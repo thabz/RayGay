@@ -63,6 +63,14 @@ class compareAreaAsc {
 	}
 };
 
+void test_sort_array() {
+    int tal[] = { 10, 5, 15, 0 ,20 };
+    sort(tal,tal + 5);
+    assert(tal[0] == 0);
+    assert(tal[1] == 5);
+    assert(tal[2] == 10);
+}
+
 void test_sort() {
     // Test descending sortering
     vector<int> tal;
@@ -104,8 +112,6 @@ void test_sort() {
     tom.push_back(1);
     sort(tom.begin(),tom.end(),compareAreaAsc());
     assert(tom.size() == 1);
-
-
 }
 
 void test_vector_copy() {
@@ -159,6 +165,7 @@ int main(int argc, char *argv[]) {
     test_modulo();
     test_lowercase();
     test_sort();
+    test_sort_array();
     test_vector_copy();
     test_vector_ref();
     test_vector_clear();
