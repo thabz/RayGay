@@ -292,6 +292,19 @@ void ThreeDS::load3ds(const string& filename) {
 		    //printf("Face flags: %x\n",l_face_flags);
 		}
 		break;
+		
+		//------------ Face Material Chunk ----------
+		// Chunk ID: 3130 (hex)
+		// Each 4130 face material chunks begins with an asciiz of a material,
+	        // then after the null character is a short int that gives the number 
+		// of faces of the object concerned by this material, then there is 
+		// the list itself of these faces. 0000 means the first face of 
+		// the (4120) face list.
+		//-------------------------------------------
+	    case 0x4130:
+		cout << "4130 found" << endl;
+		fseek(l_file, l_chunk_lenght-6, SEEK_CUR);
+		break;
 
 		//------------- TRI_MAPPINGCOORS ------------
 		// Description: Vertices list
