@@ -14,7 +14,15 @@ class TransformedInstance : public Object {
 	TransformedInstance(Object* object, Material* material);
 
 	void transform(const Matrix& matrix);
+	virtual BoundingBox boundingBoundingBox() const;
 
     private:
-	Matrix instance_transform;
+	virtual Intersection _intersect(const Ray& ray) const;
+	void prepareMatrices();
+
+	Matrix transformation;
+	Matrix inverse_transformation;
+	Matrix rotation; /// The rotation part extracted from the transformation
+	Matrix inverse_rotation;
+	Matrix scene_transformation;
 }

@@ -79,18 +79,6 @@ bool Cylinder::inside(const Vector &point) const {
    
 }
 
-bool Cylinder::intersects(const BoundingBox& bb) const {
-    // TODO: This sucks ... but is it needed? 
-    Vector* c = boundingBoundingBox().getCorners();
-    bool result = false;
-    for(int i = 0; i < 8; i++) {
-	if (bb.inside(c[i]) || bb.onEdge(c[i]))
-	    result = true;
-    }
-    delete [] c;
-    return result;
-}
-
 BoundingBox Cylinder::boundingBoundingBox() const {
     Vector rv = Vector(r,r,r);
     Vector real_begin = scene_transformation * begin;

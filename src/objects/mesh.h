@@ -84,9 +84,6 @@ class Mesh : public ObjectCollection {
 	/// Material of the mesh 
 	virtual const Material* getMaterial() const;
 
-	/// Intersection with a boundingbox
-	virtual bool intersects(const BoundingBox& b) const;
-
 	/// The bounding box containing all faces of this mesh
 	virtual BoundingBox boundingBoundingBox() const;
 

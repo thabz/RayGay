@@ -66,17 +66,6 @@ void sphere_test() {
     r = Ray(Vector(0,0,-60),Vector(0,0,-1),1);
     assert(s.intersect(r) == false);
 
-    /* Test intersects(BoundingBox) */
-    s = Sphere(Vector(0,0,0),10.0,m);
-    BoundingBox b1 = BoundingBox(Vector(-20,-20,-20),Vector(0,0,0));
-    assert(s.intersects(b1));
-    b1 = BoundingBox(Vector(-20,-20,-20),Vector(-15,-15,-15));
-    assert(!s.intersects(b1));
-    b1 = BoundingBox(Vector(-20,-20,-20),Vector(20,20,20));
-    assert(s.intersects(b1));
-    b1 = BoundingBox(Vector(-5,-5,-5),Vector(5,5,5));
-    assert(s.intersects(b1));
-
     /* Test boundingBoundingBox() */
     s = Sphere(Vector(0,0,0),20.0,m);
     assert(s.boundingBoundingBox() == BoundingBox(Vector(-20,-20,-20),Vector(20,20,20)));

@@ -21,7 +21,6 @@ class Triangle : public Object {
 
 	void transform(const Matrix& m) { };
 	const Material* getMaterial() const;
-	bool intersects(const BoundingBox&) const;
 	BoundingBox boundingBoundingBox() const;
 	Vector2 getUV(const Intersection& intersection) const;
 

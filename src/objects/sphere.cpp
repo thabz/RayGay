@@ -91,24 +91,6 @@ bool Sphere::inside(const Vector& p) const {
 }
 
 
-// Stolen from http://www.gamasutra.com/features/19991018/Gomez_4.htm
-bool Sphere::intersects(const BoundingBox& b) const {
-    double s, d = 0;
-    Vector mini = b.minimum();
-    Vector maxi = b.maximum();
-
-    for (int i = 0; i < 3; i++) {
-	if (center[i] < mini[i]) {
-	    s = center[i] - mini[i];
-	    d += s*s;
-	} else if (center[i] > maxi[i]) {
-	    s = center[i] - maxi[i];
-	    d += s*s;
-	}
-    }
-    return d <= radius*radius;
-}
-
 BoundingBox Sphere::boundingBoundingBox() const {
     Vector r = Vector(radius,radius,radius);
     return BoundingBox(center - r, center + r);

@@ -84,18 +84,6 @@ Vector Triangle::normal(const Intersection &i) const {
     return mesh->normal(i);
 };
 
-bool Triangle::intersects(const BoundingBox& bb) const {
-    // TODO: Implement an algorithm from http://www.realtimerendering.com/int/
-    Vector* c = boundingBoundingBox().getCorners();
-    bool result = false;
-    for(int i = 0; i < 8; i++) {
-	if (bb.inside(c[i]) || bb.onEdge(c[i]))
-	    result = true;
-    }
-    delete [] c;
-    return result;
-}
-
 BoundingBox Triangle::boundingBoundingBox() const {
     Vector tri[3];
     tri[0] = mesh->cornerAt(vertex[0]);

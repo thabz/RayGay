@@ -267,29 +267,6 @@ Vector Mesh::getInterpolationWeights(unsigned int triIdx, Vector p) const {
     return result;
 }
 
-// ----------------------------------------------------------------------------
-bool Mesh::intersects(const BoundingBox& box) const {
-    // Quick hackish implementation: wrap mesh in a sphere and check that for intersection
-    if (box.inside(boundingBoundingBox()))
-	return true;
-
-    Vector center;
-    for (vector<Vector>::const_iterator p = corners.begin(); p != corners.end(); p++) {
-	center = center + (*p);
-    }
-    center = center / corners.size();
-    double radius = 0;
-    for (vector<Vector>::const_iterator p = corners.begin(); p != corners.end(); p++) {
-       Vector v = ((*p) - center);
-       double l = v.length();
-       if (l > radius) radius = l;
-    }
-    assert(radius > 0);
-    Sphere s = Sphere(center,radius,material);
-    return s.intersects(box);
-    
-}
-
 const Material* Mesh::getMaterial() const {
     return material;
 }

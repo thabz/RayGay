@@ -132,18 +132,6 @@ bool Boolean::inside(const Vector &p) const {
     
 }
 
-bool Boolean::intersects(const BoundingBox& box) const {
-    switch(_op) {
-	case BOOLEAN_UNION:
-	    return _lhs->intersects(box) || _lhs->intersects(box);
-        case BOOLEAN_INTERSECTION:
-	    return _lhs->intersects(box) && _lhs->intersects(box);
-	case BOOLEAN_DIFFERENCE:
-	    return _lhs->intersects(box);
-    }
-    throw unknownOp(_op);
-}
-
 BoundingBox Boolean::boundingBoundingBox() const {
     switch(_op) {
 	case BOOLEAN_UNION:

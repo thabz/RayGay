@@ -25,7 +25,6 @@ class Cylinder : public BooleanOperand {
 	virtual bool onEdge(const Vector &p) const;
 	virtual bool inside(const Vector &p) const;
 
-	virtual bool intersects(const BoundingBox& b) const;
 	virtual BoundingBox boundingBoundingBox() const;
 
 	virtual Vector2 getUV(const Intersection& intersection) const;

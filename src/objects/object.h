@@ -31,9 +31,6 @@ class Object : public SceneObject {
 	/// Returns the materiale of this object
 	virtual const Material* getMaterial() const { return material; };
 
-	/// Says whether this object is contained or partly contained in the BoundingBox
-	virtual bool intersects(const BoundingBox&) const = 0;
-
 	/// The smallest box containing this object
 	virtual BoundingBox boundingBoundingBox() const = 0;
 	

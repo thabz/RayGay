@@ -35,7 +35,6 @@ class Boolean : public BooleanOperand {
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection& i) const;
-	virtual bool intersects(const BoundingBox&) const;
 	virtual BoundingBox boundingBoundingBox() const;
 
 	virtual bool onEdge(const Vector &p) const;

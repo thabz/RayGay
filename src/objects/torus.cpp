@@ -139,17 +139,6 @@ Vector2 Torus::getUV(const Intersection& intersection) const {
     return Vector2(0,0);
 }
 
-bool Torus::intersects(const BoundingBox& bb) const {
-    Vector* c = boundingBoundingBox().getCorners();
-    bool result = false;
-    for(int i = 0; i < 8; i++) {
-	if (bb.inside(c[i]) || bb.onEdge(c[i]))
-	    result = true;
-    }
-    delete [] c;
-    return result;
-}
-
 SceneObject* Torus::clone() const {
     return new Torus(*this);
 }
