@@ -3,6 +3,7 @@
 
 class Vector;
 class QMCSequence;
+class Vector2;
 
 /// A library of math functions
 class Math {
@@ -29,6 +30,9 @@ class Math {
 
 	static Vector perturbVector(const Vector& axis, const double angle);
 	static Vector perturbVector(const Vector& axis, const double angle, QMCSequence* qmc_sequence);
+
+	/// Fresnel
+	static Vector2 fresnel(const Vector& normal, const Vector& ray_dir, double nu);
 };
 
 inline double Math::clamp(double a) {
