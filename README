@@ -35,6 +35,11 @@ TODO:
   See Peter Shirleys "Direct Ray Tracing of Displacement Mapped Triangles"
   http://www.cs.utah.edu/~shirley/papers/
 * Scaling of all objects: See http://www.cl.cam.ac.uk/Teaching/2000/AGraphHCI/SMEG/node2.html#SECTION00024000000000000000
+* HDRI support
+* OpenEXR support. See http://www.openexr.com/
+* LightProbe support
+* Structured Importance Sampling of Environment Maps
+  http://graphics.ucsd.edu/papers/structured/
 
 
 // Compiling into assembler source
