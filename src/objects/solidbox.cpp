@@ -84,7 +84,7 @@ Intersection SolidBox::_fullIntersect(const Ray& ray, const double t) const {
     } else if (IS_EQUAL(point[1],bbox.minimum()[1])) {
 	normal[1] = -1.0;
     } else if (IS_EQUAL(point[2],bbox.minimum()[2])) {
-	normal[2] = 1.0;
+	normal[2] = -1.0;
     }
     Intersection i = Intersection(point,t,normal,Vector2(0,0));
     return intersectionToWorld(i);

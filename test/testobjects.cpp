@@ -8,6 +8,7 @@
 
 #include "boundingbox.h"
 #include "objects/sphere.h"
+#include "objects/solidbox.h"
 #include "objects/csg.h"
 #include "objects/cylinder.h"
 #include "objects/boolean.h"
@@ -712,6 +713,35 @@ void csg_test() {
     assert(!b5->onEdge(Vector(0,0,0)));*/
 }
 
+void solidbox_test() {
+    Ray ray;
+    vector<Intersection> all;
+
+    SolidBox* b = new SolidBox(Vector(-10,-10,-10),Vector(10,10,10),NULL);
+    assert(intersects(b,Vector(20,0,0),Vector(-1,0,0)));
+    assert(iPoint(b,Vector(20,0,0),Vector(-1,0,0)) == Vector(10,0,0));
+    assert(iNormal(b,Vector(20,0,0),Vector(-1,0,0)) == Vector(1,0,0));
+    assert(iPoint(b,Vector(-20,0,0),Vector(1,0,0)) == Vector(-10,0,0));
+    assert(iNormal(b,Vector(-20,0,0),Vector(1,0,0)) == Vector(-1,0,0));
+    assert(iPoint(b,Vector(0,0,0),Vector(1,0,0)) == Vector(10,0,0));
+    assert(iNormal(b,Vector(0,0,0),Vector(1,0,0)) == Vector(1,0,0));
+
+    ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
+    all = b->allIntersections(ray);
+    assert(all.size() == 2);
+    assert(all[0].getPoint() == Vector(0,0,10));
+    assert(all[0].getNormal() == Vector(0,0,1));
+    assert(all[1].getPoint() == Vector(0,0,-10));
+    cout << all[1].getNormal() << endl;
+    assert(all[1].getNormal() == Vector(0,0,-1));
+
+    ray = Ray(Vector(0,0,0),Vector(0,-1,0),-1);
+    all = b->allIntersections(ray);
+    assert(all.size() == 1);
+    assert(all[0].getPoint() == Vector(0,-10,0));
+    assert(all[0].getNormal() == Vector(0,-1,0));
+}
+
 int main(int argc, char *argv[]) {
     transformed_instance_test();
     sphere_test();
@@ -727,6 +757,7 @@ int main(int argc, char *argv[]) {
     Mesh::test();
     test_3ds();
     boolean_test();
+    solidbox_test();
     csg_test();
     return EXIT_SUCCESS;
 }
