@@ -31,27 +31,20 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc, PhotonMap* ph
     scene = sc;
     space = spc;
 
-    // Transform scene according to camera
     Camera* camera = scene->getCamera();
-    /*
-    Matrix orient = Matrix::matrixOrient(camera->getDirection(), camera->getUp());
-    scene->transform(orient);
-*/
-
     aa_enabled = camera->isAAEnabled();
     aa_depth = camera->getAADepth();
     
     beginTime = time(NULL);
-    int img_w = img->getWidth() / 2;
-    int img_h = img->getHeight() / 2;
-    int image_width = img_w*2;
+    int img_w = img->getWidth();
+    int img_h = img->getHeight();
 
     // Prepare the two PixelBlock buffers
     unsigned int block_size = 1 + (1 << aa_depth);
     if (aa_enabled) {
-	row1.reserve(image_width);
-	row2.reserve(image_width);
-	for(int i = 0; i < image_width; i++) {
+	row1.reserve(img_w);
+	row2.reserve(img_w);
+	for(int i = 0; i < img_w; i++) {
 	    row1.push_back(PixelBlock(block_size));
 	    row2.push_back(PixelBlock(block_size));
 	}
@@ -63,28 +56,28 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc, PhotonMap* ph
     PixelBlock* cur_block;
     PixelBlock* prev_block;
     RGB color;
-    for (int y = -img_h; y < img_h; y++) {
-	if (y != -img_h) {
+    for (int y = 0; y < img_h; y++) {
+	if (y != 0) {
 	    // Swap row buffers
 	    tmp_row_ptr = cur_row_ptr;
 	    cur_row_ptr = prev_row_ptr;
 	    prev_row_ptr = tmp_row_ptr;
 	    prepareCurRow(cur_row_ptr,prev_row_ptr,block_size);
 	}
-	for (int x = -img_w; x < img_w; x++) {
+	for (int x = 0; x < img_w; x++) {
 	    if (aa_enabled) {
-		cur_block = &((*cur_row_ptr)[x + img_w]);
-		if (x != -img_w) {
-		    prev_block = &((*cur_row_ptr)[x + img_w - 1]);
+		cur_block = &((*cur_row_ptr)[x]);
+		if (x != 0) {
+		    prev_block = &((*cur_row_ptr)[x - 1]);
 		    prepareCurBlock(cur_block,prev_block,block_size);
 		}
 		color = getSubPixel(0, Vector2(x,y), cur_block, 1.0, 0, 0, block_size - 1, block_size - 1);
 	    } else {
 		color = getPixel(Vector2(x,y));
 	    }
-	    img->setRGB((int)x + img_w, (int)(-y) + img_h - 1, color);
+	    img->setRGB((int)x, (int)img_h - y - 1, color);
 	}
-	cout << y + img_h << " / " << img_h*2 << "          \r" << flush;
+	cout << y << " / " << img_h << "          \r" << flush;
     }
     Stats::getUniqueInstance()->put("Rendering time (seconds)",time(NULL)-beginTime);
 }

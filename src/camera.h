@@ -4,13 +4,15 @@
 #include "math/matrix.h"
 #include "math/vector.h"
 
+class Ray;
+
 /// Datavalue class for a camera which currently just is a position and a direction.
 class Camera {
     public:
 	Camera(); 
 	
 	/// Constructor
-	Camera(Vector position, Vector lookAt, Vector up, double fieldOfView);
+	Camera(Vector position, Vector lookAt, Vector up, double fieldOfView, int width, int height);
 
 	/// Desctructor
 	~Camera();
@@ -48,12 +50,23 @@ class Camera {
 	// Set focal point 
 	void setFocalPoint(const Vector& focalPoint);
 
+	Ray getRay(const double x, const double y);
+
+	void setImageSize(int width, int height) { this->width = width; this->height = height; };
+
     private:
+	void init();
 	// General camera 
 	Vector position;
 	Vector up;
 	Vector look_at;
 	double field_of_view_radians;
+
+	double au;
+	double av;
+	Matrix basis;
+	int width, height; ///< Image size in pixels
+	bool initialized;
 
 	// Depth of field
 	Vector focal_point;
@@ -62,7 +75,6 @@ class Camera {
 	// Adaptive antialiasing
 	bool aa_enabled;
 	unsigned int aa_depth;
-
 };
 
 inline

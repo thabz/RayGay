@@ -18,11 +18,7 @@ Raytracer::Raytracer() : Renderer() {
 }
 
 RGB Raytracer::getPixel(const Vector2& v) {
-    Vector position = scene->getCamera()->getPosition();
-    Vector scr = Vector(v[0],v[1],0);
-    Vector raydir = scr - position;
-    raydir.normalize();
-    Ray ray = Ray(position,raydir,1.0);
+    Ray ray = scene->getCamera()->getRay(v[0],v[1]);
     return tracePrimary(ray);
 }
 

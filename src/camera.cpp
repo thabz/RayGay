@@ -1,8 +1,10 @@
 
 #include "camera.h"
+#include "ray.h"
 
 Camera::Camera() {
     aa_enabled = false;
+    initialized = false;
 }
 
 /**
@@ -14,15 +16,22 @@ Camera::Camera() {
  * @param up The vector that defines up
  * @param fieldOfView The anglespan that the camera should scan horizontally, normally 45.
  */
-Camera::Camera(Vector position, Vector lookAt, Vector up, double fieldOfView) {
+Camera::Camera(Vector position, Vector lookAt, Vector up, double fieldOfView, int width, int height) {
     aa_enabled = false;
-    look_at = lookAt;
+    this->look_at = lookAt;
     this->up = up;
     this->field_of_view_radians = DEG2RAD(fieldOfView);
-
+    init();
 }
 
 Camera::~Camera() {
+}
+
+void Camera::init() {
+    basis = Matrix::matrixOrient(position - look_at,up);
+    au = tan(field_of_view_radians / 2.0);
+    av = (height * au) / width;
+    initialized = true;
 }
 
 void Camera::enableAdaptiveSupersampling(unsigned int depth) {
@@ -35,5 +44,17 @@ void Camera::transform(const Matrix& m) {
     look_at = m * look_at;
     up = m * up;
     focal_point = m * focal_point;
+}
+
+Ray Camera::getRay(const double x, const double y) {
+    if (!initialized) 
+	init();
+//    double du = -au + ((2.0 * au * x) / (width - 1.0));
+//    double dv = -av + ((2.0 * av * y) / (height - 1.0));
+    double du = -au + ((2.0 * au * x) / (width));
+    double dv = -av + ((2.0 * av * y) / (height));
+    Vector dir = basis * Vector(du,dv,-1);
+    dir.normalize();
+    return Ray(position, dir, 1.0);
 }
 

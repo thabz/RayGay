@@ -29,6 +29,10 @@ Importer::Importer(const std::string& filename) {
     scene->setCamera(camera);
 
     parse(filename);
+
+    // Set image size
+    Vector2 s = getImageSize();
+    camera->setImageSize(int(s[0]),int(s[1]));
 }
 
 Vector2 Importer::getImageSize() const {

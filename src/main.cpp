@@ -27,7 +27,6 @@
 #include "math/matrix.h"
 
 #include "scene.h"
-#include "camera.h"
 #include "ray.h"
 #include "intersection.h"
 #include "image/image.h"
