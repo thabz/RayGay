@@ -8,12 +8,17 @@ $todayyear += 1900;
 $todaymonth++;
 $todaymonth = "0$todaymonth" if ($todaymonth < 9);
 
-my $selectedyear = CGI::param('year') || $todayyear;
-my $selectedmonth = CGI::param('month') || $todaymonth;
+my $selectedyear = CGI::param('year') || '';
+my $selectedmonth = CGI::param('month') || '';
 
 opendir(DIR,'entries');
 my @entries = grep { !/^\./ && !/CVS/ } readdir(DIR);
 closedir(DIR);
+
+if ($selectedmonth eq '') {
+    @entries = reverse sort @entries;
+    ($selectedyear,$selectedmonth) = split /-/,$entries[0];
+}
 
 my $calHTML = makeSidebar($selectedmonth,$selectedyear,@entries);
 
