@@ -62,8 +62,9 @@ double Blob::evaluateFunction(const Vector& point) const {
 	    continue;
 	} else {
 	    double q = rr / RR;
-	    double p = -22.0 + 17.0*q - 4.0*q*q;
-	    p *= q * one_ninth;
+	    //double p = -22.0 + 17.0*q - 4.0*q*q;
+	    double p = ((-4.0 * q + 17.0) * q - 22.0) * q * one_ninth;
+	    //p *= q * one_ninth;
 	    sum += weights[i] * (1.0 + p);
 	}
     }

@@ -46,10 +46,11 @@ class Blob : public IsoSurface {
 
     private:
 	BoundingBox bbox;
-	int atoms_num;
 	vector<Vector> centers;
 	vector<double> radii; // Squared radii
 	vector<double> weights;
+	int atoms_num;
+	
 };
 
 
