@@ -22,6 +22,7 @@ class Intersection {
 	void setObject(Object* obj) { o = obj; };
 	Object* getObject() const { return o; };
 
+	void setPoint(const Vector& point) { this->point = point; };
 	Vector getPoint() const { return point; };
 
 	void setLocalObject(const Object* obj) { local_object = obj; };
@@ -32,7 +33,7 @@ class Intersection {
 
 	
 	bool isIntersected() const { return t >= 0.0; };
-	double u,v;
+	//double u,v;
 
     private:
 	Object* o; /// The object that was intersected
