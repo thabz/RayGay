@@ -15,8 +15,10 @@
 #include "lights/lightsource.h"
 #include "materials/material.h"
 #include "space/kdtree.h"
+#include "math/halton.h"
 
 Pathtracer::Pathtracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, unsigned int thread_id) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
+    gloss_sequence = new Halton(2,2);
 }
 
 RGBA Pathtracer::getPixel(const Vector2& v) {
@@ -122,8 +124,9 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 		/* Distributed reflection */
 		double max_angle = material->glossMaxAngle();
 		int gloss_rays = material->glossRaysNum();
+		gloss_sequence->reset();
 		for(int i = 0; i < gloss_rays; i++) {
-		    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle),ray.getIndiceOfRefraction());
+		    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle,gloss_sequence),ray.getIndiceOfRefraction());
 		    refl_col += trace(refl_ray, depth + 1);
 		}
 		refl_col *= 1.0/double(gloss_rays);
