@@ -227,6 +227,42 @@ void matrix_test() {
     assert(IS_ZERO(w[0]));
     assert(IS_ZERO(w[1]));
     assert(IS_EQUAL(w[2],19));
+
+    // Test matrix rotate
+    v = Vector(1,0,0);
+    op1 = Matrix::matrixRotate(Vector(0,0,1),90);
+    assert(op1*v == Vector(0,-1,0));
+    op1 = Matrix::matrixRotate(Vector(0,0,1),180);
+    assert(op1*v == Vector(-1,0,0));
+    op1 = Matrix::matrixRotate(Vector(0,0,1),35);
+    op2 = Matrix::matrixRotate(Vector(0,0,1),-35);
+    assert(op1*op2*v == v);
+    assert(op2*op1*v == v);
+    op1 = Matrix::matrixRotate(Vector(3,4,6),360);
+    assert(op1*v == v);
+    op1 = Matrix::matrixRotate(Vector(3,4,6),180);
+    op2 = Matrix::matrixRotate(Vector(3,4,6),180);
+    assert(op1*op2*v == v);
+
+    // Test matrix translate
+    v = Vector(3,4,5);
+    op1 = Matrix::matrixTranslate(Vector(2,3,4));
+    assert(op1*v == Vector(5,7,9));
+    op1 = Matrix::matrixTranslate(Vector(2,3,4));
+    op2 = Matrix::matrixTranslate(Vector(-2,-3,-4));
+    assert(op1*op2*v == v);
+    assert(op2*op1*v == v);
+
+    // Test matrix scale
+    v = Vector(3,4,5);
+    op1 = Matrix::matrixScale(Vector(2,2,2));
+    assert(op1*v == Vector(6,8,10));
+    op1 = Matrix::matrixScale(Vector(5,6,7));
+    assert(op1*v == Vector(15,24,35));
+    op1 = Matrix::matrixScale(Vector(5,6,7));
+    op2 = Matrix::matrixScale(Vector(1.0/5.0,1.0/6.0,1.0/7.0));
+    assert(op1*op2*v == v);
+    assert(op2*op1*v == v);
 }
 
 void binomial_test() {
