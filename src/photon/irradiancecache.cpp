@@ -37,12 +37,12 @@ bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB
 	double weight = node->getWeight(point,normal);
 
 	if (weight > inv_tolerance) {
-	    result = weight * node->getIrradiance();
+	    result += weight * node->getIrradiance();
 	    weight_sum += weight;
 	    found++;
 	}
     }
-    if (found > 3) {
+    if (found > 0) {
 	Stats::getUniqueInstance()->inc("Irradiance cache hits");
 	*dest = result / weight_sum;
 	return true;
@@ -57,8 +57,8 @@ void IrradianceCache::traverseOctree(const HierarchyNode* const node, const Vect
     for(unsigned int i = 0; i < node->cache_nodes.size(); i++) {
 	const CacheNode* const cnode = &(node->cache_nodes[i]);
 	if ((point - cnode->getPoint()).norm() <= cnode->getSquaredRadius()) {
-	}
 	    result->push_back(cnode);
+	}
     }
 
     if (node->isSplit) {
