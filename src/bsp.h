@@ -7,7 +7,7 @@
 #include "object.h"
 #include <vector>
 
-#define BSP_MAX 4
+#define BSP_MAX 8
 
 class Ray;
 
@@ -21,12 +21,15 @@ class BSP : public SpaceSubdivider {
 	BSP();
 	void addObject(object* obj); ///< Place a object in the BSP tree 
 
-	Intersection intersect(const Ray& ray) const; ///< Calculate an intersection with the BSP tree
-	Intersection intersectForShadow(const Ray& ray) const; ///< Calculate an intersection with the BSP tree 
-	Intersection intersectForShadow(const Ray& ray, const object* hint) const; ///< Calculate an intersection with the BSP tree
+	Intersection intersect(const Ray& ray) const; ///< Returns the nearest intersection
+	Intersection intersectForShadow(const Ray& ray) const; ///< Returns any intersection 
+	Intersection intersectForShadow(const Ray& ray, const object* hint) const; ///< Returns any intersection but hint-object is checked for intersection first.
 
 	/// This gets called after all objects are added and before any intersection methods are called.
 	void prepare();
+	
+        /// Internal test
+	static void test();
 
     private:
 	int cutplane_dimension;   ///< [0..2] for x, y or z.
@@ -39,8 +42,9 @@ class BSP : public SpaceSubdivider {
 	BoundingBox enclosure() const;
 
 	/// Returns [0..2] for x, y or z being the widest side of the box.
-	int BSP::largestDimension(const BoundingBox& box) const;
+	static int BSP::largestDimension(const BoundingBox& box);
 	Intersection intersect(const Ray&,double,double) const;
+	Intersection intersect_recurse(const Ray&,double,double) const;
 };
 
 #endif

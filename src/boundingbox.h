@@ -37,7 +37,7 @@ class BoundingBox {
 	/// Tests whether another boundingbox is inside this
 	virtual bool inside(const BoundingBox& b) const;
 
-        /// Tests whether this bbox is in back (-1), front (1) or is intersected (0) by a axis-aligned plane.
+        /// Tests whether this bbox is in back, front or is intersected by a axis-aligned plane.
 	int cutByPlane(int cutplane_dimension, double cutplane_value) const;
 	
 	/// The corner with smallest x,y,z values

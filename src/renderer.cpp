@@ -21,6 +21,7 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
 	space->addObject(*p);
     }
     space->prepare();
+    std::cout << "Prepare done" << std::endl;
     
     int img_w = img->getWidth() / 2;
     int img_h = img->getHeight() / 2;

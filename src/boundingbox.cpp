@@ -247,7 +247,16 @@ double BoundingBox::area() const {
     return 2.0*w*h + 2.0*w*d + 2.0*h*d;
 }
 
+/**
+ * Says whether this boundingbox is on the upper or lower side of an axis-aligned plane
+ *
+ * @param cutplane_dimension The axis the plane cuts (0,1,2)
+ * @param cutplane_value The axis-value where the plane cuts.
+ * 
+ * @return 1 (higher), -1 (lower) or 0 (intersects)
+ */
 int BoundingBox::cutByPlane(int cutplane_dimension, double cutplane_value) const {
+    assert(cutplane_dimension == 0 || cutplane_dimension == 1 || cutplane_dimension == 2);
     double min = minimum()[cutplane_dimension];
     double max = maximum()[cutplane_dimension];
     if (cutplane_value > max) {
@@ -335,6 +344,18 @@ void BoundingBox::test() {
 
     BoundingBox bi = BoundingBox::doIntersection(b1,b2);
     assert(BoundingBox(Vector(-1,-1,-1),Vector(0,0,0)) == bi);
+
+    /* Test cutByPlane */
+    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+    assert(b.cutByPlane(0,10) == 1);
+    assert(b.cutByPlane(1,10) == 1);
+    assert(b.cutByPlane(2,10) == 1);
+    assert(b.cutByPlane(0,-2) == -1);
+    assert(b.cutByPlane(1,-3) == -1);
+    assert(b.cutByPlane(2,-4) == -1);
+    assert(b.cutByPlane(0,0) == 0);
+    assert(b.cutByPlane(1,0.5) == 0);
+    assert(b.cutByPlane(2,-0.5) == 0);
 
     cout << "BoundingBox::test() done." << endl;
 }

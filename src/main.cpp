@@ -59,11 +59,22 @@ void testScene4() {
     Sphere s3 = Sphere(Vector(200,50,-200),130.0,chrome);
     Sphere s4 = Sphere(Vector(-200,50,-200),130.0,chrome);
     Sphere s5 = Sphere(Vector(0,150,0),130.0,chrome);
-    scene.addObject(&s1);
+    Cylinder c1 = Cylinder(Vector(0,50,0),Vector(0,400,0),130,10,blue);
+ /*   scene.addObject(&s1);
     scene.addObject(&s2);
     scene.addObject(&s3);
     scene.addObject(&s4);
-    scene.addObject(&s5);
+    scene.addObject(&s5);*/
+    //scene.addObject(&c1);
+
+    for(int x = -10; x <= 10; x++) {
+       for(int y = -10; y <= 10; y++) {
+           for(int z = -10; z <= 10; z++) {
+	      Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,chrome);
+	      scene.addObject(sx);
+	   }
+ 	}
+    }
 
    /*
     Cylinder cyl = Cylinder(Vector(-200,-50,200),Vector(-200,50,200),100.0,6,blue);
@@ -81,7 +92,7 @@ void testScene4() {
     //scene.addLight(&light3);
     
     Box b = Box(Vector(-300,-150,-300),Vector(300,-100,300),green); /* Floor */
-    scene.addObject(&b);
+    //scene.addObject(&b);
     
     Box b2 = Box(Vector(100,-50,100),Vector(150,100,150),red);
     //scene.addObject(&b2);
@@ -96,7 +107,8 @@ void testScene4() {
     scene.setCamera(&cam);
     
     Image* img = new Image(640,480);
-    SpaceSubdivider* space = new BSP();
+    SpaceSubdivider* space = new Hierarchy();
+    //SpaceSubdivider* space = new BSP();
 
     Raytracer raytracer = Raytracer();
 
@@ -119,6 +131,7 @@ int main(int argc, char *argv[]) {
     Circle::test();
     Cylinder::test();
     PixelStore::test();
+    BSP::test();
     cout << "Tests done." << endl;
     // Test scene stuff
     testScene4();

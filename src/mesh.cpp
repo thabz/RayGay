@@ -14,6 +14,7 @@
 #include "sphere.h"
 #include "triangle.h"
 #include "hierarchy.h"
+#include "bsp.h"
 
 using namespace std;
 
@@ -34,6 +35,7 @@ Mesh::~Mesh() {
 
 void Mesh::prepare() const {
     hierarchy = new Hierarchy(boundingBoundingBox()); 
+    //hierarchy = new BSP(); 
     for (vector<Triangle*>::const_iterator p = triangles.begin(); p != triangles.end(); p++) {
 	hierarchy->addObject(*p);
     }
@@ -61,6 +63,9 @@ void Mesh::addTriangle(const Vector* c) {
 }
 
 // ----------------------------------------------------------------------------
+/**
+ * Add a triangle to this mesh
+ */
 void Mesh::addTriangle(const Vector& c1, const Vector& c2, const Vector& c3) {
     Vector c[3];
     c[0] = c1;

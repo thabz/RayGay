@@ -6,6 +6,9 @@
 
 class object;
 
+/**
+ * All spacesubdividers must extend this abstract class.
+ */
 class SpaceSubdivider {
 
     public:

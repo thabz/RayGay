@@ -11,7 +11,7 @@
 #include "boundingbox.h"
 #include "triangle.h"
 
-class Hierarchy;
+class SpaceSubdivider;
 
 /// An object consisting of a mesh of triangles
 class Mesh : public object {
@@ -58,7 +58,7 @@ class Mesh : public object {
 	mutable BoundingBox* _boundingBoundingBox;
 	virtual Intersection _intersect(const Ray& ray) const;
 	void prepare() const;
-	mutable Hierarchy* hierarchy;
+	mutable SpaceSubdivider* hierarchy;
 	mutable bool prepared;
 
 	std::vector<Vector> corners;
