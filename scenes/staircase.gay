@@ -12,9 +12,9 @@ image { width 640 aspect 4 3 }
 
 background <0.5,0.5,0.5,1.0>
 
-light { sky 10000 400 } 
+light { sky 10000 400 power <1,1,1> } 
 
-dullwhite = material {
+$dullwhite = material {
                diffuse <1.0,1.0,1.0>
                kd 0.95
                specular <1.0,1.0,1.0>
@@ -22,38 +22,38 @@ dullwhite = material {
                specpow 0
             }
 
-box { dullwhite <-300,-200,-300> <300,-150,300> }
+box { $dullwhite <-300,-200,-300> <300,-150,300> }
 
 
-step = group {
-    cylinder { dullwhite 4 <190,0,0> <190,100,0> }
-    box { dullwhite <0,-10,-40>     <200,10,40> }
-    box { dullwhite <0,5,-40>     <200,10,45> }
+$step = group {
+    cylinder { $dullwhite 4 <190,0,0> <190,100,0> }
+    box { $dullwhite <0,-10,-40>     <200,10,40> }
+    box { $dullwhite <0,5,-40>     <200,10,45> }
 }
 
-object step rotate <0,1,0> 140 translate <0,-140,0>
-object step rotate <0,1,0> 120 translate <0,-120,0>
-object step rotate <0,1,0> 100 translate <0,-100,0>
-object step rotate <0,1,0> 80 translate <0,-80,0>
-object step rotate <0,1,0> 60 translate <0,-60,0>
-object step rotate <0,1,0> 40 translate <0,-40,0>
-object step rotate <0,1,0> 20 translate <0,-20,0>
-object step rotate <0,1,0> 00 translate <0,0,0>
-object step rotate <0,1,0> -20 translate <0,20,0>
-object step rotate <0,1,0> -40 translate <0,40,0>
-object step rotate <0,1,0> -60 translate <0,60,0>
-object step rotate <0,1,0> -80 translate <0,80,0>
-object step rotate <0,1,0> -100 translate <0,100,0>
-object step rotate <0,1,0> -120 translate <0,120,0>
-object step rotate <0,1,0> -140 translate <0,140,0>
-object step rotate <0,1,0> -160 translate <0,160,0>
-object step rotate <0,1,0> -180 translate <0,180,0>
-object step rotate <0,1,0> -200 translate <0,200,0>
-object step rotate <0,1,0> -220 translate <0,220,0>
+object $step rotate <0,1,0> 140 translate <0,-140,0>
+object $step rotate <0,1,0> 120 translate <0,-120,0>
+object $step rotate <0,1,0> 100 translate <0,-100,0>
+object $step rotate <0,1,0> 80 translate <0,-80,0>
+object $step rotate <0,1,0> 60 translate <0,-60,0>
+object $step rotate <0,1,0> 40 translate <0,-40,0>
+object $step rotate <0,1,0> 20 translate <0,-20,0>
+object $step rotate <0,1,0> 00 translate <0,0,0>
+object $step rotate <0,1,0> -20 translate <0,20,0>
+object $step rotate <0,1,0> -40 translate <0,40,0>
+object $step rotate <0,1,0> -60 translate <0,60,0>
+object $step rotate <0,1,0> -80 translate <0,80,0>
+object $step rotate <0,1,0> -100 translate <0,100,0>
+object $step rotate <0,1,0> -120 translate <0,120,0>
+object $step rotate <0,1,0> -140 translate <0,140,0>
+object $step rotate <0,1,0> -160 translate <0,160,0>
+object $step rotate <0,1,0> -180 translate <0,180,0>
+object $step rotate <0,1,0> -200 translate <0,200,0>
+object $step rotate <0,1,0> -220 translate <0,220,0>
 
 
-cylinder  { dullwhite 50 <0,-140,0> <0,250,0> }
-extrusion { dullwhite
+cylinder  { $dullwhite 50 <0,-140,0> <0,250,0> }
+extrusion { $dullwhite
     spiral { 
 	linesegment { <0,-140,0> <0,220,0> }
 	190 1 0.1
