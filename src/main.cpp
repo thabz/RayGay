@@ -69,7 +69,7 @@ void testScene4() {
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));
     Spotlight light2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
-    Arealight area1 = Arealight(Vector(-2000,2000,2000),Vector(1,-1,-1),1000,25,0.10);
+    Arealight area1 = Arealight(Vector(-2000,2000,2000),Vector(1,-1,-1),1000,50,0.10);
     Arealight area2 = Arealight(Vector(2000,2000,2000),Vector(-1,-1,-1),1000,40,0.10);
     scene.addLight(&area1);
 //    scene.addLight(&area2);
