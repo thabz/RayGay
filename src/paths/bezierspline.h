@@ -18,9 +18,6 @@ class BezierSpline : public Path {
         void transform(const Matrix& m);
 
     private:
-	double bernsteinPolynomial(unsigned int i, unsigned int n, double t) const;
-	unsigned long binomialCoefficient(unsigned long n, unsigned long k) const;
-
 	Vector* controlpoints;
 	unsigned int num;
 };

@@ -10,6 +10,7 @@
 #include "math/vector.h"
 #include "math/vector2.h"
 #include "math/matrix.h"
+#include "math/functions.h"
 
 using namespace std;
 
@@ -170,9 +171,18 @@ void matrix_test() {
     assert(IS_EQUAL(w[2],19));
 }
 
+void binomial_test() {
+    assert(Math::binomialCoefficient(7,3) == 35);
+    assert(Math::binomialCoefficient(7,-3) == 0);
+    assert(Math::binomialCoefficient(-7,3) == 0);
+    assert(Math::binomialCoefficient(-7,-3) == 0);
+    assert(Math::binomialCoefficient(7,0) == 1);
+}
+
 int main(int argc, char *argv[]) {
     vector_test();
     vector2_test();
     matrix_test();
+    binomial_test();
     return EXIT_SUCCESS;
 }
