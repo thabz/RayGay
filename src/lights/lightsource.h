@@ -26,14 +26,17 @@ class Lightsource {
 	/// Apply a transformation
         virtual void transform(const Matrix& m);
 
+	/// Set attenuation parameters
 	void setAttenuation(double fadeDistance, double fadePower);
 
+	/// Get attenuation factor at a point in space
 	double getAttenuation(const Vector& point) const;
 
 	/// Returns center of lightsource
 	const Vector getPosition() const { return position; };
 
     protected:
+	/// Position of the lightsource
 	Vector position;
 
     private:
