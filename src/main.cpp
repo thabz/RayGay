@@ -114,6 +114,9 @@ void work(string scenefile, string outputfile,int jobs) {
 
     init_parser();
     yyin = fopen(scenefile.c_str(),"r");
+    if (yyin == NULL) {
+	throw_exception("File not found: " + scenefile);
+    }
     yyparse();
 
     Scene* scene = getScene();
