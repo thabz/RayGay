@@ -61,6 +61,7 @@ using namespace std;
 void testScene4() {
     Stats::getUniqueInstance()->clear();
     Scene scene;
+    //scene.setFog(RGB(0.7,0.7,0.7),1500);
  //   scene.setEnvironmentMap("stbp.tga");
 
     Material mat = MATERIAL_SHINY_BLUE;
@@ -92,15 +93,13 @@ void testScene4() {
     
     // Use this when making fog later.
     
-    /*
-    for(int x = -1000; x <= 1000; x += 60) {
-	for(int z = -1000; z <= 1000; z += 60) {
+    for(int x = -2000; x <= 1000; x += 120) {
+	for(int z = -2000; z <= 1000; z += 120) {
 	    Box* b = new Box(Vector(x,0,z),40.0,40.0,40.0,MATERIAL_SHINY_BLUE);
 	    Sphere* s = new Sphere(Vector(x,0,z),20.0,MATERIAL_SHINY_BLUE);
 	    scene.addObject(s);
 	}
     }
-    */
 
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
@@ -116,7 +115,7 @@ void testScene4() {
     scene.addLight(&light1);
     scene.addLight(&light3);
     
-    Box b = Box(Vector(-400,-300,-400),Vector(400,-250,400),MATERIAL_SHINY_GREEN); /* Floor */
+    Box b = Box(Vector(-300,-300,-300),Vector(300,-250,300),MATERIAL_SHINY_GREEN); /* Floor */
     scene.addObject(&b);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
@@ -216,7 +215,7 @@ int main(int argc, char *argv[]) {
     BSP::test();
     cout << "Tests done." << endl;
     // Test scene stuff
-    test_columns();
+    testScene4();
 
     return EXIT_SUCCESS;
 }
