@@ -6,8 +6,8 @@ AM_YFLAGS = -d
 
 noinst_LIBRARIES = libparser.a
 
-libparser_a_SOURCES = parser.yy		 tokenizer.ll	lightnodes.cpp 	assignments.cpp 
+libparser_a_SOURCES = parser.yy		 tokenizer.ll	lightnodes.cpp 	assignments.cpp parserclass.cpp
 
-BUILT_SOURCES = parser.h
+BUILT_SOURCES = parser.h parserclass.h
 
 
