@@ -1049,6 +1049,8 @@ void superellipsoid_test() {
     assert(intersects(s,Vector(100,300,401),Vector(0,0,1)));
     assert(intersects(s,Vector(101,300,401),Vector(0,-1,0)));
     assert(intersects(s,Vector(101,300,401),Vector(0,1,0)));
+    assert(intersects(s,Vector(100,300,399),Vector(0,0,-1.0)));
+    assert(intersects(s,Vector(100,300,401),Vector(0,0,-1)));
     delete s;
 
     // Test a superellipsoid with other n1 and n2 values
