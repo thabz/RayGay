@@ -4,11 +4,12 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-echo "Now running libtoolize"
-libtoolize
-
 echo "Now running aclocal"
 aclocal 
+
+echo "Now running libtoolize"
+libtoolize --force
+
 
 echo "Now running automake"
 automake --add-missing 
@@ -16,8 +17,6 @@ automake --add-missing
 echo "Now running autoconf"
 autoconf
 
-echo "Now runnning $srcdir/configure"
-$srcdir/configure 
+echo "Now run ./configure followed by make. "
+#$srcdir/configure 
 
-
-echo "'CPPFLAGS=-pg LDFLAGS=-pg ./configure' if you want profiling enabled. The tmon.out can be analyzed with kprof or gprof."
