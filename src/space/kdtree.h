@@ -81,8 +81,8 @@ class KdTree {
 		CostResult();
 		int dim; //> Output
 		double axis; //> Output
-		vector<BoundedObject*>* left_bobjects; //> Input
-		vector<BoundedObject*>* right_bobjects; //> Input
+		std::vector<BoundedObject*>* left_bobjects; //> Input
+		std::vector<BoundedObject*>* right_bobjects; //> Input
 		unsigned int left_index; //> Output
 		unsigned int right_index; //> Output
 		unsigned int left_size;
@@ -92,7 +92,7 @@ class KdTree {
 	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
 	Object* intersectForShadow_real(const Ray&,const double) const;
 	int largestDimension(const BoundingBox& box) const;
-	BoundingBox enclosure(vector<BoundedObject*>* bobs) const;
+	BoundingBox enclosure(std::vector<BoundedObject*>* bobs) const;
 	BoundingBox world_bbox;
 	bool findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const;
 	// The recursive prepare method
@@ -105,7 +105,7 @@ class KdTree {
 	unsigned int nodes_count;
 	bool prepared;
 
-	vector<Object*>* added_objects;
+	std::vector<Object*>* added_objects;
 };
 
 
