@@ -65,12 +65,9 @@ class Object : public SceneObject {
 
 /**
  *  A caching proxy around the private _intersect(Ray) method in subclasses.
- */
-
-/*  Because an object can exist in several bounding boxes we end up shooting
+ *  Because an object can exist in several bounding boxes we end up shooting
  *  the same ray at the same object several times.
  */
-
 inline
 bool Object::intersect(const Ray& ray) const {
     if (ray.getId() != last_ray) {

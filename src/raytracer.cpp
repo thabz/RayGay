@@ -12,9 +12,9 @@
 #include "math/matrix.h"
 #include "scene.h"
 #include "camera.h"
-#include "image/image.h"
 #include "lights/lightsource.h"
 #include "materials/material.h"
+#include "space/spacesubdivider.h"
 
 Raytracer::Raytracer(RendererSettings* settings, Scene* scene, SpaceSubdivider* spc) : Renderer(settings,scene,spc) {
 }
@@ -63,6 +63,13 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
     const Vector point = intersection.getPoint();
     Vector normal = object->normal(intersection);
     const Material* material = object->getMaterial();
+
+    /*
+    if (material == NULL) {
+	return RGB(0.0,0.0,0.0);
+    }
+    */
+
     normal = material->bump(intersection,normal);
 
     Vector2 fre = fresnel(normal,ray.getDirection(),material);

@@ -87,8 +87,8 @@ Vector Material::bump(const Intersection& i, const Vector& normal) const {
 	h = bumpmap->getHeight();
 
 	Vector v0 = Vector(0,0,getBumpValue(u,v));
-	Vector v1 = Vector(0,-1,getBumpValue(u,v+1.0/h));
-	Vector v2 = Vector(1,0,getBumpValue(u+1.0/w,v));
+	Vector v1 = Vector(0,-1,getBumpValue(u,v+15.0/h));
+	Vector v2 = Vector(1,0,getBumpValue(u+15.0/w,v));
 	Vector bumpnormal = Vector::xProduct(v1-v0,v2-v0);
 	bumpnormal.normalize();
 	Matrix orient = Matrix::matrixOrient(normal,Vector(0,1,0));

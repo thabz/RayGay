@@ -23,6 +23,7 @@
 #include "renderersettings.h"
 #include "math/halton.h"
 #include "materials/material.h"
+#include "space/spacesubdivider.h"
 
 PhotonRenderer::PhotonRenderer(RendererSettings* settings,  Scene* scene, SpaceSubdivider* spc) : Renderer(settings,scene,spc) {
 }

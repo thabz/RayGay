@@ -1,7 +1,7 @@
 
 #include "objectgroup.h"
 #include "object.h"
-#include "spacesubdivider.h"
+#include "space/spacesubdivider.h"
 #include "math/matrix.h"
 #include <vector>
 

@@ -30,10 +30,9 @@ class Intersection {
 
 	double getT() const { return t; }; 
 	void setT(double new_t) { t = new_t; };
-
 	
 	bool isIntersected() const { return t >= 0.0; };
-	//double u,v;
+	double u,v;
 
     private:
 	Object* o; /// The object that was intersected

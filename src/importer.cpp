@@ -244,6 +244,11 @@ void Importer::parse(const string& filename) {
 	    cur_material->enableGloss(rays,angle);
 	} else if (command == "texturemap") {
 	    cur_material->setTexturemap(readString(stream));
+	} else if (command == "maprepeat") {
+	    int repeatX = readInt(stream);
+	    int repeatY = readInt(stream);
+	    cur_material->setRepeatX(repeatX);
+	    cur_material->setRepeatY(repeatY);
 	} else if (command == "bumpmap") {
 	    string filename = readString(stream);
 	    double height = readDouble(stream);

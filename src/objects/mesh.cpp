@@ -12,7 +12,7 @@
 #include "ray.h"
 #include "sphere.h"
 #include "triangle.h"
-#include "bsp.h"
+#include "space/bsp.h"
 #include "paths/circle.h"
 #include "extrusion.h"
 #include "paths/linesegment.h"

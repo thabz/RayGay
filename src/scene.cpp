@@ -13,7 +13,7 @@
 #include "objects/sphere.h"
 #include "objects/object.h"
 #include "stats.h"
-#include "spacesubdivider.h"
+#include "space/spacesubdivider.h"
 
 using namespace std;
 
