@@ -9,6 +9,7 @@
 class Path;
 class SceneObject;
 class Material;
+class Function;
 
 using namespace std;
 
@@ -32,6 +33,9 @@ class Assignments {
 	SceneObject* getNamedSceneObject(string name);
 	void setNamedSceneObject(string name, SceneObject* obj_node);
 
+	Function* getNamedFunction(string name);
+	void setNamedFunction(string name, Function* function);
+
     private:
 	Assignments(); 
 
@@ -40,6 +44,7 @@ class Assignments {
 	map<string,Path*> pathMap;
 	map<string,Material*> materialMap;
 	map<string,SceneObject*> objectMap;
+	map<string,Function*> functionMap;
 };
 
 #endif

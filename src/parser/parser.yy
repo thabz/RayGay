@@ -42,6 +42,7 @@
 #include "parser/lightnodes.h"    
 #include "parser/cameranode.h"    
 #include "parser/boolnodes.h"    
+#include "parser/function.h"    
 
 #include "camera.h"    
 #include "exception.h"    
@@ -60,6 +61,7 @@ CameraNode* camera;
 RendererSettings* renderer_settings;
 MaterialNode* tmpMaterial;
 Vector2 image_size = Vector2(640,480);
+Function* tmpFunction;
 
 ActionListNode* top_actions;
 
@@ -87,6 +89,9 @@ ActionListNode* top_actions;
 	ObjectListNode* objlist;
 	string* c;
 	Texture::InterpolationType it;
+	FuncCallArgs* funccallargs;
+	FuncArgsDecls* funcargsdecls;
+	ValueNode* value;
 }
 %token <d> tFLOAT
 %token <i> tINTEGER
@@ -106,6 +111,7 @@ ActionListNode* top_actions;
 %token tEXTRUSION
 %token tFOV
 %token tFRAMES
+%token tFUNCTION
 %token tGROUP
 %token tIMAGE tWIDTH tHEIGHT tASPECT
 %token tLINESEGMENT tSPIRAL tCIRCLE tCATMULLROMSPLINE
@@ -174,8 +180,12 @@ ActionListNode* top_actions;
 %type <action> MainAddAction MainAction Assignment Renderer ConfAction
 %type <action> RepeatStmt IfStmt WhileStmt Action ModStmt OpAssignment
 %type <action> AddCamera AddObject AddLight Background Settings Print Image
+%type <action> FuncCall FuncDecl
 %type <actionlist> ActionList
 %type <objlist> SolidObjects
+%type <funccallargs> FuncCallArgs
+%type <value> FuncCallArg
+%type <funcargsdecls> FuncArgsDecls
 
 %left '+' '-'
 %left '*' '/'
@@ -198,6 +208,7 @@ MainAddAction	: MainAction
 
 MainAction	: Action
                 | ConfAction
+		| FuncDecl
 		;
 
 Action		: AddObject
@@ -209,6 +220,7 @@ Action		: AddObject
 		| IfStmt
 		| ModStmt 		/* $x++ */
 		| OpAssignment 		/* $x += 1 */
+		| FuncCall
 		;
 
 ConfAction	: AddCamera
@@ -248,6 +260,80 @@ AddLight	: LightDef
 		    $$ = new AddLightToSceneNode($1);
 		}
                 ;
+
+FuncDecl	: tFUNCTION tSTRING '(' FuncArgsDecls ')'
+                {
+		    tmpFunction = new Function($4);
+		    Assignments::getUniqueInstance()->setNamedFunction(*$2,tmpFunction);
+		}
+                '{' ActionList '}'
+		{
+		    tmpFunction->setActionList($8);
+		    $$ = new NOPAction();
+		}
+                ;
+
+FuncCall	: tVARNAME '(' FuncCallArgs ')'
+                {
+		    Function* f = Assignments::getUniqueInstance()->getNamedFunction(*$1);
+		    if (f == NULL) {
+			yyerror("Function '"+(*$1)+"' not declared.");
+		    }
+		    unsigned int nargs = $3->size();
+		    unsigned int fargs = f->getArgsNum();
+		    if (fargs != nargs) {
+			char line[1000];
+			sprintf(line,"Function %s required %d arguments. Caller only has %d",$1->c_str(),fargs,nargs);
+			yyerror(line);
+		    }
+		    $$ = new FuncCallNode(f,$3);
+		}
+                ;
+
+		
+		
+FuncArgsDecls	: tVARNAME
+                {
+		    $$ = new FuncArgsDecls();
+		    $$->addArg(ValueNode::FLOAT,*$1);
+		    delete $1;
+		}
+                | tVECTORVARNAME
+                {
+		    $$ = new FuncArgsDecls();
+		    $$->addArg(ValueNode::VECTOR,*$1);
+		    delete $1;
+		}
+		| FuncArgsDecls tVARNAME
+                {
+		    FuncArgsDecls* f = dynamic_cast<FuncArgsDecls*>($1);
+		    f->addArg(ValueNode::FLOAT,*$2);
+		    $$ = f;
+		}
+		| FuncArgsDecls tVECTORVARNAME
+                {
+		    FuncArgsDecls* f = dynamic_cast<FuncArgsDecls*>($1);
+		    f->addArg(ValueNode::VECTOR,*$2);
+		    $$ = f;
+		}
+                ;
+
+FuncCallArgs	: FuncCallArg
+                {
+		    $$ = new FuncCallArgs();
+		    $$->addArg($1);
+		}
+                | FuncCallArgs FuncCallArg
+		{
+		    FuncCallArgs* f = dynamic_cast<FuncCallArgs*>($1);
+		    f->addArg($2);
+		    $$ = f;
+		}
+		;
+
+FuncCallArg	: Vector
+                | Expr
+		;
 
 Assignment	: tVARNAME tEQUAL PathDef
                 {

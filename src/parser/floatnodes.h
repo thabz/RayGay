@@ -9,10 +9,12 @@
 /**
  * These are syntax tree nodes whose eval returns floats (...well, doubles really)
  */
-class FloatNode : public SyntaxNode {
+
+class FloatNode : public ValueNode {
 
     public:
 	virtual double eval() = 0;
+	ValueNode::ValueType getType() { return ValueNode::FLOAT; };
 };
 
 class FloatConstNode : public FloatNode {

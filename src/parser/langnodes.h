@@ -12,6 +12,7 @@
 #include "parser/boolnodes.h"
 #include "exception.h"
 #include "environment.h"
+#include "function.h"
 
 using namespace std;
 
@@ -471,6 +472,59 @@ class ObjectGroupNode : public SceneObjectNode {
 
     private:
 	ActionListNode* actions;
+};
+
+class FuncCallArgs {
+    public:
+	FuncCallArgs() { };
+
+	void addArg(ValueNode* node) {
+	    nodes.push_back(node);
+	}
+
+	unsigned int size() {
+	    return nodes.size();
+	}
+
+	bool getVectorArgValue(int index, Vector* result) {
+	    ValueNode* node = nodes[index];
+	    VectorNode* v = dynamic_cast<VectorNode*>(node);
+	    if (v == NULL) return false;
+	    *result = v->eval();
+	    return true;
+	}
+
+	bool getFloatArgValue(int index, double* result) {
+	    ValueNode* node = nodes[index];
+	    FloatNode* v = dynamic_cast<FloatNode*>(node);
+	    if (v == NULL) return false;
+	    *result = v->eval();
+	    return true;
+	}
+
+    private:
+	vector<ValueNode*> nodes;
+};
+
+
+/**
+ * This is a node that performs a function call.
+ */
+class FuncCallNode : public ActionNode {
+
+    public:
+	FuncCallNode(Function* function, FuncCallArgs* args) {
+	    this->function = function;
+	    this->args = args;
+	}
+
+	void eval() {
+	    function->call(args);
+	}
+
+    private:
+	Function* function;
+	FuncCallArgs* args;
 };
 
 

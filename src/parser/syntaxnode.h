@@ -9,4 +9,14 @@ class SyntaxNode {
 
 };
 
+class ValueNode : public SyntaxNode {
+    public:
+	enum ValueType {
+	    VECTOR,
+	    FLOAT
+	};
+
+	virtual ValueType getType() = 0;
+};
+
 #endif

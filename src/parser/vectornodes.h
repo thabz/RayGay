@@ -10,7 +10,7 @@
 /**
  * Nodes for doing operations on Vector
  */
-class VectorNode : public SyntaxNode {
+class VectorNode : public ValueNode {
     public:
 	VectorNode() { 
 	    this->x = NULL;
@@ -33,6 +33,9 @@ class VectorNode : public SyntaxNode {
 	virtual Vector eval() {
 	    return Vector(x->eval(),y->eval(),z->eval());
 	};
+
+	ValueNode::ValueType getType() { return ValueNode::VECTOR; };
+
     private:
 	FloatNode* x;
 	FloatNode* y;

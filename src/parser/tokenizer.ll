@@ -74,6 +74,7 @@ extrusion	return tEXTRUSION;
 finalgatherrays return tFINALGATHERRAYS;
 fov		return tFOV;
 frames		return tFRAMES;
+function	return tFUNCTION;
 globalphotons  	return tGLOBALPHOTONS;
 gloss		return tGLOSS;
 group		return tGROUP;

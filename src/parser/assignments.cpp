@@ -1,5 +1,6 @@
 
 #include "parser/assignments.h"
+#include "exception.h"
 
 Assignments* Assignments::getUniqueInstance() {
     static Assignments unique_instance;
@@ -60,4 +61,17 @@ Material* Assignments::getNamedMaterial(string name) {
 
 void Assignments::setNamedMaterial(string name, Material* material) {
     materialMap[name] = material;
+}
+
+Function* Assignments::getNamedFunction(string name) {
+    Function* result = functionMap[name];
+    if (result == NULL) {
+	throw_exception("Function " + name + " not declared.");
+    }
+    return result;
+
+}
+
+void Assignments::setNamedFunction(string name, Function* function) {
+    functionMap[name] = function;
 }
