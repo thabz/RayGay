@@ -88,19 +88,36 @@ class ScaleNode : public TransformationNode {
     public:
 	ScaleNode(VectorNode* vec) {
 	    this->vec = vec;
+	    this->f = NULL;
+	}
+
+	ScaleNode(FloatNode* f) {
+	    this->f = f;
+	    this->vec = NULL;
 	}
 
 	virtual ~ScaleNode() {
-	    delete vec;
+	    if (f == NULL) {
+		delete vec;
+	    } else {
+		delete f;
+	    }
 	}
 
 	Matrix eval() {
-	    Vector v = vec->eval();
+	    Vector v;
+	    if (f == NULL) {
+		v = vec->eval();
+	    } else {
+		double d = f->eval();
+		v = Vector(d,d,d);
+	    }
 	    return Matrix::matrixScale(v);
 	}
 
     private:
 	VectorNode* vec;
+	FloatNode* f;
 };
 
 

@@ -859,7 +859,11 @@ Scale		: tSCALE '{' Vector '}'
                 | tSCALE Vector
                 {
 		    $$ = new ScaleNode($2);
-		};
+		}
+                | tSCALE Expr
+                {
+		    $$ = new ScaleNode($2);
+		}
 		;
 
 Path		: NamedPath
