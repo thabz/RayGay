@@ -75,16 +75,17 @@ void RenderJobPool::addJob(RenderJob job) {
 }
 
 void RenderJobPool::markJobDone(RenderJob* job) {
-#ifdef HAVE_GTK
-    // Update preview window
-    pthread_mutex_lock(&mutex_jobs);
-    int x = job->begin_x;
-    int y = job->begin_y;
-    int w = job->end_x - x;
-    int h = job->end_y - y;
-    Environment::getUniqueInstance()->getPreviewWindow()->drawBlock(x,y,w,h);
-    pthread_mutex_unlock(&mutex_jobs);
-#endif    
+    if (Environment::getUniqueInstance()->hasPreviewWindow()) {
+	// Update preview window
+	pthread_mutex_lock(&mutex_jobs);
+	int x = job->begin_x;
+	int y = job->begin_y;
+	int w = job->end_x - x;
+	int h = job->end_y - y;
+	Environment::getUniqueInstance()->getPreviewWindow()->drawBlock(x,y,w,h);
+	pthread_mutex_unlock(&mutex_jobs);
+    }
+
     // Find out whether this job need to be split
     if (job->type == RenderJob::NEED_PREVIEW) {
 	RGBA mean = (job->ul + job->ur + job->ll + job->lr) * 0.25;
@@ -124,9 +125,9 @@ void RenderJobPool::markJobDone(RenderJob* job) {
     } else if (job->type == RenderJob::NEED_FULL_RENDER) {
 	pixels_fully_rendered += job->area();
 	job->type = RenderJob::IS_DONE;
-        #ifdef HAVE_GTK
-	double progress = double(pixels_fully_rendered) / double(total_image_pixels);
-	Environment::getUniqueInstance()->getPreviewWindow()->setProgress(progress);
-        #endif	
+	if (Environment::getUniqueInstance()->hasPreviewWindow()) {
+	    double progress = double(pixels_fully_rendered) / double(total_image_pixels);
+	    Environment::getUniqueInstance()->getPreviewWindow()->setProgress(progress);
+	}
     }
 }

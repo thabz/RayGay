@@ -138,9 +138,10 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     Vector2 img_size = getImageSize();
     scene->getCamera()->setImageSize(int(img_size[0]),int(img_size[1]));
     Image* img = new Image(int(img_size[0]),int(img_size[1]));
-#ifdef HAVE_GTK    
-    Environment::getUniqueInstance()->getPreviewWindow()->setImage(img);
-#endif
+
+    if (Environment::getUniqueInstance()->hasPreviewWindow()) {
+	Environment::getUniqueInstance()->getPreviewWindow()->setImage(img);
+    }
 
     if (scene->getObjects().size() == 0) {
 	throw_exception("No objects in scene.");
@@ -242,9 +243,10 @@ void work(string scenefile, string outputfile, int jobs) {
     int frames_num = getRendererSettings()->anim_frames;
     Environment* env = Environment::getUniqueInstance();
 
-    env->hasPreviewWindow(getRendererSettings()->renderertype != RendererSettings::NONE);
+    if (getRendererSettings()->renderertype == RendererSettings::NONE) {
+	env->hasPreviewWindow(false);
+    }
 
-#ifdef HAVE_GTK
     PreviewWindow* preview_window = NULL;
     if (env->hasPreviewWindow()) {
 	Vector2 size = getImageSize();
@@ -252,7 +254,7 @@ void work(string scenefile, string outputfile, int jobs) {
 	env->setPreviewWindow(preview_window);
 	preview_window->run();
     }
-#endif
+
     if (frames_num == 1) {
 	render_frame(0,outputfile,jobs);
     } else {
@@ -264,27 +266,34 @@ void work(string scenefile, string outputfile, int jobs) {
 	}
     }
     delete_interpreter();
-#ifdef HAVE_GTK
+
     if (env->hasPreviewWindow()) {
 	preview_window->stop();
     }
-#endif
 }
 
 void print_usage() {
     cout << "Usage: tracer [OPTION...] SCENEFILENAME OUTPUTFILENAME" << endl;
     cout << "       -j NUM               Number of threads to run" << endl;
+    cout << "       -x                   Disable preview window" << endl;
     cout << "       -h                   Show this help message" << endl;
     cout << "       -v                   Show current versionnumber" << endl;
 
 }
 
 int main(int argc, char *argv[]) {
+    Environment* env = Environment::getUniqueInstance();
+#ifdef HAVE_GTK
+    env->hasPreviewWindow(true);
+#else
+    env->hasPreviewWindow(false);
+#endif
+
     // Use getopt to parse arguments.
     int c;
     opterr = 0;
     int jobs = 1;
-    while ((c = getopt (argc, argv, "vhj:")) != -1) {
+    while ((c = getopt (argc, argv, "vhxj:")) != -1) {
 	switch(c) {
 	    case 'h':
 		print_usage();
@@ -292,6 +301,9 @@ int main(int argc, char *argv[]) {
 	    case 'v':
 		cout << "Raygay 0.1" << endl;
 		return EXIT_SUCCESS;
+	    case 'x':
+		env->hasPreviewWindow(false);
+		break;
 	    case 'j':
 		if (sscanf(optarg,"%u",&jobs) != 1 || jobs < 1) {
 		    cerr << "Illegal -j option" << endl;
