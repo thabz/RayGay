@@ -7,6 +7,7 @@
 #include <math.h>
 #include <stdio.h>
 #include "boundingbox.h"
+#include "exception.h"
 
 
 
@@ -42,54 +43,57 @@ void Triangle::prepare() {
 // ----------------------------------------------------------------------------
 Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
     
-   // Fast code from http://www.ce.chalmers.se/staff/tomasm/code/
-   const Vector& vert0 = mesh->cornerAt(vertex[0]);
+   double tvec[3], pvec[3], qvec[3];
+   double edge1[3], edge2[3], vert0[3];
+
+   double det;
+   double u,v;
+
+   const Vector& v0 = mesh->cornerAt(vertex[0]);
+   vert0[0] = v0[0];
+   vert0[1] = v0[1];
+   vert0[2] = v0[2];
    const Vector& vert1 = mesh->cornerAt(vertex[1]);
    const Vector& vert2 = mesh->cornerAt(vertex[2]);
-   Vector edge1 = vert1 - vert0;
-   Vector edge2 = vert2 - vert0;
 
-   Vector tvec, pvec, qvec;
-   double det,inv_det;
-   double u,v;
-   double t;
+   SUB(edge1,vert1,vert0);
+   SUB(edge2,vert2,vert0);
 
+   /* begin calculating determinant - also used to calculate U parameter */
+   CROSS(pvec,ray.getDirection(),edge2);
 
-   // begin calculating determinant - also used to calculate U parameter 
-   CROSS(pvec, ray.getDirection(), edge2);
+   /* if determinant is near zero, ray lies in plane of triangle */
+   det = DOT(edge1,pvec);
 
-   // if determinant is near zero, ray lies in plane of triangle 
-   det = edge1 * pvec;
+   if (det > EPSILON) {
+      /* calculate distance from vert0 to ray origin */
+      SUB(tvec,ray.getOrigin(),vert0)
+      
+      /* calculate U parameter and test bounds */
+      u = DOT(tvec,pvec);
 
-   if (IS_ZERO(det))
-     return Intersection();
-   inv_det = 1.0 / det;
+      if (u < 0.0 || u > det)
+	 throw_exception("This shouldn't happen!");
+      
+      /* prepare to test V parameter */
+      CROSS(qvec,tvec,edge1);
+      
+      /* calculate V parameter and test bounds */
+      v = DOT(ray.getDirection(),qvec);
+      if (v < 0.0 || u + v > det)
+	 throw_exception("This shouldn't happen!");
+   } else {
+       throw_exception("This shouldn't happen!");
+   }
 
-   // calculate distance from vert0 to ray origin 
-   tvec =  ray.getOrigin() - vert0;
-
-   // calculate U parameter and test bounds 
-   u = (tvec * pvec) * inv_det;
-   if (u < 0.0 || u > 1.0)
-     return Intersection();
-
-   // prepare to test V parameter 
-   CROSS(qvec,tvec,edge1);
-
-   // calculate V parameter and test bounds 
-   v = (ray.getDirection() * qvec) * inv_det;
-   if (v < 0.0 || u + v > 1.0)
-     return Intersection();
-
-   // calculate t, ray intersects triangle 
-   t = (edge2 * qvec) * inv_det;
-
-   if (t < EPSILON)
-       return Intersection();
+   /* calculate t, ray intersects triangle */
+ //  t = DOT(edge2,qvec) / det;
+   u /= det;
+   v /= det;
    
    Vector2 uv = mesh->getUV(this,u,v);
    Vector normal = mesh->normal(this,u,v);
-   return Intersection(ray.getPoint(t),t,normal,uv);
+   return Intersection(ray.getPoint(t2),t2,normal,uv);
 }
 
 // ----------------------------------------------------------------------------
