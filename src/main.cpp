@@ -34,6 +34,8 @@
 #include "constants.h"
 #include "box.h"
 #include "tetrahedron.h"
+#include "linesegment.h"
+#include "circle.h"
 
 using namespace std;
 
@@ -87,6 +89,8 @@ int main(int argc, char *argv[]) {
     Matrix::test();
     Mesh::test();
     Box::test();
+    Linesegment::test();
+    Circle::test();
     // Test scene stuff
     testScene4();
 
