@@ -753,6 +753,11 @@ class polynomials : public Test  {
 	    assertTrue(Polynomial(7,6,4,2) - Polynomial(1,2) == Polynomial(7,6,3,0));
 	    assertTrue(Polynomial(7) - Polynomial(0,1,2,3) == Polynomial(-1,-2,4));
 
+	    Polynomial x = Polynomial(4,3,2,1);
+	    Polynomial y = Polynomial(2,1,0,0);
+	    x = x - y;
+	    assertTrue(x == Polynomial(2,2,2,1));
+
 	    // Multiplication by scalar
 	    assertTrue(Polynomial(7,6,4,2) * 2.0 == Polynomial(14,12,8,4));
 	    assertTrue(Polynomial(1,2,3,4) * 0.0 == Polynomial(0));
@@ -795,8 +800,10 @@ class polynomials : public Test  {
 	    //           (x+6)*(x-5) = x^2 + x - 30
 	    //     (x+1)*(x+6)       = x^2 + 7*x + 6
 	    Polynomial rem;
-	    Polynomial p = Polynomial(1,2,-20,-30);
-	    //assertTrue(p.division(Polynomial(1,1),rem) == Polynomial(1,1,-30));
+	    Polynomial p = Polynomial(1,2,-29,-30);
+	    assertTrue(p.division(Polynomial(1,1),rem) == Polynomial(1,1,-30));
+	    assertTrue(rem == Polynomial(0));
+	    assertTrue(p.division(Polynomial(1,-5),rem) == Polynomial(1,7,6));
 	    assertTrue(rem == Polynomial(0));
 	}
 };

@@ -2,6 +2,7 @@
 #ifndef MATH_POLYNOMIAL_H
 #define MATH_POLYNOMIAL_H
 
+#include <iosfwd>
 #include "types.h"
 #include "math/constants.h"
 #include "math/function.h"
@@ -23,6 +24,7 @@
  * som udfra num afgør om hvordan coefficienten skal findes.
  */
 class Polynomial : public Function<double, double> {
+    friend std::ostream& operator<< (std::ostream& os, const Polynomial& x);
 
     public:
 	/// Default constructor
@@ -79,6 +81,7 @@ class Polynomial : public Function<double, double> {
 
 	/// Polynomial long division
 	Polynomial division(const Polynomial& divisor, Polynomial& remainder) const;
+	double coefficient(uint i) const { return coefficients[i]; };
 
     private:
 	void init(const Polynomial& other);

@@ -211,30 +211,18 @@ Polynomial Polynomial::division(const Polynomial& divisor, Polynomial& remainder
 
     double div_lead_q = divisor.leadingCoefficient();
     uint div_lead_d = divisor.order();
-    std::cout << "div_lead_d = " << div_lead_d << std::endl;
-
-    std::cout << "*this " << std::endl;
     remainder = *this;
     Polynomial remainder_2;
 
     do {
-	std::cout << 1 << std::endl;
 	uint new_d = remainder.order() - div_lead_d;
-	if (new_d > num) {
-	    std::cout << "Error: new_d = " << new_d << std::endl;
-	    exit(0);
-	}
-	std::cout << 2 << std::endl;
 	double new_q = remainder.leadingCoefficient() / div_lead_q;
-	std::cout << 3 << std::endl;
 	quotient_coeffs[new_d] = new_q;
-	std::cout << 4 << std::endl;
-	Polynomial remainder_2 = remainder.timesX(new_d) * new_q;
-	std::cout << 5 << std::endl;
+	Polynomial remainder_2 = divisor.timesX(new_d) * new_q;
 	remainder = remainder - remainder_2;
-	std::cout << 6 << std::endl;
-    } while (remainder.order() > div_lead_d);
+    } while (remainder.order() >= div_lead_d);
 
+    remainder.reduce();
     return Polynomial(quotient_coeffs,num);
 }
 
@@ -285,3 +273,15 @@ void Polynomial::init(const Polynomial& other) {
     }
     reduce();
 }
+
+std::ostream & operator<<(std::ostream &os, const Polynomial &p) {
+    os << "(";
+    for(uint i = 0; i <= p.order(); i++) {
+	os << p.coefficient(p.order() - i);
+	if (i != p.order())
+	    os << ",";
+    }
+    os << ")";
+    return os;
+}
+
