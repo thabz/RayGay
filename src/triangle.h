@@ -29,11 +29,11 @@ class Triangle : public object {
 	void setTri(int);
 	
 	/// Indices into the mesh' array of vertices
-        int vertex[3];
+        unsigned int vertex[3];
 	/// Indices into the mesh' array of interpolated normals
-        int interpolated_normal[3]; 
+        unsigned int interpolated_normal[3]; 
 	/// The triangle's own normal
-        int normali;
+        unsigned int normali;
 
     private:
 	Intersection _intersect(const Ray& ray) const;

@@ -14,12 +14,12 @@ class Ray {
 	~Ray() { };
 
 	/// The rays origin
-	Vector getOrigin() const { return origin; };
+	const Vector& getOrigin() const { return origin; };
 	/// The rays direction
-	Vector getDirection() const { return direction; };
+	const Vector& getDirection() const { return direction; };
 
         /// Rays direction (x,y,z) with inverted components ((1/x),(1/y),(1/x))
-	Vector getInverseDirection() const { return inv_direction; };
+	const Vector& getInverseDirection() const { return inv_direction; };
 
         /// The material the ray is travelling in where 1.0 is vacuum.
 	double getIndiceOfRefraction() const { return indice_of_refraction; };

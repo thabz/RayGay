@@ -154,20 +154,18 @@ Vector BSP::measureSplit(int dim, double val) const {
  * Private stuff   *
  *******************/
 const Intersection BSP::intersectForShadow(const Ray& ray, const double min_t, const double max_t) const {
-    Intersection result = Intersection();
     if (objects.size() > 0) {
         Intersection tmp;
 	for (unsigned int i=0; i < objects.size(); i++) {
-	    object* obj = objects[i];
-	    tmp = obj->intersect(ray);
+	    tmp = objects[i]->intersect(ray);
 	    if (tmp.isIntersected()) {
 		return tmp;
 	    }
 	}
+	return Intersection();
     } else {
-        result = intersectForShadow_recurse(ray,min_t,max_t);
+        return intersectForShadow_recurse(ray,min_t,max_t);
     }
-    return result;
 }
 
 const Intersection BSP::intersect(const Ray& ray, const double min_t, const double max_t) const {
@@ -176,8 +174,7 @@ const Intersection BSP::intersect(const Ray& ray, const double min_t, const doub
         Intersection tmp;
 	double cur_t = HUGE_DOUBLE;
 	for (unsigned int i=0; i < objects.size(); i++) {
-	    object* obj = objects[i];
-	    tmp = obj->intersect(ray);
+	    tmp = objects[i]->intersect(ray);
 	    if (tmp.isIntersected() && tmp.getT() < cur_t) {
 		result = tmp;
 		cur_t = tmp.getT();

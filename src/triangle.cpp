@@ -25,19 +25,17 @@ int Triangle::getTri() const{
 // ----------------------------------------------------------------------------
 Intersection Triangle::_intersect(const Ray& ray) const {
    /* Fast code from http://www.ce.chalmers.se/staff/tomasm/code/ */
-   Vector vert0 = mesh->cornerAt(vertex[0]);
-   Vector vert1 = mesh->cornerAt(vertex[1]);
-   Vector vert2 = mesh->cornerAt(vertex[2]);
+   const Vector& vert0 = mesh->cornerAt(vertex[0]);
+   const Vector& vert1 = mesh->cornerAt(vertex[1]);
+   const Vector& vert2 = mesh->cornerAt(vertex[2]);
 
    Vector edge1, edge2, tvec, pvec, qvec;
    double det,inv_det;
    double u,v;
    double t;
 
-   Intersection intersection;
-
-   Vector orig = ray.getOrigin();
-   Vector dir = ray.getDirection();
+   const Vector& orig = ray.getOrigin();
+   const Vector& dir = ray.getDirection();
 
    /* find vectors for two edges sharing vert0 */
    edge1 = vert1 - vert0;
@@ -50,7 +48,7 @@ Intersection Triangle::_intersect(const Ray& ray) const {
    det = edge1 * pvec;
 
    if (IS_ZERO(det))
-     return intersection;
+     return Intersection();
    inv_det = 1.0 / det;
 
    /* calculate distance from vert0 to ray origin */
@@ -59,7 +57,7 @@ Intersection Triangle::_intersect(const Ray& ray) const {
    /* calculate U parameter and test bounds */
    u = (tvec * pvec) * inv_det;
    if (u < 0.0 || u > 1.0)
-     return intersection;
+     return Intersection();
 
    /* prepare to test V parameter */
    qvec = Vector::xProduct(tvec, edge1);
@@ -67,17 +65,15 @@ Intersection Triangle::_intersect(const Ray& ray) const {
    /* calculate V parameter and test bounds */
    v = (dir * qvec) * inv_det;
    if (v < 0.0 || u + v > 1.0)
-     return intersection;
+     return Intersection();
 
    /* calculate t, ray intersects triangle */
    t = (edge2 * qvec) * inv_det;
 
    if (t < EPSILON)
-       return intersection;
+       return Intersection();
 
-   intersection = Intersection(orig + t*dir,t);
- //  intersection.u = u;
- //  intersection.v = v;
+   Intersection intersection = Intersection(orig + t*dir,t);
    intersection.setLocalObject(this);
    return intersection;
 }

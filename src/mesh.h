@@ -95,8 +95,8 @@ class Mesh : public ObjectCollection {
 	std::vector<Vector>* getVertices();
 	std::vector<Linesegment>* getEdges();
 
-	Vector normalAt(int i) { return normals[i]; };
-	Vector cornerAt(int i) { return corners[i]; };
+	const Vector& normalAt(unsigned int i) const { return normals[i]; };
+	const Vector& cornerAt(unsigned int i) const { return corners[i]; };
 
 	void prepare();
 
