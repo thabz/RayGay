@@ -61,6 +61,7 @@ int BlobAtomSphere::intersects(const BoundingBox& voxel_bbox, const BoundingBox&
 
 BlobAtomCylinder::BlobAtomCylinder(double radius, double weight, const Vector& from, const Vector& to) : BlobAtom(radius, weight) 
 {
+    assert(from != to);
     this->from = from;
     this->to = to;
 }
@@ -74,8 +75,20 @@ BoundingBox BlobAtomCylinder::boundingBoundingBox() const
 
 double BlobAtomCylinder::squaredDistToPoint(const Vector& point) const 
 {
-    // TODO: Implement
-    return 0;
+    Vector nearest;	      // Nearest point
+    Vector dir = to - from;   // Direction vector
+
+    double t = ((point - from) * dir) / dir.norm();
+
+    if (t < 0) {
+	nearest = from;
+    } else if (t > 1) {
+	nearest = to;
+    } else {
+	nearest = from + t * dir;
+    }
+
+    return (nearest - point).norm();
 }
 
 int BlobAtomCylinder::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const {
@@ -157,6 +170,22 @@ Blob::~Blob() {
  */
 void Blob::addAtom(const Vector& center, double radius, double weight) {
     tree->addObject(new BlobAtomSphere(radius, weight, center));
+}
+
+/**
+ * Add an cylindrical atom to the blob.
+ * 
+ * @param from start point of cylinder
+ * @param to end point of cylinder
+ * @param radius radius of the cylinder 
+ * @param weight weight to use
+ */
+void Blob::addAtom(const Vector& from, const Vector& to, double radius, double weight) {
+    if (from == to) {
+	addAtom(from, radius, weight);
+    } else {
+	tree->addObject(new BlobAtomCylinder(radius, weight, from, to));
+    }
 }
 
 void Blob::prepare() {

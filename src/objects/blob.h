@@ -87,6 +87,7 @@ class Blob : public IsoSurface
 	Blob(double iso, unsigned int steps, double accuracy, Material* material);
 	~Blob();
 	void addAtom(const Vector& center, double radius, double weight);
+	void addAtom(const Vector& from, const Vector& to, double radius, double weight);
 	void prepare();
     
 	SceneObject* clone() const;
