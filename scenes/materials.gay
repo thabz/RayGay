@@ -17,7 +17,7 @@ ks 0.4
 specpow 30
 eta 1.33
 kt 1.0
-#noshadow
+noshadow
 
 material $dullblue
 diffuse 0.4 0.4 1.0
