@@ -1,0 +1,36 @@
+
+# Comment
+# Comment comment
+
+include materials.gay
+
+renderer raytracer
+
+camera-position 100 1000 2000
+camera-up 0 1 0
+camera-lookat 0 0 0
+camera-field-of-view 45
+camera-aa 0
+
+image-ratio 4 3
+image-width 640
+
+light point 100 1300 1300 1 1 1
+
+name $mybox box $plaster -200 0 -200         200 400 200 rotate 0 1 0 45
+name $mysphere sphere $dullred 100 0 100 0
+
+transinstance $mysphere translate -200 0 0 
+transinstance $mysphere translate -400 0 0 
+transinstance $mysphere translate  200 0 0 
+name $mywires wireframe $mybox $dullred 10
+name $mybound bound $mywires
+
+transinstance $mybound translate -400 0 -400
+transinstance $mybound translate 400 0 400
+transinstance $mybound translate -400 0 400
+transinstance $mybound translate 400 0 -400
+
+box $dullblue -700 -50 -700  700 0 700
+
+
