@@ -21,6 +21,7 @@ class RendererSettings {
 	int final_gather_rays;
 	double cache_tolerance;
 	RendererType renderertype;
+	int threads_num;
 };
 
 inline RendererSettings::RendererSettings() {
@@ -31,6 +32,7 @@ inline RendererSettings::RendererSettings() {
     final_gather_rays = 10;
     renderertype = RAYTRACER;
     cache_tolerance = 0.1;
+    threads_num = 1;
 }
 
 #endif

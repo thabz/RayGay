@@ -48,6 +48,7 @@ void work(string scenefile, string outputfile,int jobs) {
     scene->initSpace(space);
 
     RendererSettings* renderersettings = importer.getRendererSettings();
+    renderersettings->threads_num = jobs;
     Renderer* renderer;
 
     if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
