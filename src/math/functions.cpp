@@ -269,6 +269,7 @@ Vector Math::perturbVector(const Vector& axis, const double angle) {
  * @param angle angle of the cone in radians
  * @param qmc_sequence a 2-dimensional quasi-Monto-Carlo sequence to use for random numbers
  */
+/*
 Vector Math::perturbVector(const Vector& axis, const double angle, QMCSequence* qmc_sequence) {
     Vector result;
     Vector axisP = axis.toPolar();
@@ -279,6 +280,18 @@ Vector Math::perturbVector(const Vector& axis, const double angle, QMCSequence* 
 	result[1] += (2*rnds[0] - 1)*angle;
 	result[2] += (2*rnds[1] - 1)*angle;
 	result = result.toRectangular();
+    } while (acos(result*axis) > angle);
+
+    return result;
+}
+*/
+// FIXME: This works better than the above but distribution is not uniform.
+Vector Math::perturbVector(const Vector& axis, const double angle, QMCSequence* qmc_sequence) {
+    Vector result;
+    double* rnds;
+    do {
+	rnds = qmc_sequence->getNext();
+	result = axis.randomHemisphere(rnds[0],rnds[1]);;
     } while (acos(result*axis) > angle);
 
     return result;
