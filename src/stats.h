@@ -4,6 +4,7 @@
 
 #include <map>
 #include <string>
+#include <time.h>
 #include <iostream>
 #include <vector>
 #include <iosfwd>
@@ -33,6 +34,12 @@ class Stats {
 	/// Remove all stats
 	void clear();
 
+
+	/// Begin a time measure
+	void beginTimer(string key);
+	/// End a time measure
+	void endTimer(string key);
+
 	/// Switch stats off
 	void disable() { disabled = true; };
 
@@ -40,6 +47,8 @@ class Stats {
 	static Stats* Stats::uniqueInstance;
 	Stats() {disabled = false; };
 	map<string,long> stats;
+	map<string,time_t> beginTimes;
+	map<string,time_t> endTimes;
         bool disabled;
 };
 

@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include <vector>
-#include <time.h>
 
 #include "photontracer.h"
 #include "causticsmap.h"
@@ -41,7 +40,7 @@ PhotonTracer::~PhotonTracer() {
 }
 
 void PhotonTracer::trace() {
-    time_t beginTime = time(NULL);
+    Stats::getUniqueInstance()->beginTimer("Photontracing");
     Ray ray;
     const std::vector<Lightsource*>& lights = scene->getLightsources();
     int ligths_num = lights.size();
@@ -52,7 +51,7 @@ void PhotonTracer::trace() {
 	Vector light_power = light->getPower();
 	trace(light->getRandomPhotonRay(),light_power,0);
     }
-    Stats::getUniqueInstance()->put("Photontracing time (seconds)",time(NULL)-beginTime);
+    Stats::getUniqueInstance()->endTimer("Photontracing");
 }
 
 void PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {

@@ -87,7 +87,7 @@ RGB GlobalPhotonMap::directIrradianceEstimate(const Vector& pos, const Vector& n
 RGB GlobalPhotonMap::irradianceEstimate(const Vector& pos, const Vector& normal) const {
 
     locatePhotonArgs args;
-    args.smallest_dist = 100;//(max_dist*max_dist) / 4.0;
+    args.smallest_dist = max_dist*max_dist;
     args.smallest_index = -1;
     args.pos = pos;
     args.normal = normal;

@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include <cassert>
-#include <time.h>
 
 #include "renderer.h"
 #include "camera.h"
@@ -29,13 +28,12 @@ Renderer::Renderer(RendererSettings* settings, Scene* scene, SpaceSubdivider* sp
  * @param spc The space containing the objects of the scene
  */
 void Renderer::render(Image* img) {
-    time_t beginTime;
-
     Camera* camera = scene->getCamera();
     aa_enabled = camera->isAAEnabled();
     aa_depth = camera->getAADepth();
     
-    beginTime = time(NULL);
+
+    Stats::getUniqueInstance()->beginTimer("Rendering");
     int img_w = img->getWidth();
     int img_h = img->getHeight();
 
@@ -79,8 +77,7 @@ void Renderer::render(Image* img) {
 	}
 	cout << y << " / " << img_h << "          \r" << flush;
     }
-    Stats::getUniqueInstance()->put("Rendering time (seconds)",time(NULL)-beginTime);
-    cout << "Rendering time (seconds): " << time(NULL)-beginTime << endl;
+    Stats::getUniqueInstance()->endTimer("Rendering");
 }
 
 /**

@@ -14,7 +14,7 @@
 #include "camera.h"
 #include "image/image.h"
 #include "lights/lightsource.h"
-
+#include "stats.h"
 #include "photon/globalphotonmap.h"
 #include "photon/causticsmap.h"
 #include "photon/photontracer.h"
@@ -33,15 +33,23 @@ void PhotonRenderer::init() {
     photontracer->trace();
     cout << "Done." << endl;
 
+    
+    cout << "Balancing photonmaps..." << endl;
+    Stats::getUniqueInstance()->beginTimer("Balance photonmaps");
     int total_photons_num = renderersettings->global_photons_num + renderersettings->caustic_photons_num;
     globalphotonmap->scale_photon_power(1.0/double(total_photons_num));
     globalphotonmap->balance();
-    cout << "Precomputing irradiances..." << endl;
-    //globalphotonmap->preComputeIrradiances(4);
-    cout << "Done." << endl;
-
     causticsphotonmap->scale_photon_power(1.0/double(total_photons_num));
     causticsphotonmap->balance();
+    Stats::getUniqueInstance()->endTimer("Balance photonmaps");
+    cout << "Done." << endl;
+
+    cout << "Precomputing irradiances..." << endl;
+    Stats::getUniqueInstance()->beginTimer("Precomputing irradiance");
+    globalphotonmap->preComputeIrradiances(4);
+    Stats::getUniqueInstance()->endTimer("Precomputing irradiance");
+    cout << "Done." << endl;
+
 
     delete photontracer;
 
@@ -216,6 +224,7 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 	        // If too close do additional level of path tracing
 		irra += finalGather(hitpoint,hitnormal,dir,gatherRays / 2, depth + 1);
 	    } else {
+		//irra += globalphotonmap->directIrradianceEstimate(hitpoint,hitnormal);
 		irra += globalphotonmap->irradianceEstimate(hitpoint,hitnormal);
 	    }
 	    const Material& material = inter->getObject()->getMaterial();

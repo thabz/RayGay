@@ -41,7 +41,7 @@ using namespace std;
 
 void work(string scenefile, string outputfile) {
     Stats::getUniqueInstance()->clear();
-    Stats::getUniqueInstance()->disable();
+    //Stats::getUniqueInstance()->disable();
 
     cout << "Reading " << scenefile << endl;
     Importer importer(scenefile);

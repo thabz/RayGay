@@ -1,6 +1,5 @@
 #include <iostream>
 #include <map>
-#include <time.h>
 
 #include "scene.h"
 #include "camera.h"
@@ -91,12 +90,12 @@ void Scene::setFog(const RGB& color, const double distance) {
 }
 
 void Scene::initSpace(SpaceSubdivider* space) {
-    time_t beginTime = time(NULL);
+    Stats::getUniqueInstance()->beginTimer("Preparing space");
     for (vector<SceneObject*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	(*p)->prepare();
 	(*p)->addSelf(space);
     }
 
     space->prepare();
-    Stats::getUniqueInstance()->put("Prepare time (seconds)",time(NULL)-beginTime);
+    Stats::getUniqueInstance()->endTimer("Preparing space");
 }
