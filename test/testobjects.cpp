@@ -58,6 +58,22 @@ Vector iNormal(Object* o, const Vector& origin, const Vector& dir) {
     return iNormal(o,ray);
 }
 
+/**
+ * This fires a bunch of rays at an object and checks
+ * that the returned normals all have length one.
+ */
+void normalCheck(Object* object, double radius) {
+    int num = 100;
+    for(int i = 0; i < num; i++) {
+	Vector v = Vector::randomUnitVector();
+	Vector pos = v * radius;
+	Vector dir = -1 * v;
+	Ray ray = Ray(pos,dir,-1);
+	if (intersects(object,ray)) {
+	    assert(IS_EQUAL(iNormal(object,ray).length(),1.0));
+	}
+    }
+}
 
 void sphere_test() {
     Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
@@ -134,6 +150,9 @@ void sphere_test() {
     assert(result[0].getPoint() == Vector(0,0,-20));
     assert(result[0].isEntering() == false);
 
+    // Test returned normals
+    s = Sphere(Vector(0,0,0),20.0,NULL);
+    normalCheck(&s,100);
 }
 
 void box_test() {
@@ -465,6 +484,11 @@ void torus_test() {
     assert(iNormal(t,Vector(1000,0,0),Vector(-1,0,0)) == Vector(1,0,0));
     assert(iPoint(t,Vector(-1000,0,0),Vector(1,0,0)) == Vector(-22,0,0));
     assert(iNormal(t,Vector(-1000,0,0),Vector(1,0,0)) == Vector(-1,0,0));
+
+    // Test normals
+    t = new Torus(10,1,m);
+    t->transform(Matrix::matrixScale(Vector(2,3,4)));
+    normalCheck(t,1000);
 }
 
 void transformed_instance_test() {
@@ -841,6 +865,9 @@ void solidbox_test() {
     assert(iPoint(csg,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,395,0));
     assert(iNormal(csg,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
 
+
+    b = new SolidBox(Vector(-10,-20,-30),Vector(40,50,60),NULL);
+    normalCheck(b,200);
 }
 
 void ellipsoid_test() {
@@ -885,6 +912,9 @@ void ellipsoid_test() {
     assert(all[1].getNormal() == Vector(0,0,-1));
     assert(all[0].isEntering());
     assert(!all[1].isEntering());
+
+    e = new Ellipsoid(Vector(0,0,0),Vector(10,20,30),NULL);
+    normalCheck(e,100);
 }
 
 void cone_test() {
@@ -985,6 +1015,10 @@ void cone_test() {
     assert(all[1].getPoint() == Vector(3,0,0));
     assert(all[1].getNormal() == Vector(1,0,0));
     assert(!all[1].isEntering());
+
+    // Checking normals
+    c = new Cone(Vector(0,0,0),Vector(0,0,10),500,10,true,NULL);
+    normalCheck(c,1000);
 }
 
 void superellipsoid_test() {
