@@ -76,8 +76,8 @@ void GlobalPhotonMap::preComputeIrradiances(const int M, int threads_num) {
     
     for (int i = 0; i < threads_num; i += M) {
 	ta[i].map = this;
-	ta[i].step = threads_num;
-	ta[i].offset = i;
+	ta[i].step = threads_num * M;
+	ta[i].offset = i * M;
 	ta[i].max = stored_photons;
 	pthread_create(&threads[i], NULL, preComputeIrradianceThread, &ta[i]);
     }
@@ -92,6 +92,7 @@ void GlobalPhotonMap::preComputeIrradiances(const int M, int threads_num) {
  * @param photon The photon in question
  */
 void GlobalPhotonMap::preComputeIrradiance(int photon_index) {
+    assert(photon_index < stored_photons);
     IrradiancePhoton* photon = &photons[photon_index];
     Vector pos = photon->getPosition();
     Vector normal = unpackVector(photon->normal_theta,photon->normal_phi);
