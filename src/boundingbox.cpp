@@ -18,12 +18,12 @@ BoundingBox::BoundingBox() {
 }
 
 BoundingBox::BoundingBox(const Vector c1, const Vector c2) {
-    _c1[0] = MIN(c1[0],c2[0]);
-    _c1[1] = MIN(c1[1],c2[1]);
-    _c1[2] = MIN(c1[2],c2[2]);
-    _c2[0] = MAX(c1[0],c2[0]);
-    _c2[1] = MAX(c1[1],c2[1]);
-    _c2[2] = MAX(c1[2],c2[2]);
+    _c1[0] = fmin(c1[0],c2[0]);
+    _c1[1] = fmin(c1[1],c2[1]);
+    _c1[2] = fmin(c1[2],c2[2]);
+    _c2[0] = fmax(c1[0],c2[0]);
+    _c2[1] = fmax(c1[1],c2[1]);
+    _c2[2] = fmax(c1[2],c2[2]);
 }
 
 BoundingBox::BoundingBox(const std::vector<Vector>& swarm) {
@@ -31,12 +31,12 @@ BoundingBox::BoundingBox(const std::vector<Vector>& swarm) {
     if (num < 2) throw_exception("At least two Vectors are needed");
     for(int i = 0; i < num; i++) {
 	Vector c = swarm[i];
-	_c1[0] = MIN(_c1[0],c[0]);
-	_c1[1] = MIN(_c1[1],c[1]);
-	_c1[2] = MIN(_c1[2],c[2]);
-  	_c2[0] = MAX(c[0],_c2[0]);
-	_c2[1] = MAX(c[1],_c2[1]);
-	_c2[2] = MAX(c[2],_c2[2]);
+	_c1[0] = fmin(_c1[0],c[0]);
+	_c1[1] = fmin(_c1[1],c[1]);
+	_c1[2] = fmin(_c1[2],c[2]);
+  	_c2[0] = fmax(c[0],_c2[0]);
+	_c2[1] = fmax(c[1],_c2[1]);
+	_c2[2] = fmax(c[2],_c2[2]);
     }
 }
 
@@ -228,23 +228,23 @@ Vector* BoundingBox::getCorners() const {
 }
 
 BoundingBox BoundingBox::doUnion(const BoundingBox& b1, const BoundingBox& b2) {
-    Vector mini = Vector(MIN(b1._c1[0],b2._c1[0]),
-	                 MIN(b1._c1[1],b2._c1[1]),
-			 MIN(b1._c1[2],b2._c1[2]));
-    Vector maxi = Vector(MAX(b1._c2[0],b2._c2[0]),
-	                 MAX(b1._c2[1],b2._c2[1]),
-			 MAX(b1._c2[2],b2._c2[2]));
+    Vector mini = Vector(fmin(b1._c1[0],b2._c1[0]),
+	                 fmin(b1._c1[1],b2._c1[1]),
+			 fmin(b1._c1[2],b2._c1[2]));
+    Vector maxi = Vector(fmax(b1._c2[0],b2._c2[0]),
+	                 fmax(b1._c2[1],b2._c2[1]),
+			 fmax(b1._c2[2],b2._c2[2]));
     return BoundingBox(mini,maxi);
 }
 
 // This should return NULL is they don't intersect...!
 BoundingBox BoundingBox::doIntersection(const BoundingBox& b1, const BoundingBox& b2) {
-    Vector mini = Vector(MAX(b1._c1[0],b2._c1[0]),
-	                 MAX(b1._c1[1],b2._c1[1]),
-			 MAX(b1._c1[2],b2._c1[2]));
-    Vector maxi = Vector(MIN(b1._c2[0],b2._c2[0]),
-	                 MIN(b1._c2[1],b2._c2[1]),
-			 MIN(b1._c2[2],b2._c2[2]));
+    Vector mini = Vector(fmax(b1._c1[0],b2._c1[0]),
+	                 fmax(b1._c1[1],b2._c1[1]),
+			 fmax(b1._c1[2],b2._c1[2]));
+    Vector maxi = Vector(fmin(b1._c2[0],b2._c2[0]),
+	                 fmin(b1._c2[1],b2._c2[1]),
+			 fmin(b1._c2[2],b2._c2[2]));
     return BoundingBox(mini,maxi);
 }
 
@@ -253,8 +253,8 @@ BoundingBox BoundingBox::enclosure(Vector* points, int num) {
     Vector maxi = Vector(-HUGE_DOUBLE,-HUGE_DOUBLE,-HUGE_DOUBLE);
     for(int i = 0; i < num; i++) {
 	for (int j = 0; j < 3; j++) {
-	    mini[j] = MIN(mini[j],points[i][j]);
-	    maxi[j] = MAX(maxi[j],points[i][j]);
+	    mini[j] = fmin(mini[j],points[i][j]);
+	    maxi[j] = fmax(maxi[j],points[i][j]);
 	}
     }
     return BoundingBox(mini,maxi);

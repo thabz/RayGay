@@ -29,7 +29,7 @@ double IsoSurface::_fastIntersect(const Ray& world_ray) const {
     Vector2 inout = bbox.intersect(local_ray);
 //    if (inout[0] < 0) 
 //	return -1;
-    double t_begin = MAX(inout[0],accuracy);
+    double t_begin = fmax(inout[0],accuracy);
     double t_end = inout[1] + accuracy;
  //   cout << t_begin << endl;
  //   cout << t_end << endl;
