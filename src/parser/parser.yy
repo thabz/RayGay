@@ -61,6 +61,8 @@ Vector2 image_size = Vector2(640,480);
 
 ActionListNode* top_actions;
 
+#define YYERROR_VERBOSE
+
 %}
     /* Bison declarations */
 %union {
