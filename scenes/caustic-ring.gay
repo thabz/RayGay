@@ -14,10 +14,10 @@ camera { position <200,500,1100>
 	 aa 4
 }
 
-photonmap {
- globalphotons  10000000
- causticphotons 1000000
- estimateradius 100
+settings {
+ globalphotons  1000
+ causticphotons 100000
+ estimateradius 30
  estimatesamples 300
  finalgatherrays 0
  cachetolerance 0.1
