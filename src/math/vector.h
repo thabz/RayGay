@@ -123,9 +123,10 @@ double Vector::operator*(const Vector &x) const {
 
 inline
 Vector Vector::operator*=(const double x) {
-   _vector[0] *= x;
-   _vector[1] *= x;
-   _vector[2] *= x;
+    double* d = _vector;
+    *d++ *= x;
+    *d++ *= x;
+    *d   *= x;
    return *this;
 }
 
