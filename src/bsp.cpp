@@ -114,7 +114,6 @@ Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) 
     if (max_t <= min_t) return none;
 
     Vector o = ray.origin + min_t * ray.direction;
-
     
     if (o[cutplane_dimension] < cutplane_value && 
 	ray.direction[cutplane_dimension] <= 0) {
@@ -123,7 +122,7 @@ Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) 
 	ray.direction[cutplane_dimension] >= 0) {
         return higher->intersect(ray,min_t,max_t);
     } else {
-	double intersect_t = (cutplane_value - ray.origin[cutplane_dimension]) / ray.direction[cutplane_dimension];
+	double intersect_t = (cutplane_value - ray.origin[cutplane_dimension]) * ray.inv_direction[cutplane_dimension];
 	if (intersect_t > max_t) { intersect_t = max_t; }
 	if (intersect_t < min_t) { intersect_t = min_t; }
 
