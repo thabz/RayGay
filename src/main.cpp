@@ -75,7 +75,7 @@ void work(string scenefile, string outputfile) {
     //  scene->transform(n);
 
     //SpaceSubdivider* space = new KdTree();
-    SpaceSubdivider* space = new BSP();
+    SpaceSubdivider* space = new KdTree();
     scene->initSpace(space);
 
     RendererSettings* renderersettings = importer.getRendererSettings();

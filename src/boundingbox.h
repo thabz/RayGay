@@ -39,6 +39,9 @@ class BoundingBox {
 
 	/// Tests whether a point is inside this box and not on the edge.
 	virtual bool inside(const Vector &p) const;
+	//
+	/// Tests whether a point is inside this box or on the edge.
+	virtual bool insideOrTouching(const Vector &p) const;
 	
 	/// Tests whether an array of points are inside this box and not on the edge.
 	virtual bool inside(const Vector* points, int num) const;

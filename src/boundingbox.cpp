@@ -35,6 +35,15 @@ bool BoundingBox::inside(const Vector &p) const {
 	   p[2] < _c2[2];
 }
 
+bool BoundingBox::insideOrTouching(const Vector &p) const {
+    return p[0] >= _c1[0] &&
+	   p[0] <= _c2[0] &&
+	   p[1] >= _c1[1] &&
+	   p[1] <= _c2[1] &&
+           p[2] >= _c1[2] &&
+	   p[2] <= _c2[2];
+}
+
 Vector BoundingBox::center() const {
     return 0.5 * (_c1 + _c2);
 }

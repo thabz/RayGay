@@ -220,6 +220,7 @@ RGB PhotonRenderer::getDiffuseIrradiance(const Vector& point, const Vector& norm
     if (!success) {
 	irradiance = finalGather(point, normal, ray_dir, renderersettings->final_gather_rays, 0, &hmd);
 	irradiance_cache->putEstimate(point,normal,irradiance,hmd);
+	irradiance = RGB(100.0,100.0,100.0);
     } 
     return irradiance;
 }
@@ -229,17 +230,21 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
     if (gatherRays == 0) {
 	return globalphotonmap->irradianceEstimate(point,normal);
     }
+    Vector offset_point = point + (0.1*normal);
 
     Vector result = Vector(0.0,0.0,0.0);
     *hmd = 0;
     double* rnd;
     qmc_sequence->reset();
+    unsigned int gatherHits = 0;
     for (int i = 0; i < gatherRays; i++) {
 	rnd = qmc_sequence->getNext();
 	Vector dir = normal.randomHemisphere(rnd[0],rnd[1]);
+	//Vector dir = Math::perturbVector(normal,89);
 
 	Ray ray = Ray(point+0.1*dir,dir,-1);
 	if (space->intersect(ray)) {
+	    gatherHits++;
 	    Intersection* inter = space->getLastIntersection();
 	    Vector hitpoint = inter->getPoint();
 	    Vector hitnormal = inter->getObject()->normal(*inter);
@@ -249,7 +254,7 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 	//    if ( dist < renderersettings->estimate_radius && depth == 0 ) {
 	    if (false) {
 	        // If too close do additional level of path tracing
-		irra += finalGather(hitpoint,hitnormal,dir,7, depth + 1);
+		//irra += finalGather(hitpoint,hitnormal,dir,7, depth + 1);
 	    } else {
 		//irra += globalphotonmap->directIrradianceEstimate(hitpoint,hitnormal);
 		irra += globalphotonmap->irradianceEstimate(hitpoint,hitnormal);
@@ -261,7 +266,7 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
     }
 	
     result *= 1.0 / double(gatherRays);
-    *hmd = 1.0 / *hmd;
+    *hmd = double(gatherHits) / *hmd;
     return result;
 }
 

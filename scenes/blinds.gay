@@ -5,11 +5,11 @@ include materials.gay
 renderer photonrenderer
 #renderer raytracer
 
-photonmap globalphotons 100000
+photonmap globalphotons 1000
 photonmap causticphotons 0
 photonmap estimate-radius 29
 photonmap estimate-samples 300
-photonmap final-gather-rays 5
+photonmap final-gather-rays 3
 photonmap cache-tolerance 0.1
  
 camera-position 100 180 1100
@@ -19,7 +19,7 @@ camera-field-of-view 60
 camera-aa 0
 
 image-ratio 4 3
-image-width 100
+image-width 200
 
 background 0.1 0.1 0.3 1.0
 

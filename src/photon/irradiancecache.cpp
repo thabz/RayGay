@@ -42,7 +42,7 @@ bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB
 	    found++;
 	}
     }
-    if (found > 0) {
+    if (found > 2) {
 	Stats::getUniqueInstance()->inc("Irradiance cache hits");
 	*dest = result / weight_sum;
 	return true;
@@ -57,8 +57,8 @@ void IrradianceCache::traverseOctree(const HierarchyNode* const node, const Vect
     for(unsigned int i = 0; i < node->cache_nodes.size(); i++) {
 	const CacheNode* const cnode = &(node->cache_nodes[i]);
 	if ((point - cnode->getPoint()).norm() <= cnode->getSquaredRadius()) {
-	    result->push_back(cnode);
 	}
+	    result->push_back(cnode);
     }
 
     if (node->isSplit) {
@@ -66,7 +66,7 @@ void IrradianceCache::traverseOctree(const HierarchyNode* const node, const Vect
 	for(unsigned int i = 0; i < 8; i++) {
 	    const HierarchyNode* child = node->children[i];
 	    // FIXME: Simpler test possible
-	    if (child->bbox.inside(point)) {
+	    if (child->bbox.insideOrTouching(point)) {
 		traverseOctree(child,point,result);
 	    }
 	}
@@ -115,7 +115,7 @@ void IrradianceCache::HierarchyNode::add(const CacheNode& node) {
 	int accepted_count = 0;
 	for(unsigned int j = 0; j < 8; j++) {
 	    accepted[j] = false;
-	    HierarchyNode* child = children[j];
+	    HierarchyNode* const child = children[j];
 	    if (child->bbox.intersectSphere(node.getPoint(),node.getSquaredRadius())) {
 		accepted_count++;
 		accepted[j] = true;

@@ -5,48 +5,40 @@ include materials.gay
 renderer photonrenderer
 #renderer raytracer
 
-photonmap globalphotons 50000
-photonmap causticphotons 1500000
+photonmap globalphotons 100000
+photonmap causticphotons 0
 photonmap estimate-radius 20
 photonmap estimate-samples 200
-photonmap final-gather-rays 0
+photonmap final-gather-rays 100
+photonmap cache-tolerance 0.1
 
 camera-position 10 0 500
 camera-up 0 1 0
 camera-lookat 0 0 0
 camera-field-of-view 90
-camera-aa 4
+camera-aa 0
 
 image-ratio 4 3
-image-width 1024
+image-width 200
 
 background 0.1 0.1 0.3 1.0
 
-
 # light behind wall
-light point 0 290 0 200000 200000 200000
+light point 0 290 0 600000 600000 600000
 
-# light near camera
-#light point 100 280 300 50000 50000 50000
-
-#sphere $green 60  0 -100 0
 
 # Floor
-box $dullblue -300 -350 -300    300 -300 1200
+box $dullwhite -300 -350 -300    300 -300 600
 # Ceiling 
-box $dullwhite -300 300 -300    300 350 1200
+box $dullwhite -300 300 -300    300 350 600
 # Backwall
-box $dullwhite -300 -300 -330    300 300 -300
+box $dullblue -300 -300 -330    300 300 -300
 # Left wall
-box $dullred -350 -300 -300    -300 300 1200
+box $dullred -350 -300 -300    -300 300 600
 # Right wall
-box $dullgreen 300 -300 -300    330 300 1200
+box $dullgreen 300 -300 -300    330 300 600
 # Wall behind camera
-box $dullwhite -300 -300 1200    300 300 1230
+box $dullwhite -300 -300 600    300 300 630
 
-# Table
-#box $dullwhite 100 -10 -300  300 40 -100
-
-heightfield $water water.tga 30 600 600 100 100 translate 0 -100 0
-
+sphere $dullwhite 200 -50 -100 -100 
 
