@@ -21,13 +21,14 @@ tracer_LDADD = libtracer.a paths/libpaths.a lights/liblights.a materials/libmate
 
 EXTRA_DIST = boolean.h 		\
              boundingbox.h	\
+             booleanoperand.h	\
      	     bsp.h		\
              camera.h 		\
-	     constants.h 	\
 	     cylinder.h		\
 	     hierarchy.h	\
 	     intersection.h 	\
 	     mesh.h		\
+	     object.h		\
 	     necklace.h		\
 	     objectcollection.h	\
 	     pixelstore.h	\
@@ -38,9 +39,7 @@ EXTRA_DIST = boolean.h 		\
 	     spacesubdivider.h	\
 	     sphere.h		\
 	     tessalation.h	\
-	     tetrahedron.h	\
-             transformable.h 	\	
-	     triangle.h		
+	     tetrahedron.h	transformable.h triangle.h		
 
 run:
 	sh test.sh
