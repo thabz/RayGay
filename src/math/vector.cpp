@@ -91,6 +91,23 @@ double Vector::area(const Vector& v0, const Vector& v1, const Vector& v2) {
     return xProduct(v1-v0,v2-v0).length() / 2.0;
 }
 
+/**
+ * Returns a random unit Vector that is close to this
+ * one.
+ *
+ * This vector must be converted to polar-form before this
+ * method is called
+ *
+ * @param max_degrees The max radians between this vector and the new one
+ * @return a random unit vector.
+ */
+Vector Vector::jiggle(const double& max_radians) const {
+    double theta = y() + max_radians*(2*(double(rand())/RAND_MAX)-1);
+    double phi = z() + max_radians*(2*(double(rand())/RAND_MAX)-1);
+    double sin_theta = sin(theta);
+    return Vector(sin_theta*cos(phi), sin_theta*sin(phi), cos(theta));
+}
+
 //----------------------------------------
 // Friends 
 // ---------------------------------------

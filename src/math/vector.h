@@ -56,6 +56,9 @@ public:
 	return (*v1) == (*v2);
     }
 
+    /// Returns a random Vector close to this 
+    Vector jiggle(const double& max_degrees) const;
+
     /// x-component of this vector
     double x() const { return _vector[0]; };
     /// y-component of this vector

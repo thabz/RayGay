@@ -92,8 +92,22 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 	    Vector refl_vector = -1 * ray.getDirection();
 	    refl_vector = refl_vector.reflect(normal);
 	    refl_vector.normalize();
-	    Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
-	    RGB refl_col = trace(refl_ray, depth + 1);
+	    RGB refl_col = RGB(0.0,0.0,0.0);
+	    if (material.glossEnabled()) {
+		/* Distributed reflection */
+		Vector refl_vector_orig = refl_vector.toPolar();
+		unsigned int max_rays = material.glossRaysNum();
+		for(unsigned int i = 0; i < max_rays; i++) {
+		    refl_vector = refl_vector_orig.jiggle(material.glossMaxAngle());
+		    Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
+		    refl_col += trace(refl_ray, depth + 1);
+		}
+		refl_col *= 1.0/double(max_rays);
+	    } else {
+		/* Single reflected ray */
+		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
+		refl_col = trace(refl_ray, depth + 1);
+	    }
 	    result_color = result_color + material.getKs() * refl_col;
 	}
 
@@ -118,3 +132,6 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
     return result_color;
 }
 
+Vector jiggle(const Vector& vector,double degrees) {
+
+}

@@ -22,6 +22,7 @@ Material::Material(RGB diffuseColor, RGB specularColor) {
    bumpmap = NULL;
    indice_of_refraction = 3;
    repeatY = 1; repeatX = 1;
+   gloss_enabled = false;
 }
 
 Material::Material(RGB diffuseColor, double kd, RGB specularColor, double ks, int spec_coeff) {
@@ -35,6 +36,7 @@ Material::Material(RGB diffuseColor, double kd, RGB specularColor, double ks, in
    bumpmap = NULL;
    indice_of_refraction = 3;
    repeatY = 1; repeatX = 1;
+   gloss_enabled = false;
 }
 
 Material::~Material() {
@@ -108,3 +110,16 @@ void Material::setBumpmap(const std::string& filename, double bumpHeight) {
     bumpmap->grayscale();
     this->bumpHeight = bumpHeight;
 }
+
+/**
+ * Enable gloss aka diffuse reflection. 
+ *
+ * @param gloss_ray Number of rays to sample. More rays means slower rendering but more accurate gloss.
+ * @param gloss_angle Max angle of these rays in degrees
+ */
+void Material::enableGloss(unsigned int gloss_rays, double gloss_angle) {
+    this->gloss_enabled = true;
+    this->gloss_rays = gloss_rays;
+    this->gloss_angle_rad = DEG2RAD(gloss_angle);
+}
+

@@ -70,7 +70,7 @@ void testScene4() {
     mat.setRepeatX(10);
     mat.setRepeatY(4);
 
-    Sphere* s = new Sphere(Vector(0,0,0),150.0,MATERIAL_SHINY_BLUE);
+    Sphere* s = new Sphere(Vector(0,50,0),200.0,MATERIAL_SHINY_RED);
     scene.addObject(s);
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
@@ -80,13 +80,16 @@ void testScene4() {
     Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
     Arealight area1 = Arealight(Vector(-4000,4000,4000),Vector(1,-1,-1),1000,32,0.10);
     Arealight area2 = Arealight(Vector(4000,4000,4000),Vector(-1,-1,-1),1000,32,0.10);
-    scene.addLight(&area1);
-    scene.addLight(&area2);
+    //scene.addLight(&area1);
+    //scene.addLight(&area2);
     //scene.addLight(&spotlight2);
-    //scene.addLight(&light1);
-    //scene.addLight(&light3);
+    scene.addLight(&light1);
+    scene.addLight(&light3);
     
-    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); /* Floor */
+    Material chrome = MATERIAL_CHROME;
+    chrome.enableGloss(20,10.0);
+
+    Box b = Box(Vector(-500,-200,-500),Vector(500,-150,500),chrome); /* Floor */
     scene.addObject(&b);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
@@ -96,7 +99,7 @@ void testScene4() {
     scene.setBackgroundColor(RGB(0.1,0.1,0.3));
 
     Camera cam = Camera(Vector(0,0,1500),Vector(0,0,-1));
-    cam.enableAdaptiveSupersampling(2);
+    cam.enableAdaptiveSupersampling(3);
     scene.setCamera(&cam);
     
     Image* img = new Image(640,480);

@@ -50,6 +50,15 @@ class Material {
 	double transmission_coefficient; ///< The alpha channel (0 = solid, 1 = full transparent)
 	double indice_of_refraction; ///< vacuum = 1.0. Glas ~1.2. Other materials up to 2-3.
 
+	/// Enable gloss
+	void enableGloss(unsigned int gloss_rays, double gloss_angle);
+	/// Says whether gloss aka diffuse reflection is enabled
+	bool glossEnabled() const { return gloss_enabled; };
+	/// Number of reflection rays to sample
+	unsigned int glossRaysNum() const { return gloss_rays; };
+	/// Return gloss max angle between rays in radians
+	double glossMaxAngle() const { return gloss_angle_rad; };
+
     private:
 	double getBumpValue(double u, double v) const;
 	Vector2 scaleUV(const Vector2& v) const;
@@ -62,6 +71,10 @@ class Material {
         double _ks;
 
 	int _spec_coeff;
+
+	bool gloss_enabled;
+	unsigned int gloss_rays;
+	double gloss_angle_rad;
 
 	double bumpHeight;
 	unsigned int repeatX; unsigned int repeatY;
