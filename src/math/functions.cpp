@@ -84,23 +84,19 @@ int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
     if (num < 2) 
 	return num;
 
-    // Prune and sort
-    std::list<double> L;
-    for(int i = 0; i < num; i++) {
-	L.push_back(roots[i]);
-    }
-    L.sort();
+    // TODO: A specialised sort will be faster. We know that num is 4 or 2.
+    std::sort(roots,roots + num);
 
+    // Prune the sorted array 
     int i = 0;
-    for (std::list<double>::iterator ite = L.begin(); ite != L.end(); ite++) {
-	double root = *ite;
+    for (int j = 0; j < num; j++) {
+	double root = roots[j];
 	if (i == 0) {
 	    roots[i++] = root;
 	} else {
 	    if (!IS_EQUAL(roots[i-1],root)) {
 		roots[i++] = root;
 	    }
-
 	}
     }
     return i;
