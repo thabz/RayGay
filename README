@@ -1,0 +1,20 @@
+
+TODO:
+   
+* Get a Meshs triangles into hierarchy as separate nodes.
+* Refactor Material to provide hookups for procedural textures
+* More accurate Triangle-BoundingBox intersection code
+* Hierarchy will never exit when more than 8 objects intersect a the same point.
+* Implement onEdge() and inside() for Mesh class.
+* Cylinder 
+* Separate objectspace and worldspace transformations.
+* Area lights
+* Bumpmapping
+* 3DS import (meshes, UV, materials)
+* VTune profiling
+* Create a XML scene format and an importer.
+* Cone
+* Torus
+* General polynomial surfaces.
+* Support for separate night and day textures.
+
