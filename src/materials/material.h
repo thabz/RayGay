@@ -67,6 +67,9 @@ class Material {
 	/// Return gloss max angle between rays in radians
 	double glossMaxAngle() const { return gloss_angle_rad; };
 
+	void setNoShadow(bool b) { no_shadow = b; };
+	bool noShadow() const { return no_shadow; };
+
     private:
 	double getBumpValue(double u, double v) const;
 	Vector2 scaleUV(const Vector2& v) const;
@@ -79,6 +82,8 @@ class Material {
         double _ks;
 
 	int _spec_coeff;
+
+	bool no_shadow;
 
 	bool gloss_enabled;
 	unsigned int gloss_rays;

@@ -206,6 +206,8 @@ void Importer::parse(const string& filename) {
 	    cur_material->setSc(readInt(stream));
 	} else if (command == "kd") {
 	    cur_material->setKd(readDouble(stream));
+	} else if (command == "noshadow") {
+	    cur_material->setNoShadow(true);
 	} else if (command == "ks") {
 	    cur_material->setKs(readDouble(stream));
 	} else if (command == "kt") {

@@ -131,7 +131,7 @@ bool BSP::intersectForShadow(const Ray& ray, double max_t) const {
 }
 
 bool BSP::intersectForShadow(const Ray& ray, const Object* hint, double max_t) const {
-    if (hint != NULL && hint->intersect(ray) && hint->getLastIntersection()->getT() <= max_t) {
+    if (hint != NULL && (!hint->getMaterial().noShadow()) && hint->intersect(ray) && hint->getLastIntersection()->getT() <= max_t) {
 	last_intersection = hint->getLastIntersection();
 	return true;
     } else {
@@ -184,7 +184,7 @@ bool BSP::intersectForShadow(const Ray& ray, const double min_t, const double ma
     if (objects.size() > 0) {
         Intersection tmp;
 	for (unsigned int i = 0; i < objects.size(); i++) {
-	    if (objects[i]->intersect(ray) && objects[i]->getLastIntersection()->getT() <= max_t) {
+	    if ((!(objects[i]->getMaterial().noShadow())) && objects[i]->intersect(ray) && objects[i]->getLastIntersection()->getT() <= max_t) {
 		last_intersection = objects[i]->getLastIntersection();
 		return true;
 	    }

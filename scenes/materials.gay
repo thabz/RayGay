@@ -9,6 +9,16 @@ eta 1.2
 kt 1.0
 
 
+material $water
+diffuse 0.0 0.2 0.2
+kd 0.0
+specular 1.0 1.0 1.0
+ks 0.4
+specpow 30
+eta 1.33
+kt 1.0
+#noshadow
+
 material $dullblue
 diffuse 0.4 0.4 1.0
 kd 0.8

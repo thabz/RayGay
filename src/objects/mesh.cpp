@@ -377,6 +377,7 @@ Mesh::Vertex::Vertex(int iV) {
 
 // ----------------------------------------------------------------------------
 void Mesh::test() {
+#ifdef GAHAGAH
     BSP bsp = BSP();
 
     Material mat = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
@@ -439,4 +440,5 @@ void Mesh::test() {
 
 
     cout << "Mesh::test() done." << endl;
+#endif
 }

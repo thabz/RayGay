@@ -12,6 +12,7 @@ Material::Material() {
    texturemap = NULL;
    bumpmap = NULL;
    gloss_enabled = false;
+   no_shadow = false;
 }
 
 Material::Material(RGB diffuseColor, RGB specularColor) {
@@ -26,6 +27,7 @@ Material::Material(RGB diffuseColor, RGB specularColor) {
    eta = 3;
    repeatY = 1; repeatX = 1;
    gloss_enabled = false;
+   no_shadow = false;
 }
 
 Material::Material(RGB diffuseColor, double kd, RGB specularColor, double ks, int spec_coeff) {
@@ -40,6 +42,7 @@ Material::Material(RGB diffuseColor, double kd, RGB specularColor, double ks, in
    eta = 3;
    repeatY = 1; repeatX = 1;
    gloss_enabled = false;
+   no_shadow = false;
 }
 
 Material::~Material() {
