@@ -40,14 +40,27 @@ class RGB : public Vector {
 	void clip(); ///< Clips color components to be in the [0,1] range
 
 	/// The red component
-        double r() { return Vector::_vector[0]; };
+        double r() const { return Vector::_vector[0]; };
         /// The green component
-        double g() { return Vector::_vector[1]; };
+        double g() const { return Vector::_vector[1]; };
         /// The blue component
-        double b() { return Vector::_vector[2]; }; 
+        double b() const { return Vector::_vector[2]; }; 
 
 	double sqrDistance(const RGB& other) const;
+
+	RGB operator*(const RGB& o) const;
+	RGB operator*(double c) const;
 };
+
+inline
+RGB RGB::operator*(const RGB& o) const {
+     return RGB(r()*o.r(),g()*o.g(),b()*o.b());
+}
+
+inline
+RGB RGB::operator*(double c) const {
+     return RGB(r()*c,g()*c,b()*c);
+}
 
 #endif
 

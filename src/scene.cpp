@@ -73,7 +73,7 @@ void Scene::transform(const Matrix &m) {
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	(*p)->transform(m);
     }
- //   camera->transform(m);
+    camera->transform(m);
 }
 
 std::vector<Lightsource*> Scene::getLightsources() {

@@ -9,6 +9,7 @@ class Lightsource;
 class Ray;
 class Vector;
 class QMCSequence;
+class RGB;
 
 class PhotonTracer {
 
@@ -16,7 +17,7 @@ class PhotonTracer {
 	PhotonTracer(Scene* scene, SpaceSubdivider* space, PhotonMap* photonmap);
 	~PhotonTracer();
 	void trace(int max_photons);
-	int trace(const Ray& ray, Vector power, int bounces);
+	int trace(const Ray& ray, RGB power, int bounces);
 	
     private:
 	Scene* scene;

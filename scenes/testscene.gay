@@ -4,7 +4,7 @@
 
 include materials.gay
 
-camera-position 0 500 600
+camera-position 100 1000 2000
 camera-up 0 1 0
 camera-lookat 0 0 0
 camera-field-of-view 45
@@ -13,10 +13,9 @@ camera-aa 4
 image-ratio 4 3
 image-width 640
 
-
 light point 0 1300 0
 
-box $dullwhite -700 0 -700  700 1400 700
+box $dullblue -700 -50 -700  700 0 700
 
-sphere $red 150 0 150 0 
-sphere $red 50 0 500 250
+sphere $red 200 0 200 0 
+sphere $red 100 0 100 250

@@ -60,6 +60,7 @@ bool KdTree::intersectForShadow(const Ray& ray,double a, double b) const {
 void KdTree::prepare() {
     tmp_nodes.push_back(KdNode());
     tmp_nodes[0].objects = &added_objects;
+    max_depth = 0;
     prepare(&(tmp_nodes[0]),1);
 
     int nodes_num = tmp_nodes.size();
@@ -71,6 +72,8 @@ void KdTree::prepare() {
 }
 
 void KdTree::prepare(KdNode* curNode,int depth) {
+    if (depth > max_depth)
+	max_depth = depth;
 
     if (curNode->objects->size() <= KD_TREE_MAX) {
 	curNode->axis = -1;
@@ -101,8 +104,8 @@ void KdTree::prepare(KdNode* curNode,int depth) {
 
 	tmp_nodes.push_back(KdNode());
 	tmp_nodes.push_back(KdNode());
-	KdNode* lower = &tmp_nodes[tmp_nodes.size() - 1];
-	KdNode* higher = &tmp_nodes[tmp_nodes.size() - 2];
+	KdNode* lower = &(tmp_nodes[tmp_nodes.size() - 1]);
+	KdNode* higher = &(tmp_nodes[tmp_nodes.size() - 2]);
 	curNode->left = lower;
 	curNode->right = higher;
 
@@ -110,8 +113,8 @@ void KdTree::prepare(KdNode* curNode,int depth) {
 
 	// Put all objects into lower- or higher_objects
 	int l = 0; int m = 0; int h = 0;
-	for(unsigned int i = 0; i < size; i++) {
-	    Object* obj = (*curNode->objects)[i];
+	for(vector<Object*>::iterator p = curNode->objects->begin(); p != curNode->objects->end(); p++) {
+	    Object* obj = *p;
 	    BoundingBox bbox = obj->boundingBoundingBox();
 	    int cut_val = bbox.cutByPlane(curNode->axis, curNode->splitPlane);
 	    if (cut_val == -1) {
@@ -126,6 +129,7 @@ void KdTree::prepare(KdNode* curNode,int depth) {
 		m++;
 	    }
 	}
+	return; // TODO: Remove
 	
 	if (lower->objects->size() == size || higher->objects->size() == size) {
 	    // Objects couldn't be subdivided

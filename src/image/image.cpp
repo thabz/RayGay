@@ -91,7 +91,7 @@ RGB Image::getBiCubicTexel(double u, double v) const {
     RGB result = RGB(0.0,0.0,0.0);
     for(int m = -1; m <= 2; m++) {
 	for(int n = -1; n <= 2; n++) {
-	    result = result + getRGBWrapped(i+m,j+n) * biCubicR(m-dx) * biCubicR(dy-n);
+	    result = result + (getRGBWrapped(i+m,j+n) * biCubicR(m-dx) * biCubicR(dy-n));
 	}
     }
     return result;

@@ -45,6 +45,7 @@ void Camera::transform(const Matrix& m) {
     look_at = m * look_at;
     up = m * up;
     focal_point = m * focal_point;
+    init();
 }
 
 Ray Camera::getRay(const double x, const double y) {

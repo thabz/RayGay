@@ -49,7 +49,7 @@ void PhotonTracer::trace(int max_photons) {
     Stats::getUniqueInstance()->put("Photontracing time (seconds)",time(NULL)-beginTime);
 }
 
-int PhotonTracer::trace(const Ray& ray, Vector power, int bounces) {
+int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
     if (bounces > MAX_BOUNCES) 
 	return 0;
 
@@ -63,13 +63,13 @@ int PhotonTracer::trace(const Ray& ray, Vector power, int bounces) {
     double ran = RANDOM(0,1);
     if (ran < material.getKd()) {
 	// Store photon
-	photonmap->store(power,intersection->getPoint(),ray.getDirection());
+	if (bounces > 0) 
+	    photonmap->store(power,intersection->getPoint(),ray.getDirection());
 	
 	// Reflect diffusely 
 	Vector normal = intersection->getObject()->normal(*intersection);
 	//Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89),qmcsequence);
 	//Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89));
-	
 	
 	
 	Matrix m = Matrix::matrixOrient(normal);
@@ -82,8 +82,8 @@ int PhotonTracer::trace(const Ray& ray, Vector power, int bounces) {
 	reflected_direction = m*reflected_direction;
 	reflected_direction.normalize();
         
-	Ray new_ray = Ray(intersection->getPoint(),reflected_direction,0);
-	power = power.length() * material.getDiffuseColor(*intersection);
+	Ray new_ray = Ray(intersection->getPoint() + 0.1*reflected_direction,reflected_direction,-1);
+	power = power;// * material.getDiffuseColor(*intersection);
 	return trace(new_ray, power, bounces + 1) + 1;
     } else if (ran < material.getKd() + material.getKs()) {
 	// Reflect specularly
@@ -95,8 +95,8 @@ int PhotonTracer::trace(const Ray& ray, Vector power, int bounces) {
 	return trace(new_ray, power, bounces + 1);
     } else {
 	// Store photon
-	Vector power = Vector(1.0,1.0,1.0);
-	photonmap->store(power,intersection->getPoint(),ray.getDirection());
+	if (bounces > 0) 
+	    photonmap->store(power,intersection->getPoint(),ray.getDirection());
 	return 1;
     }
 }

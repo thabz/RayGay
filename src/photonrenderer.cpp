@@ -68,7 +68,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     RGB result_color = RGB(0.0,0.0,0.0);
     vector<Lightsource*> lights = scene->getLightsources();
 
-    result_color += gatherIrradiance(point,normal).length() * material.getDiffuseColor(intersection);
+    result_color += gatherIrradiance(point,normal);//.length() * material.getDiffuseColor(intersection);
     result_color.clip();
     return result_color;
     // TODO: Add radiance_estimate from caustics map
@@ -166,13 +166,13 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
-#define FINAL_GATHER_RAYS 30
+#define FINAL_GATHER_RAYS 0
 #define ESTIMATE_RADIUS 50
-#define ESTIMATE_PHOTONS 200
+#define ESTIMATE_PHOTONS 300
 
 Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal) const {
     if (FINAL_GATHER_RAYS == 0) {
-	return 20*M_PI * photonmap->irradiance_estimate(point,normal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS);
+	return M_PI * photonmap->irradiance_estimate(point,normal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS) * 5000*100;
     }
     Vector result = Vector(0.0,0.0,0.0);
 
@@ -196,20 +196,20 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
 	Vector dir = double(-1) * photonmap->photon_dir(p);
 	//Vector dir = Math::perturbVector(normal,DEG2RAD(89));
 
-	Ray ray = Ray(point,dir,-1);
+	Ray ray = Ray(point+0.1*dir,dir,-1);
 	if (space->intersect(ray)) {
 	    Intersection* inter = space->getLastIntersection();
 	    Vector hitpoint = inter->getPoint();
 	    Vector hitnormal = inter->getObject()->normal(*inter);
 	    double cos = normal * dir;
 	    // TODO: If too close use another recursive final gather instead for estimate
-	    result += cos * photonmap->irradiance_estimate(hitpoint,hitnormal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS);
-	} else {
-	    result += scene->getBackgroundColor(ray);
+	    result += ESTIMATE_RADIUS * cos * photonmap->irradiance_estimate(hitpoint,hitnormal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS);
 	}
     }
+	
     //result *= M_PI / double(FINAL_GATHER_RAYS);
-    result *= M_PI / double(np.found - 1);
+    result *= double(M_PI) / double(np.found - 1);
+    //result *= double(1) / M_PI;
     return result;
 }
 

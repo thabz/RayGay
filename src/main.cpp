@@ -62,8 +62,8 @@ void work(string scenefile, string outputfile) {
     Vector2 img_size = importer.getImageSize();
     Image* img = new Image(int(img_size[0]),int(img_size[1]));
 
-    Matrix n = Matrix::matrixRotate(Vector(0,1,0),3.0);
-    //Matrix n = Matrix::matrixTranslate(Vector(0,0,-500));
+    Matrix n = Matrix::matrixRotate(Vector(1,1,1),15.0);
+ //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
     scene->transform(n);
 
     SpaceSubdivider* space = new BSP();
@@ -75,7 +75,7 @@ void work(string scenefile, string outputfile) {
 //#define PHOTONS_DUMP
 
 #ifdef PHOTON_CODE
-    #define PHOTON_NUM 100000
+    #define PHOTON_NUM 1000000
     PhotonMap* photonmap = new PhotonMap(PHOTON_NUM);    
     PhotonTracer* photontracer = new PhotonTracer(scene,space,photonmap);
     photontracer->trace(PHOTON_NUM);

@@ -1,6 +1,16 @@
 
+material $glass
+diffuse 0.0 0.2 0.2
+kd 0.0
+specular 1.0 1.0 1.0
+ks 0.2
+specpow 0
+ior 1.2
+trans_coeff 1.0
+
+
 material $dullblue
-diffuse 0.2 0.2 0.8
+diffuse 0.4 0.4 1.0
 kd 0.8
 specular 1.0 1.0 1.0
 ks 0.0
@@ -28,7 +38,7 @@ ks 0.5
 specpow 15
 
 material $dullred
-diffuse 0.8 0.2 0.2
+diffuse 1.0 0.4 0.4
 kd 0.8
 specular 1.0 1.0 1.0
 ks 0.0

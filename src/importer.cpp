@@ -191,6 +191,12 @@ void Importer::parse(const string& filename) {
 	    cur_material->setKd(readDouble(stream));
 	} else if (command == "ks") {
 	    cur_material->setKs(readDouble(stream));
+	} else if (command == "ior") {
+	    cur_material->indice_of_refraction = readDouble(stream);
+	} else if (command == "trans_coeff") {
+	    cur_material->transmission_coefficient = readDouble(stream);
+	} else if (command == "ks") {
+	    cur_material->setKs(readDouble(stream));
 	} else if (command == "gloss") {
 	    int rays = readInt(stream);
 	    double angle = readDouble(stream);
