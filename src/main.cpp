@@ -1,12 +1,31 @@
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+/**
+ * \mainpage
  *
- * Copyright 2003 by Jesper Christensen <jesper@kalliope.org>
+ * Documentation for the RayGay renderer.
  *
- * Added Thu Apr 17 2003
+ * This project was begun Thu Apr 17 2003.
+ *
+ * Copyright 2003-2004 by Jesper Christensen <jesper@kalliope.org>
+ *
+ * \ref page_raytracing 
+ *
+ * \ref page_photonmapping
+ */
+
+/**
+ * \page page_raytracing Raytracing
+ *
+ * This is a page about raytracing.
+ *
+ * @see Raytracer
+ */
+
+/**
+ * \page page_photonmapping Photon mapping
+ *
+ * This is a page about photon mapping
+ *
+ * @see PhotonRenderer
  */
 
 #ifdef HAVE_CONFIG_H
@@ -52,8 +71,8 @@ void work(string scenefile, string outputfile) {
     Image* img = new Image(int(img_size[0]),int(img_size[1]));
 
     Matrix n = Matrix::matrixRotate(Vector(0,1,0),2.0);
- //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
-  //  scene->transform(n);
+    //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
+    //  scene->transform(n);
 
     //SpaceSubdivider* space = new KdTree();
     SpaceSubdivider* space = new BSP();

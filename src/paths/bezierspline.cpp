@@ -31,12 +31,14 @@ Vector BezierSpline::getPoint(double t) const {
     return result;
 }
 
+/**
+ * Get a tangent vector.
+ *
+ * The derivative of the Bernstein polynomial above is
+ *
+ * \f[ \frac{d}{dt}B_{i,n}(t) = n \left( B_{i-1,n-1}(t) - B_{i,n-1}(t) \right) \f]
+ */
 Vector BezierSpline::getTangent(double t) const {
-    /* From http://medialab.di.unipi.it/web/IUM/Waterloo/node123.html
-     *
-     * The derivative of Bin(t) is
-     * d/dt Bin(t) = n ( Bi-1n-1(t) - Bin-1(t) )
-     */
     Vector result = Vector(0,0,0);
     for(unsigned int i = 0; i < num; i++) {
 	result += num*(Math::bernsteinPolynomial(i-1,num-2,t) - Math::bernsteinPolynomial(i,num-2,t)) * getControlPoint(i);
