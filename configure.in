@@ -43,10 +43,25 @@ case $target in
      pentium3) CXXFLAGS="$CXXFLAGS -malign-double -march=pentium3 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing";;
      pentium4) CXXFLAGS="$CXXFLAGS -fprefetch-loop-arrays -funroll-loops -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing -msse2";;
      g4) CXXFLAGS="$CXXFLAGS -ftracer -fstrict-aliasing";;
-     profile) CXXFLAGS="$CXXFLAGS -pg -malign-double -march=pentium3 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing"; LDFLAGS="-pg";
 esac
 LDFLAGS="$LDFLAGS -lfl"
 
+dnl -------------------------------------------------
+dnl Enable profiling
+dnl -------------------------------------------------
+AC_MSG_CHECKING(whether --enable-profile is specified)
+AC_ARG_ENABLE(profile, 
+  [  --enable-profile        Build a debugging version.],
+  [build_profile="yes"], [build_profile="no"])
+if test "$build_profile" = yes; then
+   CXXFLAGS="$CXXFLAGS -pg"
+   LDFLAGS="$LDFLAGS -pg"
+fi
+AC_MSG_RESULT($build_profile)
+
+dnl -------------------------------------------------
+dnl Write the makefiles
+dnl -------------------------------------------------
 AC_OUTPUT(Makefile \
 	  src/Makefile \
 	  src/materials/Makefile \
