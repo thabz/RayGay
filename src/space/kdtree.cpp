@@ -97,7 +97,7 @@ void KdTree::prepare() {
 		if (obj_ptr != NULL)
 		    node.objects->push_back(obj_ptr);
 	    }
-	    sort(node.objects->begin(),node.objects->end(),compareAreaDesc());
+	    //sort(node.objects->begin(),node.objects->end(),compareAreaDesc());
 	    old.bobjects.clear();
 	}
 	nodes[i] = node;
@@ -140,13 +140,12 @@ void KdTree::prepare(int curNode_idx,int depth) {
     int right_idx = tmp_nodes.size() - 2;
     curNode->left = left_idx;
     curNode->right = right_idx;
-    KdNodeTmp* lower = &tmp_nodes[curNode->left];
-    KdNodeTmp* higher = &tmp_nodes[curNode->right];
+    KdNodeTmp& lower = tmp_nodes[curNode->left];
+    KdNodeTmp& higher = tmp_nodes[curNode->right];
 
-    curNode->bbox.split(&(lower->bbox), &(higher->bbox), best_dim, best_val);
+    curNode->bbox.split(&(lower.bbox), &(higher.bbox), best_dim, best_val);
 
     // Put all objects into lower- or higher_objects
-    int l = 0; int m = 0; int h = 0;
     vector<BoundedObject>::iterator p = curNode->bobjects.begin();
     while (p != curNode->bobjects.end()) {
 	BoundedObject obj = *p;
@@ -155,15 +154,12 @@ void KdTree::prepare(int curNode_idx,int depth) {
 	const BoundingBox bbox = obj.bbox;
 	int cut_val = bbox.cutByPlane(curNode->axis, curNode->splitPlane);
 	if (cut_val == -1) {
-	    lower->bobjects.push_back(obj);
-	    l++;
+	    lower.bobjects.push_back(obj);
 	} else if (cut_val == 1) {
-	    higher->bobjects.push_back(obj);
-	    h++;
+	    higher.bobjects.push_back(obj);
 	} else {
-	    lower->bobjects.push_back(obj);
-	    higher->bobjects.push_back(obj);
-	    m++;
+	    lower.bobjects.push_back(obj);
+	    higher.bobjects.push_back(obj);
 	}
 	p++;
     }
@@ -321,15 +317,16 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 	// Intersect with all objects in list, discarding
 	// those lying before stack[enPt].t or farther than stack[exPt].t
 	Object* object_hit = NULL;
-	double smallest_t = HUGE_DOUBLE;
+	double smallest_t = stack[exPt].t;
 	if (!curNode->objects->empty()) {
-	    vector<Object*>* objects = curNode->objects;
-	    unsigned int objects_size = objects->size();
+	    const vector<Object*>& objects = *(curNode->objects);
+	    unsigned int objects_size = objects.size();
+	    const double s_min_t = MAX(0.0,stack[enPt].t);
 	    for (unsigned int i = 0; i < objects_size; i++) {
-		double i_t = (*objects)[i]->fastIntersect(ray); // TODO: Slow!
-		if (i_t > 0 && i_t < smallest_t && i_t > stack[enPt].t && i_t < stack[exPt].t) {
+		double i_t = objects[i]->fastIntersect(ray);
+		if (i_t > s_min_t && i_t < smallest_t) {
 		    smallest_t = i_t;
-		    object_hit = (*objects)[i]; // TODO: Slow!
+		    object_hit = objects[i];
 		}
 	    }
 	}
@@ -414,9 +411,10 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
 	if (!curNode->objects->empty()) {
 	    const vector<Object*> &objects = *(curNode->objects);
 	    unsigned int objects_size = objects.size();
+	    const double min_t = MAX(0.0,stack[enPt].t);
 	    for (unsigned int i = 0; i < objects_size; i++) {
 		double i_t = objects[i]->fastIntersect(ray);
-		if (i_t > 0 && i_t > stack[enPt].t && i_t < stack[exPt].t) {
+		if (i_t > min_t && i_t < stack[exPt].t) {
 		    return objects[i];
 		}
 	    }
