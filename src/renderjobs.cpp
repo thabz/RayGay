@@ -129,10 +129,12 @@ void RenderJobPool::markJobDone(RenderJob* job) {
 	    jobs.push_back(job2);
 	    jobs.push_back(job3);
 	    jobs.push_back(job4);
+	    delete job;
 	}
     } else if (job->type == RenderJob::NEED_FULL_RENDER) {
 	pixels_fully_rendered += job->area();
 	job->type = RenderJob::IS_DONE;
+	delete job;
 	double progress = double(pixels_fully_rendered) / double(total_image_pixels);
 	if (Environment::getUniqueInstance()->hasPreviewWindow()) {
 	    Environment::getUniqueInstance()->getPreviewWindow()->setProgress(progress);
