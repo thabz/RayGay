@@ -1,0 +1,65 @@
+/*
+ *   100:   2:04
+ *  5000:  28:29
+ * 
+ */
+
+renderer raytracer
+
+camera { position <1000,1000,2000>
+         up <0,1,0> 
+         lookat <0,100,0> 
+	 fov 45
+	 aa 0
+}
+
+image { width 640 aspect 4 3 }
+
+background <0.3,0.5,0.7,1.0>
+
+light { point <500,1300,1300> power <1,1,1> } 
+light { point <-500,1500,1300> power <1,1,1> } 
+
+$brown = material {
+    diffuse <0.7,0.4,0.2>
+    kd 1.0
+    ks 0.0
+}
+
+$grey85 = material {
+    diffuse <0.85,0.85,0.85>
+    kd 1.0
+    ks 0.0
+}
+
+$chrome = material {
+    diffuse <0.8,0.8,0.8>
+    kd 0.2
+    specular <1.0,1.0,1.0>
+    ks 0.8
+    specpow 30
+}
+
+box { 
+    $brown
+    <-1700,-51,-1700>
+    <1700,1,1700>	  
+}
+
+$cyl = group {
+    sphere { $chrome 20 <0,200,0> }
+    cylinder { $chrome 20 <0,-200,0> <0,200,0> }
+    sphere { $chrome 20 <0,-200,0> }
+}
+
+$i = 0
+$num = 50
+$windings = 3.5
+do {
+    object $cyl
+         rotate {<1,0,0> ($windings*$i*(360/$num)) }
+         translate <0,250,500> 
+	 rotate { <0,1,0> ($i*(360/$num)) }
+    $i++
+} while ($i < $num)
+
