@@ -1,6 +1,7 @@
 
 AC_INIT(src/main.cpp) dnl a source file from your sub dir
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
+AM_CONFIG_HEADER(config.h)    
 
 PACKAGE=tracer
 VERSION=0.1
@@ -14,8 +15,9 @@ AC_CHECK_HEADERS(pthread.h)
 
 AC_SUBST(THRLIBS)    
 
-CPPFLAGS="$CPPFLAGS -O3 -Wall -march=i686"
-#CPPFLAGS="$CPPFLAGS -O4 -Wall -march=i686 -msse -mfpmath=sse"
+CXXFLAGS="-g -O3 -Wall -march=i686 -ffast-math"
+#CXXFLAGS="$CXXFLAGS -O3 -Wall -march=i686 -ffast-math"
+#CXXFLAGS="$CPPFLAGS -O4 -Wall -march=i686 -msse -mfpmath=sse"
 
 AC_OUTPUT(Makefile \
 	  src/Makefile \
