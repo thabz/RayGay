@@ -7,8 +7,14 @@ using namespace std;
 
 static scm_t_bits wrapped_object_tag;
 
+struct wrapped_object* scm2wrappedobj(SCM s_smob, char* subr, int pos) {
+    SCM_ASSERT (SCM_SMOB_PREDICATE (wrapped_object_tag, s_smob),
+	    s_smob, pos, subr);
+    return (struct wrapped_object*) SCM_SMOB_DATA(s_smob);
+}
+
 bool isWrappedObject(SCM obj) {
-    return (SCM_FALSEP(SCM_SMOB_PREDICATE (wrapped_object_tag, obj)));
+    return (SCM_SMOB_PREDICATE (wrapped_object_tag, obj));
 }
 
 bool isLightsource(SCM object_smob) {
