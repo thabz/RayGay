@@ -81,7 +81,7 @@ void testScene4() {
     Spiral spiral2 = Spiral(&spiral,30,100,0.5);
 
     Cylinder* torus = new Cylinder(circle1,100,50,30,mat);
-    scene.addObject(torus);
+    //scene.addObject(torus);
 
     Tessalation tet = Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
     //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,MATERIAL_SHINY_BLUE);
@@ -104,6 +104,16 @@ void testScene4() {
 
     //Cylinder* tube = new Cylinder(spiral,10,16,200,MATERIAL_CHROME);
    // scene.addObject(tube); 
+
+
+    for(int x = -300; x <= 300; x += 60) {
+	for(int z = -300; z <= 300; z += 60) {
+	    Box* b = new Box(Vector(x,0,z),40.0,40.0,40.0,MATERIAL_SHINY_BLUE);
+	    Sphere* s = new Sphere(Vector(x,0,z),20.0,MATERIAL_SHINY_BLUE);
+	    scene.addObject(b);
+	}
+    }
+    
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));
