@@ -3,6 +3,12 @@
 #include "constants.h"
 #include <cstdlib>
 
+/**
+ * Constructor.
+ *
+ * @param base a base number
+ * @param dim dimension of the sequence
+ */
 Halton::Halton(int base, int dim) {
     invBase = new double[dim];
     values = new double[dim];
@@ -21,11 +27,6 @@ void Halton::reset() {
 	values[i] = v;
 }
 
-/**
- * Get next random numbers
- *
- * @return a pointer to dim doubles in [0,1]
- */
 double* Halton::getNext() {
     for (int i = 0; i < dim; i++) {
 	double r = 1.0 - values[i] - 1e-10;
