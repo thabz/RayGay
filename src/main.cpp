@@ -34,6 +34,7 @@
 #include "constants.h"
 #include "box.h"
 #include "tetrahedron.h"
+#include "tessalation.h"
 #include "linesegment.h"
 #include "circle.h"
 #include "cylinder.h"
@@ -83,8 +84,27 @@ void testScene4() {
     Spiral spiral = Spiral(&circle1,100,10);
     Spiral spiral2 = Spiral(&spiral,30,100,0.5);
 
-    Cylinder* torus = new Cylinder(circle1,100,30,20,blue);
-    scene.addObject(torus);
+    //Cylinder* torus = new Cylinder(circle1,100,50,30,blue);
+ //   scene.addObject(torus);
+
+    Tessalation tet = Tessalation(Vector(0,100,0),200,0,chrome);
+    //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,blue);
+    std::vector<Linesegment>* edges = tet.getEdges();
+    cout << "Edges : " << edges->size() << endl;
+    for(unsigned int i = 0; i < edges->size(); i++) {
+	Linesegment line = (*edges)[i];
+	Cylinder* c = new Cylinder(line.begin(),line.end(),20.0,20,blue);
+	scene.addObject(c);
+    }
+    delete edges;
+
+    vector<Vector>* vertices = tet.getVertices();
+    for(unsigned int i = 0; i < vertices->size(); i++) {
+	Vector c = (*vertices)[i];
+        Sphere* s = new Sphere(c,40.0,red);
+	scene.addObject(s);
+    }
+    delete vertices;
 
     //Cylinder* tube = new Cylinder(spiral,10,16,200,chrome);
    // scene.addObject(tube); 
@@ -100,8 +120,8 @@ void testScene4() {
     scene.addLight(&light1);
     scene.addLight(&light3);
     
-    //Box b = Box(Vector(-400,-200,-400),Vector(400,-150,400),green); /* Floor */
- //   scene.addObject(&b);
+    Box b = Box(Vector(-400,-200,-400),Vector(400,-150,400),green); /* Floor */
+    scene.addObject(&b);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
@@ -139,6 +159,8 @@ int main(int argc, char *argv[]) {
     Spiral::test();
     Cylinder::test();
     PixelStore::test();
+    Tetrahedron::test();
+    Tessalation::test();
     BSP::test();
     cout << "Tests done." << endl;
     // Test scene stuff
@@ -146,6 +168,5 @@ int main(int argc, char *argv[]) {
 
     return EXIT_SUCCESS;
 }
-
 
 
