@@ -5,7 +5,7 @@
 class Object;
 class Ray;
 class Intersection;
-
+class HitCache;
 
 /// All spacesubdividers must extend this abstract class.
 class SpaceSubdivider {
@@ -16,6 +16,8 @@ class SpaceSubdivider {
 	
 	/// Calculate an intersection with the hierarchy
 	virtual bool intersect(const Ray& ray) const = 0; 
+
+	virtual bool intersect(const Ray&,const double,const double) const = 0;
 	
 	/// Calculate an intersection with the hierarchy
 	virtual bool intersectPrimary(const Ray& ray) const = 0;  
@@ -32,8 +34,16 @@ class SpaceSubdivider {
 	/// The last successful Intersection found
 	virtual Intersection* getLastIntersection() const = 0;
 
+	/// Calculate an intersection with the hierarchy
+	bool intersect(void* fromObject, const Ray& ray); 
+
     protected:
-	SpaceSubdivider() {};
+	/// Constructor
+	SpaceSubdivider();
+	
+    private:
+	HitCache* hitcache;
+
 };
 
 #endif

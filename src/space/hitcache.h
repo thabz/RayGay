@@ -2,14 +2,16 @@
 #ifndef SPACE_HITCACHE_H
 #define SPACE_HITCACHE_H
 
+class Object;
+
 class HitCache {
 
     public:
 	HitCache(unsigned int size);
 	~HitCache();
 
-	void* findEntry(void* fromObject) const;
-	void addEntry(void* fromObject, void* toObject, double t);
+	Object* findEntry(void* fromObject) const;
+	void addEntry(void* fromObject, Object* toObject, double t);
 
     private:
 	int findEntryIndex(void* fromObject) const;
@@ -17,7 +19,7 @@ class HitCache {
 	class Entry {
 	    public:
 		void* fromObject;
-		void* toObject;
+		Object* toObject;
 		double t;
 	};
 

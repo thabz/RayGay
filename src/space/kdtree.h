@@ -28,6 +28,8 @@ class KdTree : public SpaceSubdivider {
 	/// Desctructor
 	virtual ~KdTree();
 	bool intersect(const Ray& ray) const; ///< Returns the nearest intersection
+	bool intersect(const Ray& ray, double a, double b) const;
+
 	bool intersectPrimary(const Ray& ray) const; ///< Returns the nearest intersection
 	bool intersectForShadow(const Ray& ray, double max_t) const; ///< Returns any intersection 
 	bool intersectForShadow(const Ray& ray, const Object* hint, double max_t) const; ///< Returns any intersection but hint-object is checked for intersection first.
@@ -68,7 +70,6 @@ class KdTree : public SpaceSubdivider {
 	    int prev;       // pointer to previus stack item
 	};
 
-	bool intersect(const Ray& ray, double a, double b) const;
 	bool intersectForShadow(const Ray&,double,double) const;
 	int largestDimension(const BoundingBox& box);
 	BoundingBox enclosure(std::vector<Object*>* objects) const;

@@ -1,5 +1,6 @@
 
 #include "space/hitcache.h"
+#include <cstdlib>
 
 HitCache::HitCache(unsigned int size) {
     this->size = size;
@@ -11,7 +12,7 @@ HitCache::~HitCache() {
     delete [] entries;
 }
 
-void HitCache::addEntry(void* fromObject, void* toObject, double t) {
+void HitCache::addEntry(void* fromObject, Object* toObject, double t) {
     int i = findEntryIndex(fromObject);
     if (i == -1) {
 	first = (first + 1 ) % size;
@@ -24,10 +25,10 @@ void HitCache::addEntry(void* fromObject, void* toObject, double t) {
     }
 }
 
-void* HitCache::findEntry(void* fromObject) const {
+Object* HitCache::findEntry(void* fromObject) const {
     int i = findEntryIndex(fromObject);
     if (i == -1)
-	return (void*)0;
+	return NULL;
     else 
 	return entries[i].toObject;
 }

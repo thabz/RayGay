@@ -27,6 +27,8 @@ class BSP : public SpaceSubdivider {
 	virtual ~BSP() {};
 	void addObject(Object* obj); ///< Place a object in the BSP tree 
 
+	bool intersect(const Ray&,const double,const double) const;
+
 	bool intersect(const Ray& ray) const; ///< Returns the nearest intersection
 	bool intersectPrimary(const Ray& ray) const; ///< Returns the nearest intersection
 	bool intersectForShadow(const Ray& ray, double max_t) const; ///< Returns any intersection 
@@ -59,7 +61,6 @@ class BSP : public SpaceSubdivider {
 	double median(int dimension) const;
 	Vector measureSplit(const int dim, const double val) const;
 
-	bool intersect(const Ray&,const double,const double) const;
 	bool intersect_recurse(const Ray&,const double,const double) const;
 	bool intersectForShadow(const Ray&,const double,const double) const;
 	bool intersectForShadow_recurse(const Ray&,const double,const double) const;
