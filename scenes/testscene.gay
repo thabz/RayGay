@@ -27,7 +27,8 @@ circle $circle 0 0 0 200 0 1 0
 spiral $spiral $circle 100 4 0
 
 # 76 sec
+# 66 sec
 
 extrusion $dullblue $spiral 50 32 100
 
-box $green -300 -200 -300 300 -150 300
+#box $green -300 -200 -300 300 -150 300

@@ -13,10 +13,11 @@
 // For test
 #include "sphere.h"
 
+Object* BSP::last_primary_intersected_object = NULL;
+
 BSP::BSP() {
     cutplane_dimension = 0;
     cutplane_value = 0;
-    last_primary_intersected_object = NULL;
 }
 
 void BSP::addObject(Object* obj) {
@@ -94,19 +95,27 @@ bool BSP::intersect(const Ray& ray) const {
     return intersect(ray,0,HUGE_DOUBLE);
 }
 
+/**
+ * Speed up version of intersect for primary rays only.
+ *
+ * The trick is that two adjacent primary rays often hit
+ * the same object. We check if the current primary ray hit the same
+ * object as the previous primary ray. In that case, we can 
+ * find a max bound for the t-value of the current primary ray.
+ *
+ * Ie. the ray.lowest_t can be set to a smaller value than HUGE_DOUBLE.
+ */
 inline
 bool BSP::intersectPrimary(const Ray& ray) const {
-    double begin_t;
+
     if (last_primary_intersected_object != NULL &&
 	    last_primary_intersected_object->intersect(ray)) {
-	begin_t = 0.0;
 	ray.lowest_t = last_primary_intersected_object->getLastIntersection()->getT();;
     } else {
-	begin_t = 0.0;
 	ray.lowest_t = HUGE_DOUBLE;
     }
 
-    bool result = intersect(ray,begin_t,HUGE_DOUBLE);
+    bool result = intersect(ray,double(0),HUGE_DOUBLE);
 
     if (result) {
 	last_primary_intersected_object = getLastIntersection()->getObject();
