@@ -1,4 +1,4 @@
-;; Performs a L-system expansion given an axiom, a set of rules
+;; Performs a L-system expansion given an axiom, a set of production rules
 ;; and a wanted generation.
 ;;
 ;; EXAMPLE L-SYSTEM
@@ -35,3 +35,29 @@
 	    (iter (car rest) (cdr rest))
 	    '())))
       rules (- generation 1))))
+
+
+(define (make-l-system-object angle length thickness axiom rules depth material)
+  (let ((job (l-system-expand axiom rules depth)))
+    (let iter
+      ((item (car job))
+       (rest (cdr job))
+       (up '(0 1 0))
+       (right '(1 0 0))
+       (position '(0 0 0)))
+      (end-position '(0 0 0)))
+    (append
+      (cond ((eqv? item 'F) 
+	     (set! (end-position (v+ position (vscale up length))))
+	     (make-cylinder position end-position
+			    thickness material)
+	     (set! position end-position))
+	    ((eqv? item '+) (rotate up-vector...))
+	    ((eqv? item '-) (rotate up-vector...))
+	    (else '()))
+      (if (not (null? rest))
+	(iter (car rest) (cdr rest))
+	'()))))
+
+
+
