@@ -10,12 +10,14 @@ using namespace std;
 
 SCM TextureFactory::make_texture(SCM s_filename, SCM s_repeat_x, SCM s_repeat_y, SCM s_interpolation_type) {
 
+    char* proc = "make-texture";
+
     string filename = scm2string(s_filename);
-    double rep_x = scm_num2double(s_repeat_x,0,"");
-    double rep_y = scm_num2double(s_repeat_y,0,"");
+    double rep_x = scm_num2double(s_repeat_x,2,proc);
+    double rep_y = scm_num2double(s_repeat_y,3,proc);
+
     string type_string = scm2string(s_interpolation_type);
     Texture::InterpolationType type = Texture::INTERPOLATION_NONE;
-
     if (type_string == "none") {
 	type = Texture::INTERPOLATION_NONE;
     } else if (type_string == "bilinear") {
