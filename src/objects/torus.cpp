@@ -128,7 +128,7 @@ vector<Intersection> Torus::allIntersections(const Ray& ray) const {
     int num = allPositiveRoots(ray,roots);
     vector<Intersection> result;
     result.reserve(num);
-    bool entering = (num % 2) != 0;
+    bool entering = (num % 2) == 0;
     for(int i = 0; i < num; i++) {
 	Intersection inter = fullIntersect(ray,roots[i]);
 	inter.isEntering(entering);

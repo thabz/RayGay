@@ -351,6 +351,26 @@ void torus_test() {
     assert(!intersects(t,ray));
     ray = Ray(Vector(1000,11.1,0),Vector(-1,0,0),1); // Close by
     assert(!intersects(t,ray));
+    delete t;
+
+    // Test allIntersections()
+    t = new Torus(10,1,m);
+    ray = Ray(Vector(1000,0,0),Vector(-1,0,0),1);
+    vector<Intersection> all = t->allIntersections(ray);
+    assert(all.size() == 4);
+    assert(all[0].getPoint() == Vector(11,0,0));
+    assert(all[0].isEntering() == true);
+    assert(all[1].getPoint() == Vector(9,0,0));
+    assert(all[1].isEntering() == false);
+    assert(all[2].getPoint() == Vector(-9,0,0));
+    assert(all[2].isEntering() == true);
+    assert(all[3].getPoint() == Vector(-11,0,0));
+    assert(all[3].isEntering() == false);
+
+    ray = Ray(Vector(0,1000,0),Vector(0,-1,0),1);
+    all = t->allIntersections(ray);
+    assert(all.size() == 0);
+
 }
 
 void transformed_instance_test() {
