@@ -1,6 +1,6 @@
 
-
 #include <cassert>
+#include <iostream>
 
 #include "cylinder.h"
 #include "boundingbox.h"
@@ -108,7 +108,6 @@ unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[4]) c
     double D = b*b - 4*a*c;
     if (D < 0.0) {
 	// No roots
-	return 0;
     } else if (IS_ZERO(D)) {
 	// One root
 	double t = -b / (2 * a);
@@ -118,8 +117,6 @@ unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[4]) c
 	}
     } else {
 	// Two roots
-	Intersection i1;
-	Intersection i2;
 	double sq = sqrt(D);
 	double t1 = (-b - sq ) / (2 * a);
 	double t2 = (-b + sq ) / (2 * a);
@@ -131,42 +128,36 @@ unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[4]) c
 	if (ip2_z >= EPSILON && ip2_z <= height && t2 > EPSILON) {
 	    roots[roots_found++] = t2;
 	}
-
-	// Sort roots and return if two found
-	if (roots_found == 2) {
-	    if (roots[0] > roots[1]) {
-		double tmp = roots[0];
-		roots[0] = roots[1];
-		roots[1] = tmp;
-	    }
-	    return 2;
-	}
     }
-    if (has_caps && !IS_ZERO(Rd[2])) {
+    if (roots_found < 2 && has_caps && !IS_ZERO(Rd[2])) {
 	double t, i_x, i_y;
 	// Check intersection with bottom cap
 	t = (0.0 - Ro[2]) / Rd[2];
-	i_x = Ro[0] + t * Rd[0];
-	i_y = Ro[1] + t * Rd[1];
-	if ((i_x * i_x + i_y * i_y) < rr) {
-	    roots[roots_found++] = t;
+	if (t > EPSILON) {
+	    i_x = Ro[0] + t * Rd[0];
+	    i_y = Ro[1] + t * Rd[1];
+	    if ((i_x * i_x + i_y * i_y) < rr) {
+		roots[roots_found++] = t;
+	    }
 	}
 
 	// Check intersection with top cap
 	t = (height - Ro[2]) / Rd[2];
-	i_x = Ro[0] + t * Rd[0];
-	i_y = Ro[1] + t * Rd[1];
-	if ((i_x * i_x + i_y * i_y) < rr) {
-	    roots[roots_found++] = t;
-	}
-
-	// Sort roots
-	if (roots_found == 2) {
-	    if (roots[0] > roots[1]) {
-		double tmp = roots[0];
-		roots[0] = roots[1];
-		roots[1] = tmp;
+	if (t > EPSILON) {
+	    i_x = Ro[0] + t * Rd[0];
+	    i_y = Ro[1] + t * Rd[1];
+	    if ((i_x * i_x + i_y * i_y) < rr) {
+		roots[roots_found++] = t;
 	    }
+	}
+    }
+
+    // Sort roots
+    if (roots_found == 2) {
+	if (roots[0] > roots[1]) {
+	    double tmp = roots[0];
+	    roots[0] = roots[1];
+	    roots[1] = tmp;
 	}
     }
     return roots_found;

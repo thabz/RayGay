@@ -337,6 +337,25 @@ void cylinder_test() {
     assert(intersects(s2,Vector(5,-100,-1000),Vector(0,0,1)) == false);
     assert(intersects(s1,Vector(5,100,-1000),Vector(0,0,1)) == false);
     assert(intersects(s2,Vector(5,100,-1000),Vector(0,0,1)) == true);
+
+    // Rays with origin on surface
+    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
+    assert(!intersects(cyl,Vector(0,10,0),Vector(0,1,0)));
+    assert(intersects(cyl,Vector(0,10,0),Vector(0,-1,0)));
+    assert(iPoint(cyl,Vector(0,10,0),Vector(0,-1,0)) == Vector(0,2,0));
+    assert(iPoint(cyl,Vector(0,2,0),Vector(0,1,0)) == Vector(0,10,0));
+    delete cyl;
+
+    // Ray with origin inside cylinder
+    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,true,m);
+    assert(intersects(cyl,Vector(0,0,5),Vector(0,0,1)));
+    assert(iPoint(cyl,Vector(0,0,5),Vector(0,0,1)) == Vector(0,0,10));
+    assert(intersects(cyl,Vector(0,0,5),Vector(0,1,0)));
+    assert(iPoint(cyl,Vector(0,0,5),Vector(0,1,0)) == Vector(0,10,5));
+
+    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
+    assert(intersects(cyl,Vector(0,5,0),Vector(0,1,0)));
+    assert(iPoint(cyl,Vector(0,5,0),Vector(0,1,0)) == Vector(0,10,0));
 }
 
 void test_3ds() {
