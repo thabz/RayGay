@@ -50,7 +50,7 @@ void* threadDo(void* obj) {
 
 void PhotonTracer::printProgress() {
     skip_print++;
-    if (skip_print > 100) {
+    if (skip_print > 1000) {
 	pthread_mutex_lock(&mutex_print);
 	cout << "Global: " << globalphotonmap->size();
 	cout << "   Caustic: " << causticsmap->size();
