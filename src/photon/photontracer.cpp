@@ -34,6 +34,8 @@ PhotonTracer::PhotonTracer(Scene* scene, KdTree* space, GlobalPhotonMap* globalp
     this->causticsmap = causticsmap;
     this->globalphotonmap = globalphotonmap;
     this->qmcsequence = new Halton(2,2);
+    pthread_mutex_init(&mutex_print,NULL);
+    skip_print = 0;
 }
 
 PhotonTracer::~PhotonTracer() {
@@ -44,6 +46,18 @@ void* threadDo(void* obj) {
     PhotonTracer* tracer = (PhotonTracer*) obj;
     tracer->trace();
     return NULL;
+}
+
+void PhotonTracer::printProgress() {
+    skip_print++;
+    if (skip_print > 100) {
+	pthread_mutex_lock(&mutex_print);
+	cout << "Global: " << globalphotonmap->size();
+	cout << "   Caustic: " << causticsmap->size();
+	cout << "          \r" << flush;
+	skip_print = 0;
+	pthread_mutex_unlock(&mutex_print);
+    }
 }
 
 void PhotonTracer::trace(int threads_num) {
@@ -70,9 +84,7 @@ void PhotonTracer::trace() {
 	Lightsource* light = lights[i];
 	RGB light_power = light->getPower();
 	trace(light->getRandomPhotonRay(),light_power,0);
-	cout << "Global: " << globalphotonmap->size();
-	cout << "   Caustic: " << causticsmap->size();
-	cout << "          \r" << flush;
+	printProgress();
     }
 }
 

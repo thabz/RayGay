@@ -2,6 +2,8 @@
 #ifndef PHOTON_TRACER
 #define PHOTON_TRACER
 
+#include <pthread.h>
+
 class Scene;
 class KdTree;
 class Lightsource;
@@ -27,7 +29,10 @@ class PhotonTracer {
 	
     private:
 	void trace(const Ray& ray, RGB power, int bounces);
+	void printProgress();
 
+	pthread_mutex_t mutex_print;
+	unsigned int skip_print;
 	Scene* scene;
 	KdTree* space;
 	CausticsMap* causticsmap;
