@@ -30,7 +30,7 @@
 #include "photon/irradiancecache.h"
 
 #include "renderersettings.h"
-
+#include "renderjobs.h"
 
 using namespace std;
 

@@ -1,0 +1,40 @@
+
+#ifndef RENDERJOB_POOL
+#define RENDERJOB_POOL
+
+#include <pthread.h>
+#include <vector>
+class Image;
+
+/**
+ * The input for the Renderer::render() method
+ * which basically defines a subset of the total
+ * image to be rendered.
+ */
+class RenderJob {
+    public:
+	Image* target;
+	int thread_id;
+	int begin_x;
+	int begin_y;
+	int end_x;
+	int end_y;
+};
+
+/**
+ * The pool of renderjobs
+ */
+class RenderJobPool {
+
+    public:
+	RenderJobPool();
+	void addJob(const RenderJob& job);
+	bool getJob(RenderJob* job_dest);
+
+    private:
+	std::vector<RenderJob> jobs;
+	unsigned int next_job;
+	pthread_mutex_t mutex_jobs;
+};
+
+#endif

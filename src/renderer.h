@@ -7,6 +7,7 @@
 #include "math/vector2.h"
 #include "image/rgba.h"
 #include "renderersettings.h"
+#include "renderjobs.h"
 
 //#define aa_threshhold 0.02
 #define aa_threshhold 0.3
@@ -17,16 +18,6 @@ class KdTree;
 class Material;
 class Vector2;
 
-/// The input for the Renderer::render() method
-class RenderJob {
-    public:
-	Image* target;
-	int thread_id;
-	int begin_x;
-	int begin_y;
-	int end_x;
-	int end_y;
-};
 
 ///  An abstract class all renderers must implement.
 class Renderer {
