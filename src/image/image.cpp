@@ -88,7 +88,9 @@ RGB Image::getTexel(double u, double v) const {
 }
 
 /**
- * Using http://astronomy.swin.edu.au/~pbourke/colour/bicubic/
+ * Get a bicubic interpolated texel.
+ *
+ * @see http://astronomy.swin.edu.au/~pbourke/colour/bicubic/
  */
 RGB Image::getBiCubicTexel(double u, double v) const {
     u -= int(u);
@@ -96,32 +98,49 @@ RGB Image::getBiCubicTexel(double u, double v) const {
     double x = u*(width-1);
     double y = v*(height-1);
     int i = int(x); int j = int(y);
+
     double dx = x-i; double dy = y-j;
 
     RGB result = RGB(0.0,0.0,0.0);
+
+    int realx;
+    int beginx = i -1;
+    beginx %= width;
+    if (beginx < 0) beginx += width;
+
+    int realy = j - 1;
+    realy %= height;
+    if (realy < 0) realy += height;
+
     for(int n = -1; n <= 2; n++) {
+	if (++realy > height) realy = 0;
+	realx = beginx;
 	for(int m = -1; m <= 2; m++) {
-	    result = result + (getRGBWrapped(i+m,j+n) * biCubicR(m-dx) * biCubicR(dy-n));
+	    if (++realx > width) realx = 0;
+	    result += getRGBA(realx,realy) * (biCubicR(m-dx) * biCubicR(dy-n));
 	}
     }
-    return result;
+    return result / 36.0;
 }
 
-#define ONE_OVER_SIX double(0.166666666666) 
+#define BiCubicP(x) (x) > 0 ? (x) : 0
 
-double Image::biCubicR(double x) const {
-    double Pxp2 = biCubicP(x+2);
-    double Pxp1 = biCubicP(x+1);
-    double Px = biCubicP(x);
-    double Pxm1 = biCubicP(x-1);
-    return ONE_OVER_SIX * (Pxp2*Pxp2*Pxp2 - 4*Pxp1*Pxp1*Pxp1 + 6*Px*Px*Px - 4*Pxm1*Pxm1*Pxm1);
-}
+inline
+double Image::biCubicR(const double x) const {
+    double Pxp2, Pxp1, Px, Pxm1;
 
-/*
-double Image::biCubicP(double x) const {
-   return x > 0 ? x : 0; 
+    if (x > 0) {
+	Pxm1 = BiCubicP(x-1);
+	Px = x;
+	Pxp1 = x+1;
+	Pxp2 = x+2;
+	return (Pxp2*Pxp2*Pxp2 - 4*Pxp1*Pxp1*Pxp1 + 6*Px*Px*Px - 4*Pxm1*Pxm1*Pxm1);
+    } else { /* x <= 0*/
+	Pxp1 = BiCubicP(x+1);
+	Pxp2 = BiCubicP(x+2);
+	return (Pxp2*Pxp2*Pxp2 - 4*Pxp1*Pxp1*Pxp1);
+    }
 }
-*/
 
 ImageIO* getImageIO(const std::string& filename) {
     ImageIO* io;

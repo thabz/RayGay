@@ -29,7 +29,7 @@ class Image {
 	/// Sets a pixel
         void setRGBA(const Vector2& p, const RGBA& color); 
 	/// Gets a pixel
-	RGBA getRGBA(int x, int y) const { 
+	RGBA getRGBA(const int x, const int y) const { 
 	    IMAGE_FLOAT* p = &data[4*(y*width + x)];
 	    return RGBA(*(p++),*(p++),*(p++),*p);
 	};
@@ -55,8 +55,7 @@ class Image {
 	int width;
 	IMAGE_FLOAT *data;
 
-	double biCubicR(double x) const;
-	double biCubicP(double x) const { return x > 0 ? x : 0; };
+	double biCubicR(const double x) const;
 	RGBA getRGBWrapped(int x, int y) const;
 };
 
