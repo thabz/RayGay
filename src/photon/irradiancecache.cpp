@@ -42,7 +42,7 @@ bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB
 	    found++;
 	}
     }
-    if (found > 2) {
+    if (found > 3) {
 	Stats::getUniqueInstance()->inc("Irradiance cache hits");
 	*dest = result / weight_sum;
 	return true;
