@@ -28,6 +28,7 @@
 #include "objects/cylinder.h"    
 #include "objects/extrusion.h"    
 #include "objects/sphere.h"    
+#include "objects/heightfield.h"    
 #include "objects/ellipsoid.h"    
 #include "objects/box.h"    
 #include "objects/mesh.h"    
@@ -126,6 +127,7 @@ ActionListNode* top_actions;
 %token tFRAMES
 %token tFUNCTION
 %token tGROUP
+%token tHEIGHTFIELD
 %token tIMAGE tWIDTH tHEIGHT tASPECT
 %token tLINESEGMENT tSPIRAL tCIRCLE tCATMULLROMSPLINE tBEZIERSPLINE
 %token tKD tKS tKT tSPECPOW tGLOSS
@@ -192,7 +194,7 @@ ActionListNode* top_actions;
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
 %type <object> ObjectGroup Ellipsoid Mesh Cone SuperEllipsoid Blob Bound
-%type <object> NamedObject TransInstance
+%type <object> NamedObject TransInstance HeightField
 %type <material> MaterialDef NamedMaterial Material
 %type <light> LightDef Lightsource 
 %type <light> Arealight Spotlight Pointlight Skylight
@@ -765,6 +767,7 @@ TransInstance	: tTRANSINSTANCE '{' Object '}'
 
 MeshObject	: Extrusion
                 | Box
+                | HeightField
 		| Mesh
 		;
 
@@ -800,6 +803,11 @@ Triangles	: tTRIANGLES '{' VectorList '}'
 		}
                 ;
 
+HeightField	: tHEIGHTFIELD '{' Material Texture Vector Expr Expr '}'
+                {
+		    $$ = new HeightFieldNode($4,$5,$6,$7,$3); 
+		}
+                ;
 		
 SolidObject	: Sphere
 		| Ellipsoid

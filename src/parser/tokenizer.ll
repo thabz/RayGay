@@ -90,6 +90,7 @@ grayscale	return tGRAYSCALE;
 greyscale	return tGRAYSCALE;
 group		return tGROUP;
 height		return tHEIGHT;
+heightfield	return tHEIGHTFIELD;
 intersection	return tINTERSECTION;
 if		return tIF;
 image		return tIMAGE;

@@ -6,6 +6,7 @@
 #include "objects/cylinder.h"
 #include "objects/superellipsoid.h"
 #include "objects/wireframe.h"
+#include "objects/heightfield.h"
 #include "objects/csg.h"
 #include "objects/extrusion.h"
 #include "objects/box.h"
@@ -452,7 +453,7 @@ SceneObject* TransformedInstanceNode::eval() {
 //---------------------------------------------------------------------
 // Bounded object
 //---------------------------------------------------------------------
-//
+
 BoundNode::BoundNode(SceneObjectNode* so, FilePosition pos) : SceneObjectNode(pos) {
     this->object = so;
 }
@@ -481,5 +482,32 @@ SceneObject* BoundNode::eval() {
 	runtime_error("Bounded object must be an group, ie. mesh, wireframe, necklace.");
     }
     return new Bound(o);
+}
+
+//---------------------------------------------------------------------
+// Heightfield
+//---------------------------------------------------------------------
+
+HeightFieldNode::HeightFieldNode(Texture* texture, VectorNode* size, FloatNode* width_divisions, FloatNode* depth_divisions, MaterialNode* material) {
+    this->texture = texture;
+    this->size = size;
+    this->width_divisions = width_divisions;
+    this->depth_divisions = depth_divisions;
+    this->material = material;
+}
+
+HeightFieldNode::~HeightFieldNode() {
+    delete size;
+    delete width_divisions;
+    delete depth_divisions;
+    delete material;
+}
+
+SceneObject* HeightFieldNode::eval() {
+    Vector s = size->eval();
+    int w_div = (int) width_divisions->eval();
+    int d_div = (int) depth_divisions->eval();
+    Material* mat = material->eval();
+    return new HeightField(texture, s[1], s[0], s[2], w_div, d_div, mat);
 }
 

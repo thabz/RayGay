@@ -310,5 +310,18 @@ class BoundNode : public SceneObjectNode {
 
 };
 
+class HeightFieldNode : public SceneObjectNode {
+    public:
+	HeightFieldNode(Texture* texture, VectorNode* size, FloatNode* width_divisions, FloatNode* depth_divisions, MaterialNode* material);
+	~HeightFieldNode();
+	SceneObject* eval();
+	
+    private:
+	Texture* texture;
+	VectorNode* size;
+	FloatNode* width_divisions;
+	FloatNode* depth_divisions;
+	MaterialNode* material;
+};
 
 #endif
