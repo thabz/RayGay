@@ -311,7 +311,7 @@ class NamedSceneObjectNode : public SceneObjectNode {
 	virtual ~NamedSceneObjectNode() {}; // TODO: delete from assignments?
 
 	SceneObject* eval() {
-	    return Assignments::getUniqueInstance()->getNamedSceneObject(name)->eval();
+	    return Assignments::getUniqueInstance()->getNamedSceneObject(name)->clone();
 	}
 
     private:

@@ -5,10 +5,9 @@
 #include <string>
 #include <map>
 
-class FloatNode;
-class PathNode;
-class SceneObjectNode;
-class MaterialNode;
+class Path;
+class SceneObject;
+class Material;
 
 using namespace std;
 
@@ -17,25 +16,25 @@ class Assignments {
     public:
 	static Assignments* Assignments::getUniqueInstance();
 	
-	PathNode* getNamedPath(string name);
-	void setNamedPath(string name, PathNode* path_node);
+	Path* getNamedPath(string name);
+	void setNamedPath(string name, Path* path_node);
 
-	FloatNode* getNamedFloat(string name);
-	void setNamedFloat(string name, FloatNode* float_node);
+	double getNamedFloat(string name);
+	void setNamedFloat(string name, double val);
 	
-	MaterialNode* getNamedMaterial(string name);
-	void setNamedMaterial(string name, MaterialNode* material_node);
+	Material* getNamedMaterial(string name);
+	void setNamedMaterial(string name, Material* material);
 
-	SceneObjectNode* getNamedSceneObject(string name);
-	void setNamedSceneObject(string name, SceneObjectNode* obj_node);
+	SceneObject* getNamedSceneObject(string name);
+	void setNamedSceneObject(string name, SceneObject* obj_node);
 
     private:
 	Assignments(); 
 
-	map<string,FloatNode*> floatMap;
-	map<string,PathNode*> pathMap;
-	map<string,MaterialNode*> materialMap;
-	map<string,SceneObjectNode*> objectMap;
+	map<string,double> floatMap;
+	map<string,Path*> pathMap;
+	map<string,Material*> materialMap;
+	map<string,SceneObject*> objectMap;
 };
 
 #endif

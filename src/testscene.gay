@@ -7,6 +7,8 @@ i = 0
 
 repeat(10) {
    print i
-   print 2
+   print i * 2
+   i = i + 1
 }
 
+print 5

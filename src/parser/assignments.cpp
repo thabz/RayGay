@@ -10,50 +10,46 @@ Assignments::Assignments() {
 
 }
 
-PathNode* Assignments::getNamedPath(string name) {
-    PathNode* result = pathMap[name];
+Path* Assignments::getNamedPath(string name) {
+    Path* result = pathMap[name];
     if (result == NULL) {
 	//yyerror("path '" + name + "' not defined.");
     } 
     return result;
 }
 
-void Assignments::setNamedPath(string name, PathNode* path) {
+void Assignments::setNamedPath(string name, Path* path) {
     pathMap[name] = path;
 }
 
-FloatNode* Assignments::getNamedFloat(string name) {
-    FloatNode* result = floatMap[name];
-    if (result == NULL) {
-	//yyerror("float '" + name + "' not defined.");
-    } 
-    return result;
+double Assignments::getNamedFloat(string name) {
+    return floatMap[name];
 }
 
-void Assignments::setNamedFloat(string name, FloatNode* val) {
+void Assignments::setNamedFloat(string name, double val) {
     floatMap[name] = val;
 }
 
-SceneObjectNode* Assignments::getNamedSceneObject(string name) {
-    SceneObjectNode* result = objectMap[name];
+SceneObject* Assignments::getNamedSceneObject(string name) {
+    SceneObject* result = objectMap[name];
     if (result == NULL) {
 	//yyerror("scene-object '" + name + "' not defined.");
     }
     return result;
 }
 
-void Assignments::setNamedSceneObject(string name, SceneObjectNode* obj) {
+void Assignments::setNamedSceneObject(string name, SceneObject* obj) {
     objectMap[name] = obj;
 }
 
-MaterialNode* Assignments::getNamedMaterial(string name) {
-    MaterialNode* result = materialMap[name];
+Material* Assignments::getNamedMaterial(string name) {
+    Material* result = materialMap[name];
     if (result == NULL) {
 	//yyerror("material '" + name + "' not defined.");
     }
     return result;
 }
 
-void Assignments::setNamedMaterial(string name, MaterialNode* material) {
+void Assignments::setNamedMaterial(string name, Material* material) {
     materialMap[name] = material;
 }

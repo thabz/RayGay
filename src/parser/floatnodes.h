@@ -119,7 +119,7 @@ class NamedFloatNode : public FloatNode {
 	virtual ~NamedFloatNode() {}; // TODO: delete from assigments
 
 	double eval() {
-	    return Assignments::getUniqueInstance()->getNamedFloat(name)->eval();
+	    return Assignments::getUniqueInstance()->getNamedFloat(name);
 	}
 	
     private:

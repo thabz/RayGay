@@ -100,7 +100,7 @@ class NamedMaterialNode : public MaterialNode {
 	virtual ~NamedMaterialNode() {}; // TODO: delete from assigments
 
 	Material* eval() {
-	    return Assignments::getUniqueInstance()->getNamedMaterial(name)->eval();
+	    return Assignments::getUniqueInstance()->getNamedMaterial(name);
 	}
 	
     private:

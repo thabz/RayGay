@@ -88,8 +88,7 @@ class NamedPathNode : public PathNode {
 	virtual ~NamedPathNode() { }
 
 	Path* eval() {
-	    PathNode* p = Assignments::getUniqueInstance()->getNamedPath(name);
-	    return p->eval();
+	    return Assignments::getUniqueInstance()->getNamedPath(name);
 	}
 	
     private:

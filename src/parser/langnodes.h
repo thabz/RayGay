@@ -45,7 +45,7 @@ class AssignFloatNode : public ActionNode {
 	virtual ~AssignFloatNode() { delete node; }
 
 	void eval() {
-	    Assignments::getUniqueInstance()->setNamedFloat(name,node);
+	    Assignments::getUniqueInstance()->setNamedFloat(name,node->eval());
 	}
     private:
 	FloatNode* node;
@@ -62,7 +62,7 @@ class AssignPathNode : public ActionNode {
 	virtual ~AssignPathNode() { delete node; }
 
 	void eval() {
-	    Assignments::getUniqueInstance()->setNamedPath(name,node);
+	    Assignments::getUniqueInstance()->setNamedPath(name,node->eval());
 	}
     private:
 	PathNode* node;
@@ -79,7 +79,7 @@ class AssignMaterialNode : public ActionNode {
 	virtual ~AssignMaterialNode() { delete node; }
 
 	void eval() {
-	    Assignments::getUniqueInstance()->setNamedMaterial(name,node);
+	    Assignments::getUniqueInstance()->setNamedMaterial(name,node->eval());
 	}
     private:
 	MaterialNode* node;
@@ -96,7 +96,7 @@ class AssignSceneObjectNode : public ActionNode {
 	virtual ~AssignSceneObjectNode() { delete node; }
 
 	void eval() {
-	    Assignments::getUniqueInstance()->setNamedSceneObject(name,node);
+	    Assignments::getUniqueInstance()->setNamedSceneObject(name,node->eval());
 	}
     private:
 	SceneObjectNode* node;
