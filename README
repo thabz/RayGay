@@ -36,7 +36,8 @@
 * Displacement mapping
   See Peter Shirleys "Direct Ray Tracing of Displacement Mapped Triangles"
   http://www.cs.utah.edu/~shirley/papers/
-* Scaling of all objects: See http://www.cl.cam.ac.uk/Teaching/2000/AGraphHCI/SMEG/node2.html#SECTION00024000000000000000
++ Scaling of all objects: 
+  See http://www.cl.cam.ac.uk/Teaching/2000/AGraphHCI/SMEG/node2.html
 * HDRI support
 * OpenEXR support. See http://www.openexr.com/
 * LightProbe support
@@ -44,6 +45,7 @@
   http://graphics.ucsd.edu/papers/structured/
 * ELK
 * Swept sphere: http://www.acm.org/pubs/tog/GraphicsGems/gemsv/ch5-4/sweep.cpp
+* 'man 2 times' giver bedre syscall til tidsmåling
 
 ///////////////////////////////////////////
 // Compiling into assembler source
