@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <cassert>
 
 #include "scene.h"
 #include "camera.h"
@@ -51,13 +52,14 @@ Scene::~Scene() {
 
 void Scene::addObject(SceneObject* obj) {
     Stats::getUniqueInstance()->inc(STATS_SCENE_OBJECTS_ADDED);
+    assert(obj != NULL);
     objects.push_back(obj);
 }
 
 
 void Scene::addLight(Lightsource* light) {
+    assert(light != NULL);
     lights.push_back(light);
- //   objects.push_back(light); //TODO: Make sure lights are rotated too
 }
 
 void Scene::setCamera(Camera* cam) {
