@@ -21,6 +21,6 @@ Vector & Camera::getPosition() {
 
 void Camera::enableAdaptiveSupersampling(unsigned int depth) {
     aa_depth = depth;
-    aa_enabled = true;
+    aa_enabled = depth == 0 ? false : true;
 }
 

@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <cassert>
 #include <time.h>
 
 #include "renderer.h"
@@ -48,23 +49,43 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
     beginTime = time(NULL);
     int img_w = img->getWidth() / 2;
     int img_h = img->getHeight() / 2;
+    int image_width = img_w*2;
 
-    RGB color;
-    PixelBlock* block;
-
+    // Prepare the two PixelBlock buffers
     unsigned int block_size = 1 + (1 << aa_depth);
-
     if (aa_enabled) {
 	cout << "Block size: " << block_size << endl;
 	cout << "aa_depth: " << aa_depth << endl;
-	block = new PixelBlock(block_size);
+	row1.reserve(image_width);
+	row2.reserve(image_width);
+	for(int i = 0; i < image_width; i++) {
+	    row1.push_back(PixelBlock(block_size));
+	    row2.push_back(PixelBlock(block_size));
+	}
     }
 
-    for (double y = -img_h; y < img_h; y++) {
-	for (double x = -img_w; x < img_w; x++) {
+    std::vector<PixelBlock>* cur_row_ptr = &row1;
+    std::vector<PixelBlock>* prev_row_ptr = &row2;
+    std::vector<PixelBlock>* tmp_row_ptr;
+    PixelBlock* cur_block;
+    PixelBlock* prev_block;
+    RGB color;
+    for (int y = -img_h; y < img_h; y++) {
+	if (y != -img_h) {
+	    // Swap row buffers
+	    tmp_row_ptr = cur_row_ptr;
+	    cur_row_ptr = prev_row_ptr;
+	    prev_row_ptr = tmp_row_ptr;
+	    prepareCurRow(cur_row_ptr,prev_row_ptr,block_size);
+	}
+	for (int x = -img_w; x < img_w; x++) {
 	    if (aa_enabled) {
-		block->reset();
-		color = getSubPixel(0, Vector2(x,y), block, 1.0, 0, 0, block_size - 1, block_size - 1);
+		cur_block = &((*cur_row_ptr)[x + img_w]);
+		if (x != -img_w) {
+		    prev_block = &((*cur_row_ptr)[x + img_w - 1]);
+		    prepareCurBlock(cur_block,prev_block,block_size);
+		}
+		color = getSubPixel(0, Vector2(x,y), cur_block, 1.0, 0, 0, block_size - 1, block_size - 1);
 	    } else {
 		color = getPixel(Vector2(x,y));
 	    }
@@ -73,6 +94,39 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
 	cout << y + img_h << " / " << img_h*2 << "          \r" << flush;
     }
     Stats::getUniqueInstance()->put("Rendering time (seconds)",time(NULL)-beginTime);
+}
+
+/**
+ * Clear cur_row and copy lowermost color values from prev_row into topmost color values in cur_row
+ */
+void Renderer::prepareCurRow(std::vector<PixelBlock>* cur_row, std::vector<PixelBlock>* prev_row,unsigned int blocksize) {
+    assert(cur_row->size() == prev_row->size());
+    PixelBlock* cur_row_block;
+    PixelBlock* prev_row_block;
+    unsigned int width = cur_row->size();
+
+    for(unsigned int i = 0; i < width; i++) {
+	cur_row_block = &((*cur_row)[i]);
+	prev_row_block = &((*prev_row)[i]);
+	cur_row_block->reset();
+	
+	for(unsigned int j = 0; j < blocksize; j++) {
+	    if (prev_row_block->isActive(j,0)) {
+		cur_row_block->setColor(j,blocksize-1,prev_row_block->getColor(j,0));
+	    }
+	}
+    }
+}
+
+/**
+ * Copies rightmost subpixels from prev_block into leftmost subpixels in cur_block
+ */
+void Renderer::prepareCurBlock(PixelBlock* cur_block, PixelBlock* prev_block, unsigned int blocksize) {
+    for(unsigned int i = 0; i < blocksize; i++) {
+	if (prev_block->isActive(blocksize-1,i)) {
+	    cur_block->setColor(0,i,prev_block->getColor(blocksize-1,i));
+	}
+    }
 }
 
 RGB Renderer::getSubPixel(unsigned int curLevel, const Vector2& center, PixelBlock *block, double size, int x1, int y1, int x2, int y2) {
@@ -86,7 +140,6 @@ RGB Renderer::getSubPixel(unsigned int curLevel, const Vector2& center, PixelBlo
     Vector2 lowerright = Vector2(upperright[0],lowerleft[1]);
 
     RGB c1,c2,c3,c4;
-
 	
     // Trace upper left corner
     if (!block->isActive(x1,y1)) {

@@ -38,9 +38,13 @@ class Renderer {
 	};
 
 	RGB getSubPixel(unsigned int curLevel, const Vector2& center, PixelBlock *block, double size, int x1, int y1, int x2, int y2);
+	void prepareCurRow(std::vector<PixelBlock>* cur_row, std::vector<PixelBlock>* prev_row, unsigned int blocksize);
+	void prepareCurBlock(PixelBlock* cur_block, PixelBlock* prev_block, unsigned int blocksize);
 
 	bool aa_enabled;
 	unsigned int aa_depth;
+	std::vector<PixelBlock> row1;
+	std::vector<PixelBlock> row2;
 
     protected:
 	Renderer();
