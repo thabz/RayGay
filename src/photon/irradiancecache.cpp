@@ -57,7 +57,7 @@ void IrradianceCache::traverseOctree(const HierarchyNode* const node, const Vect
     } else {
 	// traverse children
 	for(unsigned int i = 0; i < 8; i++) {
-	    HierarchyNode* child = node->children[i];
+	    const HierarchyNode* child = node->children[i];
 	    // FIXME: Simpler test possible
 	    if (child->bbox.inside(point)) {
 		traverseOctree(child,point,result);
