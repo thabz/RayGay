@@ -115,7 +115,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 
    if (det < EPSILON)
    {
-       return -1;
+       return -1.0;
    } else {
       /* calculate distance from vert0 to ray origin */
       SUB(tvec,ray.getOrigin(),vert0)
@@ -124,7 +124,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
       u = DOT(tvec,pvec);
 
       if (u < 0.0 || u > det)
-	 return -1;
+	 return -1.0;
       
       /* prepare to test V parameter */
       CROSS(qvec,tvec,edge1);
@@ -132,7 +132,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
       /* calculate V parameter and test bounds */
       v = DOT(ray.getDirection(),qvec);
       if (v < 0.0 || u + v > det)
-	 return -1;
+	 return -1.0;
    }
 #if 0  
    // Backface culling
@@ -170,7 +170,7 @@ BoundingBox Triangle::boundingBoundingBox() const {
     tri[1] = mesh->cornerAt(vertex[1]);
     tri[2] = mesh->cornerAt(vertex[2]);
     BoundingBox b = BoundingBox::enclosure(tri,3);
-    b.grow(5*EPSILON);
+    b.grow(5.0 * EPSILON);
     return b;
 }
 
