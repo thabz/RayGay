@@ -568,7 +568,7 @@ void Importer::parse(const string& filename) {
 	    Path* p = lookupPath(str1);
 	    int num = readInt(stream);
 	    double r = readDouble(stream);
-	    cur_object = new Necklace(*p,num,r,m);
+	    cur_object = new Necklace(p,num,r,m);
 	} else if (command == "rotate") {
 	    SceneObject* obj = last_referenced_object;
 	    assert(obj != NULL);

@@ -9,9 +9,9 @@
  * @param r Radius of the spheres
  * @param material Material of the spheres
  */
-Necklace::Necklace(const Path& path, int num, double r, const Material* material) {
+Necklace::Necklace(const Path* path, int num, double r, const Material* material) {
     Vector* c = new Vector[num];
-    path.getPoints(num,c);
+    path->getPoints(num,c);
     _num = num;
 
     for (int i = 0; i < num; i++) {
