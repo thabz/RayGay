@@ -18,6 +18,8 @@
  * split by arbitrary hyperplanes.
  *
  * TODO: Implementer http://www.acm.org/jgt/papers/HavranKopalBittnerZara97/ som er den bedste BSP-traversal algorithme.
+ *
+ * TODO: sorter object-listen efter forskellige kriterier. Kugler burde komme først, da disse er hurtige at tjekke. Største kugler først. Trekanter burde sorteres efter størrelse med største først. Ved shadow-testing kan vi nemlig lige så godt tjekke de største trekanter først, da disse sandsynligvis dækker lyset mere.
  */
 class BSP : public SpaceSubdivider {
 

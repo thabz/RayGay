@@ -32,3 +32,8 @@ TODO:
 
 
 * Scaling of all objects: See http://www.cl.cam.ac.uk/Teaching/2000/AGraphHCI/SMEG/node2.html#SECTION00024000000000000000
+
+
+// Compiling into assembler source
+g++ <the load> -S -dA triangle.cpp
+
