@@ -100,7 +100,7 @@ BoundingBox Cylinder::boundingBoundingBox() const {
     Vector rv = Vector(r,r,r);
     Vector real_begin = scene_transformation * begin;
     Vector real_end = scene_transformation * end;
-    return BoundingBox(begin-rv,end+rv);
+    return BoundingBox(real_begin-rv,real_end+rv);
 }
 
 Vector2 Cylinder::getUV(const Intersection& intersection) const {
