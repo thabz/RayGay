@@ -8,14 +8,17 @@
 #include "objects/object.h"
 #include <vector>
 
+/*
 class Ray;
 class Intersection;
 class Object;
-
+*/
 #define KD_TREE_MAX 2
 
 /**
- * k-dimensional tree
+ * k-dimensional tree.
+ *
+ * Implementerer http://www.acm.org/jgt/papers/HavranKopalBittnerZara97/ som er den bedste BSP-traversal algorithme.
  */
 class KdTree : public SpaceSubdivider {
 

@@ -22,7 +22,7 @@ BSP::BSP() {
 }
 
 void BSP::addObject(Object* obj) {
-    Stats::getUniqueInstance()->inc("BSP: Objects added");
+ //   Stats::getUniqueInstance()->inc("BSP: Objects added");
     objects.push_back(obj);
 }
 

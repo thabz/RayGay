@@ -25,7 +25,7 @@ KdTree::~KdTree() {
 }
 
 void KdTree::addObject(Object* obj) {
-    Stats::getUniqueInstance()->inc("KdTree: Objects added");
+ //   Stats::getUniqueInstance()->inc("KdTree: Objects added");
     added_objects->push_back(obj);
 }
 
