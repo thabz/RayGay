@@ -10,7 +10,7 @@ class Ray;
 class Object;
 class Intersection;
 
-///  Implementation of Renderer that supply a raytracer.
+///  A simple pathtracer
 class Pathtracer : public Renderer {
 
     public:
@@ -31,7 +31,16 @@ RGBA Pathtracer::tracePrimary(const Ray& ray) {
     Stats::getUniqueInstance()->inc(STATS_PRIMARY_RAYS_CAST);
     Intersection i;
     bool intersected = space->intersectPrimary(ray,&i);
-    return traceSub(intersected, i, ray, 1);
+    if (intersected) {
+	int samples = 2000;
+	RGBA result = RGBA(0.0,0.0,0.0,0.0);
+	for(int j = 0; j < samples; j++) {
+	    result = result + traceSub(intersected, i, ray, 1);
+	}
+	return result / double(samples) ;
+    } else {
+	return traceSub(intersected, i, ray, 1);
+    }
 }
 
 inline

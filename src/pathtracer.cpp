@@ -21,13 +21,8 @@ Pathtracer::Pathtracer(RendererSettings* settings, Image* img, Scene* scene, KdT
 
 RGBA Pathtracer::getPixel(const Vector2& v) {
     Camera* camera = scene->getCamera();
-    int samples = 1000;
-    RGBA result = RGBA(0.0,0.0,0.0,0.0);
-    for(int i = 0; i < samples; i++) {
-	Ray ray = camera->getRay(v[0],v[1]);
-	result = result + tracePrimary(ray);
-    }
-    return result / double(samples) ;
+    Ray ray = camera->getRay(v[0],v[1]);
+    return tracePrimary(ray);
 }
 
 RGBA Pathtracer::traceSub(const bool intersected, const Intersection& intersection, const Ray& ray, const int depth) {
@@ -59,9 +54,7 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 
     normal = material->bump(intersection,normal);
 
-    
-    double ambient_intensity = 0.2;
-    RGB result_color = material->getDiffuseColor(intersection) * ambient_intensity;
+    RGB result_color = RGB(0.0,0.0,0.0);
     const vector<Lightsource*>& lights = scene->getLightsources();
     for (vector<Lightsource*>::const_iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);
@@ -93,13 +86,15 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 	    } 
 	}
     }
-    if (depth < 3) {
+    if (depth < 7) {
         // Indirect diffuse color
-	Vector dir = normal.randomHemisphere();
-	double cosa = dir * normal;
-	Ray new_ray = Ray(point + 0.1*dir,dir,-1);
-	RGB in_diff = trace(new_ray,depth+1);
-	result_color += material->getKd() * cosa * in_diff * material->getDiffuseColor(intersection);
+	if (material->getKd() > 0) {
+	    Vector dir = normal.randomHemisphere();
+	    double cosa = dir * normal;
+	    Ray new_ray = Ray(point + 0.1*dir,dir,-1);
+	    RGB in_diff = trace(new_ray,depth+1);
+	    result_color += material->getKd() * cosa * in_diff * material->getDiffuseColor(intersection);
+	}
 
 	// Reflection
 	Vector2 fre = fresnel(normal,ray.getDirection(),material);
