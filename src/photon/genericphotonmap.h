@@ -39,7 +39,7 @@ class NearestPhotons {
     int max;
     int found;
     int got_heap;
-    float pos[3];
+    Vector pos;
     float *dist2;
     const PhotonType **index;
 };
@@ -52,6 +52,8 @@ class NearestPhotons {
  */
 template<class PhotonType>
 class PhotonMap {
+    friend class Photon;
+
     public:
 	PhotonMap(const int max_phot );
 	virtual ~PhotonMap();
@@ -88,19 +90,6 @@ class PhotonMap {
     private:
 
 	void swap(PhotonType** ph, int a, int b);
-
-	void store(
-		const float power[3],          // photon power
-		const float pos[3],            // photon position
-		const float dir[3] );          // photon direction
-
-	void irradiance_estimate(
-		float irrad[3],                // returned irradiance
-		const float pos[3],            // surface position
-		const float normal[3],         // surface normal at pos
-		const float max_dist,          // max distance to look for photons
-		const int nphotons ) const;    // number of photons to use
-
 
 	void balance_segment(
 		PhotonType **pbal,

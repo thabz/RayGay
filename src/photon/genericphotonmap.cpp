@@ -65,7 +65,8 @@ void PhotonMap<PhotonType>::photon_dir( float *dir, const PhotonType *p ) const
 }
 
 /**
- * Computes an irradiance estimate at a given surface position
+ * Computes an irradiance estimate
+ * at a given surface position
  */
 template <class PhotonType>
 Vector PhotonMap<PhotonType>::irradiance_estimate(
@@ -74,37 +75,13 @@ Vector PhotonMap<PhotonType>::irradiance_estimate(
 	const float max_dist,          // max distance to look for photons
 	const int nphotons ) const     // number of photons to use
 {
-    float irrad[3];
-    float fpos[3];
-    float fnormal[3];
-    for(int i = 0; i < 3; i++) {
-	fpos[i] = pos[i];
-	fnormal[i] = normal[i];
-    }
-    irradiance_estimate(irrad,fpos,fnormal,max_dist,nphotons);
-    return Vector(irrad[0],irrad[1],irrad[2]);
-}
-
-
-/**
- * Computes an irradiance estimate
- * at a given surface position
- */
-template <class PhotonType>
-void PhotonMap<PhotonType>::irradiance_estimate(
-	float irrad[3],                // returned irradiance
-	const float pos[3],            // surface position
-	const float normal[3],         // surface normal at pos
-	const float max_dist,          // max distance to look for photons
-	const int nphotons ) const     // number of photons to use
-{
-    irrad[0] = irrad[1] = irrad[2] = 0.0;
+    Vector irrad = Vector(0.0,0.0,0.0);
 
     NearestPhotons<PhotonType> np;
     np.dist2 = (float*)alloca( sizeof(float)*(nphotons+1) );
     np.index = (const PhotonType**)alloca( sizeof(PhotonType*)*(nphotons+1) );
 
-    np.pos[0] = pos[0]; np.pos[1] = pos[1]; np.pos[2] = pos[2];
+    np.pos = pos;
     np.max = nphotons;
     np.found = 0;
     np.got_heap = 0;
@@ -115,7 +92,7 @@ void PhotonMap<PhotonType>::irradiance_estimate(
 
     // if less than 8 photons return
     if (np.found<8)
-	return;
+	return Vector(0,0,0);
 
     float pdir[3];
 
@@ -134,9 +111,8 @@ void PhotonMap<PhotonType>::irradiance_estimate(
 
     const float tmp=(1.0f/M_PI)/(np.dist2[0]);	// estimate of density
 
-    irrad[0] *= tmp;
-    irrad[1] *= tmp;
-    irrad[2] *= tmp;
+    irrad *= tmp;
+    return irrad;
 }
 
 
@@ -240,7 +216,7 @@ void PhotonMap<PhotonType>::locate_photons(
  * Puts a photon into the flat array that will form
  * the final kd-tree.
  *
- * @param power The power of the photon
+ * @param power The RGB power of the photon
  * @param pos The position of the photon
  * @param dir The direction of the photon
  */
@@ -249,34 +225,7 @@ void PhotonMap<PhotonType>::store(
 		const Vector& power,          // photon power
 		const Vector& pos,            // photon position
 		const Vector& dir ) {          // photon direction
-    float powe[3];
-    float posi[3];
-    float dire[3];
-    for(int i = 0; i < 3; i++) {
-	powe[i] = power[i];
-	posi[i] = pos[i];
-	dire[i] = dir[i];
-    }
 
-    store(powe,posi,dire);
-}
-
-/**
- * Call this function to store a photon.
- *
- * Puts a photon into the flat array that will form
- * the final kd-tree.
- *
- * @param power The RGB power of the photon
- * @param pos The position of the photon
- * @param dir The direction of the photon
- */
-template <class PhotonType>
-void PhotonMap<PhotonType>::store(
-	const float power[3],
-	const float pos[3],
-	const float dir[3] )
-{
     if (stored_photons>=max_photons)
 	return;
 
