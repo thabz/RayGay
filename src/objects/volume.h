@@ -10,12 +10,19 @@
  * When this is known, ray intersection can be done using Marching Cubes.
  */
 class Volume : public Object {
+    
+    public:
+        Volume::Volume(unsigned int steps, double accuracy);
 
     protected:
 	/// Says whether a point in inside this volume.
 	virtual bool inside(const Vector& point) const = 0;
 
 	Intersection _intersect(const Ray& ray) const;
+
+    private:
+	unsigned int steps;
+	double accuracy;
 };
 
 #endif

@@ -13,10 +13,25 @@
  *
  * for some constant \f$ k \f$.
  * 
+ * @see http://www.dcs.shef.ac.uk/graphics/publications/implicit/overview.ps
  */
 class Blob : public Volume {
+    
+    public:
+	Blob(double surface_density, unsigned int steps, double accuracy);
+	addAtom(const Vector& center, double a, double b);
+    
+    protected:
+	bool inside(const Vector& point) const;
 
+    private:
+	double getDensity(const Vector& point) const;
 
+	double surface_density;
+	int atoms_num;
+	vector<Vector> centers;
+	vector<double> as;
+	vector<double> bs;
 };
 
 
