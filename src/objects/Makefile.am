@@ -6,8 +6,6 @@ noinst_LIBRARIES = libobjects.a
 libobjects_a_SOURCES = 3ds.cpp 		\
                        bezierpatch.cpp 	\
 		       blob.cpp		\
-		       boolean.cpp 	\
-		       booleanoperand.cpp 	\
 		       bound.cpp	\
 		       bound.h		\
 		       box.cpp		\
@@ -36,8 +34,6 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 EXTRA_DIST = 3ds.h 		\
     	     bezierpatch.h	\
 	     blob.h		\
-    	     boolean.h 		\
-             booleanoperand.h	\
 	     bound.h		\
 	     box.h		\
 	     csg.h		\

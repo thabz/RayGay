@@ -14,7 +14,7 @@
  * @param r minor radius aka inner radius
  * @param m material of the torus
  */
-Torus::Torus(double R, double r, const Material* m) : BooleanOperand(m) {
+Torus::Torus(double R, double r, const Material* m) : Solid(m) {
     assert(R > r);
     assert(r > 0);
     this->R = R;
@@ -123,18 +123,6 @@ bool Torus::onEdge(const Vector &point) const {
     return IS_EQUAL((p-X).length(),r);
 }
 
-bool Torus::inside(const Vector &point) const {
-    Vector p = inverse_transformation * point;
-    Vector Q = Vector(p[0],0,p[2]);
-    double l = Q.length();
-    if (IS_ZERO(l)) {
-	std::cout << "whoops" << std::endl;
-	return (r < R) ? false : true;
-    }
-    Vector X = (R/l) * Q; // Closest point on big circle
-    return (p-X).length() < r;
-}
-
 BoundingBox Torus::boundingBoundingBox() const {
     double min = -R-r;
     double max = R+r;
@@ -145,4 +133,9 @@ BoundingBox Torus::boundingBoundingBox() const {
 
 SceneObject* Torus::clone() const {
     return new Torus(*this);
+}
+
+vector<Intersection> Torus::allIntersections(const Ray& ray) const {
+    vector<Intersection> result;
+    return result;
 }

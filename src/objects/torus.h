@@ -2,7 +2,7 @@
 #ifndef TORUS_H
 #define TORUS_H
 
-#include "booleanoperand.h"
+#include "solid.h"
 #include "math/matrix.h"
 
 /**
@@ -40,7 +40,7 @@
   \f[ a_4 = \left(-4d_xp_x + \left(-4d_yp_y + 4d_zp_z\right)\right)R^2 + \left(\left(-4d_xp_x + \left(-4d_yp_y - 4d_zp_z\right)\right)r^2 + \left(4d_xp_x^3 + \left(4d_yp_y + 4d_zp_z\right)p_x^2 + \left(4p_y^2 + 4p_z^2\right)d_xp_x + \left(4d_yp_y^3 + 4d_zp_zp_y^2 + 4p_z^2d_yp_y + 4d_zp_z^3\right)\right)\right) \f]
   \f[ a_5 = R^4 + \left(-2r^2 + \left(-2p_x^2 + \left(-2p_y^2 + 2p_z^2\right)\right)\right)R^2 + \left(r^4 + \left(-2p_x^2 + \left(-2p_y^2 - 2p_z^2\right)\right)r^2 + \left(p_x^4 + \left(2p_y^2 + 2p_z^2\right)p_x^2 + \left(p_y^4 + 2p_z^2p_y^2 + p_z^4\right)\right)\right) \f]
  */
-class Torus : public BooleanOperand {
+class Torus : public Solid {
 
     public:
 	/// Constructor
@@ -51,11 +51,12 @@ class Torus : public BooleanOperand {
 	virtual void transform(const Matrix& m);
 
 	virtual bool onEdge(const Vector &p) const;
-	virtual bool inside(const Vector &p) const;
 
 	virtual BoundingBox boundingBoundingBox() const;
 
 	virtual SceneObject* clone() const;
+
+	vector<Intersection> allIntersections(const Ray& ray) const;
 
     private:
 	double _fastIntersect(const Ray& ray) const;

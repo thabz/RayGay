@@ -35,20 +35,6 @@ void Cylinder::transform(const Matrix& m) {
     Transformer::transform(m);
 }
 
-/**
- * Returns whether \f$\sqrt{x^2 +y^2} < r \f$ where point = \f$(x,y,z)\f$
- */
-bool Cylinder::inside(const Vector &point) const {
-   Vector p = pointToObject(point);
-   return    p[0]*p[0] + p[1]*p[1] < rr 
-          && p[2] < height 
-	  && p[2] > double(0);
-   return    IS_LESS_THAN(p[0]*p[0] + p[1]*p[1], rr)
-          && IS_LESS_THAN(p[2], height) 
-	  && IS_GREATER_THAN(p[2],double(0));
-   
-}
-
 BoundingBox Cylinder::boundingBoundingBox() const {
     Vector rv = Vector(r,r,r);
     Vector real_begin = begin;

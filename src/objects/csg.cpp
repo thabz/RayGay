@@ -16,19 +16,6 @@ SceneObject* CSG::clone() const {
     return new CSG(lhs, this->op, rhs, this->getMaterial());
 }
 
-bool CSG::inside(const Vector& p) const {
-    switch(op) {
-	case UNION:
-	    return left->inside(p) || right->inside(p);
-	case DIFFERENCE:
-	    return left->inside(p) && !right->inside(p);
-	case INTERSECTION:
-	    return left->inside(p) && right->inside(p);
-	default:
-	    throw_exception("Unknown operator");
-    }
-}
-
 BoundingBox CSG::boundingBoundingBox() const {
     BoundingBox rb = right->boundingBoundingBox();
     BoundingBox lb = left->boundingBoundingBox();
@@ -55,8 +42,14 @@ vector<Intersection> CSG::allIntersections(const Ray& ray) const {
     vector<Intersection> right_int = right->allIntersections(ray);
     unsigned int l = 0;
     unsigned int r = 0;
-    bool left_inside = left->inside(ray.getOrigin());
-    bool right_inside = right->inside(ray.getOrigin());
+    bool left_inside = false;
+    bool right_inside = false;
+    if (left_int.size() > 0) {
+	left_inside = !left_int[0].isEntering();
+    }
+    if (right_int.size() > 0) {
+	right_inside = !right_int[0].isEntering();
+    }
     switch(op) {
 	case UNION:
 	    // Bail out quickly if possible

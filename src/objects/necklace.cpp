@@ -1,7 +1,7 @@
 
-#include "necklace.h"
+#include "objects/necklace.h"
+#include "objects/sphere.h"
 #include "paths/path.h"
-#include "sphere.h"
 
 /**
  * @param path The path to place the spheres along

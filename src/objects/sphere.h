@@ -5,7 +5,6 @@
 #include "object.h"
 #include "math/vector.h"
 #include "boundingbox.h"
-#include "booleanoperand.h"
 
 class Intersection;
 class Ray;
@@ -30,7 +29,6 @@ class Sphere : public Solid {
 	virtual void transform(const Matrix& m);
 
 	virtual bool onEdge(const Vector &p) const;
-	virtual bool inside(const Vector &p) const;
 
 	virtual BoundingBox boundingBoundingBox() const;
 

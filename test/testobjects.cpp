@@ -11,7 +11,6 @@
 #include "objects/solidbox.h"
 #include "objects/csg.h"
 #include "objects/cylinder.h"
-#include "objects/boolean.h"
 #include "objects/mesh.h"
 #include "objects/extrusion.h"
 #include "objects/box.h"
@@ -21,7 +20,6 @@
 #include "objects/3ds.h"
 #include "objects/tetrahedron.h"
 #include "objects/tessalation.h"
-#include "objects/booleanoperand.h"
 #include "space/kdtree.h"
 #include "paths/linesegment.h"
 #include "paths/circle.h"
@@ -61,13 +59,6 @@ Vector iNormal(Object* o, const Vector& origin, const Vector& dir) {
 void sphere_test() {
     Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Sphere s = Sphere(Vector(0,0,0),10.0,m);
-    assert(s.inside(Vector(0,0,0)));
-    assert(s.inside(Vector(9,0,0)));
-    assert(!s.inside(Vector(10,0,0)));
-    assert(!s.inside(Vector(11,0,0)));
-    assert(s.onEdge(Vector(10,0,0)));
-    assert(s.onEdge(Vector(0,10,0)));
-    assert(!s.onEdge(Vector(0,0,0)));
 
     s = Sphere(Vector(0,0,0),60.0,m);
 
@@ -137,157 +128,6 @@ void sphere_test() {
     assert(result[0].getPoint() == Vector(0,0,-20));
     assert(result[0].isEntering() == false);
 
-}
-
-void boolean_test() {
-#if 0    
-    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
-    Sphere* s1 = new Sphere(Vector(-10,0,0),30.0,m);
-    Sphere* s2 = new Sphere(Vector(10,0,0),30.0,m);
-
-    /* Test BOOLEAN_UNION */
-    Boolean* b = new Boolean(s1,Boolean::BOOLEAN_UNION,s2,m);
-    assert(b->inside(Vector(0,0,0)));
-    assert(b->inside(Vector(39,0,0)));
-    assert(b->onEdge(Vector(40,0,0)));
-    assert(!b->inside(Vector(40,0,0)));
-    assert(b->inside(Vector(-20,0,0)));
-
-    assert(b->onEdge(Vector(-40,0,0)));
-    assert(b->onEdge(Vector(10,30,0)));
-
-    assert(!b->onEdge(Vector(-20,0,0)));
-    assert(!b->onEdge(Vector(20,0,0)));
-    assert(!b->onEdge(Vector(0,0,0)));
-
-    /* Test BOOLEAN_INTERSECTION */
-    b = new Boolean(s1,Boolean::BOOLEAN_INTERSECTION,s2,m);
-    assert(b->inside(Vector(0,0,0)));
-    assert(b->inside(Vector(19,0,0)));
-    assert(b->inside(Vector(-19,0,0)));
-    assert(!b->inside(Vector(39,0,0)));
-    assert(!b->inside(Vector(-39,0,0)));
-    assert(!b->inside(Vector(20,0,0)));
-    assert(!b->inside(Vector(-20,0,0)));
-
-    assert(!b->onEdge(Vector(-40,0,0)));
-    assert(!b->onEdge(Vector(40,0,0)));
-    assert(!b->onEdge(Vector(0,0,0)));
-    assert(b->onEdge(Vector(-20,0,0)));
-    assert(b->onEdge(Vector(20,0,0)));
-    
-    /* Test BOOLEAN_DIFFERENCE */
-    b = new Boolean(s1,Boolean::BOOLEAN_DIFFERENCE,s2,m);
-    assert(!b->inside(Vector(-40,0,0)));
-    assert(b->inside(Vector(-39,0,0)));
-    assert(b->inside(Vector(-21,0,0)));
-    assert(!b->inside(Vector(-20,0,0)));
-    assert(!b->inside(Vector(0,0,0)));
-    assert(!b->inside(Vector(40,0,0)));
-    assert(!b->inside(Vector(39,0,0)));
-
-    assert(!b->onEdge(Vector(-41,0,0)));
-    assert(b->onEdge(Vector(-40,0,0)));
-    assert(!b->onEdge(Vector(-39,0,0)));
-    assert(!b->onEdge(Vector(-21,0,0)));
-    assert(b->onEdge(Vector(-20,0,0)));
-    assert(!b->onEdge(Vector(-19,0,0)));
-    assert(!b->onEdge(Vector(0,0,0)));
-    assert(!b->onEdge(Vector(20,0,0)));
-    assert(!b->onEdge(Vector(40,0,0)));
-
-    Sphere* s3 = new Sphere(Vector(-10,0,0),10.0,m);
-    Sphere* s4 = new Sphere(Vector(10,0,0),10.0,m);
-    b = new Boolean(s3,Boolean::BOOLEAN_INTERSECTION,s4,m);
-    assert(b->onEdge(Vector(0,0,0)));
-
-    /* Intersection test */
-    s1 = new Sphere(Vector(0,0,0),60.0,m);
-    s2 = new Sphere(Vector(0,0,60),40.0,m);
-
-    b = new Boolean(s1,Boolean::BOOLEAN_DIFFERENCE,s2,m);
-
-    /*
-    Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-    assert(b->intersect(r));
-    Intersection* i = b->getLastIntersection();
-    assert(i->getPoint() == Vector(0,0,20));
-    assert(b->normal(*i) == Vector(0,0,1));
-    */
-    
-    assert(intersects(b,Vector(0,0,1000),Vector(0,0,-1)));
-    assert(iPoint(b,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,20));
-    assert(iNormal(b,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
-
-    /*
-    r = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
-    assert(b->intersect(r));
-    i = b->getLastIntersection();
-    assert(i->getPoint() == Vector(0,0,-60));
-    assert(b->normal(*i) == Vector(0,0,-1));
-    */
-    assert(intersects(b,Vector(0,0,-1000),Vector(0,0,1)));
-    assert(iPoint(b,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-60));
-    assert(iNormal(b,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
-
-    // Test a sphere with three other spheres subtracted from its middle,
-    // front and back, so that the resulting object is hollow along the z-axis.
-
-    s1 = new Sphere(Vector(0,0,0),200.0,m);
-    s2 = new Sphere(Vector(0,0,0),180.0,m);
-    Boolean* s = new Boolean(s1,Boolean::BOOLEAN_DIFFERENCE,s2,m); // Make it hollow
-    assert(!s->inside(Vector(0,0,0)));
-    assert(!s->onEdge(Vector(0,0,0)));
-    assert(s->inside(Vector(0,0,190)));
-    assert(!s->onEdge(Vector(0,0,190)));
-    assert(s->onEdge(Vector(0,0,180)));
-    assert(!s->inside(Vector(0,0,180)));
-    assert(s->onEdge(Vector(0,0,200)));
-    assert(!s->inside(Vector(0,0,200)));
-    assert(s->inside(Vector(0,0,-190)));
-    assert(s->inside(Vector(0,190,0)));
-    assert(s->inside(Vector(190,0,0)));
-
-    s3 = new Sphere(Vector(0,0,200),100.0,m); // Cut front
-    Boolean* b4 = new Boolean(s,Boolean::BOOLEAN_DIFFERENCE,s3,m);
-    assert(s->inside(Vector(0,0,190)));
-    assert(s->inside(Vector(0,0,-190)));
-    assert(!b4->inside(Vector(0,0,190)));
-    assert(!b4->onEdge(Vector(0,0,190)));
-    assert(b4->inside(Vector(0,0,-190)));
-    assert(b4->inside(Vector(0,190,0)));
-    
-    s4 = new Sphere(Vector(0,0,-200),100.0,m); // Cut back
-    Boolean* b5 = new Boolean(b4,Boolean::BOOLEAN_DIFFERENCE,s4,m);
-    assert(!b5->inside(Vector(0,0,190)));
-    assert(!b5->onEdge(Vector(0,0,190)));
-    assert(!b5->inside(Vector(0,0,-190)));
-    assert(!b5->inside(Vector(0,0,-250)));
-    assert(!b5->onEdge(Vector(0,0,-190)));
-    assert(!b5->onEdge(Vector(0,0,-200)));
-    assert(!b5->onEdge(Vector(0,0,-300)));
-    assert(b5->inside(Vector(0,190,0)));
-    assert(b5->inside(Vector(0,-190,0)));
-    assert(b5->onEdge(Vector(0,200,0)));
-    assert(b5->onEdge(Vector(0,-200,0)));
-    assert(!b5->inside(Vector(0,0,0)));
-    assert(!b5->onEdge(Vector(0,0,0)));
-    
-    Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-    //assert(s3->intersect(r));
-    //assert(s4->intersect(r));
-    //assert(b4->intersect(r));
-    assert(intersects(s,r));
-    assert(intersects(s3,r));
-    assert(intersects(s4,r));
-    assert(intersects(b4,r));
-    r = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
-    assert(! intersects(b5,r));
- /*   i = b5->getLastIntersection();
-    cout << i->getPoint() << "  ...." << endl;
-    assert(!b5->inside(Vector(0,0,0)));
-    assert(!b5->onEdge(Vector(0,0,0)));*/
-#endif    
 }
 
 void box_test() {
@@ -392,15 +232,12 @@ void extrusion_test() {
     BoundingBox b = BoundingBox(Vector(-1,-10,-10),Vector(11,10,10));
 	    
     Extrusion* c = new Extrusion(o,top,9.0,5,m);
-    //assert(b.inside(c->boundingBoundingBox()));
 
     c = new Extrusion(top,o,9.0,5,m);
-    //assert(b.inside(c->boundingBoundingBox()));
 
     top = Vector(0,10,0);
     b = BoundingBox(Vector(-10,-1,-10),Vector(10,11,10));
     c = new Extrusion(o,top,5.0,5,m);
-    //assert(b.inside(c->boundingBoundingBox()));
 
     // Check intersection 
     c = new Extrusion(Vector(0,0,0),Vector(0,0,-10),5.0,3,m);
@@ -429,18 +266,6 @@ void cylinder_test() {
     Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Cylinder* cyl = new Cylinder(Vector(0,0,0),Vector(0,0,10),10,m);
 
-    /* Test inside() and onEdge() */
-    assert(cyl->inside(Vector(0,0,5)));
-    assert(cyl->inside(Vector(0,0,9)));
-    assert(!cyl->inside(Vector(0,0,10)));
-    
-    //assert(cyl->onEdge(Vector(0,0,10)));
-    //assert(cyl->onEdge(Vector(10,0,5)));
-    //assert(cyl->onEdge(Vector(-10,0,5)));
-    assert(!cyl->inside(Vector(10,0,5)));
-    assert(!cyl->inside(Vector(0,0,11)));
-    assert(!cyl->inside(Vector(1,0,-1)));
-
     /* Test intersection() of z-axis aligned cylinder */
     
     assert(intersects(cyl,Vector(0,-1000,5),Vector(0,1,0)));
@@ -455,34 +280,10 @@ void cylinder_test() {
 
     // Test a cylinder translated along the z-axis
     cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,m);
-
-    assert(cyl->inside(Vector(0,0,3)));
-    assert(cyl->inside(Vector(0,0,5)));
-    assert(cyl->inside(Vector(0,0,9)));
-    assert(!cyl->inside(Vector(0,0,10)));
-    assert(!cyl->inside(Vector(0,0,11)));
-    assert(!cyl->inside(Vector(0,0,2)));
-    
-    //assert(cyl->onEdge(Vector(0,0,2)));
-    //assert(cyl->onEdge(Vector(0,0,10)));
-    //assert(cyl->onEdge(Vector(10,0,5)));
-    //assert(cyl->onEdge(Vector(-10,0,5)));
-    assert(!cyl->inside(Vector(10,0,5)));
-    assert(!cyl->inside(Vector(0,0,11)));
-    assert(!cyl->inside(Vector(0,0,1)));
-    //assert(!cyl->onEdge(Vector(0,0,1)));
     delete cyl;
     
     // Test an x-axis aligned cylinder
     cyl = new Cylinder(Vector(2,0,0),Vector(10,0,0),10,m);
-    assert(cyl->inside(Vector(5,0,0)));
-    assert(cyl->inside(Vector(9,0,0)));
-    assert(!cyl->inside(Vector(0,0,0)));
-    assert(!cyl->inside(Vector(-1,0,0)));
-    //assert(cyl->onEdge(Vector(2,0,0)));
-    //assert(cyl->onEdge(Vector(10,0,0)));
-    //assert(cyl->onEdge(Vector(5,10,0)));
-    //assert(cyl->onEdge(Vector(5,-10,0)));
     assert(intersects(cyl,Vector(3,0,1000),Vector(0,0,-1)));
     assert(iPoint(cyl,Vector(3,0,1000),Vector(0,0,-1)) == Vector(3,0,10));
     assert(iNormal(cyl,Vector(3,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
@@ -491,20 +292,12 @@ void cylinder_test() {
     
     // Test an y-axis aligned cylinder
     cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
-    assert(cyl->inside(Vector(0,5,0)));
     assert(intersects(cyl,Vector(0,3,1000),Vector(0,0,-1)));
     assert(iPoint(cyl,Vector(0,3,1000),Vector(0,0,-1)) == Vector(0,3,10));
     assert(iNormal(cyl,Vector(0,3,1000),Vector(0,0,-1)) == Vector(0,0,1));
     delete cyl;
 
     cyl = new Cylinder(Vector(1,1,1),Vector(10,10,10),10,m);
-    assert(cyl->inside(Vector(2,2,2)));
-    assert(cyl->inside(Vector(5,5,5)));
-    assert(cyl->inside(Vector(7,7,7)));
-    assert(cyl->inside(Vector(9,9,9)));
-    //assert(!cyl->onEdge(Vector(2,2,2)));
-    //assert(cyl->onEdge(Vector(1,1,1)));
-    //assert(cyl->onEdge(Vector(10,10,10)));
 
 }
 
@@ -540,27 +333,6 @@ void objectgroup_test() {
 void torus_test() {
     Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Torus* t = new Torus(10,1,m);
-
-    // inside
-    assert(t->inside(Vector(10,0,0)));
-    assert(t->inside(Vector(10.5,0,0)));
-    assert(t->inside(Vector(9.5,0,0)));
-    assert(!t->inside(Vector(11.5,0,0)));
-    assert(!t->inside(Vector(11,0,0)));
-    assert(!t->inside(Vector(9,0,0)));
-    assert(t->inside(Vector(0,0,10)));
-    assert(t->inside(Vector(0,-0.25,-10)));
-    assert(t->inside(Vector(-10,0.25,0)));
-
-    // onEdge
-    assert(t->onEdge(Vector(11,0,0)));
-    assert(t->onEdge(Vector(9,0,0)));
-    assert(t->onEdge(Vector(0,0,-11)));
-    assert(t->onEdge(Vector(0,0,-9)));
-    assert(!t->onEdge(Vector(10,0,0)));
-    assert(!t->onEdge(Vector(-10,0,0)));
-    assert(!t->onEdge(Vector(0,0,-10)));
-    assert(!t->onEdge(Vector(11,0.1,0)));
 
     // intersect
     Intersection i;
@@ -707,10 +479,6 @@ void csg_test() {
     assert(! intersects(b5,r));
     r = Ray(Vector(0,0,0),Vector(0,0,1),1);
     assert(! intersects(b5,r));
- /*   i = b5->getLastIntersection();
-    cout << i->getPoint() << "  ...." << endl;
-    assert(!b5->inside(Vector(0,0,0)));
-    assert(!b5->onEdge(Vector(0,0,0)));*/
 }
 
 void solidbox_test() {
@@ -775,7 +543,6 @@ int main(int argc, char *argv[]) {
 
     Mesh::test();
     test_3ds();
-    boolean_test();
     solidbox_test();
     csg_test();
     return EXIT_SUCCESS;

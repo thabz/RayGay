@@ -125,13 +125,6 @@ bool Sphere::onEdge(const Vector& p) const {
     return IS_ZERO(abs(dd));
 }
 
-bool Sphere::inside(const Vector& p) const {
-    Vector d = p - center;
-    double dd =  radius*radius - d.norm();
-    return dd > 0 && !IS_ZERO(abs(dd));
-}
-
-
 BoundingBox Sphere::boundingBoundingBox() const {
     Vector r = Vector(radius,radius,radius);
     r += Vector(5*EPSILON,5*EPSILON,5*EPSILON);

@@ -26,8 +26,6 @@ class Cylinder : public Solid, public Transformer {
 	~Cylinder() {};
 	void transform(const Matrix& m);
 
-	bool inside(const Vector &p) const;
-
 	BoundingBox boundingBoundingBox() const;
 
 	SceneObject* clone() const;
