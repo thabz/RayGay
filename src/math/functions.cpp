@@ -1,4 +1,8 @@
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <iostream>
 #include <cassert>
 #include <list>
@@ -7,6 +11,11 @@
 #include "math/vector.h"
 #include "math/vector2.h"
 #include "math/qmcsequence.h"
+
+#ifndef HAVE_LONG_DOUBLE
+#define sqrtl sqrt
+#define cbrtl cbrt
+#endif
 
 /*
 #!/usr/bin/perl -w
