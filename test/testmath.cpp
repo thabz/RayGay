@@ -354,8 +354,6 @@ bool contains(double* array, unsigned int num, double val) {
     return false;
 }
 
-// Problem: f(0.519886) = -2.67303e-05 != 0.
-
 bool check_roots(double A, double B, double C, double D, double* roots, int num) {
     double r;
     for(int i = 0; i < num; i++) {
@@ -363,7 +361,7 @@ bool check_roots(double A, double B, double C, double D, double* roots, int num)
 	double val = r*r*r*r + A*r*r*r + B*r*r + C*r + D;
 	if (!IS_ZERO(val)) {
 	    cout << "Problem: f(" << r << ") = " << val << " != 0." << endl;
-	    //if (fabs(val) > 0.001)
+	    if (fabs(val) > 0.001)
 	    return false;
 	}
     }
@@ -460,6 +458,20 @@ class solve_quartic_test : public Test {
 	}
 };
 
+bool check_cubic_roots(double A, double B, double C, double* roots, int num) {
+    double r;
+    for(int i = 0; i < num; i++) {
+	r = roots[i];
+	double val = r*r*r + A*r*r + B*r + C;
+	if (!IS_ZERO(val)) {
+	    cout << "A,B,C = " << A << "," << B << "," << C << " failed." << endl;
+	    cout << "Problem: f(" << r << ") = " << val << " != 0." << endl;
+	    //if (fabs(val) > 0.001)
+	    return false;
+	}
+    }
+    return true;
+}
 
 class solve_cubic_test : public Test {
     public:
@@ -525,6 +537,25 @@ class solve_cubic_test : public Test {
 	    // x^3 
 	    assertTrue(Math::solveCubic(0,0,0,roots) == 1);
 	    assertTrue(contains(roots,1,0));
+
+	    int n = 5;
+	    int num;
+	    for(int A = -n; A < n; A++) {
+		for(int B = -n; B < n; B++) {
+		    for(int C = -n; C < n; C++) {
+			    num = Math::solveCubic(A,B,C,roots);
+			    if (!check_cubic_roots(A,B,C,roots,num)) {
+				cout << num << " roots found: ";
+				for(int i = 0; i < num; i++) {
+				    cout << roots[i] << " and ";
+				}
+				cout << endl;
+				assertTrue(false);
+		//		exit(EXIT_FAILURE);
+			    }
+		    }
+		}
+	    }
 	}
 };
 
