@@ -56,7 +56,7 @@ class compareAreaDesc {
     public:
 	bool operator()(Object const* p1, Object const* p2)
 	{
-	    return p1->area() < p2->area();
+	    return p1->area() > p2->area();
 	}
 };
 
