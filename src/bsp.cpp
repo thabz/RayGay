@@ -33,10 +33,10 @@ void BSP::prepare() {
 	lower = new BSP();
 	higher = new BSP();
 
-	int size = objects.size();
+	unsigned int size = objects.size();
 
 	// Put all objects into lower- or higher_objects
-	for(int i = 0; i < size; i++) {
+	for(unsigned int i = 0; i < size; i++) {
 	    object* obj = objects[i];
 	    BoundingBox bbox = obj->boundingBoundingBox();
 	    int cut_val = bbox.cutByPlane(cutplane_dimension, cutplane_value);
@@ -92,7 +92,7 @@ Intersection BSP::intersect(const Ray& ray, double min_t, double max_t) const {
     if (objects.size() > 0) {
         Intersection tmp;
 	double cur_t = HUGE_DOUBLE;
-	for (int i=0; i < objects.size(); i++) {
+	for (unsigned int i=0; i < objects.size(); i++) {
 	    object* obj = objects[i];
 	    tmp = obj->intersect(ray);
 	    if (tmp.intersected && tmp.t < cur_t) {
@@ -159,7 +159,7 @@ Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) 
 BoundingBox BSP::enclosure() const {
     assert(objects.size() > 0);
     BoundingBox result = objects[0]->boundingBoundingBox(); 
-    for(int i = 1; i < objects.size(); i++) {
+    for(unsigned int i = 1; i < objects.size(); i++) {
         result = BoundingBox::doUnion(result,objects[i]->boundingBoundingBox());
     }
     return result;
@@ -176,8 +176,10 @@ int BSP::largestDimension(const BoundingBox& box) {
 	    return 1;
     } else if (IS_EQUAL(z,max)) {
 	    return 2;
+    } else {
+	return -1;
+       // Throw an exception
     }
-    // Throw an exception
 }
 
 void BSP::test() {
