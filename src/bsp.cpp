@@ -184,7 +184,7 @@ bool BSP::intersectForShadow(const Ray& ray, const double min_t, const double ma
     if (objects.size() > 0) {
         Intersection tmp;
 	for (unsigned int i = 0; i < objects.size(); i++) {
-	    if (objects[i]->intersect(ray)) {
+	    if (objects[i]->intersect(ray) && objects[i]->getLastIntersection()->getT() <= max_t) {
 		last_intersection = objects[i]->getLastIntersection();
 		return true;
 	    }
