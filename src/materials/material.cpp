@@ -2,48 +2,42 @@
 
 #include "materials/material.h"
 #include "image/rgb.h"
-#include "image/image.h"
+#include "image/texture.h"
 #include "intersection.h"
 #include "objects/object.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
 
 Material::Material() {
-   texturemap = NULL;
-   bumpmap = NULL;
-   gloss_enabled = false;
-   no_shadow = false;
+    reset();
    _kd = 1.0;
    _ks = 0.0;
    _kt = 0.0;
-   eta = 3;
-   repeatY = 1; repeatX = 1;
 }
 
 Material::Material(RGB diffuseColor, RGB specularColor) {
+    reset();
    _diffuseColor = diffuseColor;
    _specularColor = specularColor;
    _kd = 0.75;
    _ks = 0.30;
    _spec_coeff = 50;
    _kt = 0;
-   texturemap = NULL;
-   bumpmap = NULL;
-   eta = 3;
-   repeatY = 1; repeatX = 1;
-   gloss_enabled = false;
-   no_shadow = false;
 }
 
 Material::Material(RGB diffuseColor, double kd, RGB specularColor, double ks, int spec_coeff) {
+    reset();
    _diffuseColor = diffuseColor;
    _specularColor = specularColor;
    _kd = kd;
    _ks = ks;
    _spec_coeff = spec_coeff;
    _kt = 0;
-   texturemap = NULL;
-   bumpmap = NULL;
+}
+
+void Material::reset() {
+   texture_diffuse= NULL;
+   texture_bump = NULL;
    eta = 3;
    repeatY = 1; repeatX = 1;
    gloss_enabled = false;
@@ -52,40 +46,29 @@ Material::Material(RGB diffuseColor, double kd, RGB specularColor, double ks, in
 
 Material::~Material() {
    // if (texturemap != NULL) delete texturemap;
-   // if (bumpmap != NULL) delete bumpmap;
+   // if (texture_bump != NULL) delete texture_bump;
 }
 
 RGB Material::getDiffuseColor(const Intersection& i) const {
-    if (texturemap != NULL) {
+    if (texture_diffuse!= NULL) {
 	Vector2 uv = i.getUV();
-	uv = scaleUV(uv);
-	//return texturemap->getBiCubicTexel(uv[0],uv[1]);
-	return texturemap->getBiLinearTexel(uv[0],uv[1]);
+	return texture_diffuse->getTexel(uv);
     } else {
         return _diffuseColor;
     }
 }
 
-Vector2 Material::scaleUV(const Vector2& uv) const {
-    double u = uv[0];
-    double v = uv[1];
-    u -= int(u);
-    v -= int(v);
-    u *= repeatX; v *= repeatY;
-    return Vector2(u,v);
-}
 
 Vector Material::bump(const Intersection& i, const Vector& normal) const {
-    if (bumpmap == NULL) {
+    if (texture_bump == NULL) {
 	return normal;
     } else {
 	double u,v,w,h;
 	Vector2 uv = i.getUV();
-	uv = scaleUV(uv);
 	u = uv[0]; v = uv[1];
 	    
-	w = bumpmap->getWidth();
-	h = bumpmap->getHeight();
+	w = texture_bump->getWidth();
+	h = texture_bump->getHeight();
 
 	Vector v0 = Vector(0,0,getBumpValue(u,v));
 	Vector v1 = Vector(0,-1,getBumpValue(u,v+1.0/h));
@@ -101,26 +84,25 @@ Vector Material::bump(const Intersection& i, const Vector& normal) const {
 }
 
 double Material::getBumpValue(double u, double v) const {
-    RGB col = bumpmap->getBiLinearTexel(u,v);
-    //RGB col = bumpmap->getBiCubicTexel(u,v);
-    double val = col[0]; // Map was been grayscaled when loaded in setBumpmap()
+    RGB col = texture_bump->getTexel(u,v);
+    // Map was been grayscaled when loaded in setBumpmap(), so r == g == b
+    double val = col[0];
     if (bumpHeight < 0) val = 1 - val;
     return val;
 }
 
-void Material::setTexturemap(const std::string& filename) {
-    texturemap = Image::load(filename);
+void Material::setDiffuseTexture(Texture* texture) {
+    texture_diffuse = texture;
 }
 
 /**
  * Specify bumpmap
  *
- * @param filename A tga file
+ * @param texture a greyscale texture
  * @param bumpHeight a value in [0,1]
  */ 
-void Material::setBumpmap(const std::string& filename, double bumpHeight) {
-    bumpmap = Image::load(filename);
-    bumpmap->grayscale();
+void Material::setBumpTexture(Texture* texture, double bumpHeight) {
+    this->texture_bump = texture_bump;
     this->bumpHeight = bumpHeight;
 }
 

@@ -116,23 +116,21 @@ kd 1.0
 ks 0.0
 
 material $plaster plastic 1.0 1.0 1.0
-texturemap gfx/plaster.tga
-bumpmap gfx/plasterbump.tga 30.0
+texturemap gfx/plaster.tga 1 1 bilinear
+bumpmap gfx/plasterbump.tga 1 1 bilinear 30.0 
 kd 1.0
 ks 0.0
 
 material $tiles plastic 1.0 1.0 1.0
-texturemap gfx/tiles.jpg
-#bumpmap gfx/tilesbump.tga 10.0
-maprepeat 5 5
+texturemap gfx/tiles.jpg 5 5 bilinear
+bumpmap gfx/tilesbump.tga 5 5 bilinear 10.0 
 kd 0.7
 ks 0.3
 specpow 15
 
 material $slate_tiles plastic 1.0 1.0 1.0
-texturemap gfx/js_suelo1.jpg
-#bumpmap gfx/js_suelo1.jpg 10.0
-maprepeat 2 2
+texturemap gfx/js_suelo1.jpg 2 2 bilinear
+bumpmap gfx/js_suelo1.jpg 2 2 none 10.0
 kd 1.0
 ks 0.0
 

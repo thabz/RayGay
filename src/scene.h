@@ -13,6 +13,7 @@ class SceneObject;
 class Matrix;
 class Sphere;
 class Image;
+class Texture;
 class ObjectCollection;
 class Camera;
 class SpaceSubdivider;
@@ -56,7 +57,7 @@ class Scene {
 	RGBA getBackgroundColor(const Ray& ray) const;
 
 	/// Sets the environmentmap
-	void setEnvironmentMap(const std::string& filename);
+	void setEnvironmentMap(Texture* texture);
 
 	void setFog(const RGB& color, const double distance);
 	bool fogEnabled() const { return fog_enabled; };
@@ -69,7 +70,7 @@ class Scene {
     private:
 	std::vector<Lightsource*> lights;
 	std::vector<SceneObject*> objects;
-	Image* environmentMap;
+	Texture* environmentMap;
 	Sphere* environmentSphere;
 	Camera* camera;
 	RGBA bg_color;

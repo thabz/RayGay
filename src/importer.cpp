@@ -33,6 +33,7 @@
 #include "materials/materials.h"
 #include "image/rgba.h"
 #include "image/image.h"
+#include "image/texture.h"
 #include "math/vector2.h"
 
 Importer::Importer(const std::string& filename) {
@@ -70,6 +71,7 @@ SceneObject* Importer::getNamedObject(const string& key) {
     }
     return result;
 }
+
 
 Vector readVector(std::ifstream& stream) {
     double d1,d2,d3;
@@ -112,6 +114,25 @@ std::string readString(std::ifstream& stream) {
     string s;
     stream >> s;
     return s;
+}
+
+Texture* readTexture(std::ifstream& stream) {
+    string filename = readString(stream);
+    Image* image = new Image(filename);
+    double scaleu = readDouble(stream);
+    double scalev = readDouble(stream);
+    Texture::InterpolationType itype;
+    string itypes = readString(stream);
+    if (itypes == "none") {
+	itype = Texture::INTERPOLATION_NONE;
+    } else if (itypes == "bilinear") {
+	itype = Texture::INTERPOLATION_BILINEAR;
+    } else if (itypes == "bicubic") {
+	itype = Texture::INTERPOLATION_BICUBIC;
+    } else {
+	throw "Unknown interpolation type: " + itypes;
+    }
+    return new Texture(image,Vector2(scaleu,scalev),itype);
 }
 
 Material* Importer::lookupMaterial(const string& material_name) {
@@ -255,16 +276,13 @@ void Importer::parse(const string& filename) {
 	    double angle = readDouble(stream);
 	    cur_material->enableGloss(rays,angle);
 	} else if (command == "texturemap") {
-	    cur_material->setTexturemap(readString(stream));
-	} else if (command == "maprepeat") {
-	    int repeatX = readInt(stream);
-	    int repeatY = readInt(stream);
-	    cur_material->setRepeatX(repeatX);
-	    cur_material->setRepeatY(repeatY);
+	    Texture* texture = readTexture(stream);
+	    cur_material->setDiffuseTexture(texture);
 	} else if (command == "bumpmap") {
-	    string filename = readString(stream);
+	    Texture* texture = readTexture(stream);
+	    texture->grayscale();
 	    double height = readDouble(stream);
-	    cur_material->setBumpmap(filename,height);
+	    cur_material->setBumpTexture(texture,height);
 	} else if (command == "name") {
 	    object_name = readString(stream);
 	    naming_object = true;
@@ -433,15 +451,14 @@ void Importer::parse(const string& filename) {
 	} else if (command == "heightfield") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
-	    string filename = readString(stream);
-	    Image* img = Image::load(filename);
+	    Texture* texture = readTexture(stream);
 	    double height = readDouble(stream);
 	    double width = readDouble(stream);
 	    double depth = readDouble(stream);
 	    int width_divisions = readInt(stream);
 	    int depth_divisions = readInt(stream);
-	    cur_object = new HeightField(img,height,width,depth,width_divisions,depth_divisions,m);
-	    delete img;
+	    cur_object = new HeightField(texture,height,width,depth,width_divisions,depth_divisions,m);
+	    delete texture;
 	} else if (command == "3ds") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);

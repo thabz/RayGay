@@ -6,21 +6,15 @@
 #include "math/vector.h"
 
 class Intersection;
-class Image;
+class Texture;
 class Vector2;
-
-enum material_types {
-    MATERIAL_SOLID,
-    MATERIAL_TEXTURED,
-    MATERIAL_PROCEDURAL
-}; 
 
 /// Class defining a material
 class Material {
     public:
 	Material(); ///< Default constructor
 	Material(RGB diffuseColor, RGB specularColor);
-        Material(RGB diffuseColor, double kd, RGB specularColor, double ks, int spec_coeff);
+	Material(RGB diffuseColor, double kd, RGB specularColor, double ks, int spec_coeff);
 	virtual ~Material(); ///< Default destructor
 
 	/*!  Get the diffuse color */
@@ -31,11 +25,11 @@ class Material {
 	void setSpecularColor(RGB specularColor) { _specularColor = specularColor; };	///< Set the specular color
 	Vector bump(const Intersection& i, const Vector& normal) const;
 
-	void setTexturemap(const std::string& filename);
-	void setBumpmap(const std::string& filename, double bumpHeight);
+	void setDiffuseTexture(Texture* texture);
+	void setBumpTexture(Texture* texture, double bumpHeight);
 	void setRepeatX(const unsigned int repeatX) { this->repeatX = repeatX; };
 	void setRepeatY(const unsigned int repeatY) { this->repeatY = repeatY; };
-	
+
 
 	double getKd() const { return _kd; } ;
 	void setKd(double kd) { _kd = kd; };
@@ -74,12 +68,12 @@ class Material {
 	double getBumpValue(double u, double v) const;
 	Vector2 scaleUV(const Vector2& v) const;
 
-	    /* Fields */
+	/* Fields */
 	RGB _diffuseColor;
 	double _kd;
 
 	RGB _specularColor;
-        double _ks;
+	double _ks;
 
 	int _spec_coeff;
 
@@ -91,11 +85,15 @@ class Material {
 
 	double bumpHeight;
 	unsigned int repeatX; unsigned int repeatY;
-	Image* texturemap;
-	Image* bumpmap;
+
+	Texture* texture_diffuse;
+	Texture* texture_bump;
 
 	double _kt;
 	double eta;
+
+    private:
+	void reset();
 };
 
 #endif

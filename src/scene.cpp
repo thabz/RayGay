@@ -6,7 +6,7 @@
 #include "lights/lightsource.h"
 #include "intersection.h"
 #include "ray.h"
-#include "image/image.h"
+#include "image/texture.h"
 #include "image/rgba.h"
 #include "math/vector2.h"
 #include "objects/objectcollection.h"
@@ -45,9 +45,9 @@ Camera* Scene::getCamera() const {
     return camera;
 }
 
-void Scene::setEnvironmentMap(const std::string& filename) {
+void Scene::setEnvironmentMap(Texture* texture) {
     environmentSphere = new Sphere(Vector(0,0,0),10000,NULL);
-    environmentMap = Image::load(filename);
+    environmentMap = texture;
 }
 
 RGBA Scene::getBackgroundColor(const Ray& ray) const { 
@@ -57,12 +57,7 @@ RGBA Scene::getBackgroundColor(const Ray& ray) const {
 	// TODO: Optimize pushing a *i on stack below...
 	double t = environmentSphere->fastIntersect(ray);
 	Intersection i = environmentSphere->fullIntersect(ray,t);
-	double u,v;
-	Vector2 uv = i.getUV();
-	u = uv[0]; v = uv[1];
-        u -= int(u);
-	v -= int(v);
-	return environmentMap->getBiCubicTexel(u,v);
+	return environmentMap->getTexel(i.getUV());
     }
 }
 

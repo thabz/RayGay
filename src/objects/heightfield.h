@@ -4,7 +4,7 @@
 
 #include "objects/mesh.h"
 
-class Image;
+class Texture;
 
 /**
  * A heightfield.
@@ -12,7 +12,7 @@ class Image;
 class HeightField : public Mesh {
 
     public:
-	HeightField::HeightField(Image* image, double height, double width, double depth, unsigned int width_divisions, unsigned int depth_divisions, const Material* material);
+	HeightField::HeightField(Texture* image, double height, double width, double depth, unsigned int width_divisions, unsigned int depth_divisions, const Material* material);
 };
 
 #endif

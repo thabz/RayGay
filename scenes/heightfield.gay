@@ -19,6 +19,6 @@ light point -2000 2800 1500 3000000 3000000 3000000
 
 box $dullgreen -300 -60 -300    300 -10 300
 
-heightfield $dullblue gfx/water.jpg 100 600 600 100 100
+heightfield $dullblue gfx/water.jpg 1 1 bilinear 100 600 600 100 100
 
 

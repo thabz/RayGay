@@ -5,6 +5,7 @@ noinst_LIBRARIES = libimage.a
 
 libimage_a_SOURCES = image.cpp \
                      rgb.cpp \
+                     texture.cpp \
 		     imageio_tga.cpp \
 		     imageio_jpeg.cpp \
 		     imageio_png.cpp
@@ -15,4 +16,5 @@ EXTRA_DIST = image.h 		\
 	     imageio_png.h	\
              imageio_tga.h 	\
              rgba.h 		\
-             rgb.h 	
+             rgb.h 		\
+             texture.h 	

@@ -40,15 +40,6 @@ class Image {
 	/// Returns height of image
 	int getHeight() const { return height; };
 
-	/// Return a pixel where u and v in [0,1]
-	RGB getTexel(double u, double v) const;
-	
-	/// Return a bilinear interpolated pixel where u and v in [0,1]
-	RGB getBiLinearTexel(double u, double v) const;
-	
-	/// Return a bicubic interpolated pixel where u and v in [0,1]
-	RGB getBiCubicTexel(double u, double v) const;
-
 	/// Converts image to grayscale
 	void grayscale();
 
@@ -60,8 +51,6 @@ class Image {
 	int width;
 	IMAGE_FLOAT *data;
 
-	double biCubicR(const double x) const;
-	RGBA getRGBWrapped(int x, int y) const;
 };
 
 #endif

@@ -47,6 +47,6 @@ box $dullwhite -300 -300 1200    300 300 1230
 # Table
 #box $dullwhite 100 -10 -300  300 40 -100
 
-heightfield $water gfx/water.jpg 30 600 600 100 100 translate 0 -100 0
+heightfield $water gfx/water.jpg 1 1 bilinear 30 600 600 100 100 translate 0 -100 0
 
 
