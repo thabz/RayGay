@@ -11,315 +11,346 @@
 #include "math/vector2.h"
 #include "math/matrix.h"
 #include "math/functions.h"
+#include "testing.h"
 
 using namespace std;
 
-void vector_test() {
+class vector_test : public Test {
 
-    /*
-    cout << "Size of short: " << sizeof(short) << endl;
-    cout << "Size of int: " << sizeof(int) << endl;
-    cout << "Size of long: " << sizeof(long) << endl;
-    cout << "Size of float: " << sizeof(float) << endl;
-    cout << "Size of double: " << sizeof(double) << endl;
-    cout << "Size of long double: " << sizeof(long double) << endl;
-    cout << "Size of Vector: " << sizeof(Vector) << endl;
-    */
+    public:
+	vector_test(string name) : Test(name) {};
 
-    Vector v = Vector(1,1,1);
-    assert(IS_EQUAL(v.norm(),3));
-    assert(IS_EQUAL(v.norm(),3.0));
-    assert(IS_EQUAL(v.length(),sqrt(3.0)));
+	void run() {
+	    /*
+	       cout << "Size of short: " << sizeof(short) << endl;
+	       cout << "Size of int: " << sizeof(int) << endl;
+	       cout << "Size of long: " << sizeof(long) << endl;
+	       cout << "Size of float: " << sizeof(float) << endl;
+	       cout << "Size of double: " << sizeof(double) << endl;
+	       cout << "Size of long double: " << sizeof(long double) << endl;
+	       cout << "Size of Vector: " << sizeof(Vector) << endl;
+	       */
 
-    v = v - v;
-    assert(IS_ZERO(v.norm()));
-    assert(IS_ZERO(v.length()));
+	    Vector v = Vector(1,1,1);
+	    assertTrue(IS_EQUAL(v.norm(),3));
+	    assertTrue(IS_EQUAL(v.norm(),3.0));
+	    assertTrue(IS_EQUAL(v.length(),sqrt(3.0)));
 
-    v = v + v;
-    assert(IS_ZERO(v.norm()));
-    assert(IS_ZERO(v.length()));
+	    v = v - v;
+	    assertTrue(IS_ZERO(v.norm()));
+	    assertTrue(IS_ZERO(v.length()));
 
-    v = v + Vector(1,2,3);
-    v.normalize();
-    assert(IS_EQUAL(v.norm(),1));
-    assert(IS_EQUAL(v.length(),1));
+	    v = v + v;
+	    assertTrue(IS_ZERO(v.norm()));
+	    assertTrue(IS_ZERO(v.length()));
 
-    v = Vector(1,2,3);
-    v = 2 * v;
-    assert(v == Vector(2,4,6));
+	    v = v + Vector(1,2,3);
+	    v.normalize();
+	    assertTrue(IS_EQUAL(v.norm(),1));
+	    assertTrue(IS_EQUAL(v.length(),1));
 
-    v = v / 2;
-    assert(v == Vector(1,2,3));
+	    v = Vector(1,2,3);
+	    v = 2 * v;
+	    assertTrue(v == Vector(2,4,6));
 
-    v.scale(10);
-    assert(v == Vector(10,20,30));
+	    v = v / 2;
+	    assertTrue(v == Vector(1,2,3));
 
-    v.scale(-1);
-    assert(v == Vector(-10,-20,-30));
+	    v.scale(10);
+	    assertTrue(v == Vector(10,20,30));
 
-    assert(2 * v == v * 2);
+	    v.scale(-1);
+	    assertTrue(v == Vector(-10,-20,-30));
 
-    Vector w = Vector(100,200,300);
-    assert(w * v == v * w);
+	    assertTrue(2 * v == v * 2);
 
-    assert(Vector::xProduct(v,w) == Vector::xProduct(w,v));
+	    Vector w = Vector(100,200,300);
+	    assertTrue(w * v == v * w);
 
-    // Test polar coordinates
-    v = Vector(1,0,0);
-    w = v.toPolar();
-    assert(IS_EQUAL(w[0],1));
-    assert(!IS_EQUAL(w[1],0));
-    assert(IS_EQUAL(w[2],0));
+	    assertTrue(Vector::xProduct(v,w) == Vector::xProduct(w,v));
 
-    v = Vector(0,0,1);
-    w = v.toPolar();
-    assert(IS_EQUAL(w[0],1));
-    assert(IS_EQUAL(w[1],0));
-    assert(IS_EQUAL(w[2],0));
+	    // Test polar coordinates
+	    v = Vector(1,0,0);
+	    w = v.toPolar();
+	    assertTrue(IS_EQUAL(w[0],1));
+	    assertTrue(!IS_EQUAL(w[1],0));
+	    assertTrue(IS_EQUAL(w[2],0));
 
-    v = Vector(1,1,1);
-    w = v.toPolar();
-    assert(IS_EQUAL(w[0],sqrtf(3)));
-    assert(!IS_EQUAL(w[1],0));
-    assert(!IS_EQUAL(w[2],0));
+	    v = Vector(0,0,1);
+	    w = v.toPolar();
+	    assertTrue(IS_EQUAL(w[0],1));
+	    assertTrue(IS_EQUAL(w[1],0));
+	    assertTrue(IS_EQUAL(w[2],0));
 
-    v = Vector(0,1,1);
-    w = v.toPolar();
-    assert(IS_EQUAL(w[0],sqrtf(2)));
+	    v = Vector(1,1,1);
+	    w = v.toPolar();
+	    assertTrue(IS_EQUAL(w[0],sqrtf(3)));
+	    assertTrue(!IS_EQUAL(w[1],0));
+	    assertTrue(!IS_EQUAL(w[2],0));
 
-    assert(Vector(10,10,10).toPolar().toRectangular() == Vector(10,10,10));
-    assert(Vector(10,10,-10).toPolar().toRectangular() == Vector(10,10,-10));
-    assert(Vector(10,-10,10).toPolar().toRectangular() == Vector(10,-10,10));
-    assert(Vector(10,-10,-10).toPolar().toRectangular() == Vector(10,-10,-10));
-    assert(Vector(-10,10,10).toPolar().toRectangular() == Vector(-10,10,10));
-    assert(Vector(-10,10,-10).toPolar().toRectangular() == Vector(-10,10,-10));
-    assert(Vector(-10,-10,10).toPolar().toRectangular() == Vector(-10,-10,10));
-    assert(Vector(-10,-10,-10).toPolar().toRectangular() == Vector(-10,-10,-10));
-    assert(Vector(0,10,10).toPolar().toRectangular() == Vector(0,10,10));
+	    v = Vector(0,1,1);
+	    w = v.toPolar();
+	    assertTrue(IS_EQUAL(w[0],sqrtf(2)));
 
-    // Test += operator
-    v = Vector(1,2,3);
-    v += Vector(10,20,30);
-    assert(v == Vector(11,22,33));
+	    assertTrue(Vector(10,10,10).toPolar().toRectangular() == Vector(10,10,10));
+	    assertTrue(Vector(10,10,-10).toPolar().toRectangular() == Vector(10,10,-10));
+	    assertTrue(Vector(10,-10,10).toPolar().toRectangular() == Vector(10,-10,10));
+	    assertTrue(Vector(10,-10,-10).toPolar().toRectangular() == Vector(10,-10,-10));
+	    assertTrue(Vector(-10,10,10).toPolar().toRectangular() == Vector(-10,10,10));
+	    assertTrue(Vector(-10,10,-10).toPolar().toRectangular() == Vector(-10,10,-10));
+	    assertTrue(Vector(-10,-10,10).toPolar().toRectangular() == Vector(-10,-10,10));
+	    assertTrue(Vector(-10,-10,-10).toPolar().toRectangular() == Vector(-10,-10,-10));
+	    assertTrue(Vector(0,10,10).toPolar().toRectangular() == Vector(0,10,10));
 
-    // Test -= operator
-    v = Vector(1,2,3);
-    v -= Vector(10,20,30);
-    assert(v == Vector(-9,-18,-27));
+	    // Test += operator
+	    v = Vector(1,2,3);
+	    v += Vector(10,20,30);
+	    assertTrue(v == Vector(11,22,33));
 
-    // Test *= operator
-    v = Vector(1,2,3);
-    v *= 2.0;
-    assert(v == Vector(2,4,6));
+	    // Test -= operator
+	    v = Vector(1,2,3);
+	    v -= Vector(10,20,30);
+	    assertTrue(v == Vector(-9,-18,-27));
 
-    // Test norm
-    v = Vector(10,11,12);
-    w = Vector(20,31,42);
-    assert(IS_EQUAL((v-w).norm(),(w-v).norm()));
+	    // Test *= operator
+	    v = Vector(1,2,3);
+	    v *= 2.0;
+	    assertTrue(v == Vector(2,4,6));
 
-    // Test scalar
-    v = Vector(10,10,10);
-    v.normalize();
-    assert(IS_EQUAL(v*v,1));
+	    // Test norm
+	    v = Vector(10,11,12);
+	    w = Vector(20,31,42);
+	    assertTrue(IS_EQUAL((v-w).norm(),(w-v).norm()));
 
-    v = Vector(0,0,1);
-    assert(IS_EQUAL(v*v,1));
+	    // Test scalar
+	    v = Vector(10,10,10);
+	    v.normalize();
+	    assertTrue(IS_EQUAL(v*v,1));
 
-    // Test area()
-    assert(0.5 == Vector::area(Vector(1,1,1), Vector(2,1,1), Vector(1,2,1)));
-    assert(1.0 == Vector::area(Vector(0,0,0), Vector(0,2,0), Vector(1,0,0)));
-    assert(2.0 == Vector::area(Vector(0,0,0), Vector(0,2,0), Vector(2,0,0)));
-}
+	    v = Vector(0,0,1);
+	    assertTrue(IS_EQUAL(v*v,1));
 
-void vector2_test() {
-    Vector2 v = Vector2(1.0,2.0);
-    assert(v[0] == 1);
-    assert(v[1] == 2);
-    v =  v * 2.0;
-    Vector2 w = Vector2(2.0,4.0);
-    assert(v == w);
+	    // Test area()
+	    assertTrue(0.5 == Vector::area(Vector(1,1,1), Vector(2,1,1), Vector(1,2,1)));
+	    assertTrue(1.0 == Vector::area(Vector(0,0,0), Vector(0,2,0), Vector(1,0,0)));
+	    assertTrue(2.0 == Vector::area(Vector(0,0,0), Vector(0,2,0), Vector(2,0,0)));
+	}
+};
 
-    v = Vector2(1.0,2.0);
-    w = Vector2(10.0,20.0);
-    assert(w + v == Vector2(11,22));
-    assert(w -v == Vector2(9,18));
-    assert(w / 2.0 == Vector2(5,10));
-    assert(w * 0.5 == Vector2(5,10));
-}
+class vector2_test : public Test {
+    public:
+	vector2_test(string name) : Test(name) {};
+	void run() {
+	    Vector2 v = Vector2(1.0,2.0);
+	    assertTrue(v[0] == 1);
+	    assertTrue(v[1] == 2);
+	    v =  v * 2.0;
+	    Vector2 w = Vector2(2.0,4.0);
+	    assertTrue(v == w);
 
-void matrix_test() {
-    /* Test inverse() */
-    Matrix id,res;
-    Matrix op1 = Matrix::matrixRotate(Vector(10,30,19),12);
-    res = op1*id*op1.inverse();
-    assert(res.isIdentity());
+	    v = Vector2(1.0,2.0);
+	    w = Vector2(10.0,20.0);
+	    assertTrue(w + v == Vector2(11,22));
+	    assertTrue(w -v == Vector2(9,18));
+	    assertTrue(w / 2.0 == Vector2(5,10));
+	    assertTrue(w * 0.5 == Vector2(5,10));
+	}
+};
 
-    Matrix op2 = Matrix::matrixTranslate(Vector(401,221,39));
-    res = op2*id*op2.inverse();
-    assert(res.isIdentity());
+class matrix_test : public Test {
+    public:
+	matrix_test(string name) : Test(name) {};
+	void run() {
+	    /* Test inverse() */
+	    Matrix id,res;
+	    Matrix op1 = Matrix::matrixRotate(Vector(10,30,19),12);
+	    res = op1*id*op1.inverse();
+	    assertTrue(res.isIdentity());
 
-    Matrix op3 = op1*op2;
-    res = op3*id*op3.inverse();
-    assert(res.isIdentity());
+	    Matrix op2 = Matrix::matrixTranslate(Vector(401,221,39));
+	    res = op2*id*op2.inverse();
+	    assertTrue(res.isIdentity());
 
-    // Test == and !=
-    op1.identity();
-    op2.identity();
-    assert(op1 == op2);
-    op1 = Matrix::matrixTranslate(Vector(401,221,39));
-    op2 = Matrix::matrixTranslate(Vector(-401,-221,-39));
-    assert(op1 != op2);
-    op2 = op2.inverse();
-    assert(op1 == op2);
+	    Matrix op3 = op1*op2;
+	    res = op3*id*op3.inverse();
+	    assertTrue(res.isIdentity());
 
-    op1 = Matrix::matrixRotate(Vector(401,221,39),40);
-    op2 = Matrix::matrixRotate(Vector(401,221,39),-40);
-    assert(op1 != op2);
-    op2 = op2.inverse();
-    assert(op1 == op2);
+	    // Test == and !=
+	    op1.identity();
+	    op2.identity();
+	    assertTrue(op1 == op2);
+	    op1 = Matrix::matrixTranslate(Vector(401,221,39));
+	    op2 = Matrix::matrixTranslate(Vector(-401,-221,-39));
+	    assertTrue(op1 != op2);
+	    op2 = op2.inverse();
+	    assertTrue(op1 == op2);
 
-    op2 = Matrix::matrixRotate(Vector(401,221,39),-20);
-    op2 = op2 * Matrix::matrixRotate(Vector(401,221,39),-20);
-    assert(op1 != op2);
-    op2 = op2.inverse();
-    assert(op1 == op2);
+	    op1 = Matrix::matrixRotate(Vector(401,221,39),40);
+	    op2 = Matrix::matrixRotate(Vector(401,221,39),-40);
+	    assertTrue(op1 != op2);
+	    op2 = op2.inverse();
+	    assertTrue(op1 == op2);
 
-    // Test matrixOrient(Vector,Vector)
+	    op2 = Matrix::matrixRotate(Vector(401,221,39),-20);
+	    op2 = op2 * Matrix::matrixRotate(Vector(401,221,39),-20);
+	    assertTrue(op1 != op2);
+	    op2 = op2.inverse();
+	    assertTrue(op1 == op2);
 
-    Vector v = Vector(1,1,0);
-    op1 = Matrix::matrixOrient(v,Vector(0,1,0));
-    op1 = op1.inverse();
-    v = op1 * v;
-    assert(IS_ZERO(v[0]));
-    assert(IS_ZERO(v[1]));
+	    // Test matrixOrient(Vector,Vector)
 
-    /// Test matrixOrient(Vector)
-    v = Vector(20,391,29);
-    op1 = Matrix::matrixOrient(v);
-    Vector w = op1 * v;
-    assert(IS_ZERO(w[0]));
-    assert(IS_ZERO(w[1]));
-    
-    v = Vector(0,13,0);
-    op1 = Matrix::matrixOrient(v);
-    w = op1 * v;
-    assert(IS_ZERO(w[0]));
-    assert(IS_ZERO(w[1]));
-    assert(IS_EQUAL(w[2],13));
-    
-    v = Vector(0,4,3);
-    op1 = Matrix::matrixOrient(v);
-    w = op1 * v;
-    assert(IS_ZERO(w[0]));
-    assert(IS_ZERO(w[1]));
-    assert(IS_EQUAL(w[2],5));
-    
-    v = Vector(0,0,71);
-    op1 = Matrix::matrixOrient(v);
-    w = op1 * v;
-    assert(IS_ZERO(w[0]));
-    assert(IS_ZERO(w[1]));
-    assert(IS_EQUAL(w[2],71));
+	    Vector v = Vector(1,1,0);
+	    op1 = Matrix::matrixOrient(v,Vector(0,1,0));
+	    op1 = op1.inverse();
+	    v = op1 * v;
+	    assertTrue(IS_ZERO(v[0]));
+	    assertTrue(IS_ZERO(v[1]));
 
-    v = Vector(19,0,0);
-    op1 = Matrix::matrixOrient(v);
-    w = op1 * v;
-    assert(IS_ZERO(w[0]));
-    assert(IS_ZERO(w[1]));
-    assert(IS_EQUAL(w[2],19));
+	    /// Test matrixOrient(Vector)
+	    v = Vector(20,391,29);
+	    op1 = Matrix::matrixOrient(v);
+	    Vector w = op1 * v;
+	    assertTrue(IS_ZERO(w[0]));
+	    assertTrue(IS_ZERO(w[1]));
 
-    // Test matrix rotate
-    v = Vector(1,0,0);
-    op1 = Matrix::matrixRotate(Vector(0,0,1),90);
-    assert(op1*v == Vector(0,-1,0));
-    op1 = Matrix::matrixRotate(Vector(0,0,1),180);
-    assert(op1*v == Vector(-1,0,0));
-    op1 = Matrix::matrixRotate(Vector(0,0,1),35);
-    op2 = Matrix::matrixRotate(Vector(0,0,1),-35);
-    assert(op1*op2*v == v);
-    assert(op2*op1*v == v);
-    op1 = Matrix::matrixRotate(Vector(3,4,6),360);
-    assert(op1*v == v);
-    op1 = Matrix::matrixRotate(Vector(3,4,6),180);
-    op2 = Matrix::matrixRotate(Vector(3,4,6),180);
-    assert(op1*op2*v == v);
+	    v = Vector(0,13,0);
+	    op1 = Matrix::matrixOrient(v);
+	    w = op1 * v;
+	    assertTrue(IS_ZERO(w[0]));
+	    assertTrue(IS_ZERO(w[1]));
+	    assertTrue(IS_EQUAL(w[2],13));
 
-    // Test matrix translate
-    v = Vector(3,4,5);
-    op1 = Matrix::matrixTranslate(Vector(2,3,4));
-    assert(op1*v == Vector(5,7,9));
-    op1 = Matrix::matrixTranslate(Vector(2,3,4));
-    op2 = Matrix::matrixTranslate(Vector(-2,-3,-4));
-    assert(op1*op2*v == v);
-    assert(op2*op1*v == v);
+	    v = Vector(0,4,3);
+	    op1 = Matrix::matrixOrient(v);
+	    w = op1 * v;
+	    assertTrue(IS_ZERO(w[0]));
+	    assertTrue(IS_ZERO(w[1]));
+	    assertTrue(IS_EQUAL(w[2],5));
 
-    // Test matrix scale
-    v = Vector(3,4,5);
-    op1 = Matrix::matrixScale(Vector(2,2,2));
-    assert(op1*v == Vector(6,8,10));
-    op1 = Matrix::matrixScale(Vector(5,6,7));
-    assert(op1*v == Vector(15,24,35));
-    op1 = Matrix::matrixScale(Vector(5,6,7));
-    op2 = Matrix::matrixScale(Vector(1.0/5.0,1.0/6.0,1.0/7.0));
-    assert(op1*op2*v == v);
-    assert(op2*op1*v == v);
-}
+	    v = Vector(0,0,71);
+	    op1 = Matrix::matrixOrient(v);
+	    w = op1 * v;
+	    assertTrue(IS_ZERO(w[0]));
+	    assertTrue(IS_ZERO(w[1]));
+	    assertTrue(IS_EQUAL(w[2],71));
 
-void binomial_test() {
-    assert(Math::binomialCoefficient(7,-3) == 0);
-    assert(Math::binomialCoefficient(-7,3) == 0);
-    assert(Math::binomialCoefficient(-7,-3) == 0);
-    assert(Math::binomialCoefficient(7,0) == 1);
+	    v = Vector(19,0,0);
+	    op1 = Matrix::matrixOrient(v);
+	    w = op1 * v;
+	    assertTrue(IS_ZERO(w[0]));
+	    assertTrue(IS_ZERO(w[1]));
+	    assertTrue(IS_EQUAL(w[2],19));
 
-    assert(Math::binomialCoefficient(7,3) == 35);
-    assert(Math::binomialCoefficient(8,3) == 56);
-    assert(Math::binomialCoefficient(16,6) == 8008);
-    assert(Math::binomialCoefficient(20,7) == 77520);
-    assert(Math::binomialCoefficient(15,15) == 1);
-    assert(Math::binomialCoefficient(15,11) == 1365);
-}
+	    // Test matrix rotate
+	    v = Vector(1,0,0);
+	    op1 = Matrix::matrixRotate(Vector(0,0,1),90);
+	    assertTrue(op1*v == Vector(0,-1,0));
+	    op1 = Matrix::matrixRotate(Vector(0,0,1),180);
+	    assertTrue(op1*v == Vector(-1,0,0));
+	    op1 = Matrix::matrixRotate(Vector(0,0,1),35);
+	    op2 = Matrix::matrixRotate(Vector(0,0,1),-35);
+	    assertTrue(op1*op2*v == v);
+	    assertTrue(op2*op1*v == v);
+	    op1 = Matrix::matrixRotate(Vector(3,4,6),360);
+	    assertTrue(op1*v == v);
+	    op1 = Matrix::matrixRotate(Vector(3,4,6),180);
+	    op2 = Matrix::matrixRotate(Vector(3,4,6),180);
+	    assertTrue(op1*op2*v == v);
+
+	    // Test matrix translate
+	    v = Vector(3,4,5);
+	    op1 = Matrix::matrixTranslate(Vector(2,3,4));
+	    assertTrue(op1*v == Vector(5,7,9));
+	    op1 = Matrix::matrixTranslate(Vector(2,3,4));
+	    op2 = Matrix::matrixTranslate(Vector(-2,-3,-4));
+	    assertTrue(op1*op2*v == v);
+	    assertTrue(op2*op1*v == v);
+
+	    // Test matrix scale
+	    v = Vector(3,4,5);
+	    op1 = Matrix::matrixScale(Vector(2,2,2));
+	    assertTrue(op1*v == Vector(6,8,10));
+	    op1 = Matrix::matrixScale(Vector(5,6,7));
+	    assertTrue(op1*v == Vector(15,24,35));
+	    op1 = Matrix::matrixScale(Vector(5,6,7));
+	    op2 = Matrix::matrixScale(Vector(1.0/5.0,1.0/6.0,1.0/7.0));
+	    assertTrue(op1*op2*v == v);
+	    assertTrue(op2*op1*v == v);
+	}
+};
+
+class binomial_test : public Test {
+    public:
+	binomial_test(string name) : Test(name) {};
+	void run() {
+	    assertTrue(Math::binomialCoefficient(7,-3) == 0);
+	    assertTrue(Math::binomialCoefficient(-7,3) == 0);
+	    assertTrue(Math::binomialCoefficient(-7,-3) == 0);
+	    assertTrue(Math::binomialCoefficient(7,0) == 1);
+
+	    assertTrue(Math::binomialCoefficient(7,3) == 35);
+	    assertTrue(Math::binomialCoefficient(8,3) == 56);
+	    assertTrue(Math::binomialCoefficient(16,6) == 8008);
+	    assertTrue(Math::binomialCoefficient(20,7) == 77520);
+	    assertTrue(Math::binomialCoefficient(15,15) == 1);
+	    assertTrue(Math::binomialCoefficient(15,11) == 1365);
+	}
+};
 
 // See http://mathworld.wolfram.com/BernsteinPolynomial.html
-void bernstein_polynomial_test() {
-    // 1
-    assert(IS_EQUAL(Math::bernsteinPolynomial(0,0,0.5),1));
-    assert(IS_EQUAL(Math::bernsteinPolynomial(0,0,1),1));
-    assert(IS_EQUAL(Math::bernsteinPolynomial(0,0,0),1));
-    // 1 - t
-    assert(IS_EQUAL(Math::bernsteinPolynomial(0,1,0.2),0.8));
-    // t
-    assert(IS_EQUAL(Math::bernsteinPolynomial(1,1,0.2),0.2));
-    // 2(1-t)t
-    assert(IS_EQUAL(Math::bernsteinPolynomial(1,2,3),-12));
-    assert(IS_EQUAL(Math::bernsteinPolynomial(1,2,0.5),0.5));
-    assert(IS_EQUAL(Math::bernsteinPolynomial(1,2,1),0));
-    assert(IS_EQUAL(Math::bernsteinPolynomial(1,2,0),0));
-    // t^2
-    assert(IS_EQUAL(Math::bernsteinPolynomial(2,2,5),25));
-    assert(IS_EQUAL(Math::bernsteinPolynomial(2,2,1),1));
-    assert(IS_EQUAL(Math::bernsteinPolynomial(2,2,0),0));
-    // t^3
-    assert(IS_EQUAL(Math::bernsteinPolynomial(3,3,5),125));
-    assert(IS_EQUAL(Math::bernsteinPolynomial(3,3,1),1));
-    assert(IS_EQUAL(Math::bernsteinPolynomial(3,3,0),0));
-}
+class bernstein_polynomial_test : public Test {
+    public:
+	bernstein_polynomial_test(string name) : Test(name) {};
+	void run() {
+	    // 1
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(0,0,0.5),1));
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(0,0,1),1));
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(0,0,0),1));
+	    // 1 - t
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(0,1,0.2),0.8));
+	    // t
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(1,1,0.2),0.2));
+	    // 2(1-t)t
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(1,2,3),-12));
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(1,2,0.5),0.5));
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(1,2,1),0));
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(1,2,0),0));
+	    // t^2
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(2,2,5),25));
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(2,2,1),1));
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(2,2,0),0));
+	    // t^3
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(3,3,5),125));
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(3,3,1),1));
+	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(3,3,0),0));
+	}
+};
 
-void clamp_test() {
-    assert(Math::clamp(0.5) == 0.5);
-    assert(Math::clamp(0.0) == 0.0);
-    assert(Math::clamp(1.0) == 1.0);
-    assert(Math::clamp(-0.5) == 0.0);
-    assert(Math::clamp(1.5) == 1.0);
-}
+class clamp_test : public Test {
+    public:
+	clamp_test(string name) : Test(name) {};
+	void run() {
+	    assertTrue(Math::clamp(0.5) == 0.5);
+	    assertTrue(Math::clamp(0.0) == 0.0);
+	    assertTrue(Math::clamp(1.0) == 1.0);
+	    assertTrue(Math::clamp(-0.5) == 0.0);
+	    assertTrue(Math::clamp(1.5) == 1.0);
+	}
+};
 
 // Test cubic root
-void test_cubic_root() {
-    assert(IS_EQUAL(cbrt(125),5));
-    assert(IS_EQUAL(cbrt( 64),4));
-    assert(IS_EQUAL(cbrt( 27),3));
-    assert(IS_EQUAL(cbrt(  8),2));
-    assert(IS_EQUAL(cbrt(  1),1));
-}
+class test_cubic_root : public Test {
+    public:
+	test_cubic_root(string name) : Test(name) {};
+	void run() {
+	    assertTrue(IS_EQUAL(cbrt(125),5));
+	    assertTrue(IS_EQUAL(cbrt( 64),4));
+	    assertTrue(IS_EQUAL(cbrt( 27),3));
+	    assertTrue(IS_EQUAL(cbrt(  8),2));
+	    assertTrue(IS_EQUAL(cbrt(  1),1));
+	}
+};
+
 
 // Returns true if the array with num elements contains val
 bool contains(double* array, unsigned int num, double val) {
@@ -337,7 +368,7 @@ bool check_roots(double A, double B, double C, double D, double* roots, int num)
 	r = roots[i];
 	double val = r*r*r*r + A*r*r*r + B*r*r + C*r + D;
 	if (!IS_EQUAL(val,double(0)))
-	//if (fabs(val) > 0.001)
+	    //if (fabs(val) > 0.001)
 	    return false;
     }
     return true;
@@ -345,211 +376,242 @@ bool check_roots(double A, double B, double C, double D, double* roots, int num)
 
 // Used /usr/bin/gp to find test polynomials
 // Part of 'pari-gp' Debian package
-void solve_quartic_test() {
-    double roots[4];
+class solve_quartic_test : public Test {
 
-    // x^4 - 10*x^3 + 35*x^2 - 50*x + 24 = (x-1)*(x-2)*(x-3)*(x-4)
-    assert(Math::solveQuartic(-10,35,-50,24,roots) == 4);
-    assert(contains(roots,4,1));
-    assert(contains(roots,4,2));
-    assert(contains(roots,4,3));
-    assert(contains(roots,4,4));
+    public:
+	solve_quartic_test(string name) : Test(name) {};
 
-    // x^4 - 11*x^3 + 44*x^2 - 76*x + 48 = (x-2)*(x-2)*(x-3)*(x-4)
-    assert(Math::solveQuartic(-11,44,-76,48,roots) == 3);
-    assert(contains(roots,3,2));
-    assert(contains(roots,3,3));
-    assert(contains(roots,3,4));
+	void run() {
+	    double roots[4];
 
-    // x^4 - 14*x^3 + 71*x^2 - 154*x + 120 = (x-5)*(x-4)*(x-3)*(x-2)
-    assert(Math::solveQuartic(-14,71,-154,120,roots) == 4);
-    assert(contains(roots,4,2));
-    assert(contains(roots,4,3));
-    assert(contains(roots,4,4));
-    assert(contains(roots,4,5));
-    
-    // x^4 - 50*x^2 + 625 = (x-5)*(x+5)*(x-5)*(x+5)
-    assert(Math::solveQuartic(0,-50,0,625,roots) == 2);
-    assert(contains(roots,2,-5));
-    assert(contains(roots,2,5));
+	    // x^4 - 10*x^3 + 35*x^2 - 50*x + 24 = (x-1)*(x-2)*(x-3)*(x-4)
+	    assertTrue(Math::solveQuartic(-10,35,-50,24,roots) == 4);
+	    assertTrue(contains(roots,4,1));
+	    assertTrue(contains(roots,4,2));
+	    assertTrue(contains(roots,4,3));
+	    assertTrue(contains(roots,4,4));
 
-    // x^4 - 100*x^3 + 3500*x^2 - 50000*x + 240000 = (x-10)*(x-20)*(x-30)*(x-40)
-    assert(Math::solveQuartic(-100,3500,-50000,240000,roots) == 4);
-    assert(contains(roots,4,10));
-    assert(contains(roots,4,20));
-    assert(contains(roots,4,30));
-    assert(contains(roots,4,40));
+	    // x^4 - 11*x^3 + 44*x^2 - 76*x + 48 = (x-2)*(x-2)*(x-3)*(x-4)
+	    assertTrue(Math::solveQuartic(-11,44,-76,48,roots) == 3);
+	    assertTrue(contains(roots,3,2));
+	    assertTrue(contains(roots,3,3));
+	    assertTrue(contains(roots,3,4));
 
-    //  x^4 + 10*x^2 + 24 = (x^2+4)*(x^2+6)
-    assert(Math::solveQuartic(0,10,0,24,roots) == 0);
+	    // x^4 - 14*x^3 + 71*x^2 - 154*x + 120 = (x-5)*(x-4)*(x-3)*(x-2)
+	    assertTrue(Math::solveQuartic(-14,71,-154,120,roots) == 4);
+	    assertTrue(contains(roots,4,2));
+	    assertTrue(contains(roots,4,3));
+	    assertTrue(contains(roots,4,4));
+	    assertTrue(contains(roots,4,5));
 
-    //  x^4 
-    assert(Math::solveQuartic(0,0,0,0,roots) == 1);
-    assert(contains(roots,1,0));
+	    // x^4 - 50*x^2 + 625 = (x-5)*(x+5)*(x-5)*(x+5)
+	    assertTrue(Math::solveQuartic(0,-50,0,625,roots) == 2);
+	    assertTrue(contains(roots,2,-5));
+	    assertTrue(contains(roots,2,5));
 
-    // x^4 - 4*x^3 + 6*x^2 - 4*x + 1 =  (x-1)(x-1)(x-1)(x-1)
-    assert(Math::solveQuartic(-4,6,-4,1,roots) == 1);
-    assert(contains(roots,1,1));
+	    // x^4 - 100*x^3 + 3500*x^2 - 50000*x + 240000 = (x-10)*(x-20)*(x-30)*(x-40)
+	    assertTrue(Math::solveQuartic(-100,3500,-50000,240000,roots) == 4);
+	    assertTrue(contains(roots,4,10));
+	    assertTrue(contains(roots,4,20));
+	    assertTrue(contains(roots,4,30));
+	    assertTrue(contains(roots,4,40));
 
-    // x^4 - 10*x^3 + 250*x - 625 = (x-5)*(x-5)*(x-5)*(x+5)
-    assert(Math::solveQuartic(-10,0,250,-625,roots) == 2);
-    assert(contains(roots,2,5));
-    assert(contains(roots,2,-5));
+	    //  x^4 + 10*x^2 + 24 = (x^2+4)*(x^2+6)
+	    assertTrue(Math::solveQuartic(0,10,0,24,roots) == 0);
 
-    // x^4 + 2*x^3 - 2*x - 1 = (x+1)*(x+1)*(x+1)*(x-1)
-    assert(Math::solveQuartic(2,0,-2,-1,roots) == 2);
-    assert(contains(roots,2,1));
-    assert(contains(roots,2,-1));
+	    //  x^4 
+	    assertTrue(Math::solveQuartic(0,0,0,0,roots) == 1);
+	    assertTrue(contains(roots,1,0));
 
-    // x^4 + 10*x^3 - 250*x - 625 = (x+5)*(x+5)*(x-5)*(x+5)
-    assert(Math::solveQuartic(10,0,-250,-625,roots) == 2);
-    assert(contains(roots,2,5));
-    assert(contains(roots,2,-5));
+	    // x^4 - 4*x^3 + 6*x^2 - 4*x + 1 =  (x-1)(x-1)(x-1)(x-1)
+	    assertTrue(Math::solveQuartic(-4,6,-4,1,roots) == 1);
+	    assertTrue(contains(roots,1,1));
 
-    int n = 5;
-    int num;
-    for(int A = -n; A < n; A++) {
-	for(int B = -n; B < n; B++) {
-	    for(int C = -n; C < n; C++) {
-		for(int D = -n; D < n; D++) {
-		    num = Math::solveQuartic(A,B,C,D,roots);
-		    if (!check_roots(A,B,C,D,roots,num)) {
-			cout << "A,B,C,D = " << A << "," << B << "," << C << "," << D  << " failed." << endl;
-			cout << num << " roots found: ";
-			for(int i = 0; i < num; i++) {
-			    cout << roots[i] << " and ";
+	    // x^4 - 10*x^3 + 250*x - 625 = (x-5)*(x-5)*(x-5)*(x+5)
+	    assertTrue(Math::solveQuartic(-10,0,250,-625,roots) == 2);
+	    assertTrue(contains(roots,2,5));
+	    assertTrue(contains(roots,2,-5));
+
+	    // x^4 + 2*x^3 - 2*x - 1 = (x+1)*(x+1)*(x+1)*(x-1)
+	    assertTrue(Math::solveQuartic(2,0,-2,-1,roots) == 2);
+	    assertTrue(contains(roots,2,1));
+	    assertTrue(contains(roots,2,-1));
+
+	    // x^4 + 10*x^3 - 250*x - 625 = (x+5)*(x+5)*(x-5)*(x+5)
+	    assertTrue(Math::solveQuartic(10,0,-250,-625,roots) == 2);
+	    assertTrue(contains(roots,2,5));
+	    assertTrue(contains(roots,2,-5));
+
+	    int n = 5;
+	    int num;
+	    for(int A = -n; A < n; A++) {
+		for(int B = -n; B < n; B++) {
+		    for(int C = -n; C < n; C++) {
+			for(int D = -n; D < n; D++) {
+			    num = Math::solveQuartic(A,B,C,D,roots);
+			    if (!check_roots(A,B,C,D,roots,num)) {
+				cout << "A,B,C,D = " << A << "," << B << "," << C << "," << D  << " failed." << endl;
+				cout << num << " roots found: ";
+				for(int i = 0; i < num; i++) {
+				    cout << roots[i] << " and ";
+				}
+				cout << endl;
+				exit(EXIT_FAILURE);
+			    }
 			}
-			cout << endl;
-			exit(EXIT_FAILURE);
 		    }
 		}
 	    }
 	}
-    }
-}
+};
 
 
-void solve_cubic_test() {
-    double roots[3];
+class solve_cubic_test : public Test {
+    public:
+	solve_cubic_test(string name) : Test(name) {};
+	void run() {
+	    double roots[3];
 
-    // x^3 - 2x^2 -x + 2 = (x-2)*(x-1)*(x+1)
-    assert(Math::solveCubic(-2,-1,2,roots) == 3);
-    assert(contains(roots,3,1));
-    assert(contains(roots,3,-1));
-    assert(contains(roots,3,2));
+	    // x^3 - 2x^2 -x + 2 = (x-2)*(x-1)*(x+1)
+	    assertTrue(Math::solveCubic(-2,-1,2,roots) == 3);
+	    assertTrue(contains(roots,3,1));
+	    assertTrue(contains(roots,3,-1));
+	    assertTrue(contains(roots,3,2));
 
-    // x^3 - 8 = 0 = 
-    assert(Math::solveCubic(0,0,-8,roots) == 1);
-    assert(contains(roots,1,2));
+	    // x^3 - 8 = 0 = 
+	    assertTrue(Math::solveCubic(0,0,-8,roots) == 1);
+	    assertTrue(contains(roots,1,2));
 
-    // x^3 - 3*x^2 + 3*x - 1 = (x-1)*(x-1)*(x-1)
-    assert(Math::solveCubic(-3,3,-1,roots) == 1);
-    assert(contains(roots,1,1));
+	    // x^3 - 3*x^2 + 3*x - 1 = (x-1)*(x-1)*(x-1)
+	    assertTrue(Math::solveCubic(-3,3,-1,roots) == 1);
+	    assertTrue(contains(roots,1,1));
 
-    // x^3 - 4*x^2 + 5*x - 2 = (x-1)*(x-1)*(x-2)
-    assert(Math::solveCubic(-4,5,-2,roots) == 2);
-    assert(contains(roots,2,1));
-    assert(contains(roots,2,2));
+	    // x^3 - 4*x^2 + 5*x - 2 = (x-1)*(x-1)*(x-2)
+	    assertTrue(Math::solveCubic(-4,5,-2,roots) == 2);
+	    assertTrue(contains(roots,2,1));
+	    assertTrue(contains(roots,2,2));
 
-    // x^3 + 2*x^2 - 29*x - 30 = (x+1)*(x+6)*(x-5)
-    assert(Math::solveCubic(2,-29,-30,roots) == 3);
-    assert(contains(roots,3,-1));
-    assert(contains(roots,3,-6));
-    assert(contains(roots,3,5));
+	    // x^3 + 2*x^2 - 29*x - 30 = (x+1)*(x+6)*(x-5)
+	    assertTrue(Math::solveCubic(2,-29,-30,roots) == 3);
+	    assertTrue(contains(roots,3,-1));
+	    assertTrue(contains(roots,3,-6));
+	    assertTrue(contains(roots,3,5));
 
-    // x^3 + 5*x^2 - 50*x = x*(x-5)*(x+10)
-    assert(Math::solveCubic(5,-50,0,roots) == 3);
-    assert(contains(roots,3,0));
-    assert(contains(roots,3,5));
-    assert(contains(roots,3,-10));
+	    // x^3 + 5*x^2 - 50*x = x*(x-5)*(x+10)
+	    assertTrue(Math::solveCubic(5,-50,0,roots) == 3);
+	    assertTrue(contains(roots,3,0));
+	    assertTrue(contains(roots,3,5));
+	    assertTrue(contains(roots,3,-10));
 
-    // x^3 + 5*x^2 - 25*x - 125 = (x+5)*(x+5)*(x-5)
-    assert(Math::solveCubic(5,-25,-125,roots) == 2);
-    assert(contains(roots,2,-5));
-    assert(contains(roots,2,5));
+	    // x^3 + 5*x^2 - 25*x - 125 = (x+5)*(x+5)*(x-5)
+	    assertTrue(Math::solveCubic(5,-25,-125,roots) == 2);
+	    assertTrue(contains(roots,2,-5));
+	    assertTrue(contains(roots,2,5));
 
-    // x^3 - 3*x - 2 = (x+1)*(x+1)*(x-2)
-    assert(Math::solveCubic(0,-3,-2,roots) == 2);
-    assert(contains(roots,2,-1));
-    assert(contains(roots,2,2));
+	    // x^3 - 3*x - 2 = (x+1)*(x+1)*(x-2)
+	    assertTrue(Math::solveCubic(0,-3,-2,roots) == 2);
+	    assertTrue(contains(roots,2,-1));
+	    assertTrue(contains(roots,2,2));
 
-    // x^3 - 3*x - 2 = (x+1)*(x+1)*(x-2)
-    assert(Math::solveCubic(0,-12,-16,roots) == 2);
-    assert(contains(roots,2,-2));
-    assert(contains(roots,2,4));
+	    // x^3 - 3*x - 2 = (x+1)*(x+1)*(x-2)
+	    assertTrue(Math::solveCubic(0,-12,-16,roots) == 2);
+	    assertTrue(contains(roots,2,-2));
+	    assertTrue(contains(roots,2,4));
 
-    // x^3 + x^2 = x*x*(x+1)
-    assert(Math::solveCubic(1,0,0,roots) == 2);
-    assert(contains(roots,2,0));
-    assert(contains(roots,2,-1));
-    
-    // x^3 - x^2 - x + 1= (x+1)*(x-1)*(x-1)
-    assert(Math::solveCubic(-1,-1,1,roots) == 2);
-    assert(contains(roots,2,1));
-    assert(contains(roots,2,-1));
+	    // x^3 + x^2 = x*x*(x+1)
+	    assertTrue(Math::solveCubic(1,0,0,roots) == 2);
+	    assertTrue(contains(roots,2,0));
+	    assertTrue(contains(roots,2,-1));
 
-    // x^3 
-    assert(Math::solveCubic(0,0,0,roots) == 1);
-    assert(contains(roots,1,0));
-}
+	    // x^3 - x^2 - x + 1= (x+1)*(x-1)*(x-1)
+	    assertTrue(Math::solveCubic(-1,-1,1,roots) == 2);
+	    assertTrue(contains(roots,2,1));
+	    assertTrue(contains(roots,2,-1));
 
-void solve_quadratic_test() {
-    double roots[2];
-    assert(Math::solveQuadratic(1,0,0,roots) == 1);
-    assert(IS_EQUAL(roots[0],0));
+	    // x^3 
+	    assertTrue(Math::solveCubic(0,0,0,roots) == 1);
+	    assertTrue(contains(roots,1,0));
+	}
+};
 
-    assert(Math::solveQuadratic(1,0,-4,roots) == 2);
-    assert(contains(roots,2,2));
-    assert(contains(roots,2,-2));
+class solve_quadratic_test : public Test  {
 
-    assert(Math::solveQuadratic(2,0,-8,roots) == 2);
-    assert(contains(roots,2,2));
-    assert(contains(roots,2,-2));
+    public:
+	solve_quadratic_test(string name) : Test(name) {};
+	void run() {
+	    double roots[2];
+	    assertTrue(Math::solveQuadratic(1,0,0,roots) == 1);
+	    assertTrue(IS_EQUAL(roots[0],0));
 
-    assert(Math::solveQuadratic(1,5,6,roots) == 2);
-    assert(contains(roots,2,-2));
-    assert(contains(roots,2,-3));
+	    assertTrue(Math::solveQuadratic(1,0,-4,roots) == 2);
+	    assertTrue(contains(roots,2,2));
+	    assertTrue(contains(roots,2,-2));
 
-    assert(Math::solveQuadratic(2,1,0,roots) == 2);
-    assert(contains(roots,2,-0));
-    assert(contains(roots,2,-0.5));
+	    assertTrue(Math::solveQuadratic(2,0,-8,roots) == 2);
+	    assertTrue(contains(roots,2,2));
+	    assertTrue(contains(roots,2,-2));
 
-    assert(Math::solveQuadratic(5,5,2,roots) == 0);
+	    assertTrue(Math::solveQuadratic(1,5,6,roots) == 2);
+	    assertTrue(contains(roots,2,-2));
+	    assertTrue(contains(roots,2,-3));
 
-    assert(Math::solveQuadratic(0,1,-2,roots) == 1);
-    assert(contains(roots,1,2));
+	    assertTrue(Math::solveQuadratic(2,1,0,roots) == 2);
+	    assertTrue(contains(roots,2,-0));
+	    assertTrue(contains(roots,2,-0.5));
 
-    assert(Math::solveQuadratic(0,5,10,roots) == 1);
-    assert(contains(roots,1,-2));
+	    assertTrue(Math::solveQuadratic(5,5,2,roots) == 0);
 
-    assert(Math::solveQuadratic(1,0,-25,roots) == 2);
-    assert(contains(roots,2,5));
-    assert(contains(roots,2,-5));
-}
+	    assertTrue(Math::solveQuadratic(0,1,-2,roots) == 1);
+	    assertTrue(contains(roots,1,2));
 
-void perturb_vector_test() {
-    double max_angle = DEG2RAD(10.0);
-    for(int i = 0; i < 10000; i++) {
-	Vector axis = Vector(RANDOM(-1,1),RANDOM(-1,1),RANDOM(-1,1));
-	axis.normalize();
-	Vector perturbed = Math::perturbVector(axis,max_angle);
-	perturbed.normalize();
-	double angle = acos(axis*perturbed);
-	assert(angle <= max_angle);
-    }
-}
+	    assertTrue(Math::solveQuadratic(0,5,10,roots) == 1);
+	    assertTrue(contains(roots,1,-2));
+
+	    assertTrue(Math::solveQuadratic(1,0,-25,roots) == 2);
+	    assertTrue(contains(roots,2,5));
+	    assertTrue(contains(roots,2,-5));
+	}
+};
+
+
+class perturb_vector_test : public Test  {
+    public:
+	perturb_vector_test(string name) : Test(name) {};
+	void run() {
+	    double max_angle = DEG2RAD(10.0);
+	    for(int i = 0; i < 10000; i++) {
+		Vector axis = Vector(RANDOM(-1,1),RANDOM(-1,1),RANDOM(-1,1));
+		axis.normalize();
+		Vector perturbed = Math::perturbVector(axis,max_angle);
+		perturbed.normalize();
+		double angle = acos(axis*perturbed);
+		assertTrue(angle <= max_angle);
+	    }
+	}
+};
+
 
 int main(int argc, char *argv[]) {
-    vector_test();
-    vector2_test();
-    matrix_test();
-    binomial_test();
-    bernstein_polynomial_test();
-    clamp_test();
-    test_cubic_root();
-    solve_quadratic_test();
-    solve_cubic_test();
-    solve_quartic_test();
-    perturb_vector_test();
-    return EXIT_SUCCESS;
+
+    TestSuite suite;
+
+    suite.add(new vector_test("Vector"));
+    suite.add(new vector2_test("Vector2"));
+    suite.add(new matrix_test("Matrix"));
+    suite.add(new binomial_test("Binomial"));
+    suite.add(new bernstein_polynomial_test("Bernstein"));
+    suite.add(new clamp_test("Clamp"));
+    suite.add(new solve_quartic_test("Solve quartic"));
+    suite.add(new solve_quadratic_test("Solve quadratic"));
+    suite.add(new solve_cubic_test("Solve cubic"));
+    suite.add(new test_cubic_root("Cubic root"));
+    suite.add(new perturb_vector_test("Perturb vector"));
+    suite.run();
+    suite.printStatus();
+    if (suite.hasFailures()) {
+	return EXIT_FAILURE;
+    } else {
+	return EXIT_SUCCESS;
+    }
 }
+
