@@ -54,77 +54,37 @@ double IsoSurface::_fastIntersect(const Ray& world_ray) const {
 
 #undef func
 
-#if 1
-/**
- * Refine an interval containing a root.
- * Using interval bisection.
- *
- * @param t_begin an outside t
- * @param t_end an inside t
- */
-double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
-    double t_mid;
-
-    while (t_end - t_begin > accuracy) {
-	t_mid = 0.5 * (t_begin + t_end);
-	if (inside(ray.getPoint(t_mid))) {
-	    t_end = t_mid;
-	} else {
-	    t_begin = t_mid;
-	}
-    }
-    return 0.5 * (t_begin + t_end);
-}
-
-#else
-
-/**
- * Refine an interval containing a root.
- * Using Brent's method.
- *
- * @param t_begin an outside t
- * @param t_end an inside t
- */
-double IsoSurface::refine(const Ray& ray, double x1, double x3) const {
-
 #define func(x) (iso - evaluateFunction(ray.getPoint(x)))
-#define MAX_ITER 10000    
+#define MAX_ITER 100
+double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
+    double f_t_begin = func(t_begin);
+    double f_t_end = func(t_end);
+    double f_t_mid, t_mid;
+    uint i = 0;
 
-    assert(x1 < x3);
+    //assert(!SAME_SIGN(f_t_begin, f_t_end));
 
-    double x2;
-    double R,S,T;
-    double P,Q;
-    double fx1,fx2,fx3;
+    while (i++ < MAX_ITER) {
+	t_mid = ( f_t_end * t_begin - f_t_begin * t_end ) / ( f_t_end - f_t_begin );
+	f_t_mid = func(t_mid);
 
-    x2 = 0.5 * (x1 + x3);
-
-    fx1 = func(x1);
-    fx2 = func(x2);
-    fx3 = func(x3);
-
-    assert(SIGN(fx1) != SIGN(fx3));
-
-    uint num = 0;
-    while(num++ < MAX_ITER) {
-	
-	R = fx2 / fx3;
-	S = fx2 / fx1;
-	T = fx1 / fx3;
-	
-	P = S*(R*(R-T)*(x3-x2)-(1-R)*(x2-x1));
-	Q = (T-1)*(R-1)*(S-1);
-
-	x2 = x2 + (P / Q);
-
-	fx2 = func(x2);
-	if (fabs(fx2) < accuracy/1000) {
-	    return x2;
+	if (fabs(f_t_mid) < accuracy / 100) {
+	    return t_mid;
 	}
+
+	if (SAME_SIGN(f_t_begin, f_t_mid)) {
+	    t_begin = t_mid;
+	    f_t_begin = f_t_mid;
+	} else {
+	    t_end = t_mid;
+	    f_t_end = f_t_mid;
+	}
+
     }
-    return x2;
+    return 0;
 }
-#endif
+#undef func
+
 
 /**
  * Finds the surface normal at a point.
