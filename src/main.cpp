@@ -26,26 +26,13 @@
 #include "math/vector.h"
 #include "math/matrix.h"
 
-#include "sphere.h"
 #include "scene.h"
 #include "camera.h"
 #include "ray.h"
 #include "intersection.h"
 #include "image/image.h"
-#include "boolean.h"
-#include "mesh.h"
-#include "box.h"
-#include "3ds.h"
-#include "cylinder.h"
-#include "tetrahedron.h"
-#include "tessalation.h"
-#include "paths/circle.h"
-#include "extrusion.h"
 #include "raytracer.h"
 #include "bsp.h"
-#include "necklace.h"
-#include "wireframe.h"
-#include "teapot.h"
 
 #include "paths/linesegment.h"
 #include "paths/spiral.h"
@@ -58,6 +45,11 @@
 
 #include "materials/materials.h"
 
+#include "photonmap.h"
+#include "photontracer.h"
+#include "photonrenderer.h"
+
+
 using namespace std;
 
 void work(string scenefile, string outputfile) {
@@ -67,8 +59,8 @@ void work(string scenefile, string outputfile) {
     Scene* scene = importer.getScene();
     cout << "Done." << endl;
 
-    Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
-    n = n * Matrix::matrixTranslate(Vector(0,0,-500));
+    Matrix n = Matrix::matrixRotate(Vector(1,1,0),-5.0);
+    //Matrix n = Matrix::matrixTranslate(Vector(0,0,-500));
     scene->transform(n);
 
     Vector2 img_size = importer.getImageSize();
@@ -76,8 +68,19 @@ void work(string scenefile, string outputfile) {
 
     SpaceSubdivider* space = new BSP();
 
-    Raytracer raytracer = Raytracer();
-    raytracer.render(scene,img,space);
+    scene->initSpace(space);
+
+    int photon_num = 1000000;
+    PhotonMap* photonmap = new PhotonMap(photon_num);
+    PhotonTracer* photontracer = new PhotonTracer(scene,space,photonmap);
+    photontracer->trace(photon_num);
+    photonmap->scale_photon_power(1.0/double(photon_num));
+    photonmap->balance();
+
+   /* Raytracer raytracer = Raytracer();
+    raytracer.render(scene,img,space,photonmap);*/
+    PhotonRenderer renderer = PhotonRenderer();
+    renderer.render(scene,img,space,photonmap);
     
     img->save(outputfile);
     delete img;

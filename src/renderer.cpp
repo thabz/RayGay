@@ -12,6 +12,7 @@
 #include "math/matrix.h"
 #include "spacesubdivider.h"
 #include "objectcollection.h"
+#include "photonmap.h"
 
 Renderer::Renderer() {
 }
@@ -24,7 +25,8 @@ Renderer::Renderer() {
  * @param img The image to place pixels on
  * @param spc The space containing the objects of the scene
  */
-void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
+void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc, PhotonMap* photonmap) {
+    this->photonmap = photonmap;
     time_t beginTime;
     scene = sc;
     space = spc;
@@ -35,16 +37,6 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
     Matrix orient = Matrix::matrixOrient(camera->getDirection(), camera->getUp());
     scene->transform(orient);
 */
-    beginTime = time(NULL);
-    // Add all objects in scene to spacesubdivider
-    std::vector<SceneObject*> objects = scene->getObjects();
-    for (vector<SceneObject*>::iterator p = objects.begin(); p != objects.end(); p++) {
-	(*p)->prepare();
-	(*p)->addSelf(space);
-    }
-
-    space->prepare();
-    Stats::getUniqueInstance()->put("Prepare time (seconds)",time(NULL)-beginTime);
 
     aa_enabled = camera->isAAEnabled();
     aa_depth = camera->getAADepth();

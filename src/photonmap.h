@@ -3,6 +3,7 @@
 #define PHOTON_MAP
 
 class Vector;
+class RGB;
 
 /**
  * This is the photon
@@ -54,6 +55,12 @@ class PhotonMap {
 		const float scale );           // 1/(number of emitted photons)
 
 	void balance(void);              // balance the kd-tree (before use!)
+
+	Vector irradiance_estimate(
+		const Vector& pos,             // surface position
+		const Vector& normal,          // surface normal at pos
+		const float max_dist,          // max distance to look for photons
+		const int nphotons ) const;    // number of photons to use
 
 	void irradiance_estimate(
 		float irrad[3],                // returned irradiance

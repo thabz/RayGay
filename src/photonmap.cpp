@@ -13,6 +13,7 @@
 
 #include "photonmap.h"
 #include "math/vector.h"
+#include "image/rgb.h"
 
 
 /**
@@ -70,9 +71,29 @@ void PhotonMap :: photon_dir( float *dir, const Photon *p ) const
     dir[2] = costheta[p->theta];
 }
 
+ /*
+ * Computes an irradiance estimate at a given surface position
+ */
+Vector PhotonMap :: irradiance_estimate(
+	const Vector& pos,             // surface position
+	const Vector& normal,          // surface normal at pos
+	const float max_dist,          // max distance to look for photons
+	const int nphotons ) const     // number of photons to use
+{
+    float irrad[3];
+    float fpos[3];
+    float fnormal[3];
+    for(int i = 0; i < 3; i++) {
+	fpos[i] = pos[i];
+	fnormal[i] = normal[i];
+    }
+    irradiance_estimate(irrad,fpos,fnormal,max_dist,nphotons);
+    return Vector(irrad[0],irrad[1],irrad[2]);
+}
 
-/**
- * Computes an irradiance estimate
+
+    /**
+     * Computes an irradiance estimate
  * at a given surface position
  */
 void PhotonMap :: irradiance_estimate(
