@@ -19,25 +19,13 @@ tracer_LDADD = libtracer.a photon/libphoton.a lights/liblights.a materials/libma
 
 #--------------------------------------
 
-EXTRA_DIST = 3ds.h		\
-    	     bezierpatch.h	\
-    	     boolean.h 		\
-             boundingbox.h	\
-             booleanoperand.h	\
-	     box.h		\
+EXTRA_DIST = boundingbox.h	\
      	     bsp.h		\
              camera.h 		\
-	     cylinder.h		\
 	     edgekey.h		\
-	     extrusion.h	\
 	     importer.h		\
 	     intersection.h 	\
 	     kdtree.h		\
-	     mesh.h		\
-	     object.h		\
-	     necklace.h		\
-	     objectcollection.h	\
-	     objectgroup.h	\
 	     photonmap.h	\
 	     photonmapdump.h	\
 	     photonrenderer.h	\
@@ -47,15 +35,6 @@ EXTRA_DIST = 3ds.h		\
 	     raytracer.h 	\
 	     renderer.h 	\
 	     scene.h 		\
-	     sceneobject.h	\
-	     sor.h		\
 	     spacesubdivider.h	\
-	     sphere.h		\
-	     stats.h		\
-	     teapot.h		\
-	     tessalation.h	\
-	     tetrahedron.h	\
-	     torus.h		\
-	     triangle.h 	\
-	     wireframe.h
+	     stats.h
 

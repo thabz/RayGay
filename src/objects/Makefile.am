@@ -22,4 +22,25 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 		       triangle.cpp	\
 		       wireframe.cpp
 
-EXTRA_DIST = 3ds.h
+EXTRA_DIST = 3ds.h 		\
+    	     bezierpatch.h	\
+    	     boolean.h 		\
+             booleanoperand.h	\
+	     box.h		\
+	     cylinder.h		\
+	     extrusion.h	\
+	     mesh.h		\
+	     object.h		\
+	     necklace.h		\
+	     objectcollection.h	\
+	     objectgroup.h	\
+	     sceneobject.h	\
+	     sor.h		\
+	     sphere.h		\
+	     teapot.h		\
+	     tessalation.h	\
+	     tetrahedron.h	\
+	     torus.h		\
+	     triangle.h 	\
+	     wireframe.h
+
