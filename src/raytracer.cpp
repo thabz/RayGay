@@ -39,7 +39,7 @@ RGB Raytracer::trace(const Ray& ray, int depth) {
 
 RGB Raytracer::shade(const Ray& ray, Intersection& intersection, int depth) {
     object* object = intersection.getObject();
-    const Vector point = intersection.point;
+    const Vector point = intersection.getPoint();
     Vector normal = object->normal(intersection);
     Material material = object->getMaterial();
     normal = material.bump(intersection,normal);
@@ -75,7 +75,7 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, int depth) {
 	    Vector refl_vector = -1 * ray.direction;
 	    refl_vector = refl_vector.reflect(normal);
 	    refl_vector.normalize();
-	    Ray refl_ray = Ray(point,refl_vector,ray.indice_of_refraction);
+	    Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
 	    RGB refl_col = trace(refl_ray, depth + 1);
 	    result_color = result_color + material.getKs() * refl_col;
 	}
@@ -83,7 +83,7 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, int depth) {
 	/* Should we send a ray through the intersected object? */
 	if (material.transmission_coefficient > 0.0) {
 	    // Calculate refraction vector (page 757)
-	    double my = ray.indice_of_refraction / material.indice_of_refraction;
+	    double my = ray.getIndiceOfRefraction() / material.indice_of_refraction;
 	    Vector I = -1 * ray.direction;
 	    double n = normal * I;
 	    double p = my*my*(1 - n*n);

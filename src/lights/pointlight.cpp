@@ -15,11 +15,11 @@ void Pointlight::transform(const Matrix& m) {
 
 Lightinfo Pointlight::getLightinfo(const Intersection& inter,const Vector& normal, const SpaceSubdivider& space) const {
     Lightinfo info;
-    info.direction_to_light = position - inter.point;
+    info.direction_to_light = position - inter.getPoint();
     info.direction_to_light.normalize();
     info.cos = info.direction_to_light * normal;
     if (info.cos > 0.0) {
-	Ray ray_to_light = Ray(inter.point,info.direction_to_light,-1.0);
+	Ray ray_to_light = Ray(inter.getPoint(),info.direction_to_light,-1.0);
 	Intersection i2 = space.intersect(ray_to_light);
 	info.intensity = i2.isIntersected() ? 0.0 : 1.0;
     }

@@ -201,7 +201,7 @@ Intersection Hierarchy::intersect(const Ray& ray) const {
 	for (vector<Hierarchy*>::const_iterator p = children.begin(); p != children.end(); p++) {
 	    tmp = (*p)->intersect(ray);
 	    if (tmp.isIntersected()) {
-		if (!result.isIntersected() || tmp.t < result.t) {
+		if (!result.isIntersected() || tmp.getT() < result.getT()) {
 		    result = tmp;
 		}
 	    }
@@ -210,7 +210,7 @@ Intersection Hierarchy::intersect(const Ray& ray) const {
 	for (vector<object*>::const_iterator p = objects.begin(); p != objects.end(); p++) {
 	    tmp = (*p)->intersect(ray);
 	    if (tmp.isIntersected()) {
-		if (!result.isIntersected() || tmp.t < result.t) {
+		if (!result.isIntersected() || tmp.getT() < result.getT()) {
 		    result = tmp;
 		}
 	    }

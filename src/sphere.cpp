@@ -68,7 +68,7 @@ Intersection Sphere::_intersect(const Ray& ray) const {
 }
 
 Vector Sphere::normal(const Intersection& i) const {
-    Vector normal = i.point - center;
+    Vector normal = i.getPoint() - center;
     normal.normalize();
     return normal;
 }
@@ -121,7 +121,7 @@ BoundingBox Sphere::boundingBoundingBox() const {
 
 // See http://astronomy.swin.edu.au/~pbourke/texture/spheremap/
 Vector2 Sphere::getUV(const Intersection& intersection) const {
-    Vector p = intersection.point - center;
+    Vector p = intersection.getPoint() - center;
     p.normalize();
     double u,v;
     v = acos(p[1]) / M_PI;

@@ -22,11 +22,11 @@ Intersection Boolean::_intersect(const Ray& ray) const {
     switch(_op) {
 	case BOOLEAN_INTERSECTION: /* Same as next */
 	case BOOLEAN_UNION: 
-	    el = onEdge(il.point);
-	    er = onEdge(ir.point);
+	    el = onEdge(il.getPoint());
+	    er = onEdge(ir.getPoint());
 	    if (il.isIntersected() && ir.isIntersected()) {
 		if (el && er) {
-		    return il.t < ir.t ? il : ir;
+		    return il.getT() < ir.getT() ? il : ir;
 		} else if (el) {
 		    return il;
 		} else if (er) {
@@ -47,10 +47,10 @@ Intersection Boolean::_intersect(const Ray& ray) const {
 	    if ((!il.isIntersected()) && (!ir.isIntersected())) {
 		return empty; // No intersection
 	    }
-	    if (onEdge(il.point)) {
+	    if (onEdge(il.getPoint())) {
 		return il;
 	    }
-	    if (onEdge(ir.point)) {
+	    if (onEdge(ir.getPoint())) {
 		return ir;
 	    }
 	    if (!il.isIntersected()) {
@@ -59,13 +59,13 @@ Intersection Boolean::_intersect(const Ray& ray) const {
 	    if (!ir.isIntersected()) {
 		return il; // Trivial intersection
 	    }
-	    closest = il.t < ir.t ? &il : &ir;
-	    if (onEdge(closest->point)) {
+	    closest = il.getT() < ir.getT() ? &il : &ir;
+	    if (onEdge(closest->getPoint())) {
 		return *closest;
 	    } else {
-		Ray new_ray = Ray(closest->point, ray.direction, ray.indice_of_refraction);
+		Ray new_ray = Ray(closest->getPoint(), ray.direction, ray.getIndiceOfRefraction());
 		Intersection next_intersection = intersect(new_ray);
-		next_intersection.t += closest->t; 
+		next_intersection.setT( closest->getT() + next_intersection.getT());; 
 		return next_intersection;
 	    }
 	    break;
@@ -80,7 +80,7 @@ void Boolean::transform(const Matrix& m) {
 
 // FIXME: We're not sure that i is from lhs or rhs
 Vector Boolean::normal(const Intersection& i) const {
-    Vector p = i.point;
+    Vector p = i.getPoint();
     switch(_op) {
 	case BOOLEAN_INTERSECTION: /* Same as next */
 	case BOOLEAN_UNION:

@@ -208,9 +208,9 @@ void Mesh::transform(const Matrix& M) {
 }
 
 Vector2 Mesh::getUV(const Intersection &i) const {
-    const Triangle* triangle = (Triangle*) i.local_object;
+    const Triangle* triangle = (Triangle*) i.getLocalObject();
     Tri* tri = tris[triangle->getTri()];
-    Vector weight = getInterpolationWeights(triangle->getTri(), i.point);
+    Vector weight = getInterpolationWeights(triangle->getTri(), i.getPoint());
     return tri->uv[0] * weight[0] +
 	tri->uv[1] * weight[1] +
 	tri->uv[2] * weight[2];
@@ -223,10 +223,10 @@ Vector Mesh::normal(const Intersection &i) const {
 }
 
 Vector Mesh::phong_normal(const Intersection &i) const {
-    const Triangle* triangle = (Triangle*) i.local_object;
+    const Triangle* triangle = (Triangle*) i.getLocalObject();
     Tri* tri = tris[triangle->getTri()];
     Vector result = Vector(0,0,0);
-    Vector weight = getInterpolationWeights(triangle->getTri(), i.point);
+    Vector weight = getInterpolationWeights(triangle->getTri(), i.getPoint());
     for(unsigned int j = 0; j < 3; j++) {
 	result = result + normals[tri->interpolated_normal[j]] * weight[j];
     }
@@ -356,9 +356,9 @@ void Mesh::test() {
     // Test intersection
     Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),0.0);
     Intersection i = bsp.intersect(ray);
-    assert(i.point == Vector(0,0,0));
+    assert(i.getPoint() == Vector(0,0,0));
     assert(i.isIntersected());
-    assert(i.t == 100.0);
+    assert(i.getT() == 100.0);
 
     ray = Ray(Vector(0,0,100),Vector(0,0,1),0.0);
     i = bsp.intersect(ray);

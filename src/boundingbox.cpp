@@ -66,7 +66,7 @@ bool BoundingBox::onEdge(const Vector &p) const {
 Intersection BoundingBox::intersect(const Ray& ray) const {
     Intersection result;
     Vector B = ray.origin;
-    Vector v_inv = ray.inv_direction;
+    Vector v_inv = ray.getInverseDirection();
     Vector v = ray.direction;
 
     double t,tmin, tmax, tymin, tymax, tzmin, tzmax; 
@@ -115,7 +115,7 @@ Intersection BoundingBox::intersect(const Ray& ray) const {
 
 bool BoundingBox::checkIntersect(const Ray& ray) const {
     Vector B = ray.origin;
-    Vector v_inv = ray.inv_direction;
+    Vector v_inv = ray.getInverseDirection();
     Vector v = ray.direction;
 
     double tmin, tmax, tymin, tymax, tzmin, tzmax; 

@@ -178,9 +178,9 @@ Intersection BSP::intersect(const Ray& ray, double min_t, double max_t) const {
 	for (unsigned int i=0; i < objects.size(); i++) {
 	    object* obj = objects[i];
 	    tmp = obj->intersect(ray);
-	    if (tmp.isIntersected() && tmp.t < cur_t) {
+	    if (tmp.isIntersected() && tmp.getT() < cur_t) {
 		result = tmp;
-		cur_t = tmp.t;
+		cur_t = tmp.getT();
 	    }
 	}
     } else {
@@ -203,7 +203,7 @@ Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) 
 	ray.direction[cutplane_dimension] >= 0) {
         return higher->intersect(ray,min_t,max_t);
     } else {
-	double intersect_t = (cutplane_value - ray.origin[cutplane_dimension]) * ray.inv_direction[cutplane_dimension];
+	double intersect_t = (cutplane_value - ray.origin[cutplane_dimension]) * ray.getInverseDirection()[cutplane_dimension];
 	if (intersect_t > max_t) { intersect_t = max_t; }
 	if (intersect_t < min_t) { intersect_t = min_t; }
 
@@ -224,7 +224,7 @@ Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) 
 	}
 	
 	if (intersection1.isIntersected() && intersection2.isIntersected()) {
-	    if (intersection1.t < intersection2.t) {
+	    if (intersection1.getT() < intersection2.getT()) {
 		return intersection1;
 	    } else {
 		return intersection2;
@@ -253,7 +253,7 @@ Intersection BSP::intersectForShadow_recurse(const Ray& ray, double min_t, doubl
 	ray.direction[cutplane_dimension] >= 0) {
         return higher->intersectForShadow(ray,min_t,max_t);
     } else {
-	double intersect_t = (cutplane_value - ray.origin[cutplane_dimension]) * ray.inv_direction[cutplane_dimension];
+	double intersect_t = (cutplane_value - ray.origin[cutplane_dimension]) * ray.getInverseDirection()[cutplane_dimension];
 	if (intersect_t > max_t) { intersect_t = max_t; }
 	if (intersect_t < min_t) { intersect_t = min_t; }
 	
@@ -333,33 +333,33 @@ void BSP::test() {
     // Test intersection
     Ray r = Ray(Vector(200,250,1000),Vector(0,0,-1),1);
     assert(bsp.intersect(r).isIntersected());
-    assert(IS_EQUAL(bsp.intersect(r).point[0],200));
-    assert(IS_EQUAL(bsp.intersect(r).point[1],250));
-    assert(IS_EQUAL(bsp.intersect(r).point[2],210));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[0],200));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[1],250));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[2],210));
 
     r = Ray(Vector(200,250,-1000),Vector(0,0,1),1);
     assert(bsp.intersect(r).isIntersected());
-    assert(IS_EQUAL(bsp.intersect(r).point[0],200));
-    assert(IS_EQUAL(bsp.intersect(r).point[1],250));
-    assert(IS_EQUAL(bsp.intersect(r).point[2],-210));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[0],200));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[1],250));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[2],-210));
 
     r = Ray(Vector(-200,-150,1000),Vector(0,0,-1),1);
     assert(bsp.intersect(r).isIntersected());
-    assert(IS_EQUAL(bsp.intersect(r).point[0],-200));
-    assert(IS_EQUAL(bsp.intersect(r).point[1],-150));
-    assert(IS_EQUAL(bsp.intersect(r).point[2],210));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[0],-200));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[1],-150));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[2],210));
 
     r = Ray(Vector(0,1000,0),Vector(0,-1,0),1);
     assert(bsp.intersect(r).isIntersected());
-    assert(IS_EQUAL(bsp.intersect(r).point[0],0));
-    assert(IS_EQUAL(bsp.intersect(r).point[1],260));
-    assert(IS_EQUAL(bsp.intersect(r).point[2],0));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[0],0));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[1],260));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[2],0));
 
     r = Ray(Vector(0,-1000,0),Vector(0,1,0),1);
     assert(bsp.intersect(r).isIntersected());
-    assert(IS_EQUAL(bsp.intersect(r).point[0],0));
-    assert(IS_EQUAL(bsp.intersect(r).point[1],-510));
-    assert(IS_EQUAL(bsp.intersect(r).point[2],0));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[0],0));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[1],-510));
+    assert(IS_EQUAL(bsp.intersect(r).getPoint()[2],0));
 
     r = Ray(Vector(300,250,-1000),Vector(0,0,1),1);
     assert(!bsp.intersect(r).isIntersected());

@@ -22,15 +22,22 @@ class Intersection {
 	void setObject(object* obj) { o = obj; };
 	object* getObject() const { return o; };
 
-	Vector point; 	///< The intersection point
-	const object* local_object; ///< A local subobject, eg. a component of a Boolean.
+	Vector getPoint() const { return point; };
 
-	//const Triangle* local_triangle; ///< A local subobject, eg. a component of a Mesh.
-	double t;
+	void setLocalObject(const object* obj) { local_object = obj; };
+	const object* getLocalObject() const { return local_object; };
+
+	double getT() const { return t; }; 
+	void setT(double new_t) { t = new_t; };
+
+	
 	bool isIntersected() const { return t >= 0.0; };
 
     private:
 	object* o; /// The object that was intersected
+	const object* local_object; ///< A local subobject, eg. a component of a Boolean.
+	Vector point; 	///< The intersection point
+	double t;
 };
 
 inline

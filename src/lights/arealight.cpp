@@ -58,16 +58,16 @@ Vector Arealight::getPosition(int i) const {
 Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& normal, const SpaceSubdivider& space) const {
     Lightinfo info;
     Vector direction_to_light;
-    info.direction_to_light = position - inter.point;
+    info.direction_to_light = position - inter.getPoint();
     info.direction_to_light.normalize();
     info.cos = info.direction_to_light * normal;
     if (info.cos > 0.0) {
 	int count = 0;
 	for(int i = 0; i < num; i++) {
-	    direction_to_light = getPosition(i) - inter.point;
+	    direction_to_light = getPosition(i) - inter.getPoint();
 	    direction_to_light.normalize();
 
-	    Ray ray_to_light = Ray(inter.point,direction_to_light,-1.0);
+	    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
 	    Intersection i2 = space.intersectForShadow(ray_to_light,hints[i]);
 	    if (!i2.isIntersected()) {
 		count++;

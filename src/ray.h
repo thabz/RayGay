@@ -16,10 +16,10 @@ class Ray {
 	Vector direction; ///< Unit vector of rays direction
 
         /// Rays direction (x,y,z) with inverted components ((1/x),(1/y),(1/x))
-	Vector inv_direction; 
+	Vector getInverseDirection() const { return inv_direction; };
 
         /// The material the ray is travelling in where 1.0 is vacuum.
-	double indice_of_refraction; 
+	double getIndiceOfRefraction() const { return indice_of_refraction; };
 
 	/// Accessor for the unique id of this ray, that is automatically assigned.
 	long getId() const { return id; };
@@ -27,6 +27,8 @@ class Ray {
     private:
 	long id;
 	static long seq;
+	double indice_of_refraction; 
+	Vector inv_direction; 
 };
 
 #endif
