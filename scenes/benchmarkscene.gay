@@ -10,6 +10,9 @@
 # Ved ikke hvorfor: 7:25
 # Ved ikke hvorfor 7:18
 # fastIntersect og fullIntersect på object: 6:13
+# precalc sager i Triangle::_fastIntersect: 4:30
+# inline Object::fastIntersect: 4:04
+# Backface culling in Triangle::_fastIntersect: 3:16
 
 include materials.gay
 

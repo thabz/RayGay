@@ -99,9 +99,13 @@ double Triangle::_fastIntersect(const Ray& ray) const {
    const Vector& vert0 = mesh->cornerAt(vertex[0]);
 
    Vector tvec, pvec, qvec;
-   double det,inv_det;
+   double det;
    double u,v;
    double t;
+
+#if 0   
+   // Dette er den original kode 
+   double inv_det;
 
    /* begin calculating determinant - also used to calculate U parameter */
    pvec = Vector::xProduct(ray.getDirection(), edge2);
@@ -133,6 +137,61 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 
    /* calculate t, ray intersects triangle */
    t = (edge2 * qvec) * inv_det;
+#else 
+   // Denne version udskyder divisionen til sidst.
+
+   /* begin calculating determinant - also used to calculate U parameter */
+   pvec = Vector::xProduct(ray.getDirection(), edge2);
+
+   /* if determinant is near zero, ray lies in plane of triangle */
+   det = edge1 * pvec;
+
+   if (det > EPSILON)
+   {
+      /* calculate distance from vert0 to ray origin */
+      //SUB(tvec, orig, vert0);
+      tvec = ray.getOrigin() - vert0;
+      
+      /* calculate U parameter and test bounds */
+      u = tvec * pvec;
+      if (u < 0.0 || u > det)
+	 return -1;
+      
+      /* prepare to test V parameter */
+      qvec = Vector::xProduct(tvec,edge1);
+      
+      /* calculate V parameter and test bounds */
+      v = ray.getDirection() * qvec;
+      if (v < 0.0 || u + v > det)
+	 return -1;
+    /*  
+   
+   }
+   else if (det < -EPSILON)
+   {
+      // calculate distance from vert0 to ray origin
+      tvec = ray.getOrigin() - vert0;
+      
+      // calculate U parameter and test bounds
+      u = tvec * pvec;
+      if (u > 0.0 || u < det)
+	 return -1;
+      
+      // prepare to test V parameter
+      qvec = Vector::xProduct(tvec,edge1);
+      
+      // calculate V parameter and test bounds
+      v = ray.getDirection() * qvec;
+      if (v > 0.0 || u + v < det)
+	 return -1;
+*/
+   } else {
+       return -1;  /* ray is parallell to the plane of the triangle */
+   }
+
+   /* calculate t, ray intersects triangle */
+   t = (edge2 * qvec) / det;
+#endif
 
    if (t < EPSILON) {
        return -1.0;
