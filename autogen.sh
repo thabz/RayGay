@@ -10,11 +10,12 @@ autoheader
 echo "Now running aclocal"
 aclocal $ACLOCAL_FLAGS
 
-echo "Now running libtoolize"
 if test `uname` = "Darwin"; then
-   glibtoolize --force
+   echo "Now running glibtoolize"
+   glibtoolize -f -c
 else 
-   libtoolize --force
+   echo "Now running libtoolize"
+   libtoolize -f -c
 fi
 
 echo "Now running automake"
@@ -24,7 +25,7 @@ echo "Now running autoconf"
 autoconf
 
 
-echo "Now run ./configure followed by make. "
+echo "Now running configure"
 $srcdir/configure 
 
 echo "Type make to build raygay"
