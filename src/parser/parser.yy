@@ -18,6 +18,10 @@
 #include "objects/torus.h"    
 #include "materials/material.h"    
 
+#include "camera.h"    
+#include "scene.h"    
+#include "renderersettings.h"
+
 using namespace std;
 
 map<string,double> doubleMap;
@@ -34,6 +38,10 @@ void setNamedDouble(string* name, double val);
 Material* getNamedMaterial(string* name);
 void setNamedMaterial(string* name, Material* material);
 
+Camera* camera;
+Scene* scene;
+RendererSettings* renderer_settings;
+
 %}
     /* Bison declarations */
 %union {
@@ -48,14 +56,20 @@ void setNamedMaterial(string* name, Material* material);
 }
 %token <d> tFLOAT
 %token <c> tSTRING
+%token tAA
+%token tCAMERA
 %token tCIRCLE
 %token tCYLINDER
+%token tDOF
 %token tDIFFERENCE
+%token tFOV
 %token tINTERSECTION
 %token tLINESEGMENT
+%token tLOOKAT
 %token tMATERIAL
 %token tNAME
 %token tNECKLACE
+%token tPOSITION
 %token tPRINT
 %token tROTATE
 %token tSOLIDBOX
@@ -64,10 +78,11 @@ void setNamedMaterial(string* name, Material* material);
 %token tTORUS
 %token tTRANSLATE
 %token tUNION
+%token tUP
 
 %type <d> Expr 
 %type <rgb> RGB
-%type <vector> Vector
+%type <vector> Vector 
 %type <matrix> Rotate Translate Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union TransObject Object
@@ -84,8 +99,12 @@ Items		: /* Empty */
 		;
 
 Item		: TransObject
+                {
+		    scene->addObject($1);
+		}
                 | AssignName
 		| Print
+		| Camera
 		;
 
 AssignName	: tSTRING '=' PathDef
@@ -100,6 +119,39 @@ AssignName	: tSTRING '=' PathDef
                 {
 		    setNamedMaterial($1, $3);
                 }
+                ;
+
+Camera		: tCAMERA '{' CameraSettings '}'
+                ;
+
+CameraSettings  : /* Empty */
+                | CameraSettings CameraSetting
+		;
+
+CameraSetting   : tPOSITION Vector
+                {
+		    camera->setPosition(*$2);
+		}
+                | tLOOKAT Vector
+                {
+		    camera->setLookAt(*$2);
+		}
+                | tUP Vector
+                {
+		    camera->setUp(*$2);
+		}
+                | tFOV Expr 
+                {
+		    camera->setFieldOfView($2);
+		}
+                | tDOF Expr Expr
+                {
+		    camera->enableDoF($2,int($3));
+		}
+                | tAA Expr 
+                {
+		    camera->enableAdaptiveSupersampling(int($2));
+		}
                 ;
  
 Material 	: NamedMaterial 
@@ -377,4 +429,10 @@ void setNamedMaterial(string* name, Material* material) {
     materialMap[*name] = material;
 }
 
+void init_parser() {
+    camera = new Camera();
+    scene = new Scene();
+    scene->setCamera(camera);
 
+
+}

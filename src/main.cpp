@@ -38,6 +38,7 @@ using namespace std;
 
 extern FILE* yyin;
 extern void yyparse();
+extern void init_parser();
 
 void preparePhotonMaps(Scene* scene,
 	               KdTree* space,
@@ -216,6 +217,7 @@ int main(int argc, char *argv[]) {
     srand(1); // Make sure rand is seeded consistently.
 
     if (parser_to_use == 1) {
+	init_parser();
 	yyin = fopen(scenefile.c_str(),"r");
 	yyparse();
     } else {

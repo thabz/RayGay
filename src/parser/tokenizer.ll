@@ -19,15 +19,21 @@ special	[\.\_-]
 string	{alpha}({alpha}|{digit}|{special})*
 %%
 [ \t\n]		;
+aa		return tAA;
+camera		return tCAMERA;
 circle		return tCIRCLE;
 cylinder	return tCYLINDER;
 difference 	return tDIFFERENCE;
+dof		return tDOF;
+fov		return tFOV;
 intersection	return tINTERSECTION;
+lookat		return tLOOKAT;
 linesegment	return tLINESEGMENT;
 material	return tMATERIAL;
 name		return tNAME;
 necklace	return tNECKLACE;
 print		return tPRINT;
+position	return tPOSITION;
 rotate		return tROTATE;
 solidbox	return tSOLIDBOX;
 sphere		return tSPHERE;
@@ -35,6 +41,8 @@ spiral		return tSPIRAL;
 translate	return tTRANSLATE;
 torus		return tTORUS;
 union		return tUNION;
+up		return tUP;
+
 "\#.*\n"		/* Eat up comments */
 {digit}+ |
 {digit}+"."{digit}+ { yylval.d = atof(yytext); return tFLOAT;}
