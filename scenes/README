@@ -1,0 +1,19 @@
+Description of the raygay fileformat
+
+*** PATHS ***
+
+circle <path-name> center radius normal
+spiral <path-name> <path-name> radius windings offset
+
+*** OBJECTS ***
+
+extrusion <material-name> <path-name> radius segments pieces
+box <material-name> <vector1> <vector2>
+necklace <material-name> <path-name> num radius 
+cylinder <material-name> radius <from-point> <to-point>
+sphere <material-name> radius <center-point>
+
+*** TRANSFORMATIONS ***
+
+rotate <axis-vector> angle
+translate <vector>
