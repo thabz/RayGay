@@ -16,7 +16,7 @@
 
 using namespace std;
 
-#define ENV_SPHERE_RADIUS 200000
+#define ENV_SPHERE_RADIUS 20000
 
 Scene::Scene() {
     environmentMap = NULL;

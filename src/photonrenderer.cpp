@@ -181,8 +181,6 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 	    }
 	}
     }
-
-    result_color.clip();
     return result_color;
 }
 

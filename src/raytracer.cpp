@@ -147,7 +147,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int
 	}
     }
 
-    result_color.clip();
+ //   result_color.clip();
     return result_color;
 }
 
