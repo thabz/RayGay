@@ -4,6 +4,12 @@
 #include "math/polynomial.h"
 #include "math/constants.h"
 
+Polynomial::Polynomial() {
+    num = 1;
+    coefficients = new double[num];
+    coefficients[0] = 0.0;
+}
+
 Polynomial::Polynomial(double* coefficients, uint num) {
     assert(num >= 1);
     this->coefficients = new double[num];
@@ -143,6 +149,70 @@ Polynomial Polynomial::operator/(double c) const {
     }
     return Polynomial(new_coefs,num);
 }
+
+/**
+ * This multiplies the polynomial by a power of x. 
+ * It calculates \f$ g(x) = x^d f(x) \f$.
+ *
+ * @param d the \f$ d \f$ above.
+ * @return the \f$ g(x) \f$ above.
+ */
+Polynomial Polynomial::timesX(uint d) const {
+    double* new_coefficients = new double[num + d]; 
+    for(uint i = 0; i < num+d; i++) {
+	if (i < d) {
+	    new_coefficients[i] = 0.0;
+	} else {
+	    new_coefficients[i] = coefficients[i-d]; 
+	}
+    }
+    return Polynomial(new_coefficients, num + d);
+}
+
+double Polynomial::leadingCoefficient() const {
+    return coefficients[num-1];
+}
+
+/**
+ * Perform a polynomial long division. Finds the unique polynomials \f$ q(x) \f$ 
+ * and \f$ r(x) \f$ such that
+ *
+ * \f[ \frac{f(x)}{d(x)} = q(x) + \frac{r(x)}{d(x)} \f]
+ *
+ * so that the order of \f$ r(x) \f$ is less than the order of \f$ d(x) \f$.
+ *
+ * The order of \f$ d(x) \f$ must be less than or equal to the order of 
+ * \f$ f(x) \f$ and \f$ d(x) \ne 0 \f$.
+ * 
+ * @param divisor the \f$ d(x) \f$ above.
+ * @param remainder \f$ r(x) \f$ above is written here.
+ * @return the quotient \f$ q(x) \f$  above.
+ *
+ * @see http://www.sosmath.com/algebra/factor/fac01/fac01.html
+ */
+Polynomial Polynomial::division(const Polynomial& divisor, Polynomial& remainder) const {
+    assert(divisor.order() > 0);
+    assert(!(divisor.order() == 0 && IS_ZERO(divisor.coefficients[0])));
+
+    double* quotient_coeffs = new double[num];
+
+    double div_lead_q = divisor.leadingCoefficient();
+    uint div_lead_d = divisor.order();
+
+    remainder = *this;
+    Polynomial remainder_2;
+
+    do {
+	uint new_d = remainder.order() - div_lead_d;
+	double new_q = remainder.leadingCoefficient() / div_lead_q;
+	quotient_coeffs[new_d] = new_q;
+	Polynomial remainder_2 = remainder.timesX(new_d) * new_q;
+	remainder = remainder - remainder_2;
+    } while (remainder.order() > div_lead_d);
+
+    return Polynomial(quotient_coeffs,num);
+}
+
 
 /**
  * Decrease order when leading coefficients are zero.

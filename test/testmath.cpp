@@ -761,6 +761,18 @@ class polynomials : public Test  {
 	    assertTrue(Polynomial(4,2,1) / 2.0 == Polynomial(2,1,0.5));
 	    assertTrue(Polynomial(8) / 4.0 == Polynomial(2.0));
 
+	    // timesX
+	    assertTrue(Polynomial(4,2,1).timesX(1) == Polynomial(4,2,1,0));
+	    assertTrue(Polynomial(4,2).timesX(2) == Polynomial(4,2,0,0));
+	    assertTrue(Polynomial(4,2).timesX(0) == Polynomial(4,2));
+
+	    // leading coefficient
+	    assertTrue(IS_EQUAL(Polynomial(4,2,1).leadingCoefficient(),4));
+	    assertTrue(IS_EQUAL(Polynomial(3,0,1).leadingCoefficient(),3));
+	    assertTrue(IS_EQUAL(Polynomial(8,9,2,1).leadingCoefficient(),8));
+
+	    // Long division
+	    Polynomial remainder;
 	}
 };
 
@@ -790,4 +802,5 @@ int main(int argc, char *argv[]) {
 	return EXIT_SUCCESS;
     }
 }
+
 

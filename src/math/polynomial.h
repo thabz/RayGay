@@ -12,6 +12,9 @@
 class Polynomial : public Function<double, double> {
 
     public:
+	/// Default constructor
+	Polynomial();
+
 	/// General constructor
 	Polynomial(double* coefficients, uint num);
 	
@@ -36,11 +39,17 @@ class Polynomial : public Function<double, double> {
 	/// The highest power 
 	uint order() const;
 
+	/// The leading coefficient
+	double leadingCoefficient() const;
+
 	/// Evaluate
 	double eval(const double& x) const;
 
 	/// Derivative
 	Polynomial derivative() const;
+
+	/// Multiply by a power of x
+	Polynomial timesX(uint degree) const;
 
 	/// Comparator
 	bool operator==(const Polynomial& p) const;
@@ -49,6 +58,9 @@ class Polynomial : public Function<double, double> {
 	Polynomial operator-(const Polynomial& p) const;
 	Polynomial operator*(double c) const;
 	Polynomial operator/(double c) const;
+
+	/// Polynomial long division
+	Polynomial division(const Polynomial& divisor, Polynomial& remainder) const;
 
     private:
 	void reduce();
