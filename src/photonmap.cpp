@@ -487,3 +487,8 @@ void PhotonMap :: balance_segment(
     }	
 }
 
+Vector PhotonMap::photon_dir(const Photon* p) const {
+    float dir[3];
+    photon_dir(dir,p);
+    return Vector(dir[0],dir[1],dir[2]);
+}
