@@ -37,15 +37,6 @@ int Triangle::getTri() const{
           dest[2]=v1[2]-v2[2]; 
 
 void Triangle::prepare() {
-   const Vector& v0 = mesh->cornerAt(vertex[0]);
-   vert0[0] = v0[0];
-   vert0[1] = v0[1];
-   vert0[2] = v0[2];
-   const Vector& vert1 = mesh->cornerAt(vertex[1]);
-   const Vector& vert2 = mesh->cornerAt(vertex[2]);
-
-   SUB(edge1,vert1,vert0);
-   SUB(edge2,vert2,vert0);
 }
 
 // ----------------------------------------------------------------------------
@@ -107,9 +98,20 @@ double Triangle::_fastIntersect(const Ray& ray) const {
    //const Vector& vert0 = mesh->cornerAt(vertex[0]);
 
    double tvec[3], pvec[3], qvec[3];
+   double edge1[3], edge2[3], vert0[3];
 
    double det;
    double u,v;
+
+   const Vector& v0 = mesh->cornerAt(vertex[0]);
+   vert0[0] = v0[0];
+   vert0[1] = v0[1];
+   vert0[2] = v0[2];
+   const Vector& vert1 = mesh->cornerAt(vertex[1]);
+   const Vector& vert2 = mesh->cornerAt(vertex[2]);
+
+   SUB(edge1,vert1,vert0);
+   SUB(edge2,vert2,vert0);
 
    /* begin calculating determinant - also used to calculate U parameter */
    CROSS(pvec,ray.getDirection(),edge2);
@@ -135,7 +137,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
       if (v < 0.0 || u + v > det)
 	 return -1.0;
    }
-#if 0  
+#if 1 
    // Backface culling
    else if (det < -EPSILON)
    {

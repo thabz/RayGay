@@ -43,7 +43,6 @@ class Triangle : public Object {
     private:
 	Mesh* mesh;
 	int _tri_idx;
-	double edge1[3], edge2[3], vert0[3];
 };
 
 
