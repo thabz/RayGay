@@ -66,6 +66,8 @@ const Material* Triangle::getMaterial() const {
 void Triangle::prepare() {
 }
 
+// TODO: Use fast __thread aka thraed local storage instead of slow mutex protection.
+
 TriangleVertexCache vertex_cache;
 
 // ----------------------------------------------------------------------------
