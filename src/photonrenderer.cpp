@@ -208,6 +208,7 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
 	
     //result *= M_PI / double(FINAL_GATHER_RAYS);
     result *= double(M_PI) / double(np.found - 1);
+    result *= 5000;
     //result *= double(1) / M_PI;
     return result;
 }
