@@ -58,7 +58,7 @@ extrusion { dullwhite
 	linesegment { <0,-140,0> <0,220,0> }
 	190 1 0.1
         }
-    8 
+    4 
     16 
     50
 } translate <0,100,0>
