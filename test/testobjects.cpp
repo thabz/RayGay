@@ -368,7 +368,7 @@ void objectgroup_test() {
     // Test clone()
     Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Linesegment segment = Linesegment(Vector(0,0,0),Vector(0,0,100)); 
-    Necklace* g1 = new Necklace(segment,10,10,m);
+    Necklace* g1 = new Necklace(&segment,10,10,m);
     SceneObject* g2 = g1->clone();
     g1->transform(Matrix::matrixTranslate(Vector(0,-100,0)));
     g2->transform(Matrix::matrixTranslate(Vector(0,100,0)));
