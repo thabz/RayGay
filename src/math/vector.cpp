@@ -81,9 +81,10 @@ Vector Vector::xProduct(const Vector& v1, const Vector& v2) {
  */
 Vector Vector::toPolar() const {
     double r = this->length();
-    assert (!IS_ZERO(r));
-    double phi = _vector[0] == 0 ? 0 : atan(_vector[1] / _vector[0]);
-    double theta = acos(_vector[2] / r);
+    assert(!IS_ZERO(r)); // Maybe just return (0,0,0) instead?
+    double theta,phi;
+    theta = acos(_vector[2] / r);
+    phi = atan2(_vector[1],_vector[0]);
     return Vector(r,theta,phi);
 }
 
