@@ -805,6 +805,20 @@ class polynomials : public Test  {
 	    assertTrue(rem == Polynomial(0));
 	    assertTrue(p.division(Polynomial(1,-5),rem) == Polynomial(1,7,6));
 	    assertTrue(rem == Polynomial(0));
+
+	    // Fra http://www.sosmath.com/algebra/factor/fac01/fac01.html
+	    p = Polynomial(3,-2,4,-3);
+	    assertTrue(p.division(Polynomial(1,3,3),rem) == Polynomial(3,-11));
+	    assertTrue(rem == Polynomial(28,30));
+
+	    p = Polynomial(1,0,0,-1);
+	    assertTrue(p.division(Polynomial(1,2),rem) == Polynomial(1,-2,4));
+	    assertTrue(rem == Polynomial(-9));
+
+	    p = Polynomial(1,-5,3,-15);
+	    assertTrue(p.division(Polynomial(1,0,3),rem) == Polynomial(1,-5));
+	    assertTrue(rem == Polynomial(0));
+
 	}
 };
 
