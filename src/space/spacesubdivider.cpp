@@ -8,35 +8,33 @@ SpaceSubdivider::SpaceSubdivider() {
     hitcache = new HitCache(8);
 }
 
-bool SpaceSubdivider::intersect(void* fromObject, const Ray& ray) {
+bool SpaceSubdivider::intersect(const Ray& ray, Intersection* inter, void* fromObject) {
     return false;
     /*
     if (fromObject == NULL) {
-	return intersect(ray);
+	return intersect(ray,inter);
     } else {
 	Object* object = hitcache->findEntry(fromObject);
+	bool result;
 	if (object == NULL) {
-	    bool result = intersect(ray);
-	    if (result) {
-		Object* hitObject = getLastIntersection()->getObject();
-		double t = getLastIntersection()->getT();
-		hitcache->addEntry(fromObject,hitObject,t);
-	    }
-	    return result;
+	    result = intersect(ray,inter);
 	} else {
-	    if (object->intersect(ray)) {
-		double max_t = object->getLastIntersection()->getT();
-		return intersect(ray,double(0),max_t);
+	    double t_obj = object->fastIntersect(ray);
+	    if (t_obj > 0) {
+		result = intersect(ray,inter,double(0),t_obj + 0.5);
 	    } else {
-		bool result = intersect(ray);
-		if (result) {
-		    Object* hitObject = getLastIntersection()->getObject();
-		    double t = getLastIntersection()->getT();
-		    hitcache->addEntry(fromObject,hitObject,t);
+		result = intersect(ray,inter);
+		if (!result) {
+		    hitcache->removeEntry(fromObject);
 		}
-		return result;
 	    }
 	}
+	if (result) {
+	    Object* hitObject = inter->getObject();
+	    double t = inter->getT();
+	    hitcache->addEntry(fromObject,hitObject,t);
+	}
+	return result;
     }
     */
 }

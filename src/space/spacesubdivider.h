@@ -35,7 +35,7 @@ class SpaceSubdivider {
 	virtual void prepare() = 0;
 
 	/// Calculate an intersection with the hierarchy
-	bool intersect(void* fromObject, const Ray& ray); 
+	bool intersect(const Ray& ray, Intersection* inter, void* fromObject);
 
     protected:
 	/// Constructor
