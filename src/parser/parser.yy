@@ -811,11 +811,11 @@ Intersection	: tINTERSECTION '{' Material SolidObject SolidObject '}'
 		}
                 ;
 
-Union		: tUNION '{' Material SolidObjects '}'
+Union		: tUNION '{' Material ActionList '}'
                 {
 		    $$ = new UnionNode($4,$3);
 		}
-                | tUNION '{' SolidObjects '}'
+                | tUNION '{' ActionList '}'
                 {
 		    $$ = new UnionNode($3,new MaterialNullNode());
 		}

@@ -474,6 +474,45 @@ class ObjectGroupNode : public SceneObjectNode {
 	ActionListNode* actions;
 };
 
+class UnionNode : public SceneObjectNode {
+
+    public:
+	UnionNode(ActionListNode* actions, MaterialNode* mat) {
+	    this->actions = actions;
+	    this->material = mat;
+	}
+
+	virtual ~UnionNode() {
+	    delete actions;
+	    delete material;
+	}
+
+	SceneObject* eval() {
+	    ObjectCollector* oc = Environment::getUniqueInstance()->getObjectCollector();
+            // Push a new object collector
+	    oc->pushCollection();
+	    
+            // eval actions;
+	    actions->eval();
+
+
+	    // Pop collector and insert into a Union* result;
+	    vector<Solid*> solids;
+	    vector<SceneObject*> sos = oc->pop();
+	    for(unsigned int i = 0; i < sos.size(); i++) {
+		Solid* s = dynamic_cast<Solid*>(sos[i]);
+		solids.push_back(s);
+	    }
+	    Material* m = material->eval();
+	    return new CSGUnion(&solids,m);
+	}
+
+    private:
+	ActionListNode* actions;
+	MaterialNode* material;
+};
+
+
 class FuncCallArgs {
     public:
 	FuncCallArgs() { };

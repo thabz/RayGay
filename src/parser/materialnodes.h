@@ -7,6 +7,7 @@
 #include "parser/syntaxnode.h"
 #include "parser/rgbnodes.h"
 #include "image/texture.h"
+#include "exception.h"
 
 class MaterialNode : public SyntaxNode {
     public:
@@ -121,9 +122,7 @@ class NamedMaterialNode : public MaterialNode {
 
 	virtual ~NamedMaterialNode() {}; // TODO: delete from assigments
 
-	Material* eval() {
-	    return Assignments::getUniqueInstance()->getNamedMaterial(name);
-	}
+	Material* eval();
 	
     private:
 	string name;

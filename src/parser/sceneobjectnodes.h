@@ -2,6 +2,7 @@
 #ifndef PARSER_SCENE_OBJECT_NODES_H
 #define PARSER_SCENE_OBJECT_NODES_H
 
+#include <cassert>
 #include "objects/sceneobject.h"
 #include "objects/sphere.h"
 #include "objects/ellipsoid.h"
@@ -316,6 +317,7 @@ class BoxNode : public SceneObjectNode {
 	    Vector v1 = c1->eval();
 	    Vector v2 = c2->eval();
 	    Material* m = material->eval();
+	    assert(m != NULL);
 	    return new Box(v1,v2,m);
 	}
 
@@ -390,38 +392,6 @@ class DifferenceNode : public SceneObjectNode {
 	MaterialNode* material;
 };
 
-class UnionNode : public SceneObjectNode {
-
-    public:
-	UnionNode(ObjectListNode* nodes, MaterialNode* mat) {
-	    this->nodes = nodes;
-	    this->material = mat;
-	}
-
-	virtual ~UnionNode() {
-	    delete nodes;
-	    delete material;
-	}
-
-	SceneObject* eval() {
-	    vector<Solid*> solids;
-	    vector<SceneObject*> sos = nodes->eval();
-	    for(unsigned int i = 0; i < sos.size(); i++) {
-		Solid* s = dynamic_cast<Solid*>(sos[i]);
-		solids.push_back(s);
-	    }
-	    /*
-	    Solid* s1 = dynamic_cast<Solid*>(left->eval());
-	    Solid* s2 = dynamic_cast<Solid*>(right->eval());
-	    */
-	    Material* m = material->eval();
-	    return new CSGUnion(&solids,m);
-	}
-
-    private:
-	ObjectListNode* nodes;
-	MaterialNode* material;
-};
 
 class IntersectionNode : public SceneObjectNode {
 
