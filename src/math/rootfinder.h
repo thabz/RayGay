@@ -6,7 +6,8 @@ class RootFinder {
     public:
 	enum Method {
 	    BISECTION,
-	    BRENTS_METHOD
+	    BRENTS_METHOD,
+	    FALSE_POSITION
 	};
 
 	RootFinder(double t1, double t2, RootFinder::Method method, double tolerance, double (*function) (double)); 
@@ -15,6 +16,7 @@ class RootFinder {
     protected:
 	bool bisection(double* root);
 	bool brents_method(double* root);
+	bool false_position(double* root);
 
 
     private:

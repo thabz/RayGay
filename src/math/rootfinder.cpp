@@ -16,6 +16,8 @@ bool RootFinder::solve(double* root) {
 	    return bisection(root);
 	case BRENTS_METHOD: 
 	    return brents_method(root);
+	case FALSE_POSITION: 
+	    return false_position(root);
         default: 
 	    return false;			    
     }
@@ -35,6 +37,7 @@ int sign(double val) {
  * Brent's method is a root-finding algorithm which combines root 
  * bracketing, interval bisection, and inverse quadratic interpolation. 
  * It is sometimes known as the van Wijngaarden-Deker-Brent method.
+ *
  * @see http://mathworld.wolfram.com/BrentsMethod.html
  */
 bool RootFinder::brents_method(double* root) {
@@ -67,5 +70,24 @@ bool RootFinder::brents_method(double* root) {
 
     }
     return false;
+}
+
+/**
+ * Method of False Position.
+ *
+ * This code is untested!
+ *
+ * @see http://mathworld.wolfram.com/MethodofFalsePosition.html
+ */
+
+bool RootFinder::false_position(double* root) {
+    double xn1 = t1;
+    double xn = t2;
+    int i = 0;
+    while (fabs(f(xn)) < tolerance || i++ >= MAX_ITER) {
+	xn = t1 - ((xn1 - t1) / (f(xn1) - f(t1)))*f(t1);
+	xn1 = xn;
+    }
+    return xn;
 }
 
