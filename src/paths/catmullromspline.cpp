@@ -60,10 +60,13 @@ Vector CatmullRomSpline::getTangent(double t) const {
     unsigned int i = segmentBegin(t);
     t = adjustT(t);
     double tt = t*t;
-    return 0.5* ((-3*tt + 4*t - 1)   * P[i-1] +
+    Vector res;
+    res = 0.5* ((-3*tt + 4*t - 1)   * P[i-1] +
 	         (9*tt - 10*t)       * P[i]   +
    	         (-9*tt + 8*t + 1)   * P[i+1] +
 	         (3*tt - 2*t)        * P[i+2]);
+    res.normalize();
+    return res;
 }
 
 void CatmullRomSpline::transform(const Matrix& m) {
