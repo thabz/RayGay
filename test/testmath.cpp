@@ -372,6 +372,11 @@ void solve_cubic_test() {
     assert(Math::solveCubic(1,0,0,roots) == 2);
     assert(contains(roots,2,0));
     assert(contains(roots,2,-1));
+    
+    // x^3 - x^2 - x + 1= (x+1)*(x-1)*(x-1)
+    assert(Math::solveCubic(-1,-1,1,roots) == 2);
+    assert(contains(roots,2,1));
+    assert(contains(roots,2,-1));
 }
 
 void solve_quadratic_test() {
