@@ -95,17 +95,15 @@ double Triangle::_fastIntersect(const Ray& ray) const {
    //const Vector& vert0 = mesh->cornerAt(vertex[0]);
 
    double tvec[3], pvec[3], qvec[3];
-   double edge1[3], edge2[3], vert0[3];
+   double edge1[3], edge2[3];
+   double vert0[3], vert1[3], vert2[3];
 
    double det;
    double u,v;
 
-   const Vector& v0 = mesh->cornerAt(_tri_idx,0);
-   vert0[0] = v0[0];
-   vert0[1] = v0[1];
-   vert0[2] = v0[2];
-   const Vector& vert1 = mesh->cornerAt(_tri_idx,1);
-   const Vector& vert2 = mesh->cornerAt(_tri_idx,2);
+   mesh->cornerAt(_tri_idx,0,vert0);
+   mesh->cornerAt(_tri_idx,1,vert1);
+   mesh->cornerAt(_tri_idx,2,vert2);
 
    SUB(edge1,vert1,vert0);
    SUB(edge2,vert2,vert0);

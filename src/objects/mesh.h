@@ -94,6 +94,9 @@ class Mesh : public ObjectGroup {
 	/// Index into face vertices
 	const Vector& cornerAt(uint tri_idx, uint i) const;
 	
+	/// Index into face vertices
+	void cornerAt(uint tri_idx, uint i, double dest[3]) const;
+	
 	/// Index into vertices 
 	const Vector& cornerAt(uint i) const { return corners[i]; };
 
@@ -129,6 +132,13 @@ class Mesh : public ObjectGroup {
 inline
 const Vector& Mesh::cornerAt(uint tri_idx, unsigned int i) const {
     return corners[faces[3 * tri_idx + i]];
+}
+
+inline
+void Mesh::cornerAt(uint tri_idx, unsigned int i, double dest[3]) const {
+    dest[0] = corners[faces[3 * tri_idx + i]][0];
+    dest[1] = corners[faces[3 * tri_idx + i]][1];
+    dest[2] = corners[faces[3 * tri_idx + i]][2];
 }
 
 #endif
