@@ -912,6 +912,10 @@ Print		: tPRINT Expr
                 {
 		    $$ = new FloatPrintNode($2);
 		}
+                | tPRINT Vector
+                {
+		    $$ = new VectorPrintNode($2);
+		}
                 | tPRINT tQSTRING
                 {
 		    $$ = new StringPrintNode(*$2);

@@ -44,6 +44,22 @@ class FloatPrintNode : public ActionNode {
 	FloatNode* node;
 };
 
+class VectorPrintNode : public ActionNode {
+    public:
+	VectorPrintNode(VectorNode* node) {
+	    this->node = node;
+	}
+	
+	virtual ~VectorPrintNode() {
+	    delete node;
+	}
+	
+	void eval() { cout << node->eval() << endl; };
+	
+    private:
+	VectorNode* node;
+};
+
 class SetBackgroundNode : public ActionNode {
     public:
 	SetBackgroundNode(RGBA color) {
