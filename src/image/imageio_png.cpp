@@ -154,13 +154,16 @@ Image* PngIO::load(const std::string& filename) {
 	    &interlace_type, int_p_NULL, int_p_NULL);
 
     /* Expand paletted colors into true RGB triplets */
-    /*
-       if (color_type == PNG_COLOR_TYPE_PALETTE)
-       png_set_palette_rgb(png_ptr);
-       */
+    
+    if (color_type == PNG_COLOR_TYPE_PALETTE)
+	png_set_palette_to_rgb(png_ptr);
+
     /* Expand grayscale images to the full 8 bits from 1, 2, or 4 bits/pixel */
     if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
 	png_set_gray_1_2_4_to_8(png_ptr);
+
+    if (bit_depth < 8)
+        png_set_packing(png_ptr);
 
     /* Expand paletted or RGB images with transparency to full alpha channels
      * so the data will be available as RGBA quartets.
@@ -178,17 +181,26 @@ Image* PngIO::load(const std::string& filename) {
     png_bytep rowp = row;
 
     Image* result = new Image(width,height);
-    //cout << "Row bytes: " << png_get_rowbytes(png_ptr,info_ptr) << endl;
-    assert(png_get_rowbytes(png_ptr,info_ptr) == 4 * width);
+    int bpp = png_get_rowbytes(png_ptr,info_ptr) / width;
+    //cout << "Bytes per pixel: " << bpp << endl;
+    assert(bpp == 4 || bpp == 3);
 
     for (unsigned int y = 0; y < height; y++)
     {
 	png_read_rows(png_ptr, &rowp, png_bytepp_NULL, 1);
 	for(unsigned int x = 0; x < width; x++) {
-	    RGBA col = RGBA(rowp[4*x + 0] / 255.0,
-		            rowp[4*x + 1] / 255.0,
-		            rowp[4*x + 2] / 255.0,
-		            rowp[4*x + 3] / 255.0);
+	    RGBA col;
+	    if (bpp == 4) {
+		col = RGBA(rowp[4*x + 0] / 255.0,
+			   rowp[4*x + 1] / 255.0,
+			   rowp[4*x + 2] / 255.0,
+			   rowp[4*x + 3] / 255.0);
+	    } else if (bpp == 3) {
+		col = RGBA(rowp[3*x + 0] / 255.0,
+			   rowp[3*x + 1] / 255.0,
+			   rowp[3*x + 2] / 255.0,
+			   1);
+	    }
 	    result->setRGBA(x,y,col);
 	}
     }
