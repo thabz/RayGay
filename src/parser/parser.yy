@@ -46,6 +46,7 @@ void setNamedMaterial(string* name, Material* material);
 Camera* camera;
 Scene* scene;
 RendererSettings* renderer_settings;
+Material* tmpMaterial;
 
 %}
     /* Bison declarations */
@@ -69,35 +70,39 @@ RendererSettings* renderer_settings;
 %token tBICUBIC
 %token tBILINEAR
 %token tCAMERA
-%token tCIRCLE
 %token tCYLINDER
 %token tDOF
-%token tDIFFERENCE
+%token tDIFFUSE tSPECULAR tBUMP 
+%token tETA
 %token tEXTRUSION
 %token tFOV
-%token tINTERSECTION
-%token tLINESEGMENT
-%token tLOOKAT
+%token tLINESEGMENT tSPIRAL tCIRCLE
+%token tKD tKS tKT tSPECPOW tGLOSS
 %token tMATERIAL
 %token tNAME
 %token tNONE
+%token tNOSHADOW
 %token tNECKLACE
-%token tPHOTONTRACER
-%token tPOSITION
+%token tPHOTONMAP
+%token tPOSITION tLOOKAT tUP
 %token tPRINT
-%token tRAYTRACER
-%token tRENDERER
-%token tROTATE
+%token tRENDERER tRAYTRACER tPHOTONTRACER
+%token tROTATE tTRANSLATE
 %token tSOLIDBOX
 %token tSPHERE
-%token tSPIRAL
 %token tTEXTURE
 %token tTORUS
-%token tTRANSLATE
-%token tUNION
-%token tUP
+%token tUNION tDIFFERENCE tINTERSECTION
+%token tGLOBALPHOTONS 
+%token tCAUSTICPHOTONS 
+%token tESTIMATERADIUS 
+%token tESTIMATESAMPLES
+%token tFINALGATHERRAYS
+%token tCACHETOLERANCE 
+
 
 %type <d> Expr 
+%type <c> Filename
 %type <rgb> RGB
 %type <rgba> RGBA
 %type <texture> Texture
@@ -127,6 +132,7 @@ Item		: Object
 		| Camera
 		| Renderer
 		| Background
+		| Photonmap
 		;
 
 AssignName	: tSTRING '=' PathDef
@@ -162,6 +168,39 @@ Background	: tBACKGROUND RGBA
 		    scene->setBackground($2);
 		}
                 ;
+
+Photonmap 	: tPHOTONMAP '{' PhotonSettings '}'
+                ;
+
+PhotonSettings  : /* Empty */
+                | PhotonSettings PhotonSetting
+		;
+
+PhotonSetting   : tGLOBALPHOTONS Expr		
+		{
+		    renderer_settings->global_photons_num = int($2);
+		}
+                | tCAUSTICPHOTONS Expr
+		{
+		    renderer_settings->caustic_photons_num = int($2);
+		}
+		| tESTIMATERADIUS Expr
+		{
+		    renderer_settings->estimate_radius = int($2);
+		}
+		| tESTIMATESAMPLES Expr
+		{
+		    renderer_settings->estimate_samples = int($2);
+		}
+		| tFINALGATHERRAYS Expr
+		{
+		    renderer_settings->final_gather_rays = int($2);
+		}
+		| tCACHETOLERANCE Expr
+		{
+		    renderer_settings->cache_tolerance = int($2);
+		}
+		;
 
 Camera		: tCAMERA '{' CameraSettings '}'
                 ;
@@ -206,18 +245,62 @@ NamedMaterial   : tSTRING
 		}
                 ;
 
-MaterialDef     : tMATERIAL '{' RGB '}'
+MaterialDef     : tMATERIAL '{' MaterialProps '}'
                 {
-		    $$ = new Material();
-		    $$->setDiffuseColor(*$3);
-		}
-                | tMATERIAL '{' RGB RGB '}'
-                {
-		    $$ = new Material();
-		    $$->setDiffuseColor(*$3);
-		    $$->setSpecularColor(*$4);
+		    $$ = tmpMaterial;
+		    tmpMaterial = new Material();
 		}
                 ;
+
+MaterialProps	: /*Empty*/
+                | MaterialProps MaterialProp
+		;
+
+MaterialProp 	: tDIFFUSE RGB
+                {
+		    tmpMaterial->setDiffuseColor(*$2);
+		}
+                | tDIFFUSE Texture
+                {
+		    tmpMaterial->setDiffuseTexture($2);
+		}
+                | tBUMP Expr Texture
+                {
+		    tmpMaterial->setBumpTexture($3,$2);
+		}
+		| tSPECULAR RGB
+                {
+		    tmpMaterial->setSpecularColor(*$2);
+		}
+		| tKD Expr
+                {
+		    tmpMaterial->setKd($2);
+		}
+		| tKS Expr
+                {
+		    tmpMaterial->setKs($2);
+		}
+		| tKT Expr
+                {
+		    tmpMaterial->setKt($2);
+		}
+		| tETA Expr
+                {
+		    tmpMaterial->setEta($2);
+		}
+		| tSPECPOW Expr
+                {
+		    tmpMaterial->setSc(int($2));
+		}
+		| tGLOSS Expr Expr
+                {
+		    tmpMaterial->enableGloss(int($2),$3);
+		}
+		| tNOSHADOW
+                {
+		    tmpMaterial->setNoShadow(true);
+		}
+		;
 
 Object		: SolidObject
                 | Necklace 
@@ -406,10 +489,16 @@ Spiral		: tSPIRAL '{' Path Expr Expr '}'
 		}
 		;
 
-Texture		: tTEXTURE '{' tSTRING Expr Expr InterpolationType '}'
+Texture		: tTEXTURE '{' Filename Expr Expr InterpolationType '}'
                 {
 		    Image* img = new Image(*$3);
 		    $$ = new Texture(img,Vector2($4,$5),$6);
+		}
+                ;
+
+Filename	: '"' tSTRING '"'
+                {
+                    $$ = $2;
 		}
                 ;
 
@@ -519,4 +608,5 @@ void init_parser() {
     scene = new Scene();
     scene->setCamera(camera);
     renderer_settings = new RendererSettings();
+    tmpMaterial = new Material();
 }
