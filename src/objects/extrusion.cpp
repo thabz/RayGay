@@ -40,27 +40,22 @@ Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, uint
 Extrusion::Extrusion(const Path& path, double radius, uint segments, uint pieces, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
     assert(pieces > 2);
 
-    Vector* cp = new Vector[segments];  // Points on current circle
+    Vector* cp = new Vector[segments]; 
     double last_t = 0;
     for (uint p = 0; p < pieces; p++) {
 	double t = double(p) / double(pieces);
 	Vector c = path.getPoint(t);
 	Vector n = path.getTangent(t);
-	Circle circle = Circle(c,radius,n);
-	if (p == 0) {
-	    circle.getPoints(segments,cp);
-	    for(uint i = 0; i < segments; i++) {
-		uint k = addVertex(cp[i]);
-		assert(k == i);
-	    }
-	    last_t = t;
-	} else {
-	    circle.getPoints(segments,cp);
-	    for(uint i = 0; i < segments; i++) {
-		uint k = addVertex(cp[i]);
-		assert(k == p*segments + i);
-	    }
 
+	Circle circle = Circle(c,radius,n);
+	circle.getPoints(segments,cp);
+	
+	for(uint i = 0; i < segments; i++) {
+	    uint k = addVertex(cp[i]);
+	    assert(k == p*segments + i);
+	}
+
+	if (p > 0) {
 	    uint p1 = p - 1;
 	    for(uint i = 0; i < segments; i++) {
 		uint j = (i + 1) % segments;
@@ -88,7 +83,7 @@ Extrusion::Extrusion(const Path& path, double radius, uint segments, uint pieces
 		    Vector2(last_t,ti),Vector2(last_t,tj),Vector2(1,ti));
 	}
     } else {
-	// TODO: Add begin (bp) and end (pp) discs
+	// TODO: Add begin and end discs
 
     }
     delete [] cp;
