@@ -15,7 +15,7 @@ HeightField::HeightField(Texture* image, double height, double width, double dep
 	int half_width = width_divisions / 2;
 	int half_depth = depth_divisions / 2;
 
-
+	hintVertexNum((depth_divisions+1) * (width_divisions+1));
 	uint num = 0;
 	Vector vec;
 	for(int x = -half_width; x <= half_width; x++) {
@@ -38,6 +38,7 @@ HeightField::HeightField(Texture* image, double height, double width, double dep
 	 *   c3         c2
 	 */ 
 	num = 0;
+	hintFaceNum(2 * depth_divisions * width_divisions);
 	for(uint x = 0; x < width_divisions; x++) {
 	    for(uint z = 0; z < depth_divisions; z++) {
 		double u1 = (0 + x)*t_width;
