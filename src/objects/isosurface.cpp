@@ -62,7 +62,9 @@ Vector IsoSurface::normal(const Intersection & i) const {
 	       evaluateFunction(p + Vector(0,1,0));
     double z = evaluateFunction(p - Vector(0,0,1)) - 
 	       evaluateFunction(p + Vector(0,0,1));
-    return Vector(0.5*x,0.5*y,0.5*z).normalize();
+    Vector normal = Vector(0.5*x,0.5*y,0.5*z);
+    normal.normalize();
+    return normal;
 }
 
 bool IsoSurface::intersects(const BoundingBox& b) const {

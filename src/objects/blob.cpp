@@ -9,7 +9,7 @@
  * @param accuracy the accuracy which is some low number
  * @param material material of the Blob
  */
-Blob::Blob(double iso, unsigned int steps, double accuracy, Material material) : IsoSurface(steps,accuracy,surface_density) {
+Blob::Blob(double iso, unsigned int steps, double accuracy, Material material) : IsoSurface(steps,accuracy,iso) {
     atoms_num = 0;
     this->material = material;
 }
