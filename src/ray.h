@@ -29,6 +29,9 @@ class Ray {
 
 	mutable double lowest_t; ///< Used in BSP
 
+	/// Get a point on the ray
+	Vector getPoint(const double t) const { return origin + t * direction; };
+
     private:
 	long id;
 	static long seq;
