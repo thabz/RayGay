@@ -46,7 +46,7 @@ Intersection Transformer::intersectionToWorld(const Intersection& i) const {
 BoundingBox Transformer::bboxToWorld(const BoundingBox& bbox) const {
     Vector* corners = bbox.getCorners();
     for(int i = 0; i < 8; i++) {
-	corners[i] = transformation * corners[i];
+	corners[i] = pointToWorld(corners[i]);
     }
     BoundingBox result = BoundingBox::enclosure(corners,8);
     delete [] corners;

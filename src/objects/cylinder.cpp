@@ -54,9 +54,9 @@ double Cylinder::_fastIntersect(const Ray& ray) const {
 
 Intersection Cylinder::_fullIntersect(const Ray& world_ray, const double t) const {
     Ray ray = rayToObject(world_ray);
-    Vector point = ray.getPoint(t);
-    Vector normal = getNormal(point);
-    return intersectionToWorld(Intersection(point,t,normal,Vector2(0,0)));
+    Vector p = ray.getPoint(t);
+    Vector n = getNormal(p);
+    return intersectionToWorld(Intersection(p,t,n,Vector2(0,0)));
 }
 
 inline

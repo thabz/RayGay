@@ -15,8 +15,6 @@ class Vector2;
 
 /** 
  * A cylinder object
- * 
- * \todo Implement caps
  */
 class Cylinder : public Solid, public Transformer {
 
