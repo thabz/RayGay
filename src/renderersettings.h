@@ -11,7 +11,8 @@ class RendererSettings {
 
 	enum RendererType {
 	    PHOTON_RENDERER,
-	    RAYTRACER
+	    RAYTRACER,
+	    NONE 
 	};
 
 	int global_photons_num;
@@ -33,6 +34,7 @@ inline RendererSettings::RendererSettings() {
     renderertype = RAYTRACER;
     cache_tolerance = 0.1;
     threads_num = 1;
+    renderertype = NONE;
 }
 
 #endif

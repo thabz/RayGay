@@ -132,6 +132,12 @@ void work(string scenefile, string outputfile,int jobs) {
     yyparse();
     run_interpreter();
 
+    RendererSettings* renderersettings = getRendererSettings();
+    if (renderersettings->renderertype == RendererSettings::NONE) {
+	return;
+    }
+
+
     Scene* scene = getScene();
     Vector2 img_size = getImageSize();
     scene->getCamera()->setImageSize(int(img_size[0]),int(img_size[1]));
@@ -146,7 +152,6 @@ void work(string scenefile, string outputfile,int jobs) {
     scene->initSpace(space);
     cout << "Done." << endl;
 
-    RendererSettings* renderersettings = getRendererSettings();
     renderersettings->threads_num = jobs;
 
     // Prepare photon maps if necessary
