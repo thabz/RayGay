@@ -1,6 +1,8 @@
 
-#include "linesegment.h"
 #include <cassert>
+
+#include "paths/linesegment.h"
+#include "math/matrix.h"
 
 Linesegment::Linesegment(const Vector& begin, const Vector& end) {
     b = begin;

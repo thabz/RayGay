@@ -4,8 +4,6 @@
 
 #include "path.h"
 
-class Vector;
-class Matrix;
 class Circle;
 
 class Spiral : public Path {

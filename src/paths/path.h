@@ -1,8 +1,11 @@
 #ifndef PATH_H
 #define PATH_H
 
-#include "math/vector.h"
-#include "math/matrix.h"
+//#include "math/vector.h"
+//#include "math/matrix.h"
+
+class Vector;
+class Matrix;
 
 /// Abstract superclass of all paths
 class Path {

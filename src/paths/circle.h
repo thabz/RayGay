@@ -2,7 +2,9 @@
 #ifndef CIRCLE_H
 #define CIRCLE_H
 
-#include "path.h"
+#include "paths/path.h"
+#include "math/vector.h"
+#include "math/matrix.h"
 
 /// A circle path
 class Circle : public Path {
