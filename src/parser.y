@@ -9,7 +9,7 @@
     /* Bison declarations */
 %union {
         double d;
-	Vector v;
+	Vector vector;
 	RGB rgb;
 	Material* material;
 	Object* object;
@@ -23,8 +23,11 @@
 %type <d> Expr 
 %type <rgb> RGB
 %type <vector> Vector
-%type <obj> Sphere SolidBox
+%type <object> Sphere SolidBox
 %type <material> MaterialDef NamedMaterial 
+
+%left '+' '-'
+%left '*' '/'
 %%
     /* Grammar rules */
 	
@@ -63,11 +66,36 @@ Sphere		: tSPHERE NamedMaterial Expr Vector
                 }
                 ;
 
-Vector		: Expr Expr Expr { $$ = Vector($1,$2,$3); }
+Vector		: '<' Expr ',' Expr ',' Expr '>' { $$ = Vector($2,$4,$6); }
                 ;
-RGB		: Expr Expr Expr { $$ = RGB($1,$2,$3); }
+
+RGB		: '<' Expr ',' Expr ',' Expr '>' { $$ = RGB($2,$4,$6); }
                 ; 		
-Expr		: tFLOAT
+
+Expr		: tFLOAT 
+                {
+                   $$ = $1;
+                }
+		| '(' Expr ')'
+                {
+                   $$ = $2;
+		}
+		| Expr '+' Expr 
+                {
+                    $$ = $1 + $3;
+		}
+		| Expr '-' Expr 
+                {
+                    $$ = $1 - $3;
+		}
+		| Expr '*' Expr 
+                {
+                    $$ = $1 * $3;
+		}
+		| Expr '/' Expr 
+                {
+                    $$ = $1 / $3;
+		}
                 ;
 %%
 
