@@ -31,7 +31,9 @@ int line_num = 1;
 alpha	[a-zA-Z]
 digit	[0-9]
 special	[\.\_-]
+varspecial	[\_]
 string	{alpha}({alpha}|{digit}|{special})*
+varstring	{alpha}({alpha}|{digit}|_)*
 qstring \"([^\n\"])*\"
 %x comment
 
@@ -137,7 +139,7 @@ wireframe	return tWIREFRAME;
 
 {digit}+ |
 {digit}+"."{digit}+ { yylval.d = atof(yytext); return tFLOAT;}
-"$"{string}	{ yylval.c = new string(yytext+sizeof(char),yyleng-1); 
+"$"{varstring}	{ yylval.c = new string(yytext+sizeof(char),yyleng-1); 
                   return tVARNAME;
                 }
 {qstring}	{ yylval.c = new string(yytext+sizeof(char),yyleng-2); return tQSTRING; }
