@@ -227,11 +227,18 @@ void work(string scenefile, string outputfile, int jobs) {
     chdir(original_working_dir);
     
     int frames_num = getRendererSettings()->anim_frames;
+    Environment* env = Environment::getUniqueInstance();
+
+    env->hasPreviewWindow(getRendererSettings()->renderertype != RendererSettings::NONE);
+
 #ifdef HAVE_GTK
-    Vector2 size = getImageSize();
-    PreviewWindow* preview_window = new PreviewWindow(int(size[0]),int(size[1]));
-    Environment::getUniqueInstance()->setPreviewWindow(preview_window);
-    preview_window->run();
+    PreviewWindow* preview_window = NULL;
+    if (env->hasPreviewWindow()) {
+	Vector2 size = getImageSize();
+	preview_window = new PreviewWindow(int(size[0]),int(size[1]));
+	env->setPreviewWindow(preview_window);
+	preview_window->run();
+    }
 #endif
     if (frames_num == 1) {
 	render_frame(0,outputfile,jobs);
@@ -245,7 +252,9 @@ void work(string scenefile, string outputfile, int jobs) {
     }
     delete_interpreter();
 #ifdef HAVE_GTK
-    preview_window->stop();
+    if (env->hasPreviewWindow()) {
+	preview_window->stop();
+    }
 #endif
 }
 
