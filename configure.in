@@ -2,10 +2,9 @@
 AC_INIT(src/main.cpp) dnl a source file from your sub dir
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 
-MAGIC_CONFIG="/usr/bin/Magick++-config"
-#MAGIC_CFLAGS=`$MAGIC_CONFIG --cxxflags --cppflags`
-MAGIC_CFLAGS=`/usr/bin/Magick++-config --cxxflags --cppflags | tr "\n" " "`
-MAGIC_LIBS=`/usr/bin/Magick++-config --ldflags --libs | tr "\n" " "`
+#MAGIC_CONFIG="/usr/bin/Magick++-config"
+#MAGIC_CFLAGS=`/usr/bin/Magick++-config --cxxflags --cppflags | tr "\n" " "`
+#MAGIC_LIBS=`/usr/bin/Magick++-config --ldflags --libs | tr "\n" " "`
 
 AC_SUBST(MAGIC_CFLAGS)
 AC_SUBST(MAGIC_LIBS)
