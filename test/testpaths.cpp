@@ -106,6 +106,8 @@ class linesegment_test : public Test {
 
 	    assertTrue(IS_EQUAL(l.distance(Vector(0,1,0)), 1));
 	    assertTrue(IS_EQUAL(l.distance(Vector(-5,-1,0)), 1));
+	    assertTrue(IS_EQUAL(l.distance(Vector(-5,1,1)), M_SQRT2));
+	    assertTrue(IS_EQUAL(l.distance(Vector(11,1,1)), M_SQRT3));
 	    assertTrue(IS_EQUAL(l.distance(Vector(-11,0,0)), 1));
 	    assertTrue(IS_EQUAL(l.distance(Vector(-12,0,0)), 2));
 	    assertTrue(IS_EQUAL(l.distance(Vector(11,0,0)), 1));

@@ -33,15 +33,16 @@ void Linesegment::transform(const Matrix& m) {
 }
 	
 double Linesegment::sqrDistance(const Vector& p) const {
-    Vector np; 		// Nearest point
-    Vector d = e - b;   // Direction vector
+    Vector np; 		      // Nearest point
+    Vector d = e - b;         // Direction vector
+    double d_norm = d.norm();
 
-    if (d == Vector(0,0,0)) {
+    if (IS_ZERO(d_norm)) {
 	// This linesegment is a point
 	return (b - p).norm();
     }
 
-    double t = ((p - b) * d) / d.norm();
+    double t = ((p - b) * d) / d_norm;
 
     if (t < 0) {
 	np = b;
