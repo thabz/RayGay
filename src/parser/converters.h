@@ -9,6 +9,7 @@
 #include "math/vector.h"
 #include "math/vector2.h"
 #include "image/rgb.h"
+#include "image/rgba.h"
 
 using namespace std;
 
@@ -19,6 +20,8 @@ Vector2 scm2vector2(SCM s_vector, char* subr, int pos);
 SCM vector2scm(Vector vector);
 
 RGB scm2rgb(SCM s_rgb);
+
+RGBA scm2rgba(SCM s_rgb, char* subr, int pos);
 
 SCM rgb2scm(RGB rgb);
 

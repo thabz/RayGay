@@ -16,6 +16,27 @@ Vector scm2vector(SCM s_vector, char* subr, int pos) {
     return result;
 }
 
+RGBA scm2rgba(SCM s_vector, char* subr, int pos) {
+    if (!((SCM_NFALSEP (scm_list_p (s_vector))))) {
+	scm_wrong_type_arg(subr,pos,s_vector);
+    };
+    int l = scm_num2int(scm_length(s_vector), pos, subr);
+    if (l == 3) {
+	return RGBA(scm2rgb(s_vector));
+    }
+    if (l != 4) {
+	scm_wrong_type_arg(subr,pos,s_vector);
+    }
+
+    double r[4];
+    SCM s_value;
+    for(uint i = 0; i < 4; i++) {
+	s_value = scm_list_ref(s_vector, scm_int2num(i));
+	r[i] = scm_num2double(s_value, pos, subr);
+    }
+    return RGBA(r[0],r[1],r[2],r[3]);
+}
+
 Vector2 scm2vector2(SCM s_vector, char* subr, int pos) {
     if (!((SCM_NFALSEP (scm_list_p (s_vector))) &&
     (scm_num2int(scm_length(s_vector), pos, subr) == 2))) {
