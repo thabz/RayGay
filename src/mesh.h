@@ -8,7 +8,7 @@
 #include "vector.h"
 #include "rgb.h"
 #include "material.h"
-#include "box.h"
+#include "boundingbox.h"
 
 /// The triangle of a Mesh
 class Triangle {
@@ -30,9 +30,13 @@ class Mesh : public object {
 	    MESH_FLAT,
 	    MESH_INTERPOLATED
 	};
+
+	/// Default constructor
+	Mesh();
 	
 	/// Constructor
 	Mesh(MeshType type, Material mat);
+	
 	/// Destructor
 	~Mesh();
 
@@ -44,8 +48,8 @@ class Mesh : public object {
 	virtual bool onEdge(const Vector &p);
 	virtual bool inside(const Vector &p);
 
-	virtual bool intersects(const Box& b);
-	virtual Box boundingBox();
+	virtual bool intersects(const BoundingBox& b);
+	virtual BoundingBox boundingBoundingBox();
 	virtual void getUV(const Intersection& intersection, double* u, double* v);
 
 	void addTriangle(const Vector* corners);
@@ -56,7 +60,7 @@ class Mesh : public object {
     private:
 	MeshType meshType;
 	Material material;
-	Box* _boundingBox;
+	BoundingBox* _boundingBoundingBox;
 	virtual Intersection _intersect(const Ray& ray);
 	Intersection intersect_triangle(const Ray& ray, Vector vert0, Vector vert1, Vector vert2);
 

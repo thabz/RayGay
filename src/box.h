@@ -2,58 +2,38 @@
 #define BOX_H
 
 #include "vector.h"
+#include "object.h"
+#include "mesh.h"
 
 class Intersection;
 class Ray;
 class Matrix;
+class Material;
 
-/// An axis-aligned bounding box.
-
-class Box {
+/// A box
+class Box : public object {
 
     public:
-	Box();
-	Box(const Vector corner1, const Vector corner2);
+	Box(const Vector corner1, const Vector corner2, Material mat);
 	~Box();
 
-	virtual Intersection intersect(const Ray& ray) const;
-	virtual bool checkIntersect(const Ray& ray) const;
+	virtual void transform(const Matrix& m) { mesh->transform(m); };
+	virtual Vector normal(const Intersection & i) { return mesh->normal(i); };
+	virtual RGB getDiffuseColor(const Vector& p) { return mesh->getDiffuseColor(p); };
+	virtual Material getMaterial() { return mesh->getMaterial(); };
 
-	/// The box' normal at a point. This vector is always axis-aligned.
-	virtual Vector normal(const Vector& p) const;
+	virtual bool onEdge(const Vector &p) { return mesh->onEdge(p); };
+	virtual bool inside(const Vector &p) { return mesh->inside(p); };
 
-	/// Test whether a point belongs to the closure of this box.
-	virtual bool onEdge(const Vector &p) const;
+	virtual bool intersects(const BoundingBox& b) { return mesh->intersects(b); };
+	virtual BoundingBox boundingBoundingBox() {return mesh->boundingBoundingBox(); };
 
-	/// Tests whether a point is inside this box and not on the edge.
-	virtual bool inside(const Vector &p) const;
+	virtual void getUV(const Intersection& intersection, double* u, double* v) {return mesh->getUV(intersection, u, v); };
 
-	/// The corner with smallest x,y,z values
-	const Vector& minimum() const { return _c1; };
-	
-	/// The corner with biggest x,y,z values
-	const Vector& maximum() const { return _c2; };
-
-	/// Returns the smallest box that contains b1 and b2.
-	static Box doUnion(const Box& b1, const Box& b2); 
-
-	/// Returns the smallest box that b1 and b2 have in common.
-	static Box doIntersection(const Box& b1, const Box& b2);
-
-	/// Returns a length 8 array of the corners
-	Vector* corners() const; 
-
-	/// Returns the area of this box' surface
-        double area() const;
-	
-	/// Comparator
-        bool operator==(const Box &b) const;
-
-	static void test(); ///< Internal test
 
     private:
-	Vector _c1; ///< The point with smallest x,y,z values
-	Vector _c2; ///< The point with biggest x,y,z values
+	Mesh* mesh;
+
 };
 
 #endif

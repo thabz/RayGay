@@ -56,7 +56,7 @@ void testScene4() {
 
     /*
     
-    Boxobject b = Boxobject(Box(Vector(-300,-150,-300),Vector(300,-100,300)),green);
+    BoundingBoxobject b = BoundingBoxobject(BoundingBox(Vector(-300,-150,-300),Vector(300,-100,300)),green);
     scene.addObject(&b);
 */
 
@@ -78,7 +78,7 @@ void testScene4() {
 int main(int argc, char *argv[]) {
     Sphere::test();
     Boolean::test();
-    Box::test();
+    BoundingBox::test();
     Matrix::test();
     Mesh::test();
     // Test scene stuff

@@ -11,7 +11,7 @@
 #include "constants.h"
 #include "material.h"
 #include "perlin.h"
-#include "box.h"
+#include "boundingbox.h"
 #include "object.h"
 
 using namespace std;
@@ -105,7 +105,7 @@ bool Sphere::inside(const Vector& p) {
 
 
 // Stolen from http://www.gamasutra.com/features/19991018/Gomez_4.htm
-bool Sphere::intersects(const Box& b) {
+bool Sphere::intersects(const BoundingBox& b) {
     double s, d = 0;
     Vector mini = b.minimum();
     Vector maxi = b.maximum();
@@ -122,9 +122,9 @@ bool Sphere::intersects(const Box& b) {
     return d <= radius*radius;
 }
 
-Box Sphere::boundingBox() {
+BoundingBox Sphere::boundingBoundingBox() {
     Vector r = Vector(radius,radius,radius);
-    return Box(center - r, center + r);
+    return BoundingBox(center - r, center + r);
 }
 
 // See http://astronomy.swin.edu.au/~pbourke/texture/spheremap/
@@ -173,20 +173,20 @@ void Sphere::test() {
     r = Ray(Vector(0,0,-60),Vector(0,0,-1),1);
     assert(!s.intersect(r).intersected);
 
-    /* Test intersects(Box) */
+    /* Test intersects(BoundingBox) */
     s = Sphere(Vector(0,0,0),10.0,m);
-    Box b1 = Box(Vector(-20,-20,-20),Vector(0,0,0));
+    BoundingBox b1 = BoundingBox(Vector(-20,-20,-20),Vector(0,0,0));
     assert(s.intersects(b1));
-    b1 = Box(Vector(-20,-20,-20),Vector(-15,-15,-15));
+    b1 = BoundingBox(Vector(-20,-20,-20),Vector(-15,-15,-15));
     assert(!s.intersects(b1));
-    b1 = Box(Vector(-20,-20,-20),Vector(20,20,20));
+    b1 = BoundingBox(Vector(-20,-20,-20),Vector(20,20,20));
     assert(s.intersects(b1));
-    b1 = Box(Vector(-5,-5,-5),Vector(5,5,5));
+    b1 = BoundingBox(Vector(-5,-5,-5),Vector(5,5,5));
     assert(s.intersects(b1));
 
-    /* Test boundingBox() */
+    /* Test boundingBoundingBox() */
     s = Sphere(Vector(0,0,0),20.0,m);
-    assert(s.boundingBox() == Box(Vector(-20,-20,-20),Vector(20,20,20)));
+    assert(s.boundingBoundingBox() == BoundingBox(Vector(-20,-20,-20),Vector(20,20,20)));
 
     
     cout << "Sphere::test() done." << endl;

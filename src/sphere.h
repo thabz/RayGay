@@ -8,7 +8,7 @@
 #include "vector.h"
 #include "rgb.h"
 #include "material.h"
-#include "box.h"
+#include "boundingbox.h"
 
 class Intersection;
 class Ray;
@@ -36,8 +36,8 @@ class Sphere : public object {
 	virtual bool onEdge(const Vector &p);
 	virtual bool inside(const Vector &p);
 
-	virtual bool intersects(const Box& b);
-	virtual Box boundingBox();
+	virtual bool intersects(const BoundingBox& b);
+	virtual BoundingBox boundingBoundingBox();
 
 	virtual void getUV(const Intersection& intersection, double* u, double* v);
 
@@ -48,7 +48,7 @@ class Sphere : public object {
 	Vector center;
 	double radius;
 	Material material;
-	Box _boundingBox;
+	BoundingBox _boundingBoundingBox;
 	virtual Intersection _intersect(const Ray& ray);
 
 };

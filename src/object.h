@@ -9,7 +9,7 @@ class Matrix;
 class Ray;
 class Vector;
 class RGB;
-class Box;
+class BoundingBox;
 
 /// The abstract superclass of all objects in the scene that can be rendered.
 
@@ -30,11 +30,11 @@ class object {
 	/// Returns the materiale of this object
 	virtual Material getMaterial() = 0;
 
-	/// Says whether this object are contained or partly contained in the Box
-	virtual bool intersects(const Box&) = 0;
+	/// Says whether this object are contained or partly contained in the BoundingBox
+	virtual bool intersects(const BoundingBox&) = 0;
 
 	/// The smallest box containing this object
-	virtual Box boundingBox() = 0;
+	virtual BoundingBox boundingBoundingBox() = 0;
 
 	/// Says whether the point belongs to the closure (surface)
 	virtual bool onEdge(const Vector &p) = 0;

@@ -27,8 +27,8 @@ class Boolean : public object {
 	virtual Vector normal(const Intersection& i);
 	virtual RGB getDiffuseColor(const Vector& p);
 	virtual Material getMaterial();
-	virtual bool intersects(const Box&);
-	virtual Box boundingBox();
+	virtual bool intersects(const BoundingBox&);
+	virtual BoundingBox boundingBoundingBox();
 
 	virtual bool onEdge(const Vector &p);
 	virtual bool inside(const Vector &p);

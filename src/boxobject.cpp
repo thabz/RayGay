@@ -1,6 +1,6 @@
 
 #include "boxobject.h"
-#include "box.h"
+#include "boundingbox.h"
 #include "material.h"
 #include "vector.h"
 #include "rgb.h"
@@ -9,18 +9,18 @@
 #include "math.h"
 #include "constants.h"
 
-Boxobject::Boxobject(Box b, Material m) {
+BoundingBoxobject::BoundingBoxobject(BoundingBox b, Material m) {
     _box = b;
     _material = m;
 }
 
-Boxobject::Boxobject(Vector pos, double width, double height, double depth, Material m) {
-    _box = Box(pos, Vector(pos[0]+width,pos[1]+height,pos[3]+depth));
+BoundingBoxobject::BoundingBoxobject(Vector pos, double width, double height, double depth, Material m) {
+    _box = BoundingBox(pos, Vector(pos[0]+width,pos[1]+height,pos[3]+depth));
     _material = m;
 }
 	
 
-RGB Boxobject::getDiffuseColor(const Vector& p) {
+RGB BoundingBoxobject::getDiffuseColor(const Vector& p) {
     Vector pt = _invTransform * p;
     pt = p;
     static double tilesize = 100.0;
@@ -34,19 +34,19 @@ RGB Boxobject::getDiffuseColor(const Vector& p) {
     return _material.getDiffuseColor();
 }
 
-Material Boxobject::getMaterial() {
+Material BoundingBoxobject::getMaterial() {
     return _material;
 }
 
-bool Boxobject::onEdge(const Vector &p) {
+bool BoundingBoxobject::onEdge(const Vector &p) {
     return _box.onEdge(_invTransform * p);
 }
 
-bool Boxobject::inside(const Vector &p) {
+bool BoundingBoxobject::inside(const Vector &p) {
     return _box.inside(_invTransform * p);
 }
 
-Intersection Boxobject::_intersect(const Ray& ray) {
+Intersection BoundingBoxobject::_intersect(const Ray& ray) {
     Vector o = _invTransform * ray.origin;
     Vector d = (_invTransform * (ray.direction + ray.origin) ) - o;
     d.normalize();
@@ -59,17 +59,17 @@ Intersection Boxobject::_intersect(const Ray& ray) {
     return i;
 }
 
-void Boxobject::transform(const Matrix& m) {
+void BoundingBoxobject::transform(const Matrix& m) {
     _transform = m;
     _invTransform = m.inverse();
 }
 
-Vector Boxobject::normal(const Intersection& i) {
+Vector BoundingBoxobject::normal(const Intersection& i) {
     // TODO: normalen skal roteres tilbage til scenens koordinatsystem, men ikke translateres
     //return _transform * _box.normal(i.local_point);
     return _transform * _box.normal(_invTransform * i.point);
 }
 
-bool Boxobject::intersects(Box& box) {
+bool BoundingBoxobject::intersects(BoundingBox& box) {
     // TODO: Implement
 }

@@ -11,7 +11,7 @@
 #include "sphere.h" /* For test only */
 #include "perlin.h"
 #include "constants.h"
-#include "box.h"
+#include "boundingbox.h"
 
 Boolean::Boolean(object* lhs, BooleanOp op, object* rhs, Material m) {
     _lhs = lhs;
@@ -152,7 +152,7 @@ bool Boolean::inside(const Vector &p) {
     }
 }
 
-bool Boolean::intersects(const Box& box) {
+bool Boolean::intersects(const BoundingBox& box) {
     switch(_op) {
 	case BOOLEAN_UNION:
 	    return _lhs->intersects(box) || _lhs->intersects(box);
@@ -163,14 +163,14 @@ bool Boolean::intersects(const Box& box) {
     }
 }
 
-Box Boolean::boundingBox() {
+BoundingBox Boolean::boundingBoundingBox() {
     switch(_op) {
 	case BOOLEAN_UNION:
-	    return Box::doUnion(_rhs->boundingBox(),_lhs->boundingBox());
+	    return BoundingBox::doUnion(_rhs->boundingBoundingBox(),_lhs->boundingBoundingBox());
         case BOOLEAN_INTERSECTION:
-	    return Box::doIntersection(_rhs->boundingBox(),_lhs->boundingBox());
+	    return BoundingBox::doIntersection(_rhs->boundingBoundingBox(),_lhs->boundingBoundingBox());
 	case BOOLEAN_DIFFERENCE:
-	    return _lhs->boundingBox(); // TODO: Could be smaller
+	    return _lhs->boundingBoundingBox(); // TODO: Could be smaller
     }
 
 }

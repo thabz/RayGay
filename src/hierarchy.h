@@ -5,7 +5,7 @@
 #include "object.h"
 #include <vector>
 #include <iosfwd>
-#include "box.h"
+#include "boundingbox.h"
 #include "intersection.h"
 class Ray;
 
@@ -13,13 +13,13 @@ class Ray;
 
 /// Implementation of a bounding volume hierarchy.
 
-// This is basically a tree of Box at the joins and object as leafs.
+// This is basically a tree of BoundingBox at the joins and object as leafs.
 class Hierarchy {
     friend std::ostream & operator<< (std::ostream &os, Hierarchy &x);
 
     public:
         /// Constructor.
-	Hierarchy(Box bbox);
+	Hierarchy(BoundingBox bbox);
 	
 	~Hierarchy();
 
@@ -29,18 +29,18 @@ class Hierarchy {
 	void optimize(); ///< Clean up
 
     private:
-	Hierarchy(Box bbox, Hierarchy* parent);
+	Hierarchy(BoundingBox bbox, Hierarchy* parent);
 	Hierarchy* _parent;
 	bool hasChildren() const;
 	bool hasObjects() const;
 	void split();
-	Box& getBox() { return _box; };
+	BoundingBox& getBoundingBox() { return _box; };
 	void pruneChildren();
 	void optimizePaths();
-	void shrinkBoxes();
+	void shrinkBoundingBoxes();
 	double area(); ///< The surfacearea of all boundingboxes in this hierarchy
 	
-	Box _box;
+	BoundingBox _box;
 	std::vector<object*> objects;
 	std::vector<Hierarchy*> children;
 };

@@ -12,8 +12,8 @@
 using namespace std;
 
 Scene::Scene() {
-    //hierarchy = new Hierarchy(Box(Vector(-HUGE_DOUBLE,-HUGE_DOUBLE,-HUGE_DOUBLE),Vector(HUGE_DOUBLE,HUGE_DOUBLE,HUGE_DOUBLE)));
-    hierarchy = new Hierarchy(Box(Vector(-10000,-10000,-10000),Vector(10000,10000,10000)));
+    //hierarchy = new Hierarchy(BoundingBox(Vector(-HUGE_DOUBLE,-HUGE_DOUBLE,-HUGE_DOUBLE),Vector(HUGE_DOUBLE,HUGE_DOUBLE,HUGE_DOUBLE)));
+    hierarchy = new Hierarchy(BoundingBox(Vector(-10000,-10000,-10000),Vector(10000,10000,10000)));
 
 }
 

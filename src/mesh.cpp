@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "mesh.h"
-#include "box.h"
+#include "boundingbox.h"
 #include "constants.h"
 #include "rgb.h"
 #include "vector.h"
@@ -17,11 +17,11 @@ using namespace std;
 Mesh::Mesh(MeshType type, Material mat) {
     meshType = type;
     material = mat;
-    _boundingBox = NULL;
+    _boundingBoundingBox = NULL;
 }
 
 Mesh::~Mesh() {
-    delete _boundingBox;
+    delete _boundingBoundingBox;
 }
 
 /**
@@ -65,7 +65,7 @@ bool Mesh::inside(const Vector &p) {
     // TODO: implement
 }
 
-bool Mesh::intersects(const Box& box) {
+bool Mesh::intersects(const BoundingBox& box) {
     // Quick hackish implementation: wrap mesh in a sphere and check that for intersection
     Vector center;
     for (vector<Vector>::iterator p = corners.begin(); p != corners.end(); p++) {
@@ -87,9 +87,9 @@ Material Mesh::getMaterial() {
     return material;
 }
 
-Box Mesh::boundingBox() {
-    if (_boundingBox != NULL)
-	return *_boundingBox;
+BoundingBox Mesh::boundingBoundingBox() {
+    if (_boundingBoundingBox != NULL)
+	return *_boundingBoundingBox;
 
     Vector mini = Vector(HUGE_DOUBLE,HUGE_DOUBLE,HUGE_DOUBLE);
     Vector maxi = Vector(-HUGE_DOUBLE,-HUGE_DOUBLE,-HUGE_DOUBLE);
@@ -100,8 +100,8 @@ Box Mesh::boundingBox() {
 	    maxi[i] = max(maxi[i],v[i]);
 	}
     }
-    _boundingBox = new Box(mini,maxi);
-    return *_boundingBox;
+    _boundingBoundingBox = new BoundingBox(mini,maxi);
+    return *_boundingBoundingBox;
 }
 
 RGB Mesh::getDiffuseColor(const Vector& p) {

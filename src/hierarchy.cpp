@@ -4,18 +4,18 @@
 #include <cassert>
 #include <iostream>
 #include "object.h"
-#include "box.h"
+#include "boundingbox.h"
 #include "intersection.h"
 #include "ray.h"
 
 using namespace std;
 
-Hierarchy::Hierarchy(Box bbox) {
+Hierarchy::Hierarchy(BoundingBox bbox) {
     _box = bbox;
     _parent = NULL;
 }
 
-Hierarchy::Hierarchy(Box bbox, Hierarchy* parent) {
+Hierarchy::Hierarchy(BoundingBox bbox, Hierarchy* parent) {
     _box = bbox;
     _parent = parent;
 }
@@ -30,7 +30,7 @@ void Hierarchy::addObject(object* obj) {
     assert(obj->intersects(_box));
     if (hasChildren()) {
         for (vector<Hierarchy*>::iterator h = children.begin(); h != children.end(); h++) {
-	    if (obj->intersects((*h)->getBox())) {
+	    if (obj->intersects((*h)->getBoundingBox())) {
 		(*h)->addObject(obj);
 	    }
 	}
@@ -63,13 +63,13 @@ void Hierarchy::split() {
     
     Vector* corners = _box.corners();
     for (int i = 0; i < 8; i++) {
-	children.push_back(new Hierarchy(Box(corners[i],mid),this));
+	children.push_back(new Hierarchy(BoundingBox(corners[i],mid),this));
     }
 
     // Distribute my objects into the new sub-hierarchies
     for (vector<Hierarchy*>::iterator h = children.begin(); h != children.end(); h++) {
 	for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
-	    if ((*p)->intersects((*h)->getBox())) {
+	    if ((*p)->intersects((*h)->getBoundingBox())) {
 		(*h)->addObject(*p);
 	    }
 	}
@@ -88,7 +88,7 @@ void Hierarchy::optimize() {
     pruneChildren();
     optimizePaths();
     cout << "Area before: " << area() << endl;
-    shrinkBoxes();
+    shrinkBoundingBoxes();
     cout << "Area after: " << area() << endl;
 }
 
@@ -137,35 +137,35 @@ void Hierarchy::optimizePaths() {
 /**
  * Shrink bounding boxes
  */
-void Hierarchy::shrinkBoxes() {
-    Box boundingBox;
+void Hierarchy::shrinkBoundingBoxes() {
+    BoundingBox boundingBoundingBox;
     bool boxEmpty = true;
     
     for (vector<Hierarchy*>::iterator p = children.begin(); p != children.end(); p++) {
-	(*p)->shrinkBoxes();
+	(*p)->shrinkBoundingBoxes();
     }
 
     if (hasChildren()) {
 	for (vector<Hierarchy*>::iterator p = children.begin(); p != children.end(); p++) {
 	    if (boxEmpty) {
-		boundingBox = (*p)->_box;
+		boundingBoundingBox = (*p)->_box;
 		boxEmpty = false;
 	    } else {
-		boundingBox = Box::doUnion(boundingBox,(*p)->_box);
+		boundingBoundingBox = BoundingBox::doUnion(boundingBoundingBox,(*p)->_box);
 	    }
 	}
     } else if (hasObjects()) {
 	for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	    if (boxEmpty) {
-		boundingBox = (*p)->boundingBox();
+		boundingBoundingBox = (*p)->boundingBoundingBox();
 		boxEmpty = false;
 	    } else {
-		boundingBox = Box::doUnion(boundingBox,(*p)->boundingBox());
+		boundingBoundingBox = BoundingBox::doUnion(boundingBoundingBox,(*p)->boundingBoundingBox());
 	    }
 	}
     }
     assert(!boxEmpty);
-    _box = Box::doIntersection(_box,boundingBox);
+    _box = BoundingBox::doIntersection(_box,boundingBoundingBox);
 }
 
 double Hierarchy::area() {
