@@ -242,7 +242,9 @@ void box_test() {
     bsp->prepare();
     Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
     assert(bsp->intersect(r));
-    assert(bsp->getLastIntersection()->getPoint() == Vector(0,0,1));
+    Intersection* inter = bsp->getLastIntersection();
+    assert(inter->getPoint() == Vector(0,0,1));
+    assert(inter->getObject()->getUV(*inter) == Vector2(0.5,0.5));
 
     r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
     assert(bsp->intersect(r));
@@ -445,6 +447,7 @@ void cylinder_test() {
 
 void test_3ds() {
     ThreeDS* chair = new ThreeDS("../3ds/egg-chair.3ds",1.0);
+    assert(chair != NULL);
 }
 
 void objectgroup_test() {
