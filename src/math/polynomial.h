@@ -15,6 +15,9 @@ class Polynomial : public Function<double, double> {
 	/// Default constructor
 	Polynomial();
 
+	/// Copy constructor
+	Polynomial(const Polynomial& other);
+
 	/// General constructor
 	Polynomial(double* coefficients, uint num);
 	

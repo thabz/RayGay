@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include <cassert>
 #include <cstdlib>
 #include "math/polynomial.h"
@@ -8,6 +9,15 @@ Polynomial::Polynomial() {
     num = 1;
     coefficients = new double[num];
     coefficients[0] = 0.0;
+}
+
+Polynomial::Polynomial(const Polynomial& other) {
+    num = other.num;
+    coefficients = new double[num];
+    for(uint i = 0; i < num; i++) {
+	coefficients[i] = other.coefficients[i];
+    }
+    reduce();
 }
 
 Polynomial::Polynomial(double* coefficients, uint num) {
@@ -65,7 +75,10 @@ Polynomial::Polynomial(double A) {
 }
 
 Polynomial::~Polynomial() {
-    delete [] coefficients;
+    if (coefficients != NULL) {
+    	delete [] coefficients;
+	coefficients = NULL;
+    }
 }
 
 uint Polynomial::order() const {
@@ -111,7 +124,7 @@ bool Polynomial::operator==(const Polynomial& p) const {
 
 Polynomial Polynomial::operator+(const Polynomial& p) const {
     uint new_num = MAX(p.num, num);
-    double* new_coefs = (double*)alloca(new_num * sizeof(double));
+    double new_coefs[new_num];
     for(uint i = 0; i < new_num; i++) {
 	double q = 0.0;
 	if (i < num) q += coefficients[i];
@@ -123,7 +136,7 @@ Polynomial Polynomial::operator+(const Polynomial& p) const {
 
 Polynomial Polynomial::operator-(const Polynomial& p) const {
     uint new_num = MAX(p.num, num);
-    double* new_coefs = (double*)alloca(new_num * sizeof(double));
+    double new_coefs[new_num];
     for(uint i = 0; i < new_num; i++) {
 	double q = 0.0;
 	if (i < num) q += coefficients[i];
@@ -134,7 +147,7 @@ Polynomial Polynomial::operator-(const Polynomial& p) const {
 }
 
 Polynomial Polynomial::operator*(double c) const {
-    double* new_coefs = (double*)alloca(num * sizeof(double));
+    double new_coefs[num];
     for(uint i = 0; i < num; i++) {
 	new_coefs[i] = coefficients[i] * c;
     }
@@ -143,7 +156,7 @@ Polynomial Polynomial::operator*(double c) const {
 
 Polynomial Polynomial::operator/(double c) const {
     assert(!IS_ZERO(c));
-    double* new_coefs = (double*)alloca(num * sizeof(double));
+    double new_coefs[num];
     for(uint i = 0; i < num; i++) {
 	new_coefs[i] = coefficients[i] / c;
     }
@@ -158,7 +171,7 @@ Polynomial Polynomial::operator/(double c) const {
  * @return the \f$ g(x) \f$ above.
  */
 Polynomial Polynomial::timesX(uint d) const {
-    double* new_coefficients = new double[num + d]; 
+    double new_coefficients[num + d];
     for(uint i = 0; i < num+d; i++) {
 	if (i < d) {
 	    new_coefficients[i] = 0.0;
@@ -194,20 +207,33 @@ Polynomial Polynomial::division(const Polynomial& divisor, Polynomial& remainder
     assert(divisor.order() > 0);
     assert(!(divisor.order() == 0 && IS_ZERO(divisor.coefficients[0])));
 
-    double* quotient_coeffs = new double[num];
+    double quotient_coeffs[num];
+    for(uint i = 0; i < num; i++) quotient_coeffs[i] = 0.0;
 
     double div_lead_q = divisor.leadingCoefficient();
     uint div_lead_d = divisor.order();
+    std::cout << "div_lead_d = " << div_lead_d << std::endl;
 
+    std::cout << "*this " << std::endl;
     remainder = *this;
     Polynomial remainder_2;
 
     do {
+	std::cout << 1 << std::endl;
 	uint new_d = remainder.order() - div_lead_d;
+	if (new_d > num) {
+	    std::cout << "Error: new_d = " << new_d << std::endl;
+	    exit(0);
+	}
+	std::cout << 2 << std::endl;
 	double new_q = remainder.leadingCoefficient() / div_lead_q;
+	std::cout << 3 << std::endl;
 	quotient_coeffs[new_d] = new_q;
+	std::cout << 4 << std::endl;
 	Polynomial remainder_2 = remainder.timesX(new_d) * new_q;
+	std::cout << 5 << std::endl;
 	remainder = remainder - remainder_2;
+	std::cout << 6 << std::endl;
     } while (remainder.order() > div_lead_d);
 
     return Polynomial(quotient_coeffs,num);

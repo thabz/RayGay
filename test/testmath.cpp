@@ -771,8 +771,22 @@ class polynomials : public Test  {
 	    assertTrue(IS_EQUAL(Polynomial(3,0,1).leadingCoefficient(),3));
 	    assertTrue(IS_EQUAL(Polynomial(8,9,2,1).leadingCoefficient(),8));
 
-	    // Long division
-	    Polynomial remainder;
+	    // Copy constructor
+	    Polynomial a = Polynomial(1,2,3);
+	    Polynomial b;
+	    b = a;
+	    b = a * 2.0;
+	    assertTrue(IS_EQUAL(a.leadingCoefficient(), 1.0));
+	    assertTrue(IS_EQUAL(b.leadingCoefficient(), 2.0));
+
+	    // Long division 
+	    //     (x+1)*(x+6)*(x-5) = x^3 + 2*x^2 - 29*x - 30 
+	    //           (x+6)*(x-5) = x^2 + x - 30
+	    //     (x+1)*(x+6)       = x^2 + 7*x + 6
+	    Polynomial rem;
+	    Polynomial p = Polynomial(1,2,-20,-30);
+	    //assertTrue(p.division(Polynomial(1,1),rem) == Polynomial(1,1,-30));
+	    assertTrue(rem == Polynomial(0));
 	}
 };
 
@@ -802,5 +816,6 @@ int main(int argc, char *argv[]) {
 	return EXIT_SUCCESS;
     }
 }
+
 
 
