@@ -137,12 +137,14 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int
 		result_color += transmission * trans_col;
 	    } else {
 		// Internal reflection, see page 757.
+		/*
 		Vector refl_vector = -1 * ray.getDirection();
 		refl_vector = refl_vector.reflect(normal);
 		refl_vector.normalize();
 		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
 		RGB refl_col = trace(refl_ray, depth + 1);
 		result_color += transmission * refl_col;
+		*/
 	    }
 	}
     }
