@@ -11,6 +11,10 @@
 #include "mesh.h"
 #include "image/rgb.h"
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 using namespace std;
 
 ThreeDS::ThreeDS(const string& filename, const double scale, const Material* material) {
@@ -96,15 +100,23 @@ long filelength(int f) {
 }
 
 unsigned int readUInt(FILE* file) {
-    unsigned int dest;
+    unsigned int dest = 0;
+#ifdef WORDS_BIGENDIAN
+    dest =  (unsigned int) (fgetc(file) & 0xff);
+    dest = ((unsigned int) (fgetc(file) & 0xff)) | (dest << 0x08);
+    dest = ((unsigned int) (fgetc(file) & 0xff)) | (dest << 0x08);
+    dest = ((unsigned int) (fgetc(file) & 0xff)) | (dest << 0x08);
+#else
     fread (&dest, sizeof(unsigned int), 1, file);
+#endif
     return dest;
 }
 
 unsigned short readUShort(FILE* file) {
     unsigned short dest;
 #ifdef WORDS_BIGENDIAN
-
+    dest = (unsigned short) (fgetc(file) & 0xff);
+    dest |= ((unsigned short) (fgetc(file)) & 0xff) << 0x08;
 #else
     fread (&dest, sizeof(unsigned short), 1, file);
 #endif    
@@ -155,10 +167,10 @@ void ThreeDS::load3ds(const string& filename) {
 
 	l_chunk_id = readUShort(l_file);
 	//fread (&l_chunk_id, sizeof(unsigned short), 1, l_file); //Read the chunk header
-	//printf("ChunkID: %x\n",l_chunk_id); 
+	printf("ChunkID: %04x\n",l_chunk_id); 
 	l_chunk_lenght = readUInt(l_file);
 	//fread (&l_chunk_lenght, sizeof(unsigned int), 1, l_file); //Read the lenght of the chunk
-	//printf("ChunkLenght: %x\n",l_chunk_lenght);
+	printf("ChunkLenght: %x\n",l_chunk_lenght);
 
 	switch (l_chunk_id)
 	{
@@ -277,7 +289,8 @@ void ThreeDS::load3ds(const string& filename) {
 		//             + sub chunks
 		//-------------------------------------------
 	    case 0x4140:
-		fread (&l_qty, sizeof (unsigned short), 1, l_file);
+		l_qty = readUShort(l_file);
+		//fread (&l_qty, sizeof (unsigned short), 1, l_file);
 		for (i=0; i < l_qty; i++)
 		{
 		    for (int j = 0; j < 2; j++) {
