@@ -10,7 +10,7 @@ class Image;
 class Filter2D {
 
     public:
-	virtual ~Filter2D() {};
+	/// Apply the filter to an image
 	virtual void apply(Image* image) = 0;
 };
 

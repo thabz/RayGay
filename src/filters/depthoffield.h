@@ -7,7 +7,9 @@
 class Image;
 
 /**
- * Creates a depth of field blur from a depthmap and an image
+ * Creates a depth of field blur from a depthmap and an image.
+ *
+ * \todo Complete the implementation.
  */
 class DepthOfField : public Filter2D {
 
