@@ -23,7 +23,12 @@ SCM make_sphere(SCM s_center, SCM s_radius, SCM s_material)
     char* proc = "make-sphere";
     Vector center = scm2vector(s_center, proc, 1);
     double radius = scm_num2double(s_radius, 2, proc);
-    Material* material = scm2material(s_material, proc, 3);
+    Material* material;
+    if (SCM_UNBNDP (s_material) || SCM_FALSEP (s_material)) {
+        material = NULL;
+    } else {
+	material = scm2material(s_material,proc,3);
+    }
     Sphere* sphere = new Sphere(center,radius,material);
     return sceneobject2scm(sphere);
 }
@@ -33,7 +38,12 @@ SCM make_ellipsoid(SCM s_center, SCM s_radii, SCM s_material)
     char* proc = "make-ellipsoid";
     Vector center = scm2vector(s_center, proc, 1);
     Vector radii = scm2vector(s_radii, proc, 2);
-    Material* material = scm2material(s_material, proc, 3);
+    Material* material;
+    if (SCM_UNBNDP (s_material) || SCM_FALSEP (s_material)) {
+        material = NULL;
+    } else {
+	material = scm2material(s_material,proc,3);
+    }
     Ellipsoid* ellipsoid = new Ellipsoid(center,radii,material);
     return sceneobject2scm(ellipsoid);
 }
@@ -43,7 +53,12 @@ SCM make_torus(SCM s_R, SCM s_r, SCM s_material)
     char* proc = "make-ellipsoid";
     double R = scm_num2double(s_R, 1, proc);
     double r = scm_num2double(s_r, 2, proc);
-    Material* material = scm2material(s_material, proc, 3);
+    Material* material;
+    if (SCM_UNBNDP (s_material) || SCM_FALSEP (s_material)) {
+        material = NULL;
+    } else {
+	material = scm2material(s_material,proc,3);
+    }
     Torus* torus = new Torus(R,r,material);
     return sceneobject2scm(torus);
 }
@@ -63,7 +78,12 @@ SCM make_solid_box(SCM s_corner1, SCM s_corner2, SCM s_material)
     char* proc = "make-solid-box";
     Vector corner1 = scm2vector(s_corner1, proc, 1);
     Vector corner2 = scm2vector(s_corner2, proc, 2);
-    Material* material = scm2material(s_material, proc, 3);
+    Material* material;
+    if (SCM_UNBNDP (s_material) || SCM_FALSEP (s_material)) {
+        material = NULL;
+    } else {
+	material = scm2material(s_material,proc,3);
+    }
     SolidBox* box = new SolidBox(corner1, corner2, material);
     return sceneobject2scm(box);
 }
@@ -74,7 +94,12 @@ SCM make_cylinder(SCM s_begin, SCM s_end, SCM s_radius, SCM s_material)
     Vector begin = scm2vector(s_begin, proc, 1);
     Vector end = scm2vector(s_end, proc, 2);
     double radius = scm_num2double(s_radius, 3, proc);
-    Material* material = scm2material(s_material, proc, 4);
+    Material* material;
+    if (SCM_UNBNDP (s_material) || SCM_FALSEP (s_material)) {
+        material = NULL;
+    } else {
+	material = scm2material(s_material,proc,4);
+    }
     Cylinder* cylinder = new Cylinder(begin, end, radius, true, material);
     return sceneobject2scm(cylinder);
 }
@@ -273,17 +298,17 @@ SCM make_intersection(SCM s_left, SCM s_right, SCM s_material)
 
 void SceneObjectFactory::register_procs() 
 {
-    scm_c_define_gsubr("make-sphere",3,0,0,
+    scm_c_define_gsubr("make-sphere",2,1,0,
 	    (SCM (*)()) make_sphere);
-    scm_c_define_gsubr("make-ellipsoid",3,0,0,
+    scm_c_define_gsubr("make-ellipsoid",2,1,0,
 	    (SCM (*)()) make_ellipsoid);
     scm_c_define_gsubr("make-box",3,0,0,
 	    (SCM (*)()) make_box);
-    scm_c_define_gsubr("make-solid-box",3,0,0,
+    scm_c_define_gsubr("make-solid-box",2,1,0,
 	    (SCM (*)()) make_solid_box);
-    scm_c_define_gsubr("make-cylinder",4,0,0,
+    scm_c_define_gsubr("make-cylinder",3,1,0,
 	    (SCM (*)()) make_cylinder);
-    scm_c_define_gsubr("make-torus",3,0,0,
+    scm_c_define_gsubr("make-torus",2,1,0,
 	    (SCM (*)()) make_torus);
     scm_c_define_gsubr("make-extrusion",6,0,0,
 	    (SCM (*)()) make_extrusion);
