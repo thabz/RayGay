@@ -42,6 +42,7 @@ class Lightsource {
     private:
 	double fadeDistance;
 	double fadePower;
+	bool fadeEnabled;
 };
 
 #endif

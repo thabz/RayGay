@@ -96,10 +96,10 @@ void testScene4() {
     Vector points[5] = { Vector(100,-100,200),Vector(300,300,0),Vector(100,200,-500),Vector(-300,250,0),Vector(-200,200,300) };
     BezierSpline* spline = new BezierSpline(points,5);
     Extrusion* tube = new Extrusion(*spline,20,16,200,MATERIAL_SHINY_RED);
-    scene.addObject(tube); 
+    //scene.addObject(tube); 
     for(int i = 0; i < 5; i++) {
 	Sphere* s = new Sphere(points[i],20.0,MATERIAL_SHINY_BLUE);
-	scene.addObject(s); 
+	//scene.addObject(s); 
     }
 
     //Extrusion* tube = new Extrusion(spiral,10,16,200,MATERIAL_CHROME);
@@ -117,7 +117,9 @@ void testScene4() {
     */
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
+    light1.setAttenuation(4000,2);
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));
+    light3.setAttenuation(4000,2);
     Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
     Arealight area1 = Arealight(Vector(-4000,4000,4000),Vector(1,-1,-1),1000,40,0.10);
     Arealight area2 = Arealight(Vector(4000,4000,4000),Vector(-1,-1,-1),1000,40,0.10);
@@ -127,12 +129,12 @@ void testScene4() {
     scene.addLight(&light1);
     scene.addLight(&light3);
     
-    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); /* Floor */
+    Box b = Box(Vector(-8000,-200,-8000),Vector(8000,-150,8000),MATERIAL_SHINY_GREEN); /* Floor */
     scene.addObject(&b);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
-    scene.transform(n);
+    //scene.transform(n);
 
     scene.setBackgroundColor(RGB(0.1,0.1,0.3));
 

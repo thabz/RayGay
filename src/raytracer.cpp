@@ -49,30 +49,33 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
     RGB result_color = ambient_intensity * material.getDiffuseColor(intersection);
     vector<Lightsource*> lights = scene->getLightsources();
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
-	RGB color = RGB(0.0,0.0,0.0);
-	Lightinfo info = (*p)->getLightinfo(intersection,normal,space);
-	if (info.cos > 0.0) {
-	    // Check for blocking objects
-	    if (info.intensity > 0.0) {
-		double intensity = info.intensity;
-		// Diffuse color
-		color =  intensity * info.cos * material.getKd() * material.getDiffuseColor(intersection);
+	double attenuation = (*p)->getAttenuation(point);
 
-		// Specular color (Phong)
-		Vector light_reflect = info.direction_to_light.reflect(normal);
-		light_reflect.normalize();
-		double rv = light_reflect * (-1 * ray.getDirection());
-		if (rv > 0.0) {
-		   rv = pow(rv,material.getSc());
-		   color = color + ( intensity * rv *  material.getKs() * material.getSpecularColor());
+	if (attenuation > double(0)) {
+	    Lightinfo info = (*p)->getLightinfo(intersection,normal,space);
+	    if (info.cos > 0.0) {
+		RGB color = RGB(0.0,0.0,0.0);
+		// Check for blocking objects
+		if (info.intensity > 0.0) {
+		    double intensity = info.intensity * attenuation;
+		    // Diffuse color
+		    color =  intensity * info.cos * material.getKd() * material.getDiffuseColor(intersection);
+
+		    // Specular color (Phong)
+		    Vector light_reflect = info.direction_to_light.reflect(normal);
+		    light_reflect.normalize();
+		    double rv = light_reflect * (-1 * ray.getDirection());
+		    if (rv > 0.0) {
+			rv = pow(rv,material.getSc());
+			color = color + ( intensity * rv *  material.getKs() * material.getSpecularColor());
+		    }
 		}
-	    }
-	    
-	} 
-	result_color = result_color + color;
+		result_color = result_color + color;
+	    } 
+	}
     }
     if (depth < 4) {
-        /* Bounce a reflection off the intersected object */
+	/* Bounce a reflection off the intersected object */
 	if (material.getKs() > 0) {
 	    Vector refl_vector = -1 * ray.getDirection();
 	    refl_vector = refl_vector.reflect(normal);
