@@ -43,6 +43,7 @@ class Cylinder : public Solid, public Transformer {
 	double r; /// Radius
 	double rr; /// Squared radius
 	double height; /// Height of cylinder
+	bool has_caps;
 };
 
 #endif

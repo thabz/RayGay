@@ -307,6 +307,30 @@ void cylinder_test() {
     assert(result.size() == 2);
     assert(result[0].getPoint() == Vector(0,5,10));
     assert(result[1].getPoint() == Vector(0,5,-10));
+    
+    // Intersect with caps (z-axis aligned)
+    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,m);
+    ray = Ray(Vector(0,0,50),Vector(0,0,-1),-1);
+    result = cyl->allIntersections(ray);
+    assert(result.size() == 2);
+    cout << result[0].getPoint() << endl;
+    cout << result[1].getPoint() << endl;
+    assert(result[0].getPoint() == Vector(0,0,10));
+    assert(result[0].getNormal() == Vector(0,0,1));
+    assert(result[1].getPoint() == Vector(0,0,2));
+    assert(result[1].getNormal() == Vector(0,0,-1));
+
+    // Intersect with caps (y-axis aligned)
+    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
+    ray = Ray(Vector(0,50,1),Vector(0,-1,0),-1);
+    result = cyl->allIntersections(ray);
+    assert(result.size() == 2);
+    cout << result[0].getPoint() << endl;
+    cout << result[1].getPoint() << endl;
+    assert(result[0].getPoint() == Vector(0,10,1));
+    assert(result[0].getNormal() == Vector(0,1,0));
+    assert(result[1].getPoint() == Vector(0,2,1));
+    assert(result[1].getNormal() == Vector(0,-1,0));
 }
 
 void test_3ds() {

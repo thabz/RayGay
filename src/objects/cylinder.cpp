@@ -24,6 +24,8 @@ Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, const 
     Vector endt = end - begin;
     this->height = endt.length();
 
+    this->has_caps = true;
+
     Matrix translation = Matrix::matrixTranslate(begin);
     Matrix rotation = Matrix::matrixOrient(endt);
     rotation = rotation.inverse();
@@ -57,22 +59,24 @@ Intersection Cylinder::_fullIntersect(const Ray& ray, const double t) const {
 
 inline
 Vector Cylinder::getNormal(const Vector& local_point) const {
-    if (IS_EQUAL(local_point[2],0)) {
-	return Vector(0,0,-1);
-    } else if (IS_EQUAL(local_point[2],height)) {
-	return Vector(0,0,1);
-    } else {
-	Vector normal = Vector(local_point[0],local_point[1],0);
-	normal.normalize();
-	return normal;
+    if (has_caps) {
+	if (IS_EQUAL(local_point[2],0)) {
+	    return Vector(0,0,-1);
+	} else if (IS_EQUAL(local_point[2],height)) {
+	    return Vector(0,0,1);
+	}
     }
+    Vector normal = Vector(local_point[0],local_point[1],0);
+    normal.normalize();
+    return normal;
 }
 
 
 /**
  * The cylinder is transformed so that it begin-point is (0,0,0)
- * and its axis is the y-axis. The intersection results are
- * transformed back.
+ * and its axis is the z-axis. It's end-point is (0,0,height);
+ *
+ * The intersection results are transformed back.
  *
  * The cylinder intersection is done by finding the roots of
  *
@@ -110,8 +114,7 @@ unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[4]) c
 	double t = -b / (2 * a);
 	double result_p_z = Ro[2] + t * Rd[2];
 	if (t > EPSILON && result_p_z >= double(0) && result_p_z <= height) {
-	    roots[0] = t;
-	    roots_found = 1;
+	    roots[roots_found++] = t;
 	}
     } else {
 	// Two roots
@@ -133,13 +136,39 @@ unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[4]) c
 	if (roots_found == 2) {
 	    if (roots[0] > roots[1]) {
 		double tmp = roots[0];
-		roots[0] = roots[2];
-		roots[2] = tmp;
+		roots[0] = roots[1];
+		roots[1] = tmp;
 	    }
 	    return 2;
 	}
     }
-    // TODO: Intersect with caps
+    if (has_caps && !IS_ZERO(Rd[2])) {
+	double t, i_x, i_y;
+	// Check intersection with bottom cap
+	t = (0.0 - Ro[2]) / Rd[2];
+	i_x = Ro[0] + t * Rd[0];
+	i_y = Ro[1] + t * Rd[1];
+	if ((i_x * i_x + i_y * i_y) < rr) {
+	    roots[roots_found++] = t;
+	}
+
+	// Check intersection with top cap
+	t = (height - Ro[2]) / Rd[2];
+	i_x = Ro[0] + t * Rd[0];
+	i_y = Ro[1] + t * Rd[1];
+	if ((i_x * i_x + i_y * i_y) < rr) {
+	    roots[roots_found++] = t;
+	}
+
+	// Sort roots
+	if (roots_found == 2) {
+	    if (roots[0] > roots[1]) {
+		double tmp = roots[0];
+		roots[0] = roots[1];
+		roots[1] = tmp;
+	    }
+	}
+    }
     return roots_found;
 }
 
