@@ -40,6 +40,10 @@ PhotonTracer::~PhotonTracer() {
 }
 
 void PhotonTracer::trace(int threads_num) {
+    trace();
+}
+    
+void PhotonTracer::trace() {
     Stats::getUniqueInstance()->beginTimer("Photontracing");
     Ray ray;
     const std::vector<Lightsource*>& lights = scene->getLightsources();
