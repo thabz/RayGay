@@ -12,13 +12,24 @@
  */
 class VectorNode : public SyntaxNode {
     public:
-	VectorNode() {
-	};
+	VectorNode() { 
+	    this->x = NULL;
+	    this->y = NULL;
+	    this->z = NULL;
+	}
+
 	VectorNode(FloatNode* x, FloatNode* y, FloatNode* z) {
 	    this->x = x;
 	    this->y = y;
 	    this->z = z;
 	}
+	
+	virtual ~VectorNode() {
+	    if (x != NULL) delete x;
+	    if (y != NULL) delete y;
+	    if (z != NULL) delete z;
+	}
+
 	virtual Vector eval() {
 	    return Vector(x->eval(),y->eval(),z->eval());
 	};
@@ -31,6 +42,13 @@ class VectorNode : public SyntaxNode {
 class VectorListNode : public SyntaxNode {
     public:
 	VectorListNode() { };
+
+	~VectorListNode() {
+	    for(unsigned int i = 0; i < vectors.size(); i++) {
+		delete vectors[i];
+	    }
+	    vectors.clear();
+	}
 
 	void add(VectorNode* v) {
 	    vectors.push_back(v);

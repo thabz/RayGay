@@ -153,14 +153,14 @@ ActionListNode* top_actions;
 %type <rgba> RGBA
 %type <texture> Texture
 %type <vector> Vector
-%type <vectorlist> VectorList
+%type <vectorlist> VectorList Vertices Triangles
 %type <boolean> Bool 
 %type <expr> Expr Random  ExprMod
 %type <it> InterpolationType 
 %type <matrix> Rotate Translate Scale Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
-%type <object> ObjectGroup GroupItems GroupItem Ellipsoid
+%type <object> ObjectGroup GroupItems GroupItem Ellipsoid Mesh
 %type <object> NamedObject 
 %type <material> MaterialDef NamedMaterial Material
 %type <light> LightDef Lightsource 
@@ -531,23 +531,22 @@ MeshObject	: Extrusion
 
 Mesh		: tMESH '{' Material Vertices Triangles '}'
                 {
-
+		    $$ = new MeshNode($4,$5,$3);
 		}
                 ;
 
-Vertices	: tVERTICES '{' VerticeList '}'
+Vertices	: tVERTICES '{' VectorList '}'
+                {
+		    $$ = $3;
+		}
                 ;
-		
-VerticeList	: Vector
-                | VerticeList Vector
-		;
                 
-Triangles	: tTRIANGLES '{' TriangleList '}'
+Triangles	: tTRIANGLES '{' VectorList '}'
+                {
+		    $$ = $3;
+		}
                 ;
 
-TriangleList	: '<' Expr Expr Expr '>'
-                | TriangleList '<' Expr Expr Expr '>'
-                ;
 		
 SolidObject	: Sphere
 		| Ellipsoid
@@ -812,6 +811,10 @@ InterpolationType
 Vector		: '<' Expr ',' Expr ',' Expr '>' 
                 { 
 		    $$ = new VectorNode($2,$4,$6); 
+		}
+                | '<' Expr Expr Expr '>'
+                {
+		    $$ = new VectorNode($2,$3,$4); 
 		}
                 | tNORMALIZE '(' Vector ')'
 		{

@@ -141,12 +141,17 @@ wireframe	return tWIREFRAME;
 "/="		return tDIVEQUAL;
 
 {digit}+ |
-{digit}+"."{digit}+ { yylval.d = atof(yytext); return tFLOAT;}
+{digit}+"."{digit}+ |
+{digit}+"."{digit}+"e"[-\+]{digit}+   { yylval.d = atof(yytext); return tFLOAT;}
 "$"{varstring}	{ yylval.c = new string(yytext+sizeof(char),yyleng-1); 
                   return tVARNAME;
                 }
-{qstring}	{ yylval.c = new string(yytext+sizeof(char),yyleng-2); return tQSTRING; }
-{string}	{ yylval.c = new string(yytext); return tSTRING; }
+{qstring}	{ yylval.c = new string(yytext+sizeof(char),yyleng-2); 
+                  return tQSTRING; 
+		}
+{string}	{ yylval.c = new string(yytext); 
+                  return tSTRING; 
+		}
 .		return yytext[0];
 
 %%
