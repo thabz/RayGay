@@ -93,9 +93,11 @@ void KdTree::prepare() {
 	} else {
 	    node.objects = new vector<Object*>;
 	    for(unsigned int j = 0; j < old.bobjects.size(); j++) {
-		node.objects->push_back(old.bobjects[j].object);
+		Object* obj_ptr = old.bobjects[j].object;
+		if (obj_ptr != NULL)
+		    node.objects->push_back(obj_ptr);
 	    }
-	    sort(node.objects->begin(),node.objects->end(),compareAreaDesc());
+	    //sort(node.objects->begin(),node.objects->end(),compareAreaDesc());
 	    old.bobjects.clear();
 	}
 	nodes[i] = node;
