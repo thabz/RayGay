@@ -37,8 +37,8 @@ Intersection Sphere::_intersect(const Ray& ray) const {
     Intersection result = Intersection();
     
     // See CGPP page 1101
-    Vector v = ray.direction;
-    Vector Q = ray.origin;
+    Vector v = ray.getDirection();
+    Vector Q = ray.getOrigin();
     Vector P = center;
     double a = v * v;
     double b = 2 * v * (Q - P);

@@ -17,7 +17,3 @@ Ray::Ray(Vector o, Vector d, double indice) {
     id = ++seq;
 }
 
-Ray::~Ray() {
-}
-
-

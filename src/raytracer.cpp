@@ -59,7 +59,7 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, int depth) {
 		// Specular color (Phong)
 		Vector light_reflect = info.direction_to_light.reflect(normal);
 		light_reflect.normalize();
-		double rv = light_reflect * (-1 * ray.direction);
+		double rv = light_reflect * (-1 * ray.getDirection());
 		if (rv > 0.0) {
 		   rv = pow(rv,material.getSc());
 		   color = color + ( intensity * rv *  material.getKs() * material.getSpecularColor());
@@ -72,7 +72,7 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, int depth) {
     if (depth < 4) {
         /* Bounce a reflection off the intersected object */
 	if (material.getKs() > 0) {
-	    Vector refl_vector = -1 * ray.direction;
+	    Vector refl_vector = -1 * ray.getDirection();
 	    refl_vector = refl_vector.reflect(normal);
 	    refl_vector.normalize();
 	    Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
@@ -84,7 +84,7 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, int depth) {
 	if (material.transmission_coefficient > 0.0) {
 	    // Calculate refraction vector (page 757)
 	    double my = ray.getIndiceOfRefraction() / material.indice_of_refraction;
-	    Vector I = -1 * ray.direction;
+	    Vector I = -1 * ray.getDirection();
 	    double n = normal * I;
 	    double p = my*my*(1 - n*n);
 	    if (p < 1) {

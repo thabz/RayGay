@@ -194,16 +194,16 @@ Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) 
 
     if (max_t <= min_t) return none;
 
-    Vector o = ray.origin + min_t * ray.direction;
+    Vector o = ray.getOrigin() + min_t * ray.getDirection();
     
     if (o[cutplane_dimension] < cutplane_value && 
-	ray.direction[cutplane_dimension] <= 0) {
+	ray.getDirection()[cutplane_dimension] <= 0) {
         return lower->intersect(ray,min_t,max_t);
     } else if (o[cutplane_dimension] > cutplane_value && 
-	ray.direction[cutplane_dimension] >= 0) {
+	ray.getDirection()[cutplane_dimension] >= 0) {
         return higher->intersect(ray,min_t,max_t);
     } else {
-	double intersect_t = (cutplane_value - ray.origin[cutplane_dimension]) * ray.getInverseDirection()[cutplane_dimension];
+	double intersect_t = (cutplane_value - ray.getOrigin()[cutplane_dimension]) * ray.getInverseDirection()[cutplane_dimension];
 	if (intersect_t > max_t) { intersect_t = max_t; }
 	if (intersect_t < min_t) { intersect_t = min_t; }
 
@@ -244,16 +244,16 @@ Intersection BSP::intersectForShadow_recurse(const Ray& ray, double min_t, doubl
 
     if (max_t <= min_t) return none;
 
-    Vector o = ray.origin + min_t * ray.direction;
+    Vector o = ray.getOrigin() + min_t * ray.getDirection();
     
     if (o[cutplane_dimension] < cutplane_value && 
-	ray.direction[cutplane_dimension] <= 0) {
+	ray.getDirection()[cutplane_dimension] <= 0) {
         return lower->intersectForShadow(ray,min_t,max_t);
     } else if (o[cutplane_dimension] > cutplane_value && 
-	ray.direction[cutplane_dimension] >= 0) {
+	ray.getDirection()[cutplane_dimension] >= 0) {
         return higher->intersectForShadow(ray,min_t,max_t);
     } else {
-	double intersect_t = (cutplane_value - ray.origin[cutplane_dimension]) * ray.getInverseDirection()[cutplane_dimension];
+	double intersect_t = (cutplane_value - ray.getOrigin()[cutplane_dimension]) * ray.getInverseDirection()[cutplane_dimension];
 	if (intersect_t > max_t) { intersect_t = max_t; }
 	if (intersect_t < min_t) { intersect_t = min_t; }
 	

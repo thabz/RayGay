@@ -57,8 +57,8 @@ void testScene4() {
  //   scene.setEnvironmentMap("stbp.tga");
 
     Material mat = MATERIAL_SHINY_BLUE;
-    mat.setBumpmap("stregerbump.tga",2.0);
-    mat.setTexturemap("blueplasma.tga");
+    //mat.setBumpmap("stregerbump.tga",2.0);
+    //mat.setTexturemap("blueplasma.tga");
     mat.setRepeatX(10);
     mat.setRepeatY(4);
     Sphere s1 = Sphere(Vector(200,50,200),130.0,mat);

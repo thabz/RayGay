@@ -11,9 +11,12 @@ class Ray {
 	/// Constructor
 	Ray(Vector o, Vector direction, double indice);
 	/// Destructor
-	~Ray();
-	Vector origin; ///< The rays origin
-	Vector direction; ///< Unit vector of rays direction
+	~Ray() { };
+
+	/// The rays origin
+	Vector getOrigin() const { return origin; };
+	/// The rays direction
+	Vector getDirection() const { return direction; };
 
         /// Rays direction (x,y,z) with inverted components ((1/x),(1/y),(1/x))
 	Vector getInverseDirection() const { return inv_direction; };
@@ -29,6 +32,9 @@ class Ray {
 	static long seq;
 	double indice_of_refraction; 
 	Vector inv_direction; 
+	Vector origin; ///< The rays origin
+	Vector direction; ///< Unit vector of rays direction
+
 };
 
 #endif

@@ -63,7 +63,7 @@ Intersection Boolean::_intersect(const Ray& ray) const {
 	    if (onEdge(closest->getPoint())) {
 		return *closest;
 	    } else {
-		Ray new_ray = Ray(closest->getPoint(), ray.direction, ray.getIndiceOfRefraction());
+		Ray new_ray = Ray(closest->getPoint(), ray.getDirection(), ray.getIndiceOfRefraction());
 		Intersection next_intersection = intersect(new_ray);
 		next_intersection.setT( closest->getT() + next_intersection.getT());; 
 		return next_intersection;

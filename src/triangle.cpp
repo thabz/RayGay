@@ -36,8 +36,8 @@ Intersection Triangle::_intersect(const Ray& ray) const {
 
    Intersection intersection;
 
-   Vector orig = ray.origin;
-   Vector dir = ray.direction;
+   Vector orig = ray.getOrigin();
+   Vector dir = ray.getDirection();
 
    /* find vectors for two edges sharing vert0 */
    edge1 = vert1 - vert0;
