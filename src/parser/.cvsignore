@@ -6,5 +6,6 @@ Makefile
 .deps
 *.swp
 *.o
+*.lo
 *.a
 
