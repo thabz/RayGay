@@ -18,6 +18,7 @@
 # Fjernede Object::_intersect: 1:26
 # Faster stats: 1:23
 # Brug world_bbox i alle KdTree::intersects: 1:07
+# Surface Area Heuristic cost function: 0:42
 
 include materials.gay
 
