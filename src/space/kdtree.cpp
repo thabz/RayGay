@@ -488,7 +488,7 @@ void KdTree::findBestSplitPlane(const BoundingBox& bbox, std::vector<Object*>* o
     double lowest_cost = HUGE_DOUBLE;
     double axis;
     unsigned int size = objects->size();
-    double max_cost = 0.9*size*bbox.area();
+    double max_cost = 1.0*size*bbox.area();
     for(int d = 0; d < 3; d++) {
 	double from = bbox.minimum()[d];
 	double to = bbox.maximum()[d];
@@ -503,8 +503,8 @@ void KdTree::findBestSplitPlane(const BoundingBox& bbox, std::vector<Object*>* o
 	    axis = o_bbox.minimum()[d];
 	    if (axis > from && axis < to) {
 		double cost = evaluateCost(bbox,objects,d,axis,&mea);
-#if 1		
-		if (cost < lowest_cost && cost < max_cost && (mea[0]+mea[1] < size || axis > from_tole) && (mea[2]+mea[1] < size || axis < to_tole)) {  
+#if 0		
+		if (cost < lowest_cost && (mea[0]+mea[1] < size || axis > from_tole) && (mea[2]+mea[1] < size || axis < to_tole)) {  
 #else 
 		if (cost < lowest_cost && cost < max_cost) {  
 
@@ -517,7 +517,7 @@ void KdTree::findBestSplitPlane(const BoundingBox& bbox, std::vector<Object*>* o
 	    axis = o_bbox.maximum()[d];
 	    if (axis > from && axis < to) {
 		double cost = evaluateCost(bbox,objects,d,axis,&mea);
-		if (cost < lowest_cost && cost < max_cost) {
+		if (cost < lowest_cost && cost < max_cost) {  
 		    (*best_dim) = d;
 		    (*best_axis) = axis;
 		    lowest_cost = cost;
