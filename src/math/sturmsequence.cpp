@@ -9,6 +9,7 @@ SturmSequence::SturmSequence(const Polynomial& polynomial) {
 	Polynomial remainder;
 	do {
 	    f[n-2].division(f[n-1],remainder);
+	    remainder = remainder * -1;
 	    f.push_back(remainder);
 	    n++;
 	} while (remainder.order() > 0 && !IS_ZERO(remainder.coefficient(0)));
