@@ -8,7 +8,7 @@ LDADD = $(top_srcdir)/src/libtracer.a \
 	    $(top_srcdir)/src/image/libimage.a \
 	    $(top_srcdir)/src/math/libmath.a 
 
-noinst_PROGRAMS = testmath testpaths testspace testobjects testspeed
+noinst_PROGRAMS = testmath testpaths testspace testobjects testspeed testlanguage
 
 testpaths_SOURCES = testpaths.cpp
 
@@ -20,5 +20,7 @@ testspace_SOURCES = testspace.cpp
 
 testspeed_SOURCES = testspeed.cpp
 
-TESTS = testmath testpaths testspace testobjects
+testlanguage_SOURCES = testlanguage.cpp
+
+TESTS = testlanguage testmath testpaths testspace testobjects
 
