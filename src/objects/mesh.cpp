@@ -5,7 +5,6 @@
 #include <map>
 
 #include "mesh.h"
-#include "boundingbox.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
 #include "intersection.h"
@@ -23,21 +22,18 @@ using namespace std;
 // ----------------------------------------------------------------------------
 Mesh::Mesh(MeshType type, const Material* mat) {
     meshType = type;
-    _boundingBoundingBox = NULL;
     prepared = false;
     material = mat;
 }
 
 /*
 Mesh::Mesh() : SceneObject(NULL) {
-    _boundingBoundingBox = NULL;
     prepared = false;
 }
 */
 
 // ----------------------------------------------------------------------------
 Mesh::~Mesh() {
-    delete _boundingBoundingBox;
 }
 
 void Mesh::addSelf(KdTree* space) {
@@ -246,26 +242,6 @@ Vector2 Mesh::getUV(const Triangle* triangle, double u, double v) const {
     return tri->uv[0] * (1-u-v) +
            tri->uv[1] * u +
            tri->uv[2] * v;
-}
-
-
-// ----------------------------------------------------------------------------
-BoundingBox Mesh::boundingBoundingBox() const {
-    if (_boundingBoundingBox != NULL)
-	return *_boundingBoundingBox;
-
-    Vector mini = Vector(HUGE_DOUBLE,HUGE_DOUBLE,HUGE_DOUBLE);
-    Vector maxi = Vector(-HUGE_DOUBLE,-HUGE_DOUBLE,-HUGE_DOUBLE);
-    for (vector<Vector>::const_iterator p = corners.begin(); p != corners.end(); p++) {
-	Vector v = (*p);
-	for (int i = 0; i < 3; i++) {
-	    mini[i] = min(mini[i],v[i]);
-	    maxi[i] = max(maxi[i],v[i]);
-	}
-    }
-    _boundingBoundingBox = new BoundingBox(mini,maxi);
-    _boundingBoundingBox->grow(5*EPSILON);
-    return *_boundingBoundingBox;
 }
 
 std::vector<Vector>* Mesh::getVertices() {

@@ -9,7 +9,6 @@
 #include "math/vector.h"
 #include "math/vector2.h"
 #include "image/rgb.h"
-#include "boundingbox.h"
 #include "triangle.h"
 #include "edgekey.h"
 #include "objectgroup.h"
@@ -86,9 +85,6 @@ class Mesh : public ObjectGroup {
 	/// Material of the mesh 
 	virtual const Material* getMaterial() const;
 
-	/// The bounding box containing all faces of this mesh
-	virtual BoundingBox boundingBoundingBox() const;
-
 	/// Add a triangle to the mesh
 	void addTriangle(const Vector* corners, const Vector2* uv);
 	
@@ -122,8 +118,6 @@ class Mesh : public ObjectGroup {
 
     private:
 	MeshType meshType;
-	mutable BoundingBox* _boundingBoundingBox;
-	//virtual Intersection _intersect(const Ray& ray) const;
 	bool prepared;
 	int findExistingCorner(const Vector* c) const;
 	void computeAdjacentTris();

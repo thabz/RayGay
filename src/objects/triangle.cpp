@@ -6,6 +6,8 @@
 #include "math/vector2.h"
 #include <math.h>
 #include <stdio.h>
+#include "boundingbox.h"
+
 
 
 Triangle::Triangle(Mesh* m) : Object(NULL) {
