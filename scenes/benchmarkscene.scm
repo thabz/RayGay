@@ -32,35 +32,35 @@
 (set! renderer "raytracer")
 (set! camera 
   (make-pinhole-camera 
-    '( "pos" (1000 1000 2000)
-       "up" (0 1 0)
-       "lookat" (0 100 0)
-       "fov" 45
-       "aa" 4)))
+    '( pos (1000 1000 2000)
+       up (0 1 0)
+       lookat (0 100 0)
+       fov 45
+       aa 4)))
 
 (define blue
   (make-material
-    '( "diffuse" (0.2 0.2 0.8)
-       "kd" 0.4
-       "specular" (1 1 1)
-       "specpow" 15
-       "ks" 0.5)))
+    '( diffuse (0.2 0.2 0.8)
+       kd 0.4
+       specular (1 1 1)
+       specpow 15
+       ks 0.5)))
 
 (define grey85
   (make-material
-    '( "diffuse" (0.85 0.85 0.85)
-       "kd" 0.7
-       "specular" (0.85 0.85 0.85)
-       "specpow" 15
-       "ks" 0.3)))
+    '( diffuse (0.85 0.85 0.85)
+       kd 0.7
+       specular (0.85 0.85 0.85)
+       specpow 15
+       ks 0.3)))
 
 (define red
   (make-material
-    '( "diffuse" (0.8 0.2 0.2)
-       "kd" 0.4
-       "specular" (1 1 1)
-       "specpow" 15
-       "ks" 0.5)))
+    '( diffuse (0.8 0.2 0.2)
+       kd 0.4
+       specular (1 1 1)
+       specpow 15
+       ks 0.5)))
 
 
 (set! scene (list (make-pointlight '(100 1300 1300))))
