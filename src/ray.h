@@ -27,6 +27,8 @@ class Ray {
 	/// Accessor for the unique id of this ray, that is automatically assigned.
 	long getId() const { return id; };
 
+	mutable double lowest_t; ///< Used in BSP
+
     private:
 	long id;
 	static long seq;

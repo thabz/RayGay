@@ -87,6 +87,7 @@ void BSP::prepare() {
 
 inline
 bool BSP::intersect(const Ray& ray) const {
+    ray.lowest_t = HUGE_DOUBLE;
     return intersect(ray,0,HUGE_DOUBLE);
 }
 
@@ -162,6 +163,7 @@ bool BSP::intersectForShadow(const Ray& ray, const double min_t, const double ma
 
 bool BSP::intersect(const Ray& ray, const double min_t, const double max_t) const {
     if (max_t <= min_t) return false;
+    if (min_t > ray.lowest_t) return false;
 
     if (objects.size() > 0) {
 	bool result = false;
@@ -174,6 +176,7 @@ bool BSP::intersect(const Ray& ray, const double min_t, const double max_t) cons
 		result = true;
 	    }
 	}
+	ray.lowest_t = min(ray.lowest_t,smallest_t);
 	return result;
     } else {
         return intersect_recurse(ray,min_t,max_t);
@@ -181,7 +184,6 @@ bool BSP::intersect(const Ray& ray, const double min_t, const double max_t) cons
 }
 
 bool BSP::intersect_recurse(const Ray& ray, const double min_t, const double max_t) const {
-    if (max_t <= min_t) return false;
 
     //Vector o = ray.getOrigin() + min_t * ray.getDirection();
     double rd_dim = ray.getDirection()[cutplane_dimension];
