@@ -819,6 +819,13 @@ class polynomials : public Test  {
 	    assertTrue(p.division(Polynomial(1,0,3),rem) == Polynomial(1,-5));
 	    assertTrue(rem == Polynomial(0));
 
+	    p = Polynomial(1,0,0,0,4);
+	    assertTrue(p.division(Polynomial(1,0,-5),rem) == Polynomial(1,0,5));
+	    assertTrue(rem == Polynomial(29));
+
+	    p = Polynomial(1,-3,5,-3);
+	    assertTrue(p.division(Polynomial(1,-1),rem) == Polynomial(1,-2,3));
+	    assertTrue(rem == Polynomial(0));
 	}
 };
 
