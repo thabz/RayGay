@@ -33,6 +33,7 @@
 #include "boolean.h"
 #include "mesh.h"
 #include "box.h"
+#include "cylinder.h"
 #include "tetrahedron.h"
 #include "tessalation.h"
 #include "paths/circle.h"
@@ -93,7 +94,7 @@ void testScene4() {
     for(unsigned int i = 0; i < edges->size(); i++) {
 	Linesegment line = (*edges)[i];
 	Extrusion* c = new Extrusion(line.begin(),line.end(),20.0,20,MATERIAL_SHINY_RED);
-	scene.addObject(c);
+	//scene.addObject(c);
     }
     delete edges;
 
@@ -101,7 +102,7 @@ void testScene4() {
     for(unsigned int i = 0; i < vertices->size(); i++) {
 	Vector c = (*vertices)[i];
         Sphere* s = new Sphere(c,20.0,MATERIAL_SHINY_RED);
-	scene.addObject(s);
+	//scene.addObject(s);
     }
     delete vertices;
 
@@ -109,6 +110,7 @@ void testScene4() {
    // scene.addObject(tube); 
 
 
+    // Use this when making fog later.
     /*
     for(int x = -300; x <= 300; x += 60) {
 	for(int z = -300; z <= 300; z += 60) {
@@ -118,6 +120,9 @@ void testScene4() {
 	}
     }
     */
+
+    Cylinder* cyl = new Cylinder(Vector(0,-100,0),Vector(0,100,0),50,MATERIAL_SHINY_BLUE);
+    scene.addObject(cyl);
     
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));

@@ -6,7 +6,7 @@
 class Vector;
 class Path;
 
-/// A cylinder object
+/// An extrusion object
 class Extrusion : public Mesh {
 
     public:

@@ -33,6 +33,9 @@
 #define IS_ZERO(p)	((p) < EPSILON && (p) > -EPSILON)
 #define IS_EQUAL(x,y)	(IS_ZERO((x)-(y)))
 
+#define IS_LESS_THAN(a,b) 	IS_POSITIVE(((b) - (a)))
+#define IS_GREATER_THAN(a,b) 	IS_POSITIVE(((a) - (b)))
+
 #define DEG2RAD(x)	((x/360.0)*M_2PI)
 
 #endif

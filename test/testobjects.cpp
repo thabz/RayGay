@@ -8,6 +8,7 @@
 
 #include "boundingbox.h"
 #include "sphere.h"
+#include "cylinder.h"
 #include "boolean.h"
 #include "mesh.h"
 #include "extrusion.h"
@@ -256,8 +257,76 @@ void extrusion_test() {
 
 }
 
+void cylinder_test() {
+    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Cylinder* cyl = new Cylinder(Vector(0,0,0),Vector(0,10,0),10,m);
+
+    /* Test inside() and onEdge() */
+    assert(cyl->inside(Vector(0,5,0)));
+    assert(cyl->inside(Vector(0,9,0)));
+    assert(!cyl->inside(Vector(0,10,0)));
+    
+    assert(cyl->onEdge(Vector(0,10,0)));
+    assert(cyl->onEdge(Vector(10,5,0)));
+    assert(cyl->onEdge(Vector(-10,5,0)));
+    assert(!cyl->inside(Vector(10,5,0)));
+    assert(!cyl->inside(Vector(0,11,0)));
+    assert(!cyl->inside(Vector(1,-1,0)));
+
+    /* Test intersection() of y-axis aligned cylinder */
+    Ray r = Ray(Vector(0,5,-1000),Vector(0,0,1),1);
+    assert(cyl->intersect(r));
+    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[0], 0.0));
+    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[1], 5.0));
+    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[2], -10.0));
+
+    r = Ray(Vector(0,5,1000),Vector(0,0,-1),1);
+    assert(cyl->intersect(r));
+    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[0], 0.0));
+    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[1], 5.0));
+    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[2], 10.0));
+
+    delete cyl;
+
+    // Test a shifted cylinder align the y-axis
+    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
+
+    /* Test inside() and onEdge() */
+    assert(cyl->inside(Vector(0,3,0)));
+    assert(cyl->inside(Vector(0,5,0)));
+    assert(cyl->inside(Vector(0,9,0)));
+    assert(!cyl->inside(Vector(0,10,0)));
+    assert(!cyl->inside(Vector(0,11,0)));
+    assert(!cyl->inside(Vector(0,2,0)));
+    
+    assert(cyl->onEdge(Vector(0,2,0)));
+    assert(cyl->onEdge(Vector(0,10,0)));
+    assert(cyl->onEdge(Vector(10,5,0)));
+    assert(cyl->onEdge(Vector(-10,5,0)));
+    assert(!cyl->inside(Vector(10,5,0)));
+    assert(!cyl->inside(Vector(0,11,0)));
+    assert(!cyl->inside(Vector(0,1,0)));
+
+    delete cyl;
+
+    // Test an x-axis aligned cylinder
+    cyl = new Cylinder(Vector(0,0,0),Vector(10,0,0),10,m);
+    assert(cyl->inside(Vector(5,0,0)));
+    assert(cyl->inside(Vector(9,0,0)));
+    assert(!cyl->inside(Vector(0,0,0)));
+    assert(!cyl->inside(Vector(-1,0,0)));
+    assert(cyl->onEdge(Vector(0,0,0)));
+    assert(cyl->onEdge(Vector(10,0,0)));
+    assert(cyl->onEdge(Vector(5,10,0)));
+    assert(cyl->onEdge(Vector(5,-10,0)));
+
+    r = Ray(Vector(3,0,1000),Vector(0,0,-1),1);
+    assert(cyl->intersect(r));
+}
+
 int main(int argc, char *argv[]) {
     sphere_test();
+    cylinder_test();
     boolean_test();
     box_test();
     mesh_test();
