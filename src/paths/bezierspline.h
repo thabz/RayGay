@@ -2,6 +2,7 @@
 #ifndef PATHS_BEZIER_SPLINE_H 
 #define PATHS_BEZIER_SPLINE_H 
 
+#include <vector>
 #include "paths/path.h"
 #include "math/vector.h"
 #include "math/matrix.h"
@@ -21,6 +22,8 @@ class BezierSpline : public Path {
 
     public:
 	/// Constructor
+	BezierSpline(const std::vector<Vector>& points);
+	/// Constructor
 	BezierSpline(Vector* controlpoints, unsigned int num);
 	virtual ~BezierSpline();
 	Vector getPoint(double t) const;
@@ -31,7 +34,7 @@ class BezierSpline : public Path {
 	Vector getControlPoint(unsigned int n) const { return controlpoints[n]; };
 
     private:
-	Vector* controlpoints;
+	std::vector<Vector> controlpoints;
 	unsigned int num;
 };
 

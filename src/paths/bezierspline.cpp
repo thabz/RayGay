@@ -6,15 +6,20 @@
 BezierSpline::BezierSpline(Vector* controlpoints, unsigned int num) {
 
    assert(num > 2);
-   this->controlpoints = new Vector[num];
    this->num = num;
    for(unsigned int i = 0; i < num; i++) {
-       this->controlpoints[i] = controlpoints[i];
+       this->controlpoints.push_back(controlpoints[i]);
    }
 }
 
+BezierSpline::BezierSpline(const std::vector<Vector>& points) {
+    controlpoints = points;
+    num = points.size();
+    assert(num > 2);
+}
+
 BezierSpline::~BezierSpline() {
-   delete [] controlpoints;
+   controlpoints.clear();
 }
 
 void BezierSpline::transform(const Matrix& m) {
