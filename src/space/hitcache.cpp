@@ -25,14 +25,14 @@ void HitCache::addEntry(void* fromObject, Object* toObject, double t) {
     }
 }
 
-Object* HitCache::findEntry(void* fromObject) const {
+void HitCache::removeEntry(void* fromObject) {
     int i = findEntryIndex(fromObject);
     if (i == -1)
-	return NULL;
-    else 
-	return entries[i].toObject;
+	return;
+    entries[i].fromObject = NULL;
 }
 
+inline
 int HitCache::findEntryIndex(void* fromObject) const {
     for(unsigned int i = 0; i < size; i++) {
 	if (entries[i].fromObject == fromObject)
