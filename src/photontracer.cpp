@@ -13,6 +13,7 @@
 #include "lights/lightsource.h"
 #include "materials/material.h"
 #include "math/functions.h"
+#include "math/halton.h"
 #include "stats.h"
 
 #define MAX_BOUNCES 20
@@ -23,6 +24,11 @@ PhotonTracer::PhotonTracer(Scene* scene, SpaceSubdivider* space, PhotonMap* phot
     this->scene = scene;
     this->space = space;
     this->photonmap = photonmap;
+    this->qmcsequence = new Halton(2,2);
+}
+
+PhotonTracer::~PhotonTracer() {
+    delete qmcsequence;
 }
 
 void PhotonTracer::trace(int max_photons) {
@@ -60,6 +66,7 @@ int PhotonTracer::trace(const Ray& ray, Vector power, int bounces) {
 	
 	// Reflect diffusely 
 	Vector normal = intersection->getObject()->normal(*intersection);
+	//Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89),qmcsequence);
 	Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89));
 	Ray new_ray = Ray(intersection->getPoint(),reflected_direction,0);
 	power = power.length() * material.getDiffuseColor(*intersection);

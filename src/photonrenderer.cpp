@@ -69,8 +69,8 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     vector<Lightsource*> lights = scene->getLightsources();
 
     result_color += gatherIrradiance(point,normal).length() * material.getDiffuseColor(intersection);
-    //result_color.clip();
-    //return result_color;
+    result_color.clip();
+    return result_color;
     // TODO: Add radiance_estimate from caustics map
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);
@@ -166,7 +166,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
-#define FINAL_GATHER_RAYS 20
+#define FINAL_GATHER_RAYS 100
 #define ESTIMATE_RADIUS 50
 #define ESTIMATE_PHOTONS 500
 
@@ -175,8 +175,28 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
 	return M_PI * photonmap->irradiance_estimate(point,normal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS);
     }
     Vector result = Vector(0.0,0.0,0.0);
-    for (int i = 0; i < FINAL_GATHER_RAYS; i++) {
-	Vector dir = Math::perturbVector(normal,DEG2RAD(89));
+
+    NearestPhotons np;
+    np.dist2 = (float*)alloca( sizeof(float)*(FINAL_GATHER_RAYS+1) );
+    np.index = (const Photon**)alloca( sizeof(Photon*)*(FINAL_GATHER_RAYS+1) );
+    np.pos[0] = point[0];
+    np.pos[1] = point[1];
+    np.pos[2] = point[2];
+    np.max = FINAL_GATHER_RAYS;
+    np.found = 0;
+    np.got_heap = 0;
+    np.dist2[0] = ESTIMATE_RADIUS*ESTIMATE_RADIUS;
+    photonmap->locate_photons(&np,1);
+
+    if (np.found < 4) return result;
+    
+    //for (int i = 0; i < FINAL_GATHER_RAYS; i++) {
+    for (int i = 1; i < np.found; i++) {
+
+	//Vector dir = Math::perturbVector(normal,DEG2RAD(89));
+	const Photon* p = np.index[i];
+	Vector dir = double(-1) * photonmap->photon_dir(p);
+
 	Ray ray = Ray(point,dir,-1);
 	if (space->intersect(ray)) {
 	    Intersection* inter = space->getLastIntersection();
@@ -189,7 +209,8 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
 	    result += scene->getBackgroundColor(ray);
 	}
     }
-    result *= M_PI / double(FINAL_GATHER_RAYS);
+    //result *= M_PI / double(FINAL_GATHER_RAYS);
+    result *= 2*M_PI / double(np.found - 1);
     return result;
 }
 
