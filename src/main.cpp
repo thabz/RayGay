@@ -185,14 +185,18 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 	Renderer* renderers[renderersettings->threads_num];
 	pthread_t threads[renderersettings->threads_num];
 	for(int i = 0; i < renderersettings->threads_num; i++) {
-	    if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
-		renderers[i] = new PhotonRenderer(renderersettings,img,scene,space,job_pool,i,globalphotonmap,causticsmap,irradiancecache);
-	    } else if (renderersettings->renderertype == RendererSettings::RAYTRACER) {
-		renderers[i] = new Raytracer(renderersettings,img,scene,space,job_pool,i);
-	    } else if (renderersettings->renderertype == RendererSettings::PATHTRACER) {
-		renderers[i] = new Pathtracer(renderersettings,img,scene,space,job_pool,i);
-	    } else {
-		throw_exception("Unknown renderer");
+	    switch (renderersettings->renderertype) {
+		case RendererSettings::PHOTON_RENDERER:
+		    renderers[i] = new PhotonRenderer(renderersettings,img,scene,space,job_pool,i,globalphotonmap,causticsmap,irradiancecache);
+		    break;
+		case RendererSettings::RAYTRACER:
+		    renderers[i] = new Raytracer(renderersettings,img,scene,space,job_pool,i);
+		    break;
+		case RendererSettings::PATHTRACER:
+		    renderers[i] = new Pathtracer(renderersettings,img,scene,space,job_pool,i);
+		    break;
+		default:
+		    throw_exception("Unknown renderer");
 	    }
 	    pthread_create(&threads[i], NULL, renderThreadDo, renderers[i]);
 	}
