@@ -10,6 +10,8 @@
 #include "boundingbox.h"
 #include "math/vector2.h"
 
+#undef VERBOSE 
+
 KdTree::KdTree() {
     added_objects = new vector<Object*>;
     prepared = false;
@@ -60,11 +62,11 @@ void KdTree::prepare() {
     int nodes_num = tmp_nodes.size();
     nodes = new KdNode[nodes_num];
     stack = new StackElem[max_depth*10];
-    /*
+#ifdef VERBOSE    
     cout << "Prepared..." << endl;
     cout << "Max depth: " << max_depth << endl;
     cout << "Nodes: " << nodes_num << endl;
-    */
+#endif    
     for(int i = 0; i < nodes_num; i++) {
 	KdNode node = KdNode();
 	KdNodeTmp old = tmp_nodes[i];
@@ -112,13 +114,16 @@ void KdTree::prepare(int curNode_idx,int depth) {
 	    best_measure = measure;
 	}
     }
+#ifdef VERBOSE    
     for(int i = 0; i < depth; i++) {
         cout << "* ";
     }
     cout << objects->size() << " -> " << best_measure;
-
+#endif
     if (best_measure[1] > best_measure[0] + best_measure[2]) {
+#ifdef VERBOSE	
 	cout << " Leaf" << endl;
+#endif	
 	curNode->axis = -1;
 	return;
     }
@@ -172,7 +177,9 @@ void KdTree::prepare(int curNode_idx,int depth) {
     }
 
     if (lower->objects->size() == size || higher->objects->size() == size) {
+#ifdef VERBOSE	
 	cout << " Leaf" << endl;
+#endif	
 	// Objects couldn't be subdivided
 	curNode->axis = -1;
 	lower->objects->clear();
@@ -182,7 +189,9 @@ void KdTree::prepare(int curNode_idx,int depth) {
 	tmp_nodes.pop_back();
 	tmp_nodes.pop_back();
     } else {
+#ifdef VERBOSE	
 	cout << endl;
+#endif	
 	objects->clear();
 	//delete curNode->objects;
 	// Recursive prepare()
