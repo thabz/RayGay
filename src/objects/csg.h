@@ -4,6 +4,9 @@
 
 #include "objects/solid.h"
 
+/**
+ * Constructive Solid Geometry.
+ */
 class CSG : public Solid {
 
     public:

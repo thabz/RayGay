@@ -5,6 +5,12 @@
 #include "objects/solid.h"
 #include "objects/transformer.h"
 
+/**
+ * A box not build with triangles.
+ *
+ * This object can be used in CSG operations. The Box object
+ * renders a little bit faster, but can't be used for CSG.
+ */
 class SolidBox : public Solid, public Transformer {
 
     public:

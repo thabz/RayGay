@@ -2,8 +2,8 @@
 #ifndef TORUS_H
 #define TORUS_H
 
-#include "solid.h"
-#include "transformer.h"
+#include "objects/solid.h"
+#include "objects/transformer.h"
 
 /**
  * A mathematical torus.
