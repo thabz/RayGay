@@ -47,6 +47,9 @@ public:
     Vector& operator*=(const double x);
     /// Vector division
     Vector operator/(const double x) const;
+    /// Assigment
+    Vector& operator=(const Vector& v);
+    
 
     /// Returns the scalar product v1 x v2
     static Vector xProduct (const Vector& v1, const Vector& v2) {
@@ -199,6 +202,14 @@ double Vector::norm() const {
 inline
 double Vector::length() const {
     return sqrt(_vector[0]*_vector[0] + _vector[1]*_vector[1] + _vector[2]*_vector[2]);
+}
+
+inline
+Vector& Vector::operator=(const Vector& v) {
+    _vector[0] = v._vector[0];
+    _vector[1] = v._vector[1];
+    _vector[2] = v._vector[2];
+    return *this;
 }
 
 inline
