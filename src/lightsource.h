@@ -10,19 +10,16 @@ class Matrix;
 class Intersection;
 class Ray;
 
-/// A point lightsource
+/**
+ * An interface lightsources must implement
+ */
 class Lightsource {
 
     public:
-        Lightsource(Vector pos);
-        virtual ~Lightsource();
-	virtual void transform(const Matrix& m);
-        virtual Intersection intersect(const Ray& ray);
-        virtual RGB getDiffuseColor(const Vector& p);
-	virtual Vector getPosition() { return position; };
+	virtual double getIntensity(const Vector& direction_to_light, double cos) const = 0;
+	virtual const Vector& getPosition() const = 0;
+        virtual void transform(const Matrix& m) = 0;
 
-    private:
-	Vector position;
 };
 
 #endif

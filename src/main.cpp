@@ -27,10 +27,12 @@
 #include "ray.h"
 #include "intersection.h"
 #include "image.h"
-#include "lightsource.h"
+#include "pointlight.h"
 #include "boolean.h"
 #include "boxobject.h"
 #include "mesh.h"
+#include "spotlight.h"
+#include "constants.h"
 
 using namespace std;
 
@@ -47,9 +49,9 @@ void testScene4() {
     Sphere s = Sphere(Vector(0,0,0),200.0,mat);
     scene.addObject(&s);
 
-    Lightsource light1 = Lightsource(Vector(-4000,4000,4000));
-    Lightsource light2 = Lightsource(Vector(4000,3000,6000));
-    scene.addLight(&light1);
+    Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
+    Spotlight light2 = Spotlight(Vector(0,0,500),Vector(0,0,-1),DEG2RAD(30.0),DEG2RAD(10.0));
+//    scene.addLight(&light1);
     scene.addLight(&light2);
 
     /*

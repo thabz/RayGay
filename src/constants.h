@@ -26,6 +26,10 @@
 
 #define EPSILON		1e-5
 #define IS_ZERO(p)	(abs(p) < EPSILON)
+#define IS_POSITIVE(p)	(p > -EPSILON)
+#define IS_NEGATIVE(p)	(p < EPSILON)
 #define IS_EQUAL(x,y)	(abs((x)-(y)) < EPSILON)
+
+#define DEG2RAD(x)	((x/360.0)*M_2PI)
 
 #endif
