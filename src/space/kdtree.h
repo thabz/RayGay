@@ -59,14 +59,6 @@ class KdTree {
 		short axis;
 	};
 
-
-	class KdNodeTmp {
-	    public:
-		std::vector<BoundedObject*>* bobjects;  // Enclosed objects when this is a leaf
-		float splitPlane; // Position of splitting plane
-		int axis;         // Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
-	};
-
 	struct StackElem {
 	    const KdNode* node;   // pointer to far child
 	    float t;        // the entry/exit signed distance
@@ -77,26 +69,21 @@ class KdTree {
 	// The I/O data for the findBestSplitPlane method
 	class CostResult {
 	    public:
-		CostResult();
 		int dim; //> Output
 		double axis; //> Output
 		int current_sort_dim;
-		std::vector<BoundedObject*>* left_bobjects; //> Input
-		std::vector<BoundedObject*>* right_bobjects; //> Input
 		unsigned int left_index; //> Output
 		unsigned int right_index; //> Output
-		unsigned int left_size;
-		unsigned int right_size;
 	};
 
 	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
 	Object* intersectForShadow_real(const Ray&,const double) const;
-	BoundingBox enclosure(std::vector<BoundedObject*>* bobs) const;
+	BoundingBox enclosure(BoundedObject** bobs, unsigned int num) const;
 	BoundingBox world_bbox;
-	bool findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const;
-	void findBestSplitPlane(const BoundingBox& bbox, CostResult& result, int split_dim) const;
+	bool findBestSplitPlane(unsigned int size, const BoundingBox& bbox, CostResult& result) const;
+	void findBestSplitPlane(unsigned int size, const BoundingBox& bbox, CostResult& result, int split_dim) const;
 	// The recursive prepare method
-	void prepare(KdNodeTmp* tmp_node, const BoundingBox& bbox, unsigned int depth, const unsigned int dest_idx);
+	void prepare(unsigned int num, const BoundingBox& bbox, unsigned int depth, const unsigned int dest_idx);
 
 	// The kd-tree nodes
 	vector<KdNode> nodes;
@@ -105,6 +92,9 @@ class KdTree {
 	bool prepared;
 
 	std::vector<Object*>* added_objects;
+
+	BoundedObject** left_bobs;
+	BoundedObject** right_bobs;
 };
 
 
