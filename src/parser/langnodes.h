@@ -10,6 +10,7 @@
 #include "parser/cameranode.h"
 #include "parser/assignments.h"
 #include "parser/boolnodes.h"
+#include "objects/objectgroup.h"
 #include "exception.h"
 #include "environment.h"
 #include "function.h"
@@ -482,23 +483,9 @@ class ObjectGroupNode : public SceneObjectNode {
 class BlobNode : public SceneObjectNode {
 
     public:
-	BlobNode(FloatNode* iso, FloatNode* weight, FloatNode* steps, FloatNode* accuracy, ObjectGroupNode* spheres, MaterialNode* mat) {
-	    this->iso = iso;
-	    this->weight = weight;
-	    this->steps = steps;
-	    this->accuracy = accuracy;
-	    this->spheres = spheres;
-	    this->material = mat;
-	}
+	BlobNode(FloatNode* iso, FloatNode* weight, FloatNode* steps, FloatNode* accuracy, ObjectGroupNode* spheres, MaterialNode* mat);
 
-	virtual ~BlobNode() {
-	    delete steps;
-	    delete accuracy;
-	    delete iso;
-	    delete weight;
-	    delete spheres;
-	    delete material;
-	}
+	virtual ~BlobNode();
 	
 	SceneObject* eval();
 
@@ -524,25 +511,7 @@ class UnionNode : public SceneObjectNode {
 	    delete material;
 	}
 
-	SceneObject* eval() {
-	    ObjectCollector* oc = Environment::getUniqueInstance()->getObjectCollector();
-            // Push a new object collector
-	    oc->pushCollection();
-	    
-            // eval actions;
-	    actions->eval();
-
-
-	    // Pop collector and insert into a Union* result;
-	    vector<Solid*> solids;
-	    vector<SceneObject*> sos = oc->pop();
-	    for(unsigned int i = 0; i < sos.size(); i++) {
-		Solid* s = dynamic_cast<Solid*>(sos[i]);
-		solids.push_back(s);
-	    }
-	    Material* m = material->eval();
-	    return new CSGUnion(&solids,m);
-	}
+	SceneObject* eval();
 
     private:
 	ActionListNode* actions;
