@@ -9,6 +9,8 @@ class SpaceSubdivider;
 class ObjectCollection {
 
     public:
+	virtual ~ObjectCollection() {};
+
 	/// Transform this object
 	virtual void transform(const Matrix& m) = 0;
 
