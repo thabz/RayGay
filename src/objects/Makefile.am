@@ -19,6 +19,7 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 		       necklace.cpp	\
 		       object.cpp	\
 		       objectgroup.cpp	\
+		       ply.cpp		\
 		       sor.cpp		\
 		       sphere.cpp	\
 		       teapot.cpp	\
@@ -45,6 +46,7 @@ EXTRA_DIST = 3ds.h 		\
 	     object.h		\
 	     objectcollection.h	\
 	     objectgroup.h	\
+	     ply.h		\
 	     sceneobject.h	\
 	     sor.h		\
 	     sphere.h		\
