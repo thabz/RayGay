@@ -9,7 +9,7 @@
  */
 class IrradiancePhoton : public Photon {
     public:
-	/// Precomputed irrandiance estimate
+	/// Precomputed irradiance estimate
 	float irradiance_estimate[3];
 	/// Surface normal
 	unsigned char normal_theta,normal_phi;
