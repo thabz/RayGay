@@ -64,21 +64,21 @@ class IrradianceCache {
 
 		double getWeight(const Vector& point, const Vector& normal) const;
 
-		const RGB& getIrradiance() const { return irradiance; };
-		const Vector& getPoint() const { return point; };
-		const Vector& getNormal() const { return normal; };
+		RGB getIrradiance() const { return RGB(irradiance[0],irradiance[1],irradiance[2]); };
+		Vector getPoint() const { return Vector(point[0],point[1],point[2]); };
+		Vector getNormal() const { return Vector(normal[0],normal[1],normal[2]); };
 
 		/** 
 		 * This is the squared distance from point where this 
 		 * CacheNode doesn't matter anymore.
 		 */
-		const double& getSquaredRadius() const { return squared_radius; };
+		float getSquaredRadius() const { return squared_radius; };
 	    private:
-		Vector point;
-		Vector normal;
-		RGB irradiance;
-		double hmd;
-		double squared_radius;
+		float point[3];
+		float normal[3];
+		float irradiance[3];
+		float hmd;
+		float squared_radius;
 	};
 
 	class HierarchyNode {
@@ -92,6 +92,7 @@ class IrradianceCache {
 		HierarchyNode* children[8];
 		vector<CacheNode> cache_nodes;
 		unsigned int depth;
+		float length;
 		bool isSplit;
 	};
 
