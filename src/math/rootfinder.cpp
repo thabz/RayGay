@@ -70,7 +70,7 @@ bool RootFinder::bisection(double t_begin, double t_end, double* root) {
 }
 
 
-#define MAX_ITER 100
+#define MAX_ITER 1000
 /**
  * Brent's method is a root-finding algorithm which combines root 
  * bracketing, interval bisection, and inverse quadratic interpolation. 
@@ -93,7 +93,8 @@ bool RootFinder::brents_method(double x1, double x3, double* root) {
     if (SAME_SIGN(fx1, fx3))
 	return false;
 
-    while(true) {
+    uint i = 0;
+    while(i < MAX_ITER) {
 	
 	R = fx2 / fx3;
 	S = fx2 / fx1;
@@ -109,6 +110,7 @@ bool RootFinder::brents_method(double x1, double x3, double* root) {
 	    *root = x2;
 	    return true;
 	}
+	i++;
     }
     return false;
 }
