@@ -11,6 +11,7 @@
 #include "camera.h"
 #include "objects/torus.h"
 #include "objects/3ds.h"
+#include "objects/csg.h"
 #include "objects/ply.h"
 #include "objects/blob.h"
 #include "objects/box.h"
@@ -452,6 +453,54 @@ void Importer::parse(const string& filename) {
 	    double R = readDouble(stream);
 	    double r = readDouble(stream);
 	    cur_object = new Torus(R,r,m);
+	} else if (command == "union") {
+	    stream >> str1;
+	    Material* m = lookupMaterial(str1);
+	    string name1 = readString(stream);
+	    string name2 = readString(stream);
+	    SceneObject* o1 = getNamedObject(name1)->clone();
+	    SceneObject* o2 = getNamedObject(name2)->clone();
+	    Solid* s1 = dynamic_cast<Solid*>(o1);
+	    Solid* s2 = dynamic_cast<Solid*>(o2);
+	    if (s1 == NULL) {
+		throw_exception("Error creating union: " + name1 + " is not a Solid.");
+	    }
+	    if (s2 == NULL) {
+		throw_exception("Error creating union: " + name2 + " is not a Solid.");
+	    }
+	    cur_object = new CSG(s1,CSG::UNION,s2,m);
+	} else if (command == "intersection") {
+	    stream >> str1;
+	    Material* m = lookupMaterial(str1);
+	    string name1 = readString(stream);
+	    string name2 = readString(stream);
+	    SceneObject* o1 = getNamedObject(name1)->clone();
+	    SceneObject* o2 = getNamedObject(name2)->clone();
+	    Solid* s1 = dynamic_cast<Solid*>(o1);
+	    Solid* s2 = dynamic_cast<Solid*>(o2);
+	    if (s1 == NULL) {
+		throw_exception("Error creating intersection: " + name1 + " is not a Solid.");
+	    }
+	    if (s2 == NULL) {
+		throw_exception("Error creating intersection: " + name2 + " is not a Solid.");
+	    }
+	    cur_object = new CSG(s1,CSG::INTERSECTION,s2,m);
+	} else if (command == "difference") {
+	    stream >> str1;
+	    Material* m = lookupMaterial(str1);
+	    string name1 = readString(stream);
+	    string name2 = readString(stream);
+	    SceneObject* o1 = getNamedObject(name1)->clone();
+	    SceneObject* o2 = getNamedObject(name2)->clone();
+	    Solid* s1 = dynamic_cast<Solid*>(o1);
+	    Solid* s2 = dynamic_cast<Solid*>(o2);
+	    if (s1 == NULL) {
+		throw_exception("Error creating difference: " + name1 + " is not a Solid.");
+	    }
+	    if (s2 == NULL) {
+		throw_exception("Error creating difference: " + name2 + " is not a Solid.");
+	    }
+	    cur_object = new CSG(s1,CSG::DIFFERENCE,s2,m);
 	} else if (command == "heightfield") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
