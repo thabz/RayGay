@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <vector>
+#include <pthread.h>
 
 #include "photontracer.h"
 #include "causticsmap.h"
@@ -16,7 +17,6 @@
 #include "math/matrix.h"
 #include "math/halton.h"
 #include "stats.h"
-#include <pthread.h>
 
 #define MAX_BOUNCES 50
 

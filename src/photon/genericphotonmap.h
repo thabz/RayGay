@@ -2,6 +2,7 @@
 #ifndef GENERIC_PHOTON_MAP
 #define GENERIC_PHOTON_MAP
 
+#include <pthread.h>
 #include "photon.h"
 
 class Vector;
@@ -80,6 +81,8 @@ class PhotonMap {
 	int prev_scale;
 	int estimate_photons;
 
+	pthread_mutex_t mutex_storeit;
+	    
 	float costheta[256];
 	float sintheta[256];
 	float cosphi[256];

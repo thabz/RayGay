@@ -45,6 +45,8 @@ PhotonMap<PhotonType>::PhotonMap<PhotonType>( const int max_phot, double max_dis
 	cosphi[i]   = cos( 2.0*angle );
 	sinphi[i]   = sin( 2.0*angle );
     }
+
+    pthread_mutex_init(&mutex_storeit,NULL);
 }
 
 
@@ -54,6 +56,7 @@ PhotonMap<PhotonType>::PhotonMap<PhotonType>( const int max_phot, double max_dis
 template <class PhotonType>
 PhotonMap<PhotonType>:: ~PhotonMap<PhotonType>() {
     free(photons);
+    pthread_mutex_destroy(&mutex_storeit);
 }
 
 
@@ -231,6 +234,8 @@ void PhotonMap<PhotonType>::storeit(const PhotonType& photon) {
     if (isFull())
 	return;
 
+    pthread_mutex_lock(&mutex_storeit);
+
     stored_photons++;
     photons[stored_photons] = photon;
     PhotonType *const node = &photons[stored_photons];
@@ -241,7 +246,8 @@ void PhotonMap<PhotonType>::storeit(const PhotonType& photon) {
 	if (node->pos[i] > bbox_max[i])
 	    bbox_max[i] = node->pos[i];
     }
-
+    
+    pthread_mutex_unlock(&mutex_storeit);
 }
 
 
