@@ -1,6 +1,6 @@
 
 AC_INIT(src/main.cpp) dnl a source file from your sub dir
-AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
+AM_INIT_AUTOMAKE("raygay", "0.1")
 AM_CONFIG_HEADER(config.h)    
 
 PACKAGE=tracer
