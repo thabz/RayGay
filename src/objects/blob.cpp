@@ -29,6 +29,7 @@ BoundingBox BlobAtomSphere::boundingBoundingBox() const
     return BoundingBox(center-rrr,center+rrr);
 }
 
+inline
 double BlobAtomSphere::squaredDistToPoint(const Vector& point) const 
 {
     return (center - point).norm();
