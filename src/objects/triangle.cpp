@@ -16,6 +16,37 @@ Triangle::Triangle(Mesh* m, uint tri_index) : Object(NULL) {
     _tri_idx = tri_index;
 }
 
+#define SUB(dest,v1,v2) \
+          dest[0]=v1[0]-v2[0]; \
+          dest[1]=v1[1]-v2[1]; \
+          dest[2]=v1[2]-v2[2]; 
+
+inline
+CachedVertex* TriangleVertexCache::getCachedVertex(Triangle* triangle) 
+{
+    unsigned int last_cache_key = triangle->last_cache_key;
+    if (cached_vertices[last_cache_key].triangle == triangle) {
+	// Cache hit
+	return &cached_vertices[last_cache_key];
+    } else {
+	// Cache miss
+	last_cache_key = next_free_slot;
+	next_free_slot = (next_free_slot + 1) & 255;
+	triangle->last_cache_key = last_cache_key;
+	CachedVertex* cv = &cached_vertices[last_cache_key];
+
+	uint tri_idx = triangle->_tri_idx;
+	Mesh* mesh = triangle->mesh;
+	mesh->cornerAt(tri_idx,0,cv->vert0);
+	mesh->cornerAt(tri_idx,1,cv->vert1);
+	mesh->cornerAt(tri_idx,1,cv->vert2);
+	SUB(cv->edge1,cv->vert1,cv->vert0);
+	SUB(cv->edge2,cv->vert2,cv->vert0);
+	return cv;
+    }
+}
+
+
 const Material* Triangle::getMaterial() const { 
     return mesh->getMaterial(); 
 }
@@ -25,10 +56,6 @@ const Material* Triangle::getMaterial() const {
           dest[1]=v1[2]*v2[0]-v1[0]*v2[2]; \
           dest[2]=v1[0]*v2[1]-v1[1]*v2[0];
 #define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
-#define SUB(dest,v1,v2) \
-          dest[0]=v1[0]-v2[0]; \
-          dest[1]=v1[1]-v2[1]; \
-          dest[2]=v1[2]-v2[2]; 
 
 void Triangle::prepare() {
 }

@@ -8,9 +8,11 @@ class BoundingBox;
 class Mesh;
 class Intersection;
 class Matrix;
+class TriangleVertexCache;
 
 /// The triangle of a Mesh
 class Triangle : public Object {
+    friend class TriangleVertexCache;
 
     public:
 	/// Constructor
@@ -31,7 +33,23 @@ class Triangle : public Object {
     private:
 	Mesh* mesh;
 	unsigned int _tri_idx;
+	mutable unsigned int last_cache_key;
 };
 
+struct CachedVertex {
+    double vert0[3], vert1[3], vert2[3];
+    double edge1[3], edge2[3];
+    Triangle* triangle;
+};
+
+
+class TriangleVertexCache {
+    public:
+	CachedVertex* getCachedVertex(Triangle* triangle);
+	
+    private:
+	CachedVertex cached_vertices[256];
+	int next_free_slot;
+};
 
 #endif
