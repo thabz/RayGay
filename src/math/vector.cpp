@@ -19,30 +19,6 @@
 
 using namespace std;
 
-void Vector::normalize() {
-    double s = length();
-
-    if (IS_ZERO(s))
-	return;
-
-    double d = double(1.0)/s;
-    scale(d);
-}
-
-void Vector::scale(float s) {
-    _vector[0] *= s;
-    _vector[1] *= s;
-    _vector[2] *= s;
-}
-
-double Vector::norm() const {
-    return _vector[0]*_vector[0] + _vector[1]*_vector[1] + _vector[2]*_vector[2];
-}
-
-double Vector::length() const {
-    return sqrt(norm());
-}
-
 const Vector Vector::reflect(const Vector& N) {
     Vector L = *(this);
     Vector R = (2 * (N * L)) * N - L;

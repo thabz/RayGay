@@ -174,4 +174,33 @@ Vector Vector::operator/(const double x) const {
     return Vector(_vector[0]/x, _vector[1]/x, _vector[2]/x);
 }
 
+inline
+void Vector::normalize() {
+    double s = _vector[0]*_vector[0] + _vector[1]*_vector[1] + _vector[2]*_vector[2];
+    if (!IS_ZERO(s)) {
+	s = sqrt(s);
+
+	_vector[0] /= s;
+	_vector[1] /= s;
+	_vector[2] /= s;
+    }
+}
+
+inline
+void Vector::scale(float s) {
+    _vector[0] *= s;
+    _vector[1] *= s;
+    _vector[2] *= s;
+}
+
+inline
+double Vector::norm() const {
+    return _vector[0]*_vector[0] + _vector[1]*_vector[1] + _vector[2]*_vector[2];
+}
+
+inline
+double Vector::length() const {
+    return sqrt(_vector[0]*_vector[0] + _vector[1]*_vector[1] + _vector[2]*_vector[2]);
+}
+
 #endif
