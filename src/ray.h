@@ -27,7 +27,7 @@ class Ray {
 	double getIndiceOfRefraction() const { return indice_of_refraction; };
 
 	/// Accessor for the unique id of this ray, that is automatically assigned.
-	long getId() const { return id; };
+	const long getId() const { return id; };
 
 	/// Get a point on the ray
 	Vector getPoint(const double t) const { return origin + t * direction; };
