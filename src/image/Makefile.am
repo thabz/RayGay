@@ -1,9 +1,9 @@
 
 INCLUDES = -I$(top_srcdir)/src 
 
-noinst_LIBRARIES = libimage.a
+noinst_LTLIBRARIES = libimage.la
 
-libimage_a_SOURCES = image.cpp \
+libimage_la_SOURCES = image.cpp \
                      rgb.cpp \
                      texture.cpp \
 		     imageio_tga.cpp \

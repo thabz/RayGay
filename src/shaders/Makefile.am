@@ -1,9 +1,9 @@
 
 INCLUDES = -I$(top_srcdir)/src 
 
-noinst_LIBRARIES = libshaders.a
+noinst_LTLIBRARIES = libshaders.la
 
-libshaders_a_SOURCES = blinn.cpp
+libshaders_la_SOURCES = blinn.cpp
 
 EXTRA_DIST = blinn.h		\
     	     shader.h 		\

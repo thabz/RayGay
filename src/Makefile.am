@@ -4,9 +4,9 @@ SUBDIRS = materials paths lights math image photon filters objects space shaders
 
 #--------------------------------------
 
-noinst_LIBRARIES = libtracer.a
+lib_LTLIBRARIES = libtracer.la
 
-libtracer_a_SOURCES = \
+libtracer_la_SOURCES = \
 		      exception.h	\
 		      intersection.cpp 	\
 		      ray.cpp 		\
@@ -24,7 +24,7 @@ libtracer_a_SOURCES = \
 		      window.cpp	\
 		      window-icon.h	
 
-libtracer_a_LIBADD = parser/libparser.a photon/libphoton.a lights/liblights.a materials/libmaterials.a collections/libcollections.a objects/libobjects.a paths/libpaths.a math/libmath.a  image/libimage.a space/libspace.a shaders/libshaders.a cameras/libcameras.a 
+libtracer_la_LIBADD = parser/libparser.la photon/libphoton.la lights/liblights.la materials/libmaterials.la collections/libcollections.la objects/libobjects.la paths/libpaths.la math/libmath.la  image/libimage.la space/libspace.la shaders/libshaders.la cameras/libcameras.la filters/libfilters.la
 
 #--------------------------------------
 
@@ -32,39 +32,13 @@ bin_PROGRAMS = tracer bench
 
 tracer_SOURCES = main.cpp
 
-tracer_LDADD =  parser/libparser.a 	\
-		libtracer.a 		\
-    		space/libspace.a 	\
-		collections/libcollections.a \
-    		photon/libphoton.a 	\
-		lights/liblights.a 	\
-		materials/libmaterials.a \
-		math/libmath.a 		\
-		filters/libfilters.a 	\
-		objects/libobjects.a 	\
-		shaders/libshaders.a  	\
-		paths/libpaths.a  	\
-		cameras/libcameras.a  	\
-		image/libimage.a
+tracer_LDADD = libtracer.la 		
 
 #--------------------------------------
 
 bench_SOURCES = bench-main.cpp
 
-bench_LDADD =  parser/libparser.a 	\
-		libtracer.a 		\
-    		space/libspace.a 	\
-		collections/libcollections.a \
-    		photon/libphoton.a 	\
-		lights/liblights.a 	\
-		materials/libmaterials.a \
-		math/libmath.a 		\
-		filters/libfilters.a 	\
-		objects/libobjects.a 	\
-		shaders/libshaders.a  	\
-		paths/libpaths.a  	\
-		cameras/libcameras.a  	\
-		image/libimage.a
+bench_LDADD = libtracer.la
 
 #--------------------------------------
 

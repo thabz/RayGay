@@ -1,9 +1,9 @@
 
 INCLUDES = -I$(top_srcdir)/src 
 
-noinst_LIBRARIES = libspace.a
+noinst_LTLIBRARIES = libspace.la
 
-libspace_a_SOURCES = \
+libspace_la_SOURCES = \
 		kdtree.h	\
 		kdtree.cpp 	\
 		hitcache.h	\

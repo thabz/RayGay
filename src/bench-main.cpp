@@ -13,10 +13,32 @@
 
 #include "math/vector.h"
 
+#include "objects/ellipsoid.h"
+#include "ray.h"
+
 using namespace std;
 
 Vector random_vectors[1024];
 double random_doubles[1024];
+
+void bench_ellipsoid_fast_intersect() {
+    // Make some rays and some ellipsoids
+    Ellipsoid* ellipsoids[1024];
+    Ray* rays[1024];
+    uint num = 1000;
+    for(int i = 0; i < 1024; i++) {
+	Ellipsoid* e = new Ellipsoid(random_vectors[i],
+		                     Vector(RANDOM(2,3),RANDOM(2,3),RANDOM(2,3)),
+					 NULL);
+	ellipsoids[i] = e;
+
+	Vector from =  random_vectors[i] * 1000;
+	Vector dir = random_vectors[i] - from;
+	Ray* ray = new Ray(from,dir,0);
+	rays[i] = ray;
+    }
+
+}
 
 void bench_vector() {
     Vector one = Vector(1,1,1);

@@ -1,9 +1,9 @@
 
 INCLUDES = -I$(top_srcdir)/src 
 
-noinst_LIBRARIES = libphoton.a
+noinst_LTLIBRARIES = libphoton.la
 
-libphoton_a_SOURCES = photon.cpp globalphotonmap.cpp causticsmap.cpp photontracer.cpp irradiancecache.cpp
+libphoton_la_SOURCES = photon.cpp globalphotonmap.cpp causticsmap.cpp photontracer.cpp irradiancecache.cpp
 
 EXTRA_DIST = photon.h		\
     	     genericphotonmap.h	\

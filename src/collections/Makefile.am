@@ -1,6 +1,6 @@
 
 INCLUDES = -I$(top_srcdir)/src 
 
-noinst_LIBRARIES = libcollections.a
+noinst_LTLIBRARIES = libcollections.la
 
-libcollections_a_SOURCES = vectorlist.cpp vectorlist.h
+libcollections_la_SOURCES = vectorlist.cpp vectorlist.h

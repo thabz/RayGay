@@ -17,7 +17,7 @@ class Image;
 class PreviewWindow {
 
     public:
-	PreviewWindow(int w, int h);
+	PreviewWindow(int w, int h, void (*abortRenderingCB)(void));
 	void drawBlock(int x, int y, int w, int h);
 	void setImage(Image* img) { this->image = img; };
 	void run();
@@ -33,6 +33,7 @@ class PreviewWindow {
 	Image* image;
 	int width;
 	int height;
+	;
 };
 
 #endif /* PREVIEW_WINDOW_H */

@@ -744,6 +744,10 @@ class polynomials : public Test  {
 	    assertTrue(Polynomial(0,0,2,3,5) == Polynomial(2,3,5));
 	    assertTrue(Polynomial(1,0,2,3) == Polynomial(1,0,2,3));
 	    assertFalse(Polynomial(1,0,2,3) == Polynomial(0,0,2,3));
+	    
+	    double c1[] = { 7,6,5,4,3,2,0 };
+	    double c2[] = { 7,6,5,4,3,2 };
+	    assertTrue(Polynomial(c1,7) == Polynomial(c2,6));
 
 	    // Adding and subtracting
 	    assertTrue(Polynomial(1,2,3) + Polynomial(7,6,4,2) == Polynomial(7,7,6,5));
@@ -772,6 +776,12 @@ class polynomials : public Test  {
 	    assertTrue(Polynomial(1,6) * Polynomial(1,-5) == Polynomial(1,1,-30));
 	    assertTrue(Polynomial(1,6,7) * Polynomial(1,0) == Polynomial(1,6,7,0));
 	    assertTrue(Polynomial(1,6,7) * Polynomial(1,0,0) == Polynomial(1,6,7,0,0));
+	    Polynomial A = Polynomial(1,1);
+	    Polynomial B = Polynomial(1,6);
+	    Polynomial C = Polynomial(1,-5);
+	    Polynomial D = A * B * C;
+	    assertTrue(A * B * C == C * B * A);
+	    assertTrue(A * B * C * A * A * A * D == C * B * A * A * A * A * D);
 
 	    // Division 
 	    assertTrue(Polynomial(4,2,1) / 2.0 == Polynomial(2,1,0.5));
@@ -866,7 +876,8 @@ class sturm_sequence_test : public Test  {
 	    assertTrue(seq.rootCount(2,5) == 0);
 	    
 
-	    double c[] =  {1,-3,-10,34,0,-40};
+	//    double c[] =  {1,-3,-10,34,0,-40};
+	    double c[] =  {-40,0,34,-10,-3,1};
 	    seq = SturmSequence(Polynomial(c,6));
 	    assertTrue(seq.rootCount(1,3) == 1);
 	    

@@ -4,9 +4,9 @@ INCLUDES = -I$(top_srcdir)/src
 # Make bison generate the token header file parser.tab.h
 AM_YFLAGS = -d
 
-noinst_LIBRARIES = libparser.a
+noinst_LTLIBRARIES = libparser.la
 
-libparser_a_SOURCES = \
+libparser_la_SOURCES = \
 		      parser.yy		\
 		      tokenizer.ll	\
 		      assignments.h	\

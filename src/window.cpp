@@ -14,8 +14,6 @@
 #include <glib.h>
 #include <gdk/gdkkeysyms.h>
 
-extern void abortRendering();
-
 int darea_width;
 int darea_height;
 guchar* rgbbuf;
@@ -23,6 +21,7 @@ bool window_open;
 double zoom_scale;
 int zoom_center_x;
 int zoom_center_y;
+void (*abortRenderingCB)(void);
 
 gboolean on_darea_expose (GtkWidget *widget,
 	GdkEventExpose *event,
@@ -36,7 +35,7 @@ gboolean on_darea_expose (GtkWidget *widget,
 
 gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
     window_open = false;
-    abortRendering();
+    abortRenderingCB();
     gtk_main_quit();
     // TODO: Possible race. Window might be closed before all
     // renderthreads are done aborting and thus are trying to plot
@@ -48,19 +47,20 @@ gboolean keypress_event(GtkWidget* widget, GdkEventKey *event) {
     if (event->keyval == GDK_q)
     {
 	window_open = false;
-	abortRendering();
+	abortRenderingCB();
 	gtk_main_quit();
 	return FALSE;
     }
     return TRUE;
 }
 
-PreviewWindow::PreviewWindow(int width, int height) {
+PreviewWindow::PreviewWindow(int width, int height, void (*abc)(void)) {
     this->width = width;
     this->height = height;
     darea_width = width;
     darea_height = height;
     this->image = NULL;
+    abortRenderingCB = abc;
 
     zoom_scale = 4;
     zoom_center_x = width / 2;

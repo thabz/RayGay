@@ -1,9 +1,9 @@
 
 INCLUDES = -I$(top_srcdir)/src 
 
-noinst_LIBRARIES = libmath.a
+noinst_LTLIBRARIES = libmath.la
 
-libmath_a_SOURCES = vector.cpp matrix.cpp vector2.cpp functions.cpp halton.cpp  rootfinder.cpp polynomial.cpp sturmsequence.cpp
+libmath_la_SOURCES = vector.cpp matrix.cpp vector2.cpp functions.cpp halton.cpp  rootfinder.cpp polynomial.cpp sturmsequence.cpp
 
 EXTRA_DIST = vector.h 	\
              vector2.h 	\

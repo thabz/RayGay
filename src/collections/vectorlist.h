@@ -18,7 +18,7 @@ class VectorList {
 	Vector get(const unsigned int i) const;
 	void get(const unsigned int i, Vector& dest) const;
 	void get(const unsigned int i, double dest[3]) const;
-	void set(const unsigned int i, Vector v);
+	void set(const unsigned int i, const Vector& v);
 	unsigned int push_back(const Vector& w);
         void transform(const Matrix& M);
 	Vector operator[](const unsigned int i) const;
@@ -50,11 +50,11 @@ void VectorList::get(unsigned int i, double dest[3]) const {
 }
 
 inline
-void set(const unsigned int i, Vector v) {
+void VectorList::set(const unsigned int i, const Vector& w) {
     unsigned int k = i * 3;
-    v[k+0] = v[0];
-    v[k+1] = v[1];
-    v[k+2] = v[2];
+    v[k+0] = w[0];
+    v[k+1] = w[1];
+    v[k+2] = w[2];
 }
 
 inline

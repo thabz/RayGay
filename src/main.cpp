@@ -58,11 +58,10 @@ extern void delete_interpreter();
 extern void init_parser(string filename);
 extern Vector2 getImageSize();
 extern RendererSettings* getRendererSettings();
-extern void abortRendering();
 
 vector<Renderer*> active_renderers;
 
-void abortRendering() {
+void abortRenderingCB() {
     cout << "Aborting render..." << endl;
     for(unsigned int i = 0; i < active_renderers.size(); i++) {
 	active_renderers[i]->abort();
@@ -276,7 +275,7 @@ void work(string scenefile, string outputfile, int jobs) {
     PreviewWindow* preview_window = NULL;
     if (env->hasPreviewWindow()) {
 	Vector2 size = getImageSize();
-	preview_window = new PreviewWindow(int(size[0]),int(size[1]));
+	preview_window = new PreviewWindow(int(size[0]),int(size[1]), abortRenderingCB);
 	env->setPreviewWindow(preview_window);
 	preview_window->run();
     }

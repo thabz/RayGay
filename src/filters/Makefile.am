@@ -1,9 +1,9 @@
 
 INCLUDES = -I$(top_srcdir)/src 
 
-noinst_LIBRARIES = libfilters.a
+noinst_LTLIBRARIES = libfilters.la
 
-libfilters_a_SOURCES = depthoffield.cpp grayscale.cpp filterstack.cpp specularbloom.cpp gaussianblur.cpp filter.cpp sepia.cpp
+libfilters_la_SOURCES = depthoffield.cpp grayscale.cpp filterstack.cpp specularbloom.cpp gaussianblur.cpp filter.cpp sepia.cpp
 
 EXTRA_DIST = filter.h		\
 	     filterstack.h	\
