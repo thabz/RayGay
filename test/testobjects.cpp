@@ -270,15 +270,15 @@ void box_test() {
     KdTree* bsp = new KdTree();
     b->addSelf(bsp);
     bsp->prepare();
+    Intersection* inter = new Intersection();
     Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
-    assert(bsp->intersect(r));
-    Intersection* inter = bsp->getLastIntersection();
+    assert(bsp->intersect(r,inter));
     assert(inter->getPoint() == Vector(0,0,1));
     assert(inter->getObject()->getUV(*inter) == Vector2(0.5,0.5));
 
     r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
-    assert(bsp->intersect(r));
-    assert(bsp->getLastIntersection()->getPoint() == Vector(0,-1,0));
+    assert(bsp->intersect(r,inter));
+    assert(inter->getPoint() == Vector(0,-1,0));
 
     /* Test second constructor */
     b = new Box(Vector(0,0,0),2,2,2,m);
@@ -290,15 +290,15 @@ void box_test() {
     bsp->prepare();
 
     r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
-    assert(bsp->intersect(r));
-    assert(bsp->getLastIntersection()->getPoint() == Vector(0,0,1));
+    assert(bsp->intersect(r,inter));
+    assert(inter->getPoint() == Vector(0,0,1));
 
     r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
-    assert(bsp->intersect(r));
-    assert(bsp->getLastIntersection()->getPoint() == Vector(0,-1,0));
+    assert(bsp->intersect(r,inter));
+    assert(inter->getPoint() == Vector(0,-1,0));
 
     r = Ray(Vector(0,-100,1.5),Vector(0,1,0),1);
-    assert(bsp->intersect(r) == false);
+    assert(bsp->intersect(r,inter) == false);
 
     /* test clone() */
     b = new Box(Vector(-1,-1,-1),Vector(1,1,1),m);
@@ -312,12 +312,13 @@ void box_test() {
     b2->addSelf(bsp);
     bsp->prepare();
 
+    Intersection i;
     r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
-    assert(bsp->intersect(r));
+    assert(bsp->intersect(r,&i));
     r = Ray(Vector(0,10,100),Vector(0,0,-1),1);
-    assert(bsp->intersect(r));
+    assert(bsp->intersect(r,&i));
     r = Ray(Vector(0,5,100),Vector(0,0,-1),1);
-    assert(!bsp->intersect(r));
+    assert(!bsp->intersect(r,&i));
 }
 
 void mesh_test() {
@@ -378,8 +379,9 @@ void extrusion_test() {
     KdTree* bsp = new KdTree();
     c->addSelf(bsp);
     bsp->prepare();
+    Intersection i;
     Ray r = Ray(Vector(0.5,0.5,100),Vector(0,0,-1),1);
-    assert(bsp->intersect(r));
+    assert(bsp->intersect(r,&i));
 
     // Check generated mesh 
     c = new Extrusion(Vector(0,0,0),Vector(0,0,-10),2.0,5,m);
@@ -488,12 +490,13 @@ void objectgroup_test() {
     g2->addSelf(bsp);
     bsp->prepare();
 
+    Intersection i;
     Ray r = Ray(Vector(0,100,1000),Vector(0,0,-1),1);
-    assert(bsp->intersect(r));
+    assert(bsp->intersect(r,&i));
     r = Ray(Vector(0,-100,1000),Vector(0,0,-1),1);
-    assert(bsp->intersect(r));
+    assert(bsp->intersect(r,&i));
     r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-    assert(!bsp->intersect(r));
+    assert(!bsp->intersect(r,&i));
 }
 
 void torus_test() {
