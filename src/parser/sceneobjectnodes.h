@@ -5,6 +5,7 @@
 #include "objects/sceneobject.h"
 #include "objects/object.h"
 #include "objects/objectgroup.h"
+#include "objects/mesh.h"
 #include "parser/assignments.h"
 #include "parser/transformationnodes.h"
 #include "parser/materialnodes.h"
@@ -249,7 +250,7 @@ class WireframeNode : public SceneObjectNode {
 
 class MeshNode : public SceneObjectNode {
     public:
-	MeshNode(VectorListNode* verts, VectorListNode* tris, MaterialNode* m);
+	MeshNode(Mesh::MeshType type, VectorListNode* verts, VectorListNode* tris, MaterialNode* m);
 	virtual ~MeshNode();
 	SceneObject* eval();
 
@@ -258,6 +259,7 @@ class MeshNode : public SceneObjectNode {
 	VectorListNode* triangles;
 	MaterialNode* material;
 	bool eval_done;
+	Mesh::MeshType type;
 };
 
 class NamedSceneObjectNode : public SceneObjectNode {

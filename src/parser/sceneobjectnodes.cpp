@@ -20,11 +20,12 @@
 //---------------------------------------------------------------------
 // MeshNode
 //---------------------------------------------------------------------
-MeshNode::MeshNode(VectorListNode* verts, VectorListNode* tris, MaterialNode* m) {
+MeshNode::MeshNode(Mesh::MeshType type, VectorListNode* verts, VectorListNode* tris, MaterialNode* m) {
     this->vertices = verts;
     this->triangles = tris;
     this->material = m;
     this->eval_done = false;
+    this->type = type;
 }
 
 MeshNode::~MeshNode() {
@@ -38,7 +39,7 @@ SceneObject* MeshNode::eval() {
     if (eval_done) {
 	throw_exception("MeshNode::eval() called twice");
     }
-    Mesh* mesh = new Mesh(Mesh::MESH_FLAT,material->eval());
+    Mesh* mesh = new Mesh(type, material->eval());
     /// Add vertices
     vector<Vector> a = vertices->eval();
     for(unsigned int i = 0; i < a.size(); i++) {

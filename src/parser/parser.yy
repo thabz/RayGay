@@ -29,6 +29,7 @@
 #include "objects/sphere.h"    
 #include "objects/ellipsoid.h"    
 #include "objects/box.h"    
+#include "objects/mesh.h"    
 #include "objects/csg.h"    
 #include "objects/solid.h"    
 #include "objects/solidbox.h"    
@@ -69,6 +70,7 @@ MaterialNode* tmpMaterial;
 Vector2 image_size = Vector2(640,480);
 Function* tmpFunction;
 FilterStack* filter_stack;
+Mesh::MeshType mesh_type;
 
 ActionListNode* top_actions;
 
@@ -138,6 +140,7 @@ ActionListNode* top_actions;
 %token tNECKLACE
 %token tOBJECT
 %token tPATHS
+%token tPHONG tFLAT
 %token tPHOTONMAP
 %token tPINHOLE
 %token tPOSITION tLOOKAT tUP
@@ -755,11 +758,25 @@ MeshObject	: Extrusion
 		| Mesh
 		;
 
-Mesh		: tMESH '{' Material Vertices Triangles '}'
+Mesh		: tMESH '{' Material MeshType Vertices Triangles '}'
                 {
-		    $$ = new MeshNode($4,$5,$3);
+		    $$ = new MeshNode(mesh_type,$5,$6,$3);
 		}
                 ;
+
+MeshType	: /* Blank */
+                {
+		    mesh_type = Mesh::MESH_PHONG;
+		}
+                | tFLAT
+		{
+		    mesh_type = Mesh::MESH_FLAT;
+		}
+		| tPHONG
+		{
+		    mesh_type = Mesh::MESH_PHONG;
+		}
+		;
 
 Vertices	: tVERTICES '{' VectorList '}'
                 {
