@@ -86,7 +86,7 @@ class BoundingBox {
 	Vector center() const;
 
 	// Split this bbox into two by a axis-aligned plane
-	void split(BoundingBox* left, BoundingBox* right, int dim, double axis) const; 
+	bool split(BoundingBox* left, BoundingBox* right, int dim, double axis) const; 
 
     private:
 	Vector _c1; ///< The point with smallest x,y,z values

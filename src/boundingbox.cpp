@@ -314,9 +314,10 @@ bool BoundingBox::intersectSphere(const Vector& center, double squared_radius) c
     return d <= squared_radius;
 }
 
-void BoundingBox::split(BoundingBox* left, BoundingBox* right, int dim, double axis) const {
-    assert(axis < maximum()[dim]);
-    assert(axis > minimum()[dim]);
+bool BoundingBox::split(BoundingBox* left, BoundingBox* right, int dim, double axis) const {
+    if (axis > maximum()[dim] || axis < minimum()[dim]) {
+	return false;
+    }
 
     Vector split_max = maximum();
     split_max[dim] = axis;
@@ -325,5 +326,6 @@ void BoundingBox::split(BoundingBox* left, BoundingBox* right, int dim, double a
 
     (*left) = BoundingBox(minimum(),split_max);
     (*right) = BoundingBox(split_min,maximum());
+    return true;
 }
 
