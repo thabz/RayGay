@@ -20,7 +20,7 @@
 #include "objects/tetrahedron.h"
 #include "objects/tessalation.h"
 #include "objects/booleanoperand.h"
-#include "bsp.h"
+#include "space/bsp.h"
 #include "paths/linesegment.h"
 #include "paths/circle.h"
 
