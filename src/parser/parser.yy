@@ -115,6 +115,7 @@ ActionListNode* top_actions;
 %token tNUM
 %token tNORMALIZE
 %token tLENGTH
+%token tMESH tTRIANGLES tVERTICES
 %token tNOSHADOW
 %token tNECKLACE
 %token tOBJECT
@@ -143,7 +144,7 @@ ActionListNode* top_actions;
 %token tEQUAL
 %token tPLUSEQUAL tMINUSEQUAL tMULTEQUAL tDIVEQUAL
 %token tPLUSPLUS tMINUSMINUS 
-%token tIF tWHILE tDO
+%token tIF tELSE tWHILE tDO
 %token tFALSE tTRUE
 %token tBOOL_OR tBOOL_NOT tBOOL_AND tEQUALEQUAL
 
@@ -200,7 +201,6 @@ Action		: AddObject
                 | Assignment
 		| RepeatStmt
 		| Print
-		| WhileStmt
 		| WhileStmt
 		| IfStmt
 		| ModStmt 		/* $x++ */
@@ -526,8 +526,29 @@ NamedObject	: tOBJECT tVARNAME
 
 MeshObject	: Extrusion
                 | Box
+		| Mesh
 		;
 
+Mesh		: tMESH '{' Material Vertices Triangles '}'
+                {
+
+		}
+                ;
+
+Vertices	: tVERTICES '{' VerticeList '}'
+                ;
+		
+VerticeList	: Vector
+                | VerticeList Vector
+		;
+                
+Triangles	: tTRIANGLES '{' TriangleList '}'
+                ;
+
+TriangleList	: '<' Expr Expr Expr '>'
+                | TriangleList '<' Expr Expr Expr '>'
+                ;
+		
 SolidObject	: Sphere
 		| Ellipsoid
                 | SolidBox
@@ -966,7 +987,11 @@ WhileStmt	: tWHILE '(' Bool ')' '{' ActionList '}'
 
 IfStmt		: tIF '(' Bool ')' '{' ActionList '}'
                 {
-		    $$ = new IfActionNode($3,$6);
+		    $$ = new IfActionNode($3,$6,NULL);
+		}
+                | tIF '(' Bool ')' '{' ActionList '}' tELSE '{' ActionList '}'
+                {
+		    $$ = new IfActionNode($3,$6,$10);
 		}
                 ;
 

@@ -316,24 +316,33 @@ class DoWhileActionNode : public ActionNode {
 class IfActionNode : public ActionNode {
 
     public:
-	IfActionNode(BoolNode* cond, ActionListNode* list) {
+	IfActionNode(BoolNode* cond, ActionListNode* l1, ActionListNode* l2) {
 	    this->cond = cond;
-	    this->list = list;
+	    this->list1 = l1;
+	    this->list2 = l2;
 	}
 
 	virtual ~IfActionNode() {
 	    delete cond;
-	    delete list;
+	    delete list1;
+	    if (list2 != NULL) {
+		delete list2;
+	    }
 	}
 
 	void eval() {
 	    if ( cond->eval() ) {
-		list->eval();
+		list1->eval();
+	    } else {
+		if (list2 != NULL) {
+		    list2->eval();
+		}
 	    }
 	}
 
     private:
-	ActionListNode* list;
+	ActionListNode* list1;
+	ActionListNode* list2;
 	BoolNode* cond;
 };
 
