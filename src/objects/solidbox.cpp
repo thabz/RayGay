@@ -19,6 +19,8 @@ vector<Intersection> SolidBox::allIntersections(const Ray& world_ray) const {
     vector<Intersection> result;
     Ray local_ray = rayToObject(world_ray);
     Vector2 ts = bbox.intersect(local_ray);
+    ts[0] /= local_ray.t_scale;
+    ts[1] /= local_ray.t_scale;
     
     if (ts[1] < ts[0])
 	return result;
@@ -46,6 +48,8 @@ void SolidBox::transform(const Matrix& m) {
 double SolidBox::_fastIntersect(const Ray& world_ray) const {
     Ray local_ray = rayToObject(world_ray);
     Vector2 ts = bbox.intersect(local_ray);
+    ts[0] /= local_ray.t_scale;
+    ts[1] /= local_ray.t_scale;
 
     if (ts[1] < ts[0])
 	return -1;
@@ -60,8 +64,9 @@ double SolidBox::_fastIntersect(const Ray& world_ray) const {
 }
 
 /// \todo: Find UV-coordinates.
-Intersection SolidBox::_fullIntersect(const Ray& ray, const double t) const {
-    Vector point = pointToObject(ray.getPoint(t));
+Intersection SolidBox::_fullIntersect(const Ray& world_ray, const double t) const {
+    Ray local_ray = rayToObject(world_ray);
+    Vector point = local_ray.getPoint(t*local_ray.t_scale);
     Vector normal = Vector(0,0,0);
     if (IS_EQUAL(point[0],bbox.maximum()[0])) {
 	normal[0] = 1.0;

@@ -704,7 +704,12 @@ void solidbox_test() {
     // Scaled box
     b = new SolidBox(Vector(-1,-1,-1),Vector(1,1,1),NULL);
     b->transform(Matrix::matrixScale(Vector(10,20,30)));
-
+    assert(intersects(b,Vector(9,19,100),Vector(0,0,-1)));
+    assert(iPoint(b,Vector(9,19,100),Vector(0,0,-1)) == Vector(9,19,30));
+    assert(iNormal(b,Vector(9,19,100),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(intersects(b,Vector(-9,-19,-100),Vector(0,0,1)));
+    assert(iPoint(b,Vector(-9,-19,-100),Vector(0,0,1)) == Vector(-9,-19,-30));
+    assert(iNormal(b,Vector(-9,-19,-100),Vector(0,0,1)) == Vector(0,0,-1));
 }
 
 void ellipsoid_test() {
