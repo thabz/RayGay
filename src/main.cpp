@@ -45,6 +45,8 @@
 #include "renderersettings.h"
 #include "renderjobs.h"
 
+#include "filters/filterstack.h"
+
 #include "window.h"
 
 using namespace std;
@@ -111,6 +113,12 @@ void* renderThreadDo(void* obj) {
     Renderer* tracer = (Renderer*) obj;
     tracer->run();
     return NULL;
+}
+
+void do_filtering(Image* image, FilterStack* filterstack) {
+    cout << "Applying filters..." << endl;
+    filterstack->apply(image);
+    cout << "Done." << endl;
 }
 
 void render_frame(int cur_frame, string outputfile, int jobs) {
@@ -222,6 +230,15 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 	}
     }
     Stats::getUniqueInstance()->endTimer("Rendering");
+
+
+    FilterStack* filterstack = Environment::getUniqueInstance()->getFilterStack();
+    if (filterstack != NULL) {
+	Stats::getUniqueInstance()->beginTimer("Applying filters");
+	do_filtering(img,filterstack);
+	Stats::getUniqueInstance()->endTimer("Applying filters");
+    }
+
 
     img->save(outputfile);
     delete img;

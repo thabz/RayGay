@@ -7,6 +7,7 @@
 
 class ObjectCollector;
 class PreviewWindow;
+class FilterStack;
 
 class Environment {
 
@@ -15,6 +16,9 @@ class Environment {
 
 	void setScene(Scene* scene) { this->scene = scene; };
 	Scene* getScene() const { return this->scene; };
+
+	void setFilterStack(FilterStack* f) { this->filter_stack = f; };
+	FilterStack* getFilterStack() const { return this->filter_stack; };
 
 	ObjectCollector* getObjectCollector() { return this->object_collector; };
 
@@ -25,6 +29,7 @@ class Environment {
 
     private:
 	Scene* scene;
+	FilterStack* filter_stack;
 	ObjectCollector* object_collector;
 	PreviewWindow* preview_window;
 	bool has_preview_window;
@@ -35,6 +40,7 @@ class Environment {
 inline
 Environment::Environment() {
     object_collector = new ObjectCollector();
+    filter_stack = NULL;
 }
 
 inline
