@@ -47,7 +47,7 @@
 	  (make-cylinder x+y- x-y- radius material)
 	  (make-cylinder x-y- x-y+ radius material)
 	  (make-cylinder x-y+ x+y+ radius material)
-	  ;	     (make-box 
+	  ;	     (make-solid-box 
 	  ;	      (list (- w) (- w) (- radius))
 	  ;	      (list w w radius) material)
 	  )))
@@ -101,4 +101,36 @@
           (make-solid-box (list xo- y- z-) (list xo+ y+ z+) material)
           (make-solid-box (list x- yo- z-) (list x+ yo+ z+) material)
 	  (make-solid-box (list x- y- zo-) (list x+ y+ zo+) material))))
+
+
+;; Makes cylinders of all the linesegments and place
+;; spheres at all the (unique) endpoints of the linesegments.
+;; A hash should be used to determine uniqueness.
+;; The linesegments is a list of pairs of points, where a point
+;; is the using list of length 3.
+(define (make-solid-wireframe linesegments radius material)
+ (#f))
+ 
+
+;; Create an egg with a joined half-sphere and an half-ellipsoid using CSG.
+;; The ellipsoids long radius should be around (* 1.5 radius)
+(define (make-egg radius material)
+ (#f))
+ 
+
+;; Vector operations    
+(define (sum l) 
+ (if (null? l) 
+  0 (+ (car l) (sum (cdr l))))
+
+(define (.x l) (car l))
+(define (.y l) (list-ref l 1))  
+(define (.z l) (list-ref l 2))
+
+;; Normalize a vector
+(define (normalize v)
+ (let ((l (sqrt (sum (map * v v)))))
+  (if (zero? l)
+  l ;; Throw error
+  (map / v (list l l l)))))
 
