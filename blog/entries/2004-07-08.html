@@ -1,0 +1,5 @@
+<h>Pathtracer</h>
+<p>Jeg bankede lige en simpel pathtracer sammen. Nedenstående billede er har ingen almindelige lyskilder, men er udelukkende belyst med et HDRI-map. Bemærk det diffuse lys i skyggerne samt colorbleeding mellem overfladerne.</p>
+<p><a href="files/tracer55big.png"><img src="files/tracer55.png"></a></p>
+<p>Pathtracing er ret simpel metode til at beregne <i>global illumination</i>. Photonmapping gør det samme, men er meget hurtigere og laver mindre eller helt ingen støj.</p>
+<p>Når man belyser med HRDI-maps er det muligt at beregne utroligt realistiske billeder. For at gøre dette med photonmapping, skal jeg implementere <a href="http://graphics.ucsd.edu/papers/structured/">Structured Importance Sampling</a>. Dette er en metode til at konvertere et HDRI-map til en samling almindelige spotlights, som fordeles over mappets lyse områder.</p>
