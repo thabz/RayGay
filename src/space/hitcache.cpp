@@ -12,6 +12,16 @@ HitCache::~HitCache() {
     delete [] entries;
 }
 
+inline
+int HitCache::findEntryIndex(void* fromObject) const {
+    for(uint i = 0; i < size; i++) {
+	if (entries[i].fromObject == fromObject)
+	    return i;
+    }
+    return -1;
+}
+
+
 void HitCache::addEntry(void* fromObject, Object* toObject, double t) {
     int i = findEntryIndex(fromObject);
     if (i == -1) {
@@ -30,15 +40,6 @@ void HitCache::removeEntry(void* fromObject) {
     if (i == -1)
 	return;
     entries[i].fromObject = NULL;
-}
-
-inline
-int HitCache::findEntryIndex(void* fromObject) const {
-    for(uint i = 0; i < size; i++) {
-	if (entries[i].fromObject == fromObject)
-	    return i;
-    }
-    return -1;
 }
 
 

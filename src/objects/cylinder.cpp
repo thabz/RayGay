@@ -44,13 +44,6 @@ double Cylinder::_fastIntersect(const Ray& ray) const {
     return num == 0 ? -1 : roots[0];
 }
 
-Intersection Cylinder::_fullIntersect(const Ray& world_ray, const double t) const {
-    Ray ray = rayToObject(world_ray);
-    Vector p = ray.getPoint(t*ray.t_scale);
-    Vector n = getNormal(p);
-    return intersectionToWorld(Intersection(p,t,n,Vector2(0,0)));
-}
-
 inline
 Vector Cylinder::getNormal(const Vector& local_point) const {
     if (has_caps) {
@@ -64,6 +57,14 @@ Vector Cylinder::getNormal(const Vector& local_point) const {
     // of 1 in object space.
     return Vector(local_point.x(),local_point.y(),0);
 }
+
+Intersection Cylinder::_fullIntersect(const Ray& world_ray, const double t) const {
+    Ray ray = rayToObject(world_ray);
+    Vector p = ray.getPoint(t*ray.t_scale);
+    Vector n = getNormal(p);
+    return intersectionToWorld(Intersection(p,t,n,Vector2(0,0)));
+}
+
 
 
 /**

@@ -51,6 +51,11 @@ Renderer::~Renderer() {
     }
 }
 
+inline
+void Renderer::PixelBlock::reset() {
+    memset(active,(int)false,size_squared*sizeof(bool));
+}
+
 void Renderer::abort() {
     aborting = true;
 }
@@ -283,11 +288,6 @@ Renderer::PixelBlock::PixelBlock(const uint size) {
 void Renderer::PixelBlock::cleanup() {
     delete [] color;
     delete [] active;
-}
-
-inline
-void Renderer::PixelBlock::reset() {
-    memset(active,(int)false,size_squared*sizeof(bool));
 }
 
 /**

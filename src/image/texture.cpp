@@ -95,6 +95,26 @@ RGB Texture::getNormalTexel(double u, double v) const {
     return image->getRGBA(int(u*(width-1)),int(v*(height-1)));
 }
 
+#define BiCubicP(x) (x) > 0 ? (x) : 0
+
+inline
+double Texture::biCubicR(const double x) const {
+    double Pxp2, Pxp1, Px, Pxm1;
+
+    if (x > 0) {
+	Pxm1 = BiCubicP(x-1);
+	Px = x;
+	Pxp1 = x+1;
+	Pxp2 = x+2;
+	return (Pxp2*Pxp2*Pxp2 - 4*Pxp1*Pxp1*Pxp1 + 6*Px*Px*Px - 4*Pxm1*Pxm1*Pxm1);
+    } else { /* x <= 0*/
+	Pxp1 = BiCubicP(x+1);
+	Pxp2 = BiCubicP(x+2);
+	return (Pxp2*Pxp2*Pxp2 - 4*Pxp1*Pxp1*Pxp1);
+    }
+}
+
+#undef BiCubicP
 
 /**
  * Get a bicubic interpolated texel.
@@ -133,24 +153,6 @@ RGB Texture::getBiCubicTexel(double u, double v) const {
     return result / 36.0;
 }
 
-#define BiCubicP(x) (x) > 0 ? (x) : 0
-
-inline
-double Texture::biCubicR(const double x) const {
-    double Pxp2, Pxp1, Px, Pxm1;
-
-    if (x > 0) {
-	Pxm1 = BiCubicP(x-1);
-	Px = x;
-	Pxp1 = x+1;
-	Pxp2 = x+2;
-	return (Pxp2*Pxp2*Pxp2 - 4*Pxp1*Pxp1*Pxp1 + 6*Px*Px*Px - 4*Pxm1*Pxm1*Pxm1);
-    } else { /* x <= 0*/
-	Pxp1 = BiCubicP(x+1);
-	Pxp2 = BiCubicP(x+2);
-	return (Pxp2*Pxp2*Pxp2 - 4*Pxp1*Pxp1*Pxp1);
-    }
-}
 
 /**
  * Get a bilinear interpolated texel.
