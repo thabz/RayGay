@@ -34,6 +34,8 @@ Lightinfo Spotlight::getLightinfo(const Intersection& inter, const Vector& norma
 	Ray ray_to_light = Ray(inter.getPoint(),info.direction_to_light,-1.0);
 	bool in = space->intersectForShadow(ray_to_light);
 	info.intensity =  in ? 0.0 : 1.0;
+	// TODO: This code sucks... Where is bool in used?
+	// TODO: Check that shadowing object is in front of light
 
 	// Angle between light-direction and direction from light to incident
 	double b = (double(-1) * info.direction_to_light) * _dir;

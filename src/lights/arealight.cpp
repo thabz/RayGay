@@ -58,8 +58,10 @@ Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& norma
     Lightinfo info;
     Vector direction_to_light;
     info.direction_to_light = position - inter.getPoint();
+    double dist_to_light = info.direction_to_light.length();
     info.direction_to_light.normalize();
     info.cos = info.direction_to_light * normal;
+
     if (info.cos > 0.0) {
 	int count = 0;
 	for(int i = 0; i < num; i++) {
@@ -68,7 +70,13 @@ Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& norma
 
 	    Stats::getUniqueInstance()->inc("Shadow rays cast");
 	    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
-	    if (space->intersectForShadow(ray_to_light,hints[i])) {
+	    // Check that shadowing object is in front of light
+	    bool in = space->intersectForShadow(ray_to_light,hints[i]);
+	    if (space->getLastIntersection()->getT() > dist_to_light) {
+		in = false;
+	    }
+
+	    if (in) {
 		hints[i] = space->getLastIntersection()->getObject();
 	    } else {
 		count++;
