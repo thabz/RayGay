@@ -62,7 +62,7 @@
 			img 
 			(/ (+ x num) (* 2 num)) 
 			(/ (+ y num) (* 2 num)))
-		      'kd 0.8
+		      'kd 1.0
 		      'ks 0.0)))))
 	    (iterx (+ x 1)))))
       (itery (+ y 1)))))
