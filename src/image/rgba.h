@@ -22,8 +22,16 @@ class RGBA : public RGB {
 
 	/// Scale RGBA
 	RGBA operator*(double c) const;
+	/// Scale RGBA
+	RGBA operator/(double c) const;
 	/// Add another RGBA
 	RGBA operator+(const RGBA& c) const;
+        /// Addition
+	RGBA operator+=(const RGBA& c);
+        /// Subtraction
+	RGBA operator-=(const RGBA& c);
+	/// Comparator
+	bool operator==(const RGBA& c) const;
 
     private:
 	double alpha;
@@ -55,9 +63,35 @@ RGBA RGBA::operator*(double c) const {
 }
 
 inline
+RGBA RGBA::operator/(double c) const {
+     return RGBA(r()/c,g()/c,b()/c,alpha/c);
+}
+
+inline
 RGBA RGBA::operator+(const RGBA& c) const {
      return RGBA(r()+c.r(),g()+c.g(),b()+c.b(),a()+c.a());
 }
 
+inline
+RGBA RGBA::operator+=(const RGBA& c) {
+    (*this) += c;
+    alpha += c.a();
+    return (*this);
+}
+
+inline
+RGBA RGBA::operator-=(const RGBA& c) {
+    (*this) -= c;
+    alpha -= c.a();
+    return (*this);
+}
+
+inline
+bool RGBA::operator==(const RGBA& x) const {
+    return IS_EQUAL(r(),x.r()) &&
+           IS_EQUAL(g(),x.g()) &&
+           IS_EQUAL(b(),x.b()) &&
+           IS_EQUAL(a(),x.a());
+}
 #endif
 
