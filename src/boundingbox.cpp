@@ -10,7 +10,6 @@
 #include "intersection.h"
 #include "matrix.h"
 #include "rgb.h"
-#include "material.h"
 #include "constants.h"
 
 BoundingBox::BoundingBox() {
@@ -121,7 +120,7 @@ bool BoundingBox::checkIntersect(const Ray& ray) const {
     Vector v_inv = ray.inv_direction;
     Vector v = ray.direction;
 
-    double t,tmin, tmax, tymin, tymax, tzmin, tzmax; 
+    double tmin, tmax, tymin, tymax, tzmin, tzmax; 
 
     if (v[0] >= 0) { 
 	tmin = (_c1[0] - B[0]) * v_inv[0]; 
