@@ -18,6 +18,7 @@
 #include "paths/spiral.h"
 #include "paths/circle.h"
 #include "paths/linesegment.h"
+#include "objects/objectgroup.h"    
 #include "objects/cylinder.h"    
 #include "objects/extrusion.h"    
 #include "objects/sphere.h"    
@@ -31,6 +32,7 @@
 #include "materials/material.h"    
 
 #include "camera.h"    
+#include "exception.h"    
 #include "scene.h"    
 #include "renderersettings.h"
 
@@ -39,6 +41,7 @@ using namespace std;
 map<string,double> doubleMap;
 map<string,Path*> pathMap;
 map<string,Material*> materialMap;
+map<string,SceneObject*> objectMap;
 
 void yyerror(string s);
 extern int yylex(void);
@@ -49,6 +52,8 @@ double getNamedDouble(string* name);
 void setNamedDouble(string* name, double val);
 Material* getNamedMaterial(string* name);
 void setNamedMaterial(string* name, Material* material);
+SceneObject* getNamedObject(string* name);
+void setNamedObject(string* name, SceneObject* obj);
 
 Camera* camera;
 Scene* scene;
@@ -87,6 +92,7 @@ Vector2 image_size = Vector2(640,480);
 %token tETA
 %token tEXTRUSION
 %token tFOV
+%token tGROUP
 %token tIMAGE tWIDTH tHEIGHT tASPECT
 %token tLINESEGMENT tSPIRAL tCIRCLE
 %token tKD tKS tKT tSPECPOW tGLOSS
@@ -97,6 +103,7 @@ Vector2 image_size = Vector2(640,480);
 %token tNUM
 %token tNOSHADOW
 %token tNECKLACE
+%token tOBJECT
 %token tPHOTONMAP
 %token tPOSITION tLOOKAT tUP
 %token tPRINT
@@ -127,6 +134,8 @@ Vector2 image_size = Vector2(640,480);
 %type <matrix> Rotate Translate Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
+%type <object> ObjectGroup GroupItems GroupItem
+%type <object> NamedObject
 %type <material> MaterialDef NamedMaterial Material
 %type <light> LightDef Lightsource Arealight Spotlight Pointlight Skylight
 %type <path> NamedPath Circle Spiral Path PathDef LineSegment
@@ -171,6 +180,10 @@ AssignName	: tSTRING '=' PathDef
                 | tSTRING '=' MaterialDef 
                 {
 		    setNamedMaterial($1, $3);
+                }
+                | tSTRING '=' Object
+                {
+		    setNamedObject($1, $3);
                 }
                 ;
 
@@ -397,12 +410,20 @@ Object		: SolidObject
                 | Necklace 
 		| Wireframe
 		| MeshObject 
+		| ObjectGroup
+		| NamedObject
 		| Object Transformations
                 {
 		    $$ = $1;
 		    $$->transform(*$2);
                 }
 		;
+
+NamedObject	: tOBJECT tSTRING
+                {
+		    $$ = getNamedObject($2)->clone();
+		}
+                ;
 
 MeshObject	: Extrusion
                 | Box
@@ -421,6 +442,28 @@ SolidObject	: Sphere
 		    $$->transform(*$2);
 		}
 		;
+
+ObjectGroup	: tGROUP '{' GroupItems '}'
+                {
+		    $$ = $3;
+		}
+                ;
+
+GroupItems	: GroupItem
+                {
+		    ObjectGroup* og = new ObjectGroup();
+		    og->addObject($1);
+		    $$ = og;
+		}
+                | GroupItems GroupItem
+                {
+		    ObjectGroup* og = dynamic_cast<ObjectGroup*>($1);
+		    og->addObject($2);
+		    $$ = og;
+		}
+		;
+
+GroupItem	: Object;		
 
 Extrusion	: tEXTRUSION '{' Material Path Expr Expr Expr '}'
                 {
@@ -697,7 +740,12 @@ void yyerror(string s) {
 }
 
 Path* getNamedPath(string* name) {
-    return pathMap[*name];
+    Path* result = pathMap[*name];
+    if (result == NULL) {
+	throw_exception("Path named '" + *name + "' not defined.");
+    } else {
+	return result;
+    }
 }
 
 void setNamedPath(string* name, Path* path) {
@@ -712,8 +760,26 @@ void setNamedDouble(string* name, double val) {
     doubleMap[*name] = val;
 }
 
+SceneObject* getNamedObject(string* name) {
+    SceneObject* result = objectMap[*name];
+    if (result == NULL) {
+	throw_exception("Object named '" + *name + "' not defined.");
+    } else {
+	return result;
+    }
+}
+
+void setNamedObject(string* name, SceneObject* obj) {
+    objectMap[*name] = obj;
+}
+
 Material* getNamedMaterial(string* name) {
-    return materialMap[*name];
+    Material* result = materialMap[*name];
+    if (result == NULL) {
+	throw_exception("Material named '" + *name + "' not defined.");
+    } else {
+	return result;
+    }
 }
 
 void setNamedMaterial(string* name, Material* material) {

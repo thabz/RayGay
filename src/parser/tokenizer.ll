@@ -8,6 +8,7 @@
 #include "image/texture.h"
 #include "paths/spiral.h"
 #include "paths/circle.h"
+#include "objects/objectgroup.h"    
 #include "objects/sphere.h"    
 #include "objects/solidbox.h"    
 #include "objects/necklace.h"    
@@ -46,6 +47,7 @@ finalgatherrays return tFINALGATHERRAYS;
 fov		return tFOV;
 globalphotons  	return tGLOBALPHOTONS;
 gloss		return tGLOSS;
+group		return tGROUP;
 height		return tHEIGHT;
 intersection	return tINTERSECTION;
 image		return tIMAGE;
@@ -61,6 +63,7 @@ none		return tNONE;
 noshadow	return tNOSHADOW;
 num		return tNUM;
 necklace	return tNECKLACE;
+object		return tOBJECT;
 photonmap	return tPHOTONMAP;
 photontracer	return tPHOTONTRACER;
 power		return tPOWER;
