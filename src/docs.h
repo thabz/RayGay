@@ -7,6 +7,8 @@
  *
  * Copyright 2003-2004 by Jesper Christensen <jesper@kalliope.org>
  *
+ * \ref page_gay_talk
+ *
  * \ref page_raytracing 
  *
  * \ref page_photonmapping
@@ -55,3 +57,42 @@
  * This paper introduces precomputing irradiance estimates at photon positions.
  */
 
+/**
+ * \page page_gay_talk GayTalk fileformat
+ *
+ * \section sec_obj Objects
+ * 
+ * \subsection sec_obj_ellipsoid ellipsoid { MATERIAL CENTER RADII }
+ * \subsection sec_obj_ellipsoid2 ellipsoid { CENTER RADII }
+ *
+ * Inserts an ellipsoid into the current container.
+ *
+ * @param MATERIAL The material 
+ * @param POSITION The center position of the ellipsoid 
+ * @param RADII The x,y,z radii of the ellipsoid expressed as a vector
+ *
+ * \subsection sec_obj_sphere sphere { MATERIAL RADIUS CENTER } TRANSFORMATIONS
+ * \subsection sec_obj_sphere2 sphere { RADIUS CENTER } TRANSFORMATIONS
+ *
+ * Inserts a sphere into the current container. 
+ * \attention Note that scaling transformations doesn't affect a sphere. Use 
+ * an \ref sec_obj_ellipsoid instead.
+ *
+ * @param MATERIAL The material
+ * @param RADIUS The radius of the sphere
+ * @param CENTER The center vector
+ *
+ * \subsection sec_obj_blob blob { MATERIAL ISO WEIGHT STEPS ACCURACY GROUP }
+ *
+ * Inserts a blob into the current container.
+ *
+ * @param MATERIAL The material 
+ * @param STEPS The isosurface steps parameter
+ * @param ACCURACY The isosurface accuracy parameter
+ *
+ * \section sec_paths Paths
+ *
+ * circle { CENTER RADIUS NORMAL }
+ *
+ * spiral { PATH RADIUS WINDINGS OFFSET }
+ */ 
