@@ -9,7 +9,7 @@ photonmap globalphotons 100000
 photonmap causticphotons 10000
 photonmap estimate-radius 50
 photonmap estimate-samples 500
-photonmap final-gather-rays 0
+photonmap final-gather-rays 100
 
 camera-position 0 180 1100
 camera-up 0 1 0
