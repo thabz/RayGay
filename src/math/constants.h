@@ -30,7 +30,7 @@
 #define IS_POSITIVE(p)	(p > -EPSILON)
 #define IS_NEGATIVE(p)	(p < EPSILON)
 
-#define IS_ZERO(p)	((p) < EPSILON && (p) > -EPSILON)
+#define IS_ZERO(p)	(fabs(p) < EPSILON)
 #define IS_EQUAL(x,y)	(IS_ZERO((x)-(y)))
 
 #define IS_LESS_THAN(a,b) 	IS_POSITIVE(((b) - (a)))
