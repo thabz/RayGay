@@ -1,0 +1,11 @@
+
+/*
+ * A scenefile for testing float operations.
+ * See test/testparser.cpp.
+ * 
+ */
+
+$a = 1
+$b = 2
+$c = $a + $b
+$d = 2 * $a

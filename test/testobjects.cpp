@@ -2,7 +2,7 @@
 #include <config.h>
 #endif
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <cassert>
 #include <iostream>
 
