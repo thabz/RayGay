@@ -20,7 +20,7 @@
 // Don't check for best split in all 3 dimensions when number
 // of objects in a node exceeds this value. Then just use largest
 // dimension of bbox as best dimension.
-#define KD_TREE_MAX_ELEMENTS_IN_FULL_SPLIT_CHECK 250
+#define KD_TREE_MAX_ELEMENTS_IN_FULL_SPLIT_CHECK 25
 
 #define NO_STATS
 
@@ -468,40 +468,42 @@ BoundingBox KdTree::enclosure(vector<BoundedObject*>* bs) const {
     return result;
 }
 
-unsigned int g_d;
-
 class cmpL {
     public:
-	bool operator()(const BoundedObject* p1, const BoundedObject* p2) {
-	    return p1->bbox.minimum(g_d) < p2->bbox.minimum(g_d);
+	cmpL(unsigned int d) { this->d = d; } 
+	bool operator()(const BoundedObject* p1, const BoundedObject* p2) const {
+	    return p1->bbox.minimum(d) < p2->bbox.minimum(d);
 	}
+    private:
+	unsigned int d;
 };
 
 class cmpR {
     public:
-	bool operator()(const BoundedObject* p1, const BoundedObject* p2) {
-	    return p1->bbox.maximum(g_d) < p2->bbox.maximum(g_d);
+	cmpR(unsigned int d) { this->d = d; }
+	bool operator()(const BoundedObject* p1, const BoundedObject* p2) const {
+	    return p1->bbox.maximum(d) < p2->bbox.maximum(d);
 	}
+    private:
+	unsigned int d;
 };
 
-void KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result, int split_dim) const {
-    int d = split_dim;
+void KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result, int d) const {
+    assert(d == 0 || d == 1 || d == 2);
+
     double split;
     Vector bbox_lenghts = bbox.maximum() - bbox.minimum();
     unsigned int size = result.left_bobjects->size();
     double lowest_cost = 0.9*size*bbox.area();
-
-    assert(g_d == 0 || g_d == 1 || g_d == 2);
-
-    g_d = d;
 
     double cap_a = 2 * bbox_lenghts[(d+1)%3] * bbox_lenghts[(d+2)%3];
     double cap_p = 2 * bbox_lenghts[(d+1)%3] + 2 * bbox_lenghts[(d+2)%3];
     vector<BoundedObject*>* left_bobjects = result.left_bobjects;
     vector<BoundedObject*>* right_bobjects = result.right_bobjects;
 
-    sort(left_bobjects->begin(), left_bobjects->end(), cmpL());
-    sort(right_bobjects->begin(), right_bobjects->end(), cmpR());
+    sort(left_bobjects->begin(), left_bobjects->end(), cmpL(d));
+    sort(right_bobjects->begin(), right_bobjects->end(), cmpR(d));
+    result.current_sort_dim = d;
 
     unsigned int l = 0;
     unsigned int r = 0;
@@ -576,9 +578,11 @@ bool KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result) con
 	return false;
     } else {
 	//cout << "Split " << size << " into " << result.left_index << "," << size - result.right_index << endl;
-	g_d = result.dim;
-	sort(result.left_bobjects->begin(), result.left_bobjects->end(), cmpL());
-	sort(result.right_bobjects->begin(), result.right_bobjects->end(), cmpR());
+	if (result.current_sort_dim != result.dim) {
+	    sort(result.left_bobjects->begin(), result.left_bobjects->end(), cmpL(result.dim));
+	    sort(result.right_bobjects->begin(), result.right_bobjects->end(), cmpR(result.dim));
+	    result.current_sort_dim = result.dim;
+	}
 	return true;
     }
 }

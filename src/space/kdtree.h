@@ -85,6 +85,7 @@ class KdTree {
 		CostResult();
 		int dim; //> Output
 		double axis; //> Output
+		int current_sort_dim;
 		std::vector<BoundedObject*>* left_bobjects; //> Input
 		std::vector<BoundedObject*>* right_bobjects; //> Input
 		unsigned int left_index; //> Output
