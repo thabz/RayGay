@@ -53,5 +53,6 @@ EXTRA_DIST = boundingbox.h	\
 	     renderersettings.h	\
 	     renderjobs.h	\
 	     scene.h 		\
-	     stats.h		
+	     stats.h		\
+	     types.h
 
