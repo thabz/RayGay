@@ -18,3 +18,9 @@ $h = 10
 $h--
 $i = 10
 $i -= 2
+$j1 = sin(PI/2)
+$j2 = sin(PI)
+$k1 = cos(PI)
+$k2 = cos(0)    
+$l1 = abs(1)
+$l2 = abs(-1)    
