@@ -109,6 +109,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     //Stats::getUniqueInstance()->disable();
     Stats::getUniqueInstance()->put(STATS_THREADS,jobs);
 
+    srand(1); // Make sure rand is seeded consistently.
 
     RendererSettings* renderersettings = getRendererSettings();
 
