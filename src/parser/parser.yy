@@ -45,6 +45,7 @@ map<string,SceneObject*> objectMap;
 
 void yyerror(string s);
 extern int yylex(void);
+extern int line_num;
 
 Path* getNamedPath(string* name);
 void setNamedPath(string* name, Path* path);
@@ -762,7 +763,7 @@ Expr		: tSIN '(' Expr ')'
     /* Additional C code */
 
 void yyerror(string s) {
-    cout << "Error: " << s << endl;
+    cout << "Error: " << s << " at line " << line_num << endl;
     exit(1);
 }
 

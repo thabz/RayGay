@@ -16,6 +16,7 @@
 #include "parser.h"
 using namespace std;
 
+int line_num = 1;
 %}
 
 alpha	[a-zA-Z]
@@ -25,13 +26,13 @@ string	{alpha}({alpha}|{digit}|{special})*
 %x comment
 
 %%
-[ \t\n]		;
+[ \t]		;
 "/*"		BEGIN(comment);
 <comment>[^*\n]*        /* eat anything that's not a '*' */
 <comment>"*"+[^*/\n]*   /* eat up '*'s not followed by '/'s */
-<comment>\n             ;
+<comment>\n             line_num++;
 <comment>"*"+"/"        BEGIN(INITIAL);
-
+\n		line_num++;
 aa		return tAA;
 abs		return tABS;
 area		return tAREA;
