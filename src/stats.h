@@ -54,10 +54,21 @@ class CounterStats : public Statistics
 	void inc(double amount);
 	void put(double value);
 
+	virtual void out() const;
+
+    protected:
+	double value;
+};
+
+class PercentageStats : public CounterStats
+{
+    public:
+	PercentageStats(string group, string name);
+	void setTotal(double value);
 	void out() const;
 
     private:
-	double value;
+	double total;
 };
 
 

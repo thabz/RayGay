@@ -184,3 +184,27 @@ void CounterStats::out() const {
     cout << long(value);
 }
 
+///////////////////////////////////////////////////
+// PercentageStats
+///////////////////////////////////////////////////
+
+PercentageStats::PercentageStats(string g, string n) : CounterStats(g,n)
+{
+    total = 1.0;
+}
+
+void PercentageStats::setTotal(double value)
+{
+    total = value;
+}
+
+void PercentageStats::out() const 
+{
+    if (total != 0.0) {
+	double percentage = 100.0 * value / total;
+	cout << percentage << "%";
+    } else {
+	cout << "N/A";
+    }
+}
+
