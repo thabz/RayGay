@@ -33,6 +33,19 @@ Vector2 Importer::getImageSize() const {
     }
 }
 
+void Importer::putNamedObject(const string& key, SceneObject* obj) {
+    named_objects[key] = obj;
+}
+
+SceneObject* Importer::getNamedObject(const string& key) {
+    SceneObject* result = named_objects[key];
+    if (result == NULL) {
+	cerr << "Unknown named object '" << key << "'" << endl;
+        exit(EXIT_FAILURE);
+    }
+    return result;
+}
+
 Vector readVector(std::ifstream& stream) {
     double d1,d2,d3;
     stream >> d1;
@@ -63,6 +76,7 @@ Material* Importer::lookupMaterial(const string& material_name) {
     Material* material = materials[material_name];
     if (material == NULL) {
 	cerr << "Unknown material '" << material_name << "'" << endl;
+        exit(EXIT_FAILURE);
     }
     return material;
 }
@@ -71,6 +85,7 @@ Path* Importer::lookupPath(const string& path_name) {
     Path* path = paths[path_name];
     if (path == NULL) {
 	cerr << "Unknown path '" << path_name << "'" << endl;
+        exit(EXIT_FAILURE);
     }
     return path;
 }
@@ -96,6 +111,10 @@ void Importer::parse() {
     std::string str1;
     std::string str2;
     std::string str3;
+
+    bool naming_object = false;
+    string object_name;
+    SceneObject* cur_object = NULL;
 
     Camera* camera = new Camera();
     scene->setCamera(camera);
@@ -150,6 +169,13 @@ void Importer::parse() {
 	    cur_material->setKs(readDouble(stream));
 	} else if (command == "texturemap") {
 	    cur_material->setTexturemap(readString(stream));
+	} else if (command == "name") {
+	    object_name = readString(stream);
+	    naming_object = true;
+	    cur_object = NULL;
+	} else if (command == "object") {
+	    object_name = readString(stream);
+	    cur_object = getNamedObject(object_name);
 	} else if (command == "circle") {
 	    stream >> str1;
 	    Vector center = readVector(stream);
@@ -202,30 +228,26 @@ void Importer::parse() {
 	    double r = readDouble(stream);
 	    int segments = readInt(stream);
 	    int pieces = readInt(stream);
-	    Extrusion* e = new Extrusion(*p,r,segments,pieces,*m);
-	    scene->addObject(e);
+	    cur_object = new Extrusion(*p,r,segments,pieces,*m);
 	} else if (command == "sphere") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
 	    double r = readDouble(stream);
 	    Vector c = readVector(stream);
-	    Sphere* s = new Sphere(c,r,*m);
-	    scene->addObject(s);
+	    cur_object = new Sphere(c,r,*m);
 	} else if (command == "cylinder") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
 	    double r = readDouble(stream);
 	    Vector c1 = readVector(stream);
 	    Vector c2 = readVector(stream);
-	    Cylinder* cyl = new Cylinder(c1,c2,r,*m);
-	    scene->addObject(cyl);
+	    cur_object = new Cylinder(c1,c2,r,*m);
 	} else if (command == "box") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
 	    Vector c1 = readVector(stream);
 	    Vector c2 = readVector(stream);
-	    Box* box = new Box(c1,c2,*m);
-	    scene->addObject(box);
+	    cur_object = new Box(c1,c2,*m);
 	} else if (command == "necklace") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
@@ -233,8 +255,18 @@ void Importer::parse() {
 	    Path* p = lookupPath(str1);
 	    int num = readInt(stream);
 	    double r = readDouble(stream);
-	    Necklace* necklace = new Necklace(*p,num,r,*m);
-	    scene->addObject(necklace);
+	    cur_object = new Necklace(*p,num,r,*m);
+	} else if (command == "rotate") {
+	    SceneObject* obj = getNamedObject(readString(stream));
+	    Vector axis = readVector(stream);
+	    double angle = readDouble(stream);
+	    Matrix m = Matrix::matrixRotate(axis,angle);
+	    obj->transform(m);
+	} else if (command == "translate") {
+	    SceneObject* obj = getNamedObject(readString(stream));
+	    Vector axis = readVector(stream);
+	    Matrix m = Matrix::matrixTranslate(axis);
+	    obj->transform(m);
 	} else if (command[0] == '#') {
 	    // Comment. Ignore rest of line.
 	    while (stream.get() != '\n') {
@@ -242,6 +274,16 @@ void Importer::parse() {
 	} else {
             cerr << "Unknown " << command << endl;
 	    exit(EXIT_FAILURE);
+	}
+
+	if (cur_object != NULL) {
+	    if (naming_object) {
+		putNamedObject(object_name,cur_object);
+		naming_object = false;
+	    } else {
+		scene->addObject(cur_object);
+	    }
+	    cur_object = NULL;
 	}
     }
 }

@@ -10,6 +10,7 @@ class Scene;
 class Material;
 class Path;
 class Vector2;
+class SceneObject;
 
 class Importer {
 
@@ -24,9 +25,13 @@ class Importer {
 	Material* lookupMaterial(const string& name);
 	Material* initMaterial(const string& name);
 
+	void putNamedObject(const string& key, SceneObject* obj);
+	SceneObject* getNamedObject(const string& key);
+
 	string filename;
 	map<string,Material*> materials;
 	map<string,Path*> paths;
+	map<string,SceneObject*> named_objects;
 	Scene* scene;
 
 	double ratio;
