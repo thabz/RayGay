@@ -18,7 +18,7 @@ class SolidBox : public Solid, public Transformer {
 	SolidBox(const Vector corner1, const Vector corner2, const Material* mat);
 
 	bool inside(const Vector &p) const;
-	vector<Intersection> allIntersections(const Ray& ray) const;
+	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
 	BoundingBox boundingBoundingBox() const;
 	SceneObject* clone() const;

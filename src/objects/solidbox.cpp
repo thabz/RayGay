@@ -15,15 +15,14 @@ SceneObject* SolidBox::clone() const {
     return new SolidBox(*this);
 }
 
-vector<Intersection> SolidBox::allIntersections(const Ray& world_ray) const {
-    vector<Intersection> result;
+void SolidBox::allIntersections(const Ray& world_ray, vector<Intersection>& result) const {
     Ray local_ray = rayToObject(world_ray);
     Vector2 ts = bbox.intersect(local_ray);
     ts[0] /= local_ray.t_scale;
     ts[1] /= local_ray.t_scale;
     
     if (ts[1] < ts[0])
-	return result;
+	return;
 	    
     if (ts[0] > EPSILON) {
 	Intersection i = fullIntersect(world_ray,ts[0]);
@@ -38,7 +37,6 @@ vector<Intersection> SolidBox::allIntersections(const Ray& world_ray) const {
     if (result.size() == 1) {
 	result[0].isEntering(false);
     }
-    return result;
 }
 
 void SolidBox::transform(const Matrix& m) {

@@ -166,24 +166,35 @@ void work(string scenefile, string outputfile,int jobs) {
     RenderJobPool* job_pool = new RenderJobPool();
     prepareJobPool(job_pool,img,64);
 
-    // Spawn renderer threads
     Stats::getUniqueInstance()->beginTimer("Rendering");
-    Renderer* renderers[renderersettings->threads_num];
-    pthread_t threads[renderersettings->threads_num];
-    for(int i = 0; i < renderersettings->threads_num; i++) {
-	if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
-	    renderers[i] = new PhotonRenderer(renderersettings,img,scene,space,job_pool,i,globalphotonmap,causticsmap,irradiancecache);
-	} else if (renderersettings->renderertype == RendererSettings::RAYTRACER) {
-	    renderers[i] = new Raytracer(renderersettings,img,scene,space,job_pool,i);
-	} else {
-	    throw_exception("Unknown renderer");
-	}
-	pthread_create(&threads[i], NULL, renderThreadDo, renderers[i]);
-    }
 
-    // Wait for threads to finish
-    for(int i = 0; i < renderersettings->threads_num; i++) {
-	pthread_join(threads[i], NULL);
+    if (renderersettings->threads_num == 1) {
+	Renderer* renderer = NULL;
+	if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
+	    renderer = new PhotonRenderer(renderersettings,img,scene,space,job_pool,0,globalphotonmap,causticsmap,irradiancecache);
+	} else if (renderersettings->renderertype == RendererSettings::RAYTRACER) {
+	    renderer = new Raytracer(renderersettings,img,scene,space,job_pool,0);
+	}
+	renderer->run();
+    } else {
+	// Spawn renderer threads
+	Renderer* renderers[renderersettings->threads_num];
+	pthread_t threads[renderersettings->threads_num];
+	for(int i = 0; i < renderersettings->threads_num; i++) {
+	    if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
+		renderers[i] = new PhotonRenderer(renderersettings,img,scene,space,job_pool,i,globalphotonmap,causticsmap,irradiancecache);
+	    } else if (renderersettings->renderertype == RendererSettings::RAYTRACER) {
+		renderers[i] = new Raytracer(renderersettings,img,scene,space,job_pool,i);
+	    } else {
+		throw_exception("Unknown renderer");
+	    }
+	    pthread_create(&threads[i], NULL, renderThreadDo, renderers[i]);
+	}
+
+	// Wait for threads to finish
+	for(int i = 0; i < renderersettings->threads_num; i++) {
+	    pthread_join(threads[i], NULL);
+	}
     }
     Stats::getUniqueInstance()->endTimer("Rendering");
 

@@ -172,10 +172,9 @@ SceneObject* Cylinder::clone() const {
     return new Cylinder(*this);
 }
 
-vector<Intersection> Cylinder::allIntersections(const Ray& ray) const {
+void Cylinder::allIntersections(const Ray& ray, vector<Intersection>& result) const {
     double roots[2];
     int num = allPositiveRoots(ray,roots);
-    vector<Intersection> result;
     result.reserve(num);
     for(int i = 0; i < num; i++) {
 	Intersection inter = fullIntersect(ray,roots[i]);
@@ -187,6 +186,6 @@ vector<Intersection> Cylinder::allIntersections(const Ray& ray) const {
 	result[0].isEntering(true);
 	result[1].isEntering(false);
     }
-    return result;
+    return;
 }
 

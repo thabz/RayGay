@@ -78,8 +78,7 @@ double Sphere::_fastIntersect(const Ray& ray) const {
     return -1;
 }
 
-vector<Intersection> Sphere::allIntersections(const Ray& ray) const {
-    vector<Intersection> result;// = vector<Intersection>(2);
+void Sphere::allIntersections(const Ray& ray, vector<Intersection>& result) const {
 
     Vector v = ray.getDirection();
     double QmP[3];
@@ -117,7 +116,6 @@ vector<Intersection> Sphere::allIntersections(const Ray& ray) const {
 	   result.push_back(i1);
        }
     }
-    return result;
 }
 
 ostream & operator<<(ostream &os, const Sphere &s) {

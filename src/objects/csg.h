@@ -20,7 +20,7 @@ class CSG : public Solid {
 	/// Constructor
 	CSG(Solid* left, CSGOperation op, Solid* right, const Material* mat); 
 	bool inside(const Vector& point) const;
-	vector<Intersection> allIntersections(const Ray& ray) const;
+	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
 	void transform(const Matrix& m);
 	BoundingBox boundingBoundingBox() const;

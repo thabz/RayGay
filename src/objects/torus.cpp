@@ -123,10 +123,9 @@ SceneObject* Torus::clone() const {
     return new Torus(*this);
 }
 
-vector<Intersection> Torus::allIntersections(const Ray& ray) const {
+void Torus::allIntersections(const Ray& ray, vector<Intersection>& result) const {
     double roots[4];
     int num = allPositiveRoots(ray,roots);
-    vector<Intersection> result;
     result.reserve(num);
     bool entering = (num % 2) == 0;
     for(int i = 0; i < num; i++) {
@@ -135,5 +134,4 @@ vector<Intersection> Torus::allIntersections(const Ray& ray) const {
 	entering = !entering;
 	result.push_back(inter);
     }
-    return result;
 }

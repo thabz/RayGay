@@ -27,7 +27,7 @@ class Cylinder : public Solid, public Transformer {
 	BoundingBox boundingBoundingBox() const;
 
 	SceneObject* clone() const;
-	vector<Intersection> allIntersections(const Ray& ray) const;
+	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
     private:
 	double _fastIntersect(const Ray& ray) const;

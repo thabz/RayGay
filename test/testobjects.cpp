@@ -102,7 +102,7 @@ void sphere_test() {
     s = Sphere(Vector(0,0,0),20.0,m);
     vector<Intersection> result;
     Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
-    result = s.allIntersections(ray);
+    s.allIntersections(ray,result);
     assert(result.size() == 2);
     assert(result[0].getPoint() == Vector(0,0,20));
     assert(result[0].isEntering() == true);
@@ -110,7 +110,8 @@ void sphere_test() {
     assert(result[1].isEntering() == false);
 
     ray = Ray(Vector(0,0,-100),Vector(0,0,1),-1);
-    result = s.allIntersections(ray);
+    result.clear();
+    s.allIntersections(ray,result);
     assert(result.size() == 2);
     assert(result[0].getPoint() == Vector(0,0,-20));
     assert(result[0].isEntering() == true);
@@ -118,13 +119,15 @@ void sphere_test() {
     assert(result[1].isEntering() == false);
 
     ray = Ray(Vector(0,0,0),Vector(0,0,1),-1);
-    result = s.allIntersections(ray);
+    result.clear();
+    s.allIntersections(ray,result);
     assert(result.size() == 1);
     assert(result[0].getPoint() == Vector(0,0,20));
     assert(result[0].isEntering() == false);
 
     ray = Ray(Vector(0,0,0),Vector(0,0,-1),-1);
-    result = s.allIntersections(ray);
+    result.clear();
+    s.allIntersections(ray,result);
     assert(result.size() == 1);
     assert(result[0].getPoint() == Vector(0,0,-20));
     assert(result[0].isEntering() == false);
@@ -304,7 +307,7 @@ void cylinder_test() {
     cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
     vector<Intersection> result;
     Ray ray = Ray(Vector(0,5,1000),Vector(0,0,-1),-1);
-    result = cyl->allIntersections(ray);
+    cyl->allIntersections(ray,result);
     assert(result.size() == 2);
     assert(result[0].getPoint() == Vector(0,5,10));
     assert(result[1].getPoint() == Vector(0,5,-10));
@@ -312,7 +315,8 @@ void cylinder_test() {
     // Intersect with caps (z-axis aligned)
     cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,true,m);
     ray = Ray(Vector(0,0,50),Vector(0,0,-1),-1);
-    result = cyl->allIntersections(ray);
+    result.clear();
+    cyl->allIntersections(ray,result);
     assert(result.size() == 2);
     assert(result[0].getPoint() == Vector(0,0,10));
     assert(result[0].getNormal() == Vector(0,0,1));
@@ -322,7 +326,8 @@ void cylinder_test() {
     // Intersect with caps (y-axis aligned)
     cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
     ray = Ray(Vector(0,50,1),Vector(0,-1,0),-1);
-    result = cyl->allIntersections(ray);
+    result.clear();
+    cyl->allIntersections(ray,result);
     assert(result.size() == 2);
     assert(result[0].getPoint() == Vector(0,10,1));
     assert(result[0].getNormal() == Vector(0,1,0));
@@ -430,7 +435,8 @@ void torus_test() {
     // Test allIntersections()
     t = new Torus(10,1,m);
     ray = Ray(Vector(1000,0,0),Vector(-1,0,0),1);
-    vector<Intersection> all = t->allIntersections(ray);
+    vector<Intersection> all;
+    t->allIntersections(ray,all);
     assert(all.size() == 4);
     assert(all[0].getPoint() == Vector(11,0,0));
     assert(all[0].isEntering() == true);
@@ -442,7 +448,8 @@ void torus_test() {
     assert(all[3].isEntering() == false);
 
     ray = Ray(Vector(0,1000,0),Vector(0,-1,0),1);
-    all = t->allIntersections(ray);
+    all.clear();
+    t->allIntersections(ray,all);
     assert(all.size() == 0);
 
 }
@@ -475,18 +482,21 @@ void csg_test() {
     Sphere* s3 = new Sphere(Vector(0,0,0),15,NULL);
     CSG* csg = new CSG(s1,CSG::UNION,s2,NULL);
     Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
-    vector<Intersection> all = csg->allIntersections(ray);
+    vector<Intersection> all;
+    csg->allIntersections(ray,all);
     assert(all.size() == 2);
     assert(all[0].getPoint() == Vector(0,0,25));
     assert(all[1].getPoint() == Vector(0,0,-25));
     CSG* csg2 = new CSG(csg,CSG::UNION,s3,NULL);
-    all = csg2->allIntersections(ray);
+    all.clear();
+    csg2->allIntersections(ray,all);
     assert(all.size() == 2);
     assert(all[0].getPoint() == Vector(0,0,25));
     assert(all[1].getPoint() == Vector(0,0,-25));
     Sphere* s4 = new Sphere(Vector(0,0,-50),10,NULL);
     CSG* csg3 = new CSG(csg2,CSG::UNION,s4,NULL);
-    all = csg3->allIntersections(ray);
+    all.clear();
+    csg3->allIntersections(ray,all);
     assert(all.size() == 4);
     assert(all[0].getPoint() == Vector(0,0,25));
     assert(all[1].getPoint() == Vector(0,0,-25));
@@ -494,7 +504,8 @@ void csg_test() {
     assert(all[3].getPoint() == Vector(0,0,-60));
     // Ray from inside
     ray = Ray(Vector(0,0,0),Vector(0,0,-1),-1);
-    all = csg3->allIntersections(ray);
+    all.clear();
+    csg3->allIntersections(ray,all);
     assert(all.size() == 3);
     assert(all[0].getPoint() == Vector(0,0,-25));
     assert(all[1].getPoint() == Vector(0,0,-40));
@@ -503,6 +514,7 @@ void csg_test() {
     s1 = new Sphere(Vector(0,0,10),5,NULL);
     s2 = new Sphere(Vector(0,0,-10),5,NULL);
     csg = new CSG(s1,CSG::UNION,s2,NULL);
+    
     assert(iPoint(csg,Vector(0,0,0),Vector(0,0,1)) == Vector(0,0,5));
     assert(iNormal(csg,Vector(0,0,0),Vector(0,0,1)) == Vector(0,0,-1));
     assert(iPoint(csg,Vector(0,0,0),Vector(0,0,-1)) == Vector(0,0,-5));
@@ -516,7 +528,8 @@ void csg_test() {
     s3 = new Sphere(Vector(0,0,0),15,NULL);
     csg = new CSG(s1,CSG::INTERSECTION,s3,NULL);
     ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
-    all = csg->allIntersections(ray);
+    all.clear();
+    csg->allIntersections(ray,all);
     assert(all.size() == 2);
     assert(all[0].getPoint() == Vector(0,0,15));
     assert(all[0].getNormal() == Vector(0,0,1));
@@ -535,7 +548,8 @@ void csg_test() {
     s2 = new Sphere(Vector(0,0,0),15,NULL);
     csg = new CSG(s1,CSG::DIFFERENCE,s2,NULL);
     ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
-    all = csg->allIntersections(ray);
+    all.clear();
+    csg->allIntersections(ray,all);
     assert(all.size() == 2);
     assert(all[0].getPoint() == Vector(0,0,25));
     assert(all[0].getNormal() == Vector(0,0,1));
@@ -577,7 +591,8 @@ void csg_test() {
     s2 = new Sphere(Vector(0,0,0),29,NULL);
     csg = new CSG(s1,CSG::DIFFERENCE,s2,NULL); // Make it hollow
     ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
-    all = csg->allIntersections(ray);
+    all.clear();
+    csg->allIntersections(ray,all);
     assert(all.size() == 4);
     assert(all[0].getPoint() == Vector(0,0,30));
     assert(all[1].getPoint() == Vector(0,0,29));
@@ -598,7 +613,8 @@ void csg_test() {
     Ellipsoid* e2 = new Ellipsoid(Vector(0,0,0),Vector(9,19,29),NULL);
     csg = new CSG(e1,CSG::DIFFERENCE,e2,NULL);
     ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
-    all = csg->allIntersections(ray);
+    all.clear();
+    csg->allIntersections(ray,all);
     assert(all.size() == 4);
     assert(all[0].getPoint() == Vector(0,0,30));
     assert(all[1].getPoint() == Vector(0,0,29));
@@ -625,7 +641,8 @@ void csg_test() {
     SolidBox* box = new SolidBox(Vector(-100,5,-100),Vector(100,50,100),NULL);
     CSG* cup = new CSG(csg,CSG::DIFFERENCE,box,NULL);
     ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
-    all = cup->allIntersections(ray);
+    all.clear();
+    cup->allIntersections(ray,all);
     assert(all.size() == 4);
     assert(all[0].getPoint() == Vector(0,0,30));
     assert(all[1].getPoint() == Vector(0,0,29));
@@ -636,7 +653,8 @@ void csg_test() {
     assert(all[2].getNormal() == Vector(0,0,1));
     assert(all[3].getNormal() == Vector(0,0,-1));
     ray = Ray(Vector(0,1000,0),Vector(0,-1,0),-1);
-    all = cup->allIntersections(ray);
+    all.clear();
+    cup->allIntersections(ray,all);
     assert(all.size() == 2);
     assert(all[0].getPoint() == Vector(0,-19,0));
     assert(all[1].getPoint() == Vector(0,-20,0));
@@ -664,7 +682,8 @@ void solidbox_test() {
 
     // Ray from outside
     ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
-    all = b->allIntersections(ray);
+    all.clear();
+    b->allIntersections(ray,all);
     assert(all.size() == 2);
     assert(all[0].getPoint() == Vector(0,0,10));
     assert(all[0].getNormal() == Vector(0,0,1));
@@ -675,7 +694,8 @@ void solidbox_test() {
 
     // Ray from inside
     ray = Ray(Vector(0,0,0),Vector(0,-1,0),-1);
-    all = b->allIntersections(ray);
+    all.clear();
+    b->allIntersections(ray,all);
     assert(all.size() == 1);
     assert(all[0].getPoint() == Vector(0,-10,0));
     assert(all[0].getNormal() == Vector(0,-1,0));
@@ -683,18 +703,21 @@ void solidbox_test() {
     
     // Ray that misses
     ray = Ray(Vector(0,0,20),Vector(0,-1,0),-1);
-    all = b->allIntersections(ray);
+    all.clear();
+    b->allIntersections(ray,all);
     assert(all.size() == 0);
 
     // Outwards ray with origin on edge of box
     ray = Ray(Vector(0,0,10),Vector(0,0,1),-1);
-    all = b->allIntersections(ray);
+    all.clear();
+    b->allIntersections(ray,all);
     assert(all.size() == 0);
     assert(intersects(b,ray) == false);
     
     // Inwards ray with origin on edge of box
     ray = Ray(Vector(0,0,10),Vector(0,0,-1),-1);
-    all = b->allIntersections(ray);
+    all.clear();
+    b->allIntersections(ray,all);
     assert(all.size() == 1);
     assert(all[0].getPoint() == Vector(0,0,-10));
     assert(all[0].getNormal() == Vector(0,0,-1));
@@ -721,7 +744,8 @@ void ellipsoid_test() {
     assert(iNormal(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(1,0,0));
 
     Ray ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
-    vector<Intersection> all = e->allIntersections(ray);
+    vector<Intersection> all;
+    e->allIntersections(ray,all);
     assert(all.size() == 2);
     assert(all[0].getPoint() == Vector(0,0,30));
     assert(all[0].getNormal() == Vector(0,0,1));
@@ -746,8 +770,8 @@ int main(int argc, char *argv[]) {
     Mesh::test();
     test_3ds();
     solidbox_test();
-    csg_test();
     ellipsoid_test();
+    csg_test();
     return EXIT_SUCCESS;
 }
 

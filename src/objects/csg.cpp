@@ -36,10 +36,12 @@ void CSG::transform(const Matrix& m) {
     left->transform(m);
 }
 
-vector<Intersection> CSG::allIntersections(const Ray& ray) const {
-    vector<Intersection> result;
-    vector<Intersection> left_int = left->allIntersections(ray);
-    vector<Intersection> right_int = right->allIntersections(ray);
+void CSG::allIntersections(const Ray& ray, vector<Intersection>& result) const {
+    vector<Intersection> left_int;
+    left->allIntersections(ray,left_int);
+    vector<Intersection> right_int;
+    right->allIntersections(ray,right_int);
+    result.reserve(left_int.size() + right_int.size());
     unsigned int l = 0;
     unsigned int r = 0;
     bool left_inside = false;
@@ -53,8 +55,14 @@ vector<Intersection> CSG::allIntersections(const Ray& ray) const {
     switch(op) {
 	case UNION:
 	    // Bail out quickly if possible
-	    if (left_int.empty()) return right_int;
-	    if (right_int.empty()) return left_int;
+	    if (left_int.empty()) {
+		result = right_int;
+		return;
+	    }
+	    if (right_int.empty()) {
+		result = left_int;
+		return;	
+	    }
 	    // Merge intersections while preserving order
 	    while (l < left_int.size() && r < right_int.size()) {
 		if (left_int[l].getT() < right_int[r].getT()) {
@@ -76,16 +84,16 @@ vector<Intersection> CSG::allIntersections(const Ray& ray) const {
 	    // Copy remaining 
 	    while (l < left_int.size()) result.push_back(left_int[l++]);
 	    while (r < right_int.size()) result.push_back(right_int[r++]);
-	    return result;
+	    return;
 	case DIFFERENCE:
-	    if (left_int.empty() && !left_inside) return result;
+	    if (left_int.empty() && !left_inside) return;
 	    // Invert all directions of right
 	    for(unsigned int i = 0; i < right_int.size(); i++) {
 		right_int[i].isEntering(!right_int[i].isEntering());
 		right_int[i].flipNormal();
 	    }
 	    right_inside = !right_inside;
-	    if (right_int.empty() && !right_inside) return result;
+	    if (right_int.empty() && !right_inside) return;
 	    // Merge intersections while preserving order
 	    while (l < left_int.size() && r < right_int.size()) {
 		if (left_int[l].getT() < right_int[r].getT()) {
@@ -109,11 +117,11 @@ vector<Intersection> CSG::allIntersections(const Ray& ray) const {
 		result.push_back(left_int[l++]);
 	    while (r < right_int.size() && left_inside) 
 		result.push_back(right_int[r++]);
-	    return result;
+	    return;
 	case INTERSECTION:
 	    // Bail out quickly if possible
-	    if (left_int.empty() && !left_inside) return result;
-	    if (right_int.empty() && !right_inside) return result;
+	    if (left_int.empty() && !left_inside) return;
+	    if (right_int.empty() && !right_inside) return;
 	    // Merge intersections while preserving order
 	    while (l < left_int.size() && r < right_int.size()) {
 		if (left_int[l].getT() < right_int[r].getT()) {
@@ -137,7 +145,7 @@ vector<Intersection> CSG::allIntersections(const Ray& ray) const {
 		result.push_back(left_int[l++]);
 	    while (r < right_int.size() && left_inside) 
 		result.push_back(right_int[r++]);
-	    return result;
+	    return;
 	default:
 	    throw_exception("Unknown operator");
     }
@@ -161,7 +169,7 @@ double CSG::_fastIntersect(const Ray& ray) const {
 	    }
 	case DIFFERENCE:
 	case INTERSECTION:
-	    all = allIntersections(ray);
+	    allIntersections(ray,all);
 	    return all.empty() ? -1 : all.front().getT();
 	default:
 	    throw_exception("Unknown operator");
@@ -169,7 +177,8 @@ double CSG::_fastIntersect(const Ray& ray) const {
 }
 
 Intersection CSG::_fullIntersect(const Ray& ray, const double t) const {
-    vector<Intersection> all = allIntersections(ray);
+    vector<Intersection> all;
+    allIntersections(ray,all);
     Intersection result;
     switch(op) {
 	case UNION:
@@ -177,10 +186,6 @@ Intersection CSG::_fullIntersect(const Ray& ray, const double t) const {
 	case INTERSECTION:
 	    if (!all.empty()) {
 		result = all.front();
-		//assert(IS_EQUAL(t,result.getT()));
-		if (result.getNormal() * ray.getDirection() > 0) {
-		   // result.flipNormal();
-		}
 	    } else {
 		throw_exception("This shouldn't happen...");
 	    }

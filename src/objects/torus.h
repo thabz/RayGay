@@ -54,7 +54,7 @@ class Torus : public Solid, public Transformer {
 
 	virtual SceneObject* clone() const;
 
-	vector<Intersection> allIntersections(const Ray& ray) const;
+	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
     private:
 	double _fastIntersect(const Ray& ray) const;

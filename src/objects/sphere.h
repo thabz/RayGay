@@ -34,7 +34,7 @@ class Sphere : public Solid {
 	double _fastIntersect(const Ray& ray) const;
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
 	int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
-	vector<Intersection> allIntersections(const Ray& ray) const;
+	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
     private:
 	Vector center;

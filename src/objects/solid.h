@@ -14,7 +14,7 @@ class Solid : public Object {
 	/// Constructor
 	Solid(const Material* mat) : Object(mat) {};
 	/// Find all intersections with ray
-	virtual vector<Intersection> allIntersections(const Ray& ray) const = 0;
+	virtual void allIntersections(const Ray& ray, vector<Intersection>& result) const = 0;
 };
 
 #endif

@@ -17,7 +17,7 @@ class Ellipsoid : public Solid, public Transformer {
 	void transform(const Matrix& m);
 	BoundingBox boundingBoundingBox() const;
 	SceneObject* clone() const;
-	vector<Intersection> allIntersections(const Ray& ray) const;
+	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
     private:
 	double _fastIntersect(const Ray& ray) const;
