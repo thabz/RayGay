@@ -125,21 +125,17 @@ bool BSP::intersectPrimary(const Ray& ray) const {
     return result;
 }
 
-/**
- * TODO: Speedup ved at lade t_max burde være afstanden fra ray.origin til lyset. Der er jo ingen grund til at tjekke objekter/space som ligger bag lyset set fra ray.origin.
- * Dette er kun aktuelt, hvis lyskilderne har objekter på alle sider og ikke bare hænger langt væk.
- */
 inline
-bool BSP::intersectForShadow(const Ray& ray) const {
-    return intersectForShadow(ray,0,HUGE_DOUBLE);
+bool BSP::intersectForShadow(const Ray& ray, double max_t) const {
+    return intersectForShadow(ray,double(0),max_t);
 }
 
-bool BSP::intersectForShadow(const Ray& ray, const Object* hint) const {
-    if (hint != NULL && hint->intersect(ray)) {
+bool BSP::intersectForShadow(const Ray& ray, const Object* hint, double max_t) const {
+    if (hint != NULL && hint->intersect(ray) && hint->getLastIntersection()->getT() < max_t) {
 	last_intersection = hint->getLastIntersection();
 	return true;
     } else {
-	return intersectForShadow(ray);
+	return intersectForShadow(ray, max_t);
     }
 }
 

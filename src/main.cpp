@@ -41,7 +41,7 @@ using namespace std;
 
 void work(string scenefile, string outputfile) {
     Stats::getUniqueInstance()->clear();
-    Stats::getUniqueInstance()->disable();
+    //Stats::getUniqueInstance()->disable();
 
     cout << "Reading " << scenefile << endl;
     Importer importer(scenefile);
@@ -53,7 +53,7 @@ void work(string scenefile, string outputfile) {
 
     Matrix n = Matrix::matrixRotate(Vector(0,1,0),2.0);
  //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
- //   scene->transform(n);
+  //  scene->transform(n);
 
     SpaceSubdivider* space = new KdTree();
     //SpaceSubdivider* space = new BSP();

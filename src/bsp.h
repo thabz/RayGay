@@ -30,8 +30,8 @@ class BSP : public SpaceSubdivider {
 
 	bool intersect(const Ray& ray) const; ///< Returns the nearest intersection
 	bool intersectPrimary(const Ray& ray) const; ///< Returns the nearest intersection
-	bool intersectForShadow(const Ray& ray) const; ///< Returns any intersection 
-	bool intersectForShadow(const Ray& ray, const Object* hint) const; ///< Returns any intersection but hint-object is checked for intersection first.
+	bool intersectForShadow(const Ray& ray, double max_t) const; ///< Returns any intersection 
+	bool intersectForShadow(const Ray& ray, const Object* hint, double max_t) const; ///< Returns any intersection but hint-object is checked for intersection first.
 
 	/// This gets called after all objects are added and before any intersection methods are called.
 	void prepare();

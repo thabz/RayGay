@@ -31,31 +31,29 @@ void KdTree::addObject(Object* obj) {
 
 inline
 bool KdTree::intersect(const Ray& ray) const {
-    Vector2 h = world_bbox.intersect(ray);
-    h = Vector2(0,HUGE_DOUBLE);
+    //Vector2 h = world_bbox.intersect(ray);
+    Vector2 h = Vector2(0,HUGE_DOUBLE);
     return intersect(ray,h[0],h[1]);
 }
 
 inline
 bool KdTree::intersectPrimary(const Ray& ray) const {
-    Vector2 h = world_bbox.intersect(ray);
-    h = Vector2(0,HUGE_DOUBLE);
+    //Vector2 h = world_bbox.intersect(ray);
+    Vector2 h = Vector2(0,HUGE_DOUBLE);
     return intersect(ray,h[0],h[1]);
 }
 
 inline
-bool KdTree::intersectForShadow(const Ray& ray) const {
-    Vector2 h = world_bbox.intersect(ray);
-    h = Vector2(0,HUGE_DOUBLE);
-    return intersectForShadow(ray,h[0],h[1]);
+bool KdTree::intersectForShadow(const Ray& ray, double max_t) const {
+    return intersectForShadow(ray,double(0),max_t);
 }
 
-bool KdTree::intersectForShadow(const Ray& ray, const Object* hint) const {
-    if (hint != NULL && hint->intersect(ray)) {
+bool KdTree::intersectForShadow(const Ray& ray, const Object* hint, double max_t) const {
+    if (hint != NULL && hint->intersect(ray) && hint->getLastIntersection()->getT() < max_t) {
 	last_intersection = hint->getLastIntersection();
 	return true;
     } else {
-	return intersectForShadow(ray);
+	return intersectForShadow(ray,max_t);
     }
 }
 

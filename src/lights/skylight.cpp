@@ -22,11 +22,12 @@ Lightinfo Skylight::getLightinfo(const Intersection& inter, const Vector& normal
     for(int i = 0; i < num; i++) {
 	Vector pos = positions[i];
 	Vector direction_to_light = pos - inter.getPoint();
+	double dist_to_light = direction_to_light.length();
 	direction_to_light.normalize();
 	cos_tmp = direction_to_light * normal;
 	if (cos_tmp > 0.0) {
 	    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
-	    bool in = space->intersectForShadow(ray_to_light,hints[i]);
+	    bool in = space->intersectForShadow(ray_to_light,hints[i],dist_to_light);
 	    if (in) { 
 		hints[i] = space->getLastIntersection()->getObject(); 
 	    } else {
