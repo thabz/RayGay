@@ -97,6 +97,7 @@ ActionListNode* top_actions;
 %token tBILINEAR
 %token tBOX
 %token tCAMERA
+%token tCONE
 %token tCYLINDER
 %token tDOF
 %token tDIFFUSE tSPECULAR tBUMP 
@@ -162,7 +163,7 @@ ActionListNode* top_actions;
 %type <matrix> Rotate Translate Scale Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
-%type <object> ObjectGroup GroupItems GroupItem Ellipsoid Mesh
+%type <object> ObjectGroup GroupItems GroupItem Ellipsoid Mesh Cone
 %type <object> NamedObject 
 %type <material> MaterialDef NamedMaterial Material
 %type <light> LightDef Lightsource 
@@ -567,6 +568,7 @@ SolidObject	: Sphere
                 | Union
 		| Torus
 		| Cylinder
+		| Cone
 		| SolidObject Transformations
                 {
 		    $$ = new TransformedSceneObjectNode($1,$2);
@@ -633,6 +635,15 @@ Cylinder	: tCYLINDER '{' Material Expr Vector Vector '}'
                 | tCYLINDER '{' Expr Vector Vector '}'
                 {
 		    $$ = new CylinderNode($4,$5,$3,new MaterialNullNode());
+		};
+
+Cone		: tCONE '{' Material Expr Expr Vector Vector '}'
+                {
+		    $$ = new ConeNode($6,$7,$4,$5,$3);
+		}
+                | tCONE '{' Expr Expr Vector Vector '}'
+                {
+		    $$ = new ConeNode($5,$6,$3,$4,new MaterialNullNode());
 		};
 		
 SolidBox	: tSOLIDBOX '{' Material Vector Vector '}'

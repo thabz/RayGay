@@ -11,6 +11,7 @@
 #include "objects/solidbox.h"
 #include "objects/box.h"
 #include "objects/csg.h"
+#include "objects/cone.h"
 #include "objects/cylinder.h"
 #include "objects/extrusion.h"
 #include "objects/mesh.h"
@@ -159,6 +160,34 @@ class CylinderNode : public SceneObjectNode {
 	VectorNode* begin;
 	VectorNode* end;
 	FloatNode* radius;
+	MaterialNode* material;
+};
+
+class ConeNode : public SceneObjectNode {
+
+    public:
+	ConeNode(VectorNode* begin, VectorNode* end, FloatNode* radius_begin, FloatNode* radius_end, MaterialNode* mat) {
+	    this->begin = begin;
+	    this->end = end;
+	    this->radius_begin = radius_begin;
+	    this->radius_end = radius_end;
+	    this->material = mat;
+	}
+
+	SceneObject* eval() {
+	    Vector v1 = begin->eval();
+	    Vector v2 = end->eval();
+	    double r_begin = radius_begin->eval();
+	    double r_end = radius_end->eval();
+	    Material* m = material->eval();
+	    return new Cone(v1,v2,r_begin,r_end,true,m);
+	}
+
+    private:
+	VectorNode* begin;
+	VectorNode* end;
+	FloatNode* radius_begin;
+	FloatNode* radius_end;
 	MaterialNode* material;
 };
 

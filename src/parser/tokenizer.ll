@@ -59,6 +59,7 @@ camera		return tCAMERA;
 catmullromspline return tCATMULLROMSPLINE;
 causticphotons 	return tCAUSTICPHOTONS; 
 circle		return tCIRCLE;
+cone		return tCONE;
 cos		return tCOS;
 cylinder	return tCYLINDER;
 difference 	return tDIFFERENCE;
