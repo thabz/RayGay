@@ -146,16 +146,11 @@ void testScene4() {
 }
 
 int main(int argc, char *argv[]) {
-    Vector::test();
     Sphere::test();
     Boolean::test();
     BoundingBox::test();
-    Matrix::test();
     Mesh::test();
     Box::test();
-    Linesegment::test();
-    Circle::test();
-    Spiral::test();
     Cylinder::test();
     PixelStore::test();
     Tetrahedron::test();

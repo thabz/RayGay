@@ -14,9 +14,6 @@ class Circle : public Path {
 	Vector getTangent(double t) const;
         void transform(const Matrix& m);
 
-	/// Internal test
-	static void test();
-
     private:
 	Vector c;
 	Vector n;

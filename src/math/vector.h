@@ -55,9 +55,6 @@ public:
     /// Comparator
     bool operator==(const Vector &v) const;
 
-    /// Internal test
-    static void test();
-    
 protected:
     double _vector[3]; ///< The x,y,z components of the vector
 };

@@ -417,20 +417,3 @@ void Matrix::invertMatrixGeneral( const double *m, double *out ) {
 #undef MAT
 }
 
-void Matrix::test() {
-    /* Test inverse() */
-    Matrix id,res;
-    Matrix op1 = matrixRotate(Vector(10,30,19),12);
-    res = op1*id*op1.inverse();
-    assert(res.isIdentity());
-
-    Matrix op2 = matrixTranslate(Vector(401,221,39));
-    res = op2*id*op2.inverse();
-    assert(res.isIdentity());
-
-    Matrix op3 = op1*op2;
-    res = op3*id*op3.inverse();
-    assert(res.isIdentity());
-
-    cout << "Matrix::test() done." << endl;
-}

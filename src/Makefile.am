@@ -1,21 +1,31 @@
 
 SUBDIRS = materials paths lights math #tests
 
+#--------------------------------------
+
+noinst_LIBRARIES = libtracer.a
+
+libtracer_a_SOURCES = camera.cpp sphere.cpp intersection.cpp ray.cpp scene.cpp image.cpp rgb.cpp boolean.cpp box.cpp object.cpp mesh.cpp tetrahedron.cpp triangle.cpp cylinder.cpp pixelstore.cpp renderer.cpp raytracer.cpp necklace.cpp tessalation.cpp boundingbox.cpp bsp.cpp hierarchy.cpp
+
+libtracer_a_LIBADD = paths/libpaths.a lights/liblights.a materials/libmaterials.a math/libmath.a 
+
+#--------------------------------------
+
 bin_PROGRAMS = tracer
 
-tracer_SOURCES = main.cpp camera.cpp sphere.cpp intersection.cpp ray.cpp scene.cpp image.cpp rgb.cpp boolean.cpp boundingbox.cpp box.cpp hierarchy.cpp object.cpp mesh.cpp tetrahedron.cpp triangle.cpp cylinder.cpp pixelstore.cpp renderer.cpp raytracer.cpp bsp.cpp necklace.cpp tessalation.cpp
+tracer_SOURCES = main.cpp 
 
-tracer_LDADD = paths/libpaths.a lights/liblights.a materials/libmaterials.a math/libmath.a
+tracer_LDADD = libtracer.a paths/libpaths.a lights/liblights.a materials/libmaterials.a math/libmath.a 
 
-#tracer_LIBADD = materials/libmaterials.a	       
+#--------------------------------------
 
 EXTRA_DIST = boolean.h 		\
-	     boundingbox.h 	\
-	     bsp.h 		\
+             boundingbox.h	\
+     	     bsp.h		\
              camera.h 		\
 	     constants.h 	\
 	     cylinder.h		\
-	     hierarchy.h 	\
+	     hierarchy.h	\
 	     intersection.h 	\
 	     image.h		\
 	     mesh.h		\
@@ -26,7 +36,7 @@ EXTRA_DIST = boolean.h 		\
 	     raytracer.h 	\
 	     renderer.h 	\
 	     scene.h 		\
-             spacesubdivider.h	\
+	     spacesubdivider.h	\
 	     sphere.h		\
 	     tessalation.h	\
 	     tetrahedron.h	\

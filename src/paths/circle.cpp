@@ -1,10 +1,6 @@
 
-#include <cassert>
-#include <iostream>
 #include "math.h"
-
-#include "circle.h"
-#include "boundingbox.h"
+#include "paths/circle.h"
 
 /**
  * Constructs a circle path
@@ -41,64 +37,4 @@ Vector Circle::getTangent(double t) const {
 void Circle::transform(const Matrix& m) {
     c = m * c;
     n = m.extractRotation() * n;
-}
-
-void Circle::test() {
-    int num = 100;
-    Vector points[100];
-    BoundingBox b;
-
-    /* Test at origin */
-    Circle c = Circle(Vector(0,0,0),10,Vector(0,0,1));
-    assert(c.isClosed());
-    c.getPoints(num,points);
-    b = BoundingBox(Vector(-11,-11,-1),Vector(11,11,1));
-    assert(b.inside(points,num));
-    
-
-    /* Test translated */
-    c = Circle(Vector(10,10,0),10,Vector(0,0,1));
-    assert(c.isClosed());
-    c.getPoints(num,points);
-    b = BoundingBox(Vector(-1,-1,-1),Vector(21,21,1));
-    assert(b.inside(points,num));
-
-    /* Test direction along x */
-    c = Circle(Vector(0,0,0),10,Vector(1,0,0));
-    assert(c.isClosed());
-    c.getPoints(num,points);
-    b = BoundingBox(Vector(-1,-11,-11),Vector(1,11,11));
-    assert(b.inside(points,num));
-
-    /* Test direction along y */
-    c = Circle(Vector(0,0,0),10,Vector(0,1,0));
-    assert(c.isClosed());
-    c.getPoints(num,points);
-    b = BoundingBox(Vector(-11,-1,-11),Vector(11,1,11));
-    assert(b.inside(points,num));
-
-    /* Test tangent */
-    c = Circle(Vector(0,0,0),10,Vector(0,1,0));
-    assert(c.getPoint(0) == Vector(-10,0,0));
-    assert(c.getTangent(0) == Vector(0,0,1));
-    assert(c.getPoint(0.25) == Vector(0,0,10));
-    assert(c.getTangent(0.25) == Vector(1,0,0));
-    assert(c.getPoint(0.5) == Vector(10,0,0));
-    assert(c.getTangent(0.5) == Vector(0,0,-1));
-    assert(c.getPoint(0.75) == Vector(0,0,-10));
-    assert(c.getTangent(0.75) == Vector(-1,0,0));
-
-    c = Circle(Vector(0,10,0),10,Vector(0,1,0));
-    assert(c.getPoint(0) == Vector(-10,10,0));
-    assert(c.getTangent(0) == Vector(0,0,1));
-    assert(c.getPoint(0.25) == Vector(0,10,10));
-    assert(c.getTangent(0.25) == Vector(1,0,0));
-    assert(c.getPoint(0.5) == Vector(10,10,0));
-    assert(c.getTangent(0.5) == Vector(0,0,-1));
-    assert(c.getPoint(0.75) == Vector(0,10,-10));
-    assert(c.getTangent(0.75) == Vector(-1,0,0));
-
-
-    /* Done */
-    std::cout << "Circle::test() done." << std::endl;
 }

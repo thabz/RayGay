@@ -48,7 +48,3 @@ void Spiral::transform(const Matrix& m) {
     center->transform(m);
 };
 
-
-void Spiral::test() {
-
-}

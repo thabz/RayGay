@@ -73,6 +73,7 @@ Intersection Boolean::_intersect(const Ray& ray) const {
 	    }
 	    break;
     }
+    return empty; // FIXME: Throw an exception instead
 }
 
 void Boolean::transform(const Matrix& m) {

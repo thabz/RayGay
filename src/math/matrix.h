@@ -64,10 +64,6 @@ class Matrix {
         static Matrix matrixOrient(const Vector &x,const Vector &y,const Vector &z);
         static Matrix matrixOrient(const Vector &direction,const Vector &up);
 
-	/// Internal test
-	static void test();
-
-
     private:
 	double _matrix[16];
 	static double _identity[16];

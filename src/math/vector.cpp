@@ -87,7 +87,4 @@ Vector operator*(const double x, const Vector &v) {
 }
 
 
-void Vector::test() {
-    // Test area()
-    assert(0.5 == area(Vector(1,1,1), Vector(2,1,1), Vector(1,2,1)));
-}
+
