@@ -215,7 +215,7 @@ bool KdTree::intersect(const Ray& ray, double a, double b) const {
 	    stack[exPt].node = farChild;
 	    stack[exPt].pb[axis] = splitVal;
 	    int nextAxis = (axis+1) % 3;
-	    int prevAxis = (axis-1) % 3;
+	    int prevAxis = (axis-1+3) % 3;
 	    stack[exPt].pb[nextAxis] = ray.getOrigin()[nextAxis] + 
 		                       t * ray.getDirection()[nextAxis];
 	    stack[exPt].pb[prevAxis] = ray.getOrigin()[prevAxis] +
