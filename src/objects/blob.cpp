@@ -40,7 +40,7 @@ double Blob::evaluateFunction(const Vector& point) const {
     for(int i = 0; i < atoms_num; i++) {
 	double r = (centers[i] - point).length();
 	if (r >= radii[i]) {
-	    /* sum += 0 */
+	    continue;
 	} else if (r <= radii[i] / 3.0) {
 	    double p = r / radii[i];
 	    sum += weights[i] * (1.0 - 3.0 * p * p);

@@ -17,9 +17,9 @@ Intersection IsoSurface::_intersect(const Ray& ray) const {
     if (t_end < 0) {
 	return Intersection();
     }
-    double t_begin = max(inout[0],double(0));
+    double t_begin = inout[0];
     double t_step = (t_end - t_begin) / double(steps);
-
+    
     if (inside(ray.getPoint(t_begin))) {
 	return Intersection(ray.getPoint(t_begin),t_begin);
     }
