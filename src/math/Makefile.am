@@ -12,6 +12,7 @@ EXTRA_DIST = vector.h 	\
 	     halton.h	\
              matrix.h 	\
              polynomial.h 	\
+	     quaternion.h	\
 	     rootfinder.h	\
 	     sturmsequence.h	\
              qmcsequence.h 	\
