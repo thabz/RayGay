@@ -8,6 +8,12 @@
 /**
  * A Sturm sequence.
  *
+ * Jacques Charles Francois Sturm (1803-1855) found in 1829
+ * a method for finding the number of real roots of a given
+ * polynomial in a given interval.
+ *
+ * This is an implementation of that method.
+ *
  * @see http://planetmath.org/encyclopedia/SturmSequence.html
  * @see http://mathworld.wolfram.com/SturmFunction.html
  * @see http://aida.homelinux.net/wordpress/wp-content/522_ma/ma522_01.html
