@@ -5,6 +5,7 @@
 #include "intersection.h"
 #include "object.h"
 #include "math/matrix.h"
+#include "math.h"
 
 Material::Material() {
 }
@@ -67,7 +68,7 @@ Vector Material::bump(const Intersection& i, const Vector& normal) const {
 	bumpnormal.normalize();
 	Matrix orient = Matrix::matrixOrient(normal,Vector(0,1,0));
 	bumpnormal = orient * bumpnormal;
-	bumpnormal = (bumpHeight * bumpnormal) + normal;
+	bumpnormal = (fabs(bumpHeight) * bumpnormal) + normal;
 	bumpnormal.normalize();
 	return bumpnormal;
     }
@@ -75,7 +76,9 @@ Vector Material::bump(const Intersection& i, const Vector& normal) const {
 
 double Material::getBumpValue(double u, double v) const {
     RGB col = bumpmap->getBiCubicTexel(u,v);
-    return col.length();
+    double val = col[0]; // val = col.length();
+    if (bumpHeight < 0) val = 1 - val;
+    return val;
 }
 
 void Material::setTexturemap(const std::string& filename) {
