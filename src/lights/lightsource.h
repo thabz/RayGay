@@ -21,7 +21,13 @@ class Lightsource {
 	/// Constructor
 	Lightsource(const Vector& center);
 	
-	/// Shading info for this lightsource
+	/**
+	 * Shading info for this lightsource.
+	 *
+	 * @param inter the intersection in question
+	 * @param normal surface normal at the intersection
+	 * @param space the space containing the objects of the scene
+	 */
 	virtual Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space) const = 0;
 	
 	/// Apply a transformation

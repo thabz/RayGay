@@ -10,6 +10,11 @@ Lightsource::Lightsource(const Vector& position) {
     this->fadeEnabled = false;
 }
 
+/**
+ * Transforms this lightsource..
+ * 
+ * @param m a transformation matrix
+ */
 void Lightsource::transform(const Matrix& m) {
     position = m * position;
 }
@@ -32,6 +37,10 @@ void Lightsource::setAttenuation(double fadeDistance, double fadePower) {
     this->fadeEnabled = true;
 }
 
+/**
+ * Get the attenuation at a point.
+ * @param point well, that's the point
+ */
 double Lightsource::getAttenuation(const Vector& point) const {
     if (fadeEnabled) {
 	double d = (this->getPosition() - point).length();
@@ -42,7 +51,11 @@ double Lightsource::getAttenuation(const Vector& point) const {
     }
 }
 
-
+/**
+ * Get a random ray with origin in this light
+ *
+ * @return a ray
+ */
 Ray Lightsource::getRandomPhotonRay() const {
     return Ray(getPosition(), Vector::randomUnitVector(), 0);
 }
