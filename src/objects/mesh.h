@@ -100,7 +100,7 @@ class Mesh : public ObjectGroup {
 	void addVertex(const Vector& point);
 
 	/// Add a triangle by vertex indices
-	void addTriangle(int v[3], Vector2 uv[3]);
+	void addTriangle(int v[3], const Vector2 uv[3]);
 	
 	/// Add a triangle by vertex indices
 	void addTriangle(int v[3]);
