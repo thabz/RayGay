@@ -21,6 +21,8 @@ Intersection IsoSurface::_fullIntersect(const Ray& world_ray, const double t) co
     return intersectionToWorld(local_i);
 }
 
+#define func(x) (evaluateFunction(local_ray.getPoint(x)) - iso)
+
 double IsoSurface::_fastIntersect(const Ray& world_ray) const {
 
     Ray local_ray = rayToObject(world_ray);
@@ -28,23 +30,15 @@ double IsoSurface::_fastIntersect(const Ray& world_ray) const {
     
     const BoundingBox& bbox = this->_boundingBoundingBox();
     Vector2 inout = bbox.intersect(local_ray);
-//    if (inout[0] < 0) 
-//	return -1;
     double t_begin = fmax(inout[0],accuracy);
     double t_end = inout[1] + accuracy;
- //   cout << t_begin << endl;
- //   cout << t_end << endl;
     if (t_end > t_begin) {
-	bool began_inside = inside(local_ray.getPoint(t_begin));
-//	cout << "Inside:" << (began_inside ? "true" : "false") << endl;
+	
+	int start_sign = SIGN(func(t_begin));
 	double t_step = (t_end - t_begin) / double(steps);
-	bool cur_inside;
+
 	for(double t = t_begin; t <= t_end; t += t_step) {
-	    cur_inside = inside(local_ray.getPoint(t));
-	    if (began_inside && !cur_inside) {
-		res = refine(local_ray,t,t-t_step);
-		break;
-	    } else if (!began_inside && cur_inside) {
+	    if (SIGN(func(t)) != start_sign) {
 		res = refine(local_ray,t-t_step,t);
 		break;
 	    }
@@ -58,9 +52,12 @@ double IsoSurface::_fastIntersect(const Ray& world_ray) const {
     }
 }
 
+#undef func
+
 #if 1
 /**
  * Refine an interval containing a root.
+ * Using interval bisection.
  *
  * @param t_begin an outside t
  * @param t_end an inside t
@@ -90,8 +87,10 @@ double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
  */
 double IsoSurface::refine(const Ray& ray, double x1, double x3) const {
 
-#define func(x) (evaluateFunction(ray.getPoint(x)) - iso)
+#define func(x) (iso - evaluateFunction(ray.getPoint(x)))
 #define MAX_ITER 10000    
+
+    assert(x1 < x3);
 
     double x2;
     double R,S,T;
@@ -119,7 +118,7 @@ double IsoSurface::refine(const Ray& ray, double x1, double x3) const {
 	x2 = x2 + (P / Q);
 
 	fx2 = func(x2);
-	if (fabs(fx2) < accuracy) {
+	if (fabs(fx2) < accuracy/1000) {
 	    return x2;
 	}
     }
