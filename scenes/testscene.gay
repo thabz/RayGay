@@ -1,37 +1,62 @@
 
-# Comment
-# Comment comment
-
-include materials.gay
-
 renderer raytracer
 
-camera-position 1000 1000 2000
-camera-up 0 1 0
-camera-lookat 0 100 0
-camera-field-of-view 45
-camera-aa 0
-#camera-dof 60.0 200
+camera { position <5000,1000,2000>
+         up <0,1,0> 
+         lookat <0,100,0> 
+	 fov 45
+	 aa 0
+}
 
-image-ratio 4 3
-image-width 640
-background rgba 0.1 0.1 0.3 1.0
+image { width 640 aspect 4 3 }
 
-light point 100 1300 1300 1 1 1
-light point -400 3000 500 1 1 1
+/*background <0.3,0.5,0.7,1.0>*/
+background texture { "probes/grace_probe.hdr" 1.0 1.0 bilinear}
 
-# Floor
-box $slate_tiles -700 -50 -700  700 0 700
-# Back
-box $slate_tiles -700 0 -750  700 1400 -700
-# Left 
-box $slate_tiles -750 0 -700  -700 1400 700
+light { point <500,1300,1300> power <1,1,1> } 
+light { point <-500,1500,1300> power <1,1,1> } 
 
-#box $dullblue -700 -50 -700  700 0 700
-#box $dullyellow -750 -50 -750  750 -0.01 750
+$brown = material {
+    diffuse <0.7,0.4,0.2>
+    kd 1.0
+    ks 0.0
+}
 
-sphere $glass 300 0 300 0
+$grey85 = material {
+    diffuse <0.85,0.85,0.85>
+    kd 1.0
+    ks 0.0
+}
 
-sphere $red 100 500 500  500
+$chrome = material {
+    diffuse <0.8,0.8,0.8>
+    kd 0.2
+    specular <1.0,1.0,1.0>
+    ks 0.8
+    specpow 30
+}
 
-cylinder $red 30 500 0 500    500 500 500
+box { 
+    $brown
+    <-1700,-51,-1700>
+    <1700,1,1700>	  
+}
+
+$cyl = group {
+    sphere { $chrome 20 <0,200,0> }
+    cylinder { $chrome 20 <0,-200,0> <0,200,0> }
+    sphere { $chrome 20 <0,-200,0> }
+}
+
+$i = 0
+$num = 50
+$windings = 1.5
+do {
+    object $cyl
+         rotate {<1,0,0> ($windings*$i*(360/$num)) }
+         translate <0,250,500> 
+	 rotate { <0,1,0> ($i*(360/$num)) }
+    $i++
+} while ($i < $num)
+
+
