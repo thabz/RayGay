@@ -10,6 +10,7 @@
 #include "camera.h"
 #include "objects/torus.h"
 #include "objects/3ds.h"
+#include "objects/ply.h"
 #include "objects/blob.h"
 #include "objects/box.h"
 #include "objects/sor.h"
@@ -276,11 +277,11 @@ void Importer::parse(const string& filename) {
 	    }
 	    cur_object = new TransformedInstance(obj);
 	} else if (command == "bound") {
-	    object_name = readString(stream);
-	    SceneObject* sobj = getNamedObject(object_name);
+	    string group_name = readString(stream);
+	    SceneObject* sobj = getNamedObject(group_name);
 	    ObjectGroup* obj = dynamic_cast<ObjectGroup*>(sobj);
 	    if (obj == NULL) {
-		cout << "Error creating Bound: " << object_name << " is not an ObjectGroup." << endl;
+		cout << "Error creating Bound: " << group_name << " is not an ObjectGroup." << endl;
 		exit(EXIT_FAILURE);
 	    }
 	    cur_object = new Bound(obj);
@@ -430,6 +431,12 @@ void Importer::parse(const string& filename) {
 	    double scale = readDouble(stream);
 	    string filename = readString(stream);
 	    cur_object = new ThreeDS(filename,scale,m);
+	} else if (command == "ply") {
+	    stream >> str1;
+	    Material* m = lookupMaterial(str1);
+	    double scale = readDouble(stream);
+	    string filename = readString(stream);
+	    cur_object = new Ply(filename,scale,m);
 	} else if (command == "cylinder") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
