@@ -16,11 +16,17 @@
 
 #define Float double
 
-//#define M_PI            3.141592653589793238462643383276
+#ifndef M_PI
+#define M_PI            3.141592653589793238462643383276
+#endif
+
 #define M_2PI           6.283185307179586476925286766552  /* 2 * M_PI */
 #define M_PI_DEG	0.017453292519943295769236907684  /* M_PI/180.0 */
 #define M_DEG_PI	35.342917352885173932704738061855 /* 180.0/M_PI */
+
+#ifndef M_SQRT3
 #define M_SQRT3		sqrt(double(3))
+#endif
 
 #define HUGE_DOUBLE	double(1e+20)
 #define EPSILON		double(1e-5)
