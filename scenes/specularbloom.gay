@@ -1,0 +1,40 @@
+
+renderer raytracer
+
+camera { position <1000,1000,2000>
+         up <0,1,0> 
+         lookat <0,100,0> 
+	 fov 75
+	 aa 0
+}
+
+image { width 640 aspect 4 3 }
+
+filters {
+    specularbloom { 1.0 25 0.8 }	
+  /*  gaussianblur { 15 } */
+}
+
+background texture { "probes/stpeters_probe.hdr" 1 1 bilinear }
+
+light { point <100,1300,1300> power <1,1,1> } 
+
+$red = material {
+    diffuse <0.8,0.2,0.2>
+    kd 0.2
+    specular <1.0,1.0,1.0>
+    ks 0.8
+    specpow 15
+}
+
+extrusion {
+    $red
+    spiral {
+	circle { <0,300,0> 800 <0,1,0> }
+	400 8 0
+    }
+    150
+    50 
+    400
+}
+
