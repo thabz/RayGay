@@ -9,14 +9,14 @@
 /**
  * Construct a cone object.
  *
- * @param begin	    The bottom point
- * @param end	    The top point
- * @param radius_begin  The bottom radius of the cone 
- * @param radius_end	The apex radius of the cone
- * @param has_caps  Whether caps should be checked for intersection too
- * @param m Material
+ * @param begin	    	The bottom point
+ * @param end	    	The top point
+ * @param radius_begin  The radius at the base of the cone 
+ * @param radius_end	The radius at the apex of the cone
+ * @param has_caps  	Whether caps should be checked for intersection too
+ * @param material	Material of the cone
  */
-Cone::Cone(const Vector& begin, const Vector& end, double radius_begin, double radius_end, bool has_caps, const Material* m) : Solid (m) {
+Cone::Cone(const Vector& begin, const Vector& end, double radius_begin, double radius_end, bool has_caps, const Material* material) : Solid (material) {
 
     this->begin = begin;
     this->end = end;
@@ -71,6 +71,7 @@ Vector Cone::getNormal(const Vector& local_point) const {
 	    return Vector(0,0,1);
 	}
     }
+    // TODO: The z-part is probably wrong.
     Vector normal = Vector(local_point[0],local_point[1],(radius_begin-radius_end)/2);
     normal.normalize();
     return normal;
@@ -136,26 +137,32 @@ unsigned int Cone::allPositiveRoots(const Ray& world_ray, double roots[2]) const
 	    roots[roots_found++] = t2;
 	}
     }
+
+    // Check intersection with caps
     if (roots_found < 2 && has_caps && !IS_ZERO(D_z)) {
 	double t, i_x, i_y;
 
 	// Check intersection with bottom cap
-	t = (0.0 - O_z) / D_z;
-	if (t > EPSILON) {
-	    i_x = O_x + t * D_x;
-	    i_y = O_y + t * D_y;
-	    if ((i_x * i_x + i_y * i_y) < radius_begin*radius_begin) {
-		roots[roots_found++] = t;
+	if (radius_begin > EPSILON) {
+	    t = (0.0 - O_z) / D_z;
+	    if (t > EPSILON) {
+		i_x = O_x + t * D_x;
+		i_y = O_y + t * D_y;
+		if ((i_x * i_x + i_y * i_y) < radius_begin*radius_begin) {
+		    roots[roots_found++] = t;
+		}
 	    }
 	}
 
 	// Check intersection with top cap
-	t = (1.0 - O_z) / D_z;
-	if (t > EPSILON) {
-	    i_x = O_x + t * D_x;
-	    i_y = O_y + t * D_y;
-	    if ((i_x * i_x + i_y * i_y) < radius_end*radius_end) {
-		roots[roots_found++] = t;
+	if (radius_end > EPSILON) {
+	    t = (1.0 - O_z) / D_z;
+	    if (t > EPSILON) {
+		i_x = O_x + t * D_x;
+		i_y = O_y + t * D_y;
+		if ((i_x * i_x + i_y * i_y) < radius_end*radius_end) {
+		    roots[roots_found++] = t;
+		}
 	    }
 	}
     }
