@@ -57,9 +57,15 @@ Intersection Cylinder::_fullIntersect(const Ray& ray, const double t) const {
 
 inline
 Vector Cylinder::getNormal(const Vector& local_point) const {
-    Vector normal = Vector(local_point[0],local_point[1],0);
-    normal.normalize();
-    return normal;
+    if (IS_EQUAL(local_point[2],0)) {
+	return Vector(0,0,-1);
+    } else if (IS_EQUAL(local_point[2],height)) {
+	return Vector(0,0,1);
+    } else {
+	Vector normal = Vector(local_point[0],local_point[1],0);
+	normal.normalize();
+	return normal;
+    }
 }
 
 
