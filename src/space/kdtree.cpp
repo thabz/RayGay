@@ -26,6 +26,7 @@ KdTree::KdTree() {
 }
 
 KdTree::~KdTree() {
+    delete top_node;
 }
 
 void KdTree::addObject(Object* obj) {
@@ -168,9 +169,10 @@ KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, unsigned int depth) {
 	    // Recurse into child nodes
 	    left_node_ptr = prepare(&lower,depth+1);
 	    right_node_ptr = prepare(&higher,depth+1);
+	} else {
+	    delete splitResult.right_bobjects;
 	}
-    }
-
+    } 
     KdNode* new_node = new KdNode();
     new_node->axis = curNode->axis;
     new_node->splitPlane = curNode->splitPlane;
@@ -554,6 +556,15 @@ bool KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result) con
 	sort(result.left_bobjects->begin(), result.left_bobjects->end(), cmpL());
 	sort(result.right_bobjects->begin(), result.right_bobjects->end(), cmpR());
 	return true;
+    }
+}
+
+KdTree::KdNode::~KdNode() {
+    if (axis == -1) {
+	delete [] objects;
+    } else {
+	delete left;
+	delete right;
     }
 }
 

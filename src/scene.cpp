@@ -20,21 +20,32 @@ using namespace std;
 
 Scene::Scene() {
     environmentMap = NULL;
+    camera = NULL;
     fog_enabled = false;
     setBackground(RGBA(0.0,0,0,1));
 }
 
 Scene::~Scene() {
+    // Cleanup the environment texture
     if (environmentMap != NULL) {
 	delete environmentMap;
     }
+
+    // Destroy the camera 
+    if (camera != NULL) {
+	delete camera;
+    }
+
+    // Destroy all objects added to the scene
     for (vector<SceneObject*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	delete *p;
     }
+    objects.clear();
+
+    // Destroy all light sources added to the scene
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	delete *p;
     }
-    objects.clear();
     lights.clear();
 }
 

@@ -251,40 +251,49 @@ AddLight	: LightDef
 Assignment	: tVARNAME tEQUAL PathDef
                 {
 		    $$ = new AssignPathNode(*$1,$3);
+		    delete $1;
 		}
                 | tVARNAME tEQUAL Expr
                 {
 		    $$ = new AssignFloatNode(*$1,$3);
+		    delete $1;
                 }
                 | tVARNAME tEQUAL Vector
                 {
 		    $$ = new AssignVectorNode(*$1,$3);
+		    delete $1;
                 }
                 | tVARNAME tEQUAL MaterialDef 
                 {
 		    $$ = new AssignMaterialNode(*$1,$3);
+		    delete $1;
                 }
                 | tVARNAME tEQUAL Object
                 {
 		    $$ = new AssignSceneObjectNode(*$1,$3);
+		    delete $1;
                 }
                 ;
 
 OpAssignment	: tVARNAME tPLUSEQUAL Expr
                 {
 		    $$ = new FloatOpEqualsNode(*$1,'+',$3);
+		    delete $1;
 		}
                 | tVARNAME tMINUSEQUAL Expr
                 {
 		    $$ = new FloatOpEqualsNode(*$1,'-',$3);
+		    delete $1;
 		}
                 | tVARNAME tMULTEQUAL Expr
                 {
 		    $$ = new FloatOpEqualsNode(*$1,'*',$3);
+		    delete $1;
 		}
                 | tVARNAME tDIVEQUAL Expr
                 {
 		    $$ = new FloatOpEqualsNode(*$1,'/',$3);
+		    delete $1;
 		}
                 ;
 
@@ -425,6 +434,7 @@ Material 	: NamedMaterial
 NamedMaterial   : tVARNAME
                 {
 		    $$ = new NamedMaterialNode(*$1);
+		    delete $1;
 		}
                 ;
 
@@ -535,6 +545,7 @@ Object		: SolidObject
 NamedObject	: tOBJECT tVARNAME
                 {
 		    $$ = new NamedSceneObjectNode(*$2);
+		    delete $2;
 		}
                 ;
 
@@ -773,6 +784,7 @@ Path		: NamedPath
 NamedPath	: tVARNAME
                 {
 		    $$ = new NamedPathNode(*$1);   
+		    delete $1;
 		}
                 ;
 
@@ -813,6 +825,7 @@ Spiral		: tSPIRAL '{' Path Expr Expr '}'
 Texture		: tTEXTURE '{' tQSTRING tFLOAT tFLOAT InterpolationType '}'
                 {
 		    Image* img = new Image(*$3);
+		    delete $3;
 		    $$ = new Texture(img,Vector2($4,$5),$6);
 		}
                 ;
@@ -863,6 +876,7 @@ Vector		: '<' Expr ',' Expr ',' Expr '>'
                 | tVARNAME
 		{
 		    $$ = new NamedVectorNode(*$1);
+		    delete $1;
 		}
                 ;
 
@@ -899,6 +913,7 @@ Print		: tPRINT Expr
                 | tPRINT tQSTRING
                 {
 		    $$ = new StringPrintNode(*$2);
+		    delete $2;
 		}
                 ;
 
@@ -909,6 +924,7 @@ Expr		: tFLOAT
                 | tVARNAME
                 {
 		    $$ = new NamedFloatNode(*$1);
+		    delete $1;
                 }
 		| '(' Expr ')' 
                 {
@@ -950,18 +966,22 @@ ModStmt		: ExprMod
 ExprMod		: tVARNAME tPLUSPLUS
                 {
 		    $$ = new ModifyNamedFloatNode(*$1,'+',false);
+		    delete $1;
 		}
                 | tVARNAME tMINUSMINUS
                 {
 		    $$ = new ModifyNamedFloatNode(*$1,'-',false);
+		    delete $1;
 		}
                 | tPLUSPLUS tVARNAME
                 {
 		    $$ = new ModifyNamedFloatNode(*$2,'+',true);
+		    delete $2;
 		}
                 | tMINUSMINUS tVARNAME
                 {
 		    $$ = new ModifyNamedFloatNode(*$2,'-',true);
+		    delete $2;
 		}
   		;
 

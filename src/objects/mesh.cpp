@@ -34,6 +34,9 @@ Mesh::Mesh() : SceneObject(NULL) {
 
 // ----------------------------------------------------------------------------
 Mesh::~Mesh() {
+    for(unsigned int i = 0; i < triangles.size(); i++) {
+	delete triangles[i];
+    }
 }
 
 void Mesh::addSelf(KdTree* space) {

@@ -43,6 +43,8 @@ class KdTree {
     private:
 	class KdNode {
 	    public:
+		~KdNode();
+
 		union {
 		    // Enclosed objects when this is a leaf
 		    Object** objects;

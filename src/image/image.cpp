@@ -64,6 +64,7 @@ void Image::setRGBA(const Vector2& p, const RGBA& c) {
 }
 
 
+// Caller must delete the returned ImageIO object
 ImageIO* getImageIO(const std::string& filename) {
     ImageIO* io;
 
@@ -95,6 +96,7 @@ void Image::save(const std::string& filename) const {
 
     ImageIO* io = getImageIO(filename);
     io->save(this,filename);
+    delete io;
 }
 
 /**
