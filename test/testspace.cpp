@@ -11,6 +11,7 @@
 #include "ray.h"
 #include "space/kdtree.h"
 #include "objects/sphere.h"
+#include "objects/box.h"
 #include "math/vector2.h"
 #include "materials/material.h"
 #include "testing.h"
@@ -251,6 +252,21 @@ class kdtree_test : public Test {
 	    assertTrue(bsp.intersectForShadow(r,HUGE_DOUBLE) == NULL);
 	    assertTrue(bsp.intersectForShadow(r,10.0) == NULL);
 	    assertTrue(bsp.intersect(r,&i) == false);
+
+
+	    ////////////////////////////////////////////////////////
+	    // Test small objects
+	    ////////////////////////////////////////////////////////
+	    KdTree bsp2 = KdTree();
+	    double s = 0.001;
+	    Box* box = new Box(Vector(-s,-s,-s),Vector(s,s,s),NULL);
+	    box->prepare();
+	    box->addSelf(&bsp2);
+	    bsp2.prepare();
+
+	    r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
+	    assertTrue(bsp2.intersect(r,&i) == true);
+	    assertTrue(i.getPoint() == Vector(0,0,s));
 	}
 };
 
