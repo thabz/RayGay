@@ -29,6 +29,9 @@ void SpecularBloom::apply(Image* image) {
 	}
     }
 
+    // Clip colors
+    glow->clipColors();
+
     GaussianBlur blur_filter = GaussianBlur(radius);
     blur_filter.apply(glow);
 
