@@ -1,3 +1,4 @@
+#include "plastic.h"
 
 Plastic::Plastic(const RGB& color) : Material() {
     setDiffuseColor(color);
