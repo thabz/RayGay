@@ -12,6 +12,8 @@
  * \ref page_photonmapping
  *
  * \ref page_researchers
+ *
+ * \ref page_papers
  */
 
 /**
@@ -43,4 +45,10 @@
  * @see PhotonRenderer
  */
 
+/**
+ * \page page_papers Research papers
+ * 
+ * Denis Zorin, Peter Schröder and Wim Sweldens, ``Interpolating subdivision for meshes with arbitrary topology,'' in <i>Proceedings of SIGGRAPH 1996</i>, ACM SIGGRAPH, 1996, pp. 189-192. http://graphics.stanford.edu/~dzorin/multires/butterfly/
+ * This page introduces the modified butterfly subdivision scheme.
+ */
 
