@@ -61,15 +61,15 @@ void CSGDifference::allIntersections(const Ray& ray, vector<Intersection>& resul
 
     bool left_inside = false;
     left->allIntersections(ray,left_int);
+    if (left_int.empty()) return;
     if (left_int.size() > 0) {
-	left_inside = !left_int[0].isEntering();
+	left_inside = !left_int.front().isEntering();
     }
-    if (left_int.empty() && !left_inside) return;
 
     bool right_inside = false;
     right->allIntersections(ray,right_int);
     if (right_int.size() > 0) {
-	right_inside = !right_int[0].isEntering();
+	right_inside = !right_int.front().isEntering();
     }
 
     // Invert all directions of right
