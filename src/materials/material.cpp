@@ -1,5 +1,5 @@
 
-#include "material.h"
+#include "materials/material.h"
 #include "rgb.h"
 #include "image.h"
 #include "intersection.h"
