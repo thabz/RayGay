@@ -19,4 +19,6 @@ VERSION=0.1
 
 AC_PROG_CXX
 
+CPPFLAGS="$CPPFLAGS -O3 -Wall"
+
 AC_OUTPUT(Makefile src/Makefile test/Makefile)
