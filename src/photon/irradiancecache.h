@@ -51,6 +51,7 @@ class IrradianceCache {
 	void putEstimate(const Vector& point, const Vector& normal, const RGB& irrandiance, const double hmd);
 
     private:
+
 	class CacheNode {
 	    public:
 		CacheNode(const Vector& point, const Vector &normal, const RGB& irradiance, double hmd, double a);
@@ -81,7 +82,7 @@ class IrradianceCache {
 		void add(const CacheNode& node);
 		void split();
 
-		BoundingBox box;
+		BoundingBox bbox;
 		HierarchyNode* children[8];
 		vector<CacheNode> cache_nodes;
 		bool isLeaf;
@@ -90,6 +91,8 @@ class IrradianceCache {
 	double tolerance;
 	double inv_tolerance;
 	HierarchyNode* hierarchy_top;
+
+	void traverseOctree(HierarchyNode* node, const Vector& point, vector<CacheNode*>* result) const;
 };
 
 

@@ -27,9 +27,6 @@ RGB IrradianceCache::getEstimate(const Vector& point, const Vector& normal) cons
     int found = 0;
     for(int i = 0; i < nodes_num; i++) {
 	const CacheNode* node = &(hierarchy_top->cache_nodes[i]);
-	double dist = (point - node->getPoint()).norm();
-	//if (dist > node->getSquaredRadius())
-	//    continue;
 
 	weight = node->getWeight(point,normal);
 	if (weight < inv_tolerance)
@@ -45,6 +42,27 @@ RGB IrradianceCache::getEstimate(const Vector& point, const Vector& normal) cons
     } else {
 	Stats::getUniqueInstance()->inc("Irradiance cache misses");
 	return RGB(-1.0,-1.0,-1.0);
+    }
+}
+
+void IrradianceCache::traverseOctree(HierarchyNode* node, const Vector& point, vector<CacheNode*>* result) const {
+    if (node->isLeaf) {
+	// Add cache_nodes to result
+	for(unsigned int i = 0; i < node->cache_nodes.size(); i++) {
+	    CacheNode* cnode = &(node->cache_nodes[i]);
+	    if ((point - cnode->getPoint()).norm() < cnode->getSquaredRadius()) {
+		result->push_back(cnode);
+	    }
+	}
+    } else {
+	// traverse children
+	for(unsigned int i = 0; i < 8; i++) {
+	    HierarchyNode* child = node->children[i];
+	    // TODO: Optimize
+	    if (child->bbox.inside(point)) {
+		traverseOctree(child,point,result);
+	    }
+	}
     }
 }
 
@@ -72,7 +90,7 @@ double IrradianceCache::CacheNode::getWeight(const Vector& x, const Vector& n) c
 }
 
 IrradianceCache::HierarchyNode::HierarchyNode(const BoundingBox& bbox) {
-    this->box = bbox;
+    this->bbox = bbox;
     this->isLeaf = true;
     for(int i = 0; i < 8; i++) {
 	children[i] = NULL;
@@ -81,21 +99,32 @@ IrradianceCache::HierarchyNode::HierarchyNode(const BoundingBox& bbox) {
 
 void IrradianceCache::HierarchyNode::add(const CacheNode& node) {
     if (isLeaf) {
-	cache_nodes.push_back(node);
-	// TODO: call split() if this node holds too many children
+	if (bbox.intersectSphere(node.getPoint(),node.getSquaredRadius())) {
+	    cache_nodes.push_back(node);
+	    // TODO: call split() if this node holds too many children
+	}
     } else {
-	// TODO: add node to children if they want them.
+	// Add node to children (if they want it)
+	for(unsigned int j = 0; j < 8; j++) {
+	    children[j]->add(node);
+	}
     }
 }
 
+/**
+ * Create 8 children and copy my cache_nodes to them.
+ */
 void IrradianceCache::HierarchyNode::split() {
     // TODO: Create 8 children with right bbox'
 
-    // TODO: add node to children if they want them
+    // Copy nodes to children if they want them
     unsigned int nodes_num = cache_nodes.size();
     for (unsigned int i = 0; i < nodes_num; i++) {
-
+	for(unsigned int j = 0; j < 8; j++) {
+	    children[j]->add(cache_nodes[i]);
+	}
     }
+    // Clean up this node and mark it as a knot
     cache_nodes.clear();
     isLeaf = false;
 }
