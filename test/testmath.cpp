@@ -15,8 +15,7 @@
 using namespace std;
 
 void vector_test() {
-    // Test area()
-    assert(0.5 == Vector::area(Vector(1,1,1), Vector(2,1,1), Vector(1,2,1)));
+    
     Vector v = Vector(1,1,1);
     assert(IS_EQUAL(v.norm(),3));
     assert(IS_EQUAL(v.norm(),3.0));
@@ -115,10 +114,14 @@ void vector_test() {
 
     v = Vector(0,0,1);
     assert(IS_EQUAL(v*v,1));
+
+    // Test area()
+    assert(0.5 == Vector::area(Vector(1,1,1), Vector(2,1,1), Vector(1,2,1)));
+    assert(1.0 == Vector::area(Vector(0,0,0), Vector(0,2,0), Vector(1,0,0)));
+    assert(2.0 == Vector::area(Vector(0,0,0), Vector(0,2,0), Vector(2,0,0)));
 }
 
 void vector2_test() {
-    // Test area()
     Vector2 v = Vector2(1.0,2.0);
     assert(v[0] == 1);
     assert(v[1] == 2);
