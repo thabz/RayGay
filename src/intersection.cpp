@@ -7,7 +7,7 @@ Intersection::Intersection() {
     intersected = false;
 }
 
-Intersection::Intersection(Vector p, double s) {
+Intersection::Intersection(const Vector& p, double s) {
     point = p;
     t = s;
     intersected = true;

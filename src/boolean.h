@@ -4,6 +4,7 @@
 #include "object.h"
 #include "vector.h"
 #include "material.h"
+#include "booleanoperand.h"
 
 class Intersection;
 class Ray;
@@ -11,7 +12,7 @@ class Matrix;
 
 
 /// Boolean solid
-class Boolean : public object {
+class Boolean : public BooleanOperand {
 
     public:
 	/// The boolean operations
@@ -20,7 +21,8 @@ class Boolean : public object {
 	    BOOLEAN_DIFFERENCE,  ///< All points in lhs unless they're in rhs too
 	    BOOLEAN_INTERSECTION ///< Points that are in common
 	};
-	Boolean(object* lhs, BooleanOp op, object* rhs, Material material);
+
+	Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, Material material);
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection& i) const;
@@ -34,9 +36,10 @@ class Boolean : public object {
 	virtual void getUV(const Intersection& intersection, double* u, double* v) const;
 
 	static void test();
+
     private:
-	object* _lhs;
-	object* _rhs;
+	BooleanOperand* _lhs;
+	BooleanOperand* _rhs;
 	BooleanOp _op;
 	Material _material;
 	virtual Intersection _intersect(const Ray& ray) const;

@@ -31,13 +31,7 @@ class object {
 
 	/// The smallest box containing this object
 	virtual BoundingBox boundingBoundingBox() const = 0;
-
-	/// Says whether the point belongs to the closure (surface)
-	virtual bool onEdge(const Vector &p) const = 0;
-
-	/// Says whether the point belongs to the inside (and not the closure) of the object
-	virtual bool inside(const Vector &p) const = 0;
-
+	
 	/// Get texture coordinates at an intersection
 	virtual void getUV(const Intersection& intersection, double* u, double* v) const = 0;
 

@@ -199,6 +199,18 @@ BoundingBox BoundingBox::doIntersection(const BoundingBox& b1, const BoundingBox
     return BoundingBox(mini,maxi);
 }
 
+BoundingBox BoundingBox::enclosure(Vector* points, int num) {
+    Vector mini = Vector(HUGE_DOUBLE,HUGE_DOUBLE,HUGE_DOUBLE);
+    Vector maxi = Vector(-HUGE_DOUBLE,-HUGE_DOUBLE,-HUGE_DOUBLE);
+    for(int i = 0; i < num; i++) {
+	for (int j = 0; j < 3; j++) {
+	    mini[j] = min(mini[j],points[i][j]);
+	    maxi[j] = max(maxi[j],points[i][j]);
+	}
+    }
+    return BoundingBox(mini,maxi);
+}
+
 bool BoundingBox::operator==(const BoundingBox &b) const {
     return b._c1 == _c1 && b._c2 == _c2;
 }

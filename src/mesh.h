@@ -25,7 +25,7 @@ class Mesh : public object {
 	Mesh();
 	
 	/// Constructor
-	Mesh(MeshType type, Material mat);
+	Mesh(MeshType type, const Material& mat);
 	
 	/// Destructor
 	virtual ~Mesh();
@@ -47,12 +47,15 @@ class Mesh : public object {
 	/// Internal test
 	static void test();
 
+	Vector normalAt(int i) { return normals[i]; };
+	Vector cornerAt(int i) { return corners[i]; };
+
     private:
 	MeshType meshType;
 	Material material;
 	mutable BoundingBox* _boundingBoundingBox;
 	virtual Intersection _intersect(const Ray& ray) const;
-	virtual Intersection intersect_triangle(const Ray& ray, Vector vert0, Vector vert1, Vector vert2) const;
+	//virtual Intersection intersect_triangle(const Ray& ray, Vector vert0, Vector vert1, Vector vert2) const;
 
 	std::vector<Vector> corners;
 	std::vector<Vector> normals;

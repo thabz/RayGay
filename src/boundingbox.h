@@ -40,6 +40,9 @@ class BoundingBox {
 	/// Returns the smallest box that b1 and b2 have in common.
 	static BoundingBox doIntersection(const BoundingBox& b1, const BoundingBox& b2);
 
+	/// Returns the smallest box that inclose the points
+	static BoundingBox enclosure(Vector* points, int num);
+
 	/// Returns a length 8 array of the corners
 	Vector* corners() const; 
 

@@ -12,8 +12,10 @@
 #include "perlin.h"
 #include "constants.h"
 #include "boundingbox.h"
+#include "booleanoperand.h"
+#include "object.h"
 
-Boolean::Boolean(object* lhs, BooleanOp op, object* rhs, Material m) {
+Boolean::Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, Material m) {
     _lhs = lhs;
     _rhs = rhs;
     _op = op;

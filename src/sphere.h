@@ -8,19 +8,20 @@
 #include "vector.h"
 #include "material.h"
 #include "boundingbox.h"
+#include "booleanoperand.h"
 
 class Intersection;
 class Ray;
 class Matrix;
 
 /// A sphere object
-class Sphere : public object {
+class Sphere : public BooleanOperand {
 
     friend std::ostream & operator<< (std::ostream &os, const Sphere &s);
     
     public:
         /// Constructor
-	Sphere(Vector c, double r, Material material);
+	Sphere(const Vector& c, double r, const Material& material);
 
 	/// Destructor
 	virtual ~Sphere();

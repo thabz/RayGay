@@ -16,7 +16,7 @@
 
 using namespace std;
 
-Sphere::Sphere(Vector c, double r, Material mat) {
+Sphere::Sphere(const Vector& c, double r, const Material& mat) {
     assert(r > 0);
     center = c;
     radius = r;

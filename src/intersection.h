@@ -17,14 +17,14 @@ class Intersection {
 
     public:
 	Intersection();
-	Intersection(Vector point, double t);
+	Intersection(const Vector& point, double t);
 	~Intersection();	
 
 	void setObject(object* obj) { o = obj; };
 	object* getObject() const { return o; };
 
-	Vector point;
-	Vector local_point; ///< The Intersection point in the objects own coordinate system. Optional.
+	Vector point; 	///< The intersection point
+	Vector local_point; ///< The intersection point in the objects own coordinate system. Optional.
 	object* local_object; ///< A local subobject, eg. a component of a Boolean.
 
 	const Triangle* local_triangle; ///< A local subobject, eg. a component of a Mesh.

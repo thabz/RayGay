@@ -29,7 +29,6 @@
 #include "image.h"
 #include "pointlight.h"
 #include "boolean.h"
-#include "boxobject.h"
 #include "mesh.h"
 #include "spotlight.h"
 #include "constants.h"

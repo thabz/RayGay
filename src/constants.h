@@ -12,7 +12,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#include "math.h"
+#include <math.h>
 
 #define M_PI		3.14159265358979323846
 #define M_PI_DEG	(M_PI/180.0)
@@ -20,15 +20,16 @@
 #define M_2PI           (2.0*M_PI)
 
 #define HUGE_DOUBLE	double(1e+20)
+#define EPSILON		double(1e-5)
 
-#define min(x,y)		((x) < (y) ? (x) : (y))
-#define max(x,y)		((x) > (y) ? (x) : (y))
+#define MIN(x,y)	((x) < (y) ? (x) : (y))
+#define MAX(x,y)	((x) > (y) ? (x) : (y))
 
-#define EPSILON		1e-5
-#define IS_ZERO(p)	(abs(p) < EPSILON)
 #define IS_POSITIVE(p)	(p > -EPSILON)
 #define IS_NEGATIVE(p)	(p < EPSILON)
-#define IS_EQUAL(x,y)	(abs((x)-(y)) < EPSILON)
+
+#define IS_ZERO(p)	((p) < EPSILON && (p) > -EPSILON)
+#define IS_EQUAL(x,y)	(IS_ZERO((x)-(y)))
 
 #define DEG2RAD(x)	((x/360.0)*M_2PI)
 
