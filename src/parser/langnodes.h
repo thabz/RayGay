@@ -6,6 +6,7 @@
 #include <string>
 #include "parser/floatnodes.h"
 #include "parser/sceneobjectnodes.h"
+#include "parser/lightnodes.h"
 #include "parser/assignments.h"
 #include "parser/interpreterenv.h"
 #include "exception.h"
@@ -61,6 +62,20 @@ class AddSceneObjectToSceneNode : public ActionNode {
 
     private:
         SceneObjectNode* node;
+};
+
+class AddLightToSceneNode : public ActionNode {
+    public:
+	AddLightToSceneNode(LightNode* node) {
+	    this->node = node;
+	}
+
+	void eval() {
+	    InterpreterEnv::getUniqueInstance()->getScene()->addLight(node->eval());
+	}
+
+    private:
+	LightNode* node;
 };
 
 class ActionListNode : ActionNode {

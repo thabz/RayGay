@@ -228,27 +228,27 @@ PhotonSettings  : /* Empty */
                 | PhotonSettings PhotonSetting
 		;
 
-PhotonSetting   : tGLOBALPHOTONS Expr		
+PhotonSetting   : tGLOBALPHOTONS tFLOAT
 		{
 		    renderer_settings->global_photons_num = int($2);
 		}
-                | tCAUSTICPHOTONS Expr
+                | tCAUSTICPHOTONS tFLOAT
 		{
 		    renderer_settings->caustic_photons_num = int($2);
 		}
-		| tESTIMATERADIUS Expr
+		| tESTIMATERADIUS tFLOAT
 		{
 		    renderer_settings->estimate_radius = int($2);
 		}
-		| tESTIMATESAMPLES Expr
+		| tESTIMATESAMPLES tFLOAT
 		{
 		    renderer_settings->estimate_samples = int($2);
 		}
-		| tFINALGATHERRAYS Expr
+		| tFINALGATHERRAYS tFLOAT
 		{
 		    renderer_settings->final_gather_rays = int($2);
 		}
-		| tCACHETOLERANCE Expr
+		| tCACHETOLERANCE tFLOAT
 		{
 		    renderer_settings->cache_tolerance = int($2);
 		}
@@ -287,11 +287,11 @@ CameraSetting   : tPOSITION Vector
 		}
                 ;
 
-Image		: tIMAGE '{' tWIDTH Expr tHEIGHT Expr '}'
+Image		: tIMAGE '{' tWIDTH tFLOAT tHEIGHT tFLOAT '}'
                 {
 		    image_size = Vector2($4,$6);
 		}
-                | tIMAGE '{' tWIDTH Expr tASPECT Expr Expr '}'
+                | tIMAGE '{' tWIDTH tFLOAT tASPECT tFLOAT tFLOAT '}'
                 {
 		    image_size = Vector2($4,$4 * ($7/$6));
 		}
@@ -481,7 +481,7 @@ GroupItems	: GroupItem
 		}
 		;
 
-GroupItem	: Object;		
+GroupItem	: Object;
 
 Extrusion	: tEXTRUSION '{' Material Path Expr Expr Expr '}'
                 {
