@@ -2,9 +2,32 @@
 #ifndef OBJECTS_BLOB
 #define OBJECTS_BLOB
 
+#include <vector>
+
 #include "objects/isosurface.h"
 #include "boundingbox.h"
-#include <vector>
+#include "space/generickdtree.h"
+
+class BlobAtom 
+{
+    public:
+	BlobAtom(double radius, double weight, const Vector& center);
+	BoundingBox boundingBoundingBox() const;
+	int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
+	
+	double radius;
+	double radius_squared;
+	double weight;
+	Vector center;
+};
+
+class BlobTree : public GenericKdTree<BlobAtom>
+{
+    public:
+	BlobTree();
+	double eval(const Vector& point) const;
+};
+
 
 /**
  * A Blob is a collection of spheres with a power.
@@ -31,12 +54,14 @@
  * @see http://astronomy.swin.edu.au/~pbourke/modelling/implicitsurf/
  * @see http://www.dcs.shef.ac.uk/graphics/publications/implicit/overview.ps
  */
-class Blob : public IsoSurface {
+class Blob : public IsoSurface 
+{
     
     public:
 	/// Constructor
 	Blob(double iso, unsigned int steps, double accuracy, Material* material);
 	void addAtom(const Vector& center, double radius, double weight);
+	void prepare();
     
 	SceneObject* clone() const;
 
@@ -50,8 +75,8 @@ class Blob : public IsoSurface {
 	vector<double> radii; // Squared radii
 	vector<double> weights;
 	int atoms_num;
-	
-};
 
+	BlobTree tree;
+};
 
 #endif
