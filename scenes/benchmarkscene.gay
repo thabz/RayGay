@@ -1,9 +1,15 @@
-
+# Benchmark scene som bruges til optimere kode med
+# 
+# Startede med omkring 14:00 minutter
+# ...
 # Best 9:34
 # Using Boundingbox::intersect in BSP: 9:14
 # const i kdtree: 9.04
 # simplere callstack til shadow: 9.00
 # Valgt af bedste splitdimension: 7:30
+# Ved ikke hvorfor: 7:25
+# Ved ikke hvorfor 7:18
+# fastIntersect og fullIntersect på object: 6:13
 
 include materials.gay
 

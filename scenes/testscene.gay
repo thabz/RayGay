@@ -19,13 +19,13 @@ background 0.1 0.1 0.3 1.0
 
 light point 100 1300 1300 1 1 1
 
-box $tiles -700 -50 -700  700 0 700
-#box $blue -700 -50 -700  700 0 700
-box $grey85 -750 -50 -750  750 -0.01 750
+#box $tiles -700 -50 -700  700 0 700
+box $dullblue -700 -50 -700  700 0 700
+box $dullyellow -750 -50 -750  750 -0.01 750
 
 circle $circle 0 300 0 400 0 1 0
-spiral $spiral1 $circle 200 5 0
-spiral $spiral2 $circle 200 5 0.5
-extrusion $red    $spiral1 50 12 100
-extrusion $blue   $spiral2 50 12 100
-
+spiral $spiral1 $circle 200 10 0
+spiral $spiral2 $circle 200 10 0.5
+extrusion $dullred    $spiral1 25 20 600
+extrusion $dullblue   $spiral2 25 20 600
+extrusion $dullwhite   $circle 50 30 100
