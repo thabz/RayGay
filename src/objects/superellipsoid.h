@@ -14,10 +14,14 @@
  *
  * \todo Finish implementation
  */
-class SuperElliopsoid : public IsoSurface {
+class SuperEllipsoid : public IsoSurface {
 
     public:
-	SuperElliopsoid(double n1, double n2, unsigned int steps, double accuracy, Material* m);
+	SuperEllipsoid(double n1, double n2, unsigned int steps, double accuracy, Material* m);
+	SceneObject* clone() const;
+
+    protected:
+	BoundingBox _boundingBoundingBox() const;
 
     private:
 	double evaluateFunction(const Vector& v) const;

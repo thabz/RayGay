@@ -127,6 +127,7 @@ specular	return tSPECULAR;
 sphere		return tSPHERE;
 spot		return tSPOT;
 spiral		return tSPIRAL;
+superellipsoid	return tSUPERELLIPSOID;
 texture		return tTEXTURE;
 translate	return tTRANSLATE;
 triangles	return tTRIANGLES;

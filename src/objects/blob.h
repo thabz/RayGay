@@ -37,13 +37,12 @@ class Blob : public IsoSurface {
 	/// Constructor
 	Blob(double iso, unsigned int steps, double accuracy, Material* material);
 	void addAtom(const Vector& center, double radius, double weight);
-	BoundingBox boundingBoundingBox() const { return bbox; };
     
-	void transform(const Matrix& m);
 	SceneObject* clone() const;
 
     protected:
 	double evaluateFunction(const Vector& point) const;
+	BoundingBox _boundingBoundingBox() const { return bbox; };
 
     private:
 	BoundingBox bbox;

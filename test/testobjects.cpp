@@ -15,6 +15,7 @@
 #include "objects/mesh.h"
 #include "objects/extrusion.h"
 #include "objects/ellipsoid.h"
+#include "objects/superellipsoid.h"
 #include "objects/box.h"
 #include "objects/necklace.h"
 #include "objects/transformedinstance.h"
@@ -974,6 +975,44 @@ void cone_test() {
     assert(!all[1].isEntering());
 }
 
+void superellipsoid_test() {
+    // Unscaled instance at origin
+    SuperEllipsoid* s = new SuperEllipsoid(0.2,0.2,100,0.0001,NULL);
+    assert(intersects(s,Vector(0,0,1000),Vector(0,0,-1)));
+    assert(!intersects(s,Vector(2,0,1000),Vector(0,0,-1)));
+    assert(!intersects(s,Vector(0,2,1000),Vector(0,0,-1)));
+    assert(iPoint(s,Vector(0,0,1000),Vector(0,0,-1)).z() < 1.001);
+    assert(iPoint(s,Vector(0,0,1000),Vector(0,0,-1)).z() > 0.999);
+    assert(iNormal(s,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iNormal(s,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+    assert(iNormal(s,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
+    assert(iNormal(s,Vector(0,-1000,0),Vector(0,1,0)) == Vector(0,-1,0));
+    
+    // Scaled instance at origin
+    s = new SuperEllipsoid(0.2,0.2,100,0.0001,NULL);
+    s->transform(Matrix::matrixScale(Vector(10,10,10)));
+    assert(intersects(s,Vector(0,0,1000),Vector(0,0,-1)));
+    assert(intersects(s,Vector(9,0,1000),Vector(0,0,-1)));
+    assert(!intersects(s,Vector(11,0,1000),Vector(0,0,-1)));
+    cout << iPoint(s,Vector(0,0,1000),Vector(0,0,-1)) << endl;
+    assert(iPoint(s,Vector(0,0,1000),Vector(0,0,-1)).z() < 10.001);
+    assert(iPoint(s,Vector(0,0,1000),Vector(0,0,-1)).z() > 9.999);
+    assert(iNormal(s,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iNormal(s,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+    assert(iNormal(s,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
+
+    // Scaled and translated instance
+    s->transform(Matrix::matrixTranslate(Vector(100,300,400)));
+    assert(intersects(s,Vector(100,300,1000),Vector(0,0,-1)));
+    assert(intersects(s,Vector(109,300,1000),Vector(0,0,-1)));
+    assert(!intersects(s,Vector(111,300,1000),Vector(0,0,-1)));
+    assert(!intersects(s,Vector(0,0,1000),Vector(0,0,-1)));
+    assert(iPoint(s,Vector(100,300,1000),Vector(0,0,-1)).z() < 410.01);
+    assert(iPoint(s,Vector(100,300,1000),Vector(0,0,-1)).z() > 409.99);
+    assert(iNormal(s,Vector(100,300,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iNormal(s,Vector(100,300,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+}
+
 int main(int argc, char *argv[]) {
     transformed_instance_test();
     sphere_test();
@@ -992,6 +1031,7 @@ int main(int argc, char *argv[]) {
     ellipsoid_test();
     csg_test();
     cone_test();
+    superellipsoid_test();
     return EXIT_SUCCESS;
 }
 

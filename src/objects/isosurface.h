@@ -3,6 +3,7 @@
 #define OBJECTS_ISOSURFACE_H
 
 #include "objects/object.h"
+#include "objects/transformer.h"
 
 /**
  * An isosurface is points described by a function. This is also called
@@ -19,10 +20,13 @@
  * \f[ f(x,y,z) = x^2 + y^2 + z^2 \f]
  * and a \f$ K \f$  which acts as the squared radius.
  */ 
-class IsoSurface : public Object {
+class IsoSurface : public Object, public Transformer {
 
     public:
 	bool intersects(const BoundingBox& b) const;
+	void transform(const Matrix& m);
+	// Return the bounding box in world space coordinates
+	BoundingBox boundingBoundingBox() const;
 
     protected:
 	/// Constructor
@@ -32,6 +36,9 @@ class IsoSurface : public Object {
 
 	double _fastIntersect(const Ray& ray) const;
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
+
+	// Returns the bounding box in object space coordinates
+	virtual BoundingBox _boundingBoundingBox() const = 0;
 
     private:
 	virtual Vector normal(const Vector& p) const;

@@ -17,6 +17,7 @@
 #include "objects/extrusion.h"
 #include "objects/mesh.h"
 #include "objects/wireframe.h"
+#include "objects/superellipsoid.h"
 #include "parser/assignments.h"
 #include "parser/transformationnodes.h"
 #include "parser/materialnodes.h"
@@ -239,6 +240,43 @@ class ConeNode : public SceneObjectNode {
 	FloatNode* radius_begin;
 	FloatNode* radius_end;
 	MaterialNode* material;
+};
+
+class SuperEllipsoidNode : public SceneObjectNode {
+
+    public:
+	SuperEllipsoidNode(FloatNode* n1, FloatNode* n2, FloatNode* steps, FloatNode* accuracy, MaterialNode* mat) {
+	    this->n1 = n1;
+	    this->n2 = n2;
+	    this->steps = steps;
+	    this->accuracy = accuracy;
+	    this->material = mat;
+	}
+
+	virtual ~SuperEllipsoidNode() {
+	    delete n1;
+	    delete n2;
+	    delete steps;
+	    delete accuracy;
+	    delete material;
+	}
+	
+	SceneObject* eval() {
+	    double _n1 = n1->eval();
+	    double _n2 = n2->eval();
+	    unsigned int _steps = (unsigned int) steps->eval();
+	    double _accuracy = accuracy->eval();
+	    Material* m = material->eval();
+	    return new SuperEllipsoid(_n1,_n2,_steps,_accuracy,m);
+	}
+
+    private:
+	FloatNode* n1;
+	FloatNode* n2;
+	FloatNode* steps;
+	FloatNode* accuracy;
+	MaterialNode* material;
+
 };
 
 class NecklaceNode : public SceneObjectNode {

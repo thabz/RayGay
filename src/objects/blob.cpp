@@ -74,9 +74,3 @@ SceneObject* Blob::clone() const {
     return result;
 }
 
-void Blob::transform(const Matrix& m) {
-    for(int i = 0; i < atoms_num; i++) {
-	centers[i] = m * centers[i];
-    }
-}
-

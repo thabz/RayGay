@@ -10,32 +10,38 @@ IsoSurface::IsoSurface(unsigned int steps, double accuracy, double iso, Material
     this->iso = iso;
 }
 
-Intersection IsoSurface::_fullIntersect(const Ray& ray, const double t) const {
-    Vector p = ray.getPoint(t);
-    return Intersection(p,t,normal(p),Vector2(0,0));
+Intersection IsoSurface::_fullIntersect(const Ray& world_ray, const double t) const {
+    Ray ray = rayToObject(world_ray);
+    Vector p = ray.getPoint(t*ray.t_scale);
+    Intersection local_i = Intersection(p,t*ray.t_scale,normal(p),Vector2(0,0));
+    return intersectionToWorld(local_i);
 }
 
-double IsoSurface::_fastIntersect(const Ray& ray) const {
-    const BoundingBox& bbox = this->boundingBoundingBox();
-    Vector2 inout = bbox.intersect(ray);
-    double t_end = inout[1];
-    if (t_end < 0) {
-	return -1;
-    }
-    double t_begin = inout[0];
-    double t_step = (t_end - t_begin) / double(steps);
-    
-    if (inside(ray.getPoint(t_begin))) {
-	return t_begin;
-    }
+double IsoSurface::_fastIntersect(const Ray& world_ray) const {
 
-    for(double t = t_begin; t <= t_end; t += t_step) {
-	if (inside(ray.getPoint(t))) {
-	    return refine(ray,t-t_step,t);
+    Ray local_ray = rayToObject(world_ray);
+    double res = -1;
+    
+    const BoundingBox& bbox = this->_boundingBoundingBox();
+    Vector2 inout = bbox.intersect(local_ray);
+    double t_end = inout[1];
+    if (t_end >= 0) {
+	double t_begin = inout[0];
+	double t_step = (t_end - t_begin) / double(steps);
+
+	if (inside(local_ray.getPoint(t_begin))) {
+	    res = t_begin;
+	} else {
+	    for(double t = t_begin; t <= t_end; t += t_step) {
+		if (inside(local_ray.getPoint(t))) {
+		    res = refine(local_ray,t-t_step,t);
+		    goto DONE;
+		}
+	    }
 	}
     }
-    // No intersection
-    return -1;
+DONE:
+    return res / local_ray.t_scale;
 }
 
 /**
@@ -58,6 +64,12 @@ double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
     return 0.5 * (t_begin + t_end);
 }
 
+/**
+ * Finds the surface normal at a point.
+ * 
+ * @param p a surface point in object space
+ * @return the surface normal at point
+ */
 Vector IsoSurface::normal(const Vector& p) const {
     double x = evaluateFunction(p - Vector(1,0,0)) - 
 	       evaluateFunction(p + Vector(1,0,0));
@@ -74,3 +86,12 @@ bool IsoSurface::intersects(const BoundingBox& b) const {
     return b.inside(boundingBoundingBox());
 }
 
+void IsoSurface::transform(const Matrix& m) {
+    Transformer::transform(m);
+}
+
+BoundingBox IsoSurface::boundingBoundingBox() const {
+    BoundingBox result = bboxToWorld(_boundingBoundingBox());
+    result.grow(20*EPSILON);
+    return result;
+}

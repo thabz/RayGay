@@ -142,6 +142,7 @@ ActionListNode* top_actions;
 %token tSETTINGS
 %token tSOLIDBOX
 %token tSPHERE
+%token tSUPERELLIPSOID
 %token tTEXTURE
 %token tTORUS
 %token tWIREFRAME
@@ -172,7 +173,7 @@ ActionListNode* top_actions;
 %type <matrix> Rotate Translate Scale Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
-%type <object> ObjectGroup Ellipsoid Mesh Cone
+%type <object> ObjectGroup Ellipsoid Mesh Cone SuperEllipsoid
 %type <object> NamedObject 
 %type <material> MaterialDef NamedMaterial Material
 %type <light> LightDef Lightsource 
@@ -624,6 +625,7 @@ Object		: SolidObject
 		| MeshObject 
 		| ObjectGroup
 		| NamedObject
+		| SuperEllipsoid
 		| Object Transformations
                 {
 		    $$ = new TransformedSceneObjectNode($1,$2);
@@ -750,6 +752,12 @@ Ellipsoid	: tELLIPSOID '{' Material Vector Vector '}'
                 | tELLIPSOID '{' Vector Vector '}'
                 {
 		    $$ = new EllipsoidNode($4,$3,new MaterialNullNode());
+		}
+                ;
+
+SuperEllipsoid 	: tSUPERELLIPSOID '{' Material Expr Expr Expr Expr '}'
+                {
+		    $$ = new SuperEllipsoidNode($4,$5,$6,$7,$3);
 		}
                 ;
 
