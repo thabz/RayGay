@@ -6,15 +6,16 @@ use CGI();
 (undef,undef,undef,$todaymday,$todaymonth,$todayyear,undef,undef,undef) = localtime(time);
 $todayyear += 1900;
 $todaymonth++;
+$todaymonth = "0$todaymonth" if ($todaymonth < 9);
 
-my $year = CGI::param('year') || $todayyear;
-my $month = CGI::param('mon') || $todaymonth;
-
-my $calHTML = ""; #makeCal($month,$year);
+my $selectedyear = CGI::param('year') || $todayyear;
+my $selectedmonth = CGI::param('month') || $todaymonth;
 
 opendir(DIR,'entries');
 my @entries = grep { !/^\./ && !/CVS/ } readdir(DIR);
 closedir(DIR);
+
+my $calHTML = makeSidebar($selectedmonth,$selectedyear,@entries);
 
 my $HTML;
 $HTML .= '<tr><td><h1 style="font-family:arial,helvetica">RAYTRACER<i style="font-family:serif; font-weight:normal">Blog</i></h1></td></tr>';
@@ -22,8 +23,9 @@ $HTML .= '<tr><td>&nbsp;</td></tr>';
 $HTML .= '<tr><td>&nbsp;</td></tr>';
 
 my $i = 0;
+my $selectedprefix = "$selectedyear-$selectedmonth";
 foreach my $entry (sort {$b cmp $a} @entries) {
-#   last if ++$i > 10;
+    next unless $entry =~ /^$selectedprefix/;
     my $date = $entry;
     $date =~ s/\.html//;
     my $entryHTML = getEntry($entry);
@@ -185,6 +187,21 @@ sub getEntry {
    return $data;
 }
 
+sub makeSidebar {
+    my ($month,$year,@entries) = @_;
+    my %ents;
+    my $HTML = "";
+    foreach my $name (@entries) {
+	$name =~ s/-...html$//;
+	$ents{$name} = 1;
+    }
+    foreach my $name (sort {$b cmp $a} keys %ents) {
+	my ($y,$m) = split('-',$name);
+	$name = "<b>$name</b>" if ($y == $year && $m == $month);
+	$HTML .= qq|<a href="index.cgi?year=$y&month=$m">$name<br>|;
+    }
+    return $HTML;
+}
 
 sub makeCal {
    my ($mon,$year) = @_;
