@@ -37,8 +37,8 @@ Vector2 Bound::getUV(const Intersection& i) const {
 }
 
 SceneObject* Bound::clone() const {
-    // Not to be called
-    return NULL;
+    ObjectGroup* new_group = dynamic_cast<ObjectGroup*>(group->clone());
+    return new Bound(new_group);
 }
 
 /*
