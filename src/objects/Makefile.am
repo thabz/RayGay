@@ -5,11 +5,13 @@ noinst_LIBRARIES = libobjects.a
 
 libobjects_a_SOURCES = 3ds.cpp 		\
                        bezierpatch.cpp 	\
+		       blob.cpp		\
 		       boolean.cpp 	\
 		       box.cpp		\
 		       cylinder.cpp	\
 		       extrusion.cpp	\
 		       heightfield.cpp	\
+		       isosurface.cpp	\
 		       mesh.cpp		\
 		       necklace.cpp	\
 		       object.cpp	\
@@ -25,12 +27,14 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 
 EXTRA_DIST = 3ds.h 		\
     	     bezierpatch.h	\
+	     blob.h		\
     	     boolean.h 		\
              booleanoperand.h	\
 	     box.h		\
 	     cylinder.h		\
 	     extrusion.h	\
 	     heightfield.h	\
+	     isosurface.h	\
 	     mesh.h		\
 	     object.h		\
 	     necklace.h		\
