@@ -25,14 +25,6 @@ void BSP::prepare() {
     if (objects.size() > BSP_MAX) {
 	// Find the cutplane_dimension and cutplane_value
 	BoundingBox bbox = enclosure();
-	//std::cout << bbox << std::endl;
-	//cutplane_dimension = largestDimension(bbox);
-	
-	/*cutplane_value = ((bbox.maximum()[cutplane_dimension]) + 
-                          (bbox.minimum()[cutplane_dimension])) / 2.0;*/
-
-	//cutplane_value = median(cutplane_dimension);
-
 	Vector best_measure = Vector(0,HUGE_DOUBLE,0);
 	int best_dim = -1;
 	double best_val = 1;
@@ -79,13 +71,11 @@ void BSP::prepare() {
 	    }
 	}
 	
-//	if (true) {
 	if (lower->objects.size() == size || higher->objects.size() == size) {
 	    // Objects couldn't be subdivided
 	    delete lower;
 	    delete higher;
 	} else {
-	//    std::cout << size << ": " << l << " " << m << " " << h << std::endl;
 	    objects.clear();
 	    assert(objects.size() == 0);
 	    // Recursive prepare()
@@ -191,7 +181,6 @@ Intersection BSP::intersect(const Ray& ray, const double min_t, const double max
 Intersection BSP::intersect_recurse(const Ray& ray, const double min_t, const double max_t) const {
     if (max_t <= min_t) return Intersection();
 
-    //Vector o = ray.getOrigin() + min_t * ray.getDirection();
     double rd_dim = ray.getDirection()[cutplane_dimension];
     double o_dim = ray.getOrigin()[cutplane_dimension] + min_t * rd_dim;
     
@@ -204,9 +193,6 @@ Intersection BSP::intersect_recurse(const Ray& ray, const double min_t, const do
 	if (intersect_t > max_t) { intersect_t = max_t; }
 	if (intersect_t < min_t) { intersect_t = min_t; }
 
-	//Intersection intersection1 = lower->intersect(ray,min_t,intersect_t);
-	//Intersection intersection2 = higher->intersect(ray,intersect_t,max_t);
-	
 	Intersection intersection1;
 	Intersection intersection2;
 
@@ -239,7 +225,6 @@ Intersection BSP::intersect_recurse(const Ray& ray, const double min_t, const do
 Intersection BSP::intersectForShadow_recurse(const Ray& ray, const double min_t, const double max_t) const {
     if (max_t <= min_t) return Intersection();
 
-    //Vector o = ray.getOrigin() + min_t * ray.getDirection();
     double rd_dim = ray.getDirection()[cutplane_dimension];
     double o_dim = ray.getOrigin()[cutplane_dimension] + min_t * rd_dim;
     
