@@ -9,7 +9,7 @@ photonmap globalphotons 100000
 photonmap causticphotons 10000
 photonmap estimate-radius 50
 photonmap estimate-samples 500
-photonmap final-gather-rays 200
+photonmap final-gather-rays 0
 
 camera-position 0 180 1100
 camera-up 0 1 0
@@ -24,7 +24,7 @@ background 0.1 0.1 0.3
 
 
 # light behind wall
-light point 200 280 -150 5000 5000 5000
+light point 200 280 -150 200000 200000 200000
 
 # light near camera
 #light point 100 280 300 50000 50000 50000

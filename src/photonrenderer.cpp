@@ -95,9 +95,10 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 
     RGB result_color = RGB(0.0,0.0,0.0);
 
-    // Indirect diffuse light from global photonmap
+    // Indirect diffuse light by one step of path tracing
     result_color += finalGather(point,normal,ray.getDirection(),renderersettings->final_gather_rays,0);
-    // Caustics from caustics map
+
+    // Direct estimate from caustics map
     result_color += causticsphotonmap->irradiance_estimate(point,normal,renderersettings->estimate_radius,renderersettings->estimate_samples);
     //result_color.clip();
     //return result_color;
@@ -178,9 +179,10 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
+/// Final gathering does one step of path tracing
 Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const Vector& ray_dir, int gatherRays, int depth) const {
-    if (renderersettings->final_gather_rays == 0) {
-	return M_PI * 100 * globalphotonmap->irradiance_estimate(point,normal,renderersettings->estimate_radius,renderersettings->estimate_samples);
+    if (gatherRays == 0) {
+	return globalphotonmap->irradiance_estimate(point,normal,renderersettings->estimate_radius,renderersettings->estimate_samples);
     }
 
     Vector result = Vector(0.0,0.0,0.0);
@@ -195,20 +197,16 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 	    Intersection* inter = space->getLastIntersection();
 	    Vector hitpoint = inter->getPoint();
 	    Vector hitnormal = inter->getObject()->normal(*inter);
-	    // If too close use another final gather instead for estimate
 	    if ((hitpoint-point).length() < renderersettings->estimate_radius && depth == 0 ) {
+	        // If too close do additional level of path tracing
 		result += finalGather(hitpoint,hitnormal,dir,gatherRays / 2, depth + 1);
 	    } else {
-		double cos = normal * dir;
-		result += renderersettings->estimate_radius * cos * globalphotonmap->irradiance_estimate(hitpoint,hitnormal,renderersettings->estimate_radius,renderersettings->estimate_samples);
+		result += globalphotonmap->irradiance_estimate(hitpoint,hitnormal,renderersettings->estimate_radius,renderersettings->estimate_samples);
 	    }
 	}
     }
 	
-    result *= M_PI / double(renderersettings->final_gather_rays);
-    //result *= double(M_PI) / double(np.found - 1);
-    //result *= 5000;
-    //result *= double(1) / M_PI;
+    result *= M_PI / double(gatherRays);
     return result;
 }
 
