@@ -47,4 +47,23 @@ class object {
 	mutable Intersection last_intersection;
 };
 
+/**
+ *  A caching proxy around the private _intersect(Ray) method in subclasses.
+ */
+
+/*  Because an object can exist in several bounding boxes we end up shooting
+ *  the same ray at the same object several times.
+ */
+
+inline
+Intersection object::intersect(const Ray& ray) const {
+    if (ray.getId() != last_ray) {
+	last_intersection = _intersect(ray);
+	last_intersection.setObject(const_cast<object*>(this));
+	last_ray = ray.getId();
+    }
+    return last_intersection;
+}
+
+
 #endif
