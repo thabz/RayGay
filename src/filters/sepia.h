@@ -5,6 +5,8 @@
 
 /**
  * A filter for sepia-toning an image.
+ *
+ * @see http://msdn.microsoft.com/msdnmag/issues/05/01/NETMatters/default.aspx
  */
 class Sepia : public Filter2D {
     public:
