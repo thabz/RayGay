@@ -1,4 +1,8 @@
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
@@ -101,8 +105,12 @@ int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("RGBA",new test_rgba());
     suite.add("TGA",new test_tga());
+#ifdef HAVE_PNG_H
     suite.add("PNG",new test_png());
+#endif    
+#ifdef HAVE_JPEGLIB_H
     suite.add("JPEG",new test_jpg());
+#endif    
     suite.run();
     suite.printStatus();
 
