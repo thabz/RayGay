@@ -15,6 +15,7 @@
 #include "objects/necklace.h"
 #include "objects/cylinder.h"
 #include "objects/extrusion.h"
+#include "objects/heightfield.h"
 #include "objects/sphere.h"
 #include "paths/linesegment.h"
 #include "paths/circle.h"
@@ -26,6 +27,7 @@
 #include "lights/skylight.h"
 #include "materials/material.h"
 #include "image/rgba.h"
+#include "image/image.h"
 #include "math/vector2.h"
 
 Importer::Importer(const std::string& filename) {
@@ -346,6 +348,18 @@ void Importer::parse(const string& filename) {
 	    double R = readDouble(stream);
 	    double r = readDouble(stream);
 	    cur_object = new Torus(R,r,*m);
+	} else if (command == "heightfield") {
+	    stream >> str1;
+	    Material* m = lookupMaterial(str1);
+	    string filename = readString(stream);
+	    Image* img = Image::load(filename);
+	    double height = readDouble(stream);
+	    double width = readDouble(stream);
+	    double depth = readDouble(stream);
+	    int width_divisions = readInt(stream);
+	    int depth_divisions = readInt(stream);
+	    cur_object = new HeightField(img,height,width,depth,width_divisions,depth_divisions,*m);
+	    delete img;
 	} else if (command == "3ds") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
