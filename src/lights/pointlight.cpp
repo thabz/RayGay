@@ -6,13 +6,9 @@
 #include "spacesubdivider.h"
 #include "stats.h"
 
-Pointlight::Pointlight(const Vector& pos) {
+Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
     position = pos;
     hint = NULL;
-}
-
-void Pointlight::transform(const Matrix& m) {
-    position = m * position;
 }
 
 Lightinfo Pointlight::getLightinfo(const Intersection& inter,const Vector& normal, SpaceSubdivider* space) const {
@@ -34,8 +30,4 @@ Lightinfo Pointlight::getLightinfo(const Intersection& inter,const Vector& norma
     }
     return info;
 }
-
-RGB Pointlight::getDiffuseColor(const Vector& p) {
-    return RGB(0.0,0.0,0.0);
-};
 

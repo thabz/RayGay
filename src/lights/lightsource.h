@@ -13,17 +13,32 @@ class Ray;
 class Scene;
 class SpaceSubdivider;
 
-/// An interface lightsources must implement
+/// An abstract class lightsources must extend 
 class Lightsource {
 
     public:
+	/// Constructor
+	Lightsource(const Vector& center);
+	
 	/// Shading info for this lightsource
 	virtual Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space) const = 0;
-	/// Returns center of lightsource
-	virtual const Vector& getPosition() const = 0;
+	
 	/// Apply a transformation
-        virtual void transform(const Matrix& m) = 0;
+        virtual void transform(const Matrix& m);
 
+	void setAttenuation(double fadeDistance, double fadePower);
+
+	double getAttenuation(const Vector& point) const;
+
+	/// Returns center of lightsource
+	const Vector getPosition() const { return position; };
+
+    protected:
+	Vector position;
+
+    private:
+	double fadeDistance;
+	double fadePower;
 };
 
 #endif

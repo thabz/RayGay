@@ -5,8 +5,7 @@
 #include "spacesubdivider.h"
 #include "stats.h"
 
-Spotlight::Spotlight(const Vector& pos, const Vector& dir, double angle, double cut_angle) {
-    _pos = pos;
+Spotlight::Spotlight(const Vector& pos, const Vector& dir, double angle, double cut_angle) : Lightsource(pos) {
     _dir = dir;
     _dir.normalize();
     _angle = angle;
@@ -14,13 +13,13 @@ Spotlight::Spotlight(const Vector& pos, const Vector& dir, double angle, double 
 }
 
 void Spotlight::transform(const Matrix& m) {
-    _pos = m * _pos;
+    Lightsource::transform(m);
     _dir = m.extractRotation() * _dir;
 }
 
 Lightinfo Spotlight::getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space) const {
     Lightinfo info;
-    info.direction_to_light = _pos - inter.getPoint();
+    info.direction_to_light = this->getPosition() - inter.getPoint();
     info.direction_to_light.normalize();
     info.cos = info.direction_to_light * normal;
     if (info.cos > 0.0) {
@@ -28,7 +27,7 @@ Lightinfo Spotlight::getLightinfo(const Intersection& inter, const Vector& norma
 	Ray ray_to_light = Ray(inter.getPoint(),info.direction_to_light,-1.0);
 	bool in = space->intersectForShadow(ray_to_light);
 	info.intensity =  in ? 0.0 : 1.0;
-	
+
 	// Angle between light-direction and direction from light to incident
 	double b = (double(-1) * info.direction_to_light) * _dir;
 	if (b >= 1.0 ) b = 1.0; // This fixes a rounding error in math.h

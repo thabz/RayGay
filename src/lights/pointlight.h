@@ -17,13 +17,8 @@ class Pointlight : public Lightsource {
 	/// Constructor
         Pointlight(const Vector& pos);
 	Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space) const;
-	const Vector& getPosition() const { return position; };
-
-	void transform(const Matrix& m);
-        RGB getDiffuseColor(const Vector& p);
 
     private:
-	Vector position;
 	mutable object* hint;
 };
 

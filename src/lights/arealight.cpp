@@ -16,11 +16,9 @@
  * @param num Number of samples
  * @param jitter How many percent the light can jitter with value in [0,1]
  */
-Arealight::Arealight(const Vector& pos, const Vector& dir, double radius, int num, double jitter) {
+Arealight::Arealight(const Vector& pos, const Vector& dir, double radius, int num, double jitter) : Lightsource(pos) {
     this->num = num;
     this->jitter = jitter;
-    position = pos;
-
     /*
     ci'rcles = new (Circle*)[num];
     ts = double[num];
@@ -40,13 +38,10 @@ Arealight::~Arealight() {
 }
 
 void Arealight::transform(const Matrix& m) {
+    Lightsource::transform(m);
     for(int i = 0; i < num; i++) {
 	circles[i]->transform(m);
     }
-}
-
-const Vector& Arealight::getPosition() const {
-    return position;
 }
 
 Vector Arealight::getPosition(int i) const {
