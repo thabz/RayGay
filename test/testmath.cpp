@@ -79,6 +79,15 @@ void matrix_test() {
     Matrix op3 = op1*op2;
     res = op3*id*op3.inverse();
     assert(res.isIdentity());
+
+    // Test ==
+    op1.identity();
+    op2.identity();
+    assert(op1 == op2);
+    op1 = Matrix::matrixTranslate(Vector(401,221,39));
+    op2 = Matrix::matrixTranslate(Vector(-401,-221,-39));
+    op2 = op2.inverse();
+    assert(op1 == op2);
 }
 
 int main(int argc, char *argv[]) {

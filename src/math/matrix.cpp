@@ -124,6 +124,16 @@ ostream & operator<<(ostream &os,const Matrix &m) {
     return os;
 }
 
+bool Matrix::operator==(const Matrix& m) const {
+    bool result = true;
+    for (int r=0;r<4;r++) {
+	for (int c=0;c<4;c++) {
+	    result &= IS_EQUAL(get(c,r),m.get(c,r));
+	}
+    }
+    return result;
+}
+
 /*! 
 	\brief		Orientation transformation matrix
 	\ingroup	Math

@@ -54,6 +54,9 @@ class Matrix {
 	/// Multiply with another Matrix
 	Matrix &operator*=(const Matrix &);
 
+	/// Comparator
+	bool operator==(const Matrix &m) const;
+
 	/// Rotate angle degrees around axis
 	static Matrix matrixRotate(const Vector axis,const double angle);
 
@@ -61,7 +64,7 @@ class Matrix {
 	static Matrix matrixTranslate(const Vector trans);
 
 
-        static Matrix matrixOrient(const Vector &x,const Vector &y,const Vector &z);
+	static Matrix matrixOrient(const Vector &x,const Vector &y,const Vector &z);
         static Matrix matrixOrient(const Vector &direction,const Vector &up);
 
     private:
