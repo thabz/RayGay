@@ -74,7 +74,7 @@ num		return tNUM;
 necklace	return tNECKLACE;
 object		return tOBJECT;
 photonmap	return tPHOTONMAP;
-photontracer	return tPHOTONTRACER;
+photonrenderer	return tPHOTONRENDERER;
 power		return tPOWER;
 print		return tPRINT;
 point		return tPOINT;

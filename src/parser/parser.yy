@@ -108,7 +108,7 @@ Vector2 image_size = Vector2(640,480);
 %token tPOSITION tLOOKAT tUP
 %token tPRINT
 %token tRADIUS
-%token tRENDERER tRAYTRACER tPHOTONTRACER
+%token tRENDERER tRAYTRACER tPHOTONRENDERER
 %token tROTATE tTRANSLATE
 %token tSOLIDBOX
 %token tSPHERE
@@ -191,7 +191,7 @@ Renderer	: tRENDERER tRAYTRACER
                 {
                     renderer_settings->renderertype = RendererSettings::RAYTRACER;
 		}
-                | tRENDERER tPHOTONTRACER
+                | tRENDERER tPHOTONRENDERER
                 {
                     renderer_settings->renderertype = RendererSettings::PHOTON_RENDERER;
 		}
