@@ -48,13 +48,17 @@ void test_png() {
     delete img2;
 
     // Load 24 bit png 
-    img = Image::load("gfx/rgb.png");
-    assert(img->getRGBA(0,0) == RGB(1.0,0,0));
+    img = new Image("gfx/rgb.png");
+    assert(img->getWidth() == 10);
+    assert(img->getHeight() == 10);
+    assert(img->getRGBA(0,0) == RGBA(1.0,0,0,1.0));
     delete img;
     
     // Test load of png with palette
-    img = Image::load("gfx/withpalette.png");
-    assert(img->getRGBA(0,0) == RGB(1.0,0,0));
+    img = new Image("gfx/withpalette.png");
+    assert(img->getWidth() == 10);
+    assert(img->getHeight() == 10);
+    assert(img->getRGBA(0,0) == RGBA(1.0,0,0,1.0));
     delete img;
 }
 
