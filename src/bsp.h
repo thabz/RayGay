@@ -48,6 +48,8 @@ class BSP : public SpaceSubdivider {
 	Vector measureSplit(const int dim, const double val) const;
 	Intersection intersect(const Ray&,double,double) const;
 	Intersection intersect_recurse(const Ray&,double,double) const;
+	Intersection intersectForShadow(const Ray&,double,double) const;
+	Intersection intersectForShadow_recurse(const Ray&,double,double) const;
 };
 
 #endif

@@ -95,14 +95,14 @@ void BSP::prepare() {
     }
 }
 
+inline
 Intersection BSP::intersect(const Ray& ray) const {
     return intersect(ray,0,HUGE_DOUBLE);
 }
 
+inline
 Intersection BSP::intersectForShadow(const Ray& ray) const {
-    // TODO: Optimize
-    return intersect(ray,0,HUGE_DOUBLE);
-
+    return intersectForShadow(ray,0,HUGE_DOUBLE);
 }
 
 Intersection BSP::intersectForShadow(const Ray& ray, const object* hint) const {
@@ -153,6 +153,23 @@ Vector BSP::measureSplit(int dim, double val) const {
 /*******************
  * Private stuff   *
  *******************/
+Intersection BSP::intersectForShadow(const Ray& ray, double min_t, double max_t) const {
+    Intersection result = Intersection();
+    if (objects.size() > 0) {
+        Intersection tmp;
+	for (unsigned int i=0; i < objects.size(); i++) {
+	    object* obj = objects[i];
+	    tmp = obj->intersect(ray);
+	    if (tmp.intersected) {
+		return tmp;
+	    }
+	}
+    } else {
+        result = intersectForShadow_recurse(ray,min_t,max_t);
+    }
+    return result;
+}
+
 Intersection BSP::intersect(const Ray& ray, double min_t, double max_t) const {
     Intersection result = Intersection();
     if (objects.size() > 0) {
@@ -220,6 +237,46 @@ Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) 
 	    }
 	}
      }
+}
+
+Intersection BSP::intersectForShadow_recurse(const Ray& ray, double min_t, double max_t) const {
+    Intersection none = Intersection();
+
+    if (max_t <= min_t) return none;
+
+    Vector o = ray.origin + min_t * ray.direction;
+    
+    if (o[cutplane_dimension] < cutplane_value && 
+	ray.direction[cutplane_dimension] <= 0) {
+        return lower->intersectForShadow(ray,min_t,max_t);
+    } else if (o[cutplane_dimension] > cutplane_value && 
+	ray.direction[cutplane_dimension] >= 0) {
+        return higher->intersectForShadow(ray,min_t,max_t);
+    } else {
+	double intersect_t = (cutplane_value - ray.origin[cutplane_dimension]) * ray.inv_direction[cutplane_dimension];
+	if (intersect_t > max_t) { intersect_t = max_t; }
+	if (intersect_t < min_t) { intersect_t = min_t; }
+	
+	Intersection intersection1;
+
+	if (o[cutplane_dimension] < cutplane_value) {
+	    // Ray is crossing the plane from a lower value
+	    intersection1 = lower->intersectForShadow(ray,min_t,intersect_t);
+	    if (intersection1.intersected) {
+		return intersection1;
+	    } else {
+		return higher->intersectForShadow(ray,intersect_t,max_t);
+	    }
+	} else {
+	    // Ray is crossing the plane from a higher value
+	    intersection1 = higher->intersectForShadow(ray,min_t,intersect_t);
+	    if (intersection1.intersected) {
+		return intersection1;
+	    } else {
+		return lower->intersectForShadow(ray,intersect_t,max_t);
+	    }
+	}
+    }
 }
 
 BoundingBox BSP::enclosure() const {
