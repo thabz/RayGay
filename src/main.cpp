@@ -31,6 +31,7 @@ using namespace std;
 void work(string scenefile, string outputfile,int jobs) {
     Stats::getUniqueInstance()->clear();
     //Stats::getUniqueInstance()->disable();
+    Stats::getUniqueInstance()->put(STATS_THREADS,jobs);
 
     cout << "Reading " << scenefile << endl;
     Importer importer(scenefile);
@@ -115,7 +116,6 @@ int main(int argc, char *argv[]) {
 	outfile = string(argv[optind+1]);
     }
     srand(1); // Make sure rand is seeded consistently.
-    cout << "Number of threads: " << jobs << endl;
     work(scenefile,outfile,jobs); 
     return EXIT_SUCCESS;
 }

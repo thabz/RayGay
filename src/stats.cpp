@@ -20,7 +20,8 @@ string StatsStrings[] = {
     "Irradiance cache size",
     "Irradiance cache hits",
     "Irradiance cache misses",
-    "Total camera rays cast"
+    "Total camera rays cast",
+    "Threads"
 };
 
 /// The unique singleton instance
