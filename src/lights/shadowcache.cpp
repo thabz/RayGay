@@ -34,9 +34,8 @@ bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, 
 	    return true;
 	}
     }
-    bool in = space->intersectForShadow(ray_to_light,dist_to_light);
-    hint = in ? space->getLastIntersection()->getObject() : NULL;
+    hint = space->intersectForShadow(ray_to_light,dist_to_light);
     put(depth,hint);
-    return in;
+    return hint != NULL;
 }
 

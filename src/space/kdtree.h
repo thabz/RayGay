@@ -28,13 +28,11 @@ class KdTree : public SpaceSubdivider {
 	/// Desctructor
 	virtual ~KdTree();
 	bool intersect(const Ray& ray, Intersection* result) const; 
-	bool intersect(const Ray& ray) const; ///< Returns the nearest intersection
-	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
+	//bool intersect(const Ray& ray) const; ///< Returns the nearest intersection
 
 	bool intersectPrimary(const Ray& ray, Intersection* result) const; ///< Returns the nearest intersection
-	bool intersectForShadow(const Ray& ray, double max_t) const; ///< Returns any intersection 
+	Object* intersectForShadow(const Ray& ray, double max_t) const; ///< Returns any intersection 
 
-	Intersection* getLastIntersection() const { return &last_intersection; };
 	void addObject(Object* obj); ///< Place a object in the kd-tree 
 	void prepare();
 
@@ -72,7 +70,8 @@ class KdTree : public SpaceSubdivider {
 	    int prev;       // pointer to previus stack item
 	};
 
-	bool intersectForShadow(const Ray&,double,double) const;
+	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
+	Object* intersectForShadow(const Ray&,const double, const double) const;
 	int largestDimension(const BoundingBox& box);
 	BoundingBox enclosure(std::vector<Object*>* objects) const;
 	BoundingBox world_bbox;
@@ -89,8 +88,6 @@ class KdTree : public SpaceSubdivider {
 
 	std::vector<Object*>* added_objects;
 	bool prepared;
-	mutable Intersection last_intersection;
-	static Object* last_primary_intersected_object;
 
 };
 

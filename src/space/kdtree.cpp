@@ -1,4 +1,3 @@
-
 #include <cassert>
 #include <list>
 
@@ -10,8 +9,6 @@
 #include "stats.h"
 #include "boundingbox.h"
 #include "math/vector2.h"
-
-Object* KdTree::last_primary_intersected_object = NULL;
 
 KdTree::KdTree() {
     added_objects = new vector<Object*>;
@@ -48,7 +45,7 @@ bool KdTree::intersectPrimary(const Ray& ray, Intersection* result) const {
 }
 
 inline
-bool KdTree::intersectForShadow(const Ray& ray, double max_t) const {
+Object* KdTree::intersectForShadow(const Ray& ray, double max_t) const {
     return intersectForShadow(ray,double(0),max_t);
 }
 
@@ -278,7 +275,7 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
     return false;
 }
 
-bool KdTree::intersectForShadow(const Ray& ray, const double a, const double b) const {
+Object* KdTree::intersectForShadow(const Ray& ray, const double a, const double b) const {
 
     double t;
     KdNode *farChild, *curNode;
@@ -354,8 +351,7 @@ bool KdTree::intersectForShadow(const Ray& ray, const double a, const double b) 
 	    for (unsigned int i = 0; i < objects_size; i++) {
 		double i_t = objects[i]->fastIntersect(ray);
 		if (i_t > 0 && i_t > stack[enPt].t && i_t < stack[exPt].t) {
-		    last_intersection.setObject(objects[i]);
-		    return true;
+		    return objects[i];
 		}
 	    }
 	}
@@ -365,7 +361,7 @@ bool KdTree::intersectForShadow(const Ray& ray, const double a, const double b) 
 	curNode = stack[exPt].node;
 	exPt = stack[enPt].prev;
     } /* while curNode != end of nodes */
-    return false;
+    return NULL;
 }
 
 KdTree::KdNode::KdNode() {
