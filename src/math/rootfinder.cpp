@@ -3,7 +3,7 @@
 #include "math/rootfinder.h"
 
 #define MAX_ITER 10000
-
+#define DBL_EPSILON 2.2204460492503131e-16
 /*
 RootFinder::RootFinder(Method method, double tolerance, double (*function) (double)) {
     this->method = method;
@@ -81,38 +81,113 @@ int RootFinder::bisection(double t_begin, double t_end, double* root) {
  *
  * @see http://mathworld.wolfram.com/BrentsMethod.html
  */
-int RootFinder::brents_method(double a, double c, double* root) {
-    double b;
-    double R,S,T;
-    double P,Q;
+int RootFinder::brents_method(double x1, double x2, double* root) {
+    double a,b,c;
+    double r,s,t;
+    double p,q;
     double fa,fb,fc;
+    double tol,m;
+    bool ac_equal;
+    double e,d;
 
-    b = 0.5 * (a+c);
+    d = x2 - x1;
+    e = d;
+
+    a = x1;
+    b = x2;
+    c = b;
 
     fa = f(a);
     fb = f(b);
     fc = f(c);
 
-    if (SAME_SIGN(fa, fc))
+    if (SAME_SIGN(fa, fb))
 	return false;
 
     uint i = 3;
-    T = fa / fc;
     while(i++ < MAX_ITER) {
-	
-	R = fb / fc;
-	S = fb / fa;
-	
-	P = S*(T*(R-T)*(c-b)-(1-R)*(b-a));
-	Q = (T-1)*(R-1)*(S-1);
+	ac_equal = false;
 
-	b = b + (P / Q);
+	if ((fb < 0 && fc < 0) || (fb > 0 && fc > 0)) {
+	    ac_equal = true;
+	    c = a;
+	    fc = fa;
+	    d = b - a;
+	    e = b - a;
+	}
 
-	fb = f(b);
+	if (fabs(fc) < fabs(fb)) {
+	    ac_equal = true;
+	    a = b;
+	    b = c;
+	    c = a;
+	    fa = fb;
+	    fb = fc;
+	    fc = fa;
+	}
+
+	//tol = 0.5 * DBL_EPSILON * fabs (b) + 0.5 * tolerance;
+	tol = 0.5 * DBL_EPSILON * fabs (b);
+	
+	m = 0.5 * (c - b);
+
 	if (fabs(fb) < tolerance) {
 	    *root = b;
 	    return i;
 	}
+
+	/*
+	if (fabs(m) < tol) {
+	    *root = b;
+	    return i;
+	}
+	*/
+
+	if (fabs(e) < tol || fabs(fa) <= fabs(fb)) {
+	    // Using bisection
+	    d = m;
+	    e = m;
+	} else {
+	    // Use inverse cubic interpolation
+	    s = fb / fa;
+
+	    if (ac_equal) {
+		p = 2 * m * s;
+		q = 1 - s;
+	    } else {
+		q = fa / fb;
+		r = fb / fc;
+		p = s * (2 * m * q * (q - r) - (b - a) * (r - 1));
+		q = (q - 1) * (r - 1) * (s - 1);
+	    }
+
+	    if (p > 0) {
+		q = -q;
+	    } else {
+		p = -p;
+	    }
+
+	    if (2 * p < MIN(3 * m * q - fabs(tol * q), fabs (e * q)))
+	    {
+		e = d;
+		d = p / q;
+	    } else {
+		// interpolation failed, fall back to bisection
+		d = m;
+		e = m;
+	    }
+	}
+
+	a = b;
+	fa = fb;
+
+	if (fabs (d) > tol) {
+	    b += d;
+	} else {
+	    b += (m > 0 ? +tol : -tol);
+	}
+
+	fb = f(b);
     }
     return false;
 }
@@ -132,7 +207,7 @@ int RootFinder::regula_falsi(double t_begin, double t_end, double* root) {
 
     if (SAME_SIGN(f_t_begin, f_t_end))
 	return false;
-    
+
     while (i++ < MAX_ITER) {
 	if (SAME_SIGN(f_t_begin, f_t_mid)) {
 	    t_begin = t_mid;
