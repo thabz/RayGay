@@ -78,6 +78,16 @@ void vector_test() {
     w = v.toPolar();
     assert(IS_EQUAL(w[0],sqrtf(2)));
 
+    assert(Vector(10,10,10).toPolar().toRectangular() == Vector(10,10,10));
+    assert(Vector(10,10,-10).toPolar().toRectangular() == Vector(10,10,-10));
+    assert(Vector(10,-10,10).toPolar().toRectangular() == Vector(10,-10,10));
+    assert(Vector(10,-10,-10).toPolar().toRectangular() == Vector(10,-10,-10));
+    assert(Vector(-10,10,10).toPolar().toRectangular() == Vector(-10,10,10));
+    assert(Vector(-10,10,-10).toPolar().toRectangular() == Vector(-10,10,-10));
+    assert(Vector(-10,-10,10).toPolar().toRectangular() == Vector(-10,-10,10));
+    assert(Vector(-10,-10,-10).toPolar().toRectangular() == Vector(-10,-10,-10));
+    assert(Vector(0,10,10).toPolar().toRectangular() == Vector(0,10,10));
+
     // Test += operator
     v = Vector(1,2,3);
     v += Vector(10,20,30);
@@ -455,14 +465,14 @@ void solve_quadratic_test() {
 }
 
 void perturb_vector_test() {
-    double max_angle = 10.0;
+    double max_angle = DEG2RAD(10.0);
     for(int i = 0; i < 10000; i++) {
 	Vector axis = Vector(RANDOM(-1,1),RANDOM(-1,1),RANDOM(-1,1));
-	Vector perturbed = Math::perturbVector(axis,max_angle);
 	axis.normalize();
+	Vector perturbed = Math::perturbVector(axis,max_angle);
 	perturbed.normalize();
 	double angle = acos(axis*perturbed);
-	assert(angle <= DEG2RAD(max_angle*2));
+	assert(angle <= max_angle);
     }
 }
 
