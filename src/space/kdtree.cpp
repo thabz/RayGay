@@ -97,7 +97,7 @@ void KdTree::prepare() {
 		if (obj_ptr != NULL)
 		    node.objects->push_back(obj_ptr);
 	    }
-	    //sort(node.objects->begin(),node.objects->end(),compareAreaDesc());
+	    sort(node.objects->begin(),node.objects->end(),compareAreaDesc());
 	    old.bobjects.clear();
 	}
 	nodes[i] = node;
