@@ -80,7 +80,7 @@ void matrix_test() {
     res = op3*id*op3.inverse();
     assert(res.isIdentity());
 
-    // Test ==
+    // Test == and !=
     op1.identity();
     op2.identity();
     assert(op1 == op2);
@@ -101,8 +101,6 @@ void matrix_test() {
     assert(op1 != op2);
     op2 = op2.inverse();
     assert(op1 == op2);
-
-
 }
 
 int main(int argc, char *argv[]) {
