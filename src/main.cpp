@@ -79,7 +79,7 @@ void work(string scenefile, string outputfile) {
     Raytracer raytracer = Raytracer();
     raytracer.render(scene,img,space);
     
-    img->save("out.tga");
+    img->save(outputfile);
     delete img;
     Stats::getUniqueInstance()->dump();
 }
