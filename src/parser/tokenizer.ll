@@ -128,6 +128,9 @@ wireframe	return tWIREFRAME;
 
 {digit}+ |
 {digit}+"."{digit}+ { yylval.d = atof(yytext); return tFLOAT;}
+"$"{string}	{ yylval.c = new string(yytext+sizeof(char),yyleng-1); 
+                  return tVARNAME;
+                }
 {qstring}	{ yylval.c = new string(yytext+sizeof(char),yyleng-2); return tQSTRING; }
 {string}	{ yylval.c = new string(yytext); return tSTRING; }
 .		return yytext[0];

@@ -16,7 +16,7 @@ class VectorNode : public SyntaxNode {
 	    this->y = y;
 	    this->z = z;
 	}
-	Vector eval() {
+	virtual Vector eval() {
 	    return Vector(x->eval(),y->eval(),z->eval());
 	};
     private:
@@ -72,6 +72,7 @@ class VectorNormalizeNode : public VectorNode {
 	    Vector result = vecnode->eval();
 	    if (IS_ZERO(result.length())) {
                // TODO: Throw runtime exception
+	       return Vector(0,0,0);
 	    }
 	    result.normalize();
 	    return result;
@@ -80,6 +81,59 @@ class VectorNormalizeNode : public VectorNode {
     private:
 	VectorNode* vecnode;
 };
+
+class VectorMultNode : public VectorNode {
+
+    public:
+	VectorMultNode(VectorNode* v, FloatNode* f) {
+	    this->vecnode = v;
+	    this->scale = f;
+	}
+
+	Vector eval() {
+	    return scale->eval() * vecnode->eval();
+	}
+
+    private:
+	VectorNode* vecnode;
+	FloatNode* scale;
+};
+
+class VectorPlusNode : public VectorNode {
+
+    public:
+	VectorPlusNode(VectorNode* left, VectorNode* right) {
+	    this->left = left;
+	    this->right = right;
+	}
+
+	Vector eval() {
+	    return left->eval() + right->eval();
+	}
+
+    private:
+	VectorNode* left;
+	VectorNode* right;
+};
+
+class VectorMinusNode : public VectorNode {
+
+    public:
+	VectorMinusNode(VectorNode* left, VectorNode* right) {
+	    this->left = left;
+	    this->right = right;
+	}
+
+	Vector eval() {
+	    return left->eval() - right->eval();
+	}
+
+    private:
+	VectorNode* left;
+	VectorNode* right;
+};
+
+
 
 class NamedVectorNode : public VectorNode {
     public:

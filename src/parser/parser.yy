@@ -85,7 +85,7 @@ ActionListNode* top_actions;
 }
 %token <d> tFLOAT
 %token <i> tINTEGER
-%token <c> tSTRING tQSTRING
+%token <c> tSTRING tQSTRING tVARNAME
 %token tAA
 %token tBACKGROUND
 %token tBICUBIC
@@ -234,23 +234,23 @@ AddLight	: LightDef
 		}
                 ;
 
-Assignment	: tSTRING '=' PathDef
+Assignment	: tVARNAME '=' PathDef
                 {
 		    $$ = new AssignPathNode(*$1,$3);
 		}
-                | tSTRING '=' Expr
+                | tVARNAME '=' Expr
                 {
 		    $$ = new AssignFloatNode(*$1,$3);
                 }
-                | tSTRING '=' Vector
+                | tVARNAME '=' Vector
                 {
 		    $$ = new AssignVectorNode(*$1,$3);
                 }
-                | tSTRING '=' MaterialDef 
+                | tVARNAME '=' MaterialDef 
                 {
 		    $$ = new AssignMaterialNode(*$1,$3);
                 }
-                | tSTRING '=' Object
+                | tVARNAME '=' Object
                 {
 		    $$ = new AssignSceneObjectNode(*$1,$3);
                 }
@@ -379,7 +379,7 @@ Material 	: NamedMaterial
                 | MaterialDef
 		;
 
-NamedMaterial   : tSTRING
+NamedMaterial   : tVARNAME
                 {
 		    $$ = new NamedMaterialNode(*$1);
 		}
@@ -489,7 +489,7 @@ Object		: SolidObject
                 }
 		;
 
-NamedObject	: tOBJECT tSTRING
+NamedObject	: tOBJECT tVARNAME
                 {
 		    $$ = new NamedSceneObjectNode(*$2);
 		}
@@ -662,7 +662,7 @@ Path		: NamedPath
                 | PathDef
 		;
 
-NamedPath	: tSTRING
+NamedPath	: tVARNAME
                 {
 		    $$ = new NamedPathNode(*$1);   
 		}
@@ -732,7 +732,23 @@ Vector		: '<' Expr ',' Expr ',' Expr '>'
 		{
 		    $$ = new VectorNormalizeNode($3);
 		}
-                | tSTRING
+                | Vector '*' Expr
+		{
+		    $$ = new VectorMultNode($1,$3);
+		}
+                | Expr '*' Vector 
+		{
+		    $$ = new VectorMultNode($3,$1);
+		}
+                | Vector '+' Vector 
+		{
+		    $$ = new VectorPlusNode($1,$3);
+		}
+                | Vector '-' Vector 
+		{
+		    $$ = new VectorMinusNode($1,$3);
+		}
+                | tVARNAME
 		{
 		    $$ = new NamedVectorNode(*$1);
 		}
@@ -778,7 +794,7 @@ Expr		: tFLOAT
                 {
                    $$ = new FloatConstNode($1);
                 }
-                | tSTRING
+                | tVARNAME
                 {
 		    $$ = new NamedFloatNode(*$1);
                 }
