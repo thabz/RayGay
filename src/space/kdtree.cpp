@@ -24,6 +24,17 @@
 
 #define NO_STATS
 
+/*
+ * Macros for accessing the packed KdNode.
+ */
+#define leftNode(node) (node->left)
+#define rightNode(node) (node->right)
+#define isLeafNode(node) (node->axis == -1)
+#define getNodeAxis(node) (node->axis)
+#define getNodeObjectNum(node) (node->num)
+#define getNodeSplitValue(node) (node->splitPlane)
+
+
 KdTree::KdTree() {
     prepared = false;
     added_objects = new vector<Object*>;
@@ -180,11 +191,13 @@ KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, const BoundingBox& bbox, uns
 	    delete splitResult.right_bobjects;
 	}
     } 
+    
+    // Build the real KdNode
     KdNode* new_node = new KdNode();
     new_node->axis = curNode->axis;
     new_node->splitPlane = curNode->splitPlane;
     nodes_count++;
-    if (curNode->axis == -1) {
+    if (isLeafNode(curNode)) {
 	unsigned int num = curNode->bobjects->size();
 	new_node->objects = new (Object*)[num];
 	new_node->num = num;
@@ -200,12 +213,6 @@ KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, const BoundingBox& bbox, uns
     }
     return new_node;
 }
-
-#define leftNode(node) (node->left)
-#define rightNode(node) (node->right)
-#define isLeafNode(node) (node->axis == -1)
-#define getNodeAxis(node) (node->axis)
-#define getNodeObjectNum(node) (node->num)
 
 /**
  * Implementation of the recursive $f[ TA_rec^B $f] algorithm.
@@ -241,7 +248,7 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
     while (curNode != NULL) {
 	while (!isLeafNode(curNode)) {
 	    /* Current node is not a leaf */
-	    double splitVal = curNode->splitPlane;
+	    double splitVal = getNodeSplitValue(curNode);
 	    int axis = getNodeAxis(curNode); // ?
 	    switch(axis) {
 		case 0:
@@ -400,25 +407,25 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
     stack[exPt].node = NULL;
 
     while (curNode != NULL) {
-	while (curNode->axis >= 0) {
+	while (!isLeafNode(curNode)) {
 	    /* Current node is not a leaf */
-	    double splitVal = curNode->splitPlane;
-	    int axis = curNode->axis; 
+	    double splitVal = getNodeSplitValue(curNode);
+	    int axis = getNodeAxis(curNode);
 
 	    if (stack[enPt].pb[axis] <= splitVal) {
 		if (stack[exPt].pb[axis] <= splitVal) {
-		    curNode = curNode->left;
+		    curNode = leftNode(curNode);
 		    continue;
 		}
-		farChild = curNode->right;
-		curNode = curNode->left;
+		farChild = rightNode(curNode);
+		curNode = leftNode(curNode);
 	    } else {
 		if (splitVal <= stack[exPt].pb[axis]) {
-		    curNode = curNode->right;
+		    curNode = rightNode(curNode);
 		    continue;
 		}
-		farChild = curNode->left;
-		curNode = curNode->right;
+		farChild = leftNode(curNode);
+		curNode = rightNode(curNode);
 	    }
 
 	    t = (splitVal - ray.getOrigin()[axis]) / ray.getDirection()[axis];
@@ -443,9 +450,9 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
 
 	// Intersect with all objects in list, discarding
 	// those lying before stack[enPt].t or farther than stack[exPt].t
-	if (curNode->num > 0) {
+	if (getNodeObjectNum(curNode) > 0) {
 	    const double min_t = MAX(0.0,stack[enPt].t);
-	    for (unsigned int i = 0; i < curNode->num; i++) {
+	    for (unsigned int i = 0; i < getNodeObjectNum(curNode); i++) {
 		double i_t = curNode->objects[i]->fastIntersect(ray);
 		if (i_t > min_t && i_t < stack[exPt].t) {
 		    return curNode->objects[i];
