@@ -121,6 +121,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int
 		double max_angle = material->glossMaxAngle();
 		int gloss_rays = material->glossRaysNum();
 		gloss_sequence->reset();
+		//gloss_rays /= depth * depth;
 		for(int i = 0; i < gloss_rays; i++) {
 		    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle,gloss_sequence),ray.getIndiceOfRefraction());
 		    refl_col += trace(refl_ray, depth + 1);
