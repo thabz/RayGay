@@ -12,7 +12,6 @@ dnl -------------------------------------------------
 AC_PROG_CXX
 AC_PROG_YACC
 AM_PROG_LEX
-AC_PROG_RANLIB
 AC_PROG_LIBTOOL
 
 dnl -------------------------------------------------
@@ -42,7 +41,7 @@ AC_CHECK_LIB(pthread, pthread_create,LIBS="-lpthread $LIBS")
 AC_CHECK_LIB(jpeg, jpeg_read_header,LIBS="-ljpeg $LIBS")
 AC_CHECK_LIB(png, png_read_info, LIBS="-lpng $LIBS")
 
-if test "x$PKG_CONFIG" = "xno"; then
+if test "x$PKG_CONFIG" != "xno"; then
    echo -n "checking for gtk+2.0... "
    if pkg-config --exists gtk+-2.0; then
         echo "yes"
