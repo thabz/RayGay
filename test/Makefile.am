@@ -13,22 +13,28 @@ LDADD = $(top_srcdir)/src/libtracer.a \
 noinst_PROGRAMS = testimage testmath testpaths testspace testobjects testspeed testlanguage teststats testthreads
 
 testimage_SOURCES = testimage.cpp
+testimage_LDADD = $(top_srcdir)/src/image/libimage.a $(top_srcdir)/src/math/libmath.a
 
 testpaths_SOURCES = testpaths.cpp
 
 testmath_SOURCES = testmath.cpp
+testmath_LDADD = $(top_srcdir)/src/math/libmath.a
 
 testobjects_SOURCES = testobjects.cpp
 
 testspace_SOURCES = testspace.cpp
 
 testspeed_SOURCES = testspeed.cpp
+testspeed_LDADD = 
 
 testlanguage_SOURCES = testlanguage.cpp
+testlanguage_LDADD = 
 
 teststats_SOURCES = teststats.cpp
+teststats_LDADD = $(top_srcdir)/src/libtracer.a
 
 testthreads_SOURCES = testthreads.cpp
+testthreads_LDADD = 
 
 TESTS = testimage teststats testlanguage testmath testpaths testspace testobjects testthreads
 
