@@ -39,13 +39,13 @@ void Box::prepareBox(const Vector a, const Vector b) {
     Vector c8 = Vector(c2[0],c7[1],c7[2]);
 
     // Bottom left
-    Vector2 uv00 = Vector2(0.0,0.0);
+    Vector2 uv00 = Vector2(0.0,1.0);
     // Top left
-    Vector2 uv01 = Vector2(0.0,1.0);
+    Vector2 uv01 = Vector2(0.0,0.0);
     // Bottom right
-    Vector2 uv10 = Vector2(1.0,0.0);
+    Vector2 uv10 = Vector2(1.0,1.0);
     // Top right
-    Vector2 uv11 = Vector2(1.0,1.0);
+    Vector2 uv11 = Vector2(1.0,0.0);
 
     // Back face
     Mesh::addTriangle(c1,c2,c3,uv00,uv10,uv01);
