@@ -48,6 +48,7 @@ void ThreeDS::createMesh() {
 	vertices[i*3+2] = float(v[2]);
     }
     
+    bool hasMapcoords = map_coords.size() > 0;
     // Add the faces to this Mesh
     Vector verts[3]; 
     Vector2 uvs[3]; 
@@ -55,9 +56,14 @@ void ThreeDS::createMesh() {
 	for(int j = 0; j < 3; j++) {
 	    unsigned short idx = faces[i * 3 +j];
 	    verts[j] = getVertex(idx);
-	    uvs[j] = getUV(idx);
+	    if (hasMapcoords)
+		uvs[j] = getUV(idx);
 	}
-	mesh->addTriangle(verts,uvs);
+	if (hasMapcoords) {
+	    mesh->addTriangle(verts,uvs);
+	} else {
+	    mesh->addTriangle(verts[0],verts[1],verts[2]);
+	}
     }
     this->addObject(mesh);
 
