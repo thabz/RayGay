@@ -2,4 +2,4 @@
 
 echo $ARGV
 
-make && ./src/tracer scenes/testscene.gay out.png && eog out.png
+make && ./src/tracer scenes/benchmarkscene.gay out.png 

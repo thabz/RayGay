@@ -1,5 +1,8 @@
 
+#include <iostream>
 #include "rgb.h"
+
+using namespace std;
 
 void RGB::clip() {
     for (int i=0; i<3; i++) {
@@ -15,3 +18,14 @@ double RGB::sqrDistance(const RGB& other) const {
 }
 
 
+ostream & operator<<(ostream &os, const RGB &x) {
+    os << '(' << x[0] << ',';
+    os << x[1] << ',';
+    os << x[2] << ')';
+
+    return os;
+}
+
+RGB operator*(const double x, const RGB &v) {
+    return v*x;
+}

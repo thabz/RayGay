@@ -58,11 +58,6 @@ ostream & operator<<(ostream &os, const Vector &x) {
 }
 
 
-Vector Vector::operator/(const double x) const {
-    assert(x != 0.0);
-    const double inv = 1.0/x;
-    return (*this)*inv;
-}
 
 bool Vector::operator==(const Vector& x) const {
     return IS_EQUAL(x[0],_vector[0]) &&
@@ -109,9 +104,6 @@ double Vector::area(const Vector& v0, const Vector& v1, const Vector& v2) {
 // Friends 
 // ---------------------------------------
 
-Vector operator*(const double x, const Vector &v) {
-    return v*x;
-}
 
 /**
  * Returns a random unit vector.

@@ -34,9 +34,9 @@ public:
     const double &operator[](const int i) const; ///< Index into coordinates
     double operator*(const Vector &v) const; ///< Vector dot product (aka scalar product)
     /// Vector addition
-    virtual Vector operator+(const Vector &v) const;
+    Vector operator+(const Vector &v) const;
     /// Vector addition
-    virtual Vector& operator+=(const Vector &v);
+    Vector& operator+=(const Vector &v);
     /// Vector subtraction 
     Vector operator-(const Vector &v) const;
     /// Vector subtraction 
@@ -92,20 +92,20 @@ protected:
 
 inline
 Vector Vector::operator+(const Vector &v) const {
-    return Vector(v[0] + _vector[0], v[1] + _vector[1], v[2] + _vector[2]);
+    return Vector(v._vector[0] + _vector[0], v._vector[1] + _vector[1], v._vector[2] + _vector[2]);
 }
 
 inline
 Vector& Vector::operator+=(const Vector &v) {
-   _vector[0] += v[0];
-   _vector[1] += v[1];
-   _vector[2] += v[2];
+   _vector[0] += v._vector[0];
+   _vector[1] += v._vector[1];
+   _vector[2] += v._vector[2];
    return *this;
 }
 
 inline
 Vector Vector::operator-(const Vector &v) const {
-    return Vector( _vector[0] - v[0], _vector[1] - v[1], _vector[2] - v[2]);
+    return Vector( _vector[0] - v._vector[0], _vector[1] - v._vector[1], _vector[2] - v._vector[2]);
 }
 
 inline
@@ -135,7 +135,7 @@ const double &Vector::operator[](const int i) const {
 
 inline
 double Vector::operator*(const Vector &x) const {
-    return _vector[0]*x[0] + _vector[1]*x[1] + _vector[2]*x[2];
+    return _vector[0]*x._vector[0] + _vector[1]*x._vector[1] + _vector[2]*x._vector[2];
 }
 
 inline
@@ -159,6 +159,19 @@ Vector::Vector(double x, double y, double z) {
     _vector[0] = x;
     _vector[1] = y;
     _vector[2] = z; 
+}
+
+inline
+Vector operator*(const double x, const Vector &v) {
+    return Vector(v._vector[0]*x,v._vector[1]*x,v._vector[2]*x);
+}
+
+inline
+Vector Vector::operator/(const double x) const {
+    //assert(x != 0.0);
+    //const double inv = 1.0/x;
+    //return (*this)*inv;
+    return Vector(_vector[0]/x, _vector[1]/x, _vector[2]/x);
 }
 
 #endif

@@ -79,6 +79,14 @@ Vector readVector(std::ifstream& stream) {
     return Vector(d1,d2,d3);
 }
 
+RGB readRGB(std::ifstream& stream) {
+    double d1,d2,d3;
+    stream >> d1;
+    stream >> d2;
+    stream >> d3;
+    return RGB(d1,d2,d3);
+}
+
 RGBA readRGBA(std::ifstream& stream) {
     double r,g,b,a;
     stream >> r;
@@ -174,15 +182,15 @@ void Importer::parse(const string& filename) {
 	    stream >> str1;
 	    string mat_type = readString(stream);
 	    if (mat_type == "plastic") {
-		RGB col = readVector(stream);
+		RGB col = readRGB(stream);
 		cur_material = new Plastic(col);
 	    } else if (mat_type == "wood") {
-		RGB col1 = readVector(stream);
-		RGB col2 = readVector(stream);
+		RGB col1 = readRGB(stream);
+		RGB col2 = readRGB(stream);
 		cur_material = new Wood(col1,col2);
 	    } else if (mat_type == "marble") {
-		RGB col1 = readVector(stream);
-		RGB col2 = readVector(stream);
+		RGB col1 = readRGB(stream);
+		RGB col2 = readRGB(stream);
 		cur_material = new Marble(col1,col2);
 	    } else if (mat_type == "checker") {
 		Material* mat1 = lookupMaterial(readString(stream));
@@ -224,12 +232,12 @@ void Importer::parse(const string& filename) {
 	    scene->setBackgroundColor(col);
 	} else if (command == "fog") {
 	    double dist = readDouble(stream);
-	    RGB col = readVector(stream);
+	    RGB col = readRGB(stream);
 	    scene->setFog(col,dist);
 	} else if (command == "diffuse") {
-	    cur_material->setDiffuseColor(readVector(stream));
+	    cur_material->setDiffuseColor(readRGB(stream));
 	} else if (command == "specular") {
-	    cur_material->setSpecularColor(readVector(stream));
+	    cur_material->setSpecularColor(readRGB(stream));
 	} else if (command == "specpow") {
 	    cur_material->setSc(readInt(stream));
 	} else if (command == "kd") {
@@ -346,19 +354,19 @@ void Importer::parse(const string& filename) {
 	    Lightsource* l;
 	    if (type == "point") {
 		Vector c = readVector(stream);
-		Vector power = readVector(stream);
+		RGB power = readRGB(stream);
 		l = new Pointlight(c);
 		l->setPower(power);
 	    } else if (type == "skylight") {
 		double r = readDouble(stream);
 		int num = readInt(stream);
-		Vector power = readVector(stream);
+		RGB power = readRGB(stream);
 		l = new Skylight(r,num);
 		l->setPower(power);
 	    } else if (type == "area") {
 		Vector pos = readVector(stream);
 		Vector dir = readVector(stream);
-		Vector power = readVector(stream);
+		RGB power = readRGB(stream);
 		double r = readDouble(stream);
 		int num = readInt(stream);
 		double jitter = readDouble(stream);
@@ -367,7 +375,7 @@ void Importer::parse(const string& filename) {
 	    } else if (type == "spot") {
 		Vector pos = readVector(stream);
 		Vector look_at = readVector(stream);
-		Vector power = readVector(stream);
+		RGB power = readRGB(stream);
 		double angle = readDouble(stream);
 		double cut_angle = readDouble(stream);
 		l = new Spotlight(pos,look_at,angle,cut_angle);

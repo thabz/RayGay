@@ -239,12 +239,12 @@ RGB PhotonRenderer::getDiffuseIrradiance(const Vector& point, const Vector& norm
  *
  * @param hmd Harmonic means distance is written here.
  */
-Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const Vector& ray_dir, int gatherRays, int depth, double* hmd) const {
+RGB PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const Vector& ray_dir, int gatherRays, int depth, double* hmd) const {
     assert(gatherRays > 0);
 
     Vector offset_point = point + (0.1*normal);
 
-    Vector result = Vector(0.0,0.0,0.0);
+    RGB result = RGB(0.0,0.0,0.0);
     *hmd = 0;
     double* rnd;
     qmc_sequence->reset();

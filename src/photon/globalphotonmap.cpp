@@ -26,7 +26,7 @@ GlobalPhotonMap::GlobalPhotonMap(const int size, double max_dist, int estimate_p
  * @param dir photon direction
  * @param normal surface normal
  */
-void GlobalPhotonMap::store( const Vector& power, const Vector& pos, const Vector& dir, const Vector& normal)
+void GlobalPhotonMap::store( const RGB& power, const Vector& pos, const Vector& dir, const Vector& normal)
 {
     if (isFull())
 	return;
@@ -67,7 +67,7 @@ void GlobalPhotonMap::preComputeIrradiances(const int M) {
 void GlobalPhotonMap::preComputeIrradiance(IrradiancePhoton* photon) {
     Vector pos = photon->getPosition();
     Vector normal = unpackVector(photon->normal_theta,photon->normal_phi);
-    Vector irradiance = irradiance_estimate(pos,normal);
+    RGB irradiance = irradiance_estimate(pos,normal);
     for(int i = 0; i < 3; i++) {
 	photon->irradiance_estimate[i] = irradiance[i];
     }

@@ -70,7 +70,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int
 
     
     double ambient_intensity = 0.2;
-    RGB result_color = ambient_intensity * material->getDiffuseColor(intersection);
+    RGB result_color = material->getDiffuseColor(intersection) * ambient_intensity;
     const vector<Lightsource*>& lights = scene->getLightsources();
     for (vector<Lightsource*>::const_iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);

@@ -3,6 +3,7 @@
 #define MATERIAL_H
 
 #include "image/rgb.h"
+#include "math/vector.h"
 
 class Intersection;
 class Image;

@@ -48,7 +48,7 @@ void PhotonTracer::trace() {
     while ((!globalphotonmap->isFull()) || (!causticsmap->isFull())) {
 	i = (i + 1) % ligths_num;
 	Lightsource* light = lights[i];
-	Vector light_power = light->getPower();
+	RGB light_power = light->getPower();
 	trace(light->getRandomPhotonRay(),light_power,0);
     }
     Stats::getUniqueInstance()->endTimer("Photontracing");

@@ -23,7 +23,7 @@ CausticsMap::CausticsMap(int size, double max_dist, int estimate_photons) : Phot
  * @param pos photon position
  * @param dir photon direction
  */
-void CausticsMap::store( const Vector& power, const Vector& pos, const Vector& dir)
+void CausticsMap::store( const RGB& power, const Vector& pos, const Vector& dir)
 {
     if (isFull())
 	return;

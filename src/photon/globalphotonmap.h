@@ -32,7 +32,7 @@ class GlobalPhotonMap : public PhotonMap<IrradiancePhoton> {
 	RGB irradianceEstimate(const Vector& pos, const Vector& normal) const;
 	RGB directIrradianceEstimate(const Vector& pos, const Vector& normal) const;
 
-	void store(const Vector& power, const Vector& pos,
+	void store(const RGB& power, const Vector& pos,
 		   const Vector& dir, const Vector& normal);
 	
     private:

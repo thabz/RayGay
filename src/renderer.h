@@ -3,6 +3,7 @@
 
 #include "scene.h"
 #include "stats.h"
+#include "math/vector.h"
 #include "math/vector2.h"
 #include "image/rgba.h"
 #include "renderersettings.h"

@@ -75,12 +75,12 @@ void PhotonMap<PhotonType>::photon_dir( float *dir, const PhotonType *p ) const
  * @param normal surface normal at pos
  */
 template <class PhotonType>
-Vector PhotonMap<PhotonType>::irradiance_estimate(
+RGB PhotonMap<PhotonType>::irradiance_estimate(
 	const Vector& pos,
 	const Vector& normal) const
 	
 {
-    Vector irrad = Vector(0.0,0.0,0.0);
+    RGB irrad = RGB(0.0,0.0,0.0);
 
     NearestPhotons<PhotonType> np;
     np.dist2 = (float*)alloca( sizeof(float)*(estimate_photons+1) );
@@ -97,7 +97,7 @@ Vector PhotonMap<PhotonType>::irradiance_estimate(
 
     // if less than 8 photons return
     if (np.found<8)
-	return Vector(0,0,0);
+	return RGB(0.0,0,0);
 
     float pdir[3];
 

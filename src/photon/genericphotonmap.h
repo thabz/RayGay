@@ -95,7 +95,7 @@ class PhotonMap {
 
 	void storeit(const PhotonType& photon);
 
-	virtual Vector irradiance_estimate(
+	virtual RGB irradiance_estimate(
 		const Vector& pos,             // surface position
 		const Vector& normal           // surface normal at pos
 		) const;
