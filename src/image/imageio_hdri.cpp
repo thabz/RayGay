@@ -105,7 +105,7 @@ Image* HdriIO::load(const std::string& fileName)
 	    RGB col = RGB(data[offset + 0], 
 		            data[offset + 1], 
 			    data[offset + 2]);
-	    result->setRGBA(x,y,col/2);
+	    result->setRGBA(x,(h-1)-y,col);
 	}
     }
 
@@ -115,7 +115,7 @@ Image* HdriIO::load(const std::string& fileName)
 
 float convertComponent(int expo, int val)
 {
-    float v = val / 256.0f;
+    float v = val / 255.0f;
     float d = (float) pow(2, expo);
     return v * d;
 }
