@@ -55,14 +55,6 @@ double Cone::_fastIntersect(const Ray& ray) const {
     return num == 0 ? -1 : roots[0];
 }
 
-Intersection Cone::_fullIntersect(const Ray& world_ray, const double t) const {
-    Ray ray = rayToObject(world_ray);
-    Vector p = ray.getPoint(t*ray.t_scale);
-    Vector n = getNormal(p);
-    return intersectionToWorld(Intersection(p,t,n,Vector2(0,0)));
-}
-
-inline
 Vector Cone::getNormal(const Vector& local_point) const {
     if (has_caps) {
 	if (IS_EQUAL(local_point[2],0)) {
@@ -75,6 +67,14 @@ Vector Cone::getNormal(const Vector& local_point) const {
     Vector normal = Vector(local_point[0],local_point[1],(radius_begin-radius_end)/2);
     normal.normalize();
     return normal;
+}
+
+
+Intersection Cone::_fullIntersect(const Ray& world_ray, const double t) const {
+    Ray ray = rayToObject(world_ray);
+    Vector p = ray.getPoint(t*ray.t_scale);
+    Vector n = getNormal(p);
+    return intersectionToWorld(Intersection(p,t,n,Vector2(0,0)));
 }
 
 

@@ -29,9 +29,9 @@ class RGB  {
 	};
 	/// Copy constructor
 	RGB(const RGB& v) {
-	    _vector[0] = v[0];
-	    _vector[1] = v[1];
-	    _vector[2] = v[2];
+	    _vector[0] = v._vector[0];
+	    _vector[1] = v._vector[1];
+	    _vector[2] = v._vector[2];
 	};
 
 	RGB(unsigned char r, unsigned char g, unsigned char b) {
@@ -75,6 +75,18 @@ class RGB  {
     protected:
 	double _vector[3];
 };
+
+inline
+const double &RGB::operator[](const int i) const {
+    //assert(i>=0 && i<3);
+    return _vector[i];
+}
+
+inline
+double &RGB::operator[](const int i) {
+    //assert(i>=0 && i<3);
+    return _vector[i];
+}
 
 inline
 RGB RGB::operator*(const RGB& o) const {
@@ -137,17 +149,6 @@ RGB& RGB::operator*=(const double x) {
    return *this;
 }
 
-inline
-double &RGB::operator[](const int i) {
-    //assert(i>=0 && i<3);
-    return _vector[i];
-}
-
-inline
-const double &RGB::operator[](const int i) const {
-    //assert(i>=0 && i<3);
-    return _vector[i];
-}
 
 inline
 double RGB::norm() const {

@@ -50,9 +50,9 @@ public:
 
     /// Returns the scalar product v1 x v2
     static Vector xProduct (const Vector& v1, const Vector& v2) {
-	return Vector(v1[1]*v2[2] - v1[2]*v2[1],
-	 	      v1[2]*v2[0] - v1[0]*v2[2],
-		      v1[0]*v2[1] - v1[1]*v2[0]);
+	return Vector(v1._vector[1]*v2._vector[2] - v1._vector[2]*v2._vector[1],
+	 	      v1._vector[2]*v2._vector[0] - v1._vector[0]*v2._vector[2],
+		      v1._vector[0]*v2._vector[1] - v1._vector[1]*v2._vector[0]);
     }
 
     static double area(const Vector& v0, const Vector& v1, const Vector& v2);  ///< The area of the triangle with the vertices v0, v1 and v2
@@ -93,6 +93,18 @@ protected:
 };
 
 inline
+double &Vector::operator[](const int i) {
+    //assert(i>=0 && i<3);
+    return _vector[i];
+}
+
+inline
+const double &Vector::operator[](const int i) const {
+    //assert(i>=0 && i<3);
+    return _vector[i];
+}
+
+inline
 Vector Vector::operator+(const Vector &v) const {
     return Vector(v._vector[0] + _vector[0], v._vector[1] + _vector[1], v._vector[2] + _vector[2]);
 }
@@ -112,27 +124,15 @@ Vector Vector::operator-(const Vector &v) const {
 
 inline
 Vector& Vector::operator-=(const Vector &v) {
-   _vector[0] -= v[0];
-   _vector[1] -= v[1];
-   _vector[2] -= v[2];
+   _vector[0] -= v._vector[0];
+   _vector[1] -= v._vector[1];
+   _vector[2] -= v._vector[2];
    return *this;
 }
 
 inline
 Vector Vector::operator*(const double x) const {
     return Vector( x*_vector[0], x*_vector[1], x*_vector[2]);
-}
-
-inline
-double &Vector::operator[](const int i) {
-    //assert(i>=0 && i<3);
-    return _vector[i];
-}
-
-inline
-const double &Vector::operator[](const int i) const {
-    //assert(i>=0 && i<3);
-    return _vector[i];
 }
 
 inline
