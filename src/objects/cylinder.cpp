@@ -18,10 +18,12 @@
 Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, bool has_caps, const Material* m) : Solid (m) {
 
     this->has_caps = has_caps;
+    this->radius = radius;
 
     Vector axis = end - begin;
+    height = axis.length();
+    axis = axis / height;
 
-    transform(Matrix::matrixScale(Vector(radius,radius,axis.length())));
     transform(Matrix::matrixOrient(axis).inverse());
     transform(Matrix::matrixTranslate(begin));
 }
@@ -31,8 +33,8 @@ void Cylinder::transform(const Matrix& m) {
 }
 
 BoundingBox Cylinder::boundingBoundingBox() const {
-    Vector mini = Vector(-1,-1,0);
-    Vector maxi = Vector(1,1,1);
+    Vector mini = Vector(-radius,-radius,0);
+    Vector maxi = Vector(radius,radius,height);
     BoundingBox bbox = BoundingBox(mini,maxi);
     bbox.growPercentage(0.01);
     return bboxToWorld(bbox);
@@ -49,13 +51,15 @@ Vector Cylinder::getNormal(const Vector& local_point) const {
     if (has_caps) {
 	if (IS_EQUAL(local_point.z(),0)) {
 	    return Vector(0,0,-1);
-	} else if (IS_EQUAL(local_point.z(),1)) {
+	} else if (IS_EQUAL(local_point.z(),height)) {
 	    return Vector(0,0,1);
 	}
     }
     // The vector below is normalized as the cylinder has a radius
     // of 1 in object space.
-    return Vector(local_point.x(),local_point.y(),0);
+    Vector normal = Vector(local_point.x(),local_point.y(),0);
+    normal.normalize();
+    return normal;
 }
 
 void Cylinder::_fullIntersect(const Ray& world_ray, const double t, Intersection& result) const {
@@ -102,7 +106,7 @@ uint Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
 
     double a = Rd[0]*Rd[0] + Rd[1]*Rd[1];
     double b = 2 * (Ro[0]*Rd[0] + Ro[1]*Rd[1]);
-    double c = Ro[0]*Ro[0] + Ro[1]*Ro[1] - 1;
+    double c = Ro[0]*Ro[0] + Ro[1]*Ro[1] - radius*radius;
     double D = b*b - 4*a*c;
     if (D > EPSILON) {
 	// Two possible roots. We ignore the cases where the
@@ -112,10 +116,10 @@ uint Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
 	double t2 = (-b + sq ) / (2 * a);
 	double ip1_z =  Ro[2] + t1 * Rd[2];
 	double ip2_z =  Ro[2] + t2 * Rd[2];
-	if (ip1_z >= EPSILON && ip1_z <= 1.0 && t1 > EPSILON) {
+	if (ip1_z >= EPSILON && ip1_z <= height && t1 > EPSILON) {
 	    roots[roots_found++] = t1;
 	}
-	if (ip2_z >= EPSILON && ip2_z <= 1.0 && t2 > EPSILON) {
+	if (ip2_z >= EPSILON && ip2_z <= height && t2 > EPSILON) {
 	    roots[roots_found++] = t2;
 	}
     }
@@ -126,17 +130,17 @@ uint Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
 	if (t > EPSILON) {
 	    i_x = Ro[0] + t * Rd[0];
 	    i_y = Ro[1] + t * Rd[1];
-	    if ((i_x * i_x + i_y * i_y) < 1.0) {
+	    if ((i_x * i_x + i_y * i_y) < radius*radius) {
 		roots[roots_found++] = t;
 	    }
 	}
 
 	// Check intersection with top cap
-	t = (1.0 - Ro[2]) / Rd[2];
+	t = (height - Ro[2]) / Rd[2];
 	if (t > EPSILON) {
 	    i_x = Ro[0] + t * Rd[0];
 	    i_y = Ro[1] + t * Rd[1];
-	    if ((i_x * i_x + i_y * i_y) < 1.0) {
+	    if ((i_x * i_x + i_y * i_y) < radius*radius) {
 		roots[roots_found++] = t;
 	    }
 	}
@@ -151,8 +155,9 @@ uint Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
 	}
     }
     
-    roots[0] /= local_ray.t_scale;
-    roots[1] /= local_ray.t_scale;
+    double inv = 1.0 / local_ray.t_scale;
+    roots[0] *= inv;
+    roots[1] *= inv;
 
     return roots_found;
 }

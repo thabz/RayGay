@@ -41,6 +41,8 @@ class Cylinder : public Solid, public Transformer {
 	unsigned int allPositiveRoots(const Ray& world_ray, double roots[4]) const;
 	Vector getNormal(const Vector& local_point) const;
 
+	double radius;
+	double height;
 	bool has_caps;
 };
 
