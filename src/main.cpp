@@ -70,27 +70,6 @@ void testScene4() {
     mat.setRepeatX(10);
     mat.setRepeatY(4);
 
-    /*
-    Sphere* s1 = new Sphere(Vector(0,0,0),200.0,MATERIAL_SHINY_BLUE);
-    Sphere* s2 = new Sphere(Vector(0,0,0),180.0,MATERIAL_SHINY_BLUE);
-    Boolean* s = new Boolean(s1,Boolean::BOOLEAN_DIFFERENCE,s2,MATERIAL_SHINY_BLUE);
-    Cylinder* cx = new Cylinder(Vector(-300,0,0),Vector(300,0,0),120,MATERIAL_SHINY_BLUE);
-    Cylinder* cy = new Cylinder(Vector(0,-300,0),Vector(0,300,0),120,MATERIAL_SHINY_BLUE);
-    Cylinder* cz = new Cylinder(Vector(0,0,-300),Vector(0,0,300),120,MATERIAL_SHINY_BLUE);
-    Boolean* b1 = new Boolean(s,Boolean::BOOLEAN_DIFFERENCE,cz,MATERIAL_SHINY_BLUE);
-    Boolean* b2 = new Boolean(b1,Boolean::BOOLEAN_DIFFERENCE,cx,MATERIAL_SHINY_BLUE);
-    Boolean* b3 = new Boolean(b2,Boolean::BOOLEAN_DIFFERENCE,cy,MATERIAL_SHINY_BLUE);
-
-    Sphere* s3 = new Sphere(Vector(0,0,200),100.0,MATERIAL_SHINY_BLUE);
-    Boolean* b4 = new Boolean(s,Boolean::BOOLEAN_DIFFERENCE,s3,MATERIAL_SHINY_BLUE);
-    Sphere* s4 = new Sphere(Vector(0,0,-200),100.0,MATERIAL_SHINY_BLUE);
-    Boolean* b5 = new Boolean(b4,Boolean::BOOLEAN_DIFFERENCE,s4,MATERIAL_DULL_BLUE);
-    scene.addObject(b5);
-
-    Sphere* mid = new Sphere(Vector(0,0,0),100.0,MATERIAL_SHINY_RED);
-    scene.addObject(mid);
-    */
-    
     Sphere* s = new Sphere(Vector(0,0,0),150.0,MATERIAL_SHINY_BLUE);
     scene.addObject(s);
     
@@ -101,11 +80,11 @@ void testScene4() {
     Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
     Arealight area1 = Arealight(Vector(-4000,4000,4000),Vector(1,-1,-1),1000,32,0.10);
     Arealight area2 = Arealight(Vector(4000,4000,4000),Vector(-1,-1,-1),1000,32,0.10);
-    //scene.addLight(&area1);
-    //scene.addLight(&area2);
+    scene.addLight(&area1);
+    scene.addLight(&area2);
     //scene.addLight(&spotlight2);
-    scene.addLight(&light1);
-    scene.addLight(&light3);
+    //scene.addLight(&light1);
+    //scene.addLight(&light3);
     
     Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); /* Floor */
     scene.addObject(&b);
@@ -212,13 +191,13 @@ void test_3ds() {
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));
     //light3.setAttenuation(4000,3);
     Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
-    Arealight area1 = Arealight(Vector(-4000,4000,4000),Vector(1,-1,-1),1000,40,0.10);
-    Arealight area2 = Arealight(Vector(4000,4000,4000),Vector(-1,-1,-1),1000,40,0.10);
-    //scene.addLight(&area1);
+    Arealight area1 = Arealight(Vector(-4000,4000,4000),Vector(1,-1,-1),1000,32,0.10);
+    Arealight area2 = Arealight(Vector(4000,4000,4000),Vector(-1,-1,-1),1000,32,0.10);
+    scene.addLight(&area1);
     //scene.addLight(&area2);
     //scene.addLight(&spotlight2);
-    scene.addLight(&light1);
-    scene.addLight(&light3);
+    //scene.addLight(&light1);
+    //scene.addLight(&light3);
     
     Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); /* Floor */
     scene.addObject(&b);
