@@ -20,6 +20,7 @@
 #include "lights/pointlight.h"
 #include "lights/arealight.h"
 #include "lights/spotlight.h"
+#include "lights/skylight.h"
 #include "materials/material.h"
 
 Importer::Importer(const std::string& filename) {
@@ -241,6 +242,10 @@ void Importer::parse(const string& filename) {
 	    if (type == "point") {
 		Vector c = readVector(stream);
 		l = new Pointlight(c);
+	    } else if (type == "skylight") {
+		double r = readDouble(stream);
+		int num = readInt(stream);
+		l = new Skylight(r,num);
 	    } else if (type == "area") {
 		Vector pos = readVector(stream);
 		Vector dir = readVector(stream);
