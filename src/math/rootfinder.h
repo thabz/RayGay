@@ -16,12 +16,12 @@ class RootFinder {
 	};
 
 	RootFinder(Method method, double tolerance, Function<double,double>* f); 
-	bool solve(double t1, double t2, double* root);
+	int solve(double t1, double t2, double* root);
 
     protected:
-	bool bisection(double t1, double t2, double* root);
-	bool brents_method(double t1, double t2, double* root);
-	bool false_position(double t1, double t2, double* root);
+	int bisection(double t1, double t2, double* root);
+	int brents_method(double t1, double t2, double* root);
+	int false_position(double t1, double t2, double* root);
 
 
     private:

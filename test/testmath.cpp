@@ -810,6 +810,31 @@ class bisection : public Test  {
 	}
 };
 
+class rootfinding_test: public Test  {
+    public:
+	void run() {
+	    sinFunc my_sin = sinFunc();
+	    polyFunc my_poly = polyFunc();
+
+	    double root;
+	    double tole = EPSILON;
+	    RootFinder brent = RootFinder(RootFinder::BRENTS_METHOD,tole,&my_sin);
+	    RootFinder bisec = RootFinder(RootFinder::BISECTION,tole,&my_sin);
+
+	    cout << "Brent, sin: " << brent.solve(M_PI-0.7, M_PI+0.5, &root) << endl;
+	    cout << "Bisec, sin: " << bisec.solve(M_PI-0.7, M_PI+0.5, &root) << endl;
+
+	    RootFinder brent2 = RootFinder(RootFinder::BRENTS_METHOD,tole,&my_poly);
+	    RootFinder bisec2 = RootFinder(RootFinder::BISECTION,tole,&my_poly);
+	    RootFinder false2 = RootFinder(RootFinder::FALSE_POSITION,tole,&my_poly);
+
+	    cout << "Brent, poly: " << brent2.solve(M_PI, 4.26, &root) << endl;
+	    cout << "Bisec, poly: " << bisec2.solve(M_PI, 4.26, &root) << endl;
+	    cout << "False, poly: " << false2.solve(M_PI, 4.26, &root) << endl;
+
+	}
+};
+
 class polynomials : public Test  {
     public:
 	void run() {
@@ -1065,6 +1090,7 @@ int main(int argc, char *argv[]) {
     suite.add("Polynomials",new polynomials());
     suite.add("Sturm sequence",new sturm_sequence_test());
     suite.add("Quaternion",new quaternion_test());
+    suite.add("RootFinding",new rootfinding_test());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {

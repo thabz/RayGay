@@ -2,6 +2,8 @@
 #include <cmath>
 #include "math/rootfinder.h"
 
+#define MAX_ITER 1000
+
 /*
 RootFinder::RootFinder(Method method, double tolerance, double (*function) (double)) {
     this->method = method;
@@ -22,7 +24,7 @@ RootFinder::RootFinder(Method method, double tolerance, Function<double,double>*
 /**
  * Finds root in the interval \f$ [t1,t2] \f$.
  */
-bool RootFinder::solve(double t1, double t2, double* root) {
+int RootFinder::solve(double t1, double t2, double* root) {
     switch(method) {
 	case BISECTION: 
 	    return bisection(t1, t2, root);
@@ -35,21 +37,23 @@ bool RootFinder::solve(double t1, double t2, double* root) {
     }
 }
 
+
 /**
  * Rootfinding by interval bisection.
  *
  * Brent's method is faster though.
  */
-bool RootFinder::bisection(double t_begin, double t_end, double* root) {
+int RootFinder::bisection(double t_begin, double t_end, double* root) {
     double t_mid = 0.5 * (t_begin + t_end);
     double f_t_begin = f(t_begin);
     double f_t_end = f(t_end);
     double f_t_mid = f(t_mid);
+    uint i = 3;
 
     if (SAME_SIGN(f_t_begin, f_t_end))
 	return false;
     
-    while (true) {
+    while (i++ < MAX_ITER) {
 	if (SAME_SIGN(f_t_begin, f_t_mid)) {
 	    t_begin = t_mid;
 	    f_t_begin = f_t_mid;
@@ -63,14 +67,13 @@ bool RootFinder::bisection(double t_begin, double t_end, double* root) {
 
 	if (fabs(f_t_mid) < tolerance) {
 	    *root = t_mid;
-	    return true;
+	    return i;
 	}
     }
     return false;
 }
 
 
-#define MAX_ITER 1000
 /**
  * Brent's method is a root-finding algorithm which combines root 
  * bracketing, interval bisection, and inverse quadratic interpolation. 
@@ -78,7 +81,7 @@ bool RootFinder::bisection(double t_begin, double t_end, double* root) {
  *
  * @see http://mathworld.wolfram.com/BrentsMethod.html
  */
-bool RootFinder::brents_method(double x1, double x3, double* root) {
+int RootFinder::brents_method(double x1, double x3, double* root) {
     double x2;
     double R,S,T;
     double P,Q;
@@ -93,8 +96,8 @@ bool RootFinder::brents_method(double x1, double x3, double* root) {
     if (SAME_SIGN(fx1, fx3))
 	return false;
 
-    uint i = 0;
-    while(i < MAX_ITER) {
+    uint i = 3;
+    while(i++ < MAX_ITER) {
 	
 	R = fx2 / fx3;
 	S = fx2 / fx1;
@@ -108,9 +111,8 @@ bool RootFinder::brents_method(double x1, double x3, double* root) {
 	fx2 = f(x2);
 	if (fabs(fx2) < tolerance) {
 	    *root = x2;
-	    return true;
+	    return i;
 	}
-	i++;
     }
     return false;
 }
@@ -123,14 +125,15 @@ bool RootFinder::brents_method(double x1, double x3, double* root) {
  * @see http://mathworld.wolfram.com/MethodofFalsePosition.html
  */
 
-bool RootFinder::false_position(double t1, double t2, double* root) {
+int RootFinder::false_position(double t1, double t2, double* root) {
     double xn1 = t1;
     double xn = t2;
     int i = 0;
-    while (fabs(f(xn)) < tolerance || i++ >= MAX_ITER) {
+    while (fabs(f(xn)) > tolerance && i++ < MAX_ITER) {
 	xn = t1 - ((xn1 - t1) / (f(xn1) - f(t1)))*f(t1);
 	xn1 = xn;
     }
-    return xn;
+    *root = xn;
+    return i;
 }
 
