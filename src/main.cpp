@@ -80,7 +80,7 @@ void testScene4() {
    // light1.setAttenuation(4000,3);
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));
     //light3.setAttenuation(4000,3);
-    Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
+    Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),10.0,8.0);
     Arealight area1 = Arealight(Vector(-4000,4000,4000),Vector(1,-1,-1),1000,32,0.10);
     Arealight area2 = Arealight(Vector(4000,4000,4000),Vector(-1,-1,-1),1000,32,0.10);
     //scene.addLight(&area1);

@@ -13,6 +13,8 @@
 #include "paths/circle.h"
 #include "paths/spiral.h"
 #include "lights/pointlight.h"
+#include "lights/arealight.h"
+#include "lights/spotlight.h"
 #include "materials/material.h"
 
 Importer::Importer(const std::string& filename) {
@@ -141,9 +143,29 @@ void Importer::parse() {
 	    double offset = readDouble(stream);
 	    Spiral* spiral = new Spiral(p,radius,windings,offset);
 	    paths[str1] = spiral;
-	} else if (command == "pointlight") {
-	    Vector c = readVector(stream);
-	    Pointlight* l = new Pointlight(c);
+	} else if (command == "light") {
+	    string type = readString(stream);
+	    Lightsource* l;
+	    if (type == "point") {
+		Vector c = readVector(stream);
+		l = new Pointlight(c);
+	    } else if (type == "area") {
+		Vector pos = readVector(stream);
+		Vector dir = readVector(stream);
+		double r = readDouble(stream);
+		int num = readInt(stream);
+		double jitter = readDouble(stream);
+		l = new Arealight(pos,dir,r,num,jitter);
+	    } else if (type == "spot") {
+		Vector pos = readVector(stream);
+		Vector dir = readVector(stream);
+		double angle = readDouble(stream);
+		double cut_angle = readDouble(stream);
+		l = new Spotlight(pos,dir,angle,cut_angle);
+	    } else {
+		cout << "Unknown type of light" << endl;
+		exit(EXIT_FAILURE);
+	    }
 	    scene->addLight(l);
 	} else if (command == "extrusion") {
 	    Material* m = lookupMaterial(readString(stream));

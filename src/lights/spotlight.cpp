@@ -5,11 +5,17 @@
 #include "spacesubdivider.h"
 #include "stats.h"
 
-Spotlight::Spotlight(const Vector& pos, const Vector& dir, double angle, double cut_angle) : Lightsource(pos) {
-    _dir = dir;
+/**
+ * @param pos The position of the spotlight
+ * @param look_at What the light is directed to
+ * @param angle Defines the lightcone
+ * @param cut_angle Angle to cut at
+ */
+Spotlight::Spotlight(const Vector& pos, const Vector& look_at, double angle, double cut_angle) : Lightsource(pos) {
+    _dir = look_at - pos;
     _dir.normalize();
-    _angle = angle;
-    _cut_angle = cut_angle;
+    _angle = DEG2RAD(angle);
+    _cut_angle = DEG2RAD(cut_angle);
 }
 
 void Spotlight::transform(const Matrix& m) {
