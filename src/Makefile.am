@@ -1,5 +1,5 @@
 
-SUBDIRS = materials paths lights math image photon
+SUBDIRS = materials paths lights math image photon filters
 
 #--------------------------------------
 
@@ -15,7 +15,7 @@ bin_PROGRAMS = tracer
 
 tracer_SOURCES = main.cpp 
 
-tracer_LDADD = libtracer.a photon/libphoton.a paths/libpaths.a lights/liblights.a materials/libmaterials.a math/libmath.a image/libimage.a 
+tracer_LDADD = libtracer.a photon/libphoton.a paths/libpaths.a lights/liblights.a materials/libmaterials.a math/libmath.a image/libimage.a  filters/libfilters.a
 
 #--------------------------------------
 
