@@ -14,6 +14,7 @@
 Triangle::Triangle(Mesh* m, uint tri_index) : Object(NULL) {
     mesh = m;
     _tri_idx = tri_index;
+    last_cache_key = 0;
 }
 
 #define SUB(dest,v1,v2) \
@@ -22,7 +23,7 @@ Triangle::Triangle(Mesh* m, uint tri_index) : Object(NULL) {
           dest[2]=v1[2]-v2[2]; 
 
 inline
-CachedVertex* TriangleVertexCache::getCachedVertex(Triangle* triangle) 
+const CachedVertex* TriangleVertexCache::getCachedVertex(const Triangle* triangle) const
 {
     unsigned int last_cache_key = triangle->last_cache_key;
     if (cached_vertices[last_cache_key].triangle == triangle) {
@@ -30,16 +31,21 @@ CachedVertex* TriangleVertexCache::getCachedVertex(Triangle* triangle)
 	return &cached_vertices[last_cache_key];
     } else {
 	// Cache miss
-	last_cache_key = next_free_slot;
-	next_free_slot = (next_free_slot + 1) & 255;
-	triangle->last_cache_key = last_cache_key;
-	CachedVertex* cv = &cached_vertices[last_cache_key];
-
 	uint tri_idx = triangle->_tri_idx;
 	Mesh* mesh = triangle->mesh;
+
+	// Get new key
+	pthread_mutex_lock(&mutex);
+	next_free_slot = (next_free_slot + 1) & (CACHE_ENTRIES -1);
+	last_cache_key = next_free_slot;
+	pthread_mutex_unlock(&mutex);
+	CachedVertex* cv = &cached_vertices[last_cache_key];
+	triangle->last_cache_key = last_cache_key;
+
+	cv->triangle = triangle;
 	mesh->cornerAt(tri_idx,0,cv->vert0);
 	mesh->cornerAt(tri_idx,1,cv->vert1);
-	mesh->cornerAt(tri_idx,1,cv->vert2);
+	mesh->cornerAt(tri_idx,2,cv->vert2);
 	SUB(cv->edge1,cv->vert1,cv->vert0);
 	SUB(cv->edge2,cv->vert2,cv->vert0);
 	return cv;
@@ -60,32 +66,27 @@ const Material* Triangle::getMaterial() const {
 void Triangle::prepare() {
 }
 
+TriangleVertexCache vertex_cache;
+
 // ----------------------------------------------------------------------------
 Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
     
    double tvec[3], pvec[3], qvec[3];
-   double edge1[3], edge2[3];
-   double vert0[3], vert1[3], vert2[3];
 
    double det;
    double u,v;
 
-   mesh->cornerAt(_tri_idx,0,vert0);
-   mesh->cornerAt(_tri_idx,1,vert1);
-   mesh->cornerAt(_tri_idx,2,vert2);
-
-   SUB(edge1,vert1,vert0);
-   SUB(edge2,vert2,vert0);
+   const CachedVertex* cv = vertex_cache.getCachedVertex(this);
 
    /* begin calculating determinant - also used to calculate U parameter */
-   CROSS(pvec,ray.getDirection(),edge2);
+   CROSS(pvec,ray.getDirection(),cv->edge2);
 
    /* if determinant is near zero, ray lies in plane of triangle */
-   det = DOT(edge1,pvec);
+   det = DOT(cv->edge1,pvec);
 
    if (det > EPSILON) {
       /* calculate distance from vert0 to ray origin */
-      SUB(tvec,ray.getOrigin(),vert0)
+      SUB(tvec,ray.getOrigin(),cv->vert0)
       
       /* calculate U parameter and test bounds */
       u = DOT(tvec,pvec);
@@ -94,7 +95,7 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
 	 throw_exception("This shouldn't happen!");
       
       /* prepare to test V parameter */
-      CROSS(qvec,tvec,edge1);
+      CROSS(qvec,tvec,cv->edge1);
       
       /* calculate V parameter and test bounds */
       v = DOT(ray.getDirection(),qvec);
@@ -119,42 +120,61 @@ double Triangle::_fastIntersect(const Ray& ray) const {
    /* Fast code from http://www.ce.chalmers.se/staff/tomasm/code/ */
 
    double tvec[3], pvec[3], qvec[3];
-   double edge1[3], edge2[3];
-   double vert0[3], vert1[3], vert2[3];
 
    double det;
    double u,v;
 
-   mesh->cornerAt(_tri_idx,0,vert0);
-   mesh->cornerAt(_tri_idx,1,vert1);
-   mesh->cornerAt(_tri_idx,2,vert2);
+   CachedVertex* cv;
+    if (vertex_cache.cached_vertices[last_cache_key].triangle == this) {
+	// Cache hit
+	cv = &vertex_cache.cached_vertices[last_cache_key];
+	if (ray.getId() == cv->last_ray_id)
+	    return cv->last_t;
+    } else {
+	// Cache miss
 
-   SUB(edge1,vert1,vert0);
-   SUB(edge2,vert2,vert0);
+	pthread_mutex_lock(&vertex_cache.mutex);
+	vertex_cache.next_free_slot = (vertex_cache.next_free_slot + 1) & (CACHE_ENTRIES - 1);
+	last_cache_key = vertex_cache.next_free_slot;
+	pthread_mutex_unlock(&vertex_cache.mutex);
+	cv = &vertex_cache.cached_vertices[last_cache_key];
+
+	cv->triangle = this;
+	mesh->cornerAt(_tri_idx,0,cv->vert0);
+	mesh->cornerAt(_tri_idx,1,cv->vert1);
+	mesh->cornerAt(_tri_idx,2,cv->vert2);
+	SUB(cv->edge1,cv->vert1,cv->vert0);
+	SUB(cv->edge2,cv->vert2,cv->vert0);
+    }
+    cv->last_ray_id = ray.getId();
 
    /* begin calculating determinant - also used to calculate U parameter */
-   CROSS(pvec,ray.getDirection(),edge2);
+   CROSS(pvec,ray.getDirection(),cv->edge2);
 
    /* if determinant is near zero, ray lies in plane of triangle */
-   det = DOT(edge1,pvec);
+   det = DOT(cv->edge1,pvec);
 
    if (det > EPSILON) {
       /* calculate distance from vert0 to ray origin */
-      SUB(tvec,ray.getOrigin(),vert0)
+      SUB(tvec,ray.getOrigin(),cv->vert0)
       
       /* calculate U parameter and test bounds */
       u = DOT(tvec,pvec);
 
-      if (u < 0.0 || u > det)
-	 return -1.0;
+      if (u < 0.0 || u > det) {
+	  cv->last_t = -1.0;
+	  return -1.0;
+      }
       
       /* prepare to test V parameter */
-      CROSS(qvec,tvec,edge1);
+      CROSS(qvec,tvec,cv->edge1);
       
       /* calculate V parameter and test bounds */
       v = DOT(ray.getDirection(),qvec);
-      if (v < 0.0 || u + v > det)
-	 return -1.0;
+      if (v < 0.0 || u + v > det) {
+	  cv->last_t = -1.0;
+	  return -1.0;
+      }
    }
 #if 0 
    // Backface culling
@@ -179,11 +199,13 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 #endif   
    else
    {
+       cv->last_t = -1.0;
        return -1.0;  /* ray is parallell to the plane of the triangle */
    }
 
    /* calculate t, ray intersects triangle */
-   return DOT(edge2,qvec) / det;
+   cv->last_t = DOT(cv->edge2,qvec) / det;
+   return cv->last_t;
 }
     
 BoundingBox Triangle::boundingBoundingBox() const {
@@ -384,3 +406,10 @@ int Triangle::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_b
     return triBoxOverlap(boxcenter,boxhalfsize,triverts);
 }
 
+TriangleVertexCache::TriangleVertexCache() {
+    next_free_slot = 0;
+    for(int i = 0; i < CACHE_ENTRIES; i++) {
+	cached_vertices[i].triangle = NULL;
+    }
+    pthread_mutex_init(&mutex,NULL);
+}
