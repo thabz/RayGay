@@ -15,6 +15,7 @@
 #include "objects/blob.h"
 #include "objects/mesh.h"
 #include "objects/bezierpatch.h"
+#include "objects/csg.h"
 
 
 SCM make_sphere(SCM s_center, SCM s_radius, SCM s_material) 
@@ -217,6 +218,50 @@ SCM make_bezierpatch(SCM s_points, SCM s_xres, SCM s_yres, SCM s_material)
     return sceneobject2scm(patch);
 }
 
+SCM make_difference(SCM s_left, SCM s_right, SCM s_material) 
+{
+    char* proc = "make-difference";
+    Material* material;
+    if (SCM_UNBNDP (s_material) || SCM_FALSEP (s_material)) {
+        material = NULL;
+    } else {
+	material = scm2material(s_material,proc,3);
+    }
+    SceneObject* so_left = scm2sceneobject(s_left, proc, 1);
+    SceneObject* so_right = scm2sceneobject(s_right, proc, 2);
+
+    Solid* solid_left = dynamic_cast<Solid*>(so_left);
+    Solid* solid_right = dynamic_cast<Solid*>(so_right);
+
+    if (solid_left == NULL) scm_wrong_type_arg(proc,1,s_left);
+    if (solid_right == NULL) scm_wrong_type_arg(proc,2,s_right);
+
+    CSGDifference* difference = new CSGDifference(solid_left,solid_right,material);
+    return sceneobject2scm(difference);
+}
+
+SCM make_intersection(SCM s_left, SCM s_right, SCM s_material) 
+{
+    char* proc = "make-intersection";
+    Material* material;
+    if (SCM_UNBNDP (s_material) || SCM_FALSEP (s_material)) {
+        material = NULL;
+    } else {
+	material = scm2material(s_material,proc,3);
+    }
+    SceneObject* so_left = scm2sceneobject(s_left, proc, 1);
+    SceneObject* so_right = scm2sceneobject(s_right, proc, 2);
+
+    Solid* solid_left = dynamic_cast<Solid*>(so_left);
+    Solid* solid_right = dynamic_cast<Solid*>(so_right);
+
+    if (solid_left == NULL) scm_wrong_type_arg(proc,1,s_left);
+    if (solid_right == NULL) scm_wrong_type_arg(proc,2,s_right);
+
+    CSGIntersection* intersection = new CSGIntersection(solid_left,solid_right,material);
+    return sceneobject2scm(intersection);
+}
+
 void SceneObjectFactory::register_procs() 
 {
     scm_c_define_gsubr("make-sphere",3,0,0,
@@ -242,6 +287,10 @@ void SceneObjectFactory::register_procs()
     scm_c_define_gsubr("make-mesh",3,0,0,
 	    (SCM (*)()) make_mesh);
     scm_c_define_gsubr("make-bezierpatch",4,0,0,
+	    (SCM (*)()) make_bezierpatch);
+    scm_c_define_gsubr("make-difference",2,1,0,
+	    (SCM (*)()) make_bezierpatch);
+    scm_c_define_gsubr("make-intersection",2,1,0,
 	    (SCM (*)()) make_bezierpatch);
 }
 
