@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "boundingbox.h"
+#include "materials/material.h"
 #include "objects/sphere.h"
 #include "objects/solidbox.h"
 #include "objects/cone.h"
@@ -20,7 +21,6 @@
 #include "objects/necklace.h"
 #include "objects/transformedinstance.h"
 #include "objects/torus.h"
-#include "objects/3ds.h"
 #include "objects/tetrahedron.h"
 #include "objects/tessalation.h"
 #include "space/kdtree.h"
@@ -87,7 +87,7 @@ bool normalCheck(Object* object, double radius) {
  * This fires a bunch of rays at an object. And from
  * each intersection point it fires another ray with
  * the same direction. An object passing this test
- * should be eligable for using as a transparent object.
+ * should be eligible for using as a transparent object.
  */
 bool transparentCheck(Object* object, double radius) {
     int failures = 0;
@@ -124,17 +124,17 @@ class sphere_test : public Test {
 	    //assertTrue(IS_EQUAL(s.getLastIntersection()->getPoint()[2],60.0));
 
 	    assertTrue(intersects(&s,Vector(0,0,1000),Vector(0,0,-1)));
-	    assertTrue(IS_EQUAL(iPoint(&s,Vector(0,0,1000),Vector(0,0,-1))[2],60.0));
+	    assertEqualF(iPoint(&s,Vector(0,0,1000),Vector(0,0,-1))[2],60.0);
 
 	    //r = Ray(Vector(0,0,0),Vector(0,0,-1),1);
 	    // assertTrue(s.intersect(r));
 	    //   assertTrue(IS_EQUAL( s.getLastIntersection()->getPoint()[2], -60.0));
 
 	    assertTrue(intersects(&s,Vector(0,0,0),Vector(0,0,-1)));
-	    assertTrue(IS_EQUAL(iPoint(&s,Vector(0,0,0),Vector(0,0,-1))[2],-60.0));
+	    assertEqualF(iPoint(&s,Vector(0,0,0),Vector(0,0,-1))[2],-60.0);
 
 	    assertTrue(intersects(&s,Vector(0,0,-1000),Vector(0,0,1)));
-	    assertTrue(IS_EQUAL(iPoint(&s,Vector(0,0,-1000),Vector(0,0,1))[2],-60.0));
+	    assertEqualF(iPoint(&s,Vector(0,0,-1000),Vector(0,0,1))[2],-60.0);
 
 	    assertTrue(intersects(&s,Vector(0,0,-100),Vector(0,0,-1)) == false);
 
@@ -160,9 +160,9 @@ class sphere_test : public Test {
 	    Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
 	    s.allIntersections(ray,result);
 	    assertTrue(result.size() == 2);
-	    assertTrue(result[0].getPoint() == Vector(0,0,20));
+	    assertEqualV(result[0].getPoint(), Vector(0,0,20));
 	    assertTrue(result[0].isEntering() == true);
-	    assertTrue(result[1].getPoint() == Vector(0,0,-20));
+	    assertEqualV(result[1].getPoint(), Vector(0,0,-20));
 	    assertTrue(result[1].isEntering() == false);
 
 	    ray = Ray(Vector(0,0,-100),Vector(0,0,1),-1);
@@ -209,12 +209,12 @@ class box_test : public Test {
 	    Intersection* inter = new Intersection();
 	    Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
 	    assertTrue(bsp->intersect(r,inter));
-	    assertTrue(inter->getPoint() == Vector(0,0,1));
+	    assertEqualV(inter->getPoint(), Vector(0,0,1));
 	    assertTrue(inter->getUV() == Vector2(0.5,0.5));
 
 	    r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
 	    assertTrue(bsp->intersect(r,inter));
-	    assertTrue(inter->getPoint() == Vector(0,-1,0));
+	    assertEqualV(inter->getPoint(), Vector(0,-1,0));
 
 	    /* Test second constructor */
 	    b = new Box(Vector(0,0,0),2,2,2,m);
@@ -352,7 +352,6 @@ class cylinder_test : public Test {
 
 	    assertTrue(intersects(cyl,Vector(0,-1000,5),Vector(0,1,0)));
 	    assertTrue(iPoint(cyl,Vector(0,-1000,5),Vector(0,1,0)) == Vector(0,-10,5));
-	    cout << iNormal(cyl,Vector(0,-1000,5),Vector(0,1,0)) << endl;
 	    assertTrue(iNormal(cyl,Vector(0,-1000,5),Vector(0,1,0)) == Vector(0,-1,0));
 
 	    assertTrue(intersects(cyl,Vector(0,1000,5),Vector(0,-1,0)));
