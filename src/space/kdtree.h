@@ -14,6 +14,7 @@ class Intersection;
 class Object;
 */
 #define KD_TREE_MAX 3
+#define KD_TREE_MAX_DEPTH 100
 
 /**
  * k-dimensional tree.

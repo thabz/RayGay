@@ -93,6 +93,10 @@ void KdTree::prepare(int curNode_idx,int depth) {
 	curNode->axis = -1;
 	return;
     }
+    if (depth > KD_TREE_MAX_DEPTH) {
+	curNode->axis = -1;
+	return;
+    }
     // Find the best axis to split
     Vector best_measure = Vector(0,HUGE_DOUBLE,0);
     int best_dim = -1;
@@ -187,14 +191,20 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
     int enPt = 0;
     stack[enPt].t = a;
 
-    if (a >= 0.0) 
-	stack[enPt].pb = ray.getOrigin() + ray.getDirection() * a;
-    else 
-	stack[enPt].pb = ray.getOrigin();
-
+    if (a >= 0.0) {
+	stack[enPt].pb[0] = ray.getOrigin()[0] + ray.getDirection()[0] * a;
+	stack[enPt].pb[1] = ray.getOrigin()[1] + ray.getDirection()[1] * a;
+	stack[enPt].pb[2] = ray.getOrigin()[2] + ray.getDirection()[2] * a;
+    } else {
+	stack[enPt].pb[0] = ray.getOrigin()[0];
+	stack[enPt].pb[1] = ray.getOrigin()[1];
+	stack[enPt].pb[2] = ray.getOrigin()[2];    
+    }
     int exPt = 1;
     stack[exPt].t = b;
-    stack[exPt].pb = ray.getOrigin() + ray.getDirection() * b;
+    stack[exPt].pb[0] = ray.getOrigin()[0] + ray.getDirection()[0] * b;
+    stack[exPt].pb[1] = ray.getOrigin()[1] + ray.getDirection()[1] * b;
+    stack[exPt].pb[2] = ray.getOrigin()[2] + ray.getDirection()[2] * b;
     stack[exPt].node = NULL;
 
     while (curNode != NULL) {
@@ -202,63 +212,126 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 	    /* Current node is not a leaf */
 	    double splitVal = curNode->splitPlane;
 	    int axis = curNode->axis; // ?
+	    switch(axis) {
+		case 0:
+		    {
+			if (stack[enPt].pb[0] <= splitVal) {
+			    if (stack[exPt].pb[0] <= splitVal) {
+				curNode = curNode->left;
+				continue;
+			    }
+			    farChild = curNode->right;
+			    curNode = curNode->left;
+			} else {
+			    if (splitVal <= stack[exPt].pb[0]) {
+				curNode = curNode->right;
+				continue;
+			    }
+			    farChild = curNode->left;
+			    curNode = curNode->right;
+			}
 
-	    if (stack[enPt].pb[axis] <= splitVal) {
-		if (stack[exPt].pb[axis] <= splitVal) {
-		    curNode = curNode->left;
-		    continue;
-		}
-		
-		/*
-		if (stack[exPt].pb[axis] == splitVal) { //TODO: Wierd!
-		    curNode = curNode->right;
-		    continue;
-		}
-		*/
-		
-		farChild = curNode->right;
-		curNode = curNode->left;
-	    } else {
-		if (splitVal <= stack[exPt].pb[axis]) {
-		    curNode = curNode->right;
-		    continue;
-		}
-		farChild = curNode->left;
-		curNode = curNode->right;
+			t = (splitVal - ray.getOrigin()[0]) / ray.getDirection()[0];
+
+			int tmp = exPt;
+			exPt++;
+
+			if (exPt == enPt)
+			    exPt++;
+
+			stack[exPt].prev = tmp;
+			stack[exPt].t = t;
+			stack[exPt].node = farChild;
+			stack[exPt].pb[0] = splitVal;
+			stack[exPt].pb[1] = ray.getOrigin()[1] + t*ray.getDirection()[1];
+			stack[exPt].pb[2] = ray.getOrigin()[2] + t*ray.getDirection()[2];
+			continue;
+		    }
+		case 1:
+		    {
+			if (stack[enPt].pb[1] <= splitVal) {
+			    if (stack[exPt].pb[1] <= splitVal) {
+				curNode = curNode->left;
+				continue;
+			    }
+			    farChild = curNode->right;
+			    curNode = curNode->left;
+			} else {
+			    if (splitVal <= stack[exPt].pb[1]) {
+				curNode = curNode->right;
+				continue;
+			    }
+			    farChild = curNode->left;
+			    curNode = curNode->right;
+			}
+
+			t = (splitVal - ray.getOrigin()[1]) / ray.getDirection()[1];
+
+			int tmp = exPt;
+			exPt++;
+
+			if (exPt == enPt)
+			    exPt++;
+
+			stack[exPt].prev = tmp;
+			stack[exPt].t = t;
+			stack[exPt].node = farChild;
+			stack[exPt].pb[0] = ray.getOrigin()[0] + t*ray.getDirection()[0];
+			stack[exPt].pb[1] = splitVal;
+			stack[exPt].pb[2] = ray.getOrigin()[2] + t*ray.getDirection()[2];
+			continue;
+
+		    }
+		case 2:
+		    {
+			if (stack[enPt].pb[2] <= splitVal) {
+			    if (stack[exPt].pb[2] <= splitVal) {
+				curNode = curNode->left;
+				continue;
+			    }
+			    farChild = curNode->right;
+			    curNode = curNode->left;
+			} else {
+			    if (splitVal <= stack[exPt].pb[2]) {
+				curNode = curNode->right;
+				continue;
+			    }
+			    farChild = curNode->left;
+			    curNode = curNode->right;
+			}
+
+			t = (splitVal - ray.getOrigin()[2]) / ray.getDirection()[2];
+
+			int tmp = exPt;
+			exPt++;
+
+			if (exPt == enPt)
+			    exPt++;
+
+			stack[exPt].prev = tmp;
+			stack[exPt].t = t;
+			stack[exPt].node = farChild;
+			stack[exPt].pb[0] = ray.getOrigin()[0] + t*ray.getDirection()[0];
+			stack[exPt].pb[1] = ray.getOrigin()[1] + t*ray.getDirection()[1];
+			stack[exPt].pb[2] = splitVal;
+			continue;
+
+		    }
 	    }
-
-	    t = (splitVal - ray.getOrigin()[axis]) / ray.getDirection()[axis];
-
-	    int tmp = exPt;
-	    exPt++;
-
-	    if (exPt == enPt)
-		exPt++;
-
-	    stack[exPt].prev = tmp;
-	    stack[exPt].t = t;
-	    stack[exPt].node = farChild;
-	    stack[exPt].pb[axis] = splitVal;
-	    int nextAxis = (axis+1) % 3;
-	    int prevAxis = (axis+2) % 3;
-	    stack[exPt].pb[nextAxis] = ray.getOrigin()[nextAxis] + 
-		                       t * ray.getDirection()[nextAxis];
-	    stack[exPt].pb[prevAxis] = ray.getOrigin()[prevAxis] +
-		                       t * ray.getDirection()[prevAxis];
-	} /* while curNode not a leaf */
+	}/* while curNode not a leaf */
 
 	// Intersect with all objects in list, discarding
 	// those lying before stack[enPt].t or farther than stack[exPt].t
 	Object* object_hit = NULL;
 	double smallest_t = HUGE_DOUBLE;
 	if (!curNode->objects->empty()) {
-	    const vector<Object*> &objects = *(curNode->objects);
-	    unsigned int objects_size = objects.size();
+	    vector<Object*>* objects = curNode->objects;
+	    unsigned int objects_size = objects->size();
 	    for (unsigned int i = 0; i < objects_size; i++) {
-		double i_t = objects[i]->fastIntersect(ray);
+		double i_t = (*objects)[i]->fastIntersect(ray);
 		if (i_t > 0 && i_t < smallest_t && i_t > stack[enPt].t && i_t < stack[exPt].t) {
 		    smallest_t = i_t;
-		    object_hit = objects[i];
+		    object_hit = (*objects)[i];
 		}
 	    }
 	}
@@ -283,14 +356,20 @@ Object* KdTree::intersectForShadow(const Ray& ray, const double a, const double 
     int enPt = 0;
     stack[enPt].t = a;
 
-    if (a >= 0.0) 
-	stack[enPt].pb = ray.getOrigin() + ray.getDirection() * a;
-    else 
-	stack[enPt].pb = ray.getOrigin();
-
+    if (a >= 0.0) {
+	stack[enPt].pb[0] = ray.getOrigin()[0] + ray.getDirection()[0] * a;
+	stack[enPt].pb[1] = ray.getOrigin()[1] + ray.getDirection()[1] * a;
+	stack[enPt].pb[2] = ray.getOrigin()[2] + ray.getDirection()[2] * a;
+    } else {
+	stack[enPt].pb[0] = ray.getOrigin()[0];
+	stack[enPt].pb[1] = ray.getOrigin()[1];
+	stack[enPt].pb[2] = ray.getOrigin()[2];    
+    }
     int exPt = 1;
     stack[exPt].t = b;
-    stack[exPt].pb = ray.getOrigin() + ray.getDirection() * b;
+    stack[exPt].pb[0] = ray.getOrigin()[0] + ray.getDirection()[0] * b;
+    stack[exPt].pb[1] = ray.getOrigin()[1] + ray.getDirection()[1] * b;
+    stack[exPt].pb[2] = ray.getOrigin()[2] + ray.getDirection()[2] * b;
     stack[exPt].node = NULL;
 
     while (curNode != NULL) {
@@ -304,14 +383,14 @@ Object* KdTree::intersectForShadow(const Ray& ray, const double a, const double 
 		    curNode = curNode->left;
 		    continue;
 		}
-		
+
 		/*
-		if (stack[exPt].pb[axis] == splitVal) { //TODO: Wierd!
-		    curNode = curNode->right;
-		    continue;
-		}
-		*/
-		
+		   if (stack[exPt].pb[axis] == splitVal) { //TODO: Wierd!
+		   curNode = curNode->right;
+		   continue;
+		   }
+		   */
+
 		farChild = curNode->right;
 		curNode = curNode->left;
 	    } else {
@@ -338,9 +417,9 @@ Object* KdTree::intersectForShadow(const Ray& ray, const double a, const double 
 	    int nextAxis = (axis+1) % 3;
 	    int prevAxis = (axis+2) % 3;
 	    stack[exPt].pb[nextAxis] = ray.getOrigin()[nextAxis] + 
-		                       t * ray.getDirection()[nextAxis];
+		t * ray.getDirection()[nextAxis];
 	    stack[exPt].pb[prevAxis] = ray.getOrigin()[prevAxis] +
-		                       t * ray.getDirection()[prevAxis];
+		t * ray.getDirection()[prevAxis];
 	} /* while curNode not a leaf */
 
 	// Intersect with all objects in list, discarding
