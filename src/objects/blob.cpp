@@ -51,14 +51,14 @@ BlobTree::BlobTree() : GenericKdTree<BlobAtom>(KD_TREE_MAX_DEPTH, KD_TREE_MAX) {
 }
 
 double BlobTree::eval(const Vector& point) const {
-    int axis;
+    uint axis;
     double value;
     const KdNode<BlobAtom>* node = getTopNode();
 
     // Find the leaf node point is in
     while (!node->isLeafNode()) {
-	axis = getNodeAxis(node);
-	value = getNodeSplitValue(node);
+	axis = node->getAxis();
+	value = node->getSplitValue();
 	if (point[axis] < value) {
 	    node = leftNode(node);
 	} else {
@@ -69,7 +69,7 @@ double BlobTree::eval(const Vector& point) const {
     // Find the blob value
     double sum = 0.0;
     const double one_ninth = 0.11111111111111111111111111111111111111; // 1 / 9
-    uint num = getNodeObjectNum(node);
+    uint num = node->getObjectNum();
     BlobAtom* b;
     for(uint i = 0; i < num; i++) {
 	b = node->objects[i];

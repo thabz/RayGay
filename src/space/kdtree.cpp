@@ -12,7 +12,7 @@
 #include "boundingbox.h"
 #include "math/vector2.h"
 
-#define KD_TREE_MAX 2
+#define KD_TREE_MAX 1
 #define KD_TREE_MAX_DEPTH 50
 
 KdTree::KdTree() : GenericKdTree<Object>(KD_TREE_MAX_DEPTH, KD_TREE_MAX) {
@@ -86,8 +86,8 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
     while (curNode != NULL) {
 	while (!curNode->isLeafNode()) {
 	    /* Current node is not a leaf */
-	    double splitVal = getNodeSplitValue(curNode);
-	    int axis = getNodeAxis(curNode); // ?
+	    double splitVal = curNode->getSplitValue();
+	    uint axis = curNode->getAxis(); // ?
 	    switch(axis) {
 		case 0:
 		    {
@@ -198,7 +198,7 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 
 	// Intersect with all objects in list, discarding
 	// those lying before stack[enPt].t or farther than stack[exPt].t
-	uint object_num = getNodeObjectNum(curNode);
+	uint object_num = curNode->getObjectNum();
 	if (object_num > 0) {
 	    Object* object_hit = NULL;
 	    double smallest_t = stack[exPt].t;
@@ -246,8 +246,8 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
     while (curNode != NULL) {
 	while (!curNode->isLeafNode()) {
 	    /* Current node is not a leaf */
-	    double splitVal = getNodeSplitValue(curNode);
-	    int axis = getNodeAxis(curNode);
+	    double splitVal = curNode->getSplitValue();
+	    uint axis = curNode->getAxis();
 
 	    if (stack[enPt].pb[axis] <= splitVal) {
 		if (stack[exPt].pb[axis] <= splitVal) {
@@ -277,8 +277,8 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
 	    stack[exPt].t = t;
 	    stack[exPt].node = farChild;
 	    stack[exPt].pb[axis] = splitVal;
-	    int nextAxis = (axis+1) % 3;
-	    int prevAxis = (axis+2) % 3;
+	    uint nextAxis = (axis+1) % 3;
+	    uint prevAxis = (axis+2) % 3;
 	    stack[exPt].pb[nextAxis] = ray.getOrigin()[nextAxis] + 
 		t * ray.getDirection()[nextAxis];
 	    stack[exPt].pb[prevAxis] = ray.getOrigin()[prevAxis] +
@@ -287,7 +287,7 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
 
 	// Intersect with all objects in list, discarding
 	// those lying before stack[enPt].t or farther than stack[exPt].t
-	uint object_num = getNodeObjectNum(curNode);
+	uint object_num = curNode->getObjectNum();
 	if (object_num > 0) {
 	    const double min_t = MAX(0.0,stack[enPt].t);
 	    for (uint i = 0; i < object_num; i++) {

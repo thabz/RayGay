@@ -12,34 +12,40 @@
 /*
  * Macros for accessing the packed KdNode.
  */
-#define leftNode(node) (node->left == 0 ? NULL : &(nodes[node->left]))
-#define rightNode(node) (node->left == 0 ? NULL : &(nodes[node->left+1]))
-#define getNodeAxis(node) (node->axis)
-#define getNodeObjectNum(node) (node->num)
-#define getNodeSplitValue(node) (node->splitPlane)
+//#define leftNode(node) (node->left == 0 ? NULL : &(nodes[node->left]))
+//#define rightNode(node) (node->left == 0 ? NULL : &(nodes[node->left+1]))
+#define leftNode(node) (&(nodes[(((node)->left) >> 2)]))
+#define rightNode(node) (&(nodes[(((node)->left) >> 2)+1]))
 #define getTopNode() (&(nodes[0]))
 
 template<class ObjectType>
 class KdNode {
     public:
 	union {
+	    // [30 bits left/num | 2 bits axis]
+	    
 	    // Left child when not a leaf. Right child is left + 1.
 	    uint left;  
-	    // Enclosed objects when this is a leaf
-	    ObjectType** objects;
-	};
-	union {
 	    // Number of objects when this is a leaf
 	    uint num;
-	    // Position of splitting plane
+
+	    // Axis where x,y,z is 0,1,2 and 3 denotes a leaf is 
+	    // packed into left/num as first two bits.
+	};
+	union {
+	    // Enclosed objects when this is a leaf
+	    ObjectType** objects;
+	    // Position of splitting plane when not a leaf
 	    float splitPlane;
 	};
-	// Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
-	short axis;
+	//short axis;
 
 	void initLeafNode(uint num, ObjectType** objects);
 	void initInteriorNode(uint axis, float plane, uint left);
 	bool isLeafNode() const;
+	float getSplitValue() const;
+	uint getObjectNum() const;
+	uint getAxis() const;
 };
 
 template<class ObjectType>

@@ -21,7 +21,7 @@ GenericKdTree<ObjectType>::GenericKdTree<ObjectType>(uint max_depth, uint max_ob
 template<class ObjectType>
 GenericKdTree<ObjectType>::~GenericKdTree<ObjectType>() {
     for(uint i = 0; i < nodes.size(); i++) {
-	if (nodes[i].axis == -1 && nodes[i].num > 0) {
+	if (nodes[i].isLeafNode() && nodes[i].getObjectNum() > 0) {
 	    delete [] nodes[i].objects;
 	}
     }
@@ -287,23 +287,39 @@ void GenericKdTree<ObjectType>::prepare(uint num, const BoundingBox& bbox, uint 
 template<class ObjectType>
 void KdNode<ObjectType>::initLeafNode(uint num, ObjectType** objects)
 {
-    this->axis = -1;
-    this->num = num;
+    this->num = (num << 2) | 3;
     this->objects = objects;
-
 }
 
 template<class ObjectType>
 void KdNode<ObjectType>::initInteriorNode(uint axis, float plane, uint left)
 {
-    this->axis = axis;
+    assert(axis >= 0 && axis <= 2);
     this->splitPlane = plane;
-    this->left = left;
+    this->left = (left << 2) | (axis & 3);
 }
 
 template<class ObjectType>
 bool KdNode<ObjectType>::isLeafNode() const
 {
-    return axis == -1;
+    return (left & 3) == 3;
+}
+
+template<class ObjectType>
+uint KdNode<ObjectType>::getAxis() const 
+{
+    return (num & 3);
+}
+
+template<class ObjectType>
+float KdNode<ObjectType>::getSplitValue() const 
+{
+    return splitPlane;
+}
+
+template<class ObjectType>
+uint KdNode<ObjectType>::getObjectNum() const 
+{
+    return (num >> 2);
 }
 
