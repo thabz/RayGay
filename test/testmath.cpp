@@ -53,6 +53,29 @@ void vector_test() {
     assert(w * v == v * w);
 
     assert(Vector::xProduct(v,w) == Vector::xProduct(w,v));
+
+    // Test polar coordinates
+    v = Vector(1,0,0);
+    w = v.toPolar();
+    assert(IS_EQUAL(w[0],1));
+    assert(!IS_EQUAL(w[1],0));
+    assert(IS_EQUAL(w[2],0));
+
+    v = Vector(0,0,1);
+    w = v.toPolar();
+    assert(IS_EQUAL(w[0],1));
+    assert(IS_EQUAL(w[1],0));
+    assert(IS_EQUAL(w[2],0));
+
+    v = Vector(1,1,1);
+    w = v.toPolar();
+    assert(IS_EQUAL(w[0],sqrtf(3)));
+    assert(!IS_EQUAL(w[1],0));
+    assert(!IS_EQUAL(w[2],0));
+
+    v = Vector(0,1,1);
+    w = v.toPolar();
+    assert(IS_EQUAL(w[0],sqrtf(2)));
 }
 
 void vector2_test() {
@@ -101,6 +124,50 @@ void matrix_test() {
     assert(op1 != op2);
     op2 = op2.inverse();
     assert(op1 == op2);
+
+    // Test matrixOrient(Vector,Vector)
+
+    Vector v = Vector(1,1,0);
+    op1 = Matrix::matrixOrient(v,Vector(0,1,0));
+    op1 = op1.inverse();
+    v = op1 * v;
+    assert(IS_ZERO(v[0]));
+    assert(IS_ZERO(v[1]));
+
+    /// Test matrixOrient(Vector)
+    v = Vector(20,391,29);
+    op1 = Matrix::matrixOrient(v);
+    Vector w = op1 * v;
+    assert(IS_ZERO(w[0]));
+    assert(IS_ZERO(w[1]));
+    
+    v = Vector(0,13,0);
+    op1 = Matrix::matrixOrient(v);
+    w = op1 * v;
+    assert(IS_ZERO(w[0]));
+    assert(IS_ZERO(w[1]));
+    assert(IS_EQUAL(w[2],13));
+    
+    v = Vector(0,4,3);
+    op1 = Matrix::matrixOrient(v);
+    w = op1 * v;
+    assert(IS_ZERO(w[0]));
+    assert(IS_ZERO(w[1]));
+    assert(IS_EQUAL(w[2],5));
+    
+    v = Vector(0,0,71);
+    op1 = Matrix::matrixOrient(v);
+    w = op1 * v;
+    assert(IS_ZERO(w[0]));
+    assert(IS_ZERO(w[1]));
+    assert(IS_EQUAL(w[2],71));
+
+    v = Vector(19,0,0);
+    op1 = Matrix::matrixOrient(v);
+    w = op1 * v;
+    assert(IS_ZERO(w[0]));
+    assert(IS_ZERO(w[1]));
+    assert(IS_EQUAL(w[2],19));
 }
 
 int main(int argc, char *argv[]) {

@@ -309,6 +309,24 @@ void cylinder_test() {
     assert(!cyl->onEdge(Vector(0,0,1)));
     delete cyl;
     
+    // Test an x-axis aligned cylinder
+    cyl = new Cylinder(Vector(2,0,0),Vector(10,0,0),10,m);
+    assert(cyl->inside(Vector(5,0,0)));
+    assert(cyl->inside(Vector(9,0,0)));
+    assert(!cyl->inside(Vector(0,0,0)));
+    assert(!cyl->inside(Vector(-1,0,0)));
+    assert(cyl->onEdge(Vector(2,0,0)));
+    assert(cyl->onEdge(Vector(10,0,0)));
+    assert(cyl->onEdge(Vector(5,10,0)));
+    assert(cyl->onEdge(Vector(5,-10,0)));
+    r = Ray(Vector(3,0,1000),Vector(0,0,-1),1);
+    assert(cyl->intersect(r));
+    
+    // Test an y-axis aligned cylinder
+    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
+    assert(cyl->inside(Vector(0,5,0)));
+    delete cyl;
+
     cyl = new Cylinder(Vector(1,1,1),Vector(10,10,10),10,m);
     assert(cyl->inside(Vector(2,2,2)));
     assert(cyl->inside(Vector(5,5,5)));
@@ -318,24 +336,6 @@ void cylinder_test() {
     assert(cyl->onEdge(Vector(1,1,1)));
     assert(cyl->onEdge(Vector(10,10,10)));
 
-    // Test an y-axis aligned cylinder
-    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
-    assert(cyl->inside(Vector(0,5,0)));
-    delete cyl;
-
-    // Test an x-axis aligned cylinder
-    cyl = new Cylinder(Vector(2,0,0),Vector(10,0,0),10,m);
-    assert(cyl->inside(Vector(5,0,0)));
-    assert(cyl->inside(Vector(9,0,0)));
-    assert(!cyl->inside(Vector(0,0,0)));
-    assert(!cyl->inside(Vector(-1,0,0)));
-    assert(cyl->onEdge(Vector(0,0,0)));
-    assert(cyl->onEdge(Vector(10,0,0)));
-    assert(cyl->onEdge(Vector(5,10,0)));
-    assert(cyl->onEdge(Vector(5,-10,0)));
-
-    r = Ray(Vector(3,0,1000),Vector(0,0,-1),1);
-    assert(cyl->intersect(r));
 }
 
 int main(int argc, char *argv[]) {
