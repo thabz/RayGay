@@ -80,15 +80,19 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int
 		if (info.intensity > 0.0) {
 		    double intensity = info.intensity * attenuation;
 		    // Diffuse color
-		    color =  intensity * info.cos * material->getKd() * material->getDiffuseColor(intersection);
+		    if (material->getKd() > 0) {
+			color =  intensity * info.cos * material->getKd() * material->getDiffuseColor(intersection);
+		    }
 
 		    // Specular color (Phong)
-		    Vector light_reflect = info.direction_to_light.reflect(normal);
-		    light_reflect.normalize();
-		    double rv = light_reflect * (-1 * ray.getDirection());
-		    if (rv > 0.0) {
-			rv = pow(rv,material->getSc());
-			color = color + ( intensity * rv *  material->getKs() * material->getSpecularColor());
+		    if (material->getKs() > 0.0) {
+			Vector light_reflect = info.direction_to_light.reflect(normal);
+			light_reflect.normalize();
+			double rv = light_reflect * (-1 * ray.getDirection());
+			if (rv > 0.0) {
+			    rv = pow(rv,material->getSc());
+			    color = color + ( intensity * rv *  material->getKs() * material->getSpecularColor());
+			}
 		    }
 		}
 		result_color += color;
