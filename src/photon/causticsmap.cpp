@@ -38,15 +38,18 @@ void CausticsMap::store( const Vector& power, const Vector& pos, const Vector& d
 }
 
 /**
- * Using the Gaussian filter where each photon is miltiplied by
+ * Get a filtered irradiance estimate.
  *
- * w(d_p) = a ( 1 - \frac{1 - e^{(dp^2)/(2r^2) }}{ 1- e^{-b} }
+ * Using the Gaussian filter with weights
  *
- * where
+ * \f[ w(d_p) = \alpha \left( 1 - \frac{1 - e^{-\beta \frac{d_p^2}{2r^2} }}{ 1- e^{-\beta} } \right) \f]
  *
- * d_p is the distance between x and the photon and a = 0.918 and
- * b = 1.953
+ * where \f$ d_p \f$ is the distance between point and the photon and \f$ \alpha \f$ = 0.918 and \f$ \beta \f$ = 1.953.
+ *
+ * This filter is normalized so the weights are just multiplied to the 
+ * irradiance value for each photon.
  */
 RGB CausticsMap::getFilteredIrradianceEstimate(const Vector& point, const Vector& normal) const {
+    // TODO: Implement by modifying irradiance_estimate(...) code
     return irradiance_estimate(point,normal);
 }
