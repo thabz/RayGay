@@ -41,7 +41,7 @@ if pkg-config --exists gtk+-2.0; then
 	PKG_CHECK_MODULES(GTK, [$pkg_modules])
 	AC_SUBST(GTK_CFLAGS)
 	AC_SUBST(GTK_LIBS)
-        LIBS="$GTK_LIBS $LIBS"
+        AC_DEFINE([HAVE_GTK],[1],[Found GTK+-2.0. Will build the preview window.])
 else 
     	echo "no"
 fi    
@@ -49,13 +49,13 @@ fi
 dnl -------------------------------------------------
 dnl Add the CPU dependent compile optimizations
 dnl -------------------------------------------------
-CXXFLAGS="-g -O3 -Wall -ffast-math -pthread"     
+CXXFLAGS="-g -O3 -Wall -ffast-math -pthread $GTK_CFLAGS" 
 case $target in
      pentium3) CXXFLAGS="$CXXFLAGS -malign-double -march=pentium3 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing";;
      pentium4) CXXFLAGS="$CXXFLAGS -fprefetch-loop-arrays -funroll-loops -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing -msse2";;
      g4) CXXFLAGS="$CXXFLAGS -ftracer -fstrict-aliasing";;
 esac
-LDFLAGS="$LDFLAGS -lfl"
+LDFLAGS="$LDFLAGS -lfl $GTK_LIBS"
 
 dnl -------------------------------------------------
 dnl Enable profiling
