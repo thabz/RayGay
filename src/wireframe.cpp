@@ -19,9 +19,10 @@ using namespace std;
  */
 Wireframe::Wireframe(Mesh* mesh, double radius, const Material& material) {
     vector<Linesegment>* edges = mesh->getEdges();
-    for(unsigned int i = 0; i < edges->size(); i++) {
-	Linesegment line = (*edges)[i];
-	addObject(new Cylinder(line.begin(),line.end(),radius,material));
+    unsigned int size = edges->size();
+    for(unsigned int i = 0; i < size; i++) {
+	Linesegment* line = &((*edges)[i]);
+	addObject(new Cylinder(line->begin(),line->end(),radius,material));
     }
     delete edges;
 
