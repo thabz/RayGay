@@ -19,6 +19,7 @@
 # Faster stats: 1:23
 # Brug world_bbox i alle KdTree::intersects: 1:07
 # Surface Area Heuristic cost function: 0:42
+# Fixed SAH: 0:25
 
 include materials.gay
 
