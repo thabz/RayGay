@@ -20,10 +20,7 @@ libtracer_la_SOURCES = \
 		      renderjobs.cpp 	\
 		      pathtracer.cpp 	\
 		      environment.cpp 	\
-		      window.h		\
-		      window-gtk.h	\
-		      window-gtk.cpp	\
-		      window-icon.h	
+		      window.h		
 
 libtracer_la_LIBADD = parser/libparser.la photon/libphoton.la lights/liblights.la materials/libmaterials.la collections/libcollections.la objects/libobjects.la paths/libpaths.la math/libmath.la  image/libimage.la space/libspace.la shaders/libshaders.la cameras/libcameras.la filters/libfilters.la
 
@@ -31,9 +28,9 @@ libtracer_la_LIBADD = parser/libparser.la photon/libphoton.la lights/liblights.l
 
 bin_PROGRAMS = tracer bench
 
-tracer_SOURCES = main.cpp
-
-tracer_LDADD = libtracer.la 		
+tracer_SOURCES = main.cpp window-gtk.cpp window-gtk.h window-icon.h
+#tracer_CXXFLAGS = $(GTK_CFLAGS) $(CXXFLAGS)
+tracer_LDADD = libtracer.la @GTK_LIBS@
 
 #--------------------------------------
 

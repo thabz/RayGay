@@ -11,6 +11,8 @@ libimage_la_SOURCES = image.cpp \
 		     imageio_jpeg.cpp \
 		     imageio_png.cpp
 
+libimage_la_LIBADD = @JPEG_LIBS@ @PNG_LIBS@		     
+
 EXTRA_DIST = image.h 		\
              imageio.h 		\
 	     imageio_jpeg.h	\

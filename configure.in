@@ -49,8 +49,10 @@ dnl -------------------------------------------------
 LIBS="$LIBS -lm"    
 AC_CHECK_LIB(m, sin,,[AC_MSG_ERROR([math library is not found])],)
 AC_CHECK_LIB(pthread, pthread_create,LIBS="-lpthread $LIBS")
-AC_CHECK_LIB(jpeg, jpeg_read_header,LIBS="-ljpeg $LIBS")
-AC_CHECK_LIB(png, png_read_info, LIBS="-lpng $LIBS")
+AC_CHECK_LIB(jpeg, jpeg_read_header,JPEG_LIBS="-ljpeg")
+AC_CHECK_LIB(png, png_read_info, PNG_LIBS="-lpng")
+AC_SUBST(JPEG_LIBS)
+AC_SUBST(PNG_LIBS)
 
 if test "x$PKG_CONFIG" != "xno"; then
    echo -n "checking for gtk+2.0... "
@@ -70,13 +72,12 @@ fi
 dnl -------------------------------------------------
 dnl Add the CPU dependent compile optimizations
 dnl -------------------------------------------------
-CXXFLAGS="-g -O3 -Wall -Winline -ffast-math -pthread $GTK_CFLAGS" 
+CXXFLAGS="-g -O3 -Wall -Winline -ffast-math -pthread $GTK_CFLAGS"  
 case $target in
      pentium3) CXXFLAGS="$CXXFLAGS -malign-double -march=pentium3 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing";;
      pentium4) CXXFLAGS="$CXXFLAGS -fprefetch-loop-arrays -funroll-loops -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing -msse2";;
      g4) CXXFLAGS="$CXXFLAGS -ftracer -fstrict-aliasing";;
 esac
-LDFLAGS="$LDFLAGS $GTK_LIBS"
 
 dnl -------------------------------------------------
 dnl Extra warning flags
