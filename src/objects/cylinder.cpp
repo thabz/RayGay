@@ -112,8 +112,9 @@ uint Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
 	// Two possible roots. We ignore the cases where the
 	// ray is tangent to the cylinder and we only have one root.
 	double sq = sqrt(D);
-	double t1 = (-b - sq ) / (2 * a);
-	double t2 = (-b + sq ) / (2 * a);
+	double inv_2a = 1.0 / (2*a);
+	double t1 = (-b - sq ) * inv_2a;
+	double t2 = (-b + sq ) * inv_2a;
 	double ip1_z =  Ro[2] + t1 * Rd[2];
 	double ip2_z =  Ro[2] + t2 * Rd[2];
 	if (ip1_z >= EPSILON && ip1_z <= height && t1 > EPSILON) {
@@ -124,9 +125,10 @@ uint Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
 	}
     }
     if (roots_found < 2 && has_caps && !IS_ZERO(Rd[2])) {
+	double inv_rd2 = 1.0 / Rd[2];
 	double t, i_x, i_y;
 	// Check intersection with bottom cap
-	t = (0.0 - Ro[2]) / Rd[2];
+	t = (0.0 - Ro[2]) * inv_rd2;
 	if (t > EPSILON) {
 	    i_x = Ro[0] + t * Rd[0];
 	    i_y = Ro[1] + t * Rd[1];
@@ -136,7 +138,7 @@ uint Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
 	}
 
 	// Check intersection with top cap
-	t = (height - Ro[2]) / Rd[2];
+	t = (height - Ro[2]) * inv_rd2;
 	if (t > EPSILON) {
 	    i_x = Ro[0] + t * Rd[0];
 	    i_y = Ro[1] + t * Rd[1];
@@ -155,9 +157,11 @@ uint Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
 	}
     }
     
-    double inv = 1.0 / local_ray.t_scale;
-    roots[0] *= inv;
-    roots[1] *= inv;
+    if (local_ray.t_scale != 1.0) {
+	double inv = 1.0 / local_ray.t_scale;
+	roots[0] *= inv;
+	roots[1] *= inv;
+    }
 
     return roots_found;
 }
