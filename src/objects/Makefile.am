@@ -50,8 +50,6 @@ libobjects_la_SOURCES = \
 		       sphere.cpp	\
 		       superellipsoid.h	\
 		       superellipsoid.cpp	\
-		       teapot.h		\
-		       teapot.cpp	\
 		       tessalation.h	\
 		       tessalation.cpp	\
 		       tetrahedron.h	\
