@@ -19,6 +19,7 @@
 #include "photon/causticsmap.h"
 #include "photon/photontracer.h"
 #include "renderersettings.h"
+#include "math/halton.h"
 
 PhotonRenderer::PhotonRenderer(RendererSettings* settings,  Scene* scene, SpaceSubdivider* spc) : Renderer(settings,scene,spc) {
 }
@@ -38,6 +39,8 @@ void PhotonRenderer::init() {
     causticsphotonmap->balance();
 
     delete photontracer;
+
+    qmc_sequence = new Halton(2,2);
 }
 
 RGB PhotonRenderer::getPixel(const Vector2& v) {
@@ -179,28 +182,11 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
     }
 
     Vector result = Vector(0.0,0.0,0.0);
-
-    /*
-    NearestPhotons np;
-    np.dist2 = (float*)alloca( sizeof(float)*(renderersettings->final_gather_rays+1) );
-    np.index = (const Photon**)alloca( sizeof(Photon*)*(renderersettings->final_gather_rays+1) );
-    np.pos[0] = point[0];
-    np.pos[1] = point[1];
-    np.pos[2] = point[2];
-    np.max = renderersettings->final_gather_rays;;
-    np.found = 0;
-    np.got_heap = 0;
-    np.dist2[0] = renderersettings->estimate_radius * renderersettings->estimate_radius;
-    photonmap->locate_photons(&np,1);
-    if (np.found < 4) return result;
-*/
-    //Vector reflected = (-1 * ray_dir).reflect(normal);
-    
+    double* rnd;
+    qmc_sequence->reset();
     for (int i = 0; i < renderersettings->final_gather_rays; i++) {
- //   for (int i = 1; i < np.found; i++) {
-	//const Photon* p = np.index[i];
-	//Vector dir = double(-1) * photonmap->photon_dir(p);
-	Vector dir = Math::perturbVector(normal,DEG2RAD(89));
+	rnd = qmc_sequence->getNext();
+	Vector dir = normal.randomHemisphere(rnd[0],rnd[1]);
 
 	Ray ray = Ray(point+0.1*dir,dir,-1);
 	if (space->intersect(ray)) {

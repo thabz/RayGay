@@ -10,6 +10,7 @@ class Intersection;
 class PhotonSettings;
 class GlobalPhotonMap;
 class CausticsMap;
+class QMCSequence;
 
 /**
  * Implementation of Renderer that supply a raytracer using photonmaps.
@@ -27,6 +28,8 @@ class PhotonRenderer : public Renderer {
 	/// The photonmap to use
 	GlobalPhotonMap* globalphotonmap;
 	CausticsMap* causticsphotonmap;
+
+	QMCSequence* qmc_sequence;
 
 	RGB getPixel(const Vector2& v);
 

@@ -76,6 +76,7 @@ public:
     Vector refract(const Vector& normal, double ior) const;
 
     Vector randomHemisphere() const;
+    Vector randomHemisphere(const double rnd1, const double rnd2) const;
 
     static Vector randomUnitVector();
 

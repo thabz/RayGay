@@ -160,11 +160,11 @@ Vector Vector::refract(const Vector& normal, double ior) const {
  * Get a cosine distributed random direction on the hemisphere
  * with this vector as normal.
  */ 
-Vector Vector::randomHemisphere() const {
+Vector Vector::randomHemisphere(const double rnd1, const double rnd2) const {
     Matrix m = Matrix::matrixOrient(*this);
     m = m.inverse();
-    double u = 2*M_PI*RANDOM(0,1);
-    double v = RANDOM(0,1);
+    double u = 2*M_PI*rnd1;
+    double v = rnd2;
     double s = sqrt(v);
     double s1 = sqrt(1.0-v);
     Vector result = Vector(cos(u)*s,sin(u)*s,s1);
@@ -173,3 +173,6 @@ Vector Vector::randomHemisphere() const {
     return result;
 }
 
+Vector Vector::randomHemisphere() const {
+    return randomHemisphere(RANDOM(0,1),RANDOM(0,1));
+}
