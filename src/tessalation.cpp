@@ -23,11 +23,11 @@ void Tessalation::split(const Vector& v1, const Vector& v2, const Vector& v3, un
     if (depth > max_splits) {
 	Mesh::addTriangle(v1,v2,v3);
     } else {
-	Vector c = (v1 + v2 + v3) / 3;
-	c = c - center;
+	Vector c = (v1 + v2 + v3) / double(3);
+	c -= center;
 	c.normalize();
-	c = c * radius;
-	c = c + center;
+	c *= radius;
+	c += center;
 	depth++;
 	split(v1,v2,c,depth);
 	split(v2,v3,c,depth);
