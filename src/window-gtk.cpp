@@ -54,7 +54,7 @@ gboolean keypress_event(GtkWidget* widget, GdkEventKey *event) {
     return TRUE;
 }
 
-PreviewWindow::PreviewWindow(int width, int height, void (*abc)(void)) {
+PreviewWindowGTK::PreviewWindowGTK(int width, int height, void (*abc)(void)) {
     this->width = width;
     this->height = height;
     darea_width = width;
@@ -114,17 +114,17 @@ void* window_thread_do(void* obj) {
     return NULL;
 }
 
-void PreviewWindow::run() {
+void PreviewWindowGTK::run() {
     pthread_create(&window_main_loop, NULL, window_thread_do, window);
 }
 
-void PreviewWindow::stop() {
+void PreviewWindowGTK::stop() {
     if (window_open) {
 	pthread_join(window_main_loop, NULL);
     }
 }
 
-void PreviewWindow::drawBlock(int xb, int yb, int w, int h) {
+void PreviewWindowGTK::drawBlock(int xb, int yb, int w, int h) {
     assert(image != NULL);
     if (window_open) {
 	for(int y = 0; y < h; y++) {
@@ -144,7 +144,7 @@ void PreviewWindow::drawBlock(int xb, int yb, int w, int h) {
     }
 }
 
-void PreviewWindow::setProgress(double progress) {
+void PreviewWindowGTK::setProgress(double progress) {
     if (window_open) {
 	gdk_threads_enter();
 	gtk_progress_bar_set_fraction(progress_bar,progress);

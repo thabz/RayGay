@@ -11,6 +11,7 @@
 #undef MIN
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+#include "window.h"
 
 class PreviewWindowGTK : public PreviewWindow {
 

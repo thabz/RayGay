@@ -48,6 +48,7 @@
 #include "filters/filterstack.h"
 
 #include "window.h"
+#include "window-gtk.h"
 
 using namespace std;
 
