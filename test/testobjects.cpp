@@ -20,20 +20,41 @@
 #include "objects/tetrahedron.h"
 #include "objects/tessalation.h"
 #include "objects/booleanoperand.h"
-#include "space/bsp.h"
+#include "space/kdtree.h"
 #include "paths/linesegment.h"
 #include "paths/circle.h"
 
+bool intersects(Object* o, const Ray& ray) {
+    return o->fastIntersect(ray) > 0;
+}
 bool intersects(Object* o, const Vector& origin, const Vector& dir) {
     Ray ray = Ray(origin,dir,1);
-    return o->intersect(ray);
+    return intersects(o,ray);
+}
+
+Vector iPoint(Object* o, const Ray& ray) {
+    double t = o->fastIntersect(ray);
+    assert(t > 0);
+    return o->fullIntersect(ray,t).getPoint();
 }
 
 Vector iPoint(Object* o, const Vector& origin, const Vector& dir) {
     Ray ray = Ray(origin,dir,1);
-    assert(o->intersect(ray));
-    return o->getLastIntersection()->getPoint();
+    return iPoint(o,ray);
 }
+
+Vector iNormal(Object* o, const Ray& ray) {
+    double t = o->fastIntersect(ray);
+    assert(t > 0);
+    Intersection i = o->fullIntersect(ray,t);
+    return i.getObject()->normal(i);
+}
+
+Vector iNormal(Object* o, const Vector& origin, const Vector& dir) {
+    Ray ray = Ray(origin,dir,1);
+    return iNormal(o,ray);
+}
+
 
 void sphere_test() {
     Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
@@ -49,23 +70,25 @@ void sphere_test() {
     s = Sphere(Vector(0,0,0),60.0,m);
 
     /* Test intersection(ray) */
-    Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-    assert(s.intersect(r));
-    assert(IS_EQUAL(s.getLastIntersection()->getPoint()[2],60.0));
+    //assert(intersects(&s,Vector(0,0,1000),Vector(0,0,-1)));
+    //assert(IS_EQUAL(s.getLastIntersection()->getPoint()[2],60.0));
+    
+    assert(intersects(&s,Vector(0,0,1000),Vector(0,0,-1)));
+    assert(IS_EQUAL(iPoint(&s,Vector(0,0,1000),Vector(0,0,-1))[2],60.0));
 
-    r = Ray(Vector(0,0,0),Vector(0,0,-1),1);
-    assert(s.intersect(r));
-    assert(IS_EQUAL( s.getLastIntersection()->getPoint()[2], -60.0));
+    //r = Ray(Vector(0,0,0),Vector(0,0,-1),1);
+   // assert(s.intersect(r));
+ //   assert(IS_EQUAL( s.getLastIntersection()->getPoint()[2], -60.0));
 
-    r = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
-    assert(s.intersect(r));
-    assert(IS_EQUAL( s.getLastIntersection()->getPoint()[2], -60.0));
+    assert(intersects(&s,Vector(0,0,0),Vector(0,0,-1)));
+    assert(IS_EQUAL(iPoint(&s,Vector(0,0,0),Vector(0,0,-1))[2],-60.0));
 
-    r = Ray(Vector(0,0,-100),Vector(0,0,-1),1);
-    assert(s.intersect(r) == false);
+    assert(intersects(&s,Vector(0,0,-1000),Vector(0,0,1)));
+    assert(IS_EQUAL(iPoint(&s,Vector(0,0,-1000),Vector(0,0,1))[2],-60.0));
 
-    r = Ray(Vector(0,0,-60),Vector(0,0,-1),1);
-    assert(s.intersect(r) == false);
+    assert(intersects(&s,Vector(0,0,-100),Vector(0,0,-1)) == false);
+
+    assert(intersects(&s,Vector(0,0,-60),Vector(0,0,-1)) == false);
 
     /* Test boundingBoundingBox() */
     s = Sphere(Vector(0,0,0),20.0,m);
@@ -77,12 +100,16 @@ void sphere_test() {
     s1->transform(Matrix::matrixTranslate(Vector(0,-100,0)));
     s2->transform(Matrix::matrixTranslate(Vector(0,100,0)));
 
-    r = Ray(Vector(0,-100,-1000),Vector(0,0,1),1);
-    assert(s1->intersect(r));
-    assert(!s2->intersect(r));
-    r = Ray(Vector(0,100,-1000),Vector(0,0,1),1);
-    assert(!s1->intersect(r));
-    assert(s2->intersect(r));
+    //r = Ray(Vector(0,-100,-1000),Vector(0,0,1),1);
+    //assert(s1->intersect(r));
+    //assert(!s2->intersect(r));
+    assert(intersects(s1,Vector(0,-100,-1000),Vector(0,0,1)) == true);
+    assert(intersects(s2,Vector(0,-100,-1000),Vector(0,0,1)) == false);
+    //r = Ray(Vector(0,100,-1000),Vector(0,0,1),1);
+    //assert(!s1->intersect(r));
+    //assert(s2->intersect(r));
+    assert(intersects(s1,Vector(0,100,-1000),Vector(0,0,1)) == false);
+    assert(intersects(s2,Vector(0,100,-1000),Vector(0,0,1)) == true);
 }
 
 void boolean_test() {
@@ -152,18 +179,28 @@ void boolean_test() {
 
     b = new Boolean(s1,Boolean::BOOLEAN_DIFFERENCE,s2,m);
 
+    /*
     Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
     assert(b->intersect(r));
     Intersection* i = b->getLastIntersection();
-
     assert(i->getPoint() == Vector(0,0,20));
     assert(b->normal(*i) == Vector(0,0,1));
+    */
+    
+    assert(intersects(b,Vector(0,0,1000),Vector(0,0,-1)));
+    assert(iPoint(b,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,20));
+    assert(iNormal(b,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
 
+    /*
     r = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
     assert(b->intersect(r));
     i = b->getLastIntersection();
     assert(i->getPoint() == Vector(0,0,-60));
     assert(b->normal(*i) == Vector(0,0,-1));
+    */
+    assert(intersects(b,Vector(0,0,-1000),Vector(0,0,1)));
+    assert(iPoint(b,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-60));
+    assert(iNormal(b,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
 
     // Test a sphere with three other spheres subtracted from its middle,
     // front and back, so that the resulting object is hollow along the z-axis.
@@ -208,13 +245,16 @@ void boolean_test() {
     assert(!b5->inside(Vector(0,0,0)));
     assert(!b5->onEdge(Vector(0,0,0)));
     
-    r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-    assert(s->intersect(r));
-    assert(s3->intersect(r));
-    assert(s4->intersect(r));
-    assert(b4->intersect(r));
+    Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
+    //assert(s3->intersect(r));
+    //assert(s4->intersect(r));
+    //assert(b4->intersect(r));
+    assert(intersects(s,r));
+    assert(intersects(s3,r));
+    assert(intersects(s4,r));
+    assert(intersects(b4,r));
     r = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
-    assert(!b5->intersect(r));
+    assert(! intersects(b5,r));
  /*   i = b5->getLastIntersection();
     cout << i->getPoint() << "  ...." << endl;
     assert(!b5->inside(Vector(0,0,0)));
@@ -227,7 +267,7 @@ void box_test() {
     b->prepare();
     assert(b->getVertices()->size() == 8);
 
-    BSP* bsp = new BSP();
+    KdTree* bsp = new KdTree();
     b->addSelf(bsp);
     bsp->prepare();
     Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
@@ -245,7 +285,7 @@ void box_test() {
     b->prepare();
     assert(b->getVertices()->size() == 8);
 
-    bsp = new BSP();
+    bsp = new KdTree();
     b->addSelf(bsp);
     bsp->prepare();
 
@@ -267,7 +307,7 @@ void box_test() {
     b->transform(Matrix::matrixTranslate(Vector(0,10,0)));
     b->prepare();
     b2->prepare();
-    bsp = new BSP();
+    bsp = new KdTree();
     b->addSelf(bsp);
     b2->addSelf(bsp);
     bsp->prepare();
@@ -335,11 +375,11 @@ void extrusion_test() {
     // Check intersection 
     c = new Extrusion(Vector(0,0,0),Vector(0,0,-10),5.0,3,m);
     c->prepare();
-    BSP bsp = BSP();
-    c->addSelf(&bsp);
-    bsp.prepare();
+    KdTree* bsp = new KdTree();
+    c->addSelf(bsp);
+    bsp->prepare();
     Ray r = Ray(Vector(0.5,0.5,100),Vector(0,0,-1),1);
-    assert(bsp.intersect(r));
+    assert(bsp->intersect(r));
 
     // Check generated mesh 
     c = new Extrusion(Vector(0,0,0),Vector(0,0,-10),2.0,5,m);
@@ -372,17 +412,11 @@ void cylinder_test() {
 
     /* Test intersection() of z-axis aligned cylinder */
     
-    Ray r = Ray(Vector(0,-1000,5),Vector(0,1,0),1);
-    assert(cyl->intersect(r));
-    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[0], 0.0));
-    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[1], -10.0));
-    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[2], 5.0));
+    assert(intersects(cyl,Vector(0,-1000,5),Vector(0,1,0)));
+    assert(iPoint(cyl,Vector(0,-1000,5),Vector(0,1,0)) == Vector(0,-10,5));
 
-    r = Ray(Vector(0,1000,5),Vector(0,-1,0),1);
-    assert(cyl->intersect(r));
-    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[0], 0.0));
-    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[1], 10.0));
-    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[2], 5.0));
+    assert(intersects(cyl,Vector(0,1000,5),Vector(0,-1,0)));
+    assert(iPoint(cyl,Vector(0,1000,5),Vector(0,-1,0)) == Vector(0,10,5));
 
     delete cyl;
 
@@ -416,8 +450,8 @@ void cylinder_test() {
     assert(cyl->onEdge(Vector(10,0,0)));
     assert(cyl->onEdge(Vector(5,10,0)));
     assert(cyl->onEdge(Vector(5,-10,0)));
-    r = Ray(Vector(3,0,1000),Vector(0,0,-1),1);
-    assert(cyl->intersect(r));
+    assert(intersects(cyl,Vector(3,0,1000),Vector(0,0,-1)));
+    delete cyl;
     
     // Test an y-axis aligned cylinder
     cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
@@ -449,7 +483,7 @@ void objectgroup_test() {
     g1->transform(Matrix::matrixTranslate(Vector(0,-100,0)));
     g2->transform(Matrix::matrixTranslate(Vector(0,100,0)));
 
-    BSP* bsp = new BSP();
+    KdTree* bsp = new KdTree();
     g1->addSelf(bsp);
     g2->addSelf(bsp);
     bsp->prepare();
@@ -488,25 +522,28 @@ void torus_test() {
     assert(!t->onEdge(Vector(11,0.1,0)));
 
     // intersect
-    Intersection* i;
-    Ray ray = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-    assert(t->intersect(ray));
-    i = t->getLastIntersection();
-    assert(i->getPoint() == Vector(0,0,11));
-    assert(t->normal(*i) == Vector(0,0,1));
+    Intersection i;
+    //assert(i->getPoint() == Vector(0,0,11));
+    //assert(t->normal(*i) == Vector(0,0,1));
+    assert(intersects(t,Vector(0,0,1000),Vector(0,0,-1)));
+    assert(iPoint(t,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,11));
+    assert(iNormal(t,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
 
-    ray = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
-    assert(t->intersect(ray));
-    i = t->getLastIntersection();
-    assert(i->getPoint() == Vector(0,0,-11));
-    assert(t->normal(*i) == Vector(0,0,-1));
+    Ray ray = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
+    //assert(t->intersect(ray));
+    assert(intersects(t,ray));
+    assert(iPoint(t,ray) == Vector(0,0,-11));
+    assert(iNormal(t,ray) == Vector(0,0,-1));
 
     ray = Ray(Vector(0,1000,0),Vector(0,-1,0),1); // In middle
-    assert(!t->intersect(ray));
+    //assert(!t->intersect(ray));
+    assert(!intersects(t,ray));
     ray = Ray(Vector(0,1000,11.1),Vector(0,-1,0),1); // Close by
-    assert(!t->intersect(ray));
+    assert(!intersects(t,ray));
+    //assert(!t->intersect(ray));
     ray = Ray(Vector(1000,11.1,0),Vector(-1,0,0),1); // Close by
-    assert(!t->intersect(ray));
+    assert(!intersects(t,ray));
+    //assert(!t->intersect(ray));
 }
 
 void transformed_instance_test() {
@@ -515,10 +552,16 @@ void transformed_instance_test() {
     t1->transform(Matrix::matrixTranslate(Vector(100,0,0)));
     TransformedInstance* t2 = new TransformedInstance(s);
     t2->transform(Matrix::matrixTranslate(Vector(-100,0,0)));
-    assert(t1->intersect(Ray(Vector(100,0,1000),Vector(0,0,-1),0)));
-    assert(!t1->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
-    assert(t2->intersect(Ray(Vector(-100,0,1000),Vector(0,0,-1),0)));
-    assert(!t2->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
+    assert(intersects(t1,Vector(100,0,1000),Vector(0,0,-1)));
+    assert(!intersects(t1,Vector(0,0,1000),Vector(0,0,-1)));
+
+    assert(intersects(t2,Vector(-100,0,1000),Vector(0,0,-1)));
+    assert(!intersects(t2,Vector(0,0,1000),Vector(0,0,-1)));
+    
+    //assert(t1->intersect(Ray,0)));
+    //assert(!t1->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
+    //assert(t2->intersect(Ray(Vector(-100,0,1000),Vector(0,0,-1),0)));
+    //assert(!t2->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
 }
 
 int main(int argc, char *argv[]) {
@@ -527,7 +570,6 @@ int main(int argc, char *argv[]) {
     box_test();
     cylinder_test();
     torus_test();
-    test_3ds();
     mesh_test();
     tetrahedron_test();
     tesselation_test();
@@ -535,6 +577,7 @@ int main(int argc, char *argv[]) {
     objectgroup_test();
 
     Mesh::test();
+    test_3ds();
     boolean_test();
     return EXIT_SUCCESS;
 }

@@ -269,7 +269,7 @@ void kdtree_test() {
 int main(int argc, char *argv[]) {
 
     boundingbox_test();
-    bsp_test();
+    //bsp_test();
     kdtree_test();
     BSP::test();
     return EXIT_SUCCESS;
