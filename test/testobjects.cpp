@@ -216,7 +216,7 @@ void tesselation_test() {
     // 12 triangles
     t = new Tessalation(Vector(0,0,0),100,1,mat);
     assert(t->getVertices()->size() == 8);
-    cout << t->getEdges()->size() << endl;
+    //cout << t->getEdges()->size() << endl;
   //  assert(t->getEdges()->size() == 4 * 3);
 
     // 36 triangles
