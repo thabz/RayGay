@@ -21,6 +21,7 @@
 #include "parser/transformationnodes.h"
 #include "parser/materialnodes.h"
 #include "parser/pathnodes.h"
+#include "parser/fileposition.h"
 #include "exception.h"
 
 /**
@@ -31,6 +32,9 @@ class SceneObjectNode : public SyntaxNode {
     public:
 	virtual SceneObject* eval() = 0;
 	virtual ~SceneObjectNode() {}
+    protected:
+	SceneObjectNode() {};
+	SceneObjectNode(FilePosition pos) : SyntaxNode(pos) {};
 };
 
 
@@ -501,14 +505,14 @@ class MeshNode : public SceneObjectNode {
 
 class NamedSceneObjectNode : public SceneObjectNode {
     public:
-	NamedSceneObjectNode(string name) {
+	NamedSceneObjectNode(string name,FilePosition pos) : SceneObjectNode(pos) {
 	    this->name = name;
 	}
 
 	virtual ~NamedSceneObjectNode() {};
 
 	SceneObject* eval() {
-	    return Assignments::getUniqueInstance()->getNamedSceneObject(name)->clone();
+	    return Assignments::getUniqueInstance()->getNamedSceneObject(name,getFilePosition())->clone();
 	}
 
     private:

@@ -23,6 +23,9 @@ class ActionNode : public SyntaxNode {
     public:
 	virtual void eval() = 0;
 	virtual ~ActionNode() {};
+    protected:
+	ActionNode() {};
+	ActionNode(FilePosition pos) : SyntaxNode(pos) {};
 };
 
 class NOPAction	: public ActionNode {
@@ -197,7 +200,7 @@ class AssignSceneObjectNode : public ActionNode {
 
 class FloatOpEqualsNode : public ActionNode {
     public:
-	FloatOpEqualsNode(string name, char op, FloatNode* node) {
+	FloatOpEqualsNode(string name, char op, FloatNode* node, FilePosition pos) : ActionNode(pos) {
 	    this->name = name;
 	    this->op = op;
 	    this->node = node;
@@ -209,7 +212,7 @@ class FloatOpEqualsNode : public ActionNode {
 
 	void eval() {
 	    double val = node->eval();
-	    double result = Assignments::getUniqueInstance()->getNamedFloat(name);
+	    double result = Assignments::getUniqueInstance()->getNamedFloat(name,getFilePosition());
 	    switch(op) {
 		case '+': result += val;
 			  break;

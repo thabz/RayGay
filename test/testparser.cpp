@@ -5,6 +5,7 @@
 
 #include "parser/parserclass.h"
 #include "parser/assignments.h"
+#include "parser/fileposition.h"
 #include <cstdlib>
 #include <cmath>
 #include <cassert>
@@ -12,8 +13,10 @@
 
 using namespace std;
 
-#define lookup_float(s) Assignments::getUniqueInstance()->getNamedFloat(s)
-#define lookup_vector(s) Assignments::getUniqueInstance()->getNamedVector(s)
+FilePosition pos;
+
+#define lookup_float(s) Assignments::getUniqueInstance()->getNamedFloat(s,pos)
+#define lookup_vector(s) Assignments::getUniqueInstance()->getNamedVector(s,pos)
 #define assert_equal(a,b) assert(IS_EQUAL((a),(b)))
 
 void test_float_ops() {

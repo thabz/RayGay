@@ -5,6 +5,7 @@
 #include <cmath>
 #include "parser/assignments.h"
 #include "parser/syntaxnode.h"
+#include "parser/fileposition.h"
 
 /**
  * These are syntax tree nodes whose eval returns floats (...well, doubles really)
@@ -15,6 +16,9 @@ class FloatNode : public ValueNode {
     public:
 	virtual double eval() = 0;
 	ValueNode::ValueType getType() { return ValueNode::FLOAT; };
+    protected:
+	FloatNode() {};
+	FloatNode(FilePosition pos) : ValueNode(pos) {};
 };
 
 class FloatConstNode : public FloatNode {
@@ -169,7 +173,7 @@ class FloatRandomNode : public FloatNode {
  */
 class ModifyNamedFloatNode : public FloatNode {
     public:
-	ModifyNamedFloatNode(string name, char op, bool before) {
+	ModifyNamedFloatNode(string name, char op, bool before,FilePosition pos) : FloatNode(pos) {
 	    this->name = name;
 	    this->op = op;
 	    this->before = before;
@@ -178,7 +182,7 @@ class ModifyNamedFloatNode : public FloatNode {
 	virtual ~ModifyNamedFloatNode() {};
 
 	double eval() {
-	    double cur = Assignments::getUniqueInstance()->getNamedFloat(name);
+	    double cur = Assignments::getUniqueInstance()->getNamedFloat(name,getFilePosition());
 	    double result = 0;
 	    if (before) {
 		result = cur;
@@ -203,7 +207,7 @@ class ModifyNamedFloatNode : public FloatNode {
 
 class NamedFloatNode : public FloatNode {
     public:
-	NamedFloatNode(string name) {
+	NamedFloatNode(string name, FilePosition pos) : FloatNode(pos) {
 	    this->name = name;
 	}
 
@@ -211,7 +215,7 @@ class NamedFloatNode : public FloatNode {
 
 	double eval() {
 	    // TODO: Runtime error stuff if variable not defined
-	    return Assignments::getUniqueInstance()->getNamedFloat(name);
+	    return Assignments::getUniqueInstance()->getNamedFloat(name,getFilePosition());
 	}
 	
     private:

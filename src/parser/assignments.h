@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include "math/vector.h"
+#include "fileposition.h"
 
 class Path;
 class SceneObject;
@@ -18,22 +19,22 @@ class Assignments {
     public:
 	static Assignments* Assignments::getUniqueInstance();
 	
-	Path* getNamedPath(string name);
+	Path* getNamedPath(string name, FilePosition pos);
 	void setNamedPath(string name, Path* path_node);
 
-	double getNamedFloat(string name);
+	double getNamedFloat(string name, FilePosition pos);
 	void setNamedFloat(string name, double val);
 
-	Vector getNamedVector(string name);
+	Vector getNamedVector(string name, FilePosition pos);
 	void setNamedVector(string name, Vector val);
 	
-	Material* getNamedMaterial(string name);
+	Material* getNamedMaterial(string name, FilePosition pos);
 	void setNamedMaterial(string name, Material* material);
 
-	SceneObject* getNamedSceneObject(string name);
+	SceneObject* getNamedSceneObject(string name, FilePosition pos);
 	void setNamedSceneObject(string name, SceneObject* obj_node);
 
-	Function* getNamedFunction(string name);
+	Function* getNamedFunction(string name, FilePosition pos);
 	void setNamedFunction(string name, Function* function);
 
     private:

@@ -189,14 +189,14 @@ class VectorMinusNode : public VectorNode {
 
 class NamedVectorNode : public VectorNode {
     public:
-	NamedVectorNode(string name) {
+	NamedVectorNode(string name, FilePosition pos) : VectorNode(pos) {
 	    this->name = name;
 	}
 
 	virtual ~NamedVectorNode() {};
 
 	Vector eval() {
-	    return Assignments::getUniqueInstance()->getNamedVector(name);
+	    return Assignments::getUniqueInstance()->getNamedVector(name,getFilePosition());
 	}
 	
     private:

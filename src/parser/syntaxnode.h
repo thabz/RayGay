@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "parser/fileposition.h"
+#include "parser/runtimeexception.h"
 
 using namespace std;
 
@@ -22,11 +23,10 @@ class SyntaxNode {
 
     protected:
 	void runtime_error(string problem) {
-	    cout << fileposition.getFilename() << ":"
-		 << fileposition.getLineNum() << ":"
-		 << " runtime error: " << problem << endl;
-	    exit(1);
+	    throw RuntimeException(problem,fileposition);
 	}
+
+	FilePosition getFilePosition() { return fileposition; }
 
     private:
 	FilePosition fileposition;

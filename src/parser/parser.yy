@@ -43,6 +43,7 @@
 #include "parser/cameranode.h"    
 #include "parser/boolnodes.h"    
 #include "parser/function.h"    
+#include "parser/runtimeexception.h"    
 
 #include "camera.h"    
 #include "exception.h"    
@@ -55,6 +56,7 @@ using namespace std;
 
 void yyerror(string s);
 void yywarning(string s);
+FilePosition curPos();
 extern int yylex(void);
 extern vector<FilePosition> fileposition_stack;
 
@@ -274,7 +276,7 @@ FuncDecl	: tFUNCTION tSTRING '(' FuncArgsDecls ')'
 
 FuncCall	: tVARNAME '(' FuncCallArgs ')'
                 {
-		    Function* f = Assignments::getUniqueInstance()->getNamedFunction(*$1);
+		    Function* f = Assignments::getUniqueInstance()->getNamedFunction(*$1,curPos());
 		    if (f == NULL) {
 			yyerror("Function '"+(*$1)+"' not declared.");
 		    }
@@ -363,22 +365,22 @@ Assignment	: tVARNAME tEQUAL PathDef
 
 OpAssignment	: tVARNAME tPLUSEQUAL Expr
                 {
-		    $$ = new FloatOpEqualsNode(*$1,'+',$3);
+		    $$ = new FloatOpEqualsNode(*$1,'+',$3,curPos());
 		    delete $1;
 		}
                 | tVARNAME tMINUSEQUAL Expr
                 {
-		    $$ = new FloatOpEqualsNode(*$1,'-',$3);
+		    $$ = new FloatOpEqualsNode(*$1,'-',$3,curPos());
 		    delete $1;
 		}
                 | tVARNAME tMULTEQUAL Expr
                 {
-		    $$ = new FloatOpEqualsNode(*$1,'*',$3);
+		    $$ = new FloatOpEqualsNode(*$1,'*',$3,curPos());
 		    delete $1;
 		}
                 | tVARNAME tDIVEQUAL Expr
                 {
-		    $$ = new FloatOpEqualsNode(*$1,'/',$3);
+		    $$ = new FloatOpEqualsNode(*$1,'/',$3,curPos());
 		    delete $1;
 		}
                 ;
@@ -519,7 +521,7 @@ Material 	: NamedMaterial
 
 NamedMaterial   : tVARNAME
                 {
-		    $$ = new NamedMaterialNode(*$1,fileposition_stack.front());
+		    $$ = new NamedMaterialNode(*$1,curPos());
 		    delete $1;
 		}
                 ;
@@ -630,7 +632,7 @@ Object		: SolidObject
 
 NamedObject	: tOBJECT tVARNAME
                 {
-		    $$ = new NamedSceneObjectNode(*$2);
+		    $$ = new NamedSceneObjectNode(*$2,curPos());
 		    delete $2;
 		}
                 ;
@@ -840,7 +842,7 @@ Path		: NamedPath
 
 NamedPath	: tVARNAME
                 {
-		    $$ = new NamedPathNode(*$1);   
+		    $$ = new NamedPathNode(*$1,curPos());   
 		    delete $1;
 		}
                 ;
@@ -912,7 +914,7 @@ Vector		: '<' Expr ',' Expr ',' Expr '>'
 		}
                 | tNORMALIZE '(' Vector ')'
 		{
-		    $$ = new VectorNormalizeNode($3,fileposition_stack.front());
+		    $$ = new VectorNormalizeNode($3,curPos());
 		}
                 | Vector '*' Expr
 		{
@@ -932,7 +934,7 @@ Vector		: '<' Expr ',' Expr ',' Expr '>'
 		}
                 | tVECTORVARNAME 
 		{
-		    $$ = new NamedVectorNode(*$1);
+		    $$ = new NamedVectorNode(*$1,curPos());
 		    delete $1;
 		}
                 ;
@@ -984,7 +986,7 @@ Expr		: tFLOAT
                 }
                 | tVARNAME
                 {
-		    $$ = new NamedFloatNode(*$1);
+		    $$ = new NamedFloatNode(*$1,curPos());
 		    delete $1;
                 }
 		| '(' Expr ')' 
@@ -1027,22 +1029,22 @@ ModStmt		: ExprMod
 
 ExprMod		: tVARNAME tPLUSPLUS
                 {
-		    $$ = new ModifyNamedFloatNode(*$1,'+',false);
+		    $$ = new ModifyNamedFloatNode(*$1,'+',false,curPos());
 		    delete $1;
 		}
                 | tVARNAME tMINUSMINUS
                 {
-		    $$ = new ModifyNamedFloatNode(*$1,'-',false);
+		    $$ = new ModifyNamedFloatNode(*$1,'-',false,curPos());
 		    delete $1;
 		}
                 | tPLUSPLUS tVARNAME
                 {
-		    $$ = new ModifyNamedFloatNode(*$2,'+',true);
+		    $$ = new ModifyNamedFloatNode(*$2,'+',true,curPos());
 		    delete $2;
 		}
                 | tMINUSMINUS tVARNAME
                 {
-		    $$ = new ModifyNamedFloatNode(*$2,'-',true);
+		    $$ = new ModifyNamedFloatNode(*$2,'-',true,curPos());
 		    delete $2;
 		}
   		;
@@ -1139,14 +1141,14 @@ Bool		: Expr '<' Expr
     /* Additional C code */
 
 void yyerror(string s) {
-    FilePosition f = fileposition_stack.front();
+    FilePosition f = curPos();
     cout << f.getFilename() << ":" << f.getLineNum() << ":"
 	 << " error: " << s << endl;
     exit(1);
 }
 
 void yywarning(string s) {
-    FilePosition f = fileposition_stack.front();
+    FilePosition f = curPos();
     cout << f.getFilename() << ":" << f.getLineNum() << ":"
 	 << " warning: " << s << endl;
 }
@@ -1180,7 +1182,14 @@ void init_parser(string scenefile) {
 }
 
 void run_interpreter() {
-    top_actions->eval();
+    try {
+	top_actions->eval();
+    } catch (RuntimeException e) {
+	FilePosition f = e.getFilePosition();
+	cout << f.getFilename() << ":" << f.getLineNum() << ":"
+	    << " runtime error: " << e.getMessage() << endl;
+	exit(1);
+    }
     // Insert objects in object collector into scene
     Scene* scene = Environment::getUniqueInstance()->getScene();
     ObjectCollector* oc = Environment::getUniqueInstance()->getObjectCollector();
@@ -1188,6 +1197,10 @@ void run_interpreter() {
     for(unsigned int i = 0; i < list.size(); i++) {
 	scene->addObject(list[i]);
     }
+}
+
+FilePosition curPos() {
+    return fileposition_stack.front();
 }
 
 void delete_interpreter() {

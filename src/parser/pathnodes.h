@@ -5,6 +5,7 @@
 #include "parser/floatnodes.h"
 #include "parser/syntaxnode.h"
 #include "parser/assignments.h"
+#include "parser/fileposition.h"
 #include "paths/path.h"
 #include "paths/circle.h"
 #include "paths/spiral.h"
@@ -19,6 +20,10 @@ class PathNode : public SyntaxNode {
     public:
 	virtual Path* eval() = 0;
 	virtual ~PathNode() {};
+	
+    protected:
+	PathNode() {};
+	PathNode(FilePosition pos) : SyntaxNode(pos) {};
 };
 
 class CircleNode : public PathNode {
@@ -104,14 +109,14 @@ class SpiralNode : public PathNode {
 
 class NamedPathNode : public PathNode {
     public:
-	NamedPathNode(string name) {
+	NamedPathNode(string name, FilePosition pos) : PathNode(pos) {
 	    this->name = name;
 	}
 
 	virtual ~NamedPathNode() { }
 
 	Path* eval() {
-	    return Assignments::getUniqueInstance()->getNamedPath(name);
+	    return Assignments::getUniqueInstance()->getNamedPath(name,getFilePosition());
 	}
 	
     private:
