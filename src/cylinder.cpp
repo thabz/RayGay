@@ -40,6 +40,46 @@ Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, int se
     delete [] ep;
 }
 
+Cylinder::Cylinder(const Path& path, double radius, int segments, int pieces, Material m) : Mesh(Mesh::MESH_FLAT,m) {
+    assert(pieces > 2);
+
+    Vector* bp = new Vector[segments];  // Points on begin circle
+    Vector* cp = new Vector[segments];  // Points on current circle
+    Vector* pp = new Vector[segments];  // Points on previous circle
+
+    for (int p = 0; p < pieces; p++) {
+	double t = double(p) / double(pieces);
+	Vector c = path.getPoint(t);
+	Vector n = path.getTangent(t);
+	Circle circle = Circle(c,radius,n);
+	if (p == 0) {
+	    circle.getPoints(segments,bp);
+	    circle.getPoints(segments,pp);
+	} else {
+	    circle.getPoints(segments,cp);
+	    for(int i = 0; i < segments - 1; i++) {
+		int j = i + 1;
+		addTriangle(pp[j],cp[j],cp[i]);
+		addTriangle(pp[i],pp[j],cp[i]);
+	    }
+	    circle.getPoints(segments,pp);
+	}
+    }
+    if (path.isClosed()) {
+	for(int i = 0; i < segments - 1; i++) {
+	    int j = i + 1;
+	    addTriangle(pp[j],bp[j],bp[i]);
+	    addTriangle(pp[i],pp[j],bp[i]);
+	}
+    } else {
+	// TODO: Add begin (bp) and end (pp) discs
+
+    }
+    delete [] cp;
+    delete [] pp;
+    delete [] bp;
+}
+
 Cylinder::~Cylinder() {
 }
 
