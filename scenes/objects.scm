@@ -52,6 +52,7 @@
 	  ;	      (list w w radius) material)
 	  )))
 
+;;; TODO: Utilize make-solid-wireframe below
 (define (make-rounded-box lowercorner uppercorner radius material)
   (let* (
 	 (xo+ (list-ref uppercorner 0))
@@ -123,9 +124,9 @@
  (if (null? l) 
   0 (+ (car l) (sum (cdr l))))
 
-(define (.x l) (car l))
-(define (.y l) (list-ref l 1))  
-(define (.z l) (list-ref l 2))
+(define (.x vec) (car vec))
+(define (.y vec) (list-ref vec 1))  
+(define (.z vec) (list-ref vec 2))
 
 ;; Normalize a vector
 (define (normalize v)
@@ -134,3 +135,26 @@
   l ;; Throw error
   (map / v (list l l l)))))
 
+(define (eqfloat? a b)
+ (< (abs (- a b)) 0.0000001))
+
+(define (eqvec? vec1 vec2)
+ (and 
+  (eqfloat? (.x vec1) (.x vec2))
+  (eqfloat? (.y vec1) (.y vec2))
+  (eqfloat? (.z vec1) (.z vec2))))
+
+;; Comparator used for vecsort below    
+(define (lessvec? vec1 vec2)
+  (if 
+    (eqfloat? (.x vec1) (.x vec2))
+    (if 
+      (eqfloat? (.y vec1) (.y vec2))
+      (< (.z vec1) (.z vec2))
+      (< (.y vec1) (.y vec2)))
+    (< (.x vec1) (.x vec2))))
+
+;; Sort a list of vecs, ie (vecsort '((1 2 3) (1 2 4) (1 3 0)))
+(define (vecsort veclist)
+ (sort-list veclist lessvec?))
+ 
