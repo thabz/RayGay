@@ -591,6 +591,11 @@ Rotate		: tROTATE '{' Vector Expr '}'
 		    Matrix m = Matrix::matrixRotate(*$3,$4);
 		    $$ = new Matrix(m);
 		}
+                | tROTATE Vector Expr
+                {
+		    Matrix m = Matrix::matrixRotate(*$2,$3);
+		    $$ = new Matrix(m);
+		}
                 ;
 
 Translate	: tTRANSLATE '{' Vector '}'
