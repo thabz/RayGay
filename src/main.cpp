@@ -63,27 +63,22 @@ void testScene4() {
     Sphere s4 = Sphere(Vector(-200,50,-200),130.0,MATERIAL_CHROME);
     Sphere s5 = Sphere(Vector(0,150,0),130.0,MATERIAL_CHROME);
     //Cylinder c1 = Cylinder(Vector(0,0,0),Vector(0,200,0),130,10,MATERIAL_SHINY_RED);
- /*   scene.addObject(&s1);
+    /*
+    scene.addObject(&s1);
     scene.addObject(&s2);
     scene.addObject(&s3);
     scene.addObject(&s4);
     scene.addObject(&s5);
-    scene.addObject(&c1);*/
+    */
+  //  scene.addObject(&c1);
 
-    for(int x = -10; x <= 10; x += 5) {
-       for(int y = -10; y <= 10; y += 5) {
-           for(int z = -10; z <= 10; z += 5) {
-	      //Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,MATERIAL_CHROME);
-	//      scene.addObject(sx);
-	   }
- 	}
-    }
-
+    scene.setEnvironmentMap("monp.tga");
+    
     Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
     Spiral spiral = Spiral(&circle1,100,10);
     Spiral spiral2 = Spiral(&spiral,30,100,0.5);
 
-    Cylinder* torus = new Cylinder(circle1,100,50,30,MATERIAL_SHINY_BLUE);
+    Cylinder* torus = new Cylinder(circle1,100,50,30,MATERIAL_CHROME);
     scene.addObject(torus);
 
     Tessalation tet = Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
@@ -120,7 +115,7 @@ void testScene4() {
     scene.addLight(&light3);
     
     Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); /* Floor */
-    scene.addObject(&b);
+    //scene.addObject(&b);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
