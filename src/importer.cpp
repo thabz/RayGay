@@ -15,6 +15,7 @@
 #include "objects/sor.h"
 #include "objects/necklace.h"
 #include "objects/cylinder.h"
+#include "objects/bound.h"
 #include "objects/extrusion.h"
 #include "objects/heightfield.h"
 #include "objects/sphere.h"
@@ -274,6 +275,15 @@ void Importer::parse(const string& filename) {
 		exit(EXIT_FAILURE);
 	    }
 	    cur_object = new TransformedInstance(obj);
+	} else if (command == "bound") {
+	    object_name = readString(stream);
+	    SceneObject* sobj = getNamedObject(object_name);
+	    ObjectGroup* obj = dynamic_cast<ObjectGroup*>(sobj);
+	    if (obj == NULL) {
+		cout << "Error creating Bound: " << object_name << " is not an ObjectGroup." << endl;
+		exit(EXIT_FAILURE);
+	    }
+	    cur_object = new Bound(obj);
 	} else if (command == "circle") {
 	    stream >> str1;
 	    Vector center = readVector(stream);

@@ -30,6 +30,8 @@ class KdTree : public SpaceSubdivider {
 	void addObject(Object* obj); ///< Place a object in the kd-tree 
 	void prepare();
 
+	BoundingBox boundingBox() const { return world_bbox; };
+
     private:
 	class KdNode {
 	    public:

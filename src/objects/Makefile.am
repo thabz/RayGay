@@ -8,6 +8,7 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 		       blob.cpp		\
 		       boolean.cpp 	\
 		       booleanoperand.cpp 	\
+		       bound.cpp	\
 		       box.cpp		\
 		       cylinder.cpp	\
 		       extrusion.cpp	\
@@ -32,6 +33,7 @@ EXTRA_DIST = 3ds.h 		\
 	     blob.h		\
     	     boolean.h 		\
              booleanoperand.h	\
+	     bound.h		\
 	     box.h		\
 	     cylinder.h		\
 	     extrusion.h	\
