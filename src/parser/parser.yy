@@ -120,6 +120,7 @@ ActionListNode* top_actions;
 %token tPOSITION tLOOKAT tUP
 %token tPRINT
 %token tRADIUS
+%token tRANDOM
 %token tRENDERER tRAYTRACER tPHOTONRENDERER
 %token tROTATE tTRANSLATE
 %token tREPEAT
@@ -143,7 +144,7 @@ ActionListNode* top_actions;
 %type <rgba> RGBA
 %type <texture> Texture
 %type <vector> Vector 
-%type <expr> Expr 
+%type <expr> Expr Random
 %type <it> InterpolationType 
 %type <matrix> Rotate Translate Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
@@ -784,7 +785,20 @@ Expr		: tSIN '(' Expr ')'
                 {
 		    $$ = new FloatConstNode(M_PI);
 		}
+                | Random
                 ;
+
+Random		: tRANDOM '(' Expr ')'
+                {
+		    $$ = new FloatRandomNode(new FloatConstNode(0),$3);
+		}
+                | tRANDOM '(' Expr ',' Expr ')'
+                {
+		    $$ = new FloatRandomNode($3,$5);
+		}
+		;
+
+		
 
 %%
 

@@ -110,6 +110,22 @@ class FloatAbsNode : public FloatNode {
 	FloatNode* node;
 };
 
+class FloatRandomNode : public FloatNode {
+    public:
+	FloatRandomNode(FloatNode* from, FloatNode* to) {
+	    this->from = from;
+	    this->to = to;
+	}
+
+	double eval() {
+	    return RANDOM(from->eval(),to->eval());
+	}
+	
+    private:
+        FloatNode* from;
+        FloatNode* to;
+};
+
 class NamedFloatNode : public FloatNode {
     public:
 	NamedFloatNode(string name) {

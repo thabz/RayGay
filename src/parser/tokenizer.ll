@@ -96,6 +96,7 @@ raytracer	return tRAYTRACER;
 renderer	return tRENDERER;
 repeat		return tREPEAT;
 rotate		return tROTATE;
+random		return tRANDOM;
 sin		return tSIN;
 sky		return tSKY;
 solidbox	return tSOLIDBOX;
