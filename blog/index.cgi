@@ -57,9 +57,9 @@ body {
 
 td.dateheader {
     font-family: Arial, Helvetica;
-    border-bottom: 1px dotted #999999; 
+    border-bottom: 1px dashed #999999; 
     background-color: #f8f8f8;
-    border-top: 1px dotted #999999;
+    border-top: 1px dashed #999999;
     font-weight: bold;
     color: #808080;
     text-align: right;
