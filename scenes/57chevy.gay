@@ -1,14 +1,6 @@
 
 renderer raytracer
 
-/* Front */
-camera { position <1000,1000,2000>
-         up <0,1,0> 
-         lookat <0,100,0> 
-	 fov 45
-	 aa 0
-}
-
 /* Passenger side */
 camera { position <-2000,1000,500>
          up <0,1,0> 
@@ -25,11 +17,19 @@ camera { position <0,2000,0>
 	 aa 0
 }
 
+/* Front */
+camera { position <1000,700,2000>
+         up <0,1,0> 
+         lookat <0,100,0> 
+	 fov 45
+	 aa 4
+}
 
-image { width 640 aspect 4 3 }
 
- background <0.1,0.1,0.3,1.0> 
-/* background texture { "probes/stpeters_probe.hdr" 1.0 1.0 bilinear} */
+image { width 1024 aspect 4 3 }
+
+/* background <0.1,0.1,0.3,1.0> */
+ background texture { "probes/TG_Probe01.hdr" 1.0 1.0 bilinear} 
 
 light { point <100,1300,1300> power <1,1,1> } 
 
@@ -56,6 +56,13 @@ $black = material {
     ks 0.0
 }
 
+$black_shiny = material {
+    diffuse <0.0,0.0,0.0>
+    kd 0.5
+    specular <1.0,1.0,1.0>
+    ks 0.5
+}
+
 $grey85 = material {
     diffuse <0.85,0.85,0.85>
     kd 1.0
@@ -72,9 +79,9 @@ $leather = material {
 
 $red_laquer = material {
     diffuse <0.6,0.2,0.2>
-    kd 0.7
+    kd 0.5
     specular <1.0,1.0,1.0>
-    ks 0.3
+    ks 0.5
     specpow 15
 }
 
@@ -92,7 +99,7 @@ $glass = material {
 	specular <1,1,1>
 	ks 0.3
 	specpow 30
-	eta 1.33
+	eta 1.10
 	kt 0.7
 }
 
@@ -9851,7 +9858,7 @@ mesh {
 
 /* hlight */
 mesh {
-   $glass
+   $black_shiny
    vertices {
       <-2.729949, -6.805604, -0.002191>
       <-2.635788, -6.847389, -0.041836>
@@ -12338,7 +12345,7 @@ mesh {
 
 /* rlight */
 mesh {
-   $glass
+   $black_shiny
    vertices {
       <-2.840635, 8.941601, -1.056968>
       <-2.797338, 8.941601, -1.073912>
@@ -12431,7 +12438,7 @@ mesh {
 
 /* wlight */
 mesh {
-   $glass
+   $black_shiny
    vertices {
       <-2.483034, 9.270059, -1.389757>
       <-2.547268, 9.270059, -1.437610>
@@ -18018,7 +18025,7 @@ mesh {
 
 /* alight */
 mesh {
-   $glass
+   $black_shiny
    vertices {
       <-1.645681, -6.934822, -1.110614>
       <-1.634633, -6.934822, -1.097154>
@@ -48228,4 +48235,4 @@ mesh {
    }
 }
 
-} scale <100,100,100> rotate <1,0,0> 90 rotate <0,1,0> -45 translate <0,300,0> 
+} scale <100,100,100> rotate <1,0,0> 90 rotate <0,1,0> -45 translate <0,265,0> 
