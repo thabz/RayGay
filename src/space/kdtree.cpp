@@ -12,6 +12,9 @@
 
 #undef VERBOSE 
 
+#define KD_TREE_MAX 3
+#define KD_TREE_MAX_DEPTH 100
+
 KdTree::KdTree() {
     added_objects = new vector<Object*>;
     prepared = false;
@@ -156,6 +159,8 @@ void KdTree::prepare(int curNode_idx,int depth) {
     }
     
     curNode->bobjects.clear();
+    splitResult.right_bobjects.clear();
+    splitResult.left_bobjects.clear();
 
     // Recurse into child nodes
     prepare(left_idx,depth+1);
