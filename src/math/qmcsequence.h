@@ -1,4 +1,6 @@
 
+#ifndef MATH_QMC_SEQUENCE
+#define MATH_QMC_SEQUENCE
 
 /**
  * Quasi-Monte-Carlo sequence
@@ -21,3 +23,5 @@ class QMCSequence {
 	 */
 	virtual double* getNext() = 0;
 };
+
+#endif

@@ -1,4 +1,7 @@
 
+#ifndef MATH_HALTON_H
+#define MATH_HALTON_H
+
 #include "math/qmcsequence.h"
 
 /**
@@ -20,3 +23,5 @@ class Halton : public QMCSequence {
 	double* values;
 	int dim;
 };
+
+#endif
