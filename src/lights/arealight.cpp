@@ -65,22 +65,51 @@ void Arealight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo
 
     if (info->cos > 0.0) {
 	int count = 0;
-	for(int i = 0; i < num; i++) {
-	    direction_to_light = getPosition(i) - inter.getPoint();
-	    double dist_to_light = direction_to_light.length();
-	    if (IS_ZERO(dist_to_light)) {
-		continue;
-	    }
-	    direction_to_light *= 1.0/dist_to_light;
 
-	    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
-
-	    bool occluded = shadowcaches[i].occluded(ray_to_light,dist_to_light,depth,space);
-
-	    if (!occluded) {
+	/*
+        // First feelers
+	int tested = 0;
+	int count_true = 0;
+	int count_false = 0;
+	for(int i = 0; i < num; i += 2) {
+	    bool occluded = probeSublight(i,inter,space,depth);
+	    tested++;
+	    if (occluded) {
+		count_true++;
+	    } else {
+		count_false++;
 		count++;
 	    }
 	}
-	info->intensity = double(count) / num;
+	if (count_false == tested) {
+	    info->intensity = 1.0;
+	} else if (count_true == tested) {
+	    info->intensity = 0.0;
+	} else {
+	*/
+	    for(int i = 0; i < num; i++) {
+		if (i % 2 != 0) {
+		    bool occluded = probeSublight(i,inter,space,depth);
+		    if (!occluded) {
+			count++;
+		    }
+		}
+	    }
+	    info->intensity = double(count) / num;
+	//}
     }
+}
+
+bool Arealight::probeSublight(int i, const Intersection& inter, KdTree* space, unsigned int depth) const {
+    Vector direction_to_light = getPosition(i) - inter.getPoint();
+    double dist_to_light = direction_to_light.length();
+    if (IS_ZERO(dist_to_light)) {
+	return false;
+    }
+    direction_to_light *= 1.0/dist_to_light;
+
+    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
+
+    bool occluded = shadowcaches[i].occluded(ray_to_light,dist_to_light,depth,space);
+    return occluded;
 }

@@ -24,7 +24,9 @@ class Arealight : public Lightsource {
 	std::vector<double> ts;
 	double jitter;
 	int num;
+
 	Vector getPosition(int i) const;
+	bool probeSublight(int i, const Intersection& inter, KdTree* space, unsigned int depth) const;
 };
 
 #endif
