@@ -2,7 +2,7 @@
 TODO:
    
 + Get a Meshs triangles into hierarchy as separate nodes.
-* Refactor Material to provide hookups for procedural textures
++ Refactor Material to provide hookups for procedural textures
 * More accurate Triangle-BoundingBox intersection code
 * Hierarchy will never exit when more than 8 objects intersect a the same point.
 * Implement onEdge() and inside() for Mesh class.
@@ -24,15 +24,16 @@ TODO:
 + Support for u,v coordinates in meshes
 + Distributed reflections aka gloss.
 * Mathematical cone
-* Heightmap objects
++ Heightmap objects
 + Correct handling of camera placement, direction and field of view.
 * Adaptive arealights
 * Adaptive gloss
 + Mathematical torus.
 * Fix the numerical error in the final gather near wall edges
   See http://www.asimov.de/Studienarbeit/tracer.html
-
-
+* Displacement mapping
+  See Peter Shirleys "Direct Ray Tracing of Displacement Mapped Triangles"
+  http://www.cs.utah.edu/~shirley/papers/
 * Scaling of all objects: See http://www.cl.cam.ac.uk/Teaching/2000/AGraphHCI/SMEG/node2.html#SECTION00024000000000000000
 
 
