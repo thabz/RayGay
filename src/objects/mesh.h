@@ -136,9 +136,7 @@ const Vector& Mesh::cornerAt(uint tri_idx, unsigned int i) const {
 
 inline
 void Mesh::cornerAt(uint tri_idx, unsigned int i, double dest[3]) const {
-    dest[0] = corners[faces[3 * tri_idx + i]][0];
-    dest[1] = corners[faces[3 * tri_idx + i]][1];
-    dest[2] = corners[faces[3 * tri_idx + i]][2];
+    corners[faces[3 * tri_idx + i]].toArray(dest);
 }
 
 #endif
