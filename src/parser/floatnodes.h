@@ -43,7 +43,7 @@ class FloatMinusNode : public FloatNode {
 	    this->left = left;
 	    this->right = right;
 	}
-	double eval() { return left->eval() + right->eval(); };
+	double eval() { return left->eval() - right->eval(); };
     private:
 	FloatNode* left;
 	FloatNode* right;
