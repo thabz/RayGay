@@ -225,11 +225,20 @@ void bernstein_polynomial_test() {
     assert(IS_EQUAL(Math::bernsteinPolynomial(3,3,0),0));
 }
 
+void clamp_test() {
+    assert(Math::clamp(0.5) == 0.5);
+    assert(Math::clamp(0.0) == 0.0);
+    assert(Math::clamp(1.0) == 1.0);
+    assert(Math::clamp(-0.5) == 0.0);
+    assert(Math::clamp(1.5) == 1.0);
+}
+
 int main(int argc, char *argv[]) {
     vector_test();
     vector2_test();
     matrix_test();
     binomial_test();
     bernstein_polynomial_test();
+    clamp_test();
     return EXIT_SUCCESS;
 }
