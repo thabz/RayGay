@@ -24,7 +24,7 @@ SceneObject* SuperEllipsoid::clone() const {
 
 BoundingBox SuperEllipsoid::_boundingBoundingBox() const {
     BoundingBox bbox = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
-    bbox.growPercentage(1.0);
+    bbox.growPercentage(0.01);
     return bbox;
 }
 
