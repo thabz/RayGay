@@ -3,6 +3,7 @@
 #define MATH_POLYNOMIAL_H
 
 #include "types.h"
+#include "math/constants.h"
 
 /**
  * A polynomial in one variable.
@@ -26,6 +27,9 @@ class Polynomial {
 
 	/// Derivative
 	Polynomial derivative() const;
+
+	/// Comparator
+	bool operator==(const Polynomial& p) const;
 
     private:
 	uint num;

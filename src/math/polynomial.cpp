@@ -71,3 +71,12 @@ Polynomial Polynomial::derivative() const {
     return Polynomial(c,num-1);
 }
 
+bool Polynomial::operator==(const Polynomial& p) const {
+    if (p.num != num) return false;
+    for(uint i = 0; i < num; i++) {
+	if (!IS_EQUAL(coefficients[i],p.coefficients[i]))
+	    return false;
+    }
+    return true;
+}
+

@@ -11,6 +11,7 @@
 #include "math/matrix.h"
 #include "math/functions.h"
 #include "math/rootfinder.h"
+#include "math/polynomial.h"
 #include "testing.h"
 
 using namespace std;
@@ -361,7 +362,7 @@ bool check_roots(double A, double B, double C, double D, double* roots, int num)
 	double val = r*r*r*r + A*r*r*r + B*r*r + C*r + D;
 	if (!IS_ZERO(val)) {
 	    cout << "Problem: f(" << r << ") = " << val << " != 0." << endl;
-	    if (fabs(val) > 0.001)
+	//    if (fabs(val) > 0.001)
 	    return false;
 	}
     }
@@ -633,6 +634,24 @@ class brents_method : public Test  {
 	}
 };
 
+class polynomials : public Test  {
+    public:
+	void run() {
+	    // Derivation
+	    assertTrue(Polynomial(7,3,4,5).derivative() == Polynomial(21,6,4));
+	    assertTrue(Polynomial(3,4,5).derivative() == Polynomial(6,4));
+	    assertTrue(Polynomial(1,2).derivative() == Polynomial(1));
+	    assertFalse(Polynomial(1,2).derivative() == Polynomial(5));
+
+	    // Evaluation
+	    assertTrue(IS_EQUAL(Polynomial(1,2).eval(1.0),3.0));
+	    assertTrue(IS_EQUAL(Polynomial(2,1).eval(1.0),3.0));
+	    assertTrue(IS_EQUAL(Polynomial(2,1).eval(2.0),5.0));
+	    assertTrue(IS_EQUAL(Polynomial(1,2,1).eval(1.0),4.0));
+	    assertTrue(IS_EQUAL(Polynomial(1,2,1).eval(2.0),9.0));
+	}
+};
+
 int main(int argc, char *argv[]) {
 
     TestSuite suite;
@@ -649,6 +668,7 @@ int main(int argc, char *argv[]) {
     suite.add("Perturb vector",new perturb_vector_test());
     suite.add("Solve quartic",new solve_quartic_test());
     suite.add("Brent's method",new brents_method());
+    suite.add("Polynomials",new polynomials());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {
