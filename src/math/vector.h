@@ -72,6 +72,8 @@ public:
     // Convert from polar to rectangular coordinates
     Vector toRectangular() const;
 
+    static Vector randomUnitVector();
+
 protected:
     double _vector[3]; ///< The x,y,z components of the vector
 };

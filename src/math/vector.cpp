@@ -110,5 +110,25 @@ Vector operator*(const double x, const Vector &v) {
     return v*x;
 }
 
+/**
+ * Returns a random unit vector.
+ *
+ * Works by finding a random point in the double unit box and
+ * rejecting it if its length is greater than 1. Otherwise
+ * it is normalized and returned.
+ *
+ * The volume of the unit-sphere is PI*4/3 and the box is 8, so 
+ * only 48% are rejected.
+ */
+Vector Vector::randomUnitVector() {
+    Vector v;
+    while (true) {
+	v = Vector(RANDOM(-1,1),RANDOM(-1,1),RANDOM(-1,1));
+	if (v.length() <= 1.0) {
+	    v.normalize();
+	    return v;
+	}
+    }
+}
 
 
