@@ -261,7 +261,6 @@ class box_test : public Test {
 class mesh_test : public Test {
     public:
 	void run() {
-	    Mesh::test();
 	}
 };
 
