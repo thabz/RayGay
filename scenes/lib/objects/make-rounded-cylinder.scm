@@ -10,18 +10,14 @@
 	 (unitdir (vnormalize dir))
 	 (stepdir (vscale unitdir r))
 	 (length (vlength dir)))
-    (begin
-      (display stepdir)
-      (newline)
-      (list (make-cylinder from to (- R r) material)
-	    (make-cylinder (v+ from stepdir) (v- to stepdir) R material)
-	    (translate
-	      (make-torus (- R r) r material) 
-	      (list 0 r 0))
-	    (translate
-	      (make-torus (- R r) r material) 
-	      (list 0 (- height r) 0))
-	    ))))
+    (list (make-cylinder from to (- R r) material)
+	  (make-cylinder (v+ from stepdir) (v- to stepdir) R material)
+	  (translate
+	    (make-torus (- R r) r material) 
+	    (list 0 r 0))
+	  (translate
+	    (make-torus (- R r) r material) 
+	    (list 0 (- height r) 0)))))
 
 
 
