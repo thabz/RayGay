@@ -726,20 +726,39 @@ void solidbox_test() {
     assert(iPoint(b,Vector(0,0,0),Vector(1,0,0)) == Vector(10,0,0));
     assert(iNormal(b,Vector(0,0,0),Vector(1,0,0)) == Vector(1,0,0));
 
+    // Ray from outside
     ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
     all = b->allIntersections(ray);
     assert(all.size() == 2);
     assert(all[0].getPoint() == Vector(0,0,10));
     assert(all[0].getNormal() == Vector(0,0,1));
+    assert(all[0].isEntering());
     assert(all[1].getPoint() == Vector(0,0,-10));
-    cout << all[1].getNormal() << endl;
     assert(all[1].getNormal() == Vector(0,0,-1));
+    assert(!all[1].isEntering());
 
+    // Ray from inside
     ray = Ray(Vector(0,0,0),Vector(0,-1,0),-1);
     all = b->allIntersections(ray);
     assert(all.size() == 1);
     assert(all[0].getPoint() == Vector(0,-10,0));
     assert(all[0].getNormal() == Vector(0,-1,0));
+    assert(!all[0].isEntering());
+
+    // Outwards ray with origin on edge of box
+    ray = Ray(Vector(0,0,10),Vector(0,0,1),-1);
+    all = b->allIntersections(ray);
+    assert(all.size() == 0);
+    assert(intersects(b,ray) == false);
+    
+    // Inwards ray with origin on edge of box
+    ray = Ray(Vector(0,0,10),Vector(0,0,-1),-1);
+    all = b->allIntersections(ray);
+    assert(all.size() == 1);
+    assert(all[0].getPoint() == Vector(0,0,-10));
+    assert(all[0].getNormal() == Vector(0,0,-1));
+    assert(!all[0].isEntering());
+    assert(intersects(b,ray) == true);
 }
 
 int main(int argc, char *argv[]) {
