@@ -166,13 +166,13 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
-#define FINAL_GATHER_RAYS 100
+#define FINAL_GATHER_RAYS 30
 #define ESTIMATE_RADIUS 50
-#define ESTIMATE_PHOTONS 500
+#define ESTIMATE_PHOTONS 200
 
 Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal) const {
     if (FINAL_GATHER_RAYS == 0) {
-	return M_PI * photonmap->irradiance_estimate(point,normal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS);
+	return 20*M_PI * photonmap->irradiance_estimate(point,normal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS);
     }
     Vector result = Vector(0.0,0.0,0.0);
 
@@ -192,10 +192,9 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
     
     //for (int i = 0; i < FINAL_GATHER_RAYS; i++) {
     for (int i = 1; i < np.found; i++) {
-
-	//Vector dir = Math::perturbVector(normal,DEG2RAD(89));
 	const Photon* p = np.index[i];
 	Vector dir = double(-1) * photonmap->photon_dir(p);
+	//Vector dir = Math::perturbVector(normal,DEG2RAD(89));
 
 	Ray ray = Ray(point,dir,-1);
 	if (space->intersect(ray)) {
@@ -210,7 +209,7 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
 	}
     }
     //result *= M_PI / double(FINAL_GATHER_RAYS);
-    result *= 2*M_PI / double(np.found - 1);
+    result *= M_PI / double(np.found - 1);
     return result;
 }
 

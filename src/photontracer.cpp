@@ -13,6 +13,7 @@
 #include "lights/lightsource.h"
 #include "materials/material.h"
 #include "math/functions.h"
+#include "math/matrix.h"
 #include "math/halton.h"
 #include "stats.h"
 
@@ -67,7 +68,20 @@ int PhotonTracer::trace(const Ray& ray, Vector power, int bounces) {
 	// Reflect diffusely 
 	Vector normal = intersection->getObject()->normal(*intersection);
 	//Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89),qmcsequence);
-	Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89));
+	//Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89));
+	
+	
+	
+	Matrix m = Matrix::matrixOrient(normal);
+	m = m.inverse();
+	double u = 2*M_PI*RANDOM(0,1);
+	double v = RANDOM(0,1);
+	double s = sqrt(v);
+	double s1 = sqrt(1.0-v);
+	Vector reflected_direction = Vector(cos(u)*s,sin(u)*s,s1);
+	reflected_direction = m*reflected_direction;
+	reflected_direction.normalize();
+        
 	Ray new_ray = Ray(intersection->getPoint(),reflected_direction,0);
 	power = power.length() * material.getDiffuseColor(*intersection);
 	return trace(new_ray, power, bounces + 1) + 1;
