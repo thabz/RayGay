@@ -336,27 +336,21 @@ void torus_test() {
 
     // intersect
     Intersection i;
-    //assert(i->getPoint() == Vector(0,0,11));
-    //assert(t->normal(*i) == Vector(0,0,1));
     assert(intersects(t,Vector(0,0,1000),Vector(0,0,-1)));
     assert(iPoint(t,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,11));
     assert(iNormal(t,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
 
     Ray ray = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
-    //assert(t->intersect(ray));
     assert(intersects(t,ray));
     assert(iPoint(t,ray) == Vector(0,0,-11));
     assert(iNormal(t,ray) == Vector(0,0,-1));
 
     ray = Ray(Vector(0,1000,0),Vector(0,-1,0),1); // In middle
-    //assert(!t->intersect(ray));
     assert(!intersects(t,ray));
     ray = Ray(Vector(0,1000,11.1),Vector(0,-1,0),1); // Close by
     assert(!intersects(t,ray));
-    //assert(!t->intersect(ray));
     ray = Ray(Vector(1000,11.1,0),Vector(-1,0,0),1); // Close by
     assert(!intersects(t,ray));
-    //assert(!t->intersect(ray));
 }
 
 void transformed_instance_test() {
