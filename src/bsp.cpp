@@ -97,11 +97,11 @@ bool BSP::intersectForShadow(const Ray& ray) const {
 }
 
 bool BSP::intersectForShadow(const Ray& ray, const object* hint) const {
-    if (hint->intersect(ray)) {
+    if (hint != NULL && hint->intersect(ray)) {
 	last_intersection = hint->getLastIntersection();
 	return true;
     } else {
-        return intersectForShadow(ray);
+	return intersectForShadow(ray);
     }
 }
 
@@ -344,4 +344,5 @@ void BSP::test() {
     bsp.addObject(new Sphere(Vector(0,-500,0),10,Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)));
     assert(largestDimension(bsp.enclosure()) == 1);
 }
+
 

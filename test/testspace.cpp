@@ -144,6 +144,7 @@ void bsp_test() {
 
     r = Ray(Vector(0,-1000,0),Vector(0,1,0),1);
     assert(bsp.intersectForShadow(r) == true);
+    assert(bsp.intersectForShadow(r,NULL) == true);
     assert(bsp.intersect(r) == true);
     assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[0],0));
     assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[1],-510));
@@ -157,6 +158,7 @@ void bsp_test() {
     assert(bsp.intersectForShadow(r) == false);
     assert(bsp.intersect(r) == false);
 
+    assert(bsp.intersectForShadow(r,NULL) == false);
 }
 
 int main(int argc, char *argv[]) {
