@@ -9,7 +9,7 @@ class RootFinder {
 	    BRENTS_METHOD
 	};
 
-	RootFinder(double t1, double t2, RootFinder::Method method, double (*function) (double)); 
+	RootFinder(double t1, double t2, RootFinder::Method method, double tolerance, double (*function) (double)); 
 	bool solve(double* root);
 
     protected:
@@ -19,6 +19,7 @@ class RootFinder {
 
     private:
 	double t1, t2;
+	double tolerance;
 	RootFinder::Method method;
 	double (*f) (double);
 };
