@@ -7,3 +7,7 @@ config.status
 configure
 *.png
 *.tga
+config.h
+libtool
+stamp-h
+stamp-h.in
