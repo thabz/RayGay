@@ -85,13 +85,19 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     Vector normal = object->normal(intersection);
     const Material& material = object->getMaterial();
     normal = material.bump(intersection,normal);
+    
+    Vector2 fre = fresnel(normal,ray.getDirection(),material);
+    double reflection = fre[0];
+    double transmission = fre[1];
+
     RGB result_color = RGB(0.0,0.0,0.0);
-    vector<Lightsource*> lights = scene->getLightsources();
 
     result_color += gatherIrradiance(point,normal,ray.getDirection());
-    result_color.clip();
-    return result_color;
+    //result_color.clip();
+    //return result_color;
     // TODO: Add radiance_estimate from caustics map
+
+    vector<Lightsource*> lights = scene->getLightsources();
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);
 
@@ -114,68 +120,51 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 			color = color + ( intensity * rv *  material.getKs() * material.getSpecularColor());
 		    }
 		}
-		result_color = result_color + color;
+		result_color += color;
 	    } 
 	}
     }
     if (depth < 4) {
 	/* Bounce a reflection off the intersected object */
-	if (material.getKs() > 0) {
+	if (material.getKs() > 0 && reflection > 0) {
 	    Vector refl_vector = -1 * ray.getDirection();
 	    refl_vector = refl_vector.reflect(normal);
 	    refl_vector.normalize();
 	    RGB refl_col = RGB(0.0,0.0,0.0);
 	    if (material.glossEnabled()) {
 		/* Distributed reflection */
-		const double v = sin(material.glossMaxAngle());
-		const double h = cos(material.glossMaxAngle());
-
-		Vector corners[3];
-		corners[0] = Vector(-v,v,h);
-		corners[1] = Vector(v,v,h);
-		corners[2] = Vector(-v,-v,h);
-		corners[3] = Vector(v,-v,h);
-		Matrix orient = Matrix::matrixOrient(refl_vector);
-		orient = orient.inverse();
-		for(unsigned int i = 0; i < 4; i++) {
-		    corners[i] = orient*corners[i];
-		    corners[i].normalize();
+		double max_angle = material.glossMaxAngle();
+		int gloss_rays = material.glossRaysNum();
+		for(int i = 0; i < gloss_rays; i++) {
+		    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle),ray.getIndiceOfRefraction());
+		    refl_col += trace(refl_ray, depth + 1);
 		}
-		const unsigned int max_rays = material.glossRaysNum();
-		Vector v1,v2;
-		double x_factor,y_factor;
-		for(unsigned int xx = 0; xx < max_rays; xx++) {
-		    for(unsigned int yy = 0; yy < max_rays; yy++) {
-			x_factor = (double(xx)+RANDOM(0,1)) / double(max_rays);
-			y_factor = (double(yy)+RANDOM(0,1)) / double(max_rays);
-			v1 = x_factor*corners[0] + (1-x_factor)*corners[1];
-			v2 = x_factor*corners[2] + (1-x_factor)*corners[3];
-			refl_vector =  y_factor*v1 + (1-y_factor)*v2;
-			refl_vector.normalize();
-			Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
-			refl_col += trace(refl_ray, depth + 1);
-		    }
-		}
-		refl_col *= 1.0/double(max_rays*max_rays);
+		refl_col *= 1.0/double(gloss_rays);
 	    } else {
 		/* Single reflected ray */
 		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
 		refl_col = trace(refl_ray, depth + 1);
 	    }
-	    result_color = result_color + material.getKs() * refl_col;
+	    result_color += reflection * refl_col;
 	}
 
 	/* Should we send a ray through the intersected object? */
-	if (material.getKt() > 0.0) {
+	if (material.getKt() > 0.0 && transmission > 0) {
 	    // TODO: Use the ior the rays holds to allow eg. glass in water.
 	    double ior = material.getEta();
 	    Vector T = ray.getDirection().refract(normal,ior);
 	    if (!(T == Vector(0,0,0))) {
 		Ray trans_ray = Ray(point+0.1*T,T,ior);
 		RGB trans_col = trace(trans_ray, depth + 1);
-		result_color += material.getKt() * trans_col;
+		result_color += transmission * trans_col;
 	    } else {
-		// TODO: Internal reflection, see page 757.
+		// Internal reflection, see page 757.
+		Vector refl_vector = -1 * ray.getDirection();
+		refl_vector = refl_vector.reflect(normal);
+		refl_vector.normalize();
+		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
+		RGB refl_col = trace(refl_ray, depth + 1);
+		result_color += transmission * refl_col;
 	    }
 	}
     }

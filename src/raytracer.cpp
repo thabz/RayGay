@@ -93,7 +93,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 			color = color + ( intensity * rv *  material.getKs() * material.getSpecularColor());
 		    }
 		}
-		result_color = result_color + color;
+		result_color += color;
 	    } 
 	}
     }
@@ -118,7 +118,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
 		refl_col = trace(refl_ray, depth + 1);
 	    }
-	    result_color = result_color + reflection * refl_col;
+	    result_color += reflection * refl_col;
 	}
 
 	/* Should we send a ray through the intersected object? */
@@ -138,7 +138,6 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
 		RGB refl_col = trace(refl_ray, depth + 1);
 		result_color += transmission * refl_col;
-
 	    }
 	}
     }

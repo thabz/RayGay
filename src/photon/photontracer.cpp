@@ -69,49 +69,40 @@ int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
     Intersection* intersection = space->getLastIntersection();
     const Material& material = intersection->getObject()->getMaterial();
     Vector normal = intersection->getObject()->normal(*intersection);
+    Vector point = intersection->getPoint();
     double ran = RANDOM(0,1);
-    if (ran < material.getKt()) {
-	double ior = material.getEta();
-	Vector T = ray.getDirection().refract(normal,ior);
-	if (!(T == Vector(0,0,0))) {
-	    Ray new_ray = Ray(intersection->getPoint()+0.1*T,T,ior);
-	    return trace(new_ray, power, bounces + 1);
-	}
-    }
     if (ran < material.getKd()) {
 	// Store photon
 	if (bounces > 0) 
-	    globalphotonmap->store(power,intersection->getPoint(),ray.getDirection());
-
+	    globalphotonmap->store(power,point,ray.getDirection());
 	// Reflect diffusely 
-	//Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89),qmcsequence);
-	//Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89));
-
-
-	Matrix m = Matrix::matrixOrient(normal);
-	m = m.inverse();
-	double u = 2*M_PI*RANDOM(0,1);
-	double v = RANDOM(0,1);
-	double s = sqrt(v);
-	double s1 = sqrt(1.0-v);
-	Vector reflected_direction = Vector(cos(u)*s,sin(u)*s,s1);
-	reflected_direction = m*reflected_direction;
-	reflected_direction.normalize();
-        
-	Ray new_ray = Ray(intersection->getPoint() + 0.1*reflected_direction,reflected_direction,-1);
+	Vector dir = normal.randomHemisphere();
+	Ray new_ray = Ray(point + 0.1*dir,dir,-1);
 	power = power;// * material.getDiffuseColor(*intersection);
 	return trace(new_ray, power, bounces + 1) + 1;
     } else if (ran < material.getKd() + material.getKs()) {
 	// Reflect specularly
-	Vector reflected_direction = -1 * ray.getDirection();
-	reflected_direction = reflected_direction.reflect(normal);
-	// TODO: Should I reflect with materials specular color?
-	Ray new_ray = Ray(intersection->getPoint(),reflected_direction,0);
+	Vector dir = -1 * ray.getDirection();
+	dir = dir.reflect(normal);
+	Ray new_ray = Ray(point,dir,0);
 	return trace(new_ray, power, bounces + 1);
+    } else if (ran < material.getKt() + material.getKd() + material.getKs()) {
+	double ior = material.getEta();
+	Vector T = ray.getDirection().refract(normal,ior);
+	if (!(T == Vector(0,0,0))) {
+	    Ray new_ray = Ray(point+0.1*T,T,ior);
+	    return trace(new_ray, power, bounces + 1);
+	} else {
+	    // Total internal reflection
+	    Vector dir = -1 * ray.getDirection();
+	    dir = dir.reflect(normal);
+	    Ray new_ray = Ray(point,dir,0);
+	    return trace(new_ray, power, bounces + 1);
+	}
     } else {
 	// Store photon
 	if (bounces > 0) 
-	    globalphotonmap->store(power,intersection->getPoint(),ray.getDirection());
+	    globalphotonmap->store(power,point,ray.getDirection());
 	return 1;
     }
 }

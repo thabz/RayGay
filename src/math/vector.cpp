@@ -14,6 +14,7 @@
 #include <iostream>
 
 #include "math/vector.h"
+#include "math/matrix.h"
 #include "constants.h"
 
 using namespace std;
@@ -153,5 +154,22 @@ Vector Vector::refract(const Vector& normal, double ior) const {
     Vector T = (k < 0) ? Vector(0,0,0) : (ior*I + (ior*IdotN - sqrt(k))*N);
     T.normalize();
     return T;
+}
+
+/**
+ * Get a cosine distributed random direction on the hemisphere
+ * with this vector as normal.
+ */ 
+Vector Vector::randomHemisphere() const {
+    Matrix m = Matrix::matrixOrient(*this);
+    m = m.inverse();
+    double u = 2*M_PI*RANDOM(0,1);
+    double v = RANDOM(0,1);
+    double s = sqrt(v);
+    double s1 = sqrt(1.0-v);
+    Vector result = Vector(cos(u)*s,sin(u)*s,s1);
+    result = m * result;
+    result.normalize();
+    return result;
 }
 

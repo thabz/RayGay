@@ -75,6 +75,8 @@ public:
     // Returns this vector refracted around a normal
     Vector refract(const Vector& normal, double ior) const;
 
+    Vector randomHemisphere() const;
+
     static Vector randomUnitVector();
 
 protected:
