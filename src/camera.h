@@ -22,6 +22,7 @@ class Camera {
 	/// Desctructor
 	~Camera();
 
+	/// Transform the camera
 	void transform(const Matrix& m);
 
 	/// Returns position of camera
@@ -46,18 +47,25 @@ class Camera {
 	void enableAdaptiveSupersampling(unsigned int depth);
 
 	/// Enable depth of field
-	void enableDoF(double aperture, const Vector& focalpoint, int samples);
+	void enableDoF(double aperture, int samples);
+
+	/// Says whether depth of field is enabled
 	bool isDoFEnabled() const { return dof_enabled; };
+
+	/// The numer of rays to use in oversampling depth of field
 	int getDoFSamples() const { return dof_samples; };
 
+	/// Says whether adaptive antialias is enabled
 	bool isAAEnabled() const { return aa_enabled; }; 
 
 	unsigned int getAADepth() const { return aa_depth; };
 
+	/// Get a ray going through the screen
 	Ray getRay(const double x, const double y);
 
 	void setImageSize(int width, int height) { this->width = width; this->height = height; };
 
+	/// Project a 3D point to the 2D screen
 	Vector2 project(const Vector& p) const;
 
     private:

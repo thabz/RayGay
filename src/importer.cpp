@@ -217,9 +217,8 @@ void Importer::parse(const string& filename) {
 	    camera->enableAdaptiveSupersampling(a);
 	} else if (command == "camera-dof") {
 	    double aperture = readDouble(stream);
-	    Vector focalpoint = readVector(stream);
 	    int samples = readInt(stream);
-	    camera->enableDoF(aperture,focalpoint,samples);
+	    camera->enableDoF(aperture,samples);
 	} else if (command == "background") {
 	    RGBA col = readRGBA(stream);
 	    scene->setBackgroundColor(col);
