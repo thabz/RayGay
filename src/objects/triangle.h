@@ -39,6 +39,7 @@ class Triangle : public Object {
 	double _fastIntersect(const Ray& ray) const;
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
 	double area() const;
+        int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
 
     private:
 	Mesh* mesh;
