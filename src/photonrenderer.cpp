@@ -95,7 +95,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 
     RGB result_color = RGB(0.0,0.0,0.0);
 
-    result_color += gatherIrradiance(point,normal,ray.getDirection());
+    result_color += finalGather(point,normal,ray.getDirection(),renderersettings->final_gather_rays);
     //result_color.clip();
     //return result_color;
     // TODO: Add radiance_estimate from caustics map
@@ -176,7 +176,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
-Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal, const Vector& ray_dir) const {
+Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const Vector& ray_dir, int gatherRays) const {
     if (renderersettings->final_gather_rays == 0) {
 	return M_PI * 100 * globalphotonmap->irradiance_estimate(point,normal,renderersettings->estimate_radius,renderersettings->estimate_samples);
     }
@@ -184,7 +184,7 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
     Vector result = Vector(0.0,0.0,0.0);
     double* rnd;
     qmc_sequence->reset();
-    for (int i = 0; i < renderersettings->final_gather_rays; i++) {
+    for (int i = 0; i < gatherRays; i++) {
 	rnd = qmc_sequence->getNext();
 	Vector dir = normal.randomHemisphere(rnd[0],rnd[1]);
 
@@ -193,9 +193,13 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
 	    Intersection* inter = space->getLastIntersection();
 	    Vector hitpoint = inter->getPoint();
 	    Vector hitnormal = inter->getObject()->normal(*inter);
-	    double cos = normal * dir;
-	    // TODO: If too close use another recursive final gather instead for estimate
-	    result += renderersettings->estimate_radius * cos * globalphotonmap->irradiance_estimate(hitpoint,hitnormal,renderersettings->estimate_radius,renderersettings->estimate_samples);
+	    // If too close use another final gather instead for estimate
+	    if ((hitpoint-point).length() < renderersettings->estimate_radius && gatherRays > 7) {
+		result += finalGather(hitpoint,hitnormal,dir,7);
+	    } else {
+		double cos = normal * dir;
+		result += renderersettings->estimate_radius * cos * globalphotonmap->irradiance_estimate(hitpoint,hitnormal,renderersettings->estimate_radius,renderersettings->estimate_samples);
+	    }
 	}
     }
 	
