@@ -20,6 +20,12 @@
 #include "types.h"
 
 //---------------------------------------------------------------------
+// SceneObjectNode 
+//---------------------------------------------------------------------
+SceneObjectNode::~SceneObjectNode() {
+}
+
+//---------------------------------------------------------------------
 // MeshNode
 //---------------------------------------------------------------------
 MeshNode::MeshNode(Mesh::MeshType type, VectorListNode* verts, VectorListNode* tris, MaterialNode* m) {

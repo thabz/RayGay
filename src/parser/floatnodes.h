@@ -16,6 +16,7 @@ class FloatNode : public ValueNode {
 
     public:
 	virtual double eval() = 0;
+	virtual ~FloatNode();
 	ValueNode::ValueType getType() { return ValueNode::FLOAT; };
     protected:
 	FloatNode() {};

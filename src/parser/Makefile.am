@@ -13,8 +13,10 @@ libparser_a_SOURCES = \
 		      assignments.cpp 	\
 		      boolnodes.h	\
 		      cameranode.h	\
+		      cameranode.cpp	\
 		      fileposition.h	\
 		      floatnodes.h	\
+		      floatnodes.cpp	\
 		      function.h	\
 		      function.cpp 	\
 		      langnodes.h	\
@@ -28,13 +30,16 @@ libparser_a_SOURCES = \
 		      parserclass.h	\
 		      parserclass.cpp 	\
 		      pathnodes.h	\
+		      pathnodes.cpp	\
 		      rgbnodes.h	\
 		      runtimeexception.h \
 		      sceneobjectnodes.h \
 		      sceneobjectnodes.cpp \
 		      syntaxnode.h	\
+		      syntaxnode.cpp	\
 		      transformationnodes.h	\
-		      vectornodes.h
+		      vectornodes.h	\
+		      vectornodes.cpp
 
 BUILT_SOURCES = parser.h parserclass.h objectcollector.h
 

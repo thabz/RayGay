@@ -17,6 +17,7 @@ using namespace std;
 class SyntaxNode {
     public:
 	SyntaxNode() { };
+	virtual ~SyntaxNode();
 	SyntaxNode(FilePosition f) {
 	    this->fileposition = f;
 	}
@@ -43,7 +44,7 @@ class ValueNode : public SyntaxNode {
 	ValueNode() {};
 	ValueNode(FilePosition pos) : SyntaxNode(pos) {};
 
-	virtual ~ValueNode() {};
+	virtual ~ValueNode();
 
 	virtual ValueType getType() = 0;
 };

@@ -30,11 +30,7 @@ class VectorNode : public ValueNode {
 	    this->z = z;
 	}
 	
-	virtual ~VectorNode() {
-	    if (x != NULL) delete x;
-	    if (y != NULL) delete y;
-	    if (z != NULL) delete z;
-	}
+	virtual ~VectorNode();
 
 	virtual Vector eval() {
 	    return Vector(x->eval(),y->eval(),z->eval());

@@ -22,7 +22,7 @@ using namespace std;
 class ActionNode : public SyntaxNode {
     public:
 	virtual void eval() = 0;
-	virtual ~ActionNode() {};
+	virtual ~ActionNode();
     protected:
 	ActionNode() {};
 	ActionNode(FilePosition pos) : SyntaxNode(pos) {};

@@ -20,7 +20,7 @@ class PathNode : public SyntaxNode {
 
     public:
 	virtual Path* eval() = 0;
-	virtual ~PathNode() {};
+	virtual ~PathNode();
 	
     protected:
 	PathNode() {};

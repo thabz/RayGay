@@ -20,7 +20,7 @@ class SceneObjectNode : public SyntaxNode {
 
     public:
 	virtual SceneObject* eval() = 0;
-	virtual ~SceneObjectNode() {}
+	virtual ~SceneObjectNode();
 
     protected:
 	SceneObjectNode() {};
