@@ -46,7 +46,6 @@ EXTRA_DIST = boolean.h 		\
 	     stats.h		\
 	     tessalation.h	\
 	     tetrahedron.h	\
-	     transformable.h 	\
 	     triangle.h 	\
 	     wireframe.h
 
