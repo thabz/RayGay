@@ -14,6 +14,7 @@
 #include "objects/heightfield.h"
 #include "objects/blob.h"
 #include "objects/mesh.h"
+#include "objects/bezierpatch.h"
 
 
 SCM make_sphere(SCM s_center, SCM s_radius, SCM s_material) 
@@ -202,6 +203,20 @@ SCM make_mesh(SCM s_material, SCM s_vertices, SCM s_triangles)
     return sceneobject2scm(mesh);
 }
 
+SCM make_bezierpatch(SCM s_points, SCM s_xres, SCM s_yres, SCM s_material) 
+{
+    char* proc = "make-bezierpatch";
+
+    vector<Vector> points = scm2vectorlist(s_points, proc,1);
+    uint xresolution = scm_num2int(s_xres, 2, proc);
+    uint yresolution = scm_num2int(s_yres, 3, proc);
+    Material* material = scm2material(s_material, proc, 4);
+
+    assert(points.size() == 16);
+    BezierPatch* patch = new BezierPatch(points, xresolution, yresolution, material);
+    return sceneobject2scm(patch);
+}
+
 void SceneObjectFactory::register_procs() 
 {
     scm_c_define_gsubr("make-sphere",3,0,0,
@@ -226,5 +241,7 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) make_isosurface);
     scm_c_define_gsubr("make-mesh",3,0,0,
 	    (SCM (*)()) make_mesh);
+    scm_c_define_gsubr("make-bezierpatch",4,0,0,
+	    (SCM (*)()) make_bezierpatch);
 }
 

@@ -58,7 +58,7 @@ SCM PathFactory::make_spiral(SCM s_path, SCM s_radius, SCM s_windings, SCM s_off
 }
 
 SCM PathFactory::make_bezierspline(SCM s_vector_vector) {
-    vector<Vector> vectors = scm2vectorlist(s_vector_vector);
+    vector<Vector> vectors = scm2vectorlist(s_vector_vector, "make-bezierspline",1);
     return path2scm(new BezierSpline(vectors));
 }
 

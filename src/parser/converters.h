@@ -22,7 +22,7 @@ RGB scm2rgb(SCM s_rgb);
 
 SCM rgb2scm(RGB rgb);
 
-vector<Vector> scm2vectorlist(SCM s_vector_vector);
+vector<Vector> scm2vectorlist(SCM s_vector_vector, char* subr, int pos);
 
 string scm2string(SCM s_string);
 

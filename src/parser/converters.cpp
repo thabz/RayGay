@@ -50,14 +50,14 @@ SCM rgb2scm(RGB rgb) {
     return scm_list_3(r,g,b);
 }
 
-vector<Vector> scm2vectorlist(SCM s_vector_vector) {
+vector<Vector> scm2vectorlist(SCM s_vector_vector, char* subr, int pos) {
     assert(SCM_NFALSEP (scm_list_p (s_vector_vector)));
-    uint length = scm_num2int(scm_length(s_vector_vector),0,"");
+    uint length = scm_num2int(scm_length(s_vector_vector),0,NULL);
     SCM s_vector;
     vector<Vector> result;
     for(uint i = 0; i < length; i++) {
 	s_vector = scm_list_ref(s_vector_vector,scm_int2num(i));
-	result.push_back(scm2vector(s_vector, "unknown", 0));
+	result.push_back(scm2vector(s_vector, subr, pos));
     }
     return result;
 }
