@@ -4,6 +4,8 @@
 
 include materials.gay
 
+renderer raytracer
+
 camera-position 0 0 1500
 camera-up 0 1 0
 camera-lookat 0 0 0
@@ -13,10 +15,10 @@ camera-aa 4
 image-ratio 4 3
 image-width 640
 
-background 0.1 0.1 0.3
+background 0.1 0.1 0.3 1.0
 
-light point -4000 4000 4000
-light point  4000 4000 4000
+light point -4000 4000 4000 1 1 1 
+light point  4000 4000 4000 1 1 1 
 
 torus $blue 200 50
 
