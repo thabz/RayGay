@@ -1,7 +1,10 @@
 
+/*
 function kaj ($i) {
     $a = $i
 }
 
 kaj(5)
+*/
+$a = 5
 
