@@ -24,6 +24,7 @@ class Triangle : public Object {
 	BoundingBox boundingBoundingBox() const;
 	Vector2 getUV(const Intersection& intersection) const;
 
+	void prepare();
 
 	/// Get index into mesh' array of Tris
 	int getTri() const;
@@ -45,7 +46,7 @@ class Triangle : public Object {
 	Intersection _intersect(const Ray& ray) const;
 	Mesh* mesh;
 	int _tri_idx;
-	
+	Vector edge1, edge2;
 };
 
 

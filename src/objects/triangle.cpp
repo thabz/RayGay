@@ -28,6 +28,15 @@ Intersection Triangle::_intersect(const Ray& ray) const {
     return Intersection();
 }
 
+void Triangle::prepare() {
+   const Vector& vert0 = mesh->cornerAt(vertex[0]);
+   const Vector& vert1 = mesh->cornerAt(vertex[1]);
+   const Vector& vert2 = mesh->cornerAt(vertex[2]);
+
+   edge1 = vert1 - vert0;
+   edge2 = vert2 - vert0;
+}
+
 // ----------------------------------------------------------------------------
 Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
     
@@ -88,17 +97,11 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
 double Triangle::_fastIntersect(const Ray& ray) const {
    /* Fast code from http://www.ce.chalmers.se/staff/tomasm/code/ */
    const Vector& vert0 = mesh->cornerAt(vertex[0]);
-   const Vector& vert1 = mesh->cornerAt(vertex[1]);
-   const Vector& vert2 = mesh->cornerAt(vertex[2]);
 
-   Vector edge1, edge2, tvec, pvec, qvec;
+   Vector tvec, pvec, qvec;
    double det,inv_det;
    double u,v;
    double t;
-
-   /* find vectors for two edges sharing vert0 */
-   edge1 = vert1 - vert0;
-   edge2 = vert2 - vert0;
 
    /* begin calculating determinant - also used to calculate U parameter */
    pvec = Vector::xProduct(ray.getDirection(), edge2);
