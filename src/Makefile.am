@@ -20,6 +20,7 @@ libtracer_a_SOURCES = \
 		      renderjobs.cpp 	\
 		      pathtracer.cpp 	\
 		      environment.cpp 	\
+		      vectorlist.cpp	\
 		      window.h		\
 		      window.cpp	\
 		      window-icon.h	
@@ -61,5 +62,6 @@ EXTRA_DIST = boundingbox.h	\
 	     renderersettings.h	\
 	     renderjobs.h	\
 	     scene.h 		\
-	     stats.h
+	     stats.h		\
+	     vectorlist.h
 
