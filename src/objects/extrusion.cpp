@@ -3,6 +3,7 @@
 
 #include "objects/extrusion.h"
 #include "paths/circle.h"
+#include "paths/ellipse.h"
 
 /**
  * Construct a extrusion object
@@ -38,18 +39,40 @@ Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, uint
 }
 
 Extrusion::Extrusion(const Path& path, double radius, uint segments, uint pieces, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
+    Circle circle = Circle(Vector(0,0,0),radius,Vector(0,0,1));
+    init(path, circle, segments, pieces,5);
+}
+
+Extrusion::Extrusion(const Path& path, const Path& circle, uint segments, uint pieces, double twists, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
+    init(path, circle, segments, pieces, twists);
+}
+
+
+/**
+ * @param circle a path in the (x,y)-plane.
+ */
+void Extrusion::init(const Path& path, const Path& circle, uint segments, uint pieces, double twists) {
     assert(pieces > 2);
 
-    Vector* cp = new Vector[segments]; 
+    Vector cp[segments];
     double last_t = 0;
     for (uint p = 0; p < pieces; p++) {
 	double t = double(p) / double(pieces);
 	Vector c = path.getPoint(t);
 	Vector n = path.getTangent(t);
 
-	Circle circle = Circle(c,radius,n);
 	circle.getPoints(segments,cp);
-	
+
+	// Transform points
+	double twist_angle = double(p) * 360.0 * twists /  double(pieces);
+	Matrix matrix = Matrix::matrixRotate(Vector(0,0,1), twist_angle) * 
+	                Matrix::matrixOrient(n).inverse() * 
+			Matrix::matrixTranslate(c);
+
+	for(uint i = 0; i < segments; i++) {
+	    cp[i] = matrix * cp[i];
+	}
+
 	for(uint i = 0; i < segments; i++) {
 	    uint k = addVertex(cp[i]);
 	    assert(k == p*segments + i);
@@ -86,7 +109,6 @@ Extrusion::Extrusion(const Path& path, double radius, uint segments, uint pieces
 	// TODO: Add begin and end discs
 
     }
-    delete [] cp;
 }
 
 

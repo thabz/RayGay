@@ -128,7 +128,15 @@ class Mesh : public ObjectGroup {
 	// 3 indices into normals for each face
 	std::vector<uint> i_normal_indices;
 
+    protected:
+	uint facesNum() const;
+
 };
+
+inline
+uint Mesh::facesNum() const {
+    return faces.size() / 3;
+}
 
 inline
 Vector Mesh::cornerAt(uint tri_idx, unsigned int i) const {

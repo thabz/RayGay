@@ -62,15 +62,20 @@ SCM SceneObjectFactory::make_cylinder(SCM s_begin, SCM s_end, SCM s_radius, SCM 
     return sceneobject2scm(cylinder);
 }
 
-SCM SceneObjectFactory::make_extrusion(SCM s_path, SCM s_radius, SCM s_segments, SCM s_pieces, SCM s_material)
+/**
+ * @param s_circle a path in the (x,y)-plane
+ */
+SCM SceneObjectFactory::make_extrusion(SCM s_path, SCM s_circle, SCM s_twists, SCM s_segments, SCM s_pieces, SCM s_material)
 {
     char* proc = "make-extrusion";
     Path* path = scm2path(s_path, proc, 1);
-    double radius = scm_num2double(s_radius, 2, proc);
-    int segments = scm_num2int(s_segments, 3, proc);
-    int pieces = scm_num2int(s_pieces, 4, proc);
-    Material* material = scm2material(s_material, proc, 5);
-    Extrusion* extrusion = new Extrusion(*path, radius, segments, pieces, material);
+    Path* circle = scm2path(s_circle,proc,2);
+    double twists = scm_num2double(s_twists, 3, proc);
+    int segments = scm_num2int(s_segments, 4, proc);
+    int pieces = scm_num2int(s_pieces, 5, proc);
+    Material* material = scm2material(s_material, proc, 6);
+
+    Extrusion* extrusion = new Extrusion(*path, *circle, segments, pieces, twists, material);
     return sceneobject2scm(extrusion);
 }
 
@@ -100,7 +105,7 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) SceneObjectFactory::make_cylinder);
     scm_c_define_gsubr("make-torus",3,0,0,
 	    (SCM (*)()) SceneObjectFactory::make_torus);
-    scm_c_define_gsubr("make-extrusion",5,0,0,
+    scm_c_define_gsubr("make-extrusion",6,0,0,
 	    (SCM (*)()) SceneObjectFactory::make_extrusion);
     scm_c_define_gsubr("make-heightfield",5,0,0,
 	    (SCM (*)()) SceneObjectFactory::make_heightfield);
