@@ -54,7 +54,7 @@ while (tell INPUT < $input_length) {
 	print OUTPUT "   vertices {\n";
 	for(my $i = 0; $i < $num; $i++) {
 	    my @f = (readFloat(),readFloat(),readFloat());
-	    printf OUTPUT "      <%.6f %.6f %.6f>\n",@f;
+	    printf OUTPUT "      <%.6f, %.6f, %.6f>\n",@f;
 	}
 	print OUTPUT "   }\n";
     } elsif ($chunk_id == 0x4120) {
@@ -74,13 +74,14 @@ while (tell INPUT < $input_length) {
 	for(my $i = 0; $i < $num; $i++) {
 	    readUShort(); # Refers to faces
 	}
-	print OUTPUT "   /* $num/$cur_faces_num triangles in mesh uses material '$mat_name' */ \n";
+	my $var_mat = makeVarName($mat_name);
+	print OUTPUT "   /* $num/$cur_faces_num triangles in mesh uses material '$var_mat' */ \n";
     } elsif ($chunk_id == 0x4140) {
 	print "TEX_VERTS\n";
 	my $num = readUShort();
 	print OUTPUT "   uv_coords {\n";
 	for(my $i = 0; $i < $num; $i++) {
-	    printf OUTPUT "      <%.6f,%.6f>\n",readFloat(),readFloat();
+	    printf OUTPUT "      <%.6f, %.6f>\n",readFloat(),readFloat();
 	}
 	print OUTPUT "   }\n";
     } elsif ($chunk_id == 0xafff) {
@@ -93,15 +94,16 @@ while (tell INPUT < $input_length) {
 	    $inside_material = 0;
 	}
 	print "MAT_ENTRY\n";
-	print OUTPUT "material {\n";
 	$inside_material = 1;
     } elsif ($chunk_id == 0xa000) {
 	my $name = readString();
+	my $varname = makeVarName($name);
 	print "MAT_NAME  name='$name'\n";
-	print OUTPUT "   /* Material named '$name' */\n";
+	print OUTPUT "$varname = material {\n";
+	print OUTPUT "    /* Material named '$name' */\n";
     } elsif ($chunk_id == 0xa010) {
 	my $color = readColor24();
-	print OUTPUT "    ambient $color\n";
+	print OUTPUT "    /* ambient $color */\n";
     } elsif ($chunk_id == 0xa020) {
 	my $color = readColor24();
 	print OUTPUT "    diffuse $color\n";
@@ -172,7 +174,7 @@ sub printCurMap {
 	print OUTPUT "diffuse ";
     }
     print OUTPUT "texture { ";
-    print OUTPUT '"'.$cur_map{'FILENAME'}.'" ';
+    print OUTPUT '"'.lc($cur_map{'FILENAME'}).'" ';
     $uscale = $cur_map{'USCALE'} || 1;
     $vscale = $cur_map{'VSCALE'} || 1;
     print OUTPUT "$uscale $vscale bilinear }\n";
@@ -227,3 +229,8 @@ sub readAmountOf {
     return readUShort();
 }
 
+sub makeVarName {
+    my $name = shift;
+    $name =~ s/ /_/g;
+    return '$'.lc($name);
+}
