@@ -27,24 +27,26 @@
 #include "ray.h"
 #include "intersection.h"
 #include "image.h"
-#include "pointlight.h"
 #include "boolean.h"
 #include "mesh.h"
-#include "spotlight.h"
 #include "constants.h"
 #include "box.h"
 #include "tetrahedron.h"
 #include "tessalation.h"
-#include "paths/linesegment.h"
 #include "paths/circle.h"
 #include "cylinder.h"
-#include "arealight.h"
 #include "pixelstore.h"
 #include "raytracer.h"
 #include "bsp.h"
-#include "paths/circle.h"
 #include "necklace.h"
+
+#include "paths/linesegment.h"
 #include "paths/spiral.h"
+#include "paths/circle.h"
+
+#include "lights/pointlight.h"
+#include "lights/spotlight.h"
+#include "lights/arealight.h"
 
 using namespace std;
 

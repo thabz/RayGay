@@ -14,4 +14,9 @@ AC_PROG_LIBTOOL
 
 CPPFLAGS="$CPPFLAGS -O3 -Wall"
 
-AC_OUTPUT(Makefile src/Makefile src/materials/Makefile test/Makefile src/paths/Makefile)
+AC_OUTPUT(Makefile \
+	  src/Makefile \
+	  src/materials/Makefile \
+	  src/paths/Makefile \
+	  src/lights/Makefile \
+	  test/Makefile)

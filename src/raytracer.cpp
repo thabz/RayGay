@@ -11,7 +11,7 @@
 #include "matrix.h"
 #include "scene.h"
 #include "image.h"
-#include "lightsource.h"
+#include "lights/lightsource.h"
 
 Raytracer::Raytracer() {
 }

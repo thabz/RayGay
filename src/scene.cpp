@@ -3,7 +3,7 @@
 #include "scene.h"
 #include "matrix.h"
 #include "object.h"
-#include "lightsource.h"
+#include "lights/lightsource.h"
 #include "intersection.h"
 #include "ray.h"
 #include "hierarchy.h"
