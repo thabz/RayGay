@@ -144,7 +144,6 @@ void work(string scenefile, string outputfile,int jobs) {
 	    throw_exception("Unknown renderer");
 	}
 	pthread_create(&threads[i], NULL, renderThreadDo, renderers[i]);
-	cout << "Renderthread: " << i << endl;
     }
 
     // Wait for threads to finish
