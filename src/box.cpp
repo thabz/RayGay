@@ -188,6 +188,7 @@ Box Box::doUnion(const Box& b1, const Box& b2) {
     return Box(mini,maxi);
 }
 
+// This should return NULL is they don't intersect...!
 Box Box::doIntersection(const Box& b1, const Box& b2) {
     Vector mini = Vector(max(b1._c1[0],b2._c1[0]),
 	                 max(b1._c1[1],b2._c1[1]),

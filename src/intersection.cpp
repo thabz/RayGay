@@ -1,6 +1,7 @@
 
 #include "intersection.h"
 #include "vector.h"
+#include "mesh.h"
 
 Intersection::Intersection() {
     intersected = false;

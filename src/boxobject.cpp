@@ -56,7 +56,6 @@ Intersection Boxobject::_intersect(const Ray& ray) {
     i.local_point[1] = i.point[1];
     i.local_point[2] = i.point[2];
     i.point = _transform * i.point;
-    i.setObject(this);
     return i;
 }
 

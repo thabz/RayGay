@@ -10,6 +10,11 @@
 
 using namespace std;
 
+Hierarchy::Hierarchy(Box bbox) {
+    _box = bbox;
+    _parent = NULL;
+}
+
 Hierarchy::Hierarchy(Box bbox, Hierarchy* parent) {
     _box = bbox;
     _parent = parent;

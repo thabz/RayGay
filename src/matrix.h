@@ -21,11 +21,19 @@ class Matrix {
     friend std::ostream &operator<<(std::ostream &os,const Matrix &m);
 
     public:
+        /// The default constructor creates an identity
 	Matrix();
+
+        /// Copy constructor
 	Matrix(const Matrix &matrix);
+
+        /// Default destructor
 	~Matrix();
 
+        /// Reset matrix to the identity
 	void identity();
+
+        /// Same as reset()
 	void reset();
 	
 	/// Says whether this matrix is the identity
@@ -34,14 +42,25 @@ class Matrix {
         /// Returns the inverse to this matrix
 	Matrix inverse() const;
 
+	/// Returns a matrix with the translation part stripped
+	Matrix extractRotation() const;
+
+	/// Multiply this matrix with a vector.
 	Vector operator*(const Vector & v) const;
+
+	/// Multiply with another Matrix
 	Matrix operator*(const Matrix &) const;
+	
+	/// Multiply with another Matrix
 	Matrix &operator*=(const Matrix &);
 
 	/// Rotate angle degrees around axis
 	static Matrix matrixRotate(const Vector axis,const double angle);
+
 	/// Translate along a vector
 	static Matrix matrixTranslate(const Vector trans);
+
+	/// Internal test
 	static void test();
 
 

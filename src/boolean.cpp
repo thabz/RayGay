@@ -24,11 +24,8 @@ Intersection Boolean::_intersect(const Ray& ray) {
     Intersection il = _lhs->intersect(ray);
     Intersection ir = _rhs->intersect(ray);
 
-    il.setObject(this);
-    ir.setObject(this);
     Intersection* closest;
     Intersection empty = Intersection();
-    empty.setObject(this);
     bool el, er;
 
     switch(_op) {

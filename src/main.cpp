@@ -30,6 +30,7 @@
 #include "lightsource.h"
 #include "boolean.h"
 #include "boxobject.h"
+#include "mesh.h"
 
 using namespace std;
 
@@ -84,6 +85,7 @@ int main(int argc, char *argv[]) {
     Boolean::test();
     Box::test();
     Matrix::test();
+    Mesh::test();
     // Test scene stuff
     testScene4();
 

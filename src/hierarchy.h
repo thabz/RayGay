@@ -18,7 +18,9 @@ class Hierarchy {
     friend std::ostream & operator<< (std::ostream &os, Hierarchy &x);
 
     public:
-	Hierarchy(Box bbox, Hierarchy* parent);
+        /// Constructor.
+	Hierarchy(Box bbox);
+	
 	~Hierarchy();
 
 	void addObject(object* obj); ///< Place a object in the hierarchy
@@ -27,6 +29,7 @@ class Hierarchy {
 	void optimize(); ///< Clean up
 
     private:
+	Hierarchy(Box bbox, Hierarchy* parent);
 	Hierarchy* _parent;
 	bool hasChildren() const;
 	bool hasObjects() const;

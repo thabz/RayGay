@@ -24,26 +24,23 @@ double Matrix::_identity[16] = {
     0.0, 0.0, 0.0, 1.0
 };
 
-/// Default constructor 
+ 
 Matrix::Matrix(){
     reset();
 }
 
-/// Copy constructor
+
 Matrix::Matrix(const Matrix &matrix) {
     (*this) = matrix;
 }
 
-/// Default destructor
 Matrix::~Matrix(){
 }
 
-/// Reset matrix to the unit
 void Matrix::reset() {
     memcpy(_matrix,_identity,16*sizeof(double));
 }
 
-/// Same as reset
 void Matrix::identity() {
     reset();
 }
@@ -106,6 +103,15 @@ Matrix & Matrix::operator*=(const Matrix &m) {
     return (*this) = (*this)*m;
 }
 
+Matrix Matrix::extractRotation() const {
+    Matrix res;
+    for (int i = 0; i < 3; i++) {
+       for (int j = 0; j < 3; j++) {
+	   res.set(i,j,get(i,j));
+        }
+    }
+    return res;
+}
 
 
 ostream & operator<<(ostream &os,const Matrix &m) {

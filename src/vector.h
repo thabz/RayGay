@@ -37,11 +37,14 @@ public:
 
     double &operator[](const int i); ///< Index into coordinates
     const double &operator[](const int i) const; ///< Index into coordinates
+    static Vector xProduct (const Vector& v1, const Vector& v2); ///< Returns the scalar product v1 &times; v2
     
     double operator*(const Vector &v) const; ///< Vector dot product (aka scalar product)
 
+    /// Comparator
     bool operator==(const Vector &v) const;
 
+    /// Internal test
     void test();
     
 protected:

@@ -66,7 +66,6 @@ Intersection Sphere::_intersect(const Ray& ray) {
 	   result = Intersection(Q + (t2 * v),t2);
        }
     }
-    result.setObject(this);
     return result;
 }
 
