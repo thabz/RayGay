@@ -119,11 +119,6 @@ class Matrix {
 #define m43 MAT(m,3,2)
 #define m44 MAT(m,3,3)
 
-/**
- * Multiply this with a vector
- * 
- * \todo Can be optimized by unrolling loops.
- */
 inline
 Vector Matrix::operator*(const Vector &v) const {
 
