@@ -17,9 +17,9 @@
 + 3DS import (meshes, UV, materials)
 + gprof profiling
 + Create a XML scene format and an importer.
-* Cone
++ Cone
 + Torus
-* General polynomial surfaces.
++ General polynomial surfaces.
 * Support for separate night and day textures.
 + Mathematical cylinder
 + Bicubic interpolation of textures
@@ -38,7 +38,7 @@
   http://www.cs.utah.edu/~shirley/papers/
 + Scaling of all objects: 
   See http://www.cl.cam.ac.uk/Teaching/2000/AGraphHCI/SMEG/node2.html
-* HDRI support
++ HDRI support
 * OpenEXR support. See http://www.openexr.com/
 * LightProbe support
 * Structured Importance Sampling of Environment Maps
