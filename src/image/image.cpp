@@ -3,7 +3,7 @@
 #include "image.h"
 #include "image/tga.h"
 #include "image/jpeg.h"
-#include "image/png.h"
+#include "image/pngio.h"
 #include <cassert>
 #include <iostream>
 #include <cmath>
