@@ -3,6 +3,4 @@ Makefile.in
 Makefile
 .deps
 .libs
-*.png
-*.tga
 *.swp
