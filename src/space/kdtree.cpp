@@ -18,7 +18,7 @@
 #define KD_TREE_MAX 2
 #define KD_TREE_MAX_DEPTH 100
 
-#undef NO_STATS
+#define NO_STATS
 
 KdTree::KdTree() {
     prepared = false;
