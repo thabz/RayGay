@@ -17,15 +17,15 @@ void Spotlight::transform(const Matrix& m) {
     _dir = m.extractRotation() * _dir;
 }
 
-Lightinfo Spotlight::getLightinfo(const Intersection& inter, const Vector& normal, const SpaceSubdivider& space) const {
+Lightinfo Spotlight::getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space) const {
     Lightinfo info;
     info.direction_to_light = _pos - inter.getPoint();
     info.direction_to_light.normalize();
     info.cos = info.direction_to_light * normal;
     if (info.cos > 0.0) {
 	Ray ray_to_light = Ray(inter.getPoint(),info.direction_to_light,-1.0);
-	Intersection i2 = space.intersect(ray_to_light);
-	info.intensity = i2.isIntersected() ? 0.0 : 1.0;
+	Intersection in = space->intersectForShadow(ray_to_light);
+	info.intensity =  in.isIntersected() ? 0.0 : 1.0;
 	
 	// Angle between light-direction and direction from light to incident
 	double b = (double(-1) * info.direction_to_light) * _dir;

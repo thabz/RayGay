@@ -48,7 +48,7 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, int depth) {
     vector<Lightsource*> lights = scene->getLightsources();
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	RGB color = RGB(0.0,0.0,0.0);
-	Lightinfo info = (*p)->getLightinfo(intersection,normal,*space);
+	Lightinfo info = (*p)->getLightinfo(intersection,normal,space);
 	if (info.cos > 0.0) {
 	    // Check for blocking objects
 	    if (info.intensity > 0.0) {

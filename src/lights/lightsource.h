@@ -18,7 +18,7 @@ class Lightsource {
 
     public:
 	/// Shading info for this lightsource
-	virtual Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, const SpaceSubdivider& space) const = 0;
+	virtual Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space) const = 0;
 	/// Returns center of lightsource
 	virtual const Vector& getPosition() const = 0;
 	/// Apply a transformation
