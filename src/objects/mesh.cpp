@@ -90,6 +90,19 @@ void Mesh::addQuad(const Vector* corners, const Vector2* uv) {
 	        uv[0],uv[2],uv[3]);
 }
 
+void Mesh::addQuad(const uint c[4], const Vector2 uv[4]) {
+    uint k[3];
+    Vector2 uvk[3];
+
+    k[0] = c[0]; k[1] = c[1]; k[2] = c[2];
+    uvk[0] = uv[0]; uvk[1] = uv[1]; uvk[2] = uv[2];
+    addTriangle(k,uvk);
+
+    k[0] = c[0]; k[1] = c[2]; k[2] = c[3];
+    uvk[0] = uv[0]; uvk[1] = uv[2]; uvk[2] = uv[3];
+    addTriangle(k,uvk);
+}
+
 /**
  * Adds a new vertex to the mesh.
  *
@@ -338,5 +351,27 @@ SceneObject* Mesh::clone() const {
 Mesh::Edge::Edge(int iV0, int iV1) {
     vertex[0] = iV0;
     vertex[1] = iV1;
+}
+
+/**
+ * Reserves space for num vertices.
+ * 
+ * This makes subsequent insertions of 
+ * vertices a bit faster but also makes sure that the vertex-arrays are
+ * the exact needed size.
+ */
+void Mesh::hintVertexNum(uint num) {
+    corners.reserve(num);
+}
+
+/**
+ * Reserves space for num faces. This makes subsequent insertions of 
+ * faces a bit faster but also makes sure that the faces-arrays are
+ * the exact needed size.
+ */
+void Mesh::hintFaceNum(uint num) {
+    normals.reserve(num);
+    normal_indices->reserve(num);
+    faces.reserve(3 * num);
 }
 

@@ -63,6 +63,9 @@ class Mesh : public ObjectGroup {
 	
 	/// Add a quad to the mesh
 	void addQuad(const Vector* corners, const Vector2* uv);
+	
+	/// Add a quad to the mesh
+	void addQuad(const uint c[4], const Vector2 uv[4]);
 
 	/// Add a triangle to the mesh
         void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3);
@@ -97,6 +100,7 @@ class Mesh : public ObjectGroup {
 	Vector2 getUV(const uint face_idx, double u, double v) const;
 
 	void prepare();
+	
 	virtual SceneObject* clone() const;
 
     private:
@@ -118,6 +122,10 @@ class Mesh : public ObjectGroup {
 	std::vector<uint>* normal_indices;
 	// 3 indices into normals for each face
 	std::vector<uint> i_normal_indices;
+
+    protected:
+	void hintVertexNum(uint num);
+	void hintFaceNum(uint num);
 };
 
 inline
