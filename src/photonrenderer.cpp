@@ -31,11 +31,12 @@ void PhotonRenderer::init() {
     PhotonTracer* photontracer = new PhotonTracer(scene,space,globalphotonmap,causticsphotonmap);
     photontracer->trace();
 
-    globalphotonmap->scale_photon_power(1.0/double(renderersettings->global_photons_num));
+    int total_photons_num = renderersettings->global_photons_num + renderersettings->caustic_photons_num;
+    globalphotonmap->scale_photon_power(1.0/double(total_photons_num));
     globalphotonmap->balance();
     globalphotonmap->preComputeIrradiances(4);
 
-    causticsphotonmap->scale_photon_power(1.0/double(renderersettings->caustic_photons_num));
+    causticsphotonmap->scale_photon_power(1.0/double(total_photons_num));
     causticsphotonmap->balance();
 
     delete photontracer;
