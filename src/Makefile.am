@@ -1,5 +1,5 @@
 
-SUBDIRS = materials paths lights math image photon filters objects space shaders parser cameras
+SUBDIRS = materials paths lights math image photon filters objects space shaders parser cameras collections
 
 
 #--------------------------------------
@@ -24,7 +24,7 @@ libtracer_a_SOURCES = \
 		      window.cpp	\
 		      window-icon.h	
 
-libtracer_a_LIBADD = parser/libparser.a photon/libphoton.a lights/liblights.a materials/libmaterials.a  objects/libobjects.a paths/libpaths.a math/libmath.a  image/libimage.a space/libspace.a shaders/libshaders.a cameras/libcameras.a
+libtracer_a_LIBADD = parser/libparser.a photon/libphoton.a lights/liblights.a materials/libmaterials.a collections/libcollections.a objects/libobjects.a paths/libpaths.a math/libmath.a  image/libimage.a space/libspace.a shaders/libshaders.a cameras/libcameras.a 
 
 #--------------------------------------
 
@@ -35,6 +35,7 @@ tracer_SOURCES = main.cpp
 tracer_LDADD =  parser/libparser.a 	\
 		libtracer.a 		\
     		space/libspace.a 	\
+		collections/libcollections.a \
     		photon/libphoton.a 	\
 		lights/liblights.a 	\
 		materials/libmaterials.a \

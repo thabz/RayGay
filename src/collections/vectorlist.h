@@ -5,6 +5,8 @@
 #include "math/vector.h"
 #include <vector>
 
+class Matrix;
+
 /**
  * A less memoryexpensive replacement for stl::vector<Vector>
  */
@@ -18,6 +20,7 @@ class VectorList {
 	void get(const unsigned int i, double dest[3]) const;
 	void set(const unsigned int i, Vector v);
 	unsigned int push_back(const Vector& w);
+        void transform(const Matrix& M);
 	Vector operator[](const unsigned int i) const;
 
     private:
