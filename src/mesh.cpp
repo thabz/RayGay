@@ -103,7 +103,19 @@ void Mesh::addTriangle(const Vector* c, const Vector2* uv) {
     for(int i = 0; i < 3; i++) {
 	vertices[t->vertex[i]].tris.push_back(tri);
     }
-    
+}
+
+/**
+ * Add a quad to the mesh. This results in two triangles being added.
+ *
+ * @param corners A pointer to four vertices in clockwise direction
+ * @param uv A pointer to four uv coordinates
+ */
+void Mesh::addQuad(const Vector* corners, const Vector2* uv) {
+    addTriangle(corners[0],corners[1],corners[2],
+	        uv[0],uv[1],uv[2]);
+    addTriangle(corners[0],corners[2],corners[3],
+	        uv[0],uv[2],uv[3]);
 }
 
 void Mesh::computeAdjacentTris() {

@@ -90,6 +90,9 @@ class Mesh : public ObjectCollection {
 
 	/// Add a triangle to the mesh
 	void addTriangle(const Vector* corners, const Vector2* uv);
+	
+	/// Add a quad to the mesh
+	void addQuad(const Vector* corners, const Vector2* uv);
 
 	/// Add a triangle to the mesh
         void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3);

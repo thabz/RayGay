@@ -16,6 +16,9 @@ void ObjectGroup::transform(const Matrix &m) {
     for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	(*p)->transform(m);
     }
+    for (vector<ObjectCollection*>::iterator p = objectCollections.begin(); p != objectCollections.end(); p++) {
+	(*p)->transform(m);
+    }
 }
 
 /**
@@ -26,6 +29,9 @@ void ObjectGroup::addParts(SpaceSubdivider* space) {
     for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	space->addObject(*p);
     }
+    for (vector<ObjectCollection*>::iterator p = objectCollections.begin(); p != objectCollections.end(); p++) {
+	(*p)->addParts(space);
+    }
 }
 
 /**
@@ -33,6 +39,9 @@ void ObjectGroup::addParts(SpaceSubdivider* space) {
  */
 void ObjectGroup::prepare() {
     for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
+	(*p)->prepare();
+    }
+    for (vector<ObjectCollection*>::iterator p = objectCollections.begin(); p != objectCollections.end(); p++) {
 	(*p)->prepare();
     }
 }
@@ -44,4 +53,13 @@ void ObjectGroup::prepare() {
  */
 void ObjectGroup::addObject(object* obj) {
     objects.push_back(obj);
+}
+
+/**
+ * Add an subobject-collection to this collection
+ *
+ * @param obj A subobjectcollection
+ */
+void ObjectGroup::addObject(ObjectCollection* obj) {
+    objectCollections.push_back(obj);
 }

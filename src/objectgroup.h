@@ -23,9 +23,13 @@ class ObjectGroup : public ObjectCollection {
     protected:
 	/// Add an object to this group
 	void addObject(object* obj);
+	
+	/// Add an objectcollection to this group
+	void addObject(ObjectCollection* obj);
 
     private:
 	std::vector<object*> objects;
+	std::vector<ObjectCollection*> objectCollections;
 };
 
 #endif

@@ -43,6 +43,7 @@
 #include "bsp.h"
 #include "necklace.h"
 #include "wireframe.h"
+#include "teapot.h"
 
 #include "paths/linesegment.h"
 #include "paths/spiral.h"
@@ -163,6 +164,7 @@ void test_columns() {
 #define column_radius 100    
 #define box_height 20    
 
+    /*
     Circle* bottom_c = new Circle(Vector(0,-150,0),column_radius,Vector(0,1,0));
     Circle* top_c = new Circle(Vector(0,top,0),column_radius,Vector(0,1,0));
     Vector top_p[num];
@@ -177,11 +179,13 @@ void test_columns() {
     scene.addObject(bottom_box);
     Box* top_box = new Box(Vector(-column_radius-cyl_radii,top,-column_radius-cyl_radii),Vector(column_radius+cyl_radii,top+box_height,column_radius+cyl_radii),MATERIAL_DULL_BLUE); 
     scene.addObject(top_box);
+*/
     
-    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); /* Floor */
+    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); // Floor
     scene.addObject(&b);
 
-
+    Teapot* teapot = new Teapot(Vector(0,0,0),100,6,MATERIAL_SHINY_BLUE);
+    scene.addObject(teapot);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
