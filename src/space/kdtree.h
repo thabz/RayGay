@@ -41,13 +41,17 @@ class KdTree {
     private:
 	class KdNode {
 	    public:
-		// Left child
-		KdNode* left;  
 		union {
 		    // Enclosed objects when this is a leaf
-		    std::vector<Object*>* objects;
-		    // Right child
+		    Object** objects;
+		    // Right child when not a leaf
 		    KdNode* right;
+		};
+		union {
+		    // Number of objects when this is a leaf
+		    unsigned int num;
+		    // Left child when not a leaf
+		    KdNode* left;  
 		};
 		// Position of splitting plane
 		float splitPlane;

@@ -15,14 +15,12 @@
 #define VERBOSE
 #define SANITY_CHECK
 
-#define KD_TREE_MAX 3
+#define KD_TREE_MAX 8
 #define KD_TREE_MAX_DEPTH 100
 
 KdTree::KdTree() {
     prepared = false;
     added_objects = new vector<Object*>;
-    cout << "Size of BoundedObject: " << sizeof(BoundedObject) << endl;
-    cout << "Size of unsigned int: " << sizeof(unsigned int) << endl;
 }
 
 KdTree::~KdTree() {
@@ -175,11 +173,12 @@ KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, unsigned int depth) {
     new_node->splitPlane = curNode->splitPlane;
     nodes_count++;
     if (curNode->axis == -1) {
-	new_node->objects = new vector<Object*>;
+	unsigned int num = curNode->bobjects->size();
+	new_node->objects = new (Object*)[num];
+	new_node->num = num;
 	//new_node->objects->reserve(curNode->bobjects->size());
-	for(unsigned int j = 0; j < curNode->bobjects->size(); j++) {
-	    Object* obj_ptr = curNode->bobjects->operator[](j)->object;
-	    new_node->objects->push_back(obj_ptr);
+	for(unsigned int j = 0; j < num; j++) {
+	    new_node->objects[j] = curNode->bobjects->operator[](j)->object;
 	}
 	delete curNode->bobjects;
     } else {
@@ -336,17 +335,15 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 
 	// Intersect with all objects in list, discarding
 	// those lying before stack[enPt].t or farther than stack[exPt].t
-	if (!curNode->objects->empty()) {
+	if (curNode->num > 0) {
 	    Object* object_hit = NULL;
 	    double smallest_t = stack[exPt].t;
-	    const vector<Object*>& objects = *(curNode->objects);
-	    unsigned int objects_size = objects.size();
 	    const double s_min_t = MAX(0.0,stack[enPt].t);
-	    for (unsigned int i = 0; i < objects_size; i++) {
-		double i_t = objects[i]->fastIntersect(ray);
+	    for (unsigned int i = 0; i < curNode->num; i++) {
+		double i_t = curNode->objects[i]->fastIntersect(ray);
 		if (i_t > s_min_t && i_t < smallest_t) {
 		    smallest_t = i_t;
-		    object_hit = objects[i];
+		    object_hit = curNode->objects[i];
 		}
 	    }
 	    if (object_hit != NULL) {
@@ -428,14 +425,12 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
 
 	// Intersect with all objects in list, discarding
 	// those lying before stack[enPt].t or farther than stack[exPt].t
-	if (!curNode->objects->empty()) {
-	    const vector<Object*> &objects = *(curNode->objects);
-	    unsigned int objects_size = objects.size();
+	if (curNode->num > 0) {
 	    const double min_t = MAX(0.0,stack[enPt].t);
-	    for (unsigned int i = 0; i < objects_size; i++) {
-		double i_t = objects[i]->fastIntersect(ray);
+	    for (unsigned int i = 0; i < curNode->num; i++) {
+		double i_t = curNode->objects[i]->fastIntersect(ray);
 		if (i_t > min_t && i_t < stack[exPt].t) {
-		    return objects[i];
+		    return curNode->objects[i];
 		}
 	    }
 	}
