@@ -38,6 +38,8 @@ class Triangle : public Object {
 	/// The triangle's own normal
         unsigned int normali;
 
+	virtual SceneObject* clone() const { return NULL; };
+
     private:
 	Intersection _intersect(const Ray& ray) const;
 	Mesh* mesh;

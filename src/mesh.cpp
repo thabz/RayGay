@@ -334,6 +334,22 @@ std::vector<Linesegment>* Mesh::getEdges() {
     return result;
 }
 
+SceneObject* Mesh::clone() const {
+    Mesh* clone = new Mesh(meshType,material);
+    // Copy triangles and that's it.
+    unsigned int num = triangles.size();
+    Vector vs[3];
+    Vector2 uvs[3];
+    for (unsigned int i = 0; i < num; i++) {
+	Tri* tri = tris[i];
+	for (unsigned int j = 0; j < 3; j++) {
+	    vs[j] = cornerAt(tri->vertex[j]);
+	    uvs[j] = tri->uv[j];
+	}
+	clone->addTriangle(vs,uvs);
+    }
+    return clone;
+}
 
 // ----------------------------------------------------------------------------
 Mesh::Edge::Edge(int iV0, int iV1) {

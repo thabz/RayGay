@@ -31,6 +31,8 @@ class Cylinder : public BooleanOperand {
 
 	virtual Vector2 getUV(const Intersection& intersection) const;
 
+	virtual SceneObject* clone() const;
+
     private:
 	virtual Intersection _intersect(const Ray& ray) const;
 	void prepareMatrices();

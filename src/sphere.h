@@ -41,6 +41,8 @@ class Sphere : public BooleanOperand {
 
 	virtual Vector2 getUV(const Intersection& intersection) const;
 
+	virtual SceneObject* clone() const;
+
     private:
 	Vector center;
 	double radius;

@@ -137,3 +137,8 @@ Vector2 Sphere::getUV(const Intersection& intersection) const {
     return Vector2(u,v);
 }
 
+SceneObject* Sphere::clone() const {
+    Sphere* result = new Sphere(*this);
+    return result;
+}
+

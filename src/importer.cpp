@@ -1,9 +1,11 @@
 
 #include <unistd.h>
-#include "importer.h"
-#include "scene.h"
 #include <fstream>
 #include <iostream>
+#include <cassert>
+
+#include "importer.h"
+#include "scene.h"
 #include "camera.h"
 #include "box.h"
 #include "necklace.h"
@@ -128,7 +130,10 @@ void Importer::parse(const string& filename) {
     bool naming_object = false;
     string object_name;
     SceneObject* cur_object = NULL;
+    SceneObject* last_referenced_object;
     Camera* camera = scene->getCamera();
+    int grouping = 0;
+    ObjectGroup* cur_group;
 
     while(!stream.eof()) {
 	stream >> command;
@@ -185,9 +190,20 @@ void Importer::parse(const string& filename) {
 	    object_name = readString(stream);
 	    naming_object = true;
 	    cur_object = NULL;
+	} else if (command == "group") {
+	    grouping = 1;
+	    cur_group = new ObjectGroup();
+	} else if (command == "end") {
+	    if (grouping > 0) {
+		grouping = 0;
+		cur_object = cur_group;
+	    } else {
+		cout << "Why end here?" << endl;
+		exit(EXIT_FAILURE);
+	    }
 	} else if (command == "object") {
 	    object_name = readString(stream);
-	    cur_object = getNamedObject(object_name);
+	    cur_object = getNamedObject(object_name)->clone();
 	} else if (command == "circle") {
 	    stream >> str1;
 	    Vector center = readVector(stream);
@@ -269,13 +285,15 @@ void Importer::parse(const string& filename) {
 	    double r = readDouble(stream);
 	    cur_object = new Necklace(*p,num,r,*m);
 	} else if (command == "rotate") {
-	    SceneObject* obj = getNamedObject(readString(stream));
+	    SceneObject* obj = last_referenced_object;
+	    assert(obj != NULL);
 	    Vector axis = readVector(stream);
 	    double angle = readDouble(stream);
 	    Matrix m = Matrix::matrixRotate(axis,angle);
 	    obj->transform(m);
 	} else if (command == "translate") {
-	    SceneObject* obj = getNamedObject(readString(stream));
+	    SceneObject* obj = last_referenced_object;
+	    assert(obj != NULL);
 	    Vector axis = readVector(stream);
 	    Matrix m = Matrix::matrixTranslate(axis);
 	    obj->transform(m);
@@ -292,12 +310,19 @@ void Importer::parse(const string& filename) {
 	}
 
 	if (cur_object != NULL) {
-	    if (naming_object) {
+	    if (naming_object && grouping == 0) {
 		putNamedObject(object_name,cur_object);
 		naming_object = false;
+	    }
+	    if (grouping == 1) {
+		cur_object = cur_group;
+		grouping = 2;
+	    } else if (grouping == 2) {
+		cur_group->addObject(cur_object);
 	    } else {
 		scene->addObject(cur_object);
 	    }
+	    last_referenced_object = cur_object;
 	    cur_object = NULL;
 	}
     }

@@ -44,6 +44,8 @@ class Boolean : public BooleanOperand {
 
 	virtual Vector2 getUV(const Intersection& intersection) const;
 
+	virtual SceneObject* clone() const;
+
     private:
 	BooleanOperand* _lhs;
 	BooleanOperand* _rhs;

@@ -176,3 +176,6 @@ Intersection Cylinder::_intersect(const Ray& ray) const {
     }
 }
 
+SceneObject* Cylinder::clone() const {
+    return new Cylinder(*this);
+}

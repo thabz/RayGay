@@ -18,9 +18,12 @@ class ObjectGroup : public SceneObject {
 	/// Prepare object
 	void prepare();
 
-    protected:
+	virtual SceneObject* clone() const;
+	
 	/// Add an object to this group
 	void addObject(SceneObject* obj);
+
+    protected:
 
     private:
 	std::vector<SceneObject*> objects;

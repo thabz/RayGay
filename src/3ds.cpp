@@ -114,9 +114,9 @@ void ThreeDS::load3ds(const string& filename) {
 	//getch(); //Insert this command for debug (to wait for keypress for each chuck reading)
 
 	fread (&l_chunk_id, 2, 1, l_file); //Read the chunk header
-	printf("ChunkID: %x\n",l_chunk_id); 
+	//printf("ChunkID: %x\n",l_chunk_id); 
 	fread (&l_chunk_lenght, 4, 1, l_file); //Read the lenght of the chunk
-	printf("ChunkLenght: %x\n",l_chunk_lenght);
+	//printf("ChunkLenght: %x\n",l_chunk_lenght);
 
 	switch (l_chunk_id)
 	{
@@ -270,7 +270,7 @@ void ThreeDS::load3ds(const string& filename) {
 		    fread(&val, sizeof(float), 1, l_file);
 		    mesh_matrix.set(3,i,val);
 		}
-		cout << mesh_matrix << endl;
+		//cout << mesh_matrix << endl;
 
 		break;
 

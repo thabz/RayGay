@@ -118,6 +118,7 @@ class Mesh : public ObjectCollection {
 	const Vector& cornerAt(unsigned int i) const { return corners[i]; };
 
 	void prepare();
+	virtual SceneObject* clone() const;
 
     private:
 	MeshType meshType;

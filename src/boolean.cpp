@@ -165,3 +165,10 @@ Vector2 Boolean::getUV(const Intersection& intersection) const {
     // TODO: Implement
 }
 
+SceneObject* Boolean::clone() const {
+    BooleanOperand* lhs = dynamic_cast<BooleanOperand*>(this->_lhs->clone());
+    BooleanOperand* rhs = dynamic_cast<BooleanOperand*>(this->_rhs->clone());
+    return new Boolean(lhs,this->_op,rhs,this->_material);
+}
+
+
