@@ -13,7 +13,7 @@ class Ray;
 class Vector2;
 
 /// A cylinder object
-class Cylinder : public object {
+class Cylinder : public BooleanOperand {
 
     public:
 	/// Constructor
