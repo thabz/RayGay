@@ -1,48 +1,29 @@
 
 INCLUDES = -I$(top_srcdir)/src 
 
-# Make bison generate the token header file parser.tab.h
-AM_YFLAGS = -d
-
 noinst_LTLIBRARIES = libparser.la
 
-libparser_la_SOURCES = \
-		      parser.yy		\
-		      tokenizer.ll	\
-		      assignments.h	\
-		      assignments.cpp 	\
-		      boolnodes.cpp	\
-		      boolnodes.h	\
-		      cameranode.h	\
-		      cameranode.cpp	\
-		      fileposition.h	\
-		      fileposition.cpp	\
-		      floatnodes.h	\
-		      floatnodes.cpp	\
-		      function.h	\
-		      function.cpp 	\
-		      langnodes.h	\
-		      langnodes.cpp 	\
-		      lightnodes.h	\
-		      lightnodes.cpp	\
-		      materialnodes.h	\
-		      materialnodes.cpp \
-		      objectcollector.h	\
-		      objectcollector.cpp \
-		      parserclass.h	\
-		      parserclass.cpp 	\
-		      pathnodes.h	\
-		      pathnodes.cpp	\
-		      rgbnodes.h	\
-		      runtimeexception.h \
-		      sceneobjectnodes.h \
-		      sceneobjectnodes.cpp \
-		      syntaxnode.h	\
-		      syntaxnode.cpp	\
-		      transformationnodes.h	\
-		      vectornodes.h	\
-		      vectornodes.cpp
+libparser_la_SOURCES = pathfactory.cpp		\
+		       pathfactory.h		\
+		       camerafactory.cpp	\
+		       camerafactory.h		\
+		       parser.cpp		\
+		       parser.h			\
+		       sceneobjectfactory.h	\
+		       sceneobjectfactory.cpp	\
+		       lightsourcefactory.h	\
+		       lightsourcefactory.cpp	\
+		       transformationfactory.h	\
+		       transformationfactory.cpp \
+		       materialfactory.h	\
+		       materialfactory.cpp	\
+		       texturefactory.h		\
+		       texturefactory.cpp	\
+		       mathfactory.h		\
+		       mathfactory.cpp		\
+                       converters.h		\
+                       converters.cpp		\
+		       wrapper.cpp		\
+		       wrapper.h
 
-BUILT_SOURCES = parser.h 
-EXTRA_DIST = parser.h
-
+libparser_la_LIBADD = @GUILE_LDFLAGS@		       

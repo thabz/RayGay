@@ -27,9 +27,6 @@ class Material {
 
 	void setDiffuseTexture(Texture* texture);
 	void setBumpTexture(Texture* texture, double bumpHeight);
-	void setRepeatX(const unsigned int repeatX) { this->repeatX = repeatX; };
-	void setRepeatY(const unsigned int repeatY) { this->repeatY = repeatY; };
-
 
 	double getKd() const { return _kd; } ;
 	void setKd(double kd) { _kd = kd; };
@@ -86,7 +83,6 @@ class Material {
 	double gloss_angle_rad;
 
 	double bumpHeight;
-	unsigned int repeatX; unsigned int repeatY;
 
 	Texture* texture_diffuse;
 	Texture* texture_bump;

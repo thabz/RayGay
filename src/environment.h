@@ -3,7 +3,6 @@
 #define ENVIRONMENT_H
 
 #include "scene.h"
-#include "parser/objectcollector.h"
 
 class ObjectCollector;
 class PreviewWindow;
@@ -20,8 +19,6 @@ class Environment {
 	void setFilterStack(FilterStack* f) { this->filter_stack = f; };
 	FilterStack* getFilterStack() const { return this->filter_stack; };
 
-	ObjectCollector* getObjectCollector() { return this->object_collector; };
-
 	bool hasPreviewWindow() { return this->has_preview_window; }
 	void hasPreviewWindow(bool state) { this->has_preview_window = state; }
 	PreviewWindow* getPreviewWindow() const { return this->preview_window; };
@@ -33,7 +30,6 @@ class Environment {
     private:
 	Scene* scene;
 	FilterStack* filter_stack;
-	ObjectCollector* object_collector;
 	PreviewWindow* preview_window;
 	bool has_preview_window;
 	bool verbose;
@@ -43,7 +39,6 @@ class Environment {
 
 inline
 Environment::Environment() {
-    object_collector = new ObjectCollector();
     verbose = false;
     filter_stack = NULL;
 }

@@ -8,6 +8,7 @@
 #include "environment.h"
 #include "window.h"
 #include "image/image.h"
+#include "math/constants.h"
 
 /**
  * Construct a new job pool and create inital tiles/jobs.
@@ -31,10 +32,10 @@ void RenderJobPool::init(int w, int h, int cell_size) {
     double count = 0;
     for(int y = 0; y < (h / cell_size)+1; y++) {
 	job.begin_y = y*cell_size;
-	job.end_y = min((y+1)*cell_size,h);
+	job.end_y = MIN((y+1)*cell_size,h);
 	for(int x = 0; x < (w / cell_size)+1; x++) {
 	    job.begin_x = x*cell_size;
-	    job.end_x = min((x+1)*cell_size, w);
+	    job.end_x = MIN((x+1)*cell_size, w);
 	    if (job.begin_x < w &&
 		job.begin_y < h &&
 		job.begin_x < job.end_x && 
@@ -140,7 +141,7 @@ void RenderJobPool::markJobDone(RenderJob* job) {
 	    Environment::getUniqueInstance()->getPreviewWindow()->setProgress(progress);
 	} else {
 	    int percentage = (int)(progress * 100);
-	    cout << "Progress: " << percentage << "%\r" << flush;
+	    std::cout << "Progress: " << percentage << "%\r" << std::flush;
 	}
     }
 }

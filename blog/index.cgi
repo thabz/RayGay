@@ -34,7 +34,7 @@ foreach my $entry (sort {$b cmp $a} @entries) {
     my $date = $entry;
     $date =~ s/\.html//;
     my $entryHTML = getEntry($entry);
-    $HTML .= qq|<tr><td style="border-bottom: 1px dotted #999999; border-top: 1px dotted #999999">$date</td></tr>|;
+    $HTML .= qq|<tr><td class="dateheader">$date</td></tr>|;
     $HTML .= qq|<tr><td>&nbsp;</td></tr>|;
     $HTML .= qq|<tr><td align="justify">$entryHTML</td></tr>|;
     $HTML .= qq|<tr><td>&nbsp;</td></tr>|;
@@ -53,6 +53,17 @@ Content-type: text/html
 body {
       /* font-family: "Trebuchet MS",Georgia,Helvetica,Arial; */
        font-size: 12pt;
+}
+
+td.dateheader {
+    font-family: Arial, Helvetica;
+    border-bottom: 1px dotted #999999; 
+    background-color: #f8f8f8;
+    border-top: 1px dotted #999999;
+    font-weight: bold;
+    color: #808080;
+    text-align: right;
+    letter-spacing: 2pt;
 }
 
 span.title {

@@ -37,6 +37,10 @@ class RendererSettings {
 	int threads_num;
 	/// Frames in animation
 	int anim_frames;
+	/// Width of output image
+	int image_width;
+	/// Height of output image
+	int image_height;
 };
 
 /**
@@ -54,6 +58,8 @@ inline RendererSettings::RendererSettings() {
     renderertype = NONE;
     camera_paths = 10;
     anim_frames = 1;
+    image_width = 640;
+    image_height = 480;
 }
 
 #endif

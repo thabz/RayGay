@@ -11,6 +11,7 @@
 #include "exception.h"
 #include <cassert>
 #include <iostream>
+#include <fstream>
 #include <cmath>
 #include <string>
 #include <memory.h>
@@ -133,11 +134,27 @@ void Image::clipColors() {
  * Loads the image from a tga 24 og 32 bit uncompressed tga-file.
  */
 Image* Image::load(const std::string& filename) {
+
+    // Checking that file exists
+    bool exists = false;
+    fstream fin;
+    fin.open(filename.c_str(),ios::in);
+    if (fin.is_open()) {
+	exists = true;
+    }
+    fin.close();
+    if (!exists) {
+	throw_exception("File " + filename + " not found.");
+    }
+
+    // Create a loader
     ImageIO* io = getImageIO(filename);
+
+    // Read image data
     Image* image = io->load(filename);
     delete io;
 
-#if VERBOSE    
+#ifdef VERBOSE    
     cout << "Loaded " << filename << " " << image->getWidth() << "x" << image->getHeight() << endl;
 #endif    
     return image;

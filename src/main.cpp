@@ -12,6 +12,7 @@
 
 #include "stats.h"
 #include "exception.h"
+#include "environment.h"
 
 #include "math/vector.h"
 #include "math/matrix.h"
@@ -31,15 +32,6 @@
 #include "photon/photontracer.h"
 #include "photon/irradiancecache.h"
 
-#include "parser/assignments.h"    
-#include "parser/floatnodes.h"    
-#include "parser/syntaxnode.h"    
-#include "parser/vectornodes.h"    
-#include "parser/rgbnodes.h"    
-#include "parser/langnodes.h"    
-#include "parser/transformationnodes.h"    
-#include "parser/lightnodes.h"    
-#include "parser/cameranode.h"    
 #include "parser/parser.h"
 
 #include "renderersettings.h"
@@ -52,13 +44,14 @@
 
 using namespace std;
 
-extern FILE* yyin;
-extern void yyparse();
-extern void run_interpreter();
-extern void delete_interpreter();
-extern void init_parser(string filename);
-extern Vector2 getImageSize();
-extern RendererSettings* getRendererSettings();
+RendererSettings* renderer_settings = new RendererSettings();
+Parser* parser = NULL;
+PreviewWindow* preview_window = NULL;
+
+
+RendererSettings* getRendererSettings() {
+    return renderer_settings;
+}
 
 vector<Renderer*> active_renderers;
 
@@ -83,6 +76,10 @@ int availableWindowToolkit() {
     return COCOA;
 #endif    
     return NONE;
+}
+
+void parser_assign_var(string name, double value) {
+
 }
 
 PreviewWindow* windowFactory(int w, int h) {
@@ -165,7 +162,6 @@ void do_filtering(Image* image, FilterStack* filterstack) {
 void render_frame(int cur_frame, string outputfile, int jobs) {
 
     Stats::getUniqueInstance()->clear();
-    //Stats::getUniqueInstance()->disable();
     Stats::getUniqueInstance()->put(STATS_THREADS,jobs);
 
     srand(1); // Make sure rand is seeded consistently.
@@ -173,23 +169,17 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     RendererSettings* renderersettings = getRendererSettings();
 
     Scene* scene = new Scene();
+
     Environment::getUniqueInstance()->setScene(scene);
 
-    Assignments::getUniqueInstance()->setNamedFloat("frame",double(cur_frame));
-    Assignments::getUniqueInstance()->setNamedFloat("clock",double(cur_frame)/double(renderersettings->anim_frames));
-    run_interpreter();
+    parser_assign_var("frame",double(cur_frame));
+    parser_assign_var("clock",double(cur_frame)/double(renderersettings->anim_frames));
 
+    parser->run();
+    parser->populate(scene,renderersettings);
 
     if (renderersettings->renderertype == RendererSettings::NONE) {
 	return;
-    }
-
-    Vector2 img_size = getImageSize();
-    scene->getCamera()->setImageSize(int(img_size[0]),int(img_size[1]));
-    Image* img = new Image(int(img_size[0]),int(img_size[1]));
-
-    if (Environment::getUniqueInstance()->hasPreviewWindow()) {
-	Environment::getUniqueInstance()->getPreviewWindow()->setImage(img);
     }
 
     if (scene->getObjects().size() == 0) {
@@ -200,6 +190,23 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     KdTree* space = new KdTree();
     scene->initSpace(space);
     cout << "Done." << endl;
+
+
+    int img_w = renderersettings->image_width;
+    int img_h = renderersettings->image_height;
+
+    scene->getCamera()->setImageSize(img_w,img_h);
+    Image* img = new Image(img_w, img_h);
+
+    Environment* env = Environment::getUniqueInstance();
+
+    // Open preview window if enabled and not yet open
+    if (env->hasPreviewWindow() && preview_window == NULL) {
+	preview_window = windowFactory(img_w, img_h);
+	env->setPreviewWindow(preview_window);
+	preview_window->run();
+	preview_window->setImage(img);
+    }
 
     renderersettings->threads_num = jobs;
 
@@ -212,15 +219,14 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     }
 
     // Create and prepare job pool
-    RenderJobPool* job_pool = new RenderJobPool(img->getWidth(),img->getHeight(),64);
+    RenderJobPool* job_pool = new RenderJobPool(img_w,img_h,64);
 
     if (renderersettings->anim_frames == 1) {
-	cout << "Still render (" << img->getWidth() << "x" << img->getHeight() << ")" << endl;
+	cout << "Still render (" << img_w << "x" << img_h << ")" << endl;
     } else {
-	cout << "Animation render (" << img->getWidth() << "x" << img->getHeight() << ", " << renderersettings->anim_frames << " frames)" << endl;
-
+	cout << "Animation render (" << img_w << "x" << img_h 
+	     << ", " << renderersettings->anim_frames << " frames)" << endl;
     }
-
 
     Stats::getUniqueInstance()->beginTimer("Rendering");
     
@@ -291,29 +297,23 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 }
 
 void work(string scenefile, string outputfile, int jobs) {
+
     char original_working_dir[1024];
+
+    // Change cwd to this files parent folder
     getcwd(original_working_dir,1024);
+    string original_cwds = string(original_working_dir);
+    string cwd = string(original_working_dir) + "/" + scenefile;
+    string filename = string(cwd);
+    int idx = cwd.find_last_of('/');
+    cwd.resize(idx);
+    filename = filename.substr(idx+1, filename.length());
+    chdir(cwd.c_str());
 
-    init_parser(scenefile);
-    yyparse();
-    fclose(yyin);
-
-    chdir(original_working_dir);
+    parser = new Parser(filename);
     
     int frames_num = getRendererSettings()->anim_frames;
     Environment* env = Environment::getUniqueInstance();
-
-    if (getRendererSettings()->renderertype == RendererSettings::NONE) {
-	env->hasPreviewWindow(false);
-    }
-
-    PreviewWindow* preview_window = NULL;
-    if (env->hasPreviewWindow()) {
-	Vector2 size = getImageSize();
-	preview_window = windowFactory(int(size[0]),int(size[1]));
-	env->setPreviewWindow(preview_window);
-	preview_window->run();
-    }
 
     if (frames_num == 1) {
 	render_frame(0,outputfile,jobs);
@@ -325,11 +325,13 @@ void work(string scenefile, string outputfile, int jobs) {
 	    render_frame(frame,file_prefix + outputfile,jobs);
 	}
     }
-    delete_interpreter();
+    // TODO: delete_interpreter();
 
-    if (env->hasPreviewWindow()) {
+    if (env->hasPreviewWindow() && preview_window != NULL) {
 	preview_window->stop();
     }
+
+    chdir(original_working_dir);
 }
 
 void print_usage() {
@@ -397,7 +399,7 @@ int main(int argc, char *argv[]) {
     srand(1); // Make sure rand is seeded consistently.
 
     try {
-	work(scenefile,outfile,jobs); 
+	work(scenefile, outfile, jobs); 
     } catch (Exception e) {
 	cout << "Exception: " << e.getMessage() 
 	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;

@@ -1,6 +1,3 @@
-tokenizer.cc
-parser.h
-parser.cc
 .libs
 Makefile.in
 Makefile

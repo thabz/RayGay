@@ -39,7 +39,6 @@ void Material::reset() {
    texture_diffuse= NULL;
    texture_bump = NULL;
    eta = 3;
-   repeatY = 1; repeatX = 1;
    gloss_enabled = false;
    no_shadow = false;
    _spec_coeff = 1;
