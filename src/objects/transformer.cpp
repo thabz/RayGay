@@ -24,6 +24,14 @@ Intersection Transformer::_intersect(const Ray& ray) const {
     }
 }
 
+double Transformer::_fastIntersect(const Ray& ray) const {
+    return _intersect(ray).getT();
+}
+
+Intersection Transformer::_fullIntersect(const Ray& ray, const double t) const {
+    return _intersect(ray);
+}
+
 
 void Transformer::transform(const Matrix& m) {
     transformation = transformation * m;

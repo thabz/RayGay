@@ -43,7 +43,6 @@ class Triangle : public Object {
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
 
     private:
-	Intersection _intersect(const Ray& ray) const;
 	Mesh* mesh;
 	int _tri_idx;
 	double edge1[3], edge2[3], vert0[3];

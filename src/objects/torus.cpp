@@ -35,8 +35,11 @@ void Torus::transform(const Matrix& m) {
     prepareMatrices();
 }
 
+Intersection Torus::_fullIntersect(const Ray& ray, const double t) const {
+    return Intersection(ray.getPoint(t),t);
+}
 
-Intersection Torus::_intersect(const Ray& ray) const {
+double Torus::_fastIntersect(const Ray& ray) const {
 
     Vector Rd = inverse_rotation * ray.getDirection();
     Vector Ro = inverse_transformation * ray.getOrigin();
@@ -78,10 +81,10 @@ Intersection Torus::_intersect(const Ray& ray) const {
     double roots[4];
     int num = Math::solveQuartic(a1,a2,a3,a4,roots);
     if (num == 0) {
-	return Intersection();
+	return -1;
     } else {
 	double t = roots[0];
-	return Intersection(transformation * ray.getPoint(t + closer),t + closer);
+	return t + closer;
     }
 }
 

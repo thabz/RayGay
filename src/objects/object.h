@@ -21,7 +21,6 @@ class Object : public SceneObject {
     public:
         /// Return the nearest intersection to ray's origin
 	virtual Intersection fullIntersect(const Ray& ray, const double t) const;
-
 	double fastIntersect(const Ray& ray) const;
 
 	/// Returns the normalvector at a point on this objects surface
@@ -30,17 +29,8 @@ class Object : public SceneObject {
 	/// Transform this object
 	virtual void transform(const Matrix& m) = 0;
 
-	/// Returns the materiale of this object
-	virtual const Material* getMaterial() const { 
-	    return material;
-	    /*
-	    if (last_intersection.isIntersected()) {
-		return last_intersection.getObject()->material;
-	    } else {
-		return material;
-	    }
-	    */
-	};
+	/// Returns the material of this object
+	virtual const Material* getMaterial() const { return material; }; 
 
 	/// The smallest box containing this object
 	virtual BoundingBox boundingBoundingBox() const = 0;
@@ -56,9 +46,8 @@ class Object : public SceneObject {
     protected:
 	Object(const Material* material);
 	/// Internal intersect method that subclasses must implement
-	virtual Intersection _fullIntersect(const Ray& ray, const double t) const;
-	virtual Intersection _intersect(const Ray& ray) const = 0;
-	virtual double _fastIntersect(const Ray& ray) const;
+	virtual Intersection _fullIntersect(const Ray& ray, const double t) const = 0;
+	virtual double _fastIntersect(const Ray& ray) const = 0;
 
     private:	
 	// Two members for caching last intersection
@@ -67,11 +56,6 @@ class Object : public SceneObject {
 	const Material* material;
 };
 
-/**
- *  A caching proxy around the private _intersect(Ray) method in subclasses.
- *  Because an object can exist in several bounding boxes we end up shooting
- *  the same ray at the same object several times.
- */
 inline
 Intersection Object::fullIntersect(const Ray& ray, const double t) const {
     Intersection result = _fullIntersect(ray,t);
@@ -79,11 +63,21 @@ Intersection Object::fullIntersect(const Ray& ray, const double t) const {
     return result;
 }
 
-inline
-Intersection Object::_fullIntersect(const Ray& ray, const double t) const {
-    return _intersect(ray);
-}
-
+/**
+ *  Finds the smallest distance along a ray where this object is intersected by the ray.
+ *
+ *  @return positive distance along ray if and only if an intersection occured; otherwise -1 is returned.
+ *  
+ *  This is basically a caching proxy around the private _fastIntersect(Ray)
+ *  method in subclasses, where the real intersection tests are done.
+ *
+ *  Because an object can exist in several bounding boxes we end up shooting
+ *  the same ray at the same object several times. Therefore each ray
+ *  is assigned an unique id which allows us to reuse previous object-ray
+ *  intersection results.
+ *
+ *  This technique is also called mailboxing.
+ */
 inline
 double Object::fastIntersect(const Ray& ray) const {
     if (ray.getId() != last_ray) {

@@ -28,17 +28,24 @@ class IsoSurface : public Object {
 	/// Evaluate the scalar field function defining this surface
 	virtual double evaluateFunction(const Vector& point) const = 0;
 
-	Intersection _intersect(const Ray& ray) const;
+	double _fastIntersect(const Ray& ray) const;
+	Intersection _fullIntersect(const Ray& ray, const double t) const;
 
     private:
 	bool inside(const Vector& v) const;
-	double recurse(const Ray& ray, double t_begin, double t_end) const;
+	double recurse(const Ray& ray, const double t_begin, const double t_end) const;
+	virtual Intersection _intersect(const Ray& ray) const;
 
 	unsigned int steps;
 	double accuracy;
 	double iso;
 
 };
+
+inline
+bool IsoSurface::inside(const Vector& v) const {
+    return evaluateFunction(v) >= iso;
+}
 
 #endif
 

@@ -48,7 +48,9 @@ class Boolean : public BooleanOperand {
 	BooleanOperand* _lhs;
 	BooleanOperand* _rhs;
 	BooleanOp _op;
-	virtual Intersection _intersect(const Ray& ray) const;
+	double _fastIntersect(const Ray& ray) const;
+	Intersection _fullIntersect(const Ray& ray, const double t) const;
+	Intersection _intersect(const Ray& ray) const;
 };
 
 #endif

@@ -68,3 +68,11 @@ double Bound::fastIntersect(const Ray& ray) const {
 	return -1;
     }
 }
+
+double Bound::_fastIntersect(const Ray& ray) const {
+    return fastIntersect(ray);
+}
+
+Intersection Bound::_fullIntersect(const Ray& ray, const double t) const {
+    return fullIntersect(ray,t);
+}

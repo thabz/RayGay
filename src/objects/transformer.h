@@ -28,6 +28,8 @@ class Transformer : public Object {
 
     private:
 	Intersection _intersect(const Ray& ray) const;
+	double _fastIntersect(const Ray& ray) const;
+	Intersection _fullIntersect(const Ray& ray, const double t) const;
 
 	virtual Intersection localIntersect(const Ray& ray) const = 0;
 	virtual Vector localNormal(const Intersection& i) const = 0;

@@ -91,6 +91,15 @@ Vector2 Cylinder::getUV(const Intersection& intersection) const {
     return Vector2(0,0);
 }
 
+double Cylinder::_fastIntersect(const Ray& ray) const {
+    return _intersect(ray).getT();
+}
+
+Intersection Cylinder::_fullIntersect(const Ray& ray, const double t) const {
+    return _intersect(ray);
+}
+
+
 /**
  * The cylinder is transformed so that it begin-point is (0,0,0)
  * and its axis is the y-axis. The intersection results are

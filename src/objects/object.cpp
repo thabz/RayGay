@@ -23,9 +23,3 @@ void Object::prepare() {
     // Default does nothing
 }
 
-// Stand-in untill all subclasses have _fastIntersect and _fullIntersect methods instead of _intersect.
-double Object::_fastIntersect(const Ray& ray) const {
-    Intersection intersection = _intersect(ray);
-    return intersection.getT();
-}
-

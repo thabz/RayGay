@@ -10,6 +10,14 @@ Boolean::Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, const M
     _op = op;
 }
 
+double Boolean::_fastIntersect(const Ray& ray) const {
+    return _intersect(ray).getT();
+}
+
+Intersection Boolean::_fullIntersect(const Ray& ray, const double t) const {
+    return _intersect(ray);
+}
+
 Intersection Boolean::_intersect(const Ray& ray) const {
     Intersection il;
     Intersection ir;

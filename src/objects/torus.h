@@ -61,7 +61,9 @@ class Torus : public BooleanOperand {
 	virtual SceneObject* clone() const;
 
     private:
-	virtual Intersection _intersect(const Ray& ray) const;
+	double _fastIntersect(const Ray& ray) const;
+	Intersection _fullIntersect(const Ray& ray, const double t) const;
+
 	void prepareMatrices();
 
 	double r;
