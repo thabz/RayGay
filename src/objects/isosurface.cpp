@@ -29,12 +29,6 @@ double IsoSurface::refine(const Ray& ray, double t_begin, double t_end, double f
     double f_t_mid, t_mid;
     uint i = 0;
 
-    if (fabs(f_t_begin) < EPSILON)
-	return t_begin;
-	    
-    if (fabs(f_t_end) < EPSILON)
-	return t_end;
-
     //assert(!SAME_SIGN(f_t_begin, f_t_end));
 
     while (i++ < MAX_ITER) {
