@@ -93,5 +93,6 @@ void Scene::initSpace(KdTree* space) {
     }
 
     space->prepare();
+    // TODO: Delete pointers to all scene objects they're unneeded.
     Stats::getUniqueInstance()->endTimer("Preparing space");
 }
