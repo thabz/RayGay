@@ -24,11 +24,12 @@ double IsoSurface::_fastIntersect(const Ray& world_ray) const {
     
     const BoundingBox& bbox = this->_boundingBoundingBox();
     Vector2 inout = bbox.intersect(local_ray);
-    double t_begin = max(inout[0],0.0);
+    if (inout[0] < 0) 
+	return -1;
+    double t_begin = MAX(inout[0],accuracy);
     double t_end = inout[1];
-    bool began_inside;
     if (t_end > t_begin) {
-	began_inside = inside(local_ray.getPoint(t_begin));
+	bool began_inside = inside(local_ray.getPoint(t_begin));
 	double t_step = (t_end - t_begin) / double(steps);
 	for(double t = t_begin; t <= t_end; t += t_step) {
 	    if (began_inside && !inside(local_ray.getPoint(t))) {
@@ -41,7 +42,11 @@ double IsoSurface::_fastIntersect(const Ray& world_ray) const {
 	}
     }
 DONE:
-    return res / local_ray.t_scale;
+    if (res > accuracy) {
+	return res / local_ray.t_scale;
+    } else {
+	return -1;
+    }
 }
 
 /**
