@@ -4,8 +4,6 @@ INCLUDES = -I$(top_srcdir)/src
 noinst_LTLIBRARIES = libobjects.la
 
 libobjects_la_SOURCES = \
-		       3ds.h 		\
-		       3ds.cpp 		\
 		       bezierpatch.h	\
 		       bezierpatch.cpp 	\
 		       blob.h		\
