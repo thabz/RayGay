@@ -2,6 +2,7 @@
 INCLUDES = -I$(top_srcdir)/src 
 
 LDADD = $(top_srcdir)/src/libtracer.a \
+	    $(top_srcdir)/src/parser/libparser.a \
 	    $(top_srcdir)/src/materials/libmaterials.a \
 	    $(top_srcdir)/src/objects/libobjects.a \
 	    $(top_srcdir)/src/paths/libpaths.a \
@@ -10,7 +11,9 @@ LDADD = $(top_srcdir)/src/libtracer.a \
 	    $(top_srcdir)/src/space/libspace.a \
 	    $(top_srcdir)/src/math/libmath.a 
 
-noinst_PROGRAMS = testimage testmath testpaths testspace testobjects testspeed testlanguage teststats testthreads
+noinst_PROGRAMS = testimage testmath testpaths testspace testobjects testspeed testlanguage teststats testthreads testparser
+
+testparser_SOURCES = testparser.cpp
 
 testimage_SOURCES = testimage.cpp
 testimage_LDADD = $(top_srcdir)/src/image/libimage.a $(top_srcdir)/src/math/libmath.a
@@ -37,5 +40,5 @@ teststats_LDADD = $(top_srcdir)/src/libtracer.a
 testthreads_SOURCES = testthreads.cpp
 testthreads_LDADD = 
 
-TESTS = testobjects testimage teststats testlanguage testmath testpaths testspace testthreads
+TESTS = testobjects testimage teststats testlanguage testmath testpaths testspace testthreads testparser
 
