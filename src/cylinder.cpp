@@ -76,9 +76,9 @@ Cylinder::Cylinder(const Path& path, double radius, unsigned int segments, unsig
 	    double ti = double(i) / double(segments);
 	    double tj = double(j) / double(segments);
 	    addTriangle(pp[j],bp[j],bp[i],
-		    Vector2(last_t,tj),Vector2(0,tj),Vector2(0,ti));
+		    Vector2(last_t,tj),Vector2(1,tj),Vector2(1,ti));
 	    addTriangle(pp[i],pp[j],bp[i],
-		    Vector2(last_t,ti),Vector2(last_t,tj),Vector2(0,ti));
+		    Vector2(last_t,ti),Vector2(last_t,tj),Vector2(1,ti));
 	}
     } else {
 	// TODO: Add begin (bp) and end (pp) discs
