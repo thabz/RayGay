@@ -4,6 +4,8 @@
 
 #include "math/vector.h"
 
+class Object;
+
 /// Describing a ray, that is an origin and a direction Vector.
 class Ray {
     public:
@@ -35,6 +37,7 @@ class Ray {
 	/// Number of specular bounces since leaving light
         int specularBounces;
 	int diffuseBounces;
+	void* fromObject;
 	
     private:
 	long id;
@@ -59,6 +62,7 @@ Ray::Ray(const Vector& o, const Vector& d, const double indice) : indice_of_refr
     id = ++seq;
     specularBounces = 0;
     diffuseBounces = 0;
+    fromObject = NULL;
 }
 
 #endif
