@@ -671,7 +671,9 @@ MaterialProp 	: tDIFFUSE RGB
 		}
 		| tGLOSS Expr Expr
                 {
-		    tmpMaterial->enableGloss($2,$3);
+		    FloatNode* num = $2;
+		    FloatNode* angle = $3;
+		    tmpMaterial->enableGloss(num,angle);
 		}
 		;
 
