@@ -9,7 +9,7 @@ TODO:
 * Adaptive supersampling til antialias
 * Cylinder 
 * Separate objectspace and worldspace transformations.
-* Area lights
++ Area lights
 * Bumpmapping
 * 3DS import (meshes, UV, materials)
 * VTune profiling

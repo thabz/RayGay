@@ -39,7 +39,10 @@ public:
     Vector operator*(const double x) const;
     Vector operator/(const double x) const;
     static Vector xProduct (const Vector& v1, const Vector& v2); ///< Returns the scalar product v1 &times; v2
-    
+    bool operator()(const Vector* v1, const Vector* v2) const {
+	return (*v1) == (*v2);
+    }
+    static long hashValue(const Vector* p) { return long(p->x()*p->y()*p->z()); };
 
     double x() const { return _vector[0]; };
     double y() const { return _vector[1]; };

@@ -38,6 +38,7 @@
 #include "circle.h"
 #include "cylinder.h"
 #include "arealight.h"
+#include "pixelstore.h"
 
 using namespace std;
 
@@ -57,11 +58,11 @@ void testScene4() {
     Sphere s4 = Sphere(Vector(-200,50,-200),130.0,chrome);
     Sphere s5 = Sphere(Vector(0,150,0),130.0,chrome);
     scene.addObject(&s1);
-    scene.addObject(&s2);
+/*    scene.addObject(&s2);
     scene.addObject(&s3);
     scene.addObject(&s4);
     scene.addObject(&s5);
-
+*/
     /*
     Cylinder cyl = Cylinder(Vector(-200,-50,200),Vector(-200,50,200),100.0,6,blue);
     scene.addObject(&cyl);
@@ -71,10 +72,10 @@ void testScene4() {
     Spotlight light2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
     Arealight area1 = Arealight(Vector(-2000,2000,2000),Vector(1,-1,-1),1000,50,0.10);
     Arealight area2 = Arealight(Vector(2000,2000,2000),Vector(-1,-1,-1),1000,40,0.10);
-    scene.addLight(&area1);
+//    scene.addLight(&area1);
 //    scene.addLight(&area2);
-    //scene.addLight(&light1);
-    //scene.addLight(&light2);
+    scene.addLight(&light1);
+    scene.addLight(&light2);
     //scene.addLight(&light3);
     
     Box b = Box(Vector(-300,-150,-300),Vector(300,-100,300),green); /* Floor */
@@ -108,6 +109,7 @@ int main(int argc, char *argv[]) {
     Linesegment::test();
     Circle::test();
     Cylinder::test();
+    PixelStore::test();
     cout << "Tests done." << endl;
     // Test scene stuff
     testScene4();

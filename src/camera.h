@@ -3,12 +3,14 @@
 
 #include "vector.h"
 #include "scene.h"
+#include <map>
 
 class Matrix;
 class Intersection;
 class Ray;
 class RGB;
 class Image;
+
 
 class Camera {
     public:

@@ -38,7 +38,7 @@ void Camera::render(Image* img) {
     int img_w = img->getWidth() / 2;
     int img_h = img->getHeight() / 2;
 
-    RGB* mesh = new RGB[(img_w+1)*(img_h+1)*3];
+    RGB* mesh = new RGB[(img_w+1)*(img_h+1)];
 
     for (double y = -img_h; y < img_h; y++) {
         for (double x = -img_w; x < img_w; x++) {
