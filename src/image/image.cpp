@@ -33,7 +33,7 @@ void Image::setRGB(int x, int y, RGB& c) {
     data[(y*width + x)*3 + 2] = c.b();
 }
 
-RGB Image::getRGB(int x, int y) {
+RGB Image::getRGB(int x, int y) const {
     assert(0 <= x && x < width);
     assert(0 <= y && y < height);
 
@@ -42,7 +42,16 @@ RGB Image::getRGB(int x, int y) {
     return rgb;
 }
 
-RGB Image::getTexel(double u, double v) {
+RGB Image::getRGBWrapped(int x, int y) const {
+    x = x % width;
+    y = y % height;
+
+    double *p = &data[3*(y*width + x)];
+    RGB rgb = RGB(p[0],p[1],p[2]);
+    return rgb;
+}
+
+RGB Image::getTexel(double u, double v) const {
     if (u < 0.0) u = 0.0;
     if (u > 1.0) u = 1.0;
     if (v < 0.0) v = 0.0;
@@ -50,6 +59,40 @@ RGB Image::getTexel(double u, double v) {
     assert(width > 0);
     assert(height > 0);
     return getRGB(int(u*(width-1)),int(v*(height-1)));
+}
+
+// Using http://astronomy.swin.edu.au/~pbourke/colour/bicubic/
+RGB Image::getBiCubicTexel(double u, double v) const {
+    if (u < 0.0) u = 0.0;
+    if (u > 1.0) u = 1.0;
+    if (v < 0.0) v = 0.0;
+    if (v > 1.0) v = 1.0;
+    assert(width > 0);
+    assert(height > 0);
+    double x = u*(width-1);
+    double y = v*(height-1);
+    int i = int(x); int j = int(y);
+    double dx = x-i; double dy = y-j;
+
+    RGB result = RGB(0,0,0);
+    for(int m = -1; m <= 2; m++) {
+	for(int n = -1; n <= 2; n++) {
+	    result = result + getRGBWrapped(i+m,j+n) * biCubicR(m-dx) * biCubicR(dy-n);
+	}
+    }
+    return result;
+}
+
+double Image::biCubicR(double x) const {
+    double Pxp2 = biCubicP(x+2);
+    double Pxp1 = biCubicP(x+1);
+    double Px = biCubicP(x);
+    double Pxm1 = biCubicP(x-1);
+    return (Pxp2*Pxp2*Pxp2 - 4*Pxp1*Pxp1*Pxp1 + 6*Px*Px*Px - 4*Pxm1*Pxm1*Pxm1) / 6.0;
+}
+
+double Image::biCubicP(double x) const {
+   return x > 0 ? x : 0; 
 }
 
 #define byte unsigned char

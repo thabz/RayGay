@@ -55,7 +55,7 @@ RGB Scene::getBackgroundColor(const Ray& ray) const {
 	i.getObject()->getUV(i,&u,&v);
         u -= int(u);
 	v -= int(v);
-	return environmentMap->getTexel(u,v);
+	return environmentMap->getBiCubicTexel(u,v);
     }
 }
 

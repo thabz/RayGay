@@ -63,23 +63,23 @@ void testScene4() {
     Sphere s4 = Sphere(Vector(-200,50,-200),130.0,MATERIAL_CHROME);
     Sphere s5 = Sphere(Vector(0,150,0),130.0,MATERIAL_CHROME);
     //Cylinder c1 = Cylinder(Vector(0,0,0),Vector(0,200,0),130,10,MATERIAL_SHINY_RED);
-    /*
+    
     scene.addObject(&s1);
     scene.addObject(&s2);
     scene.addObject(&s3);
     scene.addObject(&s4);
     scene.addObject(&s5);
-    */
+    
   //  scene.addObject(&c1);
 
-    scene.setEnvironmentMap("monp.tga");
+    scene.setEnvironmentMap("stbp.tga");
     
     Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
     Spiral spiral = Spiral(&circle1,100,10);
     Spiral spiral2 = Spiral(&spiral,30,100,0.5);
 
     Cylinder* torus = new Cylinder(circle1,100,50,30,MATERIAL_CHROME);
-    scene.addObject(torus);
+    //scene.addObject(torus);
 
     Tessalation tet = Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
     //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,MATERIAL_SHINY_BLUE);
