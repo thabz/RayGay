@@ -122,26 +122,35 @@ SCM make_blob(SCM s_iso, SCM s_steps, SCM s_accuracy, SCM s_material, SCM s_atom
 
     // Add the atoms
     assert(SCM_NFALSEP (scm_list_p (s_atoms)));
-    uint length = scm_num2int(scm_length(s_atoms),0,"");
-    if (length % 3 != 0) {
-	scm_wrong_type_arg(proc,5,s_atoms);
-    }
-    length /= 3;
+    uint atoms_num = scm_num2int(scm_length(s_atoms),0,"");
     
-    SCM s_center;
-    SCM s_weight;
-    SCM s_radius;
-    Vector center;
-    double weight;
-    double radius;
-    for(uint i = 0; i < length; i++) {
-	s_center = scm_list_ref(s_atoms, scm_int2num(3*i + 0));
-	s_radius = scm_list_ref(s_atoms, scm_int2num(3*i + 1));
-	s_weight = scm_list_ref(s_atoms, scm_int2num(3*i + 2));
-	center = scm2vector(s_center, proc, 5);
-	radius = scm_num2double(s_radius, 5, proc);
-	weight = scm_num2double(s_weight, 5, proc);
-	blob->addAtom(center, radius, weight);
+    for(uint i = 0; i < atoms_num; i++) {
+	SCM s_atom = scm_list_ref(s_atoms, scm_int2num(i));
+
+	assert(SCM_NFALSEP (scm_list_p (s_atom)));
+	uint length = scm_num2int(scm_length(s_atom),0,"");
+
+	if (length == 3) {
+	    SCM s_center = scm_list_ref(s_atom, scm_int2num(0));
+	    SCM s_radius = scm_list_ref(s_atom, scm_int2num(1));
+	    SCM s_weight = scm_list_ref(s_atom, scm_int2num(2));
+	    Vector center = scm2vector(s_center, proc, 1);
+	    double radius = scm_num2double(s_radius, 2, proc);
+	    double weight = scm_num2double(s_weight, 3, proc);
+	    blob->addAtom(center, radius, weight);
+	} else if (length == 4) {
+	    SCM s_from = scm_list_ref(s_atom, scm_int2num(0));
+	    SCM s_to = scm_list_ref(s_atom, scm_int2num(1));
+	    SCM s_radius = scm_list_ref(s_atom, scm_int2num(2));
+	    SCM s_weight = scm_list_ref(s_atom, scm_int2num(3));
+	    Vector from = scm2vector(s_from, proc, 1);
+	    Vector to = scm2vector(s_to, proc, 2);
+	    double radius = scm_num2double(s_radius, 3, proc);
+	    double weight = scm_num2double(s_weight, 4, proc);
+	    blob->addAtom(from, to, radius, weight);
+	} else {
+	    scm_wrong_type_arg(proc,5,s_atoms);
+	}
     }
 
     return sceneobject2scm(blob);
