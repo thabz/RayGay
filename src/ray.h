@@ -9,7 +9,7 @@ class Ray {
     public:
 	Ray();
 	/// Constructor
-	Ray(Vector o, Vector direction, double indice);
+	Ray(const Vector& o, const Vector&  direction, const double indice);
 	/// Destructor
 	~Ray() { };
 

@@ -10,7 +10,7 @@ Ray::Ray() {
     diffuseBounces = 0;
 }
 
-Ray::Ray(Vector o, Vector d, double indice) {
+Ray::Ray(const Vector& o, const Vector& d, const double indice) {
     origin = o;
     direction = d;
     indice_of_refraction = indice;
