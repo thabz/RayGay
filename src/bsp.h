@@ -54,8 +54,8 @@ class BSP : public SpaceSubdivider {
 
 	Intersection intersect(const Ray&,const double,const double) const;
 	Intersection intersect_recurse(const Ray&,const double,const double) const;
-	Intersection intersectForShadow(const Ray&,const double,const double) const;
-	Intersection intersectForShadow_recurse(const Ray&,const double,const double) const;
+	bool intersectForShadow(const Ray&,const double,const double) const;
+	bool intersectForShadow_recurse(const Ray&,const double,const double) const;
 };
 
 #endif
