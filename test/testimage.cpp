@@ -1,9 +1,13 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <cstdio>
 #include <iostream>
 
 #include "image/rgba.h"
+#include "image/image.h"
+
+using namespace std;
 
 void test_rgba() {
     RGBA c;
@@ -27,8 +31,22 @@ void test_rgba() {
     assert(c == RGBA(1.0,2.0,3.0,4.0));
 }
 
+void test_tga() {
+    RGB color = RGB(1.0,0.0,1.0);
+
+    Image* img = new Image(10,20);
+    img->setRGBA(5,15,color);
+    img->save("test.tga");
+    Image* img2 = Image::load("test.tga");
+    assert(img2->getWidth() == 10);
+    assert(img2->getHeight() == 20);
+    assert(RGB(img2->getRGBA(5,15)) == color);
+    remove("test.tga");
+}
+
 int main(int argc, char *argv[]) {
 
     test_rgba();
+    test_tga();
     return EXIT_SUCCESS;
 }
