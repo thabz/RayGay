@@ -1,6 +1,11 @@
 
 #include "math/qmcsequence.h"
 
+/**
+ * The Halton sequence.
+ * 
+ * @see http://www.math.iastate.edu/reu/2001/voronoi/halton_sequence.html
+ */
 class Halton : public QMCSequence {
 
     public:
