@@ -56,10 +56,23 @@ void Mesh::addTriangle(const Vector* c) {
     t->normali = normals.size() - 1;
 
     for(int i = 0; i < 3; i++) {
-	corners.push_back(c[i]);
-	t->vertex[i] = corners.size() - 1;
+	int new_index = findExistingCorner(&c[i]);
+	if (new_index == -1) {
+	   corners.push_back(c[i]);
+	   new_index = corners.size() - 1;
+	}
+        t->vertex[i] = new_index;
     }
+
     triangles.push_back(t);
+}
+
+int Mesh::findExistingCorner(const Vector* c) const {
+    int size = corners.size();
+    for(int i = 0; i < size; i++) {
+	if (corners[i] == *c) return i;
+    }
+    return -1;
 }
 
 // ----------------------------------------------------------------------------
@@ -141,22 +154,6 @@ Intersection Mesh::_intersect(const Ray& ray) const {
     if (!prepared) prepare();
 
     return hierarchy->intersect(ray);
-
-    /*
-    hierarchy
-    Intersection result;
-    Intersection tmp;
-    for (int i = 0; i < triangles.size(); i++) {
-	const Triangle *p =  triangles[i];
-	tmp = p->intersect(ray);
-
-	if (tmp.intersected && (tmp.t < result.t || !result.intersected)) {
-	    result = tmp;
-	    result.local_triangle = p;
-	}
-    }
-    return result;
-    */
 }
 
 
@@ -188,3 +185,12 @@ void Mesh::test() {
     cout << "Mesh::test() done." << endl;
 
 }
+
+// ----------------------------------------------------------------------------
+Mesh::Edge::Edge(int iV0, int iV1) {
+    vertex[0] = iV0;
+    vertex[1] = iV1;
+    triangle[0] = NULL;
+    triangle[1] = NULL;
+}
+
