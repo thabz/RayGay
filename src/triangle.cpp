@@ -108,5 +108,7 @@ BoundingBox Triangle::boundingBoundingBox() const {
 }
 	
 void Triangle::getUV(const Intersection& intersection, double* u, double* v) const {
+    *u = intersection.u;
+    *v = intersection.v;
 
 }
