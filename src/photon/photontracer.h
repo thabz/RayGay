@@ -22,7 +22,7 @@ class PhotonTracer {
     public:
 	PhotonTracer(Scene* scene, SpaceSubdivider* space, GlobalPhotonMap* globalphotonmap, CausticsMap* photonmap);
 	~PhotonTracer();
-	void trace();
+	void trace(int threads_num);
 	void trace(const Ray& ray, RGB power, int bounces);
 	
     private:

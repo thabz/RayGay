@@ -39,7 +39,7 @@ PhotonTracer::~PhotonTracer() {
     delete qmcsequence;
 }
 
-void PhotonTracer::trace() {
+void PhotonTracer::trace(int threads_num) {
     Stats::getUniqueInstance()->beginTimer("Photontracing");
     Ray ray;
     const std::vector<Lightsource*>& lights = scene->getLightsources();

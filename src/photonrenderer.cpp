@@ -34,7 +34,7 @@ void PhotonRenderer::init() {
 
     PhotonTracer* photontracer = new PhotonTracer(scene,space,globalphotonmap,causticsphotonmap);
     cout << "Tracing photons..." << endl;
-    photontracer->trace();
+    photontracer->trace(renderersettings->threads_num);
     cout << "Done." << endl;
 
     
