@@ -11,7 +11,10 @@ SuperEllipsoid::SuperEllipsoid(double n1, double n2, unsigned int steps, double 
 }
 
 double SuperEllipsoid::evaluateFunction(const Vector& v) const {
-    return -1 * (pow(pow(v.x(),2.0/n2)+pow(v.y(),2.0/n2),n2/n1) + pow(v.z(),2.0/n1));
+    double x = fabs(v.x());
+    double y = fabs(v.y());
+    double z = fabs(v.z());
+    return -1 * (pow(pow(x,2.0/n2)+pow(y,2.0/n2),n2/n1) + pow(z,2.0/n1));
 }
 
 SceneObject* SuperEllipsoid::clone() const {
