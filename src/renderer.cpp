@@ -57,8 +57,6 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
     // Prepare the two PixelBlock buffers
     unsigned int block_size = 1 + (1 << aa_depth);
     if (aa_enabled) {
-	cout << "Block size: " << block_size << endl;
-	cout << "aa_depth: " << aa_depth << endl;
 	row1.reserve(image_width);
 	row2.reserve(image_width);
 	for(int i = 0; i < image_width; i++) {
