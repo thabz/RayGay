@@ -15,7 +15,7 @@
 #include "image/image.h"
 #include "lights/lightsource.h"
 
-Raytracer::Raytracer() : Renderer() {
+Raytracer::Raytracer(RendererSettings* settings, Scene* scene, SpaceSubdivider* spc) : Renderer(settings,scene,spc) {
 }
 
 RGB Raytracer::getPixel(const Vector2& v) {

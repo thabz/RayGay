@@ -13,9 +13,9 @@ class Raytracer : public Renderer {
 
     public:
 	/// Default constructor
-	Raytracer();
+	Raytracer(RendererSettings* settings, Scene* scene, SpaceSubdivider* spc);
 
-	void init(Scene* scene, SpaceSubdivider* space);
+	void init() {};
 
     private:
 	RGB getPixel(const Vector2& v);

@@ -18,14 +18,13 @@
 #include "photon/globalphotonmap.h"
 #include "photon/causticsmap.h"
 #include "photon/photontracer.h"
-#include "photonsettings.h"
+#include "renderersettings.h"
 
-PhotonRenderer::PhotonRenderer(PhotonSettings* photonsettings) : Renderer() {
-    this->photonsettings = photonsettings;
+PhotonRenderer::PhotonRenderer(RendererSettings* settings,  Scene* scene, SpaceSubdivider* spc) : Renderer(settings,scene,spc) {
 }
 
-void PhotonRenderer::init(Scene* scene, SpaceSubdivider* space) {
-    int PHOTON_NUM = photonsettings->photons_num;
+void PhotonRenderer::init() {
+    int PHOTON_NUM = renderersettings->photons_num;
     this->globalphotonmap = new GlobalPhotonMap(PHOTON_NUM);
     this->causticsphotonmap = new CausticsMap(PHOTON_NUM); 
 
@@ -186,29 +185,29 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 }
 
 Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal, const Vector& ray_dir) const {
-    if (photonsettings->final_gather_rays == 0) {
-	return M_PI * globalphotonmap->irradiance_estimate(point,normal,photonsettings->estimate_radius,photonsettings->estimate_samples) * 5000*100;
+    if (renderersettings->final_gather_rays == 0) {
+	return M_PI * globalphotonmap->irradiance_estimate(point,normal,renderersettings->estimate_radius,renderersettings->estimate_samples) * 5000*100;
     }
 
     Vector result = Vector(0.0,0.0,0.0);
 
     /*
     NearestPhotons np;
-    np.dist2 = (float*)alloca( sizeof(float)*(photonsettings->final_gather_rays+1) );
-    np.index = (const Photon**)alloca( sizeof(Photon*)*(photonsettings->final_gather_rays+1) );
+    np.dist2 = (float*)alloca( sizeof(float)*(renderersettings->final_gather_rays+1) );
+    np.index = (const Photon**)alloca( sizeof(Photon*)*(renderersettings->final_gather_rays+1) );
     np.pos[0] = point[0];
     np.pos[1] = point[1];
     np.pos[2] = point[2];
-    np.max = photonsettings->final_gather_rays;;
+    np.max = renderersettings->final_gather_rays;;
     np.found = 0;
     np.got_heap = 0;
-    np.dist2[0] = photonsettings->estimate_radius * photonsettings->estimate_radius;
+    np.dist2[0] = renderersettings->estimate_radius * renderersettings->estimate_radius;
     photonmap->locate_photons(&np,1);
     if (np.found < 4) return result;
 */
     //Vector reflected = (-1 * ray_dir).reflect(normal);
     
-    for (int i = 0; i < photonsettings->final_gather_rays; i++) {
+    for (int i = 0; i < renderersettings->final_gather_rays; i++) {
  //   for (int i = 1; i < np.found; i++) {
 	//const Photon* p = np.index[i];
 	//Vector dir = double(-1) * photonmap->photon_dir(p);
@@ -221,11 +220,11 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
 	    Vector hitnormal = inter->getObject()->normal(*inter);
 	    double cos = normal * dir;
 	    // TODO: If too close use another recursive final gather instead for estimate
-	    result += photonsettings->estimate_radius * cos * globalphotonmap->irradiance_estimate(hitpoint,hitnormal,photonsettings->estimate_radius,photonsettings->estimate_samples);
+	    result += renderersettings->estimate_radius * cos * globalphotonmap->irradiance_estimate(hitpoint,hitnormal,renderersettings->estimate_radius,renderersettings->estimate_samples);
 	}
     }
 	
-    result *= M_PI / double(photonsettings->final_gather_rays);
+    result *= M_PI / double(renderersettings->final_gather_rays);
     //result *= double(M_PI) / double(np.found - 1);
     result *= 5000;
     //result *= double(1) / M_PI;

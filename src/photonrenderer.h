@@ -18,16 +18,15 @@ class PhotonRenderer : public Renderer {
 
     public:
 	/// Default constructor
-	PhotonRenderer(PhotonSettings* photonsettings);
+	PhotonRenderer(RendererSettings* settings, Scene* scene, SpaceSubdivider* spc);
 
 	/// This populates the photon maps
-	void init(Scene* scene, SpaceSubdivider* space);
+	void init();
 
     private:
 	/// The photonmap to use
 	GlobalPhotonMap* globalphotonmap;
 	CausticsMap* causticsphotonmap;
-	PhotonSettings* photonsettings;
 
 	RGB getPixel(const Vector2& v);
 

@@ -20,7 +20,7 @@
 #include "paths/linesegment.h"
 #include "paths/circle.h"
 #include "paths/spiral.h"
-#include "photonsettings.h"
+#include "renderersettings.h"
 #include "lights/pointlight.h"
 #include "lights/arealight.h"
 #include "lights/spotlight.h"
@@ -33,7 +33,7 @@ Importer::Importer(const std::string& filename) {
     Camera* camera = new Camera();
     scene->setCamera(camera);
 
-    photon_settings = new PhotonSettings();
+    renderer_settings = new RendererSettings();
 
     parse(filename);
 
@@ -252,13 +252,23 @@ void Importer::parse(const string& filename) {
 	    string name = readString(stream);
 	    int value = readInt(stream);
 	    if (name == "photons") {
-		photon_settings->photons_num = value;
+		renderer_settings->photons_num = value;
 	    } else if (name == "estimate-radius") {
-		photon_settings->estimate_radius = value;
+		renderer_settings->estimate_radius = value;
 	    } else if (name == "estimate-samples") {
-		photon_settings->estimate_samples = value;
+		renderer_settings->estimate_samples = value;
 	    } else if (name == "final-gather-rays") {
-		photon_settings->final_gather_rays = value;
+		renderer_settings->final_gather_rays = value;
+	    }
+	} else if (command == "renderer") {
+	    string name = readString(stream);
+	    if (name == "raytracer") {
+		renderer_settings->renderertype = RendererSettings::RAYTRACER;
+	    } else if (name == "photonrenderer") {
+		renderer_settings->renderertype = RendererSettings::PHOTON_RENDERER;
+	    } else {
+		cout << "Unknown renderer" << endl;
+		exit(EXIT_FAILURE);
 	    }
 	} else if (command == "light") {
 	    string type = readString(stream);

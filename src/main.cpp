@@ -34,7 +34,7 @@
 #include "photonrenderer.h"
 #include "raytracer.h"
 
-#include "photonsettings.h"
+#include "renderersettings.h"
 
 
 using namespace std;
@@ -56,17 +56,19 @@ void work(string scenefile, string outputfile) {
     SpaceSubdivider* space = new BSP();
     scene->initSpace(space);
 
-    PhotonSettings* photonsettings = importer.getPhotonSettings();
+    RendererSettings* renderersettings = importer.getRendererSettings();
+    Renderer* renderer;
 
-#define PHOTON_CODE
-
-#ifdef PHOTON_CODE
-    Renderer* renderer = new PhotonRenderer(photonsettings);
-#else
-    Renderer* renderer = new Raytracer();
-#endif
-    renderer->init(scene,space);
-    renderer->render(scene,img,space);
+    if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
+	renderer = new PhotonRenderer(renderersettings,scene,space);
+    } else if (renderersettings->renderertype == RendererSettings::RAYTRACER) {
+	renderer = new Raytracer(renderersettings,scene,space);
+    } else {
+	cout << "main.cpp: Unknown renderer" << endl;
+	exit(EXIT_FAILURE);
+    }
+    renderer->init();
+    renderer->render(img);
 
     img->save(outputfile);
     delete img;

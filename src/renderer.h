@@ -4,6 +4,7 @@
 #include "scene.h"
 #include "stats.h"
 #include "math/vector2.h"
+#include "renderersettings.h"
 
 #define aa_threshhold 0.02
 
@@ -15,13 +16,13 @@ class SpaceSubdivider;
 class Renderer {
 
     public:
-	Renderer() {};
+	Renderer(RendererSettings* settings, Scene* scene, SpaceSubdivider* space);
 
 	/// Initializer the renderer
-	virtual void init(Scene* scene, SpaceSubdivider* space) = 0;
+	virtual void init() = 0;
 
 	/// Render a scene into an image
-	void render(Scene* scene, Image*, SpaceSubdivider* space);
+	void render(Image*);
 
 	/// Destructor
 	virtual ~Renderer() {};
@@ -58,6 +59,9 @@ class Renderer {
 
 	/// The space containing the objects of the scene to render
 	SpaceSubdivider* space;
+
+	/// The settings for the renderer
+	RendererSettings* renderersettings;
 };
 
 #endif

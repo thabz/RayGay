@@ -13,6 +13,12 @@
 #include "spacesubdivider.h"
 #include "objectcollection.h"
 
+Renderer::Renderer(RendererSettings* settings, Scene* scene, SpaceSubdivider* spc) {
+    this->scene = scene;
+    this->space = spc;
+    this->renderersettings = settings;
+}
+
 /**
  * Render the scene into an image
  * TODO: Jitter the samples within the grid.
@@ -21,10 +27,8 @@
  * @param img The image to place pixels on
  * @param spc The space containing the objects of the scene
  */
-void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
+void Renderer::render(Image* img) {
     time_t beginTime;
-    scene = sc;
-    space = spc;
 
     Camera* camera = scene->getCamera();
     aa_enabled = camera->isAAEnabled();
