@@ -618,10 +618,15 @@ double my_sin(double x) {
     return sin(x);
 }
 
+double my_poly(double x) {
+    return (x-4)*(x-6)*(x+7);
+}
+
 class brents_method : public Test  {
     public:
 	void run() {
 	    double root;
+	    // sin(x)
 	    RootFinder rf = RootFinder(RootFinder::BRENTS_METHOD,0.001,&my_sin);
             assertTrue(rf.solve(M_PI-0.5, M_PI+0.5, &root));
 	    assertTrue(fabs(my_sin(root)) < 0.001);
@@ -631,6 +636,49 @@ class brents_method : public Test  {
 	    assertTrue(fabs(my_sin(root)) < 0.001);
             assertFalse(rf.solve(M_PI+0.1, M_PI+0.2, &root));
             assertFalse(rf.solve(M_PI/2.0-0.1, M_PI/2.0+0.2, &root));
+
+	    // (x-4)*(x-6)*(x+7)
+	    rf = RootFinder(RootFinder::BRENTS_METHOD,EPSILON,&my_poly);
+	    assertTrue(rf.solve(3.9,4.2,&root));
+	    assertTrue(IS_EQUAL(root,4.0));
+	    assertTrue(IS_ZERO(my_poly(root)));
+	    assertTrue(rf.solve(5.2,6.4,&root));
+	    assertTrue(IS_EQUAL(root,6.0));
+	    assertTrue(IS_ZERO(my_poly(root)));
+	    assertTrue(rf.solve(-10,-2,&root));
+	    assertTrue(IS_EQUAL(root,-7.0));
+	    assertTrue(IS_ZERO(my_poly(root)));
+
+	}
+};
+
+class bisection : public Test  {
+    public:
+	void run() {
+	    double root;
+	    // sin(x)
+	    RootFinder rf = RootFinder(RootFinder::BISECTION,0.001,&my_sin);
+            assertTrue(rf.solve(M_PI-0.5, M_PI+0.5, &root));
+	    assertTrue(fabs(my_sin(root)) < 0.001);
+            assertTrue(rf.solve(M_PI-0.01, 2*M_PI-0.01, &root));
+	    assertTrue(fabs(my_sin(root)) < 0.001);
+            assertTrue(rf.solve(M_PI-0.5, M_PI+0.1, &root));
+	    assertTrue(fabs(my_sin(root)) < 0.001);
+            assertFalse(rf.solve(M_PI+0.1, M_PI+0.2, &root));
+            assertFalse(rf.solve(M_PI/2.0-0.1, M_PI/2.0+0.2, &root));
+
+	    // (x-4)*(x-6)*(x+7)
+	    rf = RootFinder(RootFinder::BISECTION,EPSILON,&my_poly);
+	    assertTrue(rf.solve(3.9,4.2,&root));
+	    assertTrue(IS_EQUAL(root,4.0));
+	    assertTrue(IS_ZERO(my_poly(root)));
+	    assertTrue(rf.solve(5.2,6.4,&root));
+	    assertTrue(IS_EQUAL(root,6.0));
+	    assertTrue(IS_ZERO(my_poly(root)));
+	    assertTrue(rf.solve(-10,-2,&root));
+	    assertTrue(IS_EQUAL(root,-7.0));
+	    assertTrue(IS_ZERO(my_poly(root)));
+
 	}
 };
 
@@ -668,6 +716,7 @@ int main(int argc, char *argv[]) {
     suite.add("Perturb vector",new perturb_vector_test());
     suite.add("Solve quartic",new solve_quartic_test());
     suite.add("Brent's method",new brents_method());
+    suite.add("Bisection",new bisection());
     suite.add("Polynomials",new polynomials());
     suite.run();
     suite.printStatus();

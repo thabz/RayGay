@@ -21,14 +21,45 @@ bool RootFinder::solve(double t1, double t2, double* root) {
     }
 }
 
-bool RootFinder::bisection(double t1, double t2, double* root) {
-    return false;
-}
-
 inline
 int sign(double val) {
     return val >= 0 ? 1 : -1;
 }
+
+/**
+ * Rootfinding by interval bisection.
+ *
+ * Brent's method is faster though.
+ */
+bool RootFinder::bisection(double t_begin, double t_end, double* root) {
+    double t_mid = 0.5 * (t_begin + t_end);
+    double f_t_begin = f(t_begin);
+    double f_t_end = f(t_end);
+    double f_t_mid = f(t_mid);
+
+    if (sign(f_t_begin) == sign(f_t_end))
+	return false;
+    
+    while (true) {
+	if (sign(f_t_begin) == sign(f_t_mid)) {
+	    t_begin = t_mid;
+	    f_t_begin = f_t_mid;
+	} else {
+	    t_end = t_mid;
+	    f_t_end = f_t_mid;
+	}
+
+	t_mid = 0.5 * (t_begin + t_end);
+	f_t_mid = f(t_mid);
+
+	if (fabs(f_t_mid) < tolerance) {
+	    *root = t_mid;
+	    return true;
+	}
+    }
+    return false;
+}
+
 
 #define MAX_ITER 100
 /**
