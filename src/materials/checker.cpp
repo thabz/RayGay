@@ -12,7 +12,7 @@ Checker::Checker(Material* mat1, Material* mat2, double size) : Material() {
 }
 
 Material* Checker::materialAtPoint(const Vector& point) const {
-    Vector p = point / size;
+    Vector p = point / (size+EPSILON);
     unsigned int x = ((unsigned int) p.x()) % 2;
     unsigned int y = ((unsigned int) p.y()) % 2;
     unsigned int z = ((unsigned int) p.z()) % 2;
