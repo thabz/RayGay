@@ -30,20 +30,20 @@ void KdTree::addObject(Object* obj) {
 }
 
 inline
-bool KdTree::intersect(const Ray& ray) const {
+bool KdTree::intersect(const Ray& ray, Intersection* result) const {
     //Vector2 h = world_bbox.intersect(ray);
     Vector2 h = Vector2(0,HUGE_DOUBLE);
-    return intersect(ray,h[0],h[1]);
+    return intersect(ray,result,h[0],h[1]);
 }
 
 inline
-bool KdTree::intersectPrimary(const Ray& ray) const {
+bool KdTree::intersectPrimary(const Ray& ray, Intersection* result) const {
     Vector2 h = world_bbox.intersect(ray);
     //Vector2 h = Vector2(0,HUGE_DOUBLE);
     if (h[0] < 0.0) {
 	return false;
     } else {
-	return intersect(ray,h[0],h[1]);
+	return intersect(ray,result,h[0],h[1]);
     }
 }
 
@@ -51,23 +51,6 @@ inline
 bool KdTree::intersectForShadow(const Ray& ray, double max_t) const {
     return intersectForShadow(ray,double(0),max_t);
 }
-
-bool KdTree::intersectForShadow(const Ray& ray, const Object* hint, double max_t) const {
-    if (hint != NULL && hint->fastIntersect(ray) < max_t) {
-	//last_intersection = hint->getLastIntersection();
-	return true;
-    } else {
-	//return intersectForShadow(ray,max_t);
-	return intersect(ray,0,max_t);
-    }
-}
-
-// TODO: Write a faster intersect for shadows
-/*
-bool KdTree::intersectForShadow(const Ray& ray,double a, double b) const {
-    return intersect(ray,a,b);
-}
-*/
 
 void KdTree::prepare() {
     world_bbox = enclosure(added_objects);
@@ -199,7 +182,7 @@ void KdTree::prepare(int curNode_idx,int depth) {
  * See http://sgi.felk.cvut.cz/~havran/phdthesis.html
  * See http://www.acm.org/jgt/papers/HavranKopalBittnerZara97/TA-B.html
  */
-bool KdTree::intersect(const Ray& ray, const double a, const double b) const {
+bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, const double b) const {
 
     double t;
     KdNode *farChild, *curNode;
@@ -283,7 +266,7 @@ bool KdTree::intersect(const Ray& ray, const double a, const double b) const {
 	    }
 	}
 	if (object_hit != NULL) {
-	    last_intersection = object_hit->fullIntersect(ray,smallest_t);
+	    *(result) = object_hit->fullIntersect(ray,smallest_t);
 	    return true;
 	}
 

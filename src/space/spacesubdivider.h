@@ -15,19 +15,14 @@ class SpaceSubdivider {
 	virtual void addObject(Object* obj) = 0; 
 	
 	/// Calculate an intersection with the hierarchy
-	virtual bool intersect(const Ray& ray) const = 0; 
-
-	virtual bool intersect(const Ray&,const double,const double) const = 0;
+	virtual bool intersect(const Ray& ray, Intersection* result) const = 0; 
+	virtual bool intersect(const Ray&, Intersection* result, const double,const double) const = 0;
 	
 	/// Calculate an intersection with the hierarchy
-	virtual bool intersectPrimary(const Ray& ray) const = 0;  
+	virtual bool intersectPrimary(const Ray& ray, Intersection* result) const = 0;  
 	
 	/// Calculate an intersection with the hierarchy
 	virtual bool intersectForShadow(const Ray& ray, double max_t) const = 0; 
-
-	/// Calculate an intersection with the hierarchy
-	virtual bool intersectForShadow(const Ray& ray, const Object* hint, double max_t) const = 0; 
-	
 	/// This gets called after all objects are added and before any intersection methods are called.
 	virtual void prepare() = 0;
 

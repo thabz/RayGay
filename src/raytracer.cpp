@@ -35,13 +35,11 @@ RGBA Raytracer::getPixel(const Vector2& v) {
     }
 }
 
-RGBA Raytracer::traceSub(const bool intersected, const Ray& ray, const int depth) {
+RGBA Raytracer::traceSub(const bool intersected, const Intersection& intersection, const Ray& ray, const int depth) {
     RGBA color; 
-    Intersection intersection;
     double intersect_distance = HUGE_DOUBLE;
 
     if (intersected) {
-	intersection = *(space->getLastIntersection());
 	color = shade(ray,intersection,depth);
     } else {
         color = scene->getBackgroundColor(ray);

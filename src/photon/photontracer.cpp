@@ -59,14 +59,14 @@ void PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
 	return;
 
     Stats::getUniqueInstance()->inc("Photon rays traced");
-    if (!space->intersect(ray)) {
+    Intersection intersection;
+    if (!space->intersect(ray,&intersection)) {
 	Stats::getUniqueInstance()->inc("Photons lost in void");
 	return;
     }
-    Intersection* intersection = space->getLastIntersection();
-    const Material* material = intersection->getObject()->getMaterial();
-    Vector normal = intersection->getObject()->normal(*intersection);
-    Vector point = intersection->getPoint();
+    const Material* material = intersection.getObject()->getMaterial();
+    Vector normal = intersection.getObject()->normal(intersection);
+    Vector point = intersection.getPoint();
     double ran = RANDOM(0,1);
     if (ran < material->getKd()) {
 	// Store photon

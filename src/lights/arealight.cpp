@@ -34,7 +34,7 @@ Arealight::Arealight(const Vector& pos, const Vector& dir, double radius, int nu
 	double r = radius*sqrt(double(i)/(num-1));
 	circles.push_back(new Circle(pos,r,dir));
 	ts.push_back(RANDOM(0,1));
-	hints.push_back(NULL);
+	shadowcaches.push_back(ShadowCache());
     }
 }
 
@@ -71,14 +71,11 @@ Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& norma
 
 	    Stats::getUniqueInstance()->inc("Shadow rays cast");
 	    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
-	    // Check that shadowing object is in front of light
-	    bool in = space->intersectForShadow(ray_to_light,hints[i],dist_to_light);
 
-	    if (in) {
-		hints[i] = space->getLastIntersection()->getObject();
-	    } else {
+	    bool occluded = shadowcaches[i].occluded(ray_to_light,dist_to_light,depth,space);
+
+	    if (!occluded) {
 		count++;
-		hints[i] = NULL;
 	    }
 	}
 	info.intensity = double(count) / num;

@@ -62,7 +62,6 @@
 
 #include "scene.h"
 #include "image/image.h"
-#include "space/bsp.h"
 #include "space/kdtree.h"
 
 #include "photonrenderer.h"
@@ -90,7 +89,6 @@ void work(string scenefile, string outputfile) {
     //scene->transform(n);
 
     SpaceSubdivider* space = new KdTree();
-    //SpaceSubdivider* space = new BSP();
     scene->initSpace(space);
 
     RendererSettings* renderersettings = importer.getRendererSettings();

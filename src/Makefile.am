@@ -29,7 +29,6 @@ tracer_LDADD =  libtracer.a 		\
 #--------------------------------------
 
 EXTRA_DIST = boundingbox.h	\
-     	     bsp.h		\
              camera.h 		\
 	     edgekey.h		\
 	     importer.h		\

@@ -76,23 +76,23 @@ RGBA PhotonRenderer::getPixel(const Vector2& v) {
 
 RGBA PhotonRenderer::tracePrimary(const Ray& ray) {
     Stats::getUniqueInstance()->inc("Primary camera rays cast");
-    bool intersected = space->intersectPrimary(ray);
-    return traceSub(intersected, ray, 1);
+    Intersection i;
+    bool intersected = space->intersectPrimary(ray,&i);
+    return traceSub(intersected, i, ray, 1);
 }
 
 RGBA PhotonRenderer::trace(const Ray& ray, int depth) {
-    bool intersected = space->intersect(ray);
-    return traceSub(intersected, ray, depth);
+    Intersection i;
+    bool intersected = space->intersect(ray,&i);
+    return traceSub(intersected, i, ray, depth);
 }
 
-RGBA PhotonRenderer::traceSub(bool intersected, const Ray& ray, int depth) {
+RGBA PhotonRenderer::traceSub(bool intersected, const Intersection& intersection, const Ray& ray, int depth) {
     Stats::getUniqueInstance()->inc("Total camera rays cast");
     RGBA color; 
-    Intersection intersection;
     double intersect_distance;
 
     if (intersected) {
-	intersection = *(space->getLastIntersection());
 	intersect_distance = (intersection.getPoint() - ray.getOrigin()).length();
 	color = shade(ray,intersection,depth);
     } else {
@@ -233,7 +233,12 @@ RGB PhotonRenderer::getDiffuseIrradiance(const Vector& point, const Vector& norm
     return irradiance;
 }
 
-/// Final gathering does one step of path tracing
+/// 
+/**
+ * Final gathering does one step of path tracing.
+ *
+ * @param hmd Harmonic means distance is written here.
+ */
 Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const Vector& ray_dir, int gatherRays, int depth, double* hmd) const {
     assert(gatherRays > 0);
 
@@ -250,11 +255,11 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 	//Vector dir = Math::perturbVector(normal,89);
 
 	Ray ray = Ray(offset_point,dir,-1);
-	if (space->intersect(ray)) {
+	Intersection inter;
+	if (space->intersect(ray,&inter)) {
 	    gatherHits++;
-	    Intersection* inter = space->getLastIntersection();
-	    Vector hitpoint = inter->getPoint();
-	    Vector hitnormal = inter->getObject()->normal(*inter);
+	    Vector hitpoint = inter.getPoint();
+	    Vector hitnormal = inter.getObject()->normal(inter);
 	    RGB irra;
 	    double dist = (hitpoint-point).length();
 	    *hmd += 1.0 / dist;
@@ -266,8 +271,8 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 		//irra += globalphotonmap->directIrradianceEstimate(hitpoint,hitnormal);
 		irra += globalphotonmap->irradianceEstimate(hitpoint,hitnormal);
 	    }
-	    const Material* material = inter->getObject()->getMaterial();
-	    RGB diffuse_col = material->getDiffuseColor(*inter);
+	    const Material* material = inter.getObject()->getMaterial();
+	    RGB diffuse_col = material->getDiffuseColor(inter);
 	    result += irra * diffuse_col;
 	}
     }

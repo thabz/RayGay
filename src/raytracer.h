@@ -3,6 +3,7 @@
 
 #include "renderer.h"
 #include "space/spacesubdivider.h"
+#include "intersection.h"
 
 class RGB;
 class Ray;
@@ -23,15 +24,16 @@ class Raytracer : public Renderer {
 
 	RGB shade(const Ray&, const Intersection&, const int depth);
 	RGBA trace(const Ray&, const int depth);
-	RGBA traceSub(const bool intersected, const Ray&, const int depth);
+	RGBA traceSub(const bool intersected, const Intersection& i, const Ray&, const int depth);
 	RGBA tracePrimary(const Ray&);
 };
 
 inline
 RGBA Raytracer::tracePrimary(const Ray& ray) {
    // Stats::getUniqueInstance()->inc("Primary camera rays cast");
-    bool intersected = space->intersectPrimary(ray);
-    return traceSub(intersected, ray, 1);
+    Intersection i;
+    bool intersected = space->intersectPrimary(ray,&i);
+    return traceSub(intersected, i, ray, 1);
 }
 
 inline
@@ -42,8 +44,9 @@ RGBA Raytracer::trace(const Ray& ray, const int depth) {
     //	return RGBA(0,0,0,0.0);
 
     //Stats::getUniqueInstance()->inc("Secondary camera rays cast");
-    bool intersected = space->intersect(ray);
-    return traceSub(intersected, ray, depth);
+    Intersection i;
+    bool intersected = space->intersect(ray,&i);
+    return traceSub(intersected, i, ray, depth);
 }
 
 #endif

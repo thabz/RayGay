@@ -27,12 +27,12 @@ class KdTree : public SpaceSubdivider {
 	KdTree();
 	/// Desctructor
 	virtual ~KdTree();
+	bool intersect(const Ray& ray, Intersection* result) const; 
 	bool intersect(const Ray& ray) const; ///< Returns the nearest intersection
-	bool intersect(const Ray& ray, const double a, const double b) const;
+	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
 
-	bool intersectPrimary(const Ray& ray) const; ///< Returns the nearest intersection
+	bool intersectPrimary(const Ray& ray, Intersection* result) const; ///< Returns the nearest intersection
 	bool intersectForShadow(const Ray& ray, double max_t) const; ///< Returns any intersection 
-	bool intersectForShadow(const Ray& ray, const Object* hint, double max_t) const; ///< Returns any intersection but hint-object is checked for intersection first.
 
 	Intersection* getLastIntersection() const { return &last_intersection; };
 	void addObject(Object* obj); ///< Place a object in the kd-tree 

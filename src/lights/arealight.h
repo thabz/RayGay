@@ -2,6 +2,7 @@
 #define AREALIGHT_H
 
 #include "lights/lightsource.h"
+#include "lights/shadowcache.h"
 #include <vector>
 
 class Circle;
@@ -19,7 +20,7 @@ class Arealight : public Lightsource {
 
     private:
 	std::vector<Circle*> circles;
-	mutable std::vector<Object*> hints;
+	mutable std::vector<ShadowCache> shadowcaches;
 	std::vector<double> ts;
 	double jitter;
 	int num;

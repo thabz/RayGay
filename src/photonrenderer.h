@@ -39,7 +39,7 @@ class PhotonRenderer : public Renderer {
 
 	RGB shade(const Ray&, const Intersection&, int depth);
 	RGBA trace(const Ray&, int depth);
-	RGBA traceSub(bool intersected, const Ray&, int depth);
+	RGBA traceSub(bool intersected, const Intersection& i, const Ray&, int depth);
 	RGBA tracePrimary(const Ray&);
 	RGB getDiffuseIrradiance(const Vector& point, const Vector& normal, const Vector& ray_dir) const;
 	Vector finalGather(const Vector& point, const Vector& normal,const Vector& raydir, int gatherRays, int depth, double* hmd) const;
