@@ -662,17 +662,17 @@ NamedObject	: tOBJECT tVARNAME
 
 Bound		: tBOUND '{' Object '}'
                 {
-		    $$ = new BoundNode($3);
+		    $$ = new BoundNode($3,curPos());
 		}
                 ;
 
 TransInstance	: tTRANSINSTANCE '{' Object '}'
                 {
-		    $$ = new TransformedInstanceNode($3);
+		    $$ = new TransformedInstanceNode($3,curPos());
 		}
                 | tTRANSINSTANCE '{' Object Material '}'
 		{
-		    $$ = new TransformedInstanceNode($3,$4);
+		    $$ = new TransformedInstanceNode($3,$4,curPos());
 		}
                 ;
 

@@ -396,12 +396,12 @@ SceneObject* TorusNode::eval() {
 // Transformed Instance
 //---------------------------------------------------------------------
 //
-TransformedInstanceNode::TransformedInstanceNode(SceneObjectNode* o) {
+TransformedInstanceNode::TransformedInstanceNode(SceneObjectNode* o, FilePosition pos) : SceneObjectNode(pos) {
     this->object = o;
     this->material = NULL;
 }
 
-TransformedInstanceNode::TransformedInstanceNode(SceneObjectNode* o, MaterialNode* m) {
+TransformedInstanceNode::TransformedInstanceNode(SceneObjectNode* o, MaterialNode* m, FilePosition pos) : SceneObjectNode(pos) {
     this->object = o;
     this->material = m;
 }
@@ -417,7 +417,7 @@ SceneObject* TransformedInstanceNode::eval() {
     SceneObject* so = object->eval();
     Object* o = dynamic_cast<Object*>(so);
     if (o == NULL) {
-	// TODO: Throw exception.
+	runtime_error("Transformed instance must be a direct renderable, ie. subclass of Object");
     }
     if (material != NULL) {
 	Material* m = material->eval();
@@ -431,7 +431,7 @@ SceneObject* TransformedInstanceNode::eval() {
 // Bounded object
 //---------------------------------------------------------------------
 //
-BoundNode::BoundNode(SceneObjectNode* o) {
+BoundNode::BoundNode(SceneObjectNode* o, FilePosition pos) : SceneObjectNode(pos) {
     this->object = o;
 }
 
@@ -443,7 +443,7 @@ SceneObject* BoundNode::eval() {
     SceneObject* so = object->eval();
     ObjectGroup* o = dynamic_cast<ObjectGroup*>(so);
     if (o == NULL) {
-	// TODO: Throw exception.
+	runtime_error("Bounded object must be an group, ie. mesh, wireframe, necklace.");
     }
     return new Bound(o);
 }

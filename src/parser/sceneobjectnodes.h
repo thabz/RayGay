@@ -280,8 +280,8 @@ class ObjectGroupNode;
 class TransformedInstanceNode: public SceneObjectNode {
 
     public:
-	TransformedInstanceNode(SceneObjectNode* obj, MaterialNode* mat);
-	TransformedInstanceNode(SceneObjectNode* obj);
+	TransformedInstanceNode(SceneObjectNode* obj, MaterialNode* mat, FilePosition pos);
+	TransformedInstanceNode(SceneObjectNode* obj, FilePosition pos);
 	virtual ~TransformedInstanceNode();
 	SceneObject* eval();
 
@@ -293,7 +293,7 @@ class TransformedInstanceNode: public SceneObjectNode {
 class BoundNode : public SceneObjectNode {
 
     public:
-	BoundNode(SceneObjectNode* obj);
+	BoundNode(SceneObjectNode* obj, FilePosition pos);
 	virtual ~BoundNode();
 	SceneObject* eval();
 
