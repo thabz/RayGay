@@ -75,8 +75,9 @@ Vector Transformer::normalToWorld(const Vector& d) const {
     if (!transformed) return d;
 
     Vector result = normal_transformation * d;
-    // Is only necessary because of a possible scale transformation
-    result.normalize();
+    if (scaled) {
+	result.normalize();
+    }
     return result;
 }
 
