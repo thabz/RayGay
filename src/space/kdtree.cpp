@@ -55,7 +55,11 @@ bool KdTree::intersect(const Ray& ray, Intersection* result) const {
     if (h[1] < h[0]) {
 	return false;
     } else {
-	return intersect(ray,result,0.0,h[1]);
+	bool res = intersect(ray,result,0.0,h[1]);
+	if (res && ray.getDirection() * result->getNormal() > 0) {
+	    result->flipNormal();
+	}
+	return res;
     }
 }
 
@@ -64,7 +68,11 @@ bool KdTree::intersectPrimary(const Ray& ray, Intersection* result) const {
     if (h[1] < h[0]) {
 	return false;
     } else {
-	return intersect(ray,result,max(h[0],0.0),h[1]);
+	bool res = intersect(ray,result,max(h[0],0.0),h[1]);
+	if (res && ray.getDirection() * result->getNormal() > 0) {
+	    result->flipNormal();
+	}
+	return res;
     }
 }
 
