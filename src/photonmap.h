@@ -11,10 +11,11 @@ class RGB;
  * size is 28 bytes
  */
 typedef struct Photon {
-    float pos[3];                 // photon position
-    short plane;                  // splitting plane for kd-tree
-    unsigned char theta, phi;     // incoming direction
-    float power[3];               // photon power (uncompressed)
+    float pos[3];                 ///< photon position
+    short plane;                  ///< splitting plane for kd-tree
+    /// incoming direction
+    unsigned char theta, phi;     
+    float power[3];               ///< photon power (uncompressed)
 } Photon;
 
 
@@ -31,20 +32,16 @@ typedef struct NearestPhotons {
     const Photon **index;
 } NearestPhotons;
 
-
 /** 
  * This is the PhotonMap class
  *
+ * An example implementation of the photon map data structure by Henrik Wann Jensen - February 2001.
+ * Interface adapted to RayGay by Jesper Christensen - February 2003
  */
 class PhotonMap {
     public:
 	PhotonMap( int max_phot );
 	~PhotonMap();
-
-	void store(
-		const float power[3],          // photon power
-		const float pos[3],            // photon position
-		const float dir[3] );          // photon direction
 
 	void store(
 		const Vector& power,          // photon power
@@ -62,13 +59,6 @@ class PhotonMap {
 		const float max_dist,          // max distance to look for photons
 		const int nphotons ) const;    // number of photons to use
 
-	void irradiance_estimate(
-		float irrad[3],                // returned irradiance
-		const float pos[3],            // surface position
-		const float normal[3],         // surface normal at pos
-		const float max_dist,          // max distance to look for photons
-		const int nphotons ) const;    // number of photons to use
-
 	void locate_photons(
 		NearestPhotons *const np,      // np is used to locate the photons
 		const int index ) const;       // call with index = 1
@@ -78,6 +68,18 @@ class PhotonMap {
 		const Photon *p ) const;       // the photon
 
     private:
+	void store(
+		const float power[3],          // photon power
+		const float pos[3],            // photon position
+		const float dir[3] );          // photon direction
+
+	void irradiance_estimate(
+		float irrad[3],                // returned irradiance
+		const float pos[3],            // surface position
+		const float normal[3],         // surface normal at pos
+		const float max_dist,          // max distance to look for photons
+		const int nphotons ) const;    // number of photons to use
+
 
 	void balance_segment(
 		Photon **pbal,

@@ -1,10 +1,3 @@
-//----------------------------------------------------------------------------
-// photonmap.cc
-// An example implementation of the photon map data structure
-//
-// Henrik Wann Jensen - February 2001
-// Interface modified by Jesper Christensen - February 2003
-//----------------------------------------------------------------------------
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,7 +64,7 @@ void PhotonMap :: photon_dir( float *dir, const Photon *p ) const
     dir[2] = costheta[p->theta];
 }
 
- /*
+/**
  * Computes an irradiance estimate at a given surface position
  */
 Vector PhotonMap :: irradiance_estimate(
@@ -92,8 +85,8 @@ Vector PhotonMap :: irradiance_estimate(
 }
 
 
-    /**
-     * Computes an irradiance estimate
+/**
+ * Computes an irradiance estimate
  * at a given surface position
  */
 void PhotonMap :: irradiance_estimate(
@@ -238,6 +231,16 @@ void PhotonMap :: locate_photons(
     }
 }
 
+/**
+ * Call this function to store a photon.
+ *
+ * Puts a photon into the flat array that will form
+ * the final kd-tree.
+ *
+ * @param power The power of the photon
+ * @param pos The position of the photon
+ * @param dir The direction of the photon
+ */
 void PhotonMap::store(
 		const Vector& power,          // photon power
 		const Vector& pos,            // photon position
