@@ -1,18 +1,18 @@
 # Benchmark scene som bruges til optimere kode med
 # 
-# Startede med omkring 14:00 minutter
-# ...
-# Best 9:34
-# Using Boundingbox::intersect in BSP: 9:14
+# Tid: 14:09 minutter
+# Light occlusion stack: 11:20
+# Udskyd fresnel udregning: 11:01
+# Inlining i raytracer: 10:25
+# Inlining Vector::xProduct(): 10:10
+# Bruger Boundingbox::intersect i KdTree: 9:14
 # const i kdtree: 9.04
 # simplere callstack til shadow: 9.00
-# Valgt af bedste splitdimension: 7:30
-# Ved ikke hvorfor: 7:25
-# Ved ikke hvorfor 7:18
+# Valgt af bedste splitdimension: 7:18
 # fastIntersect og fullIntersect på object: 6:13
 # precalc sager i Triangle::_fastIntersect: 4:30
 # inline Object::fastIntersect: 4:04
-# Backface culling in Triangle::_fastIntersect: 3:16
+# Backface culling in Triangle::_fastIntersect: 3:00
 
 include materials.gay
 
