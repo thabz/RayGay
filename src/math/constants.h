@@ -29,7 +29,7 @@
 #endif
 
 #define HUGE_DOUBLE	double(1e+20)
-#define EPSILON		double(1e-5)
+#define EPSILON		double(1e-9)
 
 #define MIN(x,y)	((x) < (y) ? (x) : (y))
 #define MAX(x,y)	((x) > (y) ? (x) : (y))
