@@ -43,6 +43,9 @@ class Image {
 	/// Converts image to grayscale
 	void grayscale();
 
+	/// Copy the content of other into this image
+	void copy(Image* other);
+
 	/// Load a tga-file (the caller must free the Image)
 	static Image* load(const std::string& filename);
 

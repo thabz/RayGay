@@ -12,6 +12,7 @@
 #include <cassert>
 #include <iostream>
 #include <cmath>
+#include <string>
 #include <memory.h>
 #include "math/vector2.h"
 
@@ -42,6 +43,14 @@ Image::Image(const std::string& filename) {
  */
 Image::~Image() {
     delete [] data;
+}
+
+void Image::copy(Image* other) {
+    if (other->getWidth() != this->getWidth() || 
+	other->getHeight() != this->getHeight()) {
+	throw_exception("Image-sizes must match.");
+    }
+    memcpy(data,other->data, height * width * sizeof(IMAGE_FLOAT) * 4);
 }
 
 

@@ -8,6 +8,7 @@
 #include "filters/filterstack.h"
 #include "filters/grayscale.h"
 #include "filters/specularbloom.h"
+#include "filters/gaussianblur.h"
 #include "image/rgba.h"
 #include "image/rgb.h"
 #include "image/image.h"
@@ -116,7 +117,7 @@ ActionListNode* top_actions;
 %token tETA
 %token tELLIPSOID
 %token tEXTRUSION
-%token tFILTERS tGRAYSCALE tSPECULARBLOOM
+%token tFILTERS tGRAYSCALE tSPECULARBLOOM tGAUSSIANBLUR
 %token tFOV
 %token tFRAMES
 %token tFUNCTION
@@ -494,6 +495,7 @@ FiltersList	: /* Empty */
 
 Filter		: Grayscale
                 | SpecularBloom
+                | GaussianBlur
 		;
 
 Grayscale	: tGRAYSCALE 
@@ -507,6 +509,17 @@ Grayscale	: tGRAYSCALE
 SpecularBloom	: tSPECULARBLOOM '{' '}'
                 {
 		    Filter2D* filter = new SpecularBloom();
+		    filter_stack->push(filter);
+		}
+                ;
+
+GaussianBlur	: tGAUSSIANBLUR '{' Expr '}'
+                {
+		    double radius = $3->eval();
+		    if (radius < 0.0) {
+			yyerror("Radius of gaussian filter must be > 0");
+		    }
+		    Filter2D* filter = new GaussianBlur(radius);
 		    filter_stack->push(filter);
 		}
                 ;

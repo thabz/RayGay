@@ -81,6 +81,7 @@ finalgatherrays return tFINALGATHERRAYS;
 fov		return tFOV;
 frames		return tFRAMES;
 function	return tFUNCTION;
+gaussianblur	return tGAUSSIANBLUR;
 globalphotons  	return tGLOBALPHOTONS;
 gloss		return tGLOSS;
 grayscale	return tGRAYSCALE;

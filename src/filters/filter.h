@@ -12,6 +12,11 @@ class Filter2D {
     public:
 	/// Apply the filter to an image
 	virtual void apply(Image* image) = 0;
+
+    protected:
+	/// Perform convolution of mask on image
+	void applyMask(Image* image, double* mask, int w, int h);
+	void normalizeMask(double* mask, int w, int h);
 };
 
 #endif

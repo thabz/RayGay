@@ -8,7 +8,11 @@
  */
 class GaussianBlur : public Filter2D {
     public:
+	GaussianBlur(double radius);
 	void apply(Image* image);
+	
+    private:
+	double radius;
 };
 
 #endif
