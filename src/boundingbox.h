@@ -61,6 +61,12 @@ class BoundingBox {
 	
 	/// The corner with biggest x,y,z values
 	const Vector maximum() const { return Vector(_c2[0],_c2[1],_c2[2]); };
+	
+	/// An x,y or z value from the corner with smallest x,y,z values
+	const double minimum(unsigned int i) const { return _c1[i]; };
+	
+	/// An x,y or z value from the corner with biggest x,y,z values
+	const double maximum(unsigned int i) const { return _c2[i]; };
 
 	/// Returns the smallest box that contains b1 and b2.
 	static BoundingBox doUnion(const BoundingBox& b1, const BoundingBox& b2); 

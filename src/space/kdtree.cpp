@@ -20,7 +20,7 @@
 // Don't check for best split in all 3 dimensions when number
 // of objects in a node exceeds this value. Then just use largest
 // dimension of bbox as best dimension.
-#define KD_TREE_MAX_ELEMENTS_IN_FULL_SPLIT_CHECK 500
+#define KD_TREE_MAX_ELEMENTS_IN_FULL_SPLIT_CHECK 250
 
 #define NO_STATS
 
@@ -468,21 +468,19 @@ BoundingBox KdTree::enclosure(vector<BoundedObject*>* bs) const {
     return result;
 }
 
-int g_d;
+unsigned int g_d;
 
 class cmpL {
     public:
 	bool operator()(const BoundedObject* p1, const BoundedObject* p2) {
-	    assert(g_d == 0 || g_d == 1 || g_d == 2);
-	    return p1->bbox.minimum()[g_d] < p2->bbox.minimum()[g_d];
+	    return p1->bbox.minimum(g_d) < p2->bbox.minimum(g_d);
 	}
 };
 
 class cmpR {
     public:
 	bool operator()(const BoundedObject* p1, const BoundedObject* p2) {
-	    assert(g_d == 0 || g_d == 1 || g_d == 2);
-	    return p1->bbox.maximum()[g_d] < p2->bbox.maximum()[g_d];
+	    return p1->bbox.maximum(g_d) < p2->bbox.maximum(g_d);
 	}
 };
 
@@ -492,6 +490,8 @@ void KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result, int
     Vector bbox_lenghts = bbox.maximum() - bbox.minimum();
     unsigned int size = result.left_bobjects->size();
     double lowest_cost = 0.9*size*bbox.area();
+
+    assert(g_d == 0 || g_d == 1 || g_d == 2);
 
     g_d = d;
 
