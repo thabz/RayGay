@@ -7,10 +7,42 @@
 #include <algorithm>
 #include "environment.h"
 #include "window.h"
+#include "image/image.h"
 
-RenderJobPool::RenderJobPool() {
+/**
+ * Construct a new job pool and create inital tiles/jobs.
+ * 
+ * @param w Width of the target image
+ * @param h Height of the target image
+ * @param initial_cell_size Size of the initial tiles
+ */
+RenderJobPool::RenderJobPool(int w, int h, int initial_cell_size) {
     pthread_mutex_init(&mutex_jobs,NULL);
-    next_job = 0;
+    pixels_fully_rendered = 0;
+    total_image_pixels = w * h;
+    init(w,h,initial_cell_size);
+}
+
+void RenderJobPool::init(int w, int h, int cell_size) {
+    RenderJob job;
+    double count = 0;
+    for(int y = 0; y < (h / cell_size)+1; y++) {
+	job.begin_y = y*cell_size;
+	job.end_y = min((y+1)*cell_size,h);
+	for(int x = 0; x < (w / cell_size)+1; x++) {
+	    job.begin_x = x*cell_size;
+	    job.end_x = min((x+1)*cell_size, w);
+	    if (job.begin_x < w &&
+		job.begin_y < h &&
+		job.begin_x < job.end_x && 
+		job.begin_y < job.end_y) {
+		job.importance = 1000000 + cell_size*cell_size + (count++);
+		job.type = RenderJob::NEED_PREVIEW;
+		addJob(job);
+	    }
+	}
+    }
+
 }
 
 // Sort jobs by descending importance
@@ -33,10 +65,6 @@ RenderJob* RenderJobPool::getJob() {
     RenderJob *result = jobs.front();
     jobs.pop_front();
     
-#ifdef HAVE_GTK
-	double progress = 0.5;
-	Environment::getUniqueInstance()->getPreviewWindow()->setProgress(progress);
-#endif	
     pthread_mutex_unlock(&mutex_jobs);
     return result;
 }
@@ -67,7 +95,7 @@ void RenderJobPool::markJobDone(RenderJob* job) {
 	    job->importance = variance;
 	    job->type = RenderJob::NEED_FULL_RENDER;
 	    jobs.push_back(job);
-	} else if (job->area()<= 8*8) {
+	} else if (job->area()<= 16*16) {
 	    job->importance = variance * job->area();
 	    job->type = RenderJob::NEED_FULL_RENDER;
 	    jobs.push_back(job);
@@ -93,6 +121,11 @@ void RenderJobPool::markJobDone(RenderJob* job) {
 	    jobs.push_back(job4);
 	}
     } else if (job->type == RenderJob::NEED_FULL_RENDER) {
+	pixels_fully_rendered += job->area();
 	job->type = RenderJob::IS_DONE;
+        #ifdef HAVE_GTK
+	double progress = double(pixels_fully_rendered) / double(total_image_pixels);
+	Environment::getUniqueInstance()->getPreviewWindow()->setProgress(progress);
+        #endif	
     }
 }

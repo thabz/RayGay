@@ -99,27 +99,6 @@ void preparePhotonMaps(Scene* scene,
     (*irradiancecache) = new IrradianceCache(bbox,renderersettings->cache_tolerance);
 }
 
-void prepareJobPool(RenderJobPool* pool, Image* img, int cell_size) {
-    RenderJob job;
-    double count = 0;
-    for(int y = 0; y < (img->getHeight() / cell_size)+1; y++) {
-	job.begin_y = y*cell_size;
-	job.end_y = min((y+1)*cell_size,img->getHeight());
-	for(int x = 0; x < (img->getWidth() / cell_size)+1; x++) {
-	    job.begin_x = x*cell_size;
-	    job.end_x = min((x+1)*cell_size, img->getWidth());
-	    if (job.begin_x < img->getWidth() &&
-		job.begin_y < img->getHeight() &&
-		job.begin_x < job.end_x && 
-		job.begin_y < job.end_y) {
-		job.importance = 1000000 + cell_size*cell_size + (count++);
-		job.type = RenderJob::NEED_PREVIEW;
-		pool->addJob(job);
-	    }
-	}
-    }
-}
-
 void* renderThreadDo(void* obj) {
     Renderer* tracer = (Renderer*) obj;
     tracer->run();
@@ -174,8 +153,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     }
 
     // Create and prepare job pool
-    RenderJobPool* job_pool = new RenderJobPool();
-    prepareJobPool(job_pool,img,64);
+    RenderJobPool* job_pool = new RenderJobPool(img->getWidth(),img->getHeight(),64);
 
     if (renderersettings->anim_frames == 1) {
 	cout << "Still render (" << img->getWidth() << "x" << img->getHeight() << ")" << endl;

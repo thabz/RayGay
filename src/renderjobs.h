@@ -48,7 +48,7 @@ class RenderJobPool {
 
     public:
 	/// Constructor
-	RenderJobPool();
+	RenderJobPool(int width, int height, int initial_cell_size);
 	/// Add a job to the pool.
 	void addJob(RenderJob job);
 	/// Get next job to be done.
@@ -57,9 +57,12 @@ class RenderJobPool {
 	void markJobDone(RenderJob* job);
 
     private:
+	void init(int w, int h, int initial_cell_size);
 	std::deque<RenderJob*> jobs;
-	unsigned int next_job;
+	unsigned long pixels_fully_rendered;
+	unsigned long total_image_pixels;
 	pthread_mutex_t mutex_jobs;
+
 };
 
 #endif
