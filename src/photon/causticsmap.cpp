@@ -2,7 +2,7 @@
 #include "photon/causticsmap.h"
 #include "stats.h"
 
-CausticsMap::CausticsMap(int size) : PhotonMap<CausticPhoton>(size) {
+CausticsMap::CausticsMap(int size, double max_dist, int estimate_photons) : PhotonMap<CausticPhoton>(size,max_dist,estimate_photons) {
 
 }
 

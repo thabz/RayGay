@@ -4,7 +4,7 @@
 #include "photon/globalphotonmap.h"
 #include "stats.h"
 
-GlobalPhotonMap::GlobalPhotonMap(const int size) : PhotonMap<IrradiancePhoton>(size) {
+GlobalPhotonMap::GlobalPhotonMap(const int size, double max_dist, int estimate_photons ) : PhotonMap<IrradiancePhoton>(size,max_dist,estimate_photons) {
 
 }
 

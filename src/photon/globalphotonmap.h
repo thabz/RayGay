@@ -23,7 +23,7 @@ class IrradiancePhoton : public Photon {
 class GlobalPhotonMap : public PhotonMap<IrradiancePhoton> {
 
     public:
-	GlobalPhotonMap(const int size);
+	GlobalPhotonMap(const int size, double max_dist, int estimate_photons );
 
 	void preComputeIrradiances(const int step);
 	RGB irradianceEstimate(const Vector& pos, const Vector& normal);

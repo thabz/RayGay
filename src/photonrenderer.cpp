@@ -25,8 +25,8 @@ PhotonRenderer::PhotonRenderer(RendererSettings* settings,  Scene* scene, SpaceS
 }
 
 void PhotonRenderer::init() {
-    this->globalphotonmap = new GlobalPhotonMap(renderersettings->global_photons_num);
-    this->causticsphotonmap = new CausticsMap(renderersettings->caustic_photons_num); 
+    this->globalphotonmap = new GlobalPhotonMap(renderersettings->global_photons_num,renderersettings->estimate_radius,renderersettings->estimate_samples);
+    this->causticsphotonmap = new CausticsMap(renderersettings->caustic_photons_num,renderersettings->estimate_radius,renderersettings->estimate_samples); 
 
     PhotonTracer* photontracer = new PhotonTracer(scene,space,globalphotonmap,causticsphotonmap);
     photontracer->trace();
@@ -106,7 +106,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     result_color += finalGather(point,normal,ray.getDirection(),renderersettings->final_gather_rays,0);
 
     // Direct estimate from caustics map
-    result_color += causticsphotonmap->irradiance_estimate(point,normal,renderersettings->estimate_radius,renderersettings->estimate_samples);
+    result_color += causticsphotonmap->irradiance_estimate(point,normal);
     //result_color.clip();
     //return result_color;
 
@@ -189,7 +189,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 /// Final gathering does one step of path tracing
 Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const Vector& ray_dir, int gatherRays, int depth) const {
     if (gatherRays == 0) {
-	return globalphotonmap->irradiance_estimate(point,normal,renderersettings->estimate_radius,renderersettings->estimate_samples);
+	return globalphotonmap->irradiance_estimate(point,normal);
     }
 
     Vector result = Vector(0.0,0.0,0.0);
@@ -208,7 +208,7 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 	        // If too close do additional level of path tracing
 		result += finalGather(hitpoint,hitnormal,dir,gatherRays / 2, depth + 1);
 	    } else {
-		result += globalphotonmap->irradiance_estimate(hitpoint,hitnormal,renderersettings->estimate_radius,renderersettings->estimate_samples);
+		result += globalphotonmap->irradiance_estimate(hitpoint,hitnormal);
 	    }
 	}
     }

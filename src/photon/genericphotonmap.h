@@ -33,7 +33,7 @@ class PhotonMap {
     friend class Photon;
 
     public:
-	PhotonMap(const int max_phot );
+	PhotonMap(const int max_phot, double max_dist, int estimate_photons );
 	virtual ~PhotonMap();
 
 	virtual void scale_photon_power(
@@ -45,9 +45,8 @@ class PhotonMap {
 
 	virtual Vector irradiance_estimate(
 		const Vector& pos,             // surface position
-		const Vector& normal,          // surface normal at pos
-		const float max_dist,          // max distance to look for photons
-		const int nphotons ) const;    // number of photons to use
+		const Vector& normal           // surface normal at pos
+		) const;
 
 	virtual void locate_photons(
 		NearestPhotons<PhotonType>* const np,      // np is used to locate the photons
@@ -90,6 +89,8 @@ class PhotonMap {
 	int half_stored_photons;
 	int max_photons;
 	int prev_scale;
+	double max_dist;
+	int estimate_photons;
 
 	float costheta[256];
 	float sintheta[256];

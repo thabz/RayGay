@@ -12,13 +12,17 @@
  * maximum number of photons that will be stored.
  *
  * @param max_phot The maximum number of photons that will be stored.
+ * @param max_dist Max distance to look for photons when doing an irradiance estimate
+ * @patam estimate_photons Number of photons to use when doing an irradiance estimate
  */
 template <class PhotonType>
-PhotonMap<PhotonType>::PhotonMap<PhotonType>( const int max_phot )
+PhotonMap<PhotonType>::PhotonMap<PhotonType>( const int max_phot, double max_dist, int estimate_photons  )
 {
     stored_photons = 0;
     prev_scale = 1;
     max_photons = max_phot;
+    this->max_dist = max_dist;
+    this->estimate_photons = estimate_photons;
 
     photons = (PhotonType*)malloc( sizeof( PhotonType ) * ( max_photons+1 ) );
 
@@ -67,22 +71,23 @@ void PhotonMap<PhotonType>::photon_dir( float *dir, const PhotonType *p ) const
 /**
  * Computes an irradiance estimate
  * at a given surface position
+ * @param pos surface position
+ * @param normal surface normal at pos
  */
 template <class PhotonType>
 Vector PhotonMap<PhotonType>::irradiance_estimate(
-	const Vector& pos,             // surface position
-	const Vector& normal,          // surface normal at pos
-	const float max_dist,          // max distance to look for photons
-	const int nphotons ) const     // number of photons to use
+	const Vector& pos,
+	const Vector& normal) const
+	
 {
     Vector irrad = Vector(0.0,0.0,0.0);
 
     NearestPhotons<PhotonType> np;
-    np.dist2 = (float*)alloca( sizeof(float)*(nphotons+1) );
-    np.index = (const PhotonType**)alloca( sizeof(PhotonType*)*(nphotons+1) );
+    np.dist2 = (float*)alloca( sizeof(float)*(estimate_photons+1) );
+    np.index = (const PhotonType**)alloca( sizeof(PhotonType*)*(estimate_photons+1) );
 
     np.pos = pos;
-    np.max = nphotons;
+    np.max = estimate_photons;
     np.found = 0;
     np.got_heap = 0;
     np.dist2[0] = max_dist*max_dist;
@@ -109,9 +114,7 @@ Vector PhotonMap<PhotonType>::irradiance_estimate(
 	}
     }
 
-    const float tmp=(1.0f/M_PI)/(np.dist2[0]);	// estimate of density
-
-    irrad *= tmp;
+    irrad *= (1.0f/M_PI)/(np.dist2[0]);	// estimate of density;
     return irrad;
 }
 
