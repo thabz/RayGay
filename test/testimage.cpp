@@ -12,7 +12,6 @@ using namespace std;
 class test_rgba : public Test {
     public:
 	void run() {
-	    cout << "srcdir: " << getLoadPrefix() << endl;
 	    RGBA c;
 
 	    // test += 
