@@ -10,6 +10,7 @@
 #include "matrix.h"
 #include "intersection.h"
 #include "ray.h"
+#include "sphere.h"
 
 using namespace std;
 
@@ -64,8 +65,22 @@ bool Mesh::inside(const Vector &p) {
     // TODO: implement
 }
 
-bool Mesh::intersects(const Box&) {
-
+bool Mesh::intersects(const Box& box) {
+    // Quick hackish implementation: wrap mesh in a sphere and check that for intersection
+    Vector center;
+    for (vector<Vector>::iterator p = corners.begin(); p != corners.end(); p++) {
+	center = center + (*p);
+    }
+    center = center / corners.size();
+    double radius = 0;
+    for (vector<Vector>::iterator p = corners.begin(); p != corners.end(); p++) {
+       Vector v = ((*p) - center);
+       double l = v.length();
+       if (l > radius) radius = l;
+    }
+    Sphere s = Sphere(center,radius,material);
+    return s.intersects(box);
+    
 }
 
 Material Mesh::getMaterial() {
