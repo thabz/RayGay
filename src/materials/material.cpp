@@ -9,6 +9,9 @@
 #include "math.h"
 
 Material::Material() {
+   texturemap = NULL;
+   bumpmap = NULL;
+   gloss_enabled = false;
 }
 
 Material::Material(RGB diffuseColor, RGB specularColor) {

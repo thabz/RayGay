@@ -10,7 +10,7 @@
 #include "image/rgb.h"
 #include "mesh.h"
 
-Box::Box(const Vector a, const Vector b, Material mat) : Mesh(Mesh::MESH_FLAT,mat) {
+Box::Box(const Vector a, const Vector b, const Material& mat) : Mesh(Mesh::MESH_FLAT,mat) {
     prepareBox(a,b);
 }
 

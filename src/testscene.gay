@@ -1,0 +1,34 @@
+
+camera-position 0 0 1500
+camera-lookat 0 0 -1
+camera-aa 4
+
+background 0.1 0.1 0.3
+
+pointlight -4000 4000 4000
+pointlight 4000 4000 4000
+
+linesegment line1 0 0 0    0 500 0
+
+material green
+diffuse 0.2 0.8 0.2
+kd 0.9
+specular 1.0 1.0 1.0
+ks 0.1
+specularpower 20
+
+material red 
+diffuse 0.8 0.2 0.2
+kd 0.9
+specular 1.0 0.2 0.2
+ks 0.1
+specularpower 30
+
+sphere red 100   0.00 50.00 0.00
+
+box green -300 -200 -300    300 -150 300
+
+cylinder red 100    0 -150 0     0 50 0 
+
+extrusion green line1 10 10 10
+

@@ -19,6 +19,8 @@ class Ray;
  * A BSP tree is a binary tree 
  * for multidimensional points where successive levels are 
  * split by arbitrary hyperplanes.
+ *
+ * TODO: Implementer http://www.acm.org/jgt/papers/HavranKopalBittnerZara97/ som er den bedste BSP-traversal algorithme.
  */
 class BSP : public SpaceSubdivider {
 

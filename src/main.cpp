@@ -21,6 +21,8 @@
 
 #include "stats.h"
 
+#include "importer.h"
+
 #include "math/vector.h"
 #include "math/matrix.h"
 
@@ -244,11 +246,40 @@ void test_3ds() {
 
 }
 
+void read() {
+    Stats::getUniqueInstance()->clear();
+    Importer importer("testscene.gay");
+    Scene* scene = importer.getScene();
+
+    Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
+    n = n * Matrix::matrixTranslate(Vector(0,0,-500));
+    scene->transform(n);
+
+    scene->setBackgroundColor(RGB(0.1,0.1,0.3));
+
+    Camera cam = Camera(Vector(0,0,1500),Vector(0,0,-1));
+    cam.enableAdaptiveSupersampling(4);
+    scene->setCamera(&cam);
+    
+    Image* img = new Image(640,480);
+    //SpaceSubdivider* space = new Hierarchy();
+    SpaceSubdivider* space = new BSP();
+
+    Raytracer raytracer = Raytracer();
+    raytracer.render(scene,img,space);
+    
+    img->save("out.tga");
+    delete img;
+    Stats::getUniqueInstance()->dump();
+
+}
+
 int main(int argc, char *argv[]) {
     BSP::test();
     cout << "Tests done." << endl;
     // Test scene stuff
-    testScene4();
+ //   testScene4();
+    read(); 
 
     return EXIT_SUCCESS;
 }
