@@ -291,8 +291,8 @@ double BoundingBox::area() const {
  */
 int BoundingBox::cutByPlane(int cutplane_dimension, double cutplane_value) const {
     assert(cutplane_dimension == 0 || cutplane_dimension == 1 || cutplane_dimension == 2);
-    const double min = minimum()[cutplane_dimension];
-    const double max = maximum()[cutplane_dimension];
+    const double min = minimum(cutplane_dimension);
+    const double max = maximum(cutplane_dimension);
     if (cutplane_value > max) {
 	return -1;
     } else if (cutplane_value < min) {
@@ -337,15 +337,13 @@ void BoundingBox::growPercentage(double percent) {
 // Stolen from http://www.gamasutra.com/features/19991018/Gomez_4.htm
 bool BoundingBox::intersectSphere(const Vector& center, double squared_radius) const {
     double s, d = 0;
-    const Vector mini = minimum();
-    const Vector maxi = maximum();
 
     for (int i = 0; i < 3; i++) {
-	if (center[i] < mini[i]) {
-	    s = center[i] - mini[i];
+	if (center[i] < minimum(i)) {
+	    s = center[i] - minimum(i);
 	    d += s*s;
-	} else if (center[i] > maxi[i]) {
-	    s = center[i] - maxi[i];
+	} else if (center[i] > maximum(i)) {
+	    s = center[i] - maximum(i);
 	    d += s*s;
 	}
     }
@@ -353,7 +351,7 @@ bool BoundingBox::intersectSphere(const Vector& center, double squared_radius) c
 }
 
 bool BoundingBox::split(BoundingBox* left, BoundingBox* right, int dim, double axis) const {
-    if (axis > maximum()[dim] || axis < minimum()[dim]) {
+    if (axis > maximum(dim) || axis < minimum(dim)) {
 	return false;
     }
 
