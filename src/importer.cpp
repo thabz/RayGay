@@ -134,6 +134,7 @@ void Importer::parse(const string& filename) {
 	stream >> command;
 
 	if (!stream) {
+	    chdir(original_cwds.c_str());
 	    return;
 	}
 
