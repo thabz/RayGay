@@ -107,10 +107,10 @@ class Mesh : public object {
 	EdgeMapType edgeMap;
 	std::vector<Tri*> tris;
 	std::vector<Vertex> vertices;
+	std::vector<Vector> corners;
 
     protected:
 	void prepare();
-	std::vector<Vector> corners;
 
 };
 

@@ -111,13 +111,13 @@ void Cylinder::test() {
     /* Check generated mesh */
     c = Cylinder(Vector(0,0,0),Vector(0,0,-10),2.0,5,m);
     c.prepare();
-    assert(c.corners.size() == 5*2 + 2);
+    assert(c.getVertices()->size() == 5*2 + 2);
 
     Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
     Cylinder torus = Cylinder(circle1,100,16,10,Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
     torus.prepare();
 
-    assert(torus.corners.size() == 16*10);
+    assert(torus.getVertices()->size() == 16*10);
 
     cout << "Cylinder::test() done." << endl;
 }
