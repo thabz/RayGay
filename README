@@ -1,5 +1,7 @@
 
-TODO:
+///////////////////////////////////////////
+// TODO
+///////////////////////////////////////////
    
 + Get a Meshs triangles into hierarchy as separate nodes.
 + Refactor Material to provide hookups for procedural textures
@@ -42,10 +44,16 @@ TODO:
   http://graphics.ucsd.edu/papers/structured/
 
 
+///////////////////////////////////////////
 // Compiling into assembler source
+///////////////////////////////////////////
+  
 g++ <the load> -S -dA triangle.cpp
 
+
+///////////////////////////////////////////
 // Movie encoding
+///////////////////////////////////////////
 
 Mencoder:
 http://www.mplayerhq.hu/DOCS/HTML/en/menc-feat-enc-images.html
@@ -58,4 +66,13 @@ $ transcode -i list -x imlist,null -g 640x480 -y xvid,null -f 25 -o movie.avi -H
 
 erstat evt. xvid med dixv5
 
+
+///////////////////////////////////////////
+// Cachegrind
+///////////////////////////////////////////
+cd src
+valgrind --skin=cachegrind ./tracer ../scenes/scene.ray out.png
+cg_annotate --<pid> --auto=yes
+
+See http://developer.kde.org/~sewardj/docs-2.0.0/cg_main.html
 
