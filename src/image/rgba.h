@@ -4,6 +4,9 @@
 
 #include "image/rgb.h"
 
+/**
+ * A color with an alpha channel.
+ */
 class RGBA : public RGB {
     public:
 	/// Default constructor
