@@ -64,8 +64,11 @@ Matrix Matrix::matrixTranslate(const Vector trans) {
     return translate;
 }
 
-/// Multiply this with a vector
-// TODO: Kan optimeres voldsomt ved at rulle løkkerne ud
+/**
+ * Multiply this with a vector
+ * 
+ * \todo Can be optimized by unrolling loops.
+ */
 Vector Matrix::operator*(const Vector &v) const {
 
     double prod[4] = { 0,0,0,0 };
@@ -285,7 +288,6 @@ Matrix Matrix::transpose() const {
 }
 
 Matrix Matrix::inverse() const {
-    // TODO: Cache resultatet, da vi beregner denne for alle scenens boxobjekter.
     Matrix inv;
     const double *m = _matrix;
     double *out = inv._matrix;

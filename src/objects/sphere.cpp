@@ -84,7 +84,6 @@ vector<Intersection> Sphere::allIntersections(const Ray& ray) const {
     Vector v = ray.getDirection();
     double QmP[3];
     SUB(QmP,ray.getOrigin(),center);
-    // TODO: Q - P udregnes for mange gange herunder
     double a = v * v;
     double b = 2 * DOT(v,QmP);
     double c = (DOT(QmP,QmP) - radius * radius);

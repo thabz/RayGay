@@ -59,8 +59,10 @@ Intersection Bound::fullIntersect(const Ray& ray, double t) const {
     return result;
 }
 
+/**
+ * \todo Inefficient method 
+ */
 double Bound::fastIntersect(const Ray& ray) const {
-    // TODO: Inefficient
     Intersection result;
     if (tree->intersect(ray,&result)) {
 	return result.getT();
