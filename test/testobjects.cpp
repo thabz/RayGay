@@ -13,6 +13,7 @@
 #include "mesh.h"
 #include "extrusion.h"
 #include "box.h"
+#include "necklace.h"
 #include "3ds.h"
 #include "tetrahedron.h"
 #include "tessalation.h"
@@ -67,6 +68,19 @@ void sphere_test() {
     /* Test boundingBoundingBox() */
     s = Sphere(Vector(0,0,0),20.0,m);
     assert(s.boundingBoundingBox() == BoundingBox(Vector(-20,-20,-20),Vector(20,20,20)));
+
+    /* Test clone */
+    Object* s1 = new Sphere(Vector(0,0,0),20,m);
+    Object* s2 = dynamic_cast<Object*>(s1->clone());
+    s1->transform(Matrix::matrixTranslate(Vector(0,-100,0)));
+    s2->transform(Matrix::matrixTranslate(Vector(0,100,0)));
+
+    r = Ray(Vector(0,-100,-1000),Vector(0,0,1),1);
+    assert(s1->intersect(r));
+    assert(!s2->intersect(r));
+    r = Ray(Vector(0,100,-1000),Vector(0,0,1),1);
+    assert(!s1->intersect(r));
+    assert(s2->intersect(r));
 }
 
 void boolean_test() {
@@ -211,41 +225,58 @@ void box_test() {
     b->prepare();
     assert(b->getVertices()->size() == 8);
 
-    BSP bsp = BSP();
-    b->addSelf(&bsp);
-    bsp.prepare();
+    BSP* bsp = new BSP();
+    b->addSelf(bsp);
+    bsp->prepare();
     Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
-    assert(bsp.intersect(r));
-    assert(bsp.getLastIntersection()->getPoint() == Vector(0,0,1));
+    assert(bsp->intersect(r));
+    assert(bsp->getLastIntersection()->getPoint() == Vector(0,0,1));
 
     r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
-    assert(bsp.intersect(r));
-    assert(bsp.getLastIntersection()->getPoint() == Vector(0,-1,0));
-    delete b;
+    assert(bsp->intersect(r));
+    assert(bsp->getLastIntersection()->getPoint() == Vector(0,-1,0));
 
     /* Test second constructor */
     b = new Box(Vector(0,0,0),2,2,2,m);
     b->prepare();
     assert(b->getVertices()->size() == 8);
 
-    bsp = BSP();
-    b->addSelf(&bsp);
-    bsp.prepare();
+    bsp = new BSP();
+    b->addSelf(bsp);
+    bsp->prepare();
 
     r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
-    assert(bsp.intersect(r));
-    assert(bsp.getLastIntersection()->getPoint() == Vector(0,0,1));
+    assert(bsp->intersect(r));
+    assert(bsp->getLastIntersection()->getPoint() == Vector(0,0,1));
 
     r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
-    assert(bsp.intersect(r));
-    assert(bsp.getLastIntersection()->getPoint() == Vector(0,-1,0));
+    assert(bsp->intersect(r));
+    assert(bsp->getLastIntersection()->getPoint() == Vector(0,-1,0));
 
     r = Ray(Vector(0,-100,1.5),Vector(0,1,0),1);
-    assert(bsp.intersect(r) == false);
+    assert(bsp->intersect(r) == false);
+
+    /* test clone() */
+    b = new Box(Vector(-1,-1,-1),Vector(1,1,1),m);
+    SceneObject* b2 = b->clone();
+    assert(b2 != NULL);
+    b->transform(Matrix::matrixTranslate(Vector(0,10,0)));
+    b->prepare();
+    b2->prepare();
+    bsp = new BSP();
+    b->addSelf(bsp);
+    b2->addSelf(bsp);
+    bsp->prepare();
+
+    r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
+    assert(bsp->intersect(r));
+    r = Ray(Vector(0,10,100),Vector(0,0,-1),1);
+    assert(bsp->intersect(r));
+    r = Ray(Vector(0,5,100),Vector(0,0,-1),1);
+    assert(!bsp->intersect(r));
 }
 
 void mesh_test() {
-
 }
 
 void tetrahedron_test() {
@@ -404,19 +435,41 @@ void test_3ds() {
     ThreeDS* chair = new ThreeDS("../3ds/egg-chair.3ds",1.0);
 }
 
+void objectgroup_test() {
+    // Test clone()
+    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Linesegment segment = Linesegment(Vector(0,0,0),Vector(0,0,100)); 
+    Necklace* g1 = new Necklace(segment,10,10,m);
+    SceneObject* g2 = g1->clone();
+    g1->transform(Matrix::matrixTranslate(Vector(0,-100,0)));
+    g2->transform(Matrix::matrixTranslate(Vector(0,100,0)));
+
+    BSP* bsp = new BSP();
+    g1->addSelf(bsp);
+    g2->addSelf(bsp);
+    bsp->prepare();
+
+    Ray r = Ray(Vector(0,100,1000),Vector(0,0,-1),1);
+    assert(bsp->intersect(r));
+    r = Ray(Vector(0,-100,1000),Vector(0,0,-1),1);
+    assert(bsp->intersect(r));
+    r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
+    assert(!bsp->intersect(r));
+}
+
 int main(int argc, char *argv[]) {
     sphere_test();
+    box_test();
     cylinder_test();
     test_3ds();
-    boolean_test();
-    box_test();
     mesh_test();
     tetrahedron_test();
     tesselation_test();
     extrusion_test();
+    objectgroup_test();
 
     Mesh::test();
-    Box::test();
+    boolean_test();
     return EXIT_SUCCESS;
 }
 

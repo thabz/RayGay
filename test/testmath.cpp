@@ -239,6 +239,162 @@ void clamp_test() {
     assert(Math::clamp(1.5) == 1.0);
 }
 
+void general_test() {
+    // Test cubic root
+    assert(IS_EQUAL(cbrt(125),5));
+    assert(IS_EQUAL(cbrt( 64),4));
+    assert(IS_EQUAL(cbrt( 27),3));
+    assert(IS_EQUAL(cbrt(  8),2));
+    assert(IS_EQUAL(cbrt(  1),1));
+}
+
+// Returns true if the array with num elements contains val
+bool contains(double* array, unsigned int num, double val) {
+    for(unsigned int i = 0; i < num; i++) {
+	if (IS_EQUAL(array[i],val)) {
+	    return true;
+	}
+    }
+    return false;
+}
+
+// Used /usr/bin/gp to find test polynomials
+void solve_quartic_test() {
+    double roots[4];
+
+    // x^4 - 10*x^3 + 35*x^2 - 50*x + 24 = (x-1)*(x-2)*(x-3)*(x-4)
+    assert(Math::solveQuartic(-10,35,-50,24,roots) == 4);
+    assert(contains(roots,4,1));
+    assert(contains(roots,4,2));
+    assert(contains(roots,4,3));
+    assert(contains(roots,4,4));
+
+    // x^4 - 11*x^3 + 44*x^2 - 76*x + 48 = (x-2)*(x-2)*(x-3)*(x-4)
+    assert(Math::solveQuartic(-11,44,-76,48,roots) == 3);
+    assert(contains(roots,3,2));
+    assert(contains(roots,3,3));
+    assert(contains(roots,3,4));
+
+    // x^4 - 14*x^3 + 71*x^2 - 154*x + 120 = (x-5)*(x-4)*(x-3)*(x-2)
+    assert(Math::solveQuartic(-14,71,-154,120,roots) == 4);
+    assert(contains(roots,4,2));
+    assert(contains(roots,4,3));
+    assert(contains(roots,4,4));
+    assert(contains(roots,4,5));
+    
+    // x^4 - 50*x^2 + 625 = (x-5)*(x+5)*(x-5)*(x+5)
+    assert(Math::solveQuartic(0,-50,0,625,roots) == 2);
+    assert(contains(roots,2,-5));
+    assert(contains(roots,2,5));
+
+    // x^4 - 100*x^3 + 3500*x^2 - 50000*x + 240000 = (x-10)*(x-20)*(x-30)*(x-40)
+    assert(Math::solveQuartic(-100,3500,-50000,240000,roots) == 4);
+    assert(contains(roots,4,10));
+    assert(contains(roots,4,20));
+    assert(contains(roots,4,30));
+    assert(contains(roots,4,40));
+
+    //  x^4 + 10*x^2 + 24 = (x^2+4)*(x^2+6)
+    assert(Math::solveQuartic(0,10,0,24,roots) == 0);
+
+    //  x^4 
+    assert(Math::solveQuartic(0,0,0,0,roots) == 1);
+    assert(contains(roots,1,0));
+
+    // x^4 - 4*x^3 + 6*x^2 - 4*x + 1 =  (x-1)(x-1)(x-1)(x-1)
+    assert(Math::solveQuartic(-4,6,-4,1,roots) == 1);
+    assert(contains(roots,1,1));
+
+    // x^4 - 10*x^3 + 250*x - 625 = (x-5)*(x-5)*(x-5)*(x+5)
+    assert(Math::solveQuartic(-10,0,250,-625,roots) == 2);
+    assert(contains(roots,2,5));
+    assert(contains(roots,2,-5));
+
+    // x^4 + 10*x^3 - 250*x - 625 = (x+5)*(x+5)*(x-5)*(x+5)
+    assert(Math::solveQuartic(10,0,-250,-625,roots) == 2);
+    assert(contains(roots,2,5));
+    assert(contains(roots,2,-5));
+}
+
+void solve_cubic_test() {
+    double roots[3];
+
+    // x^3 - 2x^2 -x + 2 = (x-2)*(x-1)*(x+1)
+    assert(Math::solveCubic(-2,-1,2,roots) == 3);
+    assert(contains(roots,3,1));
+    assert(contains(roots,3,-1));
+    assert(contains(roots,3,2));
+
+    // x^3 - 8 = 0 = 
+    assert(Math::solveCubic(0,0,-8,roots) == 1);
+    assert(contains(roots,1,2));
+
+    // x^3 - 3*x^2 + 3*x - 1 = (x-1)*(x-1)*(x-1)
+    assert(Math::solveCubic(-3,3,-1,roots) == 1);
+    assert(contains(roots,1,1));
+
+    // x^3 - 4*x^2 + 5*x - 2 = (x-1)*(x-1)*(x-2)
+    assert(Math::solveCubic(-4,5,-2,roots) == 2);
+    assert(contains(roots,2,1));
+    assert(contains(roots,2,2));
+
+    // x^3 + 2*x^2 - 29*x - 30 = (x+1)*(x+6)*(x-5)
+    assert(Math::solveCubic(2,-29,-30,roots) == 3);
+    assert(contains(roots,3,-1));
+    assert(contains(roots,3,-6));
+    assert(contains(roots,3,5));
+
+    // x^3 + 5*x^2 - 50*x = x*(x-5)*(x+10)
+    assert(Math::solveCubic(5,-50,0,roots) == 3);
+    assert(contains(roots,3,0));
+    assert(contains(roots,3,5));
+    assert(contains(roots,3,-10));
+
+    // x^3 + 5*x^2 - 25*x - 125 = (x+5)*(x+5)*(x-5)
+    assert(Math::solveCubic(5,-25,-125,roots) == 2);
+    assert(contains(roots,2,-5));
+    assert(contains(roots,2,5));
+
+    // x^3 - 3*x - 2 = (x+1)*(x+1)*(x-2)
+    assert(Math::solveCubic(0,-3,-2,roots) == 2);
+    assert(contains(roots,2,-1));
+    assert(contains(roots,2,2));
+
+    // x^3 - 3*x - 2 = (x+1)*(x+1)*(x-2)
+    assert(Math::solveCubic(0,-12,-16,roots) == 2);
+    assert(contains(roots,2,-2));
+    assert(contains(roots,2,4));
+
+    // x^3 + x^2 = x*x*(x+1)
+    assert(Math::solveCubic(1,0,0,roots) == 2);
+    assert(contains(roots,2,0));
+    assert(contains(roots,2,-1));
+}
+
+void solve_quadratic_test() {
+    double roots[2];
+    assert(Math::solveQuadratic(1,0,0,roots) == 1);
+    assert(IS_EQUAL(roots[0],0));
+
+    assert(Math::solveQuadratic(1,0,-4,roots) == 2);
+    assert(contains(roots,2,2));
+    assert(contains(roots,2,-2));
+
+    assert(Math::solveQuadratic(2,0,-8,roots) == 2);
+    assert(contains(roots,2,2));
+    assert(contains(roots,2,-2));
+
+    assert(Math::solveQuadratic(1,5,6,roots) == 2);
+    assert(contains(roots,2,-2));
+    assert(contains(roots,2,-3));
+
+    assert(Math::solveQuadratic(2,1,0,roots) == 2);
+    assert(contains(roots,2,-0));
+    assert(contains(roots,2,-0.5));
+
+    assert(Math::solveQuadratic(5,5,2,roots) == 0);
+}
+
 int main(int argc, char *argv[]) {
     vector_test();
     vector2_test();
@@ -246,5 +402,9 @@ int main(int argc, char *argv[]) {
     binomial_test();
     bernstein_polynomial_test();
     clamp_test();
+    general_test();
+    solve_quadratic_test();
+    solve_cubic_test();
+    solve_quartic_test();
     return EXIT_SUCCESS;
 }
