@@ -7,7 +7,6 @@
 #include "stats.h"
 
 Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
-    position = pos;
     hint = NULL;
 }
 
