@@ -36,7 +36,7 @@ class IsoSurface : public Object {
     private:
 	virtual Vector normal(const Vector& p) const;
 	bool inside(const Vector& v) const;
-	double recurse(const Ray& ray, const double t_begin, const double t_end) const;
+	double refine(const Ray& ray, double t_begin, double t_end) const;
 	unsigned int steps;
 	double accuracy;
 	double iso;

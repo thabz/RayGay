@@ -31,7 +31,7 @@ double IsoSurface::_fastIntersect(const Ray& ray) const {
 
     for(double t = t_begin; t <= t_end; t += t_step) {
 	if (inside(ray.getPoint(t))) {
-	    return recurse(ray,t-t_step,t);
+	    return refine(ray,t-t_step,t);
 	}
     }
     // No intersection
@@ -44,17 +44,18 @@ double IsoSurface::_fastIntersect(const Ray& ray) const {
  * @param t_begin an outside t
  * @param t_end an inside t
  */
-double IsoSurface::recurse(const Ray& ray, const double t_begin, const double t_end) const {
-    double t_mid = 0.5 * (t_begin + t_end);
+double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
+    double t_mid;
 
-    if (t_end - t_begin < accuracy)
-	return t_mid;
-
-    if (inside(ray.getPoint(t_mid))) {
-	return recurse(ray, t_begin,t_mid);
-    } else {
-	return recurse(ray, t_mid,t_end);
+    while (t_end - t_begin > accuracy) {
+	t_mid = 0.5 * (t_begin + t_end);
+	if (inside(ray.getPoint(t_mid))) {
+	    t_end = t_mid;
+	} else {
+	    t_begin = t_mid;
+	}
     }
+    return 0.5 * (t_begin + t_end);
 }
 
 Vector IsoSurface::normal(const Vector& p) const {
