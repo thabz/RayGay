@@ -8,7 +8,6 @@
 #include "object.h"
 #include "vector.h"
 #include "rgb.h"
-#include "material.h"
 #include "boundingbox.h"
 #include "triangle.h"
 #include "edgekey.h"

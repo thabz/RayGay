@@ -2,7 +2,6 @@
 #define NECKLACE_H
 
 #include <vector>
-#include "material.h"
 #include "intersection.h"
 #include "objectcollection.h"
 

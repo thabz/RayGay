@@ -18,7 +18,9 @@ PACKAGE=tracer
 VERSION=0.1
 
 AC_PROG_CXX
+AC_PROG_RANLIB
+AC_PROG_LIBTOOL
 
 CPPFLAGS="$CPPFLAGS -O3 -Wall"
 
-AC_OUTPUT(Makefile src/Makefile test/Makefile)
+AC_OUTPUT(Makefile src/Makefile src/materials/Makefile test/Makefile)

@@ -2,7 +2,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "material.h"
+#include "materials/material.h"
 #include "intersection.h"
 
 class Matrix;

@@ -2,7 +2,6 @@
 #include "tetrahedron.h"
 #include "mesh.h"
 #include "vector.h"
-#include "material.h"
 #include <math.h>
 #include <iostream>
 #include <cassert>

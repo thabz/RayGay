@@ -9,7 +9,6 @@
 #include "matrix.h"
 #include "rgb.h"
 #include "constants.h"
-#include "material.h"
 #include "perlin.h"
 #include "boundingbox.h"
 #include "object.h"

@@ -50,7 +50,7 @@ using namespace std;
 
 #define red Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30)
 #define green Material(RGB(0.2,1.0,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30)
-#define blue Material(RGB(0.0,0.2,1.0),0.80,RGB(1.0,1.0,1.0),0.20,10)
+#define blue Material(RGB(0.2,0.2,1.0),0.75,RGB(1.0,1.0,1.0),0.20,30)
 #define chrome Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)
 
 void testScene4() {
@@ -87,13 +87,13 @@ void testScene4() {
     //Cylinder* torus = new Cylinder(circle1,100,50,30,blue);
  //   scene.addObject(torus);
 
-    //Tessalation tet = Tessalation(Vector(0,100,0),200,1,blue);
-    Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,blue);
+    Tessalation tet = Tessalation(Vector(0,100,0),250,2,blue);
+    //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,blue);
     std::vector<Linesegment>* edges = tet.getEdges();
     cout << "Edges : " << edges->size() << endl;
     for(unsigned int i = 0; i < edges->size(); i++) {
 	Linesegment line = (*edges)[i];
-	Cylinder* c = new Cylinder(line.begin(),line.end(),20.0,10,blue);
+	Cylinder* c = new Cylinder(line.begin(),line.end(),10.0,4,red);
 	scene.addObject(c);
     }
     delete edges;
@@ -101,7 +101,7 @@ void testScene4() {
     vector<Vector>* vertices = tet.getVertices();
     for(unsigned int i = 0; i < vertices->size(); i++) {
 	Vector c = (*vertices)[i];
-        Sphere* s = new Sphere(c,40.0,red);
+        Sphere* s = new Sphere(c,20.0,blue);
 	scene.addObject(s);
     }
     delete vertices;

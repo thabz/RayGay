@@ -6,7 +6,6 @@
 
 #include "object.h"
 #include "vector.h"
-#include "material.h"
 #include "boundingbox.h"
 #include "booleanoperand.h"
 

@@ -1,11 +1,5 @@
 
 #include "boolean.h"
-#include "vector.h"
-#include "ray.h"
-#include "intersection.h"
-#include "matrix.h"
-#include "rgb.h"
-#include "material.h"
 #include <iostream>
 #include <cassert>
 #include "sphere.h" /* For test only */

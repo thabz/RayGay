@@ -9,7 +9,6 @@
 #include "intersection.h"
 #include "matrix.h"
 #include "rgb.h"
-#include "material.h"
 #include "constants.h"
 #include "mesh.h"
 
