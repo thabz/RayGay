@@ -244,7 +244,7 @@ void work(string scenefile, string outputfile, int jobs) {
     } else {
 	char file_prefix[50];
 	for (int frame = 0; frame < frames_num; frame++) {
-	    cout << "Rendering frame " << frame << "/" << frames_num << endl;
+	    cout << "Rendering frame " << (frame+1) << "/" << frames_num << endl;
 	    sprintf(file_prefix,"%05d",frame);
 	    render_frame(frame,file_prefix + outputfile,jobs);
 	}
