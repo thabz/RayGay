@@ -12,7 +12,7 @@
 #include "objects/objectcollection.h"
 #include "objects/sphere.h"
 #include "objects/object.h"
-#include "materials/materials.h"
+#include "materials/material.h"
 #include "stats.h"
 #include "spacesubdivider.h"
 
@@ -46,7 +46,7 @@ Camera* Scene::getCamera() const {
 }
 
 void Scene::setEnvironmentMap(const std::string& filename) {
-    environmentSphere = new Sphere(Vector(0,0,0),10000,MATERIAL_SHINY_BLUE);
+    environmentSphere = new Sphere(Vector(0,0,0),10000,Material());
     environmentMap = Image::load(filename);
 }
 
