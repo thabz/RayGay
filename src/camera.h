@@ -8,8 +8,11 @@ class Matrix;
 /// Datavalue class for a camera which currently just is a position and a direction.
 class Camera {
     public:
-	/// Constructor
+	/// Constructor (deprecated)
 	Camera(Vector position, Vector direction);
+
+	/// Constructor
+	Camera(Vector position, Vector lookAt, Vector up, double fieldOfView) {
 
 	/// Desctructor
 	~Camera();
