@@ -119,6 +119,8 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 	/* Should we send a ray through the intersected object? */
 	if (material.transmission_coefficient > 0.0) {
 	    // Calculate refraction vector (page 757)
+	//    double mat_indice = ray.isinside ? 1.0 : material.indice_of_refraction;
+	    double mat_indice = material.indice_of_refraction;
 	    double my = ray.getIndiceOfRefraction() / material.indice_of_refraction;
 	    Vector I = -1 * ray.getDirection();
 	    double n = normal * I;
@@ -126,7 +128,8 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 	    if (p < 1) {
 		// No internal reflection (page 758)
 		Vector T = (my*n - sqrt(1 - p))*normal - my*I;
-		Ray trans_ray = Ray(point,T,material.indice_of_refraction);
+		Ray trans_ray = Ray(point+0.1*T,T,mat_indice);
+		trans_ray.isinside = true;
 		RGB trans_col = trace(trans_ray, depth + 1);
 		result_color = result_color + material.transmission_coefficient * trans_col;
 	    }

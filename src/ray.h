@@ -32,6 +32,8 @@ class Ray {
 	/// Get a point on the ray
 	Vector getPoint(const double t) const { return origin + t * direction; };
 
+	bool isinside;
+
     private:
 	long id;
 	static long seq;
