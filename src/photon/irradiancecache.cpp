@@ -15,15 +15,15 @@ IrradianceCache::IrradianceCache(const BoundingBox& bbox, double tolerance = 0.1
     this->tolerance = tolerance;
     this->inv_tolerance = 1.0 / tolerance;
     this->hierarchy_top = new HierarchyNode(bbox,0);
-    pthread_mutex_init(&mutex_putEstimate,NULL);
+    pthread_mutex_init(&mutex,NULL);
 }
 
 
 void IrradianceCache::putEstimate(const Vector& point, const Vector& normal, const RGB& irradiance, const double hmd) {
-    pthread_mutex_lock(&mutex_putEstimate);
+    pthread_mutex_lock(&mutex);
     Stats::getUniqueInstance()->inc(STATS_IRRADIANCE_CACHE_SIZE);
     hierarchy_top->add(CacheNode(point,normal,irradiance,hmd,tolerance));
-    pthread_mutex_unlock(&mutex_putEstimate);
+    pthread_mutex_unlock(&mutex);
 }
 
 bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB* dest) const {
@@ -32,6 +32,9 @@ bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB
     int found = 0;
 
     vector<const CacheNode*> nodes_found;
+    
+    pthread_mutex_lock(&mutex);
+    
     traverseOctree(hierarchy_top,point,&nodes_found);
     int nodes_num = nodes_found.size();
     
@@ -46,6 +49,7 @@ bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB
 	    found++;
 	}
     }
+    pthread_mutex_unlock(&mutex);
     if (found > 0) {
 	Stats::getUniqueInstance()->inc(STATS_IRRADIANCE_CACHE_HITS);
 	*dest = result / weight_sum;

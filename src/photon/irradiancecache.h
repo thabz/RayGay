@@ -100,7 +100,7 @@ class IrradianceCache {
 	double tolerance;
 	double inv_tolerance;
 	HierarchyNode* hierarchy_top;
-	pthread_mutex_t mutex_putEstimate;
+	mutable pthread_mutex_t mutex;
 
 	void traverseOctree(const HierarchyNode* const node, const Vector& point, vector<const CacheNode*>* result) const;
 };
