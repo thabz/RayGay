@@ -17,8 +17,23 @@
  *
  * @see http://mathworld.wolfram.com/Superellipse.html
  */
-class SuperEllipse : public Path {
+class SuperEllipse : public Path 
+{
+    public:
 
+	SuperEllipse(const Vector& center, double a, double b, double r, const Vector& normal);
+	virtual ~SuperEllipse() {};
+	Vector getPoint(double t) const;
+	Vector getTangent(double t) const;
+	void transform(const Matrix& m);
+
+    private:
+	Vector c;
+	Vector n;
+	double r;
+	double a,b;
+	Matrix m;
+	Matrix orient;
 
 };
 
