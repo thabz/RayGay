@@ -963,6 +963,7 @@ Expr		: tFLOAT
                 | ExprMod
                 ;
 
+		// These are called "compound assignments" in the literature.
 ModStmt		: ExprMod
                 {
 		    $$ = new ModifyNamedFloatActionNode($1);
