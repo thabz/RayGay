@@ -36,15 +36,15 @@ public:
     /// Vector addition
     virtual Vector operator+(const Vector &v) const;
     /// Vector addition
-    virtual Vector operator+=(const Vector &v);
+    virtual Vector& operator+=(const Vector &v);
     /// Vector subtraction 
     Vector operator-(const Vector &v) const;
     /// Vector subtraction 
-    Vector operator-=(const Vector &v);
+    Vector& operator-=(const Vector &v);
     /// Vector multiplication
     Vector operator*(const double x) const;
     /// Vector multiplication
-    Vector operator*=(const double x);
+    Vector& operator*=(const double x);
     /// Vector division
     Vector operator/(const double x) const;
 
@@ -96,7 +96,7 @@ Vector Vector::operator+(const Vector &v) const {
 }
 
 inline
-Vector Vector::operator+=(const Vector &v) {
+Vector& Vector::operator+=(const Vector &v) {
    _vector[0] += v[0];
    _vector[1] += v[1];
    _vector[2] += v[2];
@@ -109,7 +109,7 @@ Vector Vector::operator-(const Vector &v) const {
 }
 
 inline
-Vector Vector::operator-=(const Vector &v) {
+Vector& Vector::operator-=(const Vector &v) {
    _vector[0] -= v[0];
    _vector[1] -= v[1];
    _vector[2] -= v[2];
@@ -139,7 +139,7 @@ double Vector::operator*(const Vector &x) const {
 }
 
 inline
-Vector Vector::operator*=(const double x) {
+Vector& Vector::operator*=(const double x) {
     double* d = _vector;
     *d++ *= x;
     *d++ *= x;
