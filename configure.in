@@ -12,7 +12,8 @@ AC_PROG_CXX
 AC_PROG_RANLIB
 AC_PROG_LIBTOOL
 
-CPPFLAGS="$CPPFLAGS -O3 -Wall"
+CPPFLAGS="$CPPFLAGS -O3 -Wall -march=i686"
+#CPPFLAGS="$CPPFLAGS -O4 -Wall -march=i686 -msse -mfpmath=sse"
 
 AC_OUTPUT(Makefile \
 	  src/Makefile \
