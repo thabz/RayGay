@@ -26,14 +26,13 @@
 #include "parser.h"
 using namespace std;
 
-int line_num = 1;
 vector<FilePosition> fileposition_stack;
 
 %}
 
 alpha	[a-zA-Z]
 digit	[0-9]
-special	[\.\_-]
+special	[\.\_]
 varspecial	[\_]
 string	{alpha}({alpha}|{digit}|{special})*
 varstring	{alpha}({alpha}|{digit}|_)*
@@ -150,10 +149,12 @@ wireframe	return tWIREFRAME;
 "-="		return tMINUSEQUAL;
 "*="		return tMULTEQUAL;
 "/="		return tDIVEQUAL;
+"-"		return tMINUS;
+"+"		return tPLUS;
 
 {digit}+ |
-"-"?{digit}+"."{digit}+ |
-"-"?{digit}+"."{digit}+"e"[-\+]{digit}+   { yylval.d = atof(yytext); return tFLOAT;}
+{digit}+"."{digit}+ |
+{digit}+"."{digit}+"e"[-\+]{digit}+   { yylval.d = atof(yytext); return tFLOAT;}
 "$"{varstring}	{ yylval.c = new string(yytext+sizeof(char),yyleng-1); 
                   return tVARNAME;
                 }

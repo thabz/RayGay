@@ -160,6 +160,7 @@ ActionListNode* top_actions;
 %token tPLUSPLUS tMINUSMINUS 
 %token tIF tELSE tWHILE tDO
 %token tFALSE tTRUE
+%token tMINUS tPLUS
 %token tBOOL_OR tBOOL_NOT tBOOL_AND tEQUALEQUAL
 
 //%type <c> QuotedString
@@ -190,7 +191,7 @@ ActionListNode* top_actions;
 %type <value> FuncCallArg
 %type <funcargsdecls> FuncArgsDecls
 
-%left '+' '-'
+%left tPLUS tMINUS
 %left '*' '/'
 %left tPLUSPLUS tMINUSMINUS
 %left UMINUS
@@ -335,7 +336,13 @@ FuncCallArgs	: FuncCallArg
 		;
 
 FuncCallArg	: Vector
+                {
+		    $$ = $1;
+		}
                 | Expr
+                {
+		    $$ = $1;
+		}
 		;
 
 Assignment	: tVARNAME tEQUAL PathDef
@@ -941,11 +948,11 @@ Vector		: '<' Expr ',' Expr ',' Expr '>'
 		{
 		    $$ = new VectorMultNode($3,$1);
 		}
-                | Vector '+' Vector 
+                | Vector tPLUS Vector 
 		{
 		    $$ = new VectorPlusNode($1,$3);
 		}
-                | Vector '-' Vector 
+                | Vector tMINUS Vector 
 		{
 		    $$ = new VectorMinusNode($1,$3);
 		}
@@ -1010,11 +1017,11 @@ Expr		: tFLOAT
                 {
                    $$ = $2;
 		}
-		| Expr '+' Expr 
+		| Expr tPLUS Expr 
                 {
 		    $$ = new FloatPlusNode($1,$3);
 		}
-		| Expr '-' Expr 
+		| Expr tMINUS Expr 
                 {
 		    $$ = new FloatMinusNode($1,$3);
 		}
@@ -1026,7 +1033,7 @@ Expr		: tFLOAT
                 {
 		    $$ = new FloatDivNode($1,$3);
 		}
-		| '-' Expr %prec UMINUS
+		| tMINUS Expr %prec UMINUS
                 {
 		    $$ = new FloatNegNode($2);
 		}
@@ -1192,6 +1199,7 @@ void openfile(string filename) {
 
 void init_parser(string scenefile) {
     openfile(scenefile);
+    fileposition_stack.clear();
     fileposition_stack.push_back(scenefile);
     renderer_settings = new RendererSettings();
     top_actions = new ActionListNode();
