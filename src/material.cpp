@@ -49,3 +49,6 @@ void Material::setTexturemap(const std::string& filename) {
     texturemap = new Image(filename);
 }
 
+void Material::setBumpmap(const std::string& filename) {
+    bumpmap = new Image(filename);
+}

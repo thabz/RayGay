@@ -26,6 +26,7 @@ class Material {
 	void setDiffuseColor(RGB diffuseColor) { _diffuseColor = diffuseColor; }; ///< Set the diffuse color
 
 	void setTexturemap(const std::string& filename);
+	void setBumpmap(const std::string& filename);
 	
 	RGB getSpecularColor() { return _specularColor; }; ///< Get the specular color
 	void setSpecularColor(RGB specularColor) { _specularColor = specularColor; };	///< Set the specular color

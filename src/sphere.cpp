@@ -131,16 +131,15 @@ Box Sphere::boundingBox() {
 void Sphere::getUV(const Intersection& intersection, double* u, double* v) {
     Vector p = intersection.point - center;
     p.normalize();
-    *v = acos(p[2]) / M_PI;
+    *v = acos(p[1]) / M_PI;
     if (IS_ZERO(sin((*v) * M_PI))) {
 	*u = double(0.5);
 	return;
     } 
-    if (p[1] >= 0.0) {
+    if (p[2] <= 0.0) {
        *u = acos(p[0] / (sin((*v) * M_PI))) / M_2PI; 
     } else {
        *u = 1 - (acos(p[0] / (sin((*v) * M_PI))) / M_2PI); 
-//       *u = (M_PI + acos(p[0] / (sin((*v) * M_PI)))) / M_2PI; 
     }
 }
 
