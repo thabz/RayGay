@@ -50,14 +50,14 @@ class Scene {
 	/// Returns a vector of all objects
 	std::vector<SceneObject*> getObjects();
 
-	/// Set the background color
-	void setBackgroundColor(const RGBA& c) { bg_color = c; };
+	/// Set a background color
+	void setBackground(const RGBA& c) { bg_color = c; };
+
+	/// Set an environmentmap
+	void setBackground(Texture* texture);
 
 	/// Returns the background color
 	RGBA getBackgroundColor(const Ray& ray) const;
-
-	/// Sets the environmentmap
-	void setEnvironmentMap(Texture* texture);
 
 	void setFog(const RGB& color, const double distance);
 	bool fogEnabled() const { return fog_enabled; };

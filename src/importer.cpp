@@ -249,8 +249,16 @@ void Importer::parse(const string& filename) {
 	    int samples = readInt(stream);
 	    camera->enableDoF(aperture,samples);
 	} else if (command == "background") {
-	    RGBA col = readRGBA(stream);
-	    scene->setBackgroundColor(col);
+	    string type = readString(stream);
+	    if (type == "rgba") {
+		RGBA col = readRGBA(stream);
+		scene->setBackground(col);
+	    } else if (type == "texture") {
+		Texture* texture = readTexture(stream);
+		scene->setBackground(texture);
+	    } else {
+                throw "Unknown background type.";
+	    }
 	} else if (command == "fog") {
 	    double dist = readDouble(stream);
 	    RGB col = readRGB(stream);

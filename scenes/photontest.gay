@@ -21,7 +21,7 @@ camera-aa 4
 image-ratio 4 3
 image-width 300
 
-background 0.1 0.1 0.3 1.0
+background rgba 0.1 0.1 0.3 1.0
 
 # light behind wall
 light point 0 290 0 900000 900000 900000

@@ -20,7 +20,7 @@ using namespace std;
 Scene::Scene() {
     environmentMap = NULL;
     fog_enabled = false;
-    setBackgroundColor(RGBA(0.0,0,0,1));
+    setBackground(RGBA(0.0,0,0,1));
 }
 
 Scene::~Scene() {
@@ -45,7 +45,7 @@ Camera* Scene::getCamera() const {
     return camera;
 }
 
-void Scene::setEnvironmentMap(Texture* texture) {
+void Scene::setBackground(Texture* texture) {
     environmentSphere = new Sphere(Vector(0,0,0),10000,NULL);
     environmentMap = texture;
 }

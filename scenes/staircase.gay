@@ -15,7 +15,7 @@ camera-aa 4
 image-ratio 4 3
 image-width 640
 
-background 0.5 0.5 0.5 1.0
+background rgba 0.5 0.5 0.5 1.0
 
 light skylight 10000 400 1 1 1 
 
