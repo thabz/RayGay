@@ -86,9 +86,7 @@ Vector Cone::getNormal(const Vector& local_point) const {
  *
  * x^2 + y^2 = (rB - z(rB - rT))^2 for the ray (x,y,z) = O + t*D = Ray(t)
  *
- * which becomes f(t) = 
- * 
- * gives a*t^2 + b*t + c = 0
+ * which reduces to a*t^2 + b*t + c = 0
  * where
  * a = D_z^2*r_B^2 - 2*D_z^2*r_T*r_B + (D_z^2*r_T^2 + (-D_x^2 - D_y^2))
  * b = (2*D_z*O_z - 2*D_z)*r_B^2 + (-4*D_z*r_T*O_z + 2*D_z*r_T)*r_B + 2*D_z*r_T^2*O_z - 2*(D_x*O_x + D_y*O_y)
