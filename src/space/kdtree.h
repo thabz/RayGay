@@ -42,28 +42,27 @@ class KdTree {
     private:
 	class KdNode {
 	    public:
-		KdNode* left;     // Left child
+		// Left child
+		KdNode* left;  
 		union {
-		    std::vector<Object*>* objects;  // Enclosed objects when this is a leaf
-		    KdNode* right;    // Right child
+		    // Enclosed objects when this is a leaf
+		    std::vector<Object*>* objects;
+		    // Right child
+		    KdNode* right;
 		};
-		float splitPlane; // Position of splitting plane
-		int axis;         // Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
-	    public:
-		KdNode();
+		// Position of splitting plane
+		float splitPlane;
+		// Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
+		int axis;
 	};
-	
-	
+
+
 	class KdNodeTmp {
 	    public:
 		std::vector<BoundedObject>* bobjects;  // Enclosed objects when this is a leaf
 		BoundingBox bbox; // Bounding box of voxel
-		int left;     // Left child
-		int right;    // Right child
 		float splitPlane; // Position of splitting plane
 		int axis;         // Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
-	    public:
-		KdNodeTmp();
 	};
 
 	struct StackElem {
@@ -90,20 +89,20 @@ class KdTree {
 	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
 	Object* intersectForShadow_real(const Ray&,const double) const;
 	int largestDimension(const BoundingBox& box) const;
-	BoundingBox enclosure(const std::vector<BoundedObject>& objects) const;
+	BoundingBox enclosure(const std::vector<BoundedObject>* objects) const;
 	BoundingBox world_bbox;
 	bool findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const;
 	// The recursive prepare method
-	void prepare(int curNode_idx, int depth);
+	KdNode* prepare(KdNodeTmp* tmp_node, unsigned int depth);
 
 	// The kd-tree nodes
-	KdNode* nodes;
-	
-	// Temporary nodes used when building the three
-	std::vector<KdNodeTmp>* tmp_nodes;
+	KdNode* top_node;
 
-	int max_depth;
+	unsigned int max_depth;
+	unsigned int nodes_count;
 	bool prepared;
+
+	std::vector<Object*> added_objects;
 };
 
 

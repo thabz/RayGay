@@ -2,7 +2,7 @@
 #include <list>
 
 #include "objects/object.h"
-#include "kdtree.h"
+#include "space/kdtree.h"
 #include "intersection.h"
 #include "ray.h"
 #include "objects/object.h"
@@ -19,13 +19,6 @@
 #define KD_TREE_MAX_DEPTH 100
 
 KdTree::KdTree() {
-    // Allocate the tree of temporary nodes
-    tmp_nodes = new vector<KdNodeTmp>;
-
-    // Push an empty top-node to fill added objects into
-    KdNodeTmp node;
-    node.bobjects = new vector<BoundedObject>;
-    tmp_nodes->push_back(node);
     prepared = false;
 }
 
@@ -34,9 +27,7 @@ KdTree::~KdTree() {
 
 void KdTree::addObject(Object* obj) {
     //Stats::getUniqueInstance()->inc(STATS_KDTREE_OBJECTS_ADDED);
-    BoundedObject bobj;
-    bobj.object = obj;
-    tmp_nodes->front().bobjects->push_back(bobj);
+    added_objects.push_back(obj);
 }
 
 bool KdTree::intersect(const Ray& ray, Intersection* result) const {
@@ -75,123 +66,120 @@ class compareAreaDesc {
 };
 
 void KdTree::prepare() {
-    assert(tmp_nodes->size() == 1);
-    unsigned int added_objects_size = tmp_nodes->front().bobjects->size();
-    for(unsigned int i = 0; i < added_objects_size; i++) {
-	BoundedObject& bobj = (*tmp_nodes->front().bobjects)[i];
-	bobj.bbox = bobj.object->boundingBoundingBox();
+    assert(added_objects.size() > 0);
+    if (prepared) throw_exception("Already prepared.");
+
+    vector<BoundedObject>*  bounded_objects = new vector<BoundedObject>;
+    bounded_objects->reserve(added_objects.size());
+
+    for(unsigned int i = 0; i < added_objects.size(); i++) {
+	BoundedObject bo;
+	bo.object = added_objects[i];
+	bo.bbox = added_objects[i]->boundingBoundingBox();
+	bounded_objects->push_back(bo);
     }
-    world_bbox = enclosure(*(tmp_nodes->front().bobjects));
-    tmp_nodes->front().axis = 0;
-    tmp_nodes->front().bbox = world_bbox;
+    added_objects.clear();
+
+    world_bbox = enclosure(bounded_objects);
     max_depth = 0;
-    prepare(0,1);
-    int nodes_num = tmp_nodes->size();
-    nodes = new KdNode[nodes_num];
+    nodes_count = 0;
+
+    KdNodeTmp node;
+    node.bbox = world_bbox;
+    node.bobjects = bounded_objects;
+
+    top_node = prepare(&node,1);
+    
 #ifdef VERBOSE    
     cout << "Prepared..." << endl;
     cout << "Max depth: " << max_depth << endl;
-    cout << "Nodes: " << nodes_num << endl;
+    cout << "Nodes: " << nodes_count << endl;
 #endif    
-    
-    // Copy all temporary nodes into the real Kd-Tree
-    for(int i = 0; i < nodes_num; i++) {
-	KdNode node = KdNode();
-	KdNodeTmp& old = tmp_nodes->operator[](i);
-	node.splitPlane = old.splitPlane;
-	node.axis = old.axis;
-	if (node.axis >= 0) {
-	    node.left = &(nodes[old.left]);
-	    node.right = &(nodes[old.right]);
-	} else {
-	    node.objects = new vector<Object*>;
-	    node.objects->reserve(old.bobjects->size());
-	    for(unsigned int j = 0; j < old.bobjects->size(); j++) {
-		Object* obj_ptr = (*old.bobjects)[j].object;
-		node.objects->push_back(obj_ptr);
-	    }
-	    //sort(node.objects->begin(),node.objects->end(),compareAreaDesc());
-	    delete old.bobjects;
-	}
-	nodes[i] = node;
-    }
-    delete tmp_nodes;
+    prepared = true;
 }
 
-void KdTree::prepare(int curNode_idx,int depth) {
+KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, unsigned int depth) {
 
-    KdNodeTmp* curNode = &(tmp_nodes->operator[](curNode_idx));
+    KdNode* left_node_ptr = NULL;
+    KdNode* right_node_ptr = NULL;
+    // Mark curNode as a leaf until a suitable split-plane is found
+    curNode->axis = -1;
 
     // Keep with in max depth or minimum node size
-    if (depth > KD_TREE_MAX_DEPTH || curNode->bobjects->size() <= KD_TREE_MAX) {
-	curNode->axis = -1;
-	return;
+    if (depth <= KD_TREE_MAX_DEPTH && curNode->bobjects->size() > KD_TREE_MAX) {
+
+	if (depth > max_depth) {
+	    max_depth = depth;
+	}
+
+	// Make an extra copy of the object list for this node
+	CostResult splitResult;
+	splitResult.left_bobjects = curNode->bobjects;
+	splitResult.right_bobjects = new vector<BoundedObject>;
+	*(splitResult.right_bobjects) = *(splitResult.left_bobjects);
+	assert(splitResult.right_bobjects->size() == splitResult.left_bobjects->size());
+	assert(splitResult.right_bobjects != splitResult.left_bobjects);
+	assert(splitResult.right_bobjects->front().bbox == splitResult.left_bobjects->front().bbox);
+
+	// Find the best axis to split node at
+	if (findBestSplitPlane(curNode->bbox,splitResult)) {
+	    // curNode will be split 
+	    curNode->axis = splitResult.dim;
+	    curNode->splitPlane = splitResult.axis;
+
+	    KdNodeTmp lower;
+	    KdNodeTmp higher;
+	    lower.bobjects = new vector<BoundedObject>;
+	    higher.bobjects = new vector<BoundedObject>;
+
+	    // Find bounding boxes for the two children
+	    if (!curNode->bbox.split(&(lower.bbox), &(higher.bbox), curNode->axis, curNode->splitPlane)) {
+		throw_exception("Split plane outside bbox of node");
+	    }
+
+	    // Move into lower
+	    lower.bobjects->reserve(splitResult.left_index);
+	    for(unsigned int i = 0; i < splitResult.left_index; i++) {
+		BoundedObject& bobject = splitResult.left_bobjects->operator[](i);
+		assert(bobject.object != NULL);
+		if (bobject.object->intersects(curNode->bbox,bobject.bbox) >= 0) 
+		    lower.bobjects->push_back(bobject);
+	    }
+	    delete splitResult.left_bobjects;
+
+	    // Move into higher
+	    higher.bobjects->reserve(splitResult.right_bobjects->size() - splitResult.right_index);
+	    for(unsigned int i = splitResult.right_index; i < splitResult.right_bobjects->size(); i++) {
+		BoundedObject& bobject = splitResult.right_bobjects->operator[](i);
+		if (bobject.object->intersects(curNode->bbox,bobject.bbox) >= 0) 
+		    higher.bobjects->push_back(bobject);
+	    }
+	    delete splitResult.right_bobjects;
+
+	    // Recurse into child nodes
+	    left_node_ptr = prepare(&lower,depth+1);
+	    right_node_ptr = prepare(&higher,depth+1);
+	}
     }
 
-    if (depth > max_depth) {
-	max_depth = depth;
-    }
-    
-    // Make an extra copy of the object list for this node
-    CostResult splitResult;
-    splitResult.left_bobjects = curNode->bobjects;
-    splitResult.right_bobjects = new vector<BoundedObject>;
-    *(splitResult.right_bobjects) = *(splitResult.left_bobjects);
-    
-    // Find the best axis to split node at
-    if (findBestSplitPlane(curNode->bbox,splitResult)) {
-	// curNode will be split 
-	curNode->axis = splitResult.dim;
-	curNode->splitPlane = splitResult.axis;
+    KdNode* new_node = new KdNode();
+    new_node->axis = curNode->axis;
+    new_node->splitPlane = curNode->splitPlane;
+    nodes_count++;
+    if (curNode->axis == -1) {
+	new_node->objects = new vector<Object*>;
+	//new_node->objects->reserve(curNode->bobjects->size());
+	for(unsigned int j = 0; j < curNode->bobjects->size(); j++) {
+	    Object* obj_ptr = curNode->bobjects->operator[](j).object;
+	    new_node->objects->push_back(obj_ptr);
+	}
+	delete curNode->bobjects;
     } else {
-	// Mark curNode as a leaf since no suitable split-plane was found
-	curNode->axis = -1;
-	return;
+	assert(left_node_ptr != NULL && right_node_ptr != NULL);
+	new_node->left = left_node_ptr;
+	new_node->right = right_node_ptr;
     }
-
-    // Create two new childnodes to split into
-    tmp_nodes->push_back(KdNodeTmp());
-    tmp_nodes->push_back(KdNodeTmp());
-
-    // Reload curNode since vector might have been realloc'ed after the pushes
-    curNode = &(tmp_nodes->operator[](curNode_idx)); 
-
-    // Set indices for child nodes
-    int left_idx = tmp_nodes->size() - 1;
-    int right_idx = tmp_nodes->size() - 2;
-    curNode->left = left_idx;
-    curNode->right = right_idx;
-    KdNodeTmp& lower = tmp_nodes->operator[](curNode->left);
-    KdNodeTmp& higher = tmp_nodes->operator[](curNode->right);
-    lower.bobjects = new vector<BoundedObject>;
-    higher.bobjects = new vector<BoundedObject>;
-
-    // Find bounding boxes for the two children
-    if (!curNode->bbox.split(&(lower.bbox), &(higher.bbox), curNode->axis, curNode->splitPlane)) {
-	throw_exception("Split plane outside bbox of node");
-    }
-
-    // Move into lower
-    lower.bobjects->reserve(splitResult.left_index);
-    for(unsigned int i = 0; i < splitResult.left_index; i++) {
-	BoundedObject& bobject = splitResult.left_bobjects->operator[](i);
-	if (bobject.object->intersects(curNode->bbox,bobject.bbox) >= 0) 
-	    lower.bobjects->push_back(bobject);
-    }
-    delete splitResult.left_bobjects;
-
-    // Move into higher
-    higher.bobjects->reserve(splitResult.right_bobjects->size() - splitResult.right_index);
-    for(unsigned int i = splitResult.right_index; i < splitResult.right_bobjects->size(); i++) {
-	BoundedObject& bobject = splitResult.right_bobjects->operator[](i);
-	if (bobject.object->intersects(curNode->bbox,bobject.bbox) >= 0) 
-	    higher.bobjects->push_back(bobject);
-    }
-    delete splitResult.right_bobjects;
-
-    // Recurse into child nodes
-    prepare(left_idx,depth+1);
-    prepare(right_idx,depth+1);
+    return new_node;
 }
 
 /**
@@ -205,7 +193,7 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 
     double t;
     KdNode *farChild, *curNode;
-    curNode = nodes;
+    curNode = top_node;
     int enPt = 0;
     stack[enPt].t = a;
 
@@ -373,7 +361,7 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
 
     double t;
     KdNode *farChild, *curNode;
-    curNode = nodes;
+    curNode = top_node;
     int enPt = 0;
     stack[enPt].t = 0.0;
 
@@ -452,22 +440,16 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
     return NULL;
 }
 
-KdTree::KdNode::KdNode() {
-}
-
-KdTree::KdNodeTmp::KdNodeTmp() {
-}
-
 KdTree::CostResult::CostResult() {
     left_bobjects = NULL;
     right_bobjects = NULL;
 }
 
-BoundingBox KdTree::enclosure(const std::vector<BoundedObject>& objects) const {
-    assert(objects.size() > 0);
-    BoundingBox result = objects[0].bbox; 
-    for(unsigned int i = 1; i < objects.size(); i++) {
-	result = BoundingBox::doUnion(result,objects[i].bbox);
+BoundingBox KdTree::enclosure(const std::vector<BoundedObject>* objects) const {
+    assert(objects->size() > 0);
+    BoundingBox result = objects->front().bbox; 
+    for(unsigned int i = 1; i < objects->size(); i++) {
+	result = BoundingBox::doUnion(result,objects->operator[](i).bbox);
     }
     return result;
 }
@@ -477,6 +459,7 @@ int g_d;
 class cmpL {
     public:
 	bool operator()(const BoundedObject& p1, const BoundedObject& p2) {
+	    assert(g_d == 0 || g_d == 1 || g_d == 2);
 	    return p1.bbox.minimum()[g_d] < p2.bbox.minimum()[g_d];
 	}
 };
@@ -484,6 +467,7 @@ class cmpL {
 class cmpR {
     public:
 	bool operator()(const BoundedObject& p1, const BoundedObject& p2) {
+	    assert(g_d == 0 || g_d == 1 || g_d == 2);
 	    return p1.bbox.maximum()[g_d] < p2.bbox.maximum()[g_d];
 	}
 };
@@ -558,7 +542,7 @@ bool KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result) con
     if (result.dim == -1) {
 	return false;
     } else {
-        //cout << "Split " << size << " into " << result.left_index << "," << size - result.right_index << endl;
+	//cout << "Split " << size << " into " << result.left_index << "," << size - result.right_index << endl;
 	g_d = result.dim;
 	sort(result.left_bobjects->begin(), result.left_bobjects->end(), cmpL());
 	sort(result.right_bobjects->begin(), result.right_bobjects->end(), cmpR());
