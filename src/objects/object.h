@@ -40,6 +40,9 @@ class Object : public SceneObject {
 
 	void addSelf(KdTree* space);
 
+	/// Returns the surface area of object
+	virtual double area() const;
+
     protected:
 	Object(const Material* material);
 	/// Internal intersect method that subclasses must implement

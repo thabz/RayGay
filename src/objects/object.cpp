@@ -23,3 +23,6 @@ void Object::prepare() {
     // Default does nothing
 }
 
+double Object::area() const {
+    return 1;
+}

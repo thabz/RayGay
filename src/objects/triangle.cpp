@@ -174,3 +174,10 @@ BoundingBox Triangle::boundingBoundingBox() const {
     return b;
 }
 
+double Triangle::area() const {
+    Vector v[3];
+    v[0] = mesh->cornerAt(vertex[0]);
+    v[1] = mesh->cornerAt(vertex[1]);
+    v[2] = mesh->cornerAt(vertex[2]);
+    return 2.0 * Vector::area(v[0],v[1],v[2]);
+}
