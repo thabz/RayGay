@@ -14,6 +14,7 @@ class Sphere;
 class Image;
 class ObjectCollection;
 class Camera;
+class SpaceSubdivider;
 
 /// The collection of objects and lights.
 
@@ -60,6 +61,9 @@ class Scene {
 	bool fogEnabled() const { return fog_enabled; };
 	RGB getFogColor() const { return fog_color; };
 	double getFogDistance() const { return fog_distance; };
+
+	/// Add all objects in scene to spacesubdivider
+	void initSpace(SpaceSubdivider* space);
 
     private:
 	std::vector<Lightsource*> lights;

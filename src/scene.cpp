@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <time.h>
 
 #include "scene.h"
 #include "camera.h"
@@ -13,6 +14,7 @@
 #include "objectcollection.h"
 #include "materials/materials.h"
 #include "stats.h"
+#include "spacesubdivider.h"
 
 using namespace std;
 
@@ -88,3 +90,13 @@ void Scene::setFog(const RGB& color, const double distance) {
     this->fog_enabled = true;
 }
 
+void Scene::initSpace(SpaceSubdivider* space) {
+    time_t beginTime = time(NULL);
+    for (vector<SceneObject*>::iterator p = objects.begin(); p != objects.end(); p++) {
+	(*p)->prepare();
+	(*p)->addSelf(space);
+    }
+
+    space->prepare();
+    Stats::getUniqueInstance()->put("Prepare time (seconds)",time(NULL)-beginTime);
+}
