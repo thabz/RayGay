@@ -75,7 +75,7 @@ enum windowToolkitId {
     NONE
 };
 
-int getWindowToolkit() {
+int availableWindowToolkit() {
 #ifdef HAVE_GTK
     return GTK;
 #endif
@@ -87,7 +87,7 @@ int getWindowToolkit() {
 
 PreviewWindow* windowFactory(int w, int h) {
     PreviewWindow* result;
-    switch (getWindowToolkit()) {
+    switch (availableWindowToolkit()) {
 	case GTK:
 	    result = new PreviewWindowGTK(w, h, abortRenderingCB);
 	    break;
@@ -344,7 +344,7 @@ void print_usage() {
 
 int main(int argc, char *argv[]) {
     Environment* env = Environment::getUniqueInstance();
-    if (getWindowToolkit() != NONE) {
+    if (availableWindowToolkit() != NONE) {
 	env->hasPreviewWindow(true);
     } else {
 	env->hasPreviewWindow(false);
