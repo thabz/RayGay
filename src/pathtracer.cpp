@@ -26,18 +26,28 @@ Pathtracer::Pathtracer(RendererSettings* settings, Image* img, Scene* scene, KdT
 
 RGBA Pathtracer::getPixel(const Vector2& v) {
     Camera* camera = scene->getCamera();
-    if (camera->isDoFEnabled()) {
-	int samples = camera->getDoFSamples();
-	RGBA result = RGBA(0.0,0.0,0.0,0.0);
-	for(int i = 0; i < samples; i++) {
-	    Ray ray = camera->getRay(v[0],v[1]);
-	    result = result + tracePrimary(ray);
+    Ray ray = camera->getRay(v[0],v[1]);
+    ray.fromObject = camera;
+    return tracePrimary(ray);
+}
+
+RGBA Pathtracer::tracePrimary(const Ray& ray) {
+    Stats::getUniqueInstance()->inc(STATS_PRIMARY_RAYS_CAST);
+    Intersection i;
+    bool intersected = space->intersectPrimary(ray,&i);
+    if (intersected) {
+	// Reset the quasi monte carlo sequence for each trace depth
+	for(uint j = 0; j < MAX_DEPTH; j++) {
+	    seqs[j]->reset();
 	}
-        return result / double(samples) ;
+	int samples = renderersettings->camera_paths;
+	RGBA result = RGBA(0.0,0.0,0.0,0.0);
+	for(int j = 0; j < samples; j++) {
+	    result = result + traceSub(intersected, i, ray, 1);
+	}
+	return result / double(samples) ;
     } else {
-	Ray ray = camera->getRay(v[0],v[1]);
-	ray.fromObject = camera;
-	return tracePrimary(ray);
+	return traceSub(intersected, i, ray, 1);
     }
 }
 
@@ -49,7 +59,7 @@ RGBA Pathtracer::traceSub(const bool intersected, const Intersection& intersecti
     if (intersected) {
 	color = shade(ray,intersection,depth);
     } else {
-        color = scene->getBackgroundColor(ray);
+	color = scene->getBackgroundColor(ray);
     }
 
     if (scene->fogEnabled()) {

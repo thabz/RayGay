@@ -32,34 +32,13 @@ class Pathtracer : public Renderer {
 };
 
 inline
-RGBA Pathtracer::tracePrimary(const Ray& ray) {
-    Stats::getUniqueInstance()->inc(STATS_PRIMARY_RAYS_CAST);
-    Intersection i;
-    bool intersected = space->intersectPrimary(ray,&i);
-    if (intersected) {
-
-
-    for(uint j = 0; j < MAX_DEPTH; j++) {
-	seqs[j]->reset();
-    }
-
-	int samples = renderersettings->camera_paths;
-	RGBA result = RGBA(0.0,0.0,0.0,0.0);
-	for(int j = 0; j < samples; j++) {
-	    result = result + traceSub(intersected, i, ray, 1);
-	}
-	return result / double(samples) ;
-    } else {
-	return traceSub(intersected, i, ray, 1);
-    }
-}
-
-inline
 RGBA Pathtracer::trace(const Ray& ray, const int depth) {
     Stats::getUniqueInstance()->inc(STATS_SECONDARY_RAYS_CAST);
     Intersection i;
     bool intersected = space->intersect(ray,&i);
     return traceSub(intersected, i, ray, depth);
 }
+
+
 
 #endif
