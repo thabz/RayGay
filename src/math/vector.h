@@ -23,6 +23,7 @@ class Vector {
 
 public:
     Vector() {}; ///< Default constructor
+    Vector(const Vector& v); ///< Copy constructor
     Vector(double x, double y, double z); ///< Initializing constructor
     void normalize(); ///< Normalize vector so that |v| = 1
     void scale(float s); ///< Scale the vector
@@ -160,6 +161,13 @@ Vector::Vector(double x, double y, double z) {
     _vector[0] = x;
     _vector[1] = y;
     _vector[2] = z; 
+}
+
+inline
+Vector::Vector(const Vector& v) {
+    _vector[0] = v._vector[0];
+    _vector[1] = v._vector[1];
+    _vector[2] = v._vector[2];
 }
 
 inline
