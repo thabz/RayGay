@@ -1,10 +1,12 @@
 ; A scene for testing photon mapping
 
+(load "lib/objects/make-rounded-box.scm")
+
 (set! image-size '(640 480))
 (set! background '(0.1 0.1 0.3))
 
-(set! renderer "raytracer")
 (set! renderer "photonrenderer")
+(set! renderer "raytracer")
 
 (set! camera 
   (make-pinhole-camera 
@@ -12,7 +14,7 @@
        up 	(0 1 0)
        lookat 	(0 0 0)
        fov 	90
-       aa 	0)))
+       aa 	4)))
 
 (set! settings 
  '( globalphotons  	500000
@@ -53,6 +55,17 @@
        kd 	1.0
        ks 	0.0)))
 
+(define dull-brown1
+  (make-material
+    '( diffuse (0.7 0.4 0.2)
+       kd 1.0
+       ks 0.0)))
+
+(define dull-brown2
+  (make-material
+    '( diffuse (0.45 0.2 0.1)
+       kd 1.0
+       ks 0.0)))
 
 (define water
   (make-material
@@ -75,11 +88,28 @@
  ))
 
 (define watermap
- (make-texture "gfx/water.jpg" 1 1 "none"))
+ (make-texture "gfx/water.jpg" 1 1 "bilinear"))
 
 (append! scene
 	 (list 
 	  (translate
 	  (make-heightfield watermap '(600 30 600) 100 100 water)
 	  '(0 -100 0))))
+
+(let loopx ((x -300))
+ (begin
+(let loopz ((z -300))
+ (begin
+  (append! scene
+   (make-rounded-box 
+    (list x -310 z)
+    (list (+ x 50) -295 (+ z 50))
+    5
+    (if (= (modulo (+ x z) 100) 0)
+    dull-brown1
+    dull-brown2)))
+  (if (< z 300)
+  (loopz (+ z 50)))))
+  (if (< x 300)
+  (loopx (+ x 50)))))
 
