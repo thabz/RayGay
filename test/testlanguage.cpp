@@ -21,6 +21,7 @@ void test_bool() {
     assert(t1 && t2);
     assert(t1 || f1);
     assert(f1 || t1);
+    assert(f1 || f2 == false);
 
 
 }
