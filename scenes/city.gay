@@ -1,0 +1,73 @@
+
+renderer raytracer
+
+camera { position <100,1000,2000>
+         up <0,1,0> 
+         lookat <0,0,0> 
+	 fov 45
+	 aa 0
+}
+
+image { width 1600 aspect 4 3 }
+
+background <0.3,0.5,0.7,1.0>
+/*background texture { "probes/stpeters_probe.hdr" 1.0 1.0 bilinear}*/
+
+light { point <500,1300,1300> power <1,1,1> } 
+light { point <-500,1500,1300> power <1,1,1> } 
+
+$brown = material {
+    diffuse <0.7,0.4,0.2>
+    kd 1.0
+    ks 0.0
+}
+
+$grey85 = material {
+    diffuse <0.85,0.85,0.85>
+    kd 1.0
+    ks 0.0
+}
+
+$chrome = material {
+    diffuse <0.8,0.8,0.8>
+    kd 0.2
+    specular <1.0,1.0,1.0>
+    ks 0.8
+    specpow 30
+}
+
+/*
+box { 
+    $brown
+    <-1700,-51,-1700>
+    <1700,1,1700>	  
+}
+*/
+
+$kaj = 20 - 1
+print ($kaj - 1)
+
+$i = 0
+$num = 240
+$windings = 0.5
+do {
+    $height = random(400,700)
+    $house = group { 
+	difference { $grey85	
+          difference {
+             solidbox { <-20,350,-20> <20,$height,20>}
+             solidbox { <-15,$height-2,-15> <15,($height+5),15>}
+	  }
+	  solidbox { <-22,0,-16>  <-18,$height-2,16> }
+	}
+       solidbox { $grey85 <-10,$height-1,-10> <10,$height+10,10>}
+       cylinder { $grey85 1 <0,$height+10,0> <0,$height+40,0> }
+      }
+    object $house
+    rotate {<1,0,0> random(0,360) }
+    rotate {<0,0,1> random(0,360) }
+    $i++
+} while ($i < $num)
+
+sphere {$grey85 400 <0,0,0> }
+
