@@ -153,7 +153,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     }
 
     // Create and prepare job pool
-    RenderJobPool* job_pool = new RenderJobPool(img->getWidth(),img->getHeight(),128);
+    RenderJobPool* job_pool = new RenderJobPool(img->getWidth(),img->getHeight(),64);
 
     if (renderersettings->anim_frames == 1) {
 	cout << "Still render (" << img->getWidth() << "x" << img->getHeight() << ")" << endl;
