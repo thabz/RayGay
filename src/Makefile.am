@@ -1,5 +1,6 @@
 
-SUBDIRS = materials paths lights math image photon filters objects space shaders
+SUBDIRS = materials paths lights math image photon filters objects space shaders parser
+
 
 #--------------------------------------
 

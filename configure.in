@@ -10,9 +10,10 @@ dnl -------------------------------------------------
 dnl Check that the compiler and programs exists
 dnl -------------------------------------------------
 AC_PROG_CXX
+AC_PROG_YACC
+AM_PROG_LEX
 AC_PROG_RANLIB
 AC_PROG_LIBTOOL
-
 
 dnl -------------------------------------------------
 dnl Check system and headers
@@ -37,7 +38,7 @@ AC_CHECK_LIB(png, png_read_info, LIBS="-lpng $LIBS")
 dnl -------------------------------------------------
 dnl Add the CPU dependent compile optimizations
 dnl -------------------------------------------------
-CXXFLAGS="-g -O3 -Wall -ffast-math"     
+CXXFLAGS="-g -O3 -Wall -ffast-math -pthread"     
 case $target in
      pentium3) CXXFLAGS="$CXXFLAGS -malign-double -march=pentium3 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing";;
      pentium4) CXXFLAGS="$CXXFLAGS -fprefetch-loop-arrays -funroll-loops -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing -msse2";;
@@ -53,6 +54,7 @@ AC_OUTPUT(Makefile \
 	  src/math/Makefile \
 	  src/image/Makefile \
 	  src/filters/Makefile \
+	  src/parser/Makefile \
 	  src/photon/Makefile \
 	  src/objects/Makefile \
 	  src/space/Makefile \
