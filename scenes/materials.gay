@@ -4,10 +4,10 @@ material $glass plastic 0.0 0.2 0.2
 diffuse 0.0 0.2 0.2
 kd 0.0
 specular 1.0 1.0 1.0
-ks 0.2
+ks 0.5
 specpow 30
-eta 1.2
-kt 0.8
+eta 1.33
+kt 0.5
 
 
 material $water plastic 0.0 0.2 0.2
