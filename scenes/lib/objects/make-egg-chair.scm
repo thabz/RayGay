@@ -1,4 +1,4 @@
-
+; $Id$
 (define (make-egg-chair cloth-material metal-material)
   (list
     (make-mesh 
