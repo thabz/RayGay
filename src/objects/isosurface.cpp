@@ -13,8 +13,11 @@ IsoSurface::IsoSurface(unsigned int steps, double accuracy, double iso) {
 Intersection IsoSurface::_intersect(const Ray& ray) const {
     const BoundingBox& bbox = this->boundingBoundingBox();
     Vector2 inout = bbox.intersect(ray);
-    double t_begin = inout[0];
     double t_end = inout[1];
+    if (t_end < 0) {
+	return Intersection();
+    }
+    double t_begin = max(inout[0],double(0));
     double t_step = (t_end - t_begin) / double(steps);
 
     if (inside(ray.getPoint(t_begin))) {
