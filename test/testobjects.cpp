@@ -47,7 +47,7 @@ Vector iNormal(Object* o, const Ray& ray) {
     double t = o->fastIntersect(ray);
     assert(t > 0);
     Intersection i = o->fullIntersect(ray,t);
-    return i.getObject()->normal(i);
+    return i.getNormal();
 }
 
 Vector iNormal(Object* o, const Vector& origin, const Vector& dir) {
@@ -274,7 +274,7 @@ void box_test() {
     Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
     assert(bsp->intersect(r,inter));
     assert(inter->getPoint() == Vector(0,0,1));
-    assert(inter->getObject()->getUV(*inter) == Vector2(0.5,0.5));
+    assert(inter->getUV() == Vector2(0.5,0.5));
 
     r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
     assert(bsp->intersect(r,inter));
