@@ -18,6 +18,7 @@
 #include "objects/extrusion.h"
 #include "objects/heightfield.h"
 #include "objects/sphere.h"
+#include "objects/wireframe.h"
 #include "objects/transformedinstance.h"
 #include "paths/linesegment.h"
 #include "paths/circle.h"
@@ -432,6 +433,17 @@ void Importer::parse(const string& filename) {
 	    Vector c1 = readVector(stream);
 	    Vector c2 = readVector(stream);
 	    cur_object = new Box(c1,c2,m);
+	} else if (command == "wireframe") {
+	    string mesh_name = readString(stream);
+	    SceneObject* sobj = getNamedObject(mesh_name);
+	    Mesh* mesh = dynamic_cast<Mesh*>(sobj);
+	    if (mesh == NULL) {
+		cout << "Error creating wireframe: " << mesh_name << " is not a Mesh." << endl;
+		exit(EXIT_FAILURE);
+	    }
+	    Material* material = lookupMaterial(readString(stream));
+	    double radius = readDouble(stream);
+	    cur_object = new Wireframe(mesh,radius,material);
 	} else if (command == "necklace") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
