@@ -56,7 +56,7 @@ RGB Material::getDiffuseColor(const Intersection& i) const {
 	uv = scaleUV(uv);
 	return texturemap->getBiCubicTexel(uv[0],uv[1]);
     } else {
-        return getDiffuseColor();
+        return _diffuseColor;
     }
 }
 

@@ -23,7 +23,7 @@ class Material {
 	virtual ~Material(); ///< Default destructor
 
 	/*!  Get the diffuse color */
-	RGB getDiffuseColor() const { return _diffuseColor; };
+	virtual RGB getDiffuseColor(const Intersection& i) const;
 	void setDiffuseColor(RGB diffuseColor) { _diffuseColor = diffuseColor; }; ///< Set the diffuse color
 
 	RGB getSpecularColor() const { return _specularColor; }; ///< Get the specular color
@@ -35,7 +35,6 @@ class Material {
 	void setRepeatX(const unsigned int repeatX) { this->repeatX = repeatX; };
 	void setRepeatY(const unsigned int repeatY) { this->repeatY = repeatY; };
 	
-	virtual RGB getDiffuseColor(const Intersection& i) const;
 
 	double getKd() const { return _kd; } ;
 	void setKd(double kd) { _kd = kd; };
