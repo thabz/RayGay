@@ -108,11 +108,6 @@ material $chess checker $dullgreen $dullblue 100
 kd 1.0
 ks 0.0
 
-material $helloworld plastic 1.0 1.0 1.0
-texturemap gfx/halloworld.tga
-kd 1.0
-ks 0.0
-
 material $plaster plastic 1.0 1.0 1.0
 texturemap gfx/plaster.tga
 bumpmap gfx/plasterbump.tga 30.0
