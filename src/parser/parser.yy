@@ -118,7 +118,7 @@ ActionListNode* top_actions;
 %token tRENDERER tRAYTRACER tPHOTONRENDERER
 %token tROTATE tTRANSLATE
 %token tREPEAT
-%token tSIN tCOS tABS tPI
+%token tSIN tCOS tABS tPI t2PI
 %token tSOLIDBOX
 %token tSPHERE
 %token tTEXTURE
@@ -813,6 +813,10 @@ Expr		: tSIN '(' Expr ')'
                 | tPI 
                 {
 		    $$ = new FloatConstNode(M_PI);
+		}
+                | t2PI 
+                {
+		    $$ = new FloatConstNode(M_2PI);
 		}
                 | Random
                 ;
