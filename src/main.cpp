@@ -23,10 +23,55 @@
 #include "photonrenderer.h"
 #include "raytracer.h"
 
+#include "photon/globalphotonmap.h"
+#include "photon/causticsmap.h"
+#include "photon/photontracer.h"
+#include "photon/irradiancecache.h"
+
 #include "renderersettings.h"
 
 
 using namespace std;
+
+void preparePhotonMaps(Scene* scene,
+	               SpaceSubdivider* space,
+		       RendererSettings* renderersettings,
+	               GlobalPhotonMap** globalphotonmap,
+		       CausticsMap** causticsphotonmap,
+		       IrradianceCache** irradiancecache) {
+
+    (*globalphotonmap) = new GlobalPhotonMap(renderersettings->global_photons_num,renderersettings->estimate_radius,renderersettings->estimate_samples);
+    (*causticsphotonmap) = new CausticsMap(renderersettings->caustic_photons_num,renderersettings->estimate_radius,renderersettings->estimate_samples); 
+
+    PhotonTracer* photontracer = new PhotonTracer(scene,space,(*globalphotonmap),(*causticsphotonmap));
+    cout << "Tracing photons..." << endl;
+    photontracer->trace(renderersettings->threads_num);
+    cout << "Done." << endl;
+
+    
+    cout << "Balancing photonmaps..." << endl;
+    Stats::getUniqueInstance()->beginTimer("Balance photonmaps");
+    int total_photons_num = renderersettings->global_photons_num + renderersettings->caustic_photons_num;
+    (*globalphotonmap)->scale_photon_power(1.0/double(total_photons_num));
+    (*globalphotonmap)->balance();
+    (*causticsphotonmap)->scale_photon_power(1.0/double(total_photons_num));
+    (*causticsphotonmap)->balance();
+    Stats::getUniqueInstance()->endTimer("Balance photonmaps");
+    cout << "Done." << endl;
+
+    cout << "Precomputing irradiances..." << endl;
+    Stats::getUniqueInstance()->beginTimer("Precomputing irradiance");
+    (*globalphotonmap)->preComputeIrradiances(4,renderersettings->threads_num);
+    Stats::getUniqueInstance()->endTimer("Precomputing irradiance");
+    cout << "Done." << endl;
+
+    delete photontracer;
+    
+    //irradiance_cache = new IrradianceCache(space->getWorldBoundingBox(),5);
+    BoundingBox bbox = BoundingBox(Vector(-733,-733,-733),Vector(733,733,733));
+    (*irradiancecache) = new IrradianceCache(bbox,renderersettings->cache_tolerance);
+
+}
 
 void work(string scenefile, string outputfile,int jobs) {
     Stats::getUniqueInstance()->clear();
@@ -53,14 +98,18 @@ void work(string scenefile, string outputfile,int jobs) {
     Renderer* renderer;
 
     if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
-	renderer = new PhotonRenderer(renderersettings,scene,space);
+	GlobalPhotonMap* globalphotonmap;
+	CausticsMap* causticsmap;
+	IrradianceCache* irradiancecache;
+	preparePhotonMaps(scene,space,renderersettings,&globalphotonmap,&causticsmap,&irradiancecache);
+
+	renderer = new PhotonRenderer(renderersettings,scene,space,globalphotonmap,causticsmap,irradiancecache);
     } else if (renderersettings->renderertype == RendererSettings::RAYTRACER) {
 	renderer = new Raytracer(renderersettings,scene,space);
     } else {
 	cout << "main.cpp: Unknown renderer" << endl;
 	exit(EXIT_FAILURE);
     }
-    renderer->init();
     renderer->render(img);
 
     img->save(outputfile);

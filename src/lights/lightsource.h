@@ -29,7 +29,7 @@ class Lightsource {
 	 * @param info the structure to write the result into
 	 * @param depth the number of times the ray has been reflected or refracted
 	 */
-	virtual void getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const = 0;
+	virtual void getLightinfo(const Intersection& inter, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const = 0;
 	
 	/// Apply a transformation
         virtual void transform(const Matrix& m);

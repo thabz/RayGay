@@ -54,11 +54,11 @@ Vector Arealight::getPosition(int i) const {
     return circles[i]->getPoint(t);
 }
 
-void Arealight::getLightinfo(const Intersection& inter,const Vector& normal, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
+void Arealight::getLightinfo(const Intersection& inter, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
     Vector direction_to_light;
     info->direction_to_light = position - inter.getPoint();
     info->direction_to_light.normalize();
-    info->cos = info->direction_to_light * normal;
+    info->cos = info->direction_to_light * inter.getNormal();
 
     if (info->cos > 0.0) {
 	int count = 0;

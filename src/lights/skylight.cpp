@@ -16,7 +16,7 @@ Skylight::Skylight (double radius, int num) : Lightsource(Vector(0,0,0)) {
     }
 }
 
-void Skylight::getLightinfo(const Intersection& inter,const Vector& normal, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
+void Skylight::getLightinfo(const Intersection& inter, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
     int count = 0;
     double cos_total = 0;
     double cos_tmp;
@@ -24,7 +24,7 @@ void Skylight::getLightinfo(const Intersection& inter,const Vector& normal, Spac
 	Vector direction_to_light = positions[i] - inter.getPoint();
 	double dist_to_light = direction_to_light.length();
 	direction_to_light = direction_to_light / dist_to_light;
-	cos_tmp = direction_to_light * normal;
+	cos_tmp = direction_to_light * inter.getNormal();
 	if (cos_tmp > 0.0) {
 	    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
 	    bool occluded = shadowcaches[i].occluded(ray_to_light,dist_to_light,depth,space);

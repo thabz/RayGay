@@ -9,7 +9,7 @@
 Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
 }
 
-void Pointlight::getLightinfo(const Intersection& inter,const Vector& normal, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
+void Pointlight::getLightinfo(const Intersection& inter, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
     // TODO: Move point ESPILON along normal to avoid selfshadowing.
     info->direction_to_light = position - inter.getPoint();
     double dist_to_light = info->direction_to_light.length();
@@ -20,7 +20,7 @@ void Pointlight::getLightinfo(const Intersection& inter,const Vector& normal, Sp
 
     }
     info->direction_to_light = info->direction_to_light / dist_to_light;
-    info->cos = info->direction_to_light * normal;
+    info->cos = info->direction_to_light * inter.getNormal();
 
     if (info->cos > 0.0) {
 	Ray ray_to_light = Ray(inter.getPoint(),info->direction_to_light,-1.0);

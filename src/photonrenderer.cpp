@@ -25,41 +25,15 @@
 #include "materials/material.h"
 #include "space/spacesubdivider.h"
 
-PhotonRenderer::PhotonRenderer(RendererSettings* settings,  Scene* scene, SpaceSubdivider* spc) : Renderer(settings,scene,spc) {
-}
-
-void PhotonRenderer::init() {
-    this->globalphotonmap = new GlobalPhotonMap(renderersettings->global_photons_num,renderersettings->estimate_radius,renderersettings->estimate_samples);
-    this->causticsphotonmap = new CausticsMap(renderersettings->caustic_photons_num,renderersettings->estimate_radius,renderersettings->estimate_samples); 
-
-    PhotonTracer* photontracer = new PhotonTracer(scene,space,globalphotonmap,causticsphotonmap);
-    cout << "Tracing photons..." << endl;
-    photontracer->trace(renderersettings->threads_num);
-    cout << "Done." << endl;
-
-    
-    cout << "Balancing photonmaps..." << endl;
-    Stats::getUniqueInstance()->beginTimer("Balance photonmaps");
-    int total_photons_num = renderersettings->global_photons_num + renderersettings->caustic_photons_num;
-    globalphotonmap->scale_photon_power(1.0/double(total_photons_num));
-    globalphotonmap->balance();
-    causticsphotonmap->scale_photon_power(1.0/double(total_photons_num));
-    causticsphotonmap->balance();
-    Stats::getUniqueInstance()->endTimer("Balance photonmaps");
-    cout << "Done." << endl;
-
-    cout << "Precomputing irradiances..." << endl;
-    Stats::getUniqueInstance()->beginTimer("Precomputing irradiance");
-    globalphotonmap->preComputeIrradiances(4,renderersettings->threads_num);
-    Stats::getUniqueInstance()->endTimer("Precomputing irradiance");
-    cout << "Done." << endl;
-
-    delete photontracer;
-    
-    //irradiance_cache = new IrradianceCache(space->getWorldBoundingBox(),5);
-    BoundingBox bbox = BoundingBox(Vector(-733,-733,-733),Vector(733,733,733));
-    irradiance_cache = new IrradianceCache(bbox,renderersettings->cache_tolerance);
-
+PhotonRenderer::PhotonRenderer(RendererSettings* settings,  
+	                       Scene* scene, 
+			       SpaceSubdivider* spc, 
+			       GlobalPhotonMap* globalphotonmap, 
+			       CausticsMap* causticsmap, 
+			       IrradianceCache* irradiancecache) : Renderer(settings,scene,spc) {
+    this->globalphotonmap = globalphotonmap;
+    this->causticsphotonmap = causticsmap;
+    this->irradiance_cache = irradiancecache;
     qmc_sequence = new Halton(2,2);
 }
 
@@ -138,7 +112,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 	double attenuation = (*p)->getAttenuation(point);
 
 	if (attenuation > double(0)) {
-	    (*p)->getLightinfo(intersection,normal,space,&info,depth);
+	    (*p)->getLightinfo(intersection,space,&info,depth);
 	    if (info.cos > 0.0) {
 		RGB color = RGB(0.0,0.0,0.0);
 		// Check for blocking objects

@@ -29,11 +29,11 @@ void Spotlight::transform(const Matrix& m) {
     _dir = m.extractRotation() * _dir;
 }
 
-void Spotlight::getLightinfo(const Intersection& inter,const Vector& normal, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
+void Spotlight::getLightinfo(const Intersection& inter, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
     info->direction_to_light = this->getPosition() - inter.getPoint();
     double dist_to_light = info->direction_to_light.length();
     info->direction_to_light.normalize();
-    info->cos = info->direction_to_light * normal;
+    info->cos = info->direction_to_light * inter.getNormal();
     if (info->cos > 0.0) {
 	Ray ray_to_light = Ray(inter.getPoint(),info->direction_to_light,-1.0);
 	bool in = space->intersectForShadow(ray_to_light,dist_to_light);
