@@ -12,7 +12,16 @@
 class Solid : public Object {
 
     public:
-	/// Find all intersections with ray
+
+	/**
+	 * Find all intersections with ray.
+	 *
+	 * The intersections are added to the result vector. The intersections
+	 * are sorted by distance along ray with nearest first.
+	 *
+	 * @param ray the ray to intersect with.
+	 * @param result the intersections are added here.
+	 */
 	virtual void allIntersections(const Ray& ray, vector<Intersection>& result) const = 0;
     protected:
 	/// Protected constructor
