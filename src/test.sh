@@ -1,3 +1,3 @@
 #!/bin/sh
 
-make && ./tracer && eog out.png
+make && ./tracer && convert out.tga out.png && eog out.png
