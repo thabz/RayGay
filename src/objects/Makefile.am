@@ -10,6 +10,7 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 		       bound.h		\
 		       box.cpp		\
 		       csg.cpp		\
+		       csg_union.cpp	\
 		       cylinder.cpp	\
 		       ellipsoid.cpp	\
 		       extrusion.cpp	\

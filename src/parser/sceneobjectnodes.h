@@ -253,7 +253,7 @@ class DifferenceNode : public SceneObjectNode {
 	    Solid* s1 = dynamic_cast<Solid*>(left->eval());
 	    Solid* s2 = dynamic_cast<Solid*>(right->eval());
 	    Material* m = material->eval();
-	    return new CSG(s1,CSG::DIFFERENCE,s2,m);
+	    return new CSGDifference(s1,s2,m);
 	}
 
     private:
@@ -275,7 +275,7 @@ class UnionNode : public SceneObjectNode {
 	    Solid* s1 = dynamic_cast<Solid*>(left->eval());
 	    Solid* s2 = dynamic_cast<Solid*>(right->eval());
 	    Material* m = material->eval();
-	    return new CSG(s1,CSG::UNION,s2,m);
+	    return new CSGUnion(s1,s2,m);
 	}
 
     private:
@@ -297,7 +297,7 @@ class IntersectionNode : public SceneObjectNode {
 	    Solid* s1 = dynamic_cast<Solid*>(left->eval());
 	    Solid* s2 = dynamic_cast<Solid*>(right->eval());
 	    Material* m = material->eval();
-	    return new CSG(s1,CSG::INTERSECTION,s2,m);
+	    return new CSGIntersection(s1,s2,m);
 	}
 
     private:

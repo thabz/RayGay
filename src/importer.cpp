@@ -469,7 +469,7 @@ void Importer::parse(const string& filename) {
 	    if (s2 == NULL) {
 		throw_exception("Error creating union: " + name2 + " is not a Solid.");
 	    }
-	    cur_object = new CSG(s1,CSG::UNION,s2,m);
+	    cur_object = new CSGUnion(s1,s2,m);
 	} else if (command == "intersection") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
@@ -485,7 +485,7 @@ void Importer::parse(const string& filename) {
 	    if (s2 == NULL) {
 		throw_exception("Error creating intersection: " + name2 + " is not a Solid.");
 	    }
-	    cur_object = new CSG(s1,CSG::INTERSECTION,s2,m);
+	    cur_object = new CSGIntersection(s1,s2,m);
 	} else if (command == "difference") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
@@ -501,7 +501,7 @@ void Importer::parse(const string& filename) {
 	    if (s2 == NULL) {
 		throw_exception("Error creating difference: " + name2 + " is not a Solid.");
 	    }
-	    cur_object = new CSG(s1,CSG::DIFFERENCE,s2,m);
+	    cur_object = new CSGDifference(s1,s2,m);
 	} else if (command == "heightfield") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);

@@ -480,21 +480,21 @@ void csg_test() {
     Sphere* s1 = new Sphere(Vector(0,0,10),15,NULL);
     Sphere* s2 = new Sphere(Vector(0,0,-10),15,NULL);
     Sphere* s3 = new Sphere(Vector(0,0,0),15,NULL);
-    CSG* csg = new CSG(s1,CSG::UNION,s2,NULL);
+    Solid* csg = new CSGUnion(s1,s2,NULL);
     Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
     vector<Intersection> all;
     csg->allIntersections(ray,all);
     assert(all.size() == 2);
     assert(all[0].getPoint() == Vector(0,0,25));
     assert(all[1].getPoint() == Vector(0,0,-25));
-    CSG* csg2 = new CSG(csg,CSG::UNION,s3,NULL);
+    CSGUnion* csg2 = new CSGUnion(csg,s3,NULL);
     all.clear();
     csg2->allIntersections(ray,all);
     assert(all.size() == 2);
     assert(all[0].getPoint() == Vector(0,0,25));
     assert(all[1].getPoint() == Vector(0,0,-25));
     Sphere* s4 = new Sphere(Vector(0,0,-50),10,NULL);
-    CSG* csg3 = new CSG(csg2,CSG::UNION,s4,NULL);
+    CSGUnion* csg3 = new CSGUnion(csg2,s4,NULL);
     all.clear();
     csg3->allIntersections(ray,all);
     assert(all.size() == 4);
@@ -513,7 +513,7 @@ void csg_test() {
 
     s1 = new Sphere(Vector(0,0,10),5,NULL);
     s2 = new Sphere(Vector(0,0,-10),5,NULL);
-    csg = new CSG(s1,CSG::UNION,s2,NULL);
+    csg = new CSGUnion(s1,s2,NULL);
     
     assert(iPoint(csg,Vector(0,0,0),Vector(0,0,1)) == Vector(0,0,5));
     assert(iNormal(csg,Vector(0,0,0),Vector(0,0,1)) == Vector(0,0,-1));
@@ -522,7 +522,7 @@ void csg_test() {
 
     s1 = new Sphere(Vector(0,0,10),15,NULL);
     s2 = new Sphere(Vector(0,0,-10),15,NULL);
-    csg = new CSG(s1,CSG::UNION,s2,NULL);
+    csg = new CSGUnion(s1,s2,NULL);
     assert(iPoint(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-25));
     assert(iNormal(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-1));
     assert(iPoint(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-25));
@@ -536,7 +536,7 @@ void csg_test() {
     s1 = new Sphere(Vector(0,0,10),15,NULL);
     s2 = new Sphere(Vector(0,0,-10),15,NULL);
     s3 = new Sphere(Vector(0,0,0),15,NULL);
-    csg = new CSG(s1,CSG::INTERSECTION,s3,NULL);
+    csg = new CSGIntersection(s1,s3,NULL);
     ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
     all.clear();
     csg->allIntersections(ray,all);
@@ -556,7 +556,7 @@ void csg_test() {
     ///////////////////////////////////////////////////////////////
     s1 = new Sphere(Vector(0,0,10),15,NULL);
     s2 = new Sphere(Vector(0,0,0),15,NULL);
-    csg = new CSG(s1,CSG::DIFFERENCE,s2,NULL);
+    csg = new CSGDifference(s1,s2,NULL);
     ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
     all.clear();
     csg->allIntersections(ray,all);
@@ -580,11 +580,11 @@ void csg_test() {
 
     s1 = new Sphere(Vector(0,0,0),200.0,NULL);
     s2 = new Sphere(Vector(0,0,0),180.0,NULL);
-    CSG* s = new CSG(s1,CSG::DIFFERENCE,s2,NULL); // Make it hollow
+    Solid* s = new CSGDifference(s1,s2,NULL); // Make it hollow
     s3 = new Sphere(Vector(0,0,200),100.0,NULL); 
-    CSG* b4 = new CSG(s,CSG::DIFFERENCE,s3,NULL); // Cut front
+    Solid* b4 = new CSGDifference(s,s3,NULL); // Cut front
     s4 = new Sphere(Vector(0,0,-200),100.0,NULL); 
-    CSG* b5 = new CSG(b4,CSG::DIFFERENCE,s4,NULL); // Cut back
+    Solid* b5 = new CSGDifference(b4,s4,NULL); // Cut back
     
     Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
     assert(intersects(s,r));
@@ -599,7 +599,7 @@ void csg_test() {
     // Test a hollow sphere
     s1 = new Sphere(Vector(0,0,0),30,NULL);
     s2 = new Sphere(Vector(0,0,0),29,NULL);
-    csg = new CSG(s1,CSG::DIFFERENCE,s2,NULL); // Make it hollow
+    csg = new CSGDifference(s1,s2,NULL); // Make it hollow
     ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
     all.clear();
     csg->allIntersections(ray,all);
@@ -621,7 +621,7 @@ void csg_test() {
     // Test a hollow ellipsoid
     Ellipsoid* e1 = new Ellipsoid(Vector(0,0,0),Vector(10,20,30),NULL);
     Ellipsoid* e2 = new Ellipsoid(Vector(0,0,0),Vector(9,19,29),NULL);
-    csg = new CSG(e1,CSG::DIFFERENCE,e2,NULL);
+    csg = new CSGDifference(e1,e2,NULL);
     ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
     all.clear();
     csg->allIntersections(ray,all);
@@ -649,7 +649,7 @@ void csg_test() {
     
     // Test a hollow ellipsoid with top cut off
     SolidBox* box = new SolidBox(Vector(-100,5,-100),Vector(100,50,100),NULL);
-    CSG* cup = new CSG(csg,CSG::DIFFERENCE,box,NULL);
+    Solid* cup = new CSGDifference(csg,box,NULL);
     ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
     all.clear();
     cup->allIntersections(ray,all);
@@ -747,7 +747,7 @@ void solidbox_test() {
     // Solidbox in CSG difference
     SolidBox* b1 = new SolidBox(Vector(-20,350,-20),Vector(20,400,20),NULL);
     SolidBox* b2 = new SolidBox(Vector(-15,395,-15),Vector(15,405,15),NULL);
-    CSG* csg = new CSG(b1,CSG::DIFFERENCE,b2,NULL);
+    Solid* csg = new CSGDifference(b1,b2,NULL);
     assert(iPoint(csg,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,395,0));
     assert(iNormal(csg,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
 
