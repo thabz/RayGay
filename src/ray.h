@@ -27,8 +27,6 @@ class Ray {
 	/// Accessor for the unique id of this ray, that is automatically assigned.
 	long getId() const { return id; };
 
-	mutable double lowest_t; ///< Used in BSP
-
 	/// Get a point on the ray
 	Vector getPoint(const double t) const { return origin + t * direction; };
 
@@ -44,6 +42,7 @@ class Ray {
 	double indice_of_refraction; 
 	Vector origin; ///< The rays origin
 	Vector direction; ///< Unit vector of rays direction
+
 };
 
 inline
@@ -53,6 +52,16 @@ Vector Ray::getInverseDirection() const {
     inv_direction[1] = direction[1] != 0.0 ? 1/direction[1] : HUGE_DOUBLE;
     inv_direction[2] = direction[2] != 0.0 ? 1/direction[2] : HUGE_DOUBLE;
     return inv_direction;
+}
+
+inline
+Ray::Ray(const Vector& o, const Vector& d, const double indice) {
+    origin = o;
+    direction = d;
+    indice_of_refraction = indice;
+    id = ++seq;
+    specularBounces = 0;
+    diffuseBounces = 0;
 }
 
 #endif
