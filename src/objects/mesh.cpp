@@ -315,13 +315,15 @@ std::vector<Linesegment>* Mesh::getEdges() {
 // TODO: Can be much more effective by using addVertex.
 SceneObject* Mesh::clone() const {
     Mesh* clone = new Mesh(meshType,material);
-    clone->corners = corners;
 
+    // Copy vertices
+    uint num = corners.size();
+    for(uint i = 0; i < num; i++) {
+	clone->addVertex(corners[i]);
+    }
 
-    clone->faces = faces;
-    *clone->normal_indices = *normal_indices;
     // Copy triangles and that's it.
-    uint num = faces.size() / 3;
+    num = faces.size() / 3;
     for (uint i = 0; i < num; i++) {
 	clone->addTriangle(&faces[i*3],&uv_coords[i*3]);
     }
