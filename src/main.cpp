@@ -87,13 +87,13 @@ void testScene4() {
     //Cylinder* torus = new Cylinder(circle1,100,50,30,blue);
  //   scene.addObject(torus);
 
-    Tessalation tet = Tessalation(Vector(0,100,0),200,0,chrome);
-    //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,blue);
+    //Tessalation tet = Tessalation(Vector(0,100,0),200,1,blue);
+    Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,blue);
     std::vector<Linesegment>* edges = tet.getEdges();
     cout << "Edges : " << edges->size() << endl;
     for(unsigned int i = 0; i < edges->size(); i++) {
 	Linesegment line = (*edges)[i];
-	Cylinder* c = new Cylinder(line.begin(),line.end(),20.0,20,blue);
+	Cylinder* c = new Cylinder(line.begin(),line.end(),20.0,10,blue);
 	scene.addObject(c);
     }
     delete edges;
@@ -120,7 +120,7 @@ void testScene4() {
     scene.addLight(&light1);
     scene.addLight(&light3);
     
-    Box b = Box(Vector(-400,-200,-400),Vector(400,-150,400),green); /* Floor */
+    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),green); /* Floor */
     scene.addObject(&b);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
