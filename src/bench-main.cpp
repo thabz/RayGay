@@ -25,8 +25,8 @@ void bench_ellipsoid_fast_intersect() {
     // Make some rays and some ellipsoids
     Ellipsoid* ellipsoids[1024];
     Ray* rays[1024];
-    uint num = 1000;
-    for(int i = 0; i < 1024; i++) {
+    uint num = 5000000;
+    for(uint i = 0; i < 1024; i++) {
 	Ellipsoid* e = new Ellipsoid(random_vectors[i],
 		                     Vector(RANDOM(2,3),RANDOM(2,3),RANDOM(2,3)),
 					 NULL);
@@ -38,6 +38,11 @@ void bench_ellipsoid_fast_intersect() {
 	rays[i] = ray;
     }
 
+    double result = 0;
+    for(uint i = 0; i < num; i++) {
+	result += ellipsoids[i & 1023]->fastIntersect(*rays[i & 1023]);
+    }
+    cout << result << endl;
 }
 
 void bench_vector() {
@@ -94,7 +99,8 @@ int main(int argc, char *argv[]) {
 
     cout << "Clocks/s : " << CLOCKS_PER_SEC << endl;
     init();
-    bench("Vector", bench_vector, 5);
+    //bench("Vector", bench_vector, 5);
+    bench("Ellipsoid fast intersect", bench_ellipsoid_fast_intersect, 5);
     return EXIT_SUCCESS;
 }
 
