@@ -75,10 +75,12 @@ void CatmullRomSpline::transform(const Matrix& m) {
 unsigned int CatmullRomSpline::segmentBegin(const double t) const {
     // TODO: Test!
     int segments = points_num - 3;
-    return int(t * segments) + 1;
+    if (t == 1) return segments + 1;
+    if (t == 0) return 1;
+    return floor(t * segments);
 }
 
 double CatmullRomSpline::adjustT(const double t) const {
     int segments = points_num - 3;
-    return fmod(t, double(segments));
+    return fmod(t*segments, double(segments));
 }
