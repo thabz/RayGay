@@ -49,6 +49,9 @@
  * \page page_papers Research papers
  * 
  * Denis Zorin, Peter Schröder and Wim Sweldens, ``Interpolating subdivision for meshes with arbitrary topology,'' in <i>Proceedings of SIGGRAPH 1996</i>, ACM SIGGRAPH, 1996, pp. 189-192. http://graphics.stanford.edu/~dzorin/multires/butterfly/
- * This page introduces the modified butterfly subdivision scheme.
+ * This paper introduces the modified butterfly subdivision scheme.
+ *
+ * Per H. Christensen,  "Faster Photon Map Global Illumination".  <i>Journal of Graphics Tools</i>, volume 4, number 3, pages 1-10.  ACM, April 2000. http://www.seanet.com/~myandper/abstract/jgt99.htm
+ * This paper introduces precomputing irradiance estimates at photon positions.
  */
 
