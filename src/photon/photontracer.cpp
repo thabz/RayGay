@@ -50,7 +50,7 @@ void PhotonTracer::trace(int max_photons) {
     while (storedPhotons < max_photons) {
 	i = (i + 1) % ligths_num;
 	Lightsource* light = lights[i];
-	Vector light_power = Vector(1.0,1.0,1.0);
+	Vector light_power = light->getPower();
 	storedPhotons += trace(light->getRandomPhotonRay(),light_power,0);
     }
     Stats::getUniqueInstance()->put("Photons stored",max_photons);
@@ -74,7 +74,7 @@ int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
     if (ran < material.getKd()) {
 	// Store photon
 	if (bounces > 0) 
-	    globalphotonmap->store(power,point,ray.getDirection());
+	    globalphotonmap->store(power,point,ray.getDirection(),normal);
 	// Reflect diffusely 
 	Vector dir = normal.randomHemisphere();
 	Ray new_ray = Ray(point + 0.1*dir,dir,-1);
@@ -102,7 +102,7 @@ int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
     } else {
 	// Store photon
 	if (bounces > 0) 
-	    globalphotonmap->store(power,point,ray.getDirection());
+	    globalphotonmap->store(power,point,ray.getDirection(),normal);
 	return 1;
     }
 }

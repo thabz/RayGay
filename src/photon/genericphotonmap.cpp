@@ -221,41 +221,22 @@ void PhotonMap<PhotonType>::locate_photons(
  * @param dir The direction of the photon
  */
 template <class PhotonType>
-void PhotonMap<PhotonType>::store(
-		const Vector& power,          // photon power
-		const Vector& pos,            // photon position
-		const Vector& dir ) {          // photon direction
+void PhotonMap<PhotonType>::storeit(const PhotonType& photon) {
 
     if (stored_photons>=max_photons)
 	return;
 
     stored_photons++;
+    photons[stored_photons] = photon;
     PhotonType *const node = &photons[stored_photons];
 
     for (int i=0; i<3; i++) {
-	node->pos[i] = pos[i];
-
 	if (node->pos[i] < bbox_min[i])
 	    bbox_min[i] = node->pos[i];
 	if (node->pos[i] > bbox_max[i])
 	    bbox_max[i] = node->pos[i];
-
-	node->power[i] = power[i];
     }
 
-    int theta = int( acos(dir[2])*(256.0/M_PI) );
-    if (theta>255)
-	node->theta = 255;
-    else
-	node->theta = (unsigned char)theta;
-
-    int phi = int( atan2(dir[1],dir[0])*(256.0/(2.0*M_PI)) );
-    if (phi>255)
-	node->phi = 255;
-    else if (phi<0)
-	node->phi = (unsigned char)(phi+256);
-    else
-	node->phi = (unsigned char)phi;
 }
 
 
@@ -459,3 +440,22 @@ Vector PhotonMap<PhotonType>::photon_dir(const PhotonType* p) const {
     photon_dir(dir,p);
     return Vector(dir[0],dir[1],dir[2]);
 }
+
+template <class PhotonType>
+void PhotonMap<PhotonType>::packVector(const Vector& dir, unsigned char* theta_dest, unsigned char* phi_dest) const {
+    int theta = int( acos(dir[2])*(256.0/M_PI) );
+    if (theta>255)
+	*theta_dest = 255;
+    else
+	*theta_dest = (unsigned char)theta;
+
+    int phi = int( atan2(dir[1],dir[0])*(256.0/(2.0*M_PI)) );
+    if (phi>255)
+	*phi_dest = 255;
+    else if (phi<0)
+	*phi_dest = (unsigned char)(phi+256);
+    else
+	*phi_dest = (unsigned char)phi;
+}
+
+

@@ -2,32 +2,10 @@
 #ifndef GENERIC_PHOTON_MAP
 #define GENERIC_PHOTON_MAP
 
+#include "photon.h"
+
 class Vector;
 class RGB;
-
-/**
- * This is the photon
- * The power is not compressed so the
- * size is 28 bytes
- */
-class Photon {
-    public:
-	float pos[3];                 ///< photon position
-	short plane;                  ///< splitting plane for kd-tree
-	/// incoming direction
-	unsigned char theta, phi;     
-	float power[3];               ///< photon power (uncompressed)
-
-	/// Get the direction of this photon
-	Vector getDirection() const;
-	/// Set the direction of this photon
-	void setDirection(const Vector& vector);
-
-	/// Get the power
-	RGB getPower() const;
-	/// Set the power
-	void setPower(const RGB& power);
-};
 
 /**
  * This structure is used only to locate the
@@ -58,15 +36,12 @@ class PhotonMap {
 	PhotonMap(const int max_phot );
 	virtual ~PhotonMap();
 
-	virtual void store(
-		const Vector& power,          // photon power
-		const Vector& pos,            // photon position
-		const Vector& dir );          // photon direction
-
 	virtual void scale_photon_power(
 		const float scale );           // 1/(number of emitted photons)
 
 	virtual void balance(void);              // balance the kd-tree (before use!)
+
+	void storeit(const PhotonType& photon);
 
 	virtual Vector irradiance_estimate(
 		const Vector& pos,             // surface position
@@ -86,6 +61,10 @@ class PhotonMap {
 
 	PhotonType* list() const { return photons; };
 
+    protected:
+	void packVector(const Vector& vector, unsigned char* theta, unsigned char* phi) const;
+	Vector unpackVector(unsigned char* theta, unsigned char* phi) const;
+	
 
     private:
 

@@ -9,18 +9,8 @@
  */
 class IrradiancePhoton : public Photon {
     public:
-
-	/// Precalculate the irradiance
-	void preCalculateIrradiances();
-
-	/// Get the surface normal of this photon
-	Vector getNormal() const;
-	/// Set surface normal of this photon
-	void setNormal(const Vector& vector);
-
-    private:
 	/// Surface normal
-	unsigned char normal_theta,phi_theta;
+	unsigned char normal_theta,normal_phi;
 
 	
 };
@@ -31,6 +21,12 @@ class GlobalPhotonMap : public PhotonMap<IrradiancePhoton> {
 
     public:
 	GlobalPhotonMap(const int size);
+
+	void store(
+		const Vector& power,          // photon power
+		const Vector& pos,            // photon position
+		const Vector& dir,            // photon direction
+		const Vector& normal);        // surface normal
 };
 
 #endif
