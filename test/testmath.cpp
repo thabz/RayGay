@@ -9,6 +9,7 @@
 #include "math/vector.h"
 #include "math/vector2.h"
 #include "math/matrix.h"
+#include "math/matrix3.h"
 #include "math/functions.h"
 #include "math/rootfinder.h"
 #include "math/polynomial.h"
@@ -158,6 +159,128 @@ class vector2_test : public Test {
 	    assertTrue(w -v == Vector2(9,18));
 	    assertTrue(w / 2.0 == Vector2(5,10));
 	    assertTrue(w * 0.5 == Vector2(5,10));
+	}
+};
+
+class matrix3_test : public Test {
+    private:
+	    Matrix3 id,res,op1,op2,op3;
+    public:
+	void run() {
+	    /* Test inverse() */
+	    op1 = Matrix3::matrixRotate(Vector(10,30,19),12);
+	    assertTrue(op1.isOrthogonal());
+	    assertTrue(op1.inverse().isOrthogonal());
+	    assertFalse(op1.isIdentity());
+	    res = op1*id*op1.inverse();
+	    assertTrue(res.isIdentity());
+
+	    op3 = op2.inverse();
+	    op3 = op1*op2;
+	    assertTrue(op3.isOrthogonal());
+	    assertFalse(op3.isIdentity());
+	    res = op3*id*op3.inverse();
+	    assertTrue(res.isIdentity());
+
+	    // Test == and !=
+	    op1 = Matrix3::matrixRotate(Vector(401,221,39),40);
+	    op2 = Matrix3::matrixRotate(Vector(401,221,39),-40);
+	    assertTrue(op1.isOrthogonal());
+	    assertTrue(op2.isOrthogonal());
+	    assertTrue(op1 != op2);
+	    assertTrue((op1*op2).isIdentity());
+	    op2 = op2.inverse();
+	    assertTrue(op2.isOrthogonal());
+	    assertTrue(op1 == op2);
+
+	    op2 = Matrix3::matrixRotate(Vector(401,221,39),-20);
+	    op2 = op2 * Matrix3::matrixRotate(Vector(401,221,39),-20);
+	    assertTrue(op1 != op2);
+	    op2 = op2.inverse();
+	    assertTrue(op1 == op2);
+
+	    // Test matrixOrient(Vector,Vector)
+
+	    Vector v = Vector(1,1,0);
+	    op1 = Matrix3::matrixOrient(v,Vector(0,1,0));
+	    op1 = op1.inverse();
+	    v = op1 * v;
+	    assertTrue(IS_ZERO(v[0]));
+	    assertTrue(IS_ZERO(v[1]));
+
+	    /// Test matrixOrient(Vector)
+	    v = Vector(20,391,29);
+	    op1 = Matrix3::matrixOrient(v);
+	    Vector w = op1 * v;
+	    assertTrue(IS_ZERO(w[0]));
+	    assertTrue(IS_ZERO(w[1]));
+
+	    v = Vector(0,13,0);
+	    op1 = Matrix3::matrixOrient(v);
+	    w = op1 * v;
+	    assertTrue(IS_ZERO(w[0]));
+	    assertTrue(IS_ZERO(w[1]));
+	    assertTrue(IS_EQUAL(w[2],13));
+
+	    v = Vector(0,4,3);
+	    op1 = Matrix3::matrixOrient(v);
+	    w = op1 * v;
+	    assertTrue(IS_ZERO(w[0]));
+	    assertTrue(IS_ZERO(w[1]));
+	    assertTrue(IS_EQUAL(w[2],5));
+
+	    v = Vector(0,0,71);
+	    op1 = Matrix3::matrixOrient(v);
+	    w = op1 * v;
+	    assertTrue(IS_ZERO(w[0]));
+	    assertTrue(IS_ZERO(w[1]));
+	    assertTrue(IS_EQUAL(w[2],71));
+
+	    v = Vector(19,0,0);
+	    op1 = Matrix3::matrixOrient(v);
+	    w = op1 * v;
+	    assertTrue(IS_ZERO(w[0]));
+	    assertTrue(IS_ZERO(w[1]));
+	    assertTrue(IS_EQUAL(w[2],19));
+
+	    // Test matrix rotate
+	    v = Vector(1,0,0);
+	    op1 = Matrix3::matrixRotate(Vector(0,0,1),90);
+	    assertTrue(op1.isOrthogonal());
+	    assertTrue(op1*v == Vector(0,-1,0));
+	    op1 = Matrix3::matrixRotate(Vector(0,0,1),180);
+	    assertTrue(op1*v == Vector(-1,0,0));
+	    op1 = Matrix3::matrixRotate(Vector(0,0,1),35);
+	    op2 = Matrix3::matrixRotate(Vector(0,0,1),-35);
+	    assertTrue(op1*op2*v == v);
+	    assertTrue(op2*op1*v == v);
+	    op1 = Matrix3::matrixRotate(Vector(3,4,6),360);
+	    assertTrue(op1*v == v);
+	    op1 = Matrix3::matrixRotate(Vector(3,4,6),180);
+	    op2 = Matrix3::matrixRotate(Vector(3,4,6),180);
+	    assertTrue((op1*op2).isOrthogonal());
+	    assertTrue(op1*op2*v == v);
+
+	    // Test matrix scale
+	    v = Vector(3,4,5);
+	    op1 = Matrix3::matrixScale(Vector(2,2,2));
+	    assertFalse(op1.isOrthogonal());
+	    assertFalse(op1.isIdentity());
+	    assertTrue(op1*v == Vector(6,8,10));
+	    op1 = Matrix3::matrixScale(Vector(5,6,7));
+	    assertFalse(op1.isOrthogonal());
+	    assertFalse(op1.isIdentity());
+	    assertTrue(op1*v == Vector(15,24,35));
+	    op1 = Matrix3::matrixScale(Vector(5,6,7));
+	    op2 = Matrix3::matrixScale(Vector(1.0/5.0,1.0/6.0,1.0/7.0));
+	    assertFalse(op1.isOrthogonal());
+	    assertFalse(op1.isIdentity());
+	    assertFalse(op2.isOrthogonal());
+	    assertFalse(op2.isIdentity());
+	    assertTrue(op1*op2*v == v);
+	    assertTrue(op2*op1*v == v);
+	    assertTrue((op1*op2).isIdentity());
+	    assertTrue(op1.inverse() == op2);
 	}
 };
 
@@ -1142,6 +1265,7 @@ int main(int argc, char *argv[]) {
     suite.add("Vector",new vector_test());
     suite.add("Vector2",new vector2_test());
     suite.add("Matrix",new matrix_test());
+    suite.add("Matrix3",new matrix3_test());
     suite.add("Binomial",new binomial_test());
     suite.add("Bernstein",new bernstein_polynomial_test());
     suite.add("Clamp",new clamp_test());
