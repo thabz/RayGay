@@ -15,6 +15,7 @@ using namespace std;
 
 Scene::Scene() {
     hierarchy = new Hierarchy();
+    environmentMap = NULL;
 }
 
 Scene::~Scene() {
