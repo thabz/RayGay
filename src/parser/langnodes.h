@@ -7,6 +7,7 @@
 #include "parser/floatnodes.h"
 #include "parser/sceneobjectnodes.h"
 #include "parser/lightnodes.h"
+#include "parser/cameranode.h"
 #include "parser/assignments.h"
 #include "parser/interpreterenv.h"
 #include "exception.h"
@@ -76,6 +77,20 @@ class AddLightToSceneNode : public ActionNode {
 
     private:
 	LightNode* node;
+};
+
+class AddCameraToSceneNode : public ActionNode {
+    public:
+	AddCameraToSceneNode(CameraNode* cam) {
+	    this->cam = cam;
+	}
+
+	void eval() {
+	    InterpreterEnv::getUniqueInstance()->getScene()->setCamera(cam->eval());
+	}
+
+    private:
+	CameraNode* cam;
 };
 
 class ActionListNode : ActionNode {
