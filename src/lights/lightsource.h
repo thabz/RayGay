@@ -3,15 +3,14 @@
 #define LIGHTSOURCE_H
 
 #include "lightinfo.h"
+#include "image/rgb.h"
 
-class RGB;
 class Matrix;
 class Intersection;
 class Ray;
 class Scene;
 class SpaceSubdivider;
 class Vector;
-class RGB;
 class Lightinfo;
 
 /// An abstract class lightsources must extend 
@@ -45,6 +44,11 @@ class Lightsource {
 	/// Shoot a photon ray from this lightsource
 	virtual Ray getRandomPhotonRay() const;
 
+	/// Get the power of this light
+	RGB getPower() const { return power; };
+	/// Set the power of this light
+	void setPower(const RGB& power) { this->power = power; };
+
     protected:
 	/// Position of the lightsource
 	Vector position;
@@ -53,6 +57,7 @@ class Lightsource {
 	double fadeDistance;
 	double fadePower;
 	bool fadeEnabled;
+	RGB power;
 };
 
 #endif

@@ -273,24 +273,32 @@ void Importer::parse(const string& filename) {
 	    Lightsource* l;
 	    if (type == "point") {
 		Vector c = readVector(stream);
+		Vector power = readVector(stream);
 		l = new Pointlight(c);
+		l->setPower(power);
 	    } else if (type == "skylight") {
 		double r = readDouble(stream);
 		int num = readInt(stream);
+		Vector power = readVector(stream);
 		l = new Skylight(r,num);
+		l->setPower(power);
 	    } else if (type == "area") {
 		Vector pos = readVector(stream);
 		Vector dir = readVector(stream);
+		Vector power = readVector(stream);
 		double r = readDouble(stream);
 		int num = readInt(stream);
 		double jitter = readDouble(stream);
 		l = new Arealight(pos,dir,r,num,jitter);
+		l->setPower(power);
 	    } else if (type == "spot") {
 		Vector pos = readVector(stream);
 		Vector look_at = readVector(stream);
+		Vector power = readVector(stream);
 		double angle = readDouble(stream);
 		double cut_angle = readDouble(stream);
 		l = new Spotlight(pos,look_at,angle,cut_angle);
+		l->setPower(power);
 	    } else {
 		cout << "Unknown type of light" << endl;
 		exit(EXIT_FAILURE);

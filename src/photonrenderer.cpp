@@ -178,7 +178,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 
 Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal, const Vector& ray_dir) const {
     if (renderersettings->final_gather_rays == 0) {
-	return M_PI * globalphotonmap->irradiance_estimate(point,normal,renderersettings->estimate_radius,renderersettings->estimate_samples) * 5000*100;
+	return M_PI * 100 * globalphotonmap->irradiance_estimate(point,normal,renderersettings->estimate_radius,renderersettings->estimate_samples);
     }
 
     Vector result = Vector(0.0,0.0,0.0);
@@ -201,7 +201,7 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
 	
     result *= M_PI / double(renderersettings->final_gather_rays);
     //result *= double(M_PI) / double(np.found - 1);
-    result *= 5000;
+    //result *= 5000;
     //result *= double(1) / M_PI;
     return result;
 }
