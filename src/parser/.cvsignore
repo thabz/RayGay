@@ -1,7 +1,7 @@
 tokenizer.cc
 parser.h
 parser.cc
-.lib
+.libs
 Makefile.in
 Makefile
 .deps
