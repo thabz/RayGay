@@ -20,17 +20,11 @@ background 0.1 0.1 0.3
 #light spot 2000 700 5     0 0 0 20.0 18.0
 light point 280 180 280
 
-box $dullred -50 -150  -50 50 100 50 rotate 0 1 0 30
-box $dullred -150 -150  -250  -100 100 -200 rotate 0 1 0 -30
+box $dullred  -50 -150  -50     50 50   50 rotate 0 1 0 30
+box $dullred -150 -150 -250   -100 50 -200 rotate 0 1 0 -30
 
-#cylinder $dullwhite 5 300   20  -300    300   20 300
-#cylinder $dullwhite 5 300   40  -300    300   40 300
-#cylinder $dullwhite 5 300   60  -300    300   60 300
-#cylinder $dullwhite 5 300   80  -300    300   80 300
-#cylinder $dullwhite 5 300  100  -300    300  100 300
-#cylinder $dullwhite 5 300  120  -300    300  120 300
-#cylinder $dullwhite 5 300  140  -300    300  140 300
-#cylinder $dullwhite 5 300  160  -300    300  160 300
+sphere $blue 50  150 -100 -150
+sphere $green 50  -150 -100 150
 
 # Floor
 box $dullwhite -300 -200 -300    300 -150 300
@@ -43,6 +37,6 @@ box $dullwhite -350 -150 -300    -300 200 300
 # Right wall
 box $dullwhite 300 -150 -300    350 200 300
 # Wall behind camera
-box $dullwhite -300 -150 2000    300 200 2050
+box $dullwhite -3000 -1500 2000    3000 2000 2050
 
 
