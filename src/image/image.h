@@ -15,8 +15,6 @@ class Image {
         Image(long h, long w);
 	/// Constructs an image from rgbrgbrgb... data
 	Image(long h, long w, double* data);
-	/// Constructs an image from a tga-file
-        Image(const std::string& filename);
 	/// Destructor
 	~Image();
 	/// Sets a pixel
