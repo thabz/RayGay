@@ -59,17 +59,18 @@ class IrradianceCache {
 		const RGB& getIrradiance() const { return irradiance; };
 		const Vector& getPoint() const { return point; };
 		const Vector& getNormal() const { return normal; };
+
 		/** 
 		 * This is the squared distance from point where this 
-		 * CacheElement doesn't matter anymore.
+		 * CacheNode doesn't matter anymore.
 		 */
-		const double& getRadius() const { return radius; };
+		const double& getSquaredRadius() const { return squared_radius; };
 	    private:
 		Vector point;
 		Vector normal;
 		RGB irradiance;
 		double hmd;
-		double radius;
+		double squared_radius;
 	};
 
 	vector<CacheNode> nodes;
