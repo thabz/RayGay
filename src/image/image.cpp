@@ -4,6 +4,7 @@
 #include "image/imageio_tga.h"
 #include "image/imageio_jpeg.h"
 #include "image/imageio_png.h"
+#include "image/imageio_hdri.h"
 #include "exception.h"
 #include <cassert>
 #include <iostream>
@@ -72,6 +73,8 @@ ImageIO* getImageIO(const std::string& filename) {
 	io = new TgaIO();
     } else if (filename.find(".png") != string::npos) {
 	io = new PngIO();
+    } else if (filename.find(".hdr") != string::npos) {
+	io = new HdriIO();
     } else {
 	throw_exception(filename + " has unknown fileformat.");
     }

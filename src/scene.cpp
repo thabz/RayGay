@@ -16,6 +16,8 @@
 
 using namespace std;
 
+#define ENV_SPHERE_RADIUS 200000
+
 Scene::Scene() {
     environmentMap = NULL;
     fog_enabled = false;
@@ -45,7 +47,7 @@ Camera* Scene::getCamera() const {
 }
 
 void Scene::setBackground(Texture* texture) {
-    environmentSphere = new Sphere(Vector(0,0,0),10000,NULL);
+    environmentSphere = new Sphere(Vector(0,0,0),ENV_SPHERE_RADIUS,NULL);
     environmentMap = texture;
 }
 
@@ -53,10 +55,24 @@ RGBA Scene::getBackgroundColor(const Ray& ray) const {
     if (environmentMap == NULL) { 
         return bg_color; 
     } else {
-	// TODO: Optimize pushing a *i on stack below...
 	double t = environmentSphere->fastIntersect(ray);
-	Intersection i = environmentSphere->fullIntersect(ray,t);
-	return environmentMap->getTexel(i.getUV());
+	if (false) {
+	    Intersection i = environmentSphere->fullIntersect(ray,t);
+	    return environmentMap->getTexel(i.getUV());
+	} else {
+	    // A light probe
+	    // See http://www.debevec.org/Probes/ for math
+	    Vector D = ray.getPoint(t);
+	    D.normalize();
+	    double r = D.x()*D.x() + D.y()*D.y();
+	    if (r != 0) {
+		r = acos(D.z()) / (M_PI * sqrt(r));
+	    }
+	    Vector2 uv = Vector2(D.x()*r, D.y()*r);
+	    uv = uv + Vector2(1,1);
+	    uv = uv / 2;
+	    return environmentMap->getTexel(uv);
+	}
     }
 }
 

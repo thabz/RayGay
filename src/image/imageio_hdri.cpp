@@ -1,5 +1,6 @@
 
 #include <cmath>
+#include <cassert>
 #include <memory.h>
 #include <string>
 #include <cstdio>
@@ -7,7 +8,6 @@
 #include "image/imageio_hdri.h"
 #include "exception.h"
 #include "image/image.h"
-
 
 typedef unsigned char RGBE[4];
 #define R			0
@@ -18,9 +18,9 @@ typedef unsigned char RGBE[4];
 #define  MINELEN	8	// minimum scanline length for encoding
 #define  MAXELEN	0x7fff	// maximum scanline length for encoding
 
-static void workOnRGBE(RGBE *scan, int len, float *cols);
-static bool decrunch(RGBE *scanline, int len, FILE *file);
-static bool oldDecrunch(RGBE *scanline, int len, FILE *file);
+void workOnRGBE(RGBE *scan, int len, float *cols);
+bool decrunch(RGBE *scanline, int len, FILE *file);
+bool oldDecrunch(RGBE *scanline, int len, FILE *file);
 
 void HdriIO::save(const Image* const image, const std::string& filename) const {
     throw_exception("HDRI saving not implemented.");
@@ -47,7 +47,7 @@ Image* HdriIO::load(const std::string& fileName)
     char cmd[2000];
     i = 0;
     char c = 0, oldc;
-    while(i < 2000) {
+    while(true) {
 	oldc = c;
 	c = fgetc(file);
 	if (c == 0xa && oldc == 0xa)
@@ -57,7 +57,7 @@ Image* HdriIO::load(const std::string& fileName)
 
     char reso[2000];
     i = 0;
-    while(i < 2000) {
+    while(true) {
 	c = fgetc(file);
 	reso[i++] = c;
 	if (c == 0xa)
@@ -69,37 +69,47 @@ Image* HdriIO::load(const std::string& fileName)
 	fclose(file);
 	throw_exception("Couldn't read resolution of HDRI file " + fileName);
     }
+    std::cout << "(w,h) = (" << w << "," << h << ")" << std::endl;
 
-    Image* result = new Image(w,h);
 
-    float *cols = new float[w * h * 3];
+    float* cols = new float[w * h * 3];
+    float* data = cols;
 
     RGBE *scanline = new RGBE[w];
     if (!scanline) {
 	fclose(file);
-	throw_exception("HDRI file " + fileName + " contains no data.");
+	throw_exception("Out of memory reading HDRI file '" + fileName + "'");
     }
 
     // convert image 
+    int li = 0;
     for (int y = h - 1; y >= 0; y--) {
 	if (decrunch(scanline, w, file) == false)
 	    break;
 	workOnRGBE(scanline, w, cols);
 	cols += w * 3;
+	li++;
     }
+    assert(li == h);
 
     delete [] scanline;
     fclose(file);
 
+    std::cout << "(w,h) = (" << w << "," << h << ")" << std::endl;
+
     // Copy cols to image
+    Image* result = new Image(w,h);
     for(int y = 0; y < h; y++) {
 	for(int x = 0; x < w; x++) {
-	    RGBA col = RGBA(cols[0+y*w+x], cols[1+y*w+x], cols[2+y*w+x], 1);
-	    result->setRGBA(x,y,col);
+	    unsigned int offset = 3 * (y*w + x);
+	    RGB col = RGB(data[offset + 0], 
+		            data[offset + 1], 
+			    data[offset + 2]);
+	    result->setRGBA(x,y,col/2);
 	}
     }
 
-    delete [] cols;
+    delete [] data;
     return result;
 }
 

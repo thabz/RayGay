@@ -11,6 +11,7 @@ class Image;
  * Based on code by Igor Kravtchenko (www.obrazstudio.com)
  * posted on www.flipcode.com.
  *
+ * @see http://radsite.lbl.gov/radiance/refer/Notes/picture_format.html
  * @see http://www.flipcode.com/cgi-bin/msg.cgi?showThread=COTD-HDRImageReader&forum=cotd&id=-1
  * 
  */

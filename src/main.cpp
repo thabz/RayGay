@@ -50,7 +50,7 @@ using namespace std;
 extern FILE* yyin;
 extern void yyparse();
 extern void run_interpreter();
-extern void init_parser();
+extern void init_parser(string filename);
 extern Vector2 getImageSize();
 extern Scene* getScene();
 extern RendererSettings* getRendererSettings();
@@ -124,14 +124,15 @@ void work(string scenefile, string outputfile,int jobs) {
     //Stats::getUniqueInstance()->disable();
     Stats::getUniqueInstance()->put(STATS_THREADS,jobs);
 
-    init_parser();
-    yyin = fopen(scenefile.c_str(),"r");
-    if (yyin == NULL) {
-	throw_exception("File not found: " + scenefile);
-    }
+    char original_working_dir[1024];
+    getcwd(original_working_dir,1024);
+
+    init_parser(scenefile);
     yyparse();
     run_interpreter();
 
+    chdir(original_working_dir);
+    
     RendererSettings* renderersettings = getRendererSettings();
     if (renderersettings->renderertype == RendererSettings::NONE) {
 	return;
