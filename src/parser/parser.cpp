@@ -70,9 +70,7 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	    Lightsource* light = scm2lightsource(s_value, "internal-populate-scene", 0);
 	    scene->addLight(light);
 	} else {
-	    cout << "Noise in scene list." << endl;
-	    // TODO: Runtime exception
-	    assert(false);
+	    scm_error(NULL, "internal-populating-scene", "A non-sceneobject or non-lightsource found.", SCM_UNSPECIFIED, NULL);
 	}
     }
 
@@ -89,6 +87,7 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	    type = RendererSettings::RAYTRACER;
 	} else {
 	    type = RendererSettings::NONE;
+	    scm_error(NULL, "internal-setting-renderer", ("Unknown renderertype: " + r_string).c_str(), SCM_UNSPECIFIED, NULL);
 	} 
     } else {
 	type = RendererSettings::NONE;
