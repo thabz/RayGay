@@ -44,6 +44,7 @@ map<string,Material*> materialMap;
 map<string,SceneObject*> objectMap;
 
 void yyerror(string s);
+void yywarning(string s);
 extern int yylex(void);
 extern int line_num;
 
@@ -154,13 +155,19 @@ Items		: /* Empty */
 
 Item		: Object
                 {
+		    Object* o = dynamic_cast<Object*>($1);
+		    if (o != NULL) {
+			if (o->getMaterial() == NULL) {
+			    yyerror("object with no material added to scene.");
+			}
+		    }
 		    scene->addObject($1);
 		}
                 | LightDef
 		{
 		    scene->addLight($1);
 		}
-                | AssignName
+                | Assignment
 		| Print
 		| Camera
 		| Image
@@ -169,7 +176,7 @@ Item		: Object
 		| Photonmap
 		;
 
-AssignName	: tSTRING '=' PathDef
+Assignment	: tSTRING '=' PathDef
                 {
                     setNamedPath($1, $3);
 		}
@@ -298,7 +305,7 @@ MaterialDef     : tMATERIAL '{' MaterialProps '}'
 		    $$ = tmpMaterial;
 		    // Sanity check some material parameters
 		    if ($$->getKs() > 0 && $$->getSc() == 0) {
-			cout << "WARNING. Ks > 0 but specpow = 0" << endl;
+			yywarning("ks > 0 but specpow = 0");
 		    }
 		    tmpMaterial = new Material();
 		}
@@ -769,10 +776,16 @@ void yyerror(string s) {
     exit(1);
 }
 
+void yywarning(string s) {
+    string filename = "";
+    cout << filename << ":" << line_num << ":"
+	 << " warning: " << s << endl;
+}
+
 Path* getNamedPath(string* name) {
     Path* result = pathMap[*name];
     if (result == NULL) {
-	yyerror("Path named '" + *name + "' not defined.");
+	yyerror("path '" + *name + "' not defined.");
     } 
     return result;
    
@@ -793,10 +806,9 @@ void setNamedDouble(string* name, double val) {
 SceneObject* getNamedObject(string* name) {
     SceneObject* result = objectMap[*name];
     if (result == NULL) {
-	throw_exception("Object named '" + *name + "' not defined.");
-    } else {
-	return result;
+	yyerror("scene-object '" + *name + "' not defined.");
     }
+    return result;
 }
 
 void setNamedObject(string* name, SceneObject* obj) {
@@ -806,10 +818,9 @@ void setNamedObject(string* name, SceneObject* obj) {
 Material* getNamedMaterial(string* name) {
     Material* result = materialMap[*name];
     if (result == NULL) {
-	throw_exception("Material named '" + *name + "' not defined.");
-    } else {
-	return result;
+	yyerror("material '" + *name + "' not defined.");
     }
+    return result;
 }
 
 void setNamedMaterial(string* name, Material* material) {
