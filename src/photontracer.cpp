@@ -60,18 +60,26 @@ int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
     }
     Intersection* intersection = space->getLastIntersection();
     const Material& material = intersection->getObject()->getMaterial();
+    Vector normal = intersection->getObject()->normal(*intersection);
     double ran = RANDOM(0,1);
+    if (ran < material.transmission_coefficient) {
+	double ior = material.indice_of_refraction;
+	Vector T = ray.getDirection().refract(normal,ior);
+	if (!(T == Vector(0,0,0))) {
+	    Ray new_ray = Ray(intersection->getPoint()+0.1*T,T,ior);
+	    return trace(new_ray, power, bounces + 1);
+	}
+    }
     if (ran < material.getKd()) {
 	// Store photon
 	if (bounces > 0) 
 	    photonmap->store(power,intersection->getPoint(),ray.getDirection());
-	
+
 	// Reflect diffusely 
-	Vector normal = intersection->getObject()->normal(*intersection);
 	//Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89),qmcsequence);
 	//Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89));
-	
-	
+
+
 	Matrix m = Matrix::matrixOrient(normal);
 	m = m.inverse();
 	double u = 2*M_PI*RANDOM(0,1);
@@ -87,7 +95,6 @@ int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
 	return trace(new_ray, power, bounces + 1) + 1;
     } else if (ran < material.getKd() + material.getKs()) {
 	// Reflect specularly
-	Vector normal = intersection->getObject()->normal(*intersection);
 	Vector reflected_direction = -1 * ray.getDirection();
 	reflected_direction = reflected_direction.reflect(normal);
 	// TODO: Should I reflect with materials specular color?

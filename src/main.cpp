@@ -73,8 +73,8 @@ void work(string scenefile, string outputfile) {
 
     PhotonSettings* photonsettings = importer.getPhotonSettings();
 
-//#define PHOTON_CODE
-#define PHOTONS_DUMP
+#define PHOTON_CODE
+//#define PHOTONS_DUMP
 
 #ifdef PHOTON_CODE
     int PHOTON_NUM = photonsettings->photons_num;

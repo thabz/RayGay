@@ -71,8 +71,8 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     vector<Lightsource*> lights = scene->getLightsources();
 
     result_color += gatherIrradiance(point,normal);
-    result_color.clip();
-    return result_color;
+    //result_color.clip();
+    //return result_color;
     // TODO: Add radiance_estimate from caustics map
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);
@@ -149,17 +149,15 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 
 	/* Should we send a ray through the intersected object? */
 	if (material.transmission_coefficient > 0.0) {
-	    // Calculate refraction vector (page 757)
-	    double my = ray.getIndiceOfRefraction() / material.indice_of_refraction;
-	    Vector I = -1 * ray.getDirection();
-	    double n = normal * I;
-	    double p = my*my*(1 - n*n);
-	    if (p < 1) {
-		// No internal reflection (page 758)
-		Vector T = (my*n - sqrt(1 - p))*normal - my*I;
-		Ray trans_ray = Ray(point,T,material.indice_of_refraction);
+	    // TODO: Use the ior the rays holds to allow eg. glass in water.
+	    double ior = material.indice_of_refraction;
+	    Vector T = ray.getDirection().refract(normal,ior);
+	    if (!(T == Vector(0,0,0))) {
+		Ray trans_ray = Ray(point+0.1*T,T,ior);
 		RGB trans_col = trace(trans_ray, depth + 1);
-		result_color = result_color + material.transmission_coefficient * trans_col;
+		result_color += material.transmission_coefficient * trans_col;
+	    } else {
+		// TODO: Internal reflection, see page 757.
 	    }
 	}
     }
