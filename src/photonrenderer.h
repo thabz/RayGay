@@ -32,6 +32,8 @@ class PhotonRenderer : public Renderer {
 
 	QMCSequence* qmc_sequence;
 
+	QMCSequence* gloss_sequence;
+
 	RGBA getPixel(const Vector2& v);
 
 	RGB shade(const Ray&, const Intersection&, const int depth);

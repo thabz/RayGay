@@ -37,7 +37,8 @@ PhotonRenderer::PhotonRenderer(RendererSettings* settings,
     this->globalphotonmap = globalphotonmap;
     this->causticsphotonmap = causticsmap;
     this->irradiance_cache = irradiancecache;
-    qmc_sequence = new Halton(2,2);
+    this->qmc_sequence = new Halton(2,2);
+    this->gloss_sequence = new Halton(2,2);
 }
 
 PhotonRenderer::~PhotonRenderer() {
@@ -153,8 +154,9 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 		/* Distributed reflection */
 		double max_angle = material->glossMaxAngle();
 		int gloss_rays = material->glossRaysNum();
+		gloss_sequence->reset();
 		for(int i = 0; i < gloss_rays; i++) {
-		    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle),ray.getIndiceOfRefraction());
+		    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle,gloss_sequence),ray.getIndiceOfRefraction());
 		    refl_col += trace(refl_ray, depth + 1);
 		}
 		refl_col *= 1.0/double(gloss_rays);
