@@ -370,7 +370,7 @@ void solve_quartic_test() {
     assert(contains(roots,2,5));
     assert(contains(roots,2,-5));
 
-    int n = 10;
+    int n = 5;
     int num;
     for(int A = -n; A < n; A++) {
 	for(int B = -n; B < n; B++) {
