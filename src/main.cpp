@@ -39,6 +39,7 @@
 #include "cylinder.h"
 #include "arealight.h"
 #include "pixelstore.h"
+#include "raytracer.h"
 
 using namespace std;
 
@@ -58,12 +59,12 @@ void testScene4() {
     Sphere s4 = Sphere(Vector(-200,50,-200),130.0,chrome);
     Sphere s5 = Sphere(Vector(0,150,0),130.0,chrome);
     scene.addObject(&s1);
-/*    scene.addObject(&s2);
+    scene.addObject(&s2);
     scene.addObject(&s3);
     scene.addObject(&s4);
     scene.addObject(&s5);
-*/
-    /*
+
+   /*
     Cylinder cyl = Cylinder(Vector(-200,-50,200),Vector(-200,50,200),100.0,6,blue);
     scene.addObject(&cyl);
     */
@@ -90,10 +91,15 @@ void testScene4() {
 
     scene.setBackgroundColor(RGB(0.1,0.1,0.3));
 
-    Camera cam = Camera(Vector(0,0,1500),Vector(0,0,-1),scene);
+    Camera cam = Camera(Vector(0,0,1500),Vector(0,0,-1));
+    scene.setCamera(&cam);
+    
     Image* img = new Image(640,480);
     time_t beginTime = time(NULL);
-    cam.render(img);
+
+    Raytracer raytracer = Raytracer();
+    raytracer.render(&scene,img);
+    
     printf("Rendering took %ld seconds.\n",time(NULL) - beginTime);
     img->save("out.png");
     delete img;

@@ -5,6 +5,7 @@
 #include <iosfwd>
 #include "rgb.h"
 #include "hierarchy.h"
+#include "camera.h"
 
 class Intersection;
 class Ray;
@@ -22,6 +23,8 @@ class Scene {
 	~Scene();	
 	void addObject(object* obj);
 	void addLight(Lightsource* light);
+	void setCamera(Camera* camera);
+	Camera* getCamera() const;
         virtual Intersection intersect(const Ray& ray) const;
         virtual Intersection intersectForShadow(const Ray& ray) const;
         virtual Intersection intersectForShadow(const Ray& ray, const object* hint) const;
@@ -34,6 +37,7 @@ class Scene {
     private:
 	std::vector<Lightsource*> lights;
 	std::vector<object*> objects;
+	Camera* camera;
 	Hierarchy* hierarchy;
 	RGB bg_color;
 };

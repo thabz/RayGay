@@ -37,6 +37,14 @@ void Scene::addLight(Lightsource* light) {
  //   objects.push_back(light); //TODO: Make sure lights are rotated too
 }
 
+void Scene::setCamera(Camera* cam) {
+    camera = cam;
+}
+
+Camera* Scene::getCamera() const {
+    return camera;
+}
+
 void Scene::transform(const Matrix &m) {
     for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	(*p)->transform(m);
@@ -44,6 +52,7 @@ void Scene::transform(const Matrix &m) {
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	(*p)->transform(m);
     }
+    // camera.transform(m)
 }
 
 std::vector<Lightsource*> Scene::getLightsources() {
