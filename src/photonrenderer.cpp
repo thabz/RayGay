@@ -96,7 +96,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     RGB result_color = RGB(0.0,0.0,0.0);
 
     // Indirect diffuse light from global photonmap
-    result_color += finalGather(point,normal,ray.getDirection(),renderersettings->final_gather_rays);
+    result_color += finalGather(point,normal,ray.getDirection(),renderersettings->final_gather_rays,0);
     // Caustics from caustics map
     result_color += causticsphotonmap->irradiance_estimate(point,normal,renderersettings->estimate_radius,renderersettings->estimate_samples);
     //result_color.clip();
@@ -178,7 +178,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
-Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const Vector& ray_dir, int gatherRays) const {
+Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const Vector& ray_dir, int gatherRays, int depth) const {
     if (renderersettings->final_gather_rays == 0) {
 	return M_PI * 100 * globalphotonmap->irradiance_estimate(point,normal,renderersettings->estimate_radius,renderersettings->estimate_samples);
     }
@@ -196,8 +196,8 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 	    Vector hitpoint = inter->getPoint();
 	    Vector hitnormal = inter->getObject()->normal(*inter);
 	    // If too close use another final gather instead for estimate
-	    if ((hitpoint-point).length() < renderersettings->estimate_radius && gatherRays > 7) {
-		result += finalGather(hitpoint,hitnormal,dir,7);
+	    if ((hitpoint-point).length() < renderersettings->estimate_radius && depth == 0 ) {
+		result += finalGather(hitpoint,hitnormal,dir,gatherRays / 2, depth + 1);
 	    } else {
 		double cos = normal * dir;
 		result += renderersettings->estimate_radius * cos * globalphotonmap->irradiance_estimate(hitpoint,hitnormal,renderersettings->estimate_radius,renderersettings->estimate_samples);

@@ -26,3 +26,7 @@ void CausticsMap::store( const Vector& power, const Vector& pos, const Vector& d
 
     Stats::getUniqueInstance()->inc("Caustic photons stored");
 }
+
+RGB CausticsMap::getFilteredIrradianceEstimate(const Vector& point, const Vector& normal) const {
+
+}

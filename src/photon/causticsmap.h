@@ -22,7 +22,7 @@ class CausticsMap : public PhotonMap<CausticPhoton> {
 	CausticsMap(int size);
 
 	/// Creates a Gauss-filtered irrandiance estimate
-	RGB getFilteredIrradianceEstimate(const Vector& point) const;
+	RGB getFilteredIrradianceEstimate(const Vector& point, const Vector& normal) const;
 
 	void store( const Vector& power, const Vector& pos, const Vector& dir);
 };
