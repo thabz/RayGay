@@ -13,7 +13,7 @@ class Spotlight : public Lightsource {
     public:
 	/// Constructor
 	Spotlight(const Vector& pos, const Vector& direction, double angle, double cut_angle);
-	Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, const Scene& scene) const;
+	Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, const SpaceSubdivider& space) const;
 	const Vector& getPosition() const { return _pos; };
         void transform(const Matrix& m);
 

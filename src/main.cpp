@@ -95,10 +95,12 @@ void testScene4() {
     scene.setCamera(&cam);
     
     Image* img = new Image(640,480);
-    time_t beginTime = time(NULL);
+    Hierarchy space = Hierarchy();
 
     Raytracer raytracer = Raytracer();
-    raytracer.render(&scene,img);
+
+    time_t beginTime = time(NULL);
+    raytracer.render(&scene,img,&space);
     
     printf("Rendering took %ld seconds.\n",time(NULL) - beginTime);
     img->save("out.png");

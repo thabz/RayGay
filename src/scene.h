@@ -25,14 +25,12 @@ class Scene {
 	void addLight(Lightsource* light);
 	void setCamera(Camera* camera);
 	Camera* getCamera() const;
-        virtual Intersection intersect(const Ray& ray) const;
-        virtual Intersection intersectForShadow(const Ray& ray) const;
-        virtual Intersection intersectForShadow(const Ray& ray, const object* hint) const;
+
 	virtual void transform(const Matrix& m);
 	std::vector<Lightsource*> getLightsources();
+	std::vector<object*> getObjects();
 	void setBackgroundColor(const RGB& c) { bg_color = c; };
 	RGB getBackgroundColor() { return bg_color; };
-	void prepare();
   
     private:
 	std::vector<Lightsource*> lights;

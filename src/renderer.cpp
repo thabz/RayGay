@@ -1,16 +1,27 @@
 
+#include <iostream>
+
 #include "renderer.h"
 #include "image.h"
 #include "scene.h"
 #include "rgb.h"
+#include "object.h"
+#include "spacesubdivider.h"
 
 Renderer::Renderer() {
 }
 
-void Renderer::render(Scene* sc, Image* img) {
+void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
     scene = sc;
-    scene->prepare();
-    Ray ray;
+    space = spc;
+
+    // Add all objects in scene to spacesubdivider
+    std::vector<object*> objects = scene->getObjects();
+    for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
+	space->addObject(*p);
+    }
+    space->prepare();
+    
     int img_w = img->getWidth() / 2;
     int img_h = img->getHeight() / 2;
 

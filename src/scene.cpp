@@ -12,20 +12,10 @@
 using namespace std;
 
 Scene::Scene() {
-    hierarchy = new Hierarchy(BoundingBox(Vector(-HUGE_DOUBLE,-HUGE_DOUBLE,-HUGE_DOUBLE),Vector(HUGE_DOUBLE,HUGE_DOUBLE,HUGE_DOUBLE)));
-    //hierarchy = new Hierarchy(BoundingBox(Vector(-10000,-10000,-10000),Vector(10000,10000,10000)));
-
+    hierarchy = new Hierarchy();
 }
 
 Scene::~Scene() {
- //   delete hierarchy;
-}
-
-void Scene::prepare() {
-    for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
-	hierarchy->addObject(*p);
-    }
-    hierarchy->optimize();
 }
 
 void Scene::addObject(object* obj) {
@@ -59,16 +49,8 @@ std::vector<Lightsource*> Scene::getLightsources() {
     return lights;   
 }
 
-Intersection Scene::intersect(const Ray& ray) const {
-    return hierarchy->intersect(ray);
-}
-
-Intersection Scene::intersectForShadow(const Ray& ray) const {
-    return hierarchy->intersectForShadow(ray);
-}
-
-Intersection Scene::intersectForShadow(const Ray& ray, const object* hint) const {
-    return hierarchy->intersectForShadow(ray,hint);
+std::vector<object*> Scene::getObjects() {
+    return objects;   
 }
 
 ostream & operator<<(ostream &os, const Scene &x) {

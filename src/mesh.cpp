@@ -37,7 +37,7 @@ void Mesh::prepare() const {
     for (vector<Triangle*>::const_iterator p = triangles.begin(); p != triangles.end(); p++) {
 	hierarchy->addObject(*p);
     }
-    hierarchy->optimize();
+    hierarchy->prepare();
     prepared = true;
 }
 

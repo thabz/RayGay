@@ -13,7 +13,7 @@ class Renderer {
 
     public:
 	/// Render a scene into an image
-	void render(Scene* scene, Image*);
+	void render(Scene* scene, Image*, SpaceSubdivider* space);
 
     private:
 	/// The public render-method uses this to render the image. Subclasses must implement this.
@@ -23,6 +23,7 @@ class Renderer {
 	Renderer();
 	/// The scene to be rendered can be accessed from implementations of Renderer.
 	Scene* scene;
+	SpaceSubdivider* space;
 };
 
 #endif

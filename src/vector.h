@@ -42,10 +42,12 @@ public:
     bool operator()(const Vector* v1, const Vector* v2) const {
 	return (*v1) == (*v2);
     }
-    static long hashValue(const Vector* p) { return long(p->x()*p->y()*p->z()); };
 
+    /// x-component of this vector
     double x() const { return _vector[0]; };
+    /// y-component of this vector
     double y() const { return _vector[1]; };
+    /// z-component of this vector
     double z() const { return _vector[2]; };
 
     /// Comparator

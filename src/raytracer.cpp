@@ -27,7 +27,7 @@ RGB Raytracer::getPixel(double x, double y) {
 
 
 RGB Raytracer::trace(const Ray& ray, int depth) {
-    Intersection intersection = scene->intersect(ray);
+    Intersection intersection = space->intersect(ray);
     RGB color; // Set to scene's ambient color
     if (intersection.intersected) {
 	color = shade(ray,intersection,depth);
@@ -47,7 +47,7 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, int depth) {
     vector<Lightsource*> lights = scene->getLightsources();
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	RGB color = RGB(0.0,0.0,0.0);
-	Lightinfo info = (*p)->getLightinfo(intersection,normal,*scene);
+	Lightinfo info = (*p)->getLightinfo(intersection,normal,*space);
 	if (info.cos > 0.0) {
 	    // Check for blocking objects
 	    if (info.intensity > 0.0) {

@@ -27,6 +27,7 @@ EXTRA_DIST = arealight.h	\
 	     raytracer.h 	\
 	     renderer.h 	\
 	     scene.h 		\
+             spacesubdivider.h	\
 	     sphere.h		\
 	     spotlight.h	\
 	     tetrahedron.h	\

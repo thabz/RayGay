@@ -14,7 +14,7 @@ class Arealight : public Lightsource {
 	/// Constructor
 	Arealight(const Vector& pos, const Vector& dir, double radius, int num, double jitter);
 	~Arealight();
-	Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, const Scene& scene) const;
+	Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, const SpaceSubdivider& space) const;
 	const Vector& getPosition() const;
         void transform(const Matrix& m);
 
