@@ -153,11 +153,9 @@ Items		: /* Empty */
 Item		: Object
                 {
 		    scene->addObject($1);
-		    cout << "SceneObject added" << endl;
 		}
                 | LightDef
 		{
-		    cout << "Light added" << endl;
 		    scene->addLight($1);
 		}
                 | AssignName
@@ -389,7 +387,7 @@ Spotlight	: tSPOT Vector Vector Expr Expr tPOWER RGB
 		    $$ = new Spotlight(*$2,*$3,$4,$5);
 		    $$->setPower(*$7);
 		}
-                | tSPOT Vector Vector Expr Expr Expr
+                | tSPOT Vector Vector Expr Expr 
                 {
 		    $$ = new Spotlight(*$2,*$3,$4,$5);
 		}
