@@ -22,9 +22,11 @@ tracer_LDADD = libtracer.a paths/libpaths.a lights/liblights.a materials/libmate
 EXTRA_DIST = boolean.h 		\
              boundingbox.h	\
              booleanoperand.h	\
+	     box.h		\
      	     bsp.h		\
              camera.h 		\
 	     cylinder.h		\
+	     edgekey.h		\
 	     extrusion.h	\
 	     hierarchy.h	\
 	     intersection.h 	\
@@ -32,6 +34,7 @@ EXTRA_DIST = boolean.h 		\
 	     object.h		\
 	     necklace.h		\
 	     objectcollection.h	\
+	     pixel.h		\
 	     pixelstore.h	\
 	     ray.h 		\
 	     raytracer.h 	\
