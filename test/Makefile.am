@@ -37,5 +37,5 @@ teststats_LDADD = $(top_srcdir)/src/libtracer.a
 testthreads_SOURCES = testthreads.cpp
 testthreads_LDADD = 
 
-TESTS = testimage teststats testlanguage testmath testpaths testspace testobjects testthreads
+TESTS = testobjects testimage teststats testlanguage testmath testpaths testspace testthreads
 

@@ -612,6 +612,41 @@ void csg_test() {
     assert(all[1].isEntering() == false);
     assert(all[2].isEntering() == true);
     assert(all[3].isEntering() == false);
+    // Rays with origin on edges
+    assert(iPoint(csg,Vector(0,0,30),Vector(0,0,-1)) == Vector(0,0,29));
+    assert(iNormal(csg,Vector(0,0,30),Vector(0,0,-1)) == Vector(0,0,-1));
+    assert(iPoint(csg,Vector(0,0,29),Vector(0,0,-1)) == Vector(0,0,-29));
+    assert(iNormal(csg,Vector(0,0,29),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iPoint(csg,Vector(0,0,-29),Vector(0,0,-1)) == Vector(0,0,-30));
+    assert(iNormal(csg,Vector(0,0,-29),Vector(0,0,-1)) == Vector(0,0,-1));
+    assert(!intersects(csg,Vector(0,0,-30),Vector(0,0,-1)));
+    
+    // Test a hollow ellipsoid with top cut off
+    SolidBox* box = new SolidBox(Vector(-100,5,-100),Vector(100,50,100),NULL);
+    CSG* cup = new CSG(csg,CSG::DIFFERENCE,box,NULL);
+    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+    all = cup->allIntersections(ray);
+    assert(all.size() == 4);
+    assert(all[0].getPoint() == Vector(0,0,30));
+    assert(all[1].getPoint() == Vector(0,0,29));
+    assert(all[2].getPoint() == Vector(0,0,-29));
+    assert(all[3].getPoint() == Vector(0,0,-30));
+    assert(all[0].getNormal() == Vector(0,0,1));
+    assert(all[1].getNormal() == Vector(0,0,-1));
+    assert(all[2].getNormal() == Vector(0,0,1));
+    assert(all[3].getNormal() == Vector(0,0,-1));
+    ray = Ray(Vector(0,1000,0),Vector(0,-1,0),-1);
+    all = cup->allIntersections(ray);
+    assert(all.size() == 2);
+    assert(all[0].getPoint() == Vector(0,-19,0));
+    assert(all[1].getPoint() == Vector(0,-20,0));
+    assert(all[0].getNormal() == Vector(0,1,0));
+    assert(all[1].getNormal() == Vector(0,-1,0));
+    assert(iPoint(cup,Vector(0,200,0),Vector(0,-1,0)) == Vector(0,-19,0));
+    assert(iNormal(cup,Vector(0,200,0),Vector(0,-1,0)) == Vector(0,1,0));
+    assert(iPoint(cup,Vector(0,-19,0),Vector(0,-1,0)) == Vector(0,-20,0));
+    assert(iNormal(cup,Vector(0,-19,0),Vector(0,-1,0)) == Vector(0,-1,0));
+    assert(!intersects(csg,Vector(0,-20,0),Vector(0,-1,0)));
 }
 
 void solidbox_test() {
@@ -665,6 +700,11 @@ void solidbox_test() {
     assert(all[0].getNormal() == Vector(0,0,-1));
     assert(!all[0].isEntering());
     assert(intersects(b,ray) == true);
+
+    // Scaled box
+    b = new SolidBox(Vector(-1,-1,-1),Vector(1,1,1),NULL);
+    b->transform(Matrix::matrixScale(Vector(10,20,30)));
+
 }
 
 void ellipsoid_test() {

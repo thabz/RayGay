@@ -16,6 +16,7 @@ using namespace std;
 
 void vector_test() {
 
+    /*
     cout << "Size of short: " << sizeof(short) << endl;
     cout << "Size of int: " << sizeof(int) << endl;
     cout << "Size of long: " << sizeof(long) << endl;
@@ -23,7 +24,8 @@ void vector_test() {
     cout << "Size of double: " << sizeof(double) << endl;
     cout << "Size of long double: " << sizeof(long double) << endl;
     cout << "Size of Vector: " << sizeof(Vector) << endl;
-    
+    */
+
     Vector v = Vector(1,1,1);
     assert(IS_EQUAL(v.norm(),3));
     assert(IS_EQUAL(v.norm(),3.0));

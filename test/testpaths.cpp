@@ -148,8 +148,8 @@ void bezierspline_test() {
     delete spline;
 }
 
+/// \todo Finish implementation
 void arc_test() {
-    cout << "arc_test() not written." << endl;
 }
 
 void catmullromspline_test() {

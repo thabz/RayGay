@@ -147,9 +147,9 @@ void test_vector_clear() {
     assert(a->size() == 10000);
     a->clear();
     assert(a->size() == 0);
-    cout << "capacity: " << a->capacity() << endl;
+    //cout << "capacity: " << a->capacity() << endl;
     a->reserve(0);
-    cout << "capacity: " << a->capacity() << endl;
+    //cout << "capacity: " << a->capacity() << endl;
 }
 
 
