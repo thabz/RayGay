@@ -90,12 +90,20 @@ int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
 	L.push_back(roots[i]);
     }
     L.sort();
-    L.unique();
+
     int i = 0;
     for (std::list<double>::iterator ite = L.begin(); ite != L.end(); ite++) {
-	roots[i++] = *ite;
+	double root = *ite;
+	if (i == 0) {
+	    roots[i++] = root;
+	} else {
+	    if (!IS_EQUAL(roots[i-1],root)) {
+		roots[i++] = root;
+	    }
+
+	}
     }
-    return L.size();
+    return i;
 }
 
 /**
