@@ -19,6 +19,10 @@ class Raytracer : public Renderer {
 
 	RGB shade(const Ray&, const Intersection&, int depth);
 	RGB trace(const Ray&, int depth);
+	RGB traceSub(bool intersected, const Ray&, int depth);
+	RGB tracePrimary(const Ray&);
+
+	Object* last_primary_ray_hit;
 };
 
 

@@ -18,21 +18,29 @@ Raytracer::Raytracer() : Renderer() {
 }
 
 RGB Raytracer::getPixel(const Vector2& v) {
-    Stats::getUniqueInstance()->inc("Primary camera rays cast");
     Vector position = scene->getCamera()->getPosition();
     Vector scr = Vector(v[0],v[1],0);
     Vector raydir = scr - position;
     raydir.normalize();
     Ray ray = Ray(position,raydir,1.0);
-    return trace(ray,1);
+    return tracePrimary(ray);
 }
 
+RGB Raytracer::tracePrimary(const Ray& ray) {
+    Stats::getUniqueInstance()->inc("Primary camera rays cast");
+    bool intersected = space->intersectPrimary(ray);
+    return traceSub(intersected, ray, 1);
+}
 
 RGB Raytracer::trace(const Ray& ray, int depth) {
+    bool intersected = space->intersect(ray);
+    return traceSub(intersected, ray, depth);
+}
+
+RGB Raytracer::traceSub(bool intersected, const Ray& ray, int depth) {
     Stats::getUniqueInstance()->inc("Total camera rays cast");
     RGB color; 
     Intersection intersection;
-    bool intersected = space->intersect(ray);
     double intersect_distance;
 
     if (intersected) {

@@ -18,6 +18,9 @@ class SpaceSubdivider {
 	virtual bool intersect(const Ray& ray) const = 0; 
 	
 	/// Calculate an intersection with the hierarchy
+	virtual bool intersectPrimary(const Ray& ray) const = 0;  
+	
+	/// Calculate an intersection with the hierarchy
 	virtual bool intersectForShadow(const Ray& ray) const = 0; 
 
 	/// Calculate an intersection with the hierarchy

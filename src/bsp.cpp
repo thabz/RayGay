@@ -16,6 +16,7 @@
 BSP::BSP() {
     cutplane_dimension = 0;
     cutplane_value = 0;
+    last_primary_intersected_object = NULL;
 }
 
 void BSP::addObject(Object* obj) {
@@ -91,6 +92,28 @@ inline
 bool BSP::intersect(const Ray& ray) const {
     ray.lowest_t = HUGE_DOUBLE;
     return intersect(ray,0,HUGE_DOUBLE);
+}
+
+inline
+bool BSP::intersectPrimary(const Ray& ray) const {
+    double begin_t;
+    if (last_primary_intersected_object != NULL &&
+	    last_primary_intersected_object->intersect(ray)) {
+	begin_t = 0.0;
+	ray.lowest_t = last_primary_intersected_object->getLastIntersection()->getT();;
+    } else {
+	begin_t = 0.0;
+	ray.lowest_t = HUGE_DOUBLE;
+    }
+
+    bool result = intersect(ray,begin_t,HUGE_DOUBLE);
+
+    if (result) {
+	last_primary_intersected_object = getLastIntersection()->getObject();
+    } else {
+	last_primary_intersected_object = NULL;
+    }
+    return result;
 }
 
 inline

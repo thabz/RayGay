@@ -30,6 +30,7 @@ class BSP : public SpaceSubdivider {
 	void addObject(Object* obj); ///< Place a object in the BSP tree 
 
 	bool intersect(const Ray& ray) const; ///< Returns the nearest intersection
+	bool intersectPrimary(const Ray& ray) const; ///< Returns the nearest intersection
 	bool intersectForShadow(const Ray& ray) const; ///< Returns any intersection 
 	bool intersectForShadow(const Ray& ray, const Object* hint) const; ///< Returns any intersection but hint-object is checked for intersection first.
 
@@ -50,6 +51,7 @@ class BSP : public SpaceSubdivider {
 	BSP* higher;
 
 	mutable Intersection* last_intersection;
+	mutable Object* last_primary_intersected_object;
 
 	/// Returns the smallest bbox containing all objects of this node
 	BoundingBox enclosure() const;
