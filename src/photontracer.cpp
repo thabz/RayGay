@@ -59,7 +59,7 @@ int PhotonTracer::trace(const Ray& ray, int bounces) {
 	
 	// Reflect diffusely 
 	Vector normal = intersection->getObject()->normal(*intersection);
-	Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(179));
+	Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89));
 	Ray new_ray = Ray(intersection->getPoint(),reflected_direction,0);
 	return trace(new_ray, bounces + 1) + 1;
     } else if (ran < material.getKd() + material.getKs()) {

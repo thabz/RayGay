@@ -71,16 +71,16 @@ void work(string scenefile, string outputfile) {
 
     int photon_num = 100000;
     PhotonMap* photonmap = new PhotonMap(photon_num);
-    /*
+    
     PhotonTracer* photontracer = new PhotonTracer(scene,space,photonmap);
     photontracer->trace(photon_num);
     photonmap->scale_photon_power(1.0/double(photon_num));
     photonmap->balance();
-*/
-    Raytracer raytracer = Raytracer();
-    raytracer.render(scene,img,space,photonmap);
-    /*PhotonRenderer renderer = PhotonRenderer();
-    renderer.render(scene,img,space,photonmap);*/
+
+ /*   Raytracer raytracer = Raytracer();
+    raytracer.render(scene,img,space,photonmap);*/
+    PhotonRenderer renderer = PhotonRenderer();
+    renderer.render(scene,img,space,photonmap);
     
     img->save(outputfile);
     delete img;

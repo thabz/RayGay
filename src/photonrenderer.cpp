@@ -70,6 +70,8 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
   //   Vector irradiance = photonmap->irradiance_estimate(point,normal,20,1000);
   //  result_color += 10*irradiance.length() * material.getDiffuseColor(intersection);
     result_color += gatherIrradiance(point,normal).length() * material.getDiffuseColor(intersection);
+   // result_color.clip();
+   // return result_color;
 
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);
@@ -165,11 +167,11 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
-#define GATHER_RAYS 200
+#define GATHER_RAYS 10
 Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal) const {
     Vector result = Vector(0.0,0.0,0.0);
     for (int i = 0; i < GATHER_RAYS; i++) {
-	Vector dir = Math::perturbVector(normal,DEG2RAD(175));
+	Vector dir = Math::perturbVector(normal,DEG2RAD(89));
 	Ray ray = Ray(point,dir,1);
 	if (space->intersect(ray)) {
 	    Intersection* inter = space->getLastIntersection();
