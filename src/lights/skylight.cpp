@@ -23,7 +23,7 @@ Lightinfo Skylight::getLightinfo(const Intersection& inter, const Vector& normal
 	Vector pos = positions[i];
 	Vector direction_to_light = pos - inter.getPoint();
 	double dist_to_light = direction_to_light.length();
-	direction_to_light.normalize();
+	direction_to_light = direction_to_light / dist_to_light;
 	cos_tmp = direction_to_light * normal;
 	if (cos_tmp > 0.0) {
 	    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
