@@ -23,7 +23,7 @@ if ($selectedmonth eq '') {
 my $calHTML = makeSidebar($selectedmonth,$selectedyear,@entries);
 
 my $HTML;
-$HTML .= '<tr><td><a href="index.cgi"><h1 style="color: black; font-family:arial,helvetica">RAYTRACER<i style="font-family:serif; font-weight:normal">Blog</i></h1></a></td></tr>';
+$HTML .= '<tr><td><h1 style="color: black; font-family:arial,helvetica"><a href="index.cgi">RAYTRACER<i style="font-family:serif; font-weight:normal">Blog</i></a></h1></td></tr>';
 $HTML .= '<tr><td>&nbsp;</td></tr>';
 $HTML .= '<tr><td>&nbsp;</td></tr>';
 
@@ -44,10 +44,12 @@ foreach my $entry (sort {$b cmp $a} @entries) {
 print <<"EOF";
 Content-type: text/html
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>RAYTRACER Blog</title>
-<style>
+<style type="text/css">
 body {
       /* font-family: "Trebuchet MS",Georgia,Helvetica,Arial; */
        font-size: 12pt;
@@ -184,7 +186,7 @@ sub getEntry {
    my $data;
    foreach (<FILE>) {
        s/<h>/<span class="title">/;
-       s/<\/h>/<\/span class="title">/;
+       s/<\/h>/<\/span>/;
        s/---/&mdash;/g;
        $data .= $_;
    }
@@ -203,7 +205,7 @@ sub makeSidebar {
     foreach my $name (sort {$b cmp $a} keys %ents) {
 	my ($y,$m) = split('-',$name);
 	$name = "<b>$name</b>" if ($y == $year && $m == $month);
-	$HTML .= qq|<a href="index.cgi?year=$y&month=$m">$name<br>|;
+	$HTML .= qq|<a href="index.cgi?year=$y&amp;month=$m">$name</a><br>|;
     }
     return $HTML;
 }
