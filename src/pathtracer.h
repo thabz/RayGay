@@ -4,12 +4,14 @@
 #include "renderer.h"
 #include "space/kdtree.h"
 #include "intersection.h"
+#include "math/qmcsequence.h"
 
 class RGB;
 class Ray;
 class Object;
 class Intersection;
-class QMCSequence;
+
+#define MAX_DEPTH 7
 
 ///  A simple pathtracer
 class Pathtracer : public Renderer {
@@ -26,7 +28,7 @@ class Pathtracer : public Renderer {
 	RGBA traceSub(const bool intersected, const Intersection& i, const Ray&, const int depth);
 	RGBA tracePrimary(const Ray&);
 
-	QMCSequence* gloss_sequence;
+	vector<QMCSequence*> seqs;
 };
 
 inline
@@ -35,6 +37,12 @@ RGBA Pathtracer::tracePrimary(const Ray& ray) {
     Intersection i;
     bool intersected = space->intersectPrimary(ray,&i);
     if (intersected) {
+
+
+    for(uint j = 0; j < MAX_DEPTH; j++) {
+	seqs[j]->reset();
+    }
+
 	int samples = renderersettings->camera_paths;
 	RGBA result = RGBA(0.0,0.0,0.0,0.0);
 	for(int j = 0; j < samples; j++) {

@@ -18,7 +18,10 @@
 #include "math/halton.h"
 
 Pathtracer::Pathtracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, unsigned int thread_id) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
-    gloss_sequence = new Halton(2,2);
+
+    for(uint i = 0; i < MAX_DEPTH; i++) {
+	seqs.push_back(new Halton(2,2));
+    }
 }
 
 RGBA Pathtracer::getPixel(const Vector2& v) {
@@ -102,7 +105,10 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
     if (depth < 7) {
         // Indirect diffuse color
 	if (material->getKd() > 0) {
-	    Vector dir = normal.randomHemisphere();
+	    double* rnd = seqs[depth]->getNext();
+	    //Vector dir = normal.randomHemisphere(rnd[0],rnd[1]);
+	    Vector dir = normal.randomHemisphere(rnd[0],rnd[1],0.01);
+	    //Vector dir = normal.randomHemisphere();
 	    double cosa = dir * normal;
 	    Ray new_ray = Ray(point + 0.1*dir,dir,-1);
 	    RGB in_diff = trace(new_ray,depth+1);
@@ -122,7 +128,8 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 	    if (material->glossEnabled()) {
 		/* Perturb reflecteced ray */
 		double max_angle = material->glossMaxAngle();
-		refl_vector = Math::perturbVector(refl_vector,max_angle);
+		refl_vector = Math::perturbVector(refl_vector,max_angle,seqs[depth]);
+		//refl_vector = Math::perturbVector(refl_vector,max_angle);
 	    }
 	    Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
 	    refl_ray.fromObject = object;
