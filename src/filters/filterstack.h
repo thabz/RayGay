@@ -12,7 +12,7 @@ class FilterStack {
 
     public:
 	
-	void pushFilter(Filter2D* filter);
+	void push(Filter2D* filter);
 	void apply(Image* image);
 
     private:

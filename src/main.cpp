@@ -232,6 +232,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     Stats::getUniqueInstance()->endTimer("Rendering");
 
 
+    // Apply filters if any
     FilterStack* filterstack = Environment::getUniqueInstance()->getFilterStack();
     if (filterstack != NULL) {
 	Stats::getUniqueInstance()->beginTimer("Applying filters");

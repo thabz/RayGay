@@ -2,7 +2,7 @@
 #include "filters/filterstack.h"
 #include "filters/filter.h"
 
-void FilterStack::pushFilter(Filter2D* filter) {
+void FilterStack::push(Filter2D* filter) {
     filters.push_back(filter);
 }
 

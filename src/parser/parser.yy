@@ -5,6 +5,9 @@
 #include <vector>    
 #include <map>    
 #include <cstdio>    
+#include "filters/filterstack.h"
+#include "filters/grayscale.h"
+#include "filters/specularbloom.h"
 #include "image/rgba.h"
 #include "image/rgb.h"
 #include "image/image.h"
@@ -64,6 +67,7 @@ RendererSettings* renderer_settings;
 MaterialNode* tmpMaterial;
 Vector2 image_size = Vector2(640,480);
 Function* tmpFunction;
+FilterStack* filter_stack;
 
 ActionListNode* top_actions;
 
@@ -112,6 +116,7 @@ ActionListNode* top_actions;
 %token tETA
 %token tELLIPSOID
 %token tEXTRUSION
+%token tFILTERS tGRAYSCALE tSPECULARBLOOM
 %token tFOV
 %token tFRAMES
 %token tFUNCTION
@@ -191,7 +196,7 @@ ActionListNode* top_actions;
 %type <action> MainAddAction MainAction Assignment Renderer ConfAction
 %type <action> RepeatStmt IfStmt WhileStmt Action ModStmt OpAssignment
 %type <action> AddCamera AddObject AddLight Background Settings Print Image
-%type <action> FuncCall FuncDecl
+%type <action> FuncCall FuncDecl Filters
 %type <actionlist> ActionList
 %type <funccallargs> FuncCallArgs
 %type <value> FuncCallArg
@@ -238,6 +243,7 @@ ConfAction	: AddCamera
 		| Renderer
 		| Background
 		| Settings
+		| Filters
 		;
 
 ActionList	: Action
@@ -470,6 +476,40 @@ Setting		: tGLOBALPHOTONS tFLOAT
 		    renderer_settings->anim_frames = int($2);
 		}
 		;
+
+Filters		: tFILTERS 
+                {
+		    filter_stack = new FilterStack();
+		    Environment::getUniqueInstance()->setFilterStack(filter_stack);
+		}
+	        '{' FiltersList '}'
+		{
+		    $$ = new NOPAction();
+		}
+                ;
+
+FiltersList	: /* Empty */
+                | FiltersList Filter
+		;		
+
+Filter		: Grayscale
+                | SpecularBloom
+		;
+
+Grayscale	: tGRAYSCALE 
+                {
+		    Filter2D* filter = new Grayscale();
+		    filter_stack->push(filter);
+		}
+		;
+		
+
+SpecularBloom	: tSPECULARBLOOM '{' '}'
+                {
+		    Filter2D* filter = new SpecularBloom();
+		    filter_stack->push(filter);
+		}
+                ;
 
 AddCamera	: Camera 
                 {
