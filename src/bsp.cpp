@@ -52,6 +52,7 @@ void BSP::prepare() {
 	    }
 	}
 	
+//	if (true) {
 	if (lower->objects.size() == size || higher->objects.size() == size) {
 	    // Objects couldn't be subdivided
 	    delete lower;
@@ -77,9 +78,12 @@ Intersection BSP::intersectForShadow(const Ray& ray) const {
 }
 
 Intersection BSP::intersectForShadow(const Ray& ray, const object* hint) const {
-    return intersect(ray,0,HUGE_DOUBLE);
     Intersection result = hint->intersect(ray);
-    return result.intersected ? result : intersectForShadow(ray);
+    if (result.intersected) {
+	return result;
+    } else {
+        return intersectForShadow(ray);
+    }
 }
 
 /*******************
@@ -111,17 +115,17 @@ Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) 
 
     Vector o = ray.origin + min_t * ray.direction;
 
-    /*
+    
     if (o[cutplane_dimension] < cutplane_value && 
 	ray.direction[cutplane_dimension] <= 0) {
         return lower->intersect(ray,min_t,max_t);
     } else if (o[cutplane_dimension] > cutplane_value && 
 	ray.direction[cutplane_dimension] >= 0) {
         return higher->intersect(ray,min_t,max_t);
-    } else {*/
+    } else {
 	double intersect_t = (cutplane_value - ray.origin[cutplane_dimension]) / ray.direction[cutplane_dimension];
-	if (intersect_t > max_t) intersect_t = max_t;
-	if (intersect_t < min_t) intersect_t = min_t;
+	if (intersect_t > max_t) { intersect_t = max_t; }
+	if (intersect_t < min_t) { intersect_t = min_t; }
 
 	//Intersection intersection1 = lower->intersect(ray,min_t,intersect_t);
 	//Intersection intersection2 = higher->intersect(ray,intersect_t,max_t);
@@ -152,7 +156,7 @@ Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) 
 		return intersection2;
 	    }
 	}
-     //}
+     }
 }
 
 BoundingBox BSP::enclosure() const {
@@ -203,6 +207,7 @@ void BSP::test() {
     bsp.addObject(new Sphere(Vector(0,-500,0),10,Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)));
     assert(largestDimension(bsp.enclosure()) == 1);
 
+    bsp.prepare();
     // Test intersection
     Ray r = Ray(Vector(200,250,1000),Vector(0,0,-1),1);
     assert(bsp.intersect(r).intersected);

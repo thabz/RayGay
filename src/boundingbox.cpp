@@ -260,9 +260,9 @@ int BoundingBox::cutByPlane(int cutplane_dimension, double cutplane_value) const
     double min = minimum()[cutplane_dimension];
     double max = maximum()[cutplane_dimension];
     if (cutplane_value > max) {
-	return 1;
+	return -1;
     } else if (cutplane_value < min) {
-        return -1;
+        return 1;
     } else {
         return 0;
     }
@@ -347,12 +347,12 @@ void BoundingBox::test() {
 
     /* Test cutByPlane */
     b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
-    assert(b.cutByPlane(0,10) == 1);
-    assert(b.cutByPlane(1,10) == 1);
-    assert(b.cutByPlane(2,10) == 1);
-    assert(b.cutByPlane(0,-2) == -1);
-    assert(b.cutByPlane(1,-3) == -1);
-    assert(b.cutByPlane(2,-4) == -1);
+    assert(b.cutByPlane(0,10) == -1);
+    assert(b.cutByPlane(1,10) == -1);
+    assert(b.cutByPlane(2,10) == -1);
+    assert(b.cutByPlane(0,-2) == 1);
+    assert(b.cutByPlane(1,-3) == 1);
+    assert(b.cutByPlane(2,-4) == 1);
     assert(b.cutByPlane(0,0) == 0);
     assert(b.cutByPlane(1,0.5) == 0);
     assert(b.cutByPlane(2,-0.5) == 0);
