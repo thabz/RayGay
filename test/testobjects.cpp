@@ -1328,7 +1328,7 @@ int main(int argc, char *argv[]) {
     suite.add("Cone",new cone_test());
     suite.add("Box",new box_test());
     suite.add("Object group",new objectgroup_test());
-    //suite.add("Superellipsoid",new superellipsoid_test());
+    suite.add("Superellipsoid",new superellipsoid_test());
     suite.add("CSG",new csg_test());
     suite.add("Tetrahedron",new tetrahedron_test());
     suite.add("Tessalation",new tesselation_test());
