@@ -3,7 +3,6 @@
 
 #include "object.h"
 #include "vector.h"
-#include "rgb.h"
 #include "material.h"
 
 class Intersection;
@@ -25,7 +24,6 @@ class Boolean : public object {
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection& i) const;
-	virtual RGB getDiffuseColor(const Vector& p) const;
 	virtual Material getMaterial() const;
 	virtual bool intersects(const BoundingBox&) const;
 	virtual BoundingBox boundingBoundingBox() const;

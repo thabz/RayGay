@@ -17,6 +17,7 @@ class Ray {
 
         /// Rays direction (x,y,z) with inverted components ((1/x),(1/y),(1/x))
 	Vector inv_direction; 
+
         /// The material the ray is travelling in where 1.0 is vacuum.
 	double indice_of_refraction; 
 

@@ -75,12 +75,6 @@ Vector Sphere::normal(const Intersection& i) const {
     return normal;
 }
 
-/*! Returns the diffuse color at at point */
-RGB Sphere::getDiffuseColor(const Vector& p) const {
-    RGB col = material.getDiffuseColor();
-    return col;
-};
-
 Material Sphere::getMaterial() const {
     return material;
 }

@@ -8,7 +8,6 @@
 class Matrix;
 class Ray;
 class Vector;
-class RGB;
 class BoundingBox;
 
 /// The abstract superclass of all objects in the scene that can be rendered.
@@ -21,9 +20,6 @@ class object {
 	/// Returns the normalvector at a point on this objects surface
 	virtual Vector normal(const Intersection &i) const = 0;
 	
-	/// Returns the diffuse color at a point of surface of this object
-        virtual RGB getDiffuseColor(const Vector& point) const = 0;
-
 	/// Transform this object
 	virtual void transform(const Matrix& m) = 0;
 

@@ -113,11 +113,6 @@ BoundingBox Mesh::boundingBoundingBox() const {
     return *_boundingBoundingBox;
 }
 
-RGB Mesh::getDiffuseColor(const Vector& p) const {
-    RGB col = material.getDiffuseColor();
-    return col;
-};
-
 Intersection Mesh::_intersect(const Ray& ray) const {
     Intersection result;
     Intersection tmp;

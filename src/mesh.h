@@ -32,12 +32,10 @@ class Mesh : public object {
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection & i) const;
-	virtual RGB getDiffuseColor(const Vector& p) const;
 	virtual Material getMaterial() const;
 
 	virtual bool onEdge(const Vector &p) const;
 	virtual bool inside(const Vector &p) const;
-
 	virtual bool intersects(const BoundingBox& b) const;
 	virtual BoundingBox boundingBoundingBox() const;
 	virtual void getUV(const Intersection& intersection, double* u, double* v) const;

@@ -8,7 +8,6 @@ LIBS=$(MAGIC_LIBS)
 
 EXTRA_DIST = boolean.h 		\
 	     boundingbox.h 	\
-	     boxobject.h	\
              camera.h 		\
 	     constants.h 	\
 	     hierarchy.h 	\

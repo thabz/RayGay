@@ -106,25 +106,9 @@ Vector Boolean::normal(const Intersection& i) const {
     }
 }
 
-RGB Boolean::getDiffuseColor(const Vector& p) const {
-    return _material.getDiffuseColor();
-    Vector v = p / 50;
-    RGB col = _material.getDiffuseColor();
-//    return col;
-    float vec[3] = {(float)v[0],(float)v[1],(float)v[2]};
-    float perlin = noise3(vec);
-    double g = perlin * 20;
-    g = g - int(g);
-    col[0] = 0.5 * g + 0.5;
-    col[1] = 0.4 * g + 0.4;
-    col[2] = 0.2 * g + 0.3;
-    return col;
-}
-
 Material Boolean::getMaterial() const {
     return _material;
 }
-
 
 bool Boolean::onEdge(const Vector &p) const {
     switch(_op) {
