@@ -13,10 +13,13 @@ class Ray;
 #define HIERARCHY_MAX_OBJECTS_PER_LEAF 8
 #define HIERARCHY_MAX_DEPTH 100
 
-/// Implementation of a bounding volume hierarchy.
+/// 
 
 /**
+ * Implementation of a bounding volume hierarchy by octrees.
  * This is basically a tree of BoundingBox at the joins and object as leafs.
+ *
+ * A method proposed by Glassner in 1984.
  */
 // TODO: Fix så nedarvning kan lade sig gøre
 class Hierarchy { //: public SpaceSubdivider {
