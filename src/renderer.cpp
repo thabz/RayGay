@@ -209,11 +209,18 @@ RGBA Renderer::getSubPixel(uint curLevel, const Vector2& center, PixelBlock *blo
 
     double halfsize = size / 2.0;
 
+    // Jitter
+//#define JIT RANDOM(-halfsize/2,halfsize/2)
+#define JIT 0
+
     // Find corner pixels
-    Vector2 lowerleft = center - Vector2(halfsize,halfsize);
-    Vector2 upperright = center + Vector2(halfsize,halfsize);
-    Vector2 upperleft = Vector2(lowerleft[0],upperright[1]);
-    Vector2 lowerright = Vector2(upperright[0],lowerleft[1]);
+    Vector2 lowerleft = center - Vector2(halfsize,halfsize) + Vector2(JIT,JIT);
+    Vector2 upperright = center + Vector2(halfsize,halfsize) + Vector2(JIT,JIT);
+    Vector2 upperleft = Vector2(lowerleft[0],upperright[1]) + Vector2(JIT,JIT);
+    Vector2 lowerright = Vector2(upperright[0],lowerleft[1]) + Vector2(JIT,JIT);
+
+#undef JIT
+
 
     RGBA c1,c2,c3,c4;
 	
