@@ -93,11 +93,13 @@ Vector2 image_size = Vector2(640,480);
 %token tMATERIAL
 %token tNAME
 %token tNONE
+%token tNUM
 %token tNOSHADOW
 %token tNECKLACE
 %token tPHOTONMAP
 %token tPOSITION tLOOKAT tUP
 %token tPRINT
+%token tRADIUS
 %token tRENDERER tRAYTRACER tPHOTONTRACER
 %token tROTATE tTRANSLATE
 %token tSOLIDBOX
@@ -130,6 +132,7 @@ Vector2 image_size = Vector2(640,480);
 
 %left '+' '-'
 %left '*' '/'
+%left UMINUS
 %%
     /* Grammar rules */
 	
@@ -140,9 +143,11 @@ Items		: /* Empty */
 Item		: Object
                 {
 		    scene->addObject($1);
+		    cout << "SceneObject added" << endl;
 		}
                 | LightDef
 		{
+		    cout << "Light added" << endl;
 		    scene->addLight($1);
 		}
                 | AssignName
@@ -332,6 +337,9 @@ MaterialProp 	: tDIFFUSE RGB
 		;
 
 LightDef	: tLIGHT '{' Lightsource '}'
+                {
+		    $$ = $3;
+		}
                 ;
 
 Lightsource	: Arealight
@@ -349,6 +357,7 @@ Pointlight	: tPOINT Vector tPOWER RGB
                 {
 		    $$ = new Pointlight(*$2);
 		}
+                ;
 
 Skylight 	: tSKY Expr Expr tPOWER RGB
                 {
@@ -359,7 +368,8 @@ Skylight 	: tSKY Expr Expr tPOWER RGB
                 {
 		    $$ = new Skylight($2,int($3));
 		}
-
+                ;
+		
 Spotlight	: tSPOT Vector Vector Expr Expr tPOWER RGB
                 {
 		    $$ = new Spotlight(*$2,*$3,$4,$5);
@@ -369,7 +379,8 @@ Spotlight	: tSPOT Vector Vector Expr Expr tPOWER RGB
                 {
 		    $$ = new Spotlight(*$2,*$3,$4,$5);
 		}
-
+                ;
+		
 Arealight	: tAREA Vector Vector Expr Expr Expr tPOWER RGB
                 {
 		    $$ = new Arealight(*$2,*$3,$4,int($5),$6);
@@ -379,6 +390,7 @@ Arealight	: tAREA Vector Vector Expr Expr Expr tPOWER RGB
                 {
 		    $$ = new Arealight(*$2,*$3,$4,int($5),$6);
 		}
+                ;
 
 Object		: SolidObject
                 | Necklace 
@@ -446,9 +458,9 @@ SolidBox	: tSOLIDBOX '{' Material Vector Vector '}'
 		    $$ = new SolidBox(*$3,*$4,NULL);
 		};
 
-Necklace 	: tNECKLACE '{' Material Path Expr Expr '}'
+Necklace 	: tNECKLACE '{' Material Path tNUM Expr tRADIUS Expr '}'
                 {
-		    $$ = new Necklace($4,int($5),$6,$3);
+		    $$ = new Necklace($4,int($6),$8,$3);
 		}
                 ;
 
@@ -665,6 +677,14 @@ Expr		: tFLOAT
                 {
                     $$ = $1 / $3;
 		}
+		| '-' Expr %prec UMINUS
+                {
+                    $$ = -$2;
+		}
+		| '+' Expr %prec UMINUS
+                {
+                    $$ = $2;
+		}
                 ;
 %%
 
@@ -709,5 +729,13 @@ void init_parser() {
 
 Vector2 getImageSize() {
     return image_size;
+}
+
+Scene* getScene() {
+    return scene;
+}
+
+RendererSettings* getRendererSettings() {
+    return renderer_settings;
 }
 

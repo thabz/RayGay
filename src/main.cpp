@@ -18,6 +18,7 @@
 #include "math/matrix.h"
 
 #include "scene.h"
+#include "camera.h"
 #include "image/image.h"
 #include "image/texture.h"
 #include "space/kdtree.h"
@@ -40,6 +41,9 @@ using namespace std;
 extern FILE* yyin;
 extern void yyparse();
 extern void init_parser();
+extern Vector2 getImageSize();
+extern Scene* getScene();
+extern RendererSettings* getRendererSettings();
 
 void preparePhotonMaps(Scene* scene,
 	               KdTree* space,
@@ -108,22 +112,21 @@ void work(string scenefile, string outputfile,int jobs) {
     //Stats::getUniqueInstance()->disable();
     Stats::getUniqueInstance()->put(STATS_THREADS,jobs);
 
-    Importer importer(scenefile);
-    Scene* scene = importer.getScene();
+    init_parser();
+    yyin = fopen(scenefile.c_str(),"r");
+    yyparse();
 
-    Vector2 img_size = importer.getImageSize();
+    Scene* scene = getScene();
+    Vector2 img_size = getImageSize();
+    scene->getCamera()->setImageSize(int(img_size[0]),int(img_size[1]));
     Image* img = new Image(int(img_size[0]),int(img_size[1]));
-
-    //Matrix n = Matrix::matrixRotate(Vector(1,1,0),21.0);
-    //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
-    //scene->transform(n);
 
     cout << "Preparing space..." << endl;
     KdTree* space = new KdTree();
     scene->initSpace(space);
     cout << "Done." << endl;
 
-    RendererSettings* renderersettings = importer.getRendererSettings();
+    RendererSettings* renderersettings = getRendererSettings();
     renderersettings->threads_num = jobs;
 
     // Prepare photon maps if necessary

@@ -19,12 +19,12 @@ tracer_SOURCES = main.cpp
 tracer_LDADD =  libtracer.a 		\
     		space/libspace.a 	\
     		photon/libphoton.a 	\
+		parser/libparser.a 	\
 		lights/liblights.a 	\
 		materials/libmaterials.a \
 		math/libmath.a 		\
 		filters/libfilters.a 	\
 		objects/libobjects.a 	\
-		parser/libparser.a 	\
 		shaders/libshaders.a  	\
 		paths/libpaths.a  	\
 		image/libimage.a
