@@ -14,7 +14,7 @@
 #include "camera.h"
 #include "image/image.h"
 #include "lights/lightsource.h"
-#include "photonmap.h"
+#include "photon/photonmap.h"
 #include "photonsettings.h"
 
 PhotonRenderer::PhotonRenderer(PhotonSettings* photonsettings, PhotonMap* photonmap) : Renderer() {
@@ -71,8 +71,8 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     vector<Lightsource*> lights = scene->getLightsources();
 
     result_color += gatherIrradiance(point,normal,ray.getDirection());
- //   result_color.clip();
- //   return result_color;
+    result_color.clip();
+    return result_color;
     // TODO: Add radiance_estimate from caustics map
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);
@@ -187,13 +187,13 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
     photonmap->locate_photons(&np,1);
     if (np.found < 4) return result;
 */
-    Vector reflected = (-1 * ray_dir).reflect(normal);
+    //Vector reflected = (-1 * ray_dir).reflect(normal);
     
     for (int i = 0; i < photonsettings->final_gather_rays; i++) {
  //   for (int i = 1; i < np.found; i++) {
 	//const Photon* p = np.index[i];
 	//Vector dir = double(-1) * photonmap->photon_dir(p);
-	Vector dir = Math::perturbVector(reflected,DEG2RAD(30));
+	Vector dir = Math::perturbVector(normal,DEG2RAD(89));
 
 	Ray ray = Ray(point+0.1*dir,dir,-1);
 	if (space->intersect(ray)) {

@@ -21,6 +21,12 @@
 
 using namespace std;
 
+/**
+ * Traces photons through the scene.
+ *
+ * This is responsible for getting photons from the lightsources,
+ * tracing them through the scene and stored them in the photonmap
+ */
 PhotonTracer::PhotonTracer(Scene* scene, SpaceSubdivider* space, PhotonMap* photonmap) {
     this->scene = scene;
     this->space = space;

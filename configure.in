@@ -24,4 +24,5 @@ AC_OUTPUT(Makefile \
 	  src/lights/Makefile \
 	  src/math/Makefile \
 	  src/image/Makefile \
+	  src/photon/Makefile \
 	  test/Makefile)

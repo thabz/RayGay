@@ -10,13 +10,20 @@ class RGB;
  * The power is not compressed so the
  * size is 28 bytes
  */
-typedef struct Photon {
-    float pos[3];                 ///< photon position
-    short plane;                  ///< splitting plane for kd-tree
-    /// incoming direction
-    unsigned char theta, phi;     
-    float power[3];               ///< photon power (uncompressed)
-} Photon;
+class Photon {
+    public:
+	float pos[3];                 ///< photon position
+	short plane;                  ///< splitting plane for kd-tree
+	/// incoming direction
+	unsigned char theta, phi;     
+	float power[3];               ///< photon power (uncompressed)
+};
+
+class IrradiancePhoton : public Photon {
+    public:
+	/// Surface normal
+	unsigned char normal_theta,phi_theta;
+};
 
 
 /**

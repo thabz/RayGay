@@ -45,9 +45,9 @@
 
 #include "materials/materials.h"
 
-#include "photonmap.h"
+#include "photon/photonmap.h"
+#include "photon/photontracer.h"
 #include "photonmapdump.h"
-#include "photontracer.h"
 #include "photonrenderer.h"
 #include "photonsettings.h"
 

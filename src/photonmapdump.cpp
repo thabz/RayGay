@@ -3,7 +3,7 @@
 #include "scene.h"
 #include "camera.h"
 #include "image/image.h"
-#include "photonmap.h"
+#include "photon/photonmap.h"
 
 void PhotonMapDump::render(Scene* scene, Image* image, PhotonMap* photonmap, int num) {
 
