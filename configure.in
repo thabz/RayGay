@@ -21,8 +21,6 @@ dnl -------------------------------------------------
 dnl Check that the compiler and programs exists
 dnl -------------------------------------------------
 AC_PROG_CXX
-AC_PROG_YACC
-AM_PROG_LEX
 AC_PROG_LIBTOOL
 
 dnl -------------------------------------------------
