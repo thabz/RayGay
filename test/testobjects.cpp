@@ -13,6 +13,7 @@
 #include "mesh.h"
 #include "extrusion.h"
 #include "box.h"
+#include "3ds.h"
 #include "tetrahedron.h"
 #include "tessalation.h"
 #include "booleanoperand.h"
@@ -399,9 +400,14 @@ void cylinder_test() {
 
 }
 
+void test_3ds() {
+    ThreeDS* chair = new ThreeDS("../3ds/egg-chair.3ds");
+}
+
 int main(int argc, char *argv[]) {
     sphere_test();
     cylinder_test();
+    test_3ds();
     boolean_test();
     box_test();
     mesh_test();
