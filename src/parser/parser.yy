@@ -119,6 +119,7 @@ ActionListNode* top_actions;
 %token tNOSHADOW
 %token tNECKLACE
 %token tOBJECT
+%token tPATHS
 %token tPHOTONMAP
 %token tPOSITION tLOOKAT tUP
 %token tPRINT
@@ -128,6 +129,7 @@ ActionListNode* top_actions;
 %token tROTATE tTRANSLATE tSCALE
 %token tREPEAT
 %token tSIN tCOS tABS tPI t2PI
+%token tSETTINGS
 %token tSOLIDBOX
 %token tSPHERE
 %token tTEXTURE
@@ -169,7 +171,7 @@ ActionListNode* top_actions;
 %type <camera> Camera
 %type <action> MainAddAction MainAction Assignment Renderer ConfAction
 %type <action> RepeatStmt IfStmt WhileStmt Action ModStmt OpAssignment
-%type <action> AddCamera AddObject AddLight Background Photonmap Print Image
+%type <action> AddCamera AddObject AddLight Background Settings Print Image
 %type <actionlist> ActionList
 %type <objlist> SolidObjects
 
@@ -211,7 +213,7 @@ ConfAction	: AddCamera
 		| Image
 		| Renderer
 		| Background
-		| Photonmap
+		| Settings
 		;
 
 ActionList	: Action
@@ -314,17 +316,17 @@ Background	: tBACKGROUND RGBA
 		}
                 ;
 
-Photonmap 	: tPHOTONMAP '{' PhotonSettings '}'
+Settings 	: tSETTINGS '{' SettingsList '}'
                 {
 		    $$ = new NOPAction();
 		}
                 ;
 
-PhotonSettings  : /* Empty */
-                | PhotonSettings PhotonSetting
+SettingsList	: /* Empty */
+                | SettingsList Setting
 		;
 
-PhotonSetting   : tGLOBALPHOTONS tFLOAT
+Setting		: tGLOBALPHOTONS tFLOAT
 		{
 		    renderer_settings->global_photons_num = int($2);
 		}
@@ -347,6 +349,10 @@ PhotonSetting   : tGLOBALPHOTONS tFLOAT
 		| tCACHETOLERANCE tFLOAT
 		{
 		    renderer_settings->cache_tolerance = int($2);
+		}
+		| tPATHS tFLOAT
+		{
+		    renderer_settings->camera_paths = int($2);
 		}
 		;
 
