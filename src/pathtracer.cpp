@@ -119,24 +119,14 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 	    Vector refl_vector = -1 * ray.getDirection();
 	    refl_vector = refl_vector.reflect(normal);
 	    refl_vector.normalize();
-	    RGB refl_col = RGB(0.0,0.0,0.0);
 	    if (material->glossEnabled()) {
-		/* Distributed reflection */
+		/* Perturb reflecteced ray */
 		double max_angle = material->glossMaxAngle();
-		int gloss_rays = material->glossRaysNum();
-		gloss_sequence->reset();
-		for(int i = 0; i < gloss_rays; i++) {
-		    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle,gloss_sequence),ray.getIndiceOfRefraction());
-		    refl_col += trace(refl_ray, depth + 1);
-		}
-		refl_col *= 1.0/double(gloss_rays);
-	    } else {
-		/* Single reflected ray */
-		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
-		refl_ray.fromObject = object;
-		refl_col = trace(refl_ray, depth + 1);
+		refl_vector = Math::perturbVector(refl_vector,max_angle);
 	    }
-	    result_color += reflection * refl_col;
+	    Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
+	    refl_ray.fromObject = object;
+	    result_color += reflection * trace(refl_ray, depth + 1);
 	}
 
 	/* Should we send a ray through the intersected object? */
