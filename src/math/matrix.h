@@ -65,6 +65,9 @@ class Matrix {
 
 	/// Translate along a vector
 	static Matrix matrixTranslate(const Vector trans);
+	
+	/// Scale
+	static Matrix matrixScale(const Vector& scale);
 
 	/// Rotate v onto the positive z-axis
 	static Matrix matrixOrient(const Vector& v);

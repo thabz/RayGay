@@ -120,7 +120,7 @@ ActionListNode* top_actions;
 %token tRADIUS
 %token tRANDOM
 %token tRENDERER tRAYTRACER tPHOTONRENDERER
-%token tROTATE tTRANSLATE
+%token tROTATE tTRANSLATE tSCALE
 %token tREPEAT
 %token tSIN tCOS tABS tPI t2PI
 %token tSOLIDBOX
@@ -152,7 +152,7 @@ ActionListNode* top_actions;
 %type <boolean> Bool 
 %type <expr> Expr Random  ExprMod
 %type <it> InterpolationType 
-%type <matrix> Rotate Translate Transformation Transformations
+%type <matrix> Rotate Translate Scale Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
 %type <object> ObjectGroup GroupItems GroupItem
@@ -661,6 +661,7 @@ Transformations	: /* Empty */
 
 Transformation  : Rotate
                 | Translate
+		| Scale
 		;
 
 Rotate		: tROTATE '{' Vector Expr '}'
@@ -681,6 +682,16 @@ Translate	: tTRANSLATE '{' Vector '}'
                 {
 		    $$ = new TranslateNode($2);
 		};
+
+Scale		: tSCALE '{' Vector '}'
+                {
+		    $$ = new ScaleNode($3);
+		}
+                | tSCALE Vector
+                {
+		    $$ = new ScaleNode($2);
+		};
+		;
 
 Path		: NamedPath
                 | PathDef

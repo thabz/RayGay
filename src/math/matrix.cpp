@@ -229,6 +229,19 @@ Matrix Matrix::matrixRotate(const Vector angles) {
     return x * y * z;
 }
 
+/**
+ * Create a scaling transformation
+ *
+ * @param scale the x,y,z scaling coefficents
+ */
+Matrix Matrix::matrixScale(const Vector& scale) {
+    Matrix result;
+    result.set(0,0,scale[0]);
+    result.set(1,1,scale[1]);
+    result.set(2,2,scale[2]);
+    return result;
+}
+
 /// Create a rotation transformation
 Matrix Matrix::matrixRotate(const Vector axis, const double angle) {
 	Matrix rotate;

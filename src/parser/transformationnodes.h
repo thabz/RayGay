@@ -65,6 +65,21 @@ class TranslateNode : public TransformationNode {
 	FloatNode* angle;
 };
 
+class ScaleNode : public TransformationNode {
+    public:
+	ScaleNode(VectorNode* vec) {
+	    this->vec = vec;
+	}
+
+	Matrix eval() {
+	    Vector v = vec->eval();
+	    return Matrix::matrixScale(v);
+	}
+
+    private:
+	VectorNode* vec;
+	FloatNode* angle;
+};
 
 
 #endif

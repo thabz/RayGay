@@ -105,6 +105,7 @@ renderer	return tRENDERER;
 repeat		return tREPEAT;
 rotate		return tROTATE;
 random		return tRANDOM;
+scale		return tSCALE;
 sin		return tSIN;
 sky		return tSKY;
 solidbox	return tSOLIDBOX;
