@@ -6,6 +6,7 @@
 
 class Circle;
 
+/// A spiral around another Path
 class Spiral : public Path {
 
     public:
