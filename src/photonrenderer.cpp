@@ -219,8 +219,8 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 	    Vector hitpoint = inter->getPoint();
 	    Vector hitnormal = inter->getObject()->normal(*inter);
 	    RGB irra;
-	    if ((hitpoint-point).length() < renderersettings->estimate_radius && depth == 0 ) {
-	//    if (false) {
+	//    if ((hitpoint-point).length() < renderersettings->estimate_radius && depth == 0 ) {
+	    if (false) {
 	        // If too close do additional level of path tracing
 		irra += finalGather(hitpoint,hitnormal,dir,gatherRays / 2, depth + 1);
 	    } else {
