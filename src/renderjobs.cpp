@@ -133,9 +133,12 @@ void RenderJobPool::markJobDone(RenderJob* job) {
     } else if (job->type == RenderJob::NEED_FULL_RENDER) {
 	pixels_fully_rendered += job->area();
 	job->type = RenderJob::IS_DONE;
+	double progress = double(pixels_fully_rendered) / double(total_image_pixels);
 	if (Environment::getUniqueInstance()->hasPreviewWindow()) {
-	    double progress = double(pixels_fully_rendered) / double(total_image_pixels);
 	    Environment::getUniqueInstance()->getPreviewWindow()->setProgress(progress);
+	} else {
+	    int percentage = (int)(progress * 100);
+	    cout << "Progress: " << percentage << "%\r" << flush;
 	}
     }
 }
