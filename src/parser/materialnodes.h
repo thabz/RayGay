@@ -28,8 +28,8 @@ class MaterialNode : public SyntaxNode {
 	    if (diffuse_rgb != NULL) result->setDiffuseColor(diffuse_rgb->eval());
 	    if (specular_rgb != NULL) result->setSpecularColor(specular_rgb->eval());
 	    if (Kd != NULL) result->setKd(Kd->eval());
-	    if (Ks != NULL) result->setKd(Ks->eval());
-	    if (Kt != NULL) result->setKd(Kt->eval());
+	    if (Ks != NULL) result->setKs(Ks->eval());
+	    if (Kt != NULL) result->setKt(Kt->eval());
 	    if (specpow != NULL) result->setSc(int(specpow->eval()));
 	    if (eta != NULL) result->setEta(eta->eval());
 	    if (diffuse_texture != NULL) {
@@ -61,7 +61,7 @@ class MaterialNode : public SyntaxNode {
 	}
 
 	void setKd(FloatNode* Kd) { this->Kd = Kd; };
-	void setKs(FloatNode* Kt) { this->Ks = Ks; };
+	void setKs(FloatNode* Ks) { this->Ks = Ks; };
 	void setKt(FloatNode* Kt) { this->Kt = Kt; };
 	void setSpecpow(FloatNode* specpow) { this->specpow = specpow; };
 	void setEta(FloatNode* eta) { this->eta = eta; };
