@@ -1,6 +1,5 @@
 
 #include "objects/transformer.h"
-#include "intersection.h"
 
 void Transformer::transform(const Matrix& m) {
     transformation = transformation * m;
@@ -18,33 +17,6 @@ Vector Transformer::dirToObject(const Vector& d) const {
     return inverse_rotation * d;
 }
 
-Vector Transformer::pointToWorld(const Vector &p) const {
-    return transformation * p;
-}
-
-Vector Transformer::normalToWorld(const Vector& d) const {
-    Vector result = normal_transformation * d;
-    result.normalize();
-    return result;
-}
-
-Ray Transformer::rayToObject(const Ray& ray) const {
-    Vector o = inverse_transformation * ray.getOrigin();
-    Vector d = inverse_rotation * ray.getDirection();
-    double l = d.length();
-    d.normalize();
-    double ior = ray.getIndiceOfRefraction();
-    Ray result = Ray(o,d,ior);
-    result.t_scale = l;
-    return result;
-}
-
-Intersection Transformer::intersectionToWorld(const Intersection& i) const {
-    Intersection result = Intersection(i);
-    result.setNormal(normalToWorld(i.getNormal()));
-    result.setPoint(pointToWorld(i.getPoint()));
-    return result;
-}
 
 BoundingBox Transformer::bboxToWorld(const BoundingBox& bbox) const {
     Vector* corners = bbox.getCorners();

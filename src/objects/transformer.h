@@ -4,6 +4,7 @@
 #include "math/matrix.h"
 #include "boundingbox.h"
 #include "ray.h"
+#include "intersection.h"
 
 
 /**
@@ -39,5 +40,37 @@ class Transformer {
 	Matrix inverse_rotation;
 	Matrix normal_transformation;
 };
+
+inline
+Ray Transformer::rayToObject(const Ray& ray) const {
+    Vector o = inverse_transformation * ray.getOrigin();
+    Vector d = inverse_rotation * ray.getDirection();
+    double l = d.length();
+    d = d / l;
+    double ior = ray.getIndiceOfRefraction();
+    Ray result = Ray(o,d,ior);
+    result.t_scale = l;
+    return result;
+}
+
+inline
+Vector Transformer::pointToWorld(const Vector &p) const {
+    return transformation * p;
+}
+
+inline
+Vector Transformer::normalToWorld(const Vector& d) const {
+    Vector result = normal_transformation * d;
+    result.normalize();
+    return result;
+}
+
+inline
+Intersection Transformer::intersectionToWorld(const Intersection& i) const {
+    Intersection result = Intersection(i);
+    result.setNormal(normalToWorld(i.getNormal()));
+    result.setPoint(pointToWorld(i.getPoint()));
+    return result;
+}
 
 #endif
