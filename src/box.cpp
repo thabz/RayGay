@@ -11,7 +11,15 @@
 #include "mesh.h"
 
 Box::Box(const Vector a, const Vector b, Material mat) : Mesh(Mesh::MESH_FLAT,mat) {
-    
+    prepareBox(a,b);
+}
+
+Box::Box(const Vector c, double width, double height, double depth, Material m): Mesh(Mesh::MESH_FLAT,m) {
+    Vector extend = Vector(width,height,depth) / 2.0;
+    prepareBox(c - extend, c + extend);
+}
+
+void Box::prepareBox(const Vector a, const Vector b) {
     Vector c2 = Vector(min(a[0],b[0]),min(a[1],b[1]),min(a[2],b[2]));
     Vector c7 = Vector(max(a[0],b[0]),max(a[1],b[1]),max(a[2],b[2]));
     
@@ -29,16 +37,6 @@ Box::Box(const Vector a, const Vector b, Material mat) : Mesh(Mesh::MESH_FLAT,ma
     Mesh::addTriangle(c6,c5,c7); Mesh::addTriangle(c6,c7,c8);
     Mesh::addTriangle(c5,c1,c7); Mesh::addTriangle(c1,c3,c7);
     Mesh::addTriangle(c3,c4,c7); Mesh::addTriangle(c4,c8,c7);
-    Mesh::prepare();
-}
-
-Box::Box(const Vector c, double width, double height, double depth, Material m): Mesh(Mesh::MESH_FLAT,m) {
-    width /= 2;
-    height /= 2;
-    depth /= 2;
-    Vector c1 = Vector(c[0]-width,c[1]-height,c[2]-depth);
-    Vector c2 = Vector(c[0]+width,c[1]+height,c[2]+depth);
-    Box(c1,c2,m);
 }
 
 Box::~Box() {
