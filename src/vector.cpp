@@ -17,10 +17,6 @@
 
 using namespace std;
 
-
-Vector::~Vector() {
-}
-
 void Vector::normalize() {
     double s = length();
 

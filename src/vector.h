@@ -24,7 +24,6 @@ class Vector {
 public:
     Vector(); ///< Constructor that returns a (0,0,0) vector
     Vector(double x, double y, double z); ///< Constructor
-    ~Vector();
     void normalize(); ///< Normalize vector so that |v| = 1
     void scale(float s); ///< Scale the vector
     double norm() const; ///< Returns squared length of vector
