@@ -20,13 +20,13 @@ void ObjectCollector::reset() {
 }
 
 void ObjectCollector::pushCollection() {
-    the_stack.push_front(new list<SceneObjectNode*> );
+    the_stack.push_front(new list<SceneObject*> );
 }
 
-ObjectListNode* ObjectCollector::popAsListNode() {
-    ObjectListNode* result = new ObjectListNode();
+vector<SceneObject*> ObjectCollector::pop() {
+    vector<SceneObject*> result;
     while (!(the_stack.front()->empty())) {
-	result->addSceneObjectNode(the_stack.front()->front());
+	result.push_back(the_stack.front()->front());
 	the_stack.front()->pop_front();
     }
     delete the_stack.front();
@@ -34,7 +34,7 @@ ObjectListNode* ObjectCollector::popAsListNode() {
     return result;
 }
 
-void ObjectCollector::addObject(SceneObjectNode* node) {
+void ObjectCollector::addObject(SceneObject* node) {
     the_stack.front()->push_front(node);
 }
 

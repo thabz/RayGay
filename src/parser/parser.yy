@@ -1128,7 +1128,7 @@ void run_interpreter() {
     // Insert objects in object collector into scene
     Scene* scene = Environment::getUniqueInstance()->getScene();
     ObjectCollector* oc = Environment::getUniqueInstance()->getObjectCollector();
-    vector<SceneObject*> list = oc->popAsListNode()->eval();
+    vector<SceneObject*> list = oc->pop();
     for(unsigned int i = 0; i < list.size(); i++) {
 	scene->addObject(list[i]);
     }

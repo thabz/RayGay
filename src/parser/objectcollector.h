@@ -18,12 +18,12 @@ class ObjectCollector {
 	/// Begin a new collection
 	void pushCollection();
 	/// Pops the toplevels collection
-	ObjectListNode* popAsListNode();
+	vector<SceneObject*> pop();
 	/// Adds an object to the toplevel collection
-	void addObject(SceneObjectNode* node);
+	void addObject(SceneObject* node);
 
     private:
-	list< list< SceneObjectNode*>* > the_stack;
+	list< list< SceneObject*>* > the_stack;
 };
 
 #endif

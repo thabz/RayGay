@@ -237,7 +237,8 @@ class AddSceneObjectToCollectorNode: public ActionNode {
 	}
 
 	void eval() {
-	    Environment::getUniqueInstance()->getObjectCollector()->addObject(node);
+	    SceneObject* obj = node->eval();
+	    Environment::getUniqueInstance()->getObjectCollector()->addObject(obj);
 	}
 
     private:
@@ -460,7 +461,7 @@ class ObjectGroupNode : public SceneObjectNode {
 	    actions->eval();
 
 	    // Pop collector and insert into a ObjectGroup* result;
-	    vector<SceneObject*> nodes = oc->popAsListNode()->eval();
+	    vector<SceneObject*> nodes = oc->pop();
 	    ObjectGroup* result = new ObjectGroup();
 	    for(unsigned int i = 0; i < nodes.size(); i++) {
 		result->addObject(nodes[i]);
