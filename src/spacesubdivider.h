@@ -2,6 +2,10 @@
 #ifndef SPACESUBDIVIDER_H
 #define SPACESUBDIVIDER_H
 
+#include "object.h"
+
+class object;
+
 class SpaceSubdivider {
 
     public:
