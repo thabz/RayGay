@@ -1,14 +1,18 @@
 
 #include "lights/skylight.h"
 #include "math/functions.h"
+#include "math/halton.h"
 #include "intersection.h"
 #include "space/spacesubdivider.h"
 
 Skylight::Skylight (double radius, int num) : Lightsource(Vector(0,0,0)) {
     this->radius = radius;
     this->num = num;
+
+    Halton qmc = Halton(2,2);
+
     for(int i = 0; i < num; i++) {
-	Vector pos = Math::perturbVector(Vector(0,1,0),DEG2RAD(89));
+	Vector pos = Math::perturbVector(Vector(0,1,0),DEG2RAD(89),&qmc);
 	positions.push_back(pos*radius);
 	shadowcaches.push_back(ShadowCache());
     }
@@ -20,8 +24,7 @@ Lightinfo Skylight::getLightinfo(const Intersection& inter, const Vector& normal
     double cos_total = 0;
     double cos_tmp;
     for(int i = 0; i < num; i++) {
-	Vector pos = positions[i];
-	Vector direction_to_light = pos - inter.getPoint();
+	Vector direction_to_light = positions[i] - inter.getPoint();
 	double dist_to_light = direction_to_light.length();
 	direction_to_light = direction_to_light / dist_to_light;
 	cos_tmp = direction_to_light * normal;
