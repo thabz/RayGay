@@ -86,6 +86,7 @@ int main(int argc, char *argv[]) {
     BoundingBox::test();
     Matrix::test();
     Mesh::test();
+    Box::test();
     // Test scene stuff
     testScene4();
 

@@ -12,6 +12,7 @@
 #include "ray.h"
 #include "sphere.h"
 #include "triangle.h"
+#include "hierarchy.h"
 
 using namespace std;
 
@@ -20,11 +21,23 @@ Mesh::Mesh(MeshType type, const Material& mat) {
     meshType = type;
     material = mat;
     _boundingBoundingBox = NULL;
+    prepared = false;
+    hierarchy = NULL;
 }
 
 // ----------------------------------------------------------------------------
 Mesh::~Mesh() {
     delete _boundingBoundingBox;
+    delete hierarchy;
+}
+
+void Mesh::prepare() const {
+    hierarchy = new Hierarchy(boundingBoundingBox()); 
+    for (vector<Triangle*>::const_iterator p = triangles.begin(); p != triangles.end(); p++) {
+	hierarchy->addObject(*p);
+    }
+    hierarchy->optimize();
+    prepared = true;
 }
 
 // ----------------------------------------------------------------------------
@@ -36,12 +49,12 @@ void Mesh::addTriangle(const Vector* c) {
     Vector normal = Vector::xProduct(c[1] - c[0], c[2] - c[0]);
     normal.normalize();
     normals.push_back(normal);
-    Triangle t = Triangle(this);
-    t.normali = normals.size() - 1;
+    Triangle* t = new Triangle(this);
+    t->normali = normals.size() - 1;
 
     for(int i = 0; i < 3; i++) {
 	corners.push_back(c[i]);
-	t.vertex[i] = corners.size() - 1;
+	t->vertex[i] = corners.size() - 1;
     }
     triangles.push_back(t);
 }
@@ -125,22 +138,25 @@ BoundingBox Mesh::boundingBoundingBox() const {
 
 // ----------------------------------------------------------------------------
 Intersection Mesh::_intersect(const Ray& ray) const {
+    if (!prepared) prepare();
+
+    return hierarchy->intersect(ray);
+
+    /*
+    hierarchy
     Intersection result;
     Intersection tmp;
     for (int i = 0; i < triangles.size(); i++) {
-	const Triangle *p =  &triangles[i];
+	const Triangle *p =  triangles[i];
 	tmp = p->intersect(ray);
 
-	/*tmp = intersect_triangle(ray,
-		corners[p->vertex[0]],
-		corners[p->vertex[1]],
-		corners[p->vertex[2]]);*/
 	if (tmp.intersected && (tmp.t < result.t || !result.intersected)) {
 	    result = tmp;
 	    result.local_triangle = p;
 	}
     }
     return result;
+    */
 }
 
 

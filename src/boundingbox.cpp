@@ -13,14 +13,17 @@
 #include "constants.h"
 
 BoundingBox::BoundingBox() {
+    corners = NULL;
 }
 
 BoundingBox::BoundingBox(const Vector c1, const Vector c2) {
     _c1 = Vector(min(c1[0],c2[0]),min(c1[1],c2[1]),min(c1[2],c2[2]));
     _c2 = Vector(max(c1[0],c2[0]),max(c1[1],c2[1]),max(c1[2],c2[2]));
+    corners = NULL;
 }
 
 BoundingBox::~BoundingBox() {
+    //delete [] corners;
 }
 
 bool BoundingBox::inside(const Vector &p) const {
@@ -165,8 +168,11 @@ Vector BoundingBox::normal(const Vector& p) const {
 /**
  * The array must be deleted after use.
  */
-Vector* BoundingBox::corners() const {
-    Vector* c = new Vector[8];
+Vector* BoundingBox::getCorners() const {
+    if (corners != NULL) return corners;
+    corners = new Vector[8];
+    Vector* c = corners;
+    if (c == NULL) exit(1);
     c[0] = Vector(_c1[0],_c1[1],_c1[2]);
     c[1] = Vector(_c1[0],_c1[1],_c2[2]);
     c[2] = Vector(_c1[0],_c2[1],_c1[2]);

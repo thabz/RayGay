@@ -11,6 +11,8 @@
 #include "boundingbox.h"
 #include "triangle.h"
 
+class Hierarchy;
+
 /// An object consisting of a mesh of triangles
 class Mesh : public object {
 
@@ -55,11 +57,13 @@ class Mesh : public object {
 	Material material;
 	mutable BoundingBox* _boundingBoundingBox;
 	virtual Intersection _intersect(const Ray& ray) const;
-	//virtual Intersection intersect_triangle(const Ray& ray, Vector vert0, Vector vert1, Vector vert2) const;
+	void prepare() const;
+	mutable Hierarchy* hierarchy;
+	mutable bool prepared;
 
 	std::vector<Vector> corners;
 	std::vector<Vector> normals;
-	std::vector<Triangle> triangles;
+	std::vector<Triangle*> triangles;
 };
 
 #endif

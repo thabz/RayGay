@@ -21,9 +21,11 @@ Hierarchy::Hierarchy(BoundingBox bbox, Hierarchy* parent) {
 }
 
 Hierarchy::~Hierarchy() {
+    /*
    for (vector<Hierarchy*>::iterator h = children.begin(); h != children.end(); h++) {
-      // delete *h;
+       delete *h;
    }
+   */
 }
 
 void Hierarchy::addObject(object* obj) {
@@ -61,7 +63,7 @@ void Hierarchy::split() {
     double midz = (maxi[2] + mini[2]) / 2.0;
     Vector mid = Vector(midx,midy,midz);
     
-    Vector* corners = _box.corners();
+    Vector* corners = _box.getCorners();
     for (int i = 0; i < 8; i++) {
 	children.push_back(new Hierarchy(BoundingBox(corners[i],mid),this));
     }

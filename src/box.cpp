@@ -25,15 +25,7 @@ Box::Box(const Vector a, const Vector b, Material mat) : Mesh(Mesh::MESH_FLAT,ma
     Vector c5 = Vector(c7[0],c2[1],c7[2]);
     Vector c6 = Vector(c2[0],c2[1],c7[2]);
     Vector c8 = Vector(c2[0],c7[1],c7[2]);
-    /*
-    //mesh = new Mesh(Mesh::MESH_FLAT,mat);
-    mesh->addTriangle(c1,c2,c3); mesh->addTriangle(c2,c4,c3);
-    mesh->addTriangle(c2,c6,c4); mesh->addTriangle(c6,c8,c4);
-    mesh->addTriangle(c5,c6,c2); mesh->addTriangle(c1,c5,c2);
-    mesh->addTriangle(c6,c5,c7); mesh->addTriangle(c6,c7,c8);
-    mesh->addTriangle(c5,c1,c7); mesh->addTriangle(c1,c3,c7);
-    mesh->addTriangle(c3,c4,c7); mesh->addTriangle(c4,c8,c7);
-    */
+
     Mesh::addTriangle(c1,c2,c3); Mesh::addTriangle(c2,c4,c3);
     Mesh::addTriangle(c2,c6,c4); Mesh::addTriangle(c6,c8,c4);
     Mesh::addTriangle(c5,c6,c2); Mesh::addTriangle(c1,c5,c2);
@@ -53,5 +45,14 @@ Box::Box(const Vector c, double width, double height, double depth, Material m):
 
 Box::~Box() {
     // Do we leak stuff inside Mesh here?
+}
+
+void Box::test() {
+    cout << "Starting Box::test()" << endl;
+    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Box b = Box(Vector(-1,-1,-1),Vector(1,1,1),m);
+    Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
+    assert(b.intersect(r).intersected);
+    cout << "Box::test() done." << endl;
 }
 

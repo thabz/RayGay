@@ -18,7 +18,7 @@ Scene::Scene() {
 }
 
 Scene::~Scene() {
-    delete hierarchy;
+ //   delete hierarchy;
 }
 
 void Scene::prepare() {

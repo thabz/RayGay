@@ -44,7 +44,7 @@ class BoundingBox {
 	static BoundingBox enclosure(Vector* points, int num);
 
 	/// Returns a length 8 array of the corners
-	Vector* corners() const; 
+	Vector* getCorners() const; 
 
 	/// Returns the area of this box' surface
         double area() const;
@@ -57,6 +57,7 @@ class BoundingBox {
     private:
 	Vector _c1; ///< The point with smallest x,y,z values
 	Vector _c2; ///< The point with biggest x,y,z values
+	mutable Vector* corners;
 };
 
 #endif
