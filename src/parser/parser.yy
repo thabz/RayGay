@@ -2,6 +2,7 @@
 %{
     /* C declarations */
 #include <string>    
+#include <vector>    
 #include <map>    
 #include <cstdio>    
 #include "image/rgba.h"
@@ -83,6 +84,7 @@ ActionListNode* top_actions;
 	PathNode* path;
 	VectorListNode* vectorlist;
 	BoolNode* boolean;
+	ObjectListNode* objlist;
 	string* c;
 	Texture::InterpolationType it;
 }
@@ -168,6 +170,7 @@ ActionListNode* top_actions;
 %type <action> RepeatStmt IfStmt WhileStmt Action ModStmt OpAssignment
 %type <action> AddCamera AddObject AddLight Background Photonmap Print Image
 %type <actionlist> ActionList
+%type <objlist> SolidObjects
 
 %left '+' '-'
 %left '*' '/'
@@ -557,9 +560,22 @@ GroupItems	: GroupItem
 		    og->addSceneObjectNode($2);
 		    $$ = og;
 		}
-		;
+		;		
 
 GroupItem	: Object;
+
+SolidObjects	: SolidObject
+                {
+		    $$ = new ObjectListNode();
+		    $$->addSceneObjectNode($1);
+		}
+                | SolidObjects SolidObject
+		{
+		    ObjectListNode* g = dynamic_cast<ObjectListNode*>($1);
+		    g->addSceneObjectNode($2);
+		    $$ = g;
+		}
+		;
 
 Extrusion	: tEXTRUSION '{' Material Path Expr Expr Expr '}'
                 {
@@ -652,13 +668,13 @@ Intersection	: tINTERSECTION '{' Material SolidObject SolidObject '}'
 		}
                 ;
 
-Union		: tUNION '{' Material SolidObject SolidObject '}'
+Union		: tUNION '{' Material SolidObjects '}'
                 {
-		    $$ = new UnionNode($4,$5,$3);
+		    $$ = new UnionNode($4,$3);
 		}
-                | tUNION '{' SolidObject SolidObject '}'
+                | tUNION '{' SolidObjects '}'
                 {
-		    $$ = new UnionNode($3,$4,new MaterialNullNode());
+		    $$ = new UnionNode($3,new MaterialNullNode());
 		}
                 ;
 

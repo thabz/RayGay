@@ -29,6 +29,27 @@ class SceneObjectNode : public SyntaxNode {
 	virtual SceneObject* eval() = 0;
 };
 
+
+class ObjectListNode {
+    public:
+	ObjectListNode() {};
+
+	void addSceneObjectNode(SceneObjectNode* node) {
+	    nodes.push_back(node);
+	}
+
+	vector<SceneObject*> eval() {
+	    vector<SceneObject*> result;
+	    for(unsigned int i = 0; i < nodes.size(); i++) {
+		result.push_back(nodes[i]->eval());
+	    }
+	    return result;
+	}
+
+    private:
+	vector<SceneObjectNode*> nodes;
+};
+
 class TransformedSceneObjectNode : public SceneObjectNode {
 
     public:
@@ -265,22 +286,28 @@ class DifferenceNode : public SceneObjectNode {
 class UnionNode : public SceneObjectNode {
 
     public:
-	UnionNode(SceneObjectNode* left, SceneObjectNode* right, MaterialNode* mat) {
-	    this->left = left;
-	    this->right = right;
+	UnionNode(ObjectListNode* nodes, MaterialNode* mat) {
+	    this->nodes = nodes;
 	    this->material = mat;
 	}
 
 	SceneObject* eval() {
+	    vector<Solid*> solids;
+	    vector<SceneObject*> sos = nodes->eval();
+	    for(unsigned int i = 0; i < sos.size(); i++) {
+		Solid* s = dynamic_cast<Solid*>(sos[i]);
+		solids.push_back(s);
+	    }
+	    /*
 	    Solid* s1 = dynamic_cast<Solid*>(left->eval());
 	    Solid* s2 = dynamic_cast<Solid*>(right->eval());
+	    */
 	    Material* m = material->eval();
-	    return new CSGUnion(s1,s2,m);
+	    return new CSGUnion(&solids,m);
 	}
 
     private:
-	SceneObjectNode* left;
-	SceneObjectNode* right;
+	ObjectListNode* nodes;
 	MaterialNode* material;
 };
 
