@@ -63,12 +63,12 @@ void abortRenderingCB() {
 }
 
 enum windowToolkitId {
+    NONE,
     GTK,
-    COCOA,
-    NONE
+    COCOA
 };
 
-int availableWindowToolkit() {
+windowToolkitId availableWindowToolkit() {
 #ifdef HAVE_GTK
     return GTK;
 #endif
@@ -84,9 +84,12 @@ void parser_assign_var(string name, double value) {
 
 PreviewWindow* windowFactory(int w, int h) {
     PreviewWindow* result;
+    cout << "Toolkit: " << availableWindowToolkit() << endl;
     switch (availableWindowToolkit()) {
 	case GTK:
+#ifdef HAVE_GTK
 	    result = new PreviewWindowGTK(w, h, abortRenderingCB);
+#endif	    
 	    break;
 	case COCOA:
 	    throw_exception("COCOA Toolkit not supported");
