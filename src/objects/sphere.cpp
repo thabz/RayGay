@@ -34,6 +34,7 @@ Intersection Sphere::_fullIntersect(const Ray& ray, const double t) const {
     Vector p = ray.getPoint(t);
     Vector n = p - center;
     n.normalize();
+    // TODO: Vector n = (p - center) / radius; er sådan set normaliseret.
     Vector2 uv = getUV(p);
     return Intersection(p,t,n,uv);
 }
@@ -44,6 +45,7 @@ double Sphere::_fastIntersect(const Ray& ray) const {
     Vector v = ray.getDirection();
     Vector Q = ray.getOrigin();
     Vector P = center;
+    // TODO: Q - P udregnes for mange gange herunder
     double a = v * v;
     double b = 2 * v * (Q - P);
     double c = ((Q - P) * (Q - P) - radius * radius);
