@@ -60,6 +60,7 @@ class Blob : public IsoSurface
     public:
 	/// Constructor
 	Blob(double iso, unsigned int steps, double accuracy, Material* material);
+	~Blob();
 	void addAtom(const Vector& center, double radius, double weight);
 	void prepare();
     
@@ -67,16 +68,10 @@ class Blob : public IsoSurface
 
     protected:
 	double evaluateFunction(const Vector& point) const;
-	BoundingBox _boundingBoundingBox() const { return bbox; };
+	BoundingBox _boundingBoundingBox() const;
 
     private:
-	BoundingBox bbox;
-	vector<Vector> centers;
-	vector<double> radii; // Squared radii
-	vector<double> weights;
-	int atoms_num;
-
-	BlobTree tree;
+	BlobTree* tree;
 };
 
 #endif

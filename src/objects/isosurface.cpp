@@ -43,14 +43,14 @@ double IsoSurface::_fastIntersect(const Ray& world_ray) const {
 	    cur_inside = inside(local_ray.getPoint(t));
 	    if (began_inside && !cur_inside) {
 		res = refine(local_ray,t,t-t_step);
-		goto DONE;
+		break;
 	    } else if (!began_inside && cur_inside) {
 		res = refine(local_ray,t-t_step,t);
-		goto DONE;
+		break;
 	    }
 	}
     }
-DONE:
+
     if (res > EPSILON) {
 	return res / local_ray.t_scale;
     } else {
@@ -58,7 +58,7 @@ DONE:
     }
 }
 
-#if 0
+#if 1
 /**
  * Refine an interval containing a root.
  *
