@@ -242,16 +242,20 @@ int Math::solveQuadratic(double A, double B, double C, double* roots) {
  * Pertubes a vector around another vector, ie. finds a random
  * vection within a cone.
  *
- * @param axis axis of the cone
+ * @param axis normalized axis of the cone
  * @param angle angle of the cone in radians
  */
 Vector Math::perturbVector(const Vector& axis, const double angle) {
+    Vector result;
     Vector axisP = axis.toPolar();
-    double rad = angle / 2.0;
-    double rnd1 = RANDOM(-rad,rad);
-    double rnd2 = RANDOM(-rad,rad);
-    axisP[1] += rnd1;
-    axisP[2] += rnd2;
-    return axisP.toRectangular();
+    assert(IS_EQUAL(axisP[0],1)); // Check that axis was a unit-vector
+    while (true) {
+	result = axisP;
+	result[1] += RANDOM(-angle,angle);
+	result[2] += RANDOM(-angle,angle);
+	result = result.toRectangular();
+	if (acos(result*axis) < angle)
+	    return result;
+    }
 }
 
