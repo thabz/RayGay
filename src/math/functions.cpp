@@ -50,14 +50,28 @@ int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
     double b = A*C - 4*D;
     double c = 4*B*D - C*C - A*A*D;
     double cubic_roots[3];
-    solveCubic(a,b,c,cubic_roots);
-    double y = cubic_roots[0];
+    std::cout << "a b c = " << a << ", " << b << ", " << c << std::endl;
 
+    int n = solveCubic(a,b,c,cubic_roots);
+    std::cout << "n = " << n << std::endl;
+    double y = cubic_roots[0];
+    std::cout << "y = " << y << std::endl;
+
+    std::cout << " sqrt1^2 = " << A*A - 4*B + 4*y << std::endl;
     double sqrt1 = sqrt(A*A - 4*B + 4*y);
+    std::cout << " sqrt1 = " << sqrt1 << std::endl;
+    std::cout << " sqrt2^2 = " << y*y - 4*D << std::endl;
     double sqrt2 = sqrt(y*y - 4*D);
+    std::cout << " sqrt2 = " << sqrt2 << std::endl;
 
     int num1 = solveQuadratic(1,(A + sqrt1)/2.0,(y - sqrt2)/2.0,roots);
+    std::cout << "num1 = " << num1 << std::endl;
+    std::cout << "root1 = " << roots[0] << std::endl;
+    std::cout << "root2 = " << roots[1] << std::endl;
     int num2 = solveQuadratic(1,(A - sqrt1)/2.0,(y + sqrt2)/2.0,&(roots[num1]));
+    std::cout << "num2 = " << num2 << std::endl;
+    std::cout << "root1 = " << roots[2] << std::endl;
+    std::cout << "root2 = " << roots[3] << std::endl;
 
     // prune duplicate roots
     if (num1 == 1 && num2 == 1) {

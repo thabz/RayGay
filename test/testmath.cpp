@@ -311,6 +311,7 @@ void solve_quartic_test() {
     assert(contains(roots,2,5));
     assert(contains(roots,2,-5));
 
+    cout << "Here we go..." << endl << endl;
     // x^4 + 10*x^3 - 250*x - 625 = (x+5)*(x+5)*(x-5)*(x+5)
     assert(Math::solveQuartic(10,0,-250,-625,roots) == 2);
     cout << roots[0] << endl;
@@ -377,6 +378,10 @@ void solve_cubic_test() {
     assert(Math::solveCubic(-1,-1,1,roots) == 2);
     assert(contains(roots,2,1));
     assert(contains(roots,2,-1));
+
+    // x^3 
+    assert(Math::solveCubic(0,0,0,roots) == 1);
+    assert(contains(roots,1,0));
 }
 
 void solve_quadratic_test() {
