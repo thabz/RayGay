@@ -595,6 +595,31 @@ void csg_test() {
     assert(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-5));
     assert(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
 
+    // Ray that misses
+    ray = Ray(Vector(0,1000,20),Vector(0,-1,0),-1);
+    all.clear();
+    csg->allIntersections(ray,all);
+    assert(all.size() == 0);
+    assert(!intersects(csg,Vector(0,1000,20),Vector(0,-1,0)));
+    assert(intersects(csg,Vector(0,1000,14),Vector(0,-1,0)));
+
+    // Ray that misses
+    ray = Ray(Vector(0,1000,-10),Vector(0,-1,0),-1);
+    all.clear();
+    csg->allIntersections(ray,all);
+    assert(all.size() == 0);
+    assert(!intersects(csg,Vector(0,1000,-10),Vector(0,-1,0)));
+    assert(intersects(csg,Vector(0,1000,-3),Vector(0,-1,0)));
+
+    // Void intersection
+    s1 = new Sphere(Vector(0,0,10),5,NULL);
+    s2 = new Sphere(Vector(0,0,-10),5,NULL);
+    csg = new CSGIntersection(s1,s2,NULL);
+    assert(!intersects(csg,Vector(0,0,1000),Vector(0,0,-1)));
+    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+    all.clear();
+    csg->allIntersections(ray,all);
+    assert(all.size() == 0);
 
     ///////////////////////////////////////////////////////////////
     // Difference 
