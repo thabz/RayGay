@@ -221,20 +221,18 @@ void Mesh::transform(const Matrix& M) {
 }
 
 // ----------------------------------------------------------------------------
-Vector Mesh::normal(const Triangle* const triangle, const Vector2 &uv) const {
-    return phong_normal(triangle,uv);
+Vector Mesh::normal(const Triangle* const triangle, double u, double v) const {
+    return phong_normal(triangle,u,v);
  //      return normals[triangle->normali]; // Flat
 }
 
-Vector Mesh::phong_normal(const Triangle* const triangle, const Vector2 &uv) const {
+Vector Mesh::phong_normal(const Triangle* const triangle, double u, double v) const {
     //const Triangle* triangle = (Triangle*) i.getLocalObject();
     Tri* tri = tris[triangle->getTri()];
     Vector result = Vector(0,0,0);
-    double u = uv[0];
-    double v = uv[1];
     Vector weight = Vector(1-u-v,u,v);
     for(unsigned int j = 0; j < 3; j++) {
-	result = result + normals[tri->interpolated_normal[j]] * weight[j];
+	result += normals[tri->interpolated_normal[j]] * weight[j];
     }
     result.normalize();
     return result;
@@ -243,6 +241,14 @@ Vector Mesh::phong_normal(const Triangle* const triangle, const Vector2 &uv) con
 const Material* Mesh::getMaterial() const {
     return material;
 }
+
+Vector2 Mesh::getUV(const Triangle* triangle, double u, double v) const {
+    Tri* tri = tris[triangle->getTri()];
+    return tri->uv[0] * (1-u-v) +
+           tri->uv[1] * u +
+           tri->uv[2] * v;
+}
+
 
 // ----------------------------------------------------------------------------
 BoundingBox Mesh::boundingBoundingBox() const {

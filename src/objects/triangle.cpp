@@ -92,8 +92,8 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
    if (t < EPSILON)
        return Intersection();
    
-   Vector2 uv = Vector2(u,v);
-   Vector normal = mesh->normal(this,uv);
+   Vector2 uv = mesh->getUV(this,u,v);
+   Vector normal = mesh->normal(this,u,v);
    return Intersection(ray.getPoint(t),t,normal,uv);
 }
 

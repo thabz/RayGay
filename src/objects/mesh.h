@@ -79,7 +79,7 @@ class Mesh : public ObjectCollection {
 	virtual void transform(const Matrix& m);
 
 	/// Returns a (possibly) phong-interpolated normal
-	Vector normal(const Triangle* const triangle, const Vector2& uv) const;
+	Vector normal(const Triangle* const triangle, double u, double v) const;
 	
 	/// Material of the mesh 
 	virtual const Material* getMaterial() const;
@@ -113,6 +113,8 @@ class Mesh : public ObjectCollection {
 	/// Index into vertices 
 	const Vector& cornerAt(unsigned int i) const { return corners[i]; };
 
+	Vector2 getUV(const Triangle* triangle, double u, double v) const;
+
 	void prepare();
 	virtual SceneObject* clone() const;
 
@@ -124,7 +126,7 @@ class Mesh : public ObjectCollection {
 	int findExistingCorner(const Vector* c) const;
 	void computeAdjacentTris();
 	void computeInterpolatedNormals();
-	Vector phong_normal(const Triangle* const triangle, const Vector2& i) const;
+	Vector phong_normal(const Triangle* const triangle, double u, double v) const;
 	std::vector<Vector> normals;
 	std::vector<Triangle*> triangles;
 	EdgeMapType edgeMap;
