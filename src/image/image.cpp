@@ -1,4 +1,7 @@
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "image/image.h"
 #include "image/imageio_tga.h"
@@ -69,11 +72,19 @@ ImageIO* getImageIO(const std::string& filename) {
     ImageIO* io;
 
     if (filename.find(".jpg") != string::npos) {
+#ifdef HAVE_JPEGLIB_H	
 	io = new JpegIO();
+#else
+	throw_exception("Support for JPEG-files is not compiled in.");
+#endif	
     } else if (filename.find(".tga") != string::npos) {
 	io = new TgaIO();
     } else if (filename.find(".png") != string::npos) {
+#ifdef HAVE_PNG_H	
 	io = new PngIO();
+#else
+	throw_exception("Support for PNG-files is not compiled in.");
+#endif	
     } else if (filename.find(".hdr") != string::npos) {
 	io = new HdriIO();
     } else {

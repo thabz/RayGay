@@ -1,3 +1,10 @@
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_PNG_H
+
 #include "image/image.h"
 #include "image/imageio_png.h"
 #include "exception.h"
@@ -218,5 +225,5 @@ Image* PngIO::load(const std::string& filename) {
     return result;
 }
 
-
+#endif
 

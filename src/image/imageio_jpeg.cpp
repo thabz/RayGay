@@ -1,4 +1,10 @@
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_JPEGLIB_H
+
 #include "image/imageio_jpeg.h"
 #include "image/image.h"
 #include "exception.h"
@@ -100,3 +106,5 @@ Image* JpegIO::load(const std::string& filename) {
     return image;
 
 }
+
+#endif /* HAVE_JPEGLIB_H */

@@ -1,7 +1,12 @@
 
-
 #ifndef IMAGE_JPEG_IO_H
 #define IMAGE_JPEG_IO_H
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_JPEGLIB_H
 
 #include "imageio.h"
 
@@ -14,4 +19,5 @@ class JpegIO : public ImageIO {
 	Image* load(const std::string& filename);
 };
 
+#endif
 #endif

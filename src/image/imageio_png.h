@@ -1,6 +1,13 @@
 
+
 #ifndef IMAGE_PNG_IO_H
 #define IMAGE_PNG_IO_H
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef HAVE_PNG_H
 
 #include "imageio.h"
 
@@ -14,4 +21,4 @@ class PngIO : public ImageIO {
 };
 
 #endif
-
+#endif
