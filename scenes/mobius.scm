@@ -1,6 +1,5 @@
 
-(load "globals.scm")
-(load "objects.scm")
+(load "lib/objects/make-pill.scm")
 
 (set! image-size '(640 480))
 (set! background '(0.3 0.6 0.7))
@@ -47,7 +46,7 @@
       brown)))
 
 (define num 50)
-(define twirls 3.5)
+(define twirls 1.5)
 
 (let iter ((i num))
   (if (not(= i 0))
