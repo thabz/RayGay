@@ -14,7 +14,7 @@ void Transformer::transform(const Matrix& m) {
     inverse_rotation = rotation.inverse();
     normal_transformation = inverse_rotation.transpose();
     transformed = !transformation.isIdentity();
-    scaled = transformation.isScaled();
+    scaled = !rotation.isOrthogonal();
 }
 
 Vector Transformer::pointToObject(const Vector& p) const {
