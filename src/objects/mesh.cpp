@@ -30,7 +30,6 @@ Mesh::Mesh(MeshType type, const Material* mat) {
 
 // ----------------------------------------------------------------------------
 Mesh::~Mesh() {
-    cout << "~Mesh" << endl;
 }
 
 void Mesh::addSelf(KdTree* space) {
