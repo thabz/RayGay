@@ -23,7 +23,8 @@ SceneObject* SuperEllipsoid::clone() const {
 }
 
 BoundingBox SuperEllipsoid::_boundingBoundingBox() const {
-    static double b = 1.00 + 20*EPSILON;
-    return BoundingBox(Vector(-b,-b,-b),Vector(b,b,b));
+    BoundingBox bbox = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+    bbox.growPercentage(1.0);
+    return bbox;
 }
 
