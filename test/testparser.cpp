@@ -44,6 +44,12 @@ void test_float_ops() {
     assert_equal(lookup_float("m3"),-3);
     assert_equal(lookup_float("n1"),5);
     assert_equal(lookup_float("n2"),12);
+    assert_equal(lookup_float("o1"),16);
+    assert_equal(lookup_float("o2"),27);
+    assert_equal(lookup_float("p1"),-1);
+    assert_equal(lookup_float("p2"),1);
+    assert_equal(lookup_float("p3"),10);
+    assert_equal(lookup_float("p4"),2);
     delete p;
 }
 

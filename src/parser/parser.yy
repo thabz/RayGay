@@ -120,6 +120,7 @@ ActionListNode* top_actions;
 %token tLINESEGMENT tSPIRAL tCIRCLE tCATMULLROMSPLINE
 %token tKD tKS tKT tSPECPOW tGLOSS
 %token tLIGHT tAREA tSPOT tPOINT tSKY tPOWER
+%token tMIN tMAX
 %token tMATERIAL
 %token tNAME
 %token tNONE
@@ -133,6 +134,7 @@ ActionListNode* top_actions;
 %token tPATHS
 %token tPHOTONMAP
 %token tPOSITION tLOOKAT tUP
+%token tPOW
 %token tPRINT
 %token tRADIUS
 %token tRANDOM
@@ -1096,6 +1098,18 @@ Expr		: tSIN '(' Expr ')'
                 | t2PI 
                 {
 		    $$ = new FloatConstNode(M_2PI);
+		}
+                | tMIN '(' Expr ',' Expr ')'
+		{
+		    $$ = new FloatMinNode($3,$5);
+		}
+                | tMAX '(' Expr ',' Expr ')'
+		{
+		    $$ = new FloatMaxNode($3,$5);
+		}
+                | tPOW '(' Expr ',' Expr ')'
+		{
+		    $$ = new FloatPowNode($3,$5);
 		}
                 | Random
                 ;

@@ -169,6 +169,69 @@ class FloatRandomNode : public FloatNode {
         FloatNode* to;
 };
 
+class FloatPowNode : public FloatNode {
+    public:
+	FloatPowNode(FloatNode* v1, FloatNode* v2) {
+	    this->v1 = v1;
+	    this->v2 = v2;
+	}
+
+	virtual ~FloatPowNode() {
+	    delete v1;
+	    delete v2;
+	}
+
+	double eval() {
+	    return pow(v1->eval(),v2->eval());
+	}
+	
+    private:
+        FloatNode* v1;
+        FloatNode* v2;
+};
+
+class FloatMaxNode : public FloatNode {
+    public:
+	FloatMaxNode(FloatNode* v1, FloatNode* v2) {
+	    this->v1 = v1;
+	    this->v2 = v2;
+	}
+
+	virtual ~FloatMaxNode() {
+	    delete v1;
+	    delete v2;
+	}
+
+	double eval() {
+	    return max(v1->eval(),v2->eval());
+	}
+	
+    private:
+        FloatNode* v1;
+        FloatNode* v2;
+};
+
+class FloatMinNode : public FloatNode {
+    public:
+	FloatMinNode(FloatNode* v1, FloatNode* v2) {
+	    this->v1 = v1;
+	    this->v2 = v2;
+	}
+
+	virtual ~FloatMinNode() {
+	    delete v1;
+	    delete v2;
+	}
+
+	double eval() {
+	    return min(v1->eval(),v2->eval());
+	}
+	
+    private:
+        FloatNode* v1;
+        FloatNode* v2;
+};
+
 /**
  * This implements the constructs $x++ and $x--  and ++$x and --$x
  */
@@ -215,7 +278,6 @@ class NamedFloatNode : public FloatNode {
 	virtual ~NamedFloatNode() {};
 
 	double eval() {
-	    // TODO: Runtime error stuff if variable not defined
 	    return Assignments::getUniqueInstance()->getNamedFloat(name,getFilePosition());
 	}
 	
