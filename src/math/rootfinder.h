@@ -10,17 +10,16 @@ class RootFinder {
 	    FALSE_POSITION
 	};
 
-	RootFinder(double t1, double t2, RootFinder::Method method, double tolerance, double (*function) (double)); 
-	bool solve(double* root);
+	RootFinder(Method method, double tolerance, double (*function) (double)); 
+	bool solve(double t1, double t2, double* root);
 
     protected:
-	bool bisection(double* root);
-	bool brents_method(double* root);
-	bool false_position(double* root);
+	bool bisection(double t1, double t2, double* root);
+	bool brents_method(double t1, double t2, double* root);
+	bool false_position(double t1, double t2, double* root);
 
 
     private:
-	double t1, t2;
 	double tolerance;
 	RootFinder::Method method;
 	double (*f) (double);

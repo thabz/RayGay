@@ -10,6 +10,7 @@
 #include "math/vector2.h"
 #include "math/matrix.h"
 #include "math/functions.h"
+#include "math/rootfinder.h"
 #include "testing.h"
 
 using namespace std;
@@ -581,6 +582,25 @@ class perturb_vector_test : public Test  {
 	}
 };
 
+double my_sin(double x) {
+    return sin(x);
+}
+
+class brents_method : public Test  {
+    public:
+	void run() {
+	    double root;
+	    RootFinder rf = RootFinder(RootFinder::BRENTS_METHOD,0.001,&my_sin);
+            assertTrue(rf.solve(M_PI-0.5, M_PI+0.5, &root));
+	    assertTrue(fabs(my_sin(root)) < 0.001);
+            assertTrue(rf.solve(M_PI-0.01, 2*M_PI-0.01, &root));
+	    assertTrue(fabs(my_sin(root)) < 0.001);
+            assertTrue(rf.solve(M_PI-0.5, M_PI+0.1, &root));
+	    assertTrue(fabs(my_sin(root)) < 0.001);
+            assertFalse(rf.solve(M_PI+0.1, M_PI+0.2, &root));
+            assertFalse(rf.solve(M_PI/2.0-0.1, M_PI/2.0+0.2, &root));
+	}
+};
 
 int main(int argc, char *argv[]) {
 
@@ -597,6 +617,7 @@ int main(int argc, char *argv[]) {
     suite.add("Cubic root",new test_cubic_root());
     suite.add("Perturb vector",new perturb_vector_test());
     suite.add("Solve quartic",new solve_quartic_test());
+    suite.add("Brent's method",new brents_method());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {

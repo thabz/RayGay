@@ -2,28 +2,26 @@
 #include <cmath>
 #include "math/rootfinder.h"
 
-RootFinder::RootFinder(double t1, double t2, RootFinder::Method method, double tolerance, double (*function) (double)) {
-    this->t1 = t1;
-    this->t2 = t2;
+RootFinder::RootFinder(Method method, double tolerance, double (*function) (double)) {
     this->method = method;
     this->f = function;
     this->tolerance = tolerance;
 }
 
-bool RootFinder::solve(double* root) {
+bool RootFinder::solve(double t1, double t2, double* root) {
     switch(method) {
 	case BISECTION: 
-	    return bisection(root);
+	    return bisection(t1, t2, root);
 	case BRENTS_METHOD: 
-	    return brents_method(root);
+	    return brents_method(t1, t2, root);
 	case FALSE_POSITION: 
-	    return false_position(root);
+	    return false_position(t1, t2, root);
         default: 
 	    return false;			    
     }
 }
 
-bool RootFinder::bisection(double* root) {
+bool RootFinder::bisection(double t1, double t2, double* root) {
     return false;
 }
 
@@ -40,7 +38,7 @@ int sign(double val) {
  *
  * @see http://mathworld.wolfram.com/BrentsMethod.html
  */
-bool RootFinder::brents_method(double* root) {
+bool RootFinder::brents_method(double t1, double t2, double* root) {
     double x1,x2,x3;
     double R,S,T;
     double P,Q;
@@ -48,13 +46,17 @@ bool RootFinder::brents_method(double* root) {
     double x;
 
     x1 = t1;
-    x2 = (t1+t2) / 2.0;
+    x2 = 0.5 * (t1+t2);
     x3 = t2;
-    if (sign(f(x1)) == sign(f(x3)))
+
+    fx1 = f(x1);
+    fx2 = f(x2);
+    fx3 = f(x3);
+
+    if (sign(fx1) == sign(fx3))
 	return false;
 
     while(true) {
-	fx1 = f(x1); fx2 = f(x2); fx3 = f(x3);
 	
 	R = fx2 / fx3;
 	S = fx2 / fx1;
@@ -63,11 +65,13 @@ bool RootFinder::brents_method(double* root) {
 	P = S*(R*(R-T)*(x3-x2)-(1-R)*(x2-x1));
 	Q = (T-1)*(R-1)*(S-1);
 
-	x = x2 + (P / Q);
+	x2 = x2 + (P / Q);
 
-	if (fabs(f(x)) < tolerance)
-	    return x;
-
+	fx2 = f(x2);
+	if (fabs(fx2) < tolerance) {
+	    *root = x2;
+	    return true;
+	}
     }
     return false;
 }
@@ -80,7 +84,7 @@ bool RootFinder::brents_method(double* root) {
  * @see http://mathworld.wolfram.com/MethodofFalsePosition.html
  */
 
-bool RootFinder::false_position(double* root) {
+bool RootFinder::false_position(double t1, double t2, double* root) {
     double xn1 = t1;
     double xn = t2;
     int i = 0;
