@@ -26,15 +26,11 @@ Mesh::Mesh(MeshType type, const Material* mat) {
     meshType = type;
     prepared = false;
     material = mat;
-    normal_indices = new vector<uint>;
 }
 
 // ----------------------------------------------------------------------------
 Mesh::~Mesh() {
     cout << "~Mesh" << endl;
-    if (normal_indices != NULL) {
-	delete normal_indices;
-    }
 }
 
 void Mesh::addSelf(KdTree* space) {
@@ -152,9 +148,6 @@ void Mesh::addTriangle(const uint v[3], const Vector2 uv[3]) {
     Vector normal = Vector::xProduct(c[1] - c[0], c[2] - c[0]);
     normal.normalize();
     normals.push_back(normal);
-    uint normal_idx = normals.size() - 1;
-
-    normal_indices->push_back(normal_idx);
 
     triangles.push_back(Triangle(this, (faces.size() / 3) - 1));
 }
@@ -176,7 +169,7 @@ void Mesh::computeInterpolatedNormals() {
     i_normal_indices.reserve(face_num * 3);
 
     for(uint i = 0; i < face_num; i++) {
-	Vector normal = normals[normal_indices->operator[](i)];
+	Vector normal = normals[i];
 	for(uint j = 0; j < 3; j++) {
 	    Vector interpolated_normal = normal;
 	    int num = 1;
@@ -186,7 +179,7 @@ void Mesh::computeInterpolatedNormals() {
 	    for(uint v = 0; v < fac_num; v++) {
 		uint other_face_idx = adj_faces[v];
 		if (other_face_idx != i) {
-		    Vector other_normal = normals[normal_indices->operator[](other_face_idx)];
+		    Vector other_normal = normals[other_face_idx];
 		    if (other_normal * normal > PHONG_ANGLETHRESHOLD) {
 			interpolated_normal += other_normal;
 			num++;
@@ -199,15 +192,13 @@ void Mesh::computeInterpolatedNormals() {
 		normals.push_back(interpolated_normal);
 		index = normals.size() - 1;
 	    } else {
-		index = normal_indices->operator[](i);
+		index = i;
 	    }
 	    i_normal_indices.push_back(index);
 	}
     }
 
     delete [] adj;
-    delete normal_indices;
-    normal_indices = NULL;
 }
 
 // TODO: Optimize by keeping a stl::set with all corners.
@@ -372,7 +363,6 @@ void Mesh::hintVertexNum(uint num) {
  */
 void Mesh::hintFaceNum(uint num) {
     normals.reserve(num);
-    normal_indices->reserve(num);
     faces.reserve(3 * num);
     triangles.reserve(num);
 }

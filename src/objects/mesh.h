@@ -121,8 +121,6 @@ class Mesh : public ObjectGroup {
 	std::vector<Vector2> uv_coords;
 	// 3 indices into corners for each face
 	std::vector<uint> faces;
-	// 1 index into normals for each face
-	std::vector<uint>* normal_indices;
 	// 3 indices into normals for each face
 	std::vector<uint> i_normal_indices;
 
