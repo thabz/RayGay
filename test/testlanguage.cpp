@@ -139,6 +139,20 @@ void test_vector_ref() {
     assert(a->size() == 0);
 }
 
+void test_vector_clear() {
+    vector<int>* a = new vector<int>;
+    for(int i = 0; i < 10000; i++) {
+	a->push_back(i);
+    }
+    assert(a->size() == 10000);
+    a->clear();
+    assert(a->size() == 0);
+    cout << "capacity: " << a->capacity() << endl;
+    a->reserve(0);
+    cout << "capacity: " << a->capacity() << endl;
+}
+
+
 int main(int argc, char *argv[]) {
 
     test_bool();
@@ -147,6 +161,7 @@ int main(int argc, char *argv[]) {
     test_sort();
     test_vector_copy();
     test_vector_ref();
+    test_vector_clear();
     return EXIT_SUCCESS;
 }
 
