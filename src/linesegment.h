@@ -13,6 +13,9 @@ class Linesegment : public Path {
 	Vector getTangent(double t) const;
         void transform(const Matrix& m);
 
+	Vector begin() const { return b; };
+	Vector end() const { return e; };
+
 	/// Internal test
 	static void test();
 
