@@ -1,5 +1,5 @@
 
-#include "image/jpeg.h"
+#include "image/imageio_jpeg.h"
 #include "image/image.h"
 #include <cassert>
 #include <iostream>

@@ -1,9 +1,9 @@
 
 
 #include "image.h"
-#include "image/tga.h"
-#include "image/jpeg.h"
-#include "image/pngio.h"
+#include "image/imageio_tga.h"
+#include "image/imageio_jpeg.h"
+#include "image/imageio_png.h"
 #include <cassert>
 #include <iostream>
 #include <cmath>

@@ -1,5 +1,5 @@
 #include "image/image.h"
-#include "image/pngio.h"
+#include "image/imageio_png.h"
 #include <cassert>
 #include <iostream>
 #include <string>

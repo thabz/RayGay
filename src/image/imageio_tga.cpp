@@ -1,5 +1,5 @@
 
-#include "image/tga.h"
+#include "image/imageio_tga.h"
 #include "image/image.h"
 #include <cassert>
 #include <iostream>
