@@ -13,6 +13,7 @@
 #include "parser/camerafactory.h"
 #include "parser/transformationfactory.h"
 #include "parser/mathfactory.h"
+#include "parser/schemefunctions.h"
 
 #include "scene.h"
 #include "renderersettings.h"
@@ -39,6 +40,7 @@ Parser::Parser(string filename) {
     CameraFactory::register_procs();
     TransformationFactory::register_procs();
     MathFactory::register_procs();
+    SchemeFunctions::register_procs();
 }
 
 void Parser::run() {

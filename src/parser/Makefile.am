@@ -23,6 +23,8 @@ libparser_la_SOURCES = pathfactory.cpp		\
 		       texturefactory.cpp	\
 		       mathfactory.h		\
 		       mathfactory.cpp		\
+		       schemefunctions.h	\
+		       schemefunctions.cpp	\
                        converters.h		\
                        converters.cpp		\
 		       wrapper.cpp		\
