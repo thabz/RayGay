@@ -26,6 +26,11 @@ Image::Image(long w, long h, IMAGE_FLOAT* dataPtr) {
     data = dataPtr;
 }
 
+Image::Image(const std::string& filename) {
+    Image* image = Image::load(filename);
+    (*this) = (*image);
+}
+
 /**
  * Frees the image data
  */

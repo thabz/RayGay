@@ -15,8 +15,13 @@ class Image {
     public:
 	/// Constructs an empty image
         Image(long h, long w);
+	
 	/// Constructs an image from rgbrgbrgb... data
 	Image(long h, long w, IMAGE_FLOAT* data);
+	
+	// Constructs an image from a file
+	Image(const std::string& filename);
+
 	/// Destructor
 	~Image();
 	/// Sets a pixel
