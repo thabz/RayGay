@@ -6,6 +6,8 @@
 #include "rgb.h"
 #include "rgba.h"
 
+#define IMAGE_FLOAT float
+
 class Vector2;
 
 /// Holds an image or texture.
@@ -14,7 +16,7 @@ class Image {
 	/// Constructs an empty image
         Image(long h, long w);
 	/// Constructs an image from rgbrgbrgb... data
-	Image(long h, long w, double* data);
+	Image(long h, long w, IMAGE_FLOAT* data);
 	/// Destructor
 	~Image();
 	/// Sets a pixel
@@ -22,7 +24,10 @@ class Image {
 	/// Sets a pixel
         void setRGBA(const Vector2& p, const RGBA& color); 
 	/// Gets a pixel
-	RGBA getRGBA(int x, int y) const;
+	RGBA getRGBA(int x, int y) const { 
+	    IMAGE_FLOAT* p = &data[4*(y*width + x)];
+	    return RGBA(*(p++),*(p++),*(p++),*p);
+	};
 	/// Saves this image as an uncompressed tga-file
 	void save(const std::string& filename) const;
 	/// Returns width of image
@@ -46,7 +51,7 @@ class Image {
     private:
 	int height;
 	int width;
-	double *data;
+	IMAGE_FLOAT *data;
 
 	double biCubicR(double x) const;
 	double biCubicP(double x) const { return x > 0 ? x : 0; };

@@ -14,10 +14,10 @@ using namespace std;
 Image::Image(long w, long h) {
     height = h;
     width = w;
-    data = new double[w*h*4];
+    data = new IMAGE_FLOAT[w*h*4];
 }
 
-Image::Image(long w, long h, double* dataPtr) {
+Image::Image(long w, long h, IMAGE_FLOAT* dataPtr) {
     height = h;
     width = w;
     data = dataPtr;
@@ -52,14 +52,13 @@ void Image::setRGBA(const Vector2& p, const RGBA& c) {
     }
 }
 
+/*
 RGBA Image::getRGBA(int x, int y) const {
- /*   assert(0 <= x && x < width);
+    assert(0 <= x && x < width);
     assert(0 <= y && y < height);
-*/
-    double *p = &data[4*(y*width + x)];
     return RGBA(p[0],p[1],p[2],p[3]);
 }
-
+*/
 RGBA Image::getRGBWrapped(int x, int y) const {
     x %= width;
     y %= height;
@@ -92,20 +91,22 @@ RGB Image::getBiCubicTexel(double u, double v) const {
     double dx = x-i; double dy = y-j;
 
     RGB result = RGB(0.0,0.0,0.0);
-    for(int m = -1; m <= 2; m++) {
-	for(int n = -1; n <= 2; n++) {
+    for(int n = -1; n <= 2; n++) {
+	for(int m = -1; m <= 2; m++) {
 	    result = result + (getRGBWrapped(i+m,j+n) * biCubicR(m-dx) * biCubicR(dy-n));
 	}
     }
     return result;
 }
 
+#define ONE_OVER_SIX double(0.166666666666) 
+
 double Image::biCubicR(double x) const {
     double Pxp2 = biCubicP(x+2);
     double Pxp1 = biCubicP(x+1);
     double Px = biCubicP(x);
     double Pxm1 = biCubicP(x-1);
-    return (Pxp2*Pxp2*Pxp2 - 4*Pxp1*Pxp1*Pxp1 + 6*Px*Px*Px - 4*Pxm1*Pxm1*Pxm1) / 6.0;
+    return ONE_OVER_SIX * (Pxp2*Pxp2*Pxp2 - 4*Pxp1*Pxp1*Pxp1 + 6*Px*Px*Px - 4*Pxm1*Pxm1*Pxm1);
 }
 
 /*
@@ -206,13 +207,13 @@ Image* Image::load(const std::string& filename) {
     fread(bytes, bpp, width*height, Handle);
     fclose(Handle);
 
-    double* data = new double[width*height*4];
+    IMAGE_FLOAT* data = new IMAGE_FLOAT[width*height*4];
     for(int y = 0; y < height ; y++) {
         for(int x = 0; x < width; x++) {
 	    long offset = ((height-1-y)*width + x)*bpp;
-	    data[(y*width + x)*4 + 0] = bytes[offset+2] / double(255.0);
-	    data[(y*width + x)*4 + 1] = bytes[offset+1] / double(255.0);
-	    data[(y*width + x)*4 + 2] = bytes[offset+0] / double(255.0);
+	    data[(y*width + x)*4 + 0] = bytes[offset+2] / 255.0;
+	    data[(y*width + x)*4 + 1] = bytes[offset+1] / 255.0;
+	    data[(y*width + x)*4 + 2] = bytes[offset+0] / 255.0;
 	}
     }
 
