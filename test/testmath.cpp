@@ -102,6 +102,12 @@ void vector_test() {
     v = Vector(1,2,3);
     v *= 2.0;
     assert(v == Vector(2,4,6));
+
+    // Test norm
+    v = Vector(10,11,12);
+    w = Vector(20,31,42);
+    assert(IS_EQUAL((v-w).norm(),(w-v).norm()));
+
 }
 
 void vector2_test() {
