@@ -154,10 +154,10 @@ void Importer::parse(const string& filename) {
     bool naming_object = false;
     string object_name;
     SceneObject* cur_object = NULL;
-    SceneObject* last_referenced_object;
+    SceneObject* last_referenced_object = NULL;
     Camera* camera = scene->getCamera();
     int grouping = 0;
-    ObjectGroup* cur_group;
+    ObjectGroup* cur_group = NULL;
 
     while(!stream.eof()) {
 	stream >> command;
@@ -255,6 +255,7 @@ void Importer::parse(const string& filename) {
 	} else if (command == "end") {
 	    if (grouping > 0) {
 		grouping = 0;
+		assert(cur_group != NULL);
 		cur_object = cur_group;
 	    } else {
 		cout << "Why end here?" << endl;
@@ -267,7 +268,10 @@ void Importer::parse(const string& filename) {
 	    object_name = readString(stream);
 	    SceneObject* sobj = getNamedObject(object_name);
 	    Object* obj = dynamic_cast<Object*>(sobj);
-	    assert(obj != NULL);
+	    if (obj == NULL) {
+		cout << "Error creating transformed instance: " << object_name << " is not an Object." << endl;
+		exit(EXIT_FAILURE);
+	    }
 	    cur_object = new TransformedInstance(obj);
 	} else if (command == "circle") {
 	    stream >> str1;
@@ -466,8 +470,7 @@ void Importer::parse(const string& filename) {
 	    if (naming_object && grouping == 0) {
 		putNamedObject(object_name,cur_object);
 		naming_object = false;
-	    }
-	    if (grouping == 1) {
+	    } else if (grouping == 1) {
 		cur_object = cur_group;
 		grouping = 2;
 	    } else if (grouping == 2) {
