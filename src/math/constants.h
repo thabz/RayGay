@@ -31,8 +31,8 @@
 #define HUGE_DOUBLE	double(1e+20)
 #define EPSILON		double(1e-9)
 
-#define SIGN(x) ((x >= 0) ? 1 : -1)
-#define SAME_SIGN(x,y) (SIGN(y) == SIGN(x)) 
+#define SIGN(x) 	((x >= 0) ? 1 : -1)
+#define SAME_SIGN(x,y) 	(SIGN(y) == SIGN(x)) 
 
 #define MIN(x,y)	((x) < (y) ? (x) : (y))
 #define MAX(x,y)	((x) > (y) ? (x) : (y))
@@ -47,7 +47,6 @@
 #define IS_GREATER_THAN(a,b) 	IS_POSITIVE(((a) - (b)))
 
 // Convert x from degrees [0,360] to radians [0,2*PI]
-//#define DEG2RAD(x)	((x/360.0)*M_2PI)
 #define DEG2RAD(x)	((x)*M_PI_DEG)
 
 // A random double in [a,b]
