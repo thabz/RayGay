@@ -13,6 +13,7 @@
 #include "objects/cone.h"
 #include "objects/solidbox.h"
 #include "objects/ellipsoid.h"
+#include "objects/transformedinstance.h"
 #include "objects/torus.h"
 
 //---------------------------------------------------------------------
@@ -388,5 +389,40 @@ SceneObject* TorusNode::eval() {
     double Rd = R->eval();
     Material* m = material->eval();
     return new Torus(rd,Rd,m);
+}
+
+//---------------------------------------------------------------------
+// Transformed Instance
+//---------------------------------------------------------------------
+//
+TransformedInstanceNode::TransformedInstanceNode(SceneObjectNode* o) {
+    this->object = o;
+    this->material = NULL;
+}
+
+TransformedInstanceNode::TransformedInstanceNode(SceneObjectNode* o, MaterialNode* m) {
+    this->object = o;
+    this->material = m;
+}
+
+TransformedInstanceNode::~TransformedInstanceNode() {
+    delete object;
+    if (material != NULL) {
+	delete material;
+    }
+}
+
+SceneObject* TransformedInstanceNode::eval() {
+    SceneObject* so = object->eval();
+    Object* o = dynamic_cast<Object*>(so);
+    if (o == NULL) {
+	// TODO: Throw exception.
+    }
+    if (material != NULL) {
+	Material* m = material->eval();
+	return new TransformedInstance(o,m);
+    } else {
+	return new TransformedInstance(o);
+    }
 }
 

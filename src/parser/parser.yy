@@ -148,6 +148,7 @@ ActionListNode* top_actions;
 %token tSUPERELLIPSOID
 %token tTEXTURE
 %token tTORUS
+%token tTRANSINSTANCE
 %token tTYPE
 %token tWIREFRAME
 %token tUNION tDIFFERENCE tINTERSECTION
@@ -179,7 +180,7 @@ ActionListNode* top_actions;
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
 %type <object> ObjectGroup Ellipsoid Mesh Cone SuperEllipsoid Blob
-%type <object> NamedObject 
+%type <object> NamedObject TransInstance
 %type <material> MaterialDef NamedMaterial Material
 %type <light> LightDef Lightsource 
 %type <light> Arealight Spotlight Pointlight Skylight
@@ -642,6 +643,7 @@ Object		: SolidObject
 		| ObjectGroup
 		| NamedObject
 		| SuperEllipsoid
+		| TransInstance
 		| Blob
 		| Object Transformations
                 {
@@ -655,6 +657,15 @@ NamedObject	: tOBJECT tVARNAME
 		    delete $2;
 		}
                 ;
+
+TransInstance	: tTRANSINSTANCE '{' Object '}'
+                {
+		    $$ = new TransformedInstanceNode($3);
+		}
+                | tTRANSINSTANCE '{' Object Material '}'
+		{
+		    $$ = new TransformedInstanceNode($3,$4);
+		}
 
 MeshObject	: Extrusion
                 | Box

@@ -277,5 +277,17 @@ class NamedSceneObjectNode : public SceneObjectNode {
 
 class ObjectGroupNode;
 
+class TransformedInstanceNode: public SceneObjectNode {
+
+    public:
+	TransformedInstanceNode(SceneObjectNode* obj, MaterialNode* mat);
+	TransformedInstanceNode(SceneObjectNode* obj);
+	virtual ~TransformedInstanceNode();
+	SceneObject* eval();
+
+    private:
+	SceneObjectNode* object;
+	MaterialNode* material;
+};
 
 #endif

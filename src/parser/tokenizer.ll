@@ -133,6 +133,7 @@ spot		return tSPOT;
 spiral		return tSPIRAL;
 superellipsoid	return tSUPERELLIPSOID;
 texture		return tTEXTURE;
+transinstance	return tTRANSINSTANCE;
 translate	return tTRANSLATE;
 triangles	return tTRIANGLES;
 torus		return tTORUS;
