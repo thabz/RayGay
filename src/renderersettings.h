@@ -21,6 +21,7 @@ class RendererSettings {
 	int estimate_radius;
 	int estimate_samples;
 	int final_gather_rays;
+	int camera_paths;
 	double cache_tolerance;
 	RendererType renderertype;
 	int threads_num;
@@ -36,6 +37,7 @@ inline RendererSettings::RendererSettings() {
     cache_tolerance = 0.1;
     threads_num = 1;
     renderertype = NONE;
+    camera_paths = 10;
 }
 
 #endif

@@ -21,8 +21,19 @@ Pathtracer::Pathtracer(RendererSettings* settings, Image* img, Scene* scene, KdT
 
 RGBA Pathtracer::getPixel(const Vector2& v) {
     Camera* camera = scene->getCamera();
-    Ray ray = camera->getRay(v[0],v[1]);
-    return tracePrimary(ray);
+    if (camera->isDoFEnabled()) {
+	int samples = camera->getDoFSamples();
+	RGBA result = RGBA(0.0,0.0,0.0,0.0);
+	for(int i = 0; i < samples; i++) {
+	    Ray ray = camera->getRay(v[0],v[1]);
+	    result = result + tracePrimary(ray);
+	}
+        return result / double(samples) ;
+    } else {
+	Ray ray = camera->getRay(v[0],v[1]);
+	ray.fromObject = camera;
+	return tracePrimary(ray);
+    }
 }
 
 RGBA Pathtracer::traceSub(const bool intersected, const Intersection& intersection, const Ray& ray, const int depth) {

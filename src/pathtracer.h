@@ -32,7 +32,7 @@ RGBA Pathtracer::tracePrimary(const Ray& ray) {
     Intersection i;
     bool intersected = space->intersectPrimary(ray,&i);
     if (intersected) {
-	int samples = 2000;
+	int samples = renderersettings->camera_paths;
 	RGBA result = RGBA(0.0,0.0,0.0,0.0);
 	for(int j = 0; j < samples; j++) {
 	    result = result + traceSub(intersected, i, ray, 1);
