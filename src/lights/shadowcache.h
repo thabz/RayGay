@@ -11,6 +11,11 @@ using namespace std;
 class Ray;
 class Object;
 
+/**
+ * A Shadow cache.
+ *
+ * This class does occlusion checking and caches results.
+ */
 class ShadowCache {
     public:
 	ShadowCache();

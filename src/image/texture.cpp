@@ -6,6 +6,11 @@
 // Public methods
 /////////////////////////////////////////////////////
 
+/**
+ * @param image The Image to wrap
+ * @param repeat_uv The number of horizonal and vertical tiles
+ * @param it The interpolation method to use when getting texels
+ */
 Texture::Texture(Image* image, const Vector2& repeat_uv, InterpolationType it) {
     this->image = image;
     this->repeat_uv = repeat_uv;
@@ -14,10 +19,18 @@ Texture::Texture(Image* image, const Vector2& repeat_uv, InterpolationType it) {
     this->height = image->getHeight();
 }
 
+/**
+ * The destructor deletes the wrapped Image.
+ */
 Texture::~Texture() {
     delete image;
 }
 
+/**
+ * Returns a texel from the texture
+ *
+ * @param uv texel-coordinates
+ */
 RGB Texture::getTexel(const Vector2& uv) const {
     return getTexel(uv[0],uv[1]);
 }

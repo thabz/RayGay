@@ -8,21 +8,34 @@
 
 class Image;
 
+/**
+ * A texture is a wrapper around Image.
+ *
+ * A texture has support for getting wrapped and tiled interpolated texels.
+ */
 class Texture {
 
     public:
+	/// Interpolation types
 	enum InterpolationType {
-	    INTERPOLATION_NONE,
-	    INTERPOLATION_BILINEAR,
-	    INTERPOLATION_BICUBIC
+	    INTERPOLATION_NONE, ///< No interpolation. Fast.
+	    INTERPOLATION_BILINEAR, ///< Bilinear interpolation. Slow.
+	    INTERPOLATION_BICUBIC ///< Bicubic interpolation. Slower.
 	};
 
+	/// Constructor
 	Texture(Image* image, const Vector2& repeat_uv, InterpolationType it);
+	/// Destructor
 	~Texture();
+	/// Get a texel
 	RGB getTexel(double u, double v) const;
+	/// Get a texel
 	RGB getTexel(const Vector2& uv) const;
+	/// Grayscale the image
 	void grayscale();
+	/// Returns width of image
 	long getWidth() const;
+	/// Returns height of image
 	long getHeight() const;
 
     private:

@@ -9,6 +9,9 @@
 #include "ray.h"
 #include "lights/lightsource.h"
 
+/**
+ * The input for shaders
+ */
 class ShaderInput {
     public:
 	/// Intersection point

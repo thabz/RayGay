@@ -6,6 +6,9 @@
 #include "image/rgb.h"
 #include "materials/material.h"
 
+/**
+ * A shader does the BRDF calculations.
+ */
 class Shader {
     public:
 	Shader(Material* material);
