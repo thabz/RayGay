@@ -4,11 +4,12 @@
 #include <math.h>
 
 #include "math/vector.h"
+#include "math/functions.h"
+#include "math/matrix.h"
 #include "ray.h"
 #include "intersection.h"
 #include "object.h"
 #include "image/rgb.h"
-#include "math/matrix.h"
 #include "scene.h"
 #include "camera.h"
 #include "image/image.h"
@@ -66,8 +67,9 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     RGB result_color = RGB(0.0,0.0,0.0);
     vector<Lightsource*> lights = scene->getLightsources();
 
-    Vector irradiance = photonmap->irradiance_estimate(point,normal,20,1000);
-    result_color += 10*irradiance.length() * material.getDiffuseColor(intersection);
+  //   Vector irradiance = photonmap->irradiance_estimate(point,normal,20,1000);
+  //  result_color += 10*irradiance.length() * material.getDiffuseColor(intersection);
+    result_color += gatherIrradiance(point,normal).length() * material.getDiffuseColor(intersection);
 
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);
@@ -161,5 +163,23 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 
     result_color.clip();
     return result_color;
+}
+
+#define GATHER_RAYS 200
+Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal) const {
+    Vector result = Vector(0.0,0.0,0.0);
+    for (int i = 0; i < GATHER_RAYS; i++) {
+	Vector dir = Math::perturbVector(normal,DEG2RAD(175));
+	Ray ray = Ray(point,dir,1);
+	if (space->intersect(ray)) {
+	    Intersection* inter = space->getLastIntersection();
+	    Vector hitpoint = inter->getPoint();
+	    Vector hitnormal = inter->getObject()->normal(*inter);
+	    result += photonmap->irradiance_estimate(hitpoint,hitnormal,20,500);
+	}
+    }
+    result *= 1.0/double(GATHER_RAYS);
+    result *= 10000;
+    return result;
 }
 

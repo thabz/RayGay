@@ -54,7 +54,7 @@ int PhotonTracer::trace(const Ray& ray, int bounces) {
     double ran = RANDOM(0,1);
     if (ran < material.getKd()) {
 	// Store photon
-	Vector power = Vector(100000.0,100000.0,100000.0);
+	Vector power = Vector(1.0,1.0,1.0);
 	photonmap->store(power,intersection->getPoint(),ray.getDirection());
 	
 	// Reflect diffusely 
@@ -71,7 +71,7 @@ int PhotonTracer::trace(const Ray& ray, int bounces) {
 	return trace(new_ray, bounces + 1);
     } else {
 	// Store photon
-	Vector power = Vector(100000.0,100000.0,100000.0);
+	Vector power = Vector(1.0,1.0,1.0);
 	photonmap->store(power,intersection->getPoint(),ray.getDirection());
 	return 1;
     }

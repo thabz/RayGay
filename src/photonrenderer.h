@@ -24,6 +24,7 @@ class PhotonRenderer : public Renderer {
 	RGB trace(const Ray&, int depth);
 	RGB traceSub(bool intersected, const Ray&, int depth);
 	RGB tracePrimary(const Ray&);
+	Vector gatherIrradiance(const Vector& point, const Vector& normal) const;
 };
 
 
