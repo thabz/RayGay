@@ -155,7 +155,7 @@ void Mesh::computeTriAreas() {
 int Mesh::findExistingCorner(const Vector* c) const {
     unsigned int size = corners.size();
     for(unsigned int i = 0; i < size; i++) {
-	if (corners[i] == *c) return i;
+	if ((corners[i] - *c).norm() < 0.5) return i;
     }
     return -1;
 }
@@ -274,6 +274,7 @@ std::vector<Linesegment>* Mesh::getEdges() {
     for(EdgeMapType::iterator h = edgeMap.begin(); h != edgeMap.end(); h++) {
 	// TODO: Retrieve all values in the map.
     }
+    return result;
 }
 
 
@@ -331,7 +332,7 @@ void Mesh::test() {
     Cylinder torus = Cylinder(circle1,100,16,10,Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
     torus.prepare();
 
-    cout << "Torus.tris: " << torus.tris.size() << endl;
+    assert(torus.corners.size() == 16*10);
     for(unsigned int i = 0; i < torus.tris.size(); i++) {
 	Tri* tri = torus.tris[i];
 	assert(tri->normal_idx != -1);

@@ -8,7 +8,7 @@ void Path::getPoints(int num, Vector* out) const {
     assert(num > 1);
     double t;
     for (int i = 0; i < num; i++) {
-	t = double(i) / (double(num-1));
+	t = double(i) / (double(num));
 	out[i] = getPoint(t);
     }
 
@@ -18,7 +18,7 @@ void Path::getTangents(int num, Vector* out) const {
     assert(num > 1);
     double t;
     for (int i = 0; i < num; i++) {
-	t = double(i) / (double(num-1));
+	t = double(i) / (double(num));
 	out[i] = getTangent(t);
     }
 }

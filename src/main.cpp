@@ -73,7 +73,7 @@ void testScene4() {
     for(int x = -10; x <= 10; x += 5) {
        for(int y = -10; y <= 10; y += 5) {
            for(int z = -10; z <= 10; z += 5) {
-	      Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,chrome);
+	      //Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,chrome);
 	//      scene.addObject(sx);
 	   }
  	}

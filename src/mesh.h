@@ -103,7 +103,6 @@ class Mesh : public object {
 	void computeTriAreas();
 	void computeInterpolatedNormals();
 
-	std::vector<Vector> corners;
 	std::vector<Vector> normals;
 	std::vector<Triangle*> triangles;
 	EdgeMapType edgeMap;
@@ -112,6 +111,7 @@ class Mesh : public object {
 
     protected:
 	void prepare();
+	std::vector<Vector> corners;
 
 };
 

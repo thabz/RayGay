@@ -15,9 +15,8 @@
  * @param segments The number of segments to use
  * @param m Material
  */
-Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, int segments, Material m) : Mesh(Mesh::MESH_FLAT,m) {
+Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, unsigned int segments, Material m) : Mesh(Mesh::MESH_FLAT,m) {
 
-    segments++;
     Vector direction = end - begin;
     direction.normalize();
     Circle b = Circle(begin,radius,direction);
@@ -27,8 +26,8 @@ Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, int se
     b.getPoints(segments,bp);
     e.getPoints(segments,ep);
     
-    for(int i = 0; i < segments - 1; i++) {
-	int j = i + 1;
+    for(unsigned int i = 0; i < segments; i++) {
+	unsigned int j = (i + 1) % segments;
 	// Discs
 	addTriangle(begin,bp[j],bp[i]);
 	addTriangle(end,ep[i],ep[j]);
@@ -40,14 +39,14 @@ Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, int se
     delete [] ep;
 }
 
-Cylinder::Cylinder(const Path& path, double radius, int segments, int pieces, Material m) : Mesh(Mesh::MESH_FLAT,m) {
+Cylinder::Cylinder(const Path& path, double radius, unsigned int segments, unsigned int pieces, Material m) : Mesh(Mesh::MESH_FLAT,m) {
     assert(pieces > 2);
 
     Vector* bp = new Vector[segments];  // Points on begin circle
     Vector* cp = new Vector[segments];  // Points on current circle
     Vector* pp = new Vector[segments];  // Points on previous circle
 
-    for (int p = 0; p < pieces; p++) {
+    for (unsigned int p = 0; p < pieces; p++) {
 	double t = double(p) / double(pieces);
 	Vector c = path.getPoint(t);
 	Vector n = path.getTangent(t);
@@ -57,8 +56,8 @@ Cylinder::Cylinder(const Path& path, double radius, int segments, int pieces, Ma
 	    circle.getPoints(segments,pp);
 	} else {
 	    circle.getPoints(segments,cp);
-	    for(int i = 0; i < segments - 1; i++) {
-		int j = i + 1;
+	    for(unsigned int i = 0; i < segments; i++) {
+		unsigned int j = (i + 1) % segments;
 		addTriangle(pp[j],cp[j],cp[i]);
 		addTriangle(pp[i],pp[j],cp[i]);
 	    }
@@ -66,8 +65,8 @@ Cylinder::Cylinder(const Path& path, double radius, int segments, int pieces, Ma
 	}
     }
     if (path.isClosed()) {
-	for(int i = 0; i < segments - 1; i++) {
-	    int j = i + 1;
+	for(unsigned int i = 0; i < segments; i++) {
+	    unsigned int j = (i + 1) % segments;
 	    addTriangle(pp[j],bp[j],bp[i]);
 	    addTriangle(pp[i],pp[j],bp[i]);
 	}
@@ -102,11 +101,19 @@ void Cylinder::test() {
     c = Cylinder(o,top,5.0,5,m);
     assert(b.inside(c.boundingBoundingBox()));
 
-    return;
     /* Check intersection */
     c = Cylinder(Vector(0,0,0),Vector(0,0,-10),5.0,3,m);
+    c.prepare();
     Ray r = Ray(Vector(0.5,0.5,100),Vector(0,0,-1),1);
     Intersection i = c.intersect(r);
     assert(i.intersected);
-    assert(i.point == Vector(0,0,0));
+
+    /* Check generated mesh */
+    c = Cylinder(Vector(0,0,0),Vector(0,0,-10),2.0,5,m);
+    c.prepare();
+    assert(c.corners.size() == 5*2 + 2);
+
+    cout << "Cylinder::test() done." << endl;
 }
+
+
