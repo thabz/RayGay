@@ -452,6 +452,17 @@ void torus_test() {
     t->allIntersections(ray,all);
     assert(all.size() == 0);
 
+    // Test scaled torus
+    t = new Torus(10,1,m);
+    t->transform(Matrix::matrixScale(Vector(2,3,4)));
+    assert(iPoint(t,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,44));
+    assert(iNormal(t,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iPoint(t,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-44));
+    assert(iNormal(t,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+    assert(iPoint(t,Vector(1000,0,0),Vector(-1,0,0)) == Vector(22,0,0));
+    assert(iNormal(t,Vector(1000,0,0),Vector(-1,0,0)) == Vector(1,0,0));
+    assert(iPoint(t,Vector(-1000,0,0),Vector(1,0,0)) == Vector(-22,0,0));
+    assert(iNormal(t,Vector(-1000,0,0),Vector(1,0,0)) == Vector(-1,0,0));
 }
 
 void transformed_instance_test() {
@@ -835,6 +846,18 @@ void ellipsoid_test() {
     assert(intersects(e,Vector(0,0,1000),Vector(0,0,-1)));
     assert(iPoint(e,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,30));
     assert(iNormal(e,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iPoint(e,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,20,0));
+    assert(iNormal(e,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
+    assert(iPoint(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(10,0,0));
+    assert(iNormal(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(1,0,0));
+
+    e = new Ellipsoid(Vector(0,0,0),Vector(2,5,6),NULL);
+    e->transform(Matrix::matrixScale(Vector(5,4,5)));
+    assert(intersects(e,Vector(0,0,1000),Vector(0,0,-1)));
+    assert(iPoint(e,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,30));
+    assert(iNormal(e,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iPoint(e,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,20,0));
+    assert(iNormal(e,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
     assert(iPoint(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(10,0,0));
     assert(iNormal(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(1,0,0));
 
