@@ -16,14 +16,26 @@
  *
  * for some constant \f$ k \f$.
  *
- * This defines an IsoSurface.
+ * \f[
+ * P_i = \left\{
+ * \begin{array}{cc}
+ *   x_1 & 0 \leq r_i \leq \frac{b_i}{3} \\
+ *   x_2 & 1 \leq r_i \leq b_i \\
+ *   x_3 & b_i \leq r_i
+ * \end{array}
+ * \right.
+ * \f]
+ *
+ * where \f$ r_i \f$ is 
  * 
+ *
  * @see http://www.dcs.shef.ac.uk/graphics/publications/implicit/overview.ps
  */
 class Blob : public IsoSurface {
     
     public:
-	Blob(double surface_density, unsigned int steps, double accuracy, Material material);
+	/// Constructor
+	Blob(double iso, unsigned int steps, double accuracy, Material material);
 	void addAtom(const Vector& center, double radius, double weight);
 	BoundingBox boundingBoundingBox() const { return bbox; };
     

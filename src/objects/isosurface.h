@@ -12,8 +12,8 @@
  * for any scalar field function \f$ f(x,y,z) \f$ and any value \f$ K \f$.
  *
  * As an example can a sphere be defined by the function 
- * \f$ f(x,y,z) = x^2 + y^2 + z^2 \f]
- * and a \f[ K \f] which acts as the squared radius.
+ * \f[ f(x,y,z) = x^2 + y^2 + z^2 \f]
+ * and a \f$ K \f$  which acts as the squared radius.
  */ 
 class IsoSurface : public Object {
 
@@ -23,6 +23,7 @@ class IsoSurface : public Object {
 	virtual Vector2 getUV(const Intersection& intersection) const;
 
     protected:
+	/// Constructor
 	IsoSurface(unsigned int steps, double accuracy, double iso);
 	/// Evaluate the scalar field function defining this surface
 	virtual double evaluateFunction(const Vector& point) const = 0;

@@ -3,11 +3,24 @@
 #include "math/vector.h"
 #include "math/matrix.h"
 
-Blob::Blob(double surface_density, unsigned int steps, double accuracy, Material material) : IsoSurface(steps,accuracy,surface_density) {
+/**
+ * @param iso the weight level defining the surface
+ * @param steps the raymarching steps
+ * @param accuracy the accuracy which is some low number
+ * @param material material of the Blob
+ */
+Blob::Blob(double iso, unsigned int steps, double accuracy, Material material) : IsoSurface(steps,accuracy,surface_density) {
     atoms_num = 0;
     this->material = material;
 }
 
+/**
+ * Add an atom to the blob.
+ * 
+ * @param center center of the sphere
+ * @param radius radius of the sphere
+ * @param weight weight to use
+ */
 void Blob::addAtom(const Vector& center, double radius, double weight) {
     centers.push_back(center);
     radii.push_back(radius);
