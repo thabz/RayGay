@@ -106,7 +106,9 @@ AC_OUTPUT(Makefile \
 	  src/objects/Makefile \
 	  src/space/Makefile \
 	  src/shaders/Makefile \
-	  test/Makefile)
+	  test/Makefile		\
+	  test/gfx/Makefile	\
+	  test/scenes/Makefile)
 
 echo "--------------------------------------------------------------"
 echo "You can specify the target CPU to enable special optimizations"

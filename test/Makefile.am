@@ -1,40 +1,42 @@
 
+SUBDIRS = gfx scenes
+
 INCLUDES = -I$(top_srcdir)/src 
 
-LDADD = $(top_srcdir)/src/libtracer.a \
-	    $(top_srcdir)/src/materials/libmaterials.a \
-	    $(top_srcdir)/src/objects/libobjects.a \
-	    $(top_srcdir)/src/paths/libpaths.a \
-	    $(top_srcdir)/src/lights/liblights.a \
-	    $(top_srcdir)/src/image/libimage.a \
-	    $(top_srcdir)/src/space/libspace.a \
-	    $(top_srcdir)/src/math/libmath.a 
+LDADD = $(top_builddir)/src/libtracer.a \
+	    $(top_builddir)/src/materials/libmaterials.a \
+	    $(top_builddir)/src/objects/libobjects.a \
+	    $(top_builddir)/src/paths/libpaths.a \
+	    $(top_builddir)/src/lights/liblights.a \
+	    $(top_builddir)/src/image/libimage.a \
+	    $(top_builddir)/src/space/libspace.a \
+	    $(top_builddir)/src/math/libmath.a 
 
-noinst_PROGRAMS = testimage testmath testpaths testspace testobjects testspeed testlanguage teststats testthreads testparser
+check_PROGRAMS = testimage testmath testpaths testspace testobjects testspeed testlanguage teststats testthreads testparser
 
 testparser_SOURCES = testparser.cpp
-testparser_LDADD = $(top_srcdir)/src/parser/libparser.a \
-		   $(top_srcdir)/src/materials/libmaterials.a \
-		   $(top_srcdir)/src/objects/libobjects.a \
-		   $(top_srcdir)/src/paths/libpaths.a \
-		   $(top_srcdir)/src/lights/liblights.a \
-	    	   $(top_srcdir)/src/image/libimage.a \
-		   $(top_srcdir)/src/space/libspace.a \
-		   $(top_srcdir)/src/libtracer.a \
-		   $(top_srcdir)/src/math/libmath.a 
+testparser_LDADD = $(top_builddir)/src/parser/libparser.a \
+		   $(top_builddir)/src/materials/libmaterials.a \
+		   $(top_builddir)/src/objects/libobjects.a \
+		   $(top_builddir)/src/paths/libpaths.a \
+		   $(top_builddir)/src/lights/liblights.a \
+	    	   $(top_builddir)/src/image/libimage.a \
+		   $(top_builddir)/src/space/libspace.a \
+		   $(top_builddir)/src/libtracer.a \
+		   $(top_builddir)/src/math/libmath.a 
 
 testimage_SOURCES = testimage.cpp
-testimage_LDADD = $(top_srcdir)/src/image/libimage.a $(top_srcdir)/src/math/libmath.a
+testimage_LDADD = $(top_builddir)/src/image/libimage.a $(top_builddir)/src/math/libmath.a
 
 testpaths_SOURCES = testpaths.cpp
 
 testmath_SOURCES = testmath.cpp
-testmath_LDADD = $(top_srcdir)/src/math/libmath.a
+testmath_LDADD = $(top_builddir)/src/math/libmath.a
 
 testobjects_SOURCES = testobjects.cpp
 
 testspace_SOURCES = testspace.cpp
-#testspace_LDADD = $(top_srcdir)/src/space/libspace.a $(top_srcdir)/src/libtracer.a $(top_srcdir)/src/objects/libobjects.a $(top_srcdir)/src/math/libmath.a  $(top_srcdir)/src/materials/libmaterials.a $(top_srcdir)/src/image/libimage.a
+#testspace_LDADD = $(top_builddir)/src/space/libspace.a $(top_builddir)/src/libtracer.a $(top_builddir)/src/objects/libobjects.a $(top_builddir)/src/math/libmath.a  $(top_builddir)/src/materials/libmaterials.a $(top_builddir)/src/image/libimage.a
 
 testspeed_SOURCES = testspeed.cpp
 testspeed_LDADD = 
@@ -43,7 +45,7 @@ testlanguage_SOURCES = testlanguage.cpp
 testlanguage_LDADD = 
 
 teststats_SOURCES = teststats.cpp
-teststats_LDADD = $(top_srcdir)/src/libtracer.a
+teststats_LDADD = $(top_builddir)/src/libtracer.a
 
 testthreads_SOURCES = testthreads.cpp
 testthreads_LDADD = 
