@@ -110,7 +110,7 @@ void KdTree::prepare() {
 		Object* obj_ptr = (*old.bobjects)[j].object;
 		node.objects->push_back(obj_ptr);
 	    }
-	    sort(node.objects->begin(),node.objects->end(),compareAreaDesc());
+	    //sort(node.objects->begin(),node.objects->end(),compareAreaDesc());
 	    delete old.bobjects;
 	}
 	nodes[i] = node;
