@@ -372,6 +372,10 @@ bool check_roots(double A, double B, double C, double D, double* roots, int num)
 	//    if (fabs(val) > 0.001)
 	    return false;
 	}
+	if (i > 0 && roots[i] < roots[i-1]) {
+	    cout << "Problem: wrong order of roots." << endl;
+	    return false;
+	}
     }
     return true;
 }
@@ -386,61 +390,61 @@ class solve_quartic_test : public Test {
 
 	    // x^4 - 10*x^3 + 35*x^2 - 50*x + 24 = (x-1)*(x-2)*(x-3)*(x-4)
 	    assertTrue(Math::solveQuartic(-10,35,-50,24,roots) == 4);
-	    assertTrue(contains(roots,4,1));
-	    assertTrue(contains(roots,4,2));
-	    assertTrue(contains(roots,4,3));
-	    assertTrue(contains(roots,4,4));
+	    assertTrue(IS_EQUAL(roots[0],1));
+	    assertTrue(IS_EQUAL(roots[1],2));
+	    assertTrue(IS_EQUAL(roots[2],3));
+	    assertTrue(IS_EQUAL(roots[3],4));
 
 	    // x^4 - 11*x^3 + 44*x^2 - 76*x + 48 = (x-2)*(x-2)*(x-3)*(x-4)
 	    assertTrue(Math::solveQuartic(-11,44,-76,48,roots) == 3);
-	    assertTrue(contains(roots,3,2));
-	    assertTrue(contains(roots,3,3));
-	    assertTrue(contains(roots,3,4));
+	    assertTrue(IS_EQUAL(roots[0],2));
+	    assertTrue(IS_EQUAL(roots[1],3));
+	    assertTrue(IS_EQUAL(roots[2],4));
 
 	    // x^4 - 14*x^3 + 71*x^2 - 154*x + 120 = (x-5)*(x-4)*(x-3)*(x-2)
 	    assertTrue(Math::solveQuartic(-14,71,-154,120,roots) == 4);
-	    assertTrue(contains(roots,4,2));
-	    assertTrue(contains(roots,4,3));
-	    assertTrue(contains(roots,4,4));
-	    assertTrue(contains(roots,4,5));
+	    assertTrue(IS_EQUAL(roots[0],2));
+	    assertTrue(IS_EQUAL(roots[1],3));
+	    assertTrue(IS_EQUAL(roots[2],4));
+	    assertTrue(IS_EQUAL(roots[3],5));
 
 	    // x^4 - 50*x^2 + 625 = (x-5)*(x+5)*(x-5)*(x+5)
 	    assertTrue(Math::solveQuartic(0,-50,0,625,roots) == 2);
-	    assertTrue(contains(roots,2,-5));
-	    assertTrue(contains(roots,2,5));
+	    assertTrue(IS_EQUAL(roots[0],-5));
+	    assertTrue(IS_EQUAL(roots[1],5));
 
 	    // x^4 - 100*x^3 + 3500*x^2 - 50000*x + 240000 = (x-10)*(x-20)*(x-30)*(x-40)
 	    assertTrue(Math::solveQuartic(-100,3500,-50000,240000,roots) == 4);
-	    assertTrue(contains(roots,4,10));
-	    assertTrue(contains(roots,4,20));
-	    assertTrue(contains(roots,4,30));
-	    assertTrue(contains(roots,4,40));
+	    assertTrue(IS_EQUAL(roots[0],10));
+	    assertTrue(IS_EQUAL(roots[1],20));
+	    assertTrue(IS_EQUAL(roots[2],30));
+	    assertTrue(IS_EQUAL(roots[3],40));
 
 	    //  x^4 + 10*x^2 + 24 = (x^2+4)*(x^2+6)
 	    assertTrue(Math::solveQuartic(0,10,0,24,roots) == 0);
 
 	    //  x^4 
 	    assertTrue(Math::solveQuartic(0,0,0,0,roots) == 1);
-	    assertTrue(contains(roots,1,0));
+	    assertTrue(IS_EQUAL(roots[0],0));
 
 	    // x^4 - 4*x^3 + 6*x^2 - 4*x + 1 =  (x-1)(x-1)(x-1)(x-1)
 	    assertTrue(Math::solveQuartic(-4,6,-4,1,roots) == 1);
-	    assertTrue(contains(roots,1,1));
+	    assertTrue(IS_EQUAL(roots[0],1));
 
 	    // x^4 - 10*x^3 + 250*x - 625 = (x-5)*(x-5)*(x-5)*(x+5)
 	    assertTrue(Math::solveQuartic(-10,0,250,-625,roots) == 2);
-	    assertTrue(contains(roots,2,5));
-	    assertTrue(contains(roots,2,-5));
+	    assertTrue(IS_EQUAL(roots[0],-5));
+	    assertTrue(IS_EQUAL(roots[1],5));
 
 	    // x^4 + 2*x^3 - 2*x - 1 = (x+1)*(x+1)*(x+1)*(x-1)
 	    assertTrue(Math::solveQuartic(2,0,-2,-1,roots) == 2);
-	    assertTrue(contains(roots,2,1));
-	    assertTrue(contains(roots,2,-1));
+	    assertTrue(IS_EQUAL(roots[0],-1));
+	    assertTrue(IS_EQUAL(roots[1],1));
 
 	    // x^4 + 10*x^3 - 250*x - 625 = (x+5)*(x+5)*(x-5)*(x+5)
 	    assertTrue(Math::solveQuartic(10,0,-250,-625,roots) == 2);
-	    assertTrue(contains(roots,2,5));
-	    assertTrue(contains(roots,2,-5));
+	    assertTrue(IS_EQUAL(roots[0],-5));
+	    assertTrue(IS_EQUAL(roots[1],5));
 
 	    int n = 5;
 	    int num;

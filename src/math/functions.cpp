@@ -137,22 +137,29 @@ int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
     }
     if (D2 >= 0.0) {
 	D2 = sqrtl(D2);
-	roots[num++] = -(A/4.0) + (R/2.0) + (D2/2.0);
 	roots[num++] = -(A/4.0) + (R/2.0) - (D2/2.0);
+	roots[num++] = -(A/4.0) + (R/2.0) + (D2/2.0);
     }
     if (E2 >= 0.0) {
 	E2 = sqrtl(E2);
-	roots[num++] = -(A/4.0) - (R/2.0) + (E2/2.0);
 	roots[num++] = -(A/4.0) - (R/2.0) - (E2/2.0);
+	roots[num++] = -(A/4.0) - (R/2.0) + (E2/2.0);
     }
 
-    if (num < 2) 
+    // There are either zero, two or four roots. 
+    // If zero, we are done now.
+    // If two, they are already sorted as per construction above and just needs
+    // pruning.
+    // If four, they needs sorting and then pruning.
+    if (num < 2) {
 	return num;
+    } 
+    if (num > 2) {
+	// TODO: A specialised sort will be faster. We know that num is 4.
+	std::sort(roots, roots + num);
+    }
 
-    // TODO: A specialised sort will be faster. We know that num is 4 or 2.
-    std::sort(roots,roots + num);
-
-    // Prune the sorted array 
+    // Prune the sorted array where we remove duplets.
     int i = 0;
     for (int j = 0; j < num; j++) {
 	double root = roots[j];
