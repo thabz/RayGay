@@ -13,9 +13,10 @@
 #include "objects/extrusion.h"
 #include "objects/heightfield.h"
 #include "objects/blob.h"
+#include "objects/mesh.h"
 
 
-SCM SceneObjectFactory::make_sphere(SCM s_center, SCM s_radius, SCM s_material) 
+SCM make_sphere(SCM s_center, SCM s_radius, SCM s_material) 
 {
     char* proc = "make-sphere";
     Vector center = scm2vector(s_center, proc, 1);
@@ -25,7 +26,7 @@ SCM SceneObjectFactory::make_sphere(SCM s_center, SCM s_radius, SCM s_material)
     return sceneobject2scm(sphere);
 }
 
-SCM SceneObjectFactory::make_ellipsoid(SCM s_center, SCM s_radii, SCM s_material) 
+SCM make_ellipsoid(SCM s_center, SCM s_radii, SCM s_material) 
 {
     char* proc = "make-ellipsoid";
     Vector center = scm2vector(s_center, proc, 1);
@@ -35,7 +36,7 @@ SCM SceneObjectFactory::make_ellipsoid(SCM s_center, SCM s_radii, SCM s_material
     return sceneobject2scm(ellipsoid);
 }
 
-SCM SceneObjectFactory::make_torus(SCM s_R, SCM s_r, SCM s_material) 
+SCM make_torus(SCM s_R, SCM s_r, SCM s_material) 
 {
     char* proc = "make-ellipsoid";
     double R = scm_num2double(s_R, 1, proc);
@@ -45,7 +46,7 @@ SCM SceneObjectFactory::make_torus(SCM s_R, SCM s_r, SCM s_material)
     return sceneobject2scm(torus);
 }
 
-SCM SceneObjectFactory::make_box(SCM s_corner1, SCM s_corner2, SCM s_material) 
+SCM make_box(SCM s_corner1, SCM s_corner2, SCM s_material) 
 {
     char* proc = "make-box";
     Vector corner1 = scm2vector(s_corner1, proc, 1);
@@ -55,7 +56,7 @@ SCM SceneObjectFactory::make_box(SCM s_corner1, SCM s_corner2, SCM s_material)
     return sceneobject2scm(box);
 }
 
-SCM SceneObjectFactory::make_solid_box(SCM s_corner1, SCM s_corner2, SCM s_material) 
+SCM make_solid_box(SCM s_corner1, SCM s_corner2, SCM s_material) 
 {
     char* proc = "make-solid-box";
     Vector corner1 = scm2vector(s_corner1, proc, 1);
@@ -65,7 +66,7 @@ SCM SceneObjectFactory::make_solid_box(SCM s_corner1, SCM s_corner2, SCM s_mater
     return sceneobject2scm(box);
 }
 
-SCM SceneObjectFactory::make_cylinder(SCM s_begin, SCM s_end, SCM s_radius, SCM s_material) 
+SCM make_cylinder(SCM s_begin, SCM s_end, SCM s_radius, SCM s_material) 
 {
     char* proc = "make-cylinder";
     Vector begin = scm2vector(s_begin, proc, 1);
@@ -79,7 +80,7 @@ SCM SceneObjectFactory::make_cylinder(SCM s_begin, SCM s_end, SCM s_radius, SCM 
 /**
  * @param s_circle a path in the (x,y)-plane
  */
-SCM SceneObjectFactory::make_extrusion(SCM s_path, SCM s_circle, SCM s_twists, SCM s_segments, SCM s_pieces, SCM s_material)
+SCM make_extrusion(SCM s_path, SCM s_circle, SCM s_twists, SCM s_segments, SCM s_pieces, SCM s_material)
 {
     char* proc = "make-extrusion";
     Path* path = scm2path(s_path, proc, 1);
@@ -93,7 +94,7 @@ SCM SceneObjectFactory::make_extrusion(SCM s_path, SCM s_circle, SCM s_twists, S
     return sceneobject2scm(extrusion);
 }
 
-SCM SceneObjectFactory::make_heightfield(SCM s_texture, SCM s_box, SCM s_w_div, SCM s_d_div, SCM s_material)
+SCM make_heightfield(SCM s_texture, SCM s_box, SCM s_w_div, SCM s_d_div, SCM s_material)
 {
     char* proc = "make-heightfield";
 
@@ -107,7 +108,7 @@ SCM SceneObjectFactory::make_heightfield(SCM s_texture, SCM s_box, SCM s_w_div, 
     return sceneobject2scm(hf);
 }
 
-SCM SceneObjectFactory::make_blob(SCM s_iso, SCM s_steps, SCM s_accuracy, SCM s_material, SCM s_atoms)
+SCM make_blob(SCM s_iso, SCM s_steps, SCM s_accuracy, SCM s_material, SCM s_atoms)
 {
     char* proc = "make-blob";
     double iso = scm_num2double(s_iso, 1, proc);
@@ -144,7 +145,7 @@ SCM SceneObjectFactory::make_blob(SCM s_iso, SCM s_steps, SCM s_accuracy, SCM s_
     return sceneobject2scm(blob);
 }
 
-SCM SceneObjectFactory::make_isosurface(SCM s_proc, SCM s_vec_lower, SCM s_vec_higher, SCM s_iso, SCM s_steps, SCM s_accuracy, SCM s_material)
+SCM make_isosurface(SCM s_proc, SCM s_vec_lower, SCM s_vec_higher, SCM s_iso, SCM s_steps, SCM s_accuracy, SCM s_material)
 {
     char* proc = "make-isosurface";
 
@@ -161,27 +162,63 @@ SCM SceneObjectFactory::make_isosurface(SCM s_proc, SCM s_vec_lower, SCM s_vec_h
     return sceneobject2scm(iso_surface);
 }
 
+SCM make_mesh(SCM s_vertices, SCM s_triangles, SCM s_material)
+{
+    char* proc = "make-mesh";
+    uint length;
+
+    Material* material = scm2material(s_material, proc, 3);
+    Mesh* mesh = new Mesh(Mesh::MESH_PHONG, material);
+
+    // Add the vertices
+    assert(SCM_NFALSEP (scm_list_p (s_vertices)));
+    length = scm_num2int(scm_length(s_vertices),0,"");
+    for(uint i = 0; i < length; i++) {
+	SCM s_vertex = scm_list_ref(s_vertices, scm_int2num(i));
+	Vector vertex = scm2vector(s_vertex, proc, 1);
+	mesh->addVertex(vertex);
+    }
+
+    // Add the triangles
+    assert(SCM_NFALSEP (scm_list_p (s_triangles)));
+    length = scm_num2int(scm_length(s_triangles),0,"");
+    Vector2 uv = Vector2(0,0);
+    uint v[3];
+    for(uint i = 0; i < length; i++) {
+	SCM s_triangle = scm_list_ref(s_vertices, scm_int2num(i));
+	Vector triangle = scm2vector(s_triangle, proc, 2);
+	v[0] = uint(triangle[0]);
+	v[1] = uint(triangle[1]);
+	v[2] = uint(triangle[2]);
+	mesh->addTriangle(v);
+    }
+
+    return sceneobject2scm(mesh);
+}
+
 void SceneObjectFactory::register_procs() 
 {
     scm_c_define_gsubr("make-sphere",3,0,0,
-	    (SCM (*)()) SceneObjectFactory::make_sphere);
+	    (SCM (*)()) make_sphere);
     scm_c_define_gsubr("make-ellipsoid",3,0,0,
-	    (SCM (*)()) SceneObjectFactory::make_ellipsoid);
+	    (SCM (*)()) make_ellipsoid);
     scm_c_define_gsubr("make-box",3,0,0,
-	    (SCM (*)()) SceneObjectFactory::make_box);
+	    (SCM (*)()) make_box);
     scm_c_define_gsubr("make-solid-box",3,0,0,
-	    (SCM (*)()) SceneObjectFactory::make_solid_box);
+	    (SCM (*)()) make_solid_box);
     scm_c_define_gsubr("make-cylinder",4,0,0,
-	    (SCM (*)()) SceneObjectFactory::make_cylinder);
+	    (SCM (*)()) make_cylinder);
     scm_c_define_gsubr("make-torus",3,0,0,
-	    (SCM (*)()) SceneObjectFactory::make_torus);
+	    (SCM (*)()) make_torus);
     scm_c_define_gsubr("make-extrusion",6,0,0,
-	    (SCM (*)()) SceneObjectFactory::make_extrusion);
+	    (SCM (*)()) make_extrusion);
     scm_c_define_gsubr("make-heightfield",5,0,0,
-	    (SCM (*)()) SceneObjectFactory::make_heightfield);
+	    (SCM (*)()) make_heightfield);
     scm_c_define_gsubr("make-blob",5,0,0,
-	    (SCM (*)()) SceneObjectFactory::make_blob);
+	    (SCM (*)()) make_blob);
     scm_c_define_gsubr("make-isosurface",7,0,0,
-	    (SCM (*)()) SceneObjectFactory::make_isosurface);
+	    (SCM (*)()) make_isosurface);
+    scm_c_define_gsubr("make-mesh",3,0,0,
+	    (SCM (*)()) make_mesh);
 }
 
