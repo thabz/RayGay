@@ -49,9 +49,9 @@ SceneObject* MeshNode::eval() {
     a = triangles->eval();
     int v[3];
     for(unsigned int i = 0; i < a.size(); i++) {
-	v[2] = int(a[i][0]);
+	v[0] = int(a[i][0]);
 	v[1] = int(a[i][1]);
-	v[0] = int(a[i][2]);
+	v[2] = int(a[i][2]);
 	mesh->addTriangle(v);
     }
     delete triangles;
