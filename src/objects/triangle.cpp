@@ -29,7 +29,7 @@ Intersection Triangle::_intersect(const Ray& ray) const {
 }
 
 void Triangle::prepare() {
-   const Vector& vert0 = mesh->cornerAt(vertex[0]);
+   vert0 = mesh->cornerAt(vertex[0]);
    const Vector& vert1 = mesh->cornerAt(vertex[1]);
    const Vector& vert2 = mesh->cornerAt(vertex[2]);
 
@@ -92,23 +92,30 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
    intersection.v = v;
    return intersection;
 }
+
+#define CROSS(dest,v1,v2) \
+          dest[0]=v1[1]*v2[2]-v1[2]*v2[1]; \
+          dest[1]=v1[2]*v2[0]-v1[0]*v2[2]; \
+          dest[2]=v1[0]*v2[1]-v1[1]*v2[0];
 // ----------------------------------------------------------------------------
 double Triangle::_fastIntersect(const Ray& ray) const {
    /* Fast code from http://www.ce.chalmers.se/staff/tomasm/code/ */
-   const Vector& vert0 = mesh->cornerAt(vertex[0]);
+   //const Vector& vert0 = mesh->cornerAt(vertex[0]);
 
    Vector tvec, pvec, qvec;
    double det;
    double u,v;
 
    /* begin calculating determinant - also used to calculate U parameter */
-   pvec = Vector::xProduct(ray.getDirection(), edge2);
-
+   //pvec = Vector::xProduct(ray.getDirection(), edge2);
+   CROSS(pvec,ray.getDirection(),edge2);
    /* if determinant is near zero, ray lies in plane of triangle */
    det = edge1 * pvec;
 
-   if (det > EPSILON)
+   if (det < EPSILON)
    {
+       return -1;
+   } else {
       /* calculate distance from vert0 to ray origin */
       tvec = ray.getOrigin() - vert0;
       
@@ -118,7 +125,8 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 	 return -1;
       
       /* prepare to test V parameter */
-      qvec = Vector::xProduct(tvec,edge1);
+      //qvec = Vector::xProduct(tvec,edge1);
+      CROSS(qvec,tvec,edge1);
       
       /* calculate V parameter and test bounds */
       v = ray.getDirection() * qvec;
@@ -145,14 +153,15 @@ double Triangle::_fastIntersect(const Ray& ray) const {
       if (v > 0.0 || u + v < det)
 	 return -1;
    } 
-#endif   
    else
    {
        return -1;  /* ray is parallell to the plane of the triangle */
    }
+#endif   
 
    /* calculate t, ray intersects triangle */
-   return (edge2 * qvec) / det;
+   double inv_det = 1.0 / det;
+   return (edge2 * qvec) * inv_det;
 }
     
 Vector Triangle::normal(const Intersection &i) const {
