@@ -302,6 +302,7 @@ void print_usage() {
     cout << "Usage: tracer [OPTION...] SCENEFILENAME OUTPUTFILENAME" << endl;
     cout << "       -j NUM               Number of threads to run" << endl;
     cout << "       -x                   Disable preview window" << endl;
+    cout << "       -d                   Print debugging information" << endl;
     cout << "       -h                   Show this help message" << endl;
     cout << "       -v                   Show current versionnumber" << endl;
 
