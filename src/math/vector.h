@@ -70,7 +70,7 @@ public:
     double z() const { return _vector[2]; };
 
     /// Comparator
-    bool operator==(const Vector &v) const;
+    virtual bool operator==(const Vector &v) const;
 
     /// Convert from rectangular to polar coordinates
     Vector toPolar() const;
