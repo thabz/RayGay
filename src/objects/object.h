@@ -19,12 +19,9 @@ class KdTree;
 
 class Object : public SceneObject {
     public:
-        /// Return the nearest intersection to ray's origin
+        /// Returns a full intersection at t distance from ray's origin
 	virtual Intersection fullIntersect(const Ray& ray, const double t) const;
 	double fastIntersect(const Ray& ray) const;
-
-	/// Returns the normalvector at a point on this objects surface
-	//virtual Vector normal(const Intersection &i) const = 0;
 	
 	/// Transform this object
 	virtual void transform(const Matrix& m) = 0;
@@ -38,21 +35,27 @@ class Object : public SceneObject {
 	/// Prepares the object before rendering
 	virtual void prepare();
 
+	/// Add this object to the kd-tree
 	void addSelf(KdTree* space);
 
 	/// Returns the surface area of object
 	virtual double area() const;
 
     protected:
+	/// Constructor
 	Object(const Material* material);
+
 	/// Internal intersect method that subclasses must implement
 	virtual Intersection _fullIntersect(const Ray& ray, const double t) const = 0;
+	/// Internal fast intersect method that subclasses must implement
 	virtual double _fastIntersect(const Ray& ray) const = 0;
 
     private:	
-	// Two members for caching last intersection
+	/// Id of the last ray that successfully intersected this object
 	mutable long last_ray;
+	/// The ray's t-value at that intersection
 	mutable double last_t;
+	/// The material of this object
 	const Material* material;
 };
 
@@ -66,6 +69,7 @@ Intersection Object::fullIntersect(const Ray& ray, const double t) const {
 /**
  *  Finds the smallest distance along a ray where this object is intersected by the ray.
  *
+ *  @param ray the Ray to intersect with
  *  @return positive distance along ray if and only if an intersection occured; otherwise -1 is returned.
  *  
  *  This is basically a caching proxy around the private _fastIntersect(Ray)
