@@ -14,7 +14,7 @@
 IrradianceCache::IrradianceCache(const BoundingBox& bbox, double tolerance = 0.1) {
     this->tolerance = tolerance;
     this->inv_tolerance = 1.0 / tolerance;
-    this->hierarchy_top = new HierarchyNode(bbox);
+    this->hierarchy_top = new HierarchyNode(bbox,0);
 }
 
 void IrradianceCache::putEstimate(const Vector& point, const Vector& normal, const RGB& irradiance, const double hmd) {
@@ -42,7 +42,7 @@ bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB
 	    found++;
 	}
     }
-    if (found > 2) {
+    if (found > 0) {
 	Stats::getUniqueInstance()->inc("Irradiance cache hits");
 	*dest = result / weight_sum;
 	return true;
@@ -53,15 +53,15 @@ bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB
 }
 
 void IrradianceCache::traverseOctree(const HierarchyNode* const node, const Vector& point, vector<const CacheNode*>* result) const {
-    if (node->isLeaf) {
-	// Add cache_nodes to result
-	for(unsigned int i = 0; i < node->cache_nodes.size(); i++) {
-	    const CacheNode* const cnode = &(node->cache_nodes[i]);
-	    if ((point - cnode->getPoint()).norm() < cnode->getSquaredRadius()) {
-	    }
-		result->push_back(cnode);
+    // Add cache_nodes to result
+    for(unsigned int i = 0; i < node->cache_nodes.size(); i++) {
+	const CacheNode* const cnode = &(node->cache_nodes[i]);
+	if ((point - cnode->getPoint()).norm() <= cnode->getSquaredRadius()) {
+	    result->push_back(cnode);
 	}
-    } else {
+    }
+
+    if (node->isSplit) {
 	// traverse children
 	for(unsigned int i = 0; i < 8; i++) {
 	    const HierarchyNode* child = node->children[i];
@@ -72,6 +72,7 @@ void IrradianceCache::traverseOctree(const HierarchyNode* const node, const Vect
 	}
     }
 }
+
 
 /**
  * Constructor for a cache node.
@@ -96,25 +97,41 @@ double IrradianceCache::CacheNode::getWeight(const Vector& x, const Vector& n) c
     return 1.0 / (d1 + d2);
 }
 
-IrradianceCache::HierarchyNode::HierarchyNode(const BoundingBox& bbox) {
+IrradianceCache::HierarchyNode::HierarchyNode(const BoundingBox& bbox, unsigned int depth) {
     this->bbox = bbox;
-    this->isLeaf = true;
+    this->isSplit = false;
+    this->depth = depth;
 }
 
 void IrradianceCache::HierarchyNode::add(const CacheNode& node) {
-    if (isLeaf) {
-	/// Add to list of nodes 
-	if (bbox.intersectSphere(node.getPoint(),node.getSquaredRadius())) {
-	    cache_nodes.push_back(node);
-	    // Split() if list gets too big
-	    if (cache_nodes.size() >= IRRADIANCE_OCTREE_MAX_NODES) {
-		split();
-	    }
-	}    
+    if (depth > IRRADIANCE_OCTREE_MAX_DEPTH) {
+	cache_nodes.push_back(node);
     } else {
-	// Add node to children (if they want it)
+	if (!isSplit)
+	    split();
+
+	// Find how many and which siblings this node fits in
+	bool accepted[8];
+	int accepted_count = 0;
 	for(unsigned int j = 0; j < 8; j++) {
-	    children[j]->add(node);
+	    accepted[j] = false;
+	    HierarchyNode* child = children[j];
+	    if (child->bbox.intersectSphere(node.getPoint(),node.getSquaredRadius())) {
+		accepted_count++;
+		accepted[j] = true;
+	    }
+	}
+
+	if (accepted_count == 8) {
+	    // It fits in all children, so keep it in this octree node
+	    cache_nodes.push_back(node);
+	} else {
+	    // Put it in siblings
+	    for(unsigned int j = 0; j < 8; j++) {
+		if (accepted[j]) {
+		    children[j]->add(node);
+		}
+	    }
 	}
     }
 }
@@ -122,33 +139,25 @@ void IrradianceCache::HierarchyNode::add(const CacheNode& node) {
 /**
  * Create 8 children and copy my cache_nodes to them.
  */
-void IrradianceCache::HierarchyNode::split() {
-    if (!isLeaf)
-	return;
+    void IrradianceCache::HierarchyNode::split() {
+	if (isSplit)
+	    return;
 
-    Stats::getUniqueInstance()->inc("Irradiance cache octree splits");
-    // Create 8 children with right bbox'
-    Vector* corners = bbox.getCorners();
-    Vector center = bbox.center();
-    for(int i = 0; i < 8; i++) {
-	children[i] = new HierarchyNode(BoundingBox(center,corners[i]));
-    }
-    delete [] corners;
+	Stats::getUniqueInstance()->inc("Irradiance cache octree splits");
 
-    // Copy nodes to children if they want them
-    unsigned int nodes_num = cache_nodes.size();
-    for (unsigned int i = 0; i < nodes_num; i++) {
-	for(unsigned int j = 0; j < 8; j++) {
-	    children[j]->add(cache_nodes[i]);
+	// Create 8 children with right bbox'
+	Vector* corners = bbox.getCorners();
+	Vector center = bbox.center();
+	for(int i = 0; i < 8; i++) {
+	    children[i] = new HierarchyNode(BoundingBox(center,corners[i]),depth + 1);
 	}
+	delete [] corners;
+
+	isSplit = true;
     }
-    // Clean up this node and mark it as a knot
-    cache_nodes.clear();
-    isLeaf = false;
-}
 
 IrradianceCache::HierarchyNode::~HierarchyNode() {
-    if (isLeaf) {
+    if (isSplit) {
 	for (unsigned int i = 0; i < 8; i++) {
 	    delete children[i];
 	}

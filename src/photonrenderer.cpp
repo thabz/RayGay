@@ -54,7 +54,7 @@ void PhotonRenderer::init() {
     delete photontracer;
     
     //irradiance_cache = new IrradianceCache(space->getWorldBoundingBox(),5);
-    BoundingBox bbox = BoundingBox(Vector(-10000,-10000,-10000),Vector(10000,10000,10000));
+    BoundingBox bbox = BoundingBox(Vector(-400,-400,-400),Vector(400,400,400));
     irradiance_cache = new IrradianceCache(bbox,renderersettings->cache_tolerance);
 
     qmc_sequence = new Halton(2,2);
@@ -231,6 +231,7 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
     }
 
     Vector result = Vector(0.0,0.0,0.0);
+    *hmd = 0;
     double* rnd;
     qmc_sequence->reset();
     for (int i = 0; i < gatherRays; i++) {
@@ -248,7 +249,7 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 	//    if ( dist < renderersettings->estimate_radius && depth == 0 ) {
 	    if (false) {
 	        // If too close do additional level of path tracing
-		//irra += finalGather(hitpoint,hitnormal,dir,gatherRays / 2, depth + 1);
+		irra += finalGather(hitpoint,hitnormal,dir,7, depth + 1);
 	    } else {
 		//irra += globalphotonmap->directIrradianceEstimate(hitpoint,hitnormal);
 		irra += globalphotonmap->irradianceEstimate(hitpoint,hitnormal);

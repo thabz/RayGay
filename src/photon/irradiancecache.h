@@ -6,6 +6,7 @@
 #include "boundingbox.h"
 
 #define IRRADIANCE_OCTREE_MAX_NODES 16
+#define IRRADIANCE_OCTREE_MAX_DEPTH 4
 
 using namespace std;
 
@@ -82,7 +83,7 @@ class IrradianceCache {
 
 	class HierarchyNode {
 	    public:
-		HierarchyNode(const BoundingBox& bbox);
+		HierarchyNode(const BoundingBox& bbox, unsigned int depth);
 		~HierarchyNode();
 		void add(const CacheNode& node);
 		void split();
@@ -90,7 +91,8 @@ class IrradianceCache {
 		BoundingBox bbox;
 		HierarchyNode* children[8];
 		vector<CacheNode> cache_nodes;
-		bool isLeaf;
+		unsigned int depth;
+		bool isSplit;
 	};
 
 	double tolerance;
