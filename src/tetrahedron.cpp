@@ -4,6 +4,12 @@
 #include "vector.h"
 #include "material.h"
 #include <math.h>
+#include <iostream>
+#include <cassert>
+#include <vector>
+#include "linesegment.h"
+
+using namespace std;
 
 Tetrahedron::Tetrahedron(const Vector a, const double r, Material mat) : Mesh(Mesh::MESH_FLAT,mat) {
 
@@ -20,5 +26,19 @@ Tetrahedron::Tetrahedron(const Vector a, const double r, Material mat) : Mesh(Me
 }
 
 Tetrahedron::~Tetrahedron() {
-    // Is ~Mesh() called automatically?
+}
+
+void Tetrahedron::test() {
+    Material mat = Material(RGB(0,0,0),RGB(0,0,0));
+    Tetrahedron t = Tetrahedron(Vector(0,0,0),100,mat);
+    t.prepare();
+    vector<Linesegment>* edges = t.getEdges();
+    assert(edges->size() == 6);
+    delete edges;
+
+    vector<Vector>* vertices = t.getVertices();
+    assert(vertices->size() == 4);
+    delete vertices;
+
+    cout << "Tetrahedron::test() done." << endl;
 }

@@ -15,6 +15,8 @@ class Tetrahedron : public Mesh {
 
 	/// Destructor
 	~Tetrahedron();
+
+	static void test();
 };
 
 #endif
