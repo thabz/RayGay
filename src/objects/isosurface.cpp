@@ -134,12 +134,13 @@ double IsoSurface::refine(const Ray& ray, double x1, double x3) const {
  * @return the surface normal at point
  */
 Vector IsoSurface::normal(const Vector& p) const {
-    double x = evaluateFunction(p - Vector(1,0,0)) - 
-	       evaluateFunction(p + Vector(1,0,0));
-    double y = evaluateFunction(p - Vector(0,1,0)) - 
-	       evaluateFunction(p + Vector(0,1,0));
-    double z = evaluateFunction(p - Vector(0,0,1)) - 
-	       evaluateFunction(p + Vector(0,0,1));
+    double off = accuracy;
+    double x = evaluateFunction(p - Vector(off,0,0)) - 
+	       evaluateFunction(p + Vector(off,0,0));
+    double y = evaluateFunction(p - Vector(0,off,0)) - 
+	       evaluateFunction(p + Vector(0,off,0));
+    double z = evaluateFunction(p - Vector(0,0,off)) - 
+	       evaluateFunction(p + Vector(0,0,off));
     Vector normal = Vector(0.5*x,0.5*y,0.5*z);
     normal.normalize();
     return  normal;
