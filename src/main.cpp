@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include "stats.h"
 
@@ -28,7 +28,7 @@
 
 using namespace std;
 
-void work(string scenefile, string outputfile) {
+void work(string scenefile, string outputfile,int jobs) {
     Stats::getUniqueInstance()->clear();
     //Stats::getUniqueInstance()->disable();
 
@@ -66,17 +66,56 @@ void work(string scenefile, string outputfile) {
     Stats::getUniqueInstance()->dump();
 }
 
-int main(int argc, char *argv[]) {
-    // TODO: Use getopt to parse arguments.
-    // See http://www.si.hhs.nl/~bertn/gnu_libc/libc_389.html
+void print_usage() {
+    cout << "Usage: tracer [OPTION...] SCENEFILENAME OUTPUTFILENAME" << endl;
+    cout << "       -j NUM               Number of threads to run" << endl;
+    cout << "       -h                   Show this help message" << endl;
+    cout << "       -v                   Show current versionnumber" << endl;
 
-    cout << "Raygay version 0.1" << endl;
-    if (argc < 3) {
-	cout << "USAGE: tracer <scenefile.ray> <outputfile.tga>" << endl;
-	return EXIT_FAILURE;
+}
+
+int main(int argc, char *argv[]) {
+    // Use getopt to parse arguments.
+    int c;
+    opterr = 0;
+    int jobs = 1;
+    while ((c = getopt (argc, argv, "vhj:")) != -1) {
+	switch(c) {
+	    case 'h':
+		print_usage();
+		return EXIT_SUCCESS;
+	    case 'v':
+		cout << "Raygay 0.1" << endl;
+		return EXIT_SUCCESS;
+	    case 'j':
+		if (sscanf(optarg,"%u",&jobs) != 1 || jobs < 1) {
+		    cerr << "Illegal -j option" << endl;
+		    print_usage();
+		    return EXIT_FAILURE;
+		};
+		break;
+	    case '?':
+		cerr << "Unknown option -" << char(optopt) << endl << endl;
+		print_usage();
+		return EXIT_FAILURE;
+	    default:
+		return EXIT_FAILURE;
+	}
     }
-    srand(1); // Make sure rand is seeded consistenly.
-    work(string(argv[1]),string(argv[2])); 
+    
+    string scenefile;
+    string outfile;
+    if (optind != argc - 2) {
+	cerr << "Not enough arguments" << endl << endl;
+	print_usage();
+	return EXIT_FAILURE;
+    } else {
+	scenefile = string(argv[optind]);
+	outfile = string(argv[optind+1]);
+    }
+    srand(1); // Make sure rand is seeded consistently.
+    cout << "Number of threads: " << jobs << endl;
+    work(scenefile,outfile,jobs); 
     return EXIT_SUCCESS;
 }
 
