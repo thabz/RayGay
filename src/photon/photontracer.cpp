@@ -64,11 +64,11 @@ void PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
 	return;
     }
     Intersection* intersection = space->getLastIntersection();
-    const Material& material = intersection->getObject()->getMaterial();
+    const Material* material = intersection->getObject()->getMaterial();
     Vector normal = intersection->getObject()->normal(*intersection);
     Vector point = intersection->getPoint();
     double ran = RANDOM(0,1);
-    if (ran < material.getKd()) {
+    if (ran < material->getKd()) {
 	// Store photon
 	if (bounces > 0) {
 	    if (ray.isCaustic()) {
@@ -88,7 +88,7 @@ void PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
 	    power = power; // TODO: Modify power
 	    return trace(new_ray, power, bounces + 1);
 	}
-    } else if (ran < material.getKd() + material.getKs()) {
+    } else if (ran < material->getKd() + material->getKs()) {
 	// Reflect specularly
 	Vector dir = -1 * ray.getDirection();
 	dir = dir.reflect(normal);
@@ -96,8 +96,8 @@ void PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
 	new_ray.specularBounces = ray.specularBounces + 1;
 	new_ray.diffuseBounces = ray.diffuseBounces;
 	return trace(new_ray, power, bounces + 1);
-    } else if (ran < material.getKt() + material.getKd() + material.getKs()) {
-	double ior = material.getEta();
+    } else if (ran < material->getKt() + material->getKd() + material->getKs()) {
+	double ior = material->getEta();
 	Vector T = ray.getDirection().refract(normal,ior);
 	if (!(T == Vector(0,0,0))) {
 	    Ray new_ray = Ray(point+0.1*T,T,ior);

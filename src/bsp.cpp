@@ -131,7 +131,7 @@ bool BSP::intersectForShadow(const Ray& ray, double max_t) const {
 }
 
 bool BSP::intersectForShadow(const Ray& ray, const Object* hint, double max_t) const {
-    if (hint != NULL && (!hint->getMaterial().noShadow()) && hint->intersect(ray) && hint->getLastIntersection()->getT() <= max_t) {
+    if (hint != NULL && (!hint->getMaterial()->noShadow()) && hint->intersect(ray) && hint->getLastIntersection()->getT() <= max_t) {
 	last_intersection = hint->getLastIntersection();
 	return true;
     } else {
@@ -184,7 +184,7 @@ bool BSP::intersectForShadow(const Ray& ray, const double min_t, const double ma
     if (objects.size() > 0) {
         Intersection tmp;
 	for (unsigned int i = 0; i < objects.size(); i++) {
-	    if ((!(objects[i]->getMaterial().noShadow())) && objects[i]->intersect(ray) && objects[i]->getLastIntersection()->getT() <= max_t) {
+	    if ((!(objects[i]->getMaterial()->noShadow())) && objects[i]->intersect(ray) && objects[i]->getLastIntersection()->getT() <= max_t) {
 		last_intersection = objects[i]->getLastIntersection();
 		return true;
 	    }
@@ -359,7 +359,7 @@ void BSP::test() {
     for(int x = -10; x <= 10; x++) {
        for(int y = -10; y <= 10; y++) {
            for(int z = -10; z <= 10; z++) {
-	      Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40));
+	      Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,NULL);
 	      bsp.addObject(sx);
 	   }
  	}
@@ -375,7 +375,7 @@ void BSP::test() {
     assert(IS_EQUAL(box.maximum()[2],210));
 
     // Test largestDimension()
-    bsp.addObject(new Sphere(Vector(0,-500,0),10,Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)));
+    bsp.addObject(new Sphere(Vector(0,-500,0),10,NULL));
     assert(largestDimension(bsp.enclosure()) == 1);
 }
 

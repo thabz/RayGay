@@ -10,11 +10,11 @@
 #include "image/rgb.h"
 #include "mesh.h"
 
-Box::Box(const Vector a, const Vector b, const Material& mat) : Mesh(Mesh::MESH_FLAT,mat) {
+Box::Box(const Vector a, const Vector b, const Material* mat) : Mesh(Mesh::MESH_FLAT,mat) {
     prepareBox(a,b);
 }
 
-Box::Box(const Vector c, double width, double height, double depth, Material m): Mesh(Mesh::MESH_FLAT,m) {
+Box::Box(const Vector c, double width, double height, double depth, Material* m): Mesh(Mesh::MESH_FLAT,m) {
     Vector extend = Vector(width,height,depth) / 2;
     prepareBox(c - extend, c + extend);
 }

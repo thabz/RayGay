@@ -13,6 +13,10 @@ Material::Material() {
    bumpmap = NULL;
    gloss_enabled = false;
    no_shadow = false;
+   _kd = 1.0;
+   _ks = 0.0;
+   _kt = 0.0;
+   eta = 3;
 }
 
 Material::Material(RGB diffuseColor, RGB specularColor) {

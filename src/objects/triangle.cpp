@@ -6,11 +6,11 @@
 #include "math/vector2.h"
 
 
-Triangle::Triangle(Mesh* m) {
+Triangle::Triangle(Mesh* m) : Object(NULL) {
     mesh = m;
 }
 
-const Material& Triangle::getMaterial() const { 
+const Material* Triangle::getMaterial() const { 
     return mesh->getMaterial(); 
 }
 

@@ -9,6 +9,7 @@ class Vector;
 class BooleanOperand : public Object {
 
     public:
+	BooleanOperand(const Material* mat);
 	/// Says whether a point belongs to the closure of the object
 	virtual bool onEdge(const Vector &p) const = 0;
 	
@@ -16,5 +17,6 @@ class BooleanOperand : public Object {
 	virtual bool inside(const Vector &p) const = 0;
 
 };
+
 
 #endif

@@ -15,7 +15,7 @@ class Material;
 class Teapot : public ObjectGroup {
     public:
 	/// Constructor
-	Teapot(const Vector& pos, double scale, unsigned int dimension, const Material& material);
+	Teapot(const Vector& pos, double scale, unsigned int dimension, const Material* material);
 };
 
 #endif

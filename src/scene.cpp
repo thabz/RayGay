@@ -46,7 +46,7 @@ Camera* Scene::getCamera() const {
 }
 
 void Scene::setEnvironmentMap(const std::string& filename) {
-    environmentSphere = new Sphere(Vector(0,0,0),10000,Material());
+    environmentSphere = new Sphere(Vector(0,0,0),10000,NULL);
     environmentMap = Image::load(filename);
 }
 

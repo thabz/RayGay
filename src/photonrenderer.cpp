@@ -110,14 +110,14 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     Object* object = intersection.getObject();
     const Vector point = intersection.getPoint();
     Vector normal = object->normal(intersection);
-    const Material& material = object->getMaterial();
-    normal = material.bump(intersection,normal);
+    const Material* material = object->getMaterial();
+    normal = material->bump(intersection,normal);
     
     Vector2 fre = fresnel(normal,ray.getDirection(),material);
     double reflection = fre[0];
     double transmission = fre[1];
 
-    RGB material_diffuse = material.getDiffuseColor(intersection);
+    RGB material_diffuse = material->getDiffuseColor(intersection);
 
     RGB result_color = RGB(0.0,0.0,0.0);
 
@@ -141,15 +141,15 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 		if (info.intensity > 0.0) {
 		    double intensity = info.intensity * attenuation;
 		    // Diffuse color
-		    color =  intensity * info.cos * material.getKd() * material.getDiffuseColor(intersection);
+		    color =  intensity * info.cos * material->getKd() * material->getDiffuseColor(intersection);
 
 		    // Specular color (Phong)
 		    Vector light_reflect = info.direction_to_light.reflect(normal);
 		    light_reflect.normalize();
 		    double rv = light_reflect * (-1 * ray.getDirection());
 		    if (rv > 0.0) {
-			rv = pow(rv,material.getSc());
-			color = color + ( intensity * rv *  material.getKs() * material.getSpecularColor());
+			rv = pow(rv,material->getSc());
+			color = color + ( intensity * rv *  material->getKs() * material->getSpecularColor());
 		    }
 		}
 		result_color += color;
@@ -158,15 +158,15 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     }
     if (depth < 4) {
 	/* Bounce a reflection off the intersected object */
-	if (material.getKs() > 0 && reflection > 0) {
+	if (material->getKs() > 0 && reflection > 0) {
 	    Vector refl_vector = -1 * ray.getDirection();
 	    refl_vector = refl_vector.reflect(normal);
 	    refl_vector.normalize();
 	    RGB refl_col = RGB(0.0,0.0,0.0);
-	    if (material.glossEnabled()) {
+	    if (material->glossEnabled()) {
 		/* Distributed reflection */
-		double max_angle = material.glossMaxAngle();
-		int gloss_rays = material.glossRaysNum();
+		double max_angle = material->glossMaxAngle();
+		int gloss_rays = material->glossRaysNum();
 		for(int i = 0; i < gloss_rays; i++) {
 		    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle),ray.getIndiceOfRefraction());
 		    refl_col += trace(refl_ray, depth + 1);
@@ -181,9 +181,9 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 	}
 
 	/* Should we send a ray through the intersected object? */
-	if (material.getKt() > 0.0 && transmission > 0) {
+	if (material->getKt() > 0.0 && transmission > 0) {
 	    // TODO: Use the ior the rays holds to allow eg. glass in water.
-	    double ior = material.getEta();
+	    double ior = material->getEta();
 	    Vector T = ray.getDirection().refract(normal,ior);
 	    if (!(T == Vector(0,0,0))) {
 		Ray trans_ray = Ray(point+0.1*T,T,ior);
@@ -264,8 +264,8 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 		//irra += globalphotonmap->directIrradianceEstimate(hitpoint,hitnormal);
 		irra += globalphotonmap->irradianceEstimate(hitpoint,hitnormal);
 	    }
-	    const Material& material = inter->getObject()->getMaterial();
-	    RGB diffuse_col = material.getDiffuseColor(*inter);
+	    const Material* material = inter->getObject()->getMaterial();
+	    RGB diffuse_col = material->getDiffuseColor(*inter);
 	    result += irra * diffuse_col;
 	}
     }

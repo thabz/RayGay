@@ -215,26 +215,26 @@ void Renderer::PixelBlock::reset() {
  *
  * @return (reflection,transmission)
  */
-Vector2 Renderer::fresnel(Vector normal, const Vector& ray_dir, const Material& material) const {
+Vector2 Renderer::fresnel(Vector normal, const Vector& ray_dir, const Material* material) const {
     double reflectance,reflection,transmission,eta;
 
-    if (material.getKt() > 0.0) {
+    if (material->getKt() > 0.0) {
 	if (normal * ray_dir > 0) {
-	    eta = material.getEta();
+	    eta = material->getEta();
 	    normal *= -1;
 	} else {
-	    eta = 1.0 / material.getEta();
+	    eta = 1.0 / material->getEta();
 	}
 	reflectance = ((1 - eta) * (1 - eta)) / ((1 + eta) * (1 + eta));
     } else {
-	reflectance = material.getKs();
+	reflectance = material->getKs();
     }
 
     double nv = -(normal * ray_dir);
 
     if (nv > EPSILON) {
 	reflection = reflectance + (1 - reflectance) * pow(1-nv,5);
-	transmission = material.getKd() + material.getKs() + material.getKt() - reflection;
+	transmission = material->getKd() + material->getKs() + material->getKt() - reflection;
     } else {
 	reflection = 0;
 	transmission = 0;

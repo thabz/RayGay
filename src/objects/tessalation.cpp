@@ -1,7 +1,7 @@
 
 #include "tessalation.h"
 
-Tessalation::Tessalation(const Vector center, const double radius, const unsigned int num, Material mat) : Mesh(Mesh::MESH_FLAT,mat) {
+Tessalation::Tessalation(const Vector center, const double radius, const unsigned int num, const Material* mat) : Mesh(Mesh::MESH_FLAT,mat) {
 
     max_splits = num;
     this->radius = radius;

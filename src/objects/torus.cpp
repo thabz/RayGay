@@ -15,12 +15,11 @@
  * @param r minor radius aka inner radius
  * @param m material of the torus
  */
-Torus::Torus(double R, double r, Material m) {
+Torus::Torus(double R, double r, const Material* m) : BooleanOperand(m) {
     assert(R > r);
     assert(r > 0);
     this->R = R;
     this->r = r;
-    this->material = m;
     this->transformation = Matrix();
     prepareMatrices();
 }
@@ -134,10 +133,6 @@ BoundingBox Torus::boundingBoundingBox() const {
     return BoundingBox(scene_transformation * Vector(min,min,min),
 	    scene_transformation * Vector(max,max,max));
 
-}
-
-const Material& Torus::getMaterial() const {
-    return material;
 }
 
 Vector2 Torus::getUV(const Intersection& intersection) const {

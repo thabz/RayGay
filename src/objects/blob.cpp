@@ -9,9 +9,8 @@
  * @param accuracy the accuracy which is some low number
  * @param material material of the Blob
  */
-Blob::Blob(double iso, unsigned int steps, double accuracy, Material material) : IsoSurface(steps,accuracy,iso) {
+Blob::Blob(double iso, unsigned int steps, double accuracy, Material* material) : IsoSurface(steps,accuracy,iso,material) {
     atoms_num = 0;
-    this->material = material;
 }
 
 /**
@@ -79,9 +78,5 @@ void Blob::transform(const Matrix& m) {
     for(int i = 0; i < atoms_num; i++) {
 	centers[i] = m * centers[i];
     }
-}
-
-const Material& Blob::getMaterial() const {
-    return material;
 }
 

@@ -17,7 +17,7 @@ using namespace std;
  * @param radius The radius of the generated cylinders and spheres
  * @param material The material
  */
-Wireframe::Wireframe(Mesh* mesh, double radius, const Material& material) {
+Wireframe::Wireframe(Mesh* mesh, double radius, const Material* material) {
     vector<Linesegment>* edges = mesh->getEdges();
     unsigned int size = edges->size();
     for(unsigned int i = 0; i < size; i++) {

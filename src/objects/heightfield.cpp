@@ -2,7 +2,7 @@
 #include "objects/heightfield.h"
 #include "image/image.h"
 
-HeightField::HeightField(Image* image, double height, double width, double depth, unsigned int width_divisions, unsigned int depth_divisions, const Material& material) : Mesh(Mesh::MESH_FLAT,material) {
+HeightField::HeightField(Image* image, double height, double width, double depth, unsigned int width_divisions, unsigned int depth_divisions, const Material* material) : Mesh(Mesh::MESH_FLAT,material) {
 
 	double t_width = 1.0 / double(width_divisions); // Texel width
 	double t_depth = 1.0 / double(depth_divisions); // Texel delth

@@ -120,10 +120,8 @@ Path* Importer::lookupPath(const string& path_name) {
     return path;
 }
 
-Material* Importer::initMaterial(const string& material_name) {
-    Material* new_material = new Material();
-    materials[material_name] = new_material;
-    return new_material;
+void Importer::registerMaterial(const string& name, Material* material) {
+    materials[name] = material;
 }
 
 void Importer::parse(const string& filename) {
@@ -170,7 +168,24 @@ void Importer::parse(const string& filename) {
 
 	if (command == "material") {
 	    stream >> str1;
-	    cur_material = initMaterial(str1);
+	    string mat_type = readString(stream);
+	    if (mat_type == "plastic") {
+		RGB col = readVector(stream);
+		cur_material = new Plastic(col);
+	    } else if (mat_type == "wood") {
+		RGB col1 = readVector(stream);
+		RGB col2 = readVector(stream);
+		cur_material = new Wood(col1,col2);
+	    } else if (mat_type == "checker") {
+		Material* mat1 = lookupMaterial(readString(stream));
+		Material* mat2 = lookupMaterial(readString(stream));
+		double size = readDouble(stream);
+		cur_material = new Checker(mat1,mat2,size);
+	    } else {
+		cout << "Unknown materialtype: " << mat_type << endl;
+		exit(EXIT_FAILURE);
+	    }
+	    registerMaterial(str1,cur_material);
 	} else if (command == "image-width") {
 	    this->width = readInt(stream);
 	} else if (command == "image-ratio") {
@@ -328,7 +343,7 @@ void Importer::parse(const string& filename) {
 	    double r = readDouble(stream);
 	    int segments = readInt(stream);
 	    int pieces = readInt(stream);
-	    cur_object = new Extrusion(*p,r,segments,pieces,*m);
+	    cur_object = new Extrusion(*p,r,segments,pieces,m);
 	} else if (command == "sor") {
 	    Material* m = lookupMaterial(readString(stream));
 	    int segments = readInt(stream);
@@ -339,20 +354,20 @@ void Importer::parse(const string& filename) {
 		Vector2 v = Vector2(readDouble(stream),readDouble(stream));
 		points.push_back(v);
 	    }
-	    cur_object = new SurfaceOfRevolution(points,segments,*m);
+	    cur_object = new SurfaceOfRevolution(points,segments,m);
 	} else if (command == "sphere") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
 	    double r = readDouble(stream);
 	    Vector c = readVector(stream);
-	    cur_object = new Sphere(c,r,*m);
+	    cur_object = new Sphere(c,r,m);
 	} else if (command == "blob") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
 	    double iso = readDouble(stream);
 	    unsigned int steps = readInt(stream);
 	    double accuracy = readDouble(stream);
-	    Blob* blob = new Blob(iso,steps,accuracy,*m);
+	    Blob* blob = new Blob(iso,steps,accuracy,m);
 	    int balls_num = readInt(stream);
 	    for(int i = 0; i < balls_num; i++) {
 		double weight = readDouble(stream);
@@ -366,7 +381,7 @@ void Importer::parse(const string& filename) {
 	    Material* m = lookupMaterial(str1);
 	    double R = readDouble(stream);
 	    double r = readDouble(stream);
-	    cur_object = new Torus(R,r,*m);
+	    cur_object = new Torus(R,r,m);
 	} else if (command == "heightfield") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
@@ -377,27 +392,27 @@ void Importer::parse(const string& filename) {
 	    double depth = readDouble(stream);
 	    int width_divisions = readInt(stream);
 	    int depth_divisions = readInt(stream);
-	    cur_object = new HeightField(img,height,width,depth,width_divisions,depth_divisions,*m);
+	    cur_object = new HeightField(img,height,width,depth,width_divisions,depth_divisions,m);
 	    delete img;
 	} else if (command == "3ds") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
 	    double scale = readDouble(stream);
 	    string filename = readString(stream);
-	    cur_object = new ThreeDS(filename,scale,*m);
+	    cur_object = new ThreeDS(filename,scale,m);
 	} else if (command == "cylinder") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
 	    double r = readDouble(stream);
 	    Vector c1 = readVector(stream);
 	    Vector c2 = readVector(stream);
-	    cur_object = new Cylinder(c1,c2,r,*m);
+	    cur_object = new Cylinder(c1,c2,r,m);
 	} else if (command == "box") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
 	    Vector c1 = readVector(stream);
 	    Vector c2 = readVector(stream);
-	    cur_object = new Box(c1,c2,*m);
+	    cur_object = new Box(c1,c2,m);
 	} else if (command == "necklace") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
@@ -405,7 +420,7 @@ void Importer::parse(const string& filename) {
 	    Path* p = lookupPath(str1);
 	    int num = readInt(stream);
 	    double r = readDouble(stream);
-	    cur_object = new Necklace(*p,num,r,*m);
+	    cur_object = new Necklace(*p,num,r,m);
 	} else if (command == "rotate") {
 	    SceneObject* obj = last_referenced_object;
 	    assert(obj != NULL);

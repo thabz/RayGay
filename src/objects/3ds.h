@@ -21,7 +21,7 @@ class ThreeDS : public ObjectGroup {
 
     public:
 	ThreeDS(const std::string& filename, const double scale);
-        ThreeDS(const std::string& filename, const double scale, const Material& material);
+        ThreeDS(const std::string& filename, const double scale, const Material* material);
 
     private:
 	void init(const std::string& filename, const double scale);
@@ -36,9 +36,9 @@ class ThreeDS : public ObjectGroup {
 	std::vector<Material> materials;
 
 	double scale;
-	Material material;
 	bool force_my_material;
 	Matrix mesh_matrix;
+	const Material* material;
 };
 
 #endif

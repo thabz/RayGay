@@ -21,7 +21,7 @@ class Sphere : public BooleanOperand {
     
     public:
         /// Constructor
-	Sphere(const Vector& c, double r, const Material& material);
+	Sphere(const Vector& c, double r, const Material* material);
 
 	/// Destructor
 	virtual ~Sphere();
@@ -31,7 +31,6 @@ class Sphere : public BooleanOperand {
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection & i) const;
-	virtual const Material& getMaterial() const;
 
 	virtual bool onEdge(const Vector &p) const;
 	virtual bool inside(const Vector &p) const;
@@ -46,7 +45,6 @@ class Sphere : public BooleanOperand {
     private:
 	Vector center;
 	double radius;
-	Material material;
 	BoundingBox _boundingBoundingBox;
 	virtual Intersection _intersect(const Ray& ray) const;
 

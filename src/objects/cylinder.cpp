@@ -14,11 +14,10 @@
  * @param radius The radius of the cylinder
  * @param m Material
  */
-Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, Material m) {
+Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, const Material* m) : BooleanOperand(m) {
 
     this->begin = begin;
     this->end = end;
-    this->material = m;
     this->r = radius;
     this->rr = radius*radius;
 
@@ -51,10 +50,6 @@ Vector Cylinder::normal(const Intersection & i) const {
     p.normalize();
     p = rotation * p;
     return p;
-}
-
-const Material& Cylinder::getMaterial() const {
-    return material;
 }
 
 /**

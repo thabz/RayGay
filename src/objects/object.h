@@ -30,7 +30,7 @@ class Object : public SceneObject {
 	virtual void transform(const Matrix& m) = 0;
 
 	/// Returns the materiale of this object
-	virtual const Material& getMaterial() const = 0;
+	virtual const Material* getMaterial() const { return material; };
 
 	/// Says whether this object is contained or partly contained in the BoundingBox
 	virtual bool intersects(const BoundingBox&) const = 0;
@@ -50,7 +50,7 @@ class Object : public SceneObject {
 	Intersection* getLastIntersection() const { return &last_intersection; }; 
 
     protected:
-	Object();
+	Object(const Material* material);
 	/// Internal intersect method that subclasses must implement
 	virtual Intersection _intersect(const Ray& ray) const = 0;
 
@@ -58,6 +58,7 @@ class Object : public SceneObject {
 	// Two members for caching last intersection
 	mutable long last_ray;
 	mutable Intersection last_intersection;
+	const Material* material;
 };
 
 /**

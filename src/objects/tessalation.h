@@ -11,7 +11,7 @@ class Tessalation : public Mesh {
 
     public:
 	/// Constructor
-	Tessalation(const Vector center, const double radius, const unsigned int num, Material mat);
+	Tessalation(const Vector center, const double radius, const unsigned int num, const Material* mat);
 
     private:
 	void split(const Vector& v1, const Vector& v2, const Vector& v3, unsigned int depth);

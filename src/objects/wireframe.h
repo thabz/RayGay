@@ -13,7 +13,7 @@ class Wireframe : public ObjectGroup {
 
     public:
 	/// Constructor
-	Wireframe(Mesh* mesh, double radius, const Material& material);
+	Wireframe(Mesh* mesh, double radius, const Material* material);
 };
 
 #endif

@@ -24,7 +24,7 @@ class IsoSurface : public Object {
 
     protected:
 	/// Constructor
-	IsoSurface(unsigned int steps, double accuracy, double iso);
+	IsoSurface(unsigned int steps, double accuracy, double iso, Material* mat);
 	/// Evaluate the scalar field function defining this surface
 	virtual double evaluateFunction(const Vector& point) const = 0;
 

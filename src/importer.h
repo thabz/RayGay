@@ -28,7 +28,7 @@ class Importer {
 	void parse(const string& filename);
 	Path* lookupPath(const string& name);
 	Material* lookupMaterial(const string& name);
-	Material* initMaterial(const string& name);
+	void registerMaterial(const string& name, Material* material);
 	void putNamedObject(const string& key, SceneObject* obj);
 	SceneObject* getNamedObject(const string& key);
 

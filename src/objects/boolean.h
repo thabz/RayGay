@@ -30,12 +30,11 @@ class Boolean : public BooleanOperand {
 	};
 
 	/// Constructor
-	Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, Material material);
+	Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, const Material* material);
 	virtual ~Boolean() {};
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection& i) const;
-	virtual const Material& getMaterial() const;
 	virtual bool intersects(const BoundingBox&) const;
 	virtual BoundingBox boundingBoundingBox() const;
 
@@ -50,7 +49,6 @@ class Boolean : public BooleanOperand {
 	BooleanOperand* _lhs;
 	BooleanOperand* _rhs;
 	BooleanOp _op;
-	Material _material;
 	virtual Intersection _intersect(const Ray& ray) const;
 };
 

@@ -44,13 +44,12 @@ class Torus : public BooleanOperand {
 
     public:
 	/// Constructor
-	Torus(double R, double r, Material m);
+	Torus(double R, double r, const Material* m);
 
 	virtual ~Torus() {};
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection& i) const;
-	virtual const Material& getMaterial() const;
 
 	virtual bool onEdge(const Vector &p) const;
 	virtual bool inside(const Vector &p) const;
@@ -68,7 +67,6 @@ class Torus : public BooleanOperand {
 
 	double r;
 	double R;
-	Material material;
 
 	Matrix transformation;
 	Matrix inverse_transformation;

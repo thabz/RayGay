@@ -7,6 +7,7 @@ libobjects_a_SOURCES = 3ds.cpp 		\
                        bezierpatch.cpp 	\
 		       blob.cpp		\
 		       boolean.cpp 	\
+		       booleanoperand.cpp 	\
 		       box.cpp		\
 		       cylinder.cpp	\
 		       extrusion.cpp	\

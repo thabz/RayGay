@@ -14,11 +14,10 @@
 
 using namespace std;
 
-Sphere::Sphere(const Vector& c, double r, const Material& mat) {
+Sphere::Sphere(const Vector& c, double r, const Material* mat) : BooleanOperand(mat) {
     assert(r > 0);
     center = c;
     radius = r;
-    material = mat;
 }
 
 Sphere::~Sphere() {
@@ -71,10 +70,6 @@ Vector Sphere::normal(const Intersection& i) const {
     Vector normal = i.getPoint() - center;
     normal.normalize();
     return normal;
-}
-
-const Material& Sphere::getMaterial() const {
-    return material;
 }
 
 ostream & operator<<(ostream &os, const Sphere &s) {

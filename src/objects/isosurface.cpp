@@ -4,7 +4,7 @@
 #include "boundingbox.h"
 #include "math/vector2.h"
 
-IsoSurface::IsoSurface(unsigned int steps, double accuracy, double iso) {
+IsoSurface::IsoSurface(unsigned int steps, double accuracy, double iso, Material* mat) : Object(mat) {
     this->steps = steps;
     this->accuracy = accuracy;
     this->iso = iso;

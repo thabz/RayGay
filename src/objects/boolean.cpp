@@ -4,11 +4,10 @@
 #include "booleanoperand.h"
 #include "math/vector2.h"
 
-Boolean::Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, Material m) {
+Boolean::Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, const Material* m) : BooleanOperand(m) {
     _lhs = lhs;
     _rhs = rhs;
     _op = op;
-    _material = m;
 }
 
 Intersection Boolean::_intersect(const Ray& ray) const {
@@ -102,10 +101,6 @@ Vector Boolean::normal(const Intersection& i) const {
     throw unknownOp(_op);
 }
 
-const Material& Boolean::getMaterial() const {
-    return _material;
-}
-
 bool Boolean::onEdge(const Vector &p) const {
     switch(_op) {
 	case BOOLEAN_UNION: 
@@ -168,7 +163,7 @@ Vector2 Boolean::getUV(const Intersection& intersection) const {
 SceneObject* Boolean::clone() const {
     BooleanOperand* lhs = dynamic_cast<BooleanOperand*>(this->_lhs->clone());
     BooleanOperand* rhs = dynamic_cast<BooleanOperand*>(this->_rhs->clone());
-    return new Boolean(lhs,this->_op,rhs,this->_material);
+    return new Boolean(lhs,this->_op,rhs,this->getMaterial());
 }
 
 

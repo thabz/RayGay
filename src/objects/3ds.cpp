@@ -13,10 +13,10 @@
 
 using namespace std;
 
-ThreeDS::ThreeDS(const string& filename, const double scale, const Material& material)  {
-    this->material = material;
+ThreeDS::ThreeDS(const string& filename, const double scale, const Material* material) {
     this->force_my_material = true;
     init(filename,scale);
+    this->material = material;
 }
 
 ThreeDS::ThreeDS(const string& filename, const double scale) {

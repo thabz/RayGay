@@ -22,17 +22,19 @@
 using namespace std;
 
 // ----------------------------------------------------------------------------
-Mesh::Mesh(MeshType type, const Material& mat) {
+Mesh::Mesh(MeshType type, const Material* mat) {
     meshType = type;
-    material = mat;
     _boundingBoundingBox = NULL;
     prepared = false;
+    material = mat;
 }
 
-Mesh::Mesh() {
+/*
+Mesh::Mesh() : SceneObject(NULL) {
     _boundingBoundingBox = NULL;
     prepared = false;
 }
+*/
 
 // ----------------------------------------------------------------------------
 Mesh::~Mesh() {
@@ -288,7 +290,7 @@ bool Mesh::intersects(const BoundingBox& box) const {
     
 }
 
-const Material& Mesh::getMaterial() const {
+const Material* Mesh::getMaterial() const {
     return material;
 }
 
@@ -380,7 +382,7 @@ void Mesh::test() {
 #ifdef GAHAGAH
     BSP bsp = BSP();
 
-    Material mat = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Material* mat = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Mesh mesh = Mesh(MESH_FLAT,mat);
     mesh.addTriangle(Vector(-1,1,1),Vector(1,1,1),Vector(0,-1,-1));
     mesh.prepare();
@@ -438,6 +440,7 @@ void Mesh::test() {
 	assert(IS_EQUAL(normal.norm(),double(1.0)));
     }
 
+    delete mat;
 
     cout << "Mesh::test() done." << endl;
 #endif

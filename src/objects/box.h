@@ -11,10 +11,10 @@ class Box : public Mesh {
 
     public:
 	/// Constructs a box with extremities at corner1 and corner2
-	Box(const Vector corner1, const Vector corner2, const Material& mat);
+	Box(const Vector corner1, const Vector corner2, const Material* mat);
 
 	/// Constructs a box 
-	Box(const Vector center, double width, double height, double depth, Material m);
+	Box(const Vector center, double width, double height, double depth, Material* m);
 
 	/// Destructor
 	~Box();

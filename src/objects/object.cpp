@@ -4,8 +4,9 @@
 #include "intersection.h"
 #include "ray.h"
 
-Object::Object() {
+Object::Object(const Material* material) {
    last_ray = -1;
+   this->material = material;
 }
 
 

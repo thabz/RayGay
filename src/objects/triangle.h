@@ -20,7 +20,7 @@ class Triangle : public Object {
 	Vector normal(const Intersection &i) const;
 
 	void transform(const Matrix& m) { };
-	const Material& getMaterial() const;
+	const Material* getMaterial() const;
 	bool intersects(const BoundingBox&) const;
 	BoundingBox boundingBoundingBox() const;
 	Vector2 getUV(const Intersection& intersection) const;

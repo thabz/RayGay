@@ -17,11 +17,10 @@ class Cylinder : public BooleanOperand {
 
     public:
 	/// Constructor
-    	Cylinder(const Vector& begin, const Vector& end, double radius, Material m);
+    	Cylinder(const Vector& begin, const Vector& end, double radius, const Material* m);
 	virtual ~Cylinder() {};
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection & i) const;
-	virtual const Material& getMaterial() const;
 
 	virtual bool onEdge(const Vector &p) const;
 	virtual bool inside(const Vector &p) const;
@@ -36,8 +35,6 @@ class Cylinder : public BooleanOperand {
     private:
 	virtual Intersection _intersect(const Ray& ray) const;
 	void prepareMatrices();
-
-	Material material;
 
 	Vector begin;
 	Vector end;

@@ -9,7 +9,7 @@
  */
 class BezierPatch : public Mesh {
     public:
-	BezierPatch(Vector* points, const unsigned int xResolution, unsigned int yResolution, const Material& material);
+	BezierPatch(Vector* points, const unsigned int xResolution, unsigned int yResolution, const Material* material);
 
     private:
 	const Vector& getControlPoint(unsigned int i, unsigned int j) const;

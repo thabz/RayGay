@@ -65,10 +65,10 @@ class Mesh : public ObjectCollection {
 	typedef std::map<EdgeKey,Edge*> EdgeMapType;
 
 	/// Default constructor
-	Mesh();
+//	Mesh();
 	
 	/// Constructor
-	Mesh(MeshType type, const Material& mat);
+	Mesh(MeshType type, const Material* mat);
 	
 	/// Destructor
 	virtual ~Mesh();
@@ -79,8 +79,9 @@ class Mesh : public ObjectCollection {
 	virtual void transform(const Matrix& m);
 	/// Returns a (possibly) phong-interpolated normal
 	virtual Vector normal(const Intersection & i) const;
+	
 	/// Material of the mesh 
-	virtual const Material& getMaterial() const;
+	virtual const Material* getMaterial() const;
 
 	/// Intersection with a boundingbox
 	virtual bool intersects(const BoundingBox& b) const;
@@ -122,7 +123,6 @@ class Mesh : public ObjectCollection {
 
     private:
 	MeshType meshType;
-	Material material;
 	mutable BoundingBox* _boundingBoundingBox;
 	//virtual Intersection _intersect(const Ray& ray) const;
 	bool prepared;
@@ -140,6 +140,7 @@ class Mesh : public ObjectCollection {
 	std::vector<Vertex> vertices;
 	std::vector<Vector> corners;
 
+	const Material* material;
 
 };
 

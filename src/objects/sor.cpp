@@ -2,7 +2,7 @@
 #include "sor.h"
 #include "paths/circle.h"
 
-SurfaceOfRevolution::SurfaceOfRevolution(const vector<Vector2>& _points, unsigned int segments, Material m) : Mesh (Mesh::MESH_FLAT,m) {
+SurfaceOfRevolution::SurfaceOfRevolution(const vector<Vector2>& _points, unsigned int segments, const Material* m) : Mesh (Mesh::MESH_FLAT,m) {
 
     int points_num = _points.size();
     assert( points_num >= 2);

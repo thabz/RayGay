@@ -17,7 +17,7 @@ class Necklace : public ObjectGroup {
 
     public:
 	/// Constructor
-	Necklace(const Path& path, int num, double r, const Material& material);
+	Necklace(const Path& path, int num, double r, const Material* material);
 	
 	/// Destructor
 	virtual ~Necklace() {};
