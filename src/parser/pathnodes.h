@@ -4,6 +4,7 @@
 #include "parser/vectornodes.h"
 #include "parser/floatnodes.h"
 #include "parser/syntaxnode.h"
+#include "parser/assignments.h"
 #include "paths/path.h"
 #include "paths/circle.h"
 #include "paths/spiral.h"
@@ -77,5 +78,24 @@ class SpiralNode : public PathNode {
 	FloatNode* windings;
 	FloatNode* offset;
 };
+
+class NamedPathNode : public PathNode {
+    public:
+	NamedPathNode(string name) {
+	    this->name = name;
+	}
+
+	virtual ~NamedPathNode() { }
+
+	Path* eval() {
+	    PathNode* p = Assignments::getUniqueInstance()->getNamedPath(name);
+	    return p->eval();
+	}
+	
+    private:
+	string name;
+};
+
+
 
 #endif

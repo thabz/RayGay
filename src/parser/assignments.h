@@ -5,10 +5,10 @@
 #include <string>
 #include <map>
 
-#include "parser/floatnodes.h"
-#include "parser/materialnodes.h"
-#include "parser/pathnodes.h"
-#include "parser/sceneobjectnodes.h"
+class FloatNode;
+class PathNode;
+class SceneObjectNode;
+class MaterialNode;
 
 using namespace std;
 

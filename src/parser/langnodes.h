@@ -8,6 +8,7 @@
 #include "parser/sceneobjectnodes.h"
 #include "parser/assignments.h"
 #include "parser/interpreterenv.h"
+#include "exception.h"
 
 using namespace std;
 
@@ -38,6 +39,8 @@ class AssignFloatNode : public ActionNode {
 	    this->node = node;
 	}
 
+	virtual ~AssignFloatNode() { delete node; }
+
 	void eval() {
 	    Assignments::getUniqueInstance()->setNamedFloat(name,node);
 	}
@@ -58,6 +61,58 @@ class AddSceneObjectToSceneNode : public ActionNode {
 
     private:
         SceneObjectNode* node;
+};
+
+class ActionListNode : ActionNode {
+    public:
+	ActionListNode() {};
+
+	virtual ~ActionListNode() {
+	    for(unsigned int i = 0; i < actions.size(); i++) {
+		delete actions[i];
+	    }
+	}
+
+	void addAction(ActionNode* action) {
+	    actions.push_back(action);
+	}
+
+	void eval() {
+	    for(unsigned int i = 0; i < actions.size(); i++) {
+		actions[i]->eval();
+	    }
+	}
+
+    private:
+	vector<ActionNode*> actions;
+};
+
+class RepeatActionNode : public ActionNode {
+
+    public:
+	RepeatActionNode(FloatNode* num, ActionListNode* list) {
+	    this->num = num;
+	    this->list = list;
+	}
+
+	virtual ~RepeatActionNode() {
+	    delete num;
+	    delete list;
+	}
+
+	void eval() {
+	    int n = int(num->eval());
+	    if (n < 0) {
+		throw_exception("Can't repeat negative number of times.");
+	    }
+	    for(int i = 0; i < n; i++) {
+		list->eval();
+	    }
+	}
+
+    private:
+	ActionListNode* list;
+	FloatNode* num;
 };
 
 #endif

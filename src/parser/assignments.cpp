@@ -1,5 +1,9 @@
 
 #include "parser/assignments.h"
+#include "parser/floatnodes.h"
+#include "parser/materialnodes.h"
+#include "parser/pathnodes.h"
+#include "parser/sceneobjectnodes.h"
 
 Assignments* Assignments::unique_instance = NULL;
 

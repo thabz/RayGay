@@ -36,6 +36,7 @@
 #include "parser/rgbnodes.h"    
 #include "parser/langnodes.h"    
 #include "parser/transformationnodes.h"    
+#include "parser/lightnodes.h"    
 
 #include "camera.h"    
 #include "exception.h"    
