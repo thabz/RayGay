@@ -2,16 +2,18 @@
 
 renderer raytracer
 
-camera { position <50,10,20>
+camera { position <1,20,50>
          up <0,1,0> 
          lookat <0,0,0> 
-	 fov 45
-	 aa 4
+	 fov 35
+	 aa 0
 }
+
+
 
 image { width 640 aspect 4 3 }
 
-background <0.1, 0.1, 0.3, 1.0>
+background <0.4, 0.4, 0.8, 1.0>
 
 $dullwhite = material {
     diffuse <1.0,1.0,1.0>
@@ -37,53 +39,51 @@ light skylight 10000 10 1 1 1
 
 box { $dullgreen <-70,-1,-70>  <70,0,70> }
 
+$num = 20
+$radius = 9.4 / 8
 $column = group {
-   box { $dullwhite <-1 0 -1>  <1 0.3 1> }
-   box { $dullwhite <-1 0 -1>  <1 0.3 1> }
-   torus { $dullwhite 0.3 0.5 } translate <0 0.3 0>
-   cylinder { $dullwhite 0.5 <0 0.3 0> <0 9.7 0> }
-   torus { $dullwhite 0.3 0.5 } translate <0 9.7 0>
+   box { $dullwhite <-1.5 0 -1.5>  <1.5 0.3 1.5> }
+   box { $dullwhite <-1.5 0 -1.5>  <1.5 0.3 1.5> }
+   torus { $dullwhite 0.3 $radius } translate <0 0.3 0>
+   difference { 
+      $dullwhite
+      cylinder { ($radius) <0,0.3,0> <0,9.7,0> }
+      union {
+      	$i = 0
+      	repeat($num) {
+	    $x = sin(2*PI*$i/$num) * (1.1*$radius)
+ 	    $z = cos(2*PI*$i/$num) * (1.1*$radius)
+	    cylinder { ($radius/6) <$x,0.3,$z> <$x,9.7,$z> }
+	    $i++
+      	}
+      }
+   }
+   torus { $dullwhite 0.3 $radius } translate <0 9.7 0>
    box { $dullwhite <-1 9.7 -1>  <1 10 1> }
 }
 
-/*
-object $column translate -10 0.6 -15 
-object $column translate -5 0.6 -15 
-object $column translate 0 0.6 -15 
-object $column translate 5 0.6 -15 
-object $column translate 10 0.6 -15
+$arcade = group {
+    object $column translate <-10 0.6 -15>
+    object $column translate <-5 0.6 -15> 
+    object $column translate <0 0.6 -15> 
+    object $column translate <5 0.6 -15> 
+    object $column translate <10 0.6 -15>
+    object $column translate <15 0.6 -15>
+    box { $dullwhite <-16.5,10,-16.5> <16.5,11,-13.5> }
+}
 
-object $column translate -10 0.6 15 
-object $column translate -5 0.6 15 
-object $column translate 0 0.6 15 
-object $column translate 5 0.6 15 
-object $column translate 10 0.6 15
-
-object $column translate 15 0.6 -10
-object $column translate 15 0.6 -5
-object $column translate 15 0.6 0 
-object $column translate 15 0.6 5 
-object $column translate 15 0.6 10
-
-object $column translate -15 0.6 -10
-object $column translate -15 0.6 -5
-object $column translate -15 0.6 0 
-object $column translate -15 0.6 5 
-object $column translate -15 0.6 10
-
-object $column translate 15 0.6 15 
-object $column translate 15 0.6 -15 
-object $column translate -15 0.6 15 
-object $column translate -15 0.6 -15 
-*/
+object $arcade
+object $arcade rotate <0,1,0> 1*90
+object $arcade rotate <0,1,0> 2*90
+object $arcade rotate <0,1,0> 3*90
 
 /* Fundament */
 box { $dullwhite <-20 0 -20>   <20 0.3 20> }
 box { $dullwhite <-19 0.3 -19>   <19 0.6 19> }
 
 /* Tempelrum */
-box { $dullwhite <-10 0.6 -10>  <10 10 10> }
+/* box { $dullwhite <-10 0.6 -10>  <10 10 10> }  */
 
 /* Tag */
-/* box $dullwhite -17 10 -17   17 11 17 */
+/*box { $dullwhite <-17 10 -17> <17 11 17> }*/
 
