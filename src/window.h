@@ -27,6 +27,7 @@ class PreviewWindow {
 	pthread_t window_main_loop;
 	GtkWidget *window;
 	GtkWidget *darea;
+	GtkProgressBar* progress_bar;
 	
 	Image* image;
 	int width;

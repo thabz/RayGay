@@ -46,10 +46,10 @@ Renderer::~Renderer() {
 }
 
 void Renderer::run() {
-    RenderJob job;
-    while (job_pool->getJob(&job)) {
-	render(job);
-	job_pool->markJobDone(&job);
+    RenderJob* job;
+    while ((job = job_pool->getJob()) != NULL) {
+	render(*job);
+	job_pool->markJobDone(job);
     }
 }
 

@@ -12,23 +12,23 @@ RenderJobPool::RenderJobPool() {
     next_job = 0;
 }
 
-bool RenderJobPool::getJob(RenderJob* job_dest) {
-    bool result;
+RenderJob* RenderJobPool::getJob() {
+    RenderJob* result;
 
     pthread_mutex_lock(&mutex_jobs);
     if (next_job < jobs.size()) {
-	(*job_dest) = jobs[next_job];
+	result = &(jobs[next_job]);
 	next_job++;
-	result = true;
 	std::cout << next_job << " / " << jobs.size() << "          \r" << std::flush;
 #ifdef HAVE_GTK
 	double progress = double(next_job) / double (jobs.size());
 	Environment::getUniqueInstance()->getPreviewWindow()->setProgress(progress);
 #endif	
     } else {
-	result = false;
+	result = NULL;
     }
     pthread_mutex_unlock(&mutex_jobs);
+    markJobDone(&(jobs[22]));
     return result;
 }
 

@@ -32,7 +32,7 @@ class RenderJobPool {
 	/// Add a job to the pool.
 	void addJob(RenderJob job);
 	/// Get next job to be done.
-	bool getJob(RenderJob* job_dest);
+	RenderJob* getJob();
 	/// Marks a job done
 	void markJobDone(RenderJob* job);
 
