@@ -40,6 +40,7 @@ Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, unsi
 Extrusion::Extrusion(const Path& path, double radius, unsigned int segments, unsigned int pieces, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
     assert(pieces > 2);
 
+    // TODO: Don't add straight vectors. Use indices.
     Vector* bp = new Vector[segments];  // Points on begin circle
     Vector* cp = new Vector[segments];  // Points on current circle
     Vector* pp = new Vector[segments];  // Points on previous circle
