@@ -32,13 +32,16 @@ Image::~Image() {
 
 
 void Image::setRGBA(int x, int y, const RGBA& c) {
+    /*
     assert(0 <= x && x < width);
     assert(0 <= y && y < height);
+    */
+    int offset = (y*width + x)*4;
 
-    data[(y*width + x)*4 + 0] = c.r();
-    data[(y*width + x)*4 + 1] = c.g();
-    data[(y*width + x)*4 + 2] = c.b();
-    data[(y*width + x)*4 + 3] = c.a();
+    data[offset++] = c.r();
+    data[offset++] = c.g();
+    data[offset++] = c.b();
+    data[offset] = c.a();
 }
 
 void Image::setRGBA(const Vector2& p, const RGBA& c) {
@@ -50,18 +53,18 @@ void Image::setRGBA(const Vector2& p, const RGBA& c) {
 }
 
 RGBA Image::getRGBA(int x, int y) const {
-    assert(0 <= x && x < width);
+ /*   assert(0 <= x && x < width);
     assert(0 <= y && y < height);
-
+*/
     double *p = &data[4*(y*width + x)];
     return RGBA(p[0],p[1],p[2],p[3]);
 }
 
-RGB Image::getRGBWrapped(int x, int y) const {
-    x = x % width;
-    y = y % height;
-    if (x < 0) x = width + x;
-    if (y < 0) y = height + y;
+RGBA Image::getRGBWrapped(int x, int y) const {
+    x %= width;
+    y %= height;
+    if (x < 0) x += width;
+    if (y < 0) y += height;
     return getRGBA(x,y);
 }
 
@@ -105,9 +108,11 @@ double Image::biCubicR(double x) const {
     return (Pxp2*Pxp2*Pxp2 - 4*Pxp1*Pxp1*Pxp1 + 6*Px*Px*Px - 4*Pxm1*Pxm1*Pxm1) / 6.0;
 }
 
+/*
 double Image::biCubicP(double x) const {
    return x > 0 ? x : 0; 
 }
+*/
 
 
 /**

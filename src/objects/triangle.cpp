@@ -34,15 +34,12 @@ Intersection Triangle::_intersect(const Ray& ray) const {
    double u,v;
    double t;
 
-   const Vector& orig = ray.getOrigin();
-   const Vector& dir = ray.getDirection();
-
    /* find vectors for two edges sharing vert0 */
    edge1 = vert1 - vert0;
    edge2 = vert2 - vert0;
 
    /* begin calculating determinant - also used to calculate U parameter */
-   pvec = Vector::xProduct(dir, edge2);
+   pvec = Vector::xProduct(ray.getDirection(), edge2);
 
    /* if determinant is near zero, ray lies in plane of triangle */
    det = edge1 * pvec;
@@ -52,7 +49,7 @@ Intersection Triangle::_intersect(const Ray& ray) const {
    inv_det = 1.0 / det;
 
    /* calculate distance from vert0 to ray origin */
-   tvec =  orig - vert0;
+   tvec =  ray.getOrigin() - vert0;
 
    /* calculate U parameter and test bounds */
    u = (tvec * pvec) * inv_det;
@@ -63,7 +60,7 @@ Intersection Triangle::_intersect(const Ray& ray) const {
    qvec = Vector::xProduct(tvec, edge1);
 
    /* calculate V parameter and test bounds */
-   v = (dir * qvec) * inv_det;
+   v = (ray.getDirection() * qvec) * inv_det;
    if (v < 0.0 || u + v > 1.0)
      return Intersection();
 
@@ -73,7 +70,7 @@ Intersection Triangle::_intersect(const Ray& ray) const {
    if (t < EPSILON)
        return Intersection();
 
-   Intersection intersection = Intersection(orig + t*dir,t);
+   Intersection intersection = Intersection(ray.getOrigin() + t*ray.getDirection(),t);
    intersection.setLocalObject(this);
    intersection.u = u;
    intersection.v = v;

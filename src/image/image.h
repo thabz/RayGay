@@ -44,13 +44,13 @@ class Image {
 	static void test();
 
     private:
-	long height;
-	long width;
+	int height;
+	int width;
 	double *data;
 
 	double biCubicR(double x) const;
-	double biCubicP(double x) const;
-	RGB getRGBWrapped(int x, int y) const;
+	double biCubicP(double x) const { return x > 0 ? x : 0; };
+	RGBA getRGBWrapped(int x, int y) const;
 
 };
 

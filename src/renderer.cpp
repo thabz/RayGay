@@ -188,14 +188,17 @@ RGBA Renderer::getSubPixel(unsigned int curLevel, const Vector2& center, PixelBl
 
 Renderer::PixelBlock::PixelBlock(const unsigned int size) {
     this->size = size;
+    this->size_squared = size*size;
     color = new RGBA[size*size]; 
     active = new bool[size*size]; 
     reset();
 }
 
+
 void Renderer::PixelBlock::reset() {
-    for(unsigned int i = 0; i < size*size; i++) {
-	active[i] = false;
+    bool* ptr = active;
+    for(unsigned int i = 0; i < size_squared; i++) {
+	*(ptr++) = false;
     }
 }
 

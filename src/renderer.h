@@ -45,6 +45,7 @@ class Renderer {
 	        RGBA* color;
 		bool* active;
 		unsigned int size;
+		unsigned int size_squared;
 	};
 
 	RGBA getSubPixel(unsigned int curLevel, const Vector2& center, PixelBlock *block, double size, int x1, int y1, int x2, int y2);
