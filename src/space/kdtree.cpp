@@ -103,8 +103,7 @@ void KdTree::prepare() {
 	    node.objects->reserve(old.bobjects->size());
 	    for(unsigned int j = 0; j < old.bobjects->size(); j++) {
 		Object* obj_ptr = (*old.bobjects)[j].object;
-		//if (obj_ptr != NULL)
-		    node.objects->push_back(obj_ptr);
+		node.objects->push_back(obj_ptr);
 	    }
 	    sort(node.objects->begin(),node.objects->end(),compareAreaDesc());
 	    delete old.bobjects;
@@ -114,6 +113,8 @@ void KdTree::prepare() {
     tmp_nodes.clear();
     tmp_nodes.reserve(1);
     cout << "tmp_nodes capacity: " << tmp_nodes.capacity() << endl;
+    cout << "size of TmpNode: " << sizeof(KdNodeTmp) << endl;
+    cout << "Waste: " << sizeof(KdNodeTmp) * tmp_nodes.capacity() << endl;
 }
 
 void KdTree::prepare(int curNode_idx,int depth) {
@@ -534,11 +535,6 @@ bool KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result) con
 	    if (used_right) r++;
 
 	    if (split < bbox.maximum()[d] && split > bbox.minimum()[d]) {
-		//BoundingBox lbox;
-		//BoundingBox rbox;
-		//bbox.split(&lbox,&rbox,d,split);
-		//double left_area = lbox.area(); 
-		//double right_area = rbox.area(); 
 		double left_area = cap_a + (split - bbox.minimum()[d])*cap_p;
 		double right_area = cap_a + (bbox.maximum()[d] - split)*cap_p;
 		double cost = left_area * l + right_area * (size -r);
@@ -557,7 +553,7 @@ bool KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result) con
     if (result.dim == -1) {
 	return false;
     } else {
-	//cout << "Split " << size << " into " << result.left_index << "," << size - result.right_index << endl;
+        //cout << "Split " << size << " into " << result.left_index << "," << size - result.right_index << endl;
 	g_d = result.dim;
 	sort(result.left_bobjects->begin(), result.left_bobjects->end(), cmpL());
 	sort(result.right_bobjects->begin(), result.right_bobjects->end(), cmpR());
