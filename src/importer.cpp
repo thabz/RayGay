@@ -116,7 +116,7 @@ void Importer::parse() {
 	    cur_material->setDiffuseColor(readVector(stream));
 	} else if (command == "specular") {
 	    cur_material->setSpecularColor(readVector(stream));
-	} else if (command == "specularpower") {
+	} else if (command == "specpow") {
 	    cur_material->setSc(readInt(stream));
 	} else if (command == "kd") {
 	    cur_material->setKd(readDouble(stream));
@@ -164,11 +164,13 @@ void Importer::parse() {
 	    Vector c2 = readVector(stream);
 	    Box* box = new Box(c1,c2,*m);
 	    scene->addObject(box);
+	} else if (command[0] == '#') {
+	    // Comment. Ignore rest of line.
+	    while (stream.get() != '\n') {
+	    }
 	} else {
             cerr << "Unknown " << command << endl;
 	    exit(EXIT_FAILURE);
-
-
 	}
     }
 }

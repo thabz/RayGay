@@ -1,7 +1,10 @@
 
+# Comment
+# Comment comment
+
 camera-position 0 0 1500
 camera-lookat 0 0 -1
-camera-aa 4
+camera-aa 3 
 
 background 0.1 0.1 0.3
 
@@ -15,14 +18,14 @@ diffuse 0.2 0.8 0.2
 kd 0.9
 specular 1.0 1.0 1.0
 ks 0.1
-specularpower 20
+specpow 20
 
 material red 
 diffuse 0.8 0.2 0.2
 kd 0.9
 specular 1.0 0.2 0.2
 ks 0.1
-specularpower 30
+specpow 30
 
 sphere red 100   0.00 50.00 0.00
 
