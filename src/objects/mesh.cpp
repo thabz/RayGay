@@ -5,6 +5,7 @@
 #include <map>
 
 #include "types.h"
+#include "exception.h"
 #include "objects/mesh.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
@@ -100,7 +101,22 @@ void Mesh::addTriangle(int v[3]) {
     addTriangle(v,uv);
 }
 
+void Mesh::addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 uv1, const Vector2 uv2) {
+    int v[3];
+    Vector2 uv[3];
+    v[0] = v0; v[1] = v1; v[2] = v2;
+    uv[0] = uv0; uv[1] = uv1; uv[2] = uv2;
+    addTriangle(v,uv);
+}
+
+
 void Mesh::addTriangle(int v[3], const Vector2 uv[3]) {
+
+    // Check vertex indices are within bounds
+    int max_idx = corners.size() - 1;
+    if (v[0] > max_idx || v[1] > max_idx || v[2] > max_idx) {
+	throw_exception("Vertex index out of bounds.");
+    }
 
     Vector c[3];
     c[0] = cornerAt(v[0]);

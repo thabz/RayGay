@@ -88,6 +88,9 @@ class Mesh : public ObjectGroup {
 	void addTriangle(int v[3], const Vector2 uv[3]);
 	
 	/// Add a triangle by vertex indices
+	void addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 uv1, const Vector2 uv2);
+	
+	/// Add a triangle by vertex indices
 	void addTriangle(int v[3]);
 	
 	/// A vector of all vertices
