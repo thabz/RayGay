@@ -61,7 +61,7 @@ Vector Transformer::pointToWorld(const Vector &p) const {
 inline
 Vector Transformer::normalToWorld(const Vector& d) const {
     Vector result = normal_transformation * d;
-    result.normalize();
+    result.normalize(); // TODO: Not necessary...!
     return result;
 }
 

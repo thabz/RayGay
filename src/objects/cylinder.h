@@ -14,7 +14,13 @@ class Ray;
 class Vector2;
 
 /** 
- * A cylinder object
+ * A cylinder object.
+ *
+ * In object space a cylinder begins at (0,0,0) ends at (0,0,1) and
+ * have a radius of 1.
+ * 
+ * Rays are automatically transformed from world space to object space
+ * whenever needed.
  */
 class Cylinder : public Solid, public Transformer {
 
@@ -35,12 +41,6 @@ class Cylinder : public Solid, public Transformer {
 	unsigned int allPositiveRoots(const Ray& world_ray, double roots[4]) const;
 	Vector getNormal(const Vector& local_point) const;
 
-	Vector begin;
-	Vector end;
-
-	double r; /// Radius
-	double rr; /// Squared radius
-	double height; /// Height of cylinder
 	bool has_caps;
 };
 
