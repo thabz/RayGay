@@ -209,8 +209,46 @@ Intersection Hierarchy::intersect(const Ray& ray) {
     return result;
 }
 
+Intersection Hierarchy::intersectForShadow(const Ray& ray) {
+    Intersection result = Intersection(); 
+    Intersection tmp;
+
+    if (_parent != NULL) { // Skip boundscheck on root-box.
+	if (!_box.checkIntersect(ray)) {
+	    return result;
+	}
+    }
+
+    if (hasChildren()) {
+	for (vector<Hierarchy*>::iterator p = children.begin(); p != children.end(); p++) {
+	    tmp = (*p)->intersectForShadow(ray);
+	    if (tmp.intersected) {
+		return tmp;
+	    }
+	}
+    } else if (hasObjects()) {
+	for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
+	    tmp = (*p)->intersect(ray);
+	    if (tmp.intersected) {
+		return tmp;
+	    }
+	}
+    }
+    return result;
+}
+
+Intersection Hierarchy::intersectForShadow(const Ray& ray, const object* hint) {
+    if (hint != NULL) {
+	Intersection i = hint->intersect(ray);
+	if (i.intersected) {
+	    return i;
+	}
+    }
+    return intersectForShadow(ray);
+}
+
 ostream & operator<<(ostream &os, Hierarchy &x) {
-    if (x.hasObjects()) {
+	if (x.hasObjects()) {
 	os << "Objects: (";
 	for (vector<object*>::iterator p = x.objects.begin(); p != x.objects.end(); p++) {
 	    os << "o";

@@ -25,6 +25,8 @@ class Hierarchy {
 
 	void addObject(object* obj); ///< Place a object in the hierarchy
 	Intersection intersect(const Ray& ray); ///< Calculate an intersection with the hierarchy
+	Intersection intersectForShadow(const Ray& ray); ///< Calculate an intersection with the hierarchy
+	Intersection intersectForShadow(const Ray& ray, const object* hint); ///< Calculate an intersection with the hierarchy
 
 	void optimize(); ///< Clean up
 

@@ -23,6 +23,8 @@ class Scene {
 	void addObject(object* obj);
 	void addLight(Lightsource* light);
         virtual Intersection intersect(const Ray& ray) const;
+        virtual Intersection intersectForShadow(const Ray& ray) const;
+        virtual Intersection intersectForShadow(const Ray& ray, const object* hint) const;
 	virtual void transform(const Matrix& m);
 	std::vector<Lightsource*> getLightsources();
 	void setBackgroundColor(const RGB& c) { bg_color = c; };

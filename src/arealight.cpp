@@ -6,6 +6,7 @@
 #include "circle.h"
 #include "intersection.h"
 #include "scene.h"
+#include "object.h"
 
 /**
  * Constructs an area light
@@ -21,26 +22,27 @@ Arealight::Arealight(const Vector& pos, const Vector& dir, double radius, int n,
     jitter = j;
     position = pos;
 
-    circles = new Circle[num];
-    ts = new double[num];
-
+    /*
+    ci'rcles = new (Circle*)[num];
+    ts = double[num];
+    hints = new object[num];
+*/
     assert(n > 1);
 
     for(int i = 0; i < n; i++) {
 	double r = radius*(double(i)/(n-1));
-	circles[i] = Circle(pos,r,dir);
-	ts[i] = (double(rand()) / RAND_MAX);
+	circles.push_back(new Circle(pos,r,dir));
+	ts.push_back((double(rand()) / RAND_MAX));
+	hints.push_back(NULL);
     }
 }
 
 Arealight::~Arealight() {
-    delete [] circles;
-    delete [] ts;
 }
 
 void Arealight::transform(const Matrix& m) {
     for(int i = 0; i < num; i++) {
-	circles[i].transform(m);
+	circles[i]->transform(m);
     }
 }
 
@@ -52,7 +54,7 @@ Vector Arealight::getPosition(int i) const {
     assert(i < num);
     double j = jitter * (double(rand()) / RAND_MAX);
     double t = (ts[i] + j) - int(ts[i] + j);
-    return circles[i].getPoint(t);
+    return circles[i]->getPoint(t);
 }
 
 Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& normal, const Scene& scene) const {
@@ -68,12 +70,15 @@ Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& norma
 	    direction_to_light.normalize();
 
 	    Ray ray_to_light = Ray(inter.point,direction_to_light,-1.0);
-	    Intersection i2 = scene.intersect(ray_to_light);
-	    if (!i2.intersected)
+	    Intersection i2 = scene.intersectForShadow(ray_to_light,hints[i]);
+	    if (!i2.intersected) {
 		count++;
+		hints[i] = NULL;
+	    } else {
+		hints[i] = i2.getObject();
+	    }
 	}
 	info.intensity = double(count) / num;
     }
     return info;
-
 }

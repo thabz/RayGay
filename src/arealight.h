@@ -2,8 +2,10 @@
 #define AREALIGHT_H
 
 #include "lightsource.h"
+#include <vector>
 
 class Circle;
+class object;
 
 /// Lightsource that produces soft shadows
 class Arealight : public Lightsource {
@@ -17,8 +19,9 @@ class Arealight : public Lightsource {
         void transform(const Matrix& m);
 
     private:
-	Circle* circles;
-	double* ts;
+	std::vector<Circle*> circles;
+	mutable std::vector<object*> hints;
+	std::vector<double> ts;
 	double jitter;
 	int num;
 	Vector position;

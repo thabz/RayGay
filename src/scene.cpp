@@ -54,6 +54,14 @@ Intersection Scene::intersect(const Ray& ray) const {
     return hierarchy->intersect(ray);
 }
 
+Intersection Scene::intersectForShadow(const Ray& ray) const {
+    return hierarchy->intersectForShadow(ray);
+}
+
+Intersection Scene::intersectForShadow(const Ray& ray, const object* hint) const {
+    return hierarchy->intersectForShadow(ray,hint);
+}
+
 ostream & operator<<(ostream &os, const Scene &x) {
     os << "Hierarchy: " << *(x.hierarchy);
 
