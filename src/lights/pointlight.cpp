@@ -1,9 +1,8 @@
 
-#include "pointlight.h"
+#include "lights/pointlight.h"
+#include "lights/lightinfo.h"
 #include "math/matrix.h"
-#include "image/rgb.h"
 #include "intersection.h"
-#include "lightinfo.h"
 #include "spacesubdivider.h"
 
 Pointlight::Pointlight(const Vector& pos) {

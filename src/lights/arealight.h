@@ -1,7 +1,7 @@
 #ifndef AREALIGHT_H
 #define AREALIGHT_H
 
-#include "lightsource.h"
+#include "lights/lightsource.h"
 #include <vector>
 
 class Circle;

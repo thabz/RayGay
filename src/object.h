@@ -10,6 +10,7 @@ class Ray;
 class Vector;
 class Vector2;
 class BoundingBox;
+class Material;
 
 /// The abstract superclass of all objects in the scene that can be rendered.
 

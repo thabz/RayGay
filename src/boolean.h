@@ -1,9 +1,8 @@
 #ifndef BOOLEAN_H
 #define BOOLEAN_H
 
-#include "object.h"
-#include "math/vector.h"
 #include "booleanoperand.h"
+#include "math/vector.h"
 
 class Intersection;
 class Ray;

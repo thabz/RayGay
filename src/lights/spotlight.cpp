@@ -1,13 +1,7 @@
 
-#include <math.h>
-#include "spotlight.h"
+#include "lights/spotlight.h"
 #include "math/matrix.h"
-#include "image/rgb.h"
-#include <cassert>
-#include <iostream>
 #include "intersection.h"
-#include "lightinfo.h"
-#include "scene.h"
 #include "spacesubdivider.h"
 
 Spotlight::Spotlight(const Vector& pos, const Vector& dir, double angle, double cut_angle) {

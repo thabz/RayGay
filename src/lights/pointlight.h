@@ -2,7 +2,7 @@
 #ifndef POINTLIGHT_H 
 #define POINTLIGHT_H
 
-#include "lightsource.h"
+#include "lights/lightsource.h"
 
 class RGB;
 class Matrix;

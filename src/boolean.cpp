@@ -1,11 +1,7 @@
 
 #include "boolean.h"
-#include <iostream>
-#include <cassert>
-#include "sphere.h" /* For test only */
 #include "boundingbox.h"
 #include "booleanoperand.h"
-#include "object.h"
 #include "math/vector2.h"
 
 Boolean::Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, Material m) {
