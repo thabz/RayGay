@@ -1,0 +1,48 @@
+# A scene for testing photon mapping
+
+include materials.gay
+
+#photonmap-maxrays 100000
+#photonmap-max-dist 20
+#photonmap-photons-in-estimate 100
+
+camera-position 0 0 1500
+camera-up 0 1 0
+camera-lookat 0 0 0
+camera-field-of-view 45
+camera-aa 4
+
+image-ratio 4 3
+image-width 640
+
+background 0.1 0.1 0.3
+
+#light spot 2000 700 5     0 0 0 20.0 18.0
+light point 280 180 280
+
+box $dullred -50 -150  -50 50 100 50 rotate 0 1 0 30
+box $dullred -150 -150  -250  -100 100 -200 rotate 0 1 0 -30
+
+#cylinder $dullwhite 5 300   20  -300    300   20 300
+#cylinder $dullwhite 5 300   40  -300    300   40 300
+#cylinder $dullwhite 5 300   60  -300    300   60 300
+#cylinder $dullwhite 5 300   80  -300    300   80 300
+#cylinder $dullwhite 5 300  100  -300    300  100 300
+#cylinder $dullwhite 5 300  120  -300    300  120 300
+#cylinder $dullwhite 5 300  140  -300    300  140 300
+#cylinder $dullwhite 5 300  160  -300    300  160 300
+
+# Floor
+box $dullwhite -300 -200 -300    300 -150 300
+# Ceiling 
+box $dullwhite -300 200 -300    300 250 300
+# Backwall
+box $dullwhite -300 -150 -330    300 200 -300
+# Left wall
+box $dullwhite -350 -150 -300    -300 200 300
+# Right wall
+box $dullwhite 300 -150 -300    350 200 300
+# Wall behind camera
+box $dullwhite -300 -150 2000    300 200 2050
+
+

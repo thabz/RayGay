@@ -1,0 +1,43 @@
+# Comment
+# Comment comment
+
+include materials.gay
+
+camera-position 0 0 1500
+camera-up 0 1 0
+camera-lookat 0 0 0
+camera-field-of-view 45
+camera-aa 4
+
+image-ratio 4 3
+image-width 640
+
+
+background 0.1 0.1 0.3
+
+light point -4000 4000 4000
+light point  4000 4000 4000
+#light area -4000 4000 4000 1 -1 -1 1000 32 0.1
+#light area 4000 4000 4000 1 -1 -1 1000 32 0.1
+#light spot -1000 1000 500 300 0 0 10.0 8.0
+#light spot 1000 1000 500 -300 0 0 10.0 8.0
+
+circle $circle 0 0 0 300 0 1 0
+spiral $spiral1 $circle 100 8 0
+spiral $spiral2 $circle 100 8 0.5
+
+# 76 sec
+# 66 sec
+
+#necklace $dullblue $spiral1 200 10
+#necklace $dullred $spiral2 200 10
+
+sphere $red 100 -150 -50 -150 rotate 0 1 0 ANGLE
+sphere $red 100 -150 -50 150 rotate 0 1 0 ANGLE
+sphere $red 100 150 -50 -150 rotate 0 1 0 ANGLE
+sphere $red 100 150 -50 150 rotate 0 1 0 ANGLE
+cylinder $red 30 -150 -50 -150     150 -50 150 rotate 0 1 0 ANGLE
+cylinder $red 30 150 -50 -150     -150 -50 150 rotate 0 1 0 ANGLE
+
+box $green -300 -200 -300 300 -150 300
+

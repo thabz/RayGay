@@ -1,0 +1,23 @@
+
+# Comment
+# Comment comment
+
+include materials.gay
+
+camera-position 0 0 1500
+camera-up 0 1 0
+camera-lookat 0 0 0
+camera-field-of-view 45
+camera-aa 4
+
+image-ratio 4 3
+image-width 640
+
+background 0.1 0.1 0.3
+
+light point -4000 4000 4000
+light point  4000 4000 4000
+
+torus $blue 200 50
+
+box $green -300 -200 -300 300 -150 300

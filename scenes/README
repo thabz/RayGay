@@ -1,5 +1,10 @@
 Description of the raygay fileformat
 
+*** LIGHTS ***
+light point <point>
+light spot <point> <look-at-point> <angle> <cut-angle>
+light area <point> <direction> radius num jitter
+
 *** PATHS ***
 
 circle <path-name> center radius normal

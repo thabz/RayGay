@@ -1,7 +1,7 @@
 
 material $dullblue
 diffuse 0.2 0.2 0.8
-kd 1.0
+kd 0.8
 specular 1.0 1.0 1.0
 ks 0.0
 specpow 0
@@ -29,7 +29,15 @@ specpow 15
 
 material $dullred
 diffuse 0.8 0.2 0.2
-kd 1.0
+kd 0.8
+specular 1.0 1.0 1.0
+ks 0.0
+specpow 0
+
+
+material $dullwhite
+diffuse 1.0 1.0 1.0
+kd 0.8
 specular 1.0 1.0 1.0
 ks 0.0
 specpow 0
