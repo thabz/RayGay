@@ -153,7 +153,7 @@ Image* Image::load(const std::string& filename) {
     byte Header[18];
     Handle = fopen(filename.c_str(), "rb");
     if(Handle == NULL) {
-        cout << "Error: can't open " << filename << endl;
+        cout << "Error opening " << filename << endl;
         exit(EXIT_FAILURE);
     }
 
