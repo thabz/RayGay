@@ -13,6 +13,7 @@
 #include "math/rootfinder.h"
 #include "math/polynomial.h"
 #include "math/sturmsequence.h"
+#include "math/quaternion.h"
 #include "testing.h"
 
 using namespace std;
@@ -884,6 +885,53 @@ class sturm_sequence_test : public Test  {
 	}
 };
 
+class quaternion_test : public Test  {
+    public:
+	void run() {
+	    p = Quaternion(1,2,3,4);
+	    q = Quaternion(2,3,4,5);
+	    assertTrue(p + p == Quaternion(2,4,6,8));
+	    assertTrue(q + q == Quaternion(4,6,8,10));
+	    assertTrue(p + q == Quaternion(3,5,7,9));
+	    assertTrue(p.conjugate() == Quaternion(1,-2,-3,-4));
+	    assertTrue(q.conjugate() == Quaternion(2,-3,-4,-5));
+	    assertEqualF((p*q).norm(), p.norm() * q.norm());
+	    assertTrue(p * 2 == Quaternion(2,4,6,8));
+	    assertTrue(q * 3 == Quaternion(6,9,12,15));
+
+	    // Rotations
+	    q = Quaternion::rotation(Vector(0,0,1),90.0);
+	    assertEqualF(q.norm(), 1.0);
+	    assertTrue(q.rotate(Vector(1,0,0)) == Vector(0,1,0));
+	    assertTrue(q.rotate(Vector(0,1,0)) == Vector(-1,0,0));
+	    assertTrue(q.rotate(Vector(-1,0,0)) == Vector(0,-1,0));
+	    assertTrue(q.rotate(Vector(0,-1,0)) == Vector(1,0,0));
+
+	    q = Quaternion::rotation(Vector(0,1,0),90.0);
+	    assertEqualF(q.norm(), 1.0);
+	    assertTrue(q.rotate(Vector(1,0,0)) == Vector(0,0,-1));
+	    assertTrue(q.rotate(Vector(0,0,-1)) == Vector(-1,0,0));
+
+	    // toMatrix
+	    q = Quaternion::rotation(Vector(0,0,1),90.0);
+	    m = q.toMatrix();
+	    assertEqualV(m * Vector(1,0,0), Vector(0,1,0));
+	    assertEqualV(m * Vector(0,1,0), Vector(-1,0,0));
+	    assertEqualV(m * Vector(-1,0,0), Vector(0,-1,0));
+	    assertEqualV(m * Vector(0,-1,0), Vector(1,0,0));
+
+	    q = Quaternion::rotation(Vector(0,1,0),90.0);
+	    m = q.toMatrix();
+	    assertEqualV(m * Vector(1,0,0), Vector(0,0,-1));
+	    assertEqualV(m * Vector(0,0,-1),  Vector(-1,0,0));
+	}
+
+    private:
+	Matrix m;
+	Quaternion q;
+	Quaternion p;
+};
+
 int main(int argc, char *argv[]) {
 
     TestSuite suite;
@@ -903,6 +951,7 @@ int main(int argc, char *argv[]) {
     suite.add("Bisection",new bisection());
     suite.add("Polynomials",new polynomials());
     suite.add("Sturm sequence",new sturm_sequence_test());
+    suite.add("Quaternion",new quaternion_test());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {

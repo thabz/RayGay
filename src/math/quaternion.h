@@ -47,11 +47,13 @@ class Quaternion
 };
 
 inline
-Quaternion::Quaternion() {
+Quaternion::Quaternion() 
+{
 }
 
 inline
-Quaternion::Quaternion(double a, double b, double c, double d) {
+Quaternion::Quaternion(double a, double b, double c, double d) 
+{
     a1 = a;
     a2 = b;
     a3 = c;
@@ -59,7 +61,8 @@ Quaternion::Quaternion(double a, double b, double c, double d) {
 }
 
 inline
-Quaternion::Quaternion(double s, const Vector& v) {
+Quaternion::Quaternion(double s, const Vector& v) 
+{
     a1 = s;
     a2 = v[0];
     a3 = v[1];
@@ -69,15 +72,21 @@ Quaternion::Quaternion(double s, const Vector& v) {
 /**
  * Add two quaternions.
  */
-Quaternion Quaternion::operator+(const Quaternion& b) const {
+inline
+Quaternion Quaternion::operator+(const Quaternion& b) const 
+{
     return Quaternion(a1 + b.a1, a2 + b.a2, a3 + b.a3, a4 + b.a4);
 }
 
-Quaternion Quaternion::operator*(double d) const {
+inline
+Quaternion Quaternion::operator*(double d) const 
+{
     return Quaternion(a1 * d, a2 * d, a3 * d, a4 * d);
 }
 
-Quaternion Quaternion::operator/(double d) const {
+inline
+Quaternion Quaternion::operator/(double d) const 
+{
     return Quaternion(a1 / d, a2 / d, a3 / d, a4 / d);
 }
 
@@ -88,7 +97,8 @@ Quaternion Quaternion::operator/(double d) const {
  * necessarily equal to \f$ ba \f$.
  */
 inline
-Quaternion Quaternion::operator*(const Quaternion& b) const {
+Quaternion Quaternion::operator*(const Quaternion& b) const 
+{
     double b1 = b.a1;
     double b2 = b.a2;
     double b3 = b.a3;
@@ -100,14 +110,16 @@ Quaternion Quaternion::operator*(const Quaternion& b) const {
 	    a1*b4 + a2*b3 - a3*b2 + a4*b1);
 }
 
-bool Quaternion::operator==(const Quaternion& b) const {
+bool Quaternion::operator==(const Quaternion& b) const 
+{
     return IS_EQUAL(a1, b.a1) && 
            IS_EQUAL(a2, b.a2) && 
            IS_EQUAL(a3, b.a3) && 
            IS_EQUAL(a4, b.a4);
 }
 
-bool Quaternion::operator!=(const Quaternion& b) const {
+bool Quaternion::operator!=(const Quaternion& b) const 
+{
     return !(*this == b);
 }
 
@@ -116,7 +128,8 @@ bool Quaternion::operator!=(const Quaternion& b) const {
  * \f$ \bar{a} = a_1 - a_2i - a_3j - a_4k \f$.
  */
 inline
-Quaternion Quaternion::conjugate() const {
+Quaternion Quaternion::conjugate() const 
+{
     return Quaternion(a1, -a2, -a3, -a4);
 }
 
@@ -124,7 +137,9 @@ Quaternion Quaternion::conjugate() const {
  * The squared norm of a quaternion. This is defined as
  * \f$ |a|^2 = a \bar{a} = \bar{a} a \f$
  */
-double Quaternion::norm_squared() const {
+inline
+double Quaternion::norm_squared() const 
+{
     return a1*a1 + a2*a2 + a3*a3 + a4*a4;
 }
 
@@ -132,7 +147,9 @@ double Quaternion::norm_squared() const {
  * The norm of a quaternion. This is defined as
  * \f$ |a| = \sqrt{a \bar{a}} = \sqrt{ \bar{a} a} \f$
  */
-double Quaternion::norm() const {
+inline
+double Quaternion::norm() const 
+{
     return sqrt(a1*a1 + a2*a2 + a3*a3 + a4*a4);
 }
 
@@ -146,7 +163,8 @@ double Quaternion::norm() const {
  * \f$ \frac {q \bar{q}} {|q|^2} = \frac {\bar{q} q} {|q|^2} = 1 \f$.
  */
 inline
-Quaternion Quaternion::inverse() const {
+Quaternion Quaternion::inverse() const 
+{
     return this->conjugate() / this->norm_squared();
 }
 
@@ -160,7 +178,8 @@ Quaternion Quaternion::inverse() const {
  * @param angle the angle to rotate in degrees
  */
 inline
-Quaternion Quaternion::rotation(const Vector& v, double angle) {
+Quaternion Quaternion::rotation(const Vector& v, double angle) 
+{
     double rad = DEG2RAD(angle);
     double sina = sin(0.5 * rad);
     double cosa = cos(0.5 * rad);
@@ -177,7 +196,8 @@ Quaternion Quaternion::rotation(const Vector& v, double angle) {
  * @param P the point to rotate
  */
 inline
-Vector Quaternion::rotate(const Vector& P) const {
+Vector Quaternion::rotate(const Vector& P) const 
+{
     Quaternion p = Quaternion(0,P);
     Quaternion r = *this * p * this->conjugate();
     return Vector(r.a2, r.a3, r.a4);
@@ -195,7 +215,8 @@ Vector Quaternion::rotate(const Vector& P) const {
  *
  * @see http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
  */
-Matrix Quaternion::toMatrix() const {
+Matrix Quaternion::toMatrix() const 
+{
     assert(IS_EQUAL(norm(),1.0));
     Matrix m;
     double a = a1;
@@ -205,7 +226,7 @@ Matrix Quaternion::toMatrix() const {
     double aa = a * a; double bb = b * b; double cc = c * c; double dd = d * d;
     double b2 = 2*b; double d2 = 2*d;
     double bc2 = b2*c; double ad2 = d2*a; double ac2 = 2*a*c;
-    double 2bd = b2*d; double cd2 = d2*c; double ab2 = b2*a;
+    double bd2 = b2*d; double cd2 = d2*c; double ab2 = b2*a;
     m.set(0,0, aa + bb - cc - dd);
     m.set(1,0, bc2 - ad2);
     m.set(2,0, ac2 - bd2);
