@@ -43,6 +43,6 @@ libparser_la_SOURCES = \
 		      vectornodes.h	\
 		      vectornodes.cpp
 
-BUILT_SOURCES = parser.h parserclass.h objectcollector.h
-
+BUILT_SOURCES = parser.h 
+EXTRA_DIST = parser.h
 
