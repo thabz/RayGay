@@ -4,6 +4,7 @@
 
 #include "objects/sceneobject.h"
 #include "objects/sphere.h"
+#include "objects/ellipsoid.h"
 #include "objects/torus.h"
 #include "objects/object.h"
 #include "objects/necklace.h"
@@ -67,6 +68,28 @@ class SphereNode : public SceneObjectNode {
     private:
 	VectorNode* center;
 	FloatNode* radius;
+	MaterialNode* material;
+};
+
+class EllipsoidNode : public SceneObjectNode {
+
+    public:
+	EllipsoidNode(VectorNode* center, VectorNode* radii, MaterialNode* mat) {
+	    this->center = center;
+	    this->radii = radii;
+	    this->material = mat;
+	}
+
+	SceneObject* eval() {
+	    Vector c = center->eval();
+	    Vector r = radii->eval();
+	    Material* m = material->eval();
+	    return new Ellipsoid(c,r,m);
+	}
+
+    private:
+	VectorNode* center;
+	VectorNode* radii;
 	MaterialNode* material;
 };
 

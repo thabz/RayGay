@@ -63,6 +63,7 @@ difference 	return tDIFFERENCE;
 diffuse		return tDIFFUSE;
 do		return tDO;
 dof		return tDOF;
+ellipsoid	return tELLIPSOID;
 estimateradius 	return tESTIMATERADIUS; 
 estimatesamples return tESTIMATESAMPLES;
 eta		return tETA;

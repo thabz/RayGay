@@ -13,6 +13,7 @@
 #include "objects/cylinder.h"
 #include "objects/mesh.h"
 #include "objects/extrusion.h"
+#include "objects/ellipsoid.h"
 #include "objects/box.h"
 #include "objects/necklace.h"
 #include "objects/transformedinstance.h"
@@ -327,6 +328,10 @@ void cylinder_test() {
     assert(result[0].getNormal() == Vector(0,1,0));
     assert(result[1].getPoint() == Vector(0,2,1));
     assert(result[1].getNormal() == Vector(0,-1,0));
+    assert(iPoint(cyl,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,10,0));
+    assert(iNormal(cyl,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
+    assert(iPoint(cyl,Vector(1,1000,1),Vector(0,-1,0)) == Vector(1,10,1));
+    assert(iNormal(cyl,Vector(1,1000,1),Vector(0,-1,0)) == Vector(0,1,0));
 
     // Test clone()
     Object* s1 = new Cylinder(Vector(2,0,0),Vector(10,0,0),10,true,m);
@@ -350,12 +355,15 @@ void cylinder_test() {
     cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,true,m);
     assert(intersects(cyl,Vector(0,0,5),Vector(0,0,1)));
     assert(iPoint(cyl,Vector(0,0,5),Vector(0,0,1)) == Vector(0,0,10));
+    assert(iNormal(cyl,Vector(0,0,5),Vector(0,0,1)) == Vector(0,0,1));
     assert(intersects(cyl,Vector(0,0,5),Vector(0,1,0)));
     assert(iPoint(cyl,Vector(0,0,5),Vector(0,1,0)) == Vector(0,10,5));
+    assert(iNormal(cyl,Vector(0,0,5),Vector(0,1,0)) == Vector(0,1,0));
 
     cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
     assert(intersects(cyl,Vector(0,5,0),Vector(0,1,0)));
     assert(iPoint(cyl,Vector(0,5,0),Vector(0,1,0)) == Vector(0,10,0));
+    assert(iNormal(cyl,Vector(0,5,0),Vector(0,1,0)) == Vector(0,1,0));
 
     // Scaled cylinder
     cyl = new Cylinder(Vector(0,0,0),Vector(0,1,0),1,true,m);
@@ -614,6 +622,15 @@ void solidbox_test() {
     assert(intersects(b,ray) == true);
 }
 
+void ellipsoid_test() {
+    Ellipsoid* e = new Ellipsoid(Vector(0,0,0),Vector(10,20,30),NULL);
+    assert(intersects(e,Vector(0,0,1000),Vector(0,0,-1)));
+    assert(iPoint(e,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,30));
+    assert(iNormal(e,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iPoint(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(10,0,0));
+    assert(iNormal(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(1,0,0));
+}
+
 int main(int argc, char *argv[]) {
     transformed_instance_test();
     sphere_test();
@@ -630,6 +647,7 @@ int main(int argc, char *argv[]) {
     test_3ds();
     solidbox_test();
     csg_test();
+    ellipsoid_test();
     return EXIT_SUCCESS;
 }
 

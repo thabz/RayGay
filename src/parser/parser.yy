@@ -22,6 +22,7 @@
 #include "objects/cylinder.h"    
 #include "objects/extrusion.h"    
 #include "objects/sphere.h"    
+#include "objects/ellipsoid.h"    
 #include "objects/box.h"    
 #include "objects/csg.h"    
 #include "objects/solid.h"    
@@ -98,6 +99,7 @@ ActionListNode* top_actions;
 %token tDOF
 %token tDIFFUSE tSPECULAR tBUMP 
 %token tETA
+%token tELLIPSOID
 %token tEXTRUSION
 %token tFOV
 %token tGROUP
@@ -155,7 +157,7 @@ ActionListNode* top_actions;
 %type <matrix> Rotate Translate Scale Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
-%type <object> ObjectGroup GroupItems GroupItem
+%type <object> ObjectGroup GroupItems GroupItem Ellipsoid
 %type <object> NamedObject 
 %type <material> MaterialDef NamedMaterial Material
 %type <light> LightDef Lightsource 
@@ -524,6 +526,7 @@ MeshObject	: Extrusion
 		;
 
 SolidObject	: Sphere
+		| Ellipsoid
                 | SolidBox
                 | Difference 
                 | Intersection
@@ -607,6 +610,16 @@ Sphere		: tSPHERE '{' Material Expr Vector '}'
                 | tSPHERE '{' Expr Vector '}'
                 {
 		    $$ = new SphereNode($4,$3,new MaterialNullNode());
+		}
+                ;
+
+Ellipsoid	: tELLIPSOID '{' Material Vector Vector '}'
+                {
+		    $$ = new EllipsoidNode($5,$4,$3);
+                }
+                | tELLIPSOID '{' Vector Vector '}'
+                {
+		    $$ = new EllipsoidNode($4,$3,new MaterialNullNode());
 		}
                 ;
 
