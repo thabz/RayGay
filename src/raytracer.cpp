@@ -10,6 +10,7 @@
 #include "image/rgb.h"
 #include "math/matrix.h"
 #include "scene.h"
+#include "camera.h"
 #include "image/image.h"
 #include "lights/lightsource.h"
 

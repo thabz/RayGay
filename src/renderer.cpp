@@ -4,10 +4,12 @@
 #include <time.h>
 
 #include "renderer.h"
+#include "camera.h"
 #include "image/image.h"
 #include "scene.h"
 #include "image/rgb.h"
 #include "object.h"
+#include "math/matrix.h"
 #include "spacesubdivider.h"
 #include "objectcollection.h"
 
@@ -27,6 +29,12 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
     scene = sc;
     space = spc;
 
+    // Transform scene according to camera
+    Camera* camera = scene->getCamera();
+    /*
+    Matrix orient = Matrix::matrixOrient(camera->getDirection(), camera->getUp());
+    scene->transform(orient);
+*/
     beginTime = time(NULL);
     // Add all objects in scene to spacesubdivider
     std::vector<object*> objects = scene->getObjects();
@@ -44,8 +52,8 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
     space->prepare();
     Stats::getUniqueInstance()->put("Prepare time (seconds)",time(NULL)-beginTime);
 
-    aa_enabled = scene->getCamera()->isAAEnabled();
-    aa_depth = scene->getCamera()->getAADepth();
+    aa_enabled = camera->isAAEnabled();
+    aa_depth = camera->getAADepth();
     
     beginTime = time(NULL);
     int img_w = img->getWidth() / 2;

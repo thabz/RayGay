@@ -5,7 +5,6 @@
 #include <iosfwd>
 #include "image/rgb.h"
 #include "hierarchy.h"
-#include "camera.h"
 
 class Intersection;
 class Ray;
@@ -15,6 +14,7 @@ class Matrix;
 class Sphere;
 class Image;
 class ObjectCollection;
+class Camera;
 
 /// The collection of objects and lights.
 
@@ -43,7 +43,7 @@ class Scene {
 	Camera* getCamera() const;
 
 	/// Transforms all objects in the scene
-	virtual void transform(const Matrix& m);
+	void transform(const Matrix& m);
 
 	/// Returns a vector of all lightsources
 	std::vector<Lightsource*> getLightsources();

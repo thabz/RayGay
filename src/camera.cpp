@@ -1,14 +1,7 @@
 
 #include "camera.h"
-#include "math/matrix.h"
 
 Camera::Camera() {
-    aa_enabled = false;
-}
-
-Camera::Camera(Vector p, Vector d) {
-    position = p;
-    direction = d;
     aa_enabled = false;
 }
 
@@ -23,21 +16,24 @@ Camera::Camera(Vector p, Vector d) {
  */
 Camera::Camera(Vector position, Vector lookAt, Vector up, double fieldOfView) {
     aa_enabled = false;
+    look_at = lookAt;
+    this->up = up;
+    this->field_of_view_radians = DEG2RAD(fieldOfView);
+
 }
 
 Camera::~Camera() {
 }
 
-void Camera::transform(Matrix &m) {
-    position = m * position;
-}
-
-Vector & Camera::getPosition() {
-    return position;
-}
-
 void Camera::enableAdaptiveSupersampling(unsigned int depth) {
     aa_depth = depth;
     aa_enabled = depth == 0 ? false : true;
+}
+
+void Camera::transform(const Matrix& m) {
+    position = m * position;
+    look_at = m * look_at;
+    up = m * up;
+    focal_point = m * focal_point;
 }
 

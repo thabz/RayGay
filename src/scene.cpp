@@ -2,6 +2,7 @@
 #include <map>
 
 #include "scene.h"
+#include "camera.h"
 #include "object.h"
 #include "lights/lightsource.h"
 #include "intersection.h"
@@ -77,7 +78,7 @@ void Scene::transform(const Matrix &m) {
     for (vector<ObjectCollection*>::iterator p = objectcollections.begin(); p != objectcollections.end(); p++) {
 	(*p)->transform(m);
     }
-    // camera.transform(m)
+ //   camera->transform(m);
 }
 
 std::vector<Lightsource*> Scene::getLightsources() {

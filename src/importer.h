@@ -9,12 +9,14 @@ using namespace std;
 class Scene;
 class Material;
 class Path;
+class Vector2;
 
 class Importer {
 
     public:
 	Importer(const string& filename);
 	Scene* getScene() const { return scene; };
+	Vector2 getImageSize() const;
 
     private:
 	void parse();
@@ -26,6 +28,9 @@ class Importer {
 	map<string,Material*> materials;
 	map<string,Path*> paths;
 	Scene* scene;
+
+	double ratio;
+	int width;
 };
 
 #endif

@@ -8,6 +8,7 @@
 #include "necklace.h"
 #include "cylinder.h"
 #include "extrusion.h"
+#include "math/vector2.h"
 #include "sphere.h"
 #include "paths/linesegment.h"
 #include "paths/circle.h"
@@ -19,8 +20,17 @@
 
 Importer::Importer(const std::string& filename) {
     this->filename = filename;
+    ratio = -1;
     scene = new Scene();
     parse();
+}
+
+Vector2 Importer::getImageSize() const {
+    if (ratio != -1) {
+	return Vector2(width,double(width)*ratio);
+    } else {
+	return Vector2(640,480);
+    }
 }
 
 Vector readVector(std::ifstream& stream) {
@@ -100,13 +110,24 @@ void Importer::parse() {
 	if (command == "material") {
 	    stream >> str1;
 	    cur_material = initMaterial(str1);
+	} else if (command == "image-width") {
+	    this->width = readInt(stream);
+	} else if (command == "image-ratio") {
+	    double w = readDouble(stream);
+	    double h = readDouble(stream);
+	    this->ratio = h / w;
 	} else if (command == "camera-position") {
 	    Vector v = readVector(stream);
 	    camera->setPosition(v);
+	} else if (command == "camera-up") {
+	    Vector v = readVector(stream);
+	    camera->setUp(v);
+	} else if (command == "camera-field-of-view") {
+	    double d = readDouble(stream);
+	    camera->setFieldOfView(d);
 	} else if (command == "camera-lookat") {
 	    Vector v = readVector(stream);
-	    camera->setDirection(v);
-	    // TODO
+	    camera->setLookAt(v);
 	} else if (command == "camera-aa") {
 	    int a = readInt(stream);
 	    camera->enableAdaptiveSupersampling(a);
