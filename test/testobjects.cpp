@@ -259,58 +259,72 @@ void extrusion_test() {
 
 void cylinder_test() {
     Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
-    Cylinder* cyl = new Cylinder(Vector(0,0,0),Vector(0,10,0),10,m);
+    Cylinder* cyl = new Cylinder(Vector(0,0,0),Vector(0,0,10),10,m);
 
     /* Test inside() and onEdge() */
-    assert(cyl->inside(Vector(0,5,0)));
-    assert(cyl->inside(Vector(0,9,0)));
-    assert(!cyl->inside(Vector(0,10,0)));
+    assert(cyl->inside(Vector(0,0,5)));
+    assert(cyl->inside(Vector(0,0,9)));
+    assert(!cyl->inside(Vector(0,0,10)));
     
-    assert(cyl->onEdge(Vector(0,10,0)));
-    assert(cyl->onEdge(Vector(10,5,0)));
-    assert(cyl->onEdge(Vector(-10,5,0)));
-    assert(!cyl->inside(Vector(10,5,0)));
-    assert(!cyl->inside(Vector(0,11,0)));
-    assert(!cyl->inside(Vector(1,-1,0)));
+    assert(cyl->onEdge(Vector(0,0,10)));
+    assert(cyl->onEdge(Vector(10,0,5)));
+    assert(cyl->onEdge(Vector(-10,0,5)));
+    assert(!cyl->inside(Vector(10,0,5)));
+    assert(!cyl->inside(Vector(0,0,11)));
+    assert(!cyl->inside(Vector(1,0,-1)));
 
-    /* Test intersection() of y-axis aligned cylinder */
-    Ray r = Ray(Vector(0,5,-1000),Vector(0,0,1),1);
+    /* Test intersection() of z-axis aligned cylinder */
+    
+    Ray r = Ray(Vector(0,-1000,5),Vector(0,1,0),1);
     assert(cyl->intersect(r));
     assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[0], 0.0));
-    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[1], 5.0));
-    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[2], -10.0));
+    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[1], -10.0));
+    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[2], 5.0));
 
-    r = Ray(Vector(0,5,1000),Vector(0,0,-1),1);
+    r = Ray(Vector(0,1000,5),Vector(0,-1,0),1);
     assert(cyl->intersect(r));
     assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[0], 0.0));
-    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[1], 5.0));
-    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[2], 10.0));
+    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[1], 10.0));
+    assert(IS_EQUAL(cyl->getLastIntersection()->getPoint()[2], 5.0));
 
     delete cyl;
 
-    // Test a shifted cylinder align the y-axis
-    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
+    // Test a cylinder translated along the z-axis
+    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,m);
 
-    /* Test inside() and onEdge() */
-    assert(cyl->inside(Vector(0,3,0)));
-    assert(cyl->inside(Vector(0,5,0)));
-    assert(cyl->inside(Vector(0,9,0)));
-    assert(!cyl->inside(Vector(0,10,0)));
-    assert(!cyl->inside(Vector(0,11,0)));
-    assert(!cyl->inside(Vector(0,2,0)));
+    assert(cyl->inside(Vector(0,0,3)));
+    assert(cyl->inside(Vector(0,0,5)));
+    assert(cyl->inside(Vector(0,0,9)));
+    assert(!cyl->inside(Vector(0,0,10)));
+    assert(!cyl->inside(Vector(0,0,11)));
+    assert(!cyl->inside(Vector(0,0,2)));
     
-    assert(cyl->onEdge(Vector(0,2,0)));
-    assert(cyl->onEdge(Vector(0,10,0)));
-    assert(cyl->onEdge(Vector(10,5,0)));
-    assert(cyl->onEdge(Vector(-10,5,0)));
-    assert(!cyl->inside(Vector(10,5,0)));
-    assert(!cyl->inside(Vector(0,11,0)));
-    assert(!cyl->inside(Vector(0,1,0)));
+    assert(cyl->onEdge(Vector(0,0,2)));
+    assert(cyl->onEdge(Vector(0,0,10)));
+    assert(cyl->onEdge(Vector(10,0,5)));
+    assert(cyl->onEdge(Vector(-10,0,5)));
+    assert(!cyl->inside(Vector(10,0,5)));
+    assert(!cyl->inside(Vector(0,0,11)));
+    assert(!cyl->inside(Vector(0,0,1)));
+    assert(!cyl->onEdge(Vector(0,0,1)));
+    delete cyl;
+    
+    cyl = new Cylinder(Vector(1,1,1),Vector(10,10,10),10,m);
+    assert(cyl->inside(Vector(2,2,2)));
+    assert(cyl->inside(Vector(5,5,5)));
+    assert(cyl->inside(Vector(7,7,7)));
+    assert(cyl->inside(Vector(9,9,9)));
+    assert(!cyl->onEdge(Vector(2,2,2)));
+    assert(cyl->onEdge(Vector(1,1,1)));
+    assert(cyl->onEdge(Vector(10,10,10)));
 
+    // Test an y-axis aligned cylinder
+    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
+    assert(cyl->inside(Vector(0,5,0)));
     delete cyl;
 
     // Test an x-axis aligned cylinder
-    cyl = new Cylinder(Vector(0,0,0),Vector(10,0,0),10,m);
+    cyl = new Cylinder(Vector(2,0,0),Vector(10,0,0),10,m);
     assert(cyl->inside(Vector(5,0,0)));
     assert(cyl->inside(Vector(9,0,0)));
     assert(!cyl->inside(Vector(0,0,0)));
