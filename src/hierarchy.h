@@ -12,9 +12,10 @@ class Ray;
 
 #define HIERARCHY_MAX 8
 
-/// Implementation of a bounding volume hierarchy.
-
-// This is basically a tree of BoundingBox at the joins and object as leafs.
+/**
+ * Implementation of a bounding volume hierarchy.
+ * This is basically a tree of BoundingBox at the joins and object as leafs.
+ */
 class Hierarchy : public SpaceSubdivider {
     friend std::ostream & operator<< (std::ostream &os, Hierarchy &x);
 
@@ -22,7 +23,7 @@ class Hierarchy : public SpaceSubdivider {
         /// Constructor.
 	Hierarchy();
 
-        /// Constructor.
+        /// Constructor (used by Mesh for now... this really should be private)
 	Hierarchy(BoundingBox bbox);
 
 	/// Destructor
