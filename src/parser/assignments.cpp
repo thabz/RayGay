@@ -25,7 +25,9 @@ void Assignments::setNamedPath(string name, Path* path) {
 }
 
 double Assignments::getNamedFloat(string name, FilePosition pos) {
-    // TODO: Throw exception
+    if (floatMap.find(name) == floatMap.end()) {
+	throw RuntimeException("Float named $"+name+" not defined",pos);
+    }
     return floatMap[name];
 }
 
@@ -34,7 +36,9 @@ void Assignments::setNamedFloat(string name, double val) {
 }
 
 Vector Assignments::getNamedVector(string name, FilePosition pos) {
-    // TODO: Throw exception
+    if (vectorMap.find(name) == vectorMap.end()) {
+	throw RuntimeException("Vector named $"+name+" not defined",pos);
+    }
     return vectorMap[name];
 }
 
