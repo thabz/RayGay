@@ -166,14 +166,14 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 	}
 
 	/* Should we send a ray through the intersected object? */
-	if (material.transmission_coefficient > 0.0) {
+	if (material.getKt() > 0.0) {
 	    // TODO: Use the ior the rays holds to allow eg. glass in water.
-	    double ior = material.indice_of_refraction;
+	    double ior = material.getEta();
 	    Vector T = ray.getDirection().refract(normal,ior);
 	    if (!(T == Vector(0,0,0))) {
 		Ray trans_ray = Ray(point+0.1*T,T,ior);
 		RGB trans_col = trace(trans_ray, depth + 1);
-		result_color += material.transmission_coefficient * trans_col;
+		result_color += material.getKt() * trans_col;
 	    } else {
 		// TODO: Internal reflection, see page 757.
 	    }

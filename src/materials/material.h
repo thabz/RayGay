@@ -46,9 +46,17 @@ class Material {
 	int getSc() const { return _spec_coeff; } ;
 	void setSc(int sc) { _spec_coeff = sc; };
 
-	/* See page 757 */
-	double transmission_coefficient; ///< The alpha channel (0 = solid, 1 = full transparent)
-	double indice_of_refraction; ///< vacuum = 1.0. Glas ~1.2. Other materials up to 2-3.
+
+	/// Set the transmission coefficent (0 = solid, 1 = full transparent)
+	void setKt(double kt) { this->_kt = kt; };
+	/// Get the transmission coefficent (0 = solid, 1 = full transparent)
+	double getKt() const { return _kt; };
+
+	/// Set indice of refraction aka \f$ \eta \f$. Vacuum = 1.0, glas ~1.2 and other materials up to 2-3.
+	void setEta(double eta) { this->eta = eta; };
+	/// Get indice of refraction aka \f$ \eta \f$
+	double getEta() const { return eta; };
+
 
 	/// Enable gloss
 	void enableGloss(unsigned int gloss_rays, double gloss_angle);
@@ -80,6 +88,9 @@ class Material {
 	unsigned int repeatX; unsigned int repeatY;
 	Image* texturemap;
 	Image* bumpmap;
+
+	double _kt;
+	double eta;
 };
 
 #endif

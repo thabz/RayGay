@@ -70,8 +70,8 @@ int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
     const Material& material = intersection->getObject()->getMaterial();
     Vector normal = intersection->getObject()->normal(*intersection);
     double ran = RANDOM(0,1);
-    if (ran < material.transmission_coefficient) {
-	double ior = material.indice_of_refraction;
+    if (ran < material.getKt()) {
+	double ior = material.getEta();
 	Vector T = ray.getDirection().refract(normal,ior);
 	if (!(T == Vector(0,0,0))) {
 	    Ray new_ray = Ray(intersection->getPoint()+0.1*T,T,ior);

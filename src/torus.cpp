@@ -105,11 +105,6 @@ Vector Torus::normal(const Intersection& i) const {
     return result;
 }
 
-/**
- * Says whether a point is on the surface of the torus.
- *
- * @param p the point the check for
- */
 bool Torus::onEdge(const Vector &point) const {
     Vector p = inverse_transformation * point;
     Vector Q = Vector(p[0],0,p[2]);

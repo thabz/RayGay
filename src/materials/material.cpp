@@ -20,10 +20,10 @@ Material::Material(RGB diffuseColor, RGB specularColor) {
    _kd = 0.75;
    _ks = 0.30;
    _spec_coeff = 50;
-   transmission_coefficient = 0;
+   _kt = 0;
    texturemap = NULL;
    bumpmap = NULL;
-   indice_of_refraction = 3;
+   eta = 3;
    repeatY = 1; repeatX = 1;
    gloss_enabled = false;
 }
@@ -34,10 +34,10 @@ Material::Material(RGB diffuseColor, double kd, RGB specularColor, double ks, in
    _kd = kd;
    _ks = ks;
    _spec_coeff = spec_coeff;
-   transmission_coefficient = 0;
+   _kt = 0;
    texturemap = NULL;
    bumpmap = NULL;
-   indice_of_refraction = 3;
+   eta = 3;
    repeatY = 1; repeatX = 1;
    gloss_enabled = false;
 }

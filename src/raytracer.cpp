@@ -122,9 +122,9 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 	}
 
 	/* Should we send a ray through the intersected object? */
-	if (material.transmission_coefficient > 0.0 && transmission > 0) {
+	if (material.getKt() > 0.0 && transmission > 0) {
 	    // TODO: Use the ior the rays holds to allow eg. glass in water.
-	    double ior = material.indice_of_refraction;
+	    double ior = material.getEta();
 	    Vector T = ray.getDirection().refract(normal,ior);
 	    if (!(T == Vector(0,0,0))) {
 		Ray trans_ray = Ray(point+0.1*T,T,ior);

@@ -66,7 +66,7 @@ class Renderer {
 	RendererSettings* renderersettings;
 
 
-	Vector2 fresnel(Vector normal, const Vector& ray_dir, const Material& material);
+	Vector2 fresnel(Vector normal, const Vector& ray_dir, const Material& material) const;
 };
 
 #endif

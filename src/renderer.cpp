@@ -213,16 +213,18 @@ void Renderer::PixelBlock::reset() {
  * @param normal The surface normal which is \f$N\f$
  * @param ray_dir Ray direction which is \f$V\f$
  * @param material The material of the surface
+ *
+ * @return (reflection,transmission)
  */
-Vector2 Renderer::fresnel(Vector normal, const Vector& ray_dir, const Material& material) {
+Vector2 Renderer::fresnel(Vector normal, const Vector& ray_dir, const Material& material) const {
     double reflectance,reflection,transmission,eta;
 
-    if (material.transmission_coefficient > 0.0) {
+    if (material.getKt() > 0.0) {
 	if (normal * ray_dir > 0) {
-	    eta = material.indice_of_refraction;
+	    eta = material.getEta();
 	    normal *= -1;
 	} else {
-	    eta = 1.0 / material.indice_of_refraction;
+	    eta = 1.0 / material.getEta();
 	}
 	reflectance = ((1 - eta) * (1 - eta)) / ((1 + eta) * (1 + eta));
     } else {
@@ -233,7 +235,7 @@ Vector2 Renderer::fresnel(Vector normal, const Vector& ray_dir, const Material& 
 
     if (nv > EPSILON) {
 	reflection = reflectance + (1 - reflectance) * pow(1-nv,5);
-	transmission = material.getKd() + material.getKs() + material.transmission_coefficient - reflection;
+	transmission = material.getKd() + material.getKs() + material.getKt() - reflection;
     } else {
 	reflection = 0;
 	transmission = 0;
