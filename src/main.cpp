@@ -121,6 +121,10 @@ void work(string scenefile, string outputfile,int jobs) {
     scene->getCamera()->setImageSize(int(img_size[0]),int(img_size[1]));
     Image* img = new Image(int(img_size[0]),int(img_size[1]));
 
+    if (scene->getObjects().size() == 0) {
+	throw_exception("No objects in scene.");
+    }
+
     cout << "Preparing space..." << endl;
     KdTree* space = new KdTree();
     scene->initSpace(space);
