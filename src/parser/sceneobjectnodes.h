@@ -302,13 +302,13 @@ class WireframeNode : public SceneObjectNode {
 	MaterialNode* material;
 };
 
-class NamedSceneObject : public SceneObjectNode {
+class NamedSceneObjectNode : public SceneObjectNode {
     public:
-	NamedSceneObject(string name) {
+	NamedSceneObjectNode(string name) {
 	    this->name = name;
 	}
 
-	virtual ~NamedSceneObject() {}; // TODO: delete from assignments?
+	virtual ~NamedSceneObjectNode() {}; // TODO: delete from assignments?
 
 	SceneObject* eval() {
 	    return Assignments::getUniqueInstance()->getNamedSceneObject(name)->eval();

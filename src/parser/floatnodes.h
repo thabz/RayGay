@@ -3,6 +3,7 @@
 #define PARSER_FLOAT_NODES
 
 #include <cmath>
+#include "parser/assignments.h"
 #include "parser/syntaxnode.h"
 
 class FloatNode : public SyntaxNode {
@@ -109,5 +110,20 @@ class FloatAbsNode : FloatNode {
 	FloatNode* node;
 };
 
+class NamedFloatNode : FloatNode {
+    public:
+	NamedFloatNode(string name) {
+	    this->name = name;
+	}
+
+	virtual ~NamedFloatNode() {}; // TODO: delete from assigments
+
+	double eval() {
+	    return Assignments::getUniqueInstance()->getNamedFloat(name)->eval();
+	}
+	
+    private:
+	string name;
+};
 
 #endif

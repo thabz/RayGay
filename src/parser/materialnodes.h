@@ -2,6 +2,8 @@
 #ifndef PARSER_MATERIAL_NODES_H
 #define PARSER_MATERIAL_NODES_H
 
+#include <string>
+#include "parser/assignments.h"
 #include "materials/material.h"
 #include "parser/syntaxnode.h"
 #include "parser/rgbnodes.h"
@@ -88,6 +90,22 @@ class MaterialNode : public SyntaxNode {
 class MaterialNullNode : public MaterialNode {
     public:
 	Material* eval() { return NULL; };
+};
+
+class NamedMaterialNode : public MaterialNode {
+    public:
+	NamedMaterialNode(string name) {
+	    this->name = name;
+	}
+
+	virtual ~NamedMaterialNode() {}; // TODO: delete from assigments
+
+	Material* eval() {
+	    return Assignments::getUniqueInstance()->getNamedMaterial(name)->eval();
+	}
+	
+    private:
+	string name;
 };
 
 #endif

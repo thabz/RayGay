@@ -665,7 +665,7 @@ Spiral		: tSPIRAL '{' Path Expr Expr '}'
 		}
 		;
 
-Texture		: tTEXTURE '{' Filename Expr Expr InterpolationType '}'
+Texture		: tTEXTURE '{' Filename tFLOAT tFLOAT InterpolationType '}'
                 {
 		    Image* img = new Image(*$3);
 		    $$ = new Texture(img,Vector2($4,$5),$6);
