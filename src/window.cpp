@@ -53,24 +53,28 @@ PreviewWindow::PreviewWindow(int width, int height) {
     gtk_window_set_icon(GTK_WINDOW(window),icon_pix);
 
     // HBox
-    GtkWidget* hbox = gtk_vbox_new(false,0); 
+    GtkWidget* hbox = gtk_vbox_new(false,10); 
 
     // Insert the progress bar
     progress_bar = (GtkProgressBar*)gtk_progress_bar_new();
-    gtk_container_add (GTK_CONTAINER (hbox), GTK_WIDGET(progress_bar));
+    gtk_box_pack_start(GTK_BOX(hbox),GTK_WIDGET(progress_bar),false,false,0);
 
     // Prepare the drawable
     rgbbuf = new guchar[width*height*3];
     darea = gtk_drawing_area_new ();
     gtk_widget_set_double_buffered(darea,false);
     gtk_widget_set_size_request (darea, width, height);
-    gtk_container_add (GTK_CONTAINER (hbox), darea);
     gtk_signal_connect (GTK_OBJECT (darea), "expose-event",
 	    GTK_SIGNAL_FUNC (on_darea_expose), NULL);
     gtk_signal_connect (GTK_OBJECT (window), "delete_event",
 	    GTK_SIGNAL_FUNC (delete_event), NULL);
     gtk_widget_show(darea);
 
+    // Scrolled window
+    GtkWidget* scroll_window = gtk_scrolled_window_new(NULL,NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_window),GTK_POLICY_AUTOMATIC,GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scroll_window),darea);
+    gtk_box_pack_start(GTK_BOX(hbox),GTK_WIDGET(scroll_window),true,true,0);
     gtk_container_add (GTK_CONTAINER (window), hbox);
 }
 
