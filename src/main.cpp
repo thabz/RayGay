@@ -158,7 +158,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     if (renderersettings->anim_frames == 1) {
 	cout << "Still render (" << img->getWidth() << "x" << img->getHeight() << ")" << endl;
     } else {
-	cout << "Animation render (" << img->getWidth() << "x" << img->getHeight() << ", " << renderersettings->anim_frames << "frames)" << endl;
+	cout << "Animation render (" << img->getWidth() << "x" << img->getHeight() << ", " << renderersettings->anim_frames << " frames)" << endl;
 
     }
 
