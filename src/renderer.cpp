@@ -214,11 +214,9 @@ Renderer::PixelBlock::PixelBlock(const unsigned int size) {
 }
 
 
+inline
 void Renderer::PixelBlock::reset() {
-    bool* ptr = active;
-    for(unsigned int i = 0; i < size_squared; i++) {
-	*(ptr++) = false;
-    }
+    memset(active,(int)false,size_squared*sizeof(bool));
 }
 
 /**
