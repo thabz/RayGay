@@ -75,6 +75,7 @@ public:
 
     /// Comparator
     virtual bool operator==(const Vector &v) const;
+    virtual bool operator!=(const Vector &v) const;
 
     /// Convert from rectangular to polar coordinates
     Vector toPolar() const;
