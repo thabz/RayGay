@@ -86,12 +86,9 @@ void Hierarchy::split() {
  * Optimizes paths by bypassing nodes with only one child.
  */
 void Hierarchy::optimize() {
-    cout << "Area before: " << area() << endl;
     pruneChildren();
     optimizePaths();
-    cout << "Area before: " << area() << endl;
     shrinkBoundingBoxes();
-    cout << "Area after: " << area() << endl;
 }
 
 void Hierarchy::pruneChildren() {
