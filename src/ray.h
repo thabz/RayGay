@@ -69,6 +69,7 @@ Ray::Ray(const Vector& o, const Vector& d, const double indice) : indice_of_refr
     specularBounces = 0;
     diffuseBounces = 0;
     fromObject = NULL;
+    t_scale = 1.0;
 }
 
 #endif

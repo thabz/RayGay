@@ -8,6 +8,7 @@ Ray::Ray() {
     indice_of_refraction = 1.0;
     specularBounces = 0;
     diffuseBounces = 0;
+    t_scale = 1.0;
 }
 
 /// Says whether this ray has travelled a LS+ path
