@@ -10,6 +10,7 @@ class Matrix;
 
 /**
  * The Catmull-Rom spline.
+ *
  * 
  * The characteristic feature of this spline interpolation is that the spline
  * passes through all but the first and last control points. The curve is
@@ -46,6 +47,10 @@ class Matrix;
  *
  * or that the tangent at the end of spline segments are the vector from the
  * previous point to the current point.
+ *
+ * The spline is first proposed in 
+ * Catmull, E. and R. Rom, ``A Class of Local Interpolationg Splines,'' in 
+ * Barnhill R.E. and R.F. Riesenfled (eds.), <i>Computer Aided Geometric Design</i>, Academic Press, New York, 1974.
  */
 class CatmullRomSpline : public Path {
     public:
