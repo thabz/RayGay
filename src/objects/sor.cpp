@@ -14,10 +14,10 @@ SurfaceOfRevolution::SurfaceOfRevolution(const vector<Vector2>& _points, unsigne
 
     /*
     // Close ends if necessay
-    if (!IS_ZERO(points[0][0])) {
+    if (IS_NZERO(points[0][0])) {
 	points.insert(points.begin(),Vector2(0,points[0][1]));
     }
-    if (!IS_ZERO(points[points_num-1][0])) {
+    if (IS_NZERO(points[points_num-1][0])) {
 	points.push_back(Vector2(0,points[points_num-1][1]));
     }
     */

@@ -71,7 +71,7 @@ double Sphere::_fastIntersect(const Ray& ray) const {
     } else if (D == 0.0) {
 	// One root
 	double t = -b / (2 * a);
-	if (!IS_ZERO(t)) {
+	if (IS_NZERO(t)) {
 	    return t;
 	}
     } else {

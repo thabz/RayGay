@@ -140,7 +140,7 @@ unsigned int Cone::allPositiveRoots(const Ray& world_ray, double roots[2]) const
     }
 
     // Check intersection with caps
-    if (roots_found < 2 && has_caps && !IS_ZERO(D_z)) {
+    if (roots_found < 2 && has_caps && IS_NZERO(D_z)) {
 	double t, i_x, i_y;
 
 	// Check intersection with bottom cap

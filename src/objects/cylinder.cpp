@@ -124,7 +124,7 @@ uint Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
 	    roots[roots_found++] = t2;
 	}
     }
-    if (roots_found < 2 && has_caps && !IS_ZERO(Rd[2])) {
+    if (roots_found < 2 && has_caps && IS_NZERO(Rd[2])) {
 	double inv_rd2 = 1.0 / Rd[2];
 	double t, i_x, i_y;
 	// Check intersection with bottom cap

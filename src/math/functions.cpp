@@ -320,11 +320,11 @@ int Math::solveCubic(double A, double B, double C, double* roots) {
  * @return the number of real roots
  */
 int Math::solveQuadratic(double A, double B, double C, double* roots) {
-    if (IS_ZERO(A) && !IS_ZERO(B)) {
+    if (IS_ZERO(A) && IS_NZERO(B)) {
 	roots[0] = -C / B;
 	return 1;
     }
-    assert(!IS_ZERO(A));
+    assert(IS_NZERO(A));
     double D = B*B - 4*A*C;
     if (D < 0) {
 	return 0;

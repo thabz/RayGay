@@ -60,7 +60,7 @@ Vector Vector::xProduct(const Vector& v1, const Vector& v2) {
  */
 Vector Vector::toPolar() const {
     double r = this->length();
-    assert(!IS_ZERO(r)); // Maybe just return (0,0,0) instead?
+    assert(IS_NZERO(r)); // Maybe just return (0,0,0) instead?
     double theta,phi;
     theta = acos(_vector[2] / r);
     phi = atan2(_vector[1],_vector[0]);

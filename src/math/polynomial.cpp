@@ -154,7 +154,7 @@ Polynomial Polynomial::operator*(double c) const {
 }
 
 Polynomial Polynomial::operator/(double c) const {
-    assert(!IS_ZERO(c));
+    assert(IS_NZERO(c));
     double new_coefs[num];
     for(uint i = 0; i < num; i++) {
 	new_coefs[i] = coefficients[i] / c;
