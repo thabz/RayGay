@@ -98,8 +98,8 @@ Matrix & Matrix::operator*=(const Matrix &m) {
     return (*this) = (*this)*m;
 }
 
-Matrix Matrix::extractRotation() const {
-    Matrix res;
+Matrix3 Matrix::extractRotation() const {
+    Matrix3 res;
     for (int i = 0; i < 3; i++) {
        for (int j = 0; j < 3; j++) {
 	   res.set(i,j,get(i,j));

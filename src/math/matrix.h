@@ -13,6 +13,7 @@
 #define MATRIX_H
 
 #include "math/vector.h"
+#include "math/matrix3.h"
 #include <iosfwd>
 
 /// Some basic linear algebra
@@ -46,7 +47,7 @@ class Matrix {
 	Matrix transpose() const;
 
 	/// Returns a matrix with the translation part stripped
-	Matrix extractRotation() const;
+	Matrix3 extractRotation() const;
 
 	/// Multiply this matrix with a vector.
 	Vector operator*(const Vector & v) const;
