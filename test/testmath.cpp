@@ -1035,6 +1035,12 @@ class constants_test : public Test {
 	void run() {
 	    assertEqualF(M_SQRT3*M_SQRT3, 3);
 	    assertEqualF(M_SQRT3, sqrt(double(3)));
+	    assertEqualF(FRAC_1_6, 1.0 / 6.0);
+	    assertEqualF(FRAC_1_3, 1.0 / 3.0);
+	    assertEqualF(FRAC_1_9, 1.0 / 9.0);
+	    assertEqualF(FRAC_2_3, 2.0 / 3.0);
+	    assertEqualF(FRAC_1_27, 1.0 / 27.0);
+	    assertEqualF(FRAC_1_54, 1.0 / 54.0);
 	}
 };
 
