@@ -57,6 +57,7 @@ bicubic 	return tBICUBIC;
 bilinear 	return tBILINEAR;
 blob		return tBLOB;
 box		return tBOX;
+bound		return tBOUND;
 bump		return tBUMP;
 cachetolerance	return tCACHETOLERANCE; 
 camera		return tCAMERA;

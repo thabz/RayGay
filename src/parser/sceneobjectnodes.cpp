@@ -11,6 +11,7 @@
 #include "objects/box.h"
 #include "objects/necklace.h"
 #include "objects/cone.h"
+#include "objects/bound.h"
 #include "objects/solidbox.h"
 #include "objects/ellipsoid.h"
 #include "objects/transformedinstance.h"
@@ -424,5 +425,26 @@ SceneObject* TransformedInstanceNode::eval() {
     } else {
 	return new TransformedInstance(o);
     }
+}
+
+//---------------------------------------------------------------------
+// Bounded object
+//---------------------------------------------------------------------
+//
+BoundNode::BoundNode(SceneObjectNode* o) {
+    this->object = o;
+}
+
+BoundNode::~BoundNode() {
+    delete object;
+}
+
+SceneObject* BoundNode::eval() {
+    SceneObject* so = object->eval();
+    ObjectGroup* o = dynamic_cast<ObjectGroup*>(so);
+    if (o == NULL) {
+	// TODO: Throw exception.
+    }
+    return new Bound(o);
 }
 

@@ -102,6 +102,7 @@ ActionListNode* top_actions;
 %token tBICUBIC
 %token tBILINEAR
 %token tBLOB
+%token tBOUND
 %token tBOX
 %token tCAMERA
 %token tCONE
@@ -179,7 +180,7 @@ ActionListNode* top_actions;
 %type <matrix> Rotate Translate Scale Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
-%type <object> ObjectGroup Ellipsoid Mesh Cone SuperEllipsoid Blob
+%type <object> ObjectGroup Ellipsoid Mesh Cone SuperEllipsoid Blob Bound
 %type <object> NamedObject TransInstance
 %type <material> MaterialDef NamedMaterial Material
 %type <light> LightDef Lightsource 
@@ -644,6 +645,7 @@ Object		: SolidObject
 		| NamedObject
 		| SuperEllipsoid
 		| TransInstance
+		| Bound
 		| Blob
 		| Object Transformations
                 {
@@ -658,6 +660,12 @@ NamedObject	: tOBJECT tVARNAME
 		}
                 ;
 
+Bound		: tBOUND '{' Object '}'
+                {
+		    $$ = new BoundNode($3);
+		}
+                ;
+
 TransInstance	: tTRANSINSTANCE '{' Object '}'
                 {
 		    $$ = new TransformedInstanceNode($3);
@@ -666,6 +674,7 @@ TransInstance	: tTRANSINSTANCE '{' Object '}'
 		{
 		    $$ = new TransformedInstanceNode($3,$4);
 		}
+                ;
 
 MeshObject	: Extrusion
                 | Box

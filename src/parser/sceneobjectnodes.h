@@ -290,4 +290,16 @@ class TransformedInstanceNode: public SceneObjectNode {
 	MaterialNode* material;
 };
 
+class BoundNode : public SceneObjectNode {
+
+    public:
+	BoundNode(SceneObjectNode* obj);
+	virtual ~BoundNode();
+	SceneObject* eval();
+
+    private:
+	SceneObjectNode* object;
+};
+
+
 #endif
