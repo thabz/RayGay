@@ -1,0 +1,82 @@
+
+renderer raytracer
+
+camera { position <1000,500,1800>
+         up <0,1,0> 
+         lookat <0,100,0> 
+	 fov 45
+	 aa 4
+}
+
+image { width 1024 aspect 4 3 }
+
+background <1.0,1.0,1.0,1.0>
+/* background <0.94,0.80,0.06,1.0> */
+
+/* light { sky 10000 300 power <1,1,1> } */
+ light { point <100,1300,1300> power <1,1,1> }  
+/* light { area <100,1300,1300> <-0.1,-1,-1> 500 80 0.1 power <1,1,1> } */
+
+$ground = material {
+    diffuse <1.0,1.0,1.0>
+    kd 0.5
+    specular <1.0,1.0,1.0>
+    ks 0.5
+    specpow 15
+}
+
+$chrome = material {
+    diffuse <0.85,0.85,0.85>
+    kd 0.5
+    specular <0.85,0.85,0.85>
+    ks 0.5
+    specpow 45
+}
+
+$blue = material {
+    diffuse <0.01,0.20,0.90>
+    kd 0.8
+    specular <0.5,0.5,0.5>
+    ks 0.2
+    specpow 45
+}
+
+sphere { $ground
+      100000
+      <0,-100200,0>
+}
+
+$halvkugle = difference {
+    $blue 
+    sphere { 300 <0,0,0>  }
+    solidbox { <-320,-320,-320> <320,0,320>  }
+}
+
+object $halvkugle translate <0,400,0>
+object $halvkugle rotate <1,0,0> 180 translate <0,100,0>
+
+$spiral = spiral {
+    linesegment { <0,100,0> <0,400,0> }
+    280 6 0
+}
+	
+extrusion {
+    $blue
+    $spiral
+    20 
+    12 
+    300
+}
+
+$fod = ellipsoid {
+    $blue
+    <150,100,200>
+    <0,0,0>
+}
+
+object $fod rotate <0,1,0> -30 translate <200,-200,100>
+object $fod rotate <0,1,0> 30 translate <-200,-200,100>
+
+/* Næse */
+
+sphere { $blue 100 <0,530,300> }
