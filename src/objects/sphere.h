@@ -40,6 +40,8 @@ class Sphere : public BooleanOperand {
 	virtual Vector2 getUV(const Intersection& intersection) const;
 
 	virtual SceneObject* clone() const;
+	double _fastIntersect(const Ray& ray) const;
+	Intersection _fullIntersect(const Ray& ray, const double t) const;
 
     private:
 	Vector center;

@@ -30,10 +30,16 @@ void Sphere::transform(const Matrix& m) {
 const Vector& Sphere::getCenter() const {
     return center;
 }
+Intersection Sphere::_fullIntersect(const Ray& ray, const double t) const {
+    return Intersection(ray.getPoint(t),t);
+}
 
 /// Return the nearest intersection to ray's origin
 Intersection Sphere::_intersect(const Ray& ray) const {
-    Intersection result = Intersection();
+    return Intersection();
+}
+
+double Sphere::_fastIntersect(const Ray& ray) const {
     
     // See CGPP page 1101
     Vector v = ray.getDirection();
@@ -45,12 +51,12 @@ Intersection Sphere::_intersect(const Ray& ray) const {
     double D = b*b - 4*a*c;
     if (D < 0.0) {
 	// No roots
-        return result;
+        return -1;
     } else if (D == 0.0) {
 	// One root
 	double t = -b / (2 * a);
 	if (!IS_ZERO(t)) {
-	    result = Intersection(Q + t * v,t);
+	    return t;
 	}
     } else {
 	// Two roots
@@ -58,12 +64,12 @@ Intersection Sphere::_intersect(const Ray& ray) const {
        double t1 = (-b - sq ) / (2 * a);
        double t2 = (-b + sq ) / (2 * a);
        if (t1 > 0 && t1 < t2 && !IS_ZERO(t1)) {
-	   result = Intersection(Q + (t1 * v),t1);
+	   return t1;
        } else if (t2 > 0 && !IS_ZERO(t2)) {
-	   result = Intersection(Q + (t2 * v),t2);
+	   return t2;
        }
     }
-    return result;
+    return -1;
 }
 
 Vector Sphere::normal(const Intersection& i) const {
