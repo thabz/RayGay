@@ -252,21 +252,11 @@ bool BSP::intersect_recurse(const Ray& ray, const double min_t, const double max
 	if (o_dim < cutplane_value) {
 	    // Ray is crossing the plane from a lower value
 	    intersection1 = lower->intersect(ray,min_t,intersect_t);
-	    if (intersection1) {
-		last_intersection = lower->getLastIntersection();
-		return true;
-	    } else {
-		intersection2 = higher->intersect(ray,intersect_t,max_t);
-	    }
+	    intersection2 = higher->intersect(ray,intersect_t,max_t);
 	} else {
 	    // Ray is crossing the plane from a higher value
 	    intersection2 = higher->intersect(ray,min_t,intersect_t);
-	    if (intersection2) {
-		last_intersection = higher->getLastIntersection();
-		return true;
-	    } else {
-		intersection1 = lower->intersect(ray,intersect_t,max_t);
-	    }
+	    intersection1 = lower->intersect(ray,intersect_t,max_t);
 	}
 
 	if (intersection1 && intersection2) {
