@@ -90,7 +90,7 @@ void Mesh::addTriangle(const Vector* c) {
 	EdgeKey key = EdgeKey(t->vertex[i],t->vertex[j]);
 	Edge* edge = edgeMap[key];
 	if (edge == NULL) {
-	    edge = new Edge(i,j);
+	    edge = new Edge(t->vertex[i],t->vertex[j]);
 	    edge->triangle[0] = tri;
 	    edgeMap[key] = edge;
 	} else {
