@@ -6,6 +6,7 @@
 #include <cassert>
 #include <iostream>
 
+#include "stats.h"
 #include "boundingbox.h"
 #include "intersection.h"
 #include "ray.h"
@@ -183,7 +184,7 @@ void kdtree_test() {
 }
 
 int main(int argc, char *argv[]) {
-
+    Stats::getUniqueInstance()->clear();
     boundingbox_test();
     kdtree_test();
     return EXIT_SUCCESS;

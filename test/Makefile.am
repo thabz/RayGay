@@ -23,6 +23,7 @@ testmath_LDADD = $(top_srcdir)/src/math/libmath.a
 testobjects_SOURCES = testobjects.cpp
 
 testspace_SOURCES = testspace.cpp
+#testspace_LDADD = $(top_srcdir)/src/space/libspace.a $(top_srcdir)/src/libtracer.a $(top_srcdir)/src/objects/libobjects.a $(top_srcdir)/src/math/libmath.a  $(top_srcdir)/src/materials/libmaterials.a $(top_srcdir)/src/image/libimage.a
 
 testspeed_SOURCES = testspeed.cpp
 testspeed_LDADD = 
