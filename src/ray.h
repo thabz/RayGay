@@ -19,7 +19,7 @@ class Ray {
 	const Vector& getDirection() const { return direction; };
 
         /// Rays direction (x,y,z) with inverted components ((1/x),(1/y),(1/x))
-	const Vector& getInverseDirection() const { return inv_direction; };
+	Vector getInverseDirection() const;
 
         /// The material the ray is travelling in where 1.0 is vacuum.
 	double getIndiceOfRefraction() const { return indice_of_refraction; };
@@ -42,9 +42,17 @@ class Ray {
 	long id;
 	static long seq;
 	double indice_of_refraction; 
-	Vector inv_direction; 
 	Vector origin; ///< The rays origin
 	Vector direction; ///< Unit vector of rays direction
 };
+
+inline
+Vector Ray::getInverseDirection() const {
+    Vector inv_direction;
+    inv_direction[0] = direction[0] != 0.0 ? 1/direction[0] : HUGE_DOUBLE;
+    inv_direction[1] = direction[1] != 0.0 ? 1/direction[1] : HUGE_DOUBLE;
+    inv_direction[2] = direction[2] != 0.0 ? 1/direction[2] : HUGE_DOUBLE;
+    return inv_direction;
+}
 
 #endif
