@@ -55,6 +55,7 @@ class KdTree {
 	class KdNodeTmp {
 	    public:
 		std::vector<Object*>* objects;  // Enclosed objects when this is a leaf
+		BoundingBox bbox;
 		int left;     // Left child
 		int right;    // Right child
 		float splitPlane; // Position of splitting plane
@@ -72,12 +73,14 @@ class KdTree {
 
 	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
 	Object* intersectForShadow_real(const Ray&,const double) const;
-	int largestDimension(const BoundingBox& box);
+	int largestDimension(const BoundingBox& box) const;
 	BoundingBox enclosure(std::vector<Object*>* objects) const;
 	BoundingBox world_bbox;
 	double objectMedian(std::vector<Object*>* objects, int d) const;
 	double spacialMedian(std::vector<Object*>* objects, int d) const;
 	Vector measureSplit(std::vector<Object*>* objects, int dim, double val) const;
+	double evaluateCost(const BoundingBox& bbox, std::vector<Object*>* objects, int dim, double val, Vector* measure) const;
+	void KdTree::findBestSplitPlane(const BoundingBox& bbox, std::vector<Object*>* objects,int* best_dim, double* best_axis) const;
 
 	void prepare(int curNode_idx, int depth);
 
