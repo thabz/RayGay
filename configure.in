@@ -1,0 +1,13 @@
+AC_INIT(src/main.cpp) dnl a source file from your sub dir
+AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
+
+PKG_CHECK_MODULES(GTKMM, gtkmm-2.0 >= 2.2)
+AC_SUBST(GTKMM_CFLAGS)
+AC_SUBST(GTKMM_LIBS)
+
+PACKAGE=tracer
+VERSION=0.1
+
+AC_PROG_CXX
+
+AC_OUTPUT(Makefile src/Makefile test/Makefile)

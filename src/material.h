@@ -1,0 +1,55 @@
+
+#ifndef MATERIAL_H
+#define MATERIAL_H
+
+#include "rgb.h"
+
+class Intersection;
+
+enum material_types {
+    MATERIAL_SOLID,
+    MATERIAL_TEXTURED,
+    MATERIAL_PROCEDURAL
+}; 
+
+/// Class defining a material
+class Material {
+    public:
+	Material(); ///< Default constructor
+	Material(RGB diffuseColor, RGB specularColor);
+        Material(RGB diffuseColor, double kd, RGB specularColor, double ks, int spec_coeff);
+	~Material(); ///< Default destructor
+
+	/*!  Get the diffuse color */
+	RGB getDiffuseColor() { return _diffuseColor; };
+	void setDiffuseColor(RGB diffuseColor) { _diffuseColor = diffuseColor; }; ///< Set the diffuse color
+
+	
+	RGB getSpecularColor() { return _specularColor; }; ///< Get the specular color
+	void setSpecularColor(RGB specularColor) { _specularColor = specularColor; };	///< Set the specular color
+	
+	virtual RGB getDiffuseColor(const Intersection& i);
+
+	double getKd() { return _kd; };
+	void setKd(double kd) { _kd = kd; };
+
+	double getKs() { return _ks; };
+	void setKs(double ks) { _ks = ks; };
+
+	int getSc() { return _spec_coeff; };
+	void setSc(int sc) { _spec_coeff = sc; };
+
+	/* See page 757 */
+	double transmission_coefficient; ///< The alpha channel (0 = solid, 1 = full transparent)
+	double indice_of_refraction; ///< vacuum = 1.0. Glas ~1.2. Other materials up to 2-3.
+    private:
+	RGB _diffuseColor;
+	double _kd;
+
+	RGB _specularColor;
+        double _ks;
+
+	int _spec_coeff;
+};
+
+#endif
