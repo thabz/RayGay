@@ -20,6 +20,7 @@ light point 0 1300 0
 sphere $red 200 0 200 0 
 sphere $red 100 0 100 250
 
-circle $circle 0 0 0 200 0 1 0
-necklace $blue $circle 30 10
+circle $circle 0 0 0 400 0 1 0
+spiral $spiral $circle 150 20 0 
+necklace $blue $spiral 3000 10
 

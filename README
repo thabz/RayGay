@@ -12,7 +12,7 @@ TODO:
 + Separate objectspace and worldspace transformations.
 + Area lights
 + Bumpmapping
-* 3DS import (meshes, UV, materials)
++ 3DS import (meshes, UV, materials)
 + gprof profiling
 + Create a XML scene format and an importer.
 * Cone
@@ -25,10 +25,10 @@ TODO:
 + Distributed reflections aka gloss.
 * Mathematical cone
 * Heightmap objects
-* Correct handling of camera placement, direction and field of view.
++ Correct handling of camera placement, direction and field of view.
 * Adaptive arealights
 * Adaptive gloss
-* Mathematical torus.
++ Mathematical torus.
 
 
 * Scaling of all objects: See http://www.cl.cam.ac.uk/Teaching/2000/AGraphHCI/SMEG/node2.html#SECTION00024000000000000000

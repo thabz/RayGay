@@ -4,12 +4,12 @@
 
 #include "math/vector.h"
 #include "spacesubdivider.h"
+#include "boundingbox.h"
 #include <vector>
 
 class Ray;
 class Intersection;
 class Object;
-class BoundingBox;
 
 #define KD_TREE_MAX 2
 
@@ -63,7 +63,9 @@ class KdTree : public SpaceSubdivider {
 	bool intersectForShadow(const Ray&,double,double) const;
 	int largestDimension(const BoundingBox& box);
 	BoundingBox enclosure(std::vector<Object*>* objects) const;
+	BoundingBox world_bbox;
 	double objectMedian(std::vector<Object*>* objects, int d) const;
+	double spacialMedian(std::vector<Object*>* objects, int d) const;
 	void prepare(int curNode_idx, int depth);
 
 	KdNode* nodes;

@@ -9,6 +9,7 @@
 #include "ray.h"
 #include "stats.h"
 #include "boundingbox.h"
+#include "math/vector2.h"
 
 Object* KdTree::last_primary_intersected_object = NULL;
 
@@ -30,17 +31,20 @@ void KdTree::addObject(Object* obj) {
 
 inline
 bool KdTree::intersect(const Ray& ray) const {
-    return intersect(ray,double(0),HUGE_DOUBLE);
+    Vector2 h = world_bbox.intersect(ray);
+    return intersect(ray,h[0],h[1]);
 }
 
 inline
 bool KdTree::intersectPrimary(const Ray& ray) const {
-    return intersect(ray,double(0),HUGE_DOUBLE);
+    Vector2 h = world_bbox.intersect(ray);
+    return intersect(ray,h[0],h[1]);
 }
 
 inline
 bool KdTree::intersectForShadow(const Ray& ray) const {
-    return intersectForShadow(ray,double(0),HUGE_DOUBLE);
+    Vector2 h = world_bbox.intersect(ray);
+    return intersectForShadow(ray,h[0],h[1]);
 }
 
 bool KdTree::intersectForShadow(const Ray& ray, const Object* hint) const {
@@ -58,6 +62,7 @@ bool KdTree::intersectForShadow(const Ray& ray, const Object* hint) const {
 //}
 
 void KdTree::prepare() {
+    world_bbox = enclosure(added_objects);
     tmp_nodes.push_back(KdNodeTmp());
     tmp_nodes[0].objects = added_objects;
     tmp_nodes[0].axis = 0;
@@ -184,10 +189,12 @@ bool KdTree::intersect(const Ray& ray, double a, double b) const {
 		    curNode = curNode->left;
 		    continue;
 		}
+		/*
 		if (stack[exPt].pb[axis] == splitVal) { //TODO: Wierd!
 		    curNode = curNode->right;
 		    continue;
 		}
+		*/
 		farChild = curNode->right;
 		curNode = curNode->left;
 	    } else {
@@ -298,6 +305,10 @@ double KdTree::objectMedian(std::vector<Object*>* objects, int d) const {
     exit(0);
 }
 
+double KdTree::spacialMedian(std::vector<Object*>* objects, int d) const {
+    BoundingBox box = enclosure(objects);
+    return (box.minimum()[d] + box.maximum()[d]) / 2.0;
+}
 /**
  * Implementation of the recursive $f[ TA_rec^B $f] algorithm.
  */

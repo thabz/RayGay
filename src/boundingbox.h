@@ -7,6 +7,7 @@
 class Intersection;
 class Ray;
 class Matrix;
+class Vector2;
 
 /// An axis-aligned bounding box.
 
@@ -24,8 +25,8 @@ class BoundingBox {
 	/// Destructor
 	virtual ~BoundingBox();
 
-	/// Returns a intersection
-	virtual Intersection intersect(const Ray& ray) const;
+	/// Returns (tmin,tmax) of intersection
+	virtual Vector2 intersect(const Ray& ray) const;
 
 	/// Simple check for intersection
 	virtual bool checkIntersect(const Ray& ray) const;

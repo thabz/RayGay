@@ -12,6 +12,7 @@
 #include "bsp.h"
 #include "kdtree.h"
 #include "sphere.h"
+#include "math/vector2.h"
 
 void boundingbox_test() {
     BoundingBox b;
@@ -52,29 +53,28 @@ void boundingbox_test() {
     /* Test intersection */
     b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
     Ray r;
-    Intersection i;
+    
     r = Ray(Vector(0.5,0.5,60),Vector(0,0,-1),1);
-    i = b.intersect(r);
-    assert(i.isIntersected());
-    assert(IS_EQUAL(i.getPoint()[2],1.0));
+    assert(b.checkIntersect(r));
+    Vector2 v = b.intersect(r);
+    assert(r.getPoint(v[0]) == Vector(0.5,0.5,1));
+    assert(r.getPoint(v[1]) == Vector(0.5,0.5,-1));
 
     r = Ray(Vector(0.5,-50,0),Vector(0,1,0),1);
-    i = b.intersect(r);
-    assert(i.isIntersected());
-    assert(IS_EQUAL(i.getPoint()[1],-1.0));
+    assert(b.checkIntersect(r));
+    v = b.intersect(r);
+    assert(r.getPoint(v[0]) == Vector(0.5,-1,0));
+    assert(r.getPoint(v[1]) == Vector(0.5,1,0));
     
     r = Ray(Vector(2,2,60),Vector(0,0,-1),1);
-    assert(!b.intersect(r).isIntersected());
+    assert(!b.checkIntersect(r));
 
     r = Ray(Vector(100,100,0),Vector(-1,-1,0),1);
-    assert(b.intersect(r).isIntersected());
+    assert(b.checkIntersect(r));
 
     r = Ray(Vector(-100,-100,-100),Vector(1,1,1),1);
-    i = b.intersect(r);
-    assert(i.isIntersected());
-    assert(IS_EQUAL(i.getPoint()[0],-1.0));
-    assert(IS_EQUAL(i.getPoint()[1],-1.0));
-    assert(IS_EQUAL(i.getPoint()[2],-1.0));
+    v = b.intersect(r);
+    assert(r.getPoint(v[0]) == Vector(-1,-1,-1));
 
     /* Test doUnion */
     BoundingBox b1 = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));

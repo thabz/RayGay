@@ -8,7 +8,9 @@
 #include "ray.h"
 #include "intersection.h"
 #include "math/matrix.h"
+#include "math/vector2.h"
 #include "image/rgb.h"
+
 
 BoundingBox::BoundingBox() {
     corners = NULL;
@@ -63,13 +65,13 @@ bool BoundingBox::onEdge(const Vector &p) const {
 
 
 // Fast algorithm from http://www.cs.utah.edu/~awilliam/box/
-Intersection BoundingBox::intersect(const Ray& ray) const {
-    Intersection result;
+Vector2 BoundingBox::intersect(const Ray& ray) const {
+    Vector2 result;
     Vector B = ray.getOrigin();
     Vector v_inv = ray.getInverseDirection();
     Vector v = ray.getDirection();
 
-    double t,tmin, tmax, tymin, tymax, tzmin, tzmax; 
+    double tmin, tmax, tymin, tymax, tzmin, tzmax; 
 
     if (v[0] >= 0) { 
 	tmin = (_c1[0] - B[0]) * v_inv[0]; 
@@ -86,7 +88,7 @@ Intersection BoundingBox::intersect(const Ray& ray) const {
 	tymax = (_c1[1] - B[1]) * v_inv[1];
     } 
     if ( (tmin > tymax) || (tymin > tmax) ) 
-	return result;   // No intersection 
+	return Vector2(-1,HUGE_DOUBLE);   // No intersection 
     if (tymin > tmin) 
 	tmin = tymin; 
     if (tymax < tmax) 
@@ -99,18 +101,13 @@ Intersection BoundingBox::intersect(const Ray& ray) const {
 	tzmax = (_c1[2] - B[2]) * v_inv[2]; 
     } 
     if ( (tmin > tzmax) || (tzmin > tmax) ) 
-	return result; 	// No intersection
+	return Vector2(-1,HUGE_DOUBLE);   // No intersection 
     if (tzmin > tmin)
 	tmin = tzmin; 
     if (tzmax < tmax)
 	tmax = tzmax; 
-    
-    t = tmin;
-    if (t > 0 && !IS_ZERO(t) && !IS_EQUAL(t,HUGE_DOUBLE)) {
-	Vector p = t*v + B;
-	result = Intersection(p,t);
-    }
-    return result;
+
+    return Vector2(tmin,tmax);
 }
 
 bool BoundingBox::checkIntersect(const Ray& ray) const {

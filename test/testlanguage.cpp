@@ -26,9 +26,20 @@ void test_bool() {
 
 }
 
+void test_modulo() {
+    assert((0 + 1) % 3 == 1);
+    assert((1 + 1) % 3 == 2);
+    assert((2 + 1) % 3 == 0);
+
+    assert((0 + 3 - 1) % 3 == 2);
+    assert((1 + 3 - 1) % 3 == 0);
+    assert((2 + 3 - 1) % 3 == 1);
+}
+
 int main(int argc, char *argv[]) {
 
     test_bool();
+    test_modulo();
     return EXIT_SUCCESS;
 }
 
