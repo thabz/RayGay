@@ -30,7 +30,6 @@ void KdTree::addObject(Object* obj) {
 
 inline
 bool KdTree::intersect(const Ray& ray) const {
-    ray.lowest_t = HUGE_DOUBLE;
     return intersect(ray,double(0),HUGE_DOUBLE);
 }
 
@@ -54,9 +53,9 @@ bool KdTree::intersectForShadow(const Ray& ray, const Object* hint) const {
 }
 
 // TODO: Write a faster intersect for shadows
-bool KdTree::intersectForShadow(const Ray& ray,double a, double b) const {
-    return intersect(ray,a,b);
-}
+//bool KdTree::intersectForShadow(const Ray& ray,double a, double b) const {
+//    return intersect(ray,a,b);
+//}
 
 void KdTree::prepare() {
     tmp_nodes.push_back(KdNodeTmp());
@@ -185,7 +184,7 @@ bool KdTree::intersect(const Ray& ray, double a, double b) const {
 		    curNode = curNode->left;
 		    continue;
 		}
-		if (stack[exPt].pb[axis] == splitVal) {
+		if (stack[exPt].pb[axis] == splitVal) { //TODO: Wierd!
 		    curNode = curNode->right;
 		    continue;
 		}
@@ -204,11 +203,9 @@ bool KdTree::intersect(const Ray& ray, double a, double b) const {
 
 	    int tmp = exPt;
 	    exPt++;
-	  //  Increment(exPt);
 
 	    if (exPt == enPt)
 		exPt++;
-	//	Increment(exPt);
 
 	    stack[exPt].prev = tmp;
 	    stack[exPt].t = t;
@@ -224,21 +221,22 @@ bool KdTree::intersect(const Ray& ray, double a, double b) const {
 
 	// TODO: Intersect with all objects in list, discarding
 	// those lying before stack[enPt].t or farther than stack[exPt].t
-	bool object_hit = false;
+	Object* object_hit = NULL;
 	if (curNode->objects->size() > 0) {
-	    const vector<Object*> objects = *(curNode->objects);
+	    const vector<Object*> &objects = *(curNode->objects);
 	    double smallest_t = HUGE_DOUBLE;
 	    for (unsigned int i = 0; i < objects.size(); i++) {
 		if (objects[i]->intersect(ray) && 
 			objects[i]->getLastIntersection()->getT() < smallest_t) {
-		    last_intersection = objects[i]->getLastIntersection();
-		    smallest_t = last_intersection->getT();
-		    object_hit = true;
+		    smallest_t = objects[i]->getLastIntersection()->getT();
+		    object_hit = objects[i];
 		}
 	    }
-	    ray.lowest_t = min(ray.lowest_t,smallest_t);
 	}
-	if (object_hit) return true;
+	if (object_hit != NULL) {
+	    last_intersection = object_hit->getLastIntersection();
+	    return true;
+	}
 	
 	enPt = exPt;
 
@@ -300,3 +298,87 @@ double KdTree::objectMedian(std::vector<Object*>* objects, int d) const {
     exit(0);
 }
 
+/**
+ * Implementation of the recursive $f[ TA_rec^B $f] algorithm.
+ */
+bool KdTree::intersectForShadow(const Ray& ray, double a, double b) const {
+
+    double t;
+    KdNode *farChild, *curNode;
+    curNode = nodes;
+    int enPt = 0;
+    stack[enPt].t = a;
+
+    if (a >= 0.0) 
+	stack[enPt].pb = ray.getOrigin() + ray.getDirection() * a;
+    else 
+	stack[enPt].pb = ray.getOrigin();
+
+    int exPt = 1;
+    stack[exPt].t = b;
+    stack[exPt].pb = ray.getOrigin() + ray.getDirection() * b;
+    stack[exPt].node = NULL;
+
+    while (curNode != NULL) {
+	while (curNode->axis >= 0) {
+	    /* Current node is not a leaf */
+	    double splitVal = curNode->splitPlane;
+	    int axis = curNode->axis; // ?
+
+	    if (stack[enPt].pb[axis] <= splitVal) {
+		if (stack[exPt].pb[axis] <= splitVal) {
+		    curNode = curNode->left;
+		    continue;
+		}
+		if (stack[exPt].pb[axis] == splitVal) { //TODO: Wierd!
+		    curNode = curNode->right;
+		    continue;
+		}
+		farChild = curNode->right;
+		curNode = curNode->left;
+	    } else {
+		if (splitVal < stack[exPt].pb[axis]) {
+		    curNode = curNode->right;
+		    continue;
+		}
+		farChild = curNode->left;
+		curNode = curNode->right;
+	    }
+
+	    t = (splitVal - ray.getOrigin()[axis]) / ray.getDirection()[axis];
+
+	    int tmp = exPt;
+	    exPt++;
+
+	    if (exPt == enPt)
+		exPt++;
+
+	    stack[exPt].prev = tmp;
+	    stack[exPt].t = t;
+	    stack[exPt].node = farChild;
+	    stack[exPt].pb[axis] = splitVal;
+	    int nextAxis = (axis+1) % 3;
+	    int prevAxis = (axis-1+3) % 3;
+	    stack[exPt].pb[nextAxis] = ray.getOrigin()[nextAxis] + 
+		                       t * ray.getDirection()[nextAxis];
+	    stack[exPt].pb[prevAxis] = ray.getOrigin()[prevAxis] +
+		                       t * ray.getDirection()[prevAxis];
+	} /* while curNode not a leaf */
+
+	// TODO: Intersect with all objects in list, discarding
+	// those lying before stack[enPt].t or farther than stack[exPt].t
+	if (curNode->objects->size() > 0) {
+	    const vector<Object*> &objects = *(curNode->objects);
+	    for (unsigned int i = 0; i < objects.size(); i++) {
+		if (objects[i]->intersect(ray))
+		    return true;
+	    }
+	}
+	
+	enPt = exPt;
+
+	curNode = stack[exPt].node;
+	exPt = stack[enPt].prev;
+    } /* while curNode != end of nodes */
+    return false;
+}
