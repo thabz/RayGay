@@ -37,3 +37,17 @@ TODO:
 // Compiling into assembler source
 g++ <the load> -S -dA triangle.cpp
 
+// Movie encoding
+
+Mencoder:
+http://www.mplayerhq.hu/DOCS/HTML/en/menc-feat-enc-images.html
+
+Transcode:
+http://www.theorie.physik.uni-goettingen.de/%7Eostreich/transcode/html/anim.html
+
+$ find frames -type f > list
+$ transcode -i list -x imlist,null -g 640x480 -y xvid,null -f 25 -o movie.avi -H 0
+
+erstat evt. xvid med dixv5
+
+
