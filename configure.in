@@ -12,7 +12,7 @@ dnl -------------------------------------------------
 AC_PROG_CXX
 AC_PROG_YACC
 AM_PROG_LEX
-dnl AC_PROG_RANLIB
+AC_PROG_RANLIB
 AC_PROG_LIBTOOL
 
 dnl -------------------------------------------------
@@ -25,6 +25,13 @@ AC_CHECK_HEADERS(pthread.h)
 AC_CHECK_HEADERS(jpeglib.h)    
 AC_CHECK_HEADERS(png.h)    
 
+dnl -------------------------------------------------
+dnl Check for pkg-config
+dnl -------------------------------------------------
+AC_PATH_PROG(PKG_CONFIG,pkg-config,no)
+if test "x$PKG_CONFIG" = "xno"; then
+   echo "You need to install pkg-config to compile GTK+ stuff."
+fi
 
 dnl -------------------------------------------------
 dnl Check libraries needed
@@ -34,17 +41,21 @@ AC_CHECK_LIB(m, sin,,[AC_MSG_ERROR([math library is not found])],)
 AC_CHECK_LIB(pthread, pthread_create,LIBS="-lpthread $LIBS")
 AC_CHECK_LIB(jpeg, jpeg_read_header,LIBS="-ljpeg $LIBS")
 AC_CHECK_LIB(png, png_read_info, LIBS="-lpng $LIBS")
-echo -n "checking for gtk+2.0... "
-if pkg-config --exists gtk+-2.0; then
+
+if test "x$PKG_CONFIG" = "xno"; then
+   echo -n "checking for gtk+2.0... "
+   if pkg-config --exists gtk+-2.0; then
         echo "yes"
 	pkg_modules="gtk+-2.0 >= 1.3"
 	PKG_CHECK_MODULES(GTK, [$pkg_modules])
 	AC_SUBST(GTK_CFLAGS)
 	AC_SUBST(GTK_LIBS)
+        GTK_LIBS="$GTK_LIBS -lgthread-2.0"
         AC_DEFINE([HAVE_GTK],[1],[Found GTK+-2.0. Will build the preview window.])
-else 
+   else 
     	echo "no"
-fi    
+   fi    
+fi
 
 dnl -------------------------------------------------
 dnl Add the CPU dependent compile optimizations
@@ -55,7 +66,7 @@ case $target in
      pentium4) CXXFLAGS="$CXXFLAGS -fprefetch-loop-arrays -funroll-loops -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing -msse2";;
      g4) CXXFLAGS="$CXXFLAGS -ftracer -fstrict-aliasing";;
 esac
-LDFLAGS="$LDFLAGS -lfl $GTK_LIBS"
+LDFLAGS="$LDFLAGS $GTK_LIBS"
 
 dnl -------------------------------------------------
 dnl Enable profiling
