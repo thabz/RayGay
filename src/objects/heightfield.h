@@ -2,17 +2,24 @@
 #ifndef OBJECTS_HEIGHT_FIELD_H
 #define OBJECTS_HEIGHT_FIELD_H
 
-#include "objects/mesh.h"
+#include "objects/parametrizedsurface.h"
 
 class Texture;
 
 /**
  * A heightfield.
  */
-class HeightField : public Mesh {
-
+class HeightField : public ParametrizedSurface 
+{
     public:
-	HeightField::HeightField(Texture* image, double height, double width, double depth, unsigned int width_divisions, unsigned int depth_divisions, const Material* material);
+	HeightField::HeightField(Texture* texture, double height, double width, double depth, uint width_divisions, uint depth_divisions, const Material* material);
+
+    protected:
+	Vector eval(double u, double v) const;
+
+    private:
+	double height, width, depth;
+	Texture* texture;
 };
 
 #endif

@@ -9,13 +9,18 @@
  * A parametrized surface is a mesh constructed from a function
  * \$[ F: [0,1][0,1] \rarr R^3 \$].
  */
-class ParametrizedSurface : public Mesh {
-
+class ParametrizedSurface : public Mesh 
+{
     public:
-	ParametrizedSurface(uint uRes, uint vRes, const Material* m);
+	ParametrizedSurface(uint uRes, uint vRes, bool uClose, bool vClose, const Material* m);
+	void prepare();
 
     protected:
-	Vector eval(double u, double v) const = 0;
+	virtual Vector eval(double u, double v) const = 0;
+
+    private:
+	uint uRes, vRes;
+	bool uClose, vClose;
 };
 
 #endif

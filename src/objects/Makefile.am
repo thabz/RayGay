@@ -36,6 +36,8 @@ libobjects_la_SOURCES = \
 		       object.cpp	\
 		       objectgroup.h	\
 		       objectgroup.cpp	\
+		       parametrizedsurface.h \
+		       parametrizedsurface.cpp \
 		       sceneobject.h	\
 		       solid.h		\
 		       solidbox.h	\
