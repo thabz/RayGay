@@ -108,17 +108,8 @@ unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) c
     double b = 2 * (Ro[0]*Rd[0] + Ro[1]*Rd[1]);
     double c = Ro[0]*Ro[0] + Ro[1]*Ro[1] - rr;
     double D = b*b - 4*a*c;
-    if (D < 0.0) {
-	// No roots
-    } else if (IS_ZERO(D)) {
-	// One root
-	double t = -b / (2 * a);
-	double result_p_z = Ro[2] + t * Rd[2];
-	if (t > EPSILON && result_p_z >= double(0) && result_p_z <= height) {
-	    roots[roots_found++] = t;
-	}
-    } else {
-	// Two roots
+    if (D > EPSILON) {
+	// Two possible roots
 	double sq = sqrt(D);
 	double t1 = (-b - sq ) / (2 * a);
 	double t2 = (-b + sq ) / (2 * a);
@@ -162,9 +153,10 @@ unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) c
 	    roots[1] = tmp;
 	}
     }
-    for(unsigned int i = 0; i < roots_found; i++) {
-	roots[i] /= local_ray.t_scale;
-    }
+    
+    roots[0] /= local_ray.t_scale;
+    roots[1] /= local_ray.t_scale;
+
     return roots_found;
 }
 
