@@ -290,6 +290,11 @@ class binomial_test : public Test {
 	    assertTrue(Math::binomialCoefficient(20,7) == 77520);
 	    assertTrue(Math::binomialCoefficient(15,15) == 1);
 	    assertTrue(Math::binomialCoefficient(15,11) == 1365);
+	    assertTrue(Math::binomialCoefficient(29,27) == 406);
+	    assertTrue(Math::binomialCoefficient(35,5) == 324632);
+	    assertTrue(Math::binomialCoefficient(50,1) == 50);
+	    assertTrue(Math::binomialCoefficient(50,2) == 1225);
+	    assertTrue(Math::binomialCoefficient(59,4) == 455126);
 	}
 };
 
