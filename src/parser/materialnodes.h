@@ -46,6 +46,9 @@ class MaterialNode : public SyntaxNode {
 	    }
 	}
 
+	/**
+	 * Evaluate the material node and return the resulting Material
+	 */
 	virtual Material* eval() {
 	    Material* result = new Material();
 	    if (diffuse_rgb != NULL) result->setDiffuseColor(diffuse_rgb->eval());
