@@ -32,7 +32,7 @@ public:
     void normalize(); ///< Normalize vector so that |v| = 1
     void scale(float s); ///< Scale the vector
     double norm() const; ///< Returns squared length of vector
-    double length(); ///< Returns length of vector
+    double length() const; ///< Returns length of vector
     const Vector reflect(const Vector& norm); ///< Returns this vector reflected around another (both must be unit-vectors)
 
     double &operator[](const int i); ///< Index into coordinates

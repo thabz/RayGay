@@ -67,7 +67,7 @@ double Vector::norm() const {
     return _vector[0]*_vector[0] + _vector[1]*_vector[1] + _vector[2]*_vector[2];
 }
 
-double Vector::length() {
+double Vector::length() const {
     return sqrt(norm());
 }
 
