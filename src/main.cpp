@@ -90,6 +90,7 @@ int main(int argc, char *argv[]) {
 	cout << "USAGE: tracer <scenefile.ray> <outputfile.tga>" << endl;
 	return EXIT_FAILURE;
     }
+    srand(1); // Make sure rand is seeded consistenly.
     work(string(argv[1]),string(argv[2])); 
     return EXIT_SUCCESS;
 }
