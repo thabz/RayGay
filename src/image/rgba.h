@@ -33,6 +33,8 @@ class RGBA : public RGB {
 	/// Comparator
 	bool operator==(const RGBA& c) const;
 
+	RGBA& operator=(const RGBA& v);
+
     private:
 	double alpha;
 };
@@ -96,6 +98,15 @@ bool RGBA::operator==(const RGBA& x) const {
            IS_EQUAL(g(),x.g()) &&
            IS_EQUAL(b(),x.b()) &&
            IS_EQUAL(a(),x.a());
+}
+
+inline
+RGBA& RGBA::operator=(const RGBA& v) {
+    _vector[0] = v._vector[0];
+    _vector[1] = v._vector[1];
+    _vector[2] = v._vector[2];
+    alpha = v.alpha;
+    return *this;
 }
 #endif
 

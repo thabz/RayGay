@@ -59,6 +59,7 @@ class RGB  {
 	RGB operator+(const RGB &v) const;
 	RGB operator-(const RGB &v) const;
 	RGB& operator+=(const RGB&v);
+	RGB& operator=(const RGB& v);
 	double &operator[](const int i); ///< Index into coordinates
 	const double &operator[](const int i) const; ///< Index into coordinates
 	/// Comparator
@@ -153,6 +154,20 @@ RGB& RGB::operator*=(const double x) {
 inline
 double RGB::norm() const {
     return _vector[0]*_vector[0] + _vector[1]*_vector[1] + _vector[2]*_vector[2];
+}
+
+
+inline
+RGB operator*(const double x, const RGB &v) {
+    return RGB(v._vector[0]*x, v._vector[1]*x, v._vector[2]*x);
+}
+
+inline
+RGB& RGB::operator=(const RGB& v) {
+    _vector[0] = v._vector[0];
+    _vector[1] = v._vector[1];
+    _vector[2] = v._vector[2];
+    return *this;
 }
 
 #endif

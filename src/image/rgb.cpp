@@ -28,7 +28,3 @@ ostream & operator<<(ostream &os, const RGB &x) {
 
     return os;
 }
-
-RGB operator*(const double x, const RGB &v) {
-    return v*x;
-}
