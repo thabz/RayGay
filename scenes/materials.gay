@@ -83,6 +83,13 @@ specular 1.0 1.0 1.0
 ks 0.0
 specpow 0
 
+material  $chrome plastic 0.0 0.0 0.0
+diffuse 0.2 0.2 0.2
+kd 0.2
+specular 1.0 1.0 1.0
+ks 0.8
+specpow 40
+
 material  $glossyred plastic 0.0 0.2 0.2
 diffuse 0.8 0.2 0.2
 kd 0.4
