@@ -19,9 +19,7 @@ class TransformedInstance : public Transformer {
 	SceneObject* clone() const;
 
     private:
-	Vector localNormal(const Intersection &i) const;
 	BoundingBox localBoundingBoundingBox() const;
-	Vector2 localGetUV(const Intersection& i) const;
 	virtual Intersection localIntersect(const Ray& ray) const;
 
 	Object* object;

@@ -10,13 +10,9 @@ IsoSurface::IsoSurface(unsigned int steps, double accuracy, double iso, Material
     this->iso = iso;
 }
 
-Intersection IsoSurface::_intersect(const Ray& ray) const {
-    return Intersection();
-}
-
-
 Intersection IsoSurface::_fullIntersect(const Ray& ray, const double t) const {
-    return Intersection(ray.getPoint(t),t);
+    Vector p = ray.getPoint(t);
+    return Intersection(p,t,normal(p),Vector2(0,0));
 }
 
 double IsoSurface::_fastIntersect(const Ray& ray) const {
@@ -61,8 +57,7 @@ double IsoSurface::recurse(const Ray& ray, const double t_begin, const double t_
     }
 }
 
-Vector IsoSurface::normal(const Intersection & i) const {
-    Vector p = i.getPoint();
+Vector IsoSurface::normal(const Vector& p) const {
     double x = evaluateFunction(p - Vector(1,0,0)) - 
 	       evaluateFunction(p + Vector(1,0,0));
     double y = evaluateFunction(p - Vector(0,1,0)) - 
@@ -76,9 +71,5 @@ Vector IsoSurface::normal(const Intersection & i) const {
 
 bool IsoSurface::intersects(const BoundingBox& b) const {
     return b.inside(boundingBoundingBox());
-}
-
-Vector2 IsoSurface::getUV(const Intersection& intersection) const {
-
 }
 

@@ -18,9 +18,7 @@
 class IsoSurface : public Object {
 
     public:
-	virtual Vector normal(const Intersection & i) const;
 	bool intersects(const BoundingBox& b) const;
-	virtual Vector2 getUV(const Intersection& intersection) const;
 
     protected:
 	/// Constructor
@@ -32,10 +30,9 @@ class IsoSurface : public Object {
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
 
     private:
+	virtual Vector normal(const Vector& p) const;
 	bool inside(const Vector& v) const;
 	double recurse(const Ray& ray, const double t_begin, const double t_end) const;
-	virtual Intersection _intersect(const Ray& ray) const;
-
 	unsigned int steps;
 	double accuracy;
 	double iso;

@@ -109,9 +109,10 @@ RGBA PhotonRenderer::traceSub(bool intersected, const Intersection& intersection
 }
 
 RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int depth) {
+    Lightinfo info;
     Object* object = intersection.getObject();
     const Vector point = intersection.getPoint();
-    Vector normal = object->normal(intersection);
+    Vector normal = intersection.getNormal();
     const Material* material = object->getMaterial();
     normal = material->bump(intersection,normal);
     
@@ -136,7 +137,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 	double attenuation = (*p)->getAttenuation(point);
 
 	if (attenuation > double(0)) {
-	    Lightinfo info = (*p)->getLightinfo(intersection,normal,space,depth);
+	    (*p)->getLightinfo(intersection,normal,space,&info,depth);
 	    if (info.cos > 0.0) {
 		RGB color = RGB(0.0,0.0,0.0);
 		// Check for blocking objects
@@ -259,7 +260,7 @@ RGB PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const
 	if (space->intersect(ray,&inter)) {
 	    gatherHits++;
 	    Vector hitpoint = inter.getPoint();
-	    Vector hitnormal = inter.getObject()->normal(inter);
+	    Vector hitnormal = inter.getNormal();
 	    RGB irra;
 	    double dist = (hitpoint-point).length();
 	    *hmd += 1.0 / dist;

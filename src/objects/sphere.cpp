@@ -31,12 +31,11 @@ const Vector& Sphere::getCenter() const {
     return center;
 }
 Intersection Sphere::_fullIntersect(const Ray& ray, const double t) const {
-    return Intersection(ray.getPoint(t),t);
-}
-
-/// Return the nearest intersection to ray's origin
-Intersection Sphere::_intersect(const Ray& ray) const {
-    return Intersection();
+    Vector p = ray.getPoint(t);
+    Vector n = p - center;
+    n.normalize();
+    Vector2 uv = getUV(p);
+    return Intersection(p,t,n,uv);
 }
 
 double Sphere::_fastIntersect(const Ray& ray) const {
@@ -72,12 +71,6 @@ double Sphere::_fastIntersect(const Ray& ray) const {
     return -1;
 }
 
-Vector Sphere::normal(const Intersection& i) const {
-    Vector normal = i.getPoint() - center;
-    normal.normalize();
-    return normal;
-}
-
 ostream & operator<<(ostream &os, const Sphere &s) {
     os << '(' << s.center << ',' << s.radius << ')';
     return os;
@@ -103,8 +96,8 @@ BoundingBox Sphere::boundingBoundingBox() const {
 }
 
 // See http://astronomy.swin.edu.au/~pbourke/texture/spheremap/
-Vector2 Sphere::getUV(const Intersection& intersection) const {
-    Vector p = intersection.getPoint() - center;
+Vector2 Sphere::getUV(const Vector& point) const {
+    Vector p = point - center;
     p.normalize();
     double u,v;
     v = acos(p[1]) / M_PI;

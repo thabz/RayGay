@@ -36,7 +36,9 @@ void Torus::transform(const Matrix& m) {
 }
 
 Intersection Torus::_fullIntersect(const Ray& ray, const double t) const {
-    return Intersection(ray.getPoint(t),t);
+    Vector p  = ray.getPoint(t);
+    Vector n = normal(p);
+    return Intersection(p,t,n,Vector2(0,0));
 }
 
 double Torus::_fastIntersect(const Ray& ray) const {
@@ -95,8 +97,8 @@ double Torus::_fastIntersect(const Ray& ray) const {
  * @param i an positive intersection with this torus
  * @see http://research.microsoft.com/~hollasch/cgindex/render/raytorus.html
  */
-Vector Torus::normal(const Intersection& i) const {
-    Vector x = inverse_transformation * i.getPoint();
+Vector Torus::normal(const Vector& point) const {
+    Vector x = inverse_transformation * point;
     Vector p = Vector(x.x(),x.y(),0);
     p.normalize();
     p = R * p;
@@ -135,11 +137,6 @@ BoundingBox Torus::boundingBoundingBox() const {
     return BoundingBox(scene_transformation * Vector(min,min,min),
 	    scene_transformation * Vector(max,max,max));
 
-}
-
-Vector2 Torus::getUV(const Intersection& intersection) const {
-    // TODO: Implement
-    return Vector2(0,0);
 }
 
 SceneObject* Torus::clone() const {

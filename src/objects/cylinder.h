@@ -27,8 +27,6 @@ class Cylinder : public BooleanOperand {
 
 	virtual BoundingBox boundingBoundingBox() const;
 
-	virtual Vector2 getUV(const Intersection& intersection) const;
-
 	virtual SceneObject* clone() const;
 
     private:

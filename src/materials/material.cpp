@@ -57,7 +57,7 @@ Material::~Material() {
 
 RGB Material::getDiffuseColor(const Intersection& i) const {
     if (texturemap != NULL) {
-	Vector2 uv = i.getObject()->getUV(i);
+	Vector2 uv = i.getUV();
 	uv = scaleUV(uv);
 	//return texturemap->getBiCubicTexel(uv[0],uv[1]);
 	return texturemap->getBiLinearTexel(uv[0],uv[1]);
@@ -80,7 +80,7 @@ Vector Material::bump(const Intersection& i, const Vector& normal) const {
 	return normal;
     } else {
 	double u,v,w,h;
-	Vector2 uv = i.getObject()->getUV(i);
+	Vector2 uv = i.getUV();
 	uv = scaleUV(uv);
 	u = uv[0]; v = uv[1];
 	    

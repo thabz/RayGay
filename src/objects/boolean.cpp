@@ -94,27 +94,6 @@ void Boolean::transform(const Matrix& m) {
     _rhs->transform(m);
 }
 
-// FIXME: We're not sure that i is from lhs or rhs
-Vector Boolean::normal(const Intersection& i) const {
-    Vector p = i.getPoint();
-    switch(_op) {
-	case BOOLEAN_INTERSECTION: /* Same as next */
-	case BOOLEAN_UNION:
-	    if (_rhs->onEdge(p)) {
-		return _rhs->normal(i);
-	    } else {
-		return _lhs->normal(i);
-	    }
-	case BOOLEAN_DIFFERENCE:
-	    if (_lhs->onEdge(p) && !_rhs->inside(p)) {
-		return _lhs->normal(i);
-	    } else {
-		return -1 * _rhs->normal(i);
-	    }
-    }
-    throw unknownOp(_op);
-}
-
 bool Boolean::onEdge(const Vector &p) const {
     switch(_op) {
 	case BOOLEAN_UNION: 
@@ -156,10 +135,6 @@ BoundingBox Boolean::boundingBoundingBox() const {
 	    return _lhs->boundingBoundingBox(); // TODO: Could be smaller
     }
     throw unknownOp(_op);
-}
-
-Vector2 Boolean::getUV(const Intersection& intersection) const {
-    // TODO: Implement
 }
 
 SceneObject* Boolean::clone() const {

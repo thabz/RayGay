@@ -34,13 +34,10 @@ class Boolean : public BooleanOperand {
 	virtual ~Boolean() {};
 
 	virtual void transform(const Matrix& m);
-	virtual Vector normal(const Intersection& i) const;
 	virtual BoundingBox boundingBoundingBox() const;
 
 	virtual bool onEdge(const Vector &p) const;
 	virtual bool inside(const Vector &p) const;
-
-	virtual Vector2 getUV(const Intersection& intersection) const;
 
 	virtual SceneObject* clone() const;
 

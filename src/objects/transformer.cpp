@@ -13,11 +13,10 @@ Intersection Transformer::_intersect(const Ray& ray) const {
     Intersection inter = this->localIntersect(local_ray);
     if (inter.isIntersected()) {
 	Vector point = transformation * inter.getPoint();
+	Vector normal = rotation * inter.getNormal();
 	// TODO: If scaling allowed, calculate a new t
 	double t = inter.getT();
-	Intersection result = Intersection(inter);
-	result.setPoint(point);
-	result.setT(t);
+	Intersection result = Intersection(point,t,normal,inter.getUV());
 	return result;
     } else {
 	return Intersection();
@@ -38,21 +37,6 @@ void Transformer::transform(const Matrix& m) {
     inverse_transformation = transformation.inverse();
     rotation = transformation.extractRotation();
     inverse_rotation = rotation.inverse();
-}
-
-Vector2 Transformer::getUV(const Intersection& i) const {
-    Vector point = inverse_transformation * i.getPoint();
-    Intersection inter = Intersection(point,i.getT());
-    return this->localGetUV(inter);
-}
-
-Vector Transformer::normal(const Intersection &i) const {
-    Vector point = inverse_transformation * i.getPoint();
-    Intersection inter = Intersection(i);
-    inter.setPoint(point);
-    inter.setT(i.getT());
-    Vector normal = this->localNormal(inter);
-    return rotation * normal;
 }
 
 BoundingBox Transformer::boundingBoundingBox() const {

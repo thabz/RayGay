@@ -86,11 +86,6 @@ BoundingBox Cylinder::boundingBoundingBox() const {
     return BoundingBox(real_begin-rv,real_end+rv);
 }
 
-Vector2 Cylinder::getUV(const Intersection& intersection) const {
-    // TODO: Implement
-    return Vector2(0,0);
-}
-
 double Cylinder::_fastIntersect(const Ray& ray) const {
     return _intersect(ray).getT();
 }
@@ -139,7 +134,9 @@ Intersection Cylinder::_intersect(const Ray& ray) const {
 	Vector result_p = Ro + t * Rd;
 	double result_t = t;
 	if (!IS_ZERO(t) && result_p[2] >= double(0) && result_p[2] <= height) {
-	    return Intersection(transformation * result_p,result_t);
+	    Vector normal = Vector(result_p[0],result_p[1],0);
+	    result_p = transformation * result_p;
+	    return Intersection(result_p,result_t,normal,Vector2(0,0));
 	} else {
 	    return Intersection();
 	}
@@ -153,10 +150,14 @@ Intersection Cylinder::_intersect(const Ray& ray) const {
 	Vector ip1 =  Ro + t1 * Rd;
 	Vector ip2 =  Ro + t2 * Rd;
 	if (ip1[2] >= double(0) && ip1[2] <= height) {
-	    i1 = Intersection(transformation * ip1,t1);
+	    Vector normal = Vector(ip1[0],ip1[1],0);
+	    ip1 = transformation * ip1;
+	    i1 = Intersection(ip1,t1,normal,Vector2(0,0));
 	}
 	if (ip2[2] >= double(0) && ip2[2] <= height) {
-	    i2 = Intersection(transformation * ip2,t2);
+	    Vector normal = Vector(ip2[0],ip2[1],0);
+	    ip2 = transformation * ip2;
+	    i2 = Intersection(transformation * ip2,t2,normal,Vector2(0,0));
 	}
 	if (t1 > 0 && t1 < t2 && !IS_ZERO(t1) && i1.isIntersected()) {
 	    return i1;

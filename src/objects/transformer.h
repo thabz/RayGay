@@ -21,7 +21,6 @@ class Transformer : public Object {
     public:
 	
 	void transform(const Matrix& m);
-	Vector normal(const Intersection& i) const;
 	Vector2 getUV(const Intersection& intersection) const;
 	BoundingBox boundingBoundingBox() const;
 
@@ -35,8 +34,6 @@ class Transformer : public Object {
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
 
 	virtual Intersection localIntersect(const Ray& ray) const = 0;
-	virtual Vector localNormal(const Intersection& i) const = 0;
-	virtual Vector2 localGetUV(const Intersection& intersection) const = 0;
 	virtual BoundingBox localBoundingBoundingBox() const = 0;
 
 	Matrix transformation;

@@ -4,6 +4,7 @@
 #include <iosfwd>
 
 #include "math/vector.h"
+#include "math/vector2.h"
 #include "ray.h"
 
 class Object;
@@ -16,29 +17,44 @@ class Intersection {
     friend ostream & operator<< (ostream &os, const Intersection &i);
 
     public:
+        /**
+	 * Default constructor.
+	 */
 	Intersection();
-	Intersection(const Vector& point, double t);
+	
+	/**
+	 * Constructor.
+	 *
+	 * @param p Point of intersection
+	 * @param t Distance along ray
+	 * @param n Surface normal at intersection
+	 * @param uv Texture UV-coordinates at point of intersection
+	 */
+	Intersection(const Vector& p, double t, const Vector& n, const Vector2& uvs);
 
 	void setObject(Object* obj) { o = obj; };
+        /// The object that was intersected
 	Object* getObject() const { return o; };
 
 	void setPoint(const Vector& point) { this->point = point; };
-	Vector getPoint() const { return point; };
+ 	/// The intersection point
+	const Vector& getPoint() const { return point; };
 
-	/*
-	void setLocalObject(const Object* obj) { local_object = obj; };
-	const Object* getLocalObject() const { return local_object; };
-        */
+        /// Surface normal at intersection point
+	const Vector& getNormal() const { return normal; };
+
+	const Vector2& getUV() const { return uv; };
+
 	double getT() const { return t; }; 
 	void setT(double new_t) { t = new_t; };
 	
 	bool isIntersected() const { return t >= 0.0; };
-	double u,v;
 
     private:
-	Object* o; /// The object that was intersected
-	//const Object* local_object; ///< A local subobject, eg. a component of a Boolean.
-	Vector point; 	///< The intersection point
+	Object* o; 
+	Vector point;
+	Vector normal;
+	Vector2 uv;
 	double t;
 };
 
@@ -48,9 +64,11 @@ Intersection::Intersection() {
 }
 
 inline
-Intersection::Intersection(const Vector& p, double s) {
-    point = p;
-    t = s;
+Intersection::Intersection(const Vector& p, double s, const Vector& n, const Vector2& uvs) {
+    this->point = p;
+    this->t = s;
+    this->normal = n;
+    this->uv = uvs;
 }
 
 #endif

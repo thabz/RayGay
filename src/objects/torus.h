@@ -49,20 +49,18 @@ class Torus : public BooleanOperand {
 	virtual ~Torus() {};
 
 	virtual void transform(const Matrix& m);
-	virtual Vector normal(const Intersection& i) const;
 
 	virtual bool onEdge(const Vector &p) const;
 	virtual bool inside(const Vector &p) const;
 
 	virtual BoundingBox boundingBoundingBox() const;
 
-	virtual Vector2 getUV(const Intersection& intersection) const;
-
 	virtual SceneObject* clone() const;
 
     private:
 	double _fastIntersect(const Ray& ray) const;
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
+	Vector normal(const Vector& point) const;
 
 	void prepareMatrices();
 

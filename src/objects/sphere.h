@@ -30,14 +30,11 @@ class Sphere : public BooleanOperand {
 	const Vector& getCenter() const; 
 
 	virtual void transform(const Matrix& m);
-	virtual Vector normal(const Intersection & i) const;
 
 	virtual bool onEdge(const Vector &p) const;
 	virtual bool inside(const Vector &p) const;
 
 	virtual BoundingBox boundingBoundingBox() const;
-
-	virtual Vector2 getUV(const Intersection& intersection) const;
 
 	virtual SceneObject* clone() const;
 	double _fastIntersect(const Ray& ray) const;
@@ -47,7 +44,7 @@ class Sphere : public BooleanOperand {
 	Vector center;
 	double radius;
 	BoundingBox _boundingBoundingBox;
-	virtual Intersection _intersect(const Ray& ray) const;
+	Vector2 getUV(const Vector& point) const;
 
 };
 

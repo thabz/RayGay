@@ -65,7 +65,7 @@ void PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
 	return;
     }
     const Material* material = intersection.getObject()->getMaterial();
-    Vector normal = intersection.getObject()->normal(intersection);
+    Vector normal = intersection.getNormal();
     Vector point = intersection.getPoint();
     double ran = RANDOM(0,1);
     if (ran < material->getKd()) {

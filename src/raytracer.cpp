@@ -55,16 +55,11 @@ RGBA Raytracer::traceSub(const bool intersected, const Intersection& intersectio
 }
 
 RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int depth) {
+    Lightinfo info;
     Object* const object = intersection.getObject();
     const Vector point = intersection.getPoint();
-    Vector normal = object->normal(intersection);
+    Vector normal = intersection.getNormal();
     const Material* material = object->getMaterial();
-
-    /*
-    if (material == NULL) {
-	return RGB(0.0,0.0,0.0);
-    }
-    */
 
     normal = material->bump(intersection,normal);
 
@@ -76,7 +71,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int
 	double attenuation = (*p)->getAttenuation(point);
 
 	if (attenuation > double(0)) {
-	    Lightinfo info = (*p)->getLightinfo(intersection,normal,space,depth);
+	    (*p)->getLightinfo(intersection,normal,space,&info,depth);
 	    if (info.cos > 0.0) {
 		RGB color = RGB(0.0,0.0,0.0);
 		// Check for blocking objects

@@ -8,9 +8,7 @@
 Skylight::Skylight (double radius, int num) : Lightsource(Vector(0,0,0)) {
     this->radius = radius;
     this->num = num;
-
     Halton qmc = Halton(2,2);
-
     for(int i = 0; i < num; i++) {
 	Vector pos = Math::perturbVector(Vector(0,1,0),DEG2RAD(89),&qmc);
 	positions.push_back(pos*radius);
@@ -18,8 +16,7 @@ Skylight::Skylight (double radius, int num) : Lightsource(Vector(0,0,0)) {
     }
 }
 
-Lightinfo Skylight::getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space, unsigned int depth) const {
-    Lightinfo info;
+void Skylight::getLightinfo(const Intersection& inter,const Vector& normal, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
     int count = 0;
     double cos_total = 0;
     double cos_tmp;
@@ -37,8 +34,7 @@ Lightinfo Skylight::getLightinfo(const Intersection& inter, const Vector& normal
 	    }
 	}
     }
-    info.cos = cos_total / double(count);
-    info.intensity = double(count) / num;
-    info.direction_to_light = Vector(0,1,0); // Should be undefined
-    return info;
+    info->cos = cos_total / double(count);
+    info->intensity = double(count) / num;
+    info->direction_to_light = Vector(0,1,0); // Should be undefined
 }

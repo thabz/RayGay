@@ -24,7 +24,7 @@ class Object : public SceneObject {
 	double fastIntersect(const Ray& ray) const;
 
 	/// Returns the normalvector at a point on this objects surface
-	virtual Vector normal(const Intersection &i) const = 0;
+	//virtual Vector normal(const Intersection &i) const = 0;
 	
 	/// Transform this object
 	virtual void transform(const Matrix& m) = 0;
@@ -34,9 +34,6 @@ class Object : public SceneObject {
 
 	/// The smallest box containing this object
 	virtual BoundingBox boundingBoundingBox() const = 0;
-	
-	/// Get texture coordinates at an intersection
-	virtual Vector2 getUV(const Intersection& intersection) const = 0;
 
 	/// Prepares the object before rendering
 	virtual void prepare();

@@ -52,7 +52,6 @@ void Mesh::prepare() {
 
     computeAdjacentTris();
     computeInterpolatedNormals();
-    computeTriAreas();
     prepared = true;
     for(unsigned int i = 0; i < triangles.size(); i++) {
 	triangles[i]->prepare();
@@ -171,13 +170,6 @@ void Mesh::computeInterpolatedNormals() {
     }
 }
 
-void Mesh::computeTriAreas() {
-    for(unsigned int i = 0; i < tris.size(); i++) {
-	Tri* tri = tris[i];
-	tri->area = Vector::area(corners[tri->vertex[0]],corners[tri->vertex[1]],corners[tri->vertex[2]]);
-    }
-}
-
 int Mesh::findExistingCorner(const Vector* c) const {
     unsigned int size = corners.size();
     for(unsigned int i = 0; i < size; i++) {
@@ -228,45 +220,23 @@ void Mesh::transform(const Matrix& M) {
     }
 }
 
-Vector2 Mesh::getUV(const Triangle* const triangle, const Intersection &i) const {
-    //const Triangle* triangle = (Triangle*) i.getLocalObject();
-    Tri* tri = tris[triangle->getTri()];
-    Vector weight = Vector(1-i.u-i.v,i.u,i.v);
-    //Vector weight = getInterpolationWeights(triangle->getTri(), i.getPoint());
-    return tri->uv[0] * weight[0] +
-	tri->uv[1] * weight[1] +
-	tri->uv[2] * weight[2];
-}
-
 // ----------------------------------------------------------------------------
-Vector Mesh::normal(const Triangle* const triangle, const Intersection &i) const {
-    return phong_normal(triangle,i);
+Vector Mesh::normal(const Triangle* const triangle, const Vector2 &uv) const {
+    return phong_normal(triangle,uv);
  //      return normals[triangle->normali]; // Flat
 }
 
-Vector Mesh::phong_normal(const Triangle* const triangle, const Intersection &i) const {
+Vector Mesh::phong_normal(const Triangle* const triangle, const Vector2 &uv) const {
     //const Triangle* triangle = (Triangle*) i.getLocalObject();
     Tri* tri = tris[triangle->getTri()];
     Vector result = Vector(0,0,0);
-    Vector weight = Vector(1-i.u-i.v,i.u,i.v);
-    //Vector weight = getInterpolationWeights(triangle->getTri(), i.getPoint());
+    double u = uv[0];
+    double v = uv[1];
+    Vector weight = Vector(1-u-v,u,v);
     for(unsigned int j = 0; j < 3; j++) {
 	result = result + normals[tri->interpolated_normal[j]] * weight[j];
     }
     result.normalize();
-    return result;
-}
-
-Vector Mesh::getInterpolationWeights(unsigned int triIdx, Vector p) const {
-    // Hvert hjørnes vægt er den modsatte trekants areal.
-    Tri* tri = tris[triIdx];
-    Vector result = Vector(0,0,0);
-    unsigned int j,j2,j3;
-    for(j = 0; j < 3; j++) {
-	j2 = (j + 1) % 3;
-	j3 = (j + 2) % 3;
-	result[j] =  Vector::area(p,corners[tri->vertex[j2]],corners[tri->vertex[j3]]) / tri->area;
-    }
     return result;
 }
 
@@ -347,7 +317,6 @@ Mesh::Tri::Tri(int iV0, int iV1, int iV2) {
     vertex[1] = iV1;
     vertex[2] = iV2;
     normal_idx = -1;
-    area = -1.0;
     for(unsigned int i = 0; i < 3; i++) {
 	interpolated_normal[i] = -1;
     }
@@ -396,7 +365,6 @@ void Mesh::test() {
     for(unsigned int i = 0; i < torus.tris.size(); i++) {
 	Tri* tri = torus.tris[i];
 	assert(tri->normal_idx != -1);
-	assert(tri->area != -1.0);
 	for(unsigned int j = 0; j < 3; j++) {
 	   assert(tri->interpolated_normal[j] != -1);
 	   assert(tri->vertex[j] != -1);

@@ -41,7 +41,6 @@ class Mesh : public ObjectCollection {
 		int interpolated_normal[3];
 		Vector2 uv[3];
 		int normal_idx;
-		double area;
 		Edge* edge[3];
 		// Adjacent tris
 		Tri* triangle[3];
@@ -80,7 +79,7 @@ class Mesh : public ObjectCollection {
 	virtual void transform(const Matrix& m);
 
 	/// Returns a (possibly) phong-interpolated normal
-	Vector normal(const Triangle* const triangle, const Intersection & i) const;
+	Vector normal(const Triangle* const triangle, const Vector2& uv) const;
 	
 	/// Material of the mesh 
 	virtual const Material* getMaterial() const;
@@ -99,9 +98,6 @@ class Mesh : public ObjectCollection {
 	
 	/// Add a triangle to the mesh with uv-texture-coordinates
         void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3, const Vector2& uv1, const Vector2& uv2,const Vector2& uv3);
-	
-	/// Returns (possible) interpolated (u,v) texture coordinates
-	Vector2 getUV(const Triangle* const triangle, const Intersection &i) const;
 	
 	/// Internal test
 	static void test();
@@ -127,11 +123,8 @@ class Mesh : public ObjectCollection {
 	bool prepared;
 	int findExistingCorner(const Vector* c) const;
 	void computeAdjacentTris();
-	void computeTriAreas();
 	void computeInterpolatedNormals();
-	Vector phong_normal(const Triangle* const triangle, const Intersection & i) const;
-	Vector getInterpolationWeights(unsigned int tri, Vector p) const;
-
+	Vector phong_normal(const Triangle* const triangle, const Vector2& i) const;
 	std::vector<Vector> normals;
 	std::vector<Triangle*> triangles;
 	EdgeMapType edgeMap;

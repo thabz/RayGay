@@ -10,25 +10,24 @@
 Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
 }
 
-Lightinfo Pointlight::getLightinfo(const Intersection& inter,const Vector& normal, SpaceSubdivider* space, unsigned int depth) const {
+void Pointlight::getLightinfo(const Intersection& inter,const Vector& normal, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
     // TODO: Move point ESPILON along normal to avoid selfshadowing.
-    Lightinfo info;
-    info.direction_to_light = position - inter.getPoint();
-    double dist_to_light = info.direction_to_light.length();
+    info->direction_to_light = position - inter.getPoint();
+    double dist_to_light = info->direction_to_light.length();
     if (IS_ZERO(dist_to_light)) {
-	info.intensity = 0.0;
-	return info;
+	info->cos = 0.0;
+	info->intensity = 0.0;
+	return;
 
     }
-    info.direction_to_light = info.direction_to_light / dist_to_light;
-    info.cos = info.direction_to_light * normal;
+    info->direction_to_light = info->direction_to_light / dist_to_light;
+    info->cos = info->direction_to_light * normal;
 
-    if (info.cos > 0.0) {
+    if (info->cos > 0.0) {
 	Stats::getUniqueInstance()->inc("Shadow rays cast");
-	Ray ray_to_light = Ray(inter.getPoint(),info.direction_to_light,-1.0);
+	Ray ray_to_light = Ray(inter.getPoint(),info->direction_to_light,-1.0);
 	bool occluded = shadowcache.occluded(ray_to_light,dist_to_light,depth,space);
-	info.intensity = occluded ? 0.0 : 1.0;
+	info->intensity = occluded ? 0.0 : 1.0;
     }
-    return info;
 }
 

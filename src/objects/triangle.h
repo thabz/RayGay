@@ -17,12 +17,9 @@ class Triangle : public Object {
 	/// Constructor
 	Triangle(Mesh* m);
 
-	Vector normal(const Intersection &i) const;
-
 	void transform(const Matrix& m) { };
 	const Material* getMaterial() const;
 	BoundingBox boundingBoundingBox() const;
-	Vector2 getUV(const Intersection& intersection) const;
 
 	void prepare();
 

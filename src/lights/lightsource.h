@@ -26,9 +26,10 @@ class Lightsource {
 	 * @param inter the intersection in question
 	 * @param normal surface normal at the intersection
 	 * @param space the space containing the objects of the scene
+	 * @param info the structure to write the result into
 	 * @param depth the number of times the ray has been reflected or refracted
 	 */
-	virtual Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space, unsigned int depth) const = 0;
+	virtual void getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const = 0;
 	
 	/// Apply a transformation
         virtual void transform(const Matrix& m);

@@ -22,14 +22,6 @@ Intersection TransformedInstance::localIntersect(const Ray& ray) const {
     }
 }
 
-Vector2 TransformedInstance::localGetUV(const Intersection& i) const {
-    return object->getUV(i);
-}
-
-Vector TransformedInstance::localNormal(const Intersection &i) const {
-    return object->normal(i);
-}
-
 BoundingBox TransformedInstance::localBoundingBoundingBox() const {
     return object->boundingBoundingBox();
 }
