@@ -9,7 +9,7 @@
  * Added Thu Apr 17 2003
  */
 
-#include "vector.h"
+#include "math/vector.h"
 #include <math.h>
 #include <cassert>
 #include <iostream>

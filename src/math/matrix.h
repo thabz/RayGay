@@ -12,7 +12,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include "vector.h"
+#include "math/vector.h"
 #include <iosfwd>
 
 /// Some basic linear algebra

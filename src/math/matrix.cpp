@@ -12,9 +12,10 @@
 #include <string> 
 #include <iostream>
 #include <cassert>
-#include "matrix.h"
-#include "vector.h"
-#include "constants.h"
+
+#include "math/matrix.h"
+#include "math/vector.h"
+#include "math/constants.h"
 
 using namespace std;
 
