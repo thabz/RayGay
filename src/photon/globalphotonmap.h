@@ -13,8 +13,11 @@ class IrradiancePhoton : public Photon {
 	float irradiance_estimate[3];
 	/// Surface normal
 	unsigned char normal_theta,normal_phi;
-	/// Flags
-	unsigned int flags;
+
+	void setHasIrrandiance(bool b) { has_irradiance = b; };
+	bool hasIrradiance() const { return has_irradiance; };
+    private:
+	bool has_irradiance;
 };
 
 /**
@@ -26,16 +29,23 @@ class GlobalPhotonMap : public PhotonMap<IrradiancePhoton> {
 	GlobalPhotonMap(const int size, double max_dist, int estimate_photons );
 
 	void preComputeIrradiances(const int step);
-	RGB irradianceEstimate(const Vector& pos, const Vector& normal);
+	RGB irradianceEstimate(const Vector& pos, const Vector& normal) const;
+	RGB directIrradianceEstimate(const Vector& pos, const Vector& normal) const;
 
-	void store(
-		const Vector& power,          // photon power
-		const Vector& pos,            // photon position
-		const Vector& dir,            // photon direction
-		const Vector& normal);        // surface normal
+	void store(const Vector& power, const Vector& pos,
+		   const Vector& dir, const Vector& normal);
 	
     private:
 	void preComputeIrradiance(IrradiancePhoton* photon);
+	class locatePhotonArgs {
+	    public:
+		float smallest_dist;
+		int smallest_index;
+		Vector pos;
+		Vector normal;
+	};
+	void locate_photon(locatePhotonArgs* const args, const int index) const;
+
 };
 
 #endif

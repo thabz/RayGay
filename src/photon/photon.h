@@ -2,7 +2,8 @@
 #ifndef PHOTON_H
 #define PHOTON_H
 
-class Vector;
+#include "math/vector.h"
+
 class RGB;
 
 /**
@@ -29,5 +30,10 @@ class Photon {
 	/// Set the power
 	void setPower(const RGB& power);
 };
+
+inline
+Vector Photon::getPosition() const {
+    return Vector(pos[0],pos[1],pos[2]);
+}
 
 #endif

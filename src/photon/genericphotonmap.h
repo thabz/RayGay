@@ -55,6 +55,7 @@ class PhotonMap {
 	void packVector(const Vector& vector, unsigned char* theta, unsigned char* phi) const;
 	Vector unpackVector(unsigned char theta, unsigned char phi) const;
 	
+	int half_stored_photons;
 
     private:
 
@@ -75,7 +76,6 @@ class PhotonMap {
 		const int axis );
 
 
-	int half_stored_photons;
 	int max_photons;
 	int prev_scale;
 	int estimate_photons;

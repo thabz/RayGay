@@ -3,10 +3,6 @@
 #include "math/vector.h"
 #include "image/rgb.h"
 
-Vector Photon::getPosition() const {
-    return Vector(pos[0],pos[1],pos[2]);
-}
-
 void Photon::setPosition(const Vector& posi) {
     pos[0] = posi[0];
     pos[1] = posi[1];
