@@ -275,7 +275,9 @@ void work(string scenefile, string outputfile, int jobs) {
     PreviewWindow* preview_window = NULL;
     if (env->hasPreviewWindow()) {
 	Vector2 size = getImageSize();
-	preview_window = new PreviewWindow(int(size[0]),int(size[1]), abortRenderingCB);
+#ifdef HAVE_GTK
+	preview_window = new PreviewWindowGTK(int(size[0]),int(size[1]), abortRenderingCB);
+#endif
 	env->setPreviewWindow(preview_window);
 	preview_window->run();
     }
