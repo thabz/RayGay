@@ -208,7 +208,7 @@ void Mesh::transform(const Matrix& M) {
 }
 
 Vector2 Mesh::getUV(const Intersection &i) const {
-    const Triangle* triangle = i.local_triangle;
+    const Triangle* triangle = (Triangle*) i.local_object;
     Tri* tri = tris[triangle->getTri()];
     Vector weight = getInterpolationWeights(triangle->getTri(), i.point);
     return tri->uv[0] * weight[0] +
@@ -219,11 +219,11 @@ Vector2 Mesh::getUV(const Intersection &i) const {
 // ----------------------------------------------------------------------------
 Vector Mesh::normal(const Intersection &i) const {
     return phong_normal(i);
-    //   return normals[i.local_triangle->normali];
+ //      return normals[((Triangle*)i.local_object)->normali];
 }
 
 Vector Mesh::phong_normal(const Intersection &i) const {
-    const Triangle* triangle = i.local_triangle;
+    const Triangle* triangle = (Triangle*) i.local_object;
     Tri* tri = tris[triangle->getTri()];
     Vector result = Vector(0,0,0);
     Vector weight = getInterpolationWeights(triangle->getTri(), i.point);

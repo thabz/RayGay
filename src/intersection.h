@@ -23,9 +23,9 @@ class Intersection {
 	object* getObject() const { return o; };
 
 	Vector point; 	///< The intersection point
-	object* local_object; ///< A local subobject, eg. a component of a Boolean.
+	const object* local_object; ///< A local subobject, eg. a component of a Boolean.
 
-	const Triangle* local_triangle; ///< A local subobject, eg. a component of a Mesh.
+	//const Triangle* local_triangle; ///< A local subobject, eg. a component of a Mesh.
 	double t;
 	bool isIntersected() const { return t >= 0.0; };
 
