@@ -9,6 +9,7 @@
 #include "ray.h"
 #include "sphere.h"
 #include "image/image.h"
+#include "image/rgba.h"
 #include "math/vector2.h"
 #include "objectcollection.h"
 #include "materials/materials.h"
@@ -49,7 +50,7 @@ void Scene::setEnvironmentMap(const std::string& filename) {
     environmentMap = Image::load(filename);
 }
 
-RGB Scene::getBackgroundColor(const Ray& ray) const { 
+RGBA Scene::getBackgroundColor(const Ray& ray) const { 
     if (environmentMap == NULL) { 
         return bg_color; 
     } else {

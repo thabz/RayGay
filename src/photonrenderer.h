@@ -33,12 +33,12 @@ class PhotonRenderer : public Renderer {
 
 	QMCSequence* qmc_sequence;
 
-	RGB getPixel(const Vector2& v);
+	RGBA getPixel(const Vector2& v);
 
 	RGB shade(const Ray&, const Intersection&, int depth);
-	RGB trace(const Ray&, int depth);
-	RGB traceSub(bool intersected, const Ray&, int depth);
-	RGB tracePrimary(const Ray&);
+	RGBA trace(const Ray&, int depth);
+	RGBA traceSub(bool intersected, const Ray&, int depth);
+	RGBA tracePrimary(const Ray&);
 	Vector finalGather(const Vector& point, const Vector& normal,const Vector& raydir, int gatherRays, int depth) const;
 };
 

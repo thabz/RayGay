@@ -33,9 +33,9 @@ RGB DepthOfField::sampleCircle(int x, int y, double z, double radius, double tol
     for (int b = y_min; b < y_max; b++) {
 	for (int a = x_min; a < x_max; a++) {
 	    if ((x-a)*(x-a) + (y-b)*(y-b) <= rad2) {
-		RGB depth = depth_buffer->getRGB(a,b);
+		RGB depth = depth_buffer->getRGBA(a,b);
 		if (fabs(depth.r() - z) < tolerance) {
-		    result += image->getRGB(a,b);
+		    result += image->getRGBA(a,b);
 		    samples++;
 		}
 	    }

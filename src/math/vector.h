@@ -34,9 +34,9 @@ public:
     const double &operator[](const int i) const; ///< Index into coordinates
     double operator*(const Vector &v) const; ///< Vector dot product (aka scalar product)
     /// Vector addition
-    Vector operator+(const Vector &v) const;
+    virtual Vector operator+(const Vector &v) const;
     /// Vector addition
-    Vector operator+=(const Vector &v);
+    virtual Vector operator+=(const Vector &v);
     /// Vector subtraction 
     Vector operator-(const Vector &v) const;
     /// Vector subtraction 

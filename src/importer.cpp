@@ -26,6 +26,7 @@
 #include "lights/spotlight.h"
 #include "lights/skylight.h"
 #include "materials/material.h"
+#include "image/rgba.h"
 
 Importer::Importer(const std::string& filename) {
     ratio = -1;
@@ -69,6 +70,15 @@ Vector readVector(std::ifstream& stream) {
     stream >> d2;
     stream >> d3;
     return Vector(d1,d2,d3);
+}
+
+RGBA readRGBA(std::ifstream& stream) {
+    double r,g,b,a;
+    stream >> r;
+    stream >> g;
+    stream >> b;
+    stream >> a;
+    return RGBA(r,g,b,a);
 }
 
 double readDouble(std::ifstream& stream) {
@@ -180,7 +190,7 @@ void Importer::parse(const string& filename) {
 	    int a = readInt(stream);
 	    camera->enableAdaptiveSupersampling(a);
 	} else if (command == "background") {
-	    RGB col = readVector(stream);
+	    RGBA col = readRGBA(stream);
 	    scene->setBackgroundColor(col);
 	} else if (command == "fog") {
 	    double dist = readDouble(stream);

@@ -15,7 +15,7 @@ void PhotonMapDump::render(Scene* scene, Image* image, GlobalPhotonMap* photonma
 	RGB intensity = RGB(photon.power[0],photon.power[0],photon.power[0]);
 	Vector2 p2 = camera->project(p3);
 	if (p2[0] != -1) {
-	    image->setRGB(p2,intensity);
+	    image->setRGBA(p2,intensity);
 	}
     }
 }

@@ -4,6 +4,7 @@
 #include <vector>
 #include <iosfwd>
 #include "image/rgb.h"
+#include "image/rgba.h"
 
 class Intersection;
 class Ray;
@@ -49,10 +50,10 @@ class Scene {
 	std::vector<SceneObject*> getObjects();
 
 	/// Set the background color
-	void setBackgroundColor(const RGB& c) { bg_color = c; };
+	void setBackgroundColor(const RGBA& c) { bg_color = c; };
 
 	/// Returns the background color
-	RGB getBackgroundColor(const Ray& ray) const;
+	RGBA getBackgroundColor(const Ray& ray) const;
 
 	/// Sets the environmentmap
 	void setEnvironmentMap(const std::string& filename);
@@ -71,7 +72,7 @@ class Scene {
 	Image* environmentMap;
 	Sphere* environmentSphere;
 	Camera* camera;
-	RGB bg_color;
+	RGBA bg_color;
 
 	bool fog_enabled;
 	RGB fog_color;

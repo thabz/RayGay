@@ -62,25 +62,25 @@ PhotonRenderer::~PhotonRenderer() {
     delete causticsphotonmap;
 }
 
-RGB PhotonRenderer::getPixel(const Vector2& v) {
+RGBA PhotonRenderer::getPixel(const Vector2& v) {
     Ray ray = scene->getCamera()->getRay(v[0],v[1]);
     return tracePrimary(ray);
 }
 
-RGB PhotonRenderer::tracePrimary(const Ray& ray) {
+RGBA PhotonRenderer::tracePrimary(const Ray& ray) {
     Stats::getUniqueInstance()->inc("Primary camera rays cast");
     bool intersected = space->intersectPrimary(ray);
     return traceSub(intersected, ray, 1);
 }
 
-RGB PhotonRenderer::trace(const Ray& ray, int depth) {
+RGBA PhotonRenderer::trace(const Ray& ray, int depth) {
     bool intersected = space->intersect(ray);
     return traceSub(intersected, ray, depth);
 }
 
-RGB PhotonRenderer::traceSub(bool intersected, const Ray& ray, int depth) {
+RGBA PhotonRenderer::traceSub(bool intersected, const Ray& ray, int depth) {
     Stats::getUniqueInstance()->inc("Total camera rays cast");
-    RGB color; 
+    RGBA color; 
     Intersection intersection;
     double intersect_distance;
 
@@ -96,7 +96,7 @@ RGB PhotonRenderer::traceSub(bool intersected, const Ray& ray, int depth) {
     if (scene->fogEnabled()) {
 	double D = scene->getFogDistance();
 	double v = expf(-intersect_distance/D);
-	color = v * color + (1-v) * scene->getFogColor();
+	color = (color * v) + (scene->getFogColor() * (1-v));
     }
     return color;
 }

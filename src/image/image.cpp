@@ -14,7 +14,7 @@ using namespace std;
 Image::Image(long w, long h) {
     height = h;
     width = w;
-    data = new double[w*h*3];
+    data = new double[w*h*4];
 }
 
 Image::Image(long w, long h, double* dataPtr) {
@@ -31,30 +31,30 @@ Image::~Image() {
 }
 
 
-void Image::setRGB(int x, int y, const RGB& c) {
+void Image::setRGBA(int x, int y, const RGBA& c) {
     assert(0 <= x && x < width);
     assert(0 <= y && y < height);
 
-    data[(y*width + x)*3 + 0] = c.r();
-    data[(y*width + x)*3 + 1] = c.g();
-    data[(y*width + x)*3 + 2] = c.b();
+    data[(y*width + x)*4 + 0] = c.r();
+    data[(y*width + x)*4 + 1] = c.g();
+    data[(y*width + x)*4 + 2] = c.b();
+    data[(y*width + x)*4 + 3] = c.a();
 }
 
-void Image::setRGB(const Vector2& p, const RGB& c) {
+void Image::setRGBA(const Vector2& p, const RGBA& c) {
     int x = int(p[0]);
     int y = int(p[1]);
     if (x >= 0 && x < width && y >= 0 && y < height) {
-	setRGB(x,y,c);
+	setRGBA(x,y,c);
     }
 }
 
-RGB Image::getRGB(int x, int y) const {
+RGBA Image::getRGBA(int x, int y) const {
     assert(0 <= x && x < width);
     assert(0 <= y && y < height);
 
-    double *p = &data[3*(y*width + x)];
-    RGB rgb = RGB(p[0],p[1],p[2]);
-    return rgb;
+    double *p = &data[4*(y*width + x)];
+    return RGBA(p[0],p[1],p[2],p[3]);
 }
 
 RGB Image::getRGBWrapped(int x, int y) const {
@@ -62,7 +62,7 @@ RGB Image::getRGBWrapped(int x, int y) const {
     y = y % height;
     if (x < 0) x = width + x;
     if (y < 0) y = height + y;
-    return getRGB(x,y);
+    return getRGBA(x,y);
 }
 
 /**
@@ -74,7 +74,7 @@ RGB Image::getRGBWrapped(int x, int y) const {
 RGB Image::getTexel(double u, double v) const {
     u -= int(u);
     v -= int(v);
-    return getRGB(int(u*(width-1)),int(v*(height-1)));
+    return getRGBA(int(u*(width-1)),int(v*(height-1)));
 }
 
 /**
@@ -114,7 +114,7 @@ double Image::biCubicP(double x) const {
  * Writes the image into a  24 bit uncompressed tga-file
  */
 void Image::save(const std::string& filename) const {
-    byte* bytes = new byte[height*width*3];
+    byte* bytes = new byte[height*width*4];
     byte Header[18];
     memset(&Header,0,18);
 
@@ -134,18 +134,19 @@ void Image::save(const std::string& filename) const {
     Header[13] = ((long) width >> 8);
     Header[14] = height;
     Header[15] = ((long) height >> 8);
-    Header[16] = 24;
+    Header[16] = 32;
     Header[17] = 0;
 
     
-    RGB color = RGB(0.0,0.0,0.0);
+    RGBA color;
 
     for(int y = 0; y < height ; y++) {
         for(int x = 0; x < width; x++) {
-            color = getRGB(x,(height - 1) - y);
-	    bytes[3*(x + y * width) + 0] = (byte)(round(color.b()*255));
-	    bytes[3*(x + y * width) + 1] = (byte)(round(color.g()*255));
-	    bytes[3*(x + y * width) + 2] = (byte)(round(color.r()*255));
+            color = getRGBA(x,(height - 1) - y);
+	    bytes[4*(x + y * width) + 0] = (byte)(round(color.b()*255));
+	    bytes[4*(x + y * width) + 1] = (byte)(round(color.g()*255));
+	    bytes[4*(x + y * width) + 2] = (byte)(round(color.r()*255));
+	    bytes[4*(x + y * width) + 3] = (byte)(round(color.a()*255));
 	}
     }
     FILE* outfile = fopen(filename.c_str(),"wb");
@@ -157,10 +158,10 @@ void Image::save(const std::string& filename) const {
     fseek(outfile,0,0);
     fwrite(Header,1,18,outfile);
     fseek(outfile,18,0);
-    int bytes_saved = fwrite(bytes,sizeof(byte),width*height*3,outfile);
+    int bytes_saved = fwrite(bytes,sizeof(byte),width*height*4,outfile);
 
     std::cout << bytes_saved << " bytes written" << std::endl;
-    if (bytes_saved < width*height*3) 
+    if (bytes_saved < width*height*4) 
 	std::cout << "Error saving file" << std::endl;
     fclose(outfile);
     delete [] bytes;
@@ -200,13 +201,13 @@ Image* Image::load(const std::string& filename) {
     fread(bytes, bpp, width*height, Handle);
     fclose(Handle);
 
-    double* data = new double[width*height*3];
+    double* data = new double[width*height*4];
     for(int y = 0; y < height ; y++) {
         for(int x = 0; x < width; x++) {
 	    long offset = ((height-1-y)*width + x)*bpp;
-	    data[(y*width + x)*3 + 0] = bytes[offset+2] / double(255.0);
-	    data[(y*width + x)*3 + 1] = bytes[offset+1] / double(255.0);
-	    data[(y*width + x)*3 + 2] = bytes[offset+0] / double(255.0);
+	    data[(y*width + x)*4 + 0] = bytes[offset+2] / double(255.0);
+	    data[(y*width + x)*4 + 1] = bytes[offset+1] / double(255.0);
+	    data[(y*width + x)*4 + 2] = bytes[offset+0] / double(255.0);
 	}
     }
 
@@ -221,12 +222,11 @@ Image* Image::load(const std::string& filename) {
  * Using the formula from ITU-R Recommendation BT.709, "Basic Parameter Values for the Studio and for International Programme Exchange (1990) [formerly CCIR Rec. 709] 
  */
 void Image::grayscale() {
-    RGB col;
-    RGB res;
+    RGBA col;
     for(int y = 0; y < height ; y++) {
         for(int x = 0; x < width; x++) {
-	    col = getRGB(x,y);
-	    setRGB(x,y,col.toGrayscale());
+	    col = getRGBA(x,y);
+	    setRGBA(x,y,col.toGrayscale());
 	}
     }
 }

@@ -5,11 +5,11 @@ include materials.gay
 renderer photonrenderer
 #renderer raytracer
 
-photonmap globalphotons 400000
-photonmap causticphotons 500
-photonmap estimate-radius 30
+photonmap globalphotons 100000
+photonmap causticphotons 0
+photonmap estimate-radius 29
 photonmap estimate-samples 300
-photonmap final-gather-rays 100
+photonmap final-gather-rays 20
 
 camera-position 100 180 1100
 camera-up 0 1 0
@@ -18,17 +18,17 @@ camera-field-of-view 60
 camera-aa 0
 
 image-ratio 4 3
-image-width 160
+image-width 200
 
 background 0.1 0.1 0.3
 
 
 # light behind wall
-light point 200 280 -150 1000000 1000000 1000000
+light point 200 280 -150 3000000 3000000 3000000
 #light area 200 280 -150 -1 -1 1 500000 500000 500000   50 64  0.01
 
 # light near camera
-#light point 100 280 300 50000 50000 50000
+#light point 100 280 900 50000 50000 50000
 
 #sphere $glass 100  -180 -200 180 
 
@@ -75,11 +75,11 @@ box $dullwhite 200 -115 0                 215 215 15
 
 # Table
 box $dullwhite -250 -145 0      250 -130 200
-cylinder $dullwhite 15 -200 -300 170              -200 -145 170
-cylinder $dullwhite 15 -200 -300 30              -200 -145 30
-cylinder $dullwhite 15 200 -300 170              200 -145 170
-cylinder $dullwhite 15 200 -300 30              200 -145 30
-sphere $glass 50  -60 -80 100
+cylinder $dullwhite 10 -200 -300 170              -200 -145 170
+cylinder $dullwhite 10 -200 -300 30              -200 -145 30
+cylinder $dullwhite 10 200 -300 170              200 -145 170
+cylinder $dullwhite 10 200 -300 30              200 -145 30
+#sphere $glass 50  -60 -80 100
 sphere $red 20    -130 -110 170
 
 # shelfs
@@ -104,3 +104,6 @@ box $dullwhite -300 -115 500                   -270 -100 485
 sphere $red 25 -275 240 100
 sphere $blue 25 -275 140 200
 sphere $green 25 -275 -60 400
+
+#3ds $dullwhite 0.22 diningchair01.3ds rotate 1 0 0 90 translate 0 -300 350
+

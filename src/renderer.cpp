@@ -7,6 +7,7 @@
 #include "image/image.h"
 #include "scene.h"
 #include "image/rgb.h"
+#include "image/rgba.h"
 #include "object.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
@@ -53,7 +54,7 @@ void Renderer::render(Image* img) {
     std::vector<PixelBlock>* tmp_row_ptr;
     PixelBlock* cur_block;
     PixelBlock* prev_block;
-    RGB color;
+    RGBA color;
     for (int y = 0; y < img_h; y++) {
 	if (y != 0) {
 	    // Swap row buffers
@@ -73,7 +74,7 @@ void Renderer::render(Image* img) {
 	    } else {
 		color = getPixel(Vector2(x,y));
 	    }
-	    img->setRGB((int)x, (int)img_h - y - 1, color);
+	    img->setRGBA((int)x, (int)img_h - y - 1, color);
 	}
 	cout << y << " / " << img_h << "          \r" << flush;
     }
@@ -113,7 +114,7 @@ void Renderer::prepareCurBlock(PixelBlock* cur_block, PixelBlock* prev_block, un
     }
 }
 
-RGB Renderer::getSubPixel(unsigned int curLevel, const Vector2& center, PixelBlock *block, double size, int x1, int y1, int x2, int y2) {
+RGBA Renderer::getSubPixel(unsigned int curLevel, const Vector2& center, PixelBlock *block, double size, int x1, int y1, int x2, int y2) {
 
     double halfsize = size / 2.0;
 
@@ -123,7 +124,7 @@ RGB Renderer::getSubPixel(unsigned int curLevel, const Vector2& center, PixelBlo
     Vector2 upperleft = Vector2(lowerleft[0],upperright[1]);
     Vector2 lowerright = Vector2(upperright[0],lowerleft[1]);
 
-    RGB c1,c2,c3,c4;
+    RGBA c1,c2,c3,c4;
 	
     // Trace upper left corner
     if (!block->isActive(x1,y1)) {
@@ -181,12 +182,12 @@ RGB Renderer::getSubPixel(unsigned int curLevel, const Vector2& center, PixelBlo
     }
 
     // Return average
-    return 0.25 * (c1 + c2 + c3 + c4);
+    return (c1 + c2 + c3 + c4) * 0.25;
 }
 
 Renderer::PixelBlock::PixelBlock(const unsigned int size) {
     this->size = size;
-    color = new RGB[size*size]; 
+    color = new RGBA[size*size]; 
     active = new bool[size*size]; 
     reset();
 }

@@ -4,6 +4,7 @@
 
 #include <string>
 #include "rgb.h"
+#include "rgba.h"
 
 class Vector2;
 
@@ -19,11 +20,11 @@ class Image {
 	/// Destructor
 	~Image();
 	/// Sets a pixel
-        void setRGB(int x, int y, const RGB& color); 
+        void setRGBA(int x, int y, const RGBA& color); 
 	/// Sets a pixel
-        void setRGB(const Vector2& p, const RGB& color); 
+        void setRGBA(const Vector2& p, const RGBA& color); 
 	/// Gets a pixel
-	RGB getRGB(int x, int y) const;
+	RGBA getRGBA(int x, int y) const;
 	/// Saves this image as an uncompressed tga-file
 	void save(const std::string& filename) const;
 	/// Returns width of image
