@@ -9,6 +9,11 @@
 #include "boundingbox.h"
 #include "sphere.h"
 #include "boolean.h"
+#include "mesh.h"
+#include "cylinder.h"
+#include "box.h"
+#include "tetrahedron.h"
+#include "tessalation.h"
 #include "booleanoperand.h"
 
 void sphere_test() {
@@ -134,9 +139,13 @@ void boolean_test() {
 }
 
 int main(int argc, char *argv[]) {
-
     sphere_test();
     boolean_test();
+    Mesh::test();
+    Box::test();
+    Cylinder::test();
+    Tetrahedron::test();
+    Tessalation::test();
     return EXIT_SUCCESS;
 }
 

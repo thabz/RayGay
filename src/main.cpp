@@ -146,12 +146,7 @@ void testScene4() {
 }
 
 int main(int argc, char *argv[]) {
-    Mesh::test();
-    Box::test();
-    Cylinder::test();
     PixelStore::test();
-    Tetrahedron::test();
-    Tessalation::test();
     BSP::test();
     cout << "Tests done." << endl;
     // Test scene stuff
