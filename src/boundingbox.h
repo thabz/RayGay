@@ -76,6 +76,11 @@ class BoundingBox {
 	/// Comparator
         bool operator==(const BoundingBox &b) const;
 
+	/// Says whether this bounding box intersects a sphere
+	bool intersectSphere(const Vector& center, double squared_radius) const;
+
+	Vector center() const;
+
     private:
 	Vector _c1; ///< The point with smallest x,y,z values
 	Vector _c2; ///< The point with biggest x,y,z values

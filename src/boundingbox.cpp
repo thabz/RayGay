@@ -35,6 +35,10 @@ bool BoundingBox::inside(const Vector &p) const {
 	   p[2] < _c2[2];
 }
 
+Vector BoundingBox::center() const {
+    return 0.5 * (_c1 + _c2);
+}
+
 bool BoundingBox::inside(const Vector* points, int num) const {
     assert(num > 0);
     for(int i = 0; i < num; i++) {
@@ -272,4 +276,22 @@ void BoundingBox::grow(double nudge) {
     Vector v = Vector(nudge,nudge,nudge);
     _c1 -= v;
     _c2 += v;
+}
+
+// Stolen from http://www.gamasutra.com/features/19991018/Gomez_4.htm
+bool BoundingBox::intersectSphere(const Vector& center, double squared_radius) const {
+    double s, d = 0;
+    const Vector mini = minimum();
+    const Vector maxi = maximum();
+
+    for (int i = 0; i < 3; i++) {
+	if (center[i] < mini[i]) {
+	    s = center[i] - mini[i];
+	    d += s*s;
+	} else if (center[i] > maxi[i]) {
+	    s = center[i] - maxi[i];
+	    d += s*s;
+	}
+    }
+    return d <= squared_radius;
 }
