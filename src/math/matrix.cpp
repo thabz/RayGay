@@ -230,7 +230,7 @@ Matrix Matrix::matrixRotate(const Vector angles) {
 }
 
 /**
- * Create a scaling transformation
+ * Create a scaling transformation.
  *
  * @param scale the x,y,z scaling coefficents
  */
@@ -239,6 +239,7 @@ Matrix Matrix::matrixScale(const Vector& scale) {
     result.set(0,0,scale[0]);
     result.set(1,1,scale[1]);
     result.set(2,2,scale[2]);
+    result.set(3,3,1);
     return result;
 }
 
@@ -271,6 +272,16 @@ Matrix Matrix::matrixRotate(const Vector axis, const double angle) {
 	rotate.set(2,2,t*z*z+c);
 
 	return rotate;
+}
+
+Matrix Matrix::transpose() const {
+    Matrix transposed;
+    for(int r = 0; r < 4; r++) {
+        for(int c = 0; c < 4; c++) {
+	    transposed.set(r,c,get(c,r));
+	}
+    }
+    return transposed;
 }
 
 Matrix Matrix::inverse() const {

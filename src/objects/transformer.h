@@ -26,7 +26,7 @@ class Transformer {
 	Vector pointToObject(const Vector& p) const;
 	Vector dirToObject(const Vector& d) const;
 	Vector pointToWorld(const Vector &p) const;
-	Vector dirToWorld(const Vector& d) const;
+	Vector normalToWorld(const Vector& d) const;
 	Ray rayToObject(const Ray& ray) const;
 	Intersection intersectionToWorld(const Intersection& i) const;
 	BoundingBox bboxToWorld(const BoundingBox& bbox) const;
@@ -36,7 +36,7 @@ class Transformer {
 	Matrix inverse_transformation;
 	Matrix rotation; /// The rotation part extracted from the transformation
 	Matrix inverse_rotation;
-	Matrix scene_transformation;
+	Matrix normal_transformation;
 };
 
 #endif

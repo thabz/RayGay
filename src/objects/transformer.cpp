@@ -7,6 +7,7 @@ void Transformer::transform(const Matrix& m) {
     inverse_transformation = transformation.inverse();
     rotation = transformation.extractRotation();
     inverse_rotation = rotation.inverse();
+    normal_transformation = inverse_rotation.transpose();
 }
 
 Vector Transformer::pointToObject(const Vector& p) const {
@@ -16,25 +17,29 @@ Vector Transformer::pointToObject(const Vector& p) const {
 Vector Transformer::dirToObject(const Vector& d) const {
     return inverse_rotation * d;
 }
+
 Vector Transformer::pointToWorld(const Vector &p) const {
     return transformation * p;
 }
 
-Vector Transformer::dirToWorld(const Vector& d) const {
-    return rotation * d;
+Vector Transformer::normalToWorld(const Vector& d) const {
+    Vector result = normal_transformation * d;
+    result.normalize();
+    return result;
 }
 
 Ray Transformer::rayToObject(const Ray& ray) const {
     Vector o = inverse_transformation * ray.getOrigin();
     Vector d = inverse_rotation * ray.getDirection();
+    d.normalize();
     double ior = ray.getIndiceOfRefraction();
     return Ray(o,d,ior);
 }
 
 Intersection Transformer::intersectionToWorld(const Intersection& i) const {
     Intersection result = Intersection(i);
-    result.setNormal(rotation * i.getNormal());
-    result.setPoint(transformation * i.getPoint());
+    result.setNormal(normalToWorld(i.getNormal()));
+    result.setPoint(pointToWorld(i.getPoint()));
     return result;
 }
 

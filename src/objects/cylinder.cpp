@@ -42,7 +42,7 @@ BoundingBox Cylinder::boundingBoundingBox() const {
     Vector mini = Vector(-r,-r,0);
     Vector maxi = Vector(r,r,height);
     BoundingBox bbox = BoundingBox(mini,maxi);
-    bbox.grow(5*EPSILON);
+    bbox.grow(10*EPSILON);
     return bboxToWorld(bbox);
 }
 
@@ -52,10 +52,11 @@ double Cylinder::_fastIntersect(const Ray& ray) const {
     return num == 0 ? -1 : roots[0];
 }
 
-Intersection Cylinder::_fullIntersect(const Ray& ray, const double t) const {
-    Vector world_point = ray.getPoint(t);
-    Vector local_normal = getNormal(pointToObject(world_point));
-    return Intersection(world_point,t,dirToWorld(local_normal),Vector2(0,0));
+Intersection Cylinder::_fullIntersect(const Ray& world_ray, const double t) const {
+    Ray ray = rayToObject(world_ray);
+    Vector point = ray.getPoint(t);
+    Vector normal = getNormal(point);
+    return intersectionToWorld(Intersection(point,t,normal,Vector2(0,0)));
 }
 
 inline

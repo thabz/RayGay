@@ -39,6 +39,9 @@ class Matrix {
         /// Returns the inverse to this matrix
 	Matrix inverse() const;
 
+	/// Returns the transpose of the 3x3 matrix part
+	Matrix transpose() const;
+
 	/// Returns a matrix with the translation part stripped
 	Matrix extractRotation() const;
 
