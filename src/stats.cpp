@@ -3,7 +3,13 @@
 
 using namespace std;
 
-Stats::Stats() {
+Stats* Stats::uniqueInstance = NULL;
+
+Stats* Stats::getUniqueInstance() {
+    if (uniqueInstance == NULL) {
+	uniqueInstance = new Stats();
+    }
+    return uniqueInstance;
 }
 
 void Stats::put(string key, long value) {
@@ -28,8 +34,11 @@ void Stats::inc(string key) {
     }
 }
 
+void Stats::clear() {
+    stats.clear();
+}
+
 void Stats::dump() const {
-    cout << "Stats" << endl;
     map<string,long>::const_iterator cur_entry;
     for (cur_entry = stats.begin();
 	    cur_entry != stats.end();

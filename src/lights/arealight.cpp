@@ -5,6 +5,7 @@
 #include "paths/circle.h"
 #include "intersection.h"
 #include "spacesubdivider.h"
+#include "stats.h"
 
 /**
  * Constructs an area light
@@ -67,8 +68,8 @@ Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& norma
 	    direction_to_light = getPosition(i) - inter.getPoint();
 	    direction_to_light.normalize();
 
+	    Stats::getUniqueInstance()->inc("Shadow rays cast");
 	    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
-	    // TODO: Fix brug af hints[i] herunder
 	    if (space->intersectForShadow(ray_to_light,hints[i])) {
 		hints[i] = space->getLastIntersection()->getObject();
 	    } else {

@@ -19,6 +19,8 @@
 #include <time.h>
 #include <stdio.h>
 
+#include "stats.h"
+
 #include "math/vector.h"
 #include "math/matrix.h"
 
@@ -53,6 +55,7 @@
 using namespace std;
 
 void testScene4() {
+    Stats::getUniqueInstance()->clear();
     Scene scene;
  //   scene.setEnvironmentMap("stbp.tga");
 
@@ -122,10 +125,10 @@ void testScene4() {
     Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
     Arealight area1 = Arealight(Vector(-4000,4000,4000),Vector(1,-1,-1),1000,40,0.10);
     Arealight area2 = Arealight(Vector(4000,4000,4000),Vector(-1,-1,-1),1000,40,0.10);
-    scene.addLight(&area1);
+    //scene.addLight(&area1);
     //scene.addLight(&area2);
     //scene.addLight(&spotlight2);
-    //scene.addLight(&light1);
+    scene.addLight(&light1);
     //scene.addLight(&light3);
     
     Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); /* Floor */
@@ -146,12 +149,11 @@ void testScene4() {
 
     Raytracer raytracer = Raytracer();
 
-    time_t beginTime = time(NULL);
     raytracer.render(&scene,img,space);
     
-    printf("Rendering took %ld seconds.\n",time(NULL) - beginTime);
     img->save("out.tga");
     delete img;
+    Stats::getUniqueInstance()->dump();
 }
 
 int main(int argc, char *argv[]) {

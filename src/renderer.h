@@ -2,6 +2,7 @@
 #define RENDERER_H
 
 #include "scene.h"
+#include "stats.h"
 
 class RGB;
 class Image;
@@ -14,6 +15,8 @@ class Renderer {
     public:
 	/// Render a scene into an image
 	void render(Scene* scene, Image*, SpaceSubdivider* space);
+	void dumpStats() const;
+	virtual ~Renderer() {};
 
     private:
 	/// The public render-method uses this to render the image. Subclasses must implement this.

@@ -12,6 +12,7 @@
 #include "hierarchy.h"
 #include "objectcollection.h"
 #include "materials/materials.h"
+#include "stats.h"
 
 using namespace std;
 
@@ -24,10 +25,12 @@ Scene::~Scene() {
 }
 
 void Scene::addObject(object* obj) {
+    Stats::getUniqueInstance()->inc("SCENE: Objects added");
     objects.push_back(obj);
 }
 
 void Scene::addObject(ObjectCollection* obj) {
+    Stats::getUniqueInstance()->inc("SCENE: ObjectCollections added");
     objectcollections.push_back(obj);
 }
 

@@ -17,6 +17,7 @@ Raytracer::Raytracer() {
 }
 
 RGB Raytracer::getPixel(double x, double y) {
+    Stats::getUniqueInstance()->inc("Primary camera rays cast");
     Vector position = scene->getCamera()->getPosition();
     Vector scr = Vector(x,y,0);
     Vector raydir = scr - position;
@@ -27,6 +28,7 @@ RGB Raytracer::getPixel(double x, double y) {
 
 
 RGB Raytracer::trace(const Ray& ray, int depth) {
+    Stats::getUniqueInstance()->inc("Total camera rays cast");
     RGB color; // Set to scene's ambient color
     if (space->intersect(ray)) {
 	Intersection intersection = *(space->getLastIntersection());

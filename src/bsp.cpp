@@ -8,6 +8,7 @@
 #include "ray.h"
 #include "intersection.h"
 #include "boundingbox.h"
+#include "stats.h"
 
 // For test
 #include "sphere.h"
@@ -18,6 +19,7 @@ BSP::BSP() {
 }
 
 void BSP::addObject(object* obj) {
+    Stats::getUniqueInstance()->inc("BSP: Objects added");
     objects.push_back(obj);
 }
 
@@ -59,14 +61,14 @@ void BSP::prepare() {
 	    BoundingBox bbox = obj->boundingBoundingBox();
 	    int cut_val = bbox.cutByPlane(cutplane_dimension, cutplane_value);
 	    if (cut_val == -1) {
-		lower->addObject(obj);
+		lower->objects.push_back(obj);
 		l++;
 	    } else if (cut_val == 1) {
-		higher->addObject(obj);
+		higher->objects.push_back(obj);
 		h++;
 	    } else {
-		lower->addObject(obj);
-		higher->addObject(obj);
+		lower->objects.push_back(obj);
+		higher->objects.push_back(obj);
 		m++;
 	    }
 	}

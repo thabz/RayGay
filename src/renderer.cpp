@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <time.h>
 
 #include "renderer.h"
 #include "image/image.h"
@@ -13,9 +14,11 @@ Renderer::Renderer() {
 }
 
 void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
+    time_t beginTime;
     scene = sc;
     space = spc;
 
+    beginTime = time(NULL);
     // Add all objects in scene to spacesubdivider
     std::vector<object*> objects = scene->getObjects();
     for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
@@ -29,11 +32,10 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
 	(*p)->prepare();
 	(*p)->addParts(space);
     }
-
-
     space->prepare();
-    std::cout << "Prepare done" << std::endl;
+    Stats::getUniqueInstance()->put("Prepare time (seconds)",time(NULL)-beginTime);
     
+    beginTime = time(NULL);
     int img_w = img->getWidth() / 2;
     int img_h = img->getHeight() / 2;
 
@@ -43,4 +45,6 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
 	    img->setRGB((int)x + img_w, (int)(-y) + img_h - 1, color);
 	}
     }
+    Stats::getUniqueInstance()->put("Rendering time (seconds)",time(NULL)-beginTime);
 }
+
