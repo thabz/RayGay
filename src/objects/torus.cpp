@@ -112,17 +112,6 @@ Vector Torus::normal(const Vector& point) const {
     return result;
 }
 
-bool Torus::onEdge(const Vector &point) const {
-    Vector p = inverse_transformation * point;
-    Vector Q = Vector(p[0],0,p[2]);
-    double l = Q.length();
-    if (IS_ZERO(l)) {
-	return (r == R) ? true : false;
-    }
-    Vector X = (R/l) * Q; // Closest point on big circle
-    return IS_EQUAL((p-X).length(),r);
-}
-
 BoundingBox Torus::boundingBoundingBox() const {
     double min = -R-r;
     double max = R+r;
