@@ -86,18 +86,11 @@ Vector Mesh::normal(const Intersection &i) const {
 }
 
 // ----------------------------------------------------------------------------
-bool Mesh::onEdge(const Vector &p) const {
-    // TODO: implement
-}
-
-// ----------------------------------------------------------------------------
-bool Mesh::inside(const Vector &p) const {
-    // TODO: implement
-}
-
-// ----------------------------------------------------------------------------
 bool Mesh::intersects(const BoundingBox& box) const {
     // Quick hackish implementation: wrap mesh in a sphere and check that for intersection
+    if (box.inside(boundingBoundingBox()))
+	return true;
+
     Vector center;
     for (vector<Vector>::const_iterator p = corners.begin(); p != corners.end(); p++) {
 	center = center + (*p);
@@ -109,6 +102,7 @@ bool Mesh::intersects(const BoundingBox& box) const {
        double l = v.length();
        if (l > radius) radius = l;
     }
+    assert(radius > 0);
     Sphere s = Sphere(center,radius,material);
     return s.intersects(box);
     

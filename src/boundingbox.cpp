@@ -1,6 +1,7 @@
 
 #include "boundingbox.h"
 
+#include <iosfwd>
 #include <iostream>
 #include <cassert>
 
@@ -33,6 +34,19 @@ bool BoundingBox::inside(const Vector &p) const {
 	   p[1] < _c2[1] &&
            p[2] > _c1[2] &&
 	   p[2] < _c2[2];
+}
+
+bool BoundingBox::inside(const Vector* points, int num) const {
+    assert(num > 0);
+    for(int i = 0; i < num; i++) {
+	if (!inside(points[i])) return false;
+    }
+    return true;
+
+}
+
+bool BoundingBox::inside(const BoundingBox& b) const {
+    return inside(b.minimum()) && inside(b.maximum());
 }
 
 bool BoundingBox::onEdge(const Vector &p) const {
@@ -229,6 +243,11 @@ double BoundingBox::area() const {
     double h = _c2[1] - _c1[1];
     double d = _c2[2] - _c1[2];
     return 2.0*w*h + 2.0*w*d + 2.0*h*d;
+}
+
+ostream & operator<<(ostream &os, const BoundingBox &b) {
+    os << "Boundingbox:(" << b.minimum() << ',' << b.maximum() << ')';
+    return os;
 }
 
 void BoundingBox::test() {

@@ -6,6 +6,7 @@
 #include "matrix.h"
 #include "math.h"
 #include "constants.h"
+#include "boundingbox.h"
 
 /**
  * Constructs a circle path
@@ -19,7 +20,10 @@ Circle::Circle(const Vector& center, double radius, const Vector& normal) {
     r = radius;
     n = normal;
     n.normalize();
-    m = Matrix::matrixOrient(n,Vector(0,1,0));
+    Vector y = Vector(0,1,0);
+    Vector x = Vector(1,0,0);
+    Vector a = n == y ? x : y;
+    m = Matrix::matrixOrient(n,Vector::xProduct(a,n));
     m = m * Matrix::matrixTranslate(center);
 }
 
@@ -36,24 +40,36 @@ Vector Circle::getTangent(double t) const {
 }
 
 void Circle::test() {
+    int num = 100;
+    Vector points[100];
+    BoundingBox b;
+
     /* Test at origin */
     Circle c = Circle(Vector(0,0,0),10,Vector(0,0,1));
     assert(c.isClosed());
-    assert(c.getPoint(0) == Vector(10,0,0));
-    assert(c.getPoint(0.25) == Vector(0,10,0));
-    assert(c.getPoint(0.5) == Vector(-10,0,0));
+    c.getPoints(num,points);
+    b = BoundingBox(Vector(-11,-11,-1),Vector(11,11,1));
+    assert(b.inside(points,num));
+    
 
     /* Test translated */
     c = Circle(Vector(10,10,0),10,Vector(0,0,1));
-    assert(c.getPoint(0) == Vector(20,10,0));
-    assert(c.getPoint(0.25) == Vector(10,20,0));
-    assert(c.getPoint(0.5) == Vector(0,10,0));
+    assert(c.isClosed());
+    c.getPoints(num,points);
+    b = BoundingBox(Vector(-1,-1,-1),Vector(21,21,1));
+    assert(b.inside(points,num));
 
-    /* Test direction */
+    /* Test direction along x */
     c = Circle(Vector(0,0,0),10,Vector(1,0,0));
-    assert(c.getPoint(0) == Vector(0,0,-10));
-    assert(c.getPoint(0.25) == Vector(0,10,0));
-    assert(c.getPoint(0.5) == Vector(0,0,10));
+    assert(c.isClosed());
+    c.getPoints(num,points);
+    b = BoundingBox(Vector(-1,-11,-11),Vector(1,11,11));
+    assert(b.inside(points,num));
 
-    // TODO: Test at a direction not axis-aligned */
+    /* Test direction along y */
+    c = Circle(Vector(0,0,0),10,Vector(0,1,0));
+    assert(c.isClosed());
+    c.getPoints(num,points);
+    b = BoundingBox(Vector(-11,-1,-11),Vector(11,1,11));
+    assert(b.inside(points,num));
 }

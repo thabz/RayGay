@@ -14,6 +14,7 @@ Vector Linesegment::getPoint(double t) const {
     return (1-t)*b + t*e;
 }
 
+inline
 Vector Linesegment::getTangent(double t) const {
     return tgt;
 }

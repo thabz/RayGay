@@ -36,9 +36,8 @@ class Mesh : public object {
 	virtual Vector normal(const Intersection & i) const;
 	virtual Material getMaterial() const;
 
-	virtual bool onEdge(const Vector &p) const;
-	virtual bool inside(const Vector &p) const;
 	virtual bool intersects(const BoundingBox& b) const;
+	/// The bounding box containing all faces of this mesh
 	virtual BoundingBox boundingBoundingBox() const;
 	virtual void getUV(const Intersection& intersection, double* u, double* v) const;
 
@@ -53,6 +52,7 @@ class Mesh : public object {
 	Vector cornerAt(int i) { return corners[i]; };
 
     private:
+
 	MeshType meshType;
 	Material material;
 	mutable BoundingBox* _boundingBoundingBox;

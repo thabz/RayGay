@@ -36,10 +36,11 @@
 #include "tetrahedron.h"
 #include "linesegment.h"
 #include "circle.h"
+#include "cylinder.h"
 
 using namespace std;
 
-#define red Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30)
+#define red Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30)
 #define green Material(RGB(0.2,1.0,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30)
 #define blue Material(RGB(0.0,0.2,1.0),0.75,RGB(1.0,1.0,1.0),0.20,10)
 #define chrome Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)
@@ -48,12 +49,12 @@ void testScene4() {
     Scene scene;
 
     Material mat = blue;
-    mat.setTexturemap("earth.jpg");
-    Sphere s = Sphere(Vector(0,300,0),100.0,mat);
+ //   mat.setTexturemap("earth.jpg");
+    Sphere s = Sphere(Vector(0,50,0),100.0,chrome);
     scene.addObject(&s);
 
-    Tetrahedron tet = Tetrahedron(Vector(0,100,0),150,blue);
-    scene.addObject(&tet);
+    Cylinder cyl = Cylinder(Vector(-200,-50,200),Vector(-200,50,200),100.0,6,blue);
+    scene.addObject(&cyl);
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));
@@ -61,15 +62,16 @@ void testScene4() {
     scene.addLight(&light1);
  //   scene.addLight(&light2);
     scene.addLight(&light3);
-
     
-    
-    Box b = Box(Vector(-300,-150,-300),Vector(300,-100,300),green);
+    Box b = Box(Vector(-300,-150,-300),Vector(300,-100,300),green); /* Floor */
     scene.addObject(&b);
     
-    Matrix n = Matrix::matrixRotate(Vector(1,1,0),-40.0);
-    n = n * Matrix::matrixTranslate(Vector(0,0,-200));
-    scene.transform(n);
+    Box b2 = Box(Vector(100,-50,100),Vector(150,100,150),red);
+    scene.addObject(&b2);
+    
+    Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
+    n = n * Matrix::matrixTranslate(Vector(0,0,-500));
+//    scene.transform(n);
 
     scene.setBackgroundColor(RGB(0.1,0.1,0.3));
 
@@ -91,6 +93,8 @@ int main(int argc, char *argv[]) {
     Box::test();
     Linesegment::test();
     Circle::test();
+    Cylinder::test();
+    cout << "Tests done." << endl;
     // Test scene stuff
     testScene4();
 

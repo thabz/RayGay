@@ -2,6 +2,7 @@
 #define BOUNDINGBOX_H
 
 #include "vector.h"
+#include <iosfwd>
 
 class Intersection;
 class Ray;
@@ -10,6 +11,8 @@ class Matrix;
 /// An axis-aligned bounding box.
 
 class BoundingBox {
+
+    friend std::ostream & operator<< (std::ostream &os, const BoundingBox &b);
 
     public:
 	BoundingBox();
@@ -27,6 +30,12 @@ class BoundingBox {
 
 	/// Tests whether a point is inside this box and not on the edge.
 	virtual bool inside(const Vector &p) const;
+	
+	/// Tests whether an array of points are inside this box and not on the edge.
+	virtual bool inside(const Vector* points, int num) const;
+
+	/// Tests whether another boundingbox is inside this
+	virtual bool inside(const BoundingBox& b) const;
 
 	/// The corner with smallest x,y,z values
 	const Vector& minimum() const { return _c1; };
