@@ -1,0 +1,42 @@
+
+renderer raytracer
+
+camera { position <1000,1000,2000>
+         up <0,1,0> 
+         lookat <0,-100,0> 
+	 fov 45
+	 aa 4
+}
+
+image { width 1600 aspect 4 3 }
+
+background <0.9,0.8,1.0,1.0>
+
+light { point <100,1300,1300> power <1,1,1> } 
+
+$blue = material {
+    diffuse <0.2,0.2,0.8>
+    kd 0.4
+    specular <1.0,1.0,1.0>
+    ks 0.5
+    specpow 15
+}
+
+$num = 10
+$x = -$num
+while ($x < $num) {
+   $y = -$num
+   while ($y < $num) {
+       $z = -$num
+       while ($z < $num) {
+	   sphere {$blue 30 <0,0,50>}
+	     rotate <1,0,0> ($x*2*(PI/0.3))
+	     rotate <0,1,0> ($y*2*(PI/0.4))
+	     rotate <0,0,1> ($z*2*(PI/0.5))
+	     translate <$x*50, $y*50, $z*50>
+	   $z++
+       }
+       $y++
+   }
+   $x++
+}
