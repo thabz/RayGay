@@ -1,11 +1,21 @@
 
+renderer photonrenderer
 renderer raytracer
 
 camera { position <100,1000,2000>
          up <0,1,0> 
          lookat <0,0,0> 
 	 fov 45
-	 aa 0
+	 aa 4
+}
+
+settings {
+ globalphotons  5000000
+ causticphotons 0
+ estimateradius 10
+ estimatesamples 300
+ finalgatherrays 500
+ cachetolerance 0.1
 }
 
 image { width 1600 aspect 4 3 }
@@ -13,8 +23,8 @@ image { width 1600 aspect 4 3 }
 background <0.3,0.5,0.7,1.0>
 /*background texture { "probes/stpeters_probe.hdr" 1.0 1.0 bilinear}*/
 
-light { point <500,1300,1300> power <1,1,1> } 
-light { point <-500,1500,1300> power <1,1,1> } 
+/* light { point <500,1300,1300> power <1,1,1> }  */
+light { spot <500,1300,1300> <0,0,0> 25 24 power <700000,700000,700000> } 
 
 $brown = material {
     diffuse <0.7,0.4,0.2>
@@ -36,38 +46,63 @@ $chrome = material {
     specpow 30
 }
 
-/*
-box { 
-    $brown
-    <-1700,-51,-1700>
-    <1700,1,1700>	  
+$glass = material {
+   		diffuse <0,0,0>
+		kd 0.0
+		specular <1,1,1>
+		ks 0.3
+		specpow 30
+		eta 1.33
+		kt 0.7
 }
-*/
 
-$kaj = 20 - 1
-print ($kaj - 1)
-
-$i = 0
-$num = 240
-$windings = 0.5
-do {
+repeat (1000) {
     $height = random(400,700)
-    $house = group { 
+    $type = random(0,1)
+    $house1 = group { 
 	difference { $grey85	
-          difference {
              solidbox { <-20,350,-20> <20,$height,20>}
-             solidbox { <-15,$height-2,-15> <15,($height+5),15>}
-	  }
-	  solidbox { <-22,0,-16>  <-18,$height-2,16> }
+	     union {
+                solidbox { <-15,$height-2,-15> <15,($height+5),15>} /* Roof */
+	        solidbox { <-22,0,-16>  <-18,$height-2,16> }
+	        solidbox { <18,0,-16>  <22,$height-2,16> }
+	        solidbox { <-16,0,18>  <16,$height-2,22> }
+	        solidbox { <-16,0,-22>  <16,$height-2,-18> }
+	     }
 	}
        solidbox { $grey85 <-10,$height-1,-10> <10,$height+10,10>}
        cylinder { $grey85 1 <0,$height+10,0> <0,$height+40,0> }
+       /*
+       box { $glass <-20,0,-16>  <-19,$height-2,16> }
+       box { $glass <19,0,-16>  <20,$height-2,16> }
+       box { $glass <-16,0,19>  <16,$height-2,20> }
+       box { $glass <-16,0,-20>  <16,$height-2,-19> }
+       */
       }
-    object $house
-    rotate {<1,0,0> random(0,360) }
-    rotate {<0,0,1> random(0,360) }
-    $i++
-} while ($i < $num)
+    $house2 = group { 
+	difference { $grey85	
+             solidbox { <-20,350,-20> <20,$height,20>}
+	     union {
+                solidbox { <-15,$height-2,-15> <15,($height+5),15>} /* Roof */
+	        solidbox { <-22,0,-16>  <-18,$height-2,16> }
+	        solidbox { <18,0,-16>  <22,$height-2,16> }
+	        solidbox { <-16,0,18>  <16,$height-2,22> }
+	        solidbox { <-16,0,-22>  <16,$height-2,-18> }
+	     }
+	}
+      }
+    $choose = random(0,1)
+    if ($choose < 0.5) {
+       object $house1
+       rotate {<1,0,0> random(0,360) }
+       rotate {<0,0,1> random(0,360) }
+    }
+    if ($choose > 0.5) {
+       object $house2
+       rotate {<1,0,0> random(0,360) }
+       rotate {<0,0,1> random(0,360) }
+    }
+}
 
 sphere {$grey85 400 <0,0,0> }
 
