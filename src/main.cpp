@@ -44,6 +44,7 @@ void preparePhotonMaps(Scene* scene,
     (*causticsphotonmap) = new CausticsMap(renderersettings->caustic_photons_num,renderersettings->estimate_radius,renderersettings->estimate_samples); 
 
     PhotonTracer* photontracer = new PhotonTracer(scene,space,(*globalphotonmap),(*causticsphotonmap));
+
     cout << "Tracing photons..." << endl;
     photontracer->trace(renderersettings->threads_num);
     cout << "Done." << endl;
@@ -60,9 +61,7 @@ void preparePhotonMaps(Scene* scene,
     cout << "Done." << endl;
 
     cout << "Precomputing irradiances..." << endl;
-    Stats::getUniqueInstance()->beginTimer("Precomputing irradiance");
     (*globalphotonmap)->preComputeIrradiances(4,renderersettings->threads_num);
-    Stats::getUniqueInstance()->endTimer("Precomputing irradiance");
     cout << "Done." << endl;
 
     delete photontracer;

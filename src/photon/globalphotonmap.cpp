@@ -69,6 +69,7 @@ void* preComputeIrradianceThread(void* thread_data) {
  * @param M The step value
  */
 void GlobalPhotonMap::preComputeIrradiances(const int M, int threads_num) {
+    Stats::getUniqueInstance()->beginTimer("Precomputing irradiance");
     assert(M >= 1);
     assert(threads_num >= 1);
     struct thread_data* ta = new thread_data[threads_num];
@@ -84,6 +85,7 @@ void GlobalPhotonMap::preComputeIrradiances(const int M, int threads_num) {
     for (int i=0; i<threads_num; i++) {
 	pthread_join(threads[i], NULL);
     }
+    Stats::getUniqueInstance()->endTimer("Precomputing irradiance");
 }
 
 /**
