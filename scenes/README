@@ -18,6 +18,7 @@ necklace <material-name> <path-name> num radius
 cylinder <material-name> radius <from-point> <to-point>
 sphere <material-name> radius <center-point>
 3ds <material-name> scale <3ds-filename>
+wireframe <named-object> <material-name> radius
 
 *** TRANSFORMATIONS ***
 
