@@ -103,7 +103,7 @@ void Material::setDiffuseTexture(Texture* texture) {
  * @param bumpHeight a value in [0,1]
  */ 
 void Material::setBumpTexture(Texture* texture, double bumpHeight) {
-    this->texture_bump = texture_bump;
+    this->texture_bump = texture;
     this->bumpHeight = bumpHeight;
 }
 
