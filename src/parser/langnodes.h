@@ -20,8 +20,9 @@ class ActionNode : public SyntaxNode {
 	virtual void eval() = 0;
 };
 
-class ActionNodeList : public SyntaxNode {
-
+class NOPAction	: public ActionNode {
+    public:
+	void eval() {};
 };
 
 class FloatPrintNode : public ActionNode {
@@ -50,6 +51,58 @@ class AssignFloatNode : public ActionNode {
 	FloatNode* node;
 	string name;
 };
+
+class AssignPathNode : public ActionNode {
+    public:
+	AssignPathNode(string name, PathNode* node) {
+	    this->name = name;
+	    this->node = node;
+	}
+
+	virtual ~AssignPathNode() { delete node; }
+
+	void eval() {
+	    Assignments::getUniqueInstance()->setNamedPath(name,node);
+	}
+    private:
+	PathNode* node;
+	string name;
+};
+
+class AssignMaterialNode : public ActionNode {
+    public:
+	AssignMaterialNode(string name, MaterialNode* node) {
+	    this->name = name;
+	    this->node = node;
+	}
+
+	virtual ~AssignMaterialNode() { delete node; }
+
+	void eval() {
+	    Assignments::getUniqueInstance()->setNamedMaterial(name,node);
+	}
+    private:
+	MaterialNode* node;
+	string name;
+};
+
+class AssignSceneObjectNode : public ActionNode {
+    public:
+	AssignSceneObjectNode(string name, SceneObjectNode* node) {
+	    this->name = name;
+	    this->node = node;
+	}
+
+	virtual ~AssignSceneObjectNode() { delete node; }
+
+	void eval() {
+	    Assignments::getUniqueInstance()->setNamedSceneObject(name,node);
+	}
+    private:
+	SceneObjectNode* node;
+	string name;
+};
+
 
 class AddSceneObjectToSceneNode : public ActionNode {
     public:

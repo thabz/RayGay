@@ -9,12 +9,7 @@
 
 class RGBNode : public SyntaxNode {
     public:
-	virtual RGB eval() = 0;
-};
-
-class RGBConstNode : public RGBNode {
-    public:
-	RGBConstNode(FloatNode* r, FloatNode* g, FloatNode* b) {
+	RGBNode(FloatNode* r, FloatNode* g, FloatNode* b) {
 	    this->r = r;
 	    this->g = g;
 	    this->b = b;
@@ -30,12 +25,7 @@ class RGBConstNode : public RGBNode {
 
 class RGBANode : public SyntaxNode {
     public:
-	virtual RGBA eval() = 0;
-};
-
-class RGBAConstNode : public RGBANode {
-    public:
-	RGBAConstNode(FloatNode* r, FloatNode* g, FloatNode* b, FloatNode* a) {
+	RGBANode(FloatNode* r, FloatNode* g, FloatNode* b, FloatNode* a) {
 	    this->r = r;
 	    this->g = g;
 	    this->b = b;

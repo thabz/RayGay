@@ -3,7 +3,6 @@
 #define PARSER_MATERIAL_NODES_H
 
 #include <string>
-#include "parser/assignments.h"
 #include "materials/material.h"
 #include "parser/syntaxnode.h"
 #include "parser/rgbnodes.h"
@@ -67,7 +66,7 @@ class MaterialNode : public SyntaxNode {
 	void setSpecpow(FloatNode* specpow) { this->specpow = specpow; };
 	void setEta(FloatNode* eta) { this->eta = eta; };
 	
-	void setGloss(FloatNode* gloss_num, FloatNode* gloss_angle) {
+	void enableGloss(FloatNode* gloss_num, FloatNode* gloss_angle) {
 	    this->gloss_num = gloss_num; 
 	    this->gloss_angle = gloss_angle; 
 	};

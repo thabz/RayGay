@@ -12,7 +12,7 @@ class FloatNode : public SyntaxNode {
 	virtual double eval() = 0;
 };
 
-class FloatConstNode : FloatNode {
+class FloatConstNode : public FloatNode {
     public:
 	FloatConstNode(double val) {
 	    this->val = val;
@@ -22,7 +22,7 @@ class FloatConstNode : FloatNode {
 	double val;
 };
 
-class FloatPlusNode : FloatNode {
+class FloatPlusNode : public FloatNode {
     public:
 	FloatPlusNode(FloatNode* left, FloatNode* right ) {
 	    this->left = left;
@@ -34,7 +34,7 @@ class FloatPlusNode : FloatNode {
 	FloatNode* right;
 };
 
-class FloatMinusNode : FloatNode {
+class FloatMinusNode : public FloatNode {
     public:
 	FloatMinusNode(FloatNode* left, FloatNode* right ) {
 	    this->left = left;
@@ -46,7 +46,7 @@ class FloatMinusNode : FloatNode {
 	FloatNode* right;
 };
 
-class FloatDivNode : FloatNode {
+class FloatDivNode : public FloatNode {
     public:
 	FloatDivNode(FloatNode* left, FloatNode* right ) {
 	    this->left = left;
@@ -58,7 +58,7 @@ class FloatDivNode : FloatNode {
 	FloatNode* right;
 };
 
-class FloatMultNode : FloatNode {
+class FloatMultNode : public FloatNode {
     public:
 	FloatMultNode(FloatNode* left, FloatNode* right ) {
 	    this->left = left;
@@ -70,7 +70,7 @@ class FloatMultNode : FloatNode {
 	FloatNode* right;
 };
 
-class FloatNegNode : FloatNode {
+class FloatNegNode : public FloatNode {
     public:
 	FloatNegNode(FloatNode* node) {
 	    this->node = node;
@@ -80,7 +80,7 @@ class FloatNegNode : FloatNode {
 	FloatNode* node;
 };
 
-class FloatSinNode : FloatNode {
+class FloatSinNode : public FloatNode {
     public:
 	FloatSinNode(FloatNode* node) {
 	    this->node = node;
@@ -90,7 +90,7 @@ class FloatSinNode : FloatNode {
 	FloatNode* node;
 };
 
-class FloatCosNode : FloatNode {
+class FloatCosNode : public FloatNode {
     public:
 	FloatCosNode(FloatNode* node) {
 	    this->node = node;
@@ -100,7 +100,7 @@ class FloatCosNode : FloatNode {
 	FloatNode* node;
 };
 
-class FloatAbsNode : FloatNode {
+class FloatAbsNode : public FloatNode {
     public:
 	FloatAbsNode(FloatNode* node) {
 	    this->node = node;
@@ -110,7 +110,7 @@ class FloatAbsNode : FloatNode {
 	FloatNode* node;
 };
 
-class NamedFloatNode : FloatNode {
+class NamedFloatNode : public FloatNode {
     public:
 	NamedFloatNode(string name) {
 	    this->name = name;

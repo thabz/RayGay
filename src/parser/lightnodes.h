@@ -2,7 +2,6 @@
 #ifndef PARSER_LIGHT_NODES
 #define PARSER_LIGHT_NODES
 
-#include "parser/assignments.h"
 #include "parser/vectornodes.h"
 #include "parser/floatnodes.h"
 #include "parser/rgbnodes.h"
@@ -30,16 +29,7 @@ class ArealightNode : public LightNode {
 	    this->power = power;
 	}
 
-	Lightsource* eval() {
-	    Vector pos = position->eval();
-	    Vector dir = direction->eval();
-	    double r = radius->eval();
-	    int n = int(num->eval());
-	    double j = jitter->eval();
-	    Arealight* light = new Arealight(pos,dir,r,n,j);
-	    light->setPower(power->eval());
-	    return light;
-	}
+	Lightsource* eval();
 
     private:
 	VectorNode* position;

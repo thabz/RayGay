@@ -8,7 +8,7 @@ noinst_LIBRARIES = libtracer.a
 
 libtracer_a_SOURCES = camera.cpp intersection.cpp ray.cpp scene.cpp renderer.cpp raytracer.cpp boundingbox.cpp stats.cpp importer.cpp photonrenderer.cpp photonmapdump.cpp  renderjobs.cpp
 
-libtracer_a_LIBADD = photon/libphoton.a lights/liblights.a materials/libmaterials.a  objects/libobjects.a paths/libpaths.a math/libmath.a  image/libimage.a space/libspace.a shaders/libshaders.a parser/libparser.a
+libtracer_a_LIBADD = photon/libphoton.a lights/liblights.a materials/libmaterials.a  objects/libobjects.a paths/libpaths.a math/libmath.a  image/libimage.a space/libspace.a shaders/libshaders.a parser/libparser.a 
 
 #--------------------------------------
 

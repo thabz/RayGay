@@ -31,6 +31,15 @@
 #include "photon/photontracer.h"
 #include "photon/irradiancecache.h"
 
+#include "parser/assignments.h"    
+#include "parser/floatnodes.h"    
+#include "parser/syntaxnode.h"    
+#include "parser/vectornodes.h"    
+#include "parser/rgbnodes.h"    
+#include "parser/langnodes.h"    
+#include "parser/transformationnodes.h"    
+#include "parser/lightnodes.h"    
+#include "parser/cameranode.h"    
 #include "parser/parser.h"
 
 #include "renderersettings.h"
@@ -40,10 +49,13 @@ using namespace std;
 
 extern FILE* yyin;
 extern void yyparse();
+extern void run_interpreter();
 extern void init_parser();
 extern Vector2 getImageSize();
 extern Scene* getScene();
 extern RendererSettings* getRendererSettings();
+
+//Assignments* global_assigments = new Assignments();
 
 void preparePhotonMaps(Scene* scene,
 	               KdTree* space,
@@ -118,6 +130,7 @@ void work(string scenefile, string outputfile,int jobs) {
 	throw_exception("File not found: " + scenefile);
     }
     yyparse();
+    run_interpreter();
 
     Scene* scene = getScene();
     Vector2 img_size = getImageSize();

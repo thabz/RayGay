@@ -13,6 +13,14 @@
 #include "objects/solidbox.h"    
 #include "objects/necklace.h"    
 #include "materials/material.h"    
+#include "parser/floatnodes.h"    
+#include "parser/syntaxnode.h"    
+#include "parser/vectornodes.h"    
+#include "parser/rgbnodes.h"    
+#include "parser/langnodes.h"    
+#include "parser/transformationnodes.h"    
+#include "parser/lightnodes.h"    
+#include "parser/cameranode.h"    
 #include "parser.h"
 using namespace std;
 

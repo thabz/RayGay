@@ -15,7 +15,7 @@ using namespace std;
 class Assignments {
 
     public:
-	static Assignments* getUniqueInstance();
+	static Assignments* Assignments::getUniqueInstance();
 	
 	PathNode* getNamedPath(string name);
 	void setNamedPath(string name, PathNode* path_node);
@@ -30,7 +30,7 @@ class Assignments {
 	void setNamedSceneObject(string name, SceneObjectNode* obj_node);
 
     private:
-	Assignments();
+	Assignments(); 
 	static Assignments* Assignments::unique_instance;
 
 	map<string,FloatNode*> floatMap;

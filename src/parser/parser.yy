@@ -30,6 +30,7 @@
 #include "objects/wireframe.h"    
 #include "objects/torus.h"    
 #include "materials/material.h"    
+#include "parser/assignments.h"
 #include "parser/floatnodes.h"    
 #include "parser/syntaxnode.h"    
 #include "parser/vectornodes.h"    
@@ -46,11 +47,6 @@
 
 using namespace std;
 
-map<string,double> doubleMap;
-map<string,Path*> pathMap;
-map<string,Material*> materialMap;
-map<string,SceneObject*> objectMap;
-
 void yyerror(string s);
 void yywarning(string s);
 extern int yylex(void);
@@ -65,25 +61,30 @@ void setNamedMaterial(string* name, Material* material);
 SceneObject* getNamedObject(string* name);
 void setNamedObject(string* name, SceneObject* obj);
 
-Camera* camera;
+CameraNode* camera;
 Scene* scene;
 RendererSettings* renderer_settings;
-Material* tmpMaterial;
+MaterialNode* tmpMaterial;
 Vector2 image_size = Vector2(640,480);
+
+ActionListNode* top_actions;
 
 %}
     /* Bison declarations */
 %union {
         double d;
-	Vector* vector;
-	RGB* rgb;
-	RGBA* rgba;
+	VectorNode* vector;
+	RGBNode* rgb;
+	RGBANode* rgba;
+	ActionNode* action;
 	Texture* texture;
-	Material* material;
-	SceneObject* object;
-	Lightsource* light;
-	Matrix* matrix;
-	Path* path;
+	MaterialNode* material;
+	CameraNode* camera;
+	SceneObjectNode* object;
+	LightNode* light;
+	TransformationNode* matrix;
+	FloatNode* expr;
+	PathNode* path;
 	string* c;
 	Texture::InterpolationType it;
 }
@@ -135,21 +136,25 @@ Vector2 image_size = Vector2(640,480);
 %token tCACHETOLERANCE 
 
 
-%type <d> Expr 
 %type <c> Filename
 %type <rgb> RGB
 %type <rgba> RGBA
 %type <texture> Texture
 %type <vector> Vector 
+%type <expr> Expr 
 %type <it> InterpolationType 
 %type <matrix> Rotate Translate Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
 %type <object> ObjectGroup GroupItems GroupItem
-%type <object> NamedObject
+%type <object> NamedObject 
 %type <material> MaterialDef NamedMaterial Material
-%type <light> LightDef Lightsource Arealight Spotlight Pointlight Skylight
+%type <light> LightDef Lightsource 
+%type <light> Arealight Spotlight Pointlight Skylight
 %type <path> NamedPath Circle Spiral Path PathDef LineSegment
+%type <camera> Camera
+%type <action> MainActions MainAddAction MainAction Assignment Renderer
+%type <action> AddCamera AddObject AddLight Background Photonmap Print Image
 
 %left '+' '-'
 %left '*' '/'
@@ -157,72 +162,88 @@ Vector2 image_size = Vector2(640,480);
 %%
     /* Grammar rules */
 	
-Items		: /* Empty */
-                | Items Item
+MainActions	: /* Empty */
+                | MainActions MainAddAction
 		;
 
-Item		: Object
+MainAddAction	: MainAction 
                 {
-		    Object* o = dynamic_cast<Object*>($1);
-		    if (o != NULL) {
-			if (o->getMaterial() == NULL) {
-			    yyerror("object with no material added to scene.");
-			}
-		    }
-		    scene->addObject($1);
+		    top_actions->addAction($1);
 		}
-                | LightDef
-		{
-		    scene->addLight($1);
-		}
-                | Assignment
-		| Print
-		| Camera
+                ;
+
+MainAction	: Action
+		| AddCamera
 		| Image
 		| Renderer
 		| Background
 		| Photonmap
 		;
 
+Action		: AddObject
+                | AddLight
+                | Assignment
+		| Print
+		;
+
+AddObject	: Object 
+                {
+		    $$ = new AddSceneObjectToSceneNode($1);
+		}
+                ;
+
+AddLight	: LightDef
+                {
+		    $$ = new AddLightToSceneNode($1);
+		}
+                ;
+
 Assignment	: tSTRING '=' PathDef
                 {
-                    setNamedPath($1, $3);
+		    $$ = new AssignPathNode(*$1,$3);
 		}
                 | tSTRING '=' Expr
                 {
-		    setNamedDouble($1, $3);
+		    $$ = new AssignFloatNode(*$1,$3);
                 }
                 | tSTRING '=' MaterialDef 
                 {
-		    setNamedMaterial($1, $3);
+		    $$ = new AssignMaterialNode(*$1,$3);
                 }
                 | tSTRING '=' Object
                 {
-		    setNamedObject($1, $3);
+		    $$ = new AssignSceneObjectNode(*$1,$3);
                 }
                 ;
 
 Renderer	: tRENDERER tRAYTRACER
                 {
                     renderer_settings->renderertype = RendererSettings::RAYTRACER;
+		    $$ = new NOPAction();
 		}
                 | tRENDERER tPHOTONRENDERER
                 {
                     renderer_settings->renderertype = RendererSettings::PHOTON_RENDERER;
+		    $$ = new NOPAction();
 		}
 		;
 
 Background	: tBACKGROUND RGBA
                 {
-		    scene->setBackground(*$2);
+		    scene->setBackground($2->eval()); // TODO: Hack
+		    $$ = new NOPAction();
 		}
                 | tBACKGROUND Texture
 		{
 		    scene->setBackground($2);
+		    $$ = new NOPAction();
 		}
                 ;
 
 Photonmap 	: tPHOTONMAP '{' PhotonSettings '}'
+                {
+		    $$ = new NOPAction();
+		}
                 ;
 
 PhotonSettings  : /* Empty */
@@ -255,7 +276,21 @@ PhotonSetting   : tGLOBALPHOTONS tFLOAT
 		}
 		;
 
-Camera		: tCAMERA '{' CameraSettings '}'
+AddCamera	: Camera 
+                {
+		    $$ = new AddCameraToSceneNode($1);
+		}
+                ;
+		      
+
+Camera		: tCAMERA '{' 
+                {
+		    camera = new CameraNode();
+		}
+                CameraSettings '}'
+                {
+		    $$ = camera;
+                }
                 ;
 
 CameraSettings  : /* Empty */
@@ -264,15 +299,15 @@ CameraSettings  : /* Empty */
 
 CameraSetting   : tPOSITION Vector
                 {
-		    camera->setPosition(*$2);
+		    camera->setPosition($2);
 		}
                 | tLOOKAT Vector
                 {
-		    camera->setLookAt(*$2);
+		    camera->setLookAt($2);
 		}
                 | tUP Vector
                 {
-		    camera->setUp(*$2);
+		    camera->setUp($2);
 		}
                 | tFOV Expr 
                 {
@@ -280,21 +315,23 @@ CameraSetting   : tPOSITION Vector
 		}
                 | tDOF Expr Expr
                 {
-		    camera->enableDoF($2,int($3));
+		    camera->enableDoF($2,$3);
 		}
                 | tAA Expr 
                 {
-		    camera->enableAdaptiveSupersampling(int($2));
+		    camera->enableAA($2);
 		}
                 ;
 
 Image		: tIMAGE '{' tWIDTH tFLOAT tHEIGHT tFLOAT '}'
                 {
 		    image_size = Vector2($4,$6);
+		    $$ = new NOPAction();
 		}
                 | tIMAGE '{' tWIDTH tFLOAT tASPECT tFLOAT tFLOAT '}'
                 {
 		    image_size = Vector2($4,$4 * ($7/$6));
+		    $$ = new NOPAction();
 		}
 		;
  
@@ -304,18 +341,17 @@ Material 	: NamedMaterial
 
 NamedMaterial   : tSTRING
                 {
-                   $$ = getNamedMaterial($1);
+		    $$ = new NamedMaterialNode(*$1);
 		}
                 ;
 
-MaterialDef     : tMATERIAL '{' MaterialProps '}'
+MaterialDef     : tMATERIAL '{' 
+                {
+		    tmpMaterial = new MaterialNode();
+		} 
+                MaterialProps '}'
                 {
 		    $$ = tmpMaterial;
-		    // Sanity check some material parameters
-		    if ($$->getKs() > 0 && $$->getSc() == 0) {
-			yywarning("ks > 0 but specpow = 0");
-		    }
-		    tmpMaterial = new Material();
 		}
                 ;
 
@@ -325,11 +361,11 @@ MaterialProps	: /*Empty*/
 
 MaterialProp 	: tDIFFUSE RGB
                 {
-		    tmpMaterial->setDiffuseColor(*$2);
+		    tmpMaterial->setDiffuseColor($2);
 		}
                 | tDIFFUSE Texture
                 {
-		    tmpMaterial->setDiffuseTexture($2);
+		    tmpMaterial->setDiffuseColor($2);
 		}
                 | tBUMP Expr Texture
                 {
@@ -337,7 +373,7 @@ MaterialProp 	: tDIFFUSE RGB
 		}
 		| tSPECULAR RGB
                 {
-		    tmpMaterial->setSpecularColor(*$2);
+		    tmpMaterial->setSpecularColor($2);
 		}
 		| tKD Expr
                 {
@@ -357,15 +393,11 @@ MaterialProp 	: tDIFFUSE RGB
 		}
 		| tSPECPOW Expr
                 {
-		    tmpMaterial->setSc(int($2));
+		    tmpMaterial->setSpecpow($2);
 		}
 		| tGLOSS Expr Expr
                 {
-		    tmpMaterial->enableGloss(int($2),$3);
-		}
-		| tNOSHADOW
-                {
-		    tmpMaterial->setNoShadow(true);
+		    tmpMaterial->enableGloss($2,$3);
 		}
 		;
 
@@ -383,45 +415,25 @@ Lightsource	: Arealight
 
 Pointlight	: tPOINT Vector tPOWER RGB
                 {
-		    $$ = new Pointlight(*$2);
-		    $$->setPower(*$4);
-		}
-                | tPOINT Vector
-                {
-		    $$ = new Pointlight(*$2);
+		    $$ = new PointlightNode($2,$4);
 		}
                 ;
 
 Skylight 	: tSKY Expr Expr tPOWER RGB
                 {
-		    $$ = new Skylight($2,int($3));
-		    $$->setPower(*$5);
-		}
-                | tSKY Expr Expr
-                {
-		    $$ = new Skylight($2,int($3));
+		    $$ = new SkylightNode($2,$3,$5);
 		}
                 ;
 		
 Spotlight	: tSPOT Vector Vector Expr Expr tPOWER RGB
                 {
-		    $$ = new Spotlight(*$2,*$3,$4,$5);
-		    $$->setPower(*$7);
-		}
-                | tSPOT Vector Vector Expr Expr 
-                {
-		    $$ = new Spotlight(*$2,*$3,$4,$5);
+		    $$ = new SpotlightNode($2,$3,$4,$5,$7);
 		}
                 ;
 		
 Arealight	: tAREA Vector Vector Expr Expr Expr tPOWER RGB
                 {
-		    $$ = new Arealight(*$2,*$3,$4,int($5),$6);
-		    $$->setPower(*$8);
-		}
-                | tAREA Vector Vector Expr Expr Expr
-                {
-		    $$ = new Arealight(*$2,*$3,$4,int($5),$6);
+		    $$ = new ArealightNode($2,$3,$4,$5,$6,$8);
 		}
                 ;
 
@@ -433,14 +445,13 @@ Object		: SolidObject
 		| NamedObject
 		| Object Transformations
                 {
-		    $$ = $1;
-		    $$->transform(*$2);
+		    $$ = new TransformedSceneObjectNode($1,$2);
                 }
 		;
 
 NamedObject	: tOBJECT tSTRING
                 {
-		    $$ = getNamedObject($2)->clone();
+		    $$ = new NamedSceneObjectNode(*$2);
 		}
                 ;
 
@@ -457,8 +468,7 @@ SolidObject	: Sphere
 		| Cylinder
 		| SolidObject Transformations
                 {
-		    $$ = $1;
-		    $$->transform(*$2);
+		    $$ = new TransformedSceneObjectNode($1,$2);
 		}
 		;
 
@@ -470,14 +480,14 @@ ObjectGroup	: tGROUP '{' GroupItems '}'
 
 GroupItems	: GroupItem
                 {
-		    ObjectGroup* og = new ObjectGroup();
-		    og->addObject($1);
+		    ObjectGroupNode* og = new ObjectGroupNode();
+		    og->addSceneObjectNode($1);
 		    $$ = og;
 		}
                 | GroupItems GroupItem
                 {
-		    ObjectGroup* og = dynamic_cast<ObjectGroup*>($1);
-		    og->addObject($2);
+		    ObjectGroupNode* og = dynamic_cast<ObjectGroupNode*>($1);
+		    og->addSceneObjectNode($2);
 		    $$ = og;
 		}
 		;
@@ -486,118 +496,102 @@ GroupItem	: Object;
 
 Extrusion	: tEXTRUSION '{' Material Path Expr Expr Expr '}'
                 {
-		    $$ = new Extrusion(*$4,$5,(int)$6,(int)$7,$3);
+		    $$ = new ExtrusionNode($4,$5,$6,$7,$3);
 		}
                 ;
 
 Box		: tBOX '{' Material Vector Vector '}'
                 {
-		    $$ = new Box(*$4,*$5,$3);
+		    $$ = new BoxNode($4,$5,$3);
 		}
 		;
 
 Wireframe	: tWIREFRAME '{' Material MeshObject Expr '}'
                 {
-                     Mesh* mesh = dynamic_cast<Mesh*>($4);
-		     $$ = new Wireframe(mesh,$5,$3);
+		     $$ = new WireframeNode($4,$5,$3);
 		}
                 ;
 
 Cylinder	: tCYLINDER '{' Material Expr Vector Vector '}'
                 {
-		    $$ = new Cylinder(*$5,*$6,$4,true,$3);
+		    $$ = new CylinderNode($5,$6,$4,$3);
 		}
                 | tCYLINDER '{' Expr Vector Vector '}'
                 {
-		    $$ = new Cylinder(*$4,*$5,$3,true,NULL);
+		    $$ = new CylinderNode($4,$5,$3,new MaterialNullNode());
 		};
 		
 SolidBox	: tSOLIDBOX '{' Material Vector Vector '}'
                 {
-		    $$ = new SolidBox(*$4,*$5,$3);
+		    $$ = new SolidBoxNode($4,$5,$3);
 		}
                 | tSOLIDBOX '{' Vector Vector '}'
                 {
-		    $$ = new SolidBox(*$3,*$4,NULL);
+		    $$ = new SolidBoxNode($3,$4,new MaterialNullNode());
 		};
 
 Necklace 	: tNECKLACE '{' Material Path tNUM Expr tRADIUS Expr '}'
                 {
-		    $$ = new Necklace($4,int($6),$8,$3);
+		    $$ = new NecklaceNode($4,$6,$8,$3);
 		}
                 ;
 
 Sphere		: tSPHERE '{' Material Expr Vector '}'
                 {
-		    $$ = new Sphere(*$5,$4,$3);
+		    $$ = new SphereNode($5,$4,$3);
                 }
                 | tSPHERE '{' Expr Vector '}'
                 {
-		    $$ = new Sphere(*$4,$3,NULL);
+		    $$ = new SphereNode($4,$3,new MaterialNullNode());
 		}
                 ;
 
 Torus		: tTORUS '{' Expr Expr '}' 
                 {
-		    $$ = new Torus($3,$4,NULL);
+		    $$ = new TorusNode($3,$4,new MaterialNullNode());
 		}
                 |  tTORUS '{' Material Expr Expr '}' 
                 {
-		    $$ = new Torus($4,$5,$3);
+		    $$ = new TorusNode($4,$5,$3);
 		}
 
 Difference 	: tDIFFERENCE '{' Material SolidObject SolidObject '}'
                 {
-		    Solid* s1 = dynamic_cast<Solid*>($4);
-		    Solid* s2 = dynamic_cast<Solid*>($5);
-		    $$ = new CSG(s1,CSG::DIFFERENCE,s2,$3);
+		    $$ = new DifferenceNode($4,$5,$3);
 		}
                 | tDIFFERENCE '{' SolidObject SolidObject '}'
                 {
-		    Solid* s1 = dynamic_cast<Solid*>($3);
-		    Solid* s2 = dynamic_cast<Solid*>($4);
-		    $$ = new CSG(s1,CSG::DIFFERENCE,s2,NULL);
+		    $$ = new DifferenceNode($3,$4,new MaterialNullNode());
 		}
                 ;
 
 Intersection	: tINTERSECTION '{' Material SolidObject SolidObject '}'
                 {
-		    Solid* s1 = dynamic_cast<Solid*>($4);
-		    Solid* s2 = dynamic_cast<Solid*>($5);
-		    $$ = new CSG(s1,CSG::INTERSECTION,s2,$3);
+		    $$ = new IntersectionNode($4,$5,$3);
 		}
                 | tINTERSECTION '{' SolidObject SolidObject '}'
                 {
-		    Solid* s1 = dynamic_cast<Solid*>($3);
-		    Solid* s2 = dynamic_cast<Solid*>($4);
-		    $$ = new CSG(s1,CSG::INTERSECTION,s2,NULL);
+		    $$ = new IntersectionNode($3,$4,new MaterialNullNode());
 		}
                 ;
 
 Union		: tUNION '{' Material SolidObject SolidObject '}'
                 {
-		    Solid* s1 = dynamic_cast<Solid*>($4);
-		    Solid* s2 = dynamic_cast<Solid*>($5);
-		    $$ = new CSG(s1,CSG::UNION,s2,$3);
+		    $$ = new UnionNode($4,$5,$3);
 		}
                 | tUNION '{' SolidObject SolidObject '}'
                 {
-		    Solid* s1 = dynamic_cast<Solid*>($3);
-		    Solid* s2 = dynamic_cast<Solid*>($4);
-		    $$ = new CSG(s1,CSG::UNION,s2,NULL);
+		    $$ = new UnionNode($3,$4,new MaterialNullNode());
 		}
                 ;
 
 Transformations	: /* Empty */
                 {
-		    $$ = new Matrix();
+		    $$ = new TransformationNode();
 		}
                 | Transformations Transformation
                 {
-		    Matrix m = (*$1) * (*$2);
-		    $$ = new Matrix(m);
-		    delete $1;
-		    delete $2;
+		    $$ = new TransformationsMultNode($1,$2);
 		}
 		;
 
@@ -607,25 +601,21 @@ Transformation  : Rotate
 
 Rotate		: tROTATE '{' Vector Expr '}'
                 {
-		    Matrix m = Matrix::matrixRotate(*$3,$4);
-		    $$ = new Matrix(m);
+		    $$ = new RotateNode($3,$4);
 		}
                 | tROTATE Vector Expr
                 {
-		    Matrix m = Matrix::matrixRotate(*$2,$3);
-		    $$ = new Matrix(m);
+		    $$ = new RotateNode($2,$3);
 		}
                 ;
 
 Translate	: tTRANSLATE '{' Vector '}'
                 {
-		    Matrix m  = Matrix::matrixTranslate(*$3);
-		    $$ = new Matrix(m);
+		    $$ = new TranslateNode($3);
 		}
                 | tTRANSLATE Vector
                 {
-		    Matrix m  = Matrix::matrixTranslate(*$2);
-		    $$ = new Matrix(m);
+		    $$ = new TranslateNode($2);
 		};
 
 Path		: NamedPath
@@ -634,7 +624,7 @@ Path		: NamedPath
 
 NamedPath	: tSTRING
                 {
-		    $$ = getNamedPath($1);   
+		    $$ = new NamedPathNode(*$1);   
 		}
                 ;
 
@@ -645,23 +635,23 @@ PathDef		: Circle
 
 LineSegment	: tLINESEGMENT '{' Vector Vector '}'
                 {
-		    $$ = new Linesegment(*$3,*$4);
+		    $$ = new LinesegmentNode($3,$4);
 		}
                 ;
 
 Circle		: tCIRCLE '{' Vector Expr Vector '}'
                 {
-		    $$ = new Circle(*$3,$4,*$5);
+		    $$ = new CircleNode($3,$4,$5);
 		}
                 ;
 
 Spiral		: tSPIRAL '{' Path Expr Expr '}'
                 {
-		    $$ = new Spiral($3,$4,$5);
+		    $$ = new SpiralNode($3,$4,$5, new FloatConstNode(0));
 		}
                 | tSPIRAL '{' Path Expr Expr Expr '}'
                 {
-		    $$ = new Spiral($3,$4,$5,$6);
+		    $$ = new SpiralNode($3,$4,$5,$6);
 		}
 		;
 
@@ -695,35 +685,35 @@ InterpolationType
 
 Vector		: '<' Expr ',' Expr ',' Expr '>' 
                 { 
-		    $$ = new Vector($2,$4,$6); 
+		    $$ = new VectorNode($2,$4,$6); 
 		}
                 ;
 
 RGB		: '<' Expr ',' Expr ',' Expr '>' 
                 { 
-		    $$ = new RGB($2,$4,$6); 
+		    $$ = new RGBNode($2,$4,$6); 
 		}
                 ; 		
 		
 RGBA		: '<' Expr ',' Expr ',' Expr ',' Expr '>' 
                 { 
-		    $$ = new RGBA($2,$4,$6,$8); 
+		    $$ = new RGBANode($2,$4,$6,$8); 
 		}
                 ; 		
 
 Print		: tPRINT Expr
                 {
-		    printf("%f\n",$2);
+		    $$ = new FloatPrintNode($2);
 		}
                 ;
 
 Expr		: tFLOAT 
                 {
-                   $$ = $1;
+                   $$ = new FloatConstNode($1);
                 }
                 | tSTRING
                 {
-		    $$ = getNamedDouble($1);
+		    $$ = new NamedFloatNode(*$1);
                 }
 		| '(' Expr ')' 
                 {
@@ -731,23 +721,23 @@ Expr		: tFLOAT
 		}
 		| Expr '+' Expr 
                 {
-                    $$ = $1 + $3;
+		    $$ = new FloatPlusNode($1,$3);
 		}
 		| Expr '-' Expr 
                 {
-                    $$ = $1 - $3;
+		    $$ = new FloatMinusNode($1,$3);
 		}
 		| Expr '*' Expr 
                 {
-                    $$ = $1 * $3;
+		    $$ = new FloatMultNode($1,$3);
 		}
 		| Expr '/' Expr 
                 {
-                    $$ = $1 / $3;
+		    $$ = new FloatDivNode($1,$3);
 		}
 		| '-' Expr %prec UMINUS
                 {
-                    $$ = -$2;
+		    $$ = new FloatNegNode($2);
 		}
 		| '+' Expr %prec UMINUS
                 {
@@ -757,19 +747,19 @@ Expr		: tFLOAT
 
 Expr		: tSIN '(' Expr ')'
                 {
-		    $$ = sin($3);
+		    $$ = new FloatSinNode($3);
 		}
                 | tCOS '(' Expr ')'
                 {
-		    $$ = cos($3);
+		    $$ = new FloatCosNode($3);
 		}
                 | tABS '(' Expr ')'
                 {
-		    $$ = fabs($3);
+		    $$ = new FloatAbsNode($3);
 		}
                 | tPI 
                 {
-		    $$ = M_PI;
+		    $$ = new FloatConstNode(M_PI);
 		}
                 ;
 
@@ -790,57 +780,14 @@ void yywarning(string s) {
 	 << " warning: " << s << endl;
 }
 
-Path* getNamedPath(string* name) {
-    Path* result = pathMap[*name];
-    if (result == NULL) {
-	yyerror("path '" + *name + "' not defined.");
-    } 
-    return result;
-   
-}
-
-void setNamedPath(string* name, Path* path) {
-    pathMap[*name] = path;
-}
-
-double getNamedDouble(string* name) {
-    return doubleMap[*name];
-}
-
-void setNamedDouble(string* name, double val) {
-    doubleMap[*name] = val;
-}
-
-SceneObject* getNamedObject(string* name) {
-    SceneObject* result = objectMap[*name];
-    if (result == NULL) {
-	yyerror("scene-object '" + *name + "' not defined.");
-    }
-    return result;
-}
-
-void setNamedObject(string* name, SceneObject* obj) {
-    objectMap[*name] = obj;
-}
-
-Material* getNamedMaterial(string* name) {
-    Material* result = materialMap[*name];
-    if (result == NULL) {
-	yyerror("material '" + *name + "' not defined.");
-    }
-    return result;
-}
-
-void setNamedMaterial(string* name, Material* material) {
-    materialMap[*name] = material;
-}
-
 void init_parser() {
-    camera = new Camera();
     scene = new Scene();
-    scene->setCamera(camera);
     renderer_settings = new RendererSettings();
-    tmpMaterial = new Material();
+    top_actions = new ActionListNode();
+}
+
+void run_interpreter() {
+    top_actions->eval();
 }
 
 Vector2 getImageSize() {

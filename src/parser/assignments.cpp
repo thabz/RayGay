@@ -1,9 +1,5 @@
 
 #include "parser/assignments.h"
-#include "parser/floatnodes.h"
-#include "parser/materialnodes.h"
-#include "parser/pathnodes.h"
-#include "parser/sceneobjectnodes.h"
 
 Assignments* Assignments::unique_instance = NULL;
 
@@ -12,6 +8,10 @@ Assignments* Assignments::getUniqueInstance() {
 	unique_instance = new Assignments();
     }
     return unique_instance;
+}
+
+Assignments::Assignments() {
+
 }
 
 PathNode* Assignments::getNamedPath(string name) {

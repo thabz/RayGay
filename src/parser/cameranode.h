@@ -36,7 +36,7 @@ class CameraNode : public SyntaxNode {
 	void enableAA(FloatNode* aa) {
 	    this->aa = aa;
 	}
-	void enableDOF(FloatNode* dof_aperture, FloatNode* dof_num) {
+	void enableDoF(FloatNode* dof_aperture, FloatNode* dof_num) {
 	    this->dof_aperture = dof_aperture;
 	    this->dof_num = dof_num;
 	}

@@ -9,7 +9,9 @@
 class TransformationNode {
 
     public:
-	virtual Matrix eval() = 0;
+	virtual Matrix eval() {
+	    return Matrix();
+	}
 };
 
 class TransformationsMultNode : public TransformationNode {
