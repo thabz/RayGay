@@ -48,7 +48,12 @@ bool KdTree::intersectPrimary(const Ray& ray, Intersection* result) const {
 
 inline
 Object* KdTree::intersectForShadow(const Ray& ray, double max_t) const {
-    return intersectForShadow(ray,double(0),max_t);
+    Vector2 h = world_bbox.intersect(ray);
+    if (h[1] < h[0]) {
+	return NULL;
+    } else {
+	return intersectForShadow(ray,double(0),min(max_t,h[1]));
+    }
 }
 
 void KdTree::prepare() {
