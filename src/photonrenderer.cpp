@@ -15,9 +15,11 @@
 #include "image/image.h"
 #include "lights/lightsource.h"
 #include "photonmap.h"
+#include "photonsettings.h"
 
-PhotonRenderer::PhotonRenderer(PhotonMap* photonmap) : Renderer() {
+PhotonRenderer::PhotonRenderer(PhotonSettings* photonsettings, PhotonMap* photonmap) : Renderer() {
     this->photonmap = photonmap;
+    this->photonsettings = photonsettings;
 }
 
 RGB PhotonRenderer::getPixel(const Vector2& v) {
@@ -68,7 +70,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     RGB result_color = RGB(0.0,0.0,0.0);
     vector<Lightsource*> lights = scene->getLightsources();
 
-    result_color += gatherIrradiance(point,normal);//.length() * material.getDiffuseColor(intersection);
+    result_color += gatherIrradiance(point,normal);
     result_color.clip();
     return result_color;
     // TODO: Add radiance_estimate from caustics map
@@ -166,26 +168,23 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
-#define FINAL_GATHER_RAYS 500
-#define ESTIMATE_RADIUS 50
-#define ESTIMATE_PHOTONS 300
-
 Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal) const {
-    if (FINAL_GATHER_RAYS == 0) {
-	return M_PI * photonmap->irradiance_estimate(point,normal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS) * 5000*100;
+    if (photonsettings->final_gather_rays == 0) {
+	return M_PI * photonmap->irradiance_estimate(point,normal,photonsettings->estimate_radius,photonsettings->estimate_samples) * 5000*100;
     }
+
     Vector result = Vector(0.0,0.0,0.0);
 
     NearestPhotons np;
-    np.dist2 = (float*)alloca( sizeof(float)*(FINAL_GATHER_RAYS+1) );
-    np.index = (const Photon**)alloca( sizeof(Photon*)*(FINAL_GATHER_RAYS+1) );
+    np.dist2 = (float*)alloca( sizeof(float)*(photonsettings->final_gather_rays+1) );
+    np.index = (const Photon**)alloca( sizeof(Photon*)*(photonsettings->final_gather_rays+1) );
     np.pos[0] = point[0];
     np.pos[1] = point[1];
     np.pos[2] = point[2];
-    np.max = FINAL_GATHER_RAYS;
+    np.max = photonsettings->final_gather_rays;;
     np.found = 0;
     np.got_heap = 0;
-    np.dist2[0] = ESTIMATE_RADIUS*ESTIMATE_RADIUS;
+    np.dist2[0] = photonsettings->estimate_radius * photonsettings->estimate_radius;
     photonmap->locate_photons(&np,1);
 
     if (np.found < 4) return result;
@@ -203,7 +202,7 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
 	    Vector hitnormal = inter->getObject()->normal(*inter);
 	    double cos = normal * dir;
 	    // TODO: If too close use another recursive final gather instead for estimate
-	    result += ESTIMATE_RADIUS * cos * photonmap->irradiance_estimate(hitpoint,hitnormal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS);
+	    result += photonsettings->estimate_radius * cos * photonmap->irradiance_estimate(hitpoint,hitnormal,photonsettings->estimate_radius,photonsettings->estimate_samples);
 	}
     }
 	

@@ -42,6 +42,7 @@ EXTRA_DIST = 3ds.h		\
 	     photonmap.h	\
 	     photonmapdump.h	\
 	     photonrenderer.h	\
+	     photonsettings.h	\
 	     photontracer.h	\
 	     ray.h 		\
 	     raytracer.h 	\

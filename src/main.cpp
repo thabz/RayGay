@@ -49,6 +49,7 @@
 #include "photonmapdump.h"
 #include "photontracer.h"
 #include "photonrenderer.h"
+#include "photonsettings.h"
 
 
 using namespace std;
@@ -67,16 +68,16 @@ void work(string scenefile, string outputfile) {
  //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
     scene->transform(n);
 
-    SpaceSubdivider* space = new KdTree();
-
+    SpaceSubdivider* space = new BSP();
     scene->initSpace(space);
 
+    PhotonSettings* photonsettings = importer.getPhotonSettings();
 
-//#define PHOTON_CODE
+#define PHOTON_CODE
 //#define PHOTONS_DUMP
 
 #ifdef PHOTON_CODE
-    #define PHOTON_NUM 1000000
+    int PHOTON_NUM = photonsettings->photons_num;
     PhotonMap* photonmap = new PhotonMap(PHOTON_NUM);    
     PhotonTracer* photontracer = new PhotonTracer(scene,space,photonmap);
     photontracer->trace(PHOTON_NUM);
@@ -86,7 +87,7 @@ void work(string scenefile, string outputfile) {
        PhotonMapDump dumper;
        dumper.render(scene,img,photonmap,PHOTON_NUM);
     #else
-       PhotonRenderer renderer = PhotonRenderer(photonmap);
+       PhotonRenderer renderer = PhotonRenderer(photonsettings,photonmap);
        renderer.render(scene,img,space);
     #endif
 #else

@@ -11,6 +11,7 @@ class Material;
 class Path;
 class Vector2;
 class SceneObject;
+class PhotonSettings;
 
 class Importer {
 
@@ -18,6 +19,7 @@ class Importer {
 	Importer(const string& filename);
 	Scene* getScene() const { return scene; };
 	Vector2 getImageSize() const;
+	PhotonSettings* getPhotonSettings() const { return photon_settings; };
 
     private:
 	void parse(const string& filename);
@@ -31,6 +33,7 @@ class Importer {
 	map<string,Path*> paths;
 	map<string,SceneObject*> named_objects;
 	Scene* scene;
+	PhotonSettings* photon_settings;
 
 	double ratio;
 	int width;

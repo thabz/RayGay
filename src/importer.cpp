@@ -18,6 +18,7 @@
 #include "paths/linesegment.h"
 #include "paths/circle.h"
 #include "paths/spiral.h"
+#include "photonsettings.h"
 #include "lights/pointlight.h"
 #include "lights/arealight.h"
 #include "lights/spotlight.h"
@@ -29,6 +30,8 @@ Importer::Importer(const std::string& filename) {
     scene = new Scene();
     Camera* camera = new Camera();
     scene->setCamera(camera);
+
+    photon_settings = new PhotonSettings();
 
     parse(filename);
 
@@ -243,6 +246,18 @@ void Importer::parse(const string& filename) {
 	    double offset = readDouble(stream);
 	    Spiral* spiral = new Spiral(p,radius,windings,offset);
 	    paths[str1] = spiral;
+	} else if (command == "photonmap") {
+	    string name = readString(stream);
+	    int value = readInt(stream);
+	    if (name == "photons") {
+		photon_settings->photons_num = value;
+	    } else if (name == "estimate-radius") {
+		photon_settings->estimate_radius = value;
+	    } else if (name == "estimate-samples") {
+		photon_settings->estimate_samples = value;
+	    } else if (name == "final-gather-rays") {
+		photon_settings->final_gather_rays = value;
+	    }
 	} else if (command == "light") {
 	    string type = readString(stream);
 	    Lightsource* l;

@@ -2,10 +2,10 @@
 
 include materials.gay
 
-#photonmap-photons 100000
-#photonmap-estimate-radius 20
-#photonmap-estimate-samples 5000
-#photonmap-final-gather-rays 100
+photonmap photons 5000000
+photonmap estimate-radius 50
+photonmap estimate-samples 700
+photonmap final-gather-rays 0
 
 camera-position 0 180 1100
 camera-up 0 1 0
@@ -14,16 +14,16 @@ camera-field-of-view 60
 camera-aa 0
 
 image-ratio 4 3
-image-width 640
+image-width 300
 
 background 0.1 0.1 0.3
 
 
 # light behind wall
-#light point 200 280 -150
+light point 200 280 -150
 
 # light near camera
-light point 100 100 800
+#light point 100 100 800
 
 #box $dullred  -50 -300  -50     50 50   50 rotate 0 1 0 30
 #box $dullblue -150 -300 -250   -100 50 -200 rotate 0 1 0 -30
