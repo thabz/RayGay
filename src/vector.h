@@ -39,6 +39,8 @@ public:
     Vector operator*(const double x) const;
     Vector operator/(const double x) const;
     static Vector xProduct (const Vector& v1, const Vector& v2); ///< Returns the scalar product v1 &times; v2
+
+    static double area(const Vector& v0, const Vector& v1, const Vector& v2);  ///< The area of the triangle with the vertices v0, v1 and v2
     bool operator()(const Vector* v1, const Vector* v2) const {
 	return (*v1) == (*v2);
     }
@@ -54,7 +56,7 @@ public:
     bool operator==(const Vector &v) const;
 
     /// Internal test
-    void test();
+    static void test();
     
 protected:
     double _vector[3]; ///< The x,y,z components of the vector

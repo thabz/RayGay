@@ -77,6 +77,11 @@ Vector Vector::xProduct(const Vector& v1, const Vector& v2) {
 	          v1[2]*v2[0] - v1[0]*v2[2],
    	          v1[0]*v2[1] - v1[1]*v2[0]);
 }
+
+double Vector::area(const Vector& v0, const Vector& v1, const Vector& v2) {
+    return xProduct(v1-v0,v2-v0).length() / 2.0;
+}
+
 //----------------------------------------
 // Friends 
 // ---------------------------------------
@@ -86,3 +91,7 @@ Vector operator*(const double x, const Vector &v) {
 }
 
 
+void Vector::test() {
+    // Test area()
+    assert(0.5 == area(Vector(1,1,1), Vector(2,1,1), Vector(1,2,1)));
+}
