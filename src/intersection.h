@@ -40,9 +40,13 @@ class Intersection {
  	/// The intersection point
 	const Vector& getPoint() const { return point; };
 
-        /// Surface normal at intersection point
+        /// Get surface normal at intersection point
 	const Vector& getNormal() const { return normal; };
+	
+        /// Set surface normal at intersection point
+	void setNormal(const Vector& normal) { this->normal = normal; };
 
+	/// Flip direction of normal
 	void flipNormal() { normal *= -1.0; };
 
 	const Vector2& getUV() const { return uv; };
