@@ -1,6 +1,5 @@
 
 ;; The teapot consist of 32 bezier patches.
-;; TODO: Swap y,z values
 (define (make-teapot xresolution yresolution material)
   (let loop 
     ((coords 
