@@ -18,10 +18,9 @@ class SuperElliopsoid : public IsoSurface {
 
     public:
 	SuperElliopsoid(double n1, double n2, unsigned int steps, double accuracy, Material* m);
-        bool inside(const Vector& v) const;
 
     private:
-	double f(const Vector& v) const;
+	double evaluateFunction(const Vector& v) const;
 	double n1,n2;
     
 };
