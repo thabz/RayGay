@@ -142,12 +142,12 @@ void boolean_test() {
 
 void box_test() {
     Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
-    Box b = Box(Vector(-1,-1,-1),Vector(1,1,1),m);
-    b.prepare();
-    assert(b.getVertices()->size() == 8);
+    Box* b = new Box(Vector(-1,-1,-1),Vector(1,1,1),m);
+    b->prepare();
+    assert(b->getVertices()->size() == 8);
 
     BSP bsp = BSP();
-    b.addParts(&bsp);
+    b->addParts(&bsp);
     bsp.prepare();
     Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
     assert(bsp.intersect(r));
@@ -156,15 +156,15 @@ void box_test() {
     r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
     assert(bsp.intersect(r));
     assert(bsp.getLastIntersection()->getPoint() == Vector(0,-1,0));
-
+    delete b;
 
     /* Test second constructor */
-    b = Box(Vector(0,0,0),2,2,2,m);
-    b.prepare();
-    //assert(b.getVertices()->size() == 8);
+    b = new Box(Vector(0,0,0),2,2,2,m);
+    b->prepare();
+    assert(b->getVertices()->size() == 8);
 
     bsp = BSP();
-    b.addParts(&bsp);
+    b->addParts(&bsp);
     bsp.prepare();
 
     r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
