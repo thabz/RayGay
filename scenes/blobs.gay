@@ -1,36 +1,78 @@
 
-# Metaballs 3:17
-# Soft objects 2:27
-
-include materials.gay
-
 renderer raytracer
 
-camera-position 700 1000 500
-camera-up 0 1 0
-camera-lookat 0 10 0
-camera-field-of-view 45
-camera-aa 4
+camera { position <1000,500,800>
+         up <0,1,0> 
+         lookat <0,0,0> 
+	 fov 45
+	 aa 4
+}
 
-image-ratio 4 3
-image-width 640
+image { width 1024 aspect 4 3 }
 
-background rgba 0.2 0.2 0.4 1.0
+background <0.361,0.078,0.753,1.0>
 
-light point -2000 2800 1500 3000000 3000000 3000000
-light point 2000 3000 1500 3000000 3000000 3000000
+light { point <100,1300,1300> power <1,1,1> } 
 
-box $dullgreen -300 -50 -300    300 0 300
+$blue = material {
+    diffuse <0.8,0.6,0.264>
+    kd 1.0
+    specular <1.0,1.0,1.0>
+    ks 0.0
+    specpow 15
+}
 
-blob $red
-    60.0 400 0.01
-    5
+$grey85 = material {
+    diffuse <0.85,0.85,0.85>
+    kd 1.0
+    specular <0.85,0.85,0.85>
+    ks 0.0
+    specpow 15
+}
 
-    
-    150 175 -200 100 0 
-    150 175    0 100 0 
-    150 175  200 100 0
+$red = material {
+    diffuse <0.5,0.45,0.35>
+    kd 0.5
+    specular <0.5,0.5,0.5>
+    ks 0.5
+    specpow 30
+}
 
-    150 175    0 100 -200 
-    150 175    0 100 200
+/*
+box { $blue
+    <-12000,-300,-12000>
+    <12000,-400,12000>	  
+}
 
+box { $grey85 
+      <-750,-50,-750>
+      <750,-0.01,750>
+}
+*/
+
+blob {
+    $red
+    60
+    150
+    600
+    0.0001
+    group {
+	$j = -2
+	repeat (6) {
+	$i = $j/4
+	repeat (24) {
+	    $x = sin($i/24*2*PI)*650
+	    $z = cos($i/24*2*PI)*650
+	    sphere { 125 <$x,50+$j*150,$z> }
+
+	    $x = sin(($i+0.5)/24*2*PI)*650
+	    $z = cos(($i+0.5)/24*2*PI)*650
+	    sphere { 40 <$x,50+$j*150,$z> }
+
+
+	    $i++
+	}
+	$j++
+	}
+    }
+}
