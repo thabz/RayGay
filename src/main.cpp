@@ -106,20 +106,20 @@ void testScene4() {
     //scene.addObject(tube); 
 
     // Use this when making fog later.
-    /*
-    for(int x = -300; x <= 300; x += 60) {
-	for(int z = -300; z <= 300; z += 60) {
+    
+    for(int x = -1000; x <= 1000; x += 60) {
+	for(int z = -1000; z <= 1000; z += 60) {
 	    Box* b = new Box(Vector(x,0,z),40.0,40.0,40.0,MATERIAL_SHINY_BLUE);
 	    Sphere* s = new Sphere(Vector(x,0,z),20.0,MATERIAL_SHINY_BLUE);
-	    scene.addObject(b);
+	    scene.addObject(s);
 	}
     }
-    */
+    
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
-    light1.setAttenuation(4000,2);
+    light1.setAttenuation(4000,3);
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));
-    light3.setAttenuation(4000,2);
+    light3.setAttenuation(4000,3);
     Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
     Arealight area1 = Arealight(Vector(-4000,4000,4000),Vector(1,-1,-1),1000,40,0.10);
     Arealight area2 = Arealight(Vector(4000,4000,4000),Vector(-1,-1,-1),1000,40,0.10);
@@ -129,12 +129,12 @@ void testScene4() {
     scene.addLight(&light1);
     scene.addLight(&light3);
     
-    Box b = Box(Vector(-8000,-200,-8000),Vector(8000,-150,8000),MATERIAL_SHINY_GREEN); /* Floor */
+    Box b = Box(Vector(-1000,-200,-1000),Vector(1000,-150,1000),MATERIAL_SHINY_GREEN); /* Floor */
     scene.addObject(&b);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
-    //scene.transform(n);
+    scene.transform(n);
 
     scene.setBackgroundColor(RGB(0.1,0.1,0.3));
 
