@@ -20,7 +20,7 @@ using namespace std;
 ThreeDS::ThreeDS(const string& filename, const double scale, const Material* material) {
     this->force_my_material = true;
     this->material = material;
-    init(filename,scale);
+    init(filename,scale);  
 }
 
 ThreeDS::ThreeDS(const string& filename, const double scale) {
@@ -30,6 +30,9 @@ ThreeDS::ThreeDS(const string& filename, const double scale) {
 
 void ThreeDS::init(const string& filename, const double scale) {
     this->scale = scale;
+#ifdef WORDS_BIGENDIAN
+    cout << "Big endian" << endl;
+#endif    
     load3ds(filename);
 }
 
@@ -99,13 +102,20 @@ long filelength(int f) {
     return buf.st_size;
 }
 
+/*
+unsigned int intSwap(unsigned int i) {
+    unsigned char b1, b2, b3, b4;
+    
+}
+*/
+
 unsigned int readUInt(FILE* file) {
     unsigned int dest = 0;
 #ifdef WORDS_BIGENDIAN
-    dest =  (unsigned int) (fgetc(file) & 0xff);
-    dest = ((unsigned int) (fgetc(file) & 0xff)) | (dest << 0x08);
-    dest = ((unsigned int) (fgetc(file) & 0xff)) | (dest << 0x08);
-    dest = ((unsigned int) (fgetc(file) & 0xff)) | (dest << 0x08);
+    dest  =  (unsigned int) (fgetc(file) & 0xff);
+    dest |= ((unsigned int) (fgetc(file) & 0xff)) << 0x08;
+    dest |= ((unsigned int) (fgetc(file) & 0xff)) << 0x10;
+    dest |= ((unsigned int) (fgetc(file) & 0xff)) << 0x18;
 #else
     fread (&dest, sizeof(unsigned int), 1, file);
 #endif
@@ -115,8 +125,8 @@ unsigned int readUInt(FILE* file) {
 unsigned short readUShort(FILE* file) {
     unsigned short dest;
 #ifdef WORDS_BIGENDIAN
-    dest = (unsigned short) (fgetc(file) & 0xff);
-    dest |= ((unsigned short) (fgetc(file)) & 0xff) << 0x08;
+    dest  =  (unsigned short) (fgetc(file) & 0xff);
+    dest |= ((unsigned short) (fgetc(file) & 0xff)) << 0x08;
 #else
     fread (&dest, sizeof(unsigned short), 1, file);
 #endif    
@@ -132,6 +142,18 @@ unsigned char readUChar(FILE* file) {
 float readFloat(FILE* file) {
     float dest;
     fread (&dest, sizeof(float), 1, file);
+#ifdef WORDS_BIGENDIAN    
+    union {
+	float f;
+	unsigned char b[4];
+    } dat1, dat2;
+    dat1.f = dest;
+    dat2.b[0] = dat1.b[3];
+    dat2.b[1] = dat1.b[2];
+    dat2.b[2] = dat1.b[1];
+    dat2.b[3] = dat1.b[0];
+    dest = dat2.f;
+#endif
     return dest;
 }
 
@@ -233,8 +255,8 @@ void ThreeDS::load3ds(const string& filename) {
 		for (i=0; i<l_qty; i++)
 		{
 		    for (int j = 0; j < 3; j++) {
-			float val;
-			fread(&val,sizeof(float),1,l_file);
+			float val = readFloat(l_file);
+			//fread(&val,sizeof(float),1,l_file);
 			vertices.push_back(val);
 		    }
 		    /*
@@ -294,8 +316,8 @@ void ThreeDS::load3ds(const string& filename) {
 		for (i=0; i < l_qty; i++)
 		{
 		    for (int j = 0; j < 2; j++) {
-			float val;
-			fread(&val, sizeof(float), 1, l_file);
+			float val = readFloat(l_file);
+			//fread(&val, sizeof(float), 1, l_file);
 			map_coords.push_back(val);
 		    }
 		    /*
@@ -380,7 +402,10 @@ void ThreeDS::load3ds(const string& filename) {
 		break;
 	    case 0x0010:
 		float rgbf[3];
-		fread(rgbf,sizeof(rgbf),1,l_file);
+		rgbf[0] = readFloat(l_file);
+		rgbf[1] = readFloat(l_file);
+		rgbf[2] = readFloat(l_file);
+		//fread(rgbf,sizeof(rgbf),1,l_file);
 		cur_color = RGB(rgbf[0],rgbf[1],rgbf[2]);
 		cout << "True color found: " << cur_color << endl;
 		switch (state_inside_color_type) {
