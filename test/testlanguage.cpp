@@ -120,6 +120,23 @@ void test_vector_copy() {
     a->push_back(4);
     assert(a->size() == 4);
     assert(b->size() == 3);
+    delete a;
+    delete b;
+}
+
+void test_vector_ref() {
+    vector<int>* a = new vector<int>;
+    a->push_back(1);
+    a->push_back(2);
+    a->push_back(3);
+    vector<int>& b = *a;
+    assert(b[0] == 1);
+    b.push_back(4);
+    assert(a->size() == 4);
+    (*a)[0] = 10;
+    assert(b[0] == 10);
+    b.clear();
+    assert(a->size() == 0);
 }
 
 int main(int argc, char *argv[]) {
@@ -129,6 +146,7 @@ int main(int argc, char *argv[]) {
     test_lowercase();
     test_sort();
     test_vector_copy();
+    test_vector_ref();
     return EXIT_SUCCESS;
 }
 
