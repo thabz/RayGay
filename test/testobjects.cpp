@@ -519,7 +519,9 @@ void csg_test() {
     all = csg->allIntersections(ray);
     assert(all.size() == 2);
     assert(all[0].getPoint() == Vector(0,0,15));
+    assert(all[0].getNormal() == Vector(0,0,1));
     assert(all[1].getPoint() == Vector(0,0,-5));
+    assert(all[1].getNormal() == Vector(0,0,-1));
     assert(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,15));
     assert(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
     assert(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-5));
@@ -536,7 +538,9 @@ void csg_test() {
     all = csg->allIntersections(ray);
     assert(all.size() == 2);
     assert(all[0].getPoint() == Vector(0,0,25));
+    assert(all[0].getNormal() == Vector(0,0,1));
     assert(all[1].getPoint() == Vector(0,0,15));
+    assert(all[1].getNormal() == Vector(0,0,-1));
     assert(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,25));
     assert(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
     assert(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,15));
