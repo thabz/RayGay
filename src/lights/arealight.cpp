@@ -67,6 +67,9 @@ Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& norma
 	for(int i = 0; i < num; i++) {
 	    direction_to_light = getPosition(i) - inter.getPoint();
 	    double dist_to_light = direction_to_light.length();
+	    if (IS_ZERO(dist_to_light)) {
+		continue;
+	    }
 	    direction_to_light *= 1.0/dist_to_light;
 
 	    Stats::getUniqueInstance()->inc("Shadow rays cast");

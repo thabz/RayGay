@@ -15,6 +15,11 @@ Lightinfo Pointlight::getLightinfo(const Intersection& inter,const Vector& norma
     Lightinfo info;
     info.direction_to_light = position - inter.getPoint();
     double dist_to_light = info.direction_to_light.length();
+    if (IS_ZERO(dist_to_light)) {
+	info.intensity = 0.0;
+	return info;
+
+    }
     info.direction_to_light = info.direction_to_light / dist_to_light;
     info.cos = info.direction_to_light * normal;
 
