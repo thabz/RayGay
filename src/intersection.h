@@ -6,7 +6,7 @@
 #include "math/vector.h"
 #include "ray.h"
 
-class object;
+class Object;
 class Triangle;
 
 using namespace std;
@@ -19,13 +19,13 @@ class Intersection {
 	Intersection();
 	Intersection(const Vector& point, double t);
 
-	void setObject(object* obj) { o = obj; };
-	object* getObject() const { return o; };
+	void setObject(Object* obj) { o = obj; };
+	Object* getObject() const { return o; };
 
 	Vector getPoint() const { return point; };
 
-	void setLocalObject(const object* obj) { local_object = obj; };
-	const object* getLocalObject() const { return local_object; };
+	void setLocalObject(const Object* obj) { local_object = obj; };
+	const Object* getLocalObject() const { return local_object; };
 
 	double getT() const { return t; }; 
 	void setT(double new_t) { t = new_t; };
@@ -35,8 +35,8 @@ class Intersection {
 	double u,v;
 
     private:
-	object* o; /// The object that was intersected
-	const object* local_object; ///< A local subobject, eg. a component of a Boolean.
+	Object* o; /// The object that was intersected
+	const Object* local_object; ///< A local subobject, eg. a component of a Boolean.
 	Vector point; 	///< The intersection point
 	double t;
 };

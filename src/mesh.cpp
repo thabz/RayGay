@@ -40,7 +40,7 @@ Mesh::~Mesh() {
     delete _boundingBoundingBox;
 }
 
-void Mesh::addParts(SpaceSubdivider* space) {
+void Mesh::addSelf(SpaceSubdivider* space) {
     for(unsigned int i = 0; i < triangles.size(); i++) {
 	space->addObject(triangles[i]);
     }
@@ -367,7 +367,7 @@ void Mesh::test() {
     Mesh mesh = Mesh(MESH_FLAT,mat);
     mesh.addTriangle(Vector(-1,1,1),Vector(1,1,1),Vector(0,-1,-1));
     mesh.prepare();
-    mesh.addParts(&bsp);
+    mesh.addSelf(&bsp);
     bsp.prepare();
 
     assert(mesh.edgeMap.size() == 3);

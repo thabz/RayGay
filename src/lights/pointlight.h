@@ -8,7 +8,7 @@ class RGB;
 class Matrix;
 class Intersection;
 class Ray;
-class object;
+class Object;
 
 /// A point Lightsource
 class Pointlight : public Lightsource {
@@ -19,7 +19,7 @@ class Pointlight : public Lightsource {
 	Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space) const;
 
     private:
-	mutable object* hint;
+	mutable Object* hint;
 };
 
 #endif

@@ -53,7 +53,7 @@ RGB Raytracer::trace(const Ray& ray, int depth) {
 }
 
 RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth) {
-    object* object = intersection.getObject();
+    Object* object = intersection.getObject();
     const Vector point = intersection.getPoint();
     Vector normal = object->normal(intersection);
     const Material& material = object->getMaterial();

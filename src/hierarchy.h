@@ -41,10 +41,10 @@ class Hierarchy { //: public SpaceSubdivider {
 	/// Destructor
 	virtual ~Hierarchy();
 
-	void addObject(object* obj); ///< Place a object in the hierarchy
+	void addObject(Object* obj); ///< Place a object in the hierarchy
 	Intersection intersect(const Ray& ray) const; ///< Calculate an intersection with the hierarchy
 	Intersection intersectForShadow(const Ray& ray) const; ///< Calculate an intersection with the hierarchy
-	Intersection intersectForShadow(const Ray& ray, const object* hint) const; ///< Calculate an intersection with the hierarchy
+	Intersection intersectForShadow(const Ray& ray, const Object* hint) const; ///< Calculate an intersection with the hierarchy
 
 	/// This gets called after all objects are added and before any intersection methods are called.
 	void prepare();
@@ -63,7 +63,7 @@ class Hierarchy { //: public SpaceSubdivider {
 	
 	BoundingBox _box;
 	int _depth;
-	std::vector<object*> objects;
+	std::vector<Object*> objects;
 	std::vector<Hierarchy*> children;
 };
 

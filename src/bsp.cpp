@@ -18,7 +18,7 @@ BSP::BSP() {
     cutplane_value = 0;
 }
 
-void BSP::addObject(object* obj) {
+void BSP::addObject(Object* obj) {
     Stats::getUniqueInstance()->inc("BSP: Objects added");
     objects.push_back(obj);
 }
@@ -57,7 +57,7 @@ void BSP::prepare() {
 	// Put all objects into lower- or higher_objects
 	int l = 0; int m = 0; int h = 0;
 	for(unsigned int i = 0; i < size; i++) {
-	    object* obj = objects[i];
+	    Object* obj = objects[i];
 	    BoundingBox bbox = obj->boundingBoundingBox();
 	    int cut_val = bbox.cutByPlane(cutplane_dimension, cutplane_value);
 	    if (cut_val == -1) {
@@ -98,7 +98,7 @@ bool BSP::intersectForShadow(const Ray& ray) const {
     return intersectForShadow(ray,0,HUGE_DOUBLE);
 }
 
-bool BSP::intersectForShadow(const Ray& ray, const object* hint) const {
+bool BSP::intersectForShadow(const Ray& ray, const Object* hint) const {
     if (hint != NULL && hint->intersect(ray)) {
 	last_intersection = hint->getLastIntersection();
 	return true;
@@ -110,7 +110,7 @@ bool BSP::intersectForShadow(const Ray& ray, const object* hint) const {
 double BSP::median(int d) const {
     std::list<double> L;
     for(unsigned int i = 0; i < objects.size(); i++) {
-	    object* obj = objects[i];
+	    Object* obj = objects[i];
 	    BoundingBox bbox = obj->boundingBoundingBox();
 	    double c = (bbox.maximum()[d] + bbox.minimum()[d]) / 2.0;
 	    L.push_back(c);
@@ -129,7 +129,7 @@ double BSP::median(int d) const {
 Vector BSP::measureSplit(int dim, double val) const {
     Vector result = Vector(0,0,0);
     for(unsigned int i = 0; i < objects.size(); i++) {
-	object* obj = objects[i];
+	Object* obj = objects[i];
 	BoundingBox bbox = obj->boundingBoundingBox();
 	int cut_val = bbox.cutByPlane(dim, val);
 	if (cut_val == -1) {

@@ -42,6 +42,7 @@ EXTRA_DIST = 3ds.h		\
 	     raytracer.h 	\
 	     renderer.h 	\
 	     scene.h 		\
+	     sceneobject.h	\
 	     spacesubdivider.h	\
 	     sphere.h		\
 	     stats.h		\

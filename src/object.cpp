@@ -4,7 +4,7 @@
 #include "intersection.h"
 #include "ray.h"
 
-object::object() {
+Object::Object() {
    last_ray = -1;
 }
 
@@ -13,7 +13,7 @@ object::object() {
  * This gets called after construction but before any
  * intersection methods are called.
  */
-void object::prepare() {
+void Object::prepare() {
     // Default does nothing
 }
 

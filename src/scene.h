@@ -28,11 +28,8 @@ class Scene {
 	virtual ~Scene();	
 
 	/// Place an object in the scene
-	void addObject(object* obj);
+	void addObject(SceneObject* obj);
 	
-	/// Place an objectcollection in the scene
-	void addObject(ObjectCollection* obj);
-
 	/// Place a lightsource in the scene
 	void addLight(Lightsource* light);
 
@@ -49,10 +46,7 @@ class Scene {
 	std::vector<Lightsource*> getLightsources();
 	
 	/// Returns a vector of all objects
-	std::vector<object*> getObjects();
-
-	/// Returns a vector of all objectcollections
-	std::vector<ObjectCollection*> getObjectCollections();
+	std::vector<SceneObject*> getObjects();
 
 	/// Set the background color
 	void setBackgroundColor(const RGB& c) { bg_color = c; };
@@ -70,8 +64,7 @@ class Scene {
 
     private:
 	std::vector<Lightsource*> lights;
-	std::vector<object*> objects;
-	std::vector<ObjectCollection*> objectcollections;
+	std::vector<SceneObject*> objects;
 	Image* environmentMap;
 	Sphere* environmentSphere;
 	Camera* camera;

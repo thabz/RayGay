@@ -5,7 +5,7 @@
 #include <vector>
 
 class Circle;
-class object;
+class Object;
 
 /// Lightsource that produces soft shadows
 class Arealight : public Lightsource {
@@ -19,7 +19,7 @@ class Arealight : public Lightsource {
 
     private:
 	std::vector<Circle*> circles;
-	mutable std::vector<object*> hints;
+	mutable std::vector<Object*> hints;
 	std::vector<double> ts;
 	double jitter;
 	int num;

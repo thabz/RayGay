@@ -2,34 +2,28 @@
 #ifndef OBJECTS_OBJECTGROUP_H
 #define OBJECTS_OBJECTGROUP_H
 
-#include "objectcollection.h"
+#include "sceneobject.h"
 #include <vector>
 
-class object;
-
 /// An object that builds itself from other objects
-class ObjectGroup : public ObjectCollection {
+class ObjectGroup : public SceneObject {
 
     public:
 	/// Transform this object
-	void transform(const Matrix& m);
+	virtual void transform(const Matrix& m);
 
 	/// Adds this or all subobjects to a space
-	void addParts(SpaceSubdivider* space);
+	virtual void addSelf(SpaceSubdivider* space);
 
 	/// Prepare object
 	void prepare();
 
     protected:
 	/// Add an object to this group
-	void addObject(object* obj);
-	
-	/// Add an objectcollection to this group
-	void addObject(ObjectCollection* obj);
+	void addObject(SceneObject* obj);
 
     private:
-	std::vector<object*> objects;
-	std::vector<ObjectCollection*> objectCollections;
+	std::vector<SceneObject*> objects;
 };
 
 #endif

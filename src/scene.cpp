@@ -24,15 +24,11 @@ Scene::Scene() {
 Scene::~Scene() {
 }
 
-void Scene::addObject(object* obj) {
+void Scene::addObject(SceneObject* obj) {
     Stats::getUniqueInstance()->inc("SCENE: Objects added");
     objects.push_back(obj);
 }
 
-void Scene::addObject(ObjectCollection* obj) {
-    Stats::getUniqueInstance()->inc("SCENE: ObjectCollections added");
-    objectcollections.push_back(obj);
-}
 
 void Scene::addLight(Lightsource* light) {
     lights.push_back(light);
@@ -69,13 +65,10 @@ RGB Scene::getBackgroundColor(const Ray& ray) const {
 }
 
 void Scene::transform(const Matrix &m) {
-    for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
+    for (vector<SceneObject*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	(*p)->transform(m);
     }
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
-	(*p)->transform(m);
-    }
-    for (vector<ObjectCollection*>::iterator p = objectcollections.begin(); p != objectcollections.end(); p++) {
 	(*p)->transform(m);
     }
  //   camera->transform(m);
@@ -85,12 +78,8 @@ std::vector<Lightsource*> Scene::getLightsources() {
     return lights;   
 }
 
-std::vector<object*> Scene::getObjects() {
+std::vector<SceneObject*> Scene::getObjects() {
     return objects;   
-}
-
-std::vector<ObjectCollection*> Scene::getObjectCollections() {
-    return objectcollections;   
 }
 
 void Scene::setFog(const RGB& color, const double distance) {

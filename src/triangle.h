@@ -11,7 +11,7 @@ class Matrix;
 class Vector2;
 
 /// The triangle of a Mesh
-class Triangle : public object {
+class Triangle : public Object {
 
     public:
 	/// Constructor

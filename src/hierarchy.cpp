@@ -36,7 +36,7 @@ Hierarchy::~Hierarchy() {
    */
 }
 
-void Hierarchy::addObject(object* obj) {
+void Hierarchy::addObject(Object* obj) {
     assert(obj->intersects(_box));
     if (hasChildren()) {
         for (vector<Hierarchy*>::iterator h = children.begin(); h != children.end(); h++) {
@@ -80,7 +80,7 @@ void Hierarchy::split() {
 
     // Distribute my objects into the new sub-hierarchies
     for (vector<Hierarchy*>::iterator h = children.begin(); h != children.end(); h++) {
-	for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
+	for (vector<Object*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	    if ((*p)->intersects((*h)->getBoundingBox())) {
 		(*h)->addObject(*p);
 	    }
@@ -164,7 +164,7 @@ void Hierarchy::shrinkBoundingBoxes() {
 	    }
 	}
     } else if (hasObjects()) {
-	for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
+	for (vector<Object*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	    if (boxEmpty) {
 		boundingBoundingBox = (*p)->boundingBoundingBox();
 		boxEmpty = false;
@@ -207,7 +207,7 @@ Intersection Hierarchy::intersect(const Ray& ray) const {
 	    }
 	}
     } else if (hasObjects()) {
-	for (vector<object*>::const_iterator p = objects.begin(); p != objects.end(); p++) {
+	for (vector<Object*>::const_iterator p = objects.begin(); p != objects.end(); p++) {
 	    (*p)->intersect(ray);
 	    tmp = *((*p)->getLastIntersection());
 	    if (tmp.isIntersected()) {
@@ -238,7 +238,7 @@ Intersection Hierarchy::intersectForShadow(const Ray& ray) const {
 	    }
 	}
     } else if (hasObjects()) {
-	for (vector<object*>::const_iterator p = objects.begin(); p != objects.end(); p++) {
+	for (vector<Object*>::const_iterator p = objects.begin(); p != objects.end(); p++) {
 	    (*p)->intersect(ray);
 	    tmp = *((*p)->getLastIntersection());
 	    if (tmp.isIntersected()) {
@@ -249,7 +249,7 @@ Intersection Hierarchy::intersectForShadow(const Ray& ray) const {
     return result;
 }
 
-Intersection Hierarchy::intersectForShadow(const Ray& ray, const object* hint) const {
+Intersection Hierarchy::intersectForShadow(const Ray& ray, const Object* hint) const {
     if (hint != NULL) {
 	hint->intersect(ray);
 	Intersection i = *(hint->getLastIntersection());
@@ -263,7 +263,7 @@ Intersection Hierarchy::intersectForShadow(const Ray& ray, const object* hint) c
 ostream & operator<<(ostream &os, Hierarchy &x) {
 	if (x.hasObjects()) {
 	os << "Objects: (";
-	for (vector<object*>::iterator p = x.objects.begin(); p != x.objects.end(); p++) {
+	for (vector<Object*>::iterator p = x.objects.begin(); p != x.objects.end(); p++) {
 	    os << "o";
 	}
 	os << ")";

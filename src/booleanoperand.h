@@ -6,7 +6,7 @@
 class Vector;
 
 /// A type of object that can be used as part of a Boolean object
-class BooleanOperand : public object {
+class BooleanOperand : public Object {
 
     public:
 	/// Says whether a point belongs to the closure of the object

@@ -27,11 +27,11 @@ class BSP : public SpaceSubdivider {
     public:
 	BSP();
 	virtual ~BSP() {};
-	void addObject(object* obj); ///< Place a object in the BSP tree 
+	void addObject(Object* obj); ///< Place a object in the BSP tree 
 
 	bool intersect(const Ray& ray) const; ///< Returns the nearest intersection
 	bool intersectForShadow(const Ray& ray) const; ///< Returns any intersection 
-	bool intersectForShadow(const Ray& ray, const object* hint) const; ///< Returns any intersection but hint-object is checked for intersection first.
+	bool intersectForShadow(const Ray& ray, const Object* hint) const; ///< Returns any intersection but hint-object is checked for intersection first.
 
 	/// This gets called after all objects are added and before any intersection methods are called.
 	void prepare();
@@ -45,7 +45,7 @@ class BSP : public SpaceSubdivider {
     private:
 	int cutplane_dimension;   ///< [0..2] for x, y or z.
         double cutplane_value;       ///< The value of x, y or z the cut plane cuts 
-	std::vector<object*> objects;
+	std::vector<Object*> objects;
 	BSP* lower;
 	BSP* higher;
 

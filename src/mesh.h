@@ -74,7 +74,7 @@ class Mesh : public ObjectCollection {
 	virtual ~Mesh();
 	
 	/// Adds this or all subobjects to a space
-	void addParts(SpaceSubdivider* space);
+	void addSelf(SpaceSubdivider* space);
 
 	virtual void transform(const Matrix& m);
 	/// Returns a (possibly) phong-interpolated normal

@@ -6,6 +6,8 @@
 
 #include "materials/material.h"
 #include "intersection.h"
+#include "sceneobject.h"
+#include "spacesubdivider.h"
 
 class Matrix;
 class Ray;
@@ -16,7 +18,7 @@ class Material;
 
 /// The abstract superclass of all objects in the scene that can be rendered.
 
-class object {
+class Object : public SceneObject {
     public:
         /// Return the nearest intersection to ray's origin
 	virtual bool intersect(const Ray& ray) const;
@@ -42,11 +44,13 @@ class object {
 	/// Prepares the object before rendering
 	virtual void prepare();
 
+	void addSelf(SpaceSubdivider* space) { space->addObject((Object*)this); };
+
 	/// Returns last successful intersection
 	Intersection* getLastIntersection() const { return &last_intersection; }; 
 
     protected:
-	object();
+	Object();
 	/// Internal intersect method that subclasses must implement
 	virtual Intersection _intersect(const Ray& ray) const = 0;
 
@@ -65,10 +69,10 @@ class object {
  */
 
 inline
-bool object::intersect(const Ray& ray) const {
+bool Object::intersect(const Ray& ray) const {
     if (ray.getId() != last_ray) {
 	last_intersection = _intersect(ray);
-	last_intersection.setObject(const_cast<object*>(this));
+	last_intersection.setObject(const_cast<Object*>(this));
 	last_ray = ray.getId();
     }
     return last_intersection.isIntersected();

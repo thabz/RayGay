@@ -37,18 +37,12 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
 */
     beginTime = time(NULL);
     // Add all objects in scene to spacesubdivider
-    std::vector<object*> objects = scene->getObjects();
-    for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
+    std::vector<SceneObject*> objects = scene->getObjects();
+    for (vector<SceneObject*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	(*p)->prepare();
-	space->addObject(*p);
+	(*p)->addSelf(space);
     }
-    //
-    // Add all objectcollections in scene to spacesubdivider
-    std::vector<ObjectCollection*> objectcols = scene->getObjectCollections();
-    for (vector<ObjectCollection*>::iterator p = objectcols.begin(); p != objectcols.end(); p++) {
-	(*p)->prepare();
-	(*p)->addParts(space);
-    }
+
     space->prepare();
     Stats::getUniqueInstance()->put("Prepare time (seconds)",time(NULL)-beginTime);
 
