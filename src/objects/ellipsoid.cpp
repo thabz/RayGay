@@ -1,6 +1,7 @@
 
 #include "objects/ellipsoid.h"
 #include "boundingbox.h"
+#include "materials/material.h"
 
 Ellipsoid::Ellipsoid(const Vector& center, const Vector& radii, Material* material) : Solid(material) {
     // The ellipsoid in object space is simply a unit-sphere
@@ -22,9 +23,15 @@ void Ellipsoid::_fullIntersect( const Ray& world_ray, const double t, Intersecti
     Ray ray = rayToObject(world_ray);
     double new_t = t*ray.t_scale;
     Vector p = ray.getPoint(new_t);
+
+    Vector2 uv;
+    if (getMaterial() != NULL && getMaterial()->requiresUV()) {
+	uv = sphere->getUV(p);
+    } 
+
     // The normalized normal at a surface point of a unit-sphere
     // is the same as the surface point itself.
-    result = Intersection(p,new_t,p,Vector2(0,0));
+    result = Intersection(p,new_t,p,uv);
     intersectionToWorld(result);
 }
 

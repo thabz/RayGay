@@ -39,10 +39,11 @@ class Sphere : public Solid {
 	int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
+	Vector2 getUV(const Vector& normal) const;
+
     private:
 	Vector center;
 	double radius;
-	Vector2 getUV(const Vector& point) const;
 
 };
 

@@ -43,7 +43,7 @@ void Sphere::_fullIntersect(const Ray& ray, const double t, Intersection& result
     Vector2 uv;
     if (getMaterial() != NULL && getMaterial()->requiresUV()) {
 	//cout << "Getting UV" << endl;
-	uv = getUV(p);
+	uv = getUV(n);
     } 
     result = Intersection(p,t,n,uv);
 }
@@ -144,9 +144,7 @@ BoundingBox Sphere::boundingBoundingBox() const {
 }
 
 // See http://astronomy.swin.edu.au/~pbourke/texture/spheremap/
-Vector2 Sphere::getUV(const Vector& point) const {
-    Vector p = point - center;
-    p.normalize();
+Vector2 Sphere::getUV(const Vector& p) const {
     double u,v;
     v = acos(p[1]) / M_PI;
     if (IS_ZERO(sin((v) * M_PI))) {
