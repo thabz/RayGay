@@ -8,6 +8,7 @@
 class IrradianceCache {
 
     public:
+	/// Constructor
 	IrradianceCache(double tolerance);
 
 	/**
@@ -18,30 +19,38 @@ class IrradianceCache {
 	 * @param point the point we want diffuse irradiance estimate at
 	 * @param normal the surface normal at point
 	 */
-	RGB getEstimate(Vector point, Vector normal);
+	RGB getEstimate(const Vector& point, const Vector& normal) const;
 
 	/**
 	 * Insert an estimate into the list.
 	 *
-	 * This inserts the result of a final gather into the irrancance cache.
+	 * This inserts the result of a final gather into the irradiance cache.
+	 *
+	 * The harmonic mean distance \f$H\f$ is defined as
+	 *
+	 * \f[ H = \frac{n}{K} \f]
+	 *
+	 * where 
+	 *
+	 * \f[ K = \sum_{i=1}^{n}{\frac{1}{n_i}} \f]
 	 *
 	 * @param point the point where the final gather was done
 	 * @param normal the surface normal at point
 	 * @param irrancance the result of the final gather
-	 * @param mean_distance the mean distance to the objects that was hit by final gather rays.
+	 * @param hmd the harmonic mean distance to the objects that was hit by final gather rays.
 	 * 
 	 */
-	void putEstimate(Vector point, Vector normal, RGB irrandiance, double mean_distance);
+	void putEstimate(const Vector& point, const Vector& normal, const RGB& irrandiance, const double hmd);
 
     private:
-	class CacheElement {
+	class CacheNode {
 
 	    Vector point;
 	    Vector normal;
 	    RGB irradiance;
-	    double mean_distance;
+	    double hmd;
 
-	    double getWeight(Vector point, Vector normal) const {
+	    double getWeight(const Vector& point, const Vector& normal) const {
 
 	    }
 
