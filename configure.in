@@ -1,7 +1,7 @@
 
 AC_INIT(raygay, 0.5, jesper@kalliope.org)
-AC_CONFIG_SRCDIR(src/main.cpp)
 AM_CONFIG_HEADER(config.h)    
+AC_CONFIG_SRCDIR(src/main.cpp)
 
 RAYGAY_MAJOR_VERSION=0
 RAYGAY_MINOR_VERSION=5    
@@ -28,7 +28,6 @@ dnl Check system and headers
 dnl -------------------------------------------------
 AC_C_BIGENDIAN
 AC_C_INLINE
-AC_C_RESTRICT
 AC_HEADER_TIME
 AC_C_LONG_DOUBLE
 AC_CHECK_HEADERS(pthread.h)
