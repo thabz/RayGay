@@ -5,6 +5,7 @@
 #include <cassert>
 #include <iostream>
 #include <string>
+#include <cmath>
 
 using namespace std;
 #define byte unsigned char
@@ -44,10 +45,10 @@ void TgaIO::save(const Image* const image, const std::string& filename) const {
     for(int y = 0; y < height ; y++) {
         for(int x = 0; x < width; x++) {
             color = image->getRGBA(x,(height - 1) - y);
-	    bytes[4*(x + y * width) + 0] = (byte)(round(color.b()*255));
-	    bytes[4*(x + y * width) + 1] = (byte)(round(color.g()*255));
-	    bytes[4*(x + y * width) + 2] = (byte)(round(color.r()*255));
-	    bytes[4*(x + y * width) + 3] = (byte)(round(color.a()*255));
+	    bytes[4*(x + y * width) + 0] = (byte)(floor(color.b()*255 + 0.5));
+	    bytes[4*(x + y * width) + 1] = (byte)(floor(color.g()*255 + 0.5));
+	    bytes[4*(x + y * width) + 2] = (byte)(floor(color.r()*255 + 0.5));
+	    bytes[4*(x + y * width) + 3] = (byte)(floor(color.a()*255 + 0.5));
 	}
     }
     FILE* outfile = fopen(filename.c_str(),"wb");

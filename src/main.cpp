@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
-//#include <unistd.h>
+#include <unistd.h>
 
 #include "stats.h"
 #include "exception.h"

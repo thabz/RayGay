@@ -4,6 +4,7 @@
 
 class Image;
 #include <string>
+#include <cstdio>
 
 /**
  * Image loaders must implement this interface.

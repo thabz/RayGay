@@ -7,6 +7,7 @@
 
 #include "ray.h"
 #include "intersection.h"
+#include "math/constants.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
 #include "image/rgb.h"
@@ -17,8 +18,8 @@ BoundingBox::BoundingBox() {
 }
 
 BoundingBox::BoundingBox(const Vector c1, const Vector c2) {
-    _c1 = Vector(min(c1[0],c2[0]),min(c1[1],c2[1]),min(c1[2],c2[2]));
-    _c2 = Vector(max(c1[0],c2[0]),max(c1[1],c2[1]),max(c1[2],c2[2]));
+    _c1 = Vector(MIN(c1[0],c2[0]),MIN(c1[1],c2[1]),MIN(c1[2],c2[2]));
+    _c2 = Vector(MAX(c1[0],c2[0]),MAX(c1[1],c2[1]),MAX(c1[2],c2[2]));
     corners = NULL;
 }
 
@@ -215,23 +216,23 @@ Vector* BoundingBox::getCorners() const {
 }
 
 BoundingBox BoundingBox::doUnion(const BoundingBox& b1, const BoundingBox& b2) {
-    Vector mini = Vector(min(b1._c1[0],b2._c1[0]),
-	                 min(b1._c1[1],b2._c1[1]),
-			 min(b1._c1[2],b2._c1[2]));
-    Vector maxi = Vector(max(b1._c2[0],b2._c2[0]),
-	                 max(b1._c2[1],b2._c2[1]),
-			 max(b1._c2[2],b2._c2[2]));
+    Vector mini = Vector(MIN(b1._c1[0],b2._c1[0]),
+	                 MIN(b1._c1[1],b2._c1[1]),
+			 MIN(b1._c1[2],b2._c1[2]));
+    Vector maxi = Vector(MAX(b1._c2[0],b2._c2[0]),
+	                 MAX(b1._c2[1],b2._c2[1]),
+			 MAX(b1._c2[2],b2._c2[2]));
     return BoundingBox(mini,maxi);
 }
 
 // This should return NULL is they don't intersect...!
 BoundingBox BoundingBox::doIntersection(const BoundingBox& b1, const BoundingBox& b2) {
-    Vector mini = Vector(max(b1._c1[0],b2._c1[0]),
-	                 max(b1._c1[1],b2._c1[1]),
-			 max(b1._c1[2],b2._c1[2]));
-    Vector maxi = Vector(min(b1._c2[0],b2._c2[0]),
-	                 min(b1._c2[1],b2._c2[1]),
-			 min(b1._c2[2],b2._c2[2]));
+    Vector mini = Vector(MAX(b1._c1[0],b2._c1[0]),
+	                 MAX(b1._c1[1],b2._c1[1]),
+			 MAX(b1._c1[2],b2._c1[2]));
+    Vector maxi = Vector(MIN(b1._c2[0],b2._c2[0]),
+	                 MIN(b1._c2[1],b2._c2[1]),
+			 MIN(b1._c2[2],b2._c2[2]));
     return BoundingBox(mini,maxi);
 }
 
@@ -240,8 +241,8 @@ BoundingBox BoundingBox::enclosure(Vector* points, int num) {
     Vector maxi = Vector(-HUGE_DOUBLE,-HUGE_DOUBLE,-HUGE_DOUBLE);
     for(int i = 0; i < num; i++) {
 	for (int j = 0; j < 3; j++) {
-	    mini[j] = min(mini[j],points[i][j]);
-	    maxi[j] = max(maxi[j],points[i][j]);
+	    mini[j] = MIN(mini[j],points[i][j]);
+	    maxi[j] = MAX(maxi[j],points[i][j]);
 	}
     }
     return BoundingBox(mini,maxi);
