@@ -41,14 +41,9 @@ CXXFLAGS="-g -O3 -Wall -ffast-math"
 case $target in
      pentium3) CXXFLAGS="$CXXFLAGS -malign-double -march=pentium3 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing";;
      pentium4) CXXFLAGS="$CXXFLAGS -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing -msse2";;
+     g4) CXXFLAGS="$CXXFLAGS -malign-double -fomit-frame-pointer -ftracer -mno-ieee-fp -fstrict-aliasing";;
      profile) CXXFLAGS="$CXXFLAGS -pg -malign-double -march=pentium3 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing"; LDFLAGS="-pg";
 esac
-
-
-#CXXFLAGS="-g -O3 -Wall -ffast-math -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing"
-#CXXFLAGS="-g -O3 -Wall -march=i686 -ffast-math"
-#CXXFLAGS="$CXXFLAGS -O3 -Wall -march=i686 -ffast-math"
-#CXXFLAGS="$CPPFLAGS -O4 -Wall -march=i686 -msse -mfpmath=sse"
 
 AC_OUTPUT(Makefile \
 	  src/Makefile \
