@@ -479,6 +479,38 @@ class ObjectGroupNode : public SceneObjectNode {
 	ActionListNode* actions;
 };
 
+class BlobNode : public SceneObjectNode {
+
+    public:
+	BlobNode(FloatNode* iso, FloatNode* weight, FloatNode* steps, FloatNode* accuracy, ObjectGroupNode* spheres, MaterialNode* mat) {
+	    this->iso = iso;
+	    this->weight = weight;
+	    this->steps = steps;
+	    this->accuracy = accuracy;
+	    this->spheres = spheres;
+	    this->material = mat;
+	}
+
+	virtual ~BlobNode() {
+	    delete steps;
+	    delete accuracy;
+	    delete iso;
+	    delete weight;
+	    delete spheres;
+	    delete material;
+	}
+	
+	SceneObject* eval();
+
+    private:
+	FloatNode* steps;
+	FloatNode* accuracy;
+	FloatNode* iso;
+	FloatNode* weight;
+	ObjectGroupNode* spheres;
+	MaterialNode* material;
+};
+
 class UnionNode : public SceneObjectNode {
 
     public:

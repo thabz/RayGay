@@ -102,6 +102,7 @@ ActionListNode* top_actions;
 %token tBACKGROUND
 %token tBICUBIC
 %token tBILINEAR
+%token tBLOB
 %token tBOX
 %token tCAMERA
 %token tCONE
@@ -173,7 +174,7 @@ ActionListNode* top_actions;
 %type <matrix> Rotate Translate Scale Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
-%type <object> ObjectGroup Ellipsoid Mesh Cone SuperEllipsoid
+%type <object> ObjectGroup Ellipsoid Mesh Cone SuperEllipsoid Blob
 %type <object> NamedObject 
 %type <material> MaterialDef NamedMaterial Material
 %type <light> LightDef Lightsource 
@@ -626,6 +627,7 @@ Object		: SolidObject
 		| ObjectGroup
 		| NamedObject
 		| SuperEllipsoid
+		| Blob
 		| Object Transformations
                 {
 		    $$ = new TransformedSceneObjectNode($1,$2);
@@ -681,6 +683,13 @@ SolidObject	: Sphere
 ObjectGroup	: tGROUP '{' ActionList '}'
                 {
 		    $$ = new ObjectGroupNode($3);
+		}
+                ;
+
+Blob		: tBLOB '{' Material Expr Expr Expr Expr ObjectGroup '}'
+                {
+		    ObjectGroupNode* n = dynamic_cast<ObjectGroupNode*>($8);
+		    $$ = new BlobNode($4,$5,$6,$7,n,$3);
 		}
                 ;
 

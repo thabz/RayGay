@@ -23,6 +23,8 @@ class ObjectGroup : public SceneObject {
 	/// Add an object to this group
 	virtual void addObject(SceneObject* obj);
 
+	std::vector<SceneObject*> getObjects() const;
+
     protected:
 
     private:

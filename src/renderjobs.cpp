@@ -95,7 +95,7 @@ void RenderJobPool::markJobDone(RenderJob* job) {
 	    job->importance = variance;
 	    job->type = RenderJob::NEED_FULL_RENDER;
 	    jobs.push_back(job);
-	} else if (job->area()<= 16*16) {
+	} else if (job->area()<= 32*32) {
 	    job->importance = variance * job->area();
 	    job->type = RenderJob::NEED_FULL_RENDER;
 	    jobs.push_back(job);

@@ -55,3 +55,8 @@ SceneObject* ObjectGroup::clone() const {
     return result;
 }
 
+
+std::vector<SceneObject*> ObjectGroup::getObjects() const {
+    vector<SceneObject*> result = objects;
+    return objects;
+}

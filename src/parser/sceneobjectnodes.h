@@ -341,6 +341,7 @@ class SolidBoxNode : public SceneObjectNode {
 
 };
 
+
 class BoxNode : public SceneObjectNode {
 
     public:
@@ -556,5 +557,8 @@ class NamedSceneObjectNode : public SceneObjectNode {
     private:
 	string name;
 };
+
+class ObjectGroupNode;
+
 
 #endif

@@ -26,6 +26,9 @@ class Sphere : public Solid {
         /// Returns center of sphere
 	const Vector& getCenter() const; 
 
+	/// Returns radius of sphere
+	double getRadius() const;
+
 	virtual void transform(const Matrix& m);
 
 	virtual BoundingBox boundingBoundingBox() const;

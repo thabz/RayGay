@@ -30,6 +30,11 @@ void Sphere::transform(const Matrix& m) {
 const Vector& Sphere::getCenter() const {
     return center;
 }
+
+double Sphere::getRadius() const {
+    return radius;
+}
+
 Intersection Sphere::_fullIntersect(const Ray& ray, const double t) const {
     Vector p = ray.getPoint(t);
     Vector n = p - center;
