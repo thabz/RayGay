@@ -4,6 +4,9 @@
 
 #include "objects/mesh.h"
 
+/**
+ * A heightfield.
+ */
 class HeightField : public Mesh {
 
     public:
