@@ -42,6 +42,7 @@ BoundingBox Cylinder::boundingBoundingBox() const {
     Vector mini = Vector(-r,-r,0);
     Vector maxi = Vector(r,r,height);
     BoundingBox bbox = BoundingBox(mini,maxi);
+    bbox.grow(5*EPSILON);
     return bboxToWorld(bbox);
 }
 
@@ -94,7 +95,7 @@ Vector Cylinder::getNormal(const Vector& local_point) const {
  * Afterwards we must check that Ray(t) where t is a root
  * are within the z-axis interval that defines the lenght of the cylinder.
  */
-unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[4]) const {
+unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
     unsigned int roots_found = 0;
 
     Ray local_ray = rayToObject(world_ray);
