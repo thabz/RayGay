@@ -49,7 +49,7 @@ using namespace std;
 
 #define red Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30)
 #define green Material(RGB(0.2,1.0,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30)
-#define blue Material(RGB(0.0,0.2,1.0),0.75,RGB(1.0,1.0,1.0),0.20,10)
+#define blue Material(RGB(0.0,0.2,1.0),0.80,RGB(1.0,1.0,1.0),0.20,10)
 #define chrome Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)
 
 void testScene4() {
@@ -80,30 +80,15 @@ void testScene4() {
     }
 
     Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
-    Spiral spiral = Spiral(&circle1,150,5);
-    Necklace* lace = new Necklace(spiral,50,30.0,chrome);
-    //scene.addObject(lace);
+    Spiral spiral = Spiral(&circle1,100,10);
+    Spiral spiral2 = Spiral(&spiral,30,100,0.5);
 
-    Spiral spiral2 = Spiral(&spiral,30,100);
-    Necklace* smalllace = new Necklace(spiral2,3000,5.0,red);
-    //scene.addObject(smalllace);
+    Cylinder* torus = new Cylinder(circle1,100,30,20,blue);
+    scene.addObject(torus);
 
-    spiral2 = Spiral(&spiral,30,100,0.5);
-    smalllace = new Necklace(spiral2,3000,5.0,blue);
-    //scene.addObject(smalllace);
-
-    Cylinder* tube = new Cylinder(spiral,25,16,200,red);
-    scene.addObject(tube); // TODO: Denne skal renderes engang
+    //Cylinder* tube = new Cylinder(spiral,10,16,200,chrome);
+   // scene.addObject(tube); 
     
-    Cylinder* torus = new Cylinder(circle1,100,16,10,red);
-    //scene.addObject(torus);
-
-    Cylinder* c1 = new Cylinder(Vector(-200,50,0),Vector(200,50,0),130,10,red);
-    //scene.addObject(c1);
-   /*
-    Cylinder cyl = Cylinder(Vector(-200,-50,200),Vector(-200,50,200),100.0,6,blue);
-    scene.addObject(&cyl);
-    */
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));
     Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
@@ -115,8 +100,8 @@ void testScene4() {
     scene.addLight(&light1);
     scene.addLight(&light3);
     
-    Box b = Box(Vector(-400,-200,-400),Vector(400,-150,400),green); /* Floor */
-    scene.addObject(&b);
+    //Box b = Box(Vector(-400,-200,-400),Vector(400,-150,400),green); /* Floor */
+ //   scene.addObject(&b);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
@@ -137,7 +122,7 @@ void testScene4() {
     raytracer.render(&scene,img,space);
     
     printf("Rendering took %ld seconds.\n",time(NULL) - beginTime);
-    img->save("out.png");
+    img->save("out.tga");
     delete img;
 }
 
