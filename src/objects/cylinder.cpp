@@ -14,7 +14,7 @@
  * @param radius The radius of the cylinder
  * @param m Material
  */
-Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, const Material* m) : BooleanOperand(m) {
+Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, const Material* m) : Solid (m) {
 
     this->begin = begin;
     this->end = end;
@@ -25,51 +25,21 @@ Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, const 
     this->height = endt.length();
 
     Matrix translation = Matrix::matrixTranslate(begin);
-    rotation = Matrix::matrixOrient(endt);
+    Matrix rotation = Matrix::matrixOrient(endt);
     rotation = rotation.inverse();
-    
-    transformation =  rotation * translation;
-    prepareMatrices();
-}
 
-void Cylinder::prepareMatrices() {
-    inverse_transformation = transformation.inverse();
-    rotation = transformation.extractRotation();
-    inverse_rotation = rotation.inverse();
+    transform(rotation * translation);
 }
 
 void Cylinder::transform(const Matrix& m) {
-    transformation = transformation * m;
-    scene_transformation = scene_transformation * m;
-    prepareMatrices();
-}
-
-Vector Cylinder::normal(const Intersection & i) const {
-    Vector p = inverse_transformation * i.getPoint();
-    p[2] = 0;
-    p.normalize();
-    p = rotation * p;
-    return p;
-}
-
-/**
- * Returns whether \f$\sqrt{x^2 +y^2} = r \f$ or is on end discs
- */
-bool Cylinder::onEdge(const Vector &point) const {
-   Vector p = inverse_transformation * point;
-   return (IS_EQUAL(p[0]*p[0] + p[1]*p[1], rr)
-              && p[2] < height 
-   	      && p[2] > double(0)) /* On stem */
-         || (p[0]*p[0] + p[1]*p[1] < rr
-	      && (IS_EQUAL(p[2],height) 
-		  || IS_EQUAL(p[2],double(0)))); /* On end discs */
+    Transformer::transform(m);
 }
 
 /**
  * Returns whether \f$\sqrt{x^2 +y^2} < r \f$ where point = \f$(x,y,z)\f$
  */
 bool Cylinder::inside(const Vector &point) const {
-   Vector p = inverse_transformation * point;
+   Vector p = pointToObject(point);
    return    p[0]*p[0] + p[1]*p[1] < rr 
           && p[2] < height 
 	  && p[2] > double(0);
@@ -81,9 +51,10 @@ bool Cylinder::inside(const Vector &point) const {
 
 BoundingBox Cylinder::boundingBoundingBox() const {
     Vector rv = Vector(r,r,r);
-    Vector real_begin = scene_transformation * begin;
-    Vector real_end = scene_transformation * end;
-    return BoundingBox(real_begin-rv,real_end+rv);
+    Vector real_begin = begin;
+    Vector real_end = end;
+    BoundingBox bbox = BoundingBox(real_begin - rv,real_end + rv);
+    return bboxToWorld(bbox);
 }
 
 double Cylinder::_fastIntersect(const Ray& ray) const {
@@ -116,10 +87,11 @@ Intersection Cylinder::_fullIntersect(const Ray& ray, const double t) const {
  * Afterwards we must check that Ray(t) where t is a root
  * are within the z-axis interval that defines the lenght of the cylinder.
  */
-Intersection Cylinder::_intersect(const Ray& ray) const {
+Intersection Cylinder::_intersect(const Ray& world_ray) const {
+    Ray ray = rayToObject(world_ray);
 
-    Vector Rd = inverse_rotation * ray.getDirection();
-    Vector Ro = inverse_transformation * ray.getOrigin();
+    Vector Rd = ray.getDirection();
+    Vector Ro = ray.getOrigin();
 
     double a = Rd[0]*Rd[0] + Rd[1]*Rd[1];
     double b = 2 * (Ro[0]*Rd[0] + Ro[1]*Rd[1]);
@@ -135,8 +107,9 @@ Intersection Cylinder::_intersect(const Ray& ray) const {
 	double result_t = t;
 	if (!IS_ZERO(t) && result_p[2] >= double(0) && result_p[2] <= height) {
 	    Vector normal = Vector(result_p[0],result_p[1],0);
-	    result_p = transformation * result_p;
-	    return Intersection(result_p,result_t,normal,Vector2(0,0));
+	    normal.normalize();
+	    Intersection res = Intersection(result_p,result_t,normal,Vector2(0,0));
+	    return intersectionToWorld(res);
 	} else {
 	    return Intersection();
 	}
@@ -151,18 +124,18 @@ Intersection Cylinder::_intersect(const Ray& ray) const {
 	Vector ip2 =  Ro + t2 * Rd;
 	if (ip1[2] >= double(0) && ip1[2] <= height) {
 	    Vector normal = Vector(ip1[0],ip1[1],0);
-	    ip1 = transformation * ip1;
+	    normal.normalize();
 	    i1 = Intersection(ip1,t1,normal,Vector2(0,0));
 	}
 	if (ip2[2] >= double(0) && ip2[2] <= height) {
 	    Vector normal = Vector(ip2[0],ip2[1],0);
-	    ip2 = transformation * ip2;
-	    i2 = Intersection(transformation * ip2,t2,normal,Vector2(0,0));
+	    normal.normalize();
+	    i2 = Intersection(ip2,t2,normal,Vector2(0,0));
 	}
 	if (t1 > 0 && t1 < t2 && !IS_ZERO(t1) && i1.isIntersected()) {
-	    return i1;
+	    return intersectionToWorld(i1);
 	} else if (t2 > 0 && !IS_ZERO(t2) && i2.isIntersected()) {
-	    return i2;
+	    return intersectionToWorld(i2);
 	} else {
 	    return Intersection();
 	}
@@ -172,3 +145,9 @@ Intersection Cylinder::_intersect(const Ray& ray) const {
 SceneObject* Cylinder::clone() const {
     return new Cylinder(*this);
 }
+
+vector<Intersection> Cylinder::allIntersections(const Ray& ray) const {
+    vector<Intersection> result;
+    return result;
+}
+

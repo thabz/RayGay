@@ -433,9 +433,9 @@ void cylinder_test() {
     assert(cyl->inside(Vector(0,0,9)));
     assert(!cyl->inside(Vector(0,0,10)));
     
-    assert(cyl->onEdge(Vector(0,0,10)));
-    assert(cyl->onEdge(Vector(10,0,5)));
-    assert(cyl->onEdge(Vector(-10,0,5)));
+    //assert(cyl->onEdge(Vector(0,0,10)));
+    //assert(cyl->onEdge(Vector(10,0,5)));
+    //assert(cyl->onEdge(Vector(-10,0,5)));
     assert(!cyl->inside(Vector(10,0,5)));
     assert(!cyl->inside(Vector(0,0,11)));
     assert(!cyl->inside(Vector(1,0,-1)));
@@ -444,9 +444,11 @@ void cylinder_test() {
     
     assert(intersects(cyl,Vector(0,-1000,5),Vector(0,1,0)));
     assert(iPoint(cyl,Vector(0,-1000,5),Vector(0,1,0)) == Vector(0,-10,5));
+    assert(iNormal(cyl,Vector(0,-1000,5),Vector(0,1,0)) == Vector(0,-1,0));
 
     assert(intersects(cyl,Vector(0,1000,5),Vector(0,-1,0)));
     assert(iPoint(cyl,Vector(0,1000,5),Vector(0,-1,0)) == Vector(0,10,5));
+    assert(iNormal(cyl,Vector(0,1000,5),Vector(0,-1,0)) == Vector(0,1,0));
 
     delete cyl;
 
@@ -460,14 +462,14 @@ void cylinder_test() {
     assert(!cyl->inside(Vector(0,0,11)));
     assert(!cyl->inside(Vector(0,0,2)));
     
-    assert(cyl->onEdge(Vector(0,0,2)));
-    assert(cyl->onEdge(Vector(0,0,10)));
-    assert(cyl->onEdge(Vector(10,0,5)));
-    assert(cyl->onEdge(Vector(-10,0,5)));
+    //assert(cyl->onEdge(Vector(0,0,2)));
+    //assert(cyl->onEdge(Vector(0,0,10)));
+    //assert(cyl->onEdge(Vector(10,0,5)));
+    //assert(cyl->onEdge(Vector(-10,0,5)));
     assert(!cyl->inside(Vector(10,0,5)));
     assert(!cyl->inside(Vector(0,0,11)));
     assert(!cyl->inside(Vector(0,0,1)));
-    assert(!cyl->onEdge(Vector(0,0,1)));
+    //assert(!cyl->onEdge(Vector(0,0,1)));
     delete cyl;
     
     // Test an x-axis aligned cylinder
@@ -476,16 +478,22 @@ void cylinder_test() {
     assert(cyl->inside(Vector(9,0,0)));
     assert(!cyl->inside(Vector(0,0,0)));
     assert(!cyl->inside(Vector(-1,0,0)));
-    assert(cyl->onEdge(Vector(2,0,0)));
-    assert(cyl->onEdge(Vector(10,0,0)));
-    assert(cyl->onEdge(Vector(5,10,0)));
-    assert(cyl->onEdge(Vector(5,-10,0)));
+    //assert(cyl->onEdge(Vector(2,0,0)));
+    //assert(cyl->onEdge(Vector(10,0,0)));
+    //assert(cyl->onEdge(Vector(5,10,0)));
+    //assert(cyl->onEdge(Vector(5,-10,0)));
     assert(intersects(cyl,Vector(3,0,1000),Vector(0,0,-1)));
+    assert(iPoint(cyl,Vector(3,0,1000),Vector(0,0,-1)) == Vector(3,0,10));
+    assert(iNormal(cyl,Vector(3,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    
     delete cyl;
     
     // Test an y-axis aligned cylinder
     cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
     assert(cyl->inside(Vector(0,5,0)));
+    assert(intersects(cyl,Vector(0,3,1000),Vector(0,0,-1)));
+    assert(iPoint(cyl,Vector(0,3,1000),Vector(0,0,-1)) == Vector(0,3,10));
+    assert(iNormal(cyl,Vector(0,3,1000),Vector(0,0,-1)) == Vector(0,0,1));
     delete cyl;
 
     cyl = new Cylinder(Vector(1,1,1),Vector(10,10,10),10,m);
@@ -493,9 +501,9 @@ void cylinder_test() {
     assert(cyl->inside(Vector(5,5,5)));
     assert(cyl->inside(Vector(7,7,7)));
     assert(cyl->inside(Vector(9,9,9)));
-    assert(!cyl->onEdge(Vector(2,2,2)));
-    assert(cyl->onEdge(Vector(1,1,1)));
-    assert(cyl->onEdge(Vector(10,10,10)));
+    //assert(!cyl->onEdge(Vector(2,2,2)));
+    //assert(cyl->onEdge(Vector(1,1,1)));
+    //assert(cyl->onEdge(Vector(10,10,10)));
 
 }
 
