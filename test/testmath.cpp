@@ -834,8 +834,13 @@ class sturm_sequence_test : public Test  {
     public:
 	void run() {
 	    // See http://aida.homelinux.net/wordpress/wp-content/522_ma/ma522_01.html
+	    // (x-2)(x-4)(x-1)(x-1)
 	    SturmSequence seq = SturmSequence(Polynomial(1,-8,21,-22,8));
 	    assertTrue(seq.rootCount(0,3) == 2);
+	    assertTrue(seq.rootCount(-1,0.5) == 0);
+	    assertTrue(seq.rootCount(3,5) == 1);
+	    assertTrue(seq.rootCount(1.5,3) == 1);
+	    assertTrue(seq.rootCount(0.5,1.5) == 1);
 
 	    double c[] =  {1,-3,-10,34,0,-40};
 	    seq = SturmSequence(Polynomial(c,6));

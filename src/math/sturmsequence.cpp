@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include "math/sturmsequence.h"
 
 SturmSequence::SturmSequence(const Polynomial& polynomial) {
@@ -11,6 +12,7 @@ SturmSequence::SturmSequence(const Polynomial& polynomial) {
 	do {
 	    f[n-2].division(f[n-1],remainder);
 	    remainder = remainder * -1;
+	    std::cout << remainder << std::endl;
 	    f.push_back(remainder);
 	    n++;
 	} while (!(remainder == pol0));
@@ -27,11 +29,13 @@ void SturmSequence::eval(double x, double* dest) const {
 
 #define sign(x) ((x >= 0) ? 1 : -1)
 
-uint SturmSequence::signChanges(double x) const {
-    uint result = 0;
-    uint num = f.size();
-    double* values = (double*) alloca(sizeof(double) * num);
+int SturmSequence::signChanges(double x) const {
+    uint num = f.size() - 1; // Ignore last polynomial that is constant 0.
+
+    double values[num];
     eval(x,values);
+
+    uint result = 0;
     int cur_sign = sign(values[0]);
     for(uint i = 1; i < num; i++) {
 	if (sign(values[i]) != cur_sign) {
@@ -47,8 +51,6 @@ uint SturmSequence::signChanges(double x) const {
  * a and b must not be roots of the polynomial.
  */
 uint SturmSequence::rootCount(double a, double b) const {
-    uint changes_a = signChanges(a);
-    uint changes_b = signChanges(b);
-    return changes_a - changes_b;
+    return abs(signChanges(b) - signChanges(a));
 }
 
