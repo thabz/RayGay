@@ -24,7 +24,7 @@ void* threadDo(void* input) {
     threadargs* myarg = static_cast<threadargs*> (input);
     int a = myarg->a;
     int b = myarg->b;
-    cout << a << b << endl;
+    cout << a << "," << b << endl;
     return NULL;
 }
 
