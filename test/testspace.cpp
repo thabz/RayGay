@@ -96,6 +96,31 @@ void boundingbox_test() {
     assert(b.cutByPlane(0,0) == 0);
     assert(b.cutByPlane(1,0.5) == 0);
     assert(b.cutByPlane(2,-0.5) == 0);
+
+    /* Test center */
+    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+    assert(b.center() == Vector(0,0,0));
+    b = BoundingBox(Vector(0,0,0),Vector(2,2,2));
+    assert(b.center() == Vector(1,1,1));
+    b = BoundingBox(Vector(0,0,0),Vector(4,2,2));
+    assert(b.center() == Vector(2,1,1));
+    b = BoundingBox(Vector(10,10,10),Vector(20,20,20));
+    assert(b.center() == Vector(15,15,15));
+
+    /* Test intersectSphere */
+    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+    assert(b.intersectSphere(Vector(0,0,0),10*10));
+    assert(b.intersectSphere(Vector(0,0,0),2*2));
+    assert(b.intersectSphere(Vector(0,0,0),0.5*0.5));
+    assert(b.intersectSphere(Vector(-2,0,0),2*2));
+    assert(!b.intersectSphere(Vector(0,4,0),2*2));
+    assert(b.intersectSphere(Vector(2,0,0),1*1));
+    assert(b.intersectSphere(Vector(2,0,0),10*10));
+    assert(b.intersectSphere(Vector(2,0,-5),10*10));
+    assert(b.intersectSphere(Vector(2,0,0),2*2));
+    assert(!b.intersectSphere(Vector(2,0,0),0.5*0.5));
+    assert(!b.intersectSphere(Vector(0,0,-2),0.5*0.5));
+
 }
 
 void bsp_test() {
@@ -183,7 +208,6 @@ void kdtree_test() {
     bsp.addObject(new Sphere(Vector(0,-500,0),10,Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)));
 
     bsp.prepare();
-    cout << "Doing well" << endl;
 
     // Test intersection
     Ray r = Ray(Vector(200,250,1000),Vector(0,0,-1),1);
@@ -239,7 +263,6 @@ void kdtree_test() {
     assert(bsp.intersect(r) == false);
 
     assert(bsp.intersectForShadow(r,(const Object*)NULL,HUGE_DOUBLE) == false);
-    cout << "Doing well" << endl;
 }
 
 int main(int argc, char *argv[]) {

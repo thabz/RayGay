@@ -158,22 +158,22 @@ void catmullromspline_test() {
     CatmullRomSpline* spline = new CatmullRomSpline(p,num);
     
     // A Catmull-Rom spline passes through all but first and last control points
-    cout << "f(0) = " << spline->getPoint(0) << endl;
+    //cout << "f(0) = " << spline->getPoint(0) << endl;
     assert(spline->getPoint(0) == p[1]);
-    cout << "f(0.5) = " << spline->getPoint(0.5) << endl;
+    //cout << "f(0.5) = " << spline->getPoint(0.5) << endl;
     assert(spline->getPoint(0.5) == p[2]);
-    cout << "f(1) = " << spline->getPoint(1) << endl;
+    //cout << "f(1) = " << spline->getPoint(1) << endl;
     assert(spline->getPoint(1) == p[3]);
 
     // The curve is tangent to p[2]-p[0] and p[n]-p[n-2] at the endpoints
     Vector t1 = spline->getTangent(0);
-    cout << "f'(0) = " << spline->getTangent(0) << endl;
+    //cout << "f'(0) = " << spline->getTangent(0) << endl;
     t1.normalize();
     Vector t2 = p[2]-p[0];
     t2.normalize();
     assert(t1 == t2);
 
-    cout << "f'(1) = " << spline->getTangent(1) << endl;
+    //cout << "f'(1) = " << spline->getTangent(1) << endl;
     t1 = spline->getTangent(1);
     t1.normalize();
     t2 = p[num-1]-p[2];
