@@ -43,6 +43,7 @@ double Math::bernsteinPolynomial(unsigned int i, unsigned int n, double t) {
  * @param A, B, C, D real coefficients of the equation above.
  * @param roots an array of four doubles where the roots are stored
  * @return the number of real roots
+ * @see http://mathforum.com/dr.math/faq/faq.cubic.equations.html for an alternative method.
  */
 int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
     double a = -B;
