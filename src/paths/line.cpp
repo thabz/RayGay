@@ -44,6 +44,7 @@ Vector Line::getDirection() const {
 
 Vector Line::intersection(const Line& line) const {
     // TODO: Implement
+    return Vector(0,0,0);
 }
 
 bool Line::operator==(const Line &other) const {
