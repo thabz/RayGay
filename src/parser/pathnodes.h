@@ -9,6 +9,7 @@
 #include "paths/circle.h"
 #include "paths/spiral.h"
 #include "paths/linesegment.h"
+#include "paths/catmullromspline.h"
 
 class PathNode : public SyntaxNode {
 
@@ -95,6 +96,20 @@ class NamedPathNode : public PathNode {
 	string name;
 };
 
+class CatmullRomSplineNode : public PathNode {
+    public:
+	CatmullRomSplineNode(VectorListNode* vectors) {
+	    this->vectors = vectors;
+	}
+
+	Path* eval() {
+	    vector<Vector> ctrl_points = vectors->eval();
+	    return new CatmullRomSpline(ctrl_points);
+	}
+
+    private:
+	VectorListNode* vectors;
+};
 
 
 #endif

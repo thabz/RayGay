@@ -78,6 +78,7 @@ ActionListNode* top_actions;
 	TransformationNode* matrix;
 	FloatNode* expr;
 	PathNode* path;
+	VectorListNode* vectorlist;
 	BoolNode* boolean;
 	string* c;
 	Texture::InterpolationType it;
@@ -99,7 +100,7 @@ ActionListNode* top_actions;
 %token tFOV
 %token tGROUP
 %token tIMAGE tWIDTH tHEIGHT tASPECT
-%token tLINESEGMENT tSPIRAL tCIRCLE
+%token tLINESEGMENT tSPIRAL tCIRCLE tCATMULLROMSPLINE
 %token tKD tKS tKT tSPECPOW tGLOSS
 %token tLIGHT tAREA tSPOT tPOINT tSKY tPOWER
 %token tMATERIAL
@@ -142,6 +143,7 @@ ActionListNode* top_actions;
 %type <rgba> RGBA
 %type <texture> Texture
 %type <vector> Vector 
+%type <vectorlist> VectorList
 %type <boolean> Bool 
 %type <expr> Expr Random
 %type <it> InterpolationType 
@@ -153,7 +155,7 @@ ActionListNode* top_actions;
 %type <material> MaterialDef NamedMaterial Material
 %type <light> LightDef Lightsource 
 %type <light> Arealight Spotlight Pointlight Skylight
-%type <path> NamedPath Circle Spiral Path PathDef LineSegment
+%type <path> NamedPath Circle Spiral Path PathDef LineSegment CatmullRomSpline
 %type <camera> Camera
 %type <action> MainAddAction MainAction Assignment Renderer ConfAction
 %type <action> RepeatStmt IfStmt WhileStmt Action
@@ -662,8 +664,15 @@ NamedPath	: tSTRING
 
 PathDef		: Circle
                 | Spiral
+		| CatmullRomSpline
 		| LineSegment
 		;
+
+CatmullRomSpline : tCATMULLROMSPLINE '{' VectorList '}'
+                {
+		    $$ = new CatmullRomSplineNode($3);
+		}
+                ;
 
 LineSegment	: tLINESEGMENT '{' Vector Vector '}'
                 {
@@ -714,6 +723,20 @@ Vector		: '<' Expr ',' Expr ',' Expr '>'
 		    $$ = new VectorNode($2,$4,$6); 
 		}
                 ;
+
+VectorList	: Vector
+                {
+		    VectorListNode* list = new VectorListNode();
+		    list->add($1);
+		    $$ = list;
+
+		}
+                | VectorList Vector
+                {
+		    $1->add($2);
+		    $$ = $1;
+		}
+		;
 
 RGB		: '<' Expr ',' Expr ',' Expr '>' 
                 { 
