@@ -134,11 +134,12 @@ ActionListNode* top_actions;
 %token tFINALGATHERRAYS
 %token tCACHETOLERANCE 
 %token tCACHETOLERANCE 
-
+%token tEQUAL
+%token tPLUSEQUAL tMINUSEQUAL tMULTEQUAL tDIVEQUAL
 
 %token tIF tWHILE tDO
 %token tFALSE tTRUE
-%token tBOOL_OR tBOOL_NOT tBOOL_AND tEQUALS
+%token tBOOL_OR tBOOL_NOT tBOOL_AND tEQUALEQUAL
 
 //%type <c> QuotedString
 %type <rgb> RGB
@@ -160,7 +161,7 @@ ActionListNode* top_actions;
 %type <path> NamedPath Circle Spiral Path PathDef LineSegment CatmullRomSpline
 %type <camera> Camera
 %type <action> MainAddAction MainAction Assignment Renderer ConfAction
-%type <action> RepeatStmt IfStmt WhileStmt Action
+%type <action> RepeatStmt IfStmt WhileStmt Action OpAssignment
 %type <action> AddCamera AddObject AddLight Background Photonmap Print Image
 %type <actionlist> ActionList
 
@@ -189,6 +190,7 @@ MainAction	: Action
 Action		: AddObject
                 | AddLight
                 | Assignment
+                | OpAssignment
 		| RepeatStmt
 		| Print
 		| WhileStmt
@@ -234,26 +236,44 @@ AddLight	: LightDef
 		}
                 ;
 
-Assignment	: tVARNAME '=' PathDef
+Assignment	: tVARNAME tEQUAL PathDef
                 {
 		    $$ = new AssignPathNode(*$1,$3);
 		}
-                | tVARNAME '=' Expr
+                | tVARNAME tEQUAL Expr
                 {
 		    $$ = new AssignFloatNode(*$1,$3);
                 }
-                | tVARNAME '=' Vector
+                | tVARNAME tEQUAL Vector
                 {
 		    $$ = new AssignVectorNode(*$1,$3);
                 }
-                | tVARNAME '=' MaterialDef 
+                | tVARNAME tEQUAL MaterialDef 
                 {
 		    $$ = new AssignMaterialNode(*$1,$3);
                 }
-                | tVARNAME '=' Object
+                | tVARNAME tEQUAL Object
                 {
 		    $$ = new AssignSceneObjectNode(*$1,$3);
                 }
+                ;
+
+OpAssignment	: tVARNAME tPLUSEQUAL Expr
+                {
+		    $$ = new FloatOpEqualsNode(*$1,'+',$3);
+		}
+                | tVARNAME tMINUSEQUAL Expr
+                {
+		    $$ = new FloatOpEqualsNode(*$1,'-',$3);
+		}
+                | tVARNAME tMULTEQUAL Expr
+                {
+		    $$ = new FloatOpEqualsNode(*$1,'*',$3);
+		}
+                | tVARNAME tDIVEQUAL Expr
+                {
+		    $$ = new FloatOpEqualsNode(*$1,'/',$3);
+		}
                 ;
 
 Renderer	: tRENDERER tRAYTRACER
@@ -889,7 +909,7 @@ Bool		: Expr '<' Expr
 		{
 		    $$ = new BoolGreaterThanFNode($1,$3);
 		}
-		| Expr tEQUALS Expr
+		| Expr tEQUALEQUAL Expr
 		{
 		    $$ = new BoolEqualsFNode($1,$3);
 		}

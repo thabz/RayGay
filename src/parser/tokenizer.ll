@@ -124,7 +124,12 @@ wireframe	return tWIREFRAME;
 "||"		return tBOOL_OR;
 "&&"		return tBOOL_AND;
 "!"		return tBOOL_NOT;
-"=="		return tEQUALS;
+"=="		return tEQUALEQUAL;
+"="		return tEQUAL;
+"+="		return tPLUSEQUAL;
+"-="		return tMINUSEQUAL;
+"*="		return tMULTEQUAL;
+"/="		return tDIVEQUAL;
 
 {digit}+ |
 {digit}+"."{digit}+ { yylval.d = atof(yytext); return tFLOAT;}

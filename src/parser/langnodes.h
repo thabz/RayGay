@@ -135,6 +135,40 @@ class AssignSceneObjectNode : public ActionNode {
 };
 
 
+class FloatOpEqualsNode : public ActionNode {
+    public:
+	FloatOpEqualsNode(string name, char op, FloatNode* node) {
+	    this->name = name;
+	    this->op = op;
+	    this->node = node;
+	}
+
+	virtual ~FloatOpEqualsNode() {
+	    delete node;
+	}
+
+	void eval() {
+	    double val = node->eval();
+	    double result = Assignments::getUniqueInstance()->getNamedFloat(name);
+	    switch(op) {
+		case '+': result += val;
+			  break;
+		case '-': result -= val;
+			  break;
+		case '*': result *= val;
+			  break;
+		case '/': result /= val;
+			  break;
+	    }
+	    Assignments::getUniqueInstance()->setNamedFloat(name,result);
+	}
+
+    private:
+	FloatNode* node;
+	string name;
+	char op;
+};
+
 class AddSceneObjectToSceneNode : public ActionNode {
     public:
 	AddSceneObjectToSceneNode(SceneObjectNode* node) {
