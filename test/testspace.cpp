@@ -17,7 +17,9 @@
 
 void boundingbox_test() {
     BoundingBox b;
-    /* Test normal() */
+    ////////////////////////////////////////////////////////
+    // Test normal() 
+    ////////////////////////////////////////////////////////
     b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
     assert(b.normal(Vector(1,0,0))[0] = 1);
     assert(b.normal(Vector(-1,0,0))[0] = -1);
@@ -29,8 +31,9 @@ void boundingbox_test() {
     b = BoundingBox(Vector(-100,-10,-100),Vector(100,10,100));
     assert(b.normal(Vector(-100,0,-100))[0] = -1);
 
-
-    /* Test onEdge() */
+    ////////////////////////////////////////////////////////
+    // Test onEdge() 
+    ////////////////////////////////////////////////////////
     b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
     assert(b.onEdge(Vector(-1,-1,-1)));
     assert(b.onEdge(Vector(-1,0,0)));
@@ -42,7 +45,9 @@ void boundingbox_test() {
     assert(!b.onEdge(Vector(0,0,0)));
     assert(!b.onEdge(Vector(10,0,0)));
 
-    /* Test inside() */
+    ////////////////////////////////////////////////////////
+    // Test inside() 
+    ////////////////////////////////////////////////////////
     b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
     assert(b.inside(Vector(0,0,0)));
     assert(b.inside(Vector(0.5,0.2,-0.3)));
@@ -51,7 +56,9 @@ void boundingbox_test() {
     assert(!b.inside(Vector(0,-1,1)));
     assert(!b.inside(Vector(0,-10,12)));
 
-    /* Test intersection */
+    ////////////////////////////////////////////////////////
+    // Test intersection 
+    ////////////////////////////////////////////////////////
     b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
     Ray r;
     
@@ -77,7 +84,9 @@ void boundingbox_test() {
     v = b.intersect(r);
     assert(r.getPoint(v[0]) == Vector(-1,-1,-1));
 
-    /* Test doUnion */
+    ////////////////////////////////////////////////////////
+    // Test doUnion 
+    ////////////////////////////////////////////////////////
     BoundingBox b1 = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
     BoundingBox b2 = BoundingBox(Vector(-2,-2,-2),Vector(0,0,0));
     BoundingBox bu = BoundingBox::doUnion(b1,b2);
@@ -86,7 +95,9 @@ void boundingbox_test() {
     BoundingBox bi = BoundingBox::doIntersection(b1,b2);
     assert(BoundingBox(Vector(-1,-1,-1),Vector(0,0,0)) == bi);
 
-    /* Test cutByPlane */
+    ////////////////////////////////////////////////////////
+    // Test cutByPlane 
+    ////////////////////////////////////////////////////////
     b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
     assert(b.cutByPlane(0,10) == -1);
     assert(b.cutByPlane(1,10) == -1);
@@ -98,7 +109,9 @@ void boundingbox_test() {
     assert(b.cutByPlane(1,0.5) == 0);
     assert(b.cutByPlane(2,-0.5) == 0);
 
-    /* Test center */
+    ////////////////////////////////////////////////////////
+    // Test center() 
+    ////////////////////////////////////////////////////////
     b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
     assert(b.center() == Vector(0,0,0));
     b = BoundingBox(Vector(0,0,0),Vector(2,2,2));
@@ -108,7 +121,9 @@ void boundingbox_test() {
     b = BoundingBox(Vector(10,10,10),Vector(20,20,20));
     assert(b.center() == Vector(15,15,15));
 
-    /* Test intersectSphere */
+    ////////////////////////////////////////////////////////
+    // Test intersectSphere()
+    ////////////////////////////////////////////////////////
     b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
     assert(b.intersectSphere(Vector(0,0,0),10*10));
     assert(b.intersectSphere(Vector(0,0,0),2*2));
@@ -121,6 +136,47 @@ void boundingbox_test() {
     assert(b.intersectSphere(Vector(2,0,0),2*2));
     assert(!b.intersectSphere(Vector(2,0,0),0.5*0.5));
     assert(!b.intersectSphere(Vector(0,0,-2),0.5*0.5));
+
+    ////////////////////////////////////////////////////////
+    // Test area()
+    ////////////////////////////////////////////////////////
+    b = BoundingBox(Vector(0,0,0),Vector(1,1,1));
+    assert(b.area() == 6*1);
+    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+    assert(b.area() == 6*4);
+    b = BoundingBox(Vector(0,0,0),Vector(3,3,3));
+    assert(b.area() == 6*9);
+
+    ////////////////////////////////////////////////////////
+    // Test split()
+    ////////////////////////////////////////////////////////
+    BoundingBox b_left;
+    BoundingBox b_right;
+    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+    b.split(&b_left, &b_right, 0, 0.0);
+    assert(b_left.minimum() == Vector(-1,-1,-1));
+    assert(b_left.maximum() == Vector(0,1,1));
+    assert(b_right.minimum() == Vector(0,-1,-1));
+    assert(b_right.maximum() == Vector(1,1,1));
+
+    b.split(&b_left, &b_right, 1, 0.0);
+    assert(b_left.minimum() == Vector(-1,-1,-1));
+    assert(b_left.maximum() == Vector(1,0,1));
+    assert(b_right.minimum() == Vector(-1,0,-1));
+    assert(b_right.maximum() == Vector(1,1,1));
+
+    b.split(&b_left, &b_right, 2, 0.0);
+    assert(b_left.minimum() == Vector(-1,-1,-1));
+    assert(b_left.maximum() == Vector(1,1,0));
+    assert(b_right.minimum() == Vector(-1,-1,0));
+    assert(b_right.maximum() == Vector(1,1,1));
+
+    b = BoundingBox(Vector(0,0,0),Vector(2,2,2));
+    b.split(&b_left, &b_right, 0, 0.5);
+    assert(b_left.minimum() == Vector(0,0,0));
+    assert(b_left.maximum() == Vector(0.5,2,2));
+    assert(b_right.minimum() == Vector(0.5,0,0));
+    assert(b_right.maximum() == Vector(2,2,2));
 
 }
 
