@@ -5,6 +5,7 @@
 #include <vector>    
 #include <map>    
 #include <cstdio>    
+#include <cassert>    
 #include "filters/filterstack.h"
 #include "filters/grayscale.h"
 #include "filters/specularbloom.h"
@@ -120,6 +121,7 @@ ActionListNode* top_actions;
 %token tELLIPSOID
 %token tEXTRUSION
 %token tFILTERS tGRAYSCALE tSPECULARBLOOM tGAUSSIANBLUR
+%token tFOG
 %token tFOV
 %token tFRAMES
 %token tFUNCTION
@@ -200,7 +202,7 @@ ActionListNode* top_actions;
 %type <action> MainAddAction MainAction Assignment Renderer ConfAction
 %type <action> RepeatStmt IfStmt WhileStmt Action ModStmt OpAssignment
 %type <action> AddCamera AddObject AddLight Background Settings Print Image
-%type <action> FuncCall FuncDecl Filters
+%type <action> FuncCall FuncDecl Filters Fog
 %type <actionlist> ActionList
 %type <funccallargs> FuncCallArgs
 %type <value> FuncCallArg
@@ -246,6 +248,7 @@ ConfAction	: AddCamera
 		| Image
 		| Renderer
 		| Background
+		| Fog 
 		| Settings
 		| Filters
 		;
@@ -436,6 +439,13 @@ Background	: tBACKGROUND RGBA
 		    $$ = new SetBackgroundNode($2);
 		}
                 ;
+
+Fog		: tFOG '{' Expr RGB '}'
+                {
+		    double distance = $3->eval();
+		    RGB color = $4->eval();
+		    $$ = new SetFogNode(distance,color);
+		}
 
 Settings 	: tSETTINGS '{' SettingsList '}'
                 {

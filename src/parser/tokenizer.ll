@@ -79,6 +79,7 @@ extrusion	return tEXTRUSION;
 filters		return tFILTERS;
 finalgatherrays return tFINALGATHERRAYS;
 flat		return tFLAT;
+fog		return tFOG;
 fov		return tFOV;
 frames		return tFRAMES;
 function	return tFUNCTION;

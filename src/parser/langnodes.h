@@ -97,6 +97,23 @@ class SetBackgroundNode : public ActionNode {
 	Texture* texture;
 };
 
+class SetFogNode : public ActionNode {
+    public:
+	SetFogNode(double dist, RGB color) {
+	    this->color = color;
+	    this->dist = dist;
+	}
+
+	void eval() {
+	    Scene* scene = Environment::getUniqueInstance()->getScene();
+	    scene->setFog(color,dist);
+	}
+
+    private:
+	RGB color;
+	double dist;
+};
+
 class StringPrintNode : public ActionNode {
     public:
 	StringPrintNode(string text) {
