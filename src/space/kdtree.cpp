@@ -18,9 +18,10 @@
 
 KdTree::KdTree() {
     // An empty top-node to fill added objects into
+    tmp_nodes = new vector<KdNodeTmp>;
     KdNodeTmp node;
     node.bobjects = new vector<BoundedObject>;
-    tmp_nodes.push_back(node);
+    tmp_nodes->push_back(node);
     prepared = false;
 }
 
@@ -31,7 +32,7 @@ void KdTree::addObject(Object* obj) {
     //Stats::getUniqueInstance()->inc(STATS_KDTREE_OBJECTS_ADDED);
     BoundedObject bobj;
     bobj.object = obj;
-    tmp_nodes[0].bobjects->push_back(bobj);
+    tmp_nodes->front().bobjects->push_back(bobj);
 }
 
 bool KdTree::intersect(const Ray& ray, Intersection* result) const {
@@ -71,18 +72,18 @@ class compareAreaDesc {
 
 
 void KdTree::prepare() {
-    assert(tmp_nodes.size() == 1);
-    unsigned int added_objects_size = tmp_nodes[0].bobjects->size();
+    assert(tmp_nodes->size() == 1);
+    unsigned int added_objects_size = tmp_nodes->front().bobjects->size();
     for(unsigned int i = 0; i < added_objects_size; i++) {
-	BoundedObject& bobj = (*tmp_nodes[0].bobjects)[i];
+	BoundedObject& bobj = (*tmp_nodes->front().bobjects)[i];
 	bobj.bbox = bobj.object->boundingBoundingBox();
     }
-    world_bbox = enclosure(*(tmp_nodes[0].bobjects));
-    tmp_nodes[0].axis = 0;
-    tmp_nodes[0].bbox = world_bbox;
+    world_bbox = enclosure(*(tmp_nodes->front().bobjects));
+    tmp_nodes->front().axis = 0;
+    tmp_nodes->front().bbox = world_bbox;
     max_depth = 0;
     prepare(0,1);
-    int nodes_num = tmp_nodes.size();
+    int nodes_num = tmp_nodes->size();
     nodes = new KdNode[nodes_num];
 #ifdef VERBOSE    
     cout << "Prepared..." << endl;
@@ -92,7 +93,7 @@ void KdTree::prepare() {
     // Copy all temporary nodes into the real Kd-Tree
     for(int i = 0; i < nodes_num; i++) {
 	KdNode node = KdNode();
-	KdNodeTmp& old = tmp_nodes[i];
+	KdNodeTmp& old = tmp_nodes->operator[](i);
 	node.splitPlane = old.splitPlane;
 	node.axis = old.axis;
 	if (node.axis >= 0) {
@@ -110,16 +111,15 @@ void KdTree::prepare() {
 	}
 	nodes[i] = node;
     }
-    tmp_nodes.clear();
-    tmp_nodes.reserve(1);
-    cout << "tmp_nodes capacity: " << tmp_nodes.capacity() << endl;
+    cout << "tmp_nodes capacity: " << tmp_nodes->capacity() << endl;
     cout << "size of TmpNode: " << sizeof(KdNodeTmp) << endl;
-    cout << "Waste: " << sizeof(KdNodeTmp) * tmp_nodes.capacity() << endl;
+    cout << "Waste: " << sizeof(KdNodeTmp) * tmp_nodes->capacity() << endl;
+    delete tmp_nodes;
 }
 
 void KdTree::prepare(int curNode_idx,int depth) {
 
-    KdNodeTmp* curNode = &(tmp_nodes[curNode_idx]);
+    KdNodeTmp* curNode = &(tmp_nodes->operator[](curNode_idx));
 
     // Keep with in max depth or minimum node size
     if (depth > KD_TREE_MAX_DEPTH || curNode->bobjects->size() <= KD_TREE_MAX) {
@@ -149,19 +149,19 @@ void KdTree::prepare(int curNode_idx,int depth) {
     }
 
     // Create two new childnodes to split into
-    tmp_nodes.push_back(KdNodeTmp());
-    tmp_nodes.push_back(KdNodeTmp());
+    tmp_nodes->push_back(KdNodeTmp());
+    tmp_nodes->push_back(KdNodeTmp());
 
     // Reload curNode since vector might have been realloc'ed after the pushes
-    curNode = &(tmp_nodes[curNode_idx]); 
+    curNode = &(tmp_nodes->operator[](curNode_idx)); 
 
     // Set indices for child nodes
-    int left_idx = tmp_nodes.size() - 1;
-    int right_idx = tmp_nodes.size() - 2;
+    int left_idx = tmp_nodes->size() - 1;
+    int right_idx = tmp_nodes->size() - 2;
     curNode->left = left_idx;
     curNode->right = right_idx;
-    KdNodeTmp& lower = tmp_nodes[curNode->left];
-    KdNodeTmp& higher = tmp_nodes[curNode->right];
+    KdNodeTmp& lower = tmp_nodes->operator[](curNode->left);
+    KdNodeTmp& higher = tmp_nodes->operator[](curNode->right);
     lower.bobjects = new vector<BoundedObject>;
     higher.bobjects = new vector<BoundedObject>;
 

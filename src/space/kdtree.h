@@ -106,7 +106,7 @@ class KdTree {
 	KdNode* nodes;
 	
 	// Temporary nodes used when building the three
-	std::vector<KdNodeTmp> tmp_nodes;
+	std::vector<KdNodeTmp>* tmp_nodes;
 
 	int max_depth;
 	bool prepared;
