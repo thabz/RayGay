@@ -9,6 +9,7 @@
 
 class RGB;
 class Image;
+class SpaceSubdivider;
 
 ///  An abstract class all renderers must implement.
 class Renderer {

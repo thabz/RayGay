@@ -1,4 +1,7 @@
 
+#ifndef PHOTON_MAP
+#define PHOTON_MAP
+
 /**
  * This is the photon
  * The power is not compressed so the
@@ -92,5 +95,4 @@ class PhotonMap {
 	float bbox_max[3];		// use bbox_max;
 };
 
-
-
+#endif

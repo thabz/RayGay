@@ -5,6 +5,7 @@
 
 class RGB;
 class Ray;
+class Object;
 class Intersection;
 
 ///  Implementation of Renderer that supply a raytracer.
@@ -21,8 +22,6 @@ class Raytracer : public Renderer {
 	RGB trace(const Ray&, int depth);
 	RGB traceSub(bool intersected, const Ray&, int depth);
 	RGB tracePrimary(const Ray&);
-
-	Object* last_primary_ray_hit;
 };
 
 

@@ -4,12 +4,11 @@
 #include <vector>
 #include <iosfwd>
 #include "image/rgb.h"
-#include "hierarchy.h"
 
 class Intersection;
 class Ray;
 class Lightsource;
-class object;
+class SceneObject;
 class Matrix;
 class Sphere;
 class Image;
