@@ -22,7 +22,7 @@ Blob::Blob(double iso, unsigned int steps, double accuracy, Material* material) 
  */
 void Blob::addAtom(const Vector& center, double radius, double weight) {
     centers.push_back(center);
-    radii.push_back(radius);
+    radii.push_back(radius*radius);
     weights.push_back(weight);
     atoms_num++;
 
@@ -54,15 +54,16 @@ double Blob::evaluateFunction(const Vector& point) const {
 */
 double Blob::evaluateFunction(const Vector& point) const {
     double sum = 0;
+    double one_ninth = 1.0 / 9.0;
     for(int i = 0; i < atoms_num; i++) {
 	double rr = (centers[i] - point).norm();
-	double RR = radii[i]*radii[i];
+	double RR = radii[i];
 	if (rr >= RR) {
 	    continue;
 	} else {
 	    double q = rr / RR;
-	    double p = double(-22.0) + double(17.0)*q - double(4.0)*q*q;
-	    p *= q/9.0;
+	    double p = -22.0 + 17.0*q - 4.0*q*q;
+	    p *= q * one_ninth;
 	    sum += weights[i] * (1.0 + p);
 	}
     }
