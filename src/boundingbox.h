@@ -26,32 +26,29 @@ class BoundingBox {
         /// Constructor
 	BoundingBox(const std::vector<Vector>& swarm);
 
-	/// Destructor
-	virtual ~BoundingBox();
-
 	/// Returns (tmin,tmax) of intersection
-	virtual Vector2 intersect(const Ray& ray) const;
+	Vector2 intersect(const Ray& ray) const;
 
 	/// Simple check for intersection
-	virtual bool checkIntersect(const Ray& ray) const;
+	bool checkIntersect(const Ray& ray) const;
 
 	/// The box' normal at a point. This vector is always axis-aligned.
-	virtual Vector normal(const Vector& p) const;
+	Vector normal(const Vector& p) const;
 
 	/// Test whether a point belongs to the closure of this box.
-	virtual bool onEdge(const Vector &p) const;
+	bool onEdge(const Vector &p) const;
 
 	/// Tests whether a point is inside this box and not on the edge.
-	virtual bool inside(const Vector &p) const;
+	bool inside(const Vector &p) const;
 	//
 	/// Tests whether a point is inside this box or on the edge.
-	virtual bool insideOrTouching(const Vector &p) const;
+	bool insideOrTouching(const Vector &p) const;
 	
 	/// Tests whether an array of points are inside this box and not on the edge.
-	virtual bool inside(const Vector* points, int num) const;
+	bool inside(const Vector* points, int num) const;
 
 	/// Tests whether another boundingbox is inside this
-	virtual bool inside(const BoundingBox& b) const;
+	bool inside(const BoundingBox& b) const;
 
         /// Tests whether this bbox is in back, front or is intersected by a axis-aligned plane.
 	int cutByPlane(int cutplane_dimension, double cutplane_value) const;
@@ -63,10 +60,10 @@ class BoundingBox {
 	const Vector maximum() const { return Vector(_c2[0],_c2[1],_c2[2]); };
 	
 	/// An x,y or z value from the corner with smallest x,y,z values
-	const double minimum(unsigned int i) const { return _c1[i]; };
+	const double minimum(const unsigned int i) const { return _c1[i]; };
 	
 	/// An x,y or z value from the corner with biggest x,y,z values
-	const double maximum(unsigned int i) const { return _c2[i]; };
+	const double maximum(const unsigned int i) const { return _c2[i]; };
 
 	/// Returns the smallest box that contains b1 and b2.
 	static BoundingBox doUnion(const BoundingBox& b1, const BoundingBox& b2); 
@@ -99,7 +96,7 @@ class BoundingBox {
 	Vector center() const;
 
 	// Split this bbox into two by a axis-aligned plane
-	bool split(BoundingBox* left, BoundingBox* right, int dim, double axis) const; 
+	bool split(BoundingBox* left, BoundingBox* right, const unsigned int dim, const double axis) const; 
 
 	// Lengths of the three sides
 	Vector lengths() const;

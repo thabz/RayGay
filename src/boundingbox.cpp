@@ -40,11 +40,6 @@ BoundingBox::BoundingBox(const std::vector<Vector>& swarm) {
     }
 }
 
-
-BoundingBox::~BoundingBox() {
-    //delete [] corners;
-}
-
 bool BoundingBox::inside(const Vector &p) const {
     return p[0] > _c1[0] &&
 	   p[0] < _c2[0] &&
@@ -350,7 +345,7 @@ bool BoundingBox::intersectSphere(const Vector& center, double squared_radius) c
     return d <= squared_radius;
 }
 
-bool BoundingBox::split(BoundingBox* left, BoundingBox* right, int dim, double axis) const {
+bool BoundingBox::split(BoundingBox* left, BoundingBox* right, const unsigned int dim, const double axis) const {
     if (axis > maximum(dim) || axis < minimum(dim)) {
 	return false;
     }
