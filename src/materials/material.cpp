@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "materials/material.h"
+#include "materials/normalperturbers/normalperturber.h"
 #include "image/rgb.h"
 #include "image/texture.h"
 #include "intersection.h"
@@ -38,6 +39,7 @@ Material::Material(RGB diffuseColor, double kd, RGB specularColor, double ks, in
 void Material::reset() {
    texture_diffuse= NULL;
    texture_bump = NULL;
+   normal_perturber = NULL;
    eta = 3;
    gloss_enabled = false;
    no_shadow = false;
@@ -60,9 +62,9 @@ RGB Material::getDiffuseColor(const Intersection& i) const {
 
 
 Vector Material::bump(const Intersection& i, const Vector& normal) const {
-    if (texture_bump == NULL) {
-	return normal;
-    } else {
+    if (normal_perturber != NULL) {
+	return normal_perturber->perturb(i.getPoint(), normal);
+    } else if (texture_bump != NULL) {
 	double u,v,w,h;
 	Vector2 uv = i.getUV();
 	u = uv[0]; v = uv[1];
@@ -80,6 +82,8 @@ Vector Material::bump(const Intersection& i, const Vector& normal) const {
 	bumpnormal = (fabs(bumpHeight) * bumpnormal) + normal;
 	bumpnormal.normalize();
 	return bumpnormal;
+    } else {
+	return normal;
     }
 }
 
@@ -120,4 +124,9 @@ void Material::enableGloss(unsigned int gloss_rays, double gloss_angle) {
 
 bool Material::requiresUV() const {
     return texture_diffuse != NULL || texture_bump != NULL;
+}
+
+void Material::setNormalPerturber(NormalPerturber* perturber) {
+    this->normal_perturber = perturber;
+
 }

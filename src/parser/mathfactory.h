@@ -10,7 +10,6 @@
 class MathFactory 
 {
     public:
-	static SCM random(SCM s_min, SCM s_max);
 	static void register_procs();
 };
 

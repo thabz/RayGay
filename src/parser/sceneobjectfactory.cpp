@@ -120,7 +120,9 @@ SCM SceneObjectFactory::make_blob(SCM s_iso, SCM s_steps, SCM s_accuracy, SCM s_
     // Add the atoms
     assert(SCM_NFALSEP (scm_list_p (s_atoms)));
     uint length = scm_num2int(scm_length(s_atoms),0,"");
-    assert (length % 3 == 0);
+    if (length % 3 != 0) {
+	scm_wrong_type_arg(proc,5,s_atoms);
+    }
     length /= 3;
     
     SCM s_center;

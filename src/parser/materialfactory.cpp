@@ -2,6 +2,7 @@
 #include "parser/materialfactory.h"
 #include "parser/converters.h"
 #include "parser/wrapper.h"
+#include "parser/schemenormalperturber.h"
 #include "materials/material.h"
 
 SCM MaterialFactory::make_material(SCM s_options) {
@@ -33,6 +34,9 @@ SCM MaterialFactory::make_material(SCM s_options) {
 	} else if (key == "kd") {
 	    double d = scm_num2double(s_value,0,"");
 	    material->setKd(d);
+	} else if (key == "normal") {
+	    SchemeNormalPerturber* perturber = new SchemeNormalPerturber(s_value);
+	    material->setNormalPerturber(perturber);
 	} else if (key == "specpow") {
 	    int d = scm_num2int(s_value,0,"");
 	    material->setSc(d);

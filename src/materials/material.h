@@ -8,6 +8,7 @@
 class Intersection;
 class Texture;
 class Vector2;
+class NormalPerturber;
 
 /// Class defining a material
 class Material {
@@ -37,6 +38,7 @@ class Material {
 	int getSc() const { return _spec_coeff; } ;
 	void setSc(int sc) { _spec_coeff = sc; };
 
+	void setNormalPerturber(NormalPerturber* perturber);
 
 	/// Set the transmission coefficent (0 = solid, 1 = full transparent)
 	void setKt(double kt) { this->_kt = kt; };
@@ -86,6 +88,8 @@ class Material {
 
 	Texture* texture_diffuse;
 	Texture* texture_bump;
+
+	NormalPerturber* normal_perturber;
 
 	double _kt;
 	double eta;
