@@ -61,7 +61,7 @@ class KdTree {
 	
 	class KdNodeTmp {
 	    public:
-		std::vector<BoundedObject> bobjects;  // Enclosed objects when this is a leaf
+		std::vector<BoundedObject>* bobjects;  // Enclosed objects when this is a leaf
 		BoundingBox bbox; // Bounding box of voxel
 		int left;     // Left child
 		int right;    // Right child
@@ -78,36 +78,36 @@ class KdTree {
 	    int prev;       // pointer to previus stack item
 	};
 
+	// The I/O data for the findBestSplitPlane method
 	class CostResult {
 	    public:
-		int dim;
-		double axis;
-		vector<BoundedObject> left_bobjects;
-		vector<BoundedObject> right_bobjects;
-		unsigned int left_index;
-		unsigned int right_index;
+		CostResult();
+		int dim; //> Output
+		double axis; //> Output
+		vector<BoundedObject>* left_bobjects; //> Input
+		vector<BoundedObject>* right_bobjects; //> Input
+		unsigned int left_index; //> Output
+		unsigned int right_index; //> Output
 	};
 
 	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
 	Object* intersectForShadow_real(const Ray&,const double) const;
 	int largestDimension(const BoundingBox& box) const;
-	BoundingBox enclosure(std::vector<BoundedObject>* objects) const;
+	BoundingBox enclosure(const std::vector<BoundedObject>& objects) const;
 	BoundingBox world_bbox;
-	double objectMedian(std::vector<Object*>* objects, int d) const;
-	double spacialMedian(std::vector<Object*>* objects, int d) const;
-	Vector measureSplit(const std::vector<BoundedObject>& bobjects, int dim, double val) const;
-	double evaluateCost(const BoundingBox& bbox, const std::vector<BoundedObject>& objects, int dim, double val, Vector* measure) const;
-	void findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const;
+	bool findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const;
 
+	// The recursive prepare method
 	void prepare(int curNode_idx, int depth);
 
+	// The kd-tree nodes
 	KdNode* nodes;
+	
+	// Temporary nodes used when building the three
 	std::vector<KdNodeTmp> tmp_nodes;
+
 	int max_depth;
-
-	std::vector<Object*>* added_objects;
 	bool prepared;
-
 };
 
 
