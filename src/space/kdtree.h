@@ -47,7 +47,7 @@ class KdTree {
 		// Left child when not a leaf. Right child is left + 1.
 		uint left;  
 		// Enclosed objects when this is a leaf
-		Object** objects;
+		Object** __restrict__ objects;
 	    };
 	    union {
 		// Number of objects when this is a leaf
@@ -60,10 +60,10 @@ class KdTree {
 	};
 
 	struct StackElem {
-	    const KdNode* node;   // pointer to far child
+	    const KdNode* __restrict__ node;   // pointer to far child
 	    float t;        // the entry/exit signed distance
 	    int prev;       // pointer to previus stack item
-	    double pb[3];   // coordinates of entry/exit point
+	    double __restrict__ pb[3];   // coordinates of entry/exit point
 	};
 
 	// The I/O data for the findBestSplitPlane method
@@ -92,8 +92,8 @@ class KdTree {
 
 	std::vector<Object*>* added_objects;
 
-	BoundedObject** left_bobs;
-	BoundedObject** right_bobs;
+	BoundedObject** __restrict__ left_bobs;
+	BoundedObject** __restrict__ right_bobs;
 };
 
 
