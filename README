@@ -6,6 +6,7 @@ TODO:
 * More accurate Triangle-BoundingBox intersection code
 * Hierarchy will never exit when more than 8 objects intersect a the same point.
 * Implement onEdge() and inside() for Mesh class.
+* Adaptive supersampling til antialias
 * Cylinder 
 * Separate objectspace and worldspace transformations.
 * Area lights

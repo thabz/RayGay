@@ -52,18 +52,6 @@ std::vector<Lightsource*> Scene::getLightsources() {
 
 Intersection Scene::intersect(const Ray& ray) {
     return hierarchy->intersect(ray);
-
-    Intersection result = Intersection(); 
-    Intersection tmp;
-    for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
-	tmp = (*p)->intersect(ray);
-	if (tmp.intersected) {
-	   if (!result.intersected || tmp.t < result.t) {
-   	       result = tmp;
-	    }
-	}
-    }
-    return result;
 }
 
 ostream & operator<<(ostream &os, const Scene &x) {

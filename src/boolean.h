@@ -24,16 +24,16 @@ class Boolean : public object {
 	Boolean(object* lhs, BooleanOp op, object* rhs, Material material);
 
 	virtual void transform(const Matrix& m);
-	virtual Vector normal(const Intersection& i);
-	virtual RGB getDiffuseColor(const Vector& p);
-	virtual Material getMaterial();
-	virtual bool intersects(const BoundingBox&);
-	virtual BoundingBox boundingBoundingBox();
+	virtual Vector normal(const Intersection& i) const;
+	virtual RGB getDiffuseColor(const Vector& p) const;
+	virtual Material getMaterial() const;
+	virtual bool intersects(const BoundingBox&) const;
+	virtual BoundingBox boundingBoundingBox() const;
 
-	virtual bool onEdge(const Vector &p);
-	virtual bool inside(const Vector &p);
+	virtual bool onEdge(const Vector &p) const;
+	virtual bool inside(const Vector &p) const;
 
-	virtual void getUV(const Intersection& intersection, double* u, double* v);
+	virtual void getUV(const Intersection& intersection, double* u, double* v) const;
 
 	static void test();
     private:
@@ -41,7 +41,7 @@ class Boolean : public object {
 	object* _rhs;
 	BooleanOp _op;
 	Material _material;
-	virtual Intersection _intersect(const Ray& ray);
+	virtual Intersection _intersect(const Ray& ray) const;
 };
 
 #endif

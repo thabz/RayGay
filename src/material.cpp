@@ -31,7 +31,7 @@ Material::Material(RGB diffuseColor, double kd, RGB specularColor, double ks, in
 Material::~Material() {
 }
 
-RGB Material::getDiffuseColor(const Intersection& i) {
+RGB Material::getDiffuseColor(const Intersection& i) const {
     if (texturemap != NULL) {
 	double u,v;
 	i.getObject()->getUV(i,&u,&v);

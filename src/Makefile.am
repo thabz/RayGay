@@ -25,6 +25,7 @@ EXTRA_DIST = boolean.h 		\
 	     spotlight.h	\
 	     tetrahedron.h	\
              transformable.h 	\	
+	     triangle.h		\
 	     vector.h 		
 
 run:

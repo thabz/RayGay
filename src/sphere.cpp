@@ -30,12 +30,12 @@ void Sphere::transform(const Matrix& m) {
     center = m * center;
 }
 
-Vector& Sphere::getCenter() {
+const Vector& Sphere::getCenter() const {
     return center;
 }
 
 /// Return the nearest intersection to ray's origin
-Intersection Sphere::_intersect(const Ray& ray) {
+Intersection Sphere::_intersect(const Ray& ray) const {
     Intersection result = Intersection();
     
     // See CGPP page 1101
@@ -69,19 +69,19 @@ Intersection Sphere::_intersect(const Ray& ray) {
     return result;
 }
 
-Vector Sphere::normal(const Intersection& i) {
+Vector Sphere::normal(const Intersection& i) const {
     Vector normal = i.point - center;
     normal.normalize();
     return normal;
 }
 
 /*! Returns the diffuse color at at point */
-RGB Sphere::getDiffuseColor(const Vector& p) {
+RGB Sphere::getDiffuseColor(const Vector& p) const {
     RGB col = material.getDiffuseColor();
     return col;
 };
 
-Material Sphere::getMaterial() {
+Material Sphere::getMaterial() const {
     return material;
 }
 
@@ -91,13 +91,13 @@ ostream & operator<<(ostream &os, const Sphere &s) {
 }
 
 
-bool Sphere::onEdge(const Vector& p) {
+bool Sphere::onEdge(const Vector& p) const {
     Vector d = p - center;
     double dd = radius*radius - d.norm();
     return IS_ZERO(abs(dd));
 }
 
-bool Sphere::inside(const Vector& p) {
+bool Sphere::inside(const Vector& p) const {
     Vector d = p - center;
     double dd =  radius*radius - d.norm();
     return dd > 0 && !IS_ZERO(abs(dd));
@@ -105,7 +105,7 @@ bool Sphere::inside(const Vector& p) {
 
 
 // Stolen from http://www.gamasutra.com/features/19991018/Gomez_4.htm
-bool Sphere::intersects(const BoundingBox& b) {
+bool Sphere::intersects(const BoundingBox& b) const {
     double s, d = 0;
     Vector mini = b.minimum();
     Vector maxi = b.maximum();
@@ -122,13 +122,13 @@ bool Sphere::intersects(const BoundingBox& b) {
     return d <= radius*radius;
 }
 
-BoundingBox Sphere::boundingBoundingBox() {
+BoundingBox Sphere::boundingBoundingBox() const {
     Vector r = Vector(radius,radius,radius);
     return BoundingBox(center - r, center + r);
 }
 
 // See http://astronomy.swin.edu.au/~pbourke/texture/spheremap/
-void Sphere::getUV(const Intersection& intersection, double* u, double* v) {
+void Sphere::getUV(const Intersection& intersection, double* u, double* v) const {
     Vector p = intersection.point - center;
     p.normalize();
     *v = acos(p[1]) / M_PI;

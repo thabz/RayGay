@@ -22,24 +22,24 @@ class Material {
 	~Material(); ///< Default destructor
 
 	/*!  Get the diffuse color */
-	RGB getDiffuseColor() { return _diffuseColor; };
+	RGB getDiffuseColor() const { return _diffuseColor; };
 	void setDiffuseColor(RGB diffuseColor) { _diffuseColor = diffuseColor; }; ///< Set the diffuse color
+
+	RGB getSpecularColor() const { return _specularColor; }; ///< Get the specular color
+	void setSpecularColor(RGB specularColor) { _specularColor = specularColor; };	///< Set the specular color
 
 	void setTexturemap(const std::string& filename);
 	void setBumpmap(const std::string& filename);
 	
-	RGB getSpecularColor() { return _specularColor; }; ///< Get the specular color
-	void setSpecularColor(RGB specularColor) { _specularColor = specularColor; };	///< Set the specular color
-	
-	virtual RGB getDiffuseColor(const Intersection& i);
+	virtual RGB getDiffuseColor(const Intersection& i) const;
 
-	double getKd() { return _kd; };
+	double getKd() const { return _kd; } ;
 	void setKd(double kd) { _kd = kd; };
 
-	double getKs() { return _ks; };
+	double getKs() const { return _ks; } ;
 	void setKs(double ks) { _ks = ks; };
 
-	int getSc() { return _spec_coeff; };
+	int getSc() const { return _spec_coeff; } ;
 	void setSc(int sc) { _spec_coeff = sc; };
 
 	/* See page 757 */

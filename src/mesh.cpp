@@ -11,6 +11,7 @@
 #include "intersection.h"
 #include "ray.h"
 #include "sphere.h"
+#include "triangle.h"
 
 using namespace std;
 
@@ -32,7 +33,7 @@ void Mesh::addTriangle(const Vector* c) {
     Vector normal = Vector::xProduct(c[1] - c[0], c[2] - c[0]);
     normal.normalize();
     normals.push_back(normal);
-    Triangle t;
+    Triangle t = Triangle(this);
     t.normal = normals.size() - 1;
 
     for(int i = 0; i < 3; i++) {
@@ -61,27 +62,27 @@ void Mesh::transform(const Matrix& M) {
 }
 
 
-Vector Mesh::normal(const Intersection &i) {
+Vector Mesh::normal(const Intersection &i) const {
     return normals[i.local_triangle->normal];
 }
 
-bool Mesh::onEdge(const Vector &p) {
+bool Mesh::onEdge(const Vector &p) const {
     // TODO: implement
 }
 
-bool Mesh::inside(const Vector &p) {
+bool Mesh::inside(const Vector &p) const {
     // TODO: implement
 }
 
-bool Mesh::intersects(const BoundingBox& box) {
+bool Mesh::intersects(const BoundingBox& box) const {
     // Quick hackish implementation: wrap mesh in a sphere and check that for intersection
     Vector center;
-    for (vector<Vector>::iterator p = corners.begin(); p != corners.end(); p++) {
+    for (vector<Vector>::const_iterator p = corners.begin(); p != corners.end(); p++) {
 	center = center + (*p);
     }
     center = center / corners.size();
     double radius = 0;
-    for (vector<Vector>::iterator p = corners.begin(); p != corners.end(); p++) {
+    for (vector<Vector>::const_iterator p = corners.begin(); p != corners.end(); p++) {
        Vector v = ((*p) - center);
        double l = v.length();
        if (l > radius) radius = l;
@@ -91,17 +92,17 @@ bool Mesh::intersects(const BoundingBox& box) {
     
 }
 
-Material Mesh::getMaterial() {
+Material Mesh::getMaterial() const {
     return material;
 }
 
-BoundingBox Mesh::boundingBoundingBox() {
+BoundingBox Mesh::boundingBoundingBox() const {
     if (_boundingBoundingBox != NULL)
 	return *_boundingBoundingBox;
 
     Vector mini = Vector(HUGE_DOUBLE,HUGE_DOUBLE,HUGE_DOUBLE);
     Vector maxi = Vector(-HUGE_DOUBLE,-HUGE_DOUBLE,-HUGE_DOUBLE);
-    for (vector<Vector>::iterator p = corners.begin(); p != corners.end(); p++) {
+    for (vector<Vector>::const_iterator p = corners.begin(); p != corners.end(); p++) {
 	Vector v = (*p);
 	for (int i = 0; i < 3; i++) {
 	    mini[i] = min(mini[i],v[i]);
@@ -112,16 +113,16 @@ BoundingBox Mesh::boundingBoundingBox() {
     return *_boundingBoundingBox;
 }
 
-RGB Mesh::getDiffuseColor(const Vector& p) {
+RGB Mesh::getDiffuseColor(const Vector& p) const {
     RGB col = material.getDiffuseColor();
     return col;
 };
 
-Intersection Mesh::_intersect(const Ray& ray) {
+Intersection Mesh::_intersect(const Ray& ray) const {
     Intersection result;
     Intersection tmp;
     for (int i = 0; i < triangles.size(); i++) {
-	Triangle *p =  &triangles[i];
+	const Triangle *p =  &triangles[i];
 
 	tmp = intersect_triangle(ray,
 		corners[p->vertex[0]],
@@ -137,7 +138,7 @@ Intersection Mesh::_intersect(const Ray& ray) {
 
 /* Fast code from http://www.ce.chalmers.se/staff/tomasm/code/ */
 Intersection Mesh::intersect_triangle(const Ray& ray,
-                   Vector vert0, Vector vert1, Vector vert2) {
+                   Vector vert0, Vector vert1, Vector vert2) const {
    Vector edge1, edge2, tvec, pvec, qvec;
    double det,inv_det;
    double u,v;
@@ -189,7 +190,7 @@ Intersection Mesh::intersect_triangle(const Ray& ray,
    return intersection;
 }
 
-void Mesh::getUV(const Intersection& intersection, double* u, double* v) {
+void Mesh::getUV(const Intersection& intersection, double* u, double* v) const {
     // TODO: Implement
 }
 

@@ -26,20 +26,21 @@ class Sphere : public object {
 	/// Destructor
 	virtual ~Sphere();
 
-	virtual Vector& getCenter(); ///< Returns center of sphere
+        /// Returns center of sphere
+	const Vector& getCenter() const; 
 
 	virtual void transform(const Matrix& m);
-	virtual Vector normal(const Intersection & i);
-	virtual RGB getDiffuseColor(const Vector& p);
-	virtual Material getMaterial();
+	virtual Vector normal(const Intersection & i) const;
+	virtual RGB getDiffuseColor(const Vector& p) const;
+	virtual Material getMaterial() const;
 
-	virtual bool onEdge(const Vector &p);
-	virtual bool inside(const Vector &p);
+	virtual bool onEdge(const Vector &p) const;
+	virtual bool inside(const Vector &p) const;
 
-	virtual bool intersects(const BoundingBox& b);
-	virtual BoundingBox boundingBoundingBox();
+	virtual bool intersects(const BoundingBox& b) const;
+	virtual BoundingBox boundingBoundingBox() const;
 
-	virtual void getUV(const Intersection& intersection, double* u, double* v);
+	virtual void getUV(const Intersection& intersection, double* u, double* v) const;
 
         /// Internal test
 	static void test();
@@ -49,7 +50,7 @@ class Sphere : public object {
 	double radius;
 	Material material;
 	BoundingBox _boundingBoundingBox;
-	virtual Intersection _intersect(const Ray& ray);
+	virtual Intersection _intersect(const Ray& ray) const;
 
 };
 

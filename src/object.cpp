@@ -15,11 +15,12 @@ object::object() {
 /*  Because an object can exist in several bounding boxes we end up shooting
  *  the same ray at the same object several times.
  */
-Intersection object::intersect(const Ray& ray) {
+Intersection object::intersect(const Ray& ray) const {
     if (ray.getId() != last_ray) {
-	last_intersection = _intersect(ray);
+	Intersection result = _intersect(ray);
 	last_ray = ray.getId();
-	last_intersection.setObject(this);
+	result.setObject(const_cast<object*>(this));
+	last_intersection = result;
     }
     return last_intersection;
 }

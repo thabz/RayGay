@@ -20,7 +20,7 @@ Boolean::Boolean(object* lhs, BooleanOp op, object* rhs, Material m) {
     _material = m;
 }
 
-Intersection Boolean::_intersect(const Ray& ray) {
+Intersection Boolean::_intersect(const Ray& ray) const {
     Intersection il = _lhs->intersect(ray);
     Intersection ir = _rhs->intersect(ray);
 
@@ -87,7 +87,7 @@ void Boolean::transform(const Matrix& m) {
 }
 
 // FIXME: We're not sure that i is from lhs or rhs
-Vector Boolean::normal(const Intersection& i) {
+Vector Boolean::normal(const Intersection& i) const {
     Vector p = i.point;
     switch(_op) {
 	case BOOLEAN_INTERSECTION: /* Same as next */
@@ -106,7 +106,7 @@ Vector Boolean::normal(const Intersection& i) {
     }
 }
 
-RGB Boolean::getDiffuseColor(const Vector& p) {
+RGB Boolean::getDiffuseColor(const Vector& p) const {
     return _material.getDiffuseColor();
     Vector v = p / 50;
     RGB col = _material.getDiffuseColor();
@@ -121,12 +121,12 @@ RGB Boolean::getDiffuseColor(const Vector& p) {
     return col;
 }
 
-Material Boolean::getMaterial() {
+Material Boolean::getMaterial() const {
     return _material;
 }
 
 
-bool Boolean::onEdge(const Vector &p) {
+bool Boolean::onEdge(const Vector &p) const {
     switch(_op) {
 	case BOOLEAN_UNION: 
 	    return (_rhs->onEdge(p) && !_lhs->inside(p)) ||
@@ -141,7 +141,7 @@ bool Boolean::onEdge(const Vector &p) {
     }
 }
 
-bool Boolean::inside(const Vector &p) {
+bool Boolean::inside(const Vector &p) const {
     switch(_op) {
 	case BOOLEAN_UNION: 
 	    return _lhs->inside(p) || _rhs->inside(p);
@@ -152,7 +152,7 @@ bool Boolean::inside(const Vector &p) {
     }
 }
 
-bool Boolean::intersects(const BoundingBox& box) {
+bool Boolean::intersects(const BoundingBox& box) const {
     switch(_op) {
 	case BOOLEAN_UNION:
 	    return _lhs->intersects(box) || _lhs->intersects(box);
@@ -163,7 +163,7 @@ bool Boolean::intersects(const BoundingBox& box) {
     }
 }
 
-BoundingBox Boolean::boundingBoundingBox() {
+BoundingBox Boolean::boundingBoundingBox() const {
     switch(_op) {
 	case BOOLEAN_UNION:
 	    return BoundingBox::doUnion(_rhs->boundingBoundingBox(),_lhs->boundingBoundingBox());
@@ -175,7 +175,7 @@ BoundingBox Boolean::boundingBoundingBox() {
 
 }
 
-void Boolean::getUV(const Intersection& intersection, double* u, double* v) {
+void Boolean::getUV(const Intersection& intersection, double* u, double* v) const {
     // TODO: Implement
 }
 

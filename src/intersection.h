@@ -27,7 +27,7 @@ class Intersection {
 	Vector local_point; ///< The Intersection point in the objects own coordinate system. Optional.
 	object* local_object; ///< A local subobject, eg. a component of a Boolean.
 
-	Triangle* local_triangle; ///< A local subobject, eg. a component of a Mesh.
+	const Triangle* local_triangle; ///< A local subobject, eg. a component of a Mesh.
 	double t;
 	bool intersected;
 

@@ -12,6 +12,7 @@ class Tetrahedron : public Mesh {
     public:
 	/// Constructor
 	Tetrahedron(const Vector center, const double radius, Material mat);
+
 	/// Destructor
 	~Tetrahedron();
 };
