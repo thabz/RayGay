@@ -90,6 +90,18 @@ class boundingbox_test : public Test {
 	    v = b.intersect(r);
 	    assertTrue(r.getPoint(v[0]) == Vector(-1,-1,-1));
 
+	    r = Ray(Vector(0,0,0),Vector(1,0,0),1);
+	    assertTrue(b.checkIntersect(r));
+	    v = b.intersect(r);
+	    assertTrue(r.getPoint(v[0]) == Vector(-1,0,0));
+	    assertTrue(r.getPoint(v[1]) == Vector(1,0,0));
+
+	    r = Ray(Vector(0,0,0),Vector(-1,0,0),1);
+	    assertTrue(b.checkIntersect(r));
+	    v = b.intersect(r);
+	    assertTrue(r.getPoint(v[0]) == Vector(1,0,0));
+	    assertTrue(r.getPoint(v[1]) == Vector(-1,0,0));
+
 	    ////////////////////////////////////////////////////////
 	    // Test doUnion 
 	    ////////////////////////////////////////////////////////
