@@ -1,0 +1,81 @@
+
+$layers = 7
+$width = 1200
+$o = $width/$layers
+
+renderer raytracer
+
+camera { position <1000,500,1800>
+         up <0,1,0> 
+         lookat <250,180,0> 
+	 fov 45
+	 aa 4
+}
+
+image { width 1024 aspect 4 3 }
+
+background <0.761,0.753,0.078,1.0>
+
+light { point <100,1300,1300> power <1,1,1> } 
+
+$blue = material {
+    diffuse <0.8,0.6,0.264>
+    kd 1.0
+    specular <1.0,1.0,1.0>
+    ks 0.0
+    specpow 15
+}
+
+$grey85 = material {
+    diffuse <0.85,0.85,0.85>
+    kd 1.0
+    specular <0.85,0.85,0.85>
+    ks 0.0
+    specpow 15
+}
+
+$red = material {
+    diffuse <0.85,0.20,0.85>
+    kd 0.5
+    specular <0.5,0.5,0.5>
+    ks 0.5
+    specpow 45
+}
+
+/*
+box { $blue
+    <-12000,-300,-12000>
+    <12000,-400,12000>	  
+}
+
+box { $grey85 
+      <-750,-50,-750>
+      <750,-0.01,750>
+}
+*/
+
+$layers = 6
+$width = 1000
+blob {
+    $red
+    60
+    150
+    600
+    0.0001
+    group {
+	$h = 0
+	while ($h < $layers) {
+	    $x = 0
+	    while ($x < $h) {
+		$z = 0
+		while ($z < $h) {
+		    $p = ($layers-$h) * $o * 0.5
+		    sphere { 125 <($x*$o)+$p,($layers-$h)*$o*0.70,($z*$o)+$p> }
+		    $z++
+		}
+		$x++
+	    }
+	    $h++
+	}
+    }
+}
