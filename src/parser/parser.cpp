@@ -137,11 +137,9 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
     SCM s_background = lookup("background");
     if (!SCM_NULLP(s_background)) {
 	if (isWrappedObject(s_background)) {
-	    cout << "Wrapped..." << endl;
 	    Texture* texture = scm2texture(s_background, "internal: setting scene background", 0);
 	    scene->setBackground(texture);
 	} else {
-	    cout << "Not wrapped..." << endl;
 	    RGB rgb = scm2rgb(s_background);
 	    scene->setBackground(rgb);
 	}

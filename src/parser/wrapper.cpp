@@ -36,6 +36,15 @@ bool isSceneObject(SCM object_smob)
     }
 }
 
+bool isTexture(SCM object_smob) {
+    if (isWrappedObject(object_smob)) {
+	struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
+	return o->type == TEXTURE;
+    } else {
+	return false;
+    }
+}
+
 SCM path2scm(Path* path) {
     struct wrapped_object* object;
     object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");

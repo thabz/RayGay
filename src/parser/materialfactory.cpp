@@ -20,8 +20,13 @@ SCM MaterialFactory::make_material(SCM s_options) {
 	string key = string(key_c);
 	SCM s_value = scm_list_ref(s_options, scm_int2num(i*2+1));
 	if (key == "diffuse") {
-	    RGB c = scm2rgb(s_value);
-	    material->setDiffuseColor(c);
+	    if (isTexture(s_value)) {
+		Texture* texture = scm2texture(s_value,"",0);
+		material->setDiffuseTexture(texture);
+	    } else {
+		RGB c = scm2rgb(s_value);
+		material->setDiffuseColor(c);
+	    }
 	} else if (key == "specular") {
 	    RGB c = scm2rgb(s_value);
 	    material->setSpecularColor(c);

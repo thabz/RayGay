@@ -107,6 +107,8 @@ bool isLightsource(SCM object_smob);
 
 bool isSceneObject(SCM object_smob);
 
+bool isTexture(SCM object_smob);
+
 bool isWrappedObject(SCM obj);
 
 #endif
