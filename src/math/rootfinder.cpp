@@ -45,16 +45,24 @@ int RootFinder::solve(double t1, double t2, double* root) {
  * Brent's method is faster though.
  */
 int RootFinder::bisection(double t_begin, double t_end, double* root) {
-    double t_mid = 0.5 * (t_begin + t_end);
+    double t_mid;
     double f_t_begin = f(t_begin);
     double f_t_end = f(t_end);
-    double f_t_mid = f(t_mid);
-    uint i = 3;
+    double f_t_mid;
+    uint i = 2;
 
     if (SAME_SIGN(f_t_begin, f_t_end))
 	return false;
     
     while (i++ < MAX_ITER) {
+	t_mid = 0.5 * (t_begin + t_end);
+	f_t_mid = f(t_mid);
+
+	if (fabs(f_t_mid) < tolerance) {
+	    *root = t_mid;
+	    return i;
+	}
+
 	if (SAME_SIGN(f_t_begin, f_t_mid)) {
 	    t_begin = t_mid;
 	    f_t_begin = f_t_mid;
@@ -63,13 +71,6 @@ int RootFinder::bisection(double t_begin, double t_end, double* root) {
 	    f_t_end = f_t_mid;
 	}
 
-	t_mid = 0.5 * (t_begin + t_end);
-	f_t_mid = f(t_mid);
-
-	if (fabs(f_t_mid) < tolerance) {
-	    *root = t_mid;
-	    return i;
-	}
     }
     return false;
 }
@@ -86,7 +87,7 @@ int RootFinder::bisection(double t_begin, double t_end, double* root) {
  */
 int RootFinder::brents_method(double x1, double x2, double* root) {
     double a,b,c;
-    double r,s,t;
+    double r,s;
     double p,q;
     double fa,fb,fc;
     double tol,m;
@@ -187,7 +188,8 @@ int RootFinder::brents_method(double x1, double x2, double* root) {
 	if (fabs (d) > tol) {
 	    b += d;
 	} else {
-	    b += (m > 0 ? +tol : -tol);
+	    //b += (m > 0 ? +tol : -tol);
+	    b += copysign(tol,m);
 	}
 
 	fb = f(b);
@@ -202,30 +204,30 @@ int RootFinder::brents_method(double x1, double x2, double* root) {
  */
 
 int RootFinder::regula_falsi(double t_begin, double t_end, double* root) {
-    double t_mid = 0.5 * (t_begin + t_end);
+    double t_mid;
     double f_t_begin = f(t_begin);
     double f_t_end = f(t_end);
-    double f_t_mid = f(t_mid);
-    uint i = 3;
+    double f_t_mid;
+    uint i = 2;
 
     if (SAME_SIGN(f_t_begin, f_t_end))
 	return false;
 
     while (i++ < MAX_ITER) {
-	if (SAME_SIGN(f_t_begin, f_t_mid)) {
-	    t_begin = t_mid;
-	    f_t_begin = f_t_mid;
-	} else {
-	    t_end = t_mid;
-	    f_t_end = f_t_mid;
-	}
-
 	t_mid = ( f_t_end * t_begin - f_t_begin * t_end ) / ( f_t_end - f_t_begin );
 	f_t_mid = f(t_mid);
 
 	if (fabs(f_t_mid) < tolerance) {
 	    *root = t_mid;
 	    return i;
+	}
+
+	if (SAME_SIGN(f_t_begin, f_t_mid)) {
+	    t_begin = t_mid;
+	    f_t_begin = f_t_mid;
+	} else {
+	    t_end = t_mid;
+	    f_t_end = f_t_mid;
 	}
     }
     return false;
