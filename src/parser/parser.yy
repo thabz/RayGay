@@ -136,7 +136,7 @@ ActionListNode* top_actions;
 %token tCACHETOLERANCE 
 %token tEQUAL
 %token tPLUSEQUAL tMINUSEQUAL tMULTEQUAL tDIVEQUAL
-
+%token tPLUSPLUS tMINUSMINUS 
 %token tIF tWHILE tDO
 %token tFALSE tTRUE
 %token tBOOL_OR tBOOL_NOT tBOOL_AND tEQUALEQUAL
@@ -148,7 +148,7 @@ ActionListNode* top_actions;
 %type <vector> Vector
 %type <vectorlist> VectorList
 %type <boolean> Bool 
-%type <expr> Expr Random 
+%type <expr> Expr Random  ExprMod
 %type <it> InterpolationType 
 %type <matrix> Rotate Translate Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
@@ -161,10 +161,11 @@ ActionListNode* top_actions;
 %type <path> NamedPath Circle Spiral Path PathDef LineSegment CatmullRomSpline
 %type <camera> Camera
 %type <action> MainAddAction MainAction Assignment Renderer ConfAction
-%type <action> RepeatStmt IfStmt WhileStmt Action OpAssignment
+%type <action> RepeatStmt IfStmt WhileStmt Action ModStmt OpAssignment
 %type <action> AddCamera AddObject AddLight Background Photonmap Print Image
 %type <actionlist> ActionList
 
+%left tPLUSPLUS tMINUSMINUS
 %left '+' '-'
 %left '*' '/'
 %left UMINUS
@@ -190,12 +191,13 @@ MainAction	: Action
 Action		: AddObject
                 | AddLight
                 | Assignment
-                | OpAssignment
 		| RepeatStmt
 		| Print
 		| WhileStmt
 		| WhileStmt
 		| IfStmt
+		| ModStmt 		/* $x++ */
+		| OpAssignment 		/* $x += 1 */
 		;
 
 ConfAction	: AddCamera
@@ -846,7 +848,32 @@ Expr		: tFLOAT
                 {
                     $$ = $2;
 		}
+                | ExprMod
                 ;
+
+ModStmt		: ExprMod
+                {
+		    $$ = new ModifyNamedFloatActionNode($1);
+		}
+                ;
+
+ExprMod		: tVARNAME tPLUSPLUS
+                {
+		    $$ = new ModifyNamedFloatNode(*$1,'+',false);
+		}
+                | tVARNAME tMINUSMINUS
+                {
+		    $$ = new ModifyNamedFloatNode(*$1,'-',false);
+		}
+                | tPLUSPLUS tVARNAME
+                {
+		    $$ = new ModifyNamedFloatNode(*$2,'+',true);
+		}
+                | tMINUSMINUS tVARNAME
+                {
+		    $$ = new ModifyNamedFloatNode(*$2,'-',true);
+		}
+  		;
 
 Expr		: tSIN '(' Expr ')'
                 {

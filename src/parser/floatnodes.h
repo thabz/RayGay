@@ -129,6 +129,43 @@ class FloatRandomNode : public FloatNode {
         FloatNode* to;
 };
 
+/**
+ * This implements the constructs $x++ and $x--  and ++$x and --$x
+ */
+class ModifyNamedFloatNode : public FloatNode {
+    public:
+	ModifyNamedFloatNode(string name, char op, bool before) {
+	    this->name = name;
+	    this->op = op;
+	    this->before = before;
+	}
+
+	virtual ~ModifyNamedFloatNode() {};
+
+	double eval() {
+	    double cur = Assignments::getUniqueInstance()->getNamedFloat(name);
+	    double result = 0;
+	    if (before) {
+		result = cur;
+	    }
+	    if (op == '+') {
+  		cur += 1;
+	    } else {
+  		cur -= 1;
+	    }
+	    if (!before) {
+		result = cur;
+	    }
+	    Assignments::getUniqueInstance()->setNamedFloat(name,cur);
+	    return result;
+	}
+
+    private:
+	string name;
+	char op;
+	bool before;
+};
+
 class NamedFloatNode : public FloatNode {
     public:
 	NamedFloatNode(string name) {
@@ -144,6 +181,5 @@ class NamedFloatNode : public FloatNode {
     private:
 	string name;
 };
-
 
 #endif

@@ -334,4 +334,22 @@ class IfActionNode : public ActionNode {
 	ActionListNode* list;
 	BoolNode* cond;
 };
+
+/** 
+ * This wraps a ModifyNamedFloatNode into an action
+ * so that $x++ can be a standalone action and not just part of
+ * a Expr
+ */
+class ModifyNamedFloatActionNode : public ActionNode {
+    public:
+	ModifyNamedFloatActionNode(FloatNode* node) {
+	    this->node = node;
+	}
+	void eval() {
+	    node->eval();
+	}
+    private:
+	FloatNode* node;
+};
+
 #endif

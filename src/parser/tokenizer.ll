@@ -123,6 +123,8 @@ width		return tWIDTH;
 wireframe	return tWIREFRAME;
 "||"		return tBOOL_OR;
 "&&"		return tBOOL_AND;
+"++"		return tPLUSPLUS;
+"--"		return tMINUSMINUS;
 "!"		return tBOOL_NOT;
 "=="		return tEQUALEQUAL;
 "="		return tEQUAL;
