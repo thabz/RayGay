@@ -4,6 +4,8 @@
 
 #include "parser/syntaxnode.h"
 #include "parser/floatnodes.h"
+#include "image/rgba.h"
+#include "image/rgb.h"
 
 class RGBNode : public SyntaxNode {
     public:
@@ -42,7 +44,8 @@ class RGBAConstNode : public RGBANode {
 
 	RGBA eval() {
 	    return RGBA(r->eval(),g->eval(),b->eval(),a->eval());
-	};
+	}
+
     private:
 	FloatNode* r;
 	FloatNode* g;
