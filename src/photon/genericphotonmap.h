@@ -84,9 +84,7 @@ class PhotonMap {
 		const int median,
 		const int axis );
 
-	PhotonType *photons;
 
-	int stored_photons;
 	int half_stored_photons;
 	int max_photons;
 	int prev_scale;
@@ -98,6 +96,11 @@ class PhotonMap {
 
 	float bbox_min[3];		// use bbox_min;
 	float bbox_max[3];		// use bbox_max;
+
+    protected:
+	int stored_photons;
+	PhotonType *photons;
+
 };
 
 #include "genericphotonmap.cpp"
