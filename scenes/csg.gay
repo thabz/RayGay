@@ -7,7 +7,7 @@ camera-position 1000 1000 2000
 camera-up 0 1 0
 camera-lookat 0 100 0
 camera-field-of-view 45
-camera-aa 0
+camera-aa 4
 
 image-ratio 4 3
 image-width 640
@@ -18,15 +18,24 @@ light point -1500 2100 2100 1 1 1
 
 box $blue -700 -50 -700  700 0 700
 
-name s1 sphere $dullwhite 400 0 400 0
-name s2 sphere $dullwhite 200 0 400 400
-name b1 solidbox $dullwhite -500 350 -500      500 450 500
-#difference $red s1 s2
+#name s1 sphere $dullwhite 400 0 400 0
+#name s2 sphere $dullwhite 200 0 400 400
+#name b1 solidbox $dullwhite -500 350 -500 500 450 500
+#difference $dullred s1 s2
 #intersection $red s1 s2
 #union $red s1 s2
 
-intersection $dullred s1 b1
-#union $dullred s1 b1
+#intersection $dullred s1 b1
+#difference $dullred s1 b1
 
 
+name s1 sphere $dullwhite 400 0 400 0
+name s2 sphere $dullwhite 350 0 400 0
+name b1 solidbox $dullwhite -500 350 -500 500 450 500
+
+name hollow difference $dullwhite s1 s2
+
+intersection $dullred hollow b1
+
+sphere $blue 300 0 400 0
 

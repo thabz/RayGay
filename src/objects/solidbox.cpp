@@ -8,7 +8,16 @@ SolidBox::SolidBox(const Vector corner1, const Vector corner2, const Material* m
 
 bool SolidBox::inside(const Vector& point_world) const {
     Vector point_local = pointToObject(point_world);
-    return bbox.inside(point_local);
+    Vector _c1 = bbox.minimum();
+    Vector _c2 = bbox.maximum();
+    return point_local[0] > _c1[0] - EPSILON &&
+           point_local[1] > _c1[1] - EPSILON &&
+           point_local[2] > _c1[2] - EPSILON &&
+           point_local[0] < _c2[0] + EPSILON &&
+           point_local[1] < _c2[1] + EPSILON &&
+           point_local[2] < _c2[2] + EPSILON;
+
+ //   return bbox.insideOrTouching(point_local);
 }
 
 BoundingBox SolidBox::boundingBoundingBox() const {
@@ -32,7 +41,7 @@ vector<Intersection> SolidBox::allIntersections(const Ray& world_ray) const {
     }
     if (ts[1] > EPSILON) {
 	Intersection i = fullIntersect(world_ray,ts[1]);
-	i.isEntering(true);
+	i.isEntering(false);
 	result.push_back(i);
     }
     if (result.size() == 1) {
