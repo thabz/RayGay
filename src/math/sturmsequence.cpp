@@ -2,9 +2,10 @@
 #include "math/sturmsequence.h"
 
 SturmSequence::SturmSequence(const Polynomial& polynomial) {
+    Polynomial pol0 = Polynomial(0.0);
     f.push_back(polynomial);
     f.push_back(polynomial.derivative());
-    if (f[1].order() != 0) {
+    if (!(f[1] == pol0)) {
 	uint n = 2;
 	Polynomial remainder;
 	do {
@@ -12,7 +13,7 @@ SturmSequence::SturmSequence(const Polynomial& polynomial) {
 	    remainder = remainder * -1;
 	    f.push_back(remainder);
 	    n++;
-	} while (remainder.order() > 0 && !IS_ZERO(remainder.coefficient(0)));
+	} while (!(remainder == pol0));
     };
     
 }
