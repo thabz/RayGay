@@ -2,8 +2,10 @@
 #ifndef MATH_QUATERNION_H
 #define MATH_QUATERNION_H
 
-#include "math/vector.h"
 #include <iostream>
+#include <cassert>
+#include "math/vector.h"
+#include "math/matrix.h"
 
 /**
  * A class representing Quaternions.
@@ -15,6 +17,7 @@ class Quaternion
     friend std::ostream& operator<<(std::ostream &os, const Quaternion& q);
 
     public:
+        Quaternion();
 	Quaternion(double a, double b, double c, double d);
 	Quaternion(double s, const Vector& v);
 	Quaternion operator+(const Quaternion& b) const;
@@ -29,11 +32,16 @@ class Quaternion
 	double norm_squared() const;
 	Vector rotate(const Vector& v) const;
 	static Quaternion rotation(const Vector& v, double angle);
+	Matrix toMatrix() const;
 
     private:
 	double a1, a2, a3, a4;
 
 };
+
+inline
+Quaternion::Quaternion() {
+}
 
 inline
 Quaternion::Quaternion(double a, double b, double c, double d) {
@@ -163,6 +171,35 @@ Vector Quaternion::rotate(const Vector& P) const {
     Quaternion p = Quaternion(0,P);
     Quaternion r = *this * p * this->conjugate();
     return Vector(r.a2, r.a3, r.a4);
+}
+
+/**
+ * Converts this quaternion to a rotation matrix. The quaternion must
+ * have norm = 1.
+ *
+ * @see http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
+ */
+Matrix Quaternion::toMatrix() const {
+    assert(IS_EQUAL(norm(),1.0));
+    Matrix m;
+    double a = a1;
+    double b = a2;
+    double c = a3;
+    double d = a4;
+    double aa = a * a;
+    double bb = b * b;
+    double cc = c * c;
+    double dd = d * d;
+    m.set(0,0, aa + bb - cc - dd);
+    m.set(1,0, 2*b*c - 2*a*d);
+    m.set(2,0, 2*a*c - 2*b*d);
+    m.set(0,1, 2*a*d + 2*b*c);
+    m.set(1,1, aa - bb + cc - dd);
+    m.set(2,1, 2*c*d - 2*a*b);
+    m.set(0,2, 2*b*d - 2*a*c);
+    m.set(1,2, 2*a*b + 2*c*d);
+    m.set(2,2, aa - bb - cc + dd);
+    return m;
 }
 
 std::ostream& operator<<(std::ostream& os, const Quaternion& q) 
