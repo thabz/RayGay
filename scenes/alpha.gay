@@ -5,12 +5,12 @@ renderer raytracer
 
 camera-position 700 1000 1100
 camera-up 0 1 0
-camera-lookat 0 -100 0
+camera-lookat 0 0 0
 camera-field-of-view 40
 camera-aa 4
 
-image-ratio 1 1
-image-width 1600
+image-ratio 16 9
+image-width 128
 
 background 0.5 0.5 0.5 0.0
 
@@ -18,3 +18,4 @@ light point 2000 2800 1500 3000000 3000000 3000000
 
 sphere $red 200 0 200 0
 box $green -300 -100 -300    300 0 300
+
