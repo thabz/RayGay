@@ -104,15 +104,23 @@ void GlobalPhotonMap::preComputeIrradiance(int photon_index) {
 }
 
 /**
- * Find the nearest precomputed estimate with a suitable normal.
+ * Computes an irradiance estimate ignoring the precomputed stuff.
  *
- * @param os The point we want an estimate for.
+ * This is slower but more accurate than irradianceEstimate()
+ *
+ * @param pos The point we want an estimate for.
  * @param normal The surface normal at that point.
  */
 RGB GlobalPhotonMap::directIrradianceEstimate(const Vector& pos, const Vector& normal) const {
     return irradiance_estimate(pos,normal);
 }
 
+/**
+ * Find the nearest precomputed estimate with a suitable normal.
+ *
+ * @param pos The point we want an estimate for.
+ * @param normal The surface normal at that point.
+ */
 RGB GlobalPhotonMap::irradianceEstimate(const Vector& pos, const Vector& normal) const {
 
     locatePhotonArgs args;
