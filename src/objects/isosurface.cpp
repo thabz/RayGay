@@ -8,7 +8,7 @@
 
 using namespace std;
 
-IsoSurface::IsoSurface(unsigned int steps, double accuracy, double iso, Material* mat) : Object(mat) {
+IsoSurface::IsoSurface(uint steps, double accuracy, double iso, Material* mat) : Object(mat) {
     this->steps = steps;
     this->accuracy = accuracy;
     this->iso = iso;
@@ -91,7 +91,6 @@ double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
 double IsoSurface::refine(const Ray& ray, double x1, double x3) const {
 
 #define func(x) (evaluateFunction(ray.getPoint(x)) - iso)
-#define sign(x) ((x) >= 0 ? 1 : -1)    
 #define MAX_ITER 10000    
 
     double x2;
@@ -105,7 +104,7 @@ double IsoSurface::refine(const Ray& ray, double x1, double x3) const {
     fx2 = func(x2);
     fx3 = func(x3);
 
-    assert(sign(fx1) != sign(fx3));
+    assert(SIGN(fx1) != SIGN(fx3));
 
     uint num = 0;
     while(num++ < MAX_ITER) {

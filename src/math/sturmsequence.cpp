@@ -14,7 +14,6 @@ SturmSequence::SturmSequence(const Polynomial& polynomial) {
 	do {
 	    f[n-2].division(f[n-1],remainder);
 	    remainder = remainder * -1;
-	    std::cout << remainder << std::endl;
 	    f.push_back(remainder);
 	    n++;
 	} while (!(remainder == pol0));
@@ -29,8 +28,6 @@ void SturmSequence::eval(double x, double* dest) const {
     }
 }
 
-#define sign(x) ((x >= 0) ? 1 : -1)
-
 int SturmSequence::signChanges(double x) const {
     uint num = f.size() - 1; // Ignore last polynomial that is constant 0.
 
@@ -38,10 +35,8 @@ int SturmSequence::signChanges(double x) const {
     eval(x,values);
 
     uint result = 0;
-    int cur_sign = sign(values[0]);
     for(uint i = 1; i < num; i++) {
-	if (sign(values[i]) != cur_sign) {
-	    cur_sign = sign(values[i]);
+	if (!SAME_SIGN(values[i], values[i-1])) {
 	    result++;
 	}
     }

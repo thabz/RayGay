@@ -35,11 +35,6 @@ bool RootFinder::solve(double t1, double t2, double* root) {
     }
 }
 
-inline
-int sign(double val) {
-    return val >= 0 ? 1 : -1;
-}
-
 /**
  * Rootfinding by interval bisection.
  *
@@ -51,11 +46,11 @@ bool RootFinder::bisection(double t_begin, double t_end, double* root) {
     double f_t_end = f(t_end);
     double f_t_mid = f(t_mid);
 
-    if (sign(f_t_begin) == sign(f_t_end))
+    if (SAME_SIGN(f_t_begin, f_t_end))
 	return false;
     
     while (true) {
-	if (sign(f_t_begin) == sign(f_t_mid)) {
+	if (SAME_SIGN(f_t_begin, f_t_mid)) {
 	    t_begin = t_mid;
 	    f_t_begin = f_t_mid;
 	} else {
@@ -95,7 +90,7 @@ bool RootFinder::brents_method(double x1, double x3, double* root) {
     fx2 = f(x2);
     fx3 = f(x3);
 
-    if (sign(fx1) == sign(fx3))
+    if (SAME_SIGN(fx1, fx3))
 	return false;
 
     while(true) {

@@ -31,6 +31,9 @@
 #define HUGE_DOUBLE	double(1e+20)
 #define EPSILON		double(1e-9)
 
+#define SIGN(x) ((x >= 0) ? 1 : -1)
+#define SAME_SIGN(x,y) (SIGN(y) == SIGN(x)) 
+
 #define MIN(x,y)	((x) < (y) ? (x) : (y))
 #define MAX(x,y)	((x) > (y) ? (x) : (y))
 
