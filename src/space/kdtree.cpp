@@ -18,6 +18,8 @@
 #define KD_TREE_MAX 2
 #define KD_TREE_MAX_DEPTH 100
 
+#undef NO_STATS
+
 KdTree::KdTree() {
     prepared = false;
     added_objects = new vector<Object*>;
@@ -27,7 +29,9 @@ KdTree::~KdTree() {
 }
 
 void KdTree::addObject(Object* obj) {
-    //Stats::getUniqueInstance()->inc(STATS_KDTREE_OBJECTS_ADDED);
+#ifndef NO_STATS    
+    Stats::getUniqueInstance()->inc(STATS_KDTREE_OBJECTS_ADDED);
+#endif    
     added_objects->push_back(obj);
 }
 
@@ -96,10 +100,9 @@ void KdTree::prepare() {
     top_node = prepare(&node,1);
     delete [] bobs;
     
-#ifdef VERBOSE    
-    cout << "Prepared..." << endl;
-    cout << "Max depth: " << max_depth << endl;
-    cout << "Nodes: " << nodes_count << endl;
+#ifndef NO_STATS
+    Stats::getUniqueInstance()->put(STATS_KDTREE_DEPTH,max_depth);
+    Stats::getUniqueInstance()->put(STATS_KDTREE_NODES,nodes_count);
 #endif    
     prepared = true;
 }

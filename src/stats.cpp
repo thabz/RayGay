@@ -21,6 +21,8 @@ string StatsStrings[] = {
     "Irradiance cache hits",
     "Irradiance cache misses",
     "Total camera rays cast",
+    "Kd-tree depth",
+    "Kd-tree nodes",
     "Threads"
 };
 
