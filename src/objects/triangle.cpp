@@ -113,10 +113,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
    /* if determinant is near zero, ray lies in plane of triangle */
    det = DOT(edge1,pvec);
 
-   if (det < EPSILON)
-   {
-       return -1.0;
-   } else {
+   if (det > EPSILON) {
       /* calculate distance from vert0 to ray origin */
       SUB(tvec,ray.getOrigin(),vert0)
       
@@ -139,10 +136,10 @@ double Triangle::_fastIntersect(const Ray& ray) const {
    else if (det < -EPSILON)
    {
       // calculate distance from vert0 to ray origin
-      tvec = ray.getOrigin() - vert0;
+      SUB(tvec,ray.getOrigin(),vert0)
       
       // calculate U parameter and test bounds
-      u = tvec * pvec;
+      u = DOT(tvec,pvec);
       if (u > 0.0 || u < det)
 	 return -1;
       
@@ -150,15 +147,15 @@ double Triangle::_fastIntersect(const Ray& ray) const {
       CROSS(qvec,tvec,edge1);
       
       // calculate V parameter and test bounds
-      v = ray.getDirection() * qvec;
+      v = DOT(ray.getDirection(),qvec);
       if (v > 0.0 || u + v < det)
 	 return -1;
    } 
+#endif   
    else
    {
        return -1;  /* ray is parallell to the plane of the triangle */
    }
-#endif   
 
    /* calculate t, ray intersects triangle */
    return DOT(edge2,qvec) / det;
