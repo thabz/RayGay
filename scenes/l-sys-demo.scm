@@ -8,7 +8,7 @@
 (set! camera 
   (make-pinhole-camera 
     '( pos (1000 1000 2000)
-       lookat (0 100 0)
+       lookat (0 500 0)
        up (0 1 0)
        fov 45
        aa 0)))
@@ -41,8 +41,8 @@
   scene 
   (list 
     (make-box 
-      '(-1700 -51 -1700) 
-      '(1700 1 1700) 
+      '(-11700 -51 -11700) 
+      '(11700 1 11700) 
       green)))
 
 
@@ -50,13 +50,17 @@
  '((F . (F + G - G))
    (G . ( [ F + F + F ] [ F - F - F ] ))))
 
+(define rules
+ '(( X . (F - [ [ X ] + X ] + F [ + F X ] - X))
+     (F . (F F))))
+
 (append! scene
  (make-l-system-object 
-  15  ; angle
-  100 ; length
-  10  ; thickness
-  '(F) ; axiom
+  22.5  ; angle
+  15 ; length
+  4  ; thickness
+  '(X) ; axiom
   rules
-  4   ; depth
+  5   ; depth
   brown))
 

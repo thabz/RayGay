@@ -16,10 +16,11 @@
 ;;   '((a . (a b))
 ;;    (b . (b a))))
 ;;
-;; The the expansion of the axiom (a b c) at generation 3 is done as
+;; Then the expansion of the axiom (a b c) at generation 3 is done as
 ;; 
 ;; (l-system-expand '(a b c) rules 3)
 ;; 
+(debug-set! stack 200000)
 (define (l-system-expand axiom rules generation)
   (if (zero? generation) 
     axiom
@@ -35,14 +36,6 @@
 	    (iter (car rest) (cdr rest))
 	    '())))
       rules (- generation 1))))
-
-(define-macro (pop stack)
-  (let ((result (car stack)))
-    (set! stack (cdr stack))
-    result))
-
-(define-macro (push stack element)
-  (set! stack (cons element stack)))
 
 (define (make-l-system-object angle length thickness axiom rules depth material)
   (let ((job (l-system-expand axiom rules depth))
