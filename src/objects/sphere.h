@@ -1,9 +1,7 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include <vector>
-#include <iosfwd>
-
+#include "solid.h"
 #include "object.h"
 #include "math/vector.h"
 #include "boundingbox.h"
@@ -15,7 +13,7 @@ class Matrix;
 class Vector2;
 
 /// A sphere object
-class Sphere : public BooleanOperand {
+class Sphere : public Solid {
 
     friend std::ostream & operator<< (std::ostream &os, const Sphere &s);
     
@@ -39,7 +37,8 @@ class Sphere : public BooleanOperand {
 	virtual SceneObject* clone() const;
 	double _fastIntersect(const Ray& ray) const;
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
-        int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
+	int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
+	vector<Intersection> allIntersections(const Ray& ray) const;
 
     private:
 	Vector center;

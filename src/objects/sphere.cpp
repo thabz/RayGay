@@ -14,7 +14,7 @@
 
 using namespace std;
 
-Sphere::Sphere(const Vector& c, double r, const Material* mat) : BooleanOperand(mat) {
+Sphere::Sphere(const Vector& c, double r, const Material* mat) : Solid(mat) {
     assert(r > 0);
     center = c;
     radius = r;
@@ -69,6 +69,48 @@ double Sphere::_fastIntersect(const Ray& ray) const {
        }
     }
     return -1;
+}
+
+vector<Intersection> Sphere::allIntersections(const Ray& ray) const {
+    vector<Intersection> result;
+
+    Vector v = ray.getDirection();
+    Vector QmP = ray.getOrigin() - center;
+    // TODO: Q - P udregnes for mange gange herunder
+    double a = v * v;
+    double b = 2 * v * QmP;
+    double c = (QmP * QmP - radius * radius);
+    double D = b * b - 4 * a * c;
+    if (D > 0) {
+	// Two roots
+       double sq = sqrt(D);
+       double t1 = (-b - sq ) / (2 * a);
+       double t2 = (-b + sq ) / (2 * a);
+       if (t1 > 0 && t2 > 0) {
+	   Intersection i1 = fullIntersect(ray,t1);
+	   Intersection i2 = fullIntersect(ray,t2);
+	   if (t1 < t2) {
+	       i1.isEntering(true);
+	       i2.isEntering(false);
+	       result.push_back(i1);
+	       result.push_back(i2);
+	   } else {
+	       i2.isEntering(true);
+	       i1.isEntering(false);
+	       result.push_back(i2);
+	       result.push_back(i1);
+	   }
+       } else if (t1 <= 0 && t2 > 0) {
+	   Intersection i2 = fullIntersect(ray,t2);
+	   i2.isEntering(false);
+	   result.push_back(i2);
+       } else if (t2 <= 0 && t1 > 0) {
+	   Intersection i1 = fullIntersect(ray,t1);
+	   i1.isEntering(false);
+	   result.push_back(i1);
+       }
+    }
+    return result;
 }
 
 ostream & operator<<(ostream &os, const Sphere &s) {
