@@ -4,7 +4,8 @@
 #include <cassert>
 #include <map>
 
-#include "mesh.h"
+#include "types.h"
+#include "objects/mesh.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
 #include "intersection.h"
@@ -42,7 +43,6 @@ void Mesh::addSelf(KdTree* space) {
 void Mesh::prepare() {
     if (prepared == true) return;
 
-    //computeAdjacentTris();
     computeInterpolatedNormals();
     prepared = true;
     for(unsigned int i = 0; i < triangles.size(); i++) {
@@ -111,6 +111,10 @@ void Mesh::addTriangle(int v[3], const Vector2 uv[3]) {
     normals.push_back(normal);
     unsigned int normal_idx = normals.size() - 1;
 
+    faces.push_back(v[0]);
+    faces.push_back(v[1]);
+    faces.push_back(v[2]);
+
     Tri tri;
     tri.normal_idx = normal_idx;
     tri.uv[0] = uv[0];
@@ -145,16 +149,65 @@ void Mesh::computeAdjacentTris() {
 */
 
 void Mesh::computeInterpolatedNormals() {
-    for(unsigned int i = 0; i < tris.size(); i++) {
-	Tri& tri = tris[i];
-	tri.interpolated_normal[0] = tri.normal_idx;
-	tri.interpolated_normal[1] = tri.normal_idx;
-	tri.interpolated_normal[2] = tri.normal_idx;
+
+    if (meshType == Mesh::MESH_FLAT) {
+	cout << "Using flat normals" << endl;
+	for(uint i = 0; i < tris.size(); i++) {
+	    Tri& tri = tris[i];
+	    tri.interpolated_normal[0] = tri.normal_idx;
+	    tri.interpolated_normal[1] = tri.normal_idx;
+	    tri.interpolated_normal[2] = tri.normal_idx;
+	}
+    } else {
+	cout << "Finding interpolated normals" << endl;
+	assert(tris.size() == faces.size() / 3);
+	uint face_num = tris.size();
+	uint vertex_num = corners.size();
+	vector<uint>* adj = new (vector<uint>)[vertex_num];
+	for(uint i = 0; i < face_num; i++) {
+	    for(uint j = 0; j < 3; j++) {
+		uint vertex_idx = faces[i*3+j];
+		adj[vertex_idx].push_back(i);
+	    }
+	}
+
+	for(uint i = 0; i < face_num; i++) {
+	    Tri* tri = &(tris[i]);
+	    Vector normal = normals[tri->normal_idx];
+	    for(uint j = 0; j < 3; j++) {
+		Vector interpolated_normal = normal;
+		int num = 1;
+		uint vertex_idx = faces[i*3+j];
+		vector<uint> adj_faces = adj[vertex_idx];
+		uint fac_num = adj_faces.size();
+		for(uint v = 0; v < fac_num; v++) {
+		    uint other_face_idx = adj_faces[v];
+		    if (other_face_idx != i) {
+			Vector other_normal = normals[tris[other_face_idx].normal_idx];
+			if (other_normal * normal > PHONG_ANGLETHRESHOLD) {
+			    interpolated_normal += other_normal;
+			    num++;
+			}
+		    }
+		}
+		if (num > 1) {
+		    interpolated_normal.normalize();
+		    normals.push_back(interpolated_normal);
+		    tri->interpolated_normal[j] = normals.size() - 1;
+		} else {
+		    tri->interpolated_normal[j] = tri->normal_idx;
+		}
+	    }
+	}
+
+	delete [] adj;
+	cout << "So far, so good." << endl;
+    }
 
 #if 0
-	Vector normal = normals[tri->normal_idx];
-	for(unsigned int j = 0; j < 3; j++) {
-	    Vertex vertex = vertices[tri->vertex[j]];
+	    Vector normal = normals[tri->normal_idx];
+	    for(unsigned int j = 0; j < 3; j++) {
+		Vertex vertex = vertices[tri->vertex[j]];
 	    int num = 1;
 	    Vector interpolated_normal = normal;
 	    for(unsigned int v = 0; v < vertex.tris.size(); v++) {
@@ -174,8 +227,8 @@ void Mesh::computeInterpolatedNormals() {
 		tri->interpolated_normal[j] = tri->normal_idx;
 	    }
 	}
-#endif	
     }
+#endif	
 }
 
 // TODO: Optimize by keeping a stl::set with all corners.

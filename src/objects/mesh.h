@@ -43,7 +43,7 @@ class Mesh : public ObjectGroup {
 	/// The types of meshes
 	enum MeshType {
 	    MESH_FLAT,
-	    MESH_INTERPOLATED
+	    MESH_PHONG
 	};
 
 	/// Helper type
@@ -122,8 +122,8 @@ class Mesh : public ObjectGroup {
 	// New data structure
 	std::vector<Vector> normals;
 	std::vector<Vector> corners;
-	std::vector<unsigned int[3]> faces;
-	std::vector<unsigned int[3]> normal_indices;
+	std::vector<unsigned int> faces;
+	std::vector<unsigned int> normal_indices;
 };
 
 inline
