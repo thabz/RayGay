@@ -83,7 +83,6 @@ class KdTree : public SpaceSubdivider {
 	void prepare(int curNode_idx, int depth);
 
 	KdNode* nodes;
-	mutable StackElem* stack;
 	std::vector<KdNodeTmp> tmp_nodes;
 	int max_depth;
 

@@ -18,9 +18,6 @@ KdTree::KdTree() {
 }
 
 KdTree::~KdTree() {
-    if (prepared) {
-	delete[] stack;
-    }
 }
 
 void KdTree::addObject(Object* obj) {
@@ -61,7 +58,6 @@ void KdTree::prepare() {
     prepare(0,1);
     int nodes_num = tmp_nodes.size();
     nodes = new KdNode[nodes_num];
-    stack = new StackElem[max_depth*10];
 #ifdef VERBOSE    
     cout << "Prepared..." << endl;
     cout << "Max depth: " << max_depth << endl;
@@ -206,6 +202,8 @@ void KdTree::prepare(int curNode_idx,int depth) {
  * See http://www.acm.org/jgt/papers/HavranKopalBittnerZara97/TA-B.html
  */
 bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, const double b) const {
+
+    StackElem* stack = (StackElem*)alloca(sizeof(StackElem)*(max_depth*2));
 
     double t;
     KdNode *farChild, *curNode;
@@ -371,6 +369,8 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 }
 
 Object* KdTree::intersectForShadow(const Ray& ray, const double a, const double b) const {
+
+    StackElem* stack = (StackElem*)alloca(sizeof(StackElem)*(max_depth*2));
 
     double t;
     KdNode *farChild, *curNode;
