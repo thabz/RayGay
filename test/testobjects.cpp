@@ -264,7 +264,7 @@ void extrusion_test() {
 
 void cylinder_test() {
     Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
-    Cylinder* cyl = new Cylinder(Vector(0,0,0),Vector(0,0,10),10,m);
+    Cylinder* cyl = new Cylinder(Vector(0,0,0),Vector(0,0,10),10,false,m);
 
     /* Test intersection() of z-axis aligned cylinder */
     
@@ -279,11 +279,11 @@ void cylinder_test() {
     delete cyl;
 
     // Test a cylinder translated along the z-axis
-    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,m);
+    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,false,m);
     delete cyl;
     
     // Test an x-axis aligned cylinder
-    cyl = new Cylinder(Vector(2,0,0),Vector(10,0,0),10,m);
+    cyl = new Cylinder(Vector(2,0,0),Vector(10,0,0),10,false,m);
     assert(intersects(cyl,Vector(3,0,1000),Vector(0,0,-1)));
     assert(iPoint(cyl,Vector(3,0,1000),Vector(0,0,-1)) == Vector(3,0,10));
     assert(iNormal(cyl,Vector(3,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
@@ -291,7 +291,7 @@ void cylinder_test() {
     delete cyl;
     
     // Test an y-axis aligned cylinder
-    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
+    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,false,m);
     assert(intersects(cyl,Vector(0,3,1000),Vector(0,0,-1)));
     assert(iPoint(cyl,Vector(0,3,1000),Vector(0,0,-1)) == Vector(0,3,10));
     assert(iNormal(cyl,Vector(0,3,1000),Vector(0,0,-1)) == Vector(0,0,1));
@@ -300,7 +300,7 @@ void cylinder_test() {
     delete cyl;
 
     // test allIntersections
-    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
+    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
     vector<Intersection> result;
     Ray ray = Ray(Vector(0,5,1000),Vector(0,0,-1),-1);
     result = cyl->allIntersections(ray);
@@ -309,7 +309,7 @@ void cylinder_test() {
     assert(result[1].getPoint() == Vector(0,5,-10));
     
     // Intersect with caps (z-axis aligned)
-    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,m);
+    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,true,m);
     ray = Ray(Vector(0,0,50),Vector(0,0,-1),-1);
     result = cyl->allIntersections(ray);
     assert(result.size() == 2);
@@ -321,7 +321,7 @@ void cylinder_test() {
     assert(result[1].getNormal() == Vector(0,0,-1));
 
     // Intersect with caps (y-axis aligned)
-    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
+    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
     ray = Ray(Vector(0,50,1),Vector(0,-1,0),-1);
     result = cyl->allIntersections(ray);
     assert(result.size() == 2);

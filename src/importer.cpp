@@ -531,7 +531,14 @@ void Importer::parse(const string& filename) {
 	    double r = readDouble(stream);
 	    Vector c1 = readVector(stream);
 	    Vector c2 = readVector(stream);
-	    cur_object = new Cylinder(c1,c2,r,m);
+	    cur_object = new Cylinder(c1,c2,r,false,m);
+	} else if (command == "capped-cylinder") {
+	    stream >> str1;
+	    Material* m = lookupMaterial(str1);
+	    double r = readDouble(stream);
+	    Vector c1 = readVector(stream);
+	    Vector c2 = readVector(stream);
+	    cur_object = new Cylinder(c1,c2,r,true,m);
 	} else if (command == "box") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);

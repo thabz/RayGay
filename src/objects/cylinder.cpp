@@ -12,9 +12,10 @@
  * @param begin The bottom point
  * @param end	The top point
  * @param radius The radius of the cylinder
+ * @param has_caps Whether caps should be checked for intersection too
  * @param m Material
  */
-Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, const Material* m) : Solid (m) {
+Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, bool has_caps, const Material* m) : Solid (m) {
 
     this->begin = begin;
     this->end = end;
@@ -24,7 +25,7 @@ Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, const 
     Vector endt = end - begin;
     this->height = endt.length();
 
-    this->has_caps = true;
+    this->has_caps = has_caps;
 
     Matrix translation = Matrix::matrixTranslate(begin);
     Matrix rotation = Matrix::matrixOrient(endt);

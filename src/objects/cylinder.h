@@ -22,7 +22,7 @@ class Cylinder : public Solid, public Transformer {
 
     public:
 	/// Constructor
-    	Cylinder(const Vector& begin, const Vector& end, double radius, const Material* m);
+    	Cylinder(const Vector& begin, const Vector& end, double radius, bool has_caps, const Material* m);
 	~Cylinder() {};
 	void transform(const Matrix& m);
 
