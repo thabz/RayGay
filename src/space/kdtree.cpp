@@ -16,7 +16,7 @@
 #define SANITY_CHECK
 
 #define KD_TREE_MAX 2
-#define KD_TREE_MAX_DEPTH 32
+#define KD_TREE_MAX_DEPTH 50
 // Don't check for best split in all 3 dimensions when number
 // of objects in a node exceeds this value. Then just use largest
 // dimension of bbox as best dimension.
@@ -27,12 +27,13 @@
 /*
  * Macros for accessing the packed KdNode.
  */
-#define leftNode(node) (node->left)
-#define rightNode(node) (node->right)
+#define leftNode(node) (node->left == 0 ? NULL : &(nodes[node->left]))
+#define rightNode(node) (node->left == 0 ? NULL : &(nodes[node->left+1]))
 #define isLeafNode(node) (node->axis == -1)
 #define getNodeAxis(node) (node->axis)
 #define getNodeObjectNum(node) (node->num)
 #define getNodeSplitValue(node) (node->splitPlane)
+#define getTopNode() (&(nodes[0]))
 
 
 KdTree::KdTree() {
@@ -41,7 +42,12 @@ KdTree::KdTree() {
 }
 
 KdTree::~KdTree() {
-    delete top_node;
+    for(unsigned int i = 0; i < nodes.size(); i++) {
+	if (nodes[i].axis == -1 && nodes[i].num > 0) {
+	    delete [] nodes[i].objects;
+	}
+    }
+    nodes.clear();
 }
 
 void KdTree::addObject(Object* obj) {
@@ -107,31 +113,35 @@ void KdTree::prepare() {
 
     world_bbox = enclosure(bounded_objects);
     max_depth = 0;
-    nodes_count = 0;
 
     KdNodeTmp node;
-    //node.bbox = world_bbox;
     node.bobjects = bounded_objects;
 
-    top_node = prepare(&node,world_bbox,1);
+    nodes.push_back(KdNode());
+    assert(nodes.size() == 1);
+    prepare(&node,world_bbox,1,0);
+
     delete [] bobs;
     
 #ifndef NO_STATS
     Stats::getUniqueInstance()->put(STATS_KDTREE_DEPTH,max_depth);
-    Stats::getUniqueInstance()->put(STATS_KDTREE_NODES,nodes_count);
+    Stats::getUniqueInstance()->put(STATS_KDTREE_NODES,nodes.size());
 #endif    
-    cout << "Nodes in kd-tree: " << nodes_count << endl;
+    cout << "Nodes in kd-tree: " << nodes.size() << endl;
+    cout << "Depth: " << max_depth << endl;
     prepared = true;
 }
 
-KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, const BoundingBox& bbox, unsigned int depth) {
+void KdTree::prepare(KdNodeTmp* curNode, const BoundingBox& bbox, unsigned int depth, const unsigned int dest_idx) {
 
-    KdNode* left_node_ptr = NULL;
-    KdNode* right_node_ptr = NULL;
+    assert(dest_idx < nodes.size());
+
     // Mark curNode as a leaf until a suitable split-plane is found
     curNode->axis = -1;
+    unsigned int new_left_idx = 0;
+    unsigned int new_right_idx = 0;
 
-    // Keep with in max depth or minimum node size
+    // Keep within max depth or minimum node size
     if (depth <= KD_TREE_MAX_DEPTH && curNode->bobjects->size() > KD_TREE_MAX) {
 
 	if (depth > max_depth) {
@@ -142,6 +152,8 @@ KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, const BoundingBox& bbox, uns
 	CostResult splitResult;
 	splitResult.left_bobjects = curNode->bobjects;
 	splitResult.right_bobjects = new vector<BoundedObject*>;
+
+	assert(splitResult.right_bobjects != splitResult.left_bobjects);
 	*(splitResult.right_bobjects) = *(splitResult.left_bobjects);
 	assert(splitResult.right_bobjects->size() == splitResult.left_bobjects->size());
 	assert(splitResult.right_bobjects != splitResult.left_bobjects);
@@ -184,34 +196,42 @@ KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, const BoundingBox& bbox, uns
 	    }
 	    delete splitResult.right_bobjects;
 
+	    // Allocate childnodes
+	    nodes.push_back(KdNode());
+	    nodes.push_back(KdNode());
+	    new_left_idx = nodes.size() - 2;
+	    new_right_idx = nodes.size() - 1;
+
 	    // Recurse into child nodes
-	    left_node_ptr = prepare(&lower, lower_bbox, depth+1);
-	    right_node_ptr = prepare(&higher, higher_bbox, depth+1);
-	} else {
-	    delete splitResult.right_bobjects;
+	    prepare(&lower, lower_bbox, depth+1, new_left_idx);
+	    prepare(&higher, higher_bbox, depth+1, new_right_idx);
 	}
     } 
     
     // Build the real KdNode
-    KdNode* new_node = new KdNode();
-    new_node->axis = curNode->axis;
-    new_node->splitPlane = curNode->splitPlane;
-    nodes_count++;
-    if (isLeafNode(curNode)) {
+    KdNode& new_node = nodes[dest_idx];
+
+    if (curNode->axis == -1) {
+	new_node.axis = -1;
 	unsigned int num = curNode->bobjects->size();
-	new_node->objects = new (Object*)[num];
-	new_node->num = num;
-	//new_node->objects->reserve(curNode->bobjects->size());
-	for(unsigned int j = 0; j < num; j++) {
-	    new_node->objects[j] = curNode->bobjects->operator[](j)->object;
+	new_node.num = num;
+	if (num > 0) {
+	    new_node.objects = new (Object*)[num];
+	    for(unsigned int j = 0; j < num; j++) {
+		new_node.objects[j] = curNode->bobjects->operator[](j)->object;
+	    }
+	} else {
+	    new_node.objects = NULL;
 	}
 	delete curNode->bobjects;
     } else {
-	assert(left_node_ptr != NULL && right_node_ptr != NULL);
-	new_node->left = left_node_ptr;
-	new_node->right = right_node_ptr;
+	new_node.axis = curNode->axis;
+	new_node.splitPlane = curNode->splitPlane;
+	assert(new_left_idx != 0 && new_right_idx != 0);
+	assert(new_right_idx == new_left_idx + 1);
+	new_node.left = new_left_idx;
+	//new_node.right = new_right_idx;
     }
-    return new_node;
 }
 
 /**
@@ -224,8 +244,8 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
     StackElem* stack = (StackElem*)alloca(sizeof(StackElem)*(max_depth+2));
 
     double t;
-    KdNode *farChild, *curNode;
-    curNode = top_node;
+    const KdNode* curNode = getTopNode();
+    const KdNode* farChild = NULL;
     int enPt = 0;
     stack[enPt].t = a;
 
@@ -390,8 +410,8 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
     StackElem* stack = (StackElem*)alloca(sizeof(StackElem)*(max_depth+2));
 
     double t;
-    KdNode *farChild, *curNode;
-    curNode = top_node;
+    const KdNode *farChild, *curNode;
+    curNode = getTopNode();
     int enPt = 0;
     stack[enPt].t = 0.0;
 
@@ -600,15 +620,6 @@ bool KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result) con
 	    result.current_sort_dim = result.dim;
 	}
 	return true;
-    }
-}
-
-KdTree::KdNode::~KdNode() {
-    if (axis == -1) {
-	delete [] objects;
-    } else {
-	delete left;
-	delete right;
     }
 }
 

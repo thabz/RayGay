@@ -43,22 +43,18 @@ class KdTree {
     private:
 	class KdNode {
 	    public:
-		~KdNode();
-
 		union {
+		    // Left child when not a leaf. Right child is left + 1.
+		    unsigned int left;  
 		    // Enclosed objects when this is a leaf
 		    Object** objects;
-		    // Right child when not a leaf
-		    KdNode* right;
 		};
 		union {
 		    // Number of objects when this is a leaf
 		    unsigned int num;
-		    // Left child when not a leaf
-		    KdNode* left;  
+		    // Position of splitting plane
+		    float splitPlane;
 		};
-		// Position of splitting plane
-		float splitPlane;
 		// Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
 		short axis;
 	};
@@ -72,7 +68,7 @@ class KdTree {
 	};
 
 	struct StackElem {
-	    KdNode* node;   // pointer to far child
+	    const KdNode* node;   // pointer to far child
 	    float t;        // the entry/exit signed distance
 	    int prev;       // pointer to previus stack item
 	    double pb[3];   // coordinates of entry/exit point
@@ -100,13 +96,12 @@ class KdTree {
 	bool findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const;
 	void findBestSplitPlane(const BoundingBox& bbox, CostResult& result, int split_dim) const;
 	// The recursive prepare method
-	KdNode* prepare(KdNodeTmp* tmp_node, const BoundingBox& bbox, unsigned int depth);
+	void prepare(KdNodeTmp* tmp_node, const BoundingBox& bbox, unsigned int depth, const unsigned int dest_idx);
 
 	// The kd-tree nodes
-	KdNode* top_node;
+	vector<KdNode> nodes;
 
 	unsigned int max_depth;
-	unsigned int nodes_count;
 	bool prepared;
 
 	std::vector<Object*>* added_objects;
