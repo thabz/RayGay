@@ -10,7 +10,7 @@ camera-position 1000 1000 2000
 camera-up 0 1 0
 camera-lookat 0 100 0
 camera-field-of-view 45
-camera-aa 4
+camera-aa 0
 #camera-dof 60.0 200
 
 image-ratio 4 3
@@ -18,14 +18,17 @@ image-width 640
 background 0.1 0.1 0.3 1.0
 
 light point 100 1300 1300 1 1 1
+light point -400 3000 500 1 1 1
 
+# Floor
 box $slate_tiles -700 -50 -700  700 0 700
-#box $dullblue -700 -50 -700  700 0 700
-box $dullyellow -750 -50 -750  750 -0.01 750
+# Back
+box $slate_tiles -700 0 -750  700 1400 -700
+# Left 
+box $slate_tiles -750 0 -700  -700 1400 700
 
-circle $circle 0 300 0 400 0 1 0
-spiral $spiral1 $circle 200 5 0
-spiral $spiral2 $circle 200 5 0.5
-extrusion $dullred    $spiral1 25 20 300
-#extrusion $dullblue   $spiral2 25 20 600
+#box $dullblue -700 -50 -700  700 0 700
+#box $dullyellow -750 -50 -750  750 -0.01 750
+
+sphere $glass 300 0 300 0
 
