@@ -42,7 +42,6 @@ class Sphere : public Solid {
     private:
 	Vector center;
 	double radius;
-	BoundingBox _boundingBoundingBox;
 	Vector2 getUV(const Vector& point) const;
 
 };
