@@ -2,8 +2,8 @@
 /*
  */
 
-renderer raytracer
 renderer photonrenderer
+renderer raytracer
 
 camera { position <200,500,1100>
          up <0,1,0> 
@@ -12,7 +12,7 @@ camera { position <200,500,1100>
 	 aa 0
 }
 
-photonmap {
+settings {
  globalphotons  1000
  causticphotons 20000
  estimateradius 100
