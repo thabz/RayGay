@@ -1,5 +1,6 @@
 
-AC_INIT(src/main.cpp)
+AC_INIT(raygay, 0.5, jesper@kalliope.org)
+AC_CONFIG_SRCDIR(src/main.cpp)
 AM_CONFIG_HEADER(config.h)    
 
 RAYGAY_MAJOR_VERSION=0
