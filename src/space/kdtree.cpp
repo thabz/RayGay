@@ -99,10 +99,10 @@ void KdTree::prepare() {
     nodes_count = 0;
 
     KdNodeTmp node;
-    node.bbox = world_bbox;
+    //node.bbox = world_bbox;
     node.bobjects = bounded_objects;
 
-    top_node = prepare(&node,1);
+    top_node = prepare(&node,world_bbox,1);
     delete [] bobs;
     
 #ifndef NO_STATS
@@ -113,7 +113,7 @@ void KdTree::prepare() {
     prepared = true;
 }
 
-KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, unsigned int depth) {
+KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, const BoundingBox& bbox, unsigned int depth) {
 
     KdNode* left_node_ptr = NULL;
     KdNode* right_node_ptr = NULL;
@@ -137,7 +137,7 @@ KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, unsigned int depth) {
 	assert(splitResult.right_bobjects->front()->bbox == splitResult.left_bobjects->front()->bbox);
 
 	// Find the best axis to split node at
-	if (findBestSplitPlane(curNode->bbox,splitResult)) {
+	if (findBestSplitPlane(bbox,splitResult)) {
 	    // curNode will be split 
 	    curNode->axis = splitResult.dim;
 	    curNode->splitPlane = splitResult.axis;
@@ -146,9 +146,11 @@ KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, unsigned int depth) {
 	    KdNodeTmp higher;
 	    lower.bobjects = new vector<BoundedObject*>;
 	    higher.bobjects = new vector<BoundedObject*>;
-
+	    
 	    // Find bounding boxes for the two children
-	    if (!curNode->bbox.split(&(lower.bbox), &(higher.bbox), curNode->axis, curNode->splitPlane)) {
+	    BoundingBox lower_bbox;
+	    BoundingBox higher_bbox;
+	    if (!bbox.split(lower_bbox, higher_bbox, curNode->axis, curNode->splitPlane)) {
 		throw_exception("Split plane outside bbox of node");
 	    }
 
@@ -157,7 +159,7 @@ KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, unsigned int depth) {
 	    for(unsigned int i = 0; i < splitResult.left_index; i++) {
 		BoundedObject* bobject = splitResult.left_bobjects->operator[](i);
 		assert(bobject->object != NULL);
-		if (bobject->object->intersects(curNode->bbox,bobject->bbox) >= 0) 
+		if (bobject->object->intersects(bbox,bobject->bbox) >= 0) 
 		    lower.bobjects->push_back(bobject);
 	    }
 	    delete splitResult.left_bobjects;
@@ -166,14 +168,14 @@ KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, unsigned int depth) {
 	    higher.bobjects->reserve(splitResult.right_bobjects->size() - splitResult.right_index);
 	    for(unsigned int i = splitResult.right_index; i < splitResult.right_bobjects->size(); i++) {
 		BoundedObject* bobject = splitResult.right_bobjects->operator[](i);
-		if (bobject->object->intersects(curNode->bbox,bobject->bbox) >= 0) 
+		if (bobject->object->intersects(bbox,bobject->bbox) >= 0) 
 		    higher.bobjects->push_back(bobject);
 	    }
 	    delete splitResult.right_bobjects;
 
 	    // Recurse into child nodes
-	    left_node_ptr = prepare(&lower,depth+1);
-	    right_node_ptr = prepare(&higher,depth+1);
+	    left_node_ptr = prepare(&lower, lower_bbox, depth+1);
+	    right_node_ptr = prepare(&higher, higher_bbox, depth+1);
 	} else {
 	    delete splitResult.right_bobjects;
 	}
@@ -198,6 +200,12 @@ KdTree::KdNode* KdTree::prepare(KdNodeTmp* curNode, unsigned int depth) {
     }
     return new_node;
 }
+
+#define leftNode(node) (node->left)
+#define rightNode(node) (node->right)
+#define isLeafNode(node) (node->axis == -1)
+#define getNodeAxis(node) (node->axis)
+#define getNodeObjectNum(node) (node->num)
 
 /**
  * Implementation of the recursive $f[ TA_rec^B $f] algorithm.
@@ -231,27 +239,27 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
     stack[exPt].node = NULL;
 
     while (curNode != NULL) {
-	while (curNode->axis >= 0) {
+	while (!isLeafNode(curNode)) {
 	    /* Current node is not a leaf */
 	    double splitVal = curNode->splitPlane;
-	    int axis = curNode->axis; // ?
+	    int axis = getNodeAxis(curNode); // ?
 	    switch(axis) {
 		case 0:
 		    {
 			if (stack[enPt].pb[0] <= splitVal) {
 			    if (stack[exPt].pb[0] <= splitVal) {
-				curNode = curNode->left;
+				curNode = leftNode(curNode);
 				continue;
 			    }
-			    farChild = curNode->right;
-			    curNode = curNode->left;
+			    farChild = rightNode(curNode);
+			    curNode = leftNode(curNode);
 			} else {
 			    if (splitVal <= stack[exPt].pb[0]) {
-				curNode = curNode->right;
+				curNode = rightNode(curNode);
 				continue;
 			    }
-			    farChild = curNode->left;
-			    curNode = curNode->right;
+			    farChild = leftNode(curNode);
+			    curNode = rightNode(curNode);
 			}
 
 			t = (splitVal - ray.getOrigin()[0]) / ray.getDirection()[0];
@@ -274,18 +282,18 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 		    {
 			if (stack[enPt].pb[1] <= splitVal) {
 			    if (stack[exPt].pb[1] <= splitVal) {
-				curNode = curNode->left;
+				curNode = leftNode(curNode);
 				continue;
 			    }
-			    farChild = curNode->right;
-			    curNode = curNode->left;
+			    farChild = rightNode(curNode);
+			    curNode = leftNode(curNode);
 			} else {
 			    if (splitVal <= stack[exPt].pb[1]) {
-				curNode = curNode->right;
+				curNode = rightNode(curNode);
 				continue;
 			    }
-			    farChild = curNode->left;
-			    curNode = curNode->right;
+			    farChild = leftNode(curNode);
+			    curNode = rightNode(curNode);
 			}
 
 			t = (splitVal - ray.getOrigin()[1]) / ray.getDirection()[1];
@@ -309,18 +317,18 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 		    {
 			if (stack[enPt].pb[2] <= splitVal) {
 			    if (stack[exPt].pb[2] <= splitVal) {
-				curNode = curNode->left;
+				curNode = leftNode(curNode);
 				continue;
 			    }
-			    farChild = curNode->right;
-			    curNode = curNode->left;
+			    farChild = rightNode(curNode);
+			    curNode = leftNode(curNode);
 			} else {
 			    if (splitVal <= stack[exPt].pb[2]) {
-				curNode = curNode->right;
+				curNode = rightNode(curNode);
 				continue;
 			    }
-			    farChild = curNode->left;
-			    curNode = curNode->right;
+			    farChild = leftNode(curNode);
+			    curNode = rightNode(curNode);
 			}
 
 			t = (splitVal - ray.getOrigin()[2]) / ray.getDirection()[2];
@@ -345,11 +353,11 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 
 	// Intersect with all objects in list, discarding
 	// those lying before stack[enPt].t or farther than stack[exPt].t
-	if (curNode->num > 0) {
+	if (getNodeObjectNum(curNode) > 0) {
 	    Object* object_hit = NULL;
 	    double smallest_t = stack[exPt].t;
 	    const double s_min_t = MAX(0.0,stack[enPt].t);
-	    for (unsigned int i = 0; i < curNode->num; i++) {
+	    for (unsigned int i = 0; i < getNodeObjectNum(curNode); i++) {
 		double i_t = curNode->objects[i]->fastIntersect(ray);
 		if (i_t > s_min_t && i_t < smallest_t) {
 		    smallest_t = i_t;
@@ -579,6 +587,7 @@ bool KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result) con
     } else {
 	//cout << "Split " << size << " into " << result.left_index << "," << size - result.right_index << endl;
 	if (result.current_sort_dim != result.dim) {
+	    // Sort objects again
 	    sort(result.left_bobjects->begin(), result.left_bobjects->end(), cmpL(result.dim));
 	    sort(result.right_bobjects->begin(), result.right_bobjects->end(), cmpR(result.dim));
 	    result.current_sort_dim = result.dim;

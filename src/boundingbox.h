@@ -96,7 +96,7 @@ class BoundingBox {
 	Vector center() const;
 
 	// Split this bbox into two by a axis-aligned plane
-	bool split(BoundingBox* left, BoundingBox* right, const unsigned int dim, const double axis) const; 
+	bool split(BoundingBox& left, BoundingBox& right, const unsigned int dim, const double axis) const; 
 
 	// Lengths of the three sides
 	Vector lengths() const;

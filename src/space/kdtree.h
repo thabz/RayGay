@@ -60,14 +60,13 @@ class KdTree {
 		// Position of splitting plane
 		float splitPlane;
 		// Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
-		int axis;
+		short axis;
 	};
 
 
 	class KdNodeTmp {
 	    public:
 		std::vector<BoundedObject*>* bobjects;  // Enclosed objects when this is a leaf
-		BoundingBox bbox; // Bounding box of voxel
 		float splitPlane; // Position of splitting plane
 		int axis;         // Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
 	};
@@ -75,8 +74,8 @@ class KdTree {
 	struct StackElem {
 	    KdNode* node;   // pointer to far child
 	    float t;        // the entry/exit signed distance
-	    Vector pb;      // coordinates of entry/exit point
 	    int prev;       // pointer to previus stack item
+	    double pb[3];   // coordinates of entry/exit point
 	};
 
 	// The I/O data for the findBestSplitPlane method
@@ -101,7 +100,7 @@ class KdTree {
 	bool findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const;
 	void findBestSplitPlane(const BoundingBox& bbox, CostResult& result, int split_dim) const;
 	// The recursive prepare method
-	KdNode* prepare(KdNodeTmp* tmp_node, unsigned int depth);
+	KdNode* prepare(KdNodeTmp* tmp_node, const BoundingBox& bbox, unsigned int depth);
 
 	// The kd-tree nodes
 	KdNode* top_node;
