@@ -104,13 +104,15 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     double reflection = fre[0];
     double transmission = fre[1];
 
+    RGB material_diffuse = material.getDiffuseColor(intersection);
+
     RGB result_color = RGB(0.0,0.0,0.0);
 
     // Indirect diffuse light by one step of path tracing
-    result_color += finalGather(point,normal,ray.getDirection(),renderersettings->final_gather_rays,0);
+    result_color += material_diffuse * finalGather(point,normal,ray.getDirection(),renderersettings->final_gather_rays,0);
 
     // Direct estimate from caustics map
-    result_color += causticsphotonmap->getFilteredIrradianceEstimate(point,normal);
+    result_color += material_diffuse * causticsphotonmap->getFilteredIrradianceEstimate(point,normal);
     //result_color.clip();
     //return result_color;
 
@@ -208,12 +210,16 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 	    Intersection* inter = space->getLastIntersection();
 	    Vector hitpoint = inter->getPoint();
 	    Vector hitnormal = inter->getObject()->normal(*inter);
-	    if ((hitpoint-point).length() < renderersettings->estimate_radius && depth == 0 ) {
+	    RGB irra;
+	    if (false) {//(hitpoint-point).length() < renderersettings->estimate_radius && depth == 0 ) {
 	        // If too close do additional level of path tracing
-		result += finalGather(hitpoint,hitnormal,dir,gatherRays / 2, depth + 1);
+		irra += finalGather(hitpoint,hitnormal,dir,gatherRays / 2, depth + 1);
 	    } else {
-		result += globalphotonmap->irradianceEstimate(hitpoint,hitnormal);
+		irra += globalphotonmap->irradianceEstimate(hitpoint,hitnormal);
 	    }
+	    const Material& material = inter->getObject()->getMaterial();
+	    RGB diffuse_col = material.getDiffuseColor(*inter);
+	    result += irra * diffuse_col;
 	}
     }
 	
