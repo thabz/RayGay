@@ -24,7 +24,8 @@ AC_CHECK_LIB(png, png_read_info, LIBS="-lpng $LIBS")
 
 AC_SUBST(THRLIBS)    
 
-CXXFLAGS="-g -O3 -Wall -march=i686 -ffast-math"
+CXXFLAGS="-g -O3 -Wall -ffast-math"
+#CXXFLAGS="-g -O3 -Wall -march=i686 -ffast-math"
 #CXXFLAGS="$CXXFLAGS -O3 -Wall -march=i686 -ffast-math"
 #CXXFLAGS="$CPPFLAGS -O4 -Wall -march=i686 -msse -mfpmath=sse"
 
