@@ -13,8 +13,6 @@
 #include "stats.h"
 #include "exception.h"
 
-#include "importer.h"
-
 #include "math/vector.h"
 #include "math/matrix.h"
 
