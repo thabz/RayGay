@@ -36,18 +36,18 @@ class Material {
 	void setRepeatY(const unsigned int repeatY) { this->repeatY = repeatY; };
 	
 
-	double getKd() const { return _kd; } ;
+	virtual double getKd() const { return _kd; } ;
 	void setKd(double kd) { _kd = kd; };
 
-	double getKs() const { return _ks; } ;
+	virtual double getKs() const { return _ks; } ;
 	void setKs(double ks) { _ks = ks; };
 
-	int getSc() const { return _spec_coeff; } ;
+	virtual int getSc() const { return _spec_coeff; } ;
 	void setSc(int sc) { _spec_coeff = sc; };
 
 
 	/// Set the transmission coefficent (0 = solid, 1 = full transparent)
-	void setKt(double kt) { this->_kt = kt; };
+	virtual void setKt(double kt) { this->_kt = kt; };
 	/// Get the transmission coefficent (0 = solid, 1 = full transparent)
 	double getKt() const { return _kt; };
 
