@@ -29,7 +29,7 @@ class Raytracer : public Renderer {
 
 inline
 RGBA Raytracer::tracePrimary(const Ray& ray) {
-    //Stats::getUniqueInstance()->inc("Primary camera rays cast");
+   // Stats::getUniqueInstance()->inc("Primary camera rays cast");
     bool intersected = space->intersectPrimary(ray);
     return traceSub(intersected, ray, 1);
 }

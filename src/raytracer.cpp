@@ -38,14 +38,13 @@ RGBA Raytracer::getPixel(const Vector2& v) {
 RGBA Raytracer::traceSub(const bool intersected, const Ray& ray, const int depth) {
     RGBA color; 
     Intersection intersection;
-    double intersect_distance;
+    double intersect_distance = HUGE_DOUBLE;
 
     if (intersected) {
 	intersection = *(space->getLastIntersection());
 	color = shade(ray,intersection,depth);
     } else {
         color = scene->getBackgroundColor(ray);
-	intersect_distance = HUGE_DOUBLE;
     }
 
     if (scene->fogEnabled()) {
@@ -58,7 +57,7 @@ RGBA Raytracer::traceSub(const bool intersected, const Ray& ray, const int depth
 }
 
 RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int depth) {
-    Object* object = intersection.getObject();
+    Object* const object = intersection.getObject();
     const Vector point = intersection.getPoint();
     Vector normal = object->normal(intersection);
     const Material* material = object->getMaterial();
@@ -71,14 +70,11 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int
 
     normal = material->bump(intersection,normal);
 
-    Vector2 fre = fresnel(normal,ray.getDirection(),material);
-    double reflection = fre[0];
-    double transmission = fre[1];
     
     double ambient_intensity = 0.2;
     RGB result_color = ambient_intensity * material->getDiffuseColor(intersection);
-    vector<Lightsource*> lights = scene->getLightsources();
-    for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
+    const vector<Lightsource*>& lights = scene->getLightsources();
+    for (vector<Lightsource*>::const_iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);
 
 	if (attenuation > double(0)) {
@@ -105,6 +101,10 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int
 	}
     }
     if (depth < 7) {
+	Vector2 fre = fresnel(normal,ray.getDirection(),material);
+	const double reflection = fre[0];
+	const double transmission = fre[1];
+
 	/* Bounce a reflection off the intersected object */
 	if (material->getKs() > 0 && reflection > 0) {
 	    Vector refl_vector = -1 * ray.getDirection();
