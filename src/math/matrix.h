@@ -38,6 +38,9 @@ class Matrix {
 
 	/// Says whether this matrix contains scaling
 	bool isScaled() const;
+
+	/// Says whether this matrix contains scaling
+	bool isOrthogonal() const;
 	
         /// Returns the inverse to this matrix
 	Matrix inverse() const;

@@ -167,21 +167,20 @@ class matrix_test : public Test {
 	    /* Test inverse() */
 	    Matrix id,res;
 	    Matrix op1 = Matrix::matrixRotate(Vector(10,30,19),12);
-	    cout << op1 << endl;
-	    assertFalse(op1.isScaled());
+	    assertTrue(op1.isOrthogonal());
+	    assertTrue(op1.inverse().isOrthogonal());
 	    assertFalse(op1.isIdentity());
 	    res = op1*id*op1.inverse();
 	    assertTrue(res.isIdentity());
-	    assertFalse(op1.isScaled());
 
 	    Matrix op2 = Matrix::matrixTranslate(Vector(401,221,39));
-	    assertFalse(op2.isScaled());
+	    assertFalse(op2.isOrthogonal());
 	    assertFalse(op2.isIdentity());
 	    res = op2*id*op2.inverse();
 	    assertTrue(res.isIdentity());
 
 	    Matrix op3 = op1*op2;
-	    assertFalse(op3.isScaled());
+	    assertFalse(op3.isOrthogonal());
 	    assertFalse(op3.isIdentity());
 	    res = op3*id*op3.inverse();
 	    assertTrue(res.isIdentity());
@@ -198,11 +197,11 @@ class matrix_test : public Test {
 
 	    op1 = Matrix::matrixRotate(Vector(401,221,39),40);
 	    op2 = Matrix::matrixRotate(Vector(401,221,39),-40);
-	    assertFalse(op1.isScaled());
-	    assertFalse(op2.isScaled());
+	    assertTrue(op1.isOrthogonal());
+	    assertTrue(op2.isOrthogonal());
 	    assertTrue(op1 != op2);
 	    op2 = op2.inverse();
-	    assertFalse(op2.isScaled());
+	    assertTrue(op2.isOrthogonal());
 	    assertTrue(op1 == op2);
 
 	    op2 = Matrix::matrixRotate(Vector(401,221,39),-20);
@@ -258,7 +257,7 @@ class matrix_test : public Test {
 	    // Test matrix rotate
 	    v = Vector(1,0,0);
 	    op1 = Matrix::matrixRotate(Vector(0,0,1),90);
-	    cout << op1*v << endl;
+	    assertTrue(op1.isOrthogonal());
 	    assertTrue(op1*v == Vector(0,-1,0));
 	    op1 = Matrix::matrixRotate(Vector(0,0,1),180);
 	    assertTrue(op1*v == Vector(-1,0,0));
@@ -270,11 +269,13 @@ class matrix_test : public Test {
 	    assertTrue(op1*v == v);
 	    op1 = Matrix::matrixRotate(Vector(3,4,6),180);
 	    op2 = Matrix::matrixRotate(Vector(3,4,6),180);
+	    assertTrue((op1*op2).isOrthogonal());
 	    assertTrue(op1*op2*v == v);
 
 	    // Test matrix translate
 	    v = Vector(3,4,5);
 	    op1 = Matrix::matrixTranslate(Vector(2,3,4));
+	    assertFalse(op1.isOrthogonal());
 	    assertTrue(op1*v == Vector(5,7,9));
 	    op1 = Matrix::matrixTranslate(Vector(2,3,4));
 	    op2 = Matrix::matrixTranslate(Vector(-2,-3,-4));
@@ -284,18 +285,18 @@ class matrix_test : public Test {
 	    // Test matrix scale
 	    v = Vector(3,4,5);
 	    op1 = Matrix::matrixScale(Vector(2,2,2));
-	    assertTrue(op1.isScaled());
+	    assertFalse(op1.isOrthogonal());
 	    assertFalse(op1.isIdentity());
 	    assertTrue(op1*v == Vector(6,8,10));
 	    op1 = Matrix::matrixScale(Vector(5,6,7));
-	    assertTrue(op1.isScaled());
+	    assertFalse(op1.isOrthogonal());
 	    assertFalse(op1.isIdentity());
 	    assertTrue(op1*v == Vector(15,24,35));
 	    op1 = Matrix::matrixScale(Vector(5,6,7));
 	    op2 = Matrix::matrixScale(Vector(1.0/5.0,1.0/6.0,1.0/7.0));
-	    assertTrue(op1.isScaled());
+	    assertFalse(op1.isOrthogonal());
 	    assertFalse(op1.isIdentity());
-	    assertTrue(op2.isScaled());
+	    assertFalse(op2.isOrthogonal());
 	    assertFalse(op2.isIdentity());
 	    assertTrue(op1*op2*v == v);
 	    assertTrue(op2*op1*v == v);

@@ -62,6 +62,12 @@ bool Matrix::isScaled() const {
     	   IS_NEQUAL(m22,1.0);
 }
 
+bool Matrix::isOrthogonal() const {
+    Matrix transposed = transpose();
+    Matrix prod = *this * transposed;
+    return prod.isIdentity();
+}
+
 /// Create a translations transformation
 Matrix Matrix::matrixTranslate(const Vector trans) {
     Matrix translate;
@@ -234,11 +240,15 @@ Matrix Matrix::matrixScale(const Vector& c) {
     return result;
 }
 
-/// Create a rotation transformation
+/**
+ * Create a rotation transformation.
+ *
+ * Using Rodrigues' rotation formula.
+ * 
+ * @see http://mathworld.wolfram.com/RodriguesRotationFormula.html
+ */
 Matrix Matrix::matrixRotate(const Vector axis, const double angle) {
 	Matrix rotate;
-
-	// Page 466, Graphics Gems
 
 	double s = sin(angle*M_PI_DEG);
 	double c = cos(angle*M_PI_DEG);
