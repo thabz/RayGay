@@ -18,6 +18,7 @@
 #include "objects/extrusion.h"
 #include "objects/heightfield.h"
 #include "objects/sphere.h"
+#include "objects/transformedinstance.h"
 #include "paths/linesegment.h"
 #include "paths/circle.h"
 #include "paths/spiral.h"
@@ -262,6 +263,12 @@ void Importer::parse(const string& filename) {
 	} else if (command == "object") {
 	    object_name = readString(stream);
 	    cur_object = getNamedObject(object_name)->clone();
+	} else if (command == "transinstance") {
+	    object_name = readString(stream);
+	    SceneObject* sobj = getNamedObject(object_name);
+	    Object* obj = dynamic_cast<Object*>(sobj);
+	    assert(obj != NULL);
+	    cur_object = new TransformedInstance(obj);
 	} else if (command == "circle") {
 	    stream >> str1;
 	    Vector center = readVector(stream);
