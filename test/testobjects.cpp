@@ -154,6 +154,24 @@ void box_test() {
     r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
     assert(bsp.intersect(r));
     assert(bsp.getLastIntersection()->getPoint() == Vector(0,-1,0));
+
+
+    /* Test second constructor */
+    b = Box(Vector(0,0,0),2,2,2,m);
+    b.prepare();
+    bsp = BSP();
+    b.addParts(&bsp);
+    bsp.prepare();
+
+    r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
+    assert(bsp.intersect(r));
+    assert(bsp.getLastIntersection()->getPoint() == Vector(0,0,1));
+
+    r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
+    assert(bsp.intersect(r));
+    assert(bsp.getLastIntersection()->getPoint() == Vector(0,-1,0));
+
+
 }
 
 int main(int argc, char *argv[]) {

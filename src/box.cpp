@@ -15,7 +15,7 @@ Box::Box(const Vector a, const Vector b, Material mat) : Mesh(Mesh::MESH_FLAT,ma
 }
 
 Box::Box(const Vector c, double width, double height, double depth, Material m): Mesh(Mesh::MESH_FLAT,m) {
-    Vector extend = Vector(width,height,depth) / 2.0;
+    Vector extend = Vector(width,height,depth) / 2;
     prepareBox(c - extend, c + extend);
 }
 
