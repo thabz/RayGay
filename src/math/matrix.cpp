@@ -125,27 +125,36 @@ ostream & operator<<(ostream &os,const Matrix &m) {
 }
 
 bool Matrix::operator==(const Matrix& m) const {
-    bool result = true;
-    for (int r=0;r<4;r++) {
-	for (int c=0;c<4;c++) {
-	    result &= IS_EQUAL(get(c,r),m.get(c,r));
+    for (int i = 0; i < 16; i++) {
+	if (!IS_EQUAL(_matrix[i],m._matrix[i])) {
+	    return false;
 	}
     }
-    return result;
+    return true;
+}
+
+bool Matrix::operator!=(const Matrix& m) const {
+    for (int i = 0; i < 16; i++) {
+	if (!IS_EQUAL(_matrix[i],m._matrix[i])) {
+	    return true;
+	}
+    }
+    return false;
+
 }
 
 /*! 
-	\brief		Orientation transformation matrix
-	\ingroup	Math
-	\param      x	New orientation for +x
-	\param		y	New orientation for +y
-	\param		z	New orientation for +z
-*/
+  \brief		Orientation transformation matrix
+  \ingroup	Math
+  \param      x	New orientation for +x
+  \param		y	New orientation for +y
+  \param		z	New orientation for +z
+  */
 Matrix Matrix::matrixOrient(const Vector &x,const Vector &y,const Vector &z)
 {
-	Matrix orient;
+    Matrix orient;
 
-	orient.set(0,0,x.x());
+    orient.set(0,0,x.x());
 	orient.set(0,1,x.y());
 	orient.set(0,2,x.z());
 

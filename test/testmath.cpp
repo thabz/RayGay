@@ -86,8 +86,23 @@ void matrix_test() {
     assert(op1 == op2);
     op1 = Matrix::matrixTranslate(Vector(401,221,39));
     op2 = Matrix::matrixTranslate(Vector(-401,-221,-39));
+    assert(op1 != op2);
     op2 = op2.inverse();
     assert(op1 == op2);
+
+    op1 = Matrix::matrixRotate(Vector(401,221,39),40);
+    op2 = Matrix::matrixRotate(Vector(401,221,39),-40);
+    assert(op1 != op2);
+    op2 = op2.inverse();
+    assert(op1 == op2);
+
+    op2 = Matrix::matrixRotate(Vector(401,221,39),-20);
+    op2 = op2 * Matrix::matrixRotate(Vector(401,221,39),-20);
+    assert(op1 != op2);
+    op2 = op2.inverse();
+    assert(op1 == op2);
+
+
 }
 
 int main(int argc, char *argv[]) {

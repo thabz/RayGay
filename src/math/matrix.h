@@ -57,6 +57,9 @@ class Matrix {
 	/// Comparator
 	bool operator==(const Matrix &m) const;
 
+	/// Comparator
+	bool operator!=(const Matrix &m) const;
+
 	/// Rotate angle degrees around axis
 	static Matrix matrixRotate(const Vector axis,const double angle);
 
