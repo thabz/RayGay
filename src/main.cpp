@@ -183,6 +183,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 	    renderer = new Pathtracer(renderersettings,img,scene,space,job_pool,0);
 	}
 	renderer->run();
+	delete renderer;
     } else {
 	// Spawn renderer threads
 	Renderer* renderers[renderersettings->threads_num];
@@ -203,6 +204,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 	// Wait for threads to finish
 	for(int i = 0; i < renderersettings->threads_num; i++) {
 	    pthread_join(threads[i], NULL);
+	    delete renderers[i];
 	}
     }
     Stats::getUniqueInstance()->endTimer("Rendering");

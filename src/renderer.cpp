@@ -39,8 +39,10 @@ Renderer::Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree*
 }
 
 Renderer::~Renderer() {
-    row1.clear();
-    row2.clear();
+    for(unsigned int i = 0; i < row1.size(); i++) {
+	row1[i].cleanup();
+	row2[i].cleanup();
+    }
 }
 
 void Renderer::run() {
@@ -216,9 +218,9 @@ Renderer::PixelBlock::PixelBlock(const unsigned int size) {
     reset();
 }
 
-Renderer::PixelBlock::~PixelBlock() {
- //   delete  color;
- //   delete  active;
+void Renderer::PixelBlock::cleanup() {
+    delete [] color;
+    delete [] active;
 }
 
 inline

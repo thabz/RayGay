@@ -39,7 +39,7 @@ class Renderer {
 	class PixelBlock {
 	    public:
 		PixelBlock(const unsigned int size);
-		~PixelBlock();
+		void cleanup();
 		void reset();
 		bool isActive(const int x, const int y) const { return active[y*size + x]; };
 		void setColor(const int x, const int y, const RGBA& c) { color[y*size + x] = c; active[y*size + x] = true;};
