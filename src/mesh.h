@@ -38,7 +38,7 @@ class Mesh : public object {
 	Mesh(MeshType type, Material mat);
 	
 	/// Destructor
-	~Mesh();
+	virtual ~Mesh();
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection & i);
@@ -64,7 +64,7 @@ class Mesh : public object {
 	Material material;
 	BoundingBox* _boundingBoundingBox;
 	virtual Intersection _intersect(const Ray& ray);
-	Intersection intersect_triangle(const Ray& ray, Vector vert0, Vector vert1, Vector vert2);
+	virtual Intersection intersect_triangle(const Ray& ray, Vector vert0, Vector vert1, Vector vert2);
 
 	std::vector<Vector> corners;
 	std::vector<Vector> normals;

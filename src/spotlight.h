@@ -6,6 +6,7 @@
 
 class Matrix;
 
+/// A directional Lightsource with a soft cutoff angle
 class Spotlight : public Lightsource {
 
     public:

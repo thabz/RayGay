@@ -10,9 +10,7 @@ class Matrix;
 class Intersection;
 class Ray;
 
-/**
- * An interface lightsources must implement
- */
+/// An interface lightsources must implement
 class Lightsource {
 
     public:

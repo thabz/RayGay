@@ -35,10 +35,8 @@ RGB Material::getDiffuseColor(const Intersection& i) {
     if (texturemap != NULL) {
 	double u,v;
 	i.getObject()->getUV(i,&u,&v);
-	assert(0.0 <= u);
-	assert(0.0 <= v);
-	assert(1.0 >= u);
-	assert(1.0 >= v);
+        u -= int(u);
+	v -= int(v);
 	return texturemap->getTexel(u,v);
     } else {
         return getDiffuseColor();

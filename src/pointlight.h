@@ -11,9 +11,7 @@ class Matrix;
 class Intersection;
 class Ray;
 
-/**
- * A point lightsource
- */
+/// A point Lightsource
 class Pointlight : public Lightsource {
 
     public:

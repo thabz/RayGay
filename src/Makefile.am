@@ -1,7 +1,7 @@
 
 bin_PROGRAMS = tracer
 
-tracer_SOURCES = main.cpp camera.cpp sphere.cpp vector.cpp matrix.cpp intersection.cpp ray.cpp scene.cpp image.cpp rgb.cpp material.cpp boolean.cpp perlin.cpp boundingbox.cpp box.cpp hierarchy.cpp object.cpp mesh.cpp spotlight.cpp pointlight.cpp
+tracer_SOURCES = main.cpp camera.cpp sphere.cpp vector.cpp matrix.cpp intersection.cpp ray.cpp scene.cpp image.cpp rgb.cpp material.cpp boolean.cpp perlin.cpp boundingbox.cpp box.cpp hierarchy.cpp object.cpp mesh.cpp spotlight.cpp pointlight.cpp tetrahedron.cpp
 
 INCLUDES=$(MAGIC_CFLAGS)
 LIBS=$(MAGIC_LIBS)    
@@ -23,6 +23,7 @@ EXTRA_DIST = boolean.h 		\
 	     ray.h scene.h 	\
 	     sphere.h		\
 	     spotlight.h	\
+	     tetrahedron.h	\
              transformable.h 	\	
 	     vector.h 		
 
