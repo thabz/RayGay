@@ -129,25 +129,22 @@ int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
     if (R < 0.0) 
 	return 0;
     
-    if (IS_ZERO(R)) {
-	R = 0.0;
-    } else {
-	R = sqrt(R);
-    }
-    
     double D2,E2;
     int num = 0;
     if (IS_ZERO(R)) {
+	R = 0.0; // Fixes precision error
 	tmp1 = 0.75*A*A - 2.0*B;
 	tmp2 = 2.0 * sqrt(y*y - 4.0*D);
 	D2 = tmp1 + tmp2;
 	E2 = tmp1 - tmp2;
     } else {
+	R = sqrt(R);
 	tmp1 = 0.75*A*A - R*R - 2.0*B;
 	tmp2 = (A*B - 2.0*C - 0.25*A*A*A) / R;
 	D2 = tmp1 + tmp2 ;
 	E2 = tmp1 - tmp2;
     }
+    
     if (D2 >= 0.0) {
 	D2 = sqrt(D2);
 	roots[num++] = 0.5 * (A * -0.5 + R - D2);
