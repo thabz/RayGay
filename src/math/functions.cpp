@@ -268,12 +268,9 @@ int Math::solveQuartic_Schaum(double A, double B, double C, double D, double* ro
  * @return the number of real roots
  * @see http://mathworld.wolfram.com/CubicEquation.html
  */
-#define FRAC_1_27 0.03703703703703703703703703703703703703703703703
-#define FRAC_1_6 0.16666666666666666666666666666666666666666666666
 int Math::solveCubic(double A, double B, double C, double* roots) {
-    double Q = (3.0 * B - A * A) / 9.0;
-    //double R = (A * B * FRAC_1_6 - 0.5 * C -  A * A * A * FRAC_1_27);
-    double R = (9.0 * A * B - 27.0 * C - 2.0 * A * A * A) / 54.0;
+    double Q = (3.0 * B - A * A) * FRAC_1_9;
+    double R = (9.0 * A * B - 27.0 * C - 2.0 * A * A * A) * FRAC_1_54;
     double D = Q * Q * Q + R * R;
     if (D < 0.0) {
 	// Three real roots
