@@ -87,8 +87,7 @@ void BSP::prepare() {
 
 inline
 bool BSP::intersect(const Ray& ray) const {
-    last_intersection = &(intersect(ray,0,HUGE_DOUBLE));
-    return last_intersection->isIntersected();
+    return intersect(ray,0,HUGE_DOUBLE);
 }
 
 inline
@@ -149,7 +148,7 @@ bool BSP::intersectForShadow(const Ray& ray, const double min_t, const double ma
 
     if (objects.size() > 0) {
         Intersection tmp;
-	for (unsigned int i=0; i < objects.size(); i++) {
+	for (unsigned int i = 0; i < objects.size(); i++) {
 	    if (objects[i]->intersect(ray)) {
 		last_intersection = objects[i]->getLastIntersection();
 		return true;
@@ -161,43 +160,54 @@ bool BSP::intersectForShadow(const Ray& ray, const double min_t, const double ma
     }
 }
 
-Intersection BSP::intersect(const Ray& ray, const double min_t, const double max_t) const {
-    Intersection result = Intersection();
+bool BSP::intersect(const Ray& ray, const double min_t, const double max_t) const {
+    if (max_t <= min_t) return false;
+
     if (objects.size() > 0) {
-        Intersection tmp;
-	double cur_t = HUGE_DOUBLE;
-	for (unsigned int i=0; i < objects.size(); i++) {
-	    if (objects[i]->intersect(ray)) {
-		tmp = *(objects[i]->getLastIntersection());
-		if (tmp.getT() < cur_t) {
-		    result = tmp;
-		    cur_t = tmp.getT();
-		}
+	bool result = false;
+	double smallest_t = HUGE_DOUBLE;
+	for (unsigned int i = 0; i < objects.size(); i++) {
+	    if (objects[i]->intersect(ray) && 
+		   objects[i]->getLastIntersection()->getT() < smallest_t) {
+		last_intersection = objects[i]->getLastIntersection();
+		smallest_t = last_intersection->getT();
+		result = true;
 	    }
 	}
+	return result;
     } else {
-	result = intersect_recurse(ray,min_t,max_t);
+        return intersect_recurse(ray,min_t,max_t);
     }
-    return result;
 }
 
-Intersection BSP::intersect_recurse(const Ray& ray, const double min_t, const double max_t) const {
-    if (max_t <= min_t) return Intersection();
+bool BSP::intersect_recurse(const Ray& ray, const double min_t, const double max_t) const {
+    if (max_t <= min_t) return false;
 
+    //Vector o = ray.getOrigin() + min_t * ray.getDirection();
     double rd_dim = ray.getDirection()[cutplane_dimension];
     double o_dim = ray.getOrigin()[cutplane_dimension] + min_t * rd_dim;
     
     if (o_dim < cutplane_value && rd_dim <= 0) {
-        return lower->intersect(ray,min_t,max_t);
+	if (lower->intersect(ray,min_t,max_t)) {
+	    last_intersection = lower->getLastIntersection();
+	    return true;
+	} else {
+	    return false;
+	}
     } else if (o_dim > cutplane_value && rd_dim >= 0) {
-        return higher->intersect(ray,min_t,max_t);
+	if (higher->intersect(ray,min_t,max_t)) {
+	    last_intersection = higher->getLastIntersection();
+	    return true;
+	} else {
+	    return false;
+	}
     } else {
 	double intersect_t = (cutplane_value - ray.getOrigin()[cutplane_dimension]) * ray.getInverseDirection()[cutplane_dimension];
 	if (intersect_t > max_t) { intersect_t = max_t; }
 	if (intersect_t < min_t) { intersect_t = min_t; }
 
-	Intersection intersection1;
-	Intersection intersection2;
+	bool intersection1;
+	bool intersection2;
 
 	if (o_dim < cutplane_value) {
 	    // Ray is crossing the plane from a lower value
@@ -205,21 +215,26 @@ Intersection BSP::intersect_recurse(const Ray& ray, const double min_t, const do
 	    intersection2 = higher->intersect(ray,intersect_t,max_t);
 	} else {
 	    // Ray is crossing the plane from a higher value
-	    intersection1 = higher->intersect(ray,min_t,intersect_t);
-	    intersection2 = lower->intersect(ray,intersect_t,max_t);
+	    intersection1 = lower->intersect(ray,intersect_t,max_t);
+	    intersection2 = higher->intersect(ray,min_t,intersect_t);
 	}
 	
-	if (intersection1.isIntersected() && intersection2.isIntersected()) {
-	    if (intersection1.getT() < intersection2.getT()) {
-		return intersection1;
+	if (intersection1 && intersection2) {
+	    if (higher->getLastIntersection()->getT() < lower->getLastIntersection()->getT()) {
+		last_intersection = higher->getLastIntersection();
 	    } else {
-		return intersection2;
+		last_intersection = lower->getLastIntersection();
 	    }
+	    return true;
 	} else {
-	    if (intersection1.isIntersected()) {
-		return intersection1;
+	    if (intersection1) {
+		last_intersection = lower->getLastIntersection();
+		return true;
+	    } else if (intersection2) {
+		last_intersection = higher->getLastIntersection();
+		return true;
 	    } else {
-		return intersection2;
+		return false;
 	    }
 	}
      }
@@ -231,8 +246,7 @@ bool BSP::intersectForShadow_recurse(const Ray& ray, const double min_t, const d
     double rd_dim = ray.getDirection()[cutplane_dimension];
     double o_dim = ray.getOrigin()[cutplane_dimension] + min_t * rd_dim;
     
-    if (o_dim < cutplane_value && 
-	rd_dim <= 0) {
+    if (o_dim < cutplane_value && rd_dim <= 0) {
 	if (lower->intersectForShadow(ray,min_t,max_t)) {
 	    last_intersection = lower->getLastIntersection();
 	    return true;

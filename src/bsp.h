@@ -52,8 +52,8 @@ class BSP : public SpaceSubdivider {
 	double median(int dimension) const;
 	Vector measureSplit(const int dim, const double val) const;
 
-	Intersection intersect(const Ray&,const double,const double) const;
-	Intersection intersect_recurse(const Ray&,const double,const double) const;
+	bool intersect(const Ray&,const double,const double) const;
+	bool intersect_recurse(const Ray&,const double,const double) const;
 	bool intersectForShadow(const Ray&,const double,const double) const;
 	bool intersectForShadow_recurse(const Ray&,const double,const double) const;
 };
