@@ -6,9 +6,14 @@
 
 class ShaderInput {
     public:
-	Vector* surfaceNormal;
-	Intersection* intersection;
-	Vector2* uv;
-	Ray* ray;
+	/// Intersection point
+	Vector& P;
+	/// Surface normal at intersection point
+	Vector& N;
+	/// Inci:ray direction
+	Vector& I;
+	/// Ray origin
+	Vector& E;
+	/// Surface texture coordinates
+	Vector2& uv;
 };
-
