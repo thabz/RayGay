@@ -48,7 +48,7 @@ class Triangle : public Object {
 
 	virtual SceneObject* clone() const { return NULL; };
 	double _fastIntersect(const Ray& ray) const;
-	Intersection _fullIntersect(const Ray& ray, const double t) const;
+	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 	double area() const;
         int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
 	//static TriangleVertexCache vertex_cache;

@@ -71,7 +71,7 @@ void Triangle::prepare() {
 TriangleVertexCache vertex_cache;
 
 // ----------------------------------------------------------------------------
-Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
+void Triangle::_fullIntersect(const Ray& ray, const double t2, Intersection& result) const {
     
    double tvec[3], pvec[3], qvec[3];
 
@@ -114,7 +114,7 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
    
    Vector2 uv = mesh->getUV(_tri_idx,u,v);
    Vector normal = mesh->normal(_tri_idx,u,v);
-   return Intersection(ray.getPoint(t2),t2,normal,uv);
+   result = Intersection(ray.getPoint(t2),t2,normal,uv);
 }
 
 // ----------------------------------------------------------------------------

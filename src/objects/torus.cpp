@@ -25,11 +25,12 @@ void Torus::transform(const Matrix& m) {
     Transformer::transform(m);
 }
 
-Intersection Torus::_fullIntersect(const Ray& world_ray, const double t) const {
+void Torus::_fullIntersect(const Ray& world_ray, const double t, Intersection& result) const {
     Ray ray = rayToObject(world_ray);
     Vector p  = ray.getPoint(t*ray.t_scale);
     Vector n = normal(p);
-    return intersectionToWorld(Intersection(p,t,n,Vector2(0,0)));
+    result = Intersection(p,t,n,Vector2(0,0));
+    intersectionToWorld(result);
 }
 
 double Torus::_fastIntersect(const Ray& world_ray) const {
@@ -129,7 +130,8 @@ void Torus::allIntersections(const Ray& ray, vector<Intersection>& result) const
     result.reserve(num);
     bool entering = (num % 2) == 0;
     for(int i = 0; i < num; i++) {
-	Intersection inter = fullIntersect(ray,roots[i]);
+	Intersection inter;
+	fullIntersect(ray,roots[i],inter);
 	inter.isEntering(entering);
 	entering = !entering;
 	result.push_back(inter);

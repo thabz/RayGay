@@ -216,42 +216,42 @@ class kdtree_test : public Test {
 	    Ray r = Ray(Vector(200,250,1000),Vector(0,0,-1),1);
 	    assertTrue(bsp.intersectForShadow(r,HUGE_DOUBLE) != NULL);
 	    assertTrue(bsp.intersectForShadow(r,10.0) == NULL);
-	    assertTrue(bsp.intersect(r,&i) == true);
+	    assertTrue(bsp.intersect(r,i) == true);
 	    assertTrue(i.getPoint() == Vector(200,250,210));
 
 	    r = Ray(Vector(200,250,-1000),Vector(0,0,1),1);
 	    assertTrue(bsp.intersectForShadow(r,HUGE_DOUBLE) != NULL);
 	    assertTrue(bsp.intersectForShadow(r,10.0) == NULL);
-	    assertTrue(bsp.intersect(r,&i) == true);
+	    assertTrue(bsp.intersect(r,i) == true);
 	    assertTrue(i.getPoint() == Vector(200,250,-210));
 
 	    r = Ray(Vector(-200,-150,1000),Vector(0,0,-1),1);
 	    assertTrue(bsp.intersectForShadow(r,HUGE_DOUBLE) != NULL);
 	    assertTrue(bsp.intersectForShadow(r,10.0) == NULL);
-	    assertTrue(bsp.intersect(r,&i) == true);
+	    assertTrue(bsp.intersect(r,i) == true);
 	    assertTrue(i.getPoint() == Vector(-200,-150,210));
 
 	    r = Ray(Vector(0,1000,0),Vector(0,-1,0),1);
 	    assertTrue(bsp.intersectForShadow(r,HUGE_DOUBLE) != NULL);
 	    assertTrue(bsp.intersectForShadow(r,10.0) == NULL);
-	    assertTrue(bsp.intersect(r,&i) == true);
+	    assertTrue(bsp.intersect(r,i) == true);
 	    assertTrue(i.getPoint() == Vector(0,260,0));
 
 	    r = Ray(Vector(0,-1000,0),Vector(0,1,0),1);
 	    assertTrue(bsp.intersectForShadow(r,HUGE_DOUBLE) != NULL);
 	    assertTrue(bsp.intersectForShadow(r,10.0) == NULL);
-	    assertTrue(bsp.intersect(r,&i) == true);
+	    assertTrue(bsp.intersect(r,i) == true);
 	    assertTrue(i.getPoint() == Vector(0,-510,0));
 
 	    r = Ray(Vector(300,250,-1000),Vector(0,0,1),1);
 	    assertTrue(bsp.intersectForShadow(r,HUGE_DOUBLE) == NULL);
 	    assertTrue(bsp.intersectForShadow(r,10.0) == NULL);
-	    assertTrue(bsp.intersect(r,&i) == false);
+	    assertTrue(bsp.intersect(r,i) == false);
 
 	    r = Ray(Vector(200,250,-1000),Vector(0,0,-1),1);
 	    assertTrue(bsp.intersectForShadow(r,HUGE_DOUBLE) == NULL);
 	    assertTrue(bsp.intersectForShadow(r,10.0) == NULL);
-	    assertTrue(bsp.intersect(r,&i) == false);
+	    assertTrue(bsp.intersect(r,i) == false);
 
 
 	    ////////////////////////////////////////////////////////
@@ -265,7 +265,7 @@ class kdtree_test : public Test {
 	    bsp2.prepare();
 
 	    r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-	    assertTrue(bsp2.intersect(r,&i) == true);
+	    assertTrue(bsp2.intersect(r,i) == true);
 	    assertTrue(i.getPoint() == Vector(0,0,s));
 	}
 };

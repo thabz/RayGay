@@ -34,7 +34,7 @@ RGBA Pathtracer::getPixel(const Vector2& v) {
 RGBA Pathtracer::tracePrimary(const Ray& ray) {
     Stats::getUniqueInstance()->inc(STATS_PRIMARY_RAYS_CAST);
     Intersection i;
-    bool intersected = space->intersectPrimary(ray,&i);
+    bool intersected = space->intersectPrimary(ray, i);
     if (intersected) {
 	// Reset the quasi monte carlo sequence for each trace depth
 	for(uint j = 0; j < MAX_DEPTH; j++) {

@@ -25,12 +25,14 @@ void SolidBox::allIntersections(const Ray& world_ray, vector<Intersection>& resu
 	return;
 	    
     if (ts[0] > EPSILON) {
-	Intersection i = fullIntersect(world_ray,ts[0]);
+	Intersection i;
+	fullIntersect(world_ray,ts[0],i);
 	i.isEntering(true);
 	result.push_back(i);
     }
     if (ts[1] > EPSILON) {
-	Intersection i = fullIntersect(world_ray,ts[1]);
+	Intersection i;
+	fullIntersect(world_ray,ts[1],i);
 	i.isEntering(false);
 	result.push_back(i);
     }
@@ -62,7 +64,7 @@ double SolidBox::_fastIntersect(const Ray& world_ray) const {
 }
 
 // TODO: Find UV-coordinates.
-Intersection SolidBox::_fullIntersect(const Ray& world_ray, const double t) const {
+void SolidBox::_fullIntersect(const Ray& world_ray, const double t, Intersection& result) const {
     Ray local_ray = rayToObject(world_ray);
     Vector point = local_ray.getPoint(t*local_ray.t_scale);
     Vector normal = Vector(0,0,0);
@@ -79,8 +81,8 @@ Intersection SolidBox::_fullIntersect(const Ray& world_ray, const double t) cons
     } else if (IS_EQUAL(point[2],bbox.minimum()[2])) {
 	normal[2] = -1.0;
     }
-    Intersection i = Intersection(point,t,normal,Vector2(0,0));
-    return intersectionToWorld(i);
+    result = Intersection(point,t,normal,Vector2(0,0));
+    intersectionToWorld(result);
 }
 
  

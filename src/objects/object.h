@@ -20,7 +20,7 @@ class KdTree;
 class Object : public SceneObject {
     public:
         /// Returns a full intersection at t distance from ray's origin
-	virtual Intersection fullIntersect(const Ray& ray, const double t) const;
+	virtual void fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 	double fastIntersect(const Ray& ray) const;
 	
 	/// Transform this object
@@ -48,7 +48,7 @@ class Object : public SceneObject {
 	Object(const Material* material);
 
 	/// Internal intersect method that subclasses must implement
-	virtual Intersection _fullIntersect(const Ray& ray, const double t) const = 0;
+	virtual void _fullIntersect(const Ray& ray, const double t, Intersection& result) const = 0;
 	/// Internal fast intersect method that subclasses must implement
 	virtual double _fastIntersect(const Ray& ray) const = 0;
 
@@ -58,10 +58,9 @@ class Object : public SceneObject {
 };
 
 inline
-Intersection Object::fullIntersect(const Ray& ray, const double t) const {
-    Intersection result = _fullIntersect(ray,t);
+void Object::fullIntersect(const Ray& ray, const double t, Intersection& result) const {
+    _fullIntersect(ray, t, result);
     result.setObject(const_cast<Object*>(this));
-    return result;
 }
 
 /**

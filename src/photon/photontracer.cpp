@@ -94,7 +94,7 @@ void PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
 
     Stats::getUniqueInstance()->inc(STATS_PHOTON_RAYS_TRACED);
     Intersection intersection;
-    if (!space->intersect(ray,&intersection)) {
+    if (!space->intersect(ray, intersection)) {
 	Stats::getUniqueInstance()->inc(STATS_PHOTONS_LOST_IN_VOID);
 	return;
     }

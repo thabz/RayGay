@@ -18,27 +18,27 @@
 KdTree::KdTree() : GenericKdTree<Object>(KD_TREE_MAX_DEPTH, KD_TREE_MAX) {
 }
 
-bool KdTree::intersect(const Ray& ray, Intersection* result) const {
+bool KdTree::intersect(const Ray& ray, Intersection& result) const {
     Vector2 h = world_bbox.intersect(ray);
     if (h[1] < h[0]) {
 	return false;
     } else {
 	bool res = intersect(ray,result,0.0,h[1]);
-	if (res && ray.getDirection() * result->getNormal() > 0) {
-	    result->flipNormal();
+	if (res && ray.getDirection() * result.getNormal() > 0) {
+	    result.flipNormal();
 	}
 	return res;
     }
 }
 
-bool KdTree::intersectPrimary(const Ray& ray, Intersection* result) const {
+bool KdTree::intersectPrimary(const Ray& ray, Intersection& result) const {
     Vector2 h = world_bbox.intersect(ray);
     if (h[1] < h[0]) {
 	return false;
     } else {
 	bool res = intersect(ray,result,max(h[0],0.0),h[1]);
-	if (res && ray.getDirection() * result->getNormal() > 0) {
-	    result->flipNormal();
+	if (res && ray.getDirection() * result.getNormal() > 0) {
+	    result.flipNormal();
 	}
 	return res;
     }
@@ -59,7 +59,7 @@ Object* KdTree::intersectForShadow(const Ray& ray, double max_t) const {
  * See http://sgi.felk.cvut.cz/~havran/phdthesis.html
  * See http://www.acm.org/jgt/papers/HavranKopalBittnerZara97/TA-B.html
  */
-bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, const double b) const {
+bool KdTree::intersect(const Ray& ray, Intersection& result, const double a, const double b) const {
 
     StackElem* stack = (StackElem*)alloca(sizeof(StackElem)*(max_depth+2));
 
@@ -211,7 +211,7 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 		}
 	    }
 	    if (object_hit != NULL) {
-		*(result) = object_hit->fullIntersect(ray,smallest_t);
+		object_hit->fullIntersect(ray, smallest_t, result);
 		return true;
 	    }
 	}

@@ -31,10 +31,10 @@ class Bound : public Object {
 
 	void prepare();
 
-	Intersection fullIntersect(const Ray& ray, double t) const;
+	void fullIntersect(const Ray& ray, double t, Intersection& result) const;
 	double fastIntersect(const Ray& ray) const;
 	double _fastIntersect(const Ray& ray) const;
-	Intersection _fullIntersect(const Ray& ray, const double t) const;
+	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 	/// Never called
 	Intersection _intersect(const Ray& ray) const {return Intersection(); };
 

@@ -35,7 +35,7 @@ inline
 RGBA Raytracer::tracePrimary(const Ray& ray) {
     primary_rays_cast->inc();
     Intersection i;
-    bool intersected = space->intersectPrimary(ray,&i);
+    bool intersected = space->intersectPrimary(ray, i);
     return traceSub(intersected, i, ray, 1);
 }
 
@@ -43,7 +43,7 @@ inline
 RGBA Raytracer::trace(const Ray& ray, const int depth) {
     secondary_rays_cast->inc();
     Intersection i;
-    bool intersected = space->intersect(ray,&i);
+    bool intersected = space->intersect(ray, i);
     return traceSub(intersected, i, ray, depth);
 }
 

@@ -18,14 +18,14 @@ BoundingBox Ellipsoid::boundingBoundingBox() const {
     return bboxToWorld(sphere->boundingBoundingBox());
 }
 
-Intersection Ellipsoid::_fullIntersect( const Ray& world_ray, const double t) const {
+void Ellipsoid::_fullIntersect( const Ray& world_ray, const double t, Intersection& result) const {
     Ray ray = rayToObject(world_ray);
     double new_t = t*ray.t_scale;
     Vector p = ray.getPoint(new_t);
     // The normalized normal at a surface point of a unit-sphere
     // is the same as the surface point itself.
-    Intersection local_i = Intersection(p,new_t,p,Vector2(0,0));
-    return intersectionToWorld(local_i);
+    result = Intersection(p,new_t,p,Vector2(0,0));
+    intersectionToWorld(result);
 }
 
 double Ellipsoid::_fastIntersect(const Ray& world_ray) const {
@@ -43,7 +43,8 @@ void Ellipsoid::allIntersections(const Ray& world_ray, vector<Intersection>& res
     vector<Intersection> result1;
     sphere->allIntersections(local_ray,result1);
     for(unsigned int i = 0; i < result1.size(); i++) {
-	Intersection is = intersectionToWorld(result1[i]);
+	Intersection is = result1[i];
+	intersectionToWorld(is);
 	is.setT(is.getT() / local_ray.t_scale);
 	result2.push_back(is);
     }

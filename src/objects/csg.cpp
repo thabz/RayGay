@@ -163,27 +163,23 @@ double CSGIntersection::_fastIntersect(const Ray& ray) const {
 }
 
 
-Intersection CSGDifference::_fullIntersect(const Ray& ray, const double t) const {
+void CSGDifference::_fullIntersect(const Ray& ray, const double t, Intersection& result) const {
     vector<Intersection> all;
     allIntersections(ray,all);
-    Intersection result;
     if (!all.empty()) {
 	result = all.front();
     } else {
 	throw_exception("This shouldn't happen...");
     }
-    return result;
 }
 
-Intersection CSGIntersection::_fullIntersect(const Ray& ray, const double t) const {
+void CSGIntersection::_fullIntersect(const Ray& ray, const double t, Intersection& result) const {
     vector<Intersection> all;
     allIntersections(ray,all);
-    Intersection result;
     if (!all.empty()) {
 	result = all.front();
     } else {
 	throw_exception("This shouldn't happen...");
     }
-    return result;
 }
 

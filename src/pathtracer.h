@@ -35,7 +35,7 @@ inline
 RGBA Pathtracer::trace(const Ray& ray, const int depth) {
     Stats::getUniqueInstance()->inc(STATS_SECONDARY_RAYS_CAST);
     Intersection i;
-    bool intersected = space->intersect(ray,&i);
+    bool intersected = space->intersect(ray, i);
     return traceSub(intersected, i, ray, depth);
 }
 

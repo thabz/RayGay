@@ -139,14 +139,12 @@ double CSGUnion::_fastIntersect(const Ray& ray) const {
     }
 }
 
-Intersection CSGUnion::_fullIntersect(const Ray& ray, const double t) const {
+void CSGUnion::_fullIntersect(const Ray& ray, const double t, Intersection& result) const {
     vector<Intersection> all;
     allIntersections(ray,all);
-    Intersection result;
     if (!all.empty()) {
 	result = all.front();
     } else {
 	throw_exception("This shouldn't happen...");
     }
-    return result;
 }

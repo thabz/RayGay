@@ -35,7 +35,7 @@ class Sphere : public Solid {
 
 	virtual SceneObject* clone() const;
 	double _fastIntersect(const Ray& ray) const;
-	Intersection _fullIntersect(const Ray& ray, const double t) const;
+	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 	int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 

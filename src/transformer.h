@@ -31,7 +31,7 @@ class Transformer {
 	Vector pointToWorld(const Vector &p) const;
 	Vector normalToWorld(const Vector& d) const;
 	Ray rayToObject(const Ray& ray) const;
-	Intersection intersectionToWorld(const Intersection& i) const;
+	void intersectionToWorld(Intersection& i) const;
 	BoundingBox bboxToWorld(const BoundingBox& bbox) const;
 
     private:
@@ -75,13 +75,12 @@ Vector Transformer::normalToWorld(const Vector& d) const {
 }
 
 inline
-Intersection Transformer::intersectionToWorld(const Intersection& i) const {
-    if (!transformed) return i;
-
-    Intersection result = Intersection(i);
-    result.setNormal(normalToWorld(i.getNormal()));
-    result.setPoint(pointToWorld(i.getPoint()));
-    return result;
+void Transformer::intersectionToWorld(Intersection& i) const 
+{
+    if (transformed) { 
+	i.setNormal(normalToWorld(i.getNormal()));
+	i.setPoint(pointToWorld(i.getPoint()));
+    }
 }
 
 #endif

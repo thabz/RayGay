@@ -25,7 +25,7 @@ class TransformedInstance : public Object, public Transformer {
 
     private:
 	double _fastIntersect(const Ray& ray) const;
-	Intersection _fullIntersect(const Ray& ray, const double t) const;
+	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 
 	Object* object;
 };

@@ -14,11 +14,11 @@ IsoSurface::IsoSurface(uint steps, double accuracy, double iso, Material* mat) :
     this->iso = iso;
 }
 
-Intersection IsoSurface::_fullIntersect(const Ray& world_ray, const double t) const {
+void IsoSurface::_fullIntersect(const Ray& world_ray, const double t, Intersection& result) const {
     Ray ray = rayToObject(world_ray);
     Vector p = ray.getPoint(t*ray.t_scale);
-    Intersection local_i = Intersection(p,t*ray.t_scale,normal(p),Vector2(0,0));
-    return intersectionToWorld(local_i);
+    result = Intersection(p,t*ray.t_scale,normal(p),Vector2(0,0));
+    intersectionToWorld(result);
 }
 
 #define func(x) (evaluateFunction(local_ray.getPoint(x)) - iso)

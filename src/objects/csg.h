@@ -29,7 +29,7 @@ class CSGUnion : public Solid {
 	Solid* right;
 
 	double _fastIntersect(const Ray& ray) const;
-	Intersection _fullIntersect(const Ray& ray, const double t) const;
+	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 };
 
 /**
@@ -53,7 +53,7 @@ class CSGDifference : public Solid {
 	Solid* right;
 
 	double _fastIntersect(const Ray& ray) const;
-	Intersection _fullIntersect(const Ray& ray, const double t) const;
+	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 };
 
 /**
@@ -77,7 +77,7 @@ class CSGIntersection : public Solid {
 	Solid* right;
 
 	double _fastIntersect(const Ray& ray) const;
-	Intersection _fullIntersect(const Ray& ray, const double t) const;
+	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 };
 
 #endif

@@ -35,7 +35,7 @@ class IsoSurface : public Object, public Transformer {
 	virtual double evaluateFunction(const Vector& point) const = 0;
 
 	double _fastIntersect(const Ray& ray) const;
-	Intersection _fullIntersect(const Ray& ray, const double t) const;
+	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 
 	// Returns the bounding box in object space coordinates
 	virtual BoundingBox _boundingBoundingBox() const = 0;

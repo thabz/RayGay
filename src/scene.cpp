@@ -81,7 +81,8 @@ RGBA Scene::getBackgroundColor(const Ray& ray) const {
     } else {
 	double t = environmentSphere->fastIntersect(ray);
 	if (false) {
-	    Intersection i = environmentSphere->fullIntersect(ray,t);
+	    Intersection i;
+	    environmentSphere->fullIntersect(ray,t,i);
 	    return environmentMap->getTexel(i.getUV());
 	} else {
 	    // A light probe

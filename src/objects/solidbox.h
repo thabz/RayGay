@@ -28,7 +28,7 @@ class SolidBox : public Solid, public Transformer {
 	BoundingBox bbox;
 
 	double _fastIntersect(const Ray& ray) const;
-	Intersection _fullIntersect(const Ray& ray, const double t) const;
+	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 };
 
 #endif

@@ -47,7 +47,10 @@ Vector iPoint(Object* o, const Ray& ray) {
 	return Vector(-1,-1,-1);
     }
     //assert(t > 0);
-    return o->fullIntersect(ray,t).getPoint();
+    Intersection intersection;
+    o->fullIntersect(ray,t,intersection);
+    return intersection.getPoint();
+    
 }
 
 Vector iPoint(Object* o, const Vector& origin, const Vector& dir) {
@@ -61,8 +64,9 @@ Vector iNormal(Object* o, const Ray& ray) {
 	cout << "assert failed: t < 0!" << endl;
 	return Vector(-1,-1,-1);
     }
-    Intersection i = o->fullIntersect(ray,t);
-    return i.getNormal();
+    Intersection intersection;
+    o->fullIntersect(ray,t,intersection);
+    return intersection.getNormal();
 }
 
 Vector iNormal(Object* o, const Vector& origin, const Vector& dir) {
@@ -217,15 +221,15 @@ class box_test : public Test {
 	    KdTree* bsp = new KdTree();
 	    b->addSelf(bsp);
 	    bsp->prepare();
-	    Intersection* inter = new Intersection();
+	    Intersection inter;
 	    Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
 	    assertTrue(bsp->intersect(r,inter));
-	    assertEqualV(inter->getPoint(), Vector(0,0,1));
-	    assertTrue(inter->getUV() == Vector2(0.5,0.5));
+	    assertEqualV(inter.getPoint(), Vector(0,0,1));
+	    assertTrue(inter.getUV() == Vector2(0.5,0.5));
 
 	    r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
 	    assertTrue(bsp->intersect(r,inter));
-	    assertEqualV(inter->getPoint(), Vector(0,-1,0));
+	    assertEqualV(inter.getPoint(), Vector(0,-1,0));
 
 	    /* Test second constructor */
 	    b = new Box(Vector(0,0,0),2,2,2,m);
@@ -238,11 +242,11 @@ class box_test : public Test {
 
 	    r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
 	    assertTrue(bsp->intersect(r,inter));
-	    assertTrue(inter->getPoint() == Vector(0,0,1));
+	    assertTrue(inter.getPoint() == Vector(0,0,1));
 
 	    r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
 	    assertTrue(bsp->intersect(r,inter));
-	    assertTrue(inter->getPoint() == Vector(0,-1,0));
+	    assertTrue(inter.getPoint() == Vector(0,-1,0));
 
 	    r = Ray(Vector(0,-100,1.5),Vector(0,1,0),1);
 	    assertTrue(bsp->intersect(r,inter) == false);
@@ -261,11 +265,11 @@ class box_test : public Test {
 
 	    Intersection i;
 	    r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
-	    assertTrue(bsp->intersect(r,&i));
+	    assertTrue(bsp->intersect(r,i));
 	    r = Ray(Vector(0,10,100),Vector(0,0,-1),1);
-	    assertTrue(bsp->intersect(r,&i));
+	    assertTrue(bsp->intersect(r,i));
 	    r = Ray(Vector(0,5,100),Vector(0,0,-1),1);
-	    assertTrue(!bsp->intersect(r,&i));
+	    assertTrue(!bsp->intersect(r,i));
 	}
 };
 
@@ -289,26 +293,26 @@ class mesh_test : public Test {
 	    b2->addSelf(bsp);
 	    bsp->prepare();
 
-	    Intersection* inter = new Intersection();
+	    Intersection inter;
 	    Ray r;
 
 	    r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
 	    assertTrue(bsp->intersect(r,inter));
-	    assertEqualV(inter->getPoint(), Vector(0,0,1));
-	    assertTrue(inter->getUV() == Vector2(0.5,0.5));
+	    assertEqualV(inter.getPoint(), Vector(0,0,1));
+	    assertTrue(inter.getUV() == Vector2(0.5,0.5));
 
 	    r = Ray(Vector(0.5,-0.5,100),Vector(0,0,-1),1);
 	    assertTrue(bsp->intersect(r,inter));
-	    assertEqualV(inter->getPoint(), Vector(0.5,-0.5,1));
+	    assertEqualV(inter.getPoint(), Vector(0.5,-0.5,1));
 
 	    r = Ray(Vector(10,10,100),Vector(0,0,-1),1);
 	    assertTrue(bsp->intersect(r,inter));
-	    assertEqualV(inter->getPoint(), Vector(10,10,1));
-	    assertTrue(inter->getUV() == Vector2(0.5,0.5));
+	    assertEqualV(inter.getPoint(), Vector(10,10,1));
+	    assertTrue(inter.getUV() == Vector2(0.5,0.5));
 
 	    r = Ray(Vector(10.5,10.5,100),Vector(0,0,-1),1);
 	    assertTrue(bsp->intersect(r,inter));
-	    assertEqualV(inter->getPoint(), Vector(10.5,10.5,1));
+	    assertEqualV(inter.getPoint(), Vector(10.5,10.5,1));
 	}
 };
 
@@ -374,7 +378,7 @@ class extrusion_test : public Test {
 	    bsp->prepare();
 	    Intersection i;
 	    Ray r = Ray(Vector(0.5,0.5,100),Vector(0,0,-1),1);
-	    assertTrue(bsp->intersect(r,&i));
+	    assertTrue(bsp->intersect(r,i));
 
 	    // Check generated mesh 
 	    c = new Extrusion(Vector(0,0,0),Vector(0,0,-10),2.0,5,m);
@@ -529,11 +533,11 @@ class objectgroup_test : public Test {
 
 	    Intersection i;
 	    Ray r = Ray(Vector(0,100,1000),Vector(0,0,-1),1);
-	    assertTrue(bsp->intersect(r,&i));
+	    assertTrue(bsp->intersect(r,i));
 	    r = Ray(Vector(0,-100,1000),Vector(0,0,-1),1);
-	    assertTrue(bsp->intersect(r,&i));
+	    assertTrue(bsp->intersect(r,i));
 	    r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-	    assertTrue(!bsp->intersect(r,&i));
+	    assertTrue(!bsp->intersect(r,i));
 	}
 };
 
@@ -1270,7 +1274,7 @@ class bounded_mesh_test : public Test {
 	    KdTree* bsp = new KdTree();
 	    b->addSelf(bsp);
 	    bsp->prepare();
-	    Intersection* inter = new Intersection();
+	    Intersection inter;
 	    Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
 	    assertTrue(bsp->intersect(r,inter));
 	}
@@ -1287,7 +1291,7 @@ class heightfield_test : public Test {
 	    KdTree* bsp = new KdTree();
 	    h->addSelf(bsp);
 	    bsp->prepare();
-	    Intersection* inter = new Intersection();
+	    Intersection inter;
 	    Ray ray;
 	    ray = Ray(Vector(0,1000,0),Vector(0,-1,0),1);
 	    assertTrue(bsp->intersect(ray,inter));

@@ -70,11 +70,12 @@ Vector Cone::getNormal(const Vector& local_point) const {
 }
 
 
-Intersection Cone::_fullIntersect(const Ray& world_ray, const double t) const {
+void Cone::_fullIntersect(const Ray& world_ray, const double t, Intersection& result) const {
     Ray ray = rayToObject(world_ray);
     Vector p = ray.getPoint(t*ray.t_scale);
     Vector n = getNormal(p);
-    return intersectionToWorld(Intersection(p,t,n,Vector2(0,0)));
+    result = Intersection(p,t,n,Vector2(0,0));
+    intersectionToWorld(result);
 }
 
 
@@ -189,7 +190,8 @@ void Cone::allIntersections(const Ray& ray, vector<Intersection>& result) const 
     int num = allPositiveRoots(ray,roots);
     result.reserve(num);
     for(int i = 0; i < num; i++) {
-	Intersection inter = fullIntersect(ray,roots[i]);
+	Intersection inter;
+	fullIntersect(ray,roots[i],inter);
 	result.push_back(inter);
     }
     if (num == 1) {

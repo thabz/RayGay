@@ -36,7 +36,7 @@ double Sphere::getRadius() const {
     return radius;
 }
 
-Intersection Sphere::_fullIntersect(const Ray& ray, const double t) const {
+void Sphere::_fullIntersect(const Ray& ray, const double t, Intersection& result) const {
     Vector p = ray.getPoint(t);
     Vector n = p - center;
     n.normalize();
@@ -45,7 +45,7 @@ Intersection Sphere::_fullIntersect(const Ray& ray, const double t) const {
 	//cout << "Getting UV" << endl;
 	uv = getUV(p);
     } 
-    return Intersection(p,t,n,uv);
+    result = Intersection(p,t,n,uv);
 }
 
 #define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
@@ -103,8 +103,10 @@ void Sphere::allIntersections(const Ray& ray, vector<Intersection>& result) cons
        double t1 = (-b - sq ) / (2 * a);
        double t2 = (-b + sq ) / (2 * a);
        if (t1 > EPSILON && t2 > EPSILON) {
-	   Intersection i1 = fullIntersect(ray,t1);
-	   Intersection i2 = fullIntersect(ray,t2);
+	   Intersection i1;
+	   fullIntersect(ray,t1,i1);
+	   Intersection i2;
+	   fullIntersect(ray,t2,i2);
 	   if (t1 < t2) {
 	       i1.isEntering(true);
 	       i2.isEntering(false);
@@ -117,11 +119,13 @@ void Sphere::allIntersections(const Ray& ray, vector<Intersection>& result) cons
 	       result.push_back(i1);
 	   }
        } else if (t1 <= EPSILON && t2 > EPSILON) {
-	   Intersection i2 = fullIntersect(ray,t2);
+	   Intersection i2;
+	   fullIntersect(ray,t2,i2);
 	   i2.isEntering(false);
 	   result.push_back(i2);
        } else if (t2 <= EPSILON && t1 > EPSILON) {
-	   Intersection i1 = fullIntersect(ray,t1);
+	   Intersection i1;
+	   fullIntersect(ray,t1,i1);
 	   i1.isEntering(false);
 	   result.push_back(i1);
        }

@@ -12,10 +12,10 @@ TransformedInstance::TransformedInstance(Object* object, Material* material) : O
     this->object = object;
 }
 
-Intersection TransformedInstance::_fullIntersect(const Ray& ray, const double t) const {
+void TransformedInstance::_fullIntersect(const Ray& ray, const double t, Intersection& result) const {
     Ray local_ray = rayToObject(ray);
-    Intersection local_intersection = object->fullIntersect(local_ray,t);
-    return intersectionToWorld(local_intersection);
+    object->fullIntersect(local_ray,t,result);
+    intersectionToWorld(result);
 }
 
 double TransformedInstance::_fastIntersect(const Ray& ray) const {

@@ -27,10 +27,10 @@ class KdTree : public GenericKdTree<Object> {
 	KdTree();
 	
 	/// Returns the nearest intersection
-	bool intersect(const Ray& ray, Intersection* result) const; 
+	bool intersect(const Ray& ray, Intersection& result) const; 
 	
 	/// Returns the nearest intersection
-	bool intersectPrimary(const Ray& ray, Intersection* result) const; 
+	bool intersectPrimary(const Ray& ray, Intersection& result) const; 
 
 	/// Returns any intersection
 	Object* intersectForShadow(const Ray& ray, double max_t) const;  
@@ -43,7 +43,7 @@ class KdTree : public GenericKdTree<Object> {
 	    int prev;       // pointer to previus stack item
 	};
 
-	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
+	bool intersect(const Ray& ray, Intersection& result, const double a, const double b) const;
 
 	Object* intersectForShadow_real(const Ray&,const double) const;
 

@@ -55,14 +55,14 @@ RGBA PhotonRenderer::getPixel(const Vector2& v) {
 RGBA PhotonRenderer::tracePrimary(const Ray& ray) {
     Stats::getUniqueInstance()->inc(STATS_PRIMARY_RAYS_CAST);
     Intersection i;
-    bool intersected = space->intersectPrimary(ray,&i);
+    bool intersected = space->intersectPrimary(ray, i);
     return traceSub(intersected, i, ray, 1);
 }
 
 RGBA PhotonRenderer::trace(const Ray& ray, int depth) {
     Stats::getUniqueInstance()->inc(STATS_SECONDARY_RAYS_CAST);
     Intersection i;
-    bool intersected = space->intersect(ray,&i);
+    bool intersected = space->intersect(ray, i);
     return traceSub(intersected, i, ray, depth);
 }
 
@@ -240,7 +240,7 @@ RGB PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const
 
 	Ray ray = Ray(offset_point,dir,-1);
 	Intersection inter;
-	if (space->intersect(ray,&inter)) {
+	if (space->intersect(ray, inter)) {
 	    gatherHits++;
 	    Vector hitpoint = inter.getPoint();
 	    Vector hitnormal = inter.getNormal();
