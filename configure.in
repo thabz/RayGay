@@ -122,6 +122,7 @@ dnl -------------------------------------------------
 AC_OUTPUT(Makefile \
 	  src/Makefile \
 	  src/materials/Makefile \
+	  src/materials/normalperturbers/Makefile \
 	  src/paths/Makefile \
 	  src/lights/Makefile \
 	  src/math/Makefile \
