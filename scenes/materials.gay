@@ -42,3 +42,19 @@ specular 1.0 1.0 1.0
 ks 0.0
 specpow 0
 
+material $glossyred
+diffuse 0.8 0.2 0.2
+kd 0.4
+specular 1.0 1.0 1.0
+ks 0.5
+gloss 100 10.0
+specpow 15
+
+material $glossyblue
+diffuse 0.2 0.2 0.8
+kd 0.4
+specular 1.0 1.0 1.0
+ks 0.5
+gloss 100 10.0
+specpow 15
+

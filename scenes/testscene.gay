@@ -4,7 +4,7 @@
 
 include materials.gay
 
-camera-position 0 0 1500
+camera-position 300 -200 700
 camera-up 0 1 0
 camera-lookat 0 0 0
 camera-field-of-view 45
@@ -29,6 +29,8 @@ spiral $spiral $circle 100 4 0
 # 76 sec
 # 66 sec
 
-extrusion $dullblue $spiral 50 32 100
+#extrusion $dullblue $spiral 50 32 100
 
-#box $green -300 -200 -300 300 -150 300
+box $green -300 -200 -300 300 -150 300
+sphere $glossyred 150 0 0 0 
+sphere $glossyblue 50 0 -100 250

@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "math/vector.h"
+#include "math/functions.h"
 #include "ray.h"
 #include "intersection.h"
 #include "object.h"
@@ -100,36 +101,13 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 	    RGB refl_col = RGB(0.0,0.0,0.0);
 	    if (material.glossEnabled()) {
 		/* Distributed reflection */
-		const double v = sin(material.glossMaxAngle());
-		const double h = cos(material.glossMaxAngle());
-
-		Vector corners[3];
-		corners[0] = Vector(-v,v,h);
-		corners[1] = Vector(v,v,h);
-		corners[2] = Vector(-v,-v,h);
-		corners[3] = Vector(v,-v,h);
-		Matrix orient = Matrix::matrixOrient(refl_vector);
-		orient = orient.inverse();
-		for(unsigned int i = 0; i < 4; i++) {
-		    corners[i] = orient*corners[i];
-		    corners[i].normalize();
+		double max_angle = material.glossMaxAngle();
+		int gloss_rays = material.glossRaysNum();
+		for(int i = 0; i < gloss_rays; i++) {
+		    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle),ray.getIndiceOfRefraction());
+		    refl_col += trace(refl_ray, depth + 1);
 		}
-		const unsigned int max_rays = material.glossRaysNum();
-		Vector v1,v2;
-		double x_factor,y_factor;
-		for(unsigned int xx = 0; xx < max_rays; xx++) {
-		    for(unsigned int yy = 0; yy < max_rays; yy++) {
-			x_factor = (double(xx)+RANDOM(0,1)) / double(max_rays);
-			y_factor = (double(yy)+RANDOM(0,1)) / double(max_rays);
-			v1 = x_factor*corners[0] + (1-x_factor)*corners[1];
-			v2 = x_factor*corners[2] + (1-x_factor)*corners[3];
-			refl_vector =  y_factor*v1 + (1-y_factor)*v2;
-			refl_vector.normalize();
-			Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
-			refl_col += trace(refl_ray, depth + 1);
-		    }
-		}
-		refl_col *= 1.0/double(max_rays*max_rays);
+		refl_col *= 1.0/double(gloss_rays);
 	    } else {
 		/* Single reflected ray */
 		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());

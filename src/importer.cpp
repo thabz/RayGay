@@ -189,6 +189,10 @@ void Importer::parse(const string& filename) {
 	    cur_material->setKd(readDouble(stream));
 	} else if (command == "ks") {
 	    cur_material->setKs(readDouble(stream));
+	} else if (command == "gloss") {
+	    int rays = readInt(stream);
+	    double angle = readDouble(stream);
+	    cur_material->enableGloss(rays,angle);
 	} else if (command == "texturemap") {
 	    cur_material->setTexturemap(readString(stream));
 	} else if (command == "name") {
