@@ -14,6 +14,7 @@
 #include "objects/extrusion.h"
 #include "objects/box.h"
 #include "objects/necklace.h"
+#include "objects/transformedinstance.h"
 #include "objects/torus.h"
 #include "objects/3ds.h"
 #include "objects/tetrahedron.h"
@@ -508,7 +509,20 @@ void torus_test() {
     assert(!t->intersect(ray));
 }
 
+void transformed_instance_test() {
+    Sphere* s = new Sphere(Vector(0,0,0),10.0,NULL);
+    TransformedInstance* t1 = new TransformedInstance(s);
+    t1->transform(Matrix::matrixTranslate(Vector(100,0,0)));
+    TransformedInstance* t2 = new TransformedInstance(s);
+    t2->transform(Matrix::matrixTranslate(Vector(-100,0,0)));
+    assert(t1->intersect(Ray(Vector(100,0,1000),Vector(0,0,-1),0)));
+    assert(!t1->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
+    assert(t2->intersect(Ray(Vector(-100,0,1000),Vector(0,0,-1),0)));
+    assert(!t2->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
+}
+
 int main(int argc, char *argv[]) {
+    transformed_instance_test();
     sphere_test();
     box_test();
     cylinder_test();
