@@ -32,6 +32,7 @@ class Intersection {
 
 	
 	bool isIntersected() const { return t >= 0.0; };
+	double u,v;
 
     private:
 	object* o; /// The object that was intersected

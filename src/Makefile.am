@@ -44,3 +44,6 @@ EXTRA_DIST = boolean.h 		\
 
 run:
 	sh test.sh
+
+view:
+	eog out.png
