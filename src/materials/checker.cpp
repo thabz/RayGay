@@ -12,7 +12,16 @@ Checker::Checker(Material* mat1, Material* mat2, double size) : Material() {
 }
 
 Material* Checker::materialAtPoint(const Vector& point) const {
-    if (fmod(point.x(),2*size) > size ) {
+    Vector p = point / size;
+    unsigned int x = (unsigned int) p.x() % 2;
+    unsigned int y = (unsigned int) p.y() % 2;
+    unsigned int z = (unsigned int) p.z() % 2;
+    
+    if (IS_NEGATIVE(p.z())) z ^= 1;
+    if (IS_NEGATIVE(p.x())) x ^= 1;
+    if (IS_NEGATIVE(p.y())) y ^= 1;
+
+    if ((x+y+z) & 1 == 1) {
 	return mat1;
     } else {
 	return mat2;

@@ -10,14 +10,16 @@ camera-position 100 1000 2000
 camera-up 0 1 0
 camera-lookat 0 0 0
 camera-field-of-view 45
-camera-aa 4
+camera-aa 0
 
 image-ratio 4 3
-image-width 1024
+image-width 640
 
 light point 100 1300 1300 1 1 1
 
-box $dullblue -700 -50 -700  700 0 700
+#box $dullblue -700 -50 -700  700 0 700
+box $chess -700 -50 -700  700 0 700
 
-3ds $dullwhite 0.7 diningchair01.3ds rotate 1 0 0 90 translate 0 0 600
+sphere $wood 300 -300 300 0
+sphere $marble 300 300 300 0
 

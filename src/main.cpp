@@ -87,10 +87,10 @@ void work(string scenefile, string outputfile) {
 
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),21.0);
     //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
-    scene->transform(n);
+    //scene->transform(n);
 
-    //SpaceSubdivider* space = new KdTree();
-    SpaceSubdivider* space = new BSP();
+    SpaceSubdivider* space = new KdTree();
+    //SpaceSubdivider* space = new BSP();
     scene->initSpace(space);
 
     RendererSettings* renderersettings = importer.getRendererSettings();

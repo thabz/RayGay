@@ -1,5 +1,6 @@
 
-material $glass
+
+material $glass plastic 0.0 0.2 0.2
 diffuse 0.0 0.2 0.2
 kd 0.0
 specular 1.0 1.0 1.0
@@ -9,7 +10,7 @@ eta 1.2
 kt 0.8
 
 
-material $water
+material $water plastic 0.0 0.2 0.2
 diffuse 0.0 0.2 0.2
 kd 0.0
 specular 1.0 1.0 1.0
@@ -19,63 +20,63 @@ eta 1.33
 kt 1.0
 noshadow
 
-material $dullblue
+material $dullblue plastic  0.0 0.2 0.2
 diffuse 0.4 0.4 1.0
 kd 0.8
 specular 1.0 1.0 1.0
 ks 0.0
 specpow 0
 
-material $blue
+material $blue plastic 0.0 0.2 0.2
 diffuse 0.2 0.2 0.8
 kd 0.4
 specular 1.0 1.0 1.0
 ks 0.5
 specpow 15
 
-material $green
+material $green plastic 0.0 0.2 0.2 
 diffuse 0.2 0.8 0.2
 kd 0.4
 specular 1.0 1.0 1.0
 ks 0.5
 specpow 15
 
-material $dullgreen
+material $dullgreen plastic 0.0 0.2 0.2
 diffuse 0.4 1.0 0.4
 kd 0.8
 specular 1.0 1.0 1.0
 ks 0.0
 specpow 0
 
-material $red 
+material $red  plastic 0.0 0.2 0.2
 diffuse 0.8 0.2 0.2
 kd 0.4
 specular 1.0 1.0 1.0
 ks 0.5
 specpow 15
 
-material $dullred
+material $dullred plastic 0.0 0.2 0.2
 diffuse 1.0 0.4 0.4
 kd 0.8
 specular 1.0 1.0 1.0
 ks 0.0
 specpow 0
 
-material $dullyellow
+material  $dullyellow plastic 0.0 0.2 0.2
 diffuse 1.0 1.0 0.4
 kd 0.8
 specular 1.0 1.0 1.0
 ks 0.0
 specpow 0
 
-material $dullwhite
+material  $dullwhite plastic 0.0 0.2 0.2
 diffuse 1.0 1.0 1.0
 kd 0.95
 specular 1.0 1.0 1.0
 ks 0.0
 specpow 0
 
-material $glossyred
+material  $glossyred plastic 0.0 0.2 0.2
 diffuse 0.8 0.2 0.2
 kd 0.4
 specular 1.0 1.0 1.0
@@ -83,11 +84,24 @@ ks 0.5
 gloss 100 10.0
 specpow 15
 
-material $glossyblue
+material  $glossyblue plastic 0.0 0.2 0.2
 diffuse 0.2 0.2 0.8
 kd 0.4
 specular 1.0 1.0 1.0
 ks 0.5
 gloss 100 10.0
 specpow 15
+
+material $chess checker $dullgreen $dullblue 50
+kd 1.0
+ks 0.0
+
+material $wood wood 0.8 0.9 0.3    0.7 0.8 0.3
+kd 1.0
+ks 0.0
+
+material $marble marble 0.8 0.9 0.3    0.7 0.8 0.3
+kd 0.8
+specular 1.0 1.0 1.0
+ks 0.2
 

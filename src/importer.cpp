@@ -176,6 +176,10 @@ void Importer::parse(const string& filename) {
 		RGB col1 = readVector(stream);
 		RGB col2 = readVector(stream);
 		cur_material = new Wood(col1,col2);
+	    } else if (mat_type == "marble") {
+		RGB col1 = readVector(stream);
+		RGB col2 = readVector(stream);
+		cur_material = new Marble(col1,col2);
 	    } else if (mat_type == "checker") {
 		Material* mat1 = lookupMaterial(readString(stream));
 		Material* mat2 = lookupMaterial(readString(stream));
