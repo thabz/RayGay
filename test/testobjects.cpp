@@ -249,14 +249,14 @@ void mesh_test() {
 }
 
 void tetrahedron_test() {
-    Material mat = Material(RGB(0,0,0),RGB(0,0,0));
+    Material mat = Material(RGB(.0,.0,.0),RGB(.0,.0,.0));
     Tetrahedron t = Tetrahedron(Vector(0,0,0),100,mat);
     assert(t.getEdges()->size() == 6);
     assert(t.getVertices()->size() == 4);
 }
 
 void tesselation_test() {
-    Material mat = Material(RGB(0,0,0),RGB(0,0,0));
+    Material mat = Material(RGB(.0,.0,.0),RGB(.0,.0,.0));
 
     // 4 triangles
     Tessalation* t = new Tessalation(Vector(0,0,0),100,0,mat);
@@ -401,7 +401,7 @@ void cylinder_test() {
 }
 
 void test_3ds() {
-    ThreeDS* chair = new ThreeDS("../3ds/egg-chair.3ds");
+    ThreeDS* chair = new ThreeDS("../3ds/egg-chair.3ds",1.0);
 }
 
 int main(int argc, char *argv[]) {
