@@ -631,9 +631,20 @@ void csg_test() {
     assert(all[1].getPoint() == Vector(0,0,-40));
     assert(all[2].getPoint() == Vector(0,0,-60));
 
+    s1 = new Sphere(Vector(0,0,10),5,NULL);
+    s2 = new Sphere(Vector(0,0,-10),5,NULL);
+    csg = new CSG(s1,CSG::UNION,s2,NULL);
+    assert(iPoint(csg,Vector(0,0,0),Vector(0,0,1)) == Vector(0,0,5));
+    assert(iNormal(csg,Vector(0,0,0),Vector(0,0,1)) == Vector(0,0,-1));
+    assert(iPoint(csg,Vector(0,0,0),Vector(0,0,-1)) == Vector(0,0,-5));
+    assert(iNormal(csg,Vector(0,0,0),Vector(0,0,-1)) == Vector(0,0,1));
+    
     ///////////////////////////////////////////////////////////////
     // Intersection 
     ///////////////////////////////////////////////////////////////
+    s1 = new Sphere(Vector(0,0,10),15,NULL);
+    s2 = new Sphere(Vector(0,0,-10),15,NULL);
+    s3 = new Sphere(Vector(0,0,0),15,NULL);
     csg = new CSG(s1,CSG::INTERSECTION,s3,NULL);
     ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
     all = csg->allIntersections(ray);
@@ -649,7 +660,9 @@ void csg_test() {
     ///////////////////////////////////////////////////////////////
     // Difference 
     ///////////////////////////////////////////////////////////////
-    csg = new CSG(s1,CSG::DIFFERENCE,s3,NULL);
+    s1 = new Sphere(Vector(0,0,10),15,NULL);
+    s2 = new Sphere(Vector(0,0,0),15,NULL);
+    csg = new CSG(s1,CSG::DIFFERENCE,s2,NULL);
     ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
     all = csg->allIntersections(ray);
     assert(all.size() == 2);
@@ -658,9 +671,12 @@ void csg_test() {
     assert(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,25));
     assert(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
     assert(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,15));
-    cout << iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) << endl;
-    cout << (all[1].isEntering() ? "entering" : "not entering") << endl;
     assert(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+    assert(!intersects(csg,Vector(0,0,25.1),Vector(0,0,1)));
+    assert(!intersects(csg,Vector(0,0,25),Vector(0,0,1)));
+    assert(!intersects(csg,Vector(0,0,14),Vector(0,0,-1)));
+    assert(!intersects(csg,Vector(0,0,14.99),Vector(0,0,-1)));
+    assert(!intersects(csg,Vector(0,0,15),Vector(0,0,-1)));
     
     // Test a sphere with three other spheres subtracted from its middle,
     // front and back, so that the resulting object is hollow along the z-axis.
