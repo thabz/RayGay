@@ -66,19 +66,20 @@ long Texture::getHeight() const {
 // Private methods
 /////////////////////////////////////////////////////
 
+#define tile(x) ((x) < 0 ? 1.0 - fmod(x,1) : fmod(x,1))
+
 inline
 double Texture::scaleU(double u) const {
-    u -= int(u);
     u *= repeat_uv[0];
-    return u;
+    return tile(u);
 }
 
 inline
 double Texture::scaleV(double v) const {
-    v -= int(v);
     v *= repeat_uv[1];
-    return v;
+    return tile(v);
 }
+
 
 inline
 RGBA Texture::getRGBWrapped(int x, int y) const {
@@ -91,8 +92,7 @@ RGBA Texture::getRGBWrapped(int x, int y) const {
 
 RGB Texture::getNormalTexel(double u, double v) const {
     u = scaleU(u); v = scaleV(v);
-    u -= int(u); v -= int(v);
-    return image->getRGBA(int(u*(width-1)),int(v*(height-1)));
+    return getRGBWrapped(int(u*(width-1)),int(v*(height-1)));
 }
 
 #define BiCubicP(x) (x) > 0 ? (x) : 0
@@ -123,8 +123,7 @@ double Texture::biCubicR(const double x) const {
  */
 RGB Texture::getBiCubicTexel(double u, double v) const {
     u = scaleU(u); v = scaleV(v);
-    u -= int(u);
-    v -= int(v);
+
     double x = u*(width-1);
     double y = v*(height-1);
     int i = int(x); int j = int(y);
@@ -161,8 +160,7 @@ RGB Texture::getBiCubicTexel(double u, double v) const {
  */
 RGB Texture::getBiLinearTexel(double u, double v) const {
     u = scaleU(u); v = scaleV(v);
-    u -= int(u);
-    v -= int(v);
+
     double x = u*(width-1);
     double y = v*(height-1);
     int xi = int(x); int yi = int(y);
