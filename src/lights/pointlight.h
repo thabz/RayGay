@@ -8,7 +8,6 @@
 class RGB;
 class Matrix;
 class Intersection;
-class Ray;
 class Object;
 
 /// A point Lightsource

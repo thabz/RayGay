@@ -2,6 +2,7 @@
 #define SKYLIGHT_H 
 
 #include "lights/lightsource.h"
+#include "lights/shadowcache.h"
 #include <vector>
 
 class Object;
@@ -18,7 +19,7 @@ class Skylight: public Lightsource {
 
     private:
 	std::vector<Vector> positions;
-	mutable std::vector<Object*> hints;
+	mutable std::vector<ShadowCache> shadowcaches;
 	double radius;
 	int num;
 };

@@ -1,5 +1,5 @@
 
-#include "skylight.h"
+#include "lights/skylight.h"
 #include "math/functions.h"
 #include "intersection.h"
 #include "space/spacesubdivider.h"
@@ -10,7 +10,7 @@ Skylight::Skylight (double radius, int num) : Lightsource(Vector(0,0,0)) {
     for(int i = 0; i < num; i++) {
 	Vector pos = Math::perturbVector(Vector(0,1,0),DEG2RAD(89));
 	positions.push_back(pos*radius);
-	hints.push_back(NULL);
+	shadowcaches.push_back(ShadowCache());
     }
 }
 
@@ -27,13 +27,10 @@ Lightinfo Skylight::getLightinfo(const Intersection& inter, const Vector& normal
 	cos_tmp = direction_to_light * normal;
 	if (cos_tmp > 0.0) {
 	    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
-	    bool in = space->intersectForShadow(ray_to_light,hints[i],dist_to_light);
-	    if (in) { 
-		hints[i] = space->getLastIntersection()->getObject(); 
-	    } else {
+	    bool occluded = shadowcaches[i].occluded(ray_to_light,dist_to_light,depth,space);
+	    if (!occluded) { 
 		count++;
 		cos_total += cos_tmp;
-		hints[i] = NULL;
 	    }
 	}
     }
