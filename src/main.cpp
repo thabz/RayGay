@@ -180,11 +180,12 @@ void test_columns() {
     Box* top_box = new Box(Vector(-column_radius-cyl_radii,top,-column_radius-cyl_radii),Vector(column_radius+cyl_radii,top+box_height,column_radius+cyl_radii),MATERIAL_DULL_BLUE); 
     scene.addObject(top_box);
 */
+    Material mat = MATERIAL_PORCELAIN;
     
     Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); // Floor
     scene.addObject(&b);
 
-    Teapot* teapot = new Teapot(Vector(0,0,0),100,6,MATERIAL_SHINY_BLUE);
+    Teapot* teapot = new Teapot(Vector(0,-100,0),300,10,mat);
     scene.addObject(teapot);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
