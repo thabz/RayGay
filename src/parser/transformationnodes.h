@@ -62,7 +62,6 @@ class TranslateNode : public TransformationNode {
 
     private:
 	VectorNode* vec;
-	FloatNode* angle;
 };
 
 class ScaleNode : public TransformationNode {
@@ -78,7 +77,6 @@ class ScaleNode : public TransformationNode {
 
     private:
 	VectorNode* vec;
-	FloatNode* angle;
 };
 
 
