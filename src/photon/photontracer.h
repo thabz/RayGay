@@ -23,9 +23,9 @@ class PhotonTracer {
 	PhotonTracer(Scene* scene, SpaceSubdivider* space, GlobalPhotonMap* globalphotonmap, CausticsMap* photonmap);
 	~PhotonTracer();
 	void trace(int threads_num);
+	void trace();
 	
     private:
-	void trace();
 	void trace(const Ray& ray, RGB power, int bounces);
 
 	Scene* scene;

@@ -16,6 +16,7 @@
 #include "math/matrix.h"
 #include "math/halton.h"
 #include "stats.h"
+#include <pthread.h>
 
 #define MAX_BOUNCES 50
 
@@ -39,12 +40,27 @@ PhotonTracer::~PhotonTracer() {
     delete qmcsequence;
 }
 
+void* threadDo(void* obj) {
+    PhotonTracer* tracer = (PhotonTracer*) obj;
+    tracer->trace();
+    return NULL;
+}
+
 void PhotonTracer::trace(int threads_num) {
-    trace();
+    Stats::getUniqueInstance()->beginTimer("Photontracing");
+    pthread_t threads[threads_num];
+    // Spawn threads
+    for(int i=0; i < threads_num; i++) {
+	pthread_create(&threads[i], NULL, threadDo, this);
+    }
+    // Wait for threads to finish
+    for (int i=0; i<threads_num; i++) {
+	pthread_join(threads[i], NULL);
+    }
+    Stats::getUniqueInstance()->endTimer("Photontracing");
 }
     
 void PhotonTracer::trace() {
-    Stats::getUniqueInstance()->beginTimer("Photontracing");
     Ray ray;
     const std::vector<Lightsource*>& lights = scene->getLightsources();
     int ligths_num = lights.size();
@@ -55,7 +71,6 @@ void PhotonTracer::trace() {
 	RGB light_power = light->getPower();
 	trace(light->getRandomPhotonRay(),light_power,0);
     }
-    Stats::getUniqueInstance()->endTimer("Photontracing");
 }
 
 void PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
