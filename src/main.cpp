@@ -40,6 +40,7 @@
 #include "arealight.h"
 #include "pixelstore.h"
 #include "raytracer.h"
+#include "bsp.h"
 
 using namespace std;
 
@@ -95,12 +96,12 @@ void testScene4() {
     scene.setCamera(&cam);
     
     Image* img = new Image(640,480);
-    Hierarchy space = Hierarchy();
+    SpaceSubdivider* space = new BSP();
 
     Raytracer raytracer = Raytracer();
 
     time_t beginTime = time(NULL);
-    raytracer.render(&scene,img,&space);
+    raytracer.render(&scene,img,space);
     
     printf("Rendering took %ld seconds.\n",time(NULL) - beginTime);
     img->save("out.png");

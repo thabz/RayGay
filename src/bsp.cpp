@@ -25,8 +25,9 @@ void BSP::prepare() {
 
 	lower = new BSP();
 	higher = new BSP();
+	std::vector<object*> cutting;
 
-	// TODO: Put all objects into lower- or higher_objects
+	// Put all objects into lower- or higher_objects
 	for(int i = 0; i < objects.size(); i++) {
 	    object* obj = objects[i];
 	    bbox = obj->boundingBoundingBox();
@@ -36,9 +37,11 @@ void BSP::prepare() {
 	    } else if (cut_val == 1) {
 		higher->addObject(obj);
 	    } else {
-                // TODO: Use an iterator and leave this obj in objects.
+		lower->addObject(obj);
+		higher->addObject(obj);
 	    }
 	}
+	objects.clear();
 
 	// Recursive prepare()
 	lower->prepare();
@@ -56,9 +59,41 @@ Intersection BSP::intersectForShadow(const Ray& ray) const {
 Intersection BSP::intersectForShadow(const Ray& ray, const object* hint) const {
 }
 
+
+
 /*******************
  * Private stuff   *
  *******************/
+
+Intersection BSP::intersect(const Ray& ray, double min_t, double max_t) const {
+    //TODO: Use max_t somewhere
+    Vector o;
+    if (min_t == -1) {
+        o = ray.origin;
+    } else {
+        o = ray.origin + min_t * ray.direction;
+    }
+
+    if (o[cutplane_dimension] < cutplane_value && 
+	ray.direction[cutplane_dimension] <= 0) {
+        return lower->intersect(ray,min_t,max_t);
+    } else if (o[cutplane_dimension] > cutplane_value && 
+	ray.direction[cutplane_dimension] >= 0) {
+        return higher->intersect(ray,min_t,max_t);
+    } else {
+	// Ray intersects cutplane (TODO: Check for zero-division case)
+	double intersect_t = (cutplane_value - ray.origin[cutplane_dimension]) / ray.direction[cutplane_dimension];
+	if (intersect_t > max_t) intersect_t = max_t;
+	if (intersect_t < min_t) intersect_t = min_t;
+	Intersection low_intersection = lower->intersect(ray,min_t,intersect_t);
+	Intersection high_intersection = higher->intersect(ray,intersect_t,max_t);
+	if (low_intersection.t < high_intersection.t) {
+	    return low_intersection;
+	} else {
+	    return high_intersection;
+	}
+    }
+}
 
 BoundingBox BSP::enclosure() const {
     BoundingBox result; 

@@ -40,6 +40,7 @@ class BSP : public SpaceSubdivider {
 
 	/// Returns [0..2] for x, y or z being the widest side of the box.
 	int BSP::largestDimension(const BoundingBox& box) const;
+	Intersection intersect(const Ray&,double,double) const;
 };
 
 #endif
