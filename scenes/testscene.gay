@@ -32,3 +32,6 @@ box $slate_tiles -750 0 -700  -700 1400 700
 
 sphere $glass 300 0 300 0
 
+sphere $red 100 500 500  500
+
+cylinder $red 30 500 0 500    500 500 500

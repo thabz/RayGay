@@ -16,6 +16,7 @@
 # Compiler flags: 2:37
 # Fjernet inline Vector math i Triange::_fastIntersect: 1:38
 # Fjernede Object::_intersect: 1:26
+# Faster stats: 1:23
 
 include materials.gay
 

@@ -4,6 +4,7 @@ Description of the raygay fileformat
 light point <point> <power>
 light spot <point> <look-at-point> <power> <angle> <cut-angle>
 light area <point> <direction> <power> radius num jitter
+light skylight <distance> <num> <power>
 
 *** PATHS ***
 
