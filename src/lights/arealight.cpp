@@ -17,17 +17,20 @@
  * @param jitter How many percent the light can jitter with value in [0,1]
  */
 Arealight::Arealight(const Vector& pos, const Vector& dir, double radius, int num, double jitter) : Lightsource(pos) {
-    this->num = num;
-    this->jitter = jitter;
-    /*
-    ci'rcles = new (Circle*)[num];
-    ts = double[num];
-    hints = new object[num];
-*/
     assert(num > 1);
 
+    this->num = num;
+    this->jitter = jitter;
+
+    /* De N punkter skal placeres på N koncentriske bånd omkring P. Disse
+     * N bånd skal have samme areal A, så punkterne er dækker cirklens 
+     * areal med bedste fordeling. Dette A er PI * R^2 / N.
+     *
+     * r(n) for 0 <= n <= N bliver dermed n * A / PI dvs.  
+     * r(n) = sqrt(n/N)*R for n mellem 0 og N.
+     */
     for(int i = 0; i < num; i++) {
-	double r = radius*(double(i)/(num-1));
+	double r = radius*sqrt(double(i)/(num-1));
 	circles.push_back(new Circle(pos,r,dir));
 	ts.push_back((double(rand()) / RAND_MAX));
 	hints.push_back(NULL);
