@@ -472,7 +472,8 @@ void cylinder_test() {
 }
 
 void test_3ds() {
-    ThreeDS* chair = new ThreeDS("../3ds/egg-chair.3ds",1.0);
+    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    ThreeDS* chair = new ThreeDS("../3ds/egg-chair.3ds",1.0,m);
     assert(chair != NULL);
 }
 
