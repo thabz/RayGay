@@ -38,9 +38,13 @@ bool KdTree::intersect(const Ray& ray) const {
 
 inline
 bool KdTree::intersectPrimary(const Ray& ray) const {
-    //Vector2 h = world_bbox.intersect(ray);
-    Vector2 h = Vector2(0,HUGE_DOUBLE);
-    return intersect(ray,h[0],h[1]);
+    Vector2 h = world_bbox.intersect(ray);
+    //Vector2 h = Vector2(0,HUGE_DOUBLE);
+    if (h[0] < 0.0) {
+	return false;
+    } else {
+	return intersect(ray,h[0],h[1]);
+    }
 }
 
 inline
@@ -53,7 +57,8 @@ bool KdTree::intersectForShadow(const Ray& ray, const Object* hint, double max_t
 	last_intersection = hint->getLastIntersection();
 	return true;
     } else {
-	return intersectForShadow(ray,max_t);
+	//return intersectForShadow(ray,max_t);
+	return intersect(ray,0,max_t);
     }
 }
 
@@ -73,10 +78,11 @@ void KdTree::prepare() {
     int nodes_num = tmp_nodes.size();
     nodes = new KdNode[nodes_num];
     stack = new StackElem[max_depth*10];
+    /*
     cout << "Prepared..." << endl;
     cout << "Max depth: " << max_depth << endl;
     cout << "Nodes: " << nodes_num << endl;
-
+    */
     for(int i = 0; i < nodes_num; i++) {
 	KdNode node = KdNode();
 	KdNodeTmp old = tmp_nodes[i];
@@ -163,7 +169,7 @@ void KdTree::prepare(int curNode_idx,int depth) {
  * See http://sgi.felk.cvut.cz/~havran/phdthesis.html
  * See http://www.acm.org/jgt/papers/HavranKopalBittnerZara97/TA-B.html
  */
-bool KdTree::intersect(const Ray& ray, double a, double b) const {
+bool KdTree::intersect(const Ray& ray, const double a, const double b) const {
 
     double t;
     KdNode *farChild, *curNode;
@@ -237,7 +243,8 @@ bool KdTree::intersect(const Ray& ray, double a, double b) const {
 	if (curNode->objects->size() > 0) {
 	    const vector<Object*> &objects = *(curNode->objects);
 	    double smallest_t = HUGE_DOUBLE;
-	    for (unsigned int i = 0; i < objects.size(); i++) {
+	    unsigned int objects_size = objects.size();
+	    for (unsigned int i = 0; i < objects_size; i++) {
 		if (objects[i]->intersect(ray)) {
 		    double i_t =  objects[i]->getLastIntersection()->getT();
 		    if (i_t < smallest_t && i_t > stack[enPt].t && i_t < stack[exPt].t) {

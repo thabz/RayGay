@@ -13,7 +13,7 @@ class Ray;
 class Intersection;
 class Object;
 */
-#define KD_TREE_MAX 2
+#define KD_TREE_MAX 3
 
 /**
  * k-dimensional tree.
@@ -28,7 +28,7 @@ class KdTree : public SpaceSubdivider {
 	/// Desctructor
 	virtual ~KdTree();
 	bool intersect(const Ray& ray) const; ///< Returns the nearest intersection
-	bool intersect(const Ray& ray, double a, double b) const;
+	bool intersect(const Ray& ray, const double a, const double b) const;
 
 	bool intersectPrimary(const Ray& ray) const; ///< Returns the nearest intersection
 	bool intersectForShadow(const Ray& ray, double max_t) const; ///< Returns any intersection 
