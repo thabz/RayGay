@@ -2,7 +2,7 @@
 (load "globals.scm")
 (load "objects.scm")
 
-(define balls 10)
+(define balls 3000)
 (define size 3)
 (define radius (* 100 100 100))    
 
@@ -26,35 +26,37 @@
        ks 0.1
        specpow 15)))
 
-(set! scene (list (make-pointlight '(500 500 1300))))
+;(set! scene (list (make-pointlight '(500 500 1300))))
+(set! scene (list (make-arealight '(500 500 1300) '(-0.5 -0.5 -1) 500 80 0.1)))
 
 (append!
   scene (list (make-box '(-1000000 -500 -1000000) '(1000000 -400 1000000) ground)))
 
 
-(let loop 
-  ((i 0))
+(let loop ((i 0))
   (if (not(= i balls) )
-    (let* ((x (random2 (* -1 size) size))
-	   (y (random2 (* -1 size) size))
-	   (z (random2 (* -1 size) size))
+    (let* ((x (random2 (- size) size))
+	   (y (random2 (- size) size))
+	   (z (random2 (- size) size))
 	   (v (- (expt (+ (* 2 x x) (* y y) (* z z) -1) 3)
 		 (* x x z z z 0.1)
 		 (* y y z z z))))
       (if (< v 0)
 	(begin
-	  (append scene (list 
-			  (make-ellipsoid 
-			    (list (* x 400) (* y 400) (* z 400))
-			    (list (random2 10 30) (random2 10 30) (random2 10 30))
-			    (make-material
-			      (list 
-				'diffuse
-				(list (random2 0.9 1) (random2 0.3 0.5) (random2 0.3 0.35))
-				'kd 0.8
-				'specular (list 0.5 0.5 0.5)
-				'ks 0.2
-				'specpow 25)))))
+	  (append!
+	    scene 
+	    (list 
+	      (make-ellipsoid 
+		(list (* y 400) (* z 400) (* x 400))
+		(list (random2 10 30) (random2 10 30) (random2 10 30))
+		(make-material
+		  (list 
+		    'diffuse
+		    (list (random2 0.9 1) (random2 0.3 0.5) (random2 0.3 0.35))
+		    'kd 0.8
+		    'specular (list 0.5 0.5 0.5)
+		    'ks 0.2
+		    'specpow 25)))))
 	  (loop (+ i 1)))
 	(loop i)))))
 
