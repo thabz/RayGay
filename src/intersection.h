@@ -50,12 +50,15 @@ class Intersection {
 	
 	bool isIntersected() const { return t >= 0.0; };
 
+	void isEntering(bool entering) { this->entering = entering; };
+	bool isEntering() const { return this->entering; };
     private:
 	Object* o; 
 	Vector point;
 	Vector normal;
 	Vector2 uv;
 	double t;
+	bool entering;
 };
 
 inline
