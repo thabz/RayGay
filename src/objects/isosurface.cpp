@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <cassert>
 #include "objects/isosurface.h"
 #include "intersection.h"
 #include "boundingbox.h"
@@ -55,6 +56,7 @@ DONE:
     }
 }
 
+#if 1
 /**
  * Refine an interval containing a root.
  *
@@ -74,6 +76,57 @@ double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
     }
     return 0.5 * (t_begin + t_end);
 }
+
+#else
+
+/**
+ * Refine an interval containing a root.
+ * Using Brent's method.
+ *
+ * @param t_begin an outside t
+ * @param t_end an inside t
+ */
+double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
+
+#define f(x) (evaluateFunction(ray.getPoint(x)) - iso)
+#define sign(x) ((x) >= 0 ? 1 : -1)    
+#define MAX_ITER 10000    
+
+    double x1,x2,x3;
+    double R,S,T;
+    double P,Q;
+    double fx1,fx2,fx3;
+
+    x1 = t_begin;
+    x2 = 0.5 * (t_begin + t_end);
+    x3 = t_end;
+
+    fx1 = f(x1);
+    fx2 = f(x2);
+    fx3 = f(x3);
+
+    assert(sign(fx1) != sign(fx3));
+
+    uint num = 0;
+    while(num++ < MAX_ITER) {
+	
+	R = fx2 / fx3;
+	S = fx2 / fx1;
+	T = fx1 / fx3;
+	
+	P = S*(R*(R-T)*(x3-x2)-(1-R)*(x2-x1));
+	Q = (T-1)*(R-1)*(S-1);
+
+	x2 = x2 + (P / Q);
+
+	fx2 = f(x2);
+	if (fabs(fx2) < accuracy) {
+	    return x2;
+	}
+    }
+    return x2;
+}
+#endif
 
 /**
  * Finds the surface normal at a point.
@@ -106,3 +159,4 @@ BoundingBox IsoSurface::boundingBoundingBox() const {
     result.grow(20*EPSILON);
     return result;
 }
+
