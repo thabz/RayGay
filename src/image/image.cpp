@@ -3,6 +3,7 @@
 #include "image.h"
 #include "image/tga.h"
 #include "image/jpeg.h"
+#include "image/png.h"
 #include <cassert>
 #include <iostream>
 #include <cmath>
@@ -117,32 +118,36 @@ double Image::biCubicP(double x) const {
 }
 */
 
+ImageIO* getImageIO(const std::string& filename) {
+    ImageIO* io;
+
+    if (filename.find(".jpg") != string::npos) {
+	io = new JpegIO();
+    } else if (filename.find(".tga") != string::npos) {
+	io = new TgaIO();
+    } else if (filename.find(".png") != string::npos) {
+	io = new PngIO();
+    } else {
+	cout << "Unknown fileformat." << endl;
+        exit(EXIT_FAILURE);
+    }
+    return io;
+}
+
 
 /**
  * Writes the image into a  24 bit uncompressed tga-file
  */
 void Image::save(const std::string& filename) const {
-    TgaIO tga;
-    tga.save(this,filename);
+    ImageIO* io = getImageIO(filename);
+    io->save(this,filename);
 }
 
 /**
  * Loads the image from a tga 24 og 32 bit uncompressed tga-file.
  */
 Image* Image::load(const std::string& filename) {
-    ImageIO* io;
-    TgaIO tga;
-    JpegIO jpeg;
-
-    if (filename.find(".jpg") != string::npos) {
-	io = new JpegIO();
-    } else if (filename.find(".tga") != string::npos) {
-	io = new TgaIO();
-    } else {
-	cout << "Unknown fileformat." << endl;
-        exit(EXIT_FAILURE);
-    }
-
+    ImageIO* io = getImageIO(filename);
     Image* image = io->load(filename);
     delete io;
     cout << "Loaded " << filename << " " << image->getWidth() << "x" << image->getHeight() << endl;
