@@ -9,6 +9,7 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 		       bound.cpp	\
 		       bound.h		\
 		       box.cpp		\
+		       cone.cpp		\
 		       csg.cpp		\
 		       csg_union.cpp	\
 		       cylinder.cpp	\
@@ -38,6 +39,7 @@ EXTRA_DIST = 3ds.h 		\
 	     blob.h		\
 	     bound.h		\
 	     box.h		\
+	     cone.h		\
 	     csg.h		\
 	     cylinder.h		\
 	     ellipsoid.h	\
