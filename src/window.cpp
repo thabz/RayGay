@@ -37,6 +37,7 @@ gboolean on_darea_expose (GtkWidget *widget,
 gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
     window_open = false;
     abortRendering();
+    gtk_main_quit();
     // TODO: Possible race. Window might be closed before all
     // renderthreads are done aborting and thus are trying to plot
     // some pixels.
@@ -48,6 +49,7 @@ gboolean keypress_event(GtkWidget* widget, GdkEventKey *event) {
     {
 	window_open = false;
 	abortRendering();
+	gtk_main_quit();
 	return FALSE;
     }
     return TRUE;
