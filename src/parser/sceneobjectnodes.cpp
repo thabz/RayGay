@@ -44,14 +44,17 @@ SceneObject* MeshNode::eval() {
     Mesh* mesh = new Mesh(type, material->eval());
     /// Add vertices
     vector<Vector> a = vertices->eval();
+    mesh->hintVertexNum(a.size());
     for(uint i = 0; i < a.size(); i++) {
 	mesh->addVertex(a[i]);
     }
     BoundingBox bbox = BoundingBox(a);
     cout << "Mesh bounding box: " << bbox << endl;
     delete vertices;
+
     /// Add triangles 
     a = triangles->eval();
+    mesh->hintFaceNum(a.size());
     uint v[3];
     for(uint i = 0; i < a.size(); i++) {
 	v[0] = int(a[i][0]);
