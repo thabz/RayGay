@@ -3,10 +3,6 @@
 #include "vector.h"
 
 
-Intersection::Intersection() {
-    intersected = false;
-}
-
 Intersection::Intersection(const Vector& p, double s) {
     point = p;
     t = s;

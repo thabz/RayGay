@@ -36,6 +36,11 @@ class Intersection {
 	object* o; /// The object that was intersected
 };
 
+inline
+Intersection::Intersection() {
+    intersected = false;
+}
+
 #endif
 
 
