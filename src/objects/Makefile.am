@@ -11,6 +11,7 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 		       box.cpp		\
 		       csg.cpp		\
 		       cylinder.cpp	\
+		       ellipsoid.cpp	\
 		       extrusion.cpp	\
 		       heightfield.cpp	\
 		       isosurface.cpp	\
@@ -38,6 +39,7 @@ EXTRA_DIST = 3ds.h 		\
 	     box.h		\
 	     csg.h		\
 	     cylinder.h		\
+	     ellipsoid.h	\
 	     extrusion.h	\
 	     heightfield.h	\
 	     isosurface.h	\
