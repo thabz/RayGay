@@ -989,7 +989,13 @@ void superellipsoid_test() {
     assert(iNormal(s,Vector(0,-1000,0),Vector(0,1,0)) == Vector(0,-1,0));
     assert(intersects(s,Vector(0,0,0),Vector(0,0,-1)));
     assert(intersects(s,Vector(0,0,0),Vector(0,0,1)));
+    assert(intersects(s,Vector(0.1,0.2,0.3),Vector(0,0,-1)));
+    assert(intersects(s,Vector(0.1,0.2,0.3),Vector(0,0,1)));
     
+    // Translated instance
+    s->transform(Matrix::matrixTranslate(Vector(100,300,400)));
+    assert(intersects(s,Vector(100,300,400),Vector(0,0,-1)));
+    assert(intersects(s,Vector(100,300,400),Vector(0,0,1)));
     
     // Scaled instance at origin
     s = new SuperEllipsoid(0.2,0.2,100,0.0001,NULL);
@@ -1004,13 +1010,17 @@ void superellipsoid_test() {
     assert(iNormal(s,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
     assert(intersects(s,Vector(0,0,0),Vector(0,0,-1)));
     assert(intersects(s,Vector(0,0,0),Vector(0,0,1)));
+    assert(intersects(s,Vector(1,-2,3),Vector(0,1,0)));
+    assert(intersects(s,Vector(1,-2,3),Vector(0,-1,0)));
 
     // Scaled and translated instance
     s->transform(Matrix::matrixTranslate(Vector(100,300,400)));
     assert(intersects(s,Vector(100,300,1000),Vector(0,0,-1)));
     assert(intersects(s,Vector(109,300,1000),Vector(0,0,-1)));
     assert(!intersects(s,Vector(111,300,1000),Vector(0,0,-1)));
+    assert(!intersects(s,Vector(111,300,-1000),Vector(0,0,1)));
     assert(!intersects(s,Vector(0,0,1000),Vector(0,0,-1)));
+    assert(!intersects(s,Vector(0,0,-1000),Vector(0,0,1)));
     assert(iPoint(s,Vector(100,300,1000),Vector(0,0,-1)).z() < 410.01);
     assert(iPoint(s,Vector(100,300,1000),Vector(0,0,-1)).z() > 409.99);
     assert(iNormal(s,Vector(100,300,1000),Vector(0,0,-1)) == Vector(0,0,1));
