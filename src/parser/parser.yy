@@ -77,6 +77,7 @@ ActionListNode* top_actions;
 	RGBNode* rgb;
 	RGBANode* rgba;
 	ActionNode* action;
+	ActionListNode* actionlist;
 	Texture* texture;
 	MaterialNode* material;
 	CameraNode* camera;
@@ -121,6 +122,7 @@ ActionListNode* top_actions;
 %token tRADIUS
 %token tRENDERER tRAYTRACER tPHOTONRENDERER
 %token tROTATE tTRANSLATE
+%token tREPEAT
 %token tSIN tCOS tABS tPI
 %token tSOLIDBOX
 %token tSPHERE
@@ -153,8 +155,9 @@ ActionListNode* top_actions;
 %type <light> Arealight Spotlight Pointlight Skylight
 %type <path> NamedPath Circle Spiral Path PathDef LineSegment
 %type <camera> Camera
-%type <action> MainAddAction MainAction Assignment Renderer
+%type <action> MainAddAction MainAction Assignment Renderer Repeat Action
 %type <action> AddCamera AddObject AddLight Background Photonmap Print Image
+%type <actionlist> ActionList
 
 %left '+' '-'
 %left '*' '/'
@@ -183,8 +186,28 @@ MainAction	: Action
 Action		: AddObject
                 | AddLight
                 | Assignment
+		| Repeat
 		| Print
 		;
+
+ActionList	: Action
+                {
+		    ActionListNode* list = new ActionListNode();
+		    list->addAction($1);
+		    $$ = list;
+		}
+                | ActionList Action
+		{
+		    $1->addAction($2);
+		    $$ = $1;
+		}
+		;
+
+Repeat		: tREPEAT '(' Expr ')' '{' ActionList '}'
+                {
+		    $$ = new RepeatActionNode($3,$6);
+		}
+                ;
 
 AddObject	: Object 
                 {

@@ -1,4 +1,12 @@
 
 a = 10
 print a
+print a
+
+i = 0
+
+repeat(10) {
+   print i
+   print 2
+}
 

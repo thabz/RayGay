@@ -94,6 +94,7 @@ position	return tPOSITION;
 radius		return tRADIUS;
 raytracer	return tRAYTRACER;
 renderer	return tRENDERER;
+repeat		return tREPEAT;
 rotate		return tROTATE;
 sin		return tSIN;
 sky		return tSKY;
