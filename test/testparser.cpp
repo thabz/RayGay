@@ -42,6 +42,9 @@ void test_vector_ops() {
     assert(lookup_vector("d") == Vector(2,3,4));
     assert(lookup_vector("e") == Vector(2,2,2));
     assert(lookup_vector("f") == Vector(2,4,6));
+    assert(lookup_vector("h") == Vector(3,1,2));
+    assert(lookup_vector("i") == Vector(10,10,10));
+    assert(lookup_vector("j") == Vector(4,1,2));
     delete p;
 }
 
