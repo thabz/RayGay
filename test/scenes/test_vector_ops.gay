@@ -1,0 +1,11 @@
+
+/*
+ * A scenefile for testing vector operations.
+ * See test/testparser.cpp.
+ * 
+ */
+
+$a = <1,1,1>
+$b = <1,2,3>
+$c = length($b)
+
