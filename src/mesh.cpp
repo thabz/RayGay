@@ -128,14 +128,18 @@ void Mesh::computeInterpolatedNormals() {
 		Tri* other_tri = vertex.tris[v];
 		Vector other_normal = normals[other_tri->normal_idx];
 		if (other_tri != tri &&
-			fabs(other_normal * normal) > PHONG_ANGLETHRESHOLD) {
+			other_normal * normal > PHONG_ANGLETHRESHOLD) {
 		    interpolated_normal = interpolated_normal + other_normal;
 		    num++;
 		}
 	    }
-	    interpolated_normal.normalize();
-	    normals.push_back(interpolated_normal);
-	    tri->interpolated_normal[j] = normals.size() -1;
+	    if (num > 1) {
+		interpolated_normal.normalize();
+		normals.push_back(interpolated_normal);
+		tri->interpolated_normal[j] = normals.size() -1;
+	    } else {
+		tri->interpolated_normal[j] = tri->normal_idx;
+	    }
 	}
     }
 }
