@@ -1,0 +1,105 @@
+
+renderer raytracer
+renderer pathtracer 
+
+camera { position <400,600,1000>
+         up <0,1,0> 
+         lookat <0,100,0> 
+	 fov 45
+	 aa 4
+}
+settings { paths 100 }
+
+image { width 1024 aspect 4 3 }
+/* fog { 1000 <0.95,0.94,0.95> } */
+
+background <0.75,0.74,0.7,1.0>
+
+/* light { point <-500,1300,1300> power <1,1,1> }  */
+
+light { area <-500,1300,1300> <0.5,-1,-1> 100.0 80 0.1 power <1,1,1> }  
+
+$yellow = material {
+    diffuse <0.90,0.90,0.1>
+    kd 0.5
+    specular <1.0,1.0,1.0>
+    ks 0.5
+    specpow 15
+}
+
+$water = material {
+    diffuse <0.35,0.25,0.2>
+    kd 0.7
+    specular <1.0,1.0,1.0>
+    ks 0.3
+    specpow 15
+    gloss 10 7
+}
+
+$strand_color = material {
+    diffuse <0.87,0.83,0.70>
+    kd 1.0
+    ks 0.0
+}
+
+box { $water <-10000,-50,-10000> <10000,00,10000> }
+
+/*
+heightfield { $blue 
+              texture { "gfx/water.jpg" 3 3 bilinear }
+	      <2000,0.7,2000>
+	      400 400 
+} translate <0,4,100>
+*/
+
+
+$y = 0
+repeat (3) {
+    $x = 0
+    repeat(3) {
+	$z = 0
+	repeat(3) {
+	    @min = <$x*100 - 150, $y * 100, $z * 100 - 150>
+	    @max = <($x+0.9)*100 - 150, ($y+0.9) * 100, ($z+0.9) * 100 - 150>
+	    $r = random(0.50,0.75)
+	    $g = random(0.50,0.75)
+	    $b = random(0.50,0.75)
+	    /*
+	    $rand = random(0,1)
+	    $r = 0.75
+	    $g = 0.50
+	    $b = 0.55
+	    if ($rand < 0.66) {
+		$r = 0.55
+		$g = 0.75
+		$b = 0.50
+	    }
+	    if ($rand < 0.33) {
+		$r = 0.50
+		$g = 0.55
+		$b = 0.75
+	    }
+	    */
+
+	    if (!(($x == 1) && ($y == 1) )) {
+	    box { 
+		material {
+	          diffuse <$r,$g,$b>
+	          kd 1.0
+	          ks 0.0
+	          }
+		
+		@min 
+		@max 
+	    }
+	    }
+
+	    $z++
+	}
+	$x++
+    }
+
+    $y++
+}
+
+
