@@ -39,7 +39,6 @@
 #include "tessalation.h"
 #include "paths/circle.h"
 #include "extrusion.h"
-#include "pixelstore.h"
 #include "raytracer.h"
 #include "bsp.h"
 #include "necklace.h"
@@ -263,7 +262,6 @@ void test_3ds() {
 }
 
 int main(int argc, char *argv[]) {
-    PixelStore::test();
     BSP::test();
     cout << "Tests done." << endl;
     // Test scene stuff

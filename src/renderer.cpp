@@ -175,6 +175,7 @@ RGB Renderer::getSubPixel(unsigned int curLevel, const Vector2& center, PixelBlo
 
     
     // Check if we need further supersampling
+    // TODO: Vi burde sammenligne brightness og ikke afstande i RGB-rummet.
     if (aa_enabled && curLevel <= aa_depth) {
 	if (c1.sqrDistance(c2) >= aa_threshhold ||
 		c2.sqrDistance(c3) >= aa_threshhold ||
