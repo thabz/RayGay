@@ -10,6 +10,7 @@
  *
  * @see http://planetmath.org/encyclopedia/SturmSequence.html
  * @see http://mathworld.wolfram.com/SturmFunction.html
+ * @see http://aida.homelinux.net/wordpress/wp-content/522_ma/ma522_01.html
  */
 class SturmSequence {
 
