@@ -1,7 +1,9 @@
 
 #include "math/functions.h"
+#include "math/constants.h"
 #include "math/matrix.h"
 #include "lights/lightsource.h"
+#include "ray.h"
 
 Lightsource::Lightsource(const Vector& position) {
     this->position = position;
@@ -38,4 +40,9 @@ double Lightsource::getAttenuation(const Vector& point) const {
     } else {
 	return double(1);
     }
+}
+
+
+Ray Lightsource::getRandomPhotonRay() const {
+    return Ray(getPosition(), Vector::randomUnitVector(), 0);
 }

@@ -4,6 +4,7 @@
 #include "intersection.h"
 #include "spacesubdivider.h"
 #include "stats.h"
+#include "math/functions.h"
 
 /**
  * @param pos The position of the spotlight
@@ -50,3 +51,7 @@ Lightinfo Spotlight::getLightinfo(const Intersection& inter, const Vector& norma
     return info;
 }
 
+Ray Spotlight::getRandomPhotonRay() const {
+    Vector dir = Math::perturbVector(_dir,_angle);
+    return Ray(this->getPosition(),dir,0);
+}

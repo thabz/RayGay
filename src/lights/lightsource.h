@@ -35,6 +35,8 @@ class Lightsource {
 	/// Returns center of lightsource
 	const Vector getPosition() const { return position; };
 
+	virtual Ray getRandomPhotonRay() const;
+
     protected:
 	/// Position of the lightsource
 	Vector position;
