@@ -1,0 +1,77 @@
+
+renderer raytracer
+renderer photonrenderer
+
+camera { position <1200,2550,1400>
+         up <0,1,0> 
+         lookat <0,0,0> 
+	 fov 45
+	 aa 4
+}
+
+settings {
+ globalphotons 5000000
+ causticphotons 0
+ estimateradius 30
+ estimatesamples 300
+ finalgatherrays 500
+ cachetolerance 0.01
+}
+
+
+image { width 1024 aspect 4 3 }
+
+background <0.94,0.70,0.06,1.0>
+
+light { point <-2900,2000,2900> power <50000000,50000000,50000000> } 
+/* light { spot <-2900,2000,2900> <0,0,0> 45 46 power <30000000,30000000,30000000> } */
+
+ $white = material {
+     diffuse <1,1,0.7>
+     kd 0.9
+     specular <1.0,1.0,1.0>
+     ks 0.0
+     kt 0.0
+     specpow 30
+ }
+
+$rad = 10
+ $box = group {
+                 sphere { $white $rad <-40,0,-40> }
+		 cylinder { $white $rad <-40,-300,-40> <-40,0,-40> }
+                 sphere { $white $rad <40,0,-40> }
+		 cylinder { $white $rad <40,-300,-40> <40,0,-40> }
+                 sphere { $white $rad <-40,0,40> }
+		 cylinder { $white $rad <-40,-300,40> <-40,0,40> }
+                 sphere { $white $rad <40,0,40> }
+		 cylinder { $white $rad <40,-300,40> <40,0,40> }
+
+		 cylinder { $white $rad <-40,0,-40> <40,0,-40> }
+		 cylinder { $white $rad <-40,0,40> <40,0,40> }
+		 cylinder { $white $rad <40,0,-40> <40,0,40> }
+		 cylinder { $white $rad <-40,0,-40> <-40,0,40> }
+
+                 box { $white <-40,-300,-40> <40,$rad,40>}
+
+                 box { $white <-40-$rad,-300,-40> <40+$rad,0,40>}
+                 box { $white <-40,-300,-40-$rad> <40,0,40+$rad>}
+              }
+
+$width = 3200
+$x = -1 * ($width/2)
+while ($x < $width/2) {
+    $z = -1 * ($width/2)
+    while ($z < $width/2) {
+       $a = sin($z/400)*sin($x / 250)*300 + 100
+       object $box translate <$x,$a,$z>
+       $z = 120 + $z
+    }
+    $x = 120 + $x
+}
+
+box { $white <3000 0 -3000>      <3010 3000 3000> }
+box { $white <-3000 0 -3010>      <3000 3000 -3000> }
+box { $white <-3000 0 3000>      <3000 3000 3010> }
+box { $white <-3000 3000 -3000>      <3000 3010 3000> }
+box { $white <-3010 0 -3000>      <-3000 3000 3000> }
+
