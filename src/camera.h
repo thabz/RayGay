@@ -12,7 +12,7 @@ class Camera {
 	Camera(Vector position, Vector direction);
 
 	/// Constructor
-	Camera(Vector position, Vector lookAt, Vector up, double fieldOfView) {
+	Camera(Vector position, Vector lookAt, Vector up, double fieldOfView);
 
 	/// Desctructor
 	~Camera();
@@ -26,18 +26,38 @@ class Camera {
 	// Enable adaptive supersampling
 	void enableAdaptiveSupersampling(unsigned int depth);
 
+	
 	bool isAAEnabled() const { return aa_enabled; }; 
 
 	unsigned int getAADepth() const { return aa_depth; };
 
+        // Set aperture
+	void setAperture(double radius);
+	
+	// Set focal point (default is the lookAt vector)
+	void setFocalPoint(const Vector& focalPoint);
+	
     private:
 	Vector position;
 	Vector direction;
+	Vector up;
+	Vector focal_point;
+
+	double aperture;
 
 	bool aa_enabled;
 	unsigned int aa_depth;
 
 };
 
+inline
+void Camera::setAperture(double radius) {
+    this->aperture = radius;
+}
+
+inline
+void Camera::setFocalPoint(const Vector& focalPoint) {
+    this->focal_point = focalPoint;
+}
 #endif
 
