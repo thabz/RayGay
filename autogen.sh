@@ -17,4 +17,4 @@ echo "Now runnning $srcdir/configure"
 $srcdir/configure 
 
 
-echo "'CPPFLAGS=-pg ./configure' if you want profiling enabled. The tmon.out can be analyzed with kprof or gprof."
+echo "'CPPFLAGS=-pg LDFLAGS=-pg ./configure' if you want profiling enabled. The tmon.out can be analyzed with kprof or gprof."
