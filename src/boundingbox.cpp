@@ -77,7 +77,17 @@ bool BoundingBox::onEdge(const Vector &p) const {
 }
 
 
-// Fast algorithm from http://www.cs.utah.edu/~awilliam/box/
+/**
+ * Finds the two distances \f$(t_{min},t_{max})\f$ where a ray intersect this 
+ * boundingbox. The values are returned as an ordered pair 
+ * \f$(t_{min},t_{max})\f$
+ * in a Vector2 so that \f$ t_{min} \leq t_{max} \f$.
+ *
+ * The method will return a pair where \f$ t_{min} > t_{max} \f$
+ * only in the case where no intersection was found.
+ * 
+ * Fast algorithm from http://www.cs.utah.edu/~awilliam/box/
+ */
 Vector2 BoundingBox::intersect(const Ray& ray) const {
     const Vector& B = ray.getOrigin();
     const Vector& v_inv = ray.getInverseDirection();
@@ -100,7 +110,7 @@ Vector2 BoundingBox::intersect(const Ray& ray) const {
 	tymax = (_c1[1] - B[1]) * v_inv[1];
     } 
     if ( (tmin > tymax) || (tymin > tmax) ) 
-	return Vector2(-1,HUGE_DOUBLE);   // No intersection 
+	return Vector2(2,1);   // No intersection 
     if (tymin > tmin) 
 	tmin = tymin; 
     if (tymax < tmax) 
@@ -113,7 +123,7 @@ Vector2 BoundingBox::intersect(const Ray& ray) const {
 	tzmax = (_c1[2] - B[2]) * v_inv[2]; 
     } 
     if ( (tmin > tzmax) || (tzmin > tmax) ) 
-	return Vector2(-1,HUGE_DOUBLE);   // No intersection 
+	return Vector2(2,1);   // No intersection 
     if (tzmin > tmin)
 	tmin = tzmin; 
     if (tzmax < tmax)

@@ -37,7 +37,7 @@ inline
 bool KdTree::intersectPrimary(const Ray& ray, Intersection* result) const {
     Vector2 h = world_bbox.intersect(ray);
     //Vector2 h = Vector2(0,HUGE_DOUBLE);
-    if (h[0] < 0.0) {
+    if (h[1] < h[0]) {
 	return false;
     } else {
 	return intersect(ray,result,h[0],h[1]);
