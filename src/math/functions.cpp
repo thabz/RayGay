@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <list>
 
 #include "math/functions.h"
 #include "math/vector.h"
@@ -40,12 +41,75 @@ double Math::bernsteinPolynomial(unsigned int i, unsigned int n, double t) {
  *
  * \f[ x^4 + Ax^3 + Bx^2 + Cx + D = 0 \f]
  * 
+ * The returned roots are sorted and duplicates removed.
+ * 
  * @param A, B, C, D real coefficients of the equation above.
  * @param roots an array of four doubles where the roots are stored
  * @return the number of real roots
- * @see http://mathforum.com/dr.math/faq/faq.cubic.equations.html for an alternative method.
+ *
+ * @see http://www.magic-software.com/ for method used.
  */
 int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
+    double a = -B;
+    double b = A*C - 4*D;
+    double c = 4*B*D - C*C - A*A*D;
+    double cubic_roots[3];
+    solveCubic(a,b,c,cubic_roots);
+    double y = cubic_roots[0];
+    double R = (A*A/4) - B + y;
+    if (R < 0) 
+	return 0;
+    R = sqrt(R);
+    double D2,E2;
+    int num = 0;
+    if (IS_ZERO(R)) {
+	D2 = (3*A*A/4) - (2*B) + (2*sqrt(y*y - 4*D));
+	E2 = (3*A*A/4) - (2*B) - (2*sqrt(y*y - 4*D));
+    } else {
+	D2 = 3*A*A/4 - R*R - 2*B + (4*A*B - 8*C - A*A*A)/(4*R);
+	E2 = 3*A*A/4 - R*R - 2*B - (4*A*B - 8*C - A*A*A)/(4*R);
+    }
+    if (D2 >= 0) {
+	D2 = sqrt(D2);
+	roots[num++] = -(A/4) + (R/2) + (D2/2);
+	roots[num++] = -(A/4) + (R/2) - (D2/2);
+    }
+    if (E2 >= 0) {
+	E2 = sqrt(E2);
+	roots[num++] = -(A/4) - (R/2) + (E2/2);
+	roots[num++] = -(A/4) - (R/2) - (E2/2);
+    }
+
+    if (num < 2) 
+	return num;
+
+    // Prune and sort
+    std::list<double> L;
+    for(int i = 0; i < num; i++) {
+	L.push_back(roots[i]);
+    }
+    L.sort();
+    L.unique();
+    int i = 0;
+    for (std::list<double>::iterator ite = L.begin(); ite != L.end(); ite++) {
+	roots[i++] = *ite;
+    }
+    return L.size();
+}
+
+/**
+ * Solves the quartic equation
+ *
+ * \f[ x^4 + Ax^3 + Bx^2 + Cx + D = 0 \f]
+ * 
+ * This method is invalid!
+ *
+ * @param A, B, C, D real coefficients of the equation above.
+ * @param roots an array of four doubles where the roots are stored
+ * @return the number of real roots
+ * @see http://mathworld.wolfram.com/QuarticEquation.html equations (32) and (33) for method used. Which is the same as Schaum, p.33.
+ */
+int Math::solveQuartic_Schaum(double A, double B, double C, double D, double* roots) {
     double a = -B;
     double b = A*C - 4*D;
     double c = 4*B*D - C*C - A*A*D;

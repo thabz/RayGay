@@ -239,8 +239,8 @@ void clamp_test() {
     assert(Math::clamp(1.5) == 1.0);
 }
 
-void general_test() {
-    // Test cubic root
+// Test cubic root
+void test_cubic_root() {
     assert(IS_EQUAL(cbrt(125),5));
     assert(IS_EQUAL(cbrt( 64),4));
     assert(IS_EQUAL(cbrt( 27),3));
@@ -256,6 +256,18 @@ bool contains(double* array, unsigned int num, double val) {
 	}
     }
     return false;
+}
+
+bool check_roots(double A, double B, double C, double D, double* roots, int num) {
+    double r;
+    for(int i = 0; i < num; i++) {
+	r = roots[i];
+	double val = r*r*r*r + A*r*r*r + B*r*r + C*r + D;
+	//if (!IS_EQUAL(val,double(0)))
+	if (fabs(val) > 0.001)
+	    return false;
+    }
+    return true;
 }
 
 // Used /usr/bin/gp to find test polynomials
@@ -316,14 +328,33 @@ void solve_quartic_test() {
     assert(contains(roots,2,1));
     assert(contains(roots,2,-1));
 
-    cout << "Here we go..." << endl << endl;
     // x^4 + 10*x^3 - 250*x - 625 = (x+5)*(x+5)*(x-5)*(x+5)
     assert(Math::solveQuartic(10,0,-250,-625,roots) == 2);
-    cout << roots[0] << endl;
-    cout << roots[1] << endl;
     assert(contains(roots,2,5));
     assert(contains(roots,2,-5));
+
+    int n = 15;
+    int num;
+    for(int A = -n; A < n; A++) {
+	for(int B = -n; B < n; B++) {
+	    for(int C = -n; C < n; C++) {
+		for(int D = -n; D < n; D++) {
+		    num = Math::solveQuartic(A,B,C,D,roots);
+		    if (!check_roots(A,B,C,D,roots,num)) {
+			cout << "A,B,C,D = " << A << "," << B << "," << C << "," << D  << " failed." << endl;
+			cout << num << " roots found: ";
+			for(int i = 0; i < num; i++) {
+			    cout << roots[i] << " and ";
+			}
+			cout << endl;
+			exit(EXIT_FAILURE);
+		    }
+		}
+	    }
+	}
+    }
 }
+
 
 void solve_cubic_test() {
     double roots[3];
@@ -430,7 +461,7 @@ int main(int argc, char *argv[]) {
     binomial_test();
     bernstein_polynomial_test();
     clamp_test();
-    general_test();
+    test_cubic_root();
     solve_quadratic_test();
     solve_cubic_test();
     solve_quartic_test();
