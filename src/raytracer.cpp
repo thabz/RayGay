@@ -32,7 +32,7 @@ RGB Raytracer::trace(const Ray& ray, int depth) {
     if (intersection.intersected) {
 	color = shade(ray,intersection,depth);
     } else {
-        color = scene->getBackgroundColor();
+        color = scene->getBackgroundColor(ray);
     }
     return color;
 }
