@@ -48,10 +48,14 @@ RGBA Raytracer::traceSub(const bool intersected, const Intersection& intersectio
     }
 
     if (scene->fogEnabled()) {
-	intersect_distance = (intersection.getPoint() - ray.getOrigin()).length();
-	double D = scene->getFogDistance();
-	double v = expf(-intersect_distance/D);
-	color =  (color * v) + (scene->getFogColor() * (1-v));
+	if (intersected) {
+	    intersect_distance = (intersection.getPoint() - ray.getOrigin()).length();
+	    double D = scene->getFogDistance();
+	    double v = expf(-intersect_distance/D);
+	    color =  (color * v) + (scene->getFogColor() * (1-v));
+	} else {
+	    color = scene->getFogColor();
+	}
     }
     return color;
 }
