@@ -3,7 +3,7 @@
 REMOTE_HOST=$1
 SCENE_FILE=$2
 REMOTE_DIR=remote-tracer
-REMOTE_TGA=remote.tga
+REMOTE_TGA=remote.png
 REMOTE_PNG=remote.png
 
 echo $REMOTE_HOST
@@ -15,6 +15,6 @@ scp -C src/tracer $REMOTE_HOST:$REMOTE_DIR
 rsync -avz --delete scenes $REMOTE_HOST:$REMOTE_DIR
 ssh $REMOTE_HOST ./$REMOTE_DIR/tracer $REMOTE_DIR/scenes/`basename $SCENE_FILE` $REMOTE_DIR/$REMOTE_TGA
 scp -C $REMOTE_HOST:$REMOTE_DIR/$REMOTE_TGA .
-convert $REMOTE_TGA $REMOTE_PNG
-rm $REMOTE_TGA
+#convert $REMOTE_TGA $REMOTE_PNG
+#rm $REMOTE_TGA
 eog $REMOTE_PNG
