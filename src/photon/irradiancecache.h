@@ -3,6 +3,8 @@
 #include "image/rgb.h"
 #include <vector>
 
+class BoundingBox;
+
 using namespace std;
 
 /**
@@ -15,7 +17,7 @@ class IrradianceCache {
 
     public:
 	/// Constructor
-	IrradianceCache(double tolerance);
+	IrradianceCache(const BoundingBox& bbox, double tolerance);
 
 	/**
 	 * Get an irradiance estimate. 

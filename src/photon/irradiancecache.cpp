@@ -1,12 +1,14 @@
 
-#include "irradiancecache.h"
+#include "photon/irradiancecache.h"
+#include "boundingbox.h"
 
 /**
  * Constructor.
  *
  * @param tolerance the a-value in Greg Wards text.
+ * @param bbox the bounding box of the scene 
  */
-IrradianceCache::IrradianceCache(double tolerance) {
+IrradianceCache::IrradianceCache(const BoundingBox& bbox, double tolerance) {
     this->tolerance = tolerance;
     this->inv_tolerance = 1.0 / tolerance;
 }
