@@ -50,7 +50,7 @@ void PhotonRenderer::init() {
 
     cout << "Precomputing irradiances..." << endl;
     Stats::getUniqueInstance()->beginTimer("Precomputing irradiance");
-    globalphotonmap->preComputeIrradiances(4);
+    globalphotonmap->preComputeIrradiances(4,renderersettings->threads_num);
     Stats::getUniqueInstance()->endTimer("Precomputing irradiance");
     cout << "Done." << endl;
 

@@ -28,15 +28,15 @@ class GlobalPhotonMap : public PhotonMap<IrradiancePhoton> {
     public:
 	GlobalPhotonMap(const int size, double max_dist, int estimate_photons );
 
-	void preComputeIrradiances(const int step);
+	void preComputeIrradiances(const int step, int threads_num);
 	RGB irradianceEstimate(const Vector& pos, const Vector& normal) const;
 	RGB directIrradianceEstimate(const Vector& pos, const Vector& normal) const;
 
 	void store(const RGB& power, const Vector& pos,
 		   const Vector& dir, const Vector& normal);
 	
+	void preComputeIrradiance(int photon_index);
     private:
-	void preComputeIrradiance(IrradiancePhoton* photon);
 	class locatePhotonArgs {
 	    public:
 		float smallest_dist;

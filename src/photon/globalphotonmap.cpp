@@ -2,6 +2,7 @@
 #include <cassert>
 
 #include "photon/globalphotonmap.h"
+#include <pthread.h>
 #include "stats.h"
 
 /**
@@ -41,6 +42,22 @@ void GlobalPhotonMap::store( const RGB& power, const Vector& pos, const Vector& 
     Stats::getUniqueInstance()->inc(STATS_GLOBAL_PHOTONS_STORED);
 }
 
+struct thread_data {
+     GlobalPhotonMap* map;
+     int step;
+     int offset;
+     int max;
+};
+
+void* preComputeIrradianceThread(void* thread_data) {
+    struct thread_data *my_data;
+    my_data = (struct thread_data*) thread_data;
+    for(int i = my_data->offset; i < my_data->max; i+= my_data->step) {
+	my_data->map->preComputeIrradiance(i);
+    }
+    return NULL;
+}
+
 /**
  * Precompute irradiance for every Mth photon.
  *
@@ -51,11 +68,21 @@ void GlobalPhotonMap::store( const RGB& power, const Vector& pos, const Vector& 
  *
  * @param M The step value
  */
-void GlobalPhotonMap::preComputeIrradiances(const int M) {
+void GlobalPhotonMap::preComputeIrradiances(const int M, int threads_num) {
     assert(M >= 1);
-    for (int i = 0; i < stored_photons; i += M) {
-	IrradiancePhoton* photon = &photons[i];
-	preComputeIrradiance(photon);
+    assert(threads_num >= 1);
+    struct thread_data* ta = new thread_data[threads_num];
+    pthread_t threads[threads_num];
+    
+    for (int i = 0; i < threads_num; i += M) {
+	ta[i].map = this;
+	ta[i].step = threads_num;
+	ta[i].offset = i;
+	ta[i].max = stored_photons;
+	pthread_create(&threads[i], NULL, preComputeIrradianceThread, &ta[i]);
+    }
+    for (int i=0; i<threads_num; i++) {
+	pthread_join(threads[i], NULL);
     }
 }
 
@@ -64,7 +91,8 @@ void GlobalPhotonMap::preComputeIrradiances(const int M) {
  *
  * @param photon The photon in question
  */
-void GlobalPhotonMap::preComputeIrradiance(IrradiancePhoton* photon) {
+void GlobalPhotonMap::preComputeIrradiance(int photon_index) {
+    IrradiancePhoton* photon = &photons[photon_index];
     Vector pos = photon->getPosition();
     Vector normal = unpackVector(photon->normal_theta,photon->normal_phi);
     RGB irradiance = irradiance_estimate(pos,normal);
