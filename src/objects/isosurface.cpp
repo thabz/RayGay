@@ -58,7 +58,7 @@ DONE:
     }
 }
 
-#if 1
+#if 0
 /**
  * Refine an interval containing a root.
  *
@@ -142,7 +142,7 @@ Vector IsoSurface::normal(const Vector& p) const {
 	       evaluateFunction(p + Vector(0,0,1));
     Vector normal = Vector(0.5*x,0.5*y,0.5*z);
     normal.normalize();
-    return normal;
+    return  normal;
 }
 
 bool IsoSurface::intersects(const BoundingBox& b) const {
