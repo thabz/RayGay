@@ -1,4 +1,7 @@
+
 (define (make-rounded-box lowercorner uppercorner radius material)
+  ;; Makes a box with round edges.
+  ;; The radius of the round edges are 'radius'.
   (let* (
 	 (xo+ (list-ref uppercorner 0))
 	 (yo+ (list-ref uppercorner 1))
