@@ -92,7 +92,6 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
 // ----------------------------------------------------------------------------
 double Triangle::_fastIntersect(const Ray& ray) const {
    /* Fast code from http://www.ce.chalmers.se/staff/tomasm/code/ */
-   //const Vector& vert0 = mesh->cornerAt(vertex[0]);
 
    double tvec[3], pvec[3], qvec[3];
    double edge1[3], edge2[3];
@@ -121,7 +120,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
       /* calculate U parameter and test bounds */
       u = DOT(tvec,pvec);
 
-      if (u < 0 || u > det)
+      if (u < 0.0 || u > det)
 	 return -1.0;
       
       /* prepare to test V parameter */
@@ -129,7 +128,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
       
       /* calculate V parameter and test bounds */
       v = DOT(ray.getDirection(),qvec);
-      if (v < 0 || u + v > det)
+      if (v < 0.0 || u + v > det)
 	 return -1.0;
    }
 #if 0 
@@ -155,7 +154,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 #endif   
    else
    {
-       return -1;  /* ray is parallell to the plane of the triangle */
+       return -1.0;  /* ray is parallell to the plane of the triangle */
    }
 
    /* calculate t, ray intersects triangle */
