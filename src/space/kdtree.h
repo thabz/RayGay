@@ -71,7 +71,7 @@ class KdTree {
 	};
 
 	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
-	Object* intersectForShadow(const Ray&,const double, const double) const;
+	Object* intersectForShadow_real(const Ray&,const double) const;
 	int largestDimension(const BoundingBox& box);
 	BoundingBox enclosure(std::vector<Object*>* objects) const;
 	BoundingBox world_bbox;

@@ -48,7 +48,7 @@ Object* KdTree::intersectForShadow(const Ray& ray, double max_t) const {
     if (h[1] < h[0]) {
 	return NULL;
     } else {
-	return intersectForShadow(ray,double(0),min(max_t,h[1]));
+	return intersectForShadow_real(ray,min(max_t,h[1]));
     }
 }
 
@@ -208,7 +208,7 @@ void KdTree::prepare(int curNode_idx,int depth) {
  */
 bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, const double b) const {
 
-    StackElem* stack = (StackElem*)alloca(sizeof(StackElem)*(max_depth*2));
+    StackElem* stack = (StackElem*)alloca(sizeof(StackElem)*(max_depth+2));
 
     double t;
     KdNode *farChild, *curNode;
@@ -373,25 +373,20 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
     return false;
 }
 
-Object* KdTree::intersectForShadow(const Ray& ray, const double a, const double b) const {
+Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
 
-    StackElem* stack = (StackElem*)alloca(sizeof(StackElem)*(max_depth*2));
+    StackElem* stack = (StackElem*)alloca(sizeof(StackElem)*(max_depth+2));
 
     double t;
     KdNode *farChild, *curNode;
     curNode = nodes;
     int enPt = 0;
-    stack[enPt].t = a;
+    stack[enPt].t = 0.0;
 
-    if (a >= 0.0) {
-	stack[enPt].pb[0] = ray.getOrigin()[0] + ray.getDirection()[0] * a;
-	stack[enPt].pb[1] = ray.getOrigin()[1] + ray.getDirection()[1] * a;
-	stack[enPt].pb[2] = ray.getOrigin()[2] + ray.getDirection()[2] * a;
-    } else {
-	stack[enPt].pb[0] = ray.getOrigin()[0];
-	stack[enPt].pb[1] = ray.getOrigin()[1];
-	stack[enPt].pb[2] = ray.getOrigin()[2];    
-    }
+    stack[enPt].pb[0] = ray.getOrigin()[0];
+    stack[enPt].pb[1] = ray.getOrigin()[1];
+    stack[enPt].pb[2] = ray.getOrigin()[2];    
+
     int exPt = 1;
     stack[exPt].t = b;
     stack[exPt].pb[0] = ray.getOrigin()[0] + ray.getDirection()[0] * b;
@@ -403,21 +398,13 @@ Object* KdTree::intersectForShadow(const Ray& ray, const double a, const double 
 	while (curNode->axis >= 0) {
 	    /* Current node is not a leaf */
 	    double splitVal = curNode->splitPlane;
-	    int axis = curNode->axis; // ?
+	    int axis = curNode->axis; 
 
 	    if (stack[enPt].pb[axis] <= splitVal) {
 		if (stack[exPt].pb[axis] <= splitVal) {
 		    curNode = curNode->left;
 		    continue;
 		}
-
-		/*
-		   if (stack[exPt].pb[axis] == splitVal) { //TODO: Wierd!
-		   curNode = curNode->right;
-		   continue;
-		   }
-		   */
-
 		farChild = curNode->right;
 		curNode = curNode->left;
 	    } else {
