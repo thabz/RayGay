@@ -14,6 +14,7 @@
 #include "math/vector2.h"
 #include "space/kdtree.h"
 #include "materials/material.h"
+#include "math/halton.h"
 
 Renderer::Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, uint thread_id) {
     this->scene = scene;
@@ -23,6 +24,7 @@ Renderer::Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree*
     this->thread_id = thread_id;
     this->img = img;
     this->aborting = false;
+    this->gloss_sequence = new Halton(2,2);
 
     // Prepare the two PixelBlock buffers
     Camera* camera = scene->getCamera();
@@ -41,6 +43,8 @@ Renderer::Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree*
 }
 
 Renderer::~Renderer() {
+    delete gloss_sequence;
+    
     for(uint i = 0; i < row1.size(); i++) {
 	row1[i].cleanup();
 	row2[i].cleanup();

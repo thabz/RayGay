@@ -31,14 +31,15 @@ Mesh::Mesh(MeshType type, const Material* mat) {
 
 // ----------------------------------------------------------------------------
 Mesh::~Mesh() {
-    for(uint i = 0; i < triangles.size(); i++) {
-	delete triangles[i];
+    cout << "~Mesh" << endl;
+    if (normal_indices != NULL) {
+	delete normal_indices;
     }
 }
 
 void Mesh::addSelf(KdTree* space) {
     for(uint i = 0; i < triangles.size(); i++) {
-	space->addObject(triangles[i]);
+	space->addObject(&triangles[i]);
     }
 }
 
@@ -50,7 +51,7 @@ void Mesh::prepare() {
     }
 
     for(uint i = 0; i < triangles.size(); i++) {
-	triangles[i]->prepare();
+	triangles[i].prepare();
     }
 
     prepared = true;
@@ -155,8 +156,7 @@ void Mesh::addTriangle(const uint v[3], const Vector2 uv[3]) {
 
     normal_indices->push_back(normal_idx);
 
-    Triangle* t = new Triangle(this, (faces.size() / 3) - 1);
-    triangles.push_back(t);
+    triangles.push_back(Triangle(this, (faces.size() / 3) - 1));
 }
 
 void Mesh::computeInterpolatedNormals() {
@@ -207,6 +207,7 @@ void Mesh::computeInterpolatedNormals() {
 
     delete [] adj;
     delete normal_indices;
+    normal_indices = NULL;
 }
 
 // TODO: Optimize by keeping a stl::set with all corners.
@@ -373,5 +374,6 @@ void Mesh::hintFaceNum(uint num) {
     normals.reserve(num);
     normal_indices->reserve(num);
     faces.reserve(3 * num);
+    triangles.reserve(num);
 }
 

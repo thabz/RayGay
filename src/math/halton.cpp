@@ -2,6 +2,8 @@
 #include "halton.h"
 #include "constants.h"
 #include <cstdlib>
+#include <iostream>
+#include <cassert>    
 
 /**
  * Constructor.
@@ -10,6 +12,7 @@
  * @param dim dimension of the sequence
  */
 Halton::Halton(int base, int dim) {
+    assert(dim > 0);
     invBase = new double[dim];
     values = new double[dim];
     this->dim = dim;
@@ -19,6 +22,11 @@ Halton::Halton(int base, int dim) {
 	invBase[i] = 1.0 / double(base);
 	base = nextPrime(base);
     }
+}
+
+Halton::~Halton() {
+    delete [] invBase;
+    delete [] values;
 }
 
 void Halton::reset() {

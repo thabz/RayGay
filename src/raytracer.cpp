@@ -15,10 +15,8 @@
 #include "lights/lightsource.h"
 #include "materials/material.h"
 #include "space/kdtree.h"
-#include "math/halton.h"
 
 Raytracer::Raytracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, unsigned int thread_id) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
-    gloss_sequence = new Halton(2,2);
 }
 
 RGBA Raytracer::getPixel(const Vector2& v) {
@@ -112,28 +110,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int
 
 	/* Bounce a reflection off the intersected object */
 	if (material->getKs() > 0 && reflection > 0) {
-	    Vector refl_vector = -1 * ray.getDirection();
-	    refl_vector = refl_vector.reflect(normal);
-	    refl_vector.normalize();
-	    RGB refl_col = RGB(0.0,0.0,0.0);
-	    if (material->glossEnabled()) {
-		/* Distributed reflection */
-		double max_angle = material->glossMaxAngle();
-		int gloss_rays = material->glossRaysNum();
-		gloss_sequence->reset();
-		//gloss_rays /= depth * depth;
-		for(int i = 0; i < gloss_rays; i++) {
-		    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle,gloss_sequence),ray.getIndiceOfRefraction());
-		    refl_col += trace(refl_ray, depth + 1);
-		}
-		refl_col *= 1.0/double(gloss_rays);
-	    } else {
-		/* Single reflected ray */
-		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
-		refl_ray.fromObject = object;
-		refl_col = trace(refl_ray, depth + 1);
-	    }
-	    result_color += reflection * refl_col;
+	    result_color += reflection * calculate_reflection(ray,intersection,depth,material);
 	}
 
 	/* Should we send a ray through the intersected object? */
@@ -148,19 +125,70 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int
 	    } else {
 		// Internal reflection, see page 757.
 		/*
-		Vector refl_vector = -1 * ray.getDirection();
-		refl_vector = refl_vector.reflect(normal);
-		refl_vector.normalize();
-		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
-		RGB refl_col = trace(refl_ray, depth + 1);
-		result_color += transmission * refl_col;
-		*/
+		   Vector refl_vector = -1 * ray.getDirection();
+		   refl_vector = refl_vector.reflect(normal);
+		   refl_vector.normalize();
+		   Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
+		   RGB refl_col = trace(refl_ray, depth + 1);
+		   result_color += transmission * refl_col;
+		   */
 	    }
 	}
     }
 
- //   result_color.clip();
+    //   result_color.clip();
     return result_color;
 }
+
+RGB Raytracer::calculate_reflection(const Ray& ray, const Intersection& intersection, const int depth, const Material* material) {
+
+    Vector refl_vector = -1 * ray.getDirection();
+    Object* const object = intersection.getObject();
+    refl_vector = refl_vector.reflect(intersection.getNormal());
+    refl_vector.normalize();
+    Vector point = intersection.getPoint();
+    RGB refl_col = RGB(0.0,0.0,0.0);
+    
+    if (material->glossEnabled()) {
+	/* Distributed reflection */
+	double max_angle = material->glossMaxAngle();
+	int gloss_rays = material->glossRaysNum();
+	gloss_sequence->reset();
+	RGB refl_col_tmp;
+
+	//gloss_rays /= depth;
+
+
+	/* Adaptive sampling. Only if the first half of the reflection rays
+	 * vary too much, do we fire off the second half. */
+	int num = 0;
+	bool needs_more = false;
+
+	for(int i = 0; i < gloss_rays/8; i++) {
+	    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle,gloss_sequence),ray.getIndiceOfRefraction());
+	    refl_col_tmp = trace(refl_ray, depth + 1);
+	    refl_col += refl_col_tmp;
+	    num++;
+	    if (refl_col_tmp.sqrDistance(refl_col * 1.0/double(num)) > 0.1)
+		needs_more = true;
+	}
+
+	if (needs_more) {
+	    for(int i = gloss_rays/8; i < gloss_rays; i++) {
+		Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle,gloss_sequence),ray.getIndiceOfRefraction());
+		refl_col += trace(refl_ray, depth + 1);
+		num++;
+	    }
+	}
+	refl_col *= 1.0 / double(num);
+    } else {
+	/* Single reflected ray */
+	Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
+	refl_ray.fromObject = object;
+	refl_col = trace(refl_ray, depth + 1);
+    }
+    return refl_col;
+}
+
 
 

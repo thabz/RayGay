@@ -112,7 +112,7 @@ class Mesh : public ObjectGroup {
 	int findExistingCorner(const Vector* c) const;
 	void computeInterpolatedNormals();
 	Vector phong_normal(const uint face_idx, double u, double v) const;
-	std::vector<Triangle*> triangles;
+	std::vector<Triangle> triangles;
 
 	const Material* material;
 

@@ -13,6 +13,7 @@ class Halton : public QMCSequence {
 
     public:
 	Halton(int base, int dim);
+	virtual ~Halton();
 	void reset();
 	double* getNext();
 

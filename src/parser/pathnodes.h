@@ -98,7 +98,8 @@ class SpiralNode : public PathNode {
 	    double r = radius->eval();
 	    double w = windings->eval();
 	    double o = offset->eval();
-	    return new Spiral(p,r,w,o);
+	    Path* result = new Spiral(p,r,w,o);
+	    return result;
 	}
 	
     private:

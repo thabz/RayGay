@@ -262,6 +262,7 @@ void work(string scenefile, string outputfile, int jobs) {
 
     init_parser(scenefile);
     yyparse();
+    fclose(yyin);
 
     chdir(original_working_dir);
     

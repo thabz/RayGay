@@ -290,6 +290,7 @@ FuncDecl	: tFUNCTION tSTRING '(' FuncArgsDecls ')'
                 {
 		    tmpFunction = new Function($4);
 		    Assignments::getUniqueInstance()->setNamedFunction(*$2,tmpFunction);
+		    delete $2;
 		}
                 '{' ActionList '}'
 		{
@@ -333,12 +334,14 @@ FuncArgsDecls	: tVARNAME
                 {
 		    FuncArgsDecls* f = dynamic_cast<FuncArgsDecls*>($1);
 		    f->addArg(ValueNode::FLOAT,*$2);
+		    delete $2;
 		    $$ = f;
 		}
 		| FuncArgsDecls tVECTORVARNAME
                 {
 		    FuncArgsDecls* f = dynamic_cast<FuncArgsDecls*>($1);
 		    f->addArg(ValueNode::VECTOR,*$2);
+		    delete $2;
 		    $$ = f;
 		}
                 ;
@@ -593,6 +596,7 @@ CameraSetting   : tPOSITION Vector
                 | tTYPE tQSTRING
                 {
 		    camera->setType(*$2);
+		    delete $2;
 		}
                 ;
 
@@ -1369,6 +1373,7 @@ void init_parser(string scenefile) {
 }
 
 void run_interpreter() {
+
     Environment::getUniqueInstance()->getObjectCollector()->reset();
     try {
 	top_actions->eval();
@@ -1393,6 +1398,7 @@ FilePosition curPos() {
 
 void delete_interpreter() {
     delete top_actions;
+    delete renderer_settings;
 }
 
 Vector2 getImageSize() {

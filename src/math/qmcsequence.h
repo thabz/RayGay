@@ -22,6 +22,8 @@ class QMCSequence {
 	 * @return a pointer to dim doubles in [0,1]
 	 */
 	virtual double* getNext() = 0;
+
+	virtual ~QMCSequence() {};
 };
 
 #endif

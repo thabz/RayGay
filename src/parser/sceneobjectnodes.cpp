@@ -253,7 +253,9 @@ SceneObject* ExtrusionNode::eval() {
     uint segs = (uint) segments->eval();
     uint pies = (uint) pieces->eval();
     Material* m = material->eval();
-    return new Extrusion(*p,r,segs,pies,m);
+    SceneObject* result = new Extrusion(*p,r,segs,pies,m);
+    delete p;
+    return result;
 }
 
 //---------------------------------------------------------------------

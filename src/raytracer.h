@@ -9,7 +9,6 @@ class RGB;
 class Ray;
 class Object;
 class Intersection;
-class QMCSequence;
 
 ///  Implementation of Renderer that supply a raytracer.
 class Raytracer : public Renderer {
@@ -25,8 +24,7 @@ class Raytracer : public Renderer {
 	RGBA trace(const Ray&, const int depth);
 	RGBA traceSub(const bool intersected, const Intersection& i, const Ray&, const int depth);
 	RGBA tracePrimary(const Ray&);
-
-	QMCSequence* gloss_sequence;
+	RGB calculate_reflection(const Ray& ray, const Intersection& intersection, const int depth, const Material* material);
 };
 
 inline
