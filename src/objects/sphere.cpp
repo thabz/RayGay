@@ -38,15 +38,22 @@ Intersection Sphere::_fullIntersect(const Ray& ray, const double t) const {
     return Intersection(p,t,n,uv);
 }
 
+#define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
+#define SUB(dest,v1,v2) \
+          dest[0]=v1[0]-v2[0]; \
+          dest[1]=v1[1]-v2[1]; \
+          dest[2]=v1[2]-v2[2]; 
+
+
 double Sphere::_fastIntersect(const Ray& ray) const {
     
     // See CGPP page 1101
-    Vector v = ray.getDirection();
-    Vector QmP = ray.getOrigin() - center;
-    // TODO: Q - P udregnes for mange gange herunder
-    double a = v * v;
-    double b = 2 * v * QmP;
-    double c = (QmP * QmP - radius * radius);
+    const Vector& v = ray.getDirection();
+    double QmP[3];
+    SUB(QmP,ray.getOrigin(),center);
+    double a = DOT(v,v);
+    double b = 2 * DOT(v,QmP);
+    double c = (DOT(QmP,QmP) - radius * radius);
     double D = b * b - 4 * a * c;
     if (D < 0.0) {
 	// No roots
@@ -62,9 +69,9 @@ double Sphere::_fastIntersect(const Ray& ray) const {
        double sq = sqrt(D);
        double t1 = (-b - sq ) / (2 * a);
        double t2 = (-b + sq ) / (2 * a);
-       if (t1 > 0 && t1 < t2 && !IS_ZERO(t1)) {
+       if (t1 > EPSILON && t1 < t2 && t2 > EPSILON) {
 	   return t1;
-       } else if (t2 > 0 && !IS_ZERO(t2)) {
+       } else if (t2 > EPSILON) {
 	   return t2;
        }
     }
@@ -75,11 +82,12 @@ vector<Intersection> Sphere::allIntersections(const Ray& ray) const {
     vector<Intersection> result;// = vector<Intersection>(2);
 
     Vector v = ray.getDirection();
-    Vector QmP = ray.getOrigin() - center;
+    double QmP[3];
+    SUB(QmP,ray.getOrigin(),center);
     // TODO: Q - P udregnes for mange gange herunder
     double a = v * v;
-    double b = 2 * v * QmP;
-    double c = (QmP * QmP - radius * radius);
+    double b = 2 * DOT(v,QmP);
+    double c = (DOT(QmP,QmP) - radius * radius);
     double D = b * b - 4 * a * c;
     if (D > EPSILON) {
 	// Two roots
