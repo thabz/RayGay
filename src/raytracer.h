@@ -15,7 +15,7 @@ class Raytracer : public Renderer {
 	Raytracer();
 
     private:
-	RGB getPixel(double x, double y);
+	RGB getPixel(const Vector2& v);
 
 	RGB shade(const Ray&, const Intersection&, int depth);
 	RGB trace(const Ray&, int depth);

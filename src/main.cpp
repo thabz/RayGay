@@ -92,16 +92,8 @@ void testScene4() {
     scene.addObject(mid);
     */
     
-    // Use this when making fog later.
-    
-    for(int x = -2000; x <= 1000; x += 120) {
-	for(int z = -2000; z <= 1000; z += 120) {
-	    Box* b = new Box(Vector(x,0,z),40.0,40.0,40.0,MATERIAL_SHINY_BLUE);
-	    Sphere* s = new Sphere(Vector(x,0,z),20.0,MATERIAL_SHINY_BLUE);
-	    scene.addObject(s);
-	}
-    }
-
+    Sphere* s = new Sphere(Vector(0,0,0),150.0,MATERIAL_SHINY_BLUE);
+    scene.addObject(s);
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
    // light1.setAttenuation(4000,3);
@@ -116,7 +108,7 @@ void testScene4() {
     scene.addLight(&light1);
     scene.addLight(&light3);
     
-    Box b = Box(Vector(-300,-300,-300),Vector(300,-250,300),MATERIAL_SHINY_GREEN); /* Floor */
+    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); /* Floor */
     scene.addObject(&b);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
@@ -126,6 +118,7 @@ void testScene4() {
     scene.setBackgroundColor(RGB(0.1,0.1,0.3));
 
     Camera cam = Camera(Vector(0,0,1500),Vector(0,0,-1));
+    cam.enableAdaptiveSupersampling(4);
     scene.setCamera(&cam);
     
     Image* img = new Image(640,480);
@@ -228,20 +221,23 @@ void test_3ds() {
     scene.addLight(&light1);
     scene.addLight(&light3);
     
-    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); // Floor
+    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); /* Floor */
     scene.addObject(&b);
 
-    //ThreeDS* o = new ThreeDS("../3ds/tower4.3ds",1,MATERIAL_DULL_BLUE);
+    //ThreeDS* egg = new ThreeDS("../3ds/swan.3ds",10,MATERIAL_DULL_BLUE);
     ThreeDS* egg = new ThreeDS("../3ds/egg-chair.3ds",10,MATERIAL_DULL_BLUE);
     Matrix ma = Matrix::matrixRotate(Vector(1,0,0),90);
     ma = ma * Matrix::matrixTranslate(Vector(0,-135,0));
     egg->transform(ma);
     scene.addObject(egg);
-
-  //  ThreeDS* boxer = new ThreeDS("../3ds/boxer/boxer.3ds",1.0/100,MATERIAL_DULL_BLUE);
-    //scene.addObject(boxer);
-
     
+
+/*    ThreeDS* chair = new ThreeDS("../3ds/3300.3ds",10,MATERIAL_DULL_BLUE);
+    ma = Matrix::matrixRotate(Vector(1,0,0),90);
+    ma = ma * Matrix::matrixTranslate(Vector(0,-135,0));
+    chair->transform(ma);
+    scene.addObject(chair);
+  */  
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
     scene.transform(n);
@@ -249,6 +245,7 @@ void test_3ds() {
     scene.setBackgroundColor(RGB(0.1,0.1,0.3));
 
     Camera cam = Camera(Vector(0,0,1500),Vector(0,0,-1));
+    cam.enableAdaptiveSupersampling(4);
     scene.setCamera(&cam);
     
     Image* img = new Image(640,480);

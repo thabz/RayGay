@@ -19,10 +19,21 @@ class Camera {
 
 	/// Returns position of camera
 	Vector& getPosition();
-	
+
+	// Enable adaptive supersampling
+	void enableAdaptiveSupersampling(unsigned int depth);
+
+	bool isAAEnabled() const { return aa_enabled; }; 
+
+	unsigned int getAADepth() const { return aa_depth; };
+
     private:
 	Vector position;
 	Vector direction;
+
+	bool aa_enabled;
+	unsigned int aa_depth;
+
 };
 
 #endif

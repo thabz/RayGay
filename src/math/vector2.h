@@ -18,9 +18,13 @@ class Vector2 {
 
 	/// Scale vector
 	Vector2 operator*(const Float x) const;
+	/// Divide by constant
+	Vector2 operator/(const Float x) const; 
 
 	/// Add two vectors
 	Vector2 operator+(const Vector2 &v) const; 
+	/// Subtract two vectors
+	Vector2 operator-(const Vector2 &v) const; 
 	bool operator==(const Vector2 &v) const; ///< Comparator
 
 	/// Comparator
@@ -49,8 +53,18 @@ Vector2 Vector2::operator+(const Vector2 &v) const {
 }
 
 inline
+Vector2 Vector2::operator-(const Vector2 &v) const {
+    return Vector2(_vector[0] - v._vector[0], _vector[1] - v._vector[1]);
+}
+
+inline
 Vector2 Vector2::operator*(const Float x) const {
     return Vector2( x*_vector[0], x*_vector[1]);
+}
+
+inline
+Vector2 Vector2::operator/(const Float x) const {
+    return Vector2(_vector[0] / x, _vector[1] / x);
 }
 
 inline

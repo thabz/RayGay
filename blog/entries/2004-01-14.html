@@ -1,2 +1,6 @@
 <h>Blog</h>
-<p>Lagde denne blog offentligt ud.</p>
+<p>Har nu lagt denne blog offentligt ud.</p>
+
+<h>Adaptive antialias</h>
+<p>Fik omsider kodet adaptive antialias. Dette foregår ved at traceren oversampler, dvs. skyder flere primære rays afsted end der er pixels, således at hver pixels består af et gennemsnit af flere rays resulterende farve. Det adaptive består i, at der kun laves antialias hvor det er nødvendigt. For hver pixel skydes fire rays afsted --- en fra hvert af pixelens hjørner. Hvis disse rays giver for forskellige farver, deles pixelen op i fire subpixels, hvor efter processen gentages på disse. Der stoppes når farverne er divergeret eller en maximal rekursionsdybde er nået. Den oprindelige pixel får nu det vægtede gennemsnit af alle disse rays.</p>
+<p><a href="files/tracer34big.png"><img src="files/tracer34.png"></a></p>

@@ -10,4 +10,8 @@ void RGB::clip() {
     }
 }
 
+double RGB::sqrDistance(const RGB& other) const {
+    return (*this-other).norm();
+}
+
 

@@ -13,13 +13,13 @@
 #include "image/image.h"
 #include "lights/lightsource.h"
 
-Raytracer::Raytracer() {
+Raytracer::Raytracer() : Renderer() {
 }
 
-RGB Raytracer::getPixel(double x, double y) {
+RGB Raytracer::getPixel(const Vector2& v) {
     Stats::getUniqueInstance()->inc("Primary camera rays cast");
     Vector position = scene->getCamera()->getPosition();
-    Vector scr = Vector(x,y,0);
+    Vector scr = Vector(v[0],v[1],0);
     Vector raydir = scr - position;
     raydir.normalize();
     Ray ray = Ray(position,raydir,1.0);

@@ -3,6 +3,9 @@
 
 #include "scene.h"
 #include "stats.h"
+#include "math/vector2.h"
+
+#define aa_threshhold 0.02
 
 class RGB;
 class Image;
@@ -19,7 +22,25 @@ class Renderer {
 
     private:
 	/// The public render-method uses this to render the image. Subclasses must implement this.
-	virtual RGB getPixel(double x, double y) = 0;
+	virtual RGB getPixel(const Vector2& c) = 0; 
+
+	class PixelBlock {
+	    public:
+		PixelBlock(const unsigned int size);
+		void reset();
+		bool isActive(const int x, const int y) const { return active[y*size + x]; };
+		void setColor(const int x, const int y, const RGB& c) { color[y*size + x] = c; active[y*size + x] = true;};
+		RGB getColor(const int x, const int y) const { return color[y*size + x]; };
+	    private:
+	        RGB* color;
+		bool* active;
+		unsigned int size;
+	};
+
+	RGB getSubPixel(unsigned int curLevel, const Vector2& center, PixelBlock *block, double size, int x1, int y1, int x2, int y2);
+
+	bool aa_enabled;
+	unsigned int aa_depth;
 
     protected:
 	Renderer();

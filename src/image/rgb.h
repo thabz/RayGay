@@ -45,6 +45,8 @@ class RGB : public Vector {
         double g() { return Vector::_vector[1]; };
         /// The blue component
         double b() { return Vector::_vector[2]; }; 
+
+	double sqrDistance(const RGB& other) const;
 };
 
 #endif

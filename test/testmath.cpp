@@ -102,6 +102,12 @@ void vector2_test() {
     v =  v * 2.0;
     Vector2 w = Vector2(2.0,4.0);
     assert(v == w);
+
+    v = Vector2(1.0,2.0);
+    w = Vector2(10.0,20.0);
+    assert(w + v == Vector2(11,22));
+    assert(w -v == Vector2(9,18));
+    assert(w / 2.0 == Vector2(5,10));
 }
 
 void matrix_test() {
