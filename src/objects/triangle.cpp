@@ -37,25 +37,22 @@ void Triangle::prepare() {
    edge2 = vert2 - vert0;
 }
 
+#define CROSS(dest,v1,v2) \
+          dest[0]=v1[1]*v2[2]-v1[2]*v2[1]; \
+          dest[1]=v1[2]*v2[0]-v1[0]*v2[2]; \
+          dest[2]=v1[0]*v2[1]-v1[1]*v2[0];
 // ----------------------------------------------------------------------------
 Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
     
    // Fast code from http://www.ce.chalmers.se/staff/tomasm/code/
-   const Vector& vert0 = mesh->cornerAt(vertex[0]);
-   const Vector& vert1 = mesh->cornerAt(vertex[1]);
-   const Vector& vert2 = mesh->cornerAt(vertex[2]);
 
-   Vector edge1, edge2, tvec, pvec, qvec;
+   Vector tvec, pvec, qvec;
    double det,inv_det;
    double u,v;
    double t;
 
-   // find vectors for two edges sharing vert0 
-   edge1 = vert1 - vert0;
-   edge2 = vert2 - vert0;
-
    // begin calculating determinant - also used to calculate U parameter 
-   pvec = Vector::xProduct(ray.getDirection(), edge2);
+   CROSS(pvec, ray.getDirection(), edge2);
 
    // if determinant is near zero, ray lies in plane of triangle 
    det = edge1 * pvec;
@@ -73,7 +70,7 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
      return Intersection();
 
    // prepare to test V parameter 
-   qvec = Vector::xProduct(tvec, edge1);
+   CROSS(qvec,tvec,edge1);
 
    // calculate V parameter and test bounds 
    v = (ray.getDirection() * qvec) * inv_det;
@@ -93,10 +90,6 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
    return intersection;
 }
 
-#define CROSS(dest,v1,v2) \
-          dest[0]=v1[1]*v2[2]-v1[2]*v2[1]; \
-          dest[1]=v1[2]*v2[0]-v1[0]*v2[2]; \
-          dest[2]=v1[0]*v2[1]-v1[1]*v2[0];
 // ----------------------------------------------------------------------------
 double Triangle::_fastIntersect(const Ray& ray) const {
    /* Fast code from http://www.ce.chalmers.se/staff/tomasm/code/ */
@@ -107,8 +100,8 @@ double Triangle::_fastIntersect(const Ray& ray) const {
    double u,v;
 
    /* begin calculating determinant - also used to calculate U parameter */
-   //pvec = Vector::xProduct(ray.getDirection(), edge2);
    CROSS(pvec,ray.getDirection(),edge2);
+
    /* if determinant is near zero, ray lies in plane of triangle */
    det = edge1 * pvec;
 
@@ -125,7 +118,6 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 	 return -1;
       
       /* prepare to test V parameter */
-      //qvec = Vector::xProduct(tvec,edge1);
       CROSS(qvec,tvec,edge1);
       
       /* calculate V parameter and test bounds */
@@ -146,7 +138,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 	 return -1;
       
       // prepare to test V parameter
-      qvec = Vector::xProduct(tvec,edge1);
+      CROSS(qvec,tvec,edge1);
       
       // calculate V parameter and test bounds
       v = ray.getDirection() * qvec;
