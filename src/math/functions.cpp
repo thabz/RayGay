@@ -273,7 +273,7 @@ int Math::solveCubic(double A, double B, double C, double* roots) {
     double R = (9.0 * A * B - 27.0 * C - 2.0 * A * A * A) * FRAC_1_54;
     double D = Q * Q * Q + R * R;
     if (IS_ZERO(D)) {
-	// D == 0 giver two (maybe equal) real roots.
+	// D == 0 gives two (maybe equal) real roots.
 	if (IS_ZERO(R)) {
 	    roots[0] = -A / 3.0;
 	    return 1;
@@ -283,8 +283,7 @@ int Math::solveCubic(double A, double B, double C, double* roots) {
 	    roots[1] = -S - A/3.0;
 	    return 2;
 	}
-    }
-    if (D < 0) {
+    } else if (D < 0) {
 	// D < 0 gives three real roots
 	double phi = acos(R / sqrt(-(Q*Q*Q)));
 	double G = 2.0 * sqrt(-Q);
