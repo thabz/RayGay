@@ -131,7 +131,7 @@ bool BSP::intersectForShadow(const Ray& ray, double max_t) const {
 }
 
 bool BSP::intersectForShadow(const Ray& ray, const Object* hint, double max_t) const {
-    if (hint != NULL && hint->intersect(ray) && hint->getLastIntersection()->getT() < max_t) {
+    if (hint != NULL && hint->intersect(ray) && hint->getLastIntersection()->getT() <= max_t) {
 	last_intersection = hint->getLastIntersection();
 	return true;
     } else {
