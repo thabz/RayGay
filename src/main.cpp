@@ -66,13 +66,12 @@ void testScene4() {
 
     Material mat = MATERIAL_SHINY_BLUE;
     //mat.setBumpmap("stregerbump.tga",2.0);
-    //mat.setTexturemap("blueplasma.tga");
-    mat.setRepeatX(10);
-    mat.setRepeatY(4);
+    mat.setTexturemap("checkboard.tga");
+    mat.setRepeatX(8);
+    mat.setRepeatY(8);
 
-    Material red = MATERIAL_SHINY_RED;
-    red.enableGloss(4,30.0);
-    Sphere* s = new Sphere(Vector(0,0,0),150.0,red);
+    Material red = MATERIAL_DULL_RED;
+    Sphere* s = new Sphere(Vector(0,0,0),150.0,mat);
     scene.addObject(s);
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
@@ -89,7 +88,7 @@ void testScene4() {
     scene.addLight(&light3);
     
     Material chrome = MATERIAL_CHROME;
-    chrome.enableGloss(4,30.0);
+    chrome.enableGloss(9,2.0);
 
     Box b = Box(Vector(-500,-200,-500),Vector(500,-150,500),chrome); /* Floor */
     scene.addObject(&b);
@@ -166,7 +165,7 @@ void test_columns() {
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
-    scene.transform(n);
+    //scene.transform(n);
 
     scene.setBackgroundColor(RGB(0.1,0.1,0.3));
 

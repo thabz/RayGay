@@ -96,11 +96,13 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 	    if (material.glossEnabled()) {
 		/* Distributed reflection */
 		const double v = sin(material.glossMaxAngle());
+		const double h = cos(material.glossMaxAngle());
+
 		Vector corners[3];
-		corners[0] = Vector(-v,0,1);
-		corners[1] = Vector(v,0,1);
-		corners[2] = Vector(0,-v,1);
-		corners[3] = Vector(0,v,1);
+		corners[0] = Vector(-v,v,h);
+		corners[1] = Vector(v,v,h);
+		corners[2] = Vector(-v,-v,h);
+		corners[3] = Vector(v,-v,h);
 		Matrix orient = Matrix::matrixOrient(refl_vector);
 		orient = orient.inverse();
 		for(unsigned int i = 0; i < 4; i++) {
@@ -108,12 +110,15 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 		    corners[i].normalize();
 		}
 		const unsigned int max_rays = material.glossRaysNum();
+		Vector v1,v2;
+		double x_factor,y_factor;
 		for(unsigned int xx = 0; xx < max_rays; xx++) {
 		    for(unsigned int yy = 0; yy < max_rays; yy++) {
-			double x_factor = (double(xx)+RANDOM(0,1)) / double(max_rays);
-			double y_factor = (double(yy)+RANDOM(0,1)) / double(max_rays);
-			refl_vector = x_factor*corners[0] + (1-x_factor)*corners[1] +
-			              y_factor*corners[2] + (1-y_factor)*corners[3];
+			x_factor = (double(xx)+RANDOM(0,1)) / double(max_rays);
+			y_factor = (double(yy)+RANDOM(0,1)) / double(max_rays);
+			v1 = x_factor*corners[0] + (1-x_factor)*corners[1];
+			v2 = x_factor*corners[2] + (1-x_factor)*corners[3];
+			refl_vector =  y_factor*v1 + (1-y_factor)*v2;
 			refl_vector.normalize();
 			Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
 			refl_col += trace(refl_ray, depth + 1);
