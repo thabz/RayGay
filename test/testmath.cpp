@@ -81,13 +81,13 @@ class vector_test : public Test {
 
 	    v = Vector(1,1,1);
 	    w = v.toPolar();
-	    assertTrue(IS_EQUAL(w[0],sqrtf(3)));
+	    assertTrue(IS_EQUAL(w[0],sqrt(3.0)));
 	    assertTrue(!IS_EQUAL(w[1],0));
 	    assertTrue(!IS_EQUAL(w[2],0));
 
 	    v = Vector(0,1,1);
 	    w = v.toPolar();
-	    assertTrue(IS_EQUAL(w[0],sqrtf(2)));
+	    assertTrue(IS_EQUAL(w[0],sqrt(2.0)));
 
 	    assertTrue(Vector(10,10,10).toPolar().toRectangular() == Vector(10,10,10));
 	    assertTrue(Vector(10,10,-10).toPolar().toRectangular() == Vector(10,10,-10));

@@ -133,7 +133,7 @@ Matrix Matrix::matrixOrient(const Vector& v) {
     double a = v[0] / D; 
     double b = v[1] / D; 
     double c = v[2] / D; 
-    double d = sqrtf(b*b + c*c);
+    double d = sqrt(b*b + c*c);
     if (IS_ZERO(v[1]) && IS_ZERO(v[2])) {
 	// d == 0, so rotate +90 degrees around y-axis
 	r.set(0,0,0);
