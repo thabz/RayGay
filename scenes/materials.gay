@@ -131,7 +131,7 @@ specpow 15
 
 material $slate_tiles plastic 1.0 1.0 1.0
 texturemap gfx/js_suelo1.jpg
-bumpmap gfx/js_suelo1.jpg 10.0
+#bumpmap gfx/js_suelo1.jpg 10.0
 maprepeat 2 2
 kd 1.0
 ks 0.0
