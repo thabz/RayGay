@@ -37,8 +37,10 @@ void SpecularBloom::apply(Image* image) {
     for(int x = 0; x < w; x++) {
 	for(int y = 0; y < h; y++) {
 	    RGBA col = image->getRGBA(x,y);
-	    col += glow->getRGBA(x,y);
+	    col += alpha * glow->getRGBA(x,y);
 	    image->setRGBA(x,y,col);
 	}
     }
+
+    delete glow;
 }
