@@ -122,7 +122,7 @@
 ;; Vector operations    
 (define (sum l) 
  (if (null? l) 
-  0 (+ (car l) (sum (cdr l))))
+  0 (+ (car l) (sum (cdr l)))))
 
 (define (.x vec) (car vec))
 (define (.y vec) (list-ref vec 1))  
