@@ -36,10 +36,7 @@ class Matrix {
 	/// Says whether this matrix is the identity
 	bool isIdentity() const;
 
-	/// Says whether this matrix contains scaling
-	bool isScaled() const;
-
-	/// Says whether this matrix contains scaling
+	/// Says whether this matrix is orthogonal
 	bool isOrthogonal() const;
 	
         /// Returns the inverse to this matrix
