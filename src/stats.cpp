@@ -26,11 +26,15 @@ long Stats::get(string key) const {
 }
 
 void Stats::inc(string key) {
+    this->inc(key,1);
+}
+
+void Stats::inc(string key, long amount) {
     map<string,long>::const_iterator p = stats.find(key);
     if (p != stats.end()) {
-	(stats.find(key)->second)++;
+	(stats.find(key)->second) += amount;
     } else {
-	put(key,1);
+	put(key,amount);
     }
 }
 

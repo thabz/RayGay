@@ -13,7 +13,7 @@ class PhotonTracer {
     public:
 	PhotonTracer(Scene* scene, SpaceSubdivider* space, PhotonMap* photonmap);
 	void trace(int max_photons);
-	bool trace(const Ray& ray);
+	int trace(const Ray& ray, int bounces);
 	
     private:
 	Scene* scene;

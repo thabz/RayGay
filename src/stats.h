@@ -24,8 +24,10 @@ class Stats {
 	void put(string key, long value);
 	/// Gets a value
 	long get(string key) const;
-	/// Increases a value
+	/// Increases a value by one
 	void inc(string key);
+	/// Increases a value by an amount
+	void inc(string key,long amount);
 	/// Prints out the stats
 	void dump() const;
 	/// Remove all stats

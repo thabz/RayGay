@@ -316,6 +316,7 @@ void Importer::parse(const string& filename) {
 	    exit(EXIT_FAILURE);
 	}
 
+	// TODO: Last object in a group is currently ignored...
 	if (cur_object != NULL) {
 	    if (naming_object && grouping == 0) {
 		putNamedObject(object_name,cur_object);

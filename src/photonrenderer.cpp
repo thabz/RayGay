@@ -67,13 +67,11 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     Vector normal = object->normal(intersection);
     const Material& material = object->getMaterial();
     normal = material.bump(intersection,normal);
-    double ambient_intensity = 0.2;
     RGB result_color = RGB(0.0,0.0,0.0);
-  //  result_color = ambient_intensity * material.getDiffuseColor(intersection);
     vector<Lightsource*> lights = scene->getLightsources();
 
-    Vector irradiance = photonmap->irradiance_estimate(point,normal,10,200);
-    result_color += 2*irradiance.length() * material.getDiffuseColor(intersection);
+    Vector irradiance = photonmap->irradiance_estimate(point,normal,20,1000);
+    result_color += 10*irradiance.length() * material.getDiffuseColor(intersection);
 
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);

@@ -8,7 +8,9 @@ class Ray;
 class Object;
 class Intersection;
 
-///  Implementation of Renderer that supply a raytracer.
+/**
+ * Implementation of Renderer that supply a raytracer using photonmaps.
+ */
 class PhotonRenderer : public Renderer {
 
     public:
