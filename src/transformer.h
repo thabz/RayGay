@@ -2,6 +2,7 @@
 #define OBJECTS_TRANSFORMER_H
 
 #include "math/matrix.h"
+#include "math/matrix3.h"
 #include "boundingbox.h"
 #include "ray.h"
 #include "intersection.h"
@@ -38,8 +39,8 @@ class Transformer {
 	Matrix transformation;
 	Matrix inverse_transformation;
 	/// The inverse of the rotation part extracted from the transformation
-	Matrix inverse_rotation;
-	Matrix normal_transformation;
+	Matrix3 inverse_rotation;
+	Matrix3 normal_transformation;
 	bool transformed;
 	bool scaled;
 };

@@ -10,7 +10,7 @@ Transformer::Transformer() {
 void Transformer::transform(const Matrix& m) {
     transformation = transformation * m;
     inverse_transformation = transformation.inverse();
-    Matrix rotation = transformation.extractRotation();
+    Matrix3 rotation = transformation.extractRotation();
     inverse_rotation = rotation.inverse();
     normal_transformation = inverse_rotation.transpose();
     transformed = !transformation.isIdentity();
