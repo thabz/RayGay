@@ -1,6 +1,9 @@
 
 #include "math/vector.h"
 #include "image/rgb.h"
+#include <vector>
+
+using namespace std;
 
 /**
  * An irradiance cache as suggested by Greg Ward.
@@ -25,7 +28,7 @@ class IrradianceCache {
 	RGB getEstimate(const Vector& point, const Vector& normal) const;
 
 	/**
-	 * Insert an estimate into the list.
+	 * Insert an estimate into the cache.
 	 *
 	 * This inserts the result of a final gather into the irradiance cache.
 	 *
@@ -48,21 +51,30 @@ class IrradianceCache {
     private:
 	class CacheNode {
 	    public:
+		CacheNode(const Vector& point, const Vector &normal, const RGB& irradiance, double hmd, double a);
 
-		Vector point;
-		Vector normal;
-		RGB irradiance;
-		double hmd;
 
 		double getWeight(const Vector& point, const Vector& normal) const;
+
+		const RGB& getIrradiance() const { return irradiance; };
+		const Vector& getPoint() const { return point; };
+		const Vector& getNormal() const { return normal; };
 		/** 
 		 * This is the squared distance from point where this 
 		 * CacheElement doesn't matter anymore.
 		 */
-		double getRadius() const;
+		const double& getRadius() const { return radius; };
+	    private:
+		Vector point;
+		Vector normal;
+		RGB irradiance;
+		double hmd;
+		double radius;
 	};
 
-
+	vector<CacheNode> nodes;
+	double tolerance;
+	double inv_tolerance;
 };
 
 
