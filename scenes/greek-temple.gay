@@ -1,69 +1,89 @@
 
-include materials.gay
 
 renderer raytracer
 
-camera-position 50 10 20
-camera-up 0 1 0
-camera-lookat 0 0 0
-camera-field-of-view 45
-camera-aa 4
+camera { position <50,10,20>
+         up <0,1,0> 
+         lookat <0,0,0> 
+	 fov 45
+	 aa 4
+}
 
-image-ratio 4 3
-image-width 640
-background rgba 0.1 0.1 0.3 1.0
+image { width 640 aspect 4 3 }
 
-light point 1500 2300 2300 1 1 1
-#light point -1500 2100 2100 1 1 1
-#light skylight 10000 10 1 1 1 
+background <0.1, 0.1, 0.3, 1.0>
 
-box $dullgreen -70 -1 -70  70 0 70
+$dullwhite = material {
+    diffuse <1.0,1.0,1.0>
+    kd 0.95
+    specular <1.0,1.0,1.0>
+    ks 0.0
+    specpow 0
+}
 
-name column group
-   box $dullwhite -1 0 -1  1 0.3 1
-   box $dullwhite -1 0 -1  1 0.3 1
-   torus $dullwhite 0.5 0.3 translate 0 0.3 0
-   capped-cylinder $dullwhite 0.5 0 0.3 0      0 9.7 0
-   torus $dullwhite 0.5 0.3 translate 0 9.7 0
-   box $dullwhite -1 9.7 -1  1 10 1
-end
+$dullgreen = material {
+    diffuse <0.4,1.0,0.4>
+    kd 0.8
+    specular <1.0,1.0,1.0>
+    ks 0.0
+    specpow 0
+}
 
-object column translate -10 0.6 -15 
-object column translate -5 0.6 -15 
-object column translate 0 0.6 -15 
-object column translate 5 0.6 -15 
-object column translate 10 0.6 -15
+light { point <1500,2300,2300> power <1,1,1> }
+/*
+light point -1500 2100 2100 1 1 1
+light skylight 10000 10 1 1 1 
+*/
 
-object column translate -10 0.6 15 
-object column translate -5 0.6 15 
-object column translate 0 0.6 15 
-object column translate 5 0.6 15 
-object column translate 10 0.6 15
+box { $dullgreen <-70,-1,-70>  <70,0,70> }
 
-object column translate 15 0.6 -10
-object column translate 15 0.6 -5
-object column translate 15 0.6 0 
-object column translate 15 0.6 5 
-object column translate 15 0.6 10
+$column = group {
+   box { $dullwhite <-1 0 -1>  <1 0.3 1> }
+   box { $dullwhite <-1 0 -1>  <1 0.3 1> }
+   torus { $dullwhite 0.3 0.5 } translate <0 0.3 0>
+   cylinder { $dullwhite 0.5 <0 0.3 0> <0 9.7 0> }
+   torus { $dullwhite 0.3 0.5 } translate <0 9.7 0>
+   box { $dullwhite <-1 9.7 -1>  <1 10 1> }
+}
 
-object column translate -15 0.6 -10
-object column translate -15 0.6 -5
-object column translate -15 0.6 0 
-object column translate -15 0.6 5 
-object column translate -15 0.6 10
+/*
+object $column translate -10 0.6 -15 
+object $column translate -5 0.6 -15 
+object $column translate 0 0.6 -15 
+object $column translate 5 0.6 -15 
+object $column translate 10 0.6 -15
 
-object column translate 15 0.6 15 
-object column translate 15 0.6 -15 
-object column translate -15 0.6 15 
-object column translate -15 0.6 -15 
+object $column translate -10 0.6 15 
+object $column translate -5 0.6 15 
+object $column translate 0 0.6 15 
+object $column translate 5 0.6 15 
+object $column translate 10 0.6 15
 
-# Fundament
-box $dullwhite -20 0 -20   20 0.3 20
-box $dullwhite -19 0.3 -19   19 0.6 19
+object $column translate 15 0.6 -10
+object $column translate 15 0.6 -5
+object $column translate 15 0.6 0 
+object $column translate 15 0.6 5 
+object $column translate 15 0.6 10
 
-# Tempelrum
-box $dullwhite -10 0.6 -10   10 10 10
+object $column translate -15 0.6 -10
+object $column translate -15 0.6 -5
+object $column translate -15 0.6 0 
+object $column translate -15 0.6 5 
+object $column translate -15 0.6 10
 
-# Tag
-#box $dullwhite -17 10 -17   17 11 17
+object $column translate 15 0.6 15 
+object $column translate 15 0.6 -15 
+object $column translate -15 0.6 15 
+object $column translate -15 0.6 -15 
+*/
+
+/* Fundament */
+box { $dullwhite <-20 0 -20>   <20 0.3 20> }
+box { $dullwhite <-19 0.3 -19>   <19 0.6 19> }
+
+/* Tempelrum */
+box { $dullwhite <-10 0.6 -10>  <10 10 10> }
+
+/* Tag */
+/* box $dullwhite -17 10 -17   17 11 17 */
 
