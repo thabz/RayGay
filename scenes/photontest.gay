@@ -2,10 +2,13 @@
 
 include materials.gay
 
+renderer photonrenderer
+#renderer raytracer
+
 photonmap photons 100000
-photonmap estimate-radius 50
-photonmap estimate-samples 200
-photonmap final-gather-rays 500
+photonmap estimate-radius 40
+photonmap estimate-samples 100
+photonmap final-gather-rays 20
 
 camera-position 0 180 1100
 camera-up 0 1 0
@@ -20,16 +23,17 @@ background 0.1 0.1 0.3
 
 
 # light behind wall
-light point 200 280 -150
+light point 200 280 -150 5000 5000 5000
+cylinder $dullwhite 50  200 150 -150   200 300 -150
+
+light point -200 280 -150 5000 5000 5000
+cylinder $dullwhite 50  -200 150 -150   -200 300 -150
 
 # light near camera
-#light point 100 280 300
+#light point 100 280 300 50000 50000 50000
 
-#box $dullred  -50 -300  -50     50 50   50 rotate 0 1 0 30
-#box $dullblue -150 -300 -250   -100 50 -200 rotate 0 1 0 -30
-
-sphere $green 60  0 -240 200
-#sphere $glass 100  -180 -200 100
+sphere $green 60  0 -240 0
+#sphere $glass 100  -180 -200 180 
 
 # Floor
 box $dullgreen -300 -350 -300    300 -300 1200
@@ -38,11 +42,11 @@ box $dullwhite -300 300 -300    300 350 1200
 # Backwall
 box $dullwhite -300 -300 -330    300 300 -300
 # Backwall (right half)
-box $dullwhite 100 -310 -30    350 310 0
+#box $dullwhite 100 -310 -30    350 310 0
 # Backwall (left half)
-box $dullwhite -300 -310 -30    -100 310 0
+#box $dullwhite -300 -310 -30    -100 310 0
 # Backwall (top half)
-box $dullwhite -350 250 -30    350 320 0
+#box $dullwhite -350 250 -30    350 320 0
 # Left wall
 box $dullred -350 -300 -300    -300 300 1200
 # Right wall
@@ -51,8 +55,10 @@ box $dullblue 300 -300 -300    330 300 1200
 box $dullwhite -300 -150 1200    300 200 1230
 
 # Table
-#box $dullwhite 100 -75 -300  300 -25 -100
+box $dullwhite 100 -75 -300  300 -25 -100
 
 #sphere $red 100 50 -200 -200
 
 #sphere $green 50  -200 -250 150
+
+
