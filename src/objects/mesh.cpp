@@ -10,7 +10,6 @@
 #include "math/vector2.h"
 #include "intersection.h"
 #include "ray.h"
-#include "sphere.h"
 #include "triangle.h"
 #include "paths/circle.h"
 #include "extrusion.h"
