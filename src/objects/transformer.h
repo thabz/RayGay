@@ -21,6 +21,7 @@
 class Transformer {
 
     public:
+	Transformer();
 	/// Apply a transformation
 	virtual void transform(const Matrix& m);
 
@@ -39,10 +40,13 @@ class Transformer {
 	Matrix rotation; /// The rotation part extracted from the transformation
 	Matrix inverse_rotation;
 	Matrix normal_transformation;
+	bool transformed;
 };
 
 inline
 Ray Transformer::rayToObject(const Ray& ray) const {
+    if (!transformed) return ray;
+	
     Vector o = inverse_transformation * ray.getOrigin();
     Vector d = inverse_rotation * ray.getDirection();
     double l = d.length();
@@ -55,11 +59,15 @@ Ray Transformer::rayToObject(const Ray& ray) const {
 
 inline
 Vector Transformer::pointToWorld(const Vector &p) const {
+    if (!transformed) return p;
+
     return transformation * p;
 }
 
 inline
 Vector Transformer::normalToWorld(const Vector& d) const {
+    if (!transformed) return d;
+
     Vector result = normal_transformation * d;
     result.normalize(); // TODO: Not necessary...!
     return result;
@@ -67,6 +75,8 @@ Vector Transformer::normalToWorld(const Vector& d) const {
 
 inline
 Intersection Transformer::intersectionToWorld(const Intersection& i) const {
+    if (!transformed) return i;
+
     Intersection result = Intersection(i);
     result.setNormal(normalToWorld(i.getNormal()));
     result.setPoint(pointToWorld(i.getPoint()));
