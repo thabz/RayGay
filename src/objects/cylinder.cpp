@@ -54,15 +54,15 @@ Intersection Cylinder::_fullIntersect(const Ray& world_ray, const double t) cons
 inline
 Vector Cylinder::getNormal(const Vector& local_point) const {
     if (has_caps) {
-	if (IS_EQUAL(local_point[2],0)) {
+	if (IS_EQUAL(local_point.z(),0)) {
 	    return Vector(0,0,-1);
-	} else if (IS_EQUAL(local_point[2],1)) {
+	} else if (IS_EQUAL(local_point.z(),1)) {
 	    return Vector(0,0,1);
 	}
     }
     // The vector below is normalized as the cylinder has a radius
     // of 1 in object space.
-    return Vector(local_point[0],local_point[1],0);
+    return Vector(local_point.x(),local_point.y(),0);
 }
 
 
