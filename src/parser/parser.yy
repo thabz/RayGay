@@ -763,17 +763,19 @@ Expr		: tSIN '(' Expr ')'
     /* Additional C code */
 
 void yyerror(string s) {
-    cout << "Error: " << s << " at line " << line_num << endl;
+    string filename = "";
+    cout << filename << ":" << line_num << ":"
+	 << " error: " << s << endl;
     exit(1);
 }
 
 Path* getNamedPath(string* name) {
     Path* result = pathMap[*name];
     if (result == NULL) {
-	throw_exception("Path named '" + *name + "' not defined.");
-    } else {
-	return result;
-    }
+	yyerror("Path named '" + *name + "' not defined.");
+    } 
+    return result;
+   
 }
 
 void setNamedPath(string* name, Path* path) {
