@@ -144,6 +144,7 @@ void vector2_test() {
     assert(w + v == Vector2(11,22));
     assert(w -v == Vector2(9,18));
     assert(w / 2.0 == Vector2(5,10));
+    assert(w * 0.5 == Vector2(5,10));
 }
 
 void matrix_test() {
