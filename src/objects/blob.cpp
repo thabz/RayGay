@@ -1,16 +1,22 @@
 
 #include "objects/blob.h"
 #include "math/vector.h"
+#include "math/matrix.h"
 
-Blob::Blob(double surface_density, unsigned int steps, double accuracy) : IsoSurface(steps,accuracy,surface_density) {
+Blob::Blob(double surface_density, unsigned int steps, double accuracy, Material material) : IsoSurface(steps,accuracy,surface_density) {
     atoms_num = 0;
+    this->material = material;
 }
 
-void Blob::addAtom(const Vector& center, double a, double b) {
+void Blob::addAtom(const Vector& center, double r, double b) {
     centers.push_back(center);
-    as.push_back(a);
+    as.push_back(r);
     bs.push_back(b);
     atoms_num++;
+
+    Vector rrr = Vector(r,r,r);
+    BoundingBox box = BoundingBox(center-rrr,center+rrr);
+    bbox = BoundingBox::doUnion(box,bbox);
 }
 
 /**
@@ -28,5 +34,20 @@ double Blob::evaluateFunction(const Vector& point) const {
 	sum += bs[i] * exp(-as[i]*r2);
     }
     return sum;
+}
+
+SceneObject* Blob::clone() const {
+    Blob* result = new Blob(*this);
+    return result;
+}
+
+void Blob::transform(const Matrix& m) {
+    for(int i = 0; i < atoms_num; i++) {
+	centers[i] = m * centers[i];
+    }
+}
+
+const Material& Blob::getMaterial() const {
+    return material;
 }
 

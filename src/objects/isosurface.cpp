@@ -50,4 +50,16 @@ double IsoSurface::recurse(const Ray& ray, double t_begin, double t_end) const {
     }
 }
 
+Vector IsoSurface::normal(const Intersection & i) const {
+    // TODO: Implement
+    return Vector(0,0,0);
+}
+
+bool IsoSurface::intersects(const BoundingBox& b) const {
+    return b.inside(boundingBoundingBox());
+}
+
+Vector2 IsoSurface::getUV(const Intersection& intersection) const {
+
+}
 

@@ -10,6 +10,7 @@
 #include "camera.h"
 #include "objects/torus.h"
 #include "objects/3ds.h"
+#include "objects/blob.h"
 #include "objects/box.h"
 #include "objects/sor.h"
 #include "objects/necklace.h"
@@ -345,6 +346,20 @@ void Importer::parse(const string& filename) {
 	    double r = readDouble(stream);
 	    Vector c = readVector(stream);
 	    cur_object = new Sphere(c,r,*m);
+	} else if (command == "blob") {
+	    stream >> str1;
+	    Material* m = lookupMaterial(str1);
+	    
+	    Blob* blob = new Blob(0.1,5,0.1,*m);
+
+	    int balls_num = readInt(stream);
+	    for(int i = 0; i < balls_num; i++) {
+		Vector center = readVector(stream);
+		double radius = readDouble(stream);
+		double power = readDouble(stream);
+		blob->addAtom(center,radius,power);
+	    }
+	    cur_object = blob;
 	} else if (command == "torus") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);

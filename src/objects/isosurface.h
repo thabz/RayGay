@@ -5,6 +5,8 @@
 #include "objects/object.h"
 
 /**
+ * An isosurface is points described by a function.
+ *
  * An isosurface is any collection of points satisfying
  * \f[ f(x,y,z) - K = 0 \f]
  * for any scalar field function \f$ f(x,y,z) \f$ and any value \f$ K \f$.
@@ -15,8 +17,13 @@
  */ 
 class IsoSurface : public Object {
 
+    public:
+	virtual Vector normal(const Intersection & i) const;
+	bool intersects(const BoundingBox& b) const;
+	virtual Vector2 getUV(const Intersection& intersection) const;
+
     protected:
-        IsoSurface(unsigned int steps, double accuracy, double iso);
+	IsoSurface(unsigned int steps, double accuracy, double iso);
 	/// Evaluate the scalar field function defining this surface
 	virtual double evaluateFunction(const Vector& point) const = 0;
 

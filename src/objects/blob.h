@@ -3,6 +3,8 @@
 #define OBJECTS_BLOB
 
 #include "objects/isosurface.h"
+#include "boundingbox.h"
+#include "materials/material.h"
 #include <vector>
 
 /**
@@ -21,13 +23,20 @@
 class Blob : public IsoSurface {
     
     public:
-	Blob(double surface_density, unsigned int steps, double accuracy);
+	Blob(double surface_density, unsigned int steps, double accuracy, Material material);
 	void addAtom(const Vector& center, double a, double b);
+	BoundingBox boundingBoundingBox() const { return bbox; };
     
+	void transform(const Matrix& m);
+	const Material& getMaterial() const;
+	SceneObject* clone() const;
+
     protected:
 	double evaluateFunction(const Vector& point) const;
 
     private:
+	Material material;
+	BoundingBox bbox;
 	int atoms_num;
 	vector<Vector> centers;
 	vector<double> as;
