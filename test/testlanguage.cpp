@@ -10,6 +10,11 @@
 #include <cstdlib>
 #include <cassert>
 #include <iostream>
+#include <string>
+#include <algorithm>
+#include <cctype>
+
+using namespace std;
 
 void test_bool() {
     bool t1 = true;
@@ -36,10 +41,25 @@ void test_modulo() {
     assert((2 + 3 - 1) % 3 == 1);
 }
 
+
+void test_lowercase() {
+    string s = "Ray Gay";
+    transform(s.begin(),s.end(),s.begin(),(int(*)(int)) tolower);
+    /*
+    int i = 0;
+    while (s[i] != '\0') {
+	s[i] = tolower(s[i]);
+	i++;
+    }
+    */
+    assert(s == "ray gay");
+}
+
 int main(int argc, char *argv[]) {
 
     test_bool();
     test_modulo();
+    test_lowercase();
     return EXIT_SUCCESS;
 }
 
