@@ -22,8 +22,6 @@
     finalgatherrays 	0
     cachetolerance 	0.1))
 
-(display settings)
-
 (set! image-size '(640 480))
 (set! background '(0.0 0.0 0.0))
 
@@ -64,4 +62,3 @@
 	     (make-cylinder '(0 -20 0) '(0 120 0) 290)
 	     chrome)
 	   (make-sphere '(0 50 0) 50 glass)))
-
