@@ -79,10 +79,9 @@ bool BoundingBox::onEdge(const Vector &p) const {
 
 // Fast algorithm from http://www.cs.utah.edu/~awilliam/box/
 Vector2 BoundingBox::intersect(const Ray& ray) const {
-    Vector2 result;
-    Vector B = ray.getOrigin();
-    Vector v_inv = ray.getInverseDirection();
-    Vector v = ray.getDirection();
+    const Vector& B = ray.getOrigin();
+    const Vector& v_inv = ray.getInverseDirection();
+    const Vector& v = ray.getDirection();
 
     double tmin, tmax, tymin, tymax, tzmin, tzmax; 
 
