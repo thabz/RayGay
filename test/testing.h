@@ -24,7 +24,7 @@ class Test {
     public:
 	Test();
 	void setName(string name);
-	virtual ~Test() {};
+	virtual ~Test();
 	virtual void run() = 0;
 	void _assertTrue(bool expr, char* filename, int line, char* expr_code);
 	void printStatus();
@@ -80,6 +80,9 @@ Test::Test() {
     total_asserts = 0;
     failed_asserts = 0;
     succeded_asserts = 0;
+}
+
+Test::~Test() {
 }
 
 void Test::setName(string name) {
