@@ -34,7 +34,7 @@ BoundingBox Cylinder::boundingBoundingBox() const {
     Vector mini = Vector(-1,-1,0);
     Vector maxi = Vector(1,1,1);
     BoundingBox bbox = BoundingBox(mini,maxi);
-    bbox.grow(10*EPSILON);
+    bbox.growPercentage(0.01);
     return bboxToWorld(bbox);
 }
 
