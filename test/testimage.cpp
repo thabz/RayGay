@@ -31,6 +31,22 @@ void test_rgba() {
     assert(c == RGBA(1.0,2.0,3.0,4.0));
 }
 
+void test_png() {
+    RGB color = RGB(1.0,0.0,1.0);
+
+    Image* img = new Image(10,20);
+    img->setRGBA(5,15,color);
+    img->save("test.png");
+    Image* img2 = Image::load("test.png");
+    assert(img2->getWidth() == 10);
+    assert(img2->getHeight() == 20);
+    //cout << RGB(img2->getRGBA(5,15)) << endl;
+    assert(RGB(img2->getRGBA(5,15)) == color);
+    remove("test.png");
+    delete img;
+    delete img2;
+}
+
 void test_tga() {
     RGB color = RGB(1.0,0.0,1.0);
 
@@ -42,11 +58,14 @@ void test_tga() {
     assert(img2->getHeight() == 20);
     assert(RGB(img2->getRGBA(5,15)) == color);
     remove("test.tga");
+    delete img;
+    delete img2;
 }
 
 int main(int argc, char *argv[]) {
 
     test_rgba();
     test_tga();
+    test_png();
     return EXIT_SUCCESS;
 }
