@@ -170,8 +170,6 @@ Image* TgaIO::load(const std::string& filename) {
 	    image->setRGBA(x,height-1-y,line[x]);
 	}
     }
-    //fread(bytes, bpp, width*height, Handle);
     fclose(Handle);
-    cout << "Loaded " << filename << " " << width << "x" << height << endl;
     return image;
 }

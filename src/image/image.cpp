@@ -2,6 +2,7 @@
 
 #include "image.h"
 #include "image/tga.h"
+#include "image/jpeg.h"
 #include <cassert>
 #include <iostream>
 #include <cmath>
@@ -129,8 +130,23 @@ void Image::save(const std::string& filename) const {
  * Loads the image from a tga 24 og 32 bit uncompressed tga-file.
  */
 Image* Image::load(const std::string& filename) {
+    ImageIO* io;
     TgaIO tga;
-    return tga.load(filename);
+    JpegIO jpeg;
+
+    if (filename.find(".jpg") != string::npos) {
+	io = new JpegIO();
+    } else if (filename.find(".tga") != string::npos) {
+	io = new TgaIO();
+    } else {
+	cout << "Unknown fileformat." << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    Image* image = io->load(filename);
+    delete io;
+    cout << "Loaded " << filename << " " << image->getWidth() << "x" << image->getHeight() << endl;
+    return image;
 }
 
 /**
