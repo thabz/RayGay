@@ -44,9 +44,11 @@ class KdTree : public SpaceSubdivider {
     private:
 	class KdNode {
 	    public:
-		std::vector<Object*>* objects;  // Enclosed objects when this is a leaf
 		KdNode* left;     // Left child
-		KdNode* right;    // Right child
+		union {
+		    std::vector<Object*>* objects;  // Enclosed objects when this is a leaf
+		    KdNode* right;    // Right child
+		};
 		float splitPlane; // Position of splitting plane
 		int axis;         // Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
 	    public:
@@ -76,6 +78,8 @@ class KdTree : public SpaceSubdivider {
 	BoundingBox world_bbox;
 	double objectMedian(std::vector<Object*>* objects, int d) const;
 	double spacialMedian(std::vector<Object*>* objects, int d) const;
+	Vector measureSplit(std::vector<Object*>* objects, int dim, double val) const;
+
 	void prepare(int curNode_idx, int depth);
 
 	KdNode* nodes;
