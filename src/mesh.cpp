@@ -308,6 +308,7 @@ BoundingBox Mesh::boundingBoundingBox() const {
 	}
     }
     _boundingBoundingBox = new BoundingBox(mini,maxi);
+    _boundingBoundingBox->grow(5*EPSILON);
     return *_boundingBoundingBox;
 }
 

@@ -101,7 +101,9 @@ BoundingBox Triangle::boundingBoundingBox() const {
     tri[0] = mesh->cornerAt(vertex[0]);
     tri[1] = mesh->cornerAt(vertex[1]);
     tri[2] = mesh->cornerAt(vertex[2]);
-    return BoundingBox::enclosure(tri,3);
+    BoundingBox b = BoundingBox::enclosure(tri,3);
+    b.grow(5*EPSILON);
+    return b;
 }
 	
 Vector2 Triangle::getUV(const Intersection& intersection) const {

@@ -68,6 +68,9 @@ class BoundingBox {
 
 	/// Returns the area of this box' surface
         double area() const;
+
+	/// Grow box 2*amount in all dimensions 
+	void grow(double amount);
 	
 	/// Comparator
         bool operator==(const BoundingBox &b) const;

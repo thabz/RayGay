@@ -270,3 +270,8 @@ ostream & operator<<(ostream &os, const BoundingBox &b) {
     return os;
 }
 
+void BoundingBox::grow(double nudge) {
+    Vector v = Vector(nudge,nudge,nudge);
+    _c1 -= v;
+    _c2 += v;
+}

@@ -58,10 +58,6 @@ void work(string scenefile, string outputfile) {
     Scene* scene = importer.getScene();
     cout << "Done." << endl;
 
-    Matrix n = Matrix::matrixRotate(Vector(1,1,0),-5.0);
-    //Matrix n = Matrix::matrixTranslate(Vector(0,0,-500));
-    scene->transform(n);
-
     Vector2 img_size = importer.getImageSize();
     Image* img = new Image(int(img_size[0]),int(img_size[1]));
 
