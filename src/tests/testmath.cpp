@@ -16,6 +16,43 @@ using namespace std;
 void vector_test() {
     // Test area()
     assert(0.5 == Vector::area(Vector(1,1,1), Vector(2,1,1), Vector(1,2,1)));
+    Vector v = Vector(1,1,1);
+    assert(IS_EQUAL(v.norm(),3));
+    assert(IS_EQUAL(v.norm(),3.0));
+    assert(IS_EQUAL(v.length(),sqrt(3.0)));
+
+    v = v - v;
+    assert(IS_ZERO(v.norm()));
+    assert(IS_ZERO(v.length()));
+
+    v = v + v;
+    assert(IS_ZERO(v.norm()));
+    assert(IS_ZERO(v.length()));
+
+    v = v + Vector(1,2,3);
+    v.normalize();
+    assert(IS_EQUAL(v.norm(),1));
+    assert(IS_EQUAL(v.length(),1));
+
+    v = Vector(1,2,3);
+    v = 2 * v;
+    assert(v == Vector(2,4,6));
+
+    v = v / 2;
+    assert(v == Vector(1,2,3));
+
+    v.scale(10);
+    assert(v == Vector(10,20,30));
+
+    v.scale(-1);
+    assert(v == Vector(-10,-20,-30));
+
+    assert(2 * v == v * 2);
+
+    Vector w = Vector(100,200,300);
+    assert(w * v == v * w);
+
+    assert(Vector::xProduct(v,w) == Vector::xProduct(w,v));
 }
 
 void vector2_test() {
