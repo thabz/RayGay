@@ -1,0 +1,23 @@
+
+include materials.gay
+
+renderer raytracer
+
+camera-position 700 1000 500
+camera-up 0 1 0
+camera-lookat 0 0 0
+camera-field-of-view 45
+camera-aa 0
+
+image-ratio 4 3
+image-width 640
+
+background 0.5 0.5 0.5 1.0
+
+light point 2000 2800 1500 3000000 3000000 3000000
+
+box $dullgreen -300 -60 -300    300 -10 300
+
+heightfield $glass water.tga 100 600 600 50 50
+
+

@@ -1,0 +1,30 @@
+
+# Comment
+# Comment comment
+
+include materials.gay
+
+renderer raytracer
+
+camera-position 100 1000 2000
+camera-up 0 1 0
+camera-lookat 0 200 100
+camera-field-of-view 30
+camera-aa 4
+
+image-ratio 4 3
+image-width 640
+
+light point 1000 1300 2000
+light point -1000 1300 2000
+
+box $dullblue -700 -50 -700  700 0 700
+
+sphere $glass 200 0 200 200 
+
+box $dullred -330 0 -600      -300 400 0
+box $dullgreen 300 0 -600      330 400 0
+box $dullwhite -330 0 -630      330 400 -600
+
+
+box $glass -30 0 400         30 200 460 rotate 0 1 0 35

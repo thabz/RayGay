@@ -5,43 +5,48 @@ include materials.gay
 renderer photonrenderer
 #renderer raytracer
 
-photonmap globalphotons 100000
-photonmap causticphotons 0
+photonmap globalphotons 10
+photonmap causticphotons 10000
 photonmap estimate-radius 20
 photonmap estimate-samples 300
-photonmap final-gather-rays 50
+photonmap final-gather-rays 0
 photonmap cache-tolerance 0.1
 
 camera-position 0 0 500
 camera-up 0 1 0
 camera-lookat 0 0 0
 camera-field-of-view 90
-camera-aa 0
+camera-aa 4
 
 image-ratio 4 3
-image-width 320
+image-width 300
 
 background 0.1 0.1 0.3 1.0
 
 # light behind wall
 light point 0 290 0 900000 900000 900000
+#light point 0 290 0 900000 900000 900000
+light spot 0 0 -290    10 10 200  900000 900000 900000   5  7
+light spot 0 290 0    0 0 0  900000 900000 900000   5  7
+light spot 290 0 0    -290 0 0  900000 900000 900000   5  7
 
 
 # Floor
-box $dullwhite -300 -350 -300    300 -300 600
+box $green -300 -350 -300    300 -300 600
 # Ceiling 
 box $dullwhite -300 300 -300    300 350 600
 # Backwall
 box $dullblue -301 -300 -330    300 300 -300
 # Left wall
-box $dullred -350 -300 -300    -300 300 600
+box $red -350 -300 -300    -300 300 600
 # Right wall
 box $dullgreen 300 -300 -300    330 300 600
 # Wall behind camera
-box $dullwhite -300 -300 600    300 300 630
+box $green -300 -300 600    300 300 630
 
 #box $dullyellow -100 -300 -100    100 100 100 rotate 0 1 0 10 translate -100 0 -100
 
-sphere $dullwhite 100 150 -200 250 
+#sphere $dullwhite 100 150 -50 -150 
 
-box $dullwhite -300 -200 -300        300 -150   100
+#box $dullwhite -50 -170 -300        300 -150 0
+#cylinder $dullwhite 25 -25 -300 -25          -25 -170 -25
