@@ -65,6 +65,7 @@ class Camera {
 	// General camera 
 	Vector position;
 	Vector up;
+	Vector right;
 	Vector look_at;
 	double field_of_view_radians;
 

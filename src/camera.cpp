@@ -1,6 +1,7 @@
 
 #include "camera.h"
 #include "ray.h"
+#include "math/functions.h"
 
 Camera::Camera() {
     aa_enabled = false;
@@ -22,6 +23,7 @@ Camera::Camera(Vector position, Vector lookAt, Vector up, double fieldOfView, in
     dof_enabled = false;
     this->look_at = lookAt;
     this->up = up;
+    this->up.normalize();
     this->position = position;
     this->field_of_view_radians = DEG2RAD(fieldOfView);
     init();
@@ -38,6 +40,12 @@ void Camera::init() {
     au = tan(field_of_view_radians / 2.0);
     av = (height * au) / width;
     initialized = true;
+
+    this->up.normalize();
+    Vector dir = look_at - position;
+    dir.normalize();
+    this->right = Vector::xProduct(dir,up);
+    this->right.normalize();
 }
 
 void Camera::enableAdaptiveSupersampling(unsigned int depth) {
@@ -47,7 +55,7 @@ void Camera::enableAdaptiveSupersampling(unsigned int depth) {
 
 void Camera::enableDoF(double aperture, const Vector& focalpoint, int samples) {
     this->dof_aperture = aperture;
-    this->dof_length = (position-focalpoint).length();
+    this->dof_length = (position-look_at).length();
     this->dof_samples = samples;
     this->dof_enabled = true;
     this->dof_sample_count = 0;
@@ -64,8 +72,7 @@ void Camera::transform(const Matrix& m) {
 Ray Camera::getRay(const double x, const double y) {
     if (!initialized) 
 	init();
-//    double du = -au + ((2.0 * au * x) / (width - 1.0));
-//    double dv = -av + ((2.0 * av * y) / (height - 1.0));
+
     double du = -au + ((2.0 * au * x) / (width));
     double dv = -av + ((2.0 * av * y) / (height));
     Vector dir = basis * Vector(du,dv,-1);
@@ -73,7 +80,7 @@ Ray Camera::getRay(const double x, const double y) {
     dir.normalize();
 
     if (dof_enabled) {
-	// Jitter position
+	// Jitter position and adjust direction
 
        Vector P = pos + dir * dof_length; // The point to aim at
 
@@ -81,15 +88,12 @@ Ray Camera::getRay(const double x, const double y) {
 	   dof_qmc->reset();
 	   dof_sample_count = 0;
        }
+
        double* qmc = dof_qmc->getNext();
+       Vector2 disc = Math::shirleyDisc(qmc[0],qmc[1]) * dof_aperture;
+       Vector jitter_pos = up * disc[0] + right * disc[1];
 
-       double r = qmc[0] * dof_aperture;
-       double theta = qmc[1] * 2*M_PI;
-
-       // TODO: Disc should be oriented orthogonal to camera direction
-       Vector out = r * Vector(cos(theta),sin(theta),0.0);
-
-       pos = pos + out;
+       pos = pos + jitter_pos;
        dir = P - pos;
        dir.normalize();
     }
