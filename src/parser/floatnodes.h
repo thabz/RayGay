@@ -9,6 +9,7 @@
 
 /**
  * These are syntax tree nodes whose eval returns floats (...well, doubles really)
+ * \todo Implement perlin(vector)
  */
 
 class FloatNode : public ValueNode {
