@@ -4,6 +4,15 @@
 #include "objects/object.h"
 #include "math/matrix.h"
 
+/**
+ * Superclass for objects that handles world->local coordinate transformations.
+ *
+ * For many objects, such as cylinder and cone, it is much easier doing 
+ * ray-object intersection if the object is placed along eg. the z-axis
+ * and has height 1. These objects can be wrapped in a Transformer superclass
+ * so that scaled, translated and rotated instances can the placing in the 
+ * scene.
+ */
 class Transformer : public Object {
 
     public:
