@@ -16,9 +16,9 @@
 #include "triangle.h"
 #include "hierarchy.h"
 #include "bsp.h"
-#include "circle.h"
+#include "paths/circle.h"
 #include "cylinder.h"
-#include "linesegment.h"
+#include "paths/linesegment.h"
 
 #define PHONG_ANGLETHRESHOLD 0.4226f // Smoothing threshold approx. 65 Deegrees :) 
 

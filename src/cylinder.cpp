@@ -4,7 +4,7 @@
 #include <cassert>
 
 #include "cylinder.h"
-#include "circle.h"
+#include "paths/circle.h"
 
 /**
  * Construct a cylinder object

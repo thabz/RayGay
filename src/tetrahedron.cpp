@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cassert>
 #include <vector>
-#include "linesegment.h"
+#include "paths/linesegment.h"
 
 using namespace std;
 

@@ -2,7 +2,7 @@
 #include "tessalation.h"
 #include <iostream>
 #include <cassert>
-#include "linesegment.h"
+#include "paths/linesegment.h"
 
 Tessalation::Tessalation(const Vector center, const double radius, const unsigned int num, Material mat) : Mesh(Mesh::MESH_FLAT,mat) {
 

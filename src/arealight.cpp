@@ -3,7 +3,7 @@
 #include <cassert>
 #include <stdlib.h>
 #include "constants.h"
-#include "circle.h"
+#include "paths/circle.h"
 #include "intersection.h"
 #include "object.h"
 #include "spacesubdivider.h"

@@ -35,16 +35,16 @@
 #include "box.h"
 #include "tetrahedron.h"
 #include "tessalation.h"
-#include "linesegment.h"
-#include "circle.h"
+#include "paths/linesegment.h"
+#include "paths/circle.h"
 #include "cylinder.h"
 #include "arealight.h"
 #include "pixelstore.h"
 #include "raytracer.h"
 #include "bsp.h"
-#include "circle.h"
+#include "paths/circle.h"
 #include "necklace.h"
-#include "spiral.h"
+#include "paths/spiral.h"
 
 using namespace std;
 
@@ -87,7 +87,7 @@ void testScene4() {
     //Cylinder* torus = new Cylinder(circle1,100,50,30,blue);
  //   scene.addObject(torus);
 
-    Tessalation tet = Tessalation(Vector(0,100,0),250,2,blue);
+    Tessalation tet = Tessalation(Vector(0,100,0),250,1,blue);
     //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,blue);
     std::vector<Linesegment>* edges = tet.getEdges();
     cout << "Edges : " << edges->size() << endl;

@@ -1,19 +1,19 @@
 
-SUBDIRS = materials
+SUBDIRS = materials paths
 
 bin_PROGRAMS = tracer
 
-tracer_SOURCES = main.cpp camera.cpp sphere.cpp vector.cpp matrix.cpp intersection.cpp ray.cpp scene.cpp image.cpp rgb.cpp boolean.cpp perlin.cpp boundingbox.cpp box.cpp hierarchy.cpp object.cpp mesh.cpp spotlight.cpp pointlight.cpp tetrahedron.cpp triangle.cpp path.cpp linesegment.cpp circle.cpp cylinder.cpp arealight.cpp pixelstore.cpp renderer.cpp raytracer.cpp bsp.cpp necklace.cpp spiral.cpp tessalation.cpp
+tracer_SOURCES = main.cpp camera.cpp sphere.cpp vector.cpp matrix.cpp intersection.cpp ray.cpp scene.cpp image.cpp rgb.cpp boolean.cpp perlin.cpp boundingbox.cpp box.cpp hierarchy.cpp object.cpp mesh.cpp spotlight.cpp pointlight.cpp tetrahedron.cpp triangle.cpp cylinder.cpp arealight.cpp pixelstore.cpp renderer.cpp raytracer.cpp bsp.cpp necklace.cpp tessalation.cpp
 
-tracer_DEPENDENCIES = materials/libmaterials.la
-tracer_LDADD = materials/libmaterials.la
+tracer_DEPENDENCIES = materials/libmaterials.la paths/libpaths.la
+
+tracer_LDADD = materials/libmaterials.la paths/libpaths.la
 
 EXTRA_DIST = arealight.h	\
     	     boolean.h 		\
 	     boundingbox.h 	\
 	     bsp.h 		\
              camera.h 		\
-	     circle.h		\
 	     constants.h 	\
 	     cylinder.h		\
 	     hierarchy.h 	\
@@ -24,7 +24,6 @@ EXTRA_DIST = arealight.h	\
 	     mesh.h		\
 	     necklace.h		\
 	     objectcollection.h	\
-	     path.h		\
 	     perlin.h 		\
 	     pointlight.h	\
 	     pixelstore.h	\
@@ -33,7 +32,6 @@ EXTRA_DIST = arealight.h	\
 	     renderer.h 	\
 	     scene.h 		\
              spacesubdivider.h	\
-	     spiral.h		\
 	     sphere.h		\
 	     spotlight.h	\
 	     tessalation.h	\

@@ -1,6 +1,6 @@
 
 #include "necklace.h"
-#include "path.h"
+#include "paths/path.h"
 #include "sphere.h"
 #include "spacesubdivider.h"
 
