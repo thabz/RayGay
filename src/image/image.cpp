@@ -31,7 +31,7 @@ Image::~Image() {
 }
 
 
-void Image::setRGB(int x, int y, RGB& c) {
+void Image::setRGB(int x, int y, const RGB& c) {
     assert(0 <= x && x < width);
     assert(0 <= y && y < height);
 
@@ -40,7 +40,7 @@ void Image::setRGB(int x, int y, RGB& c) {
     data[(y*width + x)*3 + 2] = c.b();
 }
 
-void Image::setRGB(const Vector2& p, RGB& c) {
+void Image::setRGB(const Vector2& p, const RGB& c) {
     int x = int(p[0]);
     int y = int(p[1]);
     if (x >= 0 && x < width && y >= 0 && y < height) {
@@ -226,9 +226,7 @@ void Image::grayscale() {
     for(int y = 0; y < height ; y++) {
         for(int x = 0; x < width; x++) {
 	    col = getRGB(x,y);
-            double gray = 0.2125 * col.r() + 0.7154 * col.g() + 0.0721 * col.b(); 
-	    res = RGB(gray,gray,gray);
-	    setRGB(x,y,res);
+	    setRGB(x,y,col.toGrayscale());
 	}
     }
 }

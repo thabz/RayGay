@@ -19,9 +19,9 @@ class Image {
 	/// Destructor
 	~Image();
 	/// Sets a pixel
-        void setRGB(int x, int y, RGB& color); 
+        void setRGB(int x, int y, const RGB& color); 
 	/// Sets a pixel
-        void setRGB(const Vector2& p, RGB& color); 
+        void setRGB(const Vector2& p, const RGB& color); 
 	/// Gets a pixel
 	RGB getRGB(int x, int y) const;
 	/// Saves this image as an uncompressed tga-file

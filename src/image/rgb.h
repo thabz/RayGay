@@ -50,6 +50,12 @@ class RGB : public Vector {
 
 	RGB operator*(const RGB& o) const;
 	RGB operator*(double c) const;
+
+	/// Return brightness of color
+	double brightness() const;
+
+	/// Convert color to grayscale
+	RGB toGrayscale() const;
 };
 
 inline
@@ -60,6 +66,20 @@ RGB RGB::operator*(const RGB& o) const {
 inline
 RGB RGB::operator*(double c) const {
      return RGB(r()*c,g()*c,b()*c);
+}
+
+/**
+ * Using the formula from ITU-R Recommendation BT.709, "Basic Parameter Values for the Studio and for International Programme Exchange (1990) [formerly CCIR Rec. 709] 
+ */
+inline
+double RGB::brightness() const {
+    return 0.2125 * r() + 0.7154 * g() + 0.0721 * b();
+}
+
+inline
+RGB RGB::toGrayscale() const {
+    double g = brightness();
+    return RGB(g,g,g);
 }
 
 #endif
