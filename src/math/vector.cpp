@@ -70,12 +70,13 @@ bool Vector::operator==(const Vector& x) const {
            IS_EQUAL(x[2],_vector[2]);
 }
 
+/*
 Vector Vector::xProduct(const Vector& v1, const Vector& v2) {
     return Vector(v1[1]*v2[2] - v1[2]*v2[1],
 	          v1[2]*v2[0] - v1[0]*v2[2],
    	          v1[0]*v2[1] - v1[1]*v2[0]);
 }
-
+*/
 /**
  * Convert to polar aka spherical coordinates.
  *

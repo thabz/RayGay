@@ -47,7 +47,13 @@ public:
     Vector operator*=(const double x);
     /// Vector division
     Vector operator/(const double x) const;
-    static Vector xProduct (const Vector& v1, const Vector& v2); ///< Returns the scalar product v1 x v2
+
+    /// Returns the scalar product v1 x v2
+    static Vector xProduct (const Vector& v1, const Vector& v2) {
+	return Vector(v1[1]*v2[2] - v1[2]*v2[1],
+	 	      v1[2]*v2[0] - v1[0]*v2[2],
+		      v1[0]*v2[1] - v1[1]*v2[0]);
+    }
 
     static double area(const Vector& v0, const Vector& v1, const Vector& v2);  ///< The area of the triangle with the vertices v0, v1 and v2
 
