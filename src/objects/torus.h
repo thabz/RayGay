@@ -3,7 +3,7 @@
 #define TORUS_H
 
 #include "solid.h"
-#include "math/matrix.h"
+#include "transformer.h"
 
 /**
  * A mathematical torus.
@@ -40,7 +40,7 @@
   \f[ a_4 = \left(-4d_xp_x + \left(-4d_yp_y + 4d_zp_z\right)\right)R^2 + \left(\left(-4d_xp_x + \left(-4d_yp_y - 4d_zp_z\right)\right)r^2 + \left(4d_xp_x^3 + \left(4d_yp_y + 4d_zp_z\right)p_x^2 + \left(4p_y^2 + 4p_z^2\right)d_xp_x + \left(4d_yp_y^3 + 4d_zp_zp_y^2 + 4p_z^2d_yp_y + 4d_zp_z^3\right)\right)\right) \f]
   \f[ a_5 = R^4 + \left(-2r^2 + \left(-2p_x^2 + \left(-2p_y^2 + 2p_z^2\right)\right)\right)R^2 + \left(r^4 + \left(-2p_x^2 + \left(-2p_y^2 - 2p_z^2\right)\right)r^2 + \left(p_x^4 + \left(2p_y^2 + 2p_z^2\right)p_x^2 + \left(p_y^4 + 2p_z^2p_y^2 + p_z^4\right)\right)\right) \f]
  */
-class Torus : public Solid {
+class Torus : public Solid, public Transformer {
 
     public:
 	/// Constructor
@@ -61,16 +61,8 @@ class Torus : public Solid {
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
 	Vector normal(const Vector& point) const;
 
-	void prepareMatrices();
-
 	double r;
 	double R;
-
-	Matrix transformation;
-	Matrix inverse_transformation;
-	Matrix rotation; /// The rotation part extracted from the transformation
-	Matrix inverse_rotation;
-	Matrix scene_transformation;
 };
 
 #endif

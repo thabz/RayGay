@@ -8,7 +8,7 @@
 #include "math/vector2.h"
 
 /**
- * Constructs a torus in xy-plane centered in origin.
+ * Constructs a torus in zx-plane centered in origin.
  *
  * @param R major radius aka outer radius
  * @param r minor radius aka inner radius
@@ -19,32 +19,24 @@ Torus::Torus(double R, double r, const Material* m) : Solid(m) {
     assert(r > 0);
     this->R = R;
     this->r = r;
-    this->transformation = Matrix();
-    prepareMatrices();
-}
-
-void Torus::prepareMatrices() {
-    inverse_transformation = transformation.inverse();
-    rotation = transformation.extractRotation();
-    inverse_rotation = rotation.inverse();
 }
 
 void Torus::transform(const Matrix& m) {
-    transformation = transformation * m;
-    scene_transformation = scene_transformation * m;
-    prepareMatrices();
+    Transformer::transform(m);
 }
 
-Intersection Torus::_fullIntersect(const Ray& ray, const double t) const {
+Intersection Torus::_fullIntersect(const Ray& world_ray, const double t) const {
+    Ray ray = rayToObject(world_ray);
     Vector p  = ray.getPoint(t);
     Vector n = normal(p);
-    return Intersection(p,t,n,Vector2(0,0));
+    return intersectionToWorld(Intersection(p,t,n,Vector2(0,0)));
 }
 
-double Torus::_fastIntersect(const Ray& ray) const {
+double Torus::_fastIntersect(const Ray& world_ray) const {
+    Ray ray = rayToObject(world_ray);
 
-    Vector Rd = inverse_rotation * ray.getDirection();
-    Vector Ro = inverse_transformation * ray.getOrigin();
+    Vector Rd = ray.getDirection();
+    Vector Ro = ray.getOrigin();
 
     // Move ray's origin closer to torus to improve accuracy.
     // Trick learned from http://www.hassings.dk/l3/povtorus/povtorus.html
@@ -85,11 +77,21 @@ double Torus::_fastIntersect(const Ray& ray) const {
     if (num == 0) {
 	return -1;
     } else {
-	double t = roots[0];
-	return t + closer;
+	double result;
+	if (roots[0] + closer > 2*EPSILON) {
+	    result = roots[0];
+	} else if (num > 1 && roots[1] + closer > 2*EPSILON) {
+	    result = roots[1];
+	} else if (num > 2 && roots[2] + closer > 2*EPSILON) {
+	    result = roots[2];
+	} else if (num > 3 && roots[3] + closer > 2*EPSILON) {
+	    result = roots[3];
+	} else {
+	    return -1;
+	}
+	return result + closer;
     }
 }
-
 
 /**
  * Finds the normal at a point of intersection.
@@ -102,22 +104,19 @@ double Torus::_fastIntersect(const Ray& ray) const {
  * @see http://research.microsoft.com/~hollasch/cgindex/render/raytorus.html
  */
 Vector Torus::normal(const Vector& point) const {
-    Vector x = inverse_transformation * point;
-    Vector p = Vector(x.x(),x.y(),0);
+    Vector p = Vector(point.x(),0,point.z());
     p.normalize();
     p = R * p;
-    Vector result = x-p;
+    Vector result = point - p;
     result.normalize();
-    result = rotation * result;
     return result;
 }
 
 BoundingBox Torus::boundingBoundingBox() const {
-    double min = -R-r;
-    double max = R+r;
-    return BoundingBox(scene_transformation * Vector(min,min,min),
-	    scene_transformation * Vector(max,max,max));
-
+    double tmin = -R - r;
+    double tmax = R + r;
+    BoundingBox bbox = BoundingBox(Vector(tmin,tmin,tmin), Vector(tmax,tmax,tmax));
+    return bboxToWorld(bbox);
 }
 
 SceneObject* Torus::clone() const {
