@@ -189,13 +189,13 @@ const Intersection BSP::intersect(const Ray& ray, const double min_t, const doub
 const Intersection BSP::intersect_recurse(const Ray& ray, const double min_t, const double max_t) const {
     if (max_t <= min_t) return Intersection();
 
-    Vector o = ray.getOrigin() + min_t * ray.getDirection();
+    //Vector o = ray.getOrigin() + min_t * ray.getDirection();
+    double rd_dim = ray.getDirection()[cutplane_dimension];
+    double o_dim = ray.getOrigin()[cutplane_dimension] + min_t * rd_dim;
     
-    if (o[cutplane_dimension] < cutplane_value && 
-	ray.getDirection()[cutplane_dimension] <= 0) {
+    if (o_dim < cutplane_value && rd_dim <= 0) {
         return lower->intersect(ray,min_t,max_t);
-    } else if (o[cutplane_dimension] > cutplane_value && 
-	ray.getDirection()[cutplane_dimension] >= 0) {
+    } else if (o_dim > cutplane_value && rd_dim >= 0) {
         return higher->intersect(ray,min_t,max_t);
     } else {
 	double intersect_t = (cutplane_value - ray.getOrigin()[cutplane_dimension]) * ray.getInverseDirection()[cutplane_dimension];
@@ -208,7 +208,7 @@ const Intersection BSP::intersect_recurse(const Ray& ray, const double min_t, co
 	Intersection intersection1;
 	Intersection intersection2;
 
-	if (o[cutplane_dimension] < cutplane_value) {
+	if (o_dim < cutplane_value) {
 	    // Ray is crossing the plane from a lower value
 	    intersection1 = lower->intersect(ray,min_t,intersect_t);
 	    intersection2 = higher->intersect(ray,intersect_t,max_t);
@@ -237,13 +237,13 @@ const Intersection BSP::intersect_recurse(const Ray& ray, const double min_t, co
 const Intersection BSP::intersectForShadow_recurse(const Ray& ray, const double min_t, const double max_t) const {
     if (max_t <= min_t) return Intersection();
 
-    Vector o = ray.getOrigin() + min_t * ray.getDirection();
+    //Vector o = ray.getOrigin() + min_t * ray.getDirection();
+    double rd_dim = ray.getDirection()[cutplane_dimension];
+    double o_dim = ray.getOrigin()[cutplane_dimension] + min_t * rd_dim;
     
-    if (o[cutplane_dimension] < cutplane_value && 
-	ray.getDirection()[cutplane_dimension] <= 0) {
+    if (o_dim < cutplane_value && rd_dim <= 0) {
         return lower->intersectForShadow(ray,min_t,max_t);
-    } else if (o[cutplane_dimension] > cutplane_value && 
-	ray.getDirection()[cutplane_dimension] >= 0) {
+    } else if (o_dim > cutplane_value && rd_dim >= 0) {
         return higher->intersectForShadow(ray,min_t,max_t);
     } else {
 	double intersect_t = (cutplane_value - ray.getOrigin()[cutplane_dimension]) * ray.getInverseDirection()[cutplane_dimension];
@@ -252,7 +252,7 @@ const Intersection BSP::intersectForShadow_recurse(const Ray& ray, const double 
 	
 	Intersection intersection1;
 
-	if (o[cutplane_dimension] < cutplane_value) {
+	if (o_dim < cutplane_value) {
 	    // Ray is crossing the plane from a lower value
 	    intersection1 = lower->intersectForShadow(ray,min_t,intersect_t);
 	    if (intersection1.isIntersected()) {
