@@ -42,14 +42,16 @@ SceneObject* MeshNode::eval() {
     for(unsigned int i = 0; i < a.size(); i++) {
 	mesh->addVertex(a[i]);
     }
+    BoundingBox bbox = BoundingBox(a);
+    cout << "Mesh bounding box: " << bbox << endl;
     delete vertices;
     /// Add triangles 
     a = triangles->eval();
     int v[3];
     for(unsigned int i = 0; i < a.size(); i++) {
-	v[0] = int(a[i][0]);
+	v[2] = int(a[i][0]);
 	v[1] = int(a[i][1]);
-	v[2] = int(a[i][2]);
+	v[0] = int(a[i][2]);
 	mesh->addTriangle(v);
     }
     delete triangles;
