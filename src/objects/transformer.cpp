@@ -1,36 +1,6 @@
 
 #include "objects/transformer.h"
-#include "math/vector2.h"
-#include "boundingbox.h"
-
-Transformer::Transformer(const Material* m) : Object(m) {
-}
-
-Intersection Transformer::_intersect(const Ray& ray) const {
-    Vector Rd = inverse_rotation * ray.getDirection();
-    Vector Ro = inverse_transformation * ray.getOrigin();
-    Ray local_ray = Ray(Ro,Rd,ray.getIndiceOfRefraction());
-    Intersection inter = this->localIntersect(local_ray);
-    if (inter.isIntersected()) {
-	Vector point = transformation * inter.getPoint();
-	Vector normal = rotation * inter.getNormal();
-	// TODO: If scaling allowed, calculate a new t
-	double t = inter.getT();
-	Intersection result = Intersection(point,t,normal,inter.getUV());
-	return result;
-    } else {
-	return Intersection();
-    }
-}
-
-double Transformer::_fastIntersect(const Ray& ray) const {
-    return _intersect(ray).getT();
-}
-
-Intersection Transformer::_fullIntersect(const Ray& ray, const double t) const {
-    return _intersect(ray);
-}
-
+#include "intersection.h"
 
 void Transformer::transform(const Matrix& m) {
     transformation = transformation * m;
@@ -39,13 +9,42 @@ void Transformer::transform(const Matrix& m) {
     inverse_rotation = rotation.inverse();
 }
 
-BoundingBox Transformer::boundingBoundingBox() const {
-    BoundingBox bbox = this->localBoundingBoundingBox();
+Vector Transformer::pointToObject(const Vector& p) const {
+    return inverse_transformation * p;
+} 
+
+Vector Transformer::dirToObject(const Vector& d) const {
+    return inverse_rotation * d;
+}
+Vector Transformer::pointToWorld(const Vector &p) const {
+    return transformation * p;
+}
+
+Vector Transformer::dirToWorld(const Vector& d) const {
+    return rotation * d;
+}
+
+Ray Transformer::rayToObject(const Ray& ray) const {
+    Vector o = inverse_transformation * ray.getOrigin();
+    Vector d = inverse_rotation * ray.getDirection();
+    double ior = ray.getIndiceOfRefraction();
+    return Ray(o,d,ior);
+}
+
+Intersection Transformer::intersectionToWorld(const Intersection& i) const {
+    Intersection result = Intersection(i);
+    result.setNormal(rotation * i.getNormal());
+    result.setPoint(transformation * i.getPoint());
+    return result;
+}
+
+BoundingBox Transformer::bboxToWorld(const BoundingBox& bbox) const {
     Vector* corners = bbox.getCorners();
     for(int i = 0; i < 8; i++) {
 	corners[i] = transformation * corners[i];
     }
-    bbox = BoundingBox::enclosure(corners,8);
+    BoundingBox result = BoundingBox::enclosure(corners,8);
     delete [] corners;
-    return bbox;
+    return result;
 }
+
