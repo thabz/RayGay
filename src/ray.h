@@ -55,10 +55,7 @@ Vector Ray::getInverseDirection() const {
 }
 
 inline
-Ray::Ray(const Vector& o, const Vector& d, const double indice) {
-    origin = o;
-    direction = d;
-    indice_of_refraction = indice;
+Ray::Ray(const Vector& o, const Vector& d, const double indice) : indice_of_refraction(indice), origin(o), direction(d) {
     id = ++seq;
     specularBounces = 0;
     diffuseBounces = 0;
