@@ -3,7 +3,6 @@
 #define SPACE_KD_TREE_H
 
 #include "math/vector.h"
-#include "spacesubdivider.h"
 #include "boundingbox.h"
 #include "objects/object.h"
 #include <vector>
@@ -21,12 +20,12 @@ class Object;
  *
  * Implementerer http://www.acm.org/jgt/papers/HavranKopalBittnerZara97/ som er den bedste BSP-traversal algorithme.
  */
-class KdTree : public SpaceSubdivider {
+class KdTree {
 
     public:
 	/// Constructor
 	KdTree();
-	/// Desctructor
+	/// Destructor
 	virtual ~KdTree();
 	bool intersect(const Ray& ray, Intersection* result) const; 
 	//bool intersect(const Ray& ray) const; ///< Returns the nearest intersection

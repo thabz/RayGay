@@ -16,7 +16,7 @@ class Image;
 class Texture;
 class ObjectCollection;
 class Camera;
-class SpaceSubdivider;
+class KdTree;
 
 /// The collection of objects and lights.
 
@@ -65,7 +65,7 @@ class Scene {
 	double getFogDistance() const { return fog_distance; };
 
 	/// Add all objects in scene to spacesubdivider
-	void initSpace(SpaceSubdivider* space);
+	void initSpace(KdTree* space);
 
     private:
 	std::vector<Lightsource*> lights;

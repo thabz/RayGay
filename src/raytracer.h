@@ -2,7 +2,7 @@
 #define RAYTRACER_H
 
 #include "renderer.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 #include "intersection.h"
 
 class RGB;
@@ -15,7 +15,7 @@ class Raytracer : public Renderer {
 
     public:
 	/// Default constructor
-	Raytracer(RendererSettings* settings, Scene* scene, SpaceSubdivider* spc);
+	Raytracer(RendererSettings* settings, Scene* scene, KdTree* spc);
 
     private:
 	RGBA getPixel(const Vector2& v);

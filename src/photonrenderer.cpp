@@ -23,11 +23,11 @@
 #include "renderersettings.h"
 #include "math/halton.h"
 #include "materials/material.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 
 PhotonRenderer::PhotonRenderer(RendererSettings* settings,  
 	                       Scene* scene, 
-			       SpaceSubdivider* spc, 
+			       KdTree* spc, 
 			       GlobalPhotonMap* globalphotonmap, 
 			       CausticsMap* causticsmap, 
 			       IrradianceCache* irradiancecache) : Renderer(settings,scene,spc) {

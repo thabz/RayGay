@@ -34,7 +34,7 @@
 using namespace std;
 
 void preparePhotonMaps(Scene* scene,
-	               SpaceSubdivider* space,
+	               KdTree* space,
 		       RendererSettings* renderersettings,
 	               GlobalPhotonMap** globalphotonmap,
 		       CausticsMap** causticsphotonmap,
@@ -89,7 +89,7 @@ void work(string scenefile, string outputfile,int jobs) {
     //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
     //scene->transform(n);
 
-    SpaceSubdivider* space = new KdTree();
+    KdTree* space = new KdTree();
     scene->initSpace(space);
 
     RendererSettings* renderersettings = importer.getRendererSettings();

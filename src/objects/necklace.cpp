@@ -2,7 +2,6 @@
 #include "necklace.h"
 #include "paths/path.h"
 #include "sphere.h"
-#include "space/spacesubdivider.h"
 
 /**
  * @param path The path to place the spheres along

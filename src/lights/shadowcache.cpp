@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include "objects/object.h"
 #include "lights/shadowcache.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 #include "ray.h"
 #include "stats.h"
 
@@ -42,7 +42,7 @@ void ShadowCache::putVoxel(unsigned int depth, vector<Object*>* voxel) {
 }
 
 
-bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, unsigned int depth, SpaceSubdivider* space) {
+bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, unsigned int depth, KdTree* space) {
     // Check last shadowing object first
     Object* hint = getHint(depth);
     if (hint != NULL) {

@@ -13,7 +13,7 @@
 #include "objects/sphere.h"
 #include "objects/object.h"
 #include "stats.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 
 using namespace std;
 
@@ -85,7 +85,7 @@ void Scene::setFog(const RGB& color, const double distance) {
     this->fog_enabled = true;
 }
 
-void Scene::initSpace(SpaceSubdivider* space) {
+void Scene::initSpace(KdTree* space) {
     Stats::getUniqueInstance()->beginTimer("Preparing space");
     for (vector<SceneObject*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	(*p)->prepare();

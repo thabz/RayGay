@@ -14,9 +14,9 @@
 #include "camera.h"
 #include "lights/lightsource.h"
 #include "materials/material.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 
-Raytracer::Raytracer(RendererSettings* settings, Scene* scene, SpaceSubdivider* spc) : Renderer(settings,scene,spc) {
+Raytracer::Raytracer(RendererSettings* settings, Scene* scene, KdTree* spc) : Renderer(settings,scene,spc) {
 }
 
 RGBA Raytracer::getPixel(const Vector2& v) {
@@ -31,6 +31,7 @@ RGBA Raytracer::getPixel(const Vector2& v) {
         return result / double(samples) ;
     } else {
 	Ray ray = camera->getRay(v[0],v[1]);
+	ray.fromObject = camera;
 	return tracePrimary(ray);
     }
 }
@@ -117,6 +118,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int
 	    } else {
 		/* Single reflected ray */
 		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
+		refl_ray.fromObject = object;
 		refl_col = trace(refl_ray, depth + 1);
 	    }
 	    result_color += reflection * refl_col;

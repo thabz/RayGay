@@ -13,7 +13,7 @@ class Vector;
 class Vector2;
 class BoundingBox;
 class Material;
-class SpaceSubdivider;
+class KdTree;
 
 /// The abstract superclass of all objects in the scene that can be rendered.
 
@@ -38,7 +38,7 @@ class Object : public SceneObject {
 	/// Prepares the object before rendering
 	virtual void prepare();
 
-	void addSelf(SpaceSubdivider* space);
+	void addSelf(KdTree* space);
 
     protected:
 	Object(const Material* material);

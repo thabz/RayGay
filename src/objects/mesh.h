@@ -14,7 +14,7 @@
 #include "edgekey.h"
 #include "objectcollection.h"
 
-class SpaceSubdivider;
+class KdTree;
 class Linesegment;
 class Material;
 
@@ -74,7 +74,7 @@ class Mesh : public ObjectCollection {
 	virtual ~Mesh();
 	
 	/// Adds this or all subobjects to a space
-	void addSelf(SpaceSubdivider* space);
+	void addSelf(KdTree* space);
 
 	virtual void transform(const Matrix& m);
 

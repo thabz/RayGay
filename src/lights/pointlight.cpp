@@ -3,13 +3,13 @@
 #include "lights/lightinfo.h"
 #include "math/matrix.h"
 #include "intersection.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 #include "objects/object.h"
 
 Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
 }
 
-void Pointlight::getLightinfo(const Intersection& inter, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
+void Pointlight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, unsigned int depth) const {
     // TODO: Move point ESPILON along normal to avoid selfshadowing.
     info->direction_to_light = position - inter.getPoint();
     double dist_to_light = info->direction_to_light.length();

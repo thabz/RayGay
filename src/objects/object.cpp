@@ -2,7 +2,7 @@
 
 #include "intersection.h"
 #include "ray.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 
 #include "object.h"
 
@@ -11,7 +11,7 @@ Object::Object(const Material* material) {
    this->material = material;
 }
 
-void Object::addSelf(SpaceSubdivider* space) {
+void Object::addSelf(KdTree* space) {
     space->addObject((Object*)this);
 }
 

@@ -25,7 +25,6 @@ void KdTree::addObject(Object* obj) {
     added_objects->push_back(obj);
 }
 
-inline
 bool KdTree::intersect(const Ray& ray, Intersection* result) const {
     Vector2 h = world_bbox.intersect(ray);
     if (h[1] < h[0]) {
@@ -35,17 +34,15 @@ bool KdTree::intersect(const Ray& ray, Intersection* result) const {
     }
 }
 
-inline
 bool KdTree::intersectPrimary(const Ray& ray, Intersection* result) const {
     Vector2 h = world_bbox.intersect(ray);
     if (h[1] < h[0]) {
 	return false;
     } else {
-	return intersect(ray,result,h[0],h[1]);
+	return intersect(ray,result,max(h[0],0.0),h[1]);
     }
 }
 
-inline
 Object* KdTree::intersectForShadow(const Ray& ray, double max_t) const {
     Vector2 h = world_bbox.intersect(ray);
     if (h[1] < h[0]) {
@@ -54,6 +51,7 @@ Object* KdTree::intersectForShadow(const Ray& ray, double max_t) const {
 	return intersectForShadow(ray,double(0),min(max_t,h[1]));
     }
 }
+
 
 void KdTree::prepare() {
     world_bbox = enclosure(added_objects);
@@ -577,3 +575,36 @@ Vector KdTree::measureSplit(std::vector<Object*>* objects, int dim, double val) 
     }
     return result;
 }
+
+/*
+   For constructor:
+hitcache = new HitCache(8);
+
+bool KdTree::intersect(const Ray& ray, Intersection* inter, void* fromObject) {
+    if (fromObject == NULL) {
+	return intersect(ray,inter);
+    } else {
+	Object* object = hitcache->findEntry(fromObject);
+	bool result;
+	if (object == NULL) {
+	    result = intersect(ray,inter);
+	} else {
+	    double t_obj = object->fastIntersect(ray);
+	    if (t_obj > 0) {
+		result = intersect(ray,inter,double(0),t_obj + 0.5);
+	    } else {
+		result = intersect(ray,inter);
+		if (!result) {
+		    hitcache->removeEntry(fromObject);
+		}
+	    }
+	}
+	if (result) {
+	    Object* hitObject = inter->getObject();
+	    double t = inter->getT();
+	    hitcache->addEntry(fromObject,hitObject,t);
+	}
+	return result;
+    }
+}
+*/

@@ -2,7 +2,7 @@
 #include "lights/spotlight.h"
 #include "math/matrix.h"
 #include "intersection.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 #include "math/functions.h"
 #include "math/halton.h"
 
@@ -29,7 +29,7 @@ void Spotlight::transform(const Matrix& m) {
     _dir = m.extractRotation() * _dir;
 }
 
-void Spotlight::getLightinfo(const Intersection& inter, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
+void Spotlight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, unsigned int depth) const {
     info->direction_to_light = this->getPosition() - inter.getPoint();
     double dist_to_light = info->direction_to_light.length();
     info->direction_to_light.normalize();

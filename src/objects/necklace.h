@@ -10,7 +10,7 @@ class Material;
 class Matrix;
 class BoundingBox;
 class object;
-class SpaceSubdivider;
+class KdTree;
 
 /// An object consisting of Spheres sitting on a path.
 class Necklace : public ObjectGroup {

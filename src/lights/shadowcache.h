@@ -19,7 +19,7 @@ class Object;
 class ShadowCache {
     public:
 	ShadowCache();
-	bool occluded(const Ray& ray_to_light, const double dist_to_light, unsigned int depth, SpaceSubdivider* space);
+	bool occluded(const Ray& ray_to_light, const double dist_to_light, unsigned int depth, KdTree* space);
 
     private:
 	// Methods

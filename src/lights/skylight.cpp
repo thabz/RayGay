@@ -3,7 +3,7 @@
 #include "math/functions.h"
 #include "math/halton.h"
 #include "intersection.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 
 Skylight::Skylight (double radius, int num) : Lightsource(Vector(0,0,0)) {
     this->radius = radius;
@@ -16,7 +16,7 @@ Skylight::Skylight (double radius, int num) : Lightsource(Vector(0,0,0)) {
     }
 }
 
-void Skylight::getLightinfo(const Intersection& inter, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
+void Skylight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, unsigned int depth) const {
     int count = 0;
     double cos_total = 0;
     double cos_tmp;

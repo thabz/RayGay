@@ -4,7 +4,7 @@
 #include "lights/arealight.h"
 #include "paths/circle.h"
 #include "intersection.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 #include "math/vector.h"
 
 /**
@@ -54,7 +54,7 @@ Vector Arealight::getPosition(int i) const {
     return circles[i]->getPoint(t);
 }
 
-void Arealight::getLightinfo(const Intersection& inter, SpaceSubdivider* space, Lightinfo* info, unsigned int depth) const {
+void Arealight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, unsigned int depth) const {
     Vector direction_to_light;
     info->direction_to_light = position - inter.getPoint();
     info->direction_to_light.normalize();

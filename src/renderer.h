@@ -12,7 +12,7 @@
 
 class RGB;
 class Image;
-class SpaceSubdivider;
+class KdTree;
 class Material;
 class Vector2;
 
@@ -26,7 +26,7 @@ class RenderJob {
 class Renderer {
 
     public:
-	Renderer(RendererSettings* settings, Scene* scene, SpaceSubdivider* space);
+	Renderer(RendererSettings* settings, Scene* scene, KdTree* space);
 
 	/// Render a scene into an image
 	void render(const RenderJob& job);
@@ -67,7 +67,7 @@ class Renderer {
 	Scene* scene;
 
 	/// The space containing the objects of the scene to render
-	SpaceSubdivider* space;
+	KdTree* space;
 
 	/// The settings for the renderer
 	RendererSettings* renderersettings;

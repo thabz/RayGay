@@ -15,7 +15,7 @@
 #include "paths/circle.h"
 #include "extrusion.h"
 #include "paths/linesegment.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 
 #define PHONG_ANGLETHRESHOLD 0.4226f // Smoothing threshold approx. 65 Deegrees :) 
 
@@ -41,7 +41,7 @@ Mesh::~Mesh() {
     delete _boundingBoundingBox;
 }
 
-void Mesh::addSelf(SpaceSubdivider* space) {
+void Mesh::addSelf(KdTree* space) {
     for(unsigned int i = 0; i < triangles.size(); i++) {
 	space->addObject(triangles[i]);
     }

@@ -13,7 +13,7 @@ class ObjectGroup : public SceneObject {
 	virtual void transform(const Matrix& m);
 
 	/// Adds this or all subobjects to a space
-	virtual void addSelf(SpaceSubdivider* space);
+	virtual void addSelf(KdTree* space);
 
 	/// Prepare object
 	void prepare();

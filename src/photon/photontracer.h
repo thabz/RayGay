@@ -3,7 +3,7 @@
 #define PHOTON_TRACER
 
 class Scene;
-class SpaceSubdivider;
+class KdTree;
 class Lightsource;
 class Ray;
 class Vector;
@@ -20,7 +20,7 @@ class GlobalPhotonMap;
 class PhotonTracer {
 
     public:
-	PhotonTracer(Scene* scene, SpaceSubdivider* space, GlobalPhotonMap* globalphotonmap, CausticsMap* photonmap);
+	PhotonTracer(Scene* scene, KdTree* space, GlobalPhotonMap* globalphotonmap, CausticsMap* photonmap);
 	~PhotonTracer();
 	void trace(int threads_num);
 	void trace();
@@ -29,7 +29,7 @@ class PhotonTracer {
 	void trace(const Ray& ray, RGB power, int bounces);
 
 	Scene* scene;
-	SpaceSubdivider* space;
+	KdTree* space;
 	CausticsMap* causticsmap;
 	GlobalPhotonMap* globalphotonmap;
 	QMCSequence* qmcsequence;

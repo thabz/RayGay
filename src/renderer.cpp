@@ -11,11 +11,11 @@
 #include "objects/object.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 #include "objects/objectcollection.h"
 #include "materials/material.h"
 
-Renderer::Renderer(RendererSettings* settings, Scene* scene, SpaceSubdivider* spc) {
+Renderer::Renderer(RendererSettings* settings, Scene* scene, KdTree* spc) {
     this->scene = scene;
     this->space = spc;
     this->renderersettings = settings;

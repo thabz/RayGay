@@ -6,7 +6,7 @@
 #include "photontracer.h"
 #include "causticsmap.h"
 #include "globalphotonmap.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 #include "scene.h"
 #include "objects/object.h"
 #include "ray.h"
@@ -28,7 +28,7 @@ using namespace std;
  * This is responsible for getting photons from the lightsources,
  * tracing them through the scene and stored them in the photonmap
  */
-PhotonTracer::PhotonTracer(Scene* scene, SpaceSubdivider* space, GlobalPhotonMap* globalphotonmap, CausticsMap* causticsmap) {
+PhotonTracer::PhotonTracer(Scene* scene, KdTree* space, GlobalPhotonMap* globalphotonmap, CausticsMap* causticsmap) {
     this->scene = scene;
     this->space = space;
     this->causticsmap = causticsmap;

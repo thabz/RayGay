@@ -1,7 +1,7 @@
 
 #include "objectgroup.h"
 #include "object.h"
-#include "space/spacesubdivider.h"
+#include "space/kdtree.h"
 #include "math/matrix.h"
 #include <vector>
 
@@ -22,7 +22,7 @@ void ObjectGroup::transform(const Matrix &m) {
  * Add the objects in this collection to a space
  * @param space The space to add to
  */
-void ObjectGroup::addSelf(SpaceSubdivider* space) {
+void ObjectGroup::addSelf(KdTree* space) {
     for (vector<SceneObject*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	(*p)->addSelf(space);
     }

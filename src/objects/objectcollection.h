@@ -5,7 +5,7 @@
 #include "sceneobject.h"
 
 class Matrix;
-class SpaceSubdivider;
+class KdTree;
 
 /// An object that create other objects to be rendered.
 class ObjectCollection : public SceneObject {
