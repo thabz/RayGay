@@ -37,6 +37,7 @@ class Scene {
 	void setBackgroundColor(const RGB& c) { bg_color = c; };
 	RGB getBackgroundColor(const Ray& ray) const;
 	void setEnvironmentMap(const std::string& filename);
+	void dumpStats();
 
     private:
 	std::vector<Lightsource*> lights;

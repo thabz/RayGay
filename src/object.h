@@ -2,6 +2,8 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#include <string>
+
 #include "materials/material.h"
 #include "intersection.h"
 
@@ -40,6 +42,8 @@ class object {
 	virtual void prepare();
 
 	Intersection* getLastIntersection() const { return &last_intersection; }; 
+
+	std::string getName() const { return ""; };
 
     protected:
 	object();

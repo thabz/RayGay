@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 
 #include "scene.h"
 #include "object.h"
@@ -83,6 +84,14 @@ std::vector<Lightsource*> Scene::getLightsources() {
 
 std::vector<object*> Scene::getObjects() {
     return objects;   
+}
+
+void Scene::dumpStats() {
+    map<string,int> mymap;
+    for (unsigned int i = 0; i < objects.size(); i++) {
+	object* obj = objects[i];
+	(mymap.find(obj->getName())->second)++;
+    }
 }
 
 std::vector<ObjectCollection*> Scene::getObjectCollections() {
