@@ -81,7 +81,7 @@ void testScene4() {
     Spiral spiral2 = Spiral(&spiral,30,100,0.5);
 
     Cylinder* torus = new Cylinder(circle1,100,50,30,mat);
-    //scene.addObject(torus);
+    scene.addObject(torus);
 
     Tessalation tet = Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
     //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,MATERIAL_SHINY_BLUE);
@@ -106,6 +106,7 @@ void testScene4() {
    // scene.addObject(tube); 
 
 
+    /*
     for(int x = -300; x <= 300; x += 60) {
 	for(int z = -300; z <= 300; z += 60) {
 	    Box* b = new Box(Vector(x,0,z),40.0,40.0,40.0,MATERIAL_SHINY_BLUE);
@@ -113,18 +114,19 @@ void testScene4() {
 	    scene.addObject(b);
 	}
     }
+    */
     
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));
     Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
-    Arealight area1 = Arealight(Vector(-2000,2000,2000),Vector(1,-1,-1),1000,50,0.10);
-    Arealight area2 = Arealight(Vector(2000,2000,2000),Vector(-1,-1,-1),1000,40,0.10);
-    //scene.addLight(&area1);
+    Arealight area1 = Arealight(Vector(-4000,4000,4000),Vector(1,-1,-1),1000,40,0.10);
+    Arealight area2 = Arealight(Vector(4000,4000,4000),Vector(-1,-1,-1),1000,40,0.10);
+    scene.addLight(&area1);
     //scene.addLight(&area2);
     //scene.addLight(&spotlight2);
-    scene.addLight(&light1);
-    scene.addLight(&light3);
+    //scene.addLight(&light1);
+    //scene.addLight(&light3);
     
     Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); /* Floor */
     scene.addObject(&b);
