@@ -7,7 +7,7 @@ all_ldadd = $(top_srcdir)/src/libtracer.a \
 	    $(top_srcdir)/src/lights/liblights.a \
 	    $(top_srcdir)/src/math/libmath.a 
 
-noinst_PROGRAMS = testmath testpaths #testobjects
+noinst_PROGRAMS = testmath testpaths testspace #testobjects
 
 testpaths_SOURCES = testpaths.cpp
 testpaths_LDADD = $(all_ldadd)
@@ -19,5 +19,8 @@ testmath_LDADD = $(all_ldadd)
 #testobjects_SOURCES = testobjects.cpp
 #testobjects_LDADD = $(all_ldadd)
 
-TESTS = testmath testpaths #testobjects
+testspace_SOURCES = testspace.cpp
+testspace_LDADD = $(all_ldadd)
+
+TESTS = testmath testpaths testspace #testobjects
 

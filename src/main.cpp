@@ -148,7 +148,6 @@ void testScene4() {
 int main(int argc, char *argv[]) {
     Sphere::test();
     Boolean::test();
-    BoundingBox::test();
     Mesh::test();
     Box::test();
     Cylinder::test();

@@ -64,8 +64,6 @@ class BoundingBox {
 	/// Comparator
         bool operator==(const BoundingBox &b) const;
 
-	static void test(); ///< Internal test
-
     private:
 	Vector _c1; ///< The point with smallest x,y,z values
 	Vector _c2; ///< The point with biggest x,y,z values
