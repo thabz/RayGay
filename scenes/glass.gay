@@ -2,8 +2,8 @@
 /*
  */
 
-renderer photonrenderer
 renderer raytracer
+renderer photonrenderer
 
 camera { position <200,500,1100>
          up <0,1,0> 
@@ -13,8 +13,8 @@ camera { position <200,500,1100>
 }
 
 photonmap {
- globalphotons  1000000
- causticphotons 1000000
+ globalphotons  1000
+ causticphotons 20000
  estimateradius 100
  estimatesamples 300
  finalgatherrays 0
@@ -23,9 +23,9 @@ photonmap {
 
 image { width 640 aspect 4 3 }
 
-background <1.0,1.0,1.0,1.0>
+background <0.4,0.4,0.9,1.0>
 
-light { spot <1000,3000,400> <0,0,0> 20 18 power <100000,100000,100000> } 
+light { spot <1000,1000,400> <0,0,0> 20 18 power <100000,100000,100000> } 
 
 $chrome = material {
                diffuse <0.8,0.8,0.8>
@@ -39,10 +39,10 @@ $glass = material {
    		diffuse <0,0,0>
 		kd 0.0
 		specular <1,1,1>
-		ks 0.5
+		ks 0.3
 		specpow 30
 		eta 1.33
-		kt 0.5
+		kt 0.7
 }
 
 $table_mat = material {
@@ -53,28 +53,32 @@ $table_mat = material {
                specpow 0
             }
 
+/*
 box { $table_mat <1000,0,-1000> <1010,1000,1000> }
 box { $table_mat <-1010,0,-1000> <-1000,1000,1000> }
 box { $table_mat <-1000,0,-1010> <1000,1000,-1000> }
+*/
 box { $table_mat <-1000,-100,-1000> <1000,0,1000> }
 
-/*
-    union {
-	$chrome
-        ellipsoid { <95,195,95> <0,0,0> }
-        ellipsoid { <100,200,100> <0,0,0> }
-    }
-*/
-
-difference {
+union {
     $glass
+union {
+difference {
     difference {
         ellipsoid { <100,200,100> <0,0,0> }
         ellipsoid { <95,195,95> <0,0,0> }
     }
-    solidbox { <-200,100,-200> <200,300,200> }
-} scale <0.5,0.5,0.5> translate <0,100,0>
+    solidbox { <-200,100,-200> <200,200,200> }
+} translate <0,400,0>
 
+difference {
+    cylinder { 200 <0,0,0> <0,200,0> }
+    torus { 190 200 } translate <0,100,0>
+} translate <0,20,0>
+}
+   ellipsoid { <100,5,100> <0,0,0>  }
+
+} scale <0.7,0.7,0.7>
 
 sphere { $chrome 50 <-300,50,100> }
 
