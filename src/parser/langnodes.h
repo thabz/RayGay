@@ -10,7 +10,6 @@
 #include "parser/cameranode.h"
 #include "parser/assignments.h"
 #include "parser/boolnodes.h"
-#include "objects/objectgroup.h"
 #include "exception.h"
 #include "environment.h"
 #include "function.h"
@@ -288,25 +287,15 @@ class AddCameraToSceneNode : public ActionNode {
 	CameraNode* cam;
 };
 
+/**
+ * The heart of any scene file is this list of statements.
+ */
 class ActionListNode : ActionNode {
     public:
-	ActionListNode() {};
-
-	virtual ~ActionListNode() {
-	    for(unsigned int i = 0; i < actions.size(); i++) {
-		delete actions[i];
-	    }
-	}
-
-	void addAction(ActionNode* action) {
-	    actions.push_back(action);
-	}
-
-	void eval() {
-	    for(unsigned int i = 0; i < actions.size(); i++) {
-		actions[i]->eval();
-	    }
-	}
+	ActionListNode();
+	virtual ~ActionListNode();
+	void addAction(ActionNode* action);
+	void eval();
 
     private:
 	vector<ActionNode*> actions;
@@ -315,25 +304,9 @@ class ActionListNode : ActionNode {
 class RepeatActionNode : public ActionNode {
 
     public:
-	RepeatActionNode(FloatNode* num, ActionListNode* list) {
-	    this->num = num;
-	    this->list = list;
-	}
-
-	virtual ~RepeatActionNode() {
-	    delete num;
-	    delete list;
-	}
-
-	void eval() {
-	    int n = int(num->eval());
-	    if (n < 0) {
-		throw_exception("Can't repeat negative number of times.");
-	    }
-	    for(int i = 0; i < n; i++) {
-		list->eval();
-	    }
-	}
+	RepeatActionNode(FloatNode* num, ActionListNode* list);
+	virtual ~RepeatActionNode();
+	void eval();
 
     private:
 	ActionListNode* list;
@@ -343,21 +316,9 @@ class RepeatActionNode : public ActionNode {
 class WhileActionNode : public ActionNode {
 
     public:
-	WhileActionNode(BoolNode* cond, ActionListNode* list) {
-	    this->cond = cond;
-	    this->list = list;
-	}
-
-	virtual ~WhileActionNode() {
-	    delete cond;
-	    delete list;
-	}
-
-	void eval() {
-	    while ( cond->eval() ) {
-		list->eval();
-	    }
-	}
+	WhileActionNode(BoolNode* cond, ActionListNode* list);
+	virtual ~WhileActionNode();
+	void eval();
 
     private:
 	ActionListNode* list;
@@ -367,21 +328,9 @@ class WhileActionNode : public ActionNode {
 class DoWhileActionNode : public ActionNode {
 
     public:
-	DoWhileActionNode(ActionListNode* list, BoolNode* cond) {
-	    this->cond = cond;
-	    this->list = list;
-	}
-
-	virtual ~DoWhileActionNode() {
-	    delete cond;
-	    delete list;
-	}
-
-	void eval() {
-	    do {
-		list->eval();
-	    } while ( cond->eval() );
-	}
+	DoWhileActionNode(ActionListNode* list, BoolNode* cond);
+	virtual ~DoWhileActionNode();
+	void eval();
 
     private:
 	ActionListNode* list;
@@ -397,29 +346,9 @@ class DoWhileActionNode : public ActionNode {
 class IfActionNode : public ActionNode {
 
     public:
-	IfActionNode(BoolNode* cond, ActionListNode* l1, ActionListNode* l2) {
-	    this->cond = cond;
-	    this->list1 = l1;
-	    this->list2 = l2;
-	}
-
-	virtual ~IfActionNode() {
-	    delete cond;
-	    delete list1;
-	    if (list2 != NULL) {
-		delete list2;
-	    }
-	}
-
-	void eval() {
-	    if ( cond->eval() ) {
-		list1->eval();
-	    } else {
-		if (list2 != NULL) {
-		    list2->eval();
-		}
-	    }
-	}
+	IfActionNode(BoolNode* cond, ActionListNode* l1, ActionListNode* l2);
+	virtual ~IfActionNode();
+	void eval();
 
     private:
 	ActionListNode* list1;
@@ -451,30 +380,9 @@ class ModifyNamedFloatActionNode : public ActionNode {
 
 class ObjectGroupNode : public SceneObjectNode {
     public:
-	ObjectGroupNode(ActionListNode* actions) {
-	    this->actions = actions;
-	};
-
-	virtual ~ObjectGroupNode() {
-	    delete actions;
-	}
-
-	SceneObject* eval() {
-	    ObjectCollector* oc = Environment::getUniqueInstance()->getObjectCollector();
-            // Push a new object collector
-	    oc->pushCollection();
-	    
-            // eval actions;
-	    actions->eval();
-
-	    // Pop collector and insert into a ObjectGroup* result;
-	    vector<SceneObject*> nodes = oc->pop();
-	    ObjectGroup* result = new ObjectGroup();
-	    for(unsigned int i = 0; i < nodes.size(); i++) {
-		result->addObject(nodes[i]);
-	    }
-	    return result;
-	}
+	ObjectGroupNode(ActionListNode* actions);
+	virtual ~ObjectGroupNode();
+	SceneObject* eval();
 
     private:
 	ActionListNode* actions;
@@ -484,9 +392,7 @@ class BlobNode : public SceneObjectNode {
 
     public:
 	BlobNode(FloatNode* iso, FloatNode* weight, FloatNode* steps, FloatNode* accuracy, ObjectGroupNode* spheres, MaterialNode* mat);
-
 	virtual ~BlobNode();
-	
 	SceneObject* eval();
 
     private:

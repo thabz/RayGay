@@ -3,6 +3,117 @@
 #include "objects/blob.h"
 #include "objects/csg.h"
 #include "objects/sphere.h"
+#include "objects/objectgroup.h"
+
+//---------------------------------------------------------------------
+// ActionListNode
+//---------------------------------------------------------------------
+ActionListNode::ActionListNode() {
+};
+
+ActionListNode::~ActionListNode() {
+    for(unsigned int i = 0; i < actions.size(); i++) {
+	delete actions[i];
+    }
+}
+
+void ActionListNode::addAction(ActionNode* action) {
+    actions.push_back(action);
+}
+
+void ActionListNode::eval() {
+    for(unsigned int i = 0; i < actions.size(); i++) {
+	actions[i]->eval();
+    }
+}
+
+//---------------------------------------------------------------------
+// RepeatActionNode
+//---------------------------------------------------------------------
+RepeatActionNode::RepeatActionNode(FloatNode* num, ActionListNode* list) {
+    this->num = num;
+    this->list = list;
+}
+
+RepeatActionNode::~RepeatActionNode() {
+    delete num;
+    delete list;
+}
+
+void RepeatActionNode::eval() {
+    int n = int(num->eval());
+    if (n < 0) {
+	throw_exception("Can't repeat negative number of times.");
+    }
+    for(int i = 0; i < n; i++) {
+	list->eval();
+    }
+}
+
+//---------------------------------------------------------------------
+// WhileActionNode
+//---------------------------------------------------------------------
+WhileActionNode::WhileActionNode(BoolNode* cond, ActionListNode* list) {
+    this->cond = cond;
+    this->list = list;
+}
+
+WhileActionNode::~WhileActionNode() {
+    delete cond;
+    delete list;
+}
+
+void WhileActionNode::eval() {
+    while ( cond->eval() ) {
+	list->eval();
+    }
+}
+
+//---------------------------------------------------------------------
+// DoWhileActionNode
+//---------------------------------------------------------------------
+DoWhileActionNode::DoWhileActionNode(ActionListNode* list, BoolNode* cond) {
+    this->cond = cond;
+    this->list = list;
+}
+
+DoWhileActionNode::~DoWhileActionNode() {
+    delete cond;
+    delete list;
+}
+
+void DoWhileActionNode::eval() {
+    do {
+	list->eval();
+    } while ( cond->eval() );
+}
+
+//---------------------------------------------------------------------
+// IfActionNode
+//---------------------------------------------------------------------
+IfActionNode::IfActionNode(BoolNode* cond, ActionListNode* l1, ActionListNode* l2) {
+    this->cond = cond;
+    this->list1 = l1;
+    this->list2 = l2;
+}
+
+IfActionNode::~IfActionNode() {
+    delete cond;
+    delete list1;
+    if (list2 != NULL) {
+	delete list2;
+    }
+}
+
+void IfActionNode::eval() {
+    if ( cond->eval() ) {
+	list1->eval();
+    } else {
+	if (list2 != NULL) {
+	    list2->eval();
+	}
+    }
+}
 
 //---------------------------------------------------------------------
 // UnionNode 
@@ -70,3 +181,32 @@ SceneObject* BlobNode::eval() {
     }
     return blob;
 }
+
+//---------------------------------------------------------------------
+// ObjectGroupNode
+//---------------------------------------------------------------------
+ObjectGroupNode::ObjectGroupNode(ActionListNode* actions) {
+    this->actions = actions;
+};
+
+ObjectGroupNode::~ObjectGroupNode() {
+    delete actions;
+}
+
+SceneObject* ObjectGroupNode::eval() {
+    ObjectCollector* oc = Environment::getUniqueInstance()->getObjectCollector();
+    // Push a new object collector
+    oc->pushCollection();
+
+    // eval actions;
+    actions->eval();
+
+    // Pop collector and insert into a ObjectGroup* result;
+    vector<SceneObject*> nodes = oc->pop();
+    ObjectGroup* result = new ObjectGroup();
+    for(unsigned int i = 0; i < nodes.size(); i++) {
+	result->addObject(nodes[i]);
+    }
+    return result;
+}
+
