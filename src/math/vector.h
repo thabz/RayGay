@@ -35,10 +35,16 @@ public:
     double operator*(const Vector &v) const; ///< Vector dot product (aka scalar product)
     /// Vector addition
     Vector operator+(const Vector &v) const;
+    /// Vector addition
+    Vector operator+=(const Vector &v);
     /// Vector subtraction 
     Vector operator-(const Vector &v) const;
+    /// Vector subtraction 
+    Vector operator-=(const Vector &v);
     /// Vector multiplication
     Vector operator*(const double x) const;
+    /// Vector multiplication
+    Vector operator*=(const double x);
     /// Vector division
     Vector operator/(const double x) const;
     static Vector xProduct (const Vector& v1, const Vector& v2); ///< Returns the scalar product v1 x v2
@@ -71,8 +77,24 @@ Vector Vector::operator+(const Vector &v) const {
 }
 
 inline
+Vector Vector::operator+=(const Vector &v) {
+   _vector[0] += v[0];
+   _vector[1] += v[1];
+   _vector[2] += v[2];
+   return *this;
+}
+
+inline
 Vector Vector::operator-(const Vector &v) const {
     return Vector( _vector[0] - v[0], _vector[1] - v[1], _vector[2] - v[2]);
+}
+
+inline
+Vector Vector::operator-=(const Vector &v) {
+   _vector[0] -= v[0];
+   _vector[1] -= v[1];
+   _vector[2] -= v[2];
+   return *this;
 }
 
 inline
@@ -95,6 +117,14 @@ const double &Vector::operator[](const int i) const {
 inline
 double Vector::operator*(const Vector &x) const {
     return _vector[0]*x[0] + _vector[1]*x[1] + _vector[2]*x[2];
+}
+
+inline
+Vector Vector::operator*=(const double x) {
+   _vector[0] *= x;
+   _vector[1] *= x;
+   _vector[2] *= x;
+   return *this;
 }
 
 /*

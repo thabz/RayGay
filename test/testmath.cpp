@@ -77,6 +77,21 @@ void vector_test() {
     v = Vector(0,1,1);
     w = v.toPolar();
     assert(IS_EQUAL(w[0],sqrtf(2)));
+
+    // Test += operator
+    v = Vector(1,2,3);
+    v += Vector(10,20,30);
+    assert(v == Vector(11,22,33));
+
+    // Test -= operator
+    v = Vector(1,2,3);
+    v -= Vector(10,20,30);
+    assert(v == Vector(-9,-18,-27));
+
+    // Test *= operator
+    v = Vector(1,2,3);
+    v *= 2.0;
+    assert(v == Vector(2,4,6));
 }
 
 void vector2_test() {
