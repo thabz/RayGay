@@ -62,7 +62,6 @@ void Renderer::render(const RenderJob& job) {
     int img_h = img->getHeight();
 
     // Prepare the two PixelBlock buffers
-    // TODO: Move this to constructor
     unsigned int block_size = 1 + (1 << aa_depth);
     if (aa_enabled) {
 	for(int i = 0; i < img_w; i++) {
@@ -263,8 +262,3 @@ Vector2 Renderer::fresnel(Vector normal, const Vector& ray_dir, const Material* 
 
 }
 
-void getTile(int tile_num, int width, int height, int* begin_x, int* end_x, int*  begin_y, int* end_y) {
-
-}
-
-	
