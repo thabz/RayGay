@@ -319,7 +319,7 @@ int main(int argc, char *argv[]) {
     int c;
     opterr = 0;
     int jobs = 1;
-    while ((c = getopt (argc, argv, "vhxj:")) != -1) {
+    while ((c = getopt (argc, argv, "vdhxj:")) != -1) {
 	switch(c) {
 	    case 'h':
 		print_usage();
@@ -329,6 +329,9 @@ int main(int argc, char *argv[]) {
 		return EXIT_SUCCESS;
 	    case 'x':
 		env->hasPreviewWindow(false);
+		break;
+	    case 'd':
+		env->isVerbose(true);
 		break;
 	    case 'j':
 		if (sscanf(optarg,"%u",&jobs) != 1 || jobs < 1) {

@@ -27,12 +27,16 @@ class Environment {
 	PreviewWindow* getPreviewWindow() const { return this->preview_window; };
 	void setPreviewWindow(PreviewWindow* w) { preview_window = w; };
 
+	bool isVerbose() const { return verbose; };
+	void isVerbose(bool v) { this->verbose = v; };
+
     private:
 	Scene* scene;
 	FilterStack* filter_stack;
 	ObjectCollector* object_collector;
 	PreviewWindow* preview_window;
 	bool has_preview_window;
+	bool verbose;
 	Environment();
 	static Environment* unique_instance;
 };
@@ -40,6 +44,7 @@ class Environment {
 inline
 Environment::Environment() {
     object_collector = new ObjectCollector();
+    verbose = false;
     filter_stack = NULL;
 }
 
