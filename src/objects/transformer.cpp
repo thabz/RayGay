@@ -31,9 +31,12 @@ Vector Transformer::normalToWorld(const Vector& d) const {
 Ray Transformer::rayToObject(const Ray& ray) const {
     Vector o = inverse_transformation * ray.getOrigin();
     Vector d = inverse_rotation * ray.getDirection();
+    double l = d.length();
     d.normalize();
     double ior = ray.getIndiceOfRefraction();
-    return Ray(o,d,ior);
+    Ray result = Ray(o,d,ior);
+    result.t_scale = l;
+    return result;
 }
 
 Intersection Transformer::intersectionToWorld(const Intersection& i) const {

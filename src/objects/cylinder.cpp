@@ -54,7 +54,7 @@ double Cylinder::_fastIntersect(const Ray& ray) const {
 
 Intersection Cylinder::_fullIntersect(const Ray& world_ray, const double t) const {
     Ray ray = rayToObject(world_ray);
-    Vector p = ray.getPoint(t);
+    Vector p = ray.getPoint(t*ray.t_scale);
     Vector n = getNormal(p);
     return intersectionToWorld(Intersection(p,t,n,Vector2(0,0)));
 }
@@ -161,6 +161,9 @@ unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) c
 	    roots[0] = roots[1];
 	    roots[1] = tmp;
 	}
+    }
+    for(unsigned int i = 0; i < roots_found; i++) {
+	roots[i] /= local_ray.t_scale;
     }
     return roots_found;
 }

@@ -27,7 +27,7 @@ void Torus::transform(const Matrix& m) {
 
 Intersection Torus::_fullIntersect(const Ray& world_ray, const double t) const {
     Ray ray = rayToObject(world_ray);
-    Vector p  = ray.getPoint(t);
+    Vector p  = ray.getPoint(t*ray.t_scale);
     Vector n = normal(p);
     return intersectionToWorld(Intersection(p,t,n,Vector2(0,0)));
 }
@@ -86,7 +86,7 @@ unsigned int Torus::allPositiveRoots(const Ray& world_ray, double roots[4]) cons
     int positive_roots_num = 0;
     for(int i = 0; i < num; i++) {
 	if (all_roots[i] + closer > 2*EPSILON) {
-	    roots[positive_roots_num++] = all_roots[i] + closer;
+	    roots[positive_roots_num++] = (all_roots[i] + closer) / ray.t_scale;
 	}
     }
     return positive_roots_num;

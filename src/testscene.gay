@@ -6,8 +6,8 @@ $i = 0.0
 do {
    print $i
    print "xxx"
-   $i++
+   $i++ 
 } while ($i < 10) 
 
-print "Slut" 
+print "Slut"
 

@@ -38,6 +38,8 @@ class Ray {
         int specularBounces;
 	int diffuseBounces;
 	void* fromObject;
+
+	mutable double t_scale;
 	
     private:
 	long id;
