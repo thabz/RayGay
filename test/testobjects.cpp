@@ -846,6 +846,8 @@ void solidbox_test() {
 void ellipsoid_test() {
     Ellipsoid* e = new Ellipsoid(Vector(0,0,0),Vector(10,20,30),NULL);
     assert(intersects(e,Vector(0,0,1000),Vector(0,0,-1)));
+    assert(intersects(e,Vector(0,0,0),Vector(0,0,-1)));
+    assert(intersects(e,Vector(0,0,0),Vector(0,0,1)));
     assert(iPoint(e,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,30));
     assert(iNormal(e,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
     assert(iPoint(e,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,20,0));
@@ -863,6 +865,16 @@ void ellipsoid_test() {
     assert(iPoint(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(10,0,0));
     assert(iNormal(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(1,0,0));
 
+    // Scaled and translated
+    e = new Ellipsoid(Vector(0,0,0),Vector(10,20,30),NULL);
+    e->transform(Matrix::matrixScale(Vector(2,3,4)));
+    e->transform(Matrix::matrixTranslate(Vector(30,20,10)));
+    assert(intersects(e,Vector(30,20,10),Vector(0,0,-1)));
+    assert(intersects(e,Vector(30,20,10),Vector(0,0,1)));
+
+    // All intersections
+    e = new Ellipsoid(Vector(0,0,0),Vector(2,5,6),NULL);
+    e->transform(Matrix::matrixScale(Vector(5,4,5)));
     Ray ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
     vector<Intersection> all;
     e->allIntersections(ray,all);
@@ -991,11 +1003,14 @@ void superellipsoid_test() {
     assert(intersects(s,Vector(0,0,0),Vector(0,0,1)));
     assert(intersects(s,Vector(0.1,0.2,0.3),Vector(0,0,-1)));
     assert(intersects(s,Vector(0.1,0.2,0.3),Vector(0,0,1)));
+    delete s;
     
     // Translated instance
+    s = new SuperEllipsoid(0.2,0.2,100,0.0001,NULL);
     s->transform(Matrix::matrixTranslate(Vector(100,300,400)));
     assert(intersects(s,Vector(100,300,400),Vector(0,0,-1)));
     assert(intersects(s,Vector(100,300,400),Vector(0,0,1)));
+    delete s;
     
     // Scaled instance at origin
     s = new SuperEllipsoid(0.2,0.2,100,0.0001,NULL);
@@ -1012,8 +1027,11 @@ void superellipsoid_test() {
     assert(intersects(s,Vector(0,0,0),Vector(0,0,1)));
     assert(intersects(s,Vector(1,-2,3),Vector(0,1,0)));
     assert(intersects(s,Vector(1,-2,3),Vector(0,-1,0)));
+    delete s;
 
     // Scaled and translated instance
+    s = new SuperEllipsoid(0.2,0.2,100,0.0001,NULL);
+    s->transform(Matrix::matrixScale(Vector(10,10,10)));
     s->transform(Matrix::matrixTranslate(Vector(100,300,400)));
     assert(intersects(s,Vector(100,300,1000),Vector(0,0,-1)));
     assert(intersects(s,Vector(109,300,1000),Vector(0,0,-1)));
@@ -1027,8 +1045,11 @@ void superellipsoid_test() {
     assert(iPoint(s,Vector(100,300,-1000),Vector(0,0,1)).z() < 390.01);
     assert(iPoint(s,Vector(100,300,-1000),Vector(0,0,1)).z() > 389.99);
     assert(iNormal(s,Vector(100,300,-1000),Vector(0,0,1)) == Vector(0,0,-1));
-    assert(intersects(s,Vector(100,300,401),Vector(0,0,-1)));
+    assert(intersects(s,Vector(100,300,400),Vector(0,0,-1)));
     assert(intersects(s,Vector(100,300,401),Vector(0,0,1)));
+    assert(intersects(s,Vector(101,300,401),Vector(0,-1,0)));
+    assert(intersects(s,Vector(101,300,401),Vector(0,1,0)));
+    delete s;
 
     // Test a superellipsoid with other n1 and n2 values
     s = new SuperEllipsoid(0.2,3.0,100,0.0001,NULL);
@@ -1043,6 +1064,7 @@ void superellipsoid_test() {
     assert(iNormal(s,Vector(0,-1000,0),Vector(0,1,0)) == Vector(0,-1,0));
     assert(intersects(s,Vector(0,0,0),Vector(0,0,-1)));
     assert(intersects(s,Vector(0,0,0),Vector(0,0,1)));
+    delete s;
 }
 
 int main(int argc, char *argv[]) {
