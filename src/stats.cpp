@@ -68,13 +68,11 @@ void Stats::dump() const {
     }
 
     // Print time measures
-    map<string,time_t>::const_iterator cur_time;
-    for(cur_time = beginTimes.begin();
-	    cur_time != beginTimes.end();
-	    cur_time++) {
+    map<string,clock_t>::const_iterator cur_time;
+    for(cur_time = beginTimes.begin(); cur_time != beginTimes.end(); cur_time++) {
 	cout << cur_time->first;
 	if (endTimes.find(cur_time->first) != endTimes.end()) {
-	    long secs = endTimes.find(cur_time->first)->second - cur_time->second;
+	    long secs = double(endTimes.find(cur_time->first)->second - cur_time->second) / CLOCKS_PER_SEC;
 	    cout << ": ";
 	    cout << setfill('0') << setw(2) << secs / 60;
 	    cout << ":";
@@ -90,11 +88,11 @@ void Stats::inc(StatsKey key) {
 }
 
 void Stats::beginTimer(string key) {
-    beginTimes[key] = time(NULL);
+    beginTimes[key] = clock();
 }
 
 void Stats::endTimer(string key) {
-    endTimes[key] = time(NULL);
+    endTimes[key] = clock();
 }
 
 ///////////////////////////////////////////////////
@@ -140,17 +138,17 @@ TimerStats::TimerStats(string group, string name) : Statistics(group,name)
 
 void TimerStats::startTimer()
 {
-    begin_time = time(NULL);
+    begin_time = clock();
 }
 
 void TimerStats::stopTimer()
 {
-    end_time = time(NULL);
+    end_time = clock();
 }
 
 void TimerStats::out() const 
 {
-    long secs = end_time - begin_time;
+    long secs = double(end_time - begin_time) / CLOCKS_PER_SEC;
     cout << setfill('0') << setw(2) << secs / 60;
     cout << ":";
     cout << setfill('0') << setw(2) << secs % 60;

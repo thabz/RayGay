@@ -42,8 +42,8 @@ class TimerStats : public Statistics
 	void out() const;
 	
     private:
-	time_t begin_time;
-	time_t end_time;
+	clock_t begin_time;
+	clock_t end_time;
 };
 
 class CounterStats : public Statistics 
@@ -129,8 +129,8 @@ class Stats {
 	Stats();
 	static Stats* Stats::uniqueInstance;
 	long* stats;
-	map<string,time_t> beginTimes;
-	map<string,time_t> endTimes;
+	map<string,clock_t> beginTimes;
+	map<string,clock_t> endTimes;
 	bool disabled;
 };
 
