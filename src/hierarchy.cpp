@@ -14,16 +14,19 @@ using namespace std;
 Hierarchy::Hierarchy() {
     _box = BoundingBox(Vector(-HUGE_DOUBLE,-HUGE_DOUBLE,-HUGE_DOUBLE),Vector(HUGE_DOUBLE,HUGE_DOUBLE,HUGE_DOUBLE));
     _parent = NULL;
+    _depth = 1;
 }
 
 Hierarchy::Hierarchy(BoundingBox bbox) {
     _box = bbox;
     _parent = NULL;
+    _depth = 1;
 }
 
 Hierarchy::Hierarchy(BoundingBox bbox, Hierarchy* parent) {
     _box = bbox;
     _parent = parent;
+    _depth = parent->_depth + 1;
 }
 
 Hierarchy::~Hierarchy() {
@@ -44,7 +47,7 @@ void Hierarchy::addObject(object* obj) {
 	}
     } else {
 	objects.push_back(obj);
-	if (objects.size() > HIERARCHY_MAX) {
+	if (objects.size() > HIERARCHY_MAX_OBJECTS_PER_LEAF && _depth < HIERARCHY_MAX_DEPTH) {
 	    split();
 	}
     }
@@ -71,7 +74,9 @@ void Hierarchy::split() {
     
     Vector* corners = _box.getCorners();
     for (int i = 0; i < 8; i++) {
-	children.push_back(new Hierarchy(BoundingBox(corners[i],mid),this));
+	Hierarchy* h = new Hierarchy(BoundingBox(corners[i],mid),this);
+	h->_depth = _depth + 1;
+	children.push_back(h);
     }
 
     // Distribute my objects into the new sub-hierarchies

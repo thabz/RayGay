@@ -10,7 +10,8 @@
 #include "spacesubdivider.h"
 class Ray;
 
-#define HIERARCHY_MAX 8
+#define HIERARCHY_MAX_OBJECTS_PER_LEAF 8
+#define HIERARCHY_MAX_DEPTH 100
 
 /**
  * Implementation of a bounding volume hierarchy.
@@ -50,6 +51,7 @@ class Hierarchy : public SpaceSubdivider {
 	double area(); ///< The surfacearea of all boundingboxes in this hierarchy
 	
 	BoundingBox _box;
+	int _depth;
 	std::vector<object*> objects;
 	std::vector<Hierarchy*> children;
 };
