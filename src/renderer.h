@@ -7,18 +7,21 @@ class RGB;
 class Image;
 
 /**
- * An interface all renderers must implement.
+ * An abstract class all renderers must implement.
  */
 class Renderer {
 
     public:
+	/// Render a scene into an image
 	void render(Scene* scene, Image*);
 
     private:
+	/// The public render-method uses this to render the image. Subclasses must implement this.
 	virtual RGB getPixel(double x, double y) = 0;
 
     protected:
 	Renderer();
+	/// The scene to be rendered can be accessed from implementations of Renderer.
 	Scene* scene;
 };
 
