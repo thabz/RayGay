@@ -42,6 +42,7 @@
 #include "raytracer.h"
 #include "bsp.h"
 #include "necklace.h"
+#include "wireframe.h"
 
 #include "paths/linesegment.h"
 #include "paths/spiral.h"
@@ -87,26 +88,9 @@ void testScene4() {
     Extrusion* torus = new Extrusion(circle1,100,50,30,mat);
     //scene.addObject(torus);
 
-    Tessalation tet = Tessalation(Vector(0,100,0),250,3,MATERIAL_SHINY_BLUE);
-    //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,MATERIAL_SHINY_BLUE);
-    std::vector<Linesegment>* edges = tet.getEdges();
-    cout << "Edges : " << edges->size() << endl;
-    for(unsigned int i = 0; i < edges->size(); i++) {
-	Linesegment line = (*edges)[i];
-	Cylinder* c = new Cylinder(line.begin(),line.end(),20.0,MATERIAL_SHINY_RED);
-	//scene.addObject(c);
-    }
-    delete edges;
-
-    vector<Vector>* vertices = tet.getVertices();
-    for(unsigned int i = 0; i < vertices->size(); i++) {
-	Vector c = (*vertices)[i];
-        Sphere* s = new Sphere(c,20.0,MATERIAL_SHINY_RED);
-	scene.addObject(s);
-        Cylinder* cyl = new Cylinder(Vector(0,100,0),c,20.0,MATERIAL_SHINY_RED);
-	scene.addObject(cyl);
-    }
-    delete vertices;
+    Tessalation* tet = new Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
+    Wireframe* wire = new Wireframe(tet,20.0,MATERIAL_SHINY_BLUE);
+    scene.addObject(wire);
 
     //Extrusion* tube = new Extrusion(spiral,10,16,200,MATERIAL_CHROME);
    // scene.addObject(tube); 
