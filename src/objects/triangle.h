@@ -26,13 +26,6 @@ class Triangle : public Object {
 	int getTri() const;
 	/// Set index into mesh' array of Tris
 	void setTri(int);
-	
-	/// Indices into the mesh' array of vertices
-        unsigned int vertex[3];
-	/// Indices into the mesh' array of interpolated normals
-        unsigned int interpolated_normal[3]; 
-	/// The triangle's own normal
-        unsigned int normali;
 
 	virtual SceneObject* clone() const { return NULL; };
 	double _fastIntersect(const Ray& ray) const;
@@ -42,7 +35,7 @@ class Triangle : public Object {
 
     private:
 	Mesh* mesh;
-	int _tri_idx;
+	unsigned int _tri_idx;
 };
 
 

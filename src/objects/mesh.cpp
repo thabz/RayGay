@@ -26,12 +26,6 @@ Mesh::Mesh(MeshType type, const Material* mat) {
     material = mat;
 }
 
-/*
-Mesh::Mesh() : SceneObject(NULL) {
-    prepared = false;
-}
-*/
-
 // ----------------------------------------------------------------------------
 Mesh::~Mesh() {
     for(unsigned int i = 0; i < triangles.size(); i++) {
@@ -48,7 +42,7 @@ void Mesh::addSelf(KdTree* space) {
 void Mesh::prepare() {
     if (prepared == true) return;
 
-    computeAdjacentTris();
+    //computeAdjacentTris();
     computeInterpolatedNormals();
     prepared = true;
     for(unsigned int i = 0; i < triangles.size(); i++) {
@@ -63,11 +57,6 @@ void Mesh::prepare() {
  * @param uv must a pointer to three Vector2s
  */
 void Mesh::addTriangle(const Vector* c, const Vector2* uv) {
-    Vector normal = Vector::xProduct(c[1] - c[0], c[2] - c[0]);
-    normal.normalize();
-    normals.push_back(normal);
-    Triangle* t = new Triangle(this);
-    t->normali = normals.size() - 1;
 
     int verts[3];
 
@@ -76,9 +65,7 @@ void Mesh::addTriangle(const Vector* c, const Vector2* uv) {
 	if (new_index == -1) {
 	   corners.push_back(c[i]);
 	   new_index = corners.size() - 1;
-	   vertices.push_back(Vertex(new_index));
 	}
-        //t->vertex[i] = new_index;
 	verts[i] = new_index;
     }
     addTriangle(verts,uv);
@@ -97,10 +84,15 @@ void Mesh::addQuad(const Vector* corners, const Vector2* uv) {
 	        uv[0],uv[2],uv[3]);
 }
 
-void Mesh::addVertex(const Vector& point) {
+/**
+ * Adds a new vertex to the mesh.
+ *
+ * @param point the vertex to add
+ * @return index of the new vertex
+ */
+unsigned int Mesh::addVertex(const Vector& point) {
     corners.push_back(point);
-    int new_index = corners.size() -1;
-    vertices.push_back(Vertex(new_index));
+    return corners.size() -1;
 }
 
 void Mesh::addTriangle(int v[3]) {
@@ -109,6 +101,7 @@ void Mesh::addTriangle(int v[3]) {
 }
 
 void Mesh::addTriangle(int v[3], const Vector2 uv[3]) {
+
     Vector c[3];
     c[0] = cornerAt(v[0]);
     c[1] = cornerAt(v[1]);
@@ -116,45 +109,24 @@ void Mesh::addTriangle(int v[3], const Vector2 uv[3]) {
     Vector normal = Vector::xProduct(c[1] - c[0], c[2] - c[0]);
     normal.normalize();
     normals.push_back(normal);
-    Triangle* t = new Triangle(this);
-    t->normali = normals.size() - 1;
-    t->vertex[0] = v[0];
-    t->vertex[1] = v[1];
-    t->vertex[2] = v[2];
+    unsigned int normal_idx = normals.size() - 1;
 
-    Tri* tri = new Tri(t->vertex[0],t->vertex[1],t->vertex[2]);
+    Tri tri;
+    tri.normal_idx = normal_idx;
+    tri.uv[0] = uv[0];
+    tri.uv[1] = uv[1];
+    tri.uv[2] = uv[2];
+    tri.vertex[0] = v[0];
+    tri.vertex[1] = v[1];
+    tri.vertex[2] = v[2];
     tris.push_back(tri);
-    tri->normal_idx = t->normali;
 
+    Triangle* t = new Triangle(this);
+    t->setTri(tris.size() - 1);
     triangles.push_back(t);
-    t->setTri(triangles.size() - 1);
-
-    tri->uv[0] = uv[0];
-    tri->uv[1] = uv[1];
-    tri->uv[2] = uv[2];
-
-    // Insert edges
-    for(int i = 0; i < 3; i++) {
-	int j = (i + 1) % 3;
-	EdgeKey key = EdgeKey(t->vertex[i],t->vertex[j]);
-	Edge* edge = edgeMap[key];
-	if (edge == NULL) {
-	    edge = new Edge(t->vertex[i],t->vertex[j]);
-	    edge->triangle[0] = tri;
-	    edgeMap[key] = edge;
-	} else {
-	    edge->triangle[1] = tri;
-	}
-	tri->edge[i] = edge;
-    }
-    
-    // Add to tris-list at each vertex
-    for(int i = 0; i < 3; i++) {
-	vertices[t->vertex[i]].tris.push_back(tri);
-    }
-
 }
 
+/*
 void Mesh::computeAdjacentTris() {
     for(unsigned int i = 0; i < tris.size(); i++) {
 	Tri* tri = tris[i];
@@ -170,10 +142,16 @@ void Mesh::computeAdjacentTris() {
 	}
     }
 }
+*/
 
 void Mesh::computeInterpolatedNormals() {
     for(unsigned int i = 0; i < tris.size(); i++) {
-	Tri* tri = tris[i];
+	Tri& tri = tris[i];
+	tri.interpolated_normal[0] = tri.normal_idx;
+	tri.interpolated_normal[1] = tri.normal_idx;
+	tri.interpolated_normal[2] = tri.normal_idx;
+
+#if 0
 	Vector normal = normals[tri->normal_idx];
 	for(unsigned int j = 0; j < 3; j++) {
 	    Vertex vertex = vertices[tri->vertex[j]];
@@ -196,6 +174,7 @@ void Mesh::computeInterpolatedNormals() {
 		tri->interpolated_normal[j] = tri->normal_idx;
 	    }
 	}
+#endif	
     }
 }
 
@@ -257,11 +236,11 @@ Vector Mesh::normal(const Triangle* const triangle, double u, double v) const {
 
 Vector Mesh::phong_normal(const Triangle* const triangle, double u, double v) const {
     //const Triangle* triangle = (Triangle*) i.getLocalObject();
-    Tri* tri = tris[triangle->getTri()];
+    const Tri& tri = tris[triangle->getTri()];
     Vector result = Vector(0,0,0);
     Vector weight = Vector(1-u-v,u,v);
     for(unsigned int j = 0; j < 3; j++) {
-	result += normals[tri->interpolated_normal[j]] * weight[j];
+	result += normals[tri.interpolated_normal[j]] * weight[j];
     }
     result.normalize();
     return result;
@@ -272,10 +251,10 @@ const Material* Mesh::getMaterial() const {
 }
 
 Vector2 Mesh::getUV(const Triangle* triangle, double u, double v) const {
-    Tri* tri = tris[triangle->getTri()];
-    return tri->uv[0] * (1-u-v) +
-           tri->uv[1] * u +
-           tri->uv[2] * v;
+    const Tri& tri = tris[triangle->getTri()];
+    return tri.uv[0] * (1-u-v) +
+           tri.uv[1] * u +
+           tri.uv[2] * v;
 }
 
 std::vector<Vector>* Mesh::getVertices() {
@@ -291,7 +270,22 @@ std::vector<Vector>* Mesh::getVertices() {
  * An edge is represented as a Linesegment.
  */
 std::vector<Linesegment>* Mesh::getEdges() {
-    
+    EdgeMapType edgeMap;
+
+    for(unsigned int t = 0; t < tris.size(); t++) {
+	const Tri& tri = tris[t];
+	// Insert all edges into edgeMap
+	for(int i = 0; i < 3; i++) {
+	    int j = (i + 1) % 3;
+	    EdgeKey key = EdgeKey(tri.vertex[i],tri.vertex[j]);
+	    Edge* edge = edgeMap[key];
+	    if (edge == NULL) {
+		edge = new Edge(tri.vertex[i],tri.vertex[j]);
+		edgeMap[key] = edge;
+	    }
+	}
+    }
+
     std::vector<Linesegment>* result = new std::vector<Linesegment>;
     for(EdgeMapType::iterator h = edgeMap.begin(); h != edgeMap.end(); h++) {
 	Edge* edge = h->second;
@@ -301,6 +295,7 @@ std::vector<Linesegment>* Mesh::getEdges() {
     return result;
 }
 
+// TODO: Can be much more effective by using addVertex.
 SceneObject* Mesh::clone() const {
     Mesh* clone = new Mesh(meshType,material);
     // Copy triangles and that's it.
@@ -308,10 +303,10 @@ SceneObject* Mesh::clone() const {
     Vector vs[3];
     Vector2 uvs[3];
     for (unsigned int i = 0; i < num; i++) {
-	Tri* tri = tris[i];
+	const Tri& tri = tris[i];
 	for (unsigned int j = 0; j < 3; j++) {
-	    vs[j] = cornerAt(tri->vertex[j]);
-	    uvs[j] = tri->uv[j];
+	    vs[j] = cornerAt(tri.vertex[j]);
+	    uvs[j] = tri.uv[j];
 	}
 	clone->addTriangle(vs,uvs);
     }
@@ -322,89 +317,5 @@ SceneObject* Mesh::clone() const {
 Mesh::Edge::Edge(int iV0, int iV1) {
     vertex[0] = iV0;
     vertex[1] = iV1;
-    triangle[0] = NULL;
-    triangle[1] = NULL;
 }
 
-// ----------------------------------------------------------------------------
-Mesh::Tri::Tri(int iV0, int iV1, int iV2) {
-    vertex[0] = iV0;
-    vertex[1] = iV1;
-    vertex[2] = iV2;
-    normal_idx = -1;
-    for(unsigned int i = 0; i < 3; i++) {
-	interpolated_normal[i] = -1;
-    }
-}
-
-Mesh::Vertex::Vertex(int iV) {
-    index = iV;
-}
-
-// ----------------------------------------------------------------------------
-void Mesh::test() {
-#ifdef GAHAGAH
-    KdTree bsp = KdTree();
-
-    Material* mat = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
-    Mesh mesh = Mesh(MESH_FLAT,mat);
-    mesh.addTriangle(Vector(-1,1,1),Vector(1,1,1),Vector(0,-1,-1));
-    mesh.prepare();
-    mesh.addSelf(&bsp);
-    bsp.prepare();
-
-    assert(mesh.edgeMap.size() == 3);
-
-    // Test intersection
-    Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),0.0);
-    assert(bsp.intersect(ray));
-    Intersection* i = bsp.getLastIntersection();
-    assert(i->getPoint() == Vector(0,0,0));
-    assert(i->isIntersected());
-    assert(i->getT() == 100.0);
-
-    ray = Ray(Vector(0,0,100),Vector(0,0,1),0.0);
-    assert(bsp.intersect(ray) == false);
-
-    ray = Ray(Vector(0,0,-100),Vector(0,0,-1),0.0);
-    assert(bsp.intersect(ray) == false);
-
-    // Test torus
-    Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
-    Extrusion torus = Extrusion(circle1,100,16,10,Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
-    torus.prepare();
-
-    assert(torus.corners.size() == 16*10);
-    assert(torus.vertices.size() == 16*10);
-
-    for(unsigned int i = 0; i < torus.tris.size(); i++) {
-	Tri* tri = torus.tris[i];
-	assert(tri->normal_idx != -1);
-	for(unsigned int j = 0; j < 3; j++) {
-	   assert(tri->interpolated_normal[j] != -1);
-	   assert(tri->vertex[j] != -1);
-	   for (unsigned int k = 0; k < 3; k++) {
-	       if (k != j) {
-		   assert(tri->interpolated_normal[k] != tri->interpolated_normal[j]);
-	       }
-	   }
-	}
-    }
-
-    for(unsigned int i = 0; i < torus.vertices.size(); i++) {
-	Vertex v = torus.vertices[i];
-	assert(v.tris.size() == 6);
-    }
-
-    assert(torus.normals.size() == 4 * torus.tris.size());
-   
-    for(unsigned int i = 0; i < torus.normals.size(); i++) {
-	Vector normal = torus.normals[i];
-	assert(IS_EQUAL(normal.norm(),double(1.0)));
-    }
-
-    delete mat;
-
-    cout << "Mesh::test() done." << endl;
-#endif
-}

@@ -49,12 +49,12 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
    double det;
    double u,v;
 
-   const Vector& v0 = mesh->cornerAt(vertex[0]);
+   const Vector& v0 = mesh->cornerAt(_tri_idx,0);
    vert0[0] = v0[0];
    vert0[1] = v0[1];
    vert0[2] = v0[2];
-   const Vector& vert1 = mesh->cornerAt(vertex[1]);
-   const Vector& vert2 = mesh->cornerAt(vertex[2]);
+   const Vector& vert1 = mesh->cornerAt(_tri_idx,1);
+   const Vector& vert2 = mesh->cornerAt(_tri_idx,2);
 
    SUB(edge1,vert1,vert0);
    SUB(edge2,vert2,vert0);
@@ -107,12 +107,12 @@ double Triangle::_fastIntersect(const Ray& ray) const {
    double det;
    double u,v;
 
-   const Vector& v0 = mesh->cornerAt(vertex[0]);
+   const Vector& v0 = mesh->cornerAt(_tri_idx,0);
    vert0[0] = v0[0];
    vert0[1] = v0[1];
    vert0[2] = v0[2];
-   const Vector& vert1 = mesh->cornerAt(vertex[1]);
-   const Vector& vert2 = mesh->cornerAt(vertex[2]);
+   const Vector& vert1 = mesh->cornerAt(_tri_idx,1);
+   const Vector& vert2 = mesh->cornerAt(_tri_idx,2);
 
    SUB(edge1,vert1,vert0);
    SUB(edge2,vert2,vert0);
@@ -173,20 +173,20 @@ double Triangle::_fastIntersect(const Ray& ray) const {
     
 BoundingBox Triangle::boundingBoundingBox() const {
     Vector tri[3];
-    tri[0] = mesh->cornerAt(vertex[0]);
-    tri[1] = mesh->cornerAt(vertex[1]);
-    tri[2] = mesh->cornerAt(vertex[2]);
+    tri[0] = mesh->cornerAt(_tri_idx,0);
+    tri[1] = mesh->cornerAt(_tri_idx,1);
+    tri[2] = mesh->cornerAt(_tri_idx,2);
     BoundingBox b = BoundingBox::enclosure(tri,3);
-    b.growPercentage(0.01);
+    b.growPercentage(0.1);
     //b.grow(100000.0 * EPSILON);
     return b;
 }
 
 double Triangle::area() const {
     Vector v[3];
-    v[0] = mesh->cornerAt(vertex[0]);
-    v[1] = mesh->cornerAt(vertex[1]);
-    v[2] = mesh->cornerAt(vertex[2]);
+    v[0] = mesh->cornerAt(_tri_idx,0);
+    v[1] = mesh->cornerAt(_tri_idx,1);
+    v[2] = mesh->cornerAt(_tri_idx,2);
     return 2.0 * Vector::area(v[0],v[1],v[2]);
 }
 
@@ -364,9 +364,9 @@ int triBoxOverlap(Vector boxcenter,Vector boxhalfsize,Vector triverts[3])
 
 int Triangle::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const {
     Vector triverts[3];
-    triverts[0] = mesh->cornerAt(vertex[0]);
-    triverts[1] = mesh->cornerAt(vertex[1]);
-    triverts[2] = mesh->cornerAt(vertex[2]);
+    triverts[0] = mesh->cornerAt(_tri_idx,0);
+    triverts[1] = mesh->cornerAt(_tri_idx,1);
+    triverts[2] = mesh->cornerAt(_tri_idx,2);
     Vector boxcenter = voxel_bbox.center();
     Vector boxhalfsize = 0.5 * (voxel_bbox.maximum() - voxel_bbox.minimum());
     return triBoxOverlap(boxcenter,boxhalfsize,triverts);

@@ -29,34 +29,18 @@ class Mesh : public ObjectGroup {
         class Edge {
 	    public:
 		Edge(int iV0, int iV1);
-
 	        int vertex[2];
-   	        Tri* triangle[2];
 	};
 
 	/// A class for storing triangles
-	class Tri {
-	    public:
-		Tri(int iV0, int iV1, int iV2);
-		int vertex[3];
-		int interpolated_normal[3];
-		Vector2 uv[3];
-		int normal_idx;
-		Edge* edge[3];
-		// Adjacent tris
-		Tri* triangle[3];
+	struct Tri {
+	    int vertex[3];
+	    int interpolated_normal[3];
+	    Vector2 uv[3];
+	    int normal_idx;
 	};
 
-	/// A class for storing vertices 
-	class Vertex {
-	    public:
-		Vertex(int iV);
-		// Tris meeting at this vertex
-		std::vector<Tri*> tris; // Denne kan slette efter computeInterpo.. 
-		int index;
-	};
-	
-        /// The types of meshes
+	/// The types of meshes
 	enum MeshType {
 	    MESH_FLAT,
 	    MESH_INTERPOLATED
@@ -97,7 +81,8 @@ class Mesh : public ObjectGroup {
 	/// Add a triangle to the mesh with uv-texture-coordinates
         void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3, const Vector2& uv1, const Vector2& uv2,const Vector2& uv3);
 
-	void addVertex(const Vector& point);
+	/// Adds a new vertex to the mesh
+	unsigned int addVertex(const Vector& point);
 
 	/// Add a triangle by vertex indices
 	void addTriangle(int v[3], const Vector2 uv[3]);
@@ -105,9 +90,6 @@ class Mesh : public ObjectGroup {
 	/// Add a triangle by vertex indices
 	void addTriangle(int v[3]);
 	
-	/// Internal test
-	static void test();
-
 	/// A vector of all vertices
 	std::vector<Vector>* getVertices();
 
@@ -118,6 +100,7 @@ class Mesh : public ObjectGroup {
 	const Vector& normalAt(unsigned int i) const { return normals[i]; };
 	/// Index into vertices 
 	const Vector& cornerAt(unsigned int i) const { return corners[i]; };
+	const Vector& cornerAt(int tri_idx, unsigned int i) const;
 
 	Vector2 getUV(const Triangle* triangle, double u, double v) const;
 
@@ -131,15 +114,22 @@ class Mesh : public ObjectGroup {
 	void computeAdjacentTris();
 	void computeInterpolatedNormals();
 	Vector phong_normal(const Triangle* const triangle, double u, double v) const;
-	std::vector<Vector> normals;
 	std::vector<Triangle*> triangles;
-	EdgeMapType edgeMap;
-	std::vector<Tri*> tris;
-	std::vector<Vertex> vertices;
-	std::vector<Vector> corners;
+	std::vector<Tri> tris;
 
 	const Material* material;
 
+	// New data structure
+	std::vector<Vector> normals;
+	std::vector<Vector> corners;
+	std::vector<unsigned int[3]> faces;
+	std::vector<unsigned int[3]> normal_indices;
 };
+
+inline
+const Vector& Mesh::cornerAt(int tri_idx, unsigned int i) const {
+    const Tri& tri = tris[tri_idx];
+    return corners[tri.vertex[i]];
+}
 
 #endif
