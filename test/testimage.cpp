@@ -12,10 +12,12 @@ void test_rgba() {
     c = RGBA(1.0,2.0,3.0,4.0);
     c += RGBA(1.0,2.0,3.0,4.0);
     assert(c == RGBA(2.0,4.0,6.0,8.0));
+    assert(c.a() == 8.0);
 
     c = RGBA(1.0,2.0,3.0,0.0);
     c += RGBA(1.0,2.0,3.0,1.0);
     assert(c == RGBA(2.0,4.0,6.0,1.0));
+    assert(c.a() == 1.0);
 
     // test / and *
     c = RGBA(1.0,2.0,3.0,4.0);
