@@ -53,15 +53,19 @@ class vector_test : public Test {
 	    v = Vector(1,2,3);
 	    v = 2 * v;
 	    assertTrue(v == Vector(2,4,6));
+	    assertTrue(v != Vector(2,4,7));
 
 	    v = v / 2;
 	    assertTrue(v == Vector(1,2,3));
+	    assertTrue(v != Vector(1,2,1));
 
 	    v.scale(10);
 	    assertTrue(v == Vector(10,20,30));
+	    assertTrue(v != Vector(1,2,3));
 
 	    v.scale(-1);
 	    assertTrue(v == Vector(-10,-20,-30));
+	    assertTrue(v != Vector(2,2,2));
 
 	    assertTrue(2 * v == v * 2);
 
