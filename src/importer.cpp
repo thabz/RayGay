@@ -349,15 +349,16 @@ void Importer::parse(const string& filename) {
 	} else if (command == "blob") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
-	    
-	    Blob* blob = new Blob(0.1,5,0.1,*m);
-
+	    double iso = readDouble(stream);
+	    unsigned int steps = readInt(stream);
+	    double accuracy = readDouble(stream);
+	    Blob* blob = new Blob(iso,steps,accuracy,*m);
 	    int balls_num = readInt(stream);
 	    for(int i = 0; i < balls_num; i++) {
-		Vector center = readVector(stream);
+		double weight = readDouble(stream);
 		double radius = readDouble(stream);
-		double power = readDouble(stream);
-		blob->addAtom(center,radius,power);
+		Vector center = readVector(stream);
+		blob->addAtom(center,radius,weight);
 	    }
 	    cur_object = blob;
 	} else if (command == "torus") {

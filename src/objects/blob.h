@@ -24,7 +24,7 @@ class Blob : public IsoSurface {
     
     public:
 	Blob(double surface_density, unsigned int steps, double accuracy, Material material);
-	void addAtom(const Vector& center, double a, double b);
+	void addAtom(const Vector& center, double radius, double weight);
 	BoundingBox boundingBoundingBox() const { return bbox; };
     
 	void transform(const Matrix& m);
@@ -39,8 +39,8 @@ class Blob : public IsoSurface {
 	BoundingBox bbox;
 	int atoms_num;
 	vector<Vector> centers;
-	vector<double> as;
-	vector<double> bs;
+	vector<double> radii;
+	vector<double> weights;
 };
 
 

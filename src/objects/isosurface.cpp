@@ -28,7 +28,7 @@ Intersection IsoSurface::_intersect(const Ray& ray) const {
 }
 
 bool IsoSurface::inside(const Vector& v) const {
-    return evaluateFunction(v) <= iso;
+    return evaluateFunction(v) >= iso;
 }
 
 /**
@@ -51,8 +51,14 @@ double IsoSurface::recurse(const Ray& ray, double t_begin, double t_end) const {
 }
 
 Vector IsoSurface::normal(const Intersection & i) const {
-    // TODO: Implement
-    return Vector(0,0,0);
+    Vector p = i.getPoint();
+    double x = evaluateFunction(p + Vector(1,0,0)) - 
+	       evaluateFunction(p - Vector(1,0,0));
+    double y = evaluateFunction(p + Vector(0,1,0)) - 
+	       evaluateFunction(p - Vector(0,1,0));
+    double z = evaluateFunction(p + Vector(0,0,1)) - 
+	       evaluateFunction(p - Vector(0,0,1));
+    return -1 * Vector(0.5*x,0.5*y,0.5*z);
 }
 
 bool IsoSurface::intersects(const BoundingBox& b) const {
