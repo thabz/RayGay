@@ -39,10 +39,9 @@ void Cylinder::transform(const Matrix& m) {
 }
 
 BoundingBox Cylinder::boundingBoundingBox() const {
-    Vector rv = Vector(r,r,r);
-    Vector real_begin = begin;
-    Vector real_end = end;
-    BoundingBox bbox = BoundingBox(real_begin - rv,real_end + rv);
+    Vector mini = Vector(-r,-r,0);
+    Vector maxi = Vector(r,r,height);
+    BoundingBox bbox = BoundingBox(mini,maxi);
     return bboxToWorld(bbox);
 }
 
@@ -126,10 +125,10 @@ unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[4]) c
 	double t2 = (-b + sq ) / (2 * a);
 	double ip1_z =  Ro[2] + t1 * Rd[2];
 	double ip2_z =  Ro[2] + t2 * Rd[2];
-	if (ip1_z >= EPSILON && ip1_z <= height) {
+	if (ip1_z >= EPSILON && ip1_z <= height && t1 > EPSILON) {
 	    roots[roots_found++] = t1;
 	}
-	if (ip2_z >= EPSILON && ip2_z <= height) {
+	if (ip2_z >= EPSILON && ip2_z <= height && t2 > EPSILON) {
 	    roots[roots_found++] = t2;
 	}
 
