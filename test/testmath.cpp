@@ -940,10 +940,20 @@ class quaternion_test : public Test  {
 	Quaternion p;
 };
 
+class constants_test : public Test {
+
+    public:
+	void run() {
+	    assertEqualF(M_SQRT3*M_SQRT3, 3);
+	    assertEqualF(M_SQRT3, sqrt(double(3)));
+	}
+};
+
 int main(int argc, char *argv[]) {
 
     TestSuite suite;
 
+    suite.add("Constants",new constants_test());
     suite.add("Vector",new vector_test());
     suite.add("Vector2",new vector2_test());
     suite.add("Matrix",new matrix_test());

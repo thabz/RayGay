@@ -25,7 +25,7 @@
 #define M_DEG_PI	35.342917352885173932704738061855 /* 180.0/M_PI */
 
 #ifndef M_SQRT3
-#define M_SQRT3		sqrt(double(3))
+#define M_SQRT3		1.73205080756887729352744634151   /* sqrt(3.0) */
 #endif
 
 #define HUGE_DOUBLE	double(1e+20)
