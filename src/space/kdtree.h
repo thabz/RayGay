@@ -64,7 +64,7 @@ class KdTree {
 	};
 
 	struct StackElem {
-	    double restrict pb[3];   // coordinates of entry/exit point
+	    double pb[3];   // coordinates of entry/exit point
 	    const KdNode* restrict node;   // pointer to far child
 	    float t;        // the entry/exit signed distance
 	    int prev;       // pointer to previus stack item

@@ -3,6 +3,7 @@
 #define PARSER_BOOL_NODES_H
 
 #include "parser/syntaxnode.h"
+#include "parser/floatnodes.h"
 
 /**
  * Nodes for doing boolean operations.
@@ -11,7 +12,7 @@ class BoolNode : public SyntaxNode {
 
     public:
 	virtual bool eval() = 0;
-	virtual ~BoolNode() { };
+	virtual ~BoolNode();
 };
 
 class BoolAndNode : public BoolNode {

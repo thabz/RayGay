@@ -11,10 +11,12 @@ libparser_a_SOURCES = \
 		      tokenizer.ll	\
 		      assignments.h	\
 		      assignments.cpp 	\
+		      boolnodes.cpp	\
 		      boolnodes.h	\
 		      cameranode.h	\
 		      cameranode.cpp	\
 		      fileposition.h	\
+		      fileposition.cpp	\
 		      floatnodes.h	\
 		      floatnodes.cpp	\
 		      function.h	\

@@ -9,18 +9,9 @@ using namespace std;
 class FilePosition {
 
     public:
-
-	FilePosition(string filename) {
-	    this->filename = filename;
-	    this->line_num = 1;
-	}
-
-	FilePosition() {
-	    this->filename = "Unknown";
-	    this->line_num = 0;
-	}
-
-	~FilePosition() {}
+	FilePosition(string filename);
+	FilePosition();
+	~FilePosition();
 
 	string getFilename() const { return filename; };
 	unsigned int getLineNum() const { return line_num; };

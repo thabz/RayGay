@@ -8,8 +8,14 @@
 //---------------------------------------------------------------------
 // ActionNode
 //---------------------------------------------------------------------
+ActionNode::ActionNode() {
+}
+
 ActionNode::~ActionNode() {
 }
+
+ActionNode::ActionNode(FilePosition pos) : SyntaxNode(pos) {
+};
 
 //---------------------------------------------------------------------
 // ActionListNode

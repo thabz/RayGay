@@ -24,8 +24,8 @@ class ActionNode : public SyntaxNode {
 	virtual void eval() = 0;
 	virtual ~ActionNode();
     protected:
-	ActionNode() {};
-	ActionNode(FilePosition pos) : SyntaxNode(pos) {};
+	ActionNode();
+	ActionNode(FilePosition pos);
 };
 
 class NOPAction	: public ActionNode {

@@ -157,7 +157,7 @@ void Mesh::computeInterpolatedNormals() {
 
     uint face_num = faces.size() / 3;
     uint vertex_num = corners.size();
-    vector<uint>* adj = new (vector<uint>)[vertex_num];
+    vector<uint>* adj = new vector<uint>[vertex_num];
     for(uint i = 0; i < face_num; i++) {
 	for(uint j = 0; j < 3; j++) {
 	    uint vertex_idx = faces[i*3+j];

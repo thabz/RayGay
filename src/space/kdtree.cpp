@@ -98,9 +98,9 @@ void KdTree::prepare() {
     uint num = added_objects->size();
     assert(num > 0);
     
-    BoundedObject* bobs = new (BoundedObject)[num];
-    left_bobs = new (BoundedObject*)[num];
-    right_bobs = new (BoundedObject*)[num];
+    BoundedObject* bobs = new BoundedObject[num];
+    left_bobs = new BoundedObject*[num];
+    right_bobs = new BoundedObject*[num];
 
     for(uint i = 0; i < num; i++) {
 	bobs[i].object = added_objects->operator[](i);
@@ -219,7 +219,7 @@ void KdTree::prepare(uint num, const BoundingBox& bbox, uint depth, const uint d
 	new_node.axis = -1;
 	new_node.num = num;
 	if (num > 0) {
-	    new_node.objects = new (Object*)[num];
+	    new_node.objects = new Object*[num];
 	    for(uint j = 0; j < num; j++) {
 		new_node.objects[j] = left_bobs[j]->object;
 	    }
