@@ -3,10 +3,26 @@
 #include "objects/csg.h"
 #include "boundingbox.h"
 #include "exception.h"
+#include <algorithm>
 
 CSGUnion::CSGUnion(Solid* left, Solid* right, const Material* mat) : Solid(mat) {
     this->left = left;
     this->right = right;
+}
+
+CSGUnion::CSGUnion(vector<Solid*>* solids, const Material* mat) : Solid(mat) {
+    unsigned int size = solids->size();
+    if (size < 2) throw_exception("At least two solids are needed.");
+    if (size == 2) {
+	this->left = solids->front();
+	this->right = solids->operator[](1);
+    } else {
+	this->left = solids->operator[](0);
+	this->right = solids->operator[](1);
+	for(unsigned int i = 2; i < size; i++) {
+	    this->right = new CSGUnion(this->right,solids->operator[](i),NULL);
+	}
+    }
 }
 
 SceneObject* CSGUnion::clone() const {
@@ -26,12 +42,45 @@ void CSGUnion::transform(const Matrix& m) {
     left->transform(m);
 }
 
+class compareIntersectionsAsc {
+    public:
+	bool operator()(const Intersection& i1, const Intersection &i2) {
+	    return i1.getT() < i2.getT();
+	}
+};
+
 void CSGUnion::allIntersections(const Ray& ray, vector<Intersection>& result) const {
     vector<Intersection> left_int;
     left->allIntersections(ray,left_int);
     vector<Intersection> right_int;
     right->allIntersections(ray,right_int);
     result.reserve(left_int.size() + right_int.size());
+
+    /*
+    vector<Intersection> intersections;
+    unsigned int i = 0;
+    while (i < left_int.size()) intersections.push_back(left_int[i++]);
+    i = 0;
+    while (i < right_int.size()) intersections.push_back(right_int[i++]);
+    sort(intersections.begin(),intersections.end(),compareIntersectionsAsc());
+
+    if (intersections.size() == 0) return;
+
+    bool inside = !intersections.front().isEntering();
+
+    i = 0;
+    while (i < intersections.size()) {
+	Intersection& intersection = intersections[i];
+	if ((intersection.isEntering() && !inside) ||
+            (!intersection.isEntering() && inside)) {
+	    result.push_back(intersection);
+	    inside = !inside;
+	}
+	i++;
+    }
+    return;
+    */
+
     unsigned int l = 0;
     unsigned int r = 0;
     bool left_inside = false;

@@ -13,6 +13,7 @@ class CSGUnion : public Solid {
 
 	/// Constructor
 	CSGUnion(Solid* left, Solid* right, const Material* mat); 
+	CSGUnion(vector<Solid*>* solids, const Material* mat); 
 	bool inside(const Vector& point) const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 

@@ -529,6 +529,51 @@ void csg_test() {
     assert(iNormal(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-1));
     assert(iPoint(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,25));
     assert(iNormal(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,1));
+
+    // Testing the constructor taking a vector<Solid*>
+    vector<Solid*> solids;
+
+    solids.push_back(s1);
+    solids.push_back(s2);
+    csg = new CSGUnion(&solids,NULL);
+    assert(iPoint(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-25));
+    assert(iNormal(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-1));
+    assert(iPoint(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-25));
+    assert(iNormal(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-1));
+    assert(iPoint(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,25));
+    assert(iNormal(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,1));
+    
+    solids.clear();
+    for(int i = 0; i <= 100; i++) {
+	solids.push_back(new Sphere(Vector(0,0,i),2,NULL));
+    }
+    csg = new CSGUnion(&solids,NULL);
+    assert(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,102));
+    assert(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-2));
+    assert(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+    all.clear();
+    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+    csg->allIntersections(ray,all);
+    assert(all.size() == 2);
+    assert(all[0].getPoint() == Vector(0,0,102));
+    assert(all[1].getPoint() == Vector(0,0,-2));
+
+    solids.clear();
+    for(int i = 0; i <= 100; i++) {
+	solids.push_back(new Sphere(Vector(0,0,i),0.25,NULL));
+    }
+    csg = new CSGUnion(&solids,NULL);
+    assert(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,100.25));
+    assert(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-0.25));
+    assert(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+    all.clear();
+    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+    csg->allIntersections(ray,all);
+    assert(all.size() == 2*101);
+    assert(all[0].getPoint() == Vector(0,0,100.25));
+    assert(all[1].getPoint() == Vector(0,0,99.75));
     
     ///////////////////////////////////////////////////////////////
     // Intersection 
