@@ -294,6 +294,10 @@ NamedMaterial   : tSTRING
 MaterialDef     : tMATERIAL '{' MaterialProps '}'
                 {
 		    $$ = tmpMaterial;
+		    // Sanity check some material parameters
+		    if ($$->getKs() > 0 && $$->getSc() == 0) {
+			cout << "WARNING. Ks > 0 but specpow = 0" << endl;
+		    }
 		    tmpMaterial = new Material();
 		}
                 ;
