@@ -7,6 +7,7 @@
 
 #include "ray.h"
 #include "intersection.h"
+#include "exception.h"
 #include "math/constants.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
@@ -22,6 +23,17 @@ BoundingBox::BoundingBox(const Vector c1, const Vector c2) {
     _c2 = Vector(MAX(c1[0],c2[0]),MAX(c1[1],c2[1]),MAX(c1[2],c2[2]));
     corners = NULL;
 }
+
+BoundingBox::BoundingBox(const std::vector<Vector>& swarm) {
+    int num = swarm.size();
+    if (num < 2) throw_exception("At least two Vectors are needed");
+    for(int i = 0; i < num; i++) {
+	Vector c = swarm[i];
+	_c1 = Vector(MIN(_c1[0],c[0]),MIN(_c1[1],c[1]),MIN(_c1[2],c[2]));
+  	_c2 = Vector(MAX(c[0],_c2[0]),MAX(c[1],_c2[1]),MAX(c[2],_c2[2]));
+    }
+}
+
 
 BoundingBox::~BoundingBox() {
     //delete [] corners;

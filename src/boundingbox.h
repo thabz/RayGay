@@ -3,6 +3,7 @@
 
 #include "math/vector.h"
 #include <iosfwd>
+#include <vector>
 
 class Intersection;
 class Ray;
@@ -21,6 +22,9 @@ class BoundingBox {
 	
         /// Constructor
 	BoundingBox(const Vector corner1, const Vector corner2);
+	
+        /// Constructor
+	BoundingBox(const std::vector<Vector>& swarm);
 
 	/// Destructor
 	virtual ~BoundingBox();
