@@ -30,6 +30,8 @@ class Math {
 
 	static Vector perturbVector(const Vector& axis, const double angle);
 	static Vector perturbVector(const Vector& axis, const double angle, QMCSequence* qmc_sequence);
+
+	static Vector2 shirleyDisc(double seedx, double seedy);
 };
 
 inline double Math::clamp(double a) {

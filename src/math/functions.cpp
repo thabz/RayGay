@@ -296,3 +296,37 @@ Vector Math::perturbVector(const Vector& axis, const double angle, QMCSequence* 
 
     return result;
 }
+
+/**
+ * Low distortion maps of a point on [0,1]^2 to the unit disc.
+ *
+ * @see http://www.acm.org/jgt/papers/ShirleyChiu97/
+ */
+Vector2 Math::shirleyDisc(double seedx, double seedy) {
+    double phi, r;
+
+    double a = 2*seedx - 1;   /* (a,b) is now on [-1,1]^2 */
+    double b = 2*seedy - 1;
+
+    if (a > -b) {     /* region 1 or 2 */
+	if (a > b) {  /* region 1, also |a| > |b| */
+	    r = a;
+	    phi = (M_PI/4 ) * (b/a);
+	} else       {  /* region 2, also |b| > |a| */
+	    r = b;
+	    phi = (M_PI/4) * (2 - (a/b));
+	}
+    } else {        /* region 3 or 4 */
+	if (a < b) {  /* region 3, also |a| >= |b|, a != 0 */
+	    r = -a;
+	    phi = (M_PI/4) * (4 + (b/a));
+	} else {  /* region 4, |b| >= |a|, but a==0 and b==0 could occur. */
+	    r = -b;
+	    if (b != 0)
+		phi = (M_PI/4) * (6 - (a/b));
+	    else
+		phi = 0;
+	}
+    }
+    return Vector2(r * cos(phi), r * sin(phi));
+}
