@@ -179,18 +179,16 @@ void Renderer::renderFull(const RenderJob& job) {
  */
 void Renderer::prepareCurRow(std::vector<PixelBlock>* cur_row, std::vector<PixelBlock>* prev_row,uint blocksize) {
     assert(cur_row->size() == prev_row->size());
-    PixelBlock* cur_row_block;
-    PixelBlock* prev_row_block;
     uint width = cur_row->size();
 
     for(uint i = 0; i < width; i++) {
-	cur_row_block = &((*cur_row)[i]);
-	prev_row_block = &((*prev_row)[i]);
-	cur_row_block->reset();
+	PixelBlock& cur_row_block = cur_row->operator[](i);
+	PixelBlock& prev_row_block = prev_row->operator[](i);
+	cur_row_block.reset();
 	
 	for(uint j = 0; j < blocksize; j++) {
-	    if (prev_row_block->isActive(j,0)) {
-		cur_row_block->setColor(j,blocksize-1,prev_row_block->getColor(j,0));
+	    if (prev_row_block.isActive(j,0)) {
+		cur_row_block.setColor(j,blocksize-1,prev_row_block.getColor(j,0));
 	    }
 	}
     }
