@@ -211,9 +211,8 @@ int planeBoxOverlap(double normal[3], double d, Vector maxbox)
 {
     int q;
     double vmin[3],vmax[3];
-    for(q=X;q<=Z;q++)
-    {
-	if(normal[q] > 0.0) {
+    for (q = X; q <= Z; q++) {
+	if (normal[q] > 0.0) {
 	    vmin[q]=-maxbox[q];
 	    vmax[q]=maxbox[q];
 	} else {
@@ -221,8 +220,8 @@ int planeBoxOverlap(double normal[3], double d, Vector maxbox)
 	    vmax[q]=-maxbox[q];
 	}
     }
-    if(DOT(normal,vmin)+d > 0.0) return 0;
-    if(DOT(normal,vmax)+d >= 0.0) return 1;
+    if (DOT(normal,vmin) + d > 0.0) return 0;
+    if (DOT(normal,vmax) + d >= 0.0) return 1;
 
     return 0;
 }
@@ -274,7 +273,7 @@ int planeBoxOverlap(double normal[3], double d, Vector maxbox)
     rad = fa * boxhalfsize[X] + fb * boxhalfsize[Y];   \
     if(min>rad || max<-rad) return 0;
 
-int triBoxOverlap(Vector boxcenter,Vector boxhalfsize,Vector triverts[3])
+int triBoxOverlap(const Vector& boxcenter, const Vector& boxhalfsize, Vector triverts[3])
 {
 
   /*    use separating axis theorem to test overlap between triangle and box */
@@ -330,22 +329,22 @@ int triBoxOverlap(Vector boxcenter,Vector boxhalfsize,Vector triverts[3])
 
    /* test in X-direction */
    FINDMINMAX(v0[X],v1[X],v2[X],min,max);
-   if(min>boxhalfsize[X] || max<-boxhalfsize[X]) return -1;
+   if (min > boxhalfsize[X] || max < -boxhalfsize[X]) return -1;
 
    /* test in Y-direction */
    FINDMINMAX(v0[Y],v1[Y],v2[Y],min,max);
-   if(min>boxhalfsize[Y] || max<-boxhalfsize[Y]) return -1;
+   if (min > boxhalfsize[Y] || max < -boxhalfsize[Y]) return -1;
 
    /* test in Z-direction */
    FINDMINMAX(v0[Z],v1[Z],v2[Z],min,max);
-   if(min>boxhalfsize[Z] || max<-boxhalfsize[Z]) return -1;
+   if (min > boxhalfsize[Z] || max < -boxhalfsize[Z]) return -1;
 
    /* Bullet 2: */
    /*  test if the box intersects the plane of the triangle */
    /*  compute plane equation of triangle: normal*x+d=0 */
    CROSS(normal,e0,e1);
-   d=-DOT(normal,v0);  /* plane eq: normal.x+d=0 */
-   if(!planeBoxOverlap(normal,d,boxhalfsize)) return -1;
+   d = -DOT(normal,v0);  /* plane eq: normal.x+d=0 */
+   if (!planeBoxOverlap(normal,d,boxhalfsize)) return -1;
 
    return 1;   /* box and triangle overlaps */
 }

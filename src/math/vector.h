@@ -77,6 +77,9 @@ public:
 
     // Convert from polar to rectangular coordinates
     Vector toRectangular() const;
+
+    // Copy into array of doubles
+    void toArray(double array[3]) const;
     
     // Returns this vector refracted around a normal
     Vector refract(const Vector& normal, double ior) const;
@@ -203,6 +206,13 @@ double Vector::norm() const {
 inline
 double Vector::length() const {
     return sqrt(_vector[0]*_vector[0] + _vector[1]*_vector[1] + _vector[2]*_vector[2]);
+}
+
+inline
+void Vector::toArray(double array[3]) const {
+    array[0] = _vector[0];
+    array[1] = _vector[1];
+    array[2] = _vector[2];
 }
 
 #endif

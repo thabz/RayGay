@@ -93,10 +93,10 @@ class compareAreaDesc {
 };
 
 void KdTree::prepare() {
-    assert(added_objects->size() > 0);
     if (prepared) throw_exception("Already prepared.");
 
     uint num = added_objects->size();
+    assert(num > 0);
     
     BoundedObject* bobs = new (BoundedObject)[num];
     left_bobs = new (BoundedObject*)[num];
@@ -179,11 +179,11 @@ void KdTree::prepare(uint num, const BoundingBox& bbox, uint depth, const uint d
 	    // Move into lower
 	    uint j = 0;
 	    for(uint i = 0; i < splitResult.left_index; i++) {
-		BoundedObject* bobject = left_bobs[i];
-		if (bobject->bbox.minimum(axis) < splitPlane) {
-		    if (bobject->object->intersects(lower_bbox,bobject->bbox) >= 0) {
+		BoundedObject* bob = left_bobs[i];
+		if (bob->bbox.minimum(axis) < splitPlane) {
+		    if (bob->object->intersects(lower_bbox,bob->bbox) >= 0) {
 			tmp = left_bobs[j];
-			left_bobs[j] = bobject;
+			left_bobs[j] = bob;
 			left_bobs[i] = tmp;
 			j++;
 		    }
@@ -255,9 +255,7 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 	stack[enPt].pb[1] = ray.getOrigin()[1] + ray.getDirection()[1] * a;
 	stack[enPt].pb[2] = ray.getOrigin()[2] + ray.getDirection()[2] * a;
     } else {
-	stack[enPt].pb[0] = ray.getOrigin()[0];
-	stack[enPt].pb[1] = ray.getOrigin()[1];
-	stack[enPt].pb[2] = ray.getOrigin()[2];    
+	ray.getOrigin().toArray(stack[enPt].pb);
     }
     int exPt = 1;
     stack[exPt].t = b;
@@ -416,9 +414,7 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
     int enPt = 0;
     stack[enPt].t = 0.0;
 
-    stack[enPt].pb[0] = ray.getOrigin()[0];
-    stack[enPt].pb[1] = ray.getOrigin()[1];
-    stack[enPt].pb[2] = ray.getOrigin()[2];    
+    ray.getOrigin().toArray(stack[enPt].pb);
 
     int exPt = 1;
     stack[exPt].t = b;
@@ -501,7 +497,7 @@ BoundingBox KdTree::enclosure(BoundedObject** bobs, uint num) const {
 class cmpL {
     public:
 	cmpL(uint d) { this->d = d; } 
-	bool operator()(const BoundedObject* p1, const BoundedObject* p2) const {
+	bool operator()(const BoundedObject* const p1, const BoundedObject* const p2) const {
 	    return p1->bbox.minimum(d) < p2->bbox.minimum(d);
 	}
     private:
@@ -511,7 +507,7 @@ class cmpL {
 class cmpR {
     public:
 	cmpR(uint d) { this->d = d; }
-	bool operator()(const BoundedObject* p1, const BoundedObject* p2) const {
+	bool operator()(const BoundedObject* const p1, const BoundedObject* const p2) const {
 	    return p1->bbox.maximum(d) < p2->bbox.maximum(d);
 	}
     private:
@@ -534,11 +530,12 @@ void KdTree::findBestSplitPlane(uint size, const BoundingBox& bbox, CostResult& 
 
     uint l = 0;
     uint r = 0;
+    bool used_right;
+    double rsplit, lsplit;
     while (l < size || r < size) {
-	bool used_right;
 	if (l < size && r < size) {
-	    double rsplit = right_bobs[r]->bbox.maximum(d);
-	    double lsplit = left_bobs[l]->bbox.minimum(d);
+	    rsplit = right_bobs[r]->bbox.maximum(d);
+	    lsplit = left_bobs[l]->bbox.minimum(d);
 	    if (rsplit < lsplit) {
 		split = rsplit;
 		used_right = true;
