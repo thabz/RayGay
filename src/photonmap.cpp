@@ -1,8 +1,6 @@
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include <iostream>
+#include <cmath>
 
 #include "photonmap.h"
 #include "math/vector.h"
@@ -25,7 +23,7 @@ PhotonMap :: PhotonMap( const int max_phot )
     photons = (Photon*)malloc( sizeof( Photon ) * ( max_photons+1 ) );
 
     if (photons == NULL) {
-	fprintf(stderr,"Out of memory initializing photon map\n");
+	std::cerr << "Out of memory initializing photon map." << std::endl;
 	exit(-1);
     }
 

@@ -9,10 +9,11 @@
  * Added Thu Apr 17 2003
  */
 
-#include "math/vector.h"
-#include <math.h>
+#include <cmath>
 #include <cassert>
 #include <iostream>
+
+#include "math/vector.h"
 #include "constants.h"
 
 using namespace std;

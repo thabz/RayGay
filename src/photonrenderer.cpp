@@ -1,7 +1,7 @@
 #include "photonrenderer.h"
 
 #include <iostream>
-#include <math.h>
+#include <cmath>
 
 #include "math/vector.h"
 #include "math/functions.h"

@@ -1,3 +1,4 @@
+#include <cmath>
 
 #include "materials/material.h"
 #include "image/rgb.h"
@@ -6,7 +7,6 @@
 #include "object.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
-#include "math.h"
 
 Material::Material() {
    texturemap = NULL;

@@ -1,6 +1,6 @@
 
+#include <cmath>
 #include "paths/line.h"
-#include <math.h>
 
 /**
  * Constructor takes two points that the line pass

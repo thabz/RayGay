@@ -3,7 +3,7 @@
 #include "image.h"
 #include <cassert>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <memory.h>
 #include "math/vector2.h"
 
