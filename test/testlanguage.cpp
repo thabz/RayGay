@@ -11,6 +11,7 @@
 #include <cassert>
 #include <iostream>
 #include <string>
+#include <vector>
 #include <algorithm>
 #include <cctype>
 
@@ -48,11 +49,58 @@ void test_lowercase() {
     assert(s == "ray gay");
 }
 
+class compareAreaDesc {
+    public:
+	bool operator()(int const p1, int const p2)
+	{
+	    return p1 > p2;
+	}
+};
+
+class compareAreaAsc {
+    public:
+	bool operator()(int const p1, int const p2)
+	{
+	    return p1 < p2;
+	}
+};
+
+void test_sort() {
+    // Test descending sortering
+    vector<int> tal;
+    tal.push_back(10);
+    tal.push_back(5);
+    tal.push_back(15);
+    tal.push_back(0);
+    tal.push_back(20);
+    sort(tal.begin(),tal.end(),compareAreaDesc());
+    assert(tal[0] == 20);
+    assert(tal[1] == 15);
+    assert(tal[2] == 10);
+    assert(tal[3] == 5);
+    assert(tal[4] == 0);
+    tal.clear();
+    
+    // Test ascending sortering
+    tal.push_back(10);
+    tal.push_back(5);
+    tal.push_back(15);
+    tal.push_back(0);
+    tal.push_back(20);
+    sort(tal.begin(),tal.end(),compareAreaAsc());
+    assert(tal[0] == 0);
+    assert(tal[1] == 5);
+    assert(tal[2] == 10);
+    assert(tal[3] == 15);
+    assert(tal[4] == 20);
+}
+
 int main(int argc, char *argv[]) {
 
     test_bool();
     test_modulo();
     test_lowercase();
+    test_sort();
     return EXIT_SUCCESS;
 }
 
