@@ -88,6 +88,8 @@ class KdTree {
 		vector<BoundedObject>* right_bobjects; //> Input
 		unsigned int left_index; //> Output
 		unsigned int right_index; //> Output
+		unsigned int left_size;
+		unsigned int right_size;
 	};
 
 	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
