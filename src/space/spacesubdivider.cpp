@@ -9,6 +9,8 @@ SpaceSubdivider::SpaceSubdivider() {
 }
 
 bool SpaceSubdivider::intersect(void* fromObject, const Ray& ray) {
+    return false;
+    /*
     if (fromObject == NULL) {
 	return intersect(ray);
     } else {
@@ -36,4 +38,5 @@ bool SpaceSubdivider::intersect(void* fromObject, const Ray& ray) {
 	    }
 	}
     }
+    */
 }

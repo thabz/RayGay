@@ -4,6 +4,7 @@
 #include "math/matrix.h"
 #include "intersection.h"
 #include "space/spacesubdivider.h"
+#include "objects/object.h"
 #include "stats.h"
 
 Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
@@ -23,15 +24,24 @@ Lightinfo Pointlight::getLightinfo(const Intersection& inter,const Vector& norma
 	// TODO: Move hint-checking away from space and into shadowcache code
 	// TODO: Check other objects in hints voxel
 	Object* hint = shadowcache.get(depth);
-	bool in = space->intersectForShadow(ray_to_light,hint,dist_to_light);
 
+	if (hint != NULL) {
+	    double t = hint->fastIntersect(ray_to_light);
+	    if (t > 0 && t < dist_to_light) {
+		info.intensity = 0.0;
+		return info;
+	    }
+	} 
+	bool in = space->intersectForShadow(ray_to_light,dist_to_light);
 	if (in) {
 	    shadowcache.put(depth,space->getLastIntersection()->getObject());
+	    //shadowcache.put(depth,NULL);
 	    info.intensity = 0.0;
 	} else {
 	    shadowcache.put(depth,NULL);
 	    info.intensity = 1.0;
 	}
+
     }
     return info;
 }

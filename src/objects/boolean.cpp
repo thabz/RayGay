@@ -11,10 +11,16 @@ Boolean::Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, const M
 }
 
 Intersection Boolean::_intersect(const Ray& ray) const {
-    _lhs->intersect(ray);
-    Intersection il = *(_lhs->getLastIntersection());
-    _rhs->intersect(ray);
-    Intersection ir = *(_rhs->getLastIntersection());
+    Intersection il;
+    Intersection ir;
+    double i_tl = _lhs->fastIntersect(ray);
+    double i_tr = _rhs->fastIntersect(ray);
+    if (i_tl > 0) {
+	il = _lhs->fullIntersect(ray,i_tl);
+    }
+    if (i_tr > 0) {
+	ir = _rhs->fullIntersect(ray,i_tr);
+    }
 
     Intersection* closest;
     Intersection empty = Intersection();
@@ -65,8 +71,8 @@ Intersection Boolean::_intersect(const Ray& ray) const {
 		return *closest;
 	    } else {
 		Ray new_ray = Ray(closest->getPoint(), ray.getDirection(), ray.getIndiceOfRefraction());
-		intersect(new_ray);
-		Intersection next_intersection = *(getLastIntersection());
+		double t = fastIntersect(new_ray);
+		Intersection next_intersection = fullIntersect(new_ray,t);
 		next_intersection.setT( closest->getT() + next_intersection.getT());; 
 		return next_intersection;
 	    }

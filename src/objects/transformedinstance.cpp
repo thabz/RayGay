@@ -13,11 +13,9 @@ TransformedInstance::TransformedInstance(Object* object, Material* material) : T
 }
 
 Intersection TransformedInstance::localIntersect(const Ray& ray) const {
-    if (object->intersect(ray)) {
-	Intersection* inter = object->getLastIntersection();
-	Intersection result = Intersection(*inter);
-	result.setObject(inter->getObject());
-	result.setLocalObject(inter->getLocalObject());
+    double t = object->fastIntersect(ray);
+    if (t > 0) {
+	Intersection result = object->fullIntersect(ray,t);
 	return result;
     } else {
 	return Intersection();

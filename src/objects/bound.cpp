@@ -51,16 +51,21 @@ const Material* Bound::getMaterial() const {
 }
 */
 
-bool Bound::intersect(const Ray& ray) const {
+Intersection Bound::fullIntersect(const Ray& ray, double t) const {
+    Intersection result;
     if (tree->intersect(ray)) {
-	last_intersection = *(tree->getLastIntersection());
+	result = *(tree->getLastIntersection());
     } else {
-	last_intersection = Intersection();
+	result = Intersection();
     } 
-    return last_intersection.isIntersected();
+    return result;
 }
 
-Intersection Bound::_intersect(const Ray& ray) const {
-    // Not to be called
-    return Intersection();
+double Bound::fastIntersect(const Ray& ray) const {
+    // TODO: Inefficient
+    if (tree->intersect(ray)) {
+	return tree->getLastIntersection()->getT();
+    } else {
+	return -1;
+    }
 }

@@ -37,7 +37,7 @@ class BSP : public SpaceSubdivider {
 	/// This gets called after all objects are added and before any intersection methods are called.
 	void prepare();
 
-	Intersection* getLastIntersection() const { return last_intersection; };
+	Intersection* getLastIntersection() const { return &last_intersection; };
 
 	
         /// Internal test
@@ -50,7 +50,7 @@ class BSP : public SpaceSubdivider {
 	BSP* lower;
 	BSP* higher;
 
-	mutable Intersection* last_intersection;
+	mutable Intersection last_intersection;
 	static Object* last_primary_intersected_object;
 
 	/// Returns the smallest bbox containing all objects of this node

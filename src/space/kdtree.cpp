@@ -53,8 +53,8 @@ bool KdTree::intersectForShadow(const Ray& ray, double max_t) const {
 }
 
 bool KdTree::intersectForShadow(const Ray& ray, const Object* hint, double max_t) const {
-    if (hint != NULL && hint->intersect(ray) && hint->getLastIntersection()->getT() < max_t) {
-	last_intersection = hint->getLastIntersection();
+    if (hint != NULL && hint->fastIntersect(ray) < max_t) {
+	//last_intersection = hint->getLastIntersection();
 	return true;
     } else {
 	//return intersectForShadow(ray,max_t);
@@ -63,9 +63,11 @@ bool KdTree::intersectForShadow(const Ray& ray, const Object* hint, double max_t
 }
 
 // TODO: Write a faster intersect for shadows
+/*
 bool KdTree::intersectForShadow(const Ray& ray,double a, double b) const {
     return intersect(ray,a,b);
 }
+*/
 
 void KdTree::prepare() {
     world_bbox = enclosure(added_objects);
@@ -268,23 +270,111 @@ bool KdTree::intersect(const Ray& ray, const double a, const double b) const {
 	// Intersect with all objects in list, discarding
 	// those lying before stack[enPt].t or farther than stack[exPt].t
 	Object* object_hit = NULL;
-	if (curNode->objects->size() > 0) {
+	double smallest_t = HUGE_DOUBLE;
+	if (!curNode->objects->empty()) {
 	    const vector<Object*> &objects = *(curNode->objects);
-	    double smallest_t = HUGE_DOUBLE;
 	    unsigned int objects_size = objects.size();
 	    for (unsigned int i = 0; i < objects_size; i++) {
-		if (objects[i]->intersect(ray)) {
-		    double i_t =  objects[i]->getLastIntersection()->getT();
-		    if (i_t < smallest_t && i_t > stack[enPt].t && i_t < stack[exPt].t) {
-			smallest_t = objects[i]->getLastIntersection()->getT();
-			object_hit = objects[i];
-		    }
+		double i_t = objects[i]->fastIntersect(ray);
+		if (i_t > 0 && i_t < smallest_t && i_t > stack[enPt].t && i_t < stack[exPt].t) {
+		    smallest_t = i_t;
+		    object_hit = objects[i];
 		}
 	    }
 	}
 	if (object_hit != NULL) {
-	    last_intersection = object_hit->getLastIntersection();
+	    last_intersection = object_hit->fullIntersect(ray,smallest_t);
 	    return true;
+	}
+
+	enPt = exPt;
+
+	curNode = stack[exPt].node;
+	exPt = stack[enPt].prev;
+    } /* while curNode != end of nodes */
+    return false;
+}
+
+bool KdTree::intersectForShadow(const Ray& ray, const double a, const double b) const {
+
+    double t;
+    KdNode *farChild, *curNode;
+    curNode = nodes;
+    int enPt = 0;
+    stack[enPt].t = a;
+
+    if (a >= 0.0) 
+	stack[enPt].pb = ray.getOrigin() + ray.getDirection() * a;
+    else 
+	stack[enPt].pb = ray.getOrigin();
+
+    int exPt = 1;
+    stack[exPt].t = b;
+    stack[exPt].pb = ray.getOrigin() + ray.getDirection() * b;
+    stack[exPt].node = NULL;
+
+    while (curNode != NULL) {
+	while (curNode->axis >= 0) {
+	    /* Current node is not a leaf */
+	    double splitVal = curNode->splitPlane;
+	    int axis = curNode->axis; // ?
+
+	    if (stack[enPt].pb[axis] <= splitVal) {
+		if (stack[exPt].pb[axis] <= splitVal) {
+		    curNode = curNode->left;
+		    continue;
+		}
+		
+		/*
+		if (stack[exPt].pb[axis] == splitVal) { //TODO: Wierd!
+		    curNode = curNode->right;
+		    continue;
+		}
+		*/
+		
+		farChild = curNode->right;
+		curNode = curNode->left;
+	    } else {
+		if (splitVal <= stack[exPt].pb[axis]) {
+		    curNode = curNode->right;
+		    continue;
+		}
+		farChild = curNode->left;
+		curNode = curNode->right;
+	    }
+
+	    t = (splitVal - ray.getOrigin()[axis]) / ray.getDirection()[axis];
+
+	    int tmp = exPt;
+	    exPt++;
+
+	    if (exPt == enPt)
+		exPt++;
+
+	    stack[exPt].prev = tmp;
+	    stack[exPt].t = t;
+	    stack[exPt].node = farChild;
+	    stack[exPt].pb[axis] = splitVal;
+	    int nextAxis = (axis+1) % 3;
+	    int prevAxis = (axis+2) % 3;
+	    stack[exPt].pb[nextAxis] = ray.getOrigin()[nextAxis] + 
+		                       t * ray.getDirection()[nextAxis];
+	    stack[exPt].pb[prevAxis] = ray.getOrigin()[prevAxis] +
+		                       t * ray.getDirection()[prevAxis];
+	} /* while curNode not a leaf */
+
+	// Intersect with all objects in list, discarding
+	// those lying before stack[enPt].t or farther than stack[exPt].t
+	if (!curNode->objects->empty()) {
+	    const vector<Object*> &objects = *(curNode->objects);
+	    unsigned int objects_size = objects.size();
+	    for (unsigned int i = 0; i < objects_size; i++) {
+		double i_t = objects[i]->fastIntersect(ray);
+		if (i_t > 0 && i_t > stack[enPt].t && i_t < stack[exPt].t) {
+		    last_intersection.setObject(objects[i]);
+		    return true;
+		}
+	    }
 	}
 
 	enPt = exPt;

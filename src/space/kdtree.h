@@ -34,7 +34,7 @@ class KdTree : public SpaceSubdivider {
 	bool intersectForShadow(const Ray& ray, double max_t) const; ///< Returns any intersection 
 	bool intersectForShadow(const Ray& ray, const Object* hint, double max_t) const; ///< Returns any intersection but hint-object is checked for intersection first.
 
-	Intersection* getLastIntersection() const { return last_intersection; };
+	Intersection* getLastIntersection() const { return &last_intersection; };
 	void addObject(Object* obj); ///< Place a object in the kd-tree 
 	void prepare();
 
@@ -89,7 +89,7 @@ class KdTree : public SpaceSubdivider {
 
 	std::vector<Object*>* added_objects;
 	bool prepared;
-	mutable Intersection* last_intersection;
+	mutable Intersection last_intersection;
 	static Object* last_primary_intersected_object;
 
 };

@@ -20,7 +20,9 @@ class SpaceSubdivider;
 class Object : public SceneObject {
     public:
         /// Return the nearest intersection to ray's origin
-	virtual bool intersect(const Ray& ray) const;
+	virtual Intersection fullIntersect(const Ray& ray, const double t) const;
+
+	virtual double fastIntersect(const Ray& ray) const;
 
 	/// Returns the normalvector at a point on this objects surface
 	virtual Vector normal(const Intersection &i) const = 0;
@@ -30,11 +32,14 @@ class Object : public SceneObject {
 
 	/// Returns the materiale of this object
 	virtual const Material* getMaterial() const { 
+	    return material;
+	    /*
 	    if (last_intersection.isIntersected()) {
 		return last_intersection.getObject()->material;
 	    } else {
 		return material;
 	    }
+	    */
 	};
 
 	/// The smallest box containing this object
@@ -48,18 +53,17 @@ class Object : public SceneObject {
 
 	void addSelf(SpaceSubdivider* space);
 
-	/// Returns last successful intersection
-	Intersection* getLastIntersection() const { return &last_intersection; }; 
-
     protected:
 	Object(const Material* material);
 	/// Internal intersect method that subclasses must implement
+	virtual Intersection _fullIntersect(const Ray& ray, const double t) const;
 	virtual Intersection _intersect(const Ray& ray) const = 0;
-	mutable Intersection last_intersection;
+	virtual double _fastIntersect(const Ray& ray) const;
 
     private:	
 	// Two members for caching last intersection
 	mutable long last_ray;
+	mutable double last_t;
 	const Material* material;
 };
 
@@ -69,14 +73,15 @@ class Object : public SceneObject {
  *  the same ray at the same object several times.
  */
 inline
-bool Object::intersect(const Ray& ray) const {
-    if (ray.getId() != last_ray) {
-	last_intersection = _intersect(ray);
-	last_intersection.setObject(const_cast<Object*>(this));
-	last_ray = ray.getId();
-    }
-    return last_intersection.isIntersected();
+Intersection Object::fullIntersect(const Ray& ray, const double t) const {
+    Intersection result = _fullIntersect(ray,t);
+    result.setObject(const_cast<Object*>(this));
+    return result;
 }
 
+inline
+Intersection Object::_fullIntersect(const Ray& ray, const double t) const {
+    return _intersect(ray);
+}
 
 #endif

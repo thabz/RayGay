@@ -31,10 +31,12 @@ class Bound : public Object {
 
 	void prepare();
 
-	bool intersect(const Ray& ray) const;
+	Intersection fullIntersect(const Ray& ray, double t) const;
+	double fastIntersect(const Ray& ray) const;
+	/// Never called
+	Intersection _intersect(const Ray& ray) const {return Intersection(); };
 
     private:
-	Intersection _intersect(const Ray& ray) const;
 	bool running;
 	
 	KdTree* tree;

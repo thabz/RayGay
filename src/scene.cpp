@@ -55,10 +55,10 @@ RGBA Scene::getBackgroundColor(const Ray& ray) const {
         return bg_color; 
     } else {
 	// TODO: Optimize pushing a *i on stack below...
-	environmentSphere->intersect(ray);
-	Intersection* i = environmentSphere->getLastIntersection();
+	double t = environmentSphere->fastIntersect(ray);
+	Intersection i = environmentSphere->fullIntersect(ray,t);
 	double u,v;
-	Vector2 uv = i->getObject()->getUV(*i);
+	Vector2 uv = i.getObject()->getUV(i);
 	u = uv[0]; v = uv[1];
         u -= int(u);
 	v -= int(v);
