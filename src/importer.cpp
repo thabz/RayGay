@@ -262,17 +262,18 @@ void Importer::parse(const string& filename) {
 	    paths[str1] = spiral;
 	} else if (command == "photonmap") {
 	    string name = readString(stream);
-	    int value = readInt(stream);
 	    if (name == "globalphotons") {
-		renderer_settings->global_photons_num = value;
+		renderer_settings->global_photons_num = readInt(stream);
 	    } else if (name == "causticphotons") {
-		renderer_settings->caustic_photons_num = value;
+		renderer_settings->caustic_photons_num = readInt(stream);
 	    } else if (name == "estimate-radius") {
-		renderer_settings->estimate_radius = value;
+		renderer_settings->estimate_radius = readInt(stream);
 	    } else if (name == "estimate-samples") {
-		renderer_settings->estimate_samples = value;
+		renderer_settings->estimate_samples = readInt(stream);
 	    } else if (name == "final-gather-rays") {
-		renderer_settings->final_gather_rays = value;
+		renderer_settings->final_gather_rays = readInt(stream);
+	    } else if (name == "cache-tolerance") {
+		renderer_settings->cache_tolerance = readDouble(stream);
 	    }
 	} else if (command == "renderer") {
 	    string name = readString(stream);

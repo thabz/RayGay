@@ -16,6 +16,7 @@ class RendererSettings {
 	int estimate_radius;
 	int estimate_samples;
 	int final_gather_rays;
+	double cache_tolerance;
 	RendererType renderertype;
 };
 
