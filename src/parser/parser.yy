@@ -73,6 +73,7 @@ Vector2 image_size = Vector2(640,480);
 	Texture::InterpolationType it;
 }
 %token <d> tFLOAT
+%token <i> tINTEGER
 %token <c> tSTRING
 %token tAA
 %token tBACKGROUND

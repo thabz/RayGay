@@ -180,12 +180,8 @@ int main(int argc, char *argv[]) {
     int c;
     opterr = 0;
     int jobs = 1;
-    int parser_to_use = 0;
-    while ((c = getopt (argc, argv, "nvhj:")) != -1) {
+    while ((c = getopt (argc, argv, "vhj:")) != -1) {
 	switch(c) {
-	    case 'n':
-		parser_to_use = 1;
-		break;
 	    case 'h':
 		print_usage();
 		return EXIT_SUCCESS;
@@ -221,13 +217,7 @@ int main(int argc, char *argv[]) {
     srand(1); // Make sure rand is seeded consistently.
 
     try {
-	if (parser_to_use == 1) {
-	    init_parser();
-	    yyin = fopen(scenefile.c_str(),"r");
-	    yyparse();
-	} else {
-	    work(scenefile,outfile,jobs); 
-	}
+	work(scenefile,outfile,jobs); 
     } catch (Exception e) {
 	cout << "Exception: " << e.getMessage() 
 	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
