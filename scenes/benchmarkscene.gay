@@ -20,6 +20,8 @@
 # Brug world_bbox i alle KdTree::intersects: 1:07
 # Surface Area Heuristic cost function: 0:42
 # Fixed SAH: 0:25
+# Omrokering i Triangle::_fastIntersect: 0:22
+
 
 include materials.gay
 
