@@ -506,9 +506,15 @@ Grayscale	: tGRAYSCALE
 		;
 		
 
-SpecularBloom	: tSPECULARBLOOM '{' '}'
+SpecularBloom	: tSPECULARBLOOM '{' Expr Expr Expr '}'
                 {
-		    Filter2D* filter = new SpecularBloom();
+		    double cutoff = $3->eval();
+		    double radius = $4->eval();
+		    double alpha = $5->eval();
+		    if (radius < 0.0) {
+			yyerror("Radius of specular bloom must be > 0");
+		    }
+		    Filter2D* filter = new SpecularBloom(cutoff,radius,alpha);
 		    filter_stack->push(filter);
 		}
                 ;

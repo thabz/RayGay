@@ -11,7 +11,13 @@
  */
 class SpecularBloom: public Filter2D {
     public:
+	SpecularBloom(double cutoff, double radius, double alpha);
 	void apply(Image* image);
+	
+    private:
+	double cutoff;
+	double radius;
+	double alpha;
 };
 
 #endif
