@@ -1011,6 +1011,19 @@ void superellipsoid_test() {
     assert(iPoint(s,Vector(100,300,1000),Vector(0,0,-1)).z() > 409.99);
     assert(iNormal(s,Vector(100,300,1000),Vector(0,0,-1)) == Vector(0,0,1));
     assert(iNormal(s,Vector(100,300,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+
+    // Test a superellipsoid with other n1 and n2 values
+    s = new SuperEllipsoid(0.2,3.0,100,0.0001,NULL);
+    assert(intersects(s,Vector(0,0,1000),Vector(0,0,-1)));
+    assert(!intersects(s,Vector(2,0,1000),Vector(0,0,-1)));
+    assert(!intersects(s,Vector(0,2,1000),Vector(0,0,-1)));
+    assert(iPoint(s,Vector(0,0,1000),Vector(0,0,-1)).z() < 1.001);
+    assert(iPoint(s,Vector(0,0,1000),Vector(0,0,-1)).z() > 0.999);
+    assert(iNormal(s,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iNormal(s,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+    assert(iNormal(s,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
+    assert(iNormal(s,Vector(0,-1000,0),Vector(0,1,0)) == Vector(0,-1,0));
+    
 }
 
 int main(int argc, char *argv[]) {
