@@ -167,9 +167,9 @@ ActionListNode* top_actions;
 %type <action> AddCamera AddObject AddLight Background Photonmap Print Image
 %type <actionlist> ActionList
 
-%left tPLUSPLUS tMINUSMINUS
 %left '+' '-'
 %left '*' '/'
+%left tPLUSPLUS tMINUSMINUS
 %left UMINUS
 %left tBOOL_AND tBOOL_OR
 %left tBOOL_NOT
