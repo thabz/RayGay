@@ -1,4 +1,7 @@
 
+#include "math/vector.h"
+#include "image/rgb.h"
+
 /**
  * An irradiance cache as suggested by Greg Ward.
  *
@@ -44,24 +47,23 @@ class IrradianceCache {
 
     private:
 	class CacheNode {
+	    public:
 
-	    Vector point;
-	    Vector normal;
-	    RGB irradiance;
-	    double hmd;
+		Vector point;
+		Vector normal;
+		RGB irradiance;
+		double hmd;
 
-	    double getWeight(const Vector& point, const Vector& normal) const {
+		double getWeight(const Vector& point, const Vector& normal) const;
+		/** 
+		 * This is the squared distance from point where this 
+		 * CacheElement doesn't matter anymore.
+		 */
+		double getRadius() const;
+	};
 
-	    }
 
-	    /** 
-	     * This is the squared distance from point where this 
-	     * CacheElement doesn't matter anymore.
-	     */
-	    double getRadius() const {
+};
 
-	    }
-	}
 
-}
 

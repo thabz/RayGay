@@ -1,4 +1,5 @@
 
+#include "irradiancecache.h"
 
 /**
  * The weight function.
