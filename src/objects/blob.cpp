@@ -35,6 +35,7 @@ void Blob::addAtom(const Vector& center, double radius, double weight) {
 /**
  * Using the metaball distribution model.
  */
+/*
 double Blob::evaluateFunction(const Vector& point) const {
     double sum = 0;
     for(int i = 0; i < atoms_num; i++) {
@@ -47,6 +48,23 @@ double Blob::evaluateFunction(const Vector& point) const {
 	} else {
 	    double p = 1.0 - (r / radii[i]);
 	    sum += 1.5 * weights[i] * p * p;
+	}
+    }
+    return sum;
+}
+*/
+double Blob::evaluateFunction(const Vector& point) const {
+    double sum = 0;
+    for(int i = 0; i < atoms_num; i++) {
+	double rr = (centers[i] - point).norm();
+	double RR = radii[i]*radii[i];
+	if (rr >= RR) {
+	    continue;
+	} else {
+	    double q = rr / RR;
+	    double p = -22.0 + 17*q - 4*q*q;
+	    p *= q/9.0;
+	    sum += weights[i] * (1.0 + p);
 	}
     }
     return sum;

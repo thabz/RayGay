@@ -19,9 +19,8 @@
  * \f[
  * P_i = \left\{
  * \begin{array}{cc}
- *   x_1 & 0 \leq r_i \leq \frac{b_i}{3} \\
- *   x_2 & 1 \leq r_i \leq b_i \\
- *   x_3 & b_i \leq r_i
+ *   a_i(1 - \frac{4}{9} ...) & r_i \leq R_i \\
+ *   0 & r_i > R_i
  * \end{array}
  * \right.
  * \f]
