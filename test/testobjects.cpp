@@ -14,6 +14,7 @@
 #include "extrusion.h"
 #include "box.h"
 #include "necklace.h"
+#include "torus.h"
 #include "3ds.h"
 #include "tetrahedron.h"
 #include "tessalation.h"
@@ -457,10 +458,37 @@ void objectgroup_test() {
     assert(!bsp->intersect(r));
 }
 
+void torus_test() {
+    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Torus* t = new Torus(10,1,m);
+
+    // inside
+    assert(t->inside(Vector(10,0,0)));
+    assert(t->inside(Vector(10.5,0,0)));
+    assert(t->inside(Vector(9.5,0,0)));
+    assert(!t->inside(Vector(11.5,0,0)));
+    assert(!t->inside(Vector(11,0,0)));
+    assert(!t->inside(Vector(9,0,0)));
+    assert(t->inside(Vector(0,0,10)));
+    assert(t->inside(Vector(0,-0.25,-10)));
+    assert(t->inside(Vector(-10,0.25,0)));
+
+    // onEdge
+    assert(t->onEdge(Vector(11,0,0)));
+    assert(t->onEdge(Vector(9,0,0)));
+    assert(t->onEdge(Vector(0,0,-11)));
+    assert(t->onEdge(Vector(0,0,-9)));
+    assert(!t->onEdge(Vector(10,0,0)));
+    assert(!t->onEdge(Vector(-10,0,0)));
+    assert(!t->onEdge(Vector(0,0,-10)));
+    assert(!t->onEdge(Vector(11,0.1,0)));
+}
+
 int main(int argc, char *argv[]) {
     sphere_test();
     box_test();
     cylinder_test();
+    torus_test();
     test_3ds();
     mesh_test();
     tetrahedron_test();

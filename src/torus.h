@@ -63,10 +63,9 @@ class Torus : public BooleanOperand {
 
     private:
 	virtual Intersection _intersect(const Ray& ray) const;
-
-	double r, R;
+	double r;
+	double R;
 	Material material;
-
 };
 
 #endif

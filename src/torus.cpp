@@ -1,8 +1,12 @@
 
 #include <cassert>
+#include <iostream>
 #include "torus.h"
 #include "ray.h"
+#include "boundingbox.h"
+#include "materials/material.h"
 #include "math/functions.h"
+#include "math/vector2.h"
 
 /**
  * Constructs a torus in xy-plane centered in origin.
@@ -21,10 +25,10 @@ Torus::Torus(double R, double r, Material m) {
 
 /**
  * @see http://www.robots.ox.ac.uk/~awf/graphics/ray-torus.html
- *
  */
-bool Torus::_intersect(const Ray& ray) const {
-    // TODO: implement
+Intersection Torus::_intersect(const Ray& ray) const {
+    // TODO: Implement
+    return Intersection();
 }
 
 /**
@@ -33,33 +37,63 @@ bool Torus::_intersect(const Ray& ray) const {
  */
 Vector Torus::normal(const Intersection& i) const {
     Vector x = i.getPoint();
-    Vector p = (x.x(),x.y(),0);
-    p.normalize;
-    p *= R;
-    return (x-p).normalize();
+    Vector p = Vector(x.x(),x.y(),0);
+    p.normalize();
+    p = R * p;
+    Vector result = x-p;
+    result.normalize();
+    return result;
 }
 
 /**
  * Says whether a point is on the surface of the torus.
  *
- * Using the formula
- * 
- * \f[ (x^2 + y^2 + z^2 + R^2 - r^2)^2 - 4R^2(x^2+y^2) = 0 \f]
- *
  * @param p the point the check for
  */
 bool Torus::onEdge(const Vector &p) const {
-    double x = p[0];
-    double y = p[1];
-    double z = p[2];
-    double term = x*x + y*y + z*z + R*R - r*r;
-    return IS_ZERO(term*term - 4*R*R(x*x + y*y));
+    Vector Q = Vector(p[0],0,p[2]);
+    double l = Q.length();
+    if (IS_ZERO(l)) {
+	return (r == R) ? true : false;
+    }
+    Vector X = (R/l) * Q; // Closest point on big circle
+    return IS_EQUAL((p-X).length(),r);
 }
 
 bool Torus::inside(const Vector &p) const {
+    Vector Q = Vector(p[0],0,p[2]);
+    double l = Q.length();
+    if (IS_ZERO(l)) {
+	std::cout << "whoops" << std::endl;
+	return (r < R) ? false : true;
+    }
+    Vector X = (R/l) * Q; // Closest point on big circle
+    return (p-X).length() < r;
+}
+
+void Torus::transform(const Matrix& m) {
 
 }
 
-SceneObject* Torusclone() const {
+BoundingBox Torus::boundingBoundingBox() const {
+    double min = -R-r;
+    double max = R+r;
+    return BoundingBox(Vector(min,min,min),Vector(max,max,max));
+
+}
+
+const Material& Torus::getMaterial() const {
+    return material;
+}
+
+Vector2 Torus::getUV(const Intersection& intersection) const {
+
+}
+
+bool Torus::intersects(const BoundingBox& b) const {
+
+}
+
+SceneObject* Torus::clone() const {
     return new Torus(*this);
 }
