@@ -84,7 +84,7 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
     stack[exPt].node = NULL;
 
     while (curNode != NULL) {
-	while (!isLeafNode(curNode)) {
+	while (!curNode->isLeafNode()) {
 	    /* Current node is not a leaf */
 	    double splitVal = getNodeSplitValue(curNode);
 	    int axis = getNodeAxis(curNode); // ?
@@ -243,7 +243,7 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
     stack[exPt].node = NULL;
 
     while (curNode != NULL) {
-	while (!isLeafNode(curNode)) {
+	while (!curNode->isLeafNode()) {
 	    /* Current node is not a leaf */
 	    double splitVal = getNodeSplitValue(curNode);
 	    int axis = getNodeAxis(curNode);

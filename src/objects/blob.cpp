@@ -56,7 +56,7 @@ double BlobTree::eval(const Vector& point) const {
     const KdNode<BlobAtom>* node = getTopNode();
 
     // Find the leaf node point is in
-    while (!isLeafNode(node)) {
+    while (!node->isLeafNode()) {
 	axis = getNodeAxis(node);
 	value = getNodeSplitValue(node);
 	if (point[axis] < value) {

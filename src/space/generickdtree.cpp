@@ -302,7 +302,7 @@ void KdNode<ObjectType>::initInteriorNode(uint axis, float plane, uint left)
 }
 
 template<class ObjectType>
-void KdNode<ObjectType>::isLeafNode() const
+bool KdNode<ObjectType>::isLeafNode() const
 {
     return axis == -1;
 }

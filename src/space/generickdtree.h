@@ -14,7 +14,6 @@
  */
 #define leftNode(node) (node->left == 0 ? NULL : &(nodes[node->left]))
 #define rightNode(node) (node->left == 0 ? NULL : &(nodes[node->left+1]))
-#define isLeafNode(node) (node->axis == -1)
 #define getNodeAxis(node) (node->axis)
 #define getNodeObjectNum(node) (node->num)
 #define getNodeSplitValue(node) (node->splitPlane)
