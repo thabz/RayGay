@@ -8,8 +8,7 @@
 
 class Object;
 
-class BoundedObject {
-    public:
+struct BoundedObject {
 	Object* object;
 	BoundingBox bbox;
 };
@@ -59,7 +58,7 @@ class KdTree {
 
 	class KdNodeTmp {
 	    public:
-		std::vector<BoundedObject>* bobjects;  // Enclosed objects when this is a leaf
+		std::vector<BoundedObject*>* bobjects;  // Enclosed objects when this is a leaf
 		BoundingBox bbox; // Bounding box of voxel
 		float splitPlane; // Position of splitting plane
 		int axis;         // Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
@@ -78,8 +77,8 @@ class KdTree {
 		CostResult();
 		int dim; //> Output
 		double axis; //> Output
-		vector<BoundedObject>* left_bobjects; //> Input
-		vector<BoundedObject>* right_bobjects; //> Input
+		vector<BoundedObject*>* left_bobjects; //> Input
+		vector<BoundedObject*>* right_bobjects; //> Input
 		unsigned int left_index; //> Output
 		unsigned int right_index; //> Output
 		unsigned int left_size;
@@ -89,7 +88,7 @@ class KdTree {
 	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
 	Object* intersectForShadow_real(const Ray&,const double) const;
 	int largestDimension(const BoundingBox& box) const;
-	BoundingBox enclosure(const std::vector<BoundedObject>* objects) const;
+	BoundingBox enclosure(vector<BoundedObject*>* bobs) const;
 	BoundingBox world_bbox;
 	bool findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const;
 	// The recursive prepare method
@@ -102,7 +101,7 @@ class KdTree {
 	unsigned int nodes_count;
 	bool prepared;
 
-	std::vector<Object*> added_objects;
+	vector<Object*>* added_objects;
 };
 
 
