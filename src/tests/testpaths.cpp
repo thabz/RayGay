@@ -68,7 +68,6 @@ void circle_test() {
 
 
     /* Done */
-    std::cout << "Circle test done." << std::endl;
 }
 
 void linesegment_test() {
@@ -89,7 +88,6 @@ void linesegment_test() {
     assert(p[0] == n);
 
     assert(!l.isClosed());
-    std::cout << "Linesegment test done." << std::endl;
 }
 
 int main(int argc, char *argv[]) {
