@@ -254,10 +254,6 @@ void read() {
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
     scene->transform(n);
-
-    Camera cam = Camera(Vector(0,0,1500),Vector(0,0,-1));
-    cam.enableAdaptiveSupersampling(4);
-    scene->setCamera(&cam);
     
     Image* img = new Image(640,480);
     //SpaceSubdivider* space = new Hierarchy();

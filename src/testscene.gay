@@ -4,7 +4,7 @@
 
 camera-position 0 0 1500
 camera-lookat 0 0 -1
-camera-aa 3 
+camera-aa 0 
 
 background 0.1 0.1 0.3
 

@@ -8,6 +8,8 @@ class Matrix;
 /// Datavalue class for a camera which currently just is a position and a direction.
 class Camera {
     public:
+	Camera(); 
+	
 	/// Constructor (deprecated)
 	Camera(Vector position, Vector direction);
 
@@ -22,6 +24,8 @@ class Camera {
 
 	/// Returns position of camera
 	Vector& getPosition();
+	void setPosition(const Vector& pos) { position = pos; };
+	void setDirection(const Vector& dir) { direction = dir; };
 
 	// Enable adaptive supersampling
 	void enableAdaptiveSupersampling(unsigned int depth);
@@ -36,7 +40,7 @@ class Camera {
 	
 	// Set focal point (default is the lookAt vector)
 	void setFocalPoint(const Vector& focalPoint);
-	
+
     private:
 	Vector position;
 	Vector direction;

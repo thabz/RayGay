@@ -87,7 +87,7 @@ void Importer::parse() {
     std::string str2;
     std::string str3;
 
-    Camera* camera = new Camera(Vector(0,0,1500),Vector(0,0,-1));
+    Camera* camera = new Camera();
     scene->setCamera(camera);
 
     while(!stream.eof()) {
@@ -102,9 +102,10 @@ void Importer::parse() {
 	    cur_material = initMaterial(str1);
 	} else if (command == "camera-position") {
 	    Vector v = readVector(stream);
-	    // TODO
+	    camera->setPosition(v);
 	} else if (command == "camera-lookat") {
 	    Vector v = readVector(stream);
+	    camera->setDirection(v);
 	    // TODO
 	} else if (command == "camera-aa") {
 	    int a = readInt(stream);

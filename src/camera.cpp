@@ -2,6 +2,10 @@
 #include "camera.h"
 #include "math/matrix.h"
 
+Camera::Camera() {
+    aa_enabled = false;
+}
+
 Camera::Camera(Vector p, Vector d) {
     position = p;
     direction = d;
