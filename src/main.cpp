@@ -43,6 +43,7 @@
 #include "bsp.h"
 #include "circle.h"
 #include "necklace.h"
+#include "spiral.h"
 
 using namespace std;
 
@@ -78,9 +79,14 @@ void testScene4() {
  	}
     }
 
-    Circle circle = Circle(Vector(0,0,0),200,Vector(0,1,0));
-    Necklace* lace = new Necklace(circle,40,20,chrome);
+    Circle circle1 = Circle(Vector(0,25,0),200,Vector(0,1,0));
+    Spiral spiral = Spiral(&circle1,100,5);
+    Necklace* lace = new Necklace(spiral,200,20.0,chrome);
     scene.addObject(lace);
+
+    Spiral spiral2 = Spiral(&spiral,30,100);
+    Necklace* smalllace = new Necklace(spiral2,3000,5,red);
+    scene.addObject(smalllace);
     
    /*
     Cylinder cyl = Cylinder(Vector(-200,-50,200),Vector(-200,50,200),100.0,6,blue);
@@ -91,14 +97,14 @@ void testScene4() {
     Spotlight light2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
     Arealight area1 = Arealight(Vector(-2000,2000,2000),Vector(1,-1,-1),1000,50,0.10);
     Arealight area2 = Arealight(Vector(2000,2000,2000),Vector(-1,-1,-1),1000,40,0.10);
-//    scene.addLight(&area1);
-//    scene.addLight(&area2);
+    //scene.addLight(&area1);
+    //scene.addLight(&area2);
     scene.addLight(&light1);
-    scene.addLight(&light2);
-    //scene.addLight(&light3);
+    //scene.addLight(&light2);
+    scene.addLight(&light3);
     
-    Box b = Box(Vector(-300,-150,-300),Vector(300,-100,300),green); /* Floor */
-    //scene.addObject(&b);
+    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),green); /* Floor */
+    scene.addObject(&b);
     
     Box b2 = Box(Vector(100,-50,100),Vector(150,100,150),red);
     //scene.addObject(&b2);
@@ -135,6 +141,7 @@ int main(int argc, char *argv[]) {
     Box::test();
     Linesegment::test();
     Circle::test();
+    Spiral::test();
     Cylinder::test();
     PixelStore::test();
     BSP::test();
