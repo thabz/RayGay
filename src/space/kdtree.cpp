@@ -112,6 +112,17 @@ void KdTree::prepare(int curNode_idx,int depth) {
 	    best_measure = measure;
 	}
     }
+    for(int i = 0; i < depth; i++) {
+        cout << "* ";
+    }
+    cout << objects->size() << " -> " << best_measure;
+
+    if (best_measure[1] > best_measure[0] + best_measure[2]) {
+	cout << " Leaf" << endl;
+	curNode->axis = -1;
+	return;
+    }
+    
     if (best_dim != -1) {
 	curNode->axis = best_dim;
 	curNode->splitPlane = best_val;
@@ -161,6 +172,7 @@ void KdTree::prepare(int curNode_idx,int depth) {
     }
 
     if (lower->objects->size() == size || higher->objects->size() == size) {
+	cout << " Leaf" << endl;
 	// Objects couldn't be subdivided
 	curNode->axis = -1;
 	lower->objects->clear();
@@ -170,6 +182,7 @@ void KdTree::prepare(int curNode_idx,int depth) {
 	tmp_nodes.pop_back();
 	tmp_nodes.pop_back();
     } else {
+	cout << endl;
 	objects->clear();
 	//delete curNode->objects;
 	// Recursive prepare()
@@ -489,16 +502,48 @@ double KdTree::objectMedian(std::vector<Object*>* objects, int d) const {
     assert(size == objects->size());
     // Return L[size/2]
     unsigned int i = 0;
+    double split = 0;
     for (std::list<double>::iterator h = L.begin(); h != L.end(); h++) {
-	if (i++ > size/2) return *h;
+	if (i++ > size/2) {
+	    split = *h;
+	    goto KAJ;
+	}
     }
-    exit(0);
+    KAJ:
+
+    double best_split = split;
+    if (objects->size() < 500) {
+	// Try to refine best_split value
+	double best_count = objects->size() * 10;
+	int min_side = objects->size() / 3;
+	for(unsigned int i = 0; i < objects->size(); i++) {
+	    Object* obj = (*objects)[i];
+	    BoundingBox bbox = obj->boundingBoundingBox();
+	    if (bbox.cutByPlane(d,split) == 0) {
+		double v;
+		Vector measure;
+		v = bbox.minimum()[d];
+		measure = measureSplit(objects,d,v);
+		if (measure[1] < best_count && measure[0] > min_side && measure[2] > min_side) {
+		    best_split = v;
+		    best_count = measure[1];
+		}
+		v = bbox.maximum()[d];
+		measure = measureSplit(objects,d,v);
+		if (measure[1] < best_count && measure[0] > min_side && measure[2] > min_side) {
+		    best_split = v;
+		    best_count = measure[1];
+		}
+	    }
+	}
+    }
+    return best_split;
 }
 
 double KdTree::spacialMedian(std::vector<Object*>* objects, int d) const {
     BoundingBox box = enclosure(objects);
-    return (box.minimum()[d] + box.maximum()[d]) / 2.0;
-}
+	return (box.minimum()[d] + box.maximum()[d]) / 2.0;
+    }
 
 Vector KdTree::measureSplit(std::vector<Object*>* objects, int dim, double val) const {
     Vector result = Vector(0,0,0);
