@@ -10,10 +10,10 @@ camera-position 700 1000 500
 camera-up 0 1 0
 camera-lookat 0 10 0
 camera-field-of-view 45
-camera-aa 0
+camera-aa 4
 
 image-ratio 4 3
-image-width 100
+image-width 640
 
 background 0.2 0.2 0.4 1.0
 
