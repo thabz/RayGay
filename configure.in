@@ -105,6 +105,7 @@ AC_OUTPUT(Makefile \
 	  src/photon/Makefile \
 	  src/objects/Makefile \
 	  src/space/Makefile \
+	  src/cameras/Makefile \
 	  src/shaders/Makefile \
 	  test/Makefile		\
 	  test/gfx/Makefile	\

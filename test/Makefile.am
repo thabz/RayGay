@@ -10,6 +10,7 @@ LDADD = $(top_builddir)/src/libtracer.a \
 	    $(top_builddir)/src/lights/liblights.a \
 	    $(top_builddir)/src/image/libimage.a \
 	    $(top_builddir)/src/space/libspace.a \
+	    $(top_builddir)/src/cameras/libcameras.a \
 	    $(top_builddir)/src/math/libmath.a 
 
 check_PROGRAMS = testimage testmath testpaths testspace testobjects testspeed testlanguage teststats testthreads testparser
@@ -22,6 +23,7 @@ testparser_LDADD = $(top_builddir)/src/parser/libparser.a \
 		   $(top_builddir)/src/lights/liblights.a \
 	    	   $(top_builddir)/src/image/libimage.a \
 		   $(top_builddir)/src/space/libspace.a \
+		   $(top_builddir)/src/cameras/libcameras.a \
 		   $(top_builddir)/src/libtracer.a \
 		   $(top_builddir)/src/math/libmath.a 
 

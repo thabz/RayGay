@@ -1,5 +1,5 @@
 
-SUBDIRS = materials paths lights math image photon filters objects space shaders parser
+SUBDIRS = materials paths lights math image photon filters objects space shaders parser cameras
 
 
 #--------------------------------------
@@ -7,7 +7,6 @@ SUBDIRS = materials paths lights math image photon filters objects space shaders
 noinst_LIBRARIES = libtracer.a
 
 libtracer_a_SOURCES = \
-		      camera.cpp 	\
 		      exception.h	\
 		      intersection.cpp 	\
 		      ray.cpp 		\
@@ -25,7 +24,7 @@ libtracer_a_SOURCES = \
 		      window.cpp	\
 		      window-icon.h	
 
-libtracer_a_LIBADD = parser/libparser.a photon/libphoton.a lights/liblights.a materials/libmaterials.a  objects/libobjects.a paths/libpaths.a math/libmath.a  image/libimage.a space/libspace.a shaders/libshaders.a 
+libtracer_a_LIBADD = parser/libparser.a photon/libphoton.a lights/liblights.a materials/libmaterials.a  objects/libobjects.a paths/libpaths.a math/libmath.a  image/libimage.a space/libspace.a shaders/libshaders.a cameras/libcameras.a
 
 #--------------------------------------
 
@@ -44,12 +43,12 @@ tracer_LDADD =  parser/libparser.a 	\
 		objects/libobjects.a 	\
 		shaders/libshaders.a  	\
 		paths/libpaths.a  	\
+		cameras/libcameras.a  	\
 		image/libimage.a
 
 #--------------------------------------
 
 EXTRA_DIST = boundingbox.h	\
-             camera.h 		\
 	     edgekey.h		\
 	     environment.h	\
 	     intersection.h 	\
