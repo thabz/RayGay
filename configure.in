@@ -87,7 +87,7 @@ AC_ARG_ENABLE(extra-warnings,
   [extra_warnings="yes"], [extra_warnings="no"])
 if test "$extra_warnings" = yes; then
 #   CXXFLAGS="$CXXFLAGS -W -Wunused -Wpadded -Waggregate-return"
-   CXXFLAGS="$CXXFLAGS -W -Wunused -Wpadded" 
+   CXXFLAGS="$CXXFLAGS -W -Wunused -Wpadded -Wconversion" 
 fi
 AC_MSG_RESULT($extra_warnings)
 
