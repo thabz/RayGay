@@ -40,7 +40,8 @@ dnl -------------------------------------------------
 CXXFLAGS="-g -O3 -Wall -ffast-math"     
 case $target in
      pentium3) CXXFLAGS="$CXXFLAGS -malign-double -march=pentium3 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing";;
-     pentium4) CXXFLAGS="$CXXFLAGS -malign-double -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing";;
+     pentium4) CXXFLAGS="$CXXFLAGS -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing -msse2";;
+#pentium4) CXXFLAGS="$CXXFLAGS -malign-double -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing";;
 esac
 
 
