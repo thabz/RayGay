@@ -221,7 +221,7 @@ RGB PhotonRenderer::getDiffuseIrradiance(const Vector& point, const Vector& norm
     //if (!success || RANDOM(0,100) < 1.0) {
 	irradiance = finalGather(point, normal, ray_dir, renderersettings->final_gather_rays, 0, &hmd);
 	irradiance_cache->putEstimate(point,normal,irradiance,hmd);
-//	irradiance = RGB(10000.0,10000.0,10000.0);
+	//irradiance = RGB(10000.0,10000.0,10000.0);
     } 
     return irradiance;
 }

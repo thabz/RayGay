@@ -36,7 +36,7 @@ bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB
 
 	double weight = node->getWeight(point,normal);
 
-	if (weight > inv_tolerance) {
+	if (weight >= inv_tolerance) {
 	    result += weight * node->getIrradiance();
 	    weight_sum += weight;
 	    found++;
