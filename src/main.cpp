@@ -57,9 +57,10 @@ void testScene4() {
  //   scene.setEnvironmentMap("stbp.tga");
 
     Material mat = MATERIAL_SHINY_BLUE;
-    mat.setBumpmap("dotbump.tga",2.0);
-    mat.setRepeatX(5);
-    mat.setRepeatY(2);
+    mat.setBumpmap("stregerbump.tga",2.0);
+    mat.setTexturemap("blueplasma.tga");
+    mat.setRepeatX(10);
+    mat.setRepeatY(4);
     Sphere s1 = Sphere(Vector(200,50,200),130.0,mat);
     Sphere s2 = Sphere(Vector(-200,50,200),130.0,mat);
     Sphere s3 = Sphere(Vector(200,50,-200),130.0,mat);
@@ -80,7 +81,7 @@ void testScene4() {
     Spiral spiral2 = Spiral(&spiral,30,100,0.5);
 
     Cylinder* torus = new Cylinder(circle1,100,50,30,mat);
-    scene.addObject(torus);
+    //scene.addObject(torus);
 
     Tessalation tet = Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
     //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,MATERIAL_SHINY_BLUE);
@@ -88,16 +89,16 @@ void testScene4() {
     cout << "Edges : " << edges->size() << endl;
     for(unsigned int i = 0; i < edges->size(); i++) {
 	Linesegment line = (*edges)[i];
-	Cylinder* c = new Cylinder(line.begin(),line.end(),5.0,5,MATERIAL_SHINY_RED);
-	//scene.addObject(c);
+	Cylinder* c = new Cylinder(line.begin(),line.end(),20.0,10,MATERIAL_SHINY_RED);
+	scene.addObject(c);
     }
     delete edges;
 
     vector<Vector>* vertices = tet.getVertices();
     for(unsigned int i = 0; i < vertices->size(); i++) {
 	Vector c = (*vertices)[i];
-        Sphere* s = new Sphere(c,10.0,MATERIAL_SHINY_BLUE);
-	//scene.addObject(s);
+        Sphere* s = new Sphere(c,20.0,MATERIAL_SHINY_RED);
+	scene.addObject(s);
     }
     delete vertices;
 
