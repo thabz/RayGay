@@ -6,15 +6,18 @@
 #include <vector>
 
 /**
- * Objects that can be used as part of CSG objects.
+ * Objects that can be used as part of CSG objects must
+ * implement this interface.
  */
 class Solid : public Object {
 
     public:
-	/// Constructor
-	Solid(const Material* mat) : Object(mat) {};
 	/// Find all intersections with ray
 	virtual void allIntersections(const Ray& ray, vector<Intersection>& result) const = 0;
+    protected:
+	/// Protected constructor
+	Solid(const Material* mat) : Object(mat) {};
+
 };
 
 #endif

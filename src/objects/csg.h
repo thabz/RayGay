@@ -5,16 +5,19 @@
 #include "objects/solid.h"
 
 /**
- * Constructive Solid Geometry.
+ * Constructive Solid Geometry Union.
+ * This implements the boolean union operation on 3D solids.
  */
 class CSGUnion : public Solid {
 
     public:
 
-	/// Constructor
+	/// Constructor using two solids
 	CSGUnion(Solid* left, Solid* right, const Material* mat); 
+
+	/// Constructor taking more than two solids
 	CSGUnion(vector<Solid*>* solids, const Material* mat); 
-	bool inside(const Vector& point) const;
+
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
 	void transform(const Matrix& m);
@@ -29,13 +32,16 @@ class CSGUnion : public Solid {
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
 };
 
+/**
+ * Constructive Solid Geometry Difference.
+ * This implements the boolean difference operation on 3D solids.
+ */
 class CSGDifference : public Solid {
 
     public:
 
 	/// Constructor
 	CSGDifference(Solid* left, Solid* right, const Material* mat); 
-	bool inside(const Vector& point) const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
 	void transform(const Matrix& m);
@@ -50,13 +56,16 @@ class CSGDifference : public Solid {
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
 };
 
+/**
+ * Constructive Solid Geometry Intersection.
+ * This implements the boolean intersection operation on 3D solids.
+ */
 class CSGIntersection : public Solid {
 
     public:
 
 	/// Constructor
 	CSGIntersection(Solid* left, Solid* right, const Material* mat); 
-	bool inside(const Vector& point) const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
 	void transform(const Matrix& m);

@@ -45,6 +45,14 @@ void CSGIntersection::transform(const Matrix& m) {
     left->transform(m);
 }
 
+/**
+ * Find all intersections.
+ *
+ * This is done by inverting the right side hit list and merging
+ * the two lists by using the intersection-rule.
+ * 
+ * \f[ R - L = R  \cap \neg L     \f]
+ */
 void CSGDifference::allIntersections(const Ray& ray, vector<Intersection>& result) const {
     vector<Intersection> left_int;
     vector<Intersection> right_int;
@@ -102,21 +110,19 @@ void CSGDifference::allIntersections(const Ray& ray, vector<Intersection>& resul
 void CSGIntersection::allIntersections(const Ray& ray, vector<Intersection>& result) const {
     vector<Intersection> left_int;
     left->allIntersections(ray,left_int);
+    if (left_int.empty()) return;
     bool left_inside = false;
     if (left_int.size() > 0) {
 	left_inside = !left_int[0].isEntering();
     }
-    // Bail out quickly if possible
-    if (left_int.empty() && !left_inside) return;
 
     vector<Intersection> right_int;
     right->allIntersections(ray,right_int);
+    if (right_int.empty()) return;
     bool right_inside = false;
     if (right_int.size() > 0) {
 	right_inside = !right_int[0].isEntering();
     }
-    // Bail out quickly if possible
-    if (right_int.empty() && !right_inside) return;
     
     // Merge intersections while preserving order
     result.reserve(left_int.size() + right_int.size());
