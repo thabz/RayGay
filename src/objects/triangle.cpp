@@ -170,7 +170,7 @@ BoundingBox Triangle::boundingBoundingBox() const {
     tri[1] = mesh->cornerAt(vertex[1]);
     tri[2] = mesh->cornerAt(vertex[2]);
     BoundingBox b = BoundingBox::enclosure(tri,3);
-    b.grow(5.0 * EPSILON);
+    b.grow(20.0 * EPSILON);
     return b;
 }
 
