@@ -38,6 +38,13 @@ Image::Image(const std::string& filename) {
     (*this) = (*image);
 }
 
+Image::Image(const Image& other) {
+    width = other.width;
+    height = other.height;
+    data = new IMAGE_FLOAT[width * height * 4];
+    memcpy(data,other.data, height * width * sizeof(IMAGE_FLOAT) * 4);
+}
+
 /**
  * Frees the image data
  */

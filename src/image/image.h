@@ -22,6 +22,9 @@ class Image {
 	// Constructs an image from a file
 	Image(const std::string& filename);
 
+	// Copy constructor
+	Image(const Image& image);
+
 	/// Destructor
 	~Image();
 	/// Sets a pixel
