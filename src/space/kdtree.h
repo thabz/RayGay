@@ -98,7 +98,6 @@ class KdTree {
 	BoundingBox enclosure(const std::vector<BoundedObject>& objects) const;
 	BoundingBox world_bbox;
 	bool findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const;
-
 	// The recursive prepare method
 	void prepare(int curNode_idx, int depth);
 

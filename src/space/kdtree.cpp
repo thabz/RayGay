@@ -12,13 +12,16 @@
 #include "math/vector2.h"
 
 #define VERBOSE
+#define SANITY_CHECK
 
 #define KD_TREE_MAX 3
 #define KD_TREE_MAX_DEPTH 100
 
 KdTree::KdTree() {
-    // An empty top-node to fill added objects into
+    // Allocate the tree of temporary nodes
     tmp_nodes = new vector<KdNodeTmp>;
+
+    // Push an empty top-node to fill added objects into
     KdNodeTmp node;
     node.bobjects = new vector<BoundedObject>;
     tmp_nodes->push_back(node);
@@ -70,7 +73,6 @@ class compareAreaDesc {
 	}
 };
 
-
 void KdTree::prepare() {
     assert(tmp_nodes->size() == 1);
     unsigned int added_objects_size = tmp_nodes->front().bobjects->size();
@@ -90,6 +92,7 @@ void KdTree::prepare() {
     cout << "Max depth: " << max_depth << endl;
     cout << "Nodes: " << nodes_num << endl;
 #endif    
+    
     // Copy all temporary nodes into the real Kd-Tree
     for(int i = 0; i < nodes_num; i++) {
 	KdNode node = KdNode();
@@ -173,17 +176,21 @@ void KdTree::prepare(int curNode_idx,int depth) {
     // Move into lower
     lower.bobjects->reserve(splitResult.left_index);
     for(unsigned int i = 0; i < splitResult.left_index; i++) {
-	lower.bobjects->push_back(splitResult.left_bobjects->operator[](i));
+	BoundedObject& bobject = splitResult.left_bobjects->operator[](i);
+	if (bobject.bbox.minimum()[curNode->axis]-EPSILON < curNode->splitPlane)
+	    lower.bobjects->push_back(bobject);
     }
     delete splitResult.left_bobjects;
 
     // Move into higher
     higher.bobjects->reserve(splitResult.right_bobjects->size() - splitResult.right_index);
     for(unsigned int i = splitResult.right_index; i < splitResult.right_bobjects->size(); i++) {
-	higher.bobjects->push_back(splitResult.right_bobjects->operator[](i));
+	BoundedObject& bobject = splitResult.right_bobjects->operator[](i);
+	if (bobject.bbox.maximum()[curNode->axis]+EPSILON > curNode->splitPlane)
+	    higher.bobjects->push_back(bobject);
     }
     delete splitResult.right_bobjects;
-    
+
     // Recurse into child nodes
     prepare(left_idx,depth+1);
     prepare(right_idx,depth+1);
@@ -335,9 +342,9 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 
 	// Intersect with all objects in list, discarding
 	// those lying before stack[enPt].t or farther than stack[exPt].t
-	Object* object_hit = NULL;
-	double smallest_t = stack[exPt].t;
 	if (!curNode->objects->empty()) {
+	    Object* object_hit = NULL;
+	    double smallest_t = stack[exPt].t;
 	    const vector<Object*>& objects = *(curNode->objects);
 	    unsigned int objects_size = objects.size();
 	    const double s_min_t = MAX(0.0,stack[enPt].t);
@@ -348,10 +355,10 @@ bool KdTree::intersect(const Ray& ray, Intersection* result, const double a, con
 		    object_hit = objects[i];
 		}
 	    }
-	}
-	if (object_hit != NULL) {
-	    *(result) = object_hit->fullIntersect(ray,smallest_t);
-	    return true;
+	    if (object_hit != NULL) {
+		*(result) = object_hit->fullIntersect(ray,smallest_t);
+		return true;
+	    }
 	}
 
 	enPt = exPt;
@@ -496,7 +503,7 @@ bool KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result) con
     assert(result.left_bobjects->size() == result.right_bobjects->size());
     Vector bbox_lenghts = bbox.maximum() - bbox.minimum();
 
-    double lowest_cost = size*bbox.area();
+    double lowest_cost = 0.9*size*bbox.area();
     for(int d = 0; d < 3; d++) {
 	g_d = d;
 
