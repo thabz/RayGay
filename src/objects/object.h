@@ -22,7 +22,7 @@ class Object : public SceneObject {
         /// Return the nearest intersection to ray's origin
 	virtual Intersection fullIntersect(const Ray& ray, const double t) const;
 
-	virtual double fastIntersect(const Ray& ray) const;
+	double fastIntersect(const Ray& ray) const;
 
 	/// Returns the normalvector at a point on this objects surface
 	virtual Vector normal(const Intersection &i) const = 0;
@@ -82,6 +82,16 @@ Intersection Object::fullIntersect(const Ray& ray, const double t) const {
 inline
 Intersection Object::_fullIntersect(const Ray& ray, const double t) const {
     return _intersect(ray);
+}
+
+inline
+double Object::fastIntersect(const Ray& ray) const {
+    if (ray.getId() != last_ray) {
+	last_t = _fastIntersect(ray);
+	last_ray = ray.getId();
+	return last_t;
+    }
+    return last_t;
 }
 
 #endif
