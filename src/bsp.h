@@ -30,11 +30,16 @@ class BSP : public SpaceSubdivider {
 
     private:
 	int cutplane_dimension;   ///< [0..2] for x, y or z.
-	int cutplane_value;       ///< The value of x, y or z the cut plane cuts 
-
+        double cutplane_value;       ///< The value of x, y or z the cut plane cuts 
 	std::vector<object*> objects;
 	BSP* lower;
 	BSP* higher;
+
+	/// Returns the smallest bbox containing all objects of this node
+	BoundingBox enclosure() const;
+
+	/// Returns [0..2] for x, y or z being the widest side of the box.
+	int BSP::largestDimension(const BoundingBox& box) const;
 };
 
 #endif

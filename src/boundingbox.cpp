@@ -231,6 +231,8 @@ BoundingBox BoundingBox::enclosure(Vector* points, int num) {
     return BoundingBox(mini,maxi);
 }
 
+
+
 bool BoundingBox::operator==(const BoundingBox &b) const {
     return b._c1 == _c1 && b._c2 == _c2;
 }
@@ -243,6 +245,18 @@ double BoundingBox::area() const {
     double h = _c2[1] - _c1[1];
     double d = _c2[2] - _c1[2];
     return 2.0*w*h + 2.0*w*d + 2.0*h*d;
+}
+
+int BoundingBox::cutByPlane(int cutplane_dimension, double cutplane_value) const {
+    double min = minimum()[cutplane_dimension];
+    double max = maximum()[cutplane_dimension];
+    if (cutplane_value > max) {
+	return 1;
+    } else if (cutplane_value < min) {
+        return -1;
+    } else {
+        return 0;
+    }
 }
 
 ostream & operator<<(ostream &os, const BoundingBox &b) {
