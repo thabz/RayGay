@@ -313,6 +313,12 @@ class DoWhileActionNode : public ActionNode {
 	BoolNode* cond;
 };
 
+/**
+ * Actionnode for if-statements.
+ *
+ * The eval performs 'if (cond) l1 else l2'. If l2 is NULL
+ * only 'if (cond) l1' is performed.
+ */
 class IfActionNode : public ActionNode {
 
     public:
