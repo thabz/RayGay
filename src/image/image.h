@@ -17,9 +17,9 @@ class Image {
 	/// Gets a pixel
 	RGB getRGB(int x, int y) const;
 	/// Saves this image as a flat rgbrgb... stream
-	void save(const std::string& filename);
-	int getWidth() { return width; };
-	int getHeight() { return height; };
+	void save(const std::string& filename) const;
+	int getWidth() const { return width; };
+	int getHeight() const { return height; };
 	/// Return a pixel where u and v in [0,1]
 	RGB getTexel(double u, double v) const;
 	RGB getBiCubicTexel(double u, double v) const;

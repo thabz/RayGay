@@ -94,7 +94,7 @@ double Image::biCubicP(double x) const {
 }
 
 
-void Image::save(const std::string& filename) {
+void Image::save(const std::string& filename) const {
     byte* bytes = new byte[height*width*3];
     byte Header[18];
     memset(&Header,0,18);
