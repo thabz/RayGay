@@ -47,7 +47,7 @@ Image* HdriIO::load(const std::string& fileName)
     char cmd[2000];
     i = 0;
     char c = 0, oldc;
-    while(true) {
+    while(i < 2000) {
 	oldc = c;
 	c = fgetc(file);
 	if (c == 0xa && oldc == 0xa)
@@ -55,9 +55,9 @@ Image* HdriIO::load(const std::string& fileName)
 	cmd[i++] = c;
     }
 
-    char reso[200];
+    char reso[2000];
     i = 0;
-    while(true) {
+    while(i < 2000) {
 	c = fgetc(file);
 	reso[i++] = c;
 	if (c == 0xa)

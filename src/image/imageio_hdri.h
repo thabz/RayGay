@@ -4,13 +4,12 @@
 
 class Image;
 #include "imageio.h"
-#include <string>
-#include <cstdio>
 
 /**
  * A loader for HDRI image files.
  *
- * Based on code by Igor Kravtchenko posted on www.flipcode.com.
+ * Based on code by Igor Kravtchenko (www.obrazstudio.com)
+ * posted on www.flipcode.com.
  *
  * @see http://www.flipcode.com/cgi-bin/msg.cgi?showThread=COTD-HDRImageReader&forum=cotd&id=-1
  * 
