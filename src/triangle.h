@@ -14,6 +14,7 @@ class Vector2;
 class Triangle : public object {
 
     public:
+	/// Constructor
 	Triangle(Mesh* m);
 
 	Vector normal(const Intersection &i) const;
@@ -25,7 +26,9 @@ class Triangle : public object {
 	Vector2 getUV(const Intersection& intersection) const;
 
 
+	/// Get index into mesh' array of Tris
 	int getTri() const;
+	/// Set index into mesh' array of Tris
 	void setTri(int);
 	
 	/// Indices into the mesh' array of vertices

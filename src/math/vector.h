@@ -50,6 +50,8 @@ public:
     static Vector xProduct (const Vector& v1, const Vector& v2); ///< Returns the scalar product v1 x v2
 
     static double area(const Vector& v0, const Vector& v1, const Vector& v2);  ///< The area of the triangle with the vertices v0, v1 and v2
+
+    /// Comparator
     bool operator()(const Vector* v1, const Vector* v2) const {
 	return (*v1) == (*v2);
     }

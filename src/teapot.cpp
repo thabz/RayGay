@@ -3,7 +3,15 @@
 #include "materials/material.h"
 #include "bezierpatch.h"
 
-Teapot::Teapot(const Vector& pos, double scale, unsigned int dimension, const Material& material) {
+/**
+ * Creates a classic teapot out of Bézier patches.
+ *
+ * @param pos Position of the teapot
+ * @param scale The size of the teapot
+ * @param resolution The number of quads to generate for each patch
+ * @param material The material to use
+ */
+Teapot::Teapot(const Vector& pos, double scale, unsigned int resolution, const Material& material) {
     double vertices[16*3*32] = 
 {
 -80.00,0.00,30.00,-80.00,-44.80,30.00,-44.80,-80.00,30.00,0.00,-80.00,30.00,
@@ -182,7 +190,7 @@ Teapot::Teapot(const Vector& pos, double scale, unsigned int dimension, const Ma
 	    v += pos;
 	    temp[j] = v;
 	}
-	BezierPatch* patch = new BezierPatch(temp,dimension,dimension,material);
+	BezierPatch* patch = new BezierPatch(temp,resolution,resolution,material);
 	addObject(patch);
     }
 }

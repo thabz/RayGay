@@ -8,6 +8,7 @@
  * @param points A pointer to 16 Vectors
  * @param xResolution Number of quads across
  * @param yResolution Number of quads down
+ * @param material The material to use
  */
 BezierPatch::BezierPatch(Vector* points, const unsigned int xResolution, const unsigned int yResolution, const Material& material) : Mesh(Mesh::MESH_FLAT,material) {
  //   this->controlPoints = new Vector[16];

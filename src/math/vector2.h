@@ -23,6 +23,7 @@ class Vector2 {
 	Vector2 operator+(const Vector2 &v) const; 
 	bool operator==(const Vector2 &v) const; ///< Comparator
 
+	/// Comparator
 	bool operator()(const Vector2* v1, const Vector2* v2) const {
 	    return (*v1) == (*v2);
 	}

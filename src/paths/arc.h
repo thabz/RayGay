@@ -11,7 +11,10 @@
 class Arc : public Path {
 
     public:
+	/// Constructor
 	Arc(const Vector& center, double radius, const Vector& normal, double begin_degree, double end_degree);
+	
+	/// Constructor
 	Arc(Circle* circle, double begin_degree, double end_degree);
 	virtual ~Arc() {};
 	Vector getPoint(double t) const;

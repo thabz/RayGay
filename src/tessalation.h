@@ -10,6 +10,7 @@ class Vector;
 class Tessalation : public Mesh {
 
     public:
+	/// Constructor
 	Tessalation(const Vector center, const double radius, const unsigned int num, Material mat);
 
     private:
