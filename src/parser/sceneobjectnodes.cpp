@@ -406,6 +406,18 @@ TransformedInstanceNode::TransformedInstanceNode(SceneObjectNode* o, MaterialNod
     this->material = m;
 }
 
+TransformedInstanceNode::TransformedInstanceNode(std::string name, MaterialNode* m, FilePosition pos) : SceneObjectNode(pos) {
+    this->object = NULL;
+    this->name = name;
+    this->material = m;
+}
+
+TransformedInstanceNode::TransformedInstanceNode(std::string name, FilePosition pos) : SceneObjectNode(pos) {
+    this->object = NULL;
+    this->name = name;
+    this->material = NULL;
+}
+
 TransformedInstanceNode::~TransformedInstanceNode() {
     delete object;
     if (material != NULL) {
@@ -414,11 +426,19 @@ TransformedInstanceNode::~TransformedInstanceNode() {
 }
 
 SceneObject* TransformedInstanceNode::eval() {
-    SceneObject* so = object->eval();
-    Object* o = dynamic_cast<Object*>(so);
+    Object* o = NULL;
+
+    if (object != NULL) {
+	SceneObject* so = object->eval();
+	o = dynamic_cast<Object*>(so);
+    } else { 
+	SceneObject* so = Assignments::getUniqueInstance()->getNamedSceneObject(name,getFilePosition());
+	o = dynamic_cast<Object*>(so);
+    }
     if (o == NULL) {
 	runtime_error("Transformed instance must be a direct renderable, ie. subclass of Object");
     }
+
     if (material != NULL) {
 	Material* m = material->eval();
 	return new TransformedInstance(o,m);
@@ -431,8 +451,14 @@ SceneObject* TransformedInstanceNode::eval() {
 // Bounded object
 //---------------------------------------------------------------------
 //
-BoundNode::BoundNode(SceneObjectNode* o, FilePosition pos) : SceneObjectNode(pos) {
-    this->object = o;
+BoundNode::BoundNode(SceneObjectNode* so, FilePosition pos) : SceneObjectNode(pos) {
+    this->object = so;
+}
+
+BoundNode::BoundNode(string name, FilePosition pos) : SceneObjectNode(pos) {
+    this->object = NULL;
+    this->name = name;
+    
 }
 
 BoundNode::~BoundNode() {
@@ -440,8 +466,15 @@ BoundNode::~BoundNode() {
 }
 
 SceneObject* BoundNode::eval() {
-    SceneObject* so = object->eval();
-    ObjectGroup* o = dynamic_cast<ObjectGroup*>(so);
+    ObjectGroup* o;
+    if (object != NULL) {
+	SceneObject* so = object->eval();
+	o = dynamic_cast<ObjectGroup*>(so);
+    } else {
+	SceneObject* so = Assignments::getUniqueInstance()->getNamedSceneObject(name,getFilePosition());
+	o = dynamic_cast<ObjectGroup*>(so);
+
+    }
     if (o == NULL) {
 	runtime_error("Bounded object must be an group, ie. mesh, wireframe, necklace.");
     }

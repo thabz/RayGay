@@ -4,6 +4,7 @@
 
 #include "objects/sceneobject.h"
 #include "objects/object.h"
+#include "objects/objectgroup.h"
 #include "parser/assignments.h"
 #include "parser/transformationnodes.h"
 #include "parser/materialnodes.h"
@@ -282,23 +283,29 @@ class TransformedInstanceNode: public SceneObjectNode {
     public:
 	TransformedInstanceNode(SceneObjectNode* obj, MaterialNode* mat, FilePosition pos);
 	TransformedInstanceNode(SceneObjectNode* obj, FilePosition pos);
+	TransformedInstanceNode(std::string name, MaterialNode* mat, FilePosition pos);
+	TransformedInstanceNode(std::string name, FilePosition pos);
 	virtual ~TransformedInstanceNode();
 	SceneObject* eval();
 
     private:
 	SceneObjectNode* object;
 	MaterialNode* material;
+	string name;
 };
 
 class BoundNode : public SceneObjectNode {
 
     public:
 	BoundNode(SceneObjectNode* obj, FilePosition pos);
+	BoundNode(string name, FilePosition pos);
 	virtual ~BoundNode();
 	SceneObject* eval();
 
     private:
 	SceneObjectNode* object;
+	string name;
+
 };
 
 

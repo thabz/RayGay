@@ -129,7 +129,8 @@ void KdTree::prepare() {
 #endif    
     cout << "Nodes in kd-tree: " << nodes.size() << endl;
     cout << "Depth: " << max_depth << endl;
-    cout << "Waste: " << (nodes.capacity() - nodes.size())*sizeof(KdNode) << endl;
+    cout << "Size of KdNode: " << sizeof(KdNode) << endl;
+    //cout << "Waste: " << (nodes.capacity() - nodes.size())*sizeof(KdNode) << endl;
     prepared = true;
 }
 
@@ -150,12 +151,6 @@ void KdTree::prepare(unsigned int num, const BoundingBox& bbox, unsigned int dep
 	if (depth > max_depth) {
 	    max_depth = depth;
 	}
-
-	// Make an extra copy of the bobject pointer list for this node
-	//BoundedObject** left_bobs = bobs;
-	// TODO: Use alloca when num is small
-	//BoundedObject** right_bobs = new (BoundedObject*)[num];
-	memcpy(right_bobs, left_bobs, num*sizeof(BoundedObject*));
 
 	CostResult splitResult;
 
@@ -186,7 +181,6 @@ void KdTree::prepare(unsigned int num, const BoundingBox& bbox, unsigned int dep
 	    for(unsigned int i = 0; i < splitResult.left_index; i++) {
 		BoundedObject* bobject = left_bobs[i];
 		if (bobject->bbox.minimum(axis) < splitPlane) {
-		    assert(bobject->object != NULL);
 		    if (bobject->object->intersects(lower_bbox,bobject->bbox) >= 0) {
 			tmp = left_bobs[j];
 			left_bobs[j] = bobject;
@@ -215,18 +209,6 @@ void KdTree::prepare(unsigned int num, const BoundingBox& bbox, unsigned int dep
 	    assert(j <= num - splitResult.right_index );
 	    // Recurse into right subtree
 	    prepare(j, higher_bbox, depth+1, new_right_idx);
-
-
-	    /*
-	       j = 0;
-	       for(unsigned int i = splitResult.right_index; i < num; i++) {
-	       BoundedObject* bobject = right_bobs[i];
-	       if (bobject->object->intersects(bbox,bobject->bbox) >= 0) 
-	       right_bobs[j++] = bobject;
-	       }
-	    // Recurse into right subtree
-	    prepare(right_bobs, j, higher_bbox, depth+1, new_right_idx);
-	    */
 	}
     } 
 
@@ -600,6 +582,10 @@ bool KdTree::findBestSplitPlane(unsigned int num, const BoundingBox& bbox, CostR
 
     if (num == 0) 
 	return false;
+
+    // Make a copy of the left bobjects pointer list for this node
+    memcpy(right_bobs, left_bobs, num*sizeof(BoundedObject*));
+
 
     if (num < KD_TREE_MAX_ELEMENTS_IN_FULL_SPLIT_CHECK) {
 	// Find best split in all 3 dimensions

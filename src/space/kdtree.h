@@ -41,22 +41,21 @@ class KdTree {
 
 
     private:
-	class KdNode {
-	    public:
-		union {
-		    // Left child when not a leaf. Right child is left + 1.
-		    unsigned int left;  
-		    // Enclosed objects when this is a leaf
-		    Object** objects;
-		};
-		union {
-		    // Number of objects when this is a leaf
-		    unsigned int num;
-		    // Position of splitting plane
-		    float splitPlane;
-		};
-		// Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
-		short axis;
+	struct KdNode {
+	    union {
+		// Left child when not a leaf. Right child is left + 1.
+		unsigned int left;  
+		// Enclosed objects when this is a leaf
+		Object** objects;
+	    };
+	    union {
+		// Number of objects when this is a leaf
+		unsigned int num;
+		// Position of splitting plane
+		float splitPlane;
+	    };
+	    // Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
+	    short axis;
 	};
 
 	struct StackElem {
@@ -67,8 +66,7 @@ class KdTree {
 	};
 
 	// The I/O data for the findBestSplitPlane method
-	class CostResult {
-	    public:
+	struct CostResult {
 		int dim; //> Output
 		double axis; //> Output
 		int current_sort_dim;

@@ -664,6 +664,11 @@ Bound		: tBOUND '{' Object '}'
                 {
 		    $$ = new BoundNode($3,curPos());
 		}
+                | tBOUND '{' tVARNAME '}'
+		{
+		    $$ = new BoundNode(*$3,curPos());
+		    delete $3;
+		}
                 ;
 
 TransInstance	: tTRANSINSTANCE '{' Object '}'
@@ -673,6 +678,16 @@ TransInstance	: tTRANSINSTANCE '{' Object '}'
                 | tTRANSINSTANCE '{' Object Material '}'
 		{
 		    $$ = new TransformedInstanceNode($3,$4,curPos());
+		}
+                | tTRANSINSTANCE '{' tVARNAME '}'
+		{
+		    $$ = new TransformedInstanceNode(*$3,curPos());
+		    delete $3;
+		}
+                | tTRANSINSTANCE '{' tVARNAME Material '}'
+		{
+		    $$ = new TransformedInstanceNode(*$3,$4,curPos());
+		    delete $3;
 		}
                 ;
 
