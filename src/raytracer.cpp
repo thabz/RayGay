@@ -20,8 +20,19 @@ Raytracer::Raytracer(RendererSettings* settings, Scene* scene, SpaceSubdivider* 
 }
 
 RGBA Raytracer::getPixel(const Vector2& v) {
-    Ray ray = scene->getCamera()->getRay(v[0],v[1]);
-    return tracePrimary(ray);
+    Camera* camera = scene->getCamera();
+    if (camera->isDoFEnabled()) {
+	int samples = camera->getDoFSamples();
+	RGBA result = RGBA(0.0,0.0,0.0,0.0);
+	for(int i = 0; i < samples; i++) {
+	    Ray ray = camera->getRay(v[0],v[1]);
+	    result = result + tracePrimary(ray);
+	}
+        return result / double(samples) ;
+    } else {
+	Ray ray = camera->getRay(v[0],v[1]);
+	return tracePrimary(ray);
+    }
 }
 
 RGBA Raytracer::tracePrimary(const Ray& ray) {
@@ -105,7 +116,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 	    } 
 	}
     }
-    if (depth < 5) {
+    if (depth < 7) {
 	/* Bounce a reflection off the intersected object */
 	if (material->getKs() > 0 && reflection > 0) {
 	    Vector refl_vector = -1 * ray.getDirection();

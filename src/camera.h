@@ -4,6 +4,7 @@
 #include "math/matrix.h"
 #include "math/vector.h"
 #include "math/vector2.h"
+#include "math/halton.h"
 
 class Ray;
 
@@ -44,15 +45,14 @@ class Camera {
 	/// Enable adaptive supersampling
 	void enableAdaptiveSupersampling(unsigned int depth);
 
+	/// Enable depth of field
+	void enableDoF(double aperture, const Vector& focalpoint, int samples);
+	bool isDoFEnabled() const { return dof_enabled; };
+	int getDoFSamples() const { return dof_samples; };
+
 	bool isAAEnabled() const { return aa_enabled; }; 
 
 	unsigned int getAADepth() const { return aa_depth; };
-
-	// Set aperture
-	void setAperture(double radius);
-
-	// Set focal point 
-	void setFocalPoint(const Vector& focalPoint);
 
 	Ray getRay(const double x, const double y);
 
@@ -76,8 +76,12 @@ class Camera {
 	bool initialized;
 
 	// Depth of field
-	Vector focal_point;
-	double aperture;
+	bool dof_enabled;
+	double dof_length;
+	double dof_aperture;
+	int dof_sample_count;
+	int dof_samples;
+	QMCSequence* dof_qmc;
 
 	// Adaptive antialiasing
 	bool aa_enabled;
@@ -96,14 +100,5 @@ void Camera::setFieldOfView(double degrees) {
     this->field_of_view_radians = DEG2RAD(degrees); 
 }
 
-inline
-void Camera::setAperture(double radius) {
-    this->aperture = radius;
-}
-
-inline
-void Camera::setFocalPoint(const Vector& focalPoint) {
-    this->focal_point = focalPoint;
-}
 #endif
 

@@ -215,6 +215,11 @@ void Importer::parse(const string& filename) {
 	} else if (command == "camera-aa") {
 	    int a = readInt(stream);
 	    camera->enableAdaptiveSupersampling(a);
+	} else if (command == "camera-dof") {
+	    double aperture = readDouble(stream);
+	    Vector focalpoint = readVector(stream);
+	    int samples = readInt(stream);
+	    camera->enableDoF(aperture,focalpoint,samples);
 	} else if (command == "background") {
 	    RGBA col = readRGBA(stream);
 	    scene->setBackgroundColor(col);
