@@ -366,24 +366,6 @@ bool contains(double* array, unsigned int num, double val) {
     return false;
 }
 
-bool check_roots(double A, double B, double C, double D, double* roots, int num) {
-    double r;
-    for(int i = 0; i < num; i++) {
-	r = roots[i];
-	double val = r*r*r*r + A*r*r*r + B*r*r + C*r + D;
-	if (!IS_ZERO(val)) {
-	    cout << "Problem: f(" << r << ") = " << val << " != 0." << endl;
-	//    if (fabs(val) > 0.001)
-	    return false;
-	}
-	if (i > 0 && roots[i] < roots[i-1]) {
-	    cout << "Problem: wrong order of roots." << endl;
-	    return false;
-	}
-    }
-    return true;
-}
-
 // Used /usr/bin/gp to find test polynomials
 // Part of 'pari-gp' Debian package
 class solve_quartic_test : public Test {
@@ -465,29 +447,34 @@ class solve_quartic_test : public Test {
 				}
 				cout << endl;
 				assertTrue(false);
-		//		exit(EXIT_FAILURE);
+				//		exit(EXIT_FAILURE);
 			    }
 			}
 		    }
 		}
 	    }
 	}
-};
 
-bool check_cubic_roots(double A, double B, double C, double* roots, int num) {
-    double r;
-    for(int i = 0; i < num; i++) {
-	r = roots[i];
-	double val = r*r*r + A*r*r + B*r + C;
-	if (!IS_ZERO(val)) {
-	    cout << "A,B,C = " << A << "," << B << "," << C << " failed." << endl;
-	    cout << "Problem: f(" << r << ") = " << val << " != 0." << endl;
-	    //if (fabs(val) > 0.001)
-	    return false;
+    private:
+	bool check_roots(double A, double B, double C, double D, double* roots, int num) {
+	    double r;
+	    for(int i = 0; i < num; i++) {
+		r = roots[i];
+		double val = r*r*r*r + A*r*r*r + B*r*r + C*r + D;
+		if (!IS_ZERO(val)) {
+		    cout << "Problem: f(" << r << ") = " << val << " != 0." << endl;
+		    //    if (fabs(val) > 0.001)
+		    return false;
+		}
+		if (i > 0 && roots[i] < roots[i-1]) {
+		    cout << "Problem: wrong order of roots." << endl;
+		    return false;
+		}
+	    }
+	    return true;
 	}
-    }
-    return true;
-}
+
+};
 
 class solve_cubic_test : public Test {
     public:
@@ -559,20 +546,37 @@ class solve_cubic_test : public Test {
 	    for(int A = -n; A < n; A++) {
 		for(int B = -n; B < n; B++) {
 		    for(int C = -n; C < n; C++) {
-			    num = Math::solveCubic(A,B,C,roots);
-			    if (!check_cubic_roots(A,B,C,roots,num)) {
-				cout << num << " roots found: ";
-				for(int i = 0; i < num; i++) {
-				    cout << roots[i] << " and ";
-				}
-				cout << endl;
-				assertTrue(false);
-		//		exit(EXIT_FAILURE);
+			num = Math::solveCubic(A,B,C,roots);
+			if (!check_cubic_roots(A,B,C,roots,num)) {
+			    cout << num << " roots found: ";
+			    for(int i = 0; i < num; i++) {
+				cout << roots[i] << " and ";
 			    }
+			    cout << endl;
+			    assertTrue(false);
+			    //		exit(EXIT_FAILURE);
+			}
 		    }
 		}
 	    }
 	}
+
+    private:
+	bool check_cubic_roots(double A, double B, double C, double* roots, int num) {
+	    double r;
+	    for(int i = 0; i < num; i++) {
+		r = roots[i];
+		double val = r*r*r + A*r*r + B*r + C;
+		if (!IS_ZERO(val)) {
+		    cout << "A,B,C = " << A << "," << B << "," << C << " failed." << endl;
+		    cout << "Problem: f(" << r << ") = " << val << " != 0." << endl;
+		    //if (fabs(val) > 0.001)
+		    return false;
+		}
+	    }
+	    return true;
+	}
+
 };
 
 class solve_quadratic_test : public Test  {
@@ -610,7 +614,44 @@ class solve_quadratic_test : public Test  {
 	    assertTrue(Math::solveQuadratic(1,0,-25,roots) == 2);
 	    assertTrue(contains(roots,2,5));
 	    assertTrue(contains(roots,2,-5));
+
+	    int n = 5;
+	    int num;
+	    for(int A = -n; A < n; A++) {
+		for(int B = -n; B < n; B++) {
+		    for(int C = -n; C < n; C++) {
+			if (A == 0 && B == 0)
+			    continue;
+			num = Math::solveQuadratic(A,B,C,roots);
+			if (!check_roots(A,B,C,roots,num)) {
+			    cout << num << " roots found: ";
+			    for(int i = 0; i < num; i++) {
+				cout << roots[i] << " and ";
+			    }
+			    cout << endl;
+			    assertTrue(false);
+			    //		exit(EXIT_FAILURE);
+			}
+		    }
+		}
+	    }
 	}
+
+    private:
+	bool check_roots(double A, double B, double C, double* roots, int num) {
+	    double r;
+	    for(int i = 0; i < num; i++) {
+		r = roots[i];
+		double val = A*r*r + B*r + C;
+		if (!IS_ZERO(val)) {
+		    cout << "A,B,C = " << A << "," << B << "," << C << " failed." << endl;
+		    cout << "Problem: f(" << r << ") = " << val << " != 0." << endl;
+		    return false;
+		}
+	    }
+	    return true;
+	}
+
 };
 
 
