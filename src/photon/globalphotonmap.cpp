@@ -74,7 +74,7 @@ void GlobalPhotonMap::preComputeIrradiances(const int M, int threads_num) {
     struct thread_data* ta = new thread_data[threads_num];
     pthread_t threads[threads_num];
     
-    for (int i = 0; i < threads_num; i += M) {
+    for (int i = 0; i < threads_num; i++) {
 	ta[i].map = this;
 	ta[i].step = threads_num * M;
 	ta[i].offset = i * M;
