@@ -295,10 +295,18 @@ void cylinder_test() {
     assert(intersects(cyl,Vector(0,3,1000),Vector(0,0,-1)));
     assert(iPoint(cyl,Vector(0,3,1000),Vector(0,0,-1)) == Vector(0,3,10));
     assert(iNormal(cyl,Vector(0,3,1000),Vector(0,0,-1)) == Vector(0,0,1));
+
+    assert(intersects(cyl,Vector(0,0,100),Vector(0,0,-1)) == false);
     delete cyl;
 
-    cyl = new Cylinder(Vector(1,1,1),Vector(10,10,10),10,m);
-
+    // test allIntersections
+    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,m);
+    vector<Intersection> result;
+    Ray ray = Ray(Vector(0,5,1000),Vector(0,0,-1),-1);
+    result = cyl->allIntersections(ray);
+    assert(result.size() == 2);
+    assert(result[0].getPoint() == Vector(0,5,10));
+    assert(result[1].getPoint() == Vector(0,5,-10));
 }
 
 void test_3ds() {

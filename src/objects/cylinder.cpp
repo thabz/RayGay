@@ -44,11 +44,22 @@ BoundingBox Cylinder::boundingBoundingBox() const {
 }
 
 double Cylinder::_fastIntersect(const Ray& ray) const {
-    return _intersect(ray).getT();
+    double roots[2];
+    unsigned int num = allPositiveRoots(ray,roots);
+    return num == 0 ? -1 : roots[0];
 }
 
 Intersection Cylinder::_fullIntersect(const Ray& ray, const double t) const {
-    return _intersect(ray);
+    Vector world_point = ray.getPoint(t);
+    Vector local_normal = getNormal(pointToObject(world_point));
+    return Intersection(world_point,t,dirToWorld(local_normal),Vector2(0,0));
+}
+
+inline
+Vector Cylinder::getNormal(const Vector& local_point) const {
+    Vector normal = Vector(local_point[0],local_point[1],0);
+    normal.normalize();
+    return normal;
 }
 
 
@@ -73,11 +84,13 @@ Intersection Cylinder::_fullIntersect(const Ray& ray, const double t) const {
  * Afterwards we must check that Ray(t) where t is a root
  * are within the z-axis interval that defines the lenght of the cylinder.
  */
-Intersection Cylinder::_intersect(const Ray& world_ray) const {
-    Ray ray = rayToObject(world_ray);
+unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[4]) const {
+    unsigned int roots_found = 0;
 
-    Vector Rd = ray.getDirection();
-    Vector Ro = ray.getOrigin();
+    Ray local_ray = rayToObject(world_ray);
+
+    Vector Rd = local_ray.getDirection();
+    Vector Ro = local_ray.getOrigin();
 
     double a = Rd[0]*Rd[0] + Rd[1]*Rd[1];
     double b = 2 * (Ro[0]*Rd[0] + Ro[1]*Rd[1]);
@@ -85,19 +98,14 @@ Intersection Cylinder::_intersect(const Ray& world_ray) const {
     double D = b*b - 4*a*c;
     if (D < 0.0) {
 	// No roots
-	return Intersection();
+	return 0;
     } else if (IS_ZERO(D)) {
 	// One root
 	double t = -b / (2 * a);
-	Vector result_p = Ro + t * Rd;
-	double result_t = t;
-	if (!IS_ZERO(t) && result_p[2] >= double(0) && result_p[2] <= height) {
-	    Vector normal = Vector(result_p[0],result_p[1],0);
-	    normal.normalize();
-	    Intersection res = Intersection(result_p,result_t,normal,Vector2(0,0));
-	    return intersectionToWorld(res);
-	} else {
-	    return Intersection();
+	double result_p_z = Ro[2] + t * Rd[2];
+	if (t > EPSILON && result_p_z >= double(0) && result_p_z <= height) {
+	    roots[0] = t;
+	    roots_found = 1;
 	}
     } else {
 	// Two roots
@@ -106,26 +114,27 @@ Intersection Cylinder::_intersect(const Ray& world_ray) const {
 	double sq = sqrt(D);
 	double t1 = (-b - sq ) / (2 * a);
 	double t2 = (-b + sq ) / (2 * a);
-	Vector ip1 =  Ro + t1 * Rd;
-	Vector ip2 =  Ro + t2 * Rd;
-	if (ip1[2] >= double(0) && ip1[2] <= height) {
-	    Vector normal = Vector(ip1[0],ip1[1],0);
-	    normal.normalize();
-	    i1 = Intersection(ip1,t1,normal,Vector2(0,0));
+	double ip1_z =  Ro[2] + t1 * Rd[2];
+	double ip2_z =  Ro[2] + t2 * Rd[2];
+	if (ip1_z >= EPSILON && ip1_z <= height) {
+	    roots[roots_found++] = t1;
 	}
-	if (ip2[2] >= double(0) && ip2[2] <= height) {
-	    Vector normal = Vector(ip2[0],ip2[1],0);
-	    normal.normalize();
-	    i2 = Intersection(ip2,t2,normal,Vector2(0,0));
+	if (ip2_z >= EPSILON && ip2_z <= height) {
+	    roots[roots_found++] = t2;
 	}
-	if (t1 > 0 && t1 < t2 && !IS_ZERO(t1) && i1.isIntersected()) {
-	    return intersectionToWorld(i1);
-	} else if (t2 > 0 && !IS_ZERO(t2) && i2.isIntersected()) {
-	    return intersectionToWorld(i2);
-	} else {
-	    return Intersection();
+
+	// Sort roots and return if two found
+	if (roots_found == 2) {
+	    if (roots[0] > roots[1]) {
+		double tmp = roots[0];
+		roots[0] = roots[2];
+		roots[2] = tmp;
+	    }
+	    return 2;
 	}
     }
+    // TODO: Intersect with caps
+    return roots_found;
 }
 
 SceneObject* Cylinder::clone() const {
@@ -133,7 +142,20 @@ SceneObject* Cylinder::clone() const {
 }
 
 vector<Intersection> Cylinder::allIntersections(const Ray& ray) const {
+    double roots[2];
+    int num = allPositiveRoots(ray,roots);
     vector<Intersection> result;
+    result.reserve(num);
+    for(int i = 0; i < num; i++) {
+	Intersection inter = fullIntersect(ray,roots[i]);
+	result.push_back(inter);
+    }
+    if (num == 1) {
+	result[0].isEntering(false);
+    } else if (num == 2) {
+	result[0].isEntering(true);
+	result[1].isEntering(false);
+    }
     return result;
 }
 

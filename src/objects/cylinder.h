@@ -34,7 +34,8 @@ class Cylinder : public Solid, public Transformer {
     private:
 	double _fastIntersect(const Ray& ray) const;
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
-	Intersection _intersect(const Ray& ray) const;
+	unsigned int allPositiveRoots(const Ray& world_ray, double roots[4]) const;
+	Vector getNormal(const Vector& local_point) const;
 
 	Vector begin;
 	Vector end;
