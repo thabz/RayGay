@@ -38,11 +38,13 @@ double IsoSurface::_fastIntersect(const Ray& world_ray) const {
 	bool began_inside = inside(local_ray.getPoint(t_begin));
 //	cout << "Inside:" << (began_inside ? "true" : "false") << endl;
 	double t_step = (t_end - t_begin) / double(steps);
+	bool cur_inside;
 	for(double t = t_begin; t <= t_end; t += t_step) {
-	    if (began_inside && !inside(local_ray.getPoint(t))) {
+	    cur_inside = inside(local_ray.getPoint(t));
+	    if (began_inside && !cur_inside) {
 		res = refine(local_ray,t,t-t_step);
 		goto DONE;
-	    } else if (!began_inside && inside(local_ray.getPoint(t))) {
+	    } else if (!began_inside && cur_inside) {
 		res = refine(local_ray,t-t_step,t);
 		goto DONE;
 	    }
