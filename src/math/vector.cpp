@@ -146,3 +146,11 @@ Vector Vector::randomHemisphere(const double rnd1, const double rnd2) const {
 Vector Vector::randomHemisphere() const {
     return randomHemisphere(RANDOM(0,1),RANDOM(0,1));
 }
+
+int Vector::largestDimension() const {
+    if (_vector[0] > _vector[1]) {
+	return _vector[0] > _vector[2] ? 0 : 2;
+    } else {
+	return _vector[1] > _vector[2] ? 1 : 2;
+    }
+}

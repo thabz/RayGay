@@ -16,7 +16,11 @@
 #define SANITY_CHECK
 
 #define KD_TREE_MAX 2
-#define KD_TREE_MAX_DEPTH 100
+#define KD_TREE_MAX_DEPTH 32
+// Don't check for best split in all 3 dimensions when number
+// of objects in a node exceeds this value. Then just use largest
+// dimension of bbox as best dimension.
+#define KD_TREE_MAX_ELEMENTS_IN_FULL_SPLIT_CHECK 500
 
 #define NO_STATS
 
@@ -481,74 +485,93 @@ class cmpR {
 	}
 };
 
+void KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result, int split_dim) const {
+    int d = split_dim;
+    double split;
+    Vector bbox_lenghts = bbox.maximum() - bbox.minimum();
+    unsigned int size = result.left_bobjects->size();
+    double lowest_cost = 0.9*size*bbox.area();
+
+    g_d = d;
+
+    double cap_a = 2 * bbox_lenghts[(d+1)%3] * bbox_lenghts[(d+2)%3];
+    double cap_p = 2 * bbox_lenghts[(d+1)%3] + 2 * bbox_lenghts[(d+2)%3];
+    vector<BoundedObject*>* left_bobjects = result.left_bobjects;
+    vector<BoundedObject*>* right_bobjects = result.right_bobjects;
+
+    sort(left_bobjects->begin(), left_bobjects->end(), cmpL());
+    sort(right_bobjects->begin(), right_bobjects->end(), cmpR());
+
+    unsigned int l = 0;
+    unsigned int r = 0;
+    while (l < size || r < size) {
+	bool used_right;
+	if (l < size && r < size) {
+	    double rsplit = right_bobjects->operator[](r)->bbox.maximum()[d];
+	    double lsplit = left_bobjects->operator[](l)->bbox.minimum()[d];
+	    if (rsplit < lsplit) {
+		split = rsplit;
+		used_right = true;
+	    } else {
+		split = lsplit;
+		used_right = false;
+	    }
+	} else {
+	    if (l == size) {
+		split = right_bobjects->operator[](r)->bbox.maximum()[d];
+		used_right = true;
+	    } else {
+		split = left_bobjects->operator[](l)->bbox.minimum()[d];
+		used_right = false;
+	    }
+	}
+
+	if (used_right) r++;
+
+	if (split < bbox.maximum()[d] && split > bbox.minimum()[d]) {
+	    double left_area = cap_a + (split - bbox.minimum()[d])*cap_p;
+	    double right_area = cap_a + (bbox.maximum()[d] - split)*cap_p;
+	    double cost = left_area * l + right_area * (size -r);
+	    if (cost < lowest_cost) {  
+		result.dim = d;
+		result.axis = split;
+		result.left_index = l;
+		result.right_index = r;
+		lowest_cost = cost;
+	    } 
+	}
+
+	if (!used_right) l++;
+    } /* while more edges to check */
+
+
+}
+
 bool KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const {
     result.dim = -1;
     result.left_index = 0;
     result.right_index = 0;
 
-    double split;
     unsigned int size = result.left_bobjects->size();
     if (size == 0) 
 	return false;
 
     assert(result.left_bobjects->size() == result.right_bobjects->size());
-    Vector bbox_lenghts = bbox.maximum() - bbox.minimum();
 
-    double lowest_cost = 0.9*size*bbox.area();
-    for(int d = 0; d < 3; d++) {
-	g_d = d;
+    if (size < KD_TREE_MAX_ELEMENTS_IN_FULL_SPLIT_CHECK) {
+	// Find best split in all 3 dimensions
+	for(int d = 0; d < 3; d++) {
+	    findBestSplitPlane(bbox, result, d);
+	}
+    } else {
+	// Find best split in largest dimension
+	Vector bbox_lenghts = bbox.maximum() - bbox.minimum();
+	int d = bbox_lenghts.largestDimension();
+	findBestSplitPlane(bbox,result, d);
+    }
 
-	double cap_a = 2 * bbox_lenghts[(d+1)%3] * bbox_lenghts[(d+2)%3];
-	double cap_p = 2 * bbox_lenghts[(d+1)%3] + 2 * bbox_lenghts[(d+2)%3];
-	vector<BoundedObject*>* left_bobjects = result.left_bobjects;
-	vector<BoundedObject*>* right_bobjects = result.right_bobjects;
-
-	sort(left_bobjects->begin(), left_bobjects->end(), cmpL());
-	sort(right_bobjects->begin(), right_bobjects->end(), cmpR());
-
-	unsigned int l = 0;
-	unsigned int r = 0;
-	while (l < size || r < size) {
-	    bool used_right;
-	    if (l < size && r < size) {
-		double rsplit = right_bobjects->operator[](r)->bbox.maximum()[d];
-		double lsplit = left_bobjects->operator[](l)->bbox.minimum()[d];
-		if (rsplit < lsplit) {
-		    split = rsplit;
-		    used_right = true;
-		} else {
-		    split = lsplit;
-		    used_right = false;
-		}
-	    } else {
-		if (l == size) {
-		    split = right_bobjects->operator[](r)->bbox.maximum()[d];
-		    used_right = true;
-		} else {
-		    split = left_bobjects->operator[](l)->bbox.minimum()[d];
-		    used_right = false;
-		}
-	    }
-
-	    if (used_right) r++;
-
-	    if (split < bbox.maximum()[d] && split > bbox.minimum()[d]) {
-		double left_area = cap_a + (split - bbox.minimum()[d])*cap_p;
-		double right_area = cap_a + (bbox.maximum()[d] - split)*cap_p;
-		double cost = left_area * l + right_area * (size -r);
-		if (cost < lowest_cost) {  
-		    result.dim = d;
-		    result.axis = split;
-		    result.left_index = l;
-		    result.right_index = r;
-		    lowest_cost = cost;
-		} 
-	    }
-
-	    if (!used_right) l++;
-	} /* while more edges to check */
-    } /* while more dimensions to try */
     if (result.dim == -1) {
+	// Not splitting has best cost
 	return false;
     } else {
 	//cout << "Split " << size << " into " << result.left_index << "," << size - result.right_index << endl;

@@ -85,6 +85,7 @@ public:
     Vector randomHemisphere(const double rnd1, const double rnd2) const;
 
     static Vector randomUnitVector();
+    int largestDimension() const;
 
 protected:
     double _vector[3]; ///< The x,y,z components of the vector
