@@ -54,6 +54,9 @@ void Mesh::prepare() {
     computeInterpolatedNormals();
     computeTriAreas();
     prepared = true;
+    for(unsigned int i = 0; i < triangles.size(); i++) {
+	triangles[i]->prepare();
+    }
 }
 
 // ----------------------------------------------------------------------------
