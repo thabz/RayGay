@@ -8,6 +8,7 @@ class RGB;
 class Matrix;
 class Intersection;
 class Ray;
+class object;
 
 /// A point Lightsource
 class Pointlight : public Lightsource {
@@ -23,6 +24,7 @@ class Pointlight : public Lightsource {
 
     private:
 	Vector position;
+	mutable object* hint;
 };
 
 #endif
