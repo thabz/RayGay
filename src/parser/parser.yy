@@ -110,6 +110,7 @@ Vector2 image_size = Vector2(640,480);
 %token tRADIUS
 %token tRENDERER tRAYTRACER tPHOTONRENDERER
 %token tROTATE tTRANSLATE
+%token tSIN tCOS tABS tPI
 %token tSOLIDBOX
 %token tSPHERE
 %token tTEXTURE
@@ -737,6 +738,25 @@ Expr		: tFLOAT
                     $$ = $2;
 		}
                 ;
+
+Expr		: tSIN '(' Expr ')'
+                {
+		    $$ = sin($3);
+		}
+                | tCOS '(' Expr ')'
+                {
+		    $$ = cos($3);
+		}
+                | tABS '(' Expr ')'
+                {
+		    $$ = fabs($3);
+		}
+                | tPI 
+                {
+		    $$ = M_PI;
+		}
+                ;
+
 %%
 
     /* Additional C code */
