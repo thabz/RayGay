@@ -1,9 +1,9 @@
 
 INCLUDES = -I$(top_srcdir)/src 
 
-lib_LTLIBRARIES = liblights.la
+noinst_LIBRARIES = liblights.a
 
-liblights_la_SOURCES = arealight.cpp pointlight.cpp spotlight.cpp
+liblights_a_SOURCES = arealight.cpp pointlight.cpp spotlight.cpp
 
 EXTRA_DIST = arealight.h \
              pointlight.h \

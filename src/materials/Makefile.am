@@ -1,8 +1,8 @@
 
 INCLUDES = -I$(top_srcdir)/src 
 
-lib_LTLIBRARIES = libmaterials.la
+noinst_LIBRARIES = libmaterials.a
 
-libmaterials_la_SOURCES = material.cpp 
+libmaterials_a_SOURCES = material.cpp 
 
 EXTRA_DIST = material.h materials.h

@@ -1,9 +1,9 @@
 
 INCLUDES = -I$(top_srcdir)/src 
 
-lib_LTLIBRARIES = libpaths.la
+noinst_LIBRARIES = libpaths.a
 
-libpaths_la_SOURCES = path.cpp circle.cpp spiral.cpp linesegment.cpp
+libpaths_a_SOURCES = path.cpp circle.cpp spiral.cpp linesegment.cpp
 
 EXTRA_DIST = path.h \
              circle.h \

@@ -5,9 +5,9 @@ bin_PROGRAMS = tracer
 
 tracer_SOURCES = main.cpp camera.cpp sphere.cpp vector.cpp matrix.cpp intersection.cpp ray.cpp scene.cpp image.cpp rgb.cpp boolean.cpp perlin.cpp boundingbox.cpp box.cpp hierarchy.cpp object.cpp mesh.cpp tetrahedron.cpp triangle.cpp cylinder.cpp pixelstore.cpp renderer.cpp raytracer.cpp bsp.cpp necklace.cpp tessalation.cpp
 
-tracer_LDADD = materials/libmaterials.la \
-	       paths/libpaths.la \
-	       lights/liblights.la
+tracer_LDADD = paths/libpaths.a lights/liblights.a materials/libmaterials.a	
+
+#tracer_LIBADD = materials/libmaterials.a	       
 
 EXTRA_DIST = boolean.h 		\
 	     boundingbox.h 	\
