@@ -6,7 +6,7 @@
 #include "math/vector2.h"
 #include "materials/plastic.h"
 
-Bound::Bound(ObjectGroup* group) : Object(new Plastic(RGB(1.0,1.0,1.0))) {
+Bound::Bound(ObjectGroup* group) : Object(NULL) {
     this->group = group;
     tree = new KdTree();
     group->prepare();
