@@ -15,13 +15,15 @@
 
 
 BoundingBox::BoundingBox() {
-    corners = NULL;
 }
 
 BoundingBox::BoundingBox(const Vector c1, const Vector c2) {
-    _c1 = Vector(MIN(c1[0],c2[0]),MIN(c1[1],c2[1]),MIN(c1[2],c2[2]));
-    _c2 = Vector(MAX(c1[0],c2[0]),MAX(c1[1],c2[1]),MAX(c1[2],c2[2]));
-    corners = NULL;
+    _c1[0] = MIN(c1[0],c2[0]);
+    _c1[1] = MIN(c1[1],c2[1]);
+    _c1[2] = MIN(c1[2],c2[2]);
+    _c2[0] = MAX(c1[0],c2[0]);
+    _c2[1] = MAX(c1[1],c2[1]);
+    _c2[2] = MAX(c1[2],c2[2]);
 }
 
 BoundingBox::BoundingBox(const std::vector<Vector>& swarm) {
@@ -29,8 +31,12 @@ BoundingBox::BoundingBox(const std::vector<Vector>& swarm) {
     if (num < 2) throw_exception("At least two Vectors are needed");
     for(int i = 0; i < num; i++) {
 	Vector c = swarm[i];
-	_c1 = Vector(MIN(_c1[0],c[0]),MIN(_c1[1],c[1]),MIN(_c1[2],c[2]));
-  	_c2 = Vector(MAX(c[0],_c2[0]),MAX(c[1],_c2[1]),MAX(c[2],_c2[2]));
+	_c1[0] = MIN(_c1[0],c[0]);
+	_c1[1] = MIN(_c1[1],c[1]);
+	_c1[2] = MIN(_c1[2],c[2]);
+  	_c2[0] = MAX(c[0],_c2[0]);
+	_c2[1] = MAX(c[1],_c2[1]);
+	_c2[2] = MAX(c[2],_c2[2]);
     }
 }
 
@@ -58,7 +64,7 @@ bool BoundingBox::insideOrTouching(const Vector &p) const {
 }
 
 Vector BoundingBox::center() const {
-    return 0.5 * (_c1 + _c2);
+    return 0.5 * (Vector(_c1[0],_c1[1],_c1[2]) + Vector(_c2[0],_c2[1],_c2[2]));
 }
 
 bool BoundingBox::inside(const Vector* points, int num) const {
@@ -212,8 +218,7 @@ Vector BoundingBox::normal(const Vector& p) const {
  * The array must be deleted after use.
  */
 Vector* BoundingBox::getCorners() const {
-    if (corners != NULL) return corners;
-    corners = new Vector[8];
+    Vector* corners = new Vector[8];
     Vector* c = corners;
     assert(c != NULL);
     c[0] = Vector(_c1[0],_c1[1],_c1[2]);
@@ -263,7 +268,7 @@ BoundingBox BoundingBox::enclosure(Vector* points, int num) {
 
 
 bool BoundingBox::operator==(const BoundingBox &b) const {
-    return b._c1 == _c1 && b._c2 == _c2;
+    return b.minimum() == minimum() && b.maximum() == maximum();
 }
 
 /**
@@ -304,9 +309,29 @@ ostream & operator<<(ostream &os, const BoundingBox &b) {
 
 void BoundingBox::grow(double nudge) {
     assert(nudge >= 0.0);
-    Vector v = Vector(nudge,nudge,nudge);
-    _c1 -= v;
-    _c2 += v;
+    _c1[0] -= nudge;
+    _c1[1] -= nudge;
+    _c1[2] -= nudge;
+    _c2[0] += nudge;
+    _c2[1] += nudge;
+    _c2[2] += nudge;
+}
+
+Vector BoundingBox::lengths() const {
+    return Vector(_c2[0]-_c1[0],_c2[1]-_c1[1],_c2[2]-_c1[2]);
+}
+
+/**
+ * @param percent where 0.01 is 1%
+ */
+void BoundingBox::growPercentage(double percent) {
+     Vector l = lengths();
+     _c1[0] -= percent * l[0];
+     _c1[1] -= percent * l[1];
+     _c1[2] -= percent * l[2];
+     _c2[0] += percent * l[0];
+     _c2[1] += percent * l[1];
+     _c2[2] += percent * l[2];
 }
 
 // Stolen from http://www.gamasutra.com/features/19991018/Gomez_4.htm

@@ -57,10 +57,10 @@ class BoundingBox {
 	int cutByPlane(int cutplane_dimension, double cutplane_value) const;
 	
 	/// The corner with smallest x,y,z values
-	const Vector& minimum() const { return _c1; };
+	const Vector minimum() const { return Vector(_c1[0],_c1[1],_c1[2]); };
 	
 	/// The corner with biggest x,y,z values
-	const Vector& maximum() const { return _c2; };
+	const Vector maximum() const { return Vector(_c2[0],_c2[1],_c2[2]); };
 
 	/// Returns the smallest box that contains b1 and b2.
 	static BoundingBox doUnion(const BoundingBox& b1, const BoundingBox& b2); 
@@ -80,6 +80,9 @@ class BoundingBox {
 	/// Grow box 2*amount in all dimensions 
 	void grow(double amount);
 	
+	/// Grow box a percentage in all dimensions 
+	void growPercentage(double amount);
+	
 	/// Comparator
         bool operator==(const BoundingBox &b) const;
 
@@ -92,10 +95,12 @@ class BoundingBox {
 	// Split this bbox into two by a axis-aligned plane
 	bool split(BoundingBox* left, BoundingBox* right, int dim, double axis) const; 
 
+	// Lengths of the three sides
+	Vector lengths() const;
+
     private:
-	Vector _c1; ///< The point with smallest x,y,z values
-	Vector _c2; ///< The point with biggest x,y,z values
-	mutable Vector* corners;
+	double _c1[3]; ///< The point with smallest x,y,z values
+	double _c2[3]; ///< The point with biggest x,y,z values
 };
 
 #endif
