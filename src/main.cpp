@@ -118,6 +118,13 @@ void* renderThreadDo(void* obj) {
 void do_filtering(Image* image, FilterStack* filterstack) {
     cout << "Applying filters..." << endl;
     filterstack->apply(image);
+    
+    Environment* env = Environment::getUniqueInstance();
+    if (env->hasPreviewWindow()) {
+	PreviewWindow* win = env->getPreviewWindow();
+	win->drawBlock(0,0,image->getWidth(),image->getHeight());
+    }
+
     cout << "Done." << endl;
 }
 
