@@ -1,7 +1,7 @@
 
 TODO:
    
-* Get a Meshs triangles into hierarchy as separate nodes.
++ Get a Meshs triangles into hierarchy as separate nodes.
 * Refactor Material to provide hookups for procedural textures
 * More accurate Triangle-BoundingBox intersection code
 * Hierarchy will never exit when more than 8 objects intersect a the same point.
@@ -10,7 +10,7 @@ TODO:
 + Cylinder 
 * Separate objectspace and worldspace transformations.
 + Area lights
-* Bumpmapping
++ Bumpmapping
 * 3DS import (meshes, UV, materials)
 + gprof profiling
 * Create a XML scene format and an importer.
@@ -19,4 +19,5 @@ TODO:
 * General polynomial surfaces.
 * Support for separate night and day textures.
 * Mathematical cylinder
-
++ Bicubic interpolation of textures
+* Support for u,v coordinates in meshes
