@@ -1,0 +1,74 @@
+
+renderer raytracer
+
+camera { position <0,100,1000>
+         up <0,1,0> 
+         lookat <0,0,0> 
+	 fov 45
+	 aa 4
+}
+
+image { width 1024 aspect 4 3 }
+fog { 1000 <0.95,0.94,0.95> }
+
+background <0.55,0.54,0.5,1.0>
+
+/* light { point <100,1300,1300> power <1,1,1> }  */
+
+light { area <100,1300,1300> <-0.1,-1,-1> 50 80 0.1 power <1,1,1> }  
+
+$yellow = material {
+    diffuse <0.90,0.90,0.1>
+    kd 0.5
+    specular <1.0,1.0,1.0>
+    ks 0.5
+    specpow 15
+}
+
+$blue = material {
+    diffuse <0.35,0.25,0.2>
+    kd 0.8
+    specular <1.0,1.0,1.0>
+    ks 0.2
+    specpow 15
+}
+
+$strand_color = material {
+    diffuse <0.87,0.83,0.70>
+    kd 1.0
+    ks 0.0
+}
+
+/* box { $blue <-10000,-50,-10000> <10000,20,10000> } */
+
+heightfield { $blue 
+              texture { "gfx/water.jpg" 3 3 bilinear }
+	      <2000,0.7,2000>
+	      400 400 
+} translate <0,4,100>
+
+
+repeat (60) {
+    $y = 0
+	group {
+	    repeat (15) {
+	    extrusion {
+		$strand_color
+	        bezierspline {
+	   		<random(-10,10),random(0),random(-10,10)>
+	   		<random(-200,200),random(100,200),random(-200,200)>
+			<random(-300,300),random(20,300),random(-300,300)>
+			<random(-300,300),random(200,400),random(-300,300)>
+			<random(-400,400),random(300,500),random(-400,400)>
+			<random(-500,500),random(300,600),random(-500,500)>
+		}
+		1
+		8 
+		50
+	    }
+	    }
+	} translate <random(-1200,1200), 0, random(-2000,1200)>
+}
+
+sphere { $yellow 20 <-50,10,600> }
+
