@@ -13,7 +13,7 @@ my $month = CGI::param('mon') || $todaymonth;
 my $calHTML = ""; #makeCal($month,$year);
 
 opendir(DIR,'entries');
-my @entries = grep { !/^\./ } readdir(DIR);
+my @entries = grep { !/^\./ && !/CVS/ } readdir(DIR);
 closedir(DIR);
 
 my $HTML;
