@@ -36,8 +36,6 @@ libobjects_la_SOURCES = \
 		       object.cpp	\
 		       objectgroup.h	\
 		       objectgroup.cpp	\
-		       ply.h		\
-		       ply.cpp		\
 		       sceneobject.h	\
 		       solid.h		\
 		       solidbox.h	\
