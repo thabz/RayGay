@@ -18,7 +18,6 @@
 
 using namespace std;
 
-extern FILE* yyin;
 extern void yyparse();
 extern void run_interpreter();
 extern void delete_interpreter();
