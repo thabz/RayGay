@@ -10,7 +10,7 @@
 class Path;
 class SceneObject;
 class Material;
-class Function;
+class LangFunction;
 
 using namespace std;
 
@@ -34,8 +34,8 @@ class Assignments {
 	SceneObject* getNamedSceneObject(string name, FilePosition pos);
 	void setNamedSceneObject(string name, SceneObject* obj_node);
 
-	Function* getNamedFunction(string name, FilePosition pos);
-	void setNamedFunction(string name, Function* function);
+	LangFunction* getNamedFunction(string name, FilePosition pos);
+	void setNamedFunction(string name, LangFunction* function);
 
     private:
 	Assignments(); 
@@ -45,7 +45,7 @@ class Assignments {
 	map<string,Path*> pathMap;
 	map<string,Material*> materialMap;
 	map<string,SceneObject*> objectMap;
-	map<string,Function*> functionMap;
+	map<string,LangFunction*> functionMap;
 };
 
 #endif

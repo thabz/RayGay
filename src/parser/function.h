@@ -38,11 +38,11 @@ class FuncArgsDecls {
 /**
  * A callable function
  */
-class Function {
+class LangFunction {
 
     public: 
 
-	Function(FuncArgsDecls* arg_decls) {
+	LangFunction(FuncArgsDecls* arg_decls) {
 	    this->arg_decls = arg_decls;
 	}
 

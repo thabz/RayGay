@@ -70,8 +70,8 @@ void Assignments::setNamedMaterial(string name, Material* material) {
     materialMap[name] = material;
 }
 
-Function* Assignments::getNamedFunction(string name, FilePosition pos) {
-    Function* result = functionMap[name];
+LangFunction* Assignments::getNamedFunction(string name, FilePosition pos) {
+    LangFunction* result = functionMap[name];
     if (result == NULL) {
 	throw RuntimeException("Function named "+name+" not defined",pos);
     }
@@ -79,6 +79,6 @@ Function* Assignments::getNamedFunction(string name, FilePosition pos) {
 
 }
 
-void Assignments::setNamedFunction(string name, Function* function) {
+void Assignments::setNamedFunction(string name, LangFunction* function) {
     functionMap[name] = function;
 }

@@ -70,7 +70,7 @@ CameraNode* camera;
 RendererSettings* renderer_settings;
 MaterialNode* tmpMaterial;
 Vector2 image_size = Vector2(640,480);
-Function* tmpFunction;
+LangFunction* tmpFunction;
 FilterStack* filter_stack;
 Mesh::MeshType mesh_type;
 
@@ -288,7 +288,7 @@ AddLight	: LightDef
 
 FuncDecl	: tFUNCTION tSTRING '(' FuncArgsDecls ')'
                 {
-		    tmpFunction = new Function($4);
+		    tmpFunction = new LangFunction($4);
 		    Assignments::getUniqueInstance()->setNamedFunction(*$2,tmpFunction);
 		    delete $2;
 		}
@@ -301,7 +301,7 @@ FuncDecl	: tFUNCTION tSTRING '(' FuncArgsDecls ')'
 
 FuncCall	: tVARNAME '(' FuncCallArgs ')'
                 {
-		    Function* f = Assignments::getUniqueInstance()->getNamedFunction(*$1,curPos());
+		    LangFunction* f = Assignments::getUniqueInstance()->getNamedFunction(*$1,curPos());
 		    if (f == NULL) {
 			yyerror("Function '"+(*$1)+"' not declared.");
 		    }

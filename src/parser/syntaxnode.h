@@ -34,6 +34,9 @@ class SyntaxNode {
 
 };
 
+/**
+ * This is used for nodes that holds a value.
+ */
 class ValueNode : public SyntaxNode {
     public:
 	enum ValueType {

@@ -481,7 +481,7 @@ class FuncCallArgs {
 class FuncCallNode : public ActionNode {
 
     public:
-	FuncCallNode(Function* function, FuncCallArgs* args) {
+	FuncCallNode(LangFunction* function, FuncCallArgs* args) {
 	    this->function = function;
 	    this->args = args;
 	}
@@ -496,7 +496,7 @@ class FuncCallNode : public ActionNode {
 	}
 
     private:
-	Function* function;
+	LangFunction* function;
 	FuncCallArgs* args;
 };
 
