@@ -12,6 +12,8 @@ class Ray;
 class Lightsource;
 class object;
 class Matrix;
+class Sphere;
+class Image;
 class ObjectCollection;
 
 /// The collection of objects and lights.
@@ -33,12 +35,15 @@ class Scene {
 	std::vector<object*> getObjects();
 	std::vector<ObjectCollection*> getObjectCollections();
 	void setBackgroundColor(const RGB& c) { bg_color = c; };
-	RGB getBackgroundColor() { return bg_color; };
-  
+	RGB getBackgroundColor(const Ray& ray) const;
+	void setEnvironmentMap(const std::string& filename);
+
     private:
 	std::vector<Lightsource*> lights;
 	std::vector<object*> objects;
 	std::vector<ObjectCollection*> objectcollections;
+	Image* environmentMap;
+	Sphere* environmentSphere;
 	Camera* camera;
 	Hierarchy* hierarchy;
 	RGB bg_color;

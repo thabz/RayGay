@@ -5,8 +5,11 @@
 #include "lights/lightsource.h"
 #include "intersection.h"
 #include "ray.h"
+#include "sphere.h"
+#include "image/image.h"
 #include "hierarchy.h"
 #include "objectcollection.h"
+#include "materials/materials.h"
 
 using namespace std;
 
@@ -36,6 +39,24 @@ void Scene::setCamera(Camera* cam) {
 
 Camera* Scene::getCamera() const {
     return camera;
+}
+
+void Scene::setEnvironmentMap(const std::string& filename) {
+    environmentSphere = new Sphere(Vector(0,0,0),10000,MATERIAL_SHINY_BLUE);
+    environmentMap = Image::load(filename);
+}
+
+RGB Scene::getBackgroundColor(const Ray& ray) const { 
+    if (environmentMap == NULL) { 
+        return bg_color; 
+    } else {
+	Intersection i = environmentSphere->intersect(ray);
+	double u,v;
+	i.getObject()->getUV(i,&u,&v);
+        u -= int(u);
+	v -= int(v);
+	return environmentMap->getTexel(u,v);
+    }
 }
 
 void Scene::transform(const Matrix &m) {
