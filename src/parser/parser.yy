@@ -823,8 +823,17 @@ Bool		: Expr '<' Expr
 		    $$ = $2;
 		}
                 | Bool tBOOL_AND Bool 
+		{
+		    $$ = new BoolAndNode($1,$3);
+		}
                 | Bool tBOOL_OR Bool
+		{
+		    $$ = new BoolOrNode($1,$3);
+		}
                 | tBOOL_NOT Bool
+		{
+		    $$ = new BoolNotNode($2);
+		}
 		;
 
 %%
