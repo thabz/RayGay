@@ -54,18 +54,19 @@ class compageJobsDesc {
 };
 
 RenderJob* RenderJobPool::getJob() {
+    RenderJob *result;
 
     pthread_mutex_lock(&mutex_jobs);
-
-    if (jobs.size() == 0) {
-	return NULL;
+    if (jobs.empty()) {
+	result = NULL;
+    } else {
+	std::sort(jobs.begin(),jobs.end(),compageJobsDesc());
+	result = jobs.front();
+	jobs.pop_front();
     }
 
-    std::sort(jobs.begin(),jobs.end(),compageJobsDesc());
-    RenderJob *result = jobs.front();
-    jobs.pop_front();
-    
     pthread_mutex_unlock(&mutex_jobs);
+
     return result;
 }
 
