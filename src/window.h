@@ -2,8 +2,6 @@
 #ifndef PREVIEW_WINDOW_H
 #define PREVIEW_WINDOW_H
 
-#include "window.h"
-
 class Image;
 
 class PreviewWindow {
