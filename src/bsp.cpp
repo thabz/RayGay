@@ -106,9 +106,8 @@ Intersection BSP::intersectForShadow(const Ray& ray) const {
 }
 
 Intersection BSP::intersectForShadow(const Ray& ray, const object* hint) const {
-    Intersection result = hint->intersect(ray);
-    if (result.isIntersected()) {
-	return result;
+    if (hint->intersect(ray)) {
+	return *(hint->getLastIntersection());
     } else {
         return intersectForShadow(ray);
     }
@@ -157,9 +156,8 @@ const Intersection BSP::intersectForShadow(const Ray& ray, const double min_t, c
     if (objects.size() > 0) {
         Intersection tmp;
 	for (unsigned int i=0; i < objects.size(); i++) {
-	    tmp = objects[i]->intersect(ray);
-	    if (tmp.isIntersected()) {
-		return tmp;
+	    if (objects[i]->intersect(ray)) {
+		return *(objects[i]->getLastIntersection());
 	    }
 	}
 	return Intersection();
@@ -174,7 +172,8 @@ const Intersection BSP::intersect(const Ray& ray, const double min_t, const doub
         Intersection tmp;
 	double cur_t = HUGE_DOUBLE;
 	for (unsigned int i=0; i < objects.size(); i++) {
-	    tmp = objects[i]->intersect(ray);
+	    objects[i]->intersect(ray);
+	    tmp = *(objects[i]->getLastIntersection());
 	    if (tmp.isIntersected() && tmp.getT() < cur_t) {
 		result = tmp;
 		cur_t = tmp.getT();

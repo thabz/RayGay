@@ -31,21 +31,22 @@ void sphere_test() {
     s = Sphere(Vector(0,0,0),60.0,m);
 
     Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-    assert(IS_ZERO(s.intersect(r).getPoint()[2] - 60.0));
+    s.intersect(r);
+    assert(IS_EQUAL(s.getLastIntersection()->getPoint()[2],60.0));
 
     r = Ray(Vector(0,0,0),Vector(0,0,-1),1);
-    double z = s.intersect(r).getPoint()[2];
-    assert(IS_ZERO( z + 60.0));
+    s.intersect(r);
+    assert(IS_EQUAL( s.getLastIntersection()->getPoint()[2], -60.0));
 
     r = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
-    z = s.intersect(r).getPoint()[2];
-    assert(IS_ZERO( z + 60.0));
+    s.intersect(r);
+    assert(IS_EQUAL( s.getLastIntersection()->getPoint()[2], -60.0));
 
     r = Ray(Vector(0,0,-100),Vector(0,0,-1),1);
-    assert(!s.intersect(r).isIntersected());
+    assert(s.intersect(r) == false);
 
     r = Ray(Vector(0,0,-60),Vector(0,0,-1),1);
-    assert(!s.intersect(r).isIntersected());
+    assert(s.intersect(r) == false);
 
     /* Test intersects(BoundingBox) */
     s = Sphere(Vector(0,0,0),10.0,m);
@@ -131,12 +132,11 @@ void boolean_test() {
     b = Boolean(&s1,Boolean::BOOLEAN_DIFFERENCE,&s2,m);
 
     Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-    Intersection i = b.intersect(r);
+    b.intersect(r);
+    Intersection i = *(b.getLastIntersection());
 
     assert(IS_EQUAL(i.getPoint()[2],20.0));
-    assert(IS_EQUAL(b.normal(i)[0],0.0));
-    assert(IS_EQUAL(b.normal(i)[1],0.0));
-    assert(IS_EQUAL(b.normal(i)[2],1.0));
+    assert(Vector(0,0,1) == b.normal(i));
 }
 
 void box_test() {

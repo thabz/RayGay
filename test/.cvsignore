@@ -1,5 +1,12 @@
 Makefile
 Makefile.in
 .deps
+.libs
+testlanguage
+testmath
+testobjects
+testpaths
+testspace
+testspeed
 
 

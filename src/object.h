@@ -17,7 +17,7 @@ class Material;
 class object {
     public:
         /// Return the nearest intersection to ray's origin
-	virtual Intersection intersect(const Ray& ray) const;
+	virtual bool intersect(const Ray& ray) const;
 
 	/// Returns the normalvector at a point on this objects surface
 	virtual Vector normal(const Intersection &i) const = 0;
@@ -39,6 +39,8 @@ class object {
 
 	virtual void prepare();
 
+	Intersection* getLastIntersection() const { return &last_intersection; }; 
+
     protected:
 	object();
 	virtual Intersection _intersect(const Ray& ray) const = 0;
@@ -58,13 +60,13 @@ class object {
  */
 
 inline
-Intersection object::intersect(const Ray& ray) const {
+bool object::intersect(const Ray& ray) const {
     if (ray.getId() != last_ray) {
 	last_intersection = _intersect(ray);
 	last_intersection.setObject(const_cast<object*>(this));
 	last_ray = ray.getId();
     }
-    return last_intersection;
+    return last_intersection.isIntersected();
 }
 
 

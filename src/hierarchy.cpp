@@ -208,7 +208,8 @@ Intersection Hierarchy::intersect(const Ray& ray) const {
 	}
     } else if (hasObjects()) {
 	for (vector<object*>::const_iterator p = objects.begin(); p != objects.end(); p++) {
-	    tmp = (*p)->intersect(ray);
+	    (*p)->intersect(ray);
+	    tmp = *((*p)->getLastIntersection());
 	    if (tmp.isIntersected()) {
 		if (!result.isIntersected() || tmp.getT() < result.getT()) {
 		    result = tmp;
@@ -238,7 +239,8 @@ Intersection Hierarchy::intersectForShadow(const Ray& ray) const {
 	}
     } else if (hasObjects()) {
 	for (vector<object*>::const_iterator p = objects.begin(); p != objects.end(); p++) {
-	    tmp = (*p)->intersect(ray);
+	    (*p)->intersect(ray);
+	    tmp = *((*p)->getLastIntersection());
 	    if (tmp.isIntersected()) {
 		return tmp;
 	    }
@@ -249,7 +251,8 @@ Intersection Hierarchy::intersectForShadow(const Ray& ray) const {
 
 Intersection Hierarchy::intersectForShadow(const Ray& ray, const object* hint) const {
     if (hint != NULL) {
-	Intersection i = hint->intersect(ray);
+	hint->intersect(ray);
+	Intersection i = *(hint->getLastIntersection());
 	if (i.isIntersected()) {
 	    return i;
 	}
