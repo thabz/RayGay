@@ -1,7 +1,7 @@
 
 #include "pointlight.h"
 #include "math/matrix.h"
-#include "rgb.h"
+#include "image/rgb.h"
 #include "intersection.h"
 #include "lightinfo.h"
 #include "spacesubdivider.h"

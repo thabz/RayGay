@@ -2,9 +2,9 @@
 #include <iostream>
 
 #include "renderer.h"
-#include "image.h"
+#include "image/image.h"
 #include "scene.h"
-#include "rgb.h"
+#include "image/rgb.h"
 #include "object.h"
 #include "spacesubdivider.h"
 #include "objectcollection.h"

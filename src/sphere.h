@@ -40,9 +40,6 @@ class Sphere : public BooleanOperand {
 
 	virtual void getUV(const Intersection& intersection, double* u, double* v) const;
 
-        /// Internal test
-	static void test();
-
     private:
 	Vector center;
 	double radius;

@@ -7,10 +7,10 @@
 #include "ray.h"
 #include "intersection.h"
 #include "object.h"
-#include "rgb.h"
+#include "image/rgb.h"
 #include "math/matrix.h"
 #include "scene.h"
-#include "image.h"
+#include "image/image.h"
 #include "lights/lightsource.h"
 
 Raytracer::Raytracer() {

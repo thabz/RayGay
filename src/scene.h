@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <iosfwd>
-#include "rgb.h"
+#include "image/rgb.h"
 #include "hierarchy.h"
 #include "camera.h"
 

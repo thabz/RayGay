@@ -12,7 +12,7 @@
 #ifndef PIXELSTORE_H
 #define PIXELSTORE_H
 
-#include "rgb.h"
+#include "image/rgb.h"
 class Pixel;
 
 /// A cache for adaptive antialiasing

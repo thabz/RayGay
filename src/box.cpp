@@ -7,7 +7,7 @@
 #include "ray.h"
 #include "intersection.h"
 #include "math/matrix.h"
-#include "rgb.h"
+#include "image/rgb.h"
 #include "mesh.h"
 
 Box::Box(const Vector a, const Vector b, Material mat) : Mesh(Mesh::MESH_FLAT,mat) {

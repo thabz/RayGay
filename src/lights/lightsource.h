@@ -3,7 +3,7 @@
 #define LIGHTSOURCE_H
 
 #include "math/vector.h"
-#include "rgb.h"
+#include "image/rgb.h"
 #include "lightinfo.h"
 
 class RGB;

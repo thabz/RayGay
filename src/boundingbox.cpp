@@ -8,7 +8,7 @@
 #include "ray.h"
 #include "intersection.h"
 #include "math/matrix.h"
-#include "rgb.h"
+#include "image/rgb.h"
 
 BoundingBox::BoundingBox() {
     corners = NULL;

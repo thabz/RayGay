@@ -2,7 +2,7 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "rgb.h"
+#include "image/rgb.h"
 
 class Intersection;
 class Image;

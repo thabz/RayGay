@@ -1,7 +1,7 @@
 
 #include "materials/material.h"
-#include "rgb.h"
-#include "image.h"
+#include "image/rgb.h"
+#include "image/image.h"
 #include "intersection.h"
 #include "object.h"
 

@@ -1,6 +1,6 @@
 
 #include "pixelstore.h"
-#include "rgb.h"
+#include "image/rgb.h"
 #include "pixel.h"
 #include <string.h>
 #include <cassert>
