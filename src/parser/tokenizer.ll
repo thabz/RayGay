@@ -55,6 +55,7 @@ aspect		return tASPECT;
 background	return tBACKGROUND;
 bicubic 	return tBICUBIC;
 bilinear 	return tBILINEAR;
+blob		return tBLOB;
 box		return tBOX;
 bump		return tBUMP;
 cachetolerance	return tCACHETOLERANCE; 
