@@ -353,8 +353,16 @@ void ThreeDS::load3ds(const string& filename) {
 		state_inside_material_block = true;
 		state_inside_color_type = ' ';
 
-		// TODO: Read material name
-		fseek(l_file, l_chunk_lenght-6, SEEK_CUR); // Skip name
+		// Read material name
+		unsigned char name[1024];
+		i = 0;
+		do {
+		    fread (&l_char, 1, 1, l_file);
+		    name[i] = l_char;
+		    i++;
+		} while (l_char != '\0' && i < 1024);
+		//fseek(l_file, l_chunk_lenght-6, SEEK_CUR); // Skip name
+		cout << "Material name: " << name << endl;
 		break;
 		
 		// Ambient color
