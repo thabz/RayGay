@@ -10,6 +10,21 @@
  * \ref page_raytracing 
  *
  * \ref page_photonmapping
+ *
+ * \ref page_researchers
+ */
+
+/**
+ * \page page_researchers Researcher 
+ *
+ * Andrew Glassner
+ * http://www.glassner.com/andrew/ 
+ *
+ * Jim Arvo
+ * http://www.ics.uci.edu/~arvo/
+ *
+ * Henrik Wann Jensen
+ * http://graphics.ucsd.edu/~henrik/
  */
 
 /**
@@ -75,7 +90,7 @@ void work(string scenefile, string outputfile) {
     scene->transform(n);
 
     //SpaceSubdivider* space = new KdTree();
-    SpaceSubdivider* space = new KdTree();
+    SpaceSubdivider* space = new BSP();
     scene->initSpace(space);
 
     RendererSettings* renderersettings = importer.getRendererSettings();
