@@ -168,6 +168,14 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     RenderJobPool* job_pool = new RenderJobPool();
     prepareJobPool(job_pool,img,64);
 
+    if (renderersettings->anim_frames == 1) {
+	cout << "Still render (" << img->getWidth() << "x" << img->getHeight() << ")" << endl;
+    } else {
+	cout << "Animation render (" << img->getWidth() << "x" << img->getHeight() << ", " << renderersettings->anim_frames << "frames)" << endl;
+
+    }
+
+
     Stats::getUniqueInstance()->beginTimer("Rendering");
 
     if (renderersettings->threads_num == 1) {
