@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <cassert>
 
 #include "math/vector.h"
 #include "math/functions.h"
@@ -210,8 +211,12 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
  * This uses the IrradianceCache.
  */
 RGB PhotonRenderer::getDiffuseIrradiance(const Vector& point, const Vector& normal, const Vector& ray_dir) const {
-    double hmd;
 
+    if (renderersettings->final_gather_rays == 0) {
+	return globalphotonmap->irradianceEstimate(point,normal);
+    }
+
+    double hmd;
  //   return finalGather(point, normal, ray_dir, renderersettings->final_gather_rays, 0, &hmd);
 
     RGB irradiance;
@@ -228,9 +233,8 @@ RGB PhotonRenderer::getDiffuseIrradiance(const Vector& point, const Vector& norm
 
 /// Final gathering does one step of path tracing
 Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const Vector& ray_dir, int gatherRays, int depth, double* hmd) const {
-    if (gatherRays == 0) {
-	return globalphotonmap->irradianceEstimate(point,normal);
-    }
+    assert(gatherRays > 0);
+
     Vector offset_point = point + (0.1*normal);
 
     Vector result = Vector(0.0,0.0,0.0);
