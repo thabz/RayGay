@@ -3,6 +3,7 @@
 
 #include <string>    
 #include "math/vector.h"
+#include "lights/lightsource.h"
 #include "image/rgba.h"
 #include "image/texture.h"
 #include "paths/spiral.h"
@@ -22,9 +23,11 @@ string	{alpha}({alpha}|{digit}|{special})*
 %%
 [ \t\n]		;
 aa		return tAA;
+area		return tAREA;
 background	return tBACKGROUND;
 bicubic 	return tBICUBIC;
 bilinear 	return tBILINEAR;
+box		return tBOX;
 bump		return tBUMP;
 cachetolerance	return tCACHETOLERANCE; 
 camera		return tCAMERA;
@@ -44,6 +47,7 @@ globalphotons  	return tGLOBALPHOTONS;
 gloss		return tGLOSS;
 intersection	return tINTERSECTION;
 lookat		return tLOOKAT;
+light		return tLIGHT;
 linesegment	return tLINESEGMENT;
 kd		return tKD;
 ks		return tKS;
@@ -53,23 +57,28 @@ name		return tNAME;
 none		return tNONE;
 noshadow	return tNOSHADOW;
 necklace	return tNECKLACE;
+photonmap	return tPHOTONMAP;
 photontracer	return tPHOTONTRACER;
+power		return tPOWER;
 print		return tPRINT;
+point		return tPOINT;
 position	return tPOSITION;
 raytracer	return tRAYTRACER;
 renderer	return tRENDERER;
 rotate		return tROTATE;
+sky		return tSKY;
 solidbox	return tSOLIDBOX;
 specpow		return tSPECPOW;
 specular	return tSPECULAR;
 sphere		return tSPHERE;
+spot		return tSPOT;
 spiral		return tSPIRAL;
 texture		return tTEXTURE;
 translate	return tTRANSLATE;
 torus		return tTORUS;
 union		return tUNION;
 up		return tUP;
-photonmap	return tPHOTONMAP;
+wireframe	return tWIREFRAME;
 
 "\#.*\n"		/* Eat up comments */
 {digit}+ |

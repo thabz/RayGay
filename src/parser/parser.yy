@@ -8,6 +8,11 @@
 #include "image/rgb.h"
 #include "image/image.h"
 #include "image/texture.h"
+#include "lights/lightsource.h"
+#include "lights/arealight.h"
+#include "lights/pointlight.h"
+#include "lights/spotlight.h"
+#include "lights/skylight.h"
 #include "math/matrix.h"
 #include "math/vector.h"
 #include "paths/spiral.h"
@@ -16,10 +21,12 @@
 #include "objects/cylinder.h"    
 #include "objects/extrusion.h"    
 #include "objects/sphere.h"    
+#include "objects/box.h"    
 #include "objects/csg.h"    
 #include "objects/solid.h"    
 #include "objects/solidbox.h"    
 #include "objects/necklace.h"    
+#include "objects/wireframe.h"    
 #include "objects/torus.h"    
 #include "materials/material.h"    
 
@@ -58,6 +65,7 @@ Material* tmpMaterial;
 	Texture* texture;
 	Material* material;
 	SceneObject* object;
+	Lightsource* light;
 	Matrix* matrix;
 	Path* path;
 	string* c;
@@ -69,6 +77,7 @@ Material* tmpMaterial;
 %token tBACKGROUND
 %token tBICUBIC
 %token tBILINEAR
+%token tBOX
 %token tCAMERA
 %token tCYLINDER
 %token tDOF
@@ -78,6 +87,7 @@ Material* tmpMaterial;
 %token tFOV
 %token tLINESEGMENT tSPIRAL tCIRCLE
 %token tKD tKS tKT tSPECPOW tGLOSS
+%token tLIGHT tAREA tSPOT tPOINT tSKY tPOWER
 %token tMATERIAL
 %token tNAME
 %token tNONE
@@ -92,6 +102,7 @@ Material* tmpMaterial;
 %token tSPHERE
 %token tTEXTURE
 %token tTORUS
+%token tWIREFRAME
 %token tUNION tDIFFERENCE tINTERSECTION
 %token tGLOBALPHOTONS 
 %token tCAUSTICPHOTONS 
@@ -110,8 +121,9 @@ Material* tmpMaterial;
 %type <it> InterpolationType 
 %type <matrix> Rotate Translate Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
-%type <object> Intersection Union Object Extrusion
+%type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
 %type <material> MaterialDef NamedMaterial Material
+%type <light> LightDef Lightsource Arealight Spotlight Pointlight Skylight
 %type <path> NamedPath Circle Spiral Path PathDef LineSegment
 
 %left '+' '-'
@@ -126,6 +138,10 @@ Items		: /* Empty */
 Item		: Object
                 {
 		    scene->addObject($1);
+		}
+                | LightDef
+		{
+
 		}
                 | AssignName
 		| Print
@@ -302,14 +318,68 @@ MaterialProp 	: tDIFFUSE RGB
 		}
 		;
 
+LightDef	: tLIGHT '{' Lightsource '}'
+                ;
+
+Lightsource	: Arealight
+                | Spotlight
+		| Pointlight
+		| Skylight
+		;
+
+Pointlight	: tPOINT Vector tPOWER RGB
+                {
+		    $$ = new Pointlight(*$2);
+		    $$->setPower(*$4);
+		}
+                | tPOINT Vector
+                {
+		    $$ = new Pointlight(*$2);
+		}
+
+Skylight 	: tSKY Expr Expr tPOWER RGB
+                {
+		    $$ = new Skylight($2,int($3));
+		    $$->setPower(*$5);
+		}
+                | tSKY Expr Expr
+                {
+		    $$ = new Skylight($2,int($3));
+		}
+
+Spotlight	: tSPOT Vector Vector Expr Expr tPOWER RGB
+                {
+		    $$ = new Spotlight(*$2,*$3,$4,$5);
+		    $$->setPower(*$7);
+		}
+                | tSPOT Vector Vector Expr Expr Expr
+                {
+		    $$ = new Spotlight(*$2,*$3,$4,$5);
+		}
+
+Arealight	: tAREA Vector Vector Expr Expr Expr tPOWER RGB
+                {
+		    $$ = new Arealight(*$2,*$3,$4,int($5),$6);
+		    $$->setPower(*$8);
+		}
+                | tAREA Vector Vector Expr Expr Expr
+                {
+		    $$ = new Arealight(*$2,*$3,$4,int($5),$6);
+		}
+
 Object		: SolidObject
                 | Necklace 
-		| Extrusion
+		| Wireframe
+		| MeshObject 
 		| Object Transformations
                 {
 		    $$ = $1;
 		    $$->transform(*$2);
                 }
+		;
+
+MeshObject	: Extrusion
+                | Box
 		;
 
 SolidObject	: Sphere
@@ -329,6 +399,19 @@ SolidObject	: Sphere
 Extrusion	: tEXTRUSION '{' Material Path Expr Expr Expr '}'
                 {
 		    $$ = new Extrusion(*$4,$5,(int)$6,(int)$7,$3);
+		}
+                ;
+
+Box		: tBOX '{' Material Vector Vector '}'
+                {
+		    $$ = new Box(*$4,*$5,$3);
+		}
+		;
+
+Wireframe	: tWIREFRAME '{' Material MeshObject Expr '}'
+                {
+                     Mesh* mesh = dynamic_cast<Mesh*>($4);
+		     $$ = new Wireframe(mesh,$5,$3);
 		}
                 ;
 
