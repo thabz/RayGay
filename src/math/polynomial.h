@@ -6,6 +6,8 @@
 #include "math/constants.h"
 #include "math/function.h"
 
+#define MAX_INLINE_COEFFS 5
+
 /**
  * A polynomial in one variable.
  *
@@ -71,6 +73,7 @@ class Polynomial : public Function<double, double> {
 	Polynomial operator+(const Polynomial& p) const;
 	Polynomial operator-(const Polynomial& p) const;
 	Polynomial operator*(const Polynomial& p) const;
+	Polynomial& operator=(const Polynomial& p);
 	Polynomial operator*(double c) const;
 	Polynomial operator/(double c) const;
 
@@ -78,12 +81,15 @@ class Polynomial : public Function<double, double> {
 	Polynomial division(const Polynomial& divisor, Polynomial& remainder) const;
 
     private:
+	void init(const Polynomial& other);
 	void reduce();
 	
 	// Number of coefficients.
 	uint num;
+
 	// The coefficients. Eg. c[2]x^2 + c[1]x + c[0]
 	double* coefficients;
+	double coefficients_inline[MAX_INLINE_COEFFS];
 };
 
 #endif

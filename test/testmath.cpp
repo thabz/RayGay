@@ -783,7 +783,8 @@ class polynomials : public Test  {
 
 	    // Copy constructor
 	    Polynomial a = Polynomial(1,2,3);
-	    Polynomial b;
+	    Polynomial b = a;
+
 	    b = a;
 	    b = a * 2.0;
 	    assertTrue(IS_EQUAL(a.leadingCoefficient(), 1.0));

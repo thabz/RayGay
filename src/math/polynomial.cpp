@@ -7,22 +7,21 @@
 
 Polynomial::Polynomial() {
     num = 1;
-    coefficients = new double[num];
+    coefficients = coefficients_inline;
     coefficients[0] = 0.0;
 }
 
 Polynomial::Polynomial(const Polynomial& other) {
-    num = other.num;
-    coefficients = new double[num];
-    for(uint i = 0; i < num; i++) {
-	coefficients[i] = other.coefficients[i];
-    }
-    reduce();
+    init(other);
 }
 
 Polynomial::Polynomial(double* coefficients, uint num) {
     assert(num >= 1);
-    this->coefficients = new double[num];
+    if (num < MAX_INLINE_COEFFS) {
+	this->coefficients = coefficients_inline;
+    } else {
+	this->coefficients = new double[num];
+    }
     for(uint i = 0; i < num; i++) {
 	this->coefficients[i] = coefficients[i];
     }
@@ -32,7 +31,7 @@ Polynomial::Polynomial(double* coefficients, uint num) {
 
 Polynomial::Polynomial(double A, double B, double C, double D, double E) {
     num = 5;
-    coefficients = new double[num];
+    coefficients = coefficients_inline;
     coefficients[0] = E;
     coefficients[1] = D;
     coefficients[2] = C;
@@ -43,7 +42,7 @@ Polynomial::Polynomial(double A, double B, double C, double D, double E) {
 
 Polynomial::Polynomial(double A, double B, double C, double D) {
     num = 4;
-    coefficients = new double[num];
+    coefficients = coefficients_inline;
     coefficients[0] = D;
     coefficients[1] = C;
     coefficients[2] = B;
@@ -53,7 +52,7 @@ Polynomial::Polynomial(double A, double B, double C, double D) {
 
 Polynomial::Polynomial(double A, double B, double C) {
     num = 3;
-    coefficients = new double[num];
+    coefficients = coefficients_inline;
     coefficients[0] = C;
     coefficients[1] = B;
     coefficients[2] = A;
@@ -62,7 +61,7 @@ Polynomial::Polynomial(double A, double B, double C) {
 
 Polynomial::Polynomial(double A, double B) {
     num = 2;
-    coefficients = new double[num];
+    coefficients = coefficients_inline;
     coefficients[0] = B;
     coefficients[1] = A;
     reduce();
@@ -70,12 +69,12 @@ Polynomial::Polynomial(double A, double B) {
 
 Polynomial::Polynomial(double A) {
     num = 1;
-    coefficients = new double[num];
+    coefficients = coefficients_inline;
     coefficients[0] = A;
 }
 
 Polynomial::~Polynomial() {
-    if (coefficients != NULL) {
+    if (coefficients != coefficients_inline && coefficients != NULL) {
     	delete [] coefficients;
 	coefficients = NULL;
     }
@@ -251,6 +250,7 @@ void Polynomial::reduce() {
 
 Polynomial Polynomial::operator*(const Polynomial& other) const {
     double result_coeffs[num+other.num];
+
     for(uint i = 0; i < num+other.num; i++) {
 	result_coeffs[i] = 0.0;
     }
@@ -262,4 +262,26 @@ Polynomial Polynomial::operator*(const Polynomial& other) const {
     }
 
     return Polynomial(result_coeffs, num + other.num);
+}
+
+Polynomial& Polynomial::operator=(const Polynomial& other) {
+    if (this != &other) {
+	init(other);
+    }
+    return *this;
+}
+
+// This is used by both copyconstructor and assignment operator
+void Polynomial::init(const Polynomial& other) {
+    num = other.num;
+    if (num < MAX_INLINE_COEFFS) {
+	this->coefficients = coefficients_inline;
+    } else {
+	// Potential leak of existing coefficients here
+	this->coefficients = new double[num];
+    }
+    for(uint i = 0; i < num; i++) {
+	coefficients[i] = other.coefficients[i];
+    }
+    reduce();
 }
