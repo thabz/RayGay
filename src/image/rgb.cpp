@@ -14,8 +14,11 @@ void RGB::clip() {
 }
 
 double RGB::sqrDistance(const RGB& other) const {
-    return (*this-other).norm();
-}
+//    return (*this-other).norm();
+    return fabs(_vector[0]-other._vector[0])+
+	   fabs(_vector[1]-other._vector[1])+
+	   fabs(_vector[2]-other._vector[2]);
+	   }
 
 
 ostream & operator<<(ostream &os, const RGB &x) {

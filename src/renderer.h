@@ -8,7 +8,8 @@
 #include "image/rgba.h"
 #include "renderersettings.h"
 
-#define aa_threshhold 0.02
+//#define aa_threshhold 0.02
+#define aa_threshhold 0.3
 
 class RGB;
 class Image;
