@@ -1,4 +1,5 @@
 
+#include <cassert>
 #include "objects/csg.h"
 #include "boundingbox.h"
 #include "exception.h"
@@ -182,9 +183,12 @@ Intersection CSG::_fullIntersect(const Ray& ray, const double t) const {
 	case INTERSECTION:
 	    if (!all.empty()) {
 		result = all.front();
+		//assert(IS_EQUAL(t,result.getT()));
 		if (result.getNormal() * ray.getDirection() > 0) {
-		    result.flipNormal();
+	//	    result.flipNormal();
 		}
+	    } else {
+		throw_exception("This shouldn't happen...");
 	    }
 	    return result;
 	default:
