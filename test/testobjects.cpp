@@ -9,6 +9,7 @@
 #include "boundingbox.h"
 #include "objects/sphere.h"
 #include "objects/solidbox.h"
+#include "objects/cone.h"
 #include "objects/csg.h"
 #include "objects/cylinder.h"
 #include "objects/mesh.h"
@@ -873,6 +874,78 @@ void ellipsoid_test() {
     assert(!all[1].isEntering());
 }
 
+void cone_test() {
+    Ray ray;
+    vector<Intersection> all;
+    Cone* c;
+
+    // Cone along z-axis
+    c = new Cone(Vector(0,0,0),Vector(0,0,1),1,0,true,NULL);
+    assert(intersects(c,Vector(0,1000,0.5),Vector(0,-1,0)));
+    assert(iPoint(c,Vector(0,1000,0.5),Vector(0,-1,0)) == Vector(0,0.5,0.5));
+    assert(!intersects(c,Vector(1,1000,0.5),Vector(0,-1,0)));
+    assert(!intersects(c,Vector(0,1000,-0.1),Vector(0,-1,0)));
+    assert(!intersects(c,Vector(0,1000,1.1),Vector(0,-1,0)));
+
+    c = new Cone(Vector(0,0,0),Vector(0,0,1),4,2,true,NULL);
+    assert(intersects(c,Vector(0,1000,0.5),Vector(0,-1,0)));
+    assert(iPoint(c,Vector(0,1000,0.5),Vector(0,-1,0)) == Vector(0,3,0.5));
+
+    c = new Cone(Vector(0,0,-1),Vector(0,0,1),4,2,true,NULL);
+    assert(intersects(c,Vector(0,1000,0),Vector(0,-1,0)));
+    assert(iPoint(c,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,3,0));
+    
+    // Cone along y-axis
+    c = new Cone(Vector(0,0,0),Vector(0,1,0),2,4,true,NULL);
+    assert(intersects(c,Vector(0,0.5,100),Vector(0,0,-1)));
+    assert(iPoint(c,Vector(0,0.5,1000),Vector(0,0,-1)) == Vector(0,0.5,3));
+
+    // Cone along y-axis
+    c = new Cone(Vector(0,-1,0),Vector(0,1,0),2,4,true,NULL);
+    assert(intersects(c,Vector(0,0,100),Vector(0,0,-1)));
+    cout << iPoint(c,Vector(0,0,1000),Vector(0,0,-1)) << endl;
+    assert(iPoint(c,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,3));
+    
+    // Cone along x-axis
+    c = new Cone(Vector(-1,0,0),Vector(1,0,0),2,4,true,NULL);
+    assert(intersects(c,Vector(0,1000,0),Vector(0,-1,0)));
+    cout << iPoint(c,Vector(0,1000,0),Vector(0,-1,0)) << endl;
+    assert(iPoint(c,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,3,0));
+
+    // Intersection with caps (cone along z-axis)
+    c = new Cone(Vector(0,0,0),Vector(0,0,1),1,0,true,NULL);
+    assert(iPoint(c,Vector(0,0,-100),Vector(0,0,1)) == Vector(0,0,0));
+    c = new Cone(Vector(0,0,-1),Vector(0,0,1),2,1,true,NULL);
+    assert(iPoint(c,Vector(0,0,-100),Vector(0,0,1)) == Vector(0,0,-1));
+    assert(iPoint(c,Vector(0,0,100),Vector(0,0,-1)) == Vector(0,0,1));
+
+    // All intersections with caps (cone along z-axis)
+    c = new Cone(Vector(0,0,-2),Vector(0,0,3),2,1,true,NULL);
+    ray = Ray(Vector(0,0,10),Vector(0,0,-1),-1);
+    all.clear();
+    c->allIntersections(ray,all);
+    assert(all.size() == 2);
+    assert(all[0].getPoint() == Vector(0,0,3));
+    assert(all[0].getNormal() == Vector(0,0,1));
+    assert(all[0].isEntering());
+    assert(all[1].getPoint() == Vector(0,0,-2));
+    assert(all[1].getNormal() == Vector(0,0,-1));
+    assert(!all[1].isEntering());
+    
+    // All intersections with caps (cone along x-axis)
+    c = new Cone(Vector(-2,0,0),Vector(3,0,0),2,1,true,NULL);
+    ray = Ray(Vector(-10,0,0),Vector(1,0,0),-1);
+    all.clear();
+    c->allIntersections(ray,all);
+    assert(all.size() == 2);
+    assert(all[0].getPoint() == Vector(-2,0,0));
+    assert(all[0].getNormal() == Vector(-1,0,0));
+    assert(all[0].isEntering());
+    assert(all[1].getPoint() == Vector(3,0,0));
+    assert(all[1].getNormal() == Vector(1,0,0));
+    assert(!all[1].isEntering());
+}
+
 int main(int argc, char *argv[]) {
     transformed_instance_test();
     sphere_test();
@@ -890,6 +963,7 @@ int main(int argc, char *argv[]) {
     solidbox_test();
     ellipsoid_test();
     csg_test();
+    cone_test();
     return EXIT_SUCCESS;
 }
 

@@ -27,11 +27,12 @@ Cone::Cone(const Vector& begin, const Vector& end, double radius_begin, double r
     this->has_caps = has_caps;
 
     Matrix translation = Matrix::matrixTranslate(begin);
-    Matrix scale = Matrix::matrixScale(Vector(0,0,endt.length()));
+    Matrix scale = Matrix::matrixScale(Vector(1,1,endt.length()));
     Matrix rotation = Matrix::matrixOrient(endt);
-    rotation = rotation.inverse();
 
-    transform(rotation * scale * translation);
+    transform(scale);
+    transform(rotation.inverse());
+    transform(translation);
 }
 
 void Cone::transform(const Matrix& m) {
@@ -83,35 +84,44 @@ Vector Cone::getNormal(const Vector& local_point) const {
  *
  * The cylinder intersection is done by finding the roots of
  *
- * x^2 + y^2 = (rB - z(rB - rT))^2 for the ray (x,y,z) = Ro + t*Rd = Ray(t)
+ * x^2 + y^2 = (rB - z(rB - rT))^2 for the ray (x,y,z) = O + t*D = Ray(t)
+ *
+ * which becomes f(t) = 
  * 
  * gives a*t^2 + b*t + c = 0
  * where
- * a = rB^2 - 2*rT*rB + rT^2
- * b = -2*rB^2 + 2*rT*rB
- * c = rB^2 - ox^2 - oy^2
+ * a = D_z^2*r_B^2 - 2*D_z^2*r_T*r_B + (D_z^2*r_T^2 + (-D_x^2 - D_y^2))
+ * b = (2*D_z*O_z - 2*D_z)*r_B^2 + (-4*D_z*r_T*O_z + 2*D_z*r_T)*r_B + 2*D_z*r_T^2*O_z - 2*(D_x*O_x + D_y*O_y)
+ * c = (O_z^2 - 2*O_z + 1)*r_B^2 + (-2*r_T*O_z^2 + 2*r_T*O_z)*r_B + r_T^2*O_z^2 - O_x^2 - O_y^2
  *
  * Afterwards we must check that Ray(t) where t is a root
  * are within the z-axis interval [0,1] that defines the length of the cone.
+ *
  */
 unsigned int Cone::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
     unsigned int roots_found = 0;
 
     Ray local_ray = rayToObject(world_ray);
 
-    Vector O = local_ray.getOrigin();
     double r_B = radius_begin;
     double r_T = radius_end;
     double D_x = local_ray.getDirection()[0];
     double D_y = local_ray.getDirection()[1];
     double D_z = local_ray.getDirection()[2];
-    double O_x = O[0];
-    double O_y = O[1];
-    double O_z = O[2];
+    double O_x = local_ray.getOrigin()[0];
+    double O_y = local_ray.getOrigin()[1];
+    double O_z = local_ray.getOrigin()[2];
 
-    double a = D_z*D_z*r_B*r_B - 2*D_z*D_z*r_T*r_B + (D_z*D_z*r_T*r_T + (-D_x*D_x - D_y*D_y));
-    double b = (2*D_z*O_z - 2*D_z)*r_B*r_B + (-4*D_z*r_T*O_z + 2*D_z*r_T)*r_B + (2*D_z*r_T*r_T*O_z + (-2*D_x*O_x - 2*D_y*O_y));
-    double c = (O_z*O_z - 2*O_z + 1)*r_B*r_B + (-2*r_T*O_z*O_z + 2*r_T*O_z)*r_B + (r_T*r_T*O_z*O_z + (-O_x*O_x - O_y*O_y));
+    // TODO: Optimize math by using temporaries
+    double a = D_z*D_z*r_B*r_B - 
+	       2*D_z*D_z*r_T*r_B + 
+	       (D_z*D_z*r_T*r_T + (-D_x*D_x - D_y*D_y));
+    double b = (2*D_z*O_z - 2*D_z)*r_B*r_B + 
+	       (-4*D_z*r_T*O_z + 2*D_z*r_T)*r_B + 
+	       2*D_z*r_T*r_T*O_z - 2*D_x*O_x - 2*D_y*O_y;
+    double c = (O_z*O_z - 2*O_z + 1)*r_B*r_B + 
+	       (-2*r_T*O_z*O_z + 2*r_T*O_z)*r_B + 
+	       r_T*r_T*O_z*O_z - O_x*O_x - O_y*O_y;
     double D = b*b - 4*a*c;
     if (D > EPSILON) {
 	// Two possible roots
@@ -129,6 +139,7 @@ unsigned int Cone::allPositiveRoots(const Ray& world_ray, double roots[2]) const
     }
     if (roots_found < 2 && has_caps && !IS_ZERO(D_z)) {
 	double t, i_x, i_y;
+
 	// Check intersection with bottom cap
 	t = (0.0 - O_z) / D_z;
 	if (t > EPSILON) {
@@ -151,14 +162,12 @@ unsigned int Cone::allPositiveRoots(const Ray& world_ray, double roots[2]) const
     }
 
     // Sort roots
-    if (roots_found == 2) {
-	if (roots[0] > roots[1]) {
-	    double tmp = roots[0];
-	    roots[0] = roots[1];
-	    roots[1] = tmp;
-	}
+    if (roots_found == 2 && roots[0] > roots[1]) {
+	double tmp = roots[0];
+	roots[0] = roots[1];
+	roots[1] = tmp;
     }
-    
+
     roots[0] /= local_ray.t_scale;
     roots[1] /= local_ray.t_scale;
 
