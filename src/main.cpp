@@ -41,6 +41,8 @@
 #include "pixelstore.h"
 #include "raytracer.h"
 #include "bsp.h"
+#include "circle.h"
+#include "necklace.h"
 
 using namespace std;
 
@@ -67,15 +69,19 @@ void testScene4() {
     scene.addObject(&s5);*/
     //scene.addObject(&c1);
 
-    for(int x = -10; x <= 10; x++) {
-       for(int y = -10; y <= 10; y++) {
-           for(int z = -10; z <= 10; z++) {
+    for(int x = -10; x <= 10; x += 5) {
+       for(int y = -10; y <= 10; y += 5) {
+           for(int z = -10; z <= 10; z += 5) {
 	      Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,chrome);
-	      scene.addObject(sx);
+	//      scene.addObject(sx);
 	   }
  	}
     }
 
+    Circle circle = Circle(Vector(0,0,0),200,Vector(0,1,0));
+    Necklace* lace = new Necklace(circle,40,20,chrome);
+    scene.addObject(lace);
+    
    /*
     Cylinder cyl = Cylinder(Vector(-200,-50,200),Vector(-200,50,200),100.0,6,blue);
     scene.addObject(&cyl);

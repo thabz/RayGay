@@ -8,6 +8,7 @@
 #include "ray.h"
 #include "hierarchy.h"
 #include "constants.h"
+#include "objectcollection.h"
 
 using namespace std;
 
@@ -20,6 +21,10 @@ Scene::~Scene() {
 
 void Scene::addObject(object* obj) {
     objects.push_back(obj);
+}
+
+void Scene::addObject(ObjectCollection* obj) {
+    objectcollections.push_back(obj);
 }
 
 void Scene::addLight(Lightsource* light) {
@@ -42,6 +47,9 @@ void Scene::transform(const Matrix &m) {
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	(*p)->transform(m);
     }
+    for (vector<ObjectCollection*>::iterator p = objectcollections.begin(); p != objectcollections.end(); p++) {
+	(*p)->transform(m);
+    }
     // camera.transform(m)
 }
 
@@ -51,6 +59,10 @@ std::vector<Lightsource*> Scene::getLightsources() {
 
 std::vector<object*> Scene::getObjects() {
     return objects;   
+}
+
+std::vector<ObjectCollection*> Scene::getObjectCollections() {
+    return objectcollections;   
 }
 
 ostream & operator<<(ostream &os, const Scene &x) {

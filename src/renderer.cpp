@@ -7,6 +7,7 @@
 #include "rgb.h"
 #include "object.h"
 #include "spacesubdivider.h"
+#include "objectcollection.h"
 
 Renderer::Renderer() {
 }
@@ -20,6 +21,14 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
     for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	space->addObject(*p);
     }
+    //
+    // Add all objectcollections in scene to spacesubdivider
+    std::vector<ObjectCollection*> objectcols = scene->getObjectCollections();
+    for (vector<ObjectCollection*>::iterator p = objectcols.begin(); p != objectcols.end(); p++) {
+	(*p)->addParts(space);
+    }
+
+
     space->prepare();
     std::cout << "Prepare done" << std::endl;
     
