@@ -38,16 +38,13 @@ int sign(double val) {
  *
  * @see http://mathworld.wolfram.com/BrentsMethod.html
  */
-bool RootFinder::brents_method(double t1, double t2, double* root) {
-    double x1,x2,x3;
+bool RootFinder::brents_method(double x1, double x3, double* root) {
+    double x2;
     double R,S,T;
     double P,Q;
     double fx1,fx2,fx3;
-    double x;
 
-    x1 = t1;
-    x2 = 0.5 * (t1+t2);
-    x3 = t2;
+    x2 = 0.5 * (x1+x3);
 
     fx1 = f(x1);
     fx2 = f(x2);
