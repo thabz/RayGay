@@ -17,6 +17,7 @@ Material::Material() {
    _ks = 0.0;
    _kt = 0.0;
    eta = 3;
+   repeatY = 1; repeatX = 1;
 }
 
 Material::Material(RGB diffuseColor, RGB specularColor) {
