@@ -153,7 +153,7 @@ ActionListNode* top_actions;
 %type <light> Arealight Spotlight Pointlight Skylight
 %type <path> NamedPath Circle Spiral Path PathDef LineSegment
 %type <camera> Camera
-%type <action> MainActions MainAddAction MainAction Assignment Renderer
+%type <action> MainAddAction MainAction Assignment Renderer
 %type <action> AddCamera AddObject AddLight Background Photonmap Print Image
 
 %left '+' '-'

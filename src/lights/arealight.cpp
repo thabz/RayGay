@@ -1,6 +1,8 @@
 
 #include <cassert>
 
+#pragma implementation "lights/arealight.h"
+
 #include "lights/arealight.h"
 #include "paths/circle.h"
 #include "intersection.h"

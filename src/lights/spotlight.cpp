@@ -1,4 +1,8 @@
 
+#ifdef P_USE_PRAGMA
+#pragma implementation "spotlight.h"
+#endif
+
 #include "lights/spotlight.h"
 #include "math/matrix.h"
 #include "intersection.h"

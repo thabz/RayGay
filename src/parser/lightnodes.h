@@ -2,6 +2,9 @@
 #ifndef PARSER_LIGHT_NODES
 #define PARSER_LIGHT_NODES
 
+#pragma interface 
+
+#include "parser/syntaxnode.h"
 #include "parser/vectornodes.h"
 #include "parser/floatnodes.h"
 #include "parser/rgbnodes.h"
@@ -15,19 +18,12 @@
 class LightNode : public SyntaxNode {
 
     public:
-	virtual Lightsource* eval();
+	virtual Lightsource* eval() = 0;
 };
 
 class ArealightNode : public LightNode {
     public:
-	ArealightNode(VectorNode* pos, VectorNode* dir, FloatNode* radius, FloatNode* num, FloatNode* jitter, RGBNode* power) {
-	    this->position = pos;
-	    this->direction = dir;
-	    this->radius = radius;
-	    this->num = num;
-	    this->jitter = jitter;
-	    this->power = power;
-	}
+	ArealightNode(VectorNode* pos, VectorNode* dir, FloatNode* radius, FloatNode* num, FloatNode* jitter, RGBNode* power);
 
 	Lightsource* eval();
 
@@ -42,23 +38,9 @@ class ArealightNode : public LightNode {
 
 class SpotlightNode : public LightNode {
     public:
-	SpotlightNode(VectorNode* pos, VectorNode* look_at, FloatNode* angle, FloatNode* cut_angle, RGBNode* power) {
-	    this->position = pos;
-	    this->look_at = look_at;
-	    this->angle = angle;
-	    this->cut_angle = cut_angle;
-	    this->power = power;
-	}
+	SpotlightNode(VectorNode* pos, VectorNode* look_at, FloatNode* angle, FloatNode* cut_angle, RGBNode* power);
 
-	Lightsource* eval() {
-	    Vector pos = position->eval();
-	    Vector look = look_at->eval();
-	    double a = angle->eval();
-	    double ca = cut_angle->eval();
-	    Spotlight* light = new Spotlight(pos,look,a,ca);
-	    light->setPower(power->eval());
-	    return light;
-	}
+	Lightsource* eval();
 
     private:
 	VectorNode* position;
@@ -70,17 +52,8 @@ class SpotlightNode : public LightNode {
 
 class PointlightNode : public LightNode {
     public:
-	PointlightNode(VectorNode* pos, RGBNode* power) {
-	    this->position = pos;
-	    this->power = power;
-	}
-
-	Lightsource* eval() {
-	    Vector pos = position->eval();
-	    Pointlight* light = new Pointlight(pos);
-	    light->setPower(power->eval());
-	    return light;
-	}
+	PointlightNode(VectorNode* pos, RGBNode* power);
+	Lightsource* eval();
 
     private:
 	VectorNode* position;
@@ -92,19 +65,8 @@ class PointlightNode : public LightNode {
 
 class SkylightNode : public LightNode {
     public:
-	SkylightNode(FloatNode* radius, FloatNode* num, RGBNode* power) {
-	    this->radius = radius;
-	    this->num = num;
-	    this->power = power;
-	}
-
-	Lightsource* eval() {
-	    double r = radius->eval();
-	    int n = int(num->eval());
-	    Skylight* light = new Skylight(r,n);
-	    light->setPower(power->eval());
-	    return light;
-	}
+	SkylightNode(FloatNode* radius, FloatNode* num, RGBNode* power);
+	Lightsource* eval();
 
     private:
 	FloatNode* radius;

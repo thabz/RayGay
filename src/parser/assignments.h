@@ -31,7 +31,6 @@ class Assignments {
 
     private:
 	Assignments(); 
-	static Assignments* Assignments::unique_instance;
 
 	map<string,FloatNode*> floatMap;
 	map<string,PathNode*> pathMap;

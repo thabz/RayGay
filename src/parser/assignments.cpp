@@ -1,13 +1,9 @@
 
 #include "parser/assignments.h"
 
-Assignments* Assignments::unique_instance = NULL;
-
 Assignments* Assignments::getUniqueInstance() {
-    if (unique_instance == NULL) {
-	unique_instance = new Assignments();
-    }
-    return unique_instance;
+    static Assignments unique_instance;
+    return &unique_instance;
 }
 
 Assignments::Assignments() {
