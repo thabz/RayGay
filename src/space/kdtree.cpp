@@ -109,6 +109,7 @@ void KdTree::prepare() {
     Stats::getUniqueInstance()->put(STATS_KDTREE_DEPTH,max_depth);
     Stats::getUniqueInstance()->put(STATS_KDTREE_NODES,nodes_count);
 #endif    
+    cout << "Nodes in kd-tree: " << nodes_count << endl;
     prepared = true;
 }
 

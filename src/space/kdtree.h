@@ -95,7 +95,6 @@ class KdTree {
 
 	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
 	Object* intersectForShadow_real(const Ray&,const double) const;
-	int largestDimension(const BoundingBox& box) const;
 	BoundingBox enclosure(std::vector<BoundedObject*>* bobs) const;
 	BoundingBox world_bbox;
 	bool findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const;
