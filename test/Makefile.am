@@ -19,3 +19,5 @@ testthreads_SOURCES = testthreads.cpp
 
 TESTS = testobjects testimage teststats testlanguage testmath testpaths testspace testthreads testparser
 
+EXTRA_DIST = testing.h
+

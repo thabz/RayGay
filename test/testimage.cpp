@@ -12,6 +12,7 @@ using namespace std;
 class test_rgba : public Test {
     public:
 	void run() {
+	    cout << "srcdir: " << getLoadPrefix() << endl;
 	    RGBA c;
 
 	    // test += 
@@ -42,25 +43,25 @@ class test_png : public Test {
 
 	    Image* img = new Image(10,20);
 	    img->setRGBA(5,15,color);
-	    img->save("test.png");
-	    Image* img2 = Image::load("test.png");
+	    img->save(getLoadPrefix() + "/test.png");
+	    Image* img2 = Image::load(getLoadPrefix() + "/test.png");
 	    assertTrue(img2->getWidth() == 10);
 	    assertTrue(img2->getHeight() == 20);
 	    //cout << RGB(img2->getRGBA(5,15)) << endl;
 	    assertTrue(RGB(img2->getRGBA(5,15)) == color);
-	    remove("test.png");
+	    remove((getLoadPrefix() + "/test.png").c_str());
 	    delete img;
 	    delete img2;
 
 	    // Load 24 bit png 
-	    img = new Image("gfx/rgb.png");
+	    img = new Image(getLoadPrefix() + "/gfx/rgb.png");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
 	    assertTrue(img->getRGBA(0,0) == RGBA(1.0,0,0,1.0));
 	    delete img;
 
 	    // Test load of png with palette
-	    img = new Image("gfx/withpalette.png");
+	    img = new Image(getLoadPrefix() + "/gfx/withpalette.png");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
 	    assertTrue(img->getRGBA(0,0) == RGBA(1.0,0,0,1.0));
@@ -75,12 +76,12 @@ class test_tga : public Test {
 
 	    Image* img = new Image(10,20);
 	    img->setRGBA(5,15,color);
-	    img->save("test.tga");
-	    Image* img2 = Image::load("test.tga");
+	    img->save(getLoadPrefix() + "/test.tga");
+	    Image* img2 = Image::load(getLoadPrefix() + "/test.tga");
 	    assertTrue(img2->getWidth() == 10);
 	    assertTrue(img2->getHeight() == 20);
 	    assertTrue(RGB(img2->getRGBA(5,15)) == color);
-	    remove("test.tga");
+	    remove((getLoadPrefix() + "/test.tga").c_str());
 	    delete img;
 	    delete img2;
 	}
@@ -89,7 +90,7 @@ class test_tga : public Test {
 class test_jpg : public Test {
     public:
 	void run() {
-	    Image* img = new Image("gfx/simple.jpg");
+	    Image* img = new Image(getLoadPrefix() + "/gfx/simple.jpg");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
 	    delete img;

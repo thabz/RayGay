@@ -4,6 +4,8 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
+#include "exception.h"
 
 using namespace std;
 
@@ -29,6 +31,7 @@ class Test {
 	void _assertTrue(bool expr, char* filename, int line, char* expr_code);
 	void printStatus();
 	bool hasFailures();
+	string getLoadPrefix();
 
     private:
 	string name;
@@ -52,7 +55,13 @@ class TestSuite {
 
 void TestSuite::run() {
     for(unsigned int i = 0; i < tests.size(); i++) {
-	tests[i]->run();
+	try {
+	    tests[i]->run();
+	} catch (Exception e) {
+	    cout << "Exception: " << e.getMessage() 
+		<< " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
+	    exit(EXIT_FAILURE);
+	}
     }
 }
 
@@ -120,6 +129,11 @@ void Test::printStatus() {
 
 bool Test::hasFailures() {
     return failed_asserts > 0;
+}
+
+string Test::getLoadPrefix() {
+    char* v = getenv("srcdir");
+    return v == NULL ? "." : string(v);
 }
 
 #endif
