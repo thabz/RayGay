@@ -15,18 +15,6 @@
 #define KD_TREE_MAX 2
 #define KD_TREE_MAX_DEPTH 50
 
-/*
- * Macros for accessing the packed KdNode.
- */
-#define leftNode(node) (node->left == 0 ? NULL : &(nodes[node->left]))
-#define rightNode(node) (node->left == 0 ? NULL : &(nodes[node->left+1]))
-#define isLeafNode(node) (node->axis == -1)
-#define getNodeAxis(node) (node->axis)
-#define getNodeObjectNum(node) (node->num)
-#define getNodeSplitValue(node) (node->splitPlane)
-#define getTopNode() (&(nodes[0]))
-
-
 KdTree::KdTree() : GenericKdTree<Object>(KD_TREE_MAX_DEPTH, KD_TREE_MAX) {
 }
 

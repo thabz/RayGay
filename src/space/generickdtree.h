@@ -2,8 +2,23 @@
 #ifndef GENERIC_KD_TREE_H
 #define GENERIC_KD_TREE_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <vector>
 #include "boundingbox.h"
+
+/*
+ * Macros for accessing the packed KdNode.
+ */
+#define leftNode(node) (node->left == 0 ? NULL : &(nodes[node->left]))
+#define rightNode(node) (node->left == 0 ? NULL : &(nodes[node->left+1]))
+#define isLeafNode(node) (node->axis == -1)
+#define getNodeAxis(node) (node->axis)
+#define getNodeObjectNum(node) (node->num)
+#define getNodeSplitValue(node) (node->splitPlane)
+#define getTopNode() (&(nodes[0]))
 
 template<class ObjectType>
 class KdNode {
@@ -54,6 +69,7 @@ class GenericKdTree {
 	GenericKdTree(uint max_depth, uint max_objs);
 
 	BoundingBox enclosure(BoundedObject<ObjectType>** bobs, uint num) const;
+
 	BoundingBox world_bbox;
 	uint max_depth;
 

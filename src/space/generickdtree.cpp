@@ -281,3 +281,4 @@ void GenericKdTree<ObjectType>::prepare(uint num, const BoundingBox& bbox, uint 
 	new_node.left = new_left_idx;
     }
 }
+
