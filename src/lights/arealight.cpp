@@ -6,6 +6,7 @@
 #include "intersection.h"
 #include "spacesubdivider.h"
 #include "stats.h"
+#include "math/vector.h"
 
 /**
  * Constructs an area light

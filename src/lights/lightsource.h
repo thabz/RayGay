@@ -2,8 +2,6 @@
 #ifndef LIGHTSOURCE_H
 #define LIGHTSOURCE_H
 
-#include "math/vector.h"
-#include "image/rgb.h"
 #include "lightinfo.h"
 
 class RGB;
@@ -12,6 +10,9 @@ class Intersection;
 class Ray;
 class Scene;
 class SpaceSubdivider;
+class Vector;
+class RGB;
+class Lightinfo;
 
 /// An abstract class lightsources must extend 
 class Lightsource {

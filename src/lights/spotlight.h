@@ -2,7 +2,6 @@
 #define SPOTLIGHT_H
 
 #include "lightsource.h"
-#include "lightinfo.h"
 
 class Matrix;
 

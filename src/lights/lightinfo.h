@@ -1,6 +1,8 @@
 #ifndef LIGHTINFO_H
 #define LIGHTINFO_H
 
+#include "math/vector.h"
+
 /// The datavalue class lightsources returns to the camera
 class Lightinfo {
 
