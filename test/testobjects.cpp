@@ -8,6 +8,7 @@
 
 #include "boundingbox.h"
 #include "materials/material.h"
+#include "objects/bound.h"
 #include "objects/sphere.h"
 #include "objects/solidbox.h"
 #include "objects/cone.h"
@@ -1205,6 +1206,29 @@ class superellipsoid_test : public Test {
 	}
 };
 
+class bounded_mesh_test : public Test {
+    public: 
+	void run() {
+	    // Basic intersections
+	    Tessalation* t = new Tessalation(Vector(0,0,0),100,5,NULL);
+	    Bound* b = new Bound(t);
+	    assertTrue(intersects(b,Vector(0,0,1000),Vector(0,0,-1)));
+	    assertTrue(intersects(b,Vector(0,0,-1000),Vector(0,0,1)));
+	    assertTrue(intersects(b,Vector(1000,0,0),Vector(-1,0,0)));
+	    assertTrue(intersects(b,Vector(-1000,0,0),Vector(1,0,0)));
+	    assertTrue(intersects(b,Vector(0,1000,0),Vector(0,-1,0)));
+	    assertTrue(intersects(b,Vector(0,-1000,0),Vector(0,1,0)));
+	    
+	    // Added to a Kd-tree.
+	    KdTree* bsp = new KdTree();
+	    b->addSelf(bsp);
+	    bsp->prepare();
+	    Intersection* inter = new Intersection();
+	    Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
+	    assertTrue(bsp->intersect(r,inter));
+	}
+};
+
 int main(int argc, char *argv[]) {
 
     TestSuite suite;
@@ -1224,6 +1248,7 @@ int main(int argc, char *argv[]) {
     suite.add("Extrusion",new extrusion_test());
     suite.add("Mesh",new mesh_test());
     suite.add("Transformed instance",new transformed_instance_test());
+    suite.add("Bounded mesh",new bounded_mesh_test());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {
