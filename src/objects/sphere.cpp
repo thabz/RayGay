@@ -41,9 +41,6 @@ Intersection Sphere::_fullIntersect(const Ray& ray, const double t) const {
     Vector n = p - center;
     n.normalize();
     Vector2 uv;
-    if (getMaterial()->requiresUV()) {
-	cout << "Req UV" << endl;
-    }
     if (getMaterial() != NULL && getMaterial()->requiresUV()) {
 	cout << "Getting UV" << endl;
 	uv = getUV(p);
