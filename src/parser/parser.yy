@@ -53,15 +53,6 @@ void yywarning(string s);
 extern int yylex(void);
 extern int line_num;
 
-Path* getNamedPath(string* name);
-void setNamedPath(string* name, Path* path);
-double getNamedDouble(string* name);
-void setNamedDouble(string* name, double val);
-Material* getNamedMaterial(string* name);
-void setNamedMaterial(string* name, Material* material);
-SceneObject* getNamedObject(string* name);
-void setNamedObject(string* name, SceneObject* obj);
-
 CameraNode* camera;
 Scene* scene;
 RendererSettings* renderer_settings;
@@ -164,7 +155,8 @@ ActionListNode* top_actions;
 %type <light> Arealight Spotlight Pointlight Skylight
 %type <path> NamedPath Circle Spiral Path PathDef LineSegment
 %type <camera> Camera
-%type <action> MainAddAction MainAction Assignment Renderer Repeat Action
+%type <action> MainAddAction MainAction Assignment Renderer ConfAction
+%type <action> RepeatStmt IfStmt WhileStmt Action
 %type <action> AddCamera AddObject AddLight Background Photonmap Print Image
 %type <actionlist> ActionList
 
@@ -187,18 +179,24 @@ MainAddAction	: MainAction
                 ;
 
 MainAction	: Action
-		| AddCamera
-		| Image
-		| Renderer
-		| Background
-		| Photonmap
+                | ConfAction
 		;
 
 Action		: AddObject
                 | AddLight
                 | Assignment
-		| Repeat
+		| RepeatStmt
 		| Print
+		| WhileStmt
+		| WhileStmt
+		| IfStmt
+		;
+
+ConfAction	: AddCamera
+		| Image
+		| Renderer
+		| Background
+		| Photonmap
 		;
 
 ActionList	: Action
@@ -214,7 +212,7 @@ ActionList	: Action
 		}
 		;
 
-Repeat		: tREPEAT '(' Expr ')' '{' ActionList '}'
+RepeatStmt	: tREPEAT '(' Expr ')' '{' ActionList '}'
                 {
 		    $$ = new RepeatActionNode($3,$6);
 		}
@@ -809,15 +807,33 @@ Random		: tRANDOM '(' Expr ')'
 		;
 
 WhileStmt	: tWHILE '(' Bool ')' '{' ActionList '}'
+                {
+		    $$ = new WhileActionNode($3,$6);
+		}
                 | tDO '{' ActionList '}' tWHILE '(' Bool ')'
+                {
+		    $$ = new DoWhileActionNode($3,$7);
+		}
                 ;
 
 IfStmt		: tIF '(' Bool ')' '{' ActionList '}'
+                {
+		    $$ = new IfActionNode($3,$6);
+		}
                 ;
 
 Bool		: Expr '<' Expr
+		{
+		    $$ = new BoolLessThanFNode($1,$3);
+		}
                 | Expr '>' Expr
+		{
+		    $$ = new BoolGreaterThanFNode($1,$3);
+		}
 		| Expr tEQUALS Expr
+		{
+		    $$ = new BoolEqualsFNode($1,$3);
+		}
 		| '(' Bool ')'
 		{
 		    $$ = $2;

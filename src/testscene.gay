@@ -1,24 +1,16 @@
 
 
-white = material {
-    diffuse <1,1,1>
-}
-
-sphere { white 10 <1,1,1> }
-sphere { white 11 <1,1,1> }
-
 a = 10
 print a
 
 i = 0
 
-repeat(10) {
+do {
    print i
-   print i * 2
-   repeat(5) {
-       print i
-   }
    i = i + 1
-}
+   if (i > 5) {
+       print 5
+   }
+} while (i < 10) 
 
 print 5

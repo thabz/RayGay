@@ -8,7 +8,7 @@ class BoolNode {
 	virtual bool eval() = 0;
 };
 
-class BoolAndNode {
+class BoolAndNode : public BoolNode {
     public:
 	BoolAndNode(BoolNode* left, BoolNode* right) {
 	    this->left = left;
@@ -24,7 +24,7 @@ class BoolAndNode {
 	BoolNode* right;
 };
 
-class BoolOrNode {
+class BoolOrNode : public BoolNode  {
     public:
 	BoolOrNode(BoolNode* left, BoolNode* right) {
 	    this->left = left;
@@ -40,7 +40,55 @@ class BoolOrNode {
 	BoolNode* right;
 };
 
-class BoolNotNode {
+class BoolLessThanFNode : public BoolNode  {
+    public:
+	BoolLessThanFNode(FloatNode* left, FloatNode* right) {
+	    this->left = left;
+	    this->right = right;
+	}
+
+	bool eval() {
+	    return left->eval() < right->eval();
+	}
+
+    private:
+	FloatNode* left;
+	FloatNode* right;
+};
+
+class BoolGreaterThanFNode : public BoolNode  {
+    public:
+	BoolGreaterThanFNode(FloatNode* left, FloatNode* right) {
+	    this->left = left;
+	    this->right = right;
+	}
+
+	bool eval() {
+	    return left->eval() > right->eval();
+	}
+
+    private:
+	FloatNode* left;
+	FloatNode* right;
+};
+
+class BoolEqualsFNode : public BoolNode  {
+    public:
+	BoolEqualsFNode(FloatNode* left, FloatNode* right) {
+	    this->left = left;
+	    this->right = right;
+	}
+
+	bool eval() {
+	    return left->eval() == right->eval();
+	}
+
+    private:
+	FloatNode* left;
+	FloatNode* right;
+};
+
+class BoolNotNode : public BoolNode  {
     public:
 	BoolNotNode(BoolNode* node) {
 	    this->node = node;

@@ -10,6 +10,7 @@
 #include "parser/cameranode.h"
 #include "parser/assignments.h"
 #include "parser/interpreterenv.h"
+#include "parser/boolnodes.h"
 #include "exception.h"
 
 using namespace std;
@@ -198,4 +199,75 @@ class RepeatActionNode : public ActionNode {
 	FloatNode* num;
 };
 
+class WhileActionNode : public ActionNode {
+
+    public:
+	WhileActionNode(BoolNode* cond, ActionListNode* list) {
+	    this->cond = cond;
+	    this->list = list;
+	}
+
+	virtual ~WhileActionNode() {
+	    delete cond;
+	    delete list;
+	}
+
+	void eval() {
+	    while ( cond->eval() ) {
+		list->eval();
+	    }
+	}
+
+    private:
+	ActionListNode* list;
+	BoolNode* cond;
+};
+
+class DoWhileActionNode : public ActionNode {
+
+    public:
+	DoWhileActionNode(ActionListNode* list, BoolNode* cond) {
+	    this->cond = cond;
+	    this->list = list;
+	}
+
+	virtual ~DoWhileActionNode() {
+	    delete cond;
+	    delete list;
+	}
+
+	void eval() {
+	    do {
+		list->eval();
+	    } while ( cond->eval() );
+	}
+
+    private:
+	ActionListNode* list;
+	BoolNode* cond;
+};
+
+class IfActionNode : public ActionNode {
+
+    public:
+	IfActionNode(BoolNode* cond, ActionListNode* list) {
+	    this->cond = cond;
+	    this->list = list;
+	}
+
+	virtual ~IfActionNode() {
+	    delete cond;
+	    delete list;
+	}
+
+	void eval() {
+	    if ( cond->eval() ) {
+		list->eval();
+	    }
+	}
+
+    private:
+	ActionListNode* list;
+	BoolNode* cond;
+};
 #endif
