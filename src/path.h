@@ -4,7 +4,7 @@
 class Vector;
 class Matrix;
 
-/// Abstract path
+/// Abstract superclass of all paths
 class Path {
     
     public:
