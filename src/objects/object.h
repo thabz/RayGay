@@ -29,7 +29,13 @@ class Object : public SceneObject {
 	virtual void transform(const Matrix& m) = 0;
 
 	/// Returns the materiale of this object
-	virtual const Material* getMaterial() const { return material; };
+	virtual const Material* getMaterial() const { 
+	    if (last_intersection.isIntersected()) {
+		return last_intersection.getObject()->material;
+	    } else {
+		return material;
+	    }
+	};
 
 	/// The smallest box containing this object
 	virtual BoundingBox boundingBoundingBox() const = 0;
@@ -49,11 +55,11 @@ class Object : public SceneObject {
 	Object(const Material* material);
 	/// Internal intersect method that subclasses must implement
 	virtual Intersection _intersect(const Ray& ray) const = 0;
+	mutable Intersection last_intersection;
 
     private:	
 	// Two members for caching last intersection
 	mutable long last_ray;
-	mutable Intersection last_intersection;
 	const Material* material;
 };
 

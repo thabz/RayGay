@@ -4,9 +4,9 @@
 
 #include "space/kdtree.h"
 #include "objects/object.h"
+#include "intersection.h"
 
 class ObjectGroup;
-class Intersection;
 
 /**
  * An ObjectGroup inside its own KdTree.
@@ -27,11 +27,16 @@ class Bound : public Object {
 
 	SceneObject* clone() const;
 
+	//const Material* getMaterial() const;
+
 	void prepare();
+
+	bool intersect(const Ray& ray) const;
 
     private:
 	Intersection _intersect(const Ray& ray) const;
-
+	bool running;
+	
 	KdTree* tree;
 	ObjectGroup* group;
 };

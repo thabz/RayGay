@@ -27,7 +27,10 @@ Intersection TransformedInstance::_intersect(const Ray& ray) const {
 	Vector point = transformation * inter->getPoint();
 	// TODO: If scaling allowed, calculate a new t
 	double t = inter->getT();
-	return Intersection(point,t);
+	Intersection result = Intersection(point,t);
+	result.setObject(inter->getObject());
+	result.setLocalObject(inter->getLocalObject());
+	return result;
     } else {
 	return Intersection();
     }
