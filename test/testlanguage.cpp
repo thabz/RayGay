@@ -45,13 +45,6 @@ void test_modulo() {
 void test_lowercase() {
     string s = "Ray Gay";
     transform(s.begin(),s.end(),s.begin(),(int(*)(int)) tolower);
-    /*
-    int i = 0;
-    while (s[i] != '\0') {
-	s[i] = tolower(s[i]);
-	i++;
-    }
-    */
     assert(s == "ray gay");
 }
 
