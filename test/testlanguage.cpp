@@ -28,8 +28,6 @@ void test_bool() {
     assert(t1 || f1);
     assert(f1 || t1);
     assert(f1 || f2 == false);
-
-
 }
 
 void test_modulo() {
@@ -110,12 +108,27 @@ void test_sort() {
 
 }
 
+void test_vector_copy() {
+    vector<int>* a = new vector<int>;
+    vector<int>* b = new vector<int>;
+    a->push_back(1);
+    a->push_back(2);
+    a->push_back(3);
+    (*b) = (*a);
+    (*a)[0] = 10;
+    assert((*b)[0] == 1);
+    a->push_back(4);
+    assert(a->size() == 4);
+    assert(b->size() == 3);
+}
+
 int main(int argc, char *argv[]) {
 
     test_bool();
     test_modulo();
     test_lowercase();
     test_sort();
+    test_vector_copy();
     return EXIT_SUCCESS;
 }
 
