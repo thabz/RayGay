@@ -84,7 +84,7 @@ int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
 	// Reflect specularly
 	Vector dir = -1 * ray.getDirection();
 	dir = dir.reflect(normal);
-	Ray new_ray = Ray(point,dir,0);
+	Ray new_ray = Ray(point+0.1*dir,dir,0);
 	return trace(new_ray, power, bounces + 1);
     } else if (ran < material.getKt() + material.getKd() + material.getKs()) {
 	double ior = material.getEta();
@@ -96,7 +96,7 @@ int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
 	    // Total internal reflection
 	    Vector dir = -1 * ray.getDirection();
 	    dir = dir.reflect(normal);
-	    Ray new_ray = Ray(point,dir,0);
+	    Ray new_ray = Ray(point+0.1*dir,dir,0);
 	    return trace(new_ray, power, bounces + 1);
 	}
     } else {
