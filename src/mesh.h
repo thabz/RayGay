@@ -23,6 +23,7 @@ class Mesh : public ObjectCollection {
     public:
 	
 	class Tri;
+	/// A class for storing edges
         class Edge {
 	    public:
 		Edge(int iV0, int iV1);
@@ -31,6 +32,7 @@ class Mesh : public ObjectCollection {
    	        Tri* triangle[2];
 	};
 
+	/// A class for storing triangles
 	class Tri {
 	    public:
 		Tri(int iV0, int iV1, int iV2);
@@ -44,6 +46,7 @@ class Mesh : public ObjectCollection {
 		Tri* triangle[3];
 	};
 
+	/// A class for storing vertices 
 	class Vertex {
 	    public:
 		Vertex(int iV);
@@ -58,6 +61,7 @@ class Mesh : public ObjectCollection {
 	    MESH_INTERPOLATED
 	};
 
+	/// Helper type
 	typedef std::map<EdgeKey,Edge*> EdgeMapType;
 
 	/// Default constructor
@@ -73,7 +77,9 @@ class Mesh : public ObjectCollection {
 	void addParts(SpaceSubdivider* space);
 
 	virtual void transform(const Matrix& m);
+	/// Returns a (possibly) phong-interpolated normal
 	virtual Vector normal(const Intersection & i) const;
+	/// Material of the mesh 
 	virtual const Material& getMaterial() const;
 
 	/// Intersection with a boundingbox
@@ -84,18 +90,28 @@ class Mesh : public ObjectCollection {
 
 	/// Add a triangle to the mesh
 	void addTriangle(const Vector* corners, const Vector2* uv);
+
 	/// Add a triangle to the mesh
         void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3);
+	
 	/// Add a triangle to the mesh with uv-texture-coordinates
         void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3, const Vector2& uv1, const Vector2& uv2,const Vector2& uv3);
+	
+	/// Returns (possible) interpolated (u,v) texture coordinates
 	Vector2 getUV(const Intersection &i) const;
+	
 	/// Internal test
 	static void test();
 
+	/// A vector of all vertices
 	std::vector<Vector>* getVertices();
+
+	/// A vector of all unique edges
 	std::vector<Linesegment>* getEdges();
 
+	/// Index into normals
 	const Vector& normalAt(unsigned int i) const { return normals[i]; };
+	/// Index into vertices 
 	const Vector& cornerAt(unsigned int i) const { return corners[i]; };
 
 	void prepare();

@@ -5,14 +5,13 @@
 
 class Matrix;
 
-/**
- *  Datavalue class for a camera which currently just is
- *  a position and a direction.
- */
+/// Datavalue class for a camera which currently just is a position and a direction.
 class Camera {
     public:
 	/// Constructor
 	Camera(Vector position, Vector direction);
+
+	/// Desctructor
 	~Camera();
 
 	/// Transform position and direction 

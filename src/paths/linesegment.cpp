@@ -23,6 +23,6 @@ Vector Linesegment::getTangent(double t) const {
 void Linesegment::transform(const Matrix& m) {
     b = m * b;
     e = m * e;
-    tgt = m * tgt;
+    tgt = m.extractRotation() * tgt;
 }
 	

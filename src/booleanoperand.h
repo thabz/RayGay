@@ -9,7 +9,10 @@ class Vector;
 class BooleanOperand : public object {
 
     public:
+	/// Says whether a point belongs to the closure of the object
 	virtual bool onEdge(const Vector &p) const = 0;
+	
+	/// Says whether a point belongs to the strict inside of the object
 	virtual bool inside(const Vector &p) const = 0;
 
 };

@@ -23,11 +23,6 @@ void BezierSpline::transform(const Matrix& m) {
    }
 }
 
-/**
- * Returns a point on the spline
- *
- * See http://mathworld.wolfram.com/BezierCurve.html
- */
 Vector BezierSpline::getPoint(double t) const {
     Vector result = Vector(0,0,0);
     for(unsigned int i = 0; i < num; i++) {

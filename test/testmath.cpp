@@ -200,6 +200,7 @@ void binomial_test() {
     assert(Math::binomialCoefficient(15,11) == 1365);
 }
 
+// See http://mathworld.wolfram.com/BernsteinPolynomial.html
 void bernstein_polynomial_test() {
     // 1
     assert(IS_EQUAL(Math::bernsteinPolynomial(0,0,0.5),1));

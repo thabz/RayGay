@@ -39,14 +39,15 @@ class object {
 	/// Get texture coordinates at an intersection
 	virtual Vector2 getUV(const Intersection& intersection) const = 0;
 
+	/// Prepares the object before rendering
 	virtual void prepare();
 
+	/// Returns last successful intersection
 	Intersection* getLastIntersection() const { return &last_intersection; }; 
-
-	std::string getName() const { return ""; };
 
     protected:
 	object();
+	/// Internal intersect method that subclasses must implement
 	virtual Intersection _intersect(const Ray& ray) const = 0;
 
     private:	

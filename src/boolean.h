@@ -20,13 +20,16 @@ class Boolean : public BooleanOperand {
 	    BOOLEAN_INTERSECTION ///< Points that are in common
 	};
 
+	/// Exception class
 	class unknownOp {
 	    public:
-		BooleanOp op;
+		/// Constructor
 		unknownOp(BooleanOp op) { this->op = op; };
-
+		/// The operation that is unknown
+		BooleanOp op; 
 	};
 
+	/// Constructor
 	Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, Material material);
 	virtual ~Boolean() {};
 

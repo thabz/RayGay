@@ -11,7 +11,9 @@
 
 class Ray;
 
-/** A binary space partitioning (BSP) tree is a binary tree 
+/// A binary space partitioning tree.
+
+ /** A binary space partitioning (BSP) tree is a binary tree 
  *  for multidimensional points where successive levels are 
  *  split by arbitrary hyperplanes.
  */

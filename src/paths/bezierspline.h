@@ -6,7 +6,17 @@
 #include "math/vector.h"
 #include "math/matrix.h"
 
-/// A Bezier-spline path
+/// A Beziér-spline path
+
+/**
+ * Given a set of \f$ n+1 \f$ control points \f$ P_0, P_1, ..., P_n \f$ the
+ * corresponding Beziér-curve is defined by
+ * \f[ C(t) = \sum_{i=0}^n P_i B_{i,n}(t) \f]
+ * where \f$ B_{i,n}\f$  is the Bernstein polynomial defined by
+ * \f[ B_{i,n}(t) = {n \choose i} t^i (1-t)^{n-i} \quad \mbox{for } t \in {[0,1]} \qquad \f]
+ * 
+ * See http://mathworld.wolfram.com/BezierCurve.html
+ */
 class BezierSpline : public Path {
 
     public:

@@ -6,6 +6,7 @@
 class Material;
 class Vector;
 
+/// An incremental tessalation of a Tetrahedron
 class Tessalation : public Mesh {
 
     public:

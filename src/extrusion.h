@@ -10,9 +10,10 @@ class Path;
 class Extrusion : public Mesh {
 
     public:
-	/// Constructor
+	/// Constructor for a simple cylinder
     	Extrusion(const Vector& begin, const Vector& end, double radius, unsigned int segments, Material m);
 
+	/// Constructor
         Extrusion(const Path& path, double radius, unsigned int segments, unsigned int pieces, Material m);
 };
 

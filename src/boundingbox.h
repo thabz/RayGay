@@ -15,11 +15,19 @@ class BoundingBox {
     friend std::ostream & operator<< (std::ostream &os, const BoundingBox &b);
 
     public:
+        /// Constructor
 	BoundingBox();
+	
+        /// Constructor
 	BoundingBox(const Vector corner1, const Vector corner2);
+
+	/// Destructor
 	virtual ~BoundingBox();
 
+	/// Returns a intersection
 	virtual Intersection intersect(const Ray& ray) const;
+
+	/// Simple check for intersection
 	virtual bool checkIntersect(const Ray& ray) const;
 
 	/// The box' normal at a point. This vector is always axis-aligned.

@@ -19,25 +19,49 @@ class ObjectCollection;
 /// The collection of objects and lights.
 
 class Scene {
-    friend std::ostream & operator<< (std::ostream &os, const Scene &x);
 
     public:
+        // Constructor
 	Scene();
+
+	/// Destructor
 	virtual ~Scene();	
+
+	/// Place an object in the scene
 	void addObject(object* obj);
+	
+	/// Place an objectcollection in the scene
 	void addObject(ObjectCollection* obj);
+
+	/// Place a lightsource in the scene
 	void addLight(Lightsource* light);
+
+	/// Place the camera in the scene
 	void setCamera(Camera* camera);
+
+	/// Returns the camera placed in the scene
 	Camera* getCamera() const;
 
+	/// Transforms all objects in the scene
 	virtual void transform(const Matrix& m);
+
+	/// Returns a vector of all lightsources
 	std::vector<Lightsource*> getLightsources();
+	
+	/// Returns a vector of all objects
 	std::vector<object*> getObjects();
+
+	/// Returns a vector of all objectcollections
 	std::vector<ObjectCollection*> getObjectCollections();
+
+	/// Set the background color
 	void setBackgroundColor(const RGB& c) { bg_color = c; };
+
+	/// Returns the background color
 	RGB getBackgroundColor(const Ray& ray) const;
+
+	/// Sets the environmentmap
 	void setEnvironmentMap(const std::string& filename);
-	void dumpStats();
 
     private:
 	std::vector<Lightsource*> lights;
@@ -46,7 +70,6 @@ class Scene {
 	Image* environmentMap;
 	Sphere* environmentSphere;
 	Camera* camera;
-	Hierarchy* hierarchy;
 	RGB bg_color;
 };
 

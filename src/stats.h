@@ -10,6 +10,7 @@
 
 using namespace std;
 
+/// A helper class for counting statistics
 /**
  * The stats class is basically a hashmap of string and incremental
  * counts of the different strings.

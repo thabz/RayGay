@@ -9,7 +9,6 @@
 #include "sphere.h"
 #include "image/image.h"
 #include "math/vector2.h"
-#include "hierarchy.h"
 #include "objectcollection.h"
 #include "materials/materials.h"
 #include "stats.h"
@@ -17,7 +16,6 @@
 using namespace std;
 
 Scene::Scene() {
-    hierarchy = new Hierarchy();
     environmentMap = NULL;
 }
 
@@ -89,20 +87,6 @@ std::vector<object*> Scene::getObjects() {
     return objects;   
 }
 
-void Scene::dumpStats() {
-    map<string,int> mymap;
-    for (unsigned int i = 0; i < objects.size(); i++) {
-	object* obj = objects[i];
-	(mymap.find(obj->getName())->second)++;
-    }
-}
-
 std::vector<ObjectCollection*> Scene::getObjectCollections() {
     return objectcollections;   
-}
-
-ostream & operator<<(ostream &os, const Scene &x) {
-    os << "Hierarchy: " << *(x.hierarchy);
-
-    return os;
 }

@@ -16,7 +16,7 @@ Circle::Circle(const Vector& center, double radius, const Vector& normal) {
     n.normalize();
     Vector y = Vector(0,1,0);
     Vector x = Vector(1,0,0);
-    Vector a = n == y ? x : y;
+    Vector a = n == y ? x : y; // TODO: This doesn't work... y-axis aligned normals fails
     m = Matrix::matrixOrient(n,Vector::xProduct(a,n));
     orient = m;
     m = m * Matrix::matrixTranslate(center);

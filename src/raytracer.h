@@ -7,9 +7,7 @@ class RGB;
 class Ray;
 class Intersection;
 
-/**
- * Implementation of Renderer that supply a raytracer.
- */
+///  Implementation of Renderer that supply a raytracer.
 class Raytracer : public Renderer {
 
     public:

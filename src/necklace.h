@@ -16,7 +16,10 @@ class SpaceSubdivider;
 class Necklace : public ObjectCollection {
 
     public:
+	/// Constructor
 	Necklace(const Path& path, int num, double r, const Material& material);
+	
+	/// Destructor
 	virtual ~Necklace() {};
 	
 	/// Transform this object
