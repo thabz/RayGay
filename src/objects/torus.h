@@ -60,6 +60,7 @@ class Torus : public Solid, public Transformer {
 	double _fastIntersect(const Ray& ray) const;
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
 	Vector normal(const Vector& point) const;
+	unsigned int allPositiveRoots(const Ray& world_ray, double roots[4]) const;
 
 	double r;
 	double R;

@@ -33,6 +33,12 @@ Intersection Torus::_fullIntersect(const Ray& world_ray, const double t) const {
 }
 
 double Torus::_fastIntersect(const Ray& world_ray) const {
+    double roots[4];
+    unsigned int num = allPositiveRoots(world_ray,roots);
+    return num == 0 ? -1 : roots[0];
+}
+
+unsigned int Torus::allPositiveRoots(const Ray& world_ray, double roots[4]) const {
     Ray ray = rayToObject(world_ray);
 
     Vector Rd = ray.getDirection();
@@ -72,26 +78,20 @@ double Torus::_fastIntersect(const Ray& world_ray) const {
     double a3 = 4.0 * (k2 * k1 + 2.0 * R2 * pdy2);
     double a4 = k1 * k1 + 4.0 * R2 * (Py2 - r2);
 
-    double roots[4];
-    int num = Math::solveQuartic(a1,a2,a3,a4,roots);
-    if (num == 0) {
-	return -1;
-    } else {
-	double result;
-	if (roots[0] + closer > 2*EPSILON) {
-	    result = roots[0];
-	} else if (num > 1 && roots[1] + closer > 2*EPSILON) {
-	    result = roots[1];
-	} else if (num > 2 && roots[2] + closer > 2*EPSILON) {
-	    result = roots[2];
-	} else if (num > 3 && roots[3] + closer > 2*EPSILON) {
-	    result = roots[3];
-	} else {
-	    return -1;
+    // Find all roots
+    double all_roots[4];
+    int num = Math::solveQuartic(a1,a2,a3,a4,all_roots);
+
+    // Prune out the negative roots
+    int positive_roots_num = 0;
+    for(int i = 0; i < num; i++) {
+	if (all_roots[i] + closer > 2*EPSILON) {
+	    roots[positive_roots_num++] = all_roots[i] + closer;
 	}
-	return result + closer;
     }
+    return positive_roots_num;
 }
+
 
 /**
  * Finds the normal at a point of intersection.
@@ -124,6 +124,16 @@ SceneObject* Torus::clone() const {
 }
 
 vector<Intersection> Torus::allIntersections(const Ray& ray) const {
+    double roots[4];
+    int num = allPositiveRoots(ray,roots);
     vector<Intersection> result;
+    result.reserve(num);
+    bool entering = (num % 2) != 0;
+    for(int i = 0; i < num; i++) {
+	Intersection inter = fullIntersect(ray,roots[i]);
+	inter.isEntering(entering);
+	entering = !entering;
+	result.push_back(inter);
+    }
     return result;
 }
