@@ -64,8 +64,8 @@ http://www.mplayerhq.hu/DOCS/HTML/en/menc-feat-enc-images.html
 Transcode:
 http://www.theorie.physik.uni-goettingen.de/%7Eostreich/transcode/html/anim.html
 
-$ find frames -type f > list
-$ transcode -z -i list -x imlist,null -g 640x480 -y xvid,null -f 25 -o movie.avi -H 0
+$ find frames -type f > files
+$ transcode -z -i files -x imlist,null -g 640x480 -y xvid,null -f 25 -o movie.avi -H 0
 
 erstat evt. xvid med dixv5
 
@@ -78,4 +78,8 @@ valgrind --skin=cachegrind ./tracer ../scenes/scene.ray out.png
 cg_annotate --<pid> --auto=yes
 
 See http://developer.kde.org/~sewardj/docs-2.0.0/cg_main.html
+
+Alleyoop er endnu bedre:
+
+alleyoop -R src ./src/tracer scenes/math.gay out.png
 
