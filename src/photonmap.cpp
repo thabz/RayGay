@@ -123,8 +123,7 @@ void PhotonMap :: irradiance_estimate(
 	// the photon_dir call and following if can be omitted (for speed)
 	// if the scene does not have any thin surfaces
 	photon_dir( pdir, p );
-	// TODO: Originally < 0.0f below
-	if ( (pdir[0]*normal[0]+pdir[1]*normal[1]+pdir[2]*normal[2]) > 0.5f ) {
+	if ( (pdir[0]*normal[0]+pdir[1]*normal[1]+pdir[2]*normal[2]) < 0.0f ) {
 	    irrad[0] += p->power[0];
 	    irrad[1] += p->power[1];
 	    irrad[2] += p->power[2];
