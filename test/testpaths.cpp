@@ -147,11 +147,16 @@ void bezierspline_test() {
     delete spline;
 }
 
+void arc_test() {
+    cout << "arc_test() not written." << endl;
+}
+
 int main(int argc, char *argv[]) {
     linesegment_test();
     circle_test();
     line_test();
     bezierspline_test();
+    arc_test();
     return EXIT_SUCCESS;
 }
 
