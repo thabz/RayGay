@@ -9,8 +9,7 @@
 class Ray;
 
 /**
- * A camera implementation.
- * The camera supplies camera rays.
+ * The abstract superclass of all cameras.
  */
 class Camera {
     public:

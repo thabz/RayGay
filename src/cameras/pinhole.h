@@ -4,6 +4,9 @@
 
 #include "cameras/camera.h"
 
+/**
+ * A pinhole camera.
+ */
 class Pinhole : public Camera {
 
     public:
