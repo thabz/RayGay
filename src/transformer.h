@@ -37,7 +37,7 @@ class Transformer {
     private:
 	Matrix transformation;
 	Matrix inverse_transformation;
-	Matrix rotation; /// The rotation part extracted from the transformation
+	/// The inverse of the rotation part extracted from the transformation
 	Matrix inverse_rotation;
 	Matrix normal_transformation;
 	bool transformed;
@@ -69,7 +69,8 @@ Vector Transformer::normalToWorld(const Vector& d) const {
     if (!transformed) return d;
 
     Vector result = normal_transformation * d;
-    result.normalize(); // TODO: Not necessary...!
+    // Is only necessary because of a possible scale transformation
+    result.normalize();
     return result;
 }
 

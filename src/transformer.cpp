@@ -9,10 +9,12 @@ Transformer::Transformer() {
 void Transformer::transform(const Matrix& m) {
     transformation = transformation * m;
     inverse_transformation = transformation.inverse();
-    rotation = transformation.extractRotation();
+    Matrix rotation = transformation.extractRotation();
     inverse_rotation = rotation.inverse();
     normal_transformation = inverse_rotation.transpose();
-    transformed = true;
+    if (!transformation.isIdentity()) {
+	transformed = true;
+    }
 }
 
 Vector Transformer::pointToObject(const Vector& p) const {
