@@ -86,9 +86,8 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
    if (t < EPSILON)
        return Intersection();
    
-
    Intersection intersection = Intersection(ray.getOrigin() + t*ray.getDirection(),t);
-   intersection.setLocalObject(this);
+   //intersection.setLocalObject(this);
    intersection.u = u;
    intersection.v = v;
    return intersection;
@@ -201,7 +200,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 }
     
 Vector Triangle::normal(const Intersection &i) const {
-    return mesh->normal(i);
+    return mesh->normal(this,i);
 };
 
 BoundingBox Triangle::boundingBoundingBox() const {
@@ -215,6 +214,6 @@ BoundingBox Triangle::boundingBoundingBox() const {
 }
 	
 Vector2 Triangle::getUV(const Intersection& intersection) const {
-    return mesh->getUV(intersection);
+    return mesh->getUV(this,intersection);
 }
 

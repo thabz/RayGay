@@ -78,8 +78,9 @@ class Mesh : public ObjectCollection {
 	void addSelf(SpaceSubdivider* space);
 
 	virtual void transform(const Matrix& m);
+
 	/// Returns a (possibly) phong-interpolated normal
-	virtual Vector normal(const Intersection & i) const;
+	Vector normal(const Triangle* const triangle, const Intersection & i) const;
 	
 	/// Material of the mesh 
 	virtual const Material* getMaterial() const;
@@ -100,7 +101,7 @@ class Mesh : public ObjectCollection {
         void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3, const Vector2& uv1, const Vector2& uv2,const Vector2& uv3);
 	
 	/// Returns (possible) interpolated (u,v) texture coordinates
-	Vector2 getUV(const Intersection &i) const;
+	Vector2 getUV(const Triangle* const triangle, const Intersection &i) const;
 	
 	/// Internal test
 	static void test();
@@ -128,7 +129,7 @@ class Mesh : public ObjectCollection {
 	void computeAdjacentTris();
 	void computeTriAreas();
 	void computeInterpolatedNormals();
-	virtual Vector phong_normal(const Intersection & i) const;
+	Vector phong_normal(const Triangle* const triangle, const Intersection & i) const;
 	Vector getInterpolationWeights(unsigned int tri, Vector p) const;
 
 	std::vector<Vector> normals;

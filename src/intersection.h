@@ -25,9 +25,10 @@ class Intersection {
 	void setPoint(const Vector& point) { this->point = point; };
 	Vector getPoint() const { return point; };
 
+	/*
 	void setLocalObject(const Object* obj) { local_object = obj; };
 	const Object* getLocalObject() const { return local_object; };
-
+        */
 	double getT() const { return t; }; 
 	void setT(double new_t) { t = new_t; };
 	
@@ -36,7 +37,7 @@ class Intersection {
 
     private:
 	Object* o; /// The object that was intersected
-	const Object* local_object; ///< A local subobject, eg. a component of a Boolean.
+	//const Object* local_object; ///< A local subobject, eg. a component of a Boolean.
 	Vector point; 	///< The intersection point
 	double t;
 };
