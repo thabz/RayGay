@@ -64,12 +64,14 @@ void Stats::dump() const {
 	    cur_time != beginTimes.end();
 	    cur_time++) {
 	cout << cur_time->first;
-	long secs = endTimes.find(cur_time->first)->second - cur_time->second;
-	cout << ": ";
-	cout << setfill('0') << setw(2) << secs / 60;
-	cout << ":";
-	cout << setfill('0') << setw(2) << secs % 60;
-	cout << endl;
+	if (endTimes.find(cur_time->first) != endTimes.end()) {
+	    long secs = endTimes.find(cur_time->first)->second - cur_time->second;
+	    cout << ": ";
+	    cout << setfill('0') << setw(2) << secs / 60;
+	    cout << ":";
+	    cout << setfill('0') << setw(2) << secs % 60;
+	    cout << endl;
+	}
     }
 }
 
