@@ -13,7 +13,7 @@ void Lightsource::transform(const Matrix& m) {
 }
 
 /**
- * This method sets the attenuation parameters. The attenuation
+ * This method sets the attenuation parameters. The attenuation \f$ A \f$
  * is a factor [0,1] which describes the intensity of light based
  * of distance from a lightsource.
  * 
