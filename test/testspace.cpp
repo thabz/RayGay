@@ -177,7 +177,7 @@ void kdtree_test() {
     bsp.addObject(new Sphere(Vector(0,-500,0),10,Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)));
 
     bsp.prepare();
-    return;
+    cout << "Doing well" << endl;
 
     // Test intersection
     Ray r = Ray(Vector(200,250,1000),Vector(0,0,-1),1);
@@ -225,6 +225,7 @@ void kdtree_test() {
     assert(bsp.intersect(r) == false);
 
     assert(bsp.intersectForShadow(r,NULL) == false);
+    cout << "Doing well" << endl;
 }
 
 int main(int argc, char *argv[]) {

@@ -13,6 +13,7 @@
 Object* KdTree::last_primary_intersected_object = NULL;
 
 KdTree::KdTree() {
+    added_objects = new vector<Object*>;
     prepared = false;
 }
 
@@ -24,7 +25,7 @@ KdTree::~KdTree() {
 
 void KdTree::addObject(Object* obj) {
     Stats::getUniqueInstance()->inc("KdTree: Objects added");
-    added_objects.push_back(obj);
+    added_objects->push_back(obj);
 }
 
 inline
@@ -58,93 +59,98 @@ bool KdTree::intersectForShadow(const Ray& ray,double a, double b) const {
 }
 
 void KdTree::prepare() {
-    tmp_nodes.push_back(KdNode());
-    tmp_nodes[0].objects = &added_objects;
+    tmp_nodes.push_back(KdNodeTmp());
+    tmp_nodes[0].objects = added_objects;
+    tmp_nodes[0].axis = 0;
+    assert(tmp_nodes.size() == 1);
     max_depth = 0;
-    prepare(&(tmp_nodes[0]),1);
-
+    prepare(0,1);
     int nodes_num = tmp_nodes.size();
     nodes = new KdNode[nodes_num];
-    stack = new StackElem[max_depth];
+    stack = new StackElem[max_depth*10];
+    cout << "Prepared..." << endl;
+    cout << "Max depth: " << max_depth << endl;
+    cout << "Nodes: " << nodes_num << endl;
+
     for(int i = 0; i < nodes_num; i++) {
-	nodes[i] = tmp_nodes[i];
+	KdNode node = KdNode();
+	KdNodeTmp old = tmp_nodes[i];
+	node.objects = old.objects;
+	node.splitPlane = old.splitPlane;
+	node.axis = old.axis;
+	node.left = &(nodes[old.left]);
+	node.right = &(nodes[old.right]);
+	nodes[i] = node;
     }
+    tmp_nodes.clear();
 }
 
-void KdTree::prepare(KdNode* curNode,int depth) {
-    if (depth > max_depth)
+void KdTree::prepare(int curNode_idx,int depth) {
+    KdNodeTmp* curNode = &(tmp_nodes[curNode_idx]);
+
+    if (depth > max_depth) 
 	max_depth = depth;
 
     if (curNode->objects->size() <= KD_TREE_MAX) {
 	curNode->axis = -1;
+	return;
+    }
+
+    // Find the splitplane value
+    curNode->splitPlane = float(objectMedian(curNode->objects,curNode->axis));
+
+    tmp_nodes.push_back(KdNodeTmp());
+    tmp_nodes.push_back(KdNodeTmp());
+    curNode = &(tmp_nodes[curNode_idx]); // Reloading since it might have changed
+    int left_idx = tmp_nodes.size() - 1;
+    int right_idx = tmp_nodes.size() - 2;
+    curNode->left = left_idx;
+    curNode->right = right_idx;
+    KdNodeTmp* lower = &tmp_nodes[curNode->left];
+    KdNodeTmp* higher = &tmp_nodes[curNode->right];
+    lower->axis = (curNode->axis + 1) % 3;
+    higher->axis = (curNode->axis + 1) % 3;
+
+    unsigned int size = curNode->objects->size();
+
+    // Put all objects into lower- or higher_objects
+    int l = 0; int m = 0; int h = 0;
+    vector<Object*>::iterator p = curNode->objects->begin();
+    while (p != curNode->objects->end()) {
+	Object* obj = *p;
+	assert(obj != NULL);
+	const BoundingBox bbox = obj->boundingBoundingBox();
+	int cut_val = bbox.cutByPlane(curNode->axis, curNode->splitPlane);
+	if (cut_val == -1) {
+	    lower->objects->push_back(obj);
+	    l++;
+	} else if (cut_val == 1) {
+	    higher->objects->push_back(obj);
+	    h++;
+	} else {
+	    lower->objects->push_back(obj);
+	    higher->objects->push_back(obj);
+	    m++;
+	}
+	p++;
+    }
+
+    if (lower->objects->size() == size || higher->objects->size() == size) {
+	// Objects couldn't be subdivided
+	curNode->axis = -1;
+	lower->objects->clear();
+	higher->objects->clear();
+	//delete [] lower->objects;
+	//delete [] higher->objects;
+	tmp_nodes.pop_back();
+	tmp_nodes.pop_back();
     } else {
-	// Find the cutplane_dimension and cutplane_value
-	BoundingBox bbox = enclosure(curNode->objects);
-	Vector best_measure = Vector(0,HUGE_DOUBLE,0);
-	int best_dim = -1;
-	double best_val = 1;
-	for(int i = 0; i < 3; i++) {
-	    double val = median(curNode->objects,i);
-	    Vector measure = measureSplit(curNode->objects,i,val);
-	    if (measure[1] < best_measure[1] &&
-		measure[0] <  curNode->objects->size() &&
-		measure[2] <  curNode->objects->size()) {
-		best_dim = i;
-		best_val = val;
-		best_measure = measure;
-	    }
-	}
-	if (best_dim != -1) {
-	    curNode->axis = best_dim;
-	    curNode->splitPlane = best_val;
-	} else {
-	    curNode->axis = largestDimension(bbox);
-	    curNode->splitPlane = median(curNode->objects,curNode->axis);
-	}
-
-	tmp_nodes.push_back(KdNode());
-	tmp_nodes.push_back(KdNode());
-	KdNode* lower = &(tmp_nodes[tmp_nodes.size() - 1]);
-	KdNode* higher = &(tmp_nodes[tmp_nodes.size() - 2]);
-	curNode->left = lower;
-	curNode->right = higher;
-
-	unsigned int size = curNode->objects->size();
-
-	// Put all objects into lower- or higher_objects
-	int l = 0; int m = 0; int h = 0;
-	for(vector<Object*>::iterator p = curNode->objects->begin(); p != curNode->objects->end(); p++) {
-	    Object* obj = *p;
-	    BoundingBox bbox = obj->boundingBoundingBox();
-	    int cut_val = bbox.cutByPlane(curNode->axis, curNode->splitPlane);
-	    if (cut_val == -1) {
-		lower->objects->push_back(obj);
-		l++;
-	    } else if (cut_val == 1) {
-		higher->objects->push_back(obj);
-		h++;
-	    } else {
-		lower->objects->push_back(obj);
-		higher->objects->push_back(obj);
-		m++;
-	    }
-	}
-	return; // TODO: Remove
-	
-	if (lower->objects->size() == size || higher->objects->size() == size) {
-	    // Objects couldn't be subdivided
-	    curNode->axis = -1;
-	    delete lower->objects;
-	    delete higher->objects;
-	    tmp_nodes.pop_back();
-	    tmp_nodes.pop_back();
-	} else {
-	    delete curNode->objects;
-	    // Recursive prepare()
-	    prepare(lower,depth+1);
-	    prepare(higher,depth+1);
-	}
-    } 
+	curNode->objects->clear();
+	//delete curNode->objects;
+	// Recursive prepare()
+	prepare(left_idx,depth+1);
+	prepare(right_idx,depth+1);
+    }
 }
 
 /**
@@ -208,8 +214,8 @@ bool KdTree::intersect(const Ray& ray, double a, double b) const {
 	    stack[exPt].t = t;
 	    stack[exPt].node = farChild;
 	    stack[exPt].pb[axis] = splitVal;
-	    int nextAxis = (axis+1) & 3;
-	    int prevAxis = (axis-1) & 3;
+	    int nextAxis = (axis+1) % 3;
+	    int prevAxis = (axis-1) % 3;
 	    stack[exPt].pb[nextAxis] = ray.getOrigin()[nextAxis] + 
 		                       t * ray.getDirection()[nextAxis];
 	    stack[exPt].pb[prevAxis] = ray.getOrigin()[prevAxis] +
@@ -243,6 +249,9 @@ bool KdTree::intersect(const Ray& ray, double a, double b) const {
 }
 
 KdTree::KdNode::KdNode() {
+}
+
+KdTree::KdNodeTmp::KdNodeTmp() {
     objects = new std::vector<Object*>;
 }
 
@@ -272,7 +281,7 @@ BoundingBox KdTree::enclosure(std::vector<Object*>* objects) const {
     return result;
 }
 
-double KdTree::median(std::vector<Object*>* objects, int d) const {
+double KdTree::objectMedian(std::vector<Object*>* objects, int d) const {
     std::list<double> L;
     for(unsigned int i = 0; i < objects->size(); i++) {
 	    Object* obj = (*objects)[i];
@@ -291,19 +300,3 @@ double KdTree::median(std::vector<Object*>* objects, int d) const {
     exit(0);
 }
 
-Vector KdTree::measureSplit(std::vector<Object*>* objects, int dim, double val) const {
-    Vector result = Vector(0,0,0);
-    for(unsigned int i = 0; i < objects->size(); i++) {
-	Object* obj = (*objects)[i];
-	BoundingBox bbox = obj->boundingBoundingBox();
-	int cut_val = bbox.cutByPlane(dim, val);
-	if (cut_val == -1) {
-	    result[0]++;
-	} else if (cut_val == 1) {
-	    result[2]++;
-	} else {
-	    result[1]++;
-	}
-    }
-    return result;
-}

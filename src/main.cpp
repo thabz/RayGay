@@ -32,6 +32,7 @@
 #include "image/image.h"
 #include "raytracer.h"
 #include "bsp.h"
+#include "kdtree.h"
 
 #include "paths/linesegment.h"
 #include "paths/spiral.h"
@@ -66,12 +67,12 @@ void work(string scenefile, string outputfile) {
  //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
     scene->transform(n);
 
-    SpaceSubdivider* space = new BSP();
+    SpaceSubdivider* space = new KdTree();
 
     scene->initSpace(space);
 
 
-#define PHOTON_CODE
+//#define PHOTON_CODE
 //#define PHOTONS_DUMP
 
 #ifdef PHOTON_CODE

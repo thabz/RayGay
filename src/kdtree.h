@@ -41,6 +41,16 @@ class KdTree : public SpaceSubdivider {
 	    public:
 		KdNode();
 	};
+	class KdNodeTmp {
+	    public:
+		std::vector<Object*>* objects;  // Enclosed objects when this is a leaf
+		int left;     // Left child
+		int right;    // Right child
+		float splitPlane; // Position of splitting plane
+		int axis;         // Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
+	    public:
+		KdNodeTmp();
+	};
 
 	struct StackElem {
 	    KdNode* node;   // pointer to far child
@@ -53,16 +63,15 @@ class KdTree : public SpaceSubdivider {
 	bool intersectForShadow(const Ray&,double,double) const;
 	int largestDimension(const BoundingBox& box);
 	BoundingBox enclosure(std::vector<Object*>* objects) const;
-	double median(std::vector<Object*>* objects, int d) const;
-	Vector KdTree::measureSplit(std::vector<Object*>* objects, int dim, double val) const;
-	void prepare(KdNode* curNode, int depth);
+	double objectMedian(std::vector<Object*>* objects, int d) const;
+	void prepare(int curNode_idx, int depth);
 
 	KdNode* nodes;
 	mutable StackElem* stack;
-	std::vector<KdNode> tmp_nodes;
+	std::vector<KdNodeTmp> tmp_nodes;
 	int max_depth;
 
-	std::vector<Object*> added_objects;
+	std::vector<Object*>* added_objects;
 	bool prepared;
 	mutable Intersection* last_intersection;
 	static Object* last_primary_intersected_object;

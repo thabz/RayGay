@@ -166,7 +166,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
-#define FINAL_GATHER_RAYS 0
+#define FINAL_GATHER_RAYS 500
 #define ESTIMATE_RADIUS 50
 #define ESTIMATE_PHOTONS 300
 

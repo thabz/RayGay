@@ -3,7 +3,7 @@ material $glass
 diffuse 0.0 0.2 0.2
 kd 0.0
 specular 1.0 1.0 1.0
-ks 0.2
+ks 0.1
 specpow 0
 ior 1.2
 trans_coeff 1.0

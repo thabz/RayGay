@@ -15,7 +15,11 @@ image-width 640
 
 light point 0 1300 0
 
-box $dullblue -700 -50 -700  700 0 700
+#box $dullblue -700 -50 -700  700 0 700
 
 sphere $red 200 0 200 0 
 sphere $red 100 0 100 250
+
+circle $circle 0 0 0 200 0 1 0
+necklace $blue $circle 30 10
+
