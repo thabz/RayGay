@@ -45,11 +45,11 @@ RGB IrradianceCache::getEstimate(const Vector& point, const Vector& normal) cons
     }
 }
 
-void IrradianceCache::traverseOctree(HierarchyNode* node, const Vector& point, vector<CacheNode*>* result) const {
+void IrradianceCache::traverseOctree(const HierarchyNode* const node, const Vector& point, vector<const CacheNode*>* result) const {
     if (node->isLeaf) {
 	// Add cache_nodes to result
 	for(unsigned int i = 0; i < node->cache_nodes.size(); i++) {
-	    CacheNode* cnode = &(node->cache_nodes[i]);
+	    const CacheNode* const cnode = &(node->cache_nodes[i]);
 	    if ((point - cnode->getPoint()).norm() < cnode->getSquaredRadius()) {
 		result->push_back(cnode);
 	    }
@@ -58,7 +58,7 @@ void IrradianceCache::traverseOctree(HierarchyNode* node, const Vector& point, v
 	// traverse children
 	for(unsigned int i = 0; i < 8; i++) {
 	    HierarchyNode* child = node->children[i];
-	    // TODO: Optimize
+	    // FIXME: Simpler test possible
 	    if (child->bbox.inside(point)) {
 		traverseOctree(child,point,result);
 	    }

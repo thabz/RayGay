@@ -92,7 +92,7 @@ class IrradianceCache {
 	double inv_tolerance;
 	HierarchyNode* hierarchy_top;
 
-	void traverseOctree(HierarchyNode* node, const Vector& point, vector<CacheNode*>* result) const;
+	void traverseOctree(const HierarchyNode* const node, const Vector& point, vector<const CacheNode*>* result) const;
 };
 
 
