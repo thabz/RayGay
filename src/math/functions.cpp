@@ -4,8 +4,8 @@
 
 /**
  * The binomial coefficient is defined as 
- * \f$ {n \choose k} = \frac{n!}{k!(n-k)!} \quad \mbox{if } n\geq k\geq 0 \qquad \mbox{(1)} \f$
- *  \f$ {n \choose k} = 0 \quad \mbox{if } k<0 \mbox{ or } k>n. \f$
+ * \f[ {n \choose k} = \frac{n!}{k!(n-k)!} \quad \mbox{if } n\geq k\geq 0 \qquad \f]
+ * \f[ {n \choose k} = 0 \quad \mbox{if } k<0 \mbox{ or } k>n. \f]
  * 
  * Implemented as a slow recursive function.
  *
@@ -21,6 +21,12 @@ unsigned long Math::binomialCoefficient(long n, long k) {
     }
 }
 
+/**
+ * The Bernstein polynomial is defined as
+ *
+ * \f[ B_{i,n}(t) = {n \choose i} t^i (1-t)^{n-i} \quad \mbox{for } t \in {[0,1]} \qquad \f]
+ * 
+ */
 double Math::bernsteinPolynomial(unsigned int i, unsigned int n, double t) {
     return binomialCoefficient(n,i) * pow(t,i) * pow((1-t),n-i);
 }

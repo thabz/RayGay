@@ -10,7 +10,10 @@
 #include "paths/spiral.h"
 #include "paths/circle.h"
 #include "paths/line.h"
+#include "paths/bezierspline.h"
 #include "boundingbox.h"
+
+using namespace std;
 
 void circle_test() {
     int num = 100;
@@ -113,10 +116,42 @@ void line_test() {
 
 }
 
+void bezierspline_test() {
+    int num = 5;
+    Vector p[5] = { Vector(1,1,1),Vector(10,10,2),Vector(50,20,10),Vector(3,4,6),Vector(5,2,5) };
+    BezierSpline* spline = new BezierSpline(p,num);
+
+    // Check that controlpoints are correct
+    assert(spline->getControlPoint(0) == p[0]);
+    assert(spline->getControlPoint(1) == p[1]);
+    assert(spline->getControlPoint(2) == p[2]);
+    assert(spline->getControlPoint(num-1) == p[num-1]);
+
+    // A Bezierspline passes through first and last controlpoint
+    assert(spline->getPoint(0) == p[0]);
+    assert(spline->getPoint(1) == p[num-1]);
+
+    // The curve is tangent to p[1]-P[0] and p[n]-p[n-1] at the endpoints
+    Vector t1 = spline->getTangent(0);
+    t1.normalize();
+    Vector t2 = p[1]-p[0];
+    t2.normalize();
+    assert(t1 == t2);
+
+    t1 = spline->getTangent(1);
+    t1.normalize();
+    t2 = p[num-1]-p[3];
+    t2.normalize();
+    assert(t1 == t2);
+
+    delete spline;
+}
+
 int main(int argc, char *argv[]) {
     linesegment_test();
     circle_test();
     line_test();
+    bezierspline_test();
     return EXIT_SUCCESS;
 }
 

@@ -47,6 +47,7 @@
 #include "paths/linesegment.h"
 #include "paths/spiral.h"
 #include "paths/circle.h"
+#include "paths/bezierspline.h"
 
 #include "lights/pointlight.h"
 #include "lights/spotlight.h"
@@ -90,11 +91,19 @@ void testScene4() {
 
     Tessalation* tet = new Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
     Wireframe* wire = new Wireframe(tet,20.0,MATERIAL_SHINY_BLUE);
-    scene.addObject(wire);
+    //scene.addObject(wire);
+
+    Vector points[5] = { Vector(100,-100,200),Vector(300,300,0),Vector(100,200,-500),Vector(-300,250,0),Vector(-200,200,300) };
+    BezierSpline* spline = new BezierSpline(points,5);
+    Extrusion* tube = new Extrusion(*spline,20,16,200,MATERIAL_SHINY_RED);
+    scene.addObject(tube); 
+    for(int i = 0; i < 5; i++) {
+	Sphere* s = new Sphere(points[i],20.0,MATERIAL_SHINY_BLUE);
+	scene.addObject(s); 
+    }
 
     //Extrusion* tube = new Extrusion(spiral,10,16,200,MATERIAL_CHROME);
-   // scene.addObject(tube); 
-
+    //scene.addObject(tube); 
 
     // Use this when making fog later.
     /*

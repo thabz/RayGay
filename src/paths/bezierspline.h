@@ -17,6 +17,9 @@ class BezierSpline : public Path {
 	Vector getTangent(double t) const;
         void transform(const Matrix& m);
 
+	/// Returns a controlpoint for 0 < n < num
+	Vector getControlPoint(unsigned int n) const { return controlpoints[n]; };
+
     private:
 	Vector* controlpoints;
 	unsigned int num;

@@ -7,6 +7,7 @@ BezierSpline::BezierSpline(Vector* controlpoints, unsigned int num) {
 
    assert(num > 2);
    this->controlpoints = new Vector[num];
+   this->num = num;
    for(unsigned int i = 0; i < num; i++) {
        this->controlpoints[i] = controlpoints[i];
    }
@@ -30,7 +31,7 @@ void BezierSpline::transform(const Matrix& m) {
 Vector BezierSpline::getPoint(double t) const {
     Vector result = Vector(0,0,0);
     for(unsigned int i = 0; i < num; i++) {
-	result = result + Math::bernsteinPolynomial(i,num,t) * controlpoints[i];
+	result += Math::bernsteinPolynomial(i,num-1,t) * getControlPoint(i);
     }
     return result;
 }
@@ -43,8 +44,9 @@ Vector BezierSpline::getTangent(double t) const {
      */
     Vector result = Vector(0,0,0);
     for(unsigned int i = 0; i < num; i++) {
-	result = result + num*(Math::bernsteinPolynomial(i-1,num-1,t) - Math::bernsteinPolynomial(i,num-1,t)) * controlpoints[i];
+	result += num*(Math::bernsteinPolynomial(i-1,num-2,t) - Math::bernsteinPolynomial(i,num-2,t)) * getControlPoint(i);
     }
+    result.normalize();
     return result;
 }
 

@@ -187,11 +187,41 @@ void matrix_test() {
 }
 
 void binomial_test() {
-    assert(Math::binomialCoefficient(7,3) == 35);
     assert(Math::binomialCoefficient(7,-3) == 0);
     assert(Math::binomialCoefficient(-7,3) == 0);
     assert(Math::binomialCoefficient(-7,-3) == 0);
     assert(Math::binomialCoefficient(7,0) == 1);
+
+    assert(Math::binomialCoefficient(7,3) == 35);
+    assert(Math::binomialCoefficient(8,3) == 56);
+    assert(Math::binomialCoefficient(16,6) == 8008);
+    assert(Math::binomialCoefficient(20,7) == 77520);
+    assert(Math::binomialCoefficient(15,15) == 1);
+    assert(Math::binomialCoefficient(15,11) == 1365);
+}
+
+void bernstein_polynomial_test() {
+    // 1
+    assert(IS_EQUAL(Math::bernsteinPolynomial(0,0,0.5),1));
+    assert(IS_EQUAL(Math::bernsteinPolynomial(0,0,1),1));
+    assert(IS_EQUAL(Math::bernsteinPolynomial(0,0,0),1));
+    // 1 - t
+    assert(IS_EQUAL(Math::bernsteinPolynomial(0,1,0.2),0.8));
+    // t
+    assert(IS_EQUAL(Math::bernsteinPolynomial(1,1,0.2),0.2));
+    // 2(1-t)t
+    assert(IS_EQUAL(Math::bernsteinPolynomial(1,2,3),-12));
+    assert(IS_EQUAL(Math::bernsteinPolynomial(1,2,0.5),0.5));
+    assert(IS_EQUAL(Math::bernsteinPolynomial(1,2,1),0));
+    assert(IS_EQUAL(Math::bernsteinPolynomial(1,2,0),0));
+    // t^2
+    assert(IS_EQUAL(Math::bernsteinPolynomial(2,2,5),25));
+    assert(IS_EQUAL(Math::bernsteinPolynomial(2,2,1),1));
+    assert(IS_EQUAL(Math::bernsteinPolynomial(2,2,0),0));
+    // t^3
+    assert(IS_EQUAL(Math::bernsteinPolynomial(3,3,5),125));
+    assert(IS_EQUAL(Math::bernsteinPolynomial(3,3,1),1));
+    assert(IS_EQUAL(Math::bernsteinPolynomial(3,3,0),0));
 }
 
 int main(int argc, char *argv[]) {
@@ -199,5 +229,6 @@ int main(int argc, char *argv[]) {
     vector2_test();
     matrix_test();
     binomial_test();
+    bernstein_polynomial_test();
     return EXIT_SUCCESS;
 }
