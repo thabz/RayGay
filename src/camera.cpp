@@ -29,6 +29,7 @@ Camera::~Camera() {
 
 void Camera::init() {
     basis = Matrix::matrixOrient(position - look_at,up);
+    inv_basis = basis.inverse();
     au = tan(field_of_view_radians / 2.0);
     av = (height * au) / width;
     initialized = true;
@@ -58,3 +59,15 @@ Ray Camera::getRay(const double x, const double y) {
     return Ray(position, dir, 1.0);
 }
 
+/**
+ * Map a 3D point onto the screen
+ */
+Vector2 Camera::project(const Vector& p) const {
+    Vector v = inv_basis * (p - position);
+   // if (v.z() > 0.0) return Vector2(-1,-1);
+
+    Vector2 sp;
+    sp[0] = (((v.x() / (-v.z())) + au) * (width - 1.0)) / (2.0 * au);
+    sp[1] = (((v.y() / (-v.z())) + av) * (height - 1.0)) / (2.0 * av);
+    return sp;
+}

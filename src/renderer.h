@@ -17,7 +17,7 @@ class Renderer {
 
     public:
 	/// Render a scene into an image
-	void render(Scene* scene, Image*, SpaceSubdivider* space, PhotonMap* photonmap);
+	void render(Scene* scene, Image*, SpaceSubdivider* space);
 
 	/// Destructor
 	virtual ~Renderer() {};
@@ -52,9 +52,6 @@ class Renderer {
 	Renderer();
 	/// The scene to be rendered can be accessed from implementations of Renderer.
 	Scene* scene;
-
-	/// The photonmap to use
-	PhotonMap* photonmap;
 
 	/// The space containing the objects of the scene to render
 	SpaceSubdivider* space;

@@ -67,6 +67,8 @@ class PhotonMap {
 		float *dir,                    // direction of photon (returned)
 		const Photon *p ) const;       // the photon
 
+	Photon* list() const { return photons; };
+
     private:
 	void store(
 		const float power[3],          // photon power

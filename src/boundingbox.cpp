@@ -254,8 +254,8 @@ double BoundingBox::area() const {
  */
 int BoundingBox::cutByPlane(int cutplane_dimension, double cutplane_value) const {
     assert(cutplane_dimension == 0 || cutplane_dimension == 1 || cutplane_dimension == 2);
-    double min = minimum()[cutplane_dimension];
-    double max = maximum()[cutplane_dimension];
+    const double min = minimum()[cutplane_dimension];
+    const double max = maximum()[cutplane_dimension];
     if (cutplane_value > max) {
 	return -1;
     } else if (cutplane_value < min) {
@@ -271,6 +271,7 @@ ostream & operator<<(ostream &os, const BoundingBox &b) {
 }
 
 void BoundingBox::grow(double nudge) {
+    assert(nudge >= 0.0);
     Vector v = Vector(nudge,nudge,nudge);
     _c1 -= v;
     _c2 += v;

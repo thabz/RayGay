@@ -3,6 +3,7 @@
 
 #include "math/matrix.h"
 #include "math/vector.h"
+#include "math/vector2.h"
 
 class Ray;
 
@@ -10,21 +11,21 @@ class Ray;
 class Camera {
     public:
 	Camera(); 
-	
+
 	/// Constructor
 	Camera(Vector position, Vector lookAt, Vector up, double fieldOfView, int width, int height);
 
 	/// Desctructor
 	~Camera();
-	
-        void transform(const Matrix& m);
+
+	void transform(const Matrix& m);
 
 	/// Returns position of camera
 	Vector getPosition() const { return position; };
 	void setPosition(const Vector& pos) { position = pos; };
 
 	const Vector& getLookAt() const { return look_at; };
-        void setLookAt(const Vector& look_at) { this->look_at = look_at; };
+	void setLookAt(const Vector& look_at) { this->look_at = look_at; };
 
 	Vector getDirection() const;
 
@@ -54,6 +55,8 @@ class Camera {
 
 	void setImageSize(int width, int height) { this->width = width; this->height = height; };
 
+	Vector2 project(const Vector& p) const;
+
     private:
 	void init();
 	// General camera 
@@ -65,6 +68,7 @@ class Camera {
 	double au;
 	double av;
 	Matrix basis;
+	Matrix inv_basis;
 	int width, height; ///< Image size in pixels
 	bool initialized;
 

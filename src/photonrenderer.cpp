@@ -16,7 +16,8 @@
 #include "lights/lightsource.h"
 #include "photonmap.h"
 
-PhotonRenderer::PhotonRenderer() : Renderer() {
+PhotonRenderer::PhotonRenderer(PhotonMap* photonmap) : Renderer() {
+    this->photonmap = photonmap;
 }
 
 RGB PhotonRenderer::getPixel(const Vector2& v) {
@@ -67,12 +68,10 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     RGB result_color = RGB(0.0,0.0,0.0);
     vector<Lightsource*> lights = scene->getLightsources();
 
-  //   Vector irradiance = photonmap->irradiance_estimate(point,normal,20,1000);
-  //  result_color += 10*irradiance.length() * material.getDiffuseColor(intersection);
     result_color += gatherIrradiance(point,normal).length() * material.getDiffuseColor(intersection);
-   // result_color.clip();
-   // return result_color;
-
+    //result_color.clip();
+    //return result_color;
+    // TODO: Add radiance_estimate from caustics map
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);
 
@@ -167,21 +166,32 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
-#define GATHER_RAYS 10
+#define FINAL_GATHER_RAYS 10
+#define ESTIMATE_RADIUS 50
+#define ESTIMATE_PHOTONS 500
+#define MULTIPLIER 3.0
+
 Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal) const {
+    if (FINAL_GATHER_RAYS == 0) {
+	return MULTIPLIER * photonmap->irradiance_estimate(point,normal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS);
+    }
     Vector result = Vector(0.0,0.0,0.0);
-    for (int i = 0; i < GATHER_RAYS; i++) {
+    for (int i = 0; i < FINAL_GATHER_RAYS; i++) {
 	Vector dir = Math::perturbVector(normal,DEG2RAD(89));
-	Ray ray = Ray(point,dir,1);
+	Ray ray = Ray(point,dir,-1);
 	if (space->intersect(ray)) {
 	    Intersection* inter = space->getLastIntersection();
 	    Vector hitpoint = inter->getPoint();
 	    Vector hitnormal = inter->getObject()->normal(*inter);
-	    result += photonmap->irradiance_estimate(hitpoint,hitnormal,20,500);
+	    double cos = normal * dir;
+	    // TODO: If too close use another recursive final gather instead for estimate
+	    result += cos * photonmap->irradiance_estimate(hitpoint,hitnormal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS);
+	} else {
+	    result += scene->getBackgroundColor(ray);
 	}
     }
-    result *= 1.0/double(GATHER_RAYS);
-    result *= 10000;
+    result *= 1.0/double(FINAL_GATHER_RAYS);
+    result *= MULTIPLIER;
     return result;
 }
 

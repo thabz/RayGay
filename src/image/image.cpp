@@ -5,6 +5,7 @@
 #include <iostream>
 #include <math.h>
 #include <memory.h>
+#include "math/vector2.h"
 
 #define byte unsigned char
 
@@ -37,6 +38,14 @@ void Image::setRGB(int x, int y, RGB& c) {
     data[(y*width + x)*3 + 0] = c.r();
     data[(y*width + x)*3 + 1] = c.g();
     data[(y*width + x)*3 + 2] = c.b();
+}
+
+void Image::setRGB(const Vector2& p, RGB& c) {
+    int x = int(p[0]);
+    int y = int(p[1]);
+    if (x >= 0 && x < width && y >= 0 && y < height) {
+	setRGB(x,y,c);
+    }
 }
 
 RGB Image::getRGB(int x, int y) const {

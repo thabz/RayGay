@@ -2,42 +2,49 @@
 
 include materials.gay
 
-#photonmap-maxrays 100000
-#photonmap-max-dist 20
-#photonmap-photons-in-estimate 100
+#photonmap-photons 100000
+#photonmap-estimate-radius 20
+#photonmap-estimate-samples 5000
+#photonmap-final-gather-rays 100
 
-camera-position 0 190 1590
+camera-position 0 180 1100
 camera-up 0 1 0
 camera-lookat 0 0 0
-camera-field-of-view 45
+camera-field-of-view 60
 camera-aa 0
 
 image-ratio 4 3
-image-width 320
+image-width 640
 
 background 0.1 0.1 0.3
 
 #light spot 2000 700 5     0 0 0 20.0 18.0
-light point 280 280 280
+light point 200 280 -150
 
-box $dullred  -50 -300  -50     50 50   50 rotate 0 1 0 30
-box $dullblue -150 -300 -250   -100 50 -200 rotate 0 1 0 -30
+#box $dullred  -50 -300  -50     50 50   50 rotate 0 1 0 30
+#box $dullblue -150 -300 -250   -100 50 -200 rotate 0 1 0 -30
 
-#sphere $blue 50  200 -250 -250
-sphere $green 50  -200 -250 150
+sphere $green 60  0 -240 200
+#sphere $green 60  -200 -240 200
 
 # Floor
-box $dullwhite -300 -350 -300    300 -300 600
+box $dullwhite -300 -350 -300    300 -300 1200
 # Ceiling 
-box $dullwhite -300 300 -300    300 350 600
+box $dullwhite -300 300 -300    300 350 1200
 # Backwall
 box $dullwhite -300 -300 -330    300 300 -300
+# Backwall (right half)
+box $dullwhite 100 -310 -30    350 310 0
+# Backwall (left half)
+box $dullwhite -300 -310 -30    -100 310 0
+# Backwall (top half)
+box $dullwhite -350 250 -30    350 320 0
 # Left wall
-box $dullwhite -350 -300 -300    -300 300 600
+box $dullwhite -350 -300 -300    -300 300 1200
 # Right wall
-box $dullwhite 350 -300 -300    300 300 600
+box $dullwhite 300 -300 -300    330 300 1200
 # Wall behind camera
-#box $dullwhite -300 -150 600    300 200 630
+box $dullwhite -300 -150 1200    300 200 1230
 
 
 #sphere $green 50  -200 -250 150

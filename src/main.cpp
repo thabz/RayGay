@@ -45,6 +45,7 @@
 #include "materials/materials.h"
 
 #include "photonmap.h"
+#include "photonmapdump.h"
 #include "photontracer.h"
 #include "photonrenderer.h"
 
@@ -61,7 +62,7 @@ void work(string scenefile, string outputfile) {
     Vector2 img_size = importer.getImageSize();
     Image* img = new Image(int(img_size[0]),int(img_size[1]));
 
-    Matrix n = Matrix::matrixRotate(Vector(0,1,0),-5.0);
+    Matrix n = Matrix::matrixRotate(Vector(0,1,0),3.0);
     //Matrix n = Matrix::matrixTranslate(Vector(0,0,-500));
     scene->transform(n);
 
@@ -69,18 +70,28 @@ void work(string scenefile, string outputfile) {
 
     scene->initSpace(space);
 
-    int photon_num = 100000;
-    PhotonMap* photonmap = new PhotonMap(photon_num);
-    
-    PhotonTracer* photontracer = new PhotonTracer(scene,space,photonmap);
-    photontracer->trace(photon_num);
-    photonmap->scale_photon_power(1.0/double(photon_num));
-    photonmap->balance();
 
- /*   Raytracer raytracer = Raytracer();
-    raytracer.render(scene,img,space,photonmap);*/
-    PhotonRenderer renderer = PhotonRenderer();
-    renderer.render(scene,img,space,photonmap);
+#define PHOTON_CODE
+//#define PHOTONS_DUMP
+
+#ifdef PHOTON_CODE
+    #define PHOTON_NUM 100000
+    PhotonMap* photonmap = new PhotonMap(PHOTON_NUM);    
+    PhotonTracer* photontracer = new PhotonTracer(scene,space,photonmap);
+    photontracer->trace(PHOTON_NUM);
+    photonmap->scale_photon_power(1.0/double(PHOTON_NUM));
+    photonmap->balance();
+    #ifdef PHOTONS_DUMP
+       PhotonMapDump dumper;
+       dumper.render(scene,img,photonmap,PHOTON_NUM);
+    #else
+       PhotonRenderer renderer = PhotonRenderer(photonmap);
+       renderer.render(scene,img,space);
+    #endif
+#else
+    Raytracer raytracer = Raytracer();
+    raytracer.render(scene,img,space);
+#endif
     
     img->save(outputfile);
     delete img;

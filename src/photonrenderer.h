@@ -15,9 +15,12 @@ class PhotonRenderer : public Renderer {
 
     public:
 	/// Default constructor
-	PhotonRenderer();
+	PhotonRenderer(PhotonMap* photonmap);
 
     private:
+	/// The photonmap to use
+	PhotonMap* photonmap;
+
 	RGB getPixel(const Vector2& v);
 
 	RGB shade(const Ray&, const Intersection&, int depth);

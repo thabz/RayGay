@@ -12,7 +12,6 @@
 #include "math/matrix.h"
 #include "spacesubdivider.h"
 #include "objectcollection.h"
-#include "photonmap.h"
 
 Renderer::Renderer() {
 }
@@ -25,8 +24,7 @@ Renderer::Renderer() {
  * @param img The image to place pixels on
  * @param spc The space containing the objects of the scene
  */
-void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc, PhotonMap* photonmap) {
-    this->photonmap = photonmap;
+void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
     time_t beginTime;
     scene = sc;
     space = spc;
