@@ -48,6 +48,6 @@ uint SturmSequence::signChanges(double x) const {
 uint SturmSequence::rootCount(double a, double b) const {
     uint changes_a = signChanges(a);
     uint changes_b = signChanges(b);
-    return changes_b - changes_a;
+    return changes_a - changes_b;
 }
 

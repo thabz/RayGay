@@ -12,6 +12,7 @@
 #include "math/functions.h"
 #include "math/rootfinder.h"
 #include "math/polynomial.h"
+#include "math/sturmsequence.h"
 #include "testing.h"
 
 using namespace std;
@@ -829,6 +830,20 @@ class polynomials : public Test  {
 	}
 };
 
+class sturm_sequence_test : public Test  {
+    public:
+	void run() {
+	    // See http://aida.homelinux.net/wordpress/wp-content/522_ma/ma522_01.html
+	    SturmSequence seq = SturmSequence(Polynomial(1,-8,21,-22,8));
+	    assertTrue(seq.rootCount(0,3) == 2);
+
+	    double c[] =  {1,-3,-10,34,0,-40};
+	    seq = SturmSequence(Polynomial(c,6));
+	    assertTrue(seq.rootCount(1,3) == 1);
+	    
+	}
+};
+
 int main(int argc, char *argv[]) {
 
     TestSuite suite;
@@ -847,6 +862,7 @@ int main(int argc, char *argv[]) {
     suite.add("Brent's method",new brents_method());
     suite.add("Bisection",new bisection());
     suite.add("Polynomials",new polynomials());
+    suite.add("Sturm sequence",new sturm_sequence_test());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {
