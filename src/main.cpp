@@ -56,6 +56,16 @@ extern void delete_interpreter();
 extern void init_parser(string filename);
 extern Vector2 getImageSize();
 extern RendererSettings* getRendererSettings();
+extern void abortRendering();
+
+vector<Renderer*> active_renderers;
+
+void abortRendering() {
+    cout << "Aborting render..." << endl;
+    for(unsigned int i = 0; i < active_renderers.size(); i++) {
+	active_renderers[i]->abort();
+    }
+}
 
 //Assignments* global_assigments = new Assignments();
 
@@ -163,6 +173,8 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 
 
     Stats::getUniqueInstance()->beginTimer("Rendering");
+    
+    active_renderers.clear();
 
     if (renderersettings->threads_num == 1) {
 	// If only one thread is wanted we don't spawn a render-thread
@@ -177,6 +189,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 	} else if (renderersettings->renderertype == RendererSettings::PATHTRACER) {
 	    renderer = new Pathtracer(renderersettings,img,scene,space,job_pool,0);
 	}
+	active_renderers.push_back(renderer);
 	renderer->run();
 	delete renderer;
     } else {
@@ -197,6 +210,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 		default:
 		    throw_exception("Unknown renderer");
 	    }
+	    active_renderers.push_back(renderers[i]);
 	    pthread_create(&threads[i], NULL, renderThreadDo, renderers[i]);
 	}
 

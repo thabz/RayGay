@@ -12,6 +12,9 @@
 #include "window.h"
 #include "window-icon.h"
 #include <glib.h>
+#include <gdk/gdkkeysyms.h>
+
+extern void abortRendering();
 
 int darea_width;
 int darea_height;
@@ -33,9 +36,22 @@ gboolean on_darea_expose (GtkWidget *widget,
 
 gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
     window_open = false;
+    abortRendering();
+    // TODO: Possible race. Window might be closed before all
+    // renderthreads are done aborting and thus are trying to plot
+    // some pixels.
     return FALSE;
 }
 
+gboolean keypress_event(GtkWidget* widget, GdkEventKey *event) {
+    if (event->keyval == GDK_q)
+    {
+	window_open = false;
+	abortRendering();
+	return FALSE;
+    }
+    return TRUE;
+}
 
 PreviewWindow::PreviewWindow(int width, int height) {
     this->width = width;
@@ -71,10 +87,13 @@ PreviewWindow::PreviewWindow(int width, int height) {
     darea = gtk_drawing_area_new ();
     gtk_widget_set_double_buffered(darea,false);
     gtk_widget_set_size_request (darea, width, height);
+ //   gtk_widget_set_events (window, GDK_KEY_PRESS_MASK);
     gtk_signal_connect (GTK_OBJECT (darea), "expose-event",
 	    GTK_SIGNAL_FUNC (on_darea_expose), NULL);
     gtk_signal_connect (GTK_OBJECT (window), "delete_event",
 	    GTK_SIGNAL_FUNC (delete_event), NULL);
+    gtk_signal_connect (GTK_OBJECT (window), "key-press-event",
+	    GTK_SIGNAL_FUNC (keypress_event), NULL);
     gtk_widget_show(darea);
 
     // Scrolled window

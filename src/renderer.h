@@ -28,6 +28,8 @@ class Renderer {
 	/// Run
 	void run();
 
+	void abort();
+
 	/// Destructor
 	virtual ~Renderer();
 
@@ -81,6 +83,8 @@ class Renderer {
 
 
 	Vector2 fresnel(Vector normal, const Vector& ray_dir, const Material* material) const;
+
+	bool aborting;
 };
 
 #endif

@@ -22,6 +22,7 @@ Renderer::Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree*
     this->job_pool = job_pool;
     this->thread_id = thread_id;
     this->img = img;
+    this->aborting = false;
 
     // Prepare the two PixelBlock buffers
     Camera* camera = scene->getCamera();
@@ -46,9 +47,13 @@ Renderer::~Renderer() {
     }
 }
 
+void Renderer::abort() {
+    aborting = true;
+}
+
 void Renderer::run() {
     RenderJob* job;
-    while ((job = job_pool->getJob()) != NULL) {
+    while ((job = job_pool->getJob()) != NULL && !aborting) {
 	render(*job);
 	job_pool->markJobDone(job);
     }
@@ -136,7 +141,7 @@ void Renderer::renderFull(const RenderJob& job) {
     PixelBlock* cur_block;
     PixelBlock* prev_block;
     RGBA color;
-    for (int y = job.begin_y; y < job.end_y; y++) {
+    for (int y = job.begin_y; y < job.end_y && !aborting; y++) {
 	if (y != job.begin_y) {
 	    // Swap row buffers
 	    tmp_row_ptr = cur_row_ptr;
@@ -144,7 +149,7 @@ void Renderer::renderFull(const RenderJob& job) {
 	    prev_row_ptr = tmp_row_ptr;
 	    prepareCurRow(cur_row_ptr,prev_row_ptr,block_size);
 	}
-	for (int x = job.begin_x; x < job.end_x; x++) {
+	for (int x = job.begin_x; x < job.end_x && !aborting; x++) {
 	    if (aa_enabled) {
 		cur_block = &((*cur_row_ptr)[x]);
 		if (x != job.begin_x) {

@@ -10,6 +10,7 @@
 
 #undef MIN
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
 
 class Image;
 
