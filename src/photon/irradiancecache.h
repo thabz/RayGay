@@ -2,6 +2,7 @@
 #include "math/vector.h"
 #include "image/rgb.h"
 #include <vector>
+#include <pthread.h>
 
 #include "boundingbox.h"
 
@@ -38,6 +39,7 @@ class IrradianceCache {
 	 * Insert an estimate into the cache.
 	 *
 	 * This inserts the result of a final gather into the irradiance cache.
+	 * This method is reentrant by protection of a mutex lock.
 	 *
 	 * The harmonic mean distance \f$H\f$ is defined as
 	 *
@@ -56,7 +58,6 @@ class IrradianceCache {
 	void putEstimate(const Vector& point, const Vector& normal, const RGB& irradiance, const double hmd);
 
     private:
-
 	class CacheNode {
 	    public:
 		CacheNode(const Vector& point, const Vector &normal, const RGB& irradiance, double hmd, double a);
@@ -99,6 +100,7 @@ class IrradianceCache {
 	double tolerance;
 	double inv_tolerance;
 	HierarchyNode* hierarchy_top;
+	pthread_mutex_t mutex_putEstimate;
 
 	void traverseOctree(const HierarchyNode* const node, const Vector& point, vector<const CacheNode*>* result) const;
 };
