@@ -41,7 +41,7 @@
 	   (v (- (expt (+ (* 2 x x) (* y y) (* z z) -1) 3)
 		 (* x x z z z 0.1)
 		 (* y y z z z))))
-      (if (< v 0)
+      (if (negative? v)
 	(begin
 	  (append!
 	    scene 
