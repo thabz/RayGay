@@ -95,7 +95,7 @@ div.vim {
        border: 1px solid #808060;
        color: #202020;
        padding: 10px;
-       font-family: LucidaTypewriter;       		
+       font-family: LucidaTypewriter, Courier;       		
        font-size: 10pt;
        white-space: pre;
 }

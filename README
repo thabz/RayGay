@@ -6,18 +6,29 @@ TODO:
 * More accurate Triangle-BoundingBox intersection code
 * Hierarchy will never exit when more than 8 objects intersect a the same point.
 * Implement onEdge() and inside() for Mesh class.
-* Adaptive supersampling til antialias
++ Adaptive supersampling til antialias
++ BSP
 + Cylinder 
-* Separate objectspace and worldspace transformations.
++ Separate objectspace and worldspace transformations.
 + Area lights
 + Bumpmapping
 * 3DS import (meshes, UV, materials)
 + gprof profiling
-* Create a XML scene format and an importer.
++ Create a XML scene format and an importer.
 * Cone
 + Torus
 * General polynomial surfaces.
 * Support for separate night and day textures.
-* Mathematical cylinder
++ Mathematical cylinder
 + Bicubic interpolation of textures
 + Support for u,v coordinates in meshes
++ Distributed reflections aka gloss.
+* Mathematical cone
+* Heightmap objects
+* Correct handling of camera placement, direction and field of view.
+* Adaptive arealights
+* Adaptive gloss
+* Mathematical torus.
+
+
+* Scaling of all objects: See http://www.cl.cam.ac.uk/Teaching/2000/AGraphHCI/SMEG/node2.html#SECTION00024000000000000000
