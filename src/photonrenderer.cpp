@@ -123,7 +123,8 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 		    double intensity = info.intensity * attenuation;
 		    // Diffuse color
 		    if (material->getKd() > 0) {
-			color =  intensity * info.cos * material->getKd() * material->getDiffuseColor(intersection);
+			double power = 1; //(*p)->getPower().brightness();
+			color =  power * intensity * info.cos * material->getKd() * material->getDiffuseColor(intersection);
 		    }
 
 		    // Specular color (Phong)
