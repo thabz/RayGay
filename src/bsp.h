@@ -19,6 +19,7 @@ class BSP : public SpaceSubdivider {
 
     public:
 	BSP();
+	virtual ~BSP() {};
 	void addObject(object* obj); ///< Place a object in the BSP tree 
 
 	Intersection intersect(const Ray& ray) const; ///< Returns the nearest intersection

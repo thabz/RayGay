@@ -10,8 +10,8 @@
 class Circle : public Path {
 
     public:
-	Circle() { };
 	Circle(const Vector& center, double radius, const Vector& normal);
+	virtual ~Circle() {};
 	Vector getPoint(double t) const;
 	Vector getTangent(double t) const;
         void transform(const Matrix& m);

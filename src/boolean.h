@@ -23,6 +23,7 @@ class Boolean : public BooleanOperand {
 	};
 
 	Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, Material material);
+	virtual ~Boolean() {};
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection& i) const;

@@ -20,6 +20,7 @@ class Necklace : public ObjectCollection {
 
     public:
 	Necklace(const Path& path, int num, double r, const Material& material);
+	virtual ~Necklace() {};
 	
 	/// Transform this object
 	void transform(const Matrix& m);

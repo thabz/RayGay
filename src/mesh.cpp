@@ -102,9 +102,9 @@ void Mesh::addTriangle(const Vector* c) {
 }
 
 void Mesh::computeAdjacentTris() {
-    for(int i = 0; i++; i < tris.size()) {
+    for(unsigned int i = 0; i < tris.size(); i++) {
 	Tri* tri = tris[i];
-	for(int e = 0; e++; e < 3) {
+	for(unsigned int e = 0; e < 3; e++) {
 	    Tri* adj;
 	    Edge* edge = tri->edge[e];
 	    if (edge->triangle[0] == tri) {
@@ -118,14 +118,14 @@ void Mesh::computeAdjacentTris() {
 }
 
 void Mesh::computeInterpolatedNormals() {
-    for(int i = 0; i < tris.size(); i++) {
+    for(unsigned int i = 0; i < tris.size(); i++) {
 	Tri* tri = tris[i];
 	Vector normal = normals[tri->normal_idx];
-	for(int j = 0; j < 3; j++) {
+	for(unsigned int j = 0; j < 3; j++) {
 	    Vertex vertex = vertices[tri->vertex[j]];
 	    int num = 1;
 	    Vector interpolated_normal = normal;
-	    for(int v=0; v < vertex.tris.size(); v++) {
+	    for(unsigned int v=0; v < vertex.tris.size(); v++) {
 		Tri* other_tri = vertex.tris[v];
 		Vector other_normal = normals[other_tri->normal_idx];
 		if (other_tri != tri &&
@@ -146,15 +146,15 @@ void Mesh::computeInterpolatedNormals() {
 }
 
 void Mesh::computeTriAreas() {
-    for(int i = 0; i < tris.size(); i++) {
+    for(unsigned int i = 0; i < tris.size(); i++) {
 	Tri* tri = tris[i];
 	tri->area = Vector::area(corners[tri->vertex[0]],corners[tri->vertex[1]],corners[tri->vertex[2]]);
     }
 }
 
 int Mesh::findExistingCorner(const Vector* c) const {
-    int size = corners.size();
-    for(int i = 0; i < size; i++) {
+    unsigned int size = corners.size();
+    for(unsigned int i = 0; i < size; i++) {
 	if (corners[i] == *c) return i;
     }
     return -1;
@@ -195,7 +195,7 @@ Vector Mesh::phong_normal(const Intersection &i) const {
     const Triangle* triangle = i.local_triangle;
     Tri* tri = tris[triangle->getTri()];
     Vector result = Vector(0,0,0);
-    int j,j2,j3;
+    unsigned int j,j2,j3;
     for(j = 0; j < 3; j++) {
 	j2 = (j + 1) % 3;
 	j3 = (j + 2) % 3;
@@ -263,7 +263,7 @@ void Mesh::getUV(const Intersection& intersection, double* u, double* v) const {
 
 std::vector<Vector>* Mesh::getVertices() {
     std::vector<Vector>* result = new std::vector<Vector>;
-    for(int i = 0; i < corners.size(); i++) {
+    for(unsigned int i = 0; i < corners.size(); i++) {
 	result->push_back(corners[i]);
     }
     return result;
@@ -292,7 +292,7 @@ Mesh::Tri::Tri(int iV0, int iV1, int iV2) {
     vertex[2] = iV2;
     normal_idx = -1;
     area = -1.0;
-    for(int i = 0; i++; i < 3) {
+    for(unsigned int i = 0; i < 3; i++) {
 	interpolated_normal[i] = -1;
     }
 }
@@ -332,11 +332,11 @@ void Mesh::test() {
     torus.prepare();
 
     cout << "Torus.tris: " << torus.tris.size() << endl;
-    for(int i = 0; i < torus.tris.size(); i++) {
+    for(unsigned int i = 0; i < torus.tris.size(); i++) {
 	Tri* tri = torus.tris[i];
 	assert(tri->normal_idx != -1);
 	assert(tri->area != -1.0);
-	for(int j = 0; j < 3; j++) {
+	for(unsigned int j = 0; j < 3; j++) {
 	   assert(tri->interpolated_normal[j] != -1);
 	   assert(tri->vertex[j] != -1);
 	}

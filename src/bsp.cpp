@@ -15,8 +15,6 @@
 BSP::BSP() {
     cutplane_dimension = 0;
     cutplane_value = 0;
-    lower == NULL;
-    higher == NULL;
 }
 
 void BSP::addObject(object* obj) {

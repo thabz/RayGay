@@ -39,7 +39,7 @@ Lightinfo Spotlight::getLightinfo(const Intersection& inter, const Vector& norma
 	double b = (double(-1) * info.direction_to_light) * _dir;
 	if (b >= 1.0 ) b = 1.0; // This fixes a rounding error in math.h
 	double a = acos(b);  
-	double intensity;
+	//double intensity;
 	if (a <= _cut_angle) {
 	    info.intensity = 1.0;
 	} else if (a <= _angle) {
