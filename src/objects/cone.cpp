@@ -105,6 +105,9 @@ unsigned int Cone::allPositiveRoots(const Ray& world_ray, double roots[2]) const
 
     double r_B = radius_begin;
     double r_T = radius_end;
+    double r_T2 = r_T * r_T;
+    double r_B2 = r_B * r_B;
+
     double D_x = local_ray.getDirection()[0];
     double D_y = local_ray.getDirection()[1];
     double D_z = local_ray.getDirection()[2];
@@ -112,16 +115,13 @@ unsigned int Cone::allPositiveRoots(const Ray& world_ray, double roots[2]) const
     double O_y = local_ray.getOrigin()[1];
     double O_z = local_ray.getOrigin()[2];
 
-    // TODO: Optimize math by using temporaries
-    double a = D_z*D_z*r_B*r_B - 
-	       2*D_z*D_z*r_T*r_B + 
-	       (D_z*D_z*r_T*r_T + (-D_x*D_x - D_y*D_y));
-    double b = (2*D_z*O_z - 2*D_z)*r_B*r_B + 
-	       (-4*D_z*r_T*O_z + 2*D_z*r_T)*r_B + 
-	       2*D_z*r_T*r_T*O_z - 2*D_x*O_x - 2*D_y*O_y;
-    double c = (O_z*O_z - 2*O_z + 1)*r_B*r_B + 
-	       (-2*r_T*O_z*O_z + 2*r_T*O_z)*r_B + 
-	       r_T*r_T*O_z*O_z - O_x*O_x - O_y*O_y;
+    double a = D_z*D_z* (r_B2 - 2*r_T*r_B + r_T2) - D_x*D_x - D_y*D_y;
+    double b = 2*((O_z - 1)*D_z*r_B2 + 
+	       (1 - -2*O_z)*r_B*D_z*r_T + 
+	       D_z*r_T2*O_z - D_x*O_x - D_y*O_y);
+    double c = (O_z*O_z - 2*O_z + 1)*r_B2 + 
+	       (1 - O_z)*r_B*2*r_T*O_z +  
+	       r_T2*O_z*O_z - O_x*O_x - O_y*O_y;
     double D = b*b - 4*a*c;
     if (D > EPSILON) {
 	// Two possible roots
