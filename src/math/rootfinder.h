@@ -2,6 +2,11 @@
 #ifndef MATH_ROOT_FINDER_H
 #define MATH_ROOT_FINDER_H
 
+#include "math/function.h"
+
+/**
+ * A collection of rootfinding algorithms.
+ */
 class RootFinder {
     public:
 	enum Method {
@@ -10,7 +15,7 @@ class RootFinder {
 	    FALSE_POSITION
 	};
 
-	RootFinder(Method method, double tolerance, double (*function) (double)); 
+	RootFinder(Method method, double tolerance, Function<double,double>* f); 
 	bool solve(double t1, double t2, double* root);
 
     protected:
@@ -20,10 +25,17 @@ class RootFinder {
 
 
     private:
+	double f(double t) const;
+
 	double tolerance;
 	RootFinder::Method method;
-	double (*f) (double);
+	Function<double,double>* function;
 };
+
+inline
+double RootFinder::f(double t) const {
+    return function->eval(t);
+}
 
 #endif
 

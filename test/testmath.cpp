@@ -614,17 +614,26 @@ class perturb_vector_test : public Test  {
 	}
 };
 
-double my_sin(double x) {
-    return sin(x);
-}
+class sinFunc : public Function<double,double> {
+    public:
+	double eval(const double& x) const {
+	    return sin(x);
+	}
+};
 
-double my_poly(double x) {
-    return (x-4)*(x-6)*(x+7);
-}
+class polyFunc: public Function<double,double> {
+    public:
+	double eval(const double& x) const {
+	    return (x-4)*(x-6)*(x+7);
+	}
+};
 
 class brents_method : public Test  {
     public:
 	void run() {
+	    sinFunc my_sin = sinFunc();
+	    polyFunc my_poly = polyFunc();
+
 	    double root;
 	    // sin(x)
 	    RootFinder rf = RootFinder(RootFinder::BRENTS_METHOD,0.001,&my_sin);
@@ -655,7 +664,10 @@ class brents_method : public Test  {
 class bisection : public Test  {
     public:
 	void run() {
+	    sinFunc my_sin = sinFunc();
+	    polyFunc my_poly = polyFunc();
 	    double root;
+
 	    // sin(x)
 	    RootFinder rf = RootFinder(RootFinder::BISECTION,0.001,&my_sin);
             assertTrue(rf.solve(M_PI-0.5, M_PI+0.5, &root));
@@ -697,6 +709,13 @@ class polynomials : public Test  {
 	    assertTrue(IS_EQUAL(Polynomial(2,1).eval(2.0),5.0));
 	    assertTrue(IS_EQUAL(Polynomial(1,2,1).eval(1.0),4.0));
 	    assertTrue(IS_EQUAL(Polynomial(1,2,1).eval(2.0),9.0));
+
+	    // Auto-reduce
+	    assertTrue(Polynomial(0,1,2) == Polynomial(1,2));
+	    assertTrue(Polynomial(0,0,2,3) == Polynomial(2,3));
+	    assertTrue(Polynomial(0,0,2,3,5) == Polynomial(2,3,5));
+	    assertTrue(Polynomial(1,0,2,3) == Polynomial(1,0,2,3));
+	    assertFalse(Polynomial(1,0,2,3) == Polynomial(0,0,2,3));
 	}
 };
 

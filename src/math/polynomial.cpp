@@ -9,6 +9,18 @@ Polynomial::Polynomial(double* coefficients, uint num) {
 	this->coefficients[i] = coefficients[i];
     }
     this->num = num;
+    reduce();
+}
+
+Polynomial::Polynomial(double A, double B, double C, double D, double E) {
+    num = 5;
+    coefficients = new double[num];
+    coefficients[0] = E;
+    coefficients[1] = D;
+    coefficients[2] = C;
+    coefficients[3] = B;
+    coefficients[4] = A;
+    reduce();
 }
 
 Polynomial::Polynomial(double A, double B, double C, double D) {
@@ -18,6 +30,7 @@ Polynomial::Polynomial(double A, double B, double C, double D) {
     coefficients[1] = C;
     coefficients[2] = B;
     coefficients[3] = A;
+    reduce();
 }
 
 Polynomial::Polynomial(double A, double B, double C) {
@@ -26,7 +39,7 @@ Polynomial::Polynomial(double A, double B, double C) {
     coefficients[0] = C;
     coefficients[1] = B;
     coefficients[2] = A;
-
+    reduce();
 }
 
 Polynomial::Polynomial(double A, double B) {
@@ -34,6 +47,7 @@ Polynomial::Polynomial(double A, double B) {
     coefficients = new double[num];
     coefficients[0] = B;
     coefficients[1] = A;
+    reduce();
 }
 
 Polynomial::Polynomial(double A) {
@@ -51,11 +65,15 @@ uint Polynomial::order() const {
 }
 
 /**
- * Using Horner's rule.
+ * Evaluate the polynomial at a point.
+ *
+ * Limts number of multiplications by utilizing Horner's rule:
+ *
+ * \f[ a_nx^n + a_{n-1}x^{n-1} + \cdots + a_0 = (( a_nx + a_{n-1})x + \cdots) x + a_0  \f]
  *
  * @see http://mathworld.wolfram.com/HornersRule.html
  */
-double Polynomial::eval(double x) const {
+double Polynomial::eval(const double& x) const {
     double result = coefficients[num-1];
     for(int i = num - 2; i >= 0; i--) {
 	result = result * x + coefficients[i];
@@ -80,6 +98,9 @@ bool Polynomial::operator==(const Polynomial& p) const {
     return true;
 }
 
+/**
+ * Decrease order when leading coefficients are zero.
+ */
 void Polynomial::reduce() {
     while (num > 1 && IS_ZERO(coefficients[num-1])) {
 	num--;

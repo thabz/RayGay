@@ -2,12 +2,26 @@
 #include <cmath>
 #include "math/rootfinder.h"
 
+/*
 RootFinder::RootFinder(Method method, double tolerance, double (*function) (double)) {
     this->method = method;
     this->f = function;
     this->tolerance = tolerance;
 }
+*/
 
+/**
+ * Constructor.
+ */
+RootFinder::RootFinder(Method method, double tolerance, Function<double,double>* f) {
+    this->method = method;
+    this->function = f;
+    this->tolerance = tolerance;
+}
+
+/**
+ * Finds root in the interval \f$ [t1,t2] \f$.
+ */
 bool RootFinder::solve(double t1, double t2, double* root) {
     switch(method) {
 	case BISECTION: 
