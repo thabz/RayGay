@@ -4,6 +4,7 @@
 
 #include "scene.h"
 #include "parser/objectcollector.h"
+#include "window.h"
 
 class ObjectCollector;
 
@@ -17,9 +18,13 @@ class Environment {
 
 	ObjectCollector* getObjectCollector() { return this->object_collector; };
 
+	PreviewWindow* getPreviewWindow() const { return this->preview_window; };
+	void setPreviewWindow(PreviewWindow* w) { preview_window = w; };
+
     private:
 	Scene* scene;
 	ObjectCollector* object_collector;
+	PreviewWindow* preview_window;
 	Environment();
 	static Environment* unique_instance;
 };

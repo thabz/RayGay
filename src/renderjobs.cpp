@@ -1,6 +1,11 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include "renderjobs.h"
 #include <iostream>
+#include "environment.h"
+#include "window.h"
 
 RenderJobPool::RenderJobPool() {
     pthread_mutex_init(&mutex_jobs,NULL);
@@ -16,6 +21,10 @@ bool RenderJobPool::getJob(RenderJob* job_dest) {
 	next_job++;
 	result = true;
 	std::cout << next_job << " / " << jobs.size() << "          \r" << std::flush;
+#ifdef HAVE_GTK
+	double progress = double(next_job) / double (jobs.size());
+	Environment::getUniqueInstance()->getPreviewWindow()->setProgress(progress);
+#endif	
     } else {
 	result = false;
     }

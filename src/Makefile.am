@@ -6,7 +6,7 @@ SUBDIRS = materials paths lights math image photon filters objects space shaders
 
 noinst_LIBRARIES = libtracer.a
 
-libtracer_a_SOURCES = camera.cpp intersection.cpp ray.cpp scene.cpp renderer.cpp raytracer.cpp boundingbox.cpp stats.cpp importer.cpp photonrenderer.cpp photonmapdump.cpp renderjobs.cpp pathtracer.cpp environment.cpp
+libtracer_a_SOURCES = camera.cpp intersection.cpp ray.cpp scene.cpp renderer.cpp raytracer.cpp boundingbox.cpp stats.cpp importer.cpp photonrenderer.cpp photonmapdump.cpp renderjobs.cpp pathtracer.cpp environment.cpp window.cpp
 
 libtracer_a_LIBADD = parser/libparser.a photon/libphoton.a lights/liblights.a materials/libmaterials.a  objects/libobjects.a paths/libpaths.a math/libmath.a  image/libimage.a space/libspace.a shaders/libshaders.a 
 
@@ -14,7 +14,7 @@ libtracer_a_LIBADD = parser/libparser.a photon/libphoton.a lights/liblights.a ma
 
 bin_PROGRAMS = tracer
 
-tracer_SOURCES = main.cpp 
+tracer_SOURCES = main.cpp
 
 tracer_LDADD =  parser/libparser.a 	\
 		libtracer.a 		\

@@ -1,3 +1,4 @@
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -45,6 +46,8 @@
 
 #include "renderersettings.h"
 #include "renderjobs.h"
+
+#include "window.h"
 
 using namespace std;
 
@@ -236,6 +239,13 @@ void work(string scenefile, string outputfile, int jobs) {
     chdir(original_working_dir);
     
     int frames_num = getRendererSettings()->anim_frames;
+#ifdef HAVE_GTK
+    PreviewWindow* preview_window = new PreviewWindow();
+    Environment::getUniqueInstance()->setPreviewWindow(preview_window);
+    Vector2 size = getImageSize();
+    preview_window->setSize(int(size[0]),int(size[1]));
+    preview_window->run();
+#endif
     if (frames_num == 1) {
 	render_frame(0,outputfile,jobs);
     } else {
@@ -247,6 +257,9 @@ void work(string scenefile, string outputfile, int jobs) {
 	}
     }
     delete_interpreter();
+#ifdef HAVE_GTK
+    preview_window->stop();
+#endif
 }
 
 void print_usage() {
