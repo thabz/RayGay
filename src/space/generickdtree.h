@@ -37,6 +37,10 @@ class KdNode {
 	};
 	// Orientation where x,y,z is 0,1,2 and -1 denotes a leaf
 	short axis;
+
+	void initLeafNode(uint num, ObjectType** objects);
+	void initInteriorNode(uint axis, float plane, uint left);
+	bool isLeafNode() const;
 };
 
 template<class ObjectType>

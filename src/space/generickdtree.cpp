@@ -263,22 +263,47 @@ void GenericKdTree<ObjectType>::prepare(uint num, const BoundingBox& bbox, uint 
     KdNode<ObjectType>& new_node = nodes[dest_idx];
 
     if (axis == -1) {
-	new_node.axis = -1;
-	new_node.num = num;
+	ObjectType** objects;
 	if (num > 0) {
-	    new_node.objects = new ObjectType*[num];
+	    objects = new ObjectType*[num];
 	    for(uint j = 0; j < num; j++) {
-		new_node.objects[j] = left_bobs[j]->object;
+		objects[j] = left_bobs[j]->object;
 	    }
 	} else {
-	    new_node.objects = NULL;
+	    objects = NULL;
 	}
+	new_node.initLeafNode(num, objects);
     } else {
-	new_node.axis = axis;
-	new_node.splitPlane = splitPlane;
 	assert(new_left_idx != 0 && new_right_idx != 0);
 	assert(new_right_idx == new_left_idx + 1);
-	new_node.left = new_left_idx;
+	new_node.initInteriorNode(axis, splitPlane, new_left_idx);
     }
+}
+
+/////////////////////////////////////////////////////////////////////
+// KdNode methods
+/////////////////////////////////////////////////////////////////////
+
+template<class ObjectType>
+void KdNode<ObjectType>::initLeafNode(uint num, ObjectType** objects)
+{
+    this->axis = -1;
+    this->num = num;
+    this->objects = objects;
+
+}
+
+template<class ObjectType>
+void KdNode<ObjectType>::initInteriorNode(uint axis, float plane, uint left)
+{
+    this->axis = axis;
+    this->splitPlane = plane;
+    this->left = left;
+}
+
+template<class ObjectType>
+void KdNode<ObjectType>::isLeafNode() const
+{
+    return axis == -1;
 }
 
