@@ -4,6 +4,8 @@
 
 include materials.gay
 
+renderer raytracer
+
 camera-position 200 300 1100
 camera-up 0 1 0
 camera-lookat 0 0 0
@@ -13,9 +15,9 @@ camera-aa 4
 image-ratio 4 3
 image-width 640
 
-background 0.5 0.5 0.5
+background 0.5 0.5 0.5 1.0
 
-light skylight 10000 400
+light skylight 10000 400 1 1 1 
 
 
 linesegment $line1 0 0 0    0 500 0
