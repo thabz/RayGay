@@ -35,7 +35,16 @@ Vector BezierSpline::getPoint(double t) const {
 }
 
 Vector BezierSpline::getTangent(double t) const {
-    /// TODO: Implement
+    /* From http://medialab.di.unipi.it/web/IUM/Waterloo/node123.html
+     *
+     * The derivative of Bin(t) is
+     * d/dt Bin(t) = n ( Bi-1n-1(t) - Bin-1(t) )
+     */
+    Vector result = Vector(0,0,0);
+    for(unsigned int i = 0; i < num; i++) {
+	result = result + num*(bernsteinPolynomial(i-1,num-1,t)-bernsteinPolynomial(i,num-1,t)) * controlpoints[i];
+    }
+    return result;
 }
 
 double BezierSpline::bernsteinPolynomial(unsigned int i, unsigned int n, double t) const {
