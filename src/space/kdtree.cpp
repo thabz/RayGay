@@ -156,25 +156,11 @@ void KdTree::prepare(int curNode_idx,int depth) {
 	}
 	p++;
     }
+    objects->clear();
 
-/*    
-    if (lower->objects->size() == size || higher->objects->size() == size) {
-	// Objects couldn't be subdivided
-	curNode->axis = -1;
-	lower->objects->clear();
-	higher->objects->clear();
-	//delete [] lower->objects;
-	//delete [] higher->objects;
-	tmp_nodes.pop_back();
-	tmp_nodes.pop_back();
-    } else {
-*/    
-	objects->clear();
-	//delete curNode->objects;
-	// Recursive prepare()
-	prepare(left_idx,depth+1);
-	prepare(right_idx,depth+1);
- //   }
+    // Recurse into child nodes
+    prepare(left_idx,depth+1);
+    prepare(right_idx,depth+1);
 }
 
 /**
