@@ -242,10 +242,10 @@ void Importer::parse(const string& filename) {
 		l = new Arealight(pos,dir,r,num,jitter);
 	    } else if (type == "spot") {
 		Vector pos = readVector(stream);
-		Vector dir = readVector(stream);
+		Vector look_at = readVector(stream);
 		double angle = readDouble(stream);
 		double cut_angle = readDouble(stream);
-		l = new Spotlight(pos,dir,angle,cut_angle);
+		l = new Spotlight(pos,look_at,angle,cut_angle);
 	    } else {
 		cout << "Unknown type of light" << endl;
 		exit(EXIT_FAILURE);
