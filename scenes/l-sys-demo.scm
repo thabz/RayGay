@@ -19,9 +19,9 @@
        kd 1.0
        ks 0.0)))
 
-(define grey85
+(define green
   (make-material
-    '( diffuse (0.85 0.85 0.85)
+    '( diffuse (0.4 0.7 0.2)
        kd 1.0
        ks 0.0)))
 
@@ -43,19 +43,20 @@
     (make-box 
       '(-1700 -51 -1700) 
       '(1700 1 1700) 
-      brown)))
+      green)))
 
 
 (define rules
- '((F . ([ F + F + F ] [ F - F - F ] ))))
+ '((F . (F + G - G))
+   (G . ( [ F + F + F ] [ F - F - F ] ))))
 
 (append! scene
  (make-l-system-object 
   15  ; angle
-  200 ; length
-  20  ; thickness
+  100 ; length
+  10  ; thickness
   '(F) ; axiom
   rules
-  3   ; depth
-  chrome))
+  4   ; depth
+  brown))
 

@@ -57,10 +57,10 @@
        (position '(0 0 0)))
       (append
 	(let ((thing '()))
-	  (display item)
+	  ;(display item)
 	  (cond ((eqv? item 'F) 
 		 (let ((end-position (v+ position (vscale up length))))
-		   (display "!")
+		   ;(display "!")
 		   (set! thing (list (make-cylinder position end-position
 						    thickness material)))
 		   (set! position end-position)))
@@ -77,7 +77,7 @@
 		   (set! position (car item))
 		   (set! up (car (cdr item)))
 		   (set! right (car (cdr (cdr item)))))))
-	  (display thing)
+	  ;(display thing)
 	  thing)
 	(if (not (null? rest))
 	  (iter (car rest) (cdr rest) up right position)
