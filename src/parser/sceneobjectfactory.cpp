@@ -5,6 +5,7 @@
 #include "objects/sphere.h"
 #include "objects/ellipsoid.h"
 #include "objects/box.h"
+#include "objects/solidbox.h"
 #include "objects/cylinder.h"
 #include "objects/torus.h"
 #include "objects/extrusion.h"
@@ -49,6 +50,16 @@ SCM SceneObjectFactory::make_box(SCM s_corner1, SCM s_corner2, SCM s_material)
     Vector corner2 = scm2vector(s_corner2, proc, 2);
     Material* material = scm2material(s_material, proc, 3);
     Box* box = new Box(corner1, corner2, material);
+    return sceneobject2scm(box);
+}
+
+SCM SceneObjectFactory::make_solid_box(SCM s_corner1, SCM s_corner2, SCM s_material) 
+{
+    char* proc = "make-solid-box";
+    Vector corner1 = scm2vector(s_corner1, proc, 1);
+    Vector corner2 = scm2vector(s_corner2, proc, 2);
+    Material* material = scm2material(s_material, proc, 3);
+    SolidBox* box = new SolidBox(corner1, corner2, material);
     return sceneobject2scm(box);
 }
 
@@ -137,6 +148,8 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) SceneObjectFactory::make_ellipsoid);
     scm_c_define_gsubr("make-box",3,0,0,
 	    (SCM (*)()) SceneObjectFactory::make_box);
+    scm_c_define_gsubr("make-solid-box",3,0,0,
+	    (SCM (*)()) SceneObjectFactory::make_solid_box);
     scm_c_define_gsubr("make-cylinder",4,0,0,
 	    (SCM (*)()) SceneObjectFactory::make_cylinder);
     scm_c_define_gsubr("make-torus",3,0,0,
