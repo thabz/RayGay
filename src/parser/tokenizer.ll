@@ -24,6 +24,7 @@ string	{alpha}({alpha}|{digit}|{special})*
 [ \t\n]		;
 aa		return tAA;
 area		return tAREA;
+aspect		return tASPECT;
 background	return tBACKGROUND;
 bicubic 	return tBICUBIC;
 bilinear 	return tBILINEAR;
@@ -45,7 +46,9 @@ finalgatherrays return tFINALGATHERRAYS;
 fov		return tFOV;
 globalphotons  	return tGLOBALPHOTONS;
 gloss		return tGLOSS;
+height		return tHEIGHT;
 intersection	return tINTERSECTION;
+image		return tIMAGE;
 lookat		return tLOOKAT;
 light		return tLIGHT;
 linesegment	return tLINESEGMENT;
@@ -78,6 +81,7 @@ translate	return tTRANSLATE;
 torus		return tTORUS;
 union		return tUNION;
 up		return tUP;
+width		return tWIDTH;
 wireframe	return tWIREFRAME;
 
 "\#.*\n"		/* Eat up comments */

@@ -54,6 +54,7 @@ Camera* camera;
 Scene* scene;
 RendererSettings* renderer_settings;
 Material* tmpMaterial;
+Vector2 image_size = Vector2(640,480);
 
 %}
     /* Bison declarations */
@@ -85,6 +86,7 @@ Material* tmpMaterial;
 %token tETA
 %token tEXTRUSION
 %token tFOV
+%token tIMAGE tWIDTH tHEIGHT tASPECT
 %token tLINESEGMENT tSPIRAL tCIRCLE
 %token tKD tKS tKT tSPECPOW tGLOSS
 %token tLIGHT tAREA tSPOT tPOINT tSKY tPOWER
@@ -141,11 +143,12 @@ Item		: Object
 		}
                 | LightDef
 		{
-
+		    scene->addLight($1);
 		}
                 | AssignName
 		| Print
 		| Camera
+		| Image
 		| Renderer
 		| Background
 		| Photonmap
@@ -250,6 +253,16 @@ CameraSetting   : tPOSITION Vector
 		    camera->enableAdaptiveSupersampling(int($2));
 		}
                 ;
+
+Image		: tIMAGE '{' tWIDTH Expr tHEIGHT Expr '}'
+                {
+		    image_size = Vector2($4,$6);
+		}
+                | tIMAGE '{' tWIDTH Expr tASPECT Expr Expr '}'
+                {
+		    image_size = Vector2($4,$4 * ($7/$6));
+		}
+		;
  
 Material 	: NamedMaterial 
                 | MaterialDef
@@ -693,3 +706,8 @@ void init_parser() {
     renderer_settings = new RendererSettings();
     tmpMaterial = new Material();
 }
+
+Vector2 getImageSize() {
+    return image_size;
+}
+
