@@ -16,7 +16,7 @@
 #include "materials/material.h"
 #include "space/kdtree.h"
 
-Raytracer::Raytracer(RendererSettings* settings, Scene* scene, KdTree* spc) : Renderer(settings,scene,spc) {
+Raytracer::Raytracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, unsigned int thread_id) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
 }
 
 RGBA Raytracer::getPixel(const Vector2& v) {

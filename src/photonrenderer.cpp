@@ -26,11 +26,14 @@
 #include "space/kdtree.h"
 
 PhotonRenderer::PhotonRenderer(RendererSettings* settings,  
+			       Image* img,
 	                       Scene* scene, 
 			       KdTree* spc, 
+			       RenderJobPool* job_pool,
+			       unsigned int thread_id,
 			       GlobalPhotonMap* globalphotonmap, 
 			       CausticsMap* causticsmap, 
-			       IrradianceCache* irradiancecache) : Renderer(settings,scene,spc) {
+			       IrradianceCache* irradiancecache) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
     this->globalphotonmap = globalphotonmap;
     this->causticsphotonmap = causticsmap;
     this->irradiance_cache = irradiancecache;

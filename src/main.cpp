@@ -70,7 +70,30 @@ void preparePhotonMaps(Scene* scene,
     //irradiance_cache = new IrradianceCache(space->getWorldBoundingBox(),5);
     BoundingBox bbox = BoundingBox(Vector(-733,-733,-733),Vector(733,733,733));
     (*irradiancecache) = new IrradianceCache(bbox,renderersettings->cache_tolerance);
+}
 
+void prepareJobPool(RenderJobPool* pool, Image* img, int cell_size) {
+    RenderJob job;
+    for(int y = 0; y < (img->getHeight() / cell_size)+1; y++) {
+	job.begin_y = y*cell_size;
+	job.end_y = min((y+1)*cell_size,img->getHeight());
+	for(int x = 0; x < (img->getWidth() / cell_size)+1; x++) {
+	    job.begin_x = x*cell_size;
+	    job.end_x = min((x+1)*cell_size, img->getWidth());
+	    if (job.begin_x < img->getWidth() &&
+		job.begin_y < img->getHeight() &&
+		job.begin_x < job.end_x && 
+		job.begin_y < job.end_y) {
+		pool->addJob(job);
+	    }
+	}
+    }
+}
+
+void* renderThreadDo(void* obj) {
+    Renderer* tracer = (Renderer*) obj;
+    tracer->run();
+    return NULL;
 }
 
 void work(string scenefile, string outputfile,int jobs) {
@@ -95,29 +118,40 @@ void work(string scenefile, string outputfile,int jobs) {
 
     RendererSettings* renderersettings = importer.getRendererSettings();
     renderersettings->threads_num = jobs;
-    Renderer* renderer;
 
+    // Prepare photon maps if necessary
+    GlobalPhotonMap* globalphotonmap;
+    CausticsMap* causticsmap;
+    IrradianceCache* irradiancecache;
     if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
-	GlobalPhotonMap* globalphotonmap;
-	CausticsMap* causticsmap;
-	IrradianceCache* irradiancecache;
 	preparePhotonMaps(scene,space,renderersettings,&globalphotonmap,&causticsmap,&irradiancecache);
-
-	renderer = new PhotonRenderer(renderersettings,scene,space,globalphotonmap,causticsmap,irradiancecache);
-    } else if (renderersettings->renderertype == RendererSettings::RAYTRACER) {
-	renderer = new Raytracer(renderersettings,scene,space);
-    } else {
-	throw_exception("Unknown renderer");
     }
 
-    RenderJob job;
-    job.target = img;
-    job.thread_id = 0;
-    job.begin_x = 0;
-    job.begin_y = 0;
-    job.end_x = img->getWidth();
-    job.end_y = img->getHeight();
-    renderer->render(job);
+    // Create and prepare job pool
+    RenderJobPool* job_pool = new RenderJobPool();
+    prepareJobPool(job_pool,img,64);
+
+    // Spawn renderer threads
+    Stats::getUniqueInstance()->beginTimer("Rendering");
+    Renderer* renderers[renderersettings->threads_num];
+    pthread_t threads[renderersettings->threads_num];
+    for(int i = 0; i < renderersettings->threads_num; i++) {
+	if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
+	    renderers[i] = new PhotonRenderer(renderersettings,img,scene,space,job_pool,i,globalphotonmap,causticsmap,irradiancecache);
+	} else if (renderersettings->renderertype == RendererSettings::RAYTRACER) {
+	    renderers[i] = new Raytracer(renderersettings,img,scene,space,job_pool,i);
+	} else {
+	    throw_exception("Unknown renderer");
+	}
+	pthread_create(&threads[i], NULL, renderThreadDo, renderers[i]);
+	cout << "Renderthread: " << i << endl;
+    }
+
+    // Wait for threads to finish
+    for(int i = 0; i < renderersettings->threads_num; i++) {
+	pthread_join(threads[i], NULL);
+    }
+    Stats::getUniqueInstance()->endTimer("Rendering");
 
     img->save(outputfile);
     delete img;
@@ -160,7 +194,7 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
     }
-    
+
     string scenefile;
     string outfile;
     if (optind != argc - 2) {
@@ -173,10 +207,10 @@ int main(int argc, char *argv[]) {
     }
     srand(1); // Make sure rand is seeded consistently.
     try {
-       work(scenefile,outfile,jobs); 
+	work(scenefile,outfile,jobs); 
     } catch (Exception e) {
 	cout << "Exception: " << e.getMessage() 
-	     << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
+	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
 	return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

@@ -14,10 +14,35 @@
 #include "space/kdtree.h"
 #include "materials/material.h"
 
-Renderer::Renderer(RendererSettings* settings, Scene* scene, KdTree* spc) {
+Renderer::Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, unsigned int thread_id) {
     this->scene = scene;
     this->space = spc;
     this->renderersettings = settings;
+    this->job_pool = job_pool;
+    this->thread_id = thread_id;
+    this->img = img;
+
+    // Prepare the two PixelBlock buffers
+    Camera* camera = scene->getCamera();
+    aa_enabled = camera->isAAEnabled();
+    aa_depth = camera->getAADepth();
+    unsigned int block_size = 1 + (1 << aa_depth);
+    if (aa_enabled) {
+	int img_w = img->getWidth();
+	row1.reserve(img_w);
+	row2.reserve(img_w);
+	for(int i = 0; i < img_w; i++) {
+	    row1.push_back(PixelBlock(block_size));
+	    row2.push_back(PixelBlock(block_size));
+	}
+    }
+}
+
+void Renderer::run() {
+    RenderJob job;
+    while (job_pool->getJob(&job)) {
+	render(job);
+    }
 }
 
 /**
@@ -28,24 +53,21 @@ Renderer::Renderer(RendererSettings* settings, Scene* scene, KdTree* spc) {
  * @param job The job to render
  */
 void Renderer::render(const RenderJob& job) {
-    Image* img = job.target;
     Camera* camera = scene->getCamera();
     aa_enabled = camera->isAAEnabled();
     aa_depth = camera->getAADepth();
     
 
-    Stats::getUniqueInstance()->beginTimer("Rendering");
     int img_w = img->getWidth();
     int img_h = img->getHeight();
 
     // Prepare the two PixelBlock buffers
+    // TODO: Move this to constructor
     unsigned int block_size = 1 + (1 << aa_depth);
     if (aa_enabled) {
-	row1.reserve(img_w);
-	row2.reserve(img_w);
 	for(int i = 0; i < img_w; i++) {
-	    row1.push_back(PixelBlock(block_size));
-	    row2.push_back(PixelBlock(block_size));
+	    row1[i].reset();
+	    row2[i].reset();
 	}
     }
 
@@ -76,9 +98,7 @@ void Renderer::render(const RenderJob& job) {
 	    }
 	    img->setRGBA((int)x, (int)img_h - y - 1, color);
 	}
-	cout << y << " / " << img_h << "          \r" << flush;
     }
-    Stats::getUniqueInstance()->endTimer("Rendering");
 }
 
 /**
