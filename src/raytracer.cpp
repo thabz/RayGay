@@ -63,6 +63,11 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
     Vector normal = object->normal(intersection);
     const Material& material = object->getMaterial();
     normal = material.bump(intersection,normal);
+
+    Vector2 fre = fresnel(normal,ray.getDirection(),material);
+    double reflection = fre[0];
+    double transmission = fre[1];
+    
     double ambient_intensity = 0.2;
     RGB result_color = ambient_intensity * material.getDiffuseColor(intersection);
     vector<Lightsource*> lights = scene->getLightsources();
@@ -94,7 +99,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
     }
     if (depth < 5) {
 	/* Bounce a reflection off the intersected object */
-	if (material.getKs() > 0) {
+	if (material.getKs() > 0 && reflection > 0) {
 	    Vector refl_vector = -1 * ray.getDirection();
 	    refl_vector = refl_vector.reflect(normal);
 	    refl_vector.normalize();
@@ -113,21 +118,27 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
 		refl_col = trace(refl_ray, depth + 1);
 	    }
-	    result_color = result_color + material.getKs() * refl_col;
+	    result_color = result_color + reflection * refl_col;
 	}
 
 	/* Should we send a ray through the intersected object? */
-	if (material.transmission_coefficient > 0.0) {
+	if (material.transmission_coefficient > 0.0 && transmission > 0) {
 	    // TODO: Use the ior the rays holds to allow eg. glass in water.
 	    double ior = material.indice_of_refraction;
 	    Vector T = ray.getDirection().refract(normal,ior);
 	    if (!(T == Vector(0,0,0))) {
 		Ray trans_ray = Ray(point+0.1*T,T,ior);
 		RGB trans_col = trace(trans_ray, depth + 1);
-		result_color += material.transmission_coefficient * trans_col;
+		result_color += transmission * trans_col;
 	    } else {
 		// Internal reflection, see page 757.
-		// We should reflect ray instead.
+		Vector refl_vector = -1 * ray.getDirection();
+		refl_vector = refl_vector.reflect(normal);
+		refl_vector.normalize();
+		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
+		RGB refl_col = trace(refl_ray, depth + 1);
+		result_color += transmission * refl_col;
+
 	    }
 	}
     }
@@ -135,4 +146,5 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
     result_color.clip();
     return result_color;
 }
+
 

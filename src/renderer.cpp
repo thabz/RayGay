@@ -10,6 +10,7 @@
 #include "image/rgb.h"
 #include "object.h"
 #include "math/matrix.h"
+#include "math/vector2.h"
 #include "spacesubdivider.h"
 #include "objectcollection.h"
 
@@ -198,3 +199,45 @@ void Renderer::PixelBlock::reset() {
     }
 }
 
+/**
+ * The Fresnel equation.
+ *
+ * Schlicks approximation to the Fresnel equation is
+ *
+ * \f[ R(N,V) = R_0 + \left(1-R_0\right)\left(1-\left(N \cdot V\right)\right)^5 \f]
+ *
+ * where the reflectance \f$R_0\f$ is
+ *
+ * \f[ R_0 = \frac{(1-\eta)^2}{(1+\eta)^2} \f]
+ *
+ * @param normal The surface normal which is \f$N\f$
+ * @param ray_dir Ray direction which is \f$V\f$
+ * @param material The material of the surface
+ */
+Vector2 Renderer::fresnel(Vector normal, const Vector& ray_dir, const Material& material) {
+    double reflectance,reflection,transmission,eta;
+
+    if (material.transmission_coefficient > 0.0) {
+	if (normal * ray_dir > 0) {
+	    eta = material.indice_of_refraction;
+	    normal *= -1;
+	} else {
+	    eta = 1.0 / material.indice_of_refraction;
+	}
+	reflectance = ((1 - eta) * (1 - eta)) / ((1 + eta) * (1 + eta));
+    } else {
+	reflectance = material.getKs();
+    }
+
+    double nv = -(normal * ray_dir);
+
+    if (nv > EPSILON) {
+	reflection = reflectance + (1 - reflectance) * pow(1-nv,5);
+	transmission = material.getKd() + material.getKs() + material.transmission_coefficient - reflection;
+    } else {
+	reflection = 0;
+	transmission = 0;
+    }
+    return Vector2(reflection,transmission);
+
+}

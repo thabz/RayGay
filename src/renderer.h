@@ -11,6 +11,8 @@
 class RGB;
 class Image;
 class SpaceSubdivider;
+class Material;
+class Vector2;
 
 ///  An abstract class all renderers must implement.
 class Renderer {
@@ -62,6 +64,9 @@ class Renderer {
 
 	/// The settings for the renderer
 	RendererSettings* renderersettings;
+
+
+	Vector2 fresnel(Vector normal, const Vector& ray_dir, const Material& material);
 };
 
 #endif

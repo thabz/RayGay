@@ -283,22 +283,3 @@ Vector Math::perturbVector(const Vector& axis, const double angle, QMCSequence* 
 
     return result;
 }
-
-/**
- * The Fresnel equation.
- *
- * Schlicks approximation to the Fresnel equation is
- *
- * \f[ R(N,V) = R_0 + \left(1-R_0\right)\left(1-\left(N \cdot V\right)\right)^5 \f]
- *
- * where the reflectance \f$R_0\f$ is
- *
- * \f[ R_0 = \frac{(1-\eta)^2}{(1+\eta)^2} \f]
- *
- * @param normal The surface normal which is \f$N\f$
- * @param ray_dir Ray direction which is \f$V\f$
- * @param nu Indice of refraction which is \f$\eta\f$
- */
-Vector2 Math::fresnel(const Vector& normal, const Vector& ray_dir, double nu) {
-
-}
