@@ -199,7 +199,7 @@ void Mesh::computeInterpolatedNormals() {
     }
 }
 
-// TODO: Optimize by keeping a stl::set with all corner.
+// TODO: Optimize by keeping a stl::set with all corners.
 int Mesh::findExistingCorner(const Vector* c) const {
     unsigned int size = corners.size();
     for(unsigned int i = 0; i < size; i++) {
