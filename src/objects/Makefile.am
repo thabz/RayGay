@@ -25,6 +25,7 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 		       solidbox.cpp	\
 		       sor.cpp		\
 		       sphere.cpp	\
+		       superellipsoid.cpp	\
 		       teapot.cpp	\
 		       tessalation.cpp	\
 		       tetrahedron.cpp	\

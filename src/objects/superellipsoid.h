@@ -1,4 +1,9 @@
 
+#ifndef OBJECTS_SUPERELLIPSOID_H
+#define OBJECTS_SUPERELLIPSOID_H
+
+#include "objects/isosurface.h"
+
 /**
  * A shape between a sphere and a box.
  *
@@ -11,5 +16,14 @@
  */
 class SuperElliopsoid : public IsoSurface {
 
-    public SuperElliopsoid(double n1, double n2, const Vector& scale);
-}
+    public:
+	SuperElliopsoid(double n1, double n2, unsigned int steps, double accuracy, Material* m);
+        bool inside(const Vector& v) const;
+
+    private:
+	double f(const Vector& v) const;
+	double n1,n2;
+    
+};
+
+#endif
