@@ -52,23 +52,23 @@ void boundingbox_test() {
     Intersection i;
     r = Ray(Vector(0.5,0.5,60),Vector(0,0,-1),1);
     i = b.intersect(r);
-    assert(i.intersected);
+    assert(i.isIntersected());
     assert(IS_EQUAL(i.point[2],1.0));
 
     r = Ray(Vector(0.5,-50,0),Vector(0,1,0),1);
     i = b.intersect(r);
-    assert(i.intersected);
+    assert(i.isIntersected());
     assert(IS_EQUAL(i.point[1],-1.0));
     
     r = Ray(Vector(2,2,60),Vector(0,0,-1),1);
-    assert(!b.intersect(r).intersected);
+    assert(!b.intersect(r).isIntersected());
 
     r = Ray(Vector(100,100,0),Vector(-1,-1,0),1);
-    assert(b.intersect(r).intersected);
+    assert(b.intersect(r).isIntersected());
 
     r = Ray(Vector(-100,-100,-100),Vector(1,1,1),1);
     i = b.intersect(r);
-    assert(i.intersected);
+    assert(i.isIntersected());
     assert(IS_EQUAL(i.point[0],-1.0));
     assert(IS_EQUAL(i.point[1],-1.0));
     assert(IS_EQUAL(i.point[2],-1.0));

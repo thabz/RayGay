@@ -42,10 +42,10 @@ void sphere_test() {
     assert(IS_ZERO( z + 60.0));
 
     r = Ray(Vector(0,0,-100),Vector(0,0,-1),1);
-    assert(!s.intersect(r).intersected);
+    assert(!s.intersect(r).isIntersected());
 
     r = Ray(Vector(0,0,-60),Vector(0,0,-1),1);
-    assert(!s.intersect(r).intersected);
+    assert(!s.intersect(r).isIntersected());
 
     /* Test intersects(BoundingBox) */
     s = Sphere(Vector(0,0,0),10.0,m);
@@ -147,11 +147,11 @@ void box_test() {
     b.addParts(&bsp);
     bsp.prepare();
     Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
-    assert(bsp.intersect(r).intersected);
+    assert(bsp.intersect(r).isIntersected());
     assert(bsp.intersect(r).point == Vector(0,0,1));
 
     r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
-    assert(bsp.intersect(r).intersected);
+    assert(bsp.intersect(r).isIntersected());
     assert(bsp.intersect(r).point == Vector(0,-1,0));
 }
 

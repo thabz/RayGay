@@ -107,7 +107,7 @@ Intersection BSP::intersectForShadow(const Ray& ray) const {
 
 Intersection BSP::intersectForShadow(const Ray& ray, const object* hint) const {
     Intersection result = hint->intersect(ray);
-    if (result.intersected) {
+    if (result.isIntersected()) {
 	return result;
     } else {
         return intersectForShadow(ray);
@@ -160,7 +160,7 @@ Intersection BSP::intersectForShadow(const Ray& ray, double min_t, double max_t)
 	for (unsigned int i=0; i < objects.size(); i++) {
 	    object* obj = objects[i];
 	    tmp = obj->intersect(ray);
-	    if (tmp.intersected) {
+	    if (tmp.isIntersected()) {
 		return tmp;
 	    }
 	}
@@ -178,7 +178,7 @@ Intersection BSP::intersect(const Ray& ray, double min_t, double max_t) const {
 	for (unsigned int i=0; i < objects.size(); i++) {
 	    object* obj = objects[i];
 	    tmp = obj->intersect(ray);
-	    if (tmp.intersected && tmp.t < cur_t) {
+	    if (tmp.isIntersected() && tmp.t < cur_t) {
 		result = tmp;
 		cur_t = tmp.t;
 	    }
@@ -223,14 +223,14 @@ Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) 
 	    intersection2 = lower->intersect(ray,intersect_t,max_t);
 	}
 	
-	if (intersection1.intersected && intersection2.intersected) {
+	if (intersection1.isIntersected() && intersection2.isIntersected()) {
 	    if (intersection1.t < intersection2.t) {
 		return intersection1;
 	    } else {
 		return intersection2;
 	    }
 	} else {
-	    if (intersection1.intersected) {
+	    if (intersection1.isIntersected()) {
 		return intersection1;
 	    } else {
 		return intersection2;
@@ -262,7 +262,7 @@ Intersection BSP::intersectForShadow_recurse(const Ray& ray, double min_t, doubl
 	if (o[cutplane_dimension] < cutplane_value) {
 	    // Ray is crossing the plane from a lower value
 	    intersection1 = lower->intersectForShadow(ray,min_t,intersect_t);
-	    if (intersection1.intersected) {
+	    if (intersection1.isIntersected()) {
 		return intersection1;
 	    } else {
 		return higher->intersectForShadow(ray,intersect_t,max_t);
@@ -270,7 +270,7 @@ Intersection BSP::intersectForShadow_recurse(const Ray& ray, double min_t, doubl
 	} else {
 	    // Ray is crossing the plane from a higher value
 	    intersection1 = higher->intersectForShadow(ray,min_t,intersect_t);
-	    if (intersection1.intersected) {
+	    if (intersection1.isIntersected()) {
 		return intersection1;
 	    } else {
 		return lower->intersectForShadow(ray,intersect_t,max_t);
@@ -332,40 +332,40 @@ void BSP::test() {
     bsp.prepare();
     // Test intersection
     Ray r = Ray(Vector(200,250,1000),Vector(0,0,-1),1);
-    assert(bsp.intersect(r).intersected);
+    assert(bsp.intersect(r).isIntersected());
     assert(IS_EQUAL(bsp.intersect(r).point[0],200));
     assert(IS_EQUAL(bsp.intersect(r).point[1],250));
     assert(IS_EQUAL(bsp.intersect(r).point[2],210));
 
     r = Ray(Vector(200,250,-1000),Vector(0,0,1),1);
-    assert(bsp.intersect(r).intersected);
+    assert(bsp.intersect(r).isIntersected());
     assert(IS_EQUAL(bsp.intersect(r).point[0],200));
     assert(IS_EQUAL(bsp.intersect(r).point[1],250));
     assert(IS_EQUAL(bsp.intersect(r).point[2],-210));
 
     r = Ray(Vector(-200,-150,1000),Vector(0,0,-1),1);
-    assert(bsp.intersect(r).intersected);
+    assert(bsp.intersect(r).isIntersected());
     assert(IS_EQUAL(bsp.intersect(r).point[0],-200));
     assert(IS_EQUAL(bsp.intersect(r).point[1],-150));
     assert(IS_EQUAL(bsp.intersect(r).point[2],210));
 
     r = Ray(Vector(0,1000,0),Vector(0,-1,0),1);
-    assert(bsp.intersect(r).intersected);
+    assert(bsp.intersect(r).isIntersected());
     assert(IS_EQUAL(bsp.intersect(r).point[0],0));
     assert(IS_EQUAL(bsp.intersect(r).point[1],260));
     assert(IS_EQUAL(bsp.intersect(r).point[2],0));
 
     r = Ray(Vector(0,-1000,0),Vector(0,1,0),1);
-    assert(bsp.intersect(r).intersected);
+    assert(bsp.intersect(r).isIntersected());
     assert(IS_EQUAL(bsp.intersect(r).point[0],0));
     assert(IS_EQUAL(bsp.intersect(r).point[1],-510));
     assert(IS_EQUAL(bsp.intersect(r).point[2],0));
 
     r = Ray(Vector(300,250,-1000),Vector(0,0,1),1);
-    assert(!bsp.intersect(r).intersected);
+    assert(!bsp.intersect(r).isIntersected());
 
     r = Ray(Vector(200,250,-1000),Vector(0,0,-1),1);
-    assert(!bsp.intersect(r).intersected);
+    assert(!bsp.intersect(r).isIntersected());
 
     std::cout << "BSP::test() done." << std::endl;
 }

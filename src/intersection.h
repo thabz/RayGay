@@ -23,14 +23,11 @@ class Intersection {
 	object* getObject() const { return o; };
 
 	Vector point; 	///< The intersection point
-	Vector local_point; ///< The intersection point in the objects own coordinate system. Optional.
 	object* local_object; ///< A local subobject, eg. a component of a Boolean.
 
 	const Triangle* local_triangle; ///< A local subobject, eg. a component of a Mesh.
 	double t;
-	bool intersected;
-
-	double u,v; ///< Texel coordinates (mostly unused)
+	bool isIntersected() const { return t >= 0.0; };
 
     private:
 	object* o; /// The object that was intersected
@@ -38,7 +35,13 @@ class Intersection {
 
 inline
 Intersection::Intersection() {
-    intersected = false;
+    t = -1.0;
+}
+
+inline
+Intersection::Intersection(const Vector& p, double s) {
+    point = p;
+    t = s;
 }
 
 #endif

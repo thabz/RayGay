@@ -200,8 +200,8 @@ Intersection Hierarchy::intersect(const Ray& ray) const {
     if (hasChildren()) {
 	for (vector<Hierarchy*>::const_iterator p = children.begin(); p != children.end(); p++) {
 	    tmp = (*p)->intersect(ray);
-	    if (tmp.intersected) {
-		if (!result.intersected || tmp.t < result.t) {
+	    if (tmp.isIntersected()) {
+		if (!result.isIntersected() || tmp.t < result.t) {
 		    result = tmp;
 		}
 	    }
@@ -209,8 +209,8 @@ Intersection Hierarchy::intersect(const Ray& ray) const {
     } else if (hasObjects()) {
 	for (vector<object*>::const_iterator p = objects.begin(); p != objects.end(); p++) {
 	    tmp = (*p)->intersect(ray);
-	    if (tmp.intersected) {
-		if (!result.intersected || tmp.t < result.t) {
+	    if (tmp.isIntersected()) {
+		if (!result.isIntersected() || tmp.t < result.t) {
 		    result = tmp;
 		}
 	    }
@@ -232,14 +232,14 @@ Intersection Hierarchy::intersectForShadow(const Ray& ray) const {
     if (hasChildren()) {
 	for (vector<Hierarchy*>::const_iterator p = children.begin(); p != children.end(); p++) {
 	    tmp = (*p)->intersectForShadow(ray);
-	    if (tmp.intersected) {
+	    if (tmp.isIntersected()) {
 		return tmp;
 	    }
 	}
     } else if (hasObjects()) {
 	for (vector<object*>::const_iterator p = objects.begin(); p != objects.end(); p++) {
 	    tmp = (*p)->intersect(ray);
-	    if (tmp.intersected) {
+	    if (tmp.isIntersected()) {
 		return tmp;
 	    }
 	}
@@ -250,7 +250,7 @@ Intersection Hierarchy::intersectForShadow(const Ray& ray) const {
 Intersection Hierarchy::intersectForShadow(const Ray& ray, const object* hint) const {
     if (hint != NULL) {
 	Intersection i = hint->intersect(ray);
-	if (i.intersected) {
+	if (i.isIntersected()) {
 	    return i;
 	}
     }

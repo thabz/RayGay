@@ -81,7 +81,7 @@ void testScene4() {
     Spiral spiral2 = Spiral(&spiral,30,100,0.5);
 
     Cylinder* torus = new Cylinder(circle1,100,50,30,mat);
-    //scene.addObject(torus);
+    scene.addObject(torus);
 
     Tessalation tet = Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
     //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,MATERIAL_SHINY_BLUE);
@@ -90,7 +90,7 @@ void testScene4() {
     for(unsigned int i = 0; i < edges->size(); i++) {
 	Linesegment line = (*edges)[i];
 	Cylinder* c = new Cylinder(line.begin(),line.end(),20.0,10,MATERIAL_SHINY_RED);
-	scene.addObject(c);
+	//scene.addObject(c);
     }
     delete edges;
 
@@ -98,7 +98,7 @@ void testScene4() {
     for(unsigned int i = 0; i < vertices->size(); i++) {
 	Vector c = (*vertices)[i];
         Sphere* s = new Sphere(c,20.0,MATERIAL_SHINY_RED);
-	scene.addObject(s);
+	//scene.addObject(s);
     }
     delete vertices;
 

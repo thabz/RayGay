@@ -10,6 +10,7 @@
 #include "image/rgb.h"
 #include "boundingbox.h"
 #include "object.h"
+#include "intersection.h"
 
 using namespace std;
 

@@ -21,7 +21,7 @@ Lightinfo Pointlight::getLightinfo(const Intersection& inter,const Vector& norma
     if (info.cos > 0.0) {
 	Ray ray_to_light = Ray(inter.point,info.direction_to_light,-1.0);
 	Intersection i2 = space.intersect(ray_to_light);
-	info.intensity = i2.intersected ? 0.0 : 1.0;
+	info.intensity = i2.isIntersected() ? 0.0 : 1.0;
     }
     return info;
 }

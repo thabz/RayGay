@@ -69,7 +69,7 @@ Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& norma
 
 	    Ray ray_to_light = Ray(inter.point,direction_to_light,-1.0);
 	    Intersection i2 = space.intersectForShadow(ray_to_light,hints[i]);
-	    if (!i2.intersected) {
+	    if (!i2.isIntersected()) {
 		count++;
 		hints[i] = NULL;
 	    } else {

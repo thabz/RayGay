@@ -357,16 +357,16 @@ void Mesh::test() {
     Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),0.0);
     Intersection i = bsp.intersect(ray);
     assert(i.point == Vector(0,0,0));
-    assert(i.intersected);
+    assert(i.isIntersected());
     assert(i.t == 100.0);
 
     ray = Ray(Vector(0,0,100),Vector(0,0,1),0.0);
     i = bsp.intersect(ray);
-    assert(!i.intersected);
+    assert(!i.isIntersected());
 
     ray = Ray(Vector(0,0,-100),Vector(0,0,-1),0.0);
     i = bsp.intersect(ray);
-    assert(!i.intersected);
+    assert(!i.isIntersected());
 
     // Test torus
     Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));

@@ -76,8 +76,8 @@ Intersection Triangle::_intersect(const Ray& ray) const {
        return intersection;
 
    intersection = Intersection(orig + t*dir,t);
-   intersection.u = u;
-   intersection.v = v;
+ //  intersection.u = u;
+ //  intersection.v = v;
    intersection.local_triangle = this;
    return intersection;
 }

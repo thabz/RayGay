@@ -24,7 +24,7 @@ Intersection Boolean::_intersect(const Ray& ray) const {
 	case BOOLEAN_UNION: 
 	    el = onEdge(il.point);
 	    er = onEdge(ir.point);
-	    if (il.intersected && ir.intersected) {
+	    if (il.isIntersected() && ir.isIntersected()) {
 		if (el && er) {
 		    return il.t < ir.t ? il : ir;
 		} else if (el) {
@@ -34,9 +34,9 @@ Intersection Boolean::_intersect(const Ray& ray) const {
 		} else {
 		    return empty;
 		}
-	    } else if (il.intersected && el) {
+	    } else if (il.isIntersected() && el) {
 		return il;
-	    } else if (ir.intersected && er) {
+	    } else if (ir.isIntersected() && er) {
 		return ir;
 	    } else {
 		return empty;
@@ -44,7 +44,7 @@ Intersection Boolean::_intersect(const Ray& ray) const {
 	    break;
 
 	case BOOLEAN_DIFFERENCE:
-	    if ((!il.intersected) && (!ir.intersected)) {
+	    if ((!il.isIntersected()) && (!ir.isIntersected())) {
 		return empty; // No intersection
 	    }
 	    if (onEdge(il.point)) {
@@ -53,10 +53,10 @@ Intersection Boolean::_intersect(const Ray& ray) const {
 	    if (onEdge(ir.point)) {
 		return ir;
 	    }
-	    if (!il.intersected) {
+	    if (!il.isIntersected()) {
 		return empty; // No intersection 
 	    }
-	    if (!ir.intersected) {
+	    if (!ir.isIntersected()) {
 		return il; // Trivial intersection
 	    }
 	    closest = il.t < ir.t ? &il : &ir;
