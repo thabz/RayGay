@@ -39,6 +39,7 @@
 #include "parser/transformationnodes.h"    
 #include "parser/lightnodes.h"    
 #include "parser/cameranode.h"    
+#include "parser/boolnodes.h"    
 
 #include "camera.h"    
 #include "exception.h"    
@@ -86,6 +87,7 @@ ActionListNode* top_actions;
 	TransformationNode* matrix;
 	FloatNode* expr;
 	PathNode* path;
+	BoolNode* boolean;
 	string* c;
 	Texture::InterpolationType it;
 }
@@ -137,13 +139,19 @@ ActionListNode* top_actions;
 %token tESTIMATESAMPLES
 %token tFINALGATHERRAYS
 %token tCACHETOLERANCE 
+%token tCACHETOLERANCE 
 
+
+%token tIF tWHILE tDO
+%token tFALSE tTRUE
+%token tBOOL_OR tBOOL_NOT tBOOL_AND tEQUALS
 
 %type <c> Filename
 %type <rgb> RGB
 %type <rgba> RGBA
 %type <texture> Texture
 %type <vector> Vector 
+%type <boolean> Bool 
 %type <expr> Expr Random
 %type <it> InterpolationType 
 %type <matrix> Rotate Translate Transformation Transformations
@@ -163,6 +171,8 @@ ActionListNode* top_actions;
 %left '+' '-'
 %left '*' '/'
 %left UMINUS
+%left tBOOL_AND tBOOL_OR
+%left tBOOL_NOT
 %%
     /* Grammar rules */
 	
@@ -798,7 +808,24 @@ Random		: tRANDOM '(' Expr ')'
 		}
 		;
 
-		
+WhileStmt	: tWHILE '(' Bool ')' '{' ActionList '}'
+                | tDO '{' ActionList '}' tWHILE '(' Bool ')'
+                ;
+
+IfStmt		: tIF '(' Bool ')' '{' ActionList '}'
+                ;
+
+Bool		: Expr '<' Expr
+                | Expr '>' Expr
+		| Expr tEQUALS Expr
+		| '(' Bool ')'
+		{
+		    $$ = $2;
+		}
+                | Bool tBOOL_AND Bool 
+                | Bool tBOOL_OR Bool
+                | tBOOL_NOT Bool
+		;
 
 %%
 

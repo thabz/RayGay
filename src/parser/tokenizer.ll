@@ -21,6 +21,7 @@
 #include "parser/transformationnodes.h"    
 #include "parser/lightnodes.h"    
 #include "parser/cameranode.h"    
+#include "parser/boolnodes.h"    
 #include "parser.h"
 using namespace std;
 
@@ -112,6 +113,10 @@ union		return tUNION;
 up		return tUP;
 width		return tWIDTH;
 wireframe	return tWIREFRAME;
+"||"		return tBOOL_OR;
+"&&"		return tBOOL_AND;
+"!"		return tBOOL_NOT;
+"=="		return tEQUALS;
 
 {digit}+ |
 {digit}+"."{digit}+ { yylval.d = atof(yytext); return tFLOAT;}
