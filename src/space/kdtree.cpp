@@ -508,8 +508,8 @@ void KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result, int
     while (l < size || r < size) {
 	bool used_right;
 	if (l < size && r < size) {
-	    double rsplit = right_bobjects->operator[](r)->bbox.maximum()[d];
-	    double lsplit = left_bobjects->operator[](l)->bbox.minimum()[d];
+	    double rsplit = right_bobjects->operator[](r)->bbox.maximum(d);
+	    double lsplit = left_bobjects->operator[](l)->bbox.minimum(d);
 	    if (rsplit < lsplit) {
 		split = rsplit;
 		used_right = true;
@@ -519,10 +519,10 @@ void KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result, int
 	    }
 	} else {
 	    if (l == size) {
-		split = right_bobjects->operator[](r)->bbox.maximum()[d];
+		split = right_bobjects->operator[](r)->bbox.maximum(d);
 		used_right = true;
 	    } else {
-		split = left_bobjects->operator[](l)->bbox.minimum()[d];
+		split = left_bobjects->operator[](l)->bbox.minimum(d);
 		used_right = false;
 	    }
 	}
