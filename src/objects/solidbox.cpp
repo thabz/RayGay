@@ -19,6 +19,10 @@ vector<Intersection> SolidBox::allIntersections(const Ray& world_ray) const {
     vector<Intersection> result;
     Ray local_ray = rayToObject(world_ray);
     Vector2 ts = bbox.intersect(local_ray);
+    
+    if (ts[1] < ts[0])
+	return result;
+	    
     if (ts[0] > EPSILON) {
 	Intersection i = fullIntersect(world_ray,ts[0]);
 	i.isEntering(true);

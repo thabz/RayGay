@@ -526,6 +526,11 @@ void solidbox_test() {
     assert(all[0].getPoint() == Vector(0,-10,0));
     assert(all[0].getNormal() == Vector(0,-1,0));
     assert(!all[0].isEntering());
+    
+    // Ray that misses
+    ray = Ray(Vector(0,0,20),Vector(0,-1,0),-1);
+    all = b->allIntersections(ray);
+    assert(all.size() == 0);
 
     // Outwards ray with origin on edge of box
     ray = Ray(Vector(0,0,10),Vector(0,0,1),-1);
