@@ -11,17 +11,6 @@
 
 /**
  * A polynomial in one variable.
- *
- * TODO: Optimer for polynomials med num under f.eks. 6 ved at
- * have
- *
- * union {
- *     double local_coefficients[6],
- *     double* coefficients
- * }
- *
- * og ved at kun at tilgå disse via getCoefficient(uint i)
- * som udfra num afgør om hvordan coefficienten skal findes.
  */
 class Polynomial : public Function<double, double> {
     friend std::ostream& operator<< (std::ostream& os, const Polynomial& x);
