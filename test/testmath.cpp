@@ -259,6 +259,7 @@ bool contains(double* array, unsigned int num, double val) {
 }
 
 // Used /usr/bin/gp to find test polynomials
+// Part of 'pari-gp' Debian package
 void solve_quartic_test() {
     double roots[4];
 
@@ -395,6 +396,12 @@ void solve_quadratic_test() {
     assert(contains(roots,2,-0.5));
 
     assert(Math::solveQuadratic(5,5,2,roots) == 0);
+
+    assert(Math::solveQuadratic(0,1,-2,roots) == 1);
+    assert(contains(roots,1,2));
+
+    assert(Math::solveQuadratic(0,5,10,roots) == 1);
+    assert(contains(roots,1,-2));
 }
 
 int main(int argc, char *argv[]) {

@@ -84,8 +84,8 @@ int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
 		num2--;
 	    }
 	}
-
     }
+
     return num1+num2;
 }
 
@@ -134,11 +134,17 @@ int Math::solveCubic(double A, double B, double C, double* roots) {
  *
  * \f[ Ax^2 + Bx + C = 0 \f]
  * 
+ * Where A != 0 or B != 0.
+ *
  * @param A, B, C real coefficients of the equation above.
  * @param roots an array of two doubles where the roots are stored
  * @return the number of real roots
  */
 int Math::solveQuadratic(double A, double B, double C, double* roots) {
+    if (IS_ZERO(A) && !IS_ZERO(B)) {
+	roots[0] = -C / B;
+	return 1;
+    }
     assert(!IS_ZERO(A));
     double D = B*B - 4*A*C;
     if (D < 0) {
