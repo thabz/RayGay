@@ -20,6 +20,7 @@ using namespace std;
 Scene::Scene() {
     environmentMap = NULL;
     fog_enabled = false;
+    setBackgroundColor(RGBA(0.0,0,0,1));
 }
 
 Scene::~Scene() {
