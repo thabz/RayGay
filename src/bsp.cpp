@@ -25,8 +25,22 @@ void BSP::prepare() {
 
 	lower = new BSP();
 	higher = new BSP();
+
 	// TODO: Put all objects into lower- or higher_objects
-	
+	for(int i = 0; i < objects.size(); i++) {
+	    object* obj = objects[i];
+	    bbox = obj->boundingBoundingBox();
+	    int cut_val = bbox.cutByPlane(cutplane_dimension, cutplane_value);
+	    if (cut_val == -1) {
+		lower->addObject(obj);
+	    } else if (cut_val == 1) {
+		higher->addObject(obj);
+	    } else {
+                // TODO: Use an iterator and leave this obj in objects.
+	    }
+	}
+
+	// Recursive prepare()
 	lower->prepare();
 	higher->prepare();
     }
