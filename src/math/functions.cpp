@@ -1,6 +1,10 @@
 
+#include <iostream>
+#include <cassert>
+
 #include "math/functions.h"
 #include "math/vector.h"
+//#include "math/solvequartic.h"
 
 /**
  * The binomial coefficient is defined as 
@@ -9,7 +13,7 @@
  * 
  * Implemented as a slow recursive function.
  *
- * See http://www.brpreiss.com/books/opus4/html/page467.html for a O(n^2) version.
+ * @see http://www.brpreiss.com/books/opus4/html/page467.html for a O(n^2) version.
  */
 unsigned long Math::binomialCoefficient(long n, long k) {
     if (k == 0 || k == n) {
@@ -30,3 +34,96 @@ unsigned long Math::binomialCoefficient(long n, long k) {
 double Math::bernsteinPolynomial(unsigned int i, unsigned int n, double t) {
     return binomialCoefficient(n,i) * pow(t,i) * pow((1-t),n-i);
 }
+
+/**
+ * Solves the quartic equation
+ *
+ * \f[ x^4 + Ax^3 + Bx^2 + Cx + D = 0 \f]
+ * 
+ * @param A, B, C, D real coefficients of the equation above.
+ * @param roots an array of four doubles where the roots are stored
+ * @return the number of real roots
+ */
+int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
+    double a = -B;
+    double b = A*C - 4*D;
+    double c = 4*B*D - C*C - A*A*D;
+    double cubic_roots[3];
+    solveCubic(a,b,c,cubic_roots);
+    double y = cubic_roots[0];
+
+    double sqrt1 = sqrt(A*A - 4*B + 4*y);
+    double sqrt2 = sqrt(y*y - 4*D);
+
+    int num = solveQuadratic(1,(A + sqrt1)/2.0,(y - sqrt2)/2.0,roots);
+    num += solveQuadratic(1,(A - sqrt1)/2.0,(y + sqrt2)/2.0,&(roots[num]));
+    // TODO: prune duplicates
+    return num;
+}
+
+/**
+ * Solves the cubic equation
+ *
+ * \f[ x^3 + Ax^2 + Bx + C = 0 \f]
+ *
+ * Every cubic equation has at least one real root.
+ *
+ * 
+ * @param A, B, C real coefficients of the equation above.
+ * @param roots an array of three doubles where the roots are stored
+ * @return the number of real roots
+ * @see http://mathworld.wolfram.com/CubicEquation.html
+ */
+int Math::solveCubic(double A, double B, double C, double* roots) {
+    double Q = (3.0 * B - A * A) / 9.0;
+    double R = (9.0 * A * B - 27.0 * C - 2.0 * A * A * A) / 54.0;
+    double D = Q * Q * Q + R * R;
+    if (D < 0) {
+	// Three real roots
+	double phi = acos(R / sqrt(-(Q*Q*Q)));
+	double G = 2.0 * sqrt(-Q);
+	double H = A / 3.0;
+	roots[0] = G * cos(phi/3.0) - H;
+	roots[1] = G * cos(phi/3.0 + M_2PI/3.0) - H;
+	roots[2] = G * cos(phi/3.0 + 2*M_2PI/3.0) - H;
+	return 3;
+    } else {
+	double sqrtD = sqrt(D);
+	double S = cbrt(R + sqrtD);
+	double T = cbrt(R - sqrtD);
+	roots[0] = S + T - A/3;
+	if (IS_ZERO(D)) {
+	    roots[1] = -(S+T)/2 - A/3;
+	    return (roots[1] == roots[0]) ? 1 : 2;
+	}
+	// D > 0 gives only one real root
+	return 1;
+    }
+}
+
+/**
+ * Solves the quadratic equation
+ *
+ * \f[ Ax^2 + Bx + C = 0 \f]
+ * 
+ * @param A, B, C real coefficients of the equation above.
+ * @param roots an array of two doubles where the roots are stored
+ * @return the number of real roots
+ */
+int Math::solveQuadratic(double A, double B, double C, double* roots) {
+    assert(!IS_ZERO(A));
+    double D = B*B - 4*A*C;
+    if (D < 0) {
+	return 0;
+    } else if (IS_EQUAL(D,0)) {
+	roots[0] = -B / (2.0 * A);
+	return 1;
+    } else {
+	double sqrtD = sqrt(D);
+	roots[0] = (-B + sqrtD) / (2.0 * A);
+	roots[1] = (-B - sqrtD) / (2.0 * A);
+	return 2;
+    }
+}
+
+

@@ -12,6 +12,15 @@ class Math {
 	static double bernsteinPolynomial(unsigned int i, unsigned int n, double t);
 	/// Clamps a to the [0,1] interval.
 	static double clamp(double a);
+
+	/// Solves quartic equation
+	static int solveQuartic(double A, double B, double C, double D, double* roots);
+	
+	/// Solves cubic equation
+	static int solveCubic(double A, double B, double C, double* roots);
+
+	/// Solves quadratic equation
+	static int solveQuadratic(double A, double B, double C, double* roots);
 };
 
 inline double Math::clamp(double a) {
