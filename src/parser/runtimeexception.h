@@ -14,6 +14,7 @@ class RuntimeException {
 	    this->message = message;
 	    this->pos = pos;
 	}
+	~RuntimeException() {};
 
 	string getMessage() { return message; }
 	FilePosition getFilePosition() { return pos; };
