@@ -8,7 +8,9 @@ class Pinhole : public Camera {
 
     public:
 	Pinhole();
-	Ray getRay(const double x, const double y);
+
+    protected:
+	Ray _getRay(const double x, const double y);
 
 };
 

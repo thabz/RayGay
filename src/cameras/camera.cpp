@@ -87,3 +87,40 @@ Vector2 Camera::project(const Vector& p) const {
     sp[1] = (((v.y() / (-v.z())) + av) * (height - 1.0)) / (2.0 * av);
     return sp;
 }
+
+/**
+ * This will fetch the ray from the subclass' _getRay() method and
+ * then apply depth of field if needed.
+ */
+Ray Camera::getRay(const double x, const double y) {
+    if (!initialized) 
+	init();
+
+    Ray result = _getRay(x,y);
+
+    if (dof_enabled) {
+	// Jitter position and adjust direction
+
+	Vector pos = result.getOrigin();
+	Vector dir = result.getDirection();
+
+       Vector P = pos + dir * dof_length; // The point to aim at
+
+       if (++dof_sample_count > dof_samples) {
+	   dof_qmc->reset();
+	   dof_sample_count = 0;
+       }
+
+       double* qmc = dof_qmc->getNext();
+       Vector2 disc = Math::shirleyDisc(qmc[0],qmc[1]) * dof_aperture;
+       Vector jitter_pos = up * disc[0] + right * disc[1];
+
+       pos = pos + jitter_pos;
+       dir = P - pos;
+       dir.normalize();
+
+       result = Ray(pos,dir,result.getIndiceOfRefraction());
+    }
+
+    return result;
+}

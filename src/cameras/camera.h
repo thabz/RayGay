@@ -1,5 +1,5 @@
-#ifndef CAMERA_H 
-#define CAMERA_H
+#ifndef CAMERAS_CAMERA_H 
+#define CAMERAS_CAMERA_H
 
 #include "math/matrix.h"
 #include "math/vector.h"
@@ -61,15 +61,21 @@ class Camera {
 	unsigned int getAADepth() const { return aa_depth; };
 
 	/// Get a ray going through the screen
-	virtual Ray getRay(const double x, const double y) = 0;
+	Ray getRay(const double x, const double y);
+
 
 	void setImageSize(int width, int height) { this->width = width; this->height = height; };
 
 	/// Project a 3D point to the 2D screen
 	Vector2 project(const Vector& p) const;
 
-    protected:
+    private:
 	void init();
+
+    protected:
+	/// Get a ray going through the screen
+	virtual Ray _getRay(const double x, const double y) = 0;
+
 	// General camera 
 	Vector position;
 	Vector up;
