@@ -210,18 +210,18 @@ class FloatOpEqualsNode : public ActionNode {
 	char op;
 };
 
-class AddSceneObjectToSceneNode : public ActionNode {
+class AddSceneObjectToCollectorNode: public ActionNode {
     public:
-	AddSceneObjectToSceneNode(SceneObjectNode* node) {
+	AddSceneObjectToCollectorNode(SceneObjectNode* node) {
 	    this->node = node;
 	}
 
-	virtual ~AddSceneObjectToSceneNode() {
+	virtual ~AddSceneObjectToCollectorNode() {
 	    delete node;
 	}
 
 	void eval() {
-	    Environment::getUniqueInstance()->getScene()->addObject(node->eval());
+	    Environment::getUniqueInstance()->getObjectCollector()->addObject(node);
 	}
 
     private:
@@ -424,5 +424,37 @@ class ModifyNamedFloatActionNode : public ActionNode {
     private:
 	FloatNode* node;
 };
+
+class ObjectGroupNode : public SceneObjectNode {
+    public:
+	ObjectGroupNode(ActionListNode* actions) {
+	    this->actions = actions;
+	};
+
+	virtual ~ObjectGroupNode() {
+	    delete actions;
+	}
+
+	SceneObject* eval() {
+	    ObjectCollector* oc = Environment::getUniqueInstance()->getObjectCollector();
+            // Push a new object collector
+	    oc->pushCollection();
+	    
+            // eval actions;
+	    actions->eval();
+
+	    // Pop collector and insert into a ObjectGroup* result;
+	    vector<SceneObject*> nodes = oc->popAsListNode()->eval();
+	    ObjectGroup* result = new ObjectGroup();
+	    for(unsigned int i = 0; i < nodes.size(); i++) {
+		result->addObject(nodes[i]);
+	    }
+	    return result;
+	}
+
+    private:
+	ActionListNode* actions;
+};
+
 
 #endif

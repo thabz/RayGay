@@ -47,6 +47,7 @@
 #include "exception.h"    
 #include "renderersettings.h"
 #include "environment.h"
+#include "parser/objectcollector.h"
 
 using namespace std;
 
@@ -163,7 +164,7 @@ ActionListNode* top_actions;
 %type <matrix> Rotate Translate Scale Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
 %type <object> Intersection Union Object Extrusion MeshObject Wireframe Box
-%type <object> ObjectGroup GroupItems GroupItem Ellipsoid Mesh Cone
+%type <object> ObjectGroup Ellipsoid Mesh Cone
 %type <object> NamedObject 
 %type <material> MaterialDef NamedMaterial Material
 %type <light> LightDef Lightsource 
@@ -238,7 +239,7 @@ RepeatStmt	: tREPEAT '(' Expr ')' '{' ActionList '}'
 
 AddObject	: Object 
                 {
-		    $$ = new AddSceneObjectToSceneNode($1);
+		    $$ = new AddSceneObjectToCollectorNode($1);
 		}
                 ;
 
@@ -588,12 +589,13 @@ SolidObject	: Sphere
 		}
 		;
 
-ObjectGroup	: tGROUP '{' GroupItems '}'
+ObjectGroup	: tGROUP '{' ActionList '}'
                 {
-		    $$ = $3;
+		    $$ = new ObjectGroupNode($3);
 		}
                 ;
 
+		/*
 GroupItems	: GroupItem
                 {
 		    ObjectGroupNode* og = new ObjectGroupNode();
@@ -609,7 +611,7 @@ GroupItems	: GroupItem
 		;		
 
 GroupItem	: Object;
-
+*/
 SolidObjects	: SolidObject
                 {
 		    $$ = new ObjectListNode();
@@ -1114,10 +1116,18 @@ void init_parser(string scenefile) {
     line_num = 1;
     renderer_settings = new RendererSettings();
     top_actions = new ActionListNode();
+    Environment::getUniqueInstance()->getObjectCollector()->reset();
 }
 
 void run_interpreter() {
     top_actions->eval();
+    // Insert objects in object collector into scene
+    Scene* scene = Environment::getUniqueInstance()->getScene();
+    ObjectCollector* oc = Environment::getUniqueInstance()->getObjectCollector();
+    vector<SceneObject*> list = oc->popAsListNode()->eval();
+    for(unsigned int i = 0; i < list.size(); i++) {
+	scene->addObject(list[i]);
+    }
 }
 
 void delete_interpreter() {

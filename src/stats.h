@@ -35,6 +35,8 @@ enum StatsKey {
 
 /**
  * A helper class for counting statistics
+ *
+ * \todo inline constructor and getUniqueInstance as done in environment.h
  */ 
 class Stats {
 

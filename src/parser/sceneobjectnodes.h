@@ -544,30 +544,4 @@ class NamedSceneObjectNode : public SceneObjectNode {
 	string name;
 };
 
-class ObjectGroupNode : public SceneObjectNode {
-    public:
-	ObjectGroupNode() {};
-
-	virtual ~ObjectGroupNode() {
-	    for(unsigned int i = 0; i < nodes.size(); i++) {
-		delete nodes[i];
-	    }
-	}
-
-	void addSceneObjectNode(SceneObjectNode* node) {
-	    nodes.push_back(node);
-	}
-
-	SceneObject* eval() {
-	    ObjectGroup* result = new ObjectGroup();
-	    for(unsigned int i = 0; i < nodes.size(); i++) {
-		result->addObject(nodes[i]->eval());
-	    }
-	    return result;
-	}
-
-    private:
-	vector<SceneObjectNode*> nodes;
-};
-
 #endif

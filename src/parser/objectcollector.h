@@ -13,10 +13,10 @@ class ObjectCollector {
     public:
 	/// Constructor
 	ObjectCollector();
+	/// Reset
+	void reset();
 	/// Begin a new collection
 	void pushCollection();
-	/// Pops the toplevels collection
-	ObjectGroupNode* popAsGroupNode();
 	/// Pops the toplevels collection
 	ObjectListNode* popAsListNode();
 	/// Adds an object to the toplevel collection
