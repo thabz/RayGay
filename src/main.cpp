@@ -165,7 +165,7 @@ void do_filtering(Image* image, FilterStack* filterstack) {
 void render_frame(int cur_frame, string outputfile, int jobs) {
 
     Stats::getUniqueInstance()->clear();
-    Stats::getUniqueInstance()->put(STATS_THREADS,jobs);
+    Statistics::put("Renderer","Threads",jobs);
 
     srand(1); // Make sure rand is seeded consistently.
 
@@ -231,6 +231,9 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 	     << ", " << renderersettings->anim_frames << " frames)" << endl;
     }
 
+    TimerStats* rendering_time = new TimerStats("Renderer","Time");
+    rendering_time->startTimer();
+
     Stats::getUniqueInstance()->beginTimer("Rendering");
     
     active_renderers.clear();
@@ -280,6 +283,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 	}
     }
     Stats::getUniqueInstance()->endTimer("Rendering");
+    rendering_time->stopTimer();
 
 
     // Apply filters if any
@@ -297,6 +301,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     delete scene;
     delete job_pool;
     Stats::getUniqueInstance()->dump();
+    Statistics::dumpAll();
 }
 
 void work(string scenefile, string outputfile, int jobs) {

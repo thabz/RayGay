@@ -11,6 +11,56 @@
 
 using namespace std;
 
+class Statistics 
+{
+    public:
+	/// Constructor
+	Statistics(string group, string name);
+	virtual ~Statistics();
+
+	static void dumpAll();
+	static void put(string group, string name, double value);
+	virtual void out() const = 0;
+
+    private:
+	string name;
+	string group;
+	static vector<Statistics*> stats;
+};
+
+class TimerStats : public Statistics 
+{
+    public:
+	/// Constructor
+	TimerStats(string group, string name);
+
+	/// Begin a time measure
+	void startTimer();
+	/// End a time measure
+	void stopTimer();
+
+	void out() const;
+	
+    private:
+	time_t begin_time;
+	time_t end_time;
+};
+
+class CounterStats : public Statistics 
+{
+    public:
+	CounterStats(string group, string name);
+	void inc();
+	void inc(double amount);
+	void put(double value);
+
+	void out() const;
+
+    private:
+	double value;
+};
+
+
 enum StatsKey {
     STATS_PRIMARY_RAYS_CAST,
     STATS_SECONDARY_RAYS_CAST,

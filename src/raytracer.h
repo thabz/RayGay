@@ -25,11 +25,15 @@ class Raytracer : public Renderer {
 	RGBA traceSub(const bool intersected, Intersection& i, const Ray&, const int depth);
 	RGBA tracePrimary(const Ray&);
 	RGB calculate_reflection(const Ray& ray, const Intersection& intersection, const int depth, const Material* material);
+
+	static CounterStats* total_rays_cast;
+	static CounterStats* primary_rays_cast;
+	static CounterStats* secondary_rays_cast;
 };
 
 inline
 RGBA Raytracer::tracePrimary(const Ray& ray) {
-    Stats::getUniqueInstance()->inc(STATS_PRIMARY_RAYS_CAST);
+    primary_rays_cast->inc();
     Intersection i;
     bool intersected = space->intersectPrimary(ray,&i);
     return traceSub(intersected, i, ray, 1);
@@ -37,7 +41,7 @@ RGBA Raytracer::tracePrimary(const Ray& ray) {
 
 inline
 RGBA Raytracer::trace(const Ray& ray, const int depth) {
-    Stats::getUniqueInstance()->inc(STATS_SECONDARY_RAYS_CAST);
+    secondary_rays_cast->inc();
     Intersection i;
     bool intersected = space->intersect(ray,&i);
     return traceSub(intersected, i, ray, depth);

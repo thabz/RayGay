@@ -65,8 +65,6 @@ class GenericKdTree {
 	/// The BoundingBox around all objects added to the tree
 	BoundingBox boundingBox() const { return world_bbox; };
 
-
-
     protected:
 	/// Constructor
 	GenericKdTree(uint max_depth, uint max_objs);

@@ -4,7 +4,9 @@
 #include "lights/shadowcache.h"
 #include "space/kdtree.h"
 #include "ray.h"
-#include "stats.h"
+
+CounterStats* ShadowCache::shadow_rays_cast = new CounterStats("Lights","Shadow rays cast");
+CounterStats* ShadowCache::shadow_cache_hint_hit = new CounterStats("Lights","Shadow cache hint hit");
 
 ShadowCache::ShadowCache() {
     for(int i = 0; i < LIGHTS_SHADOW_CACHE_MAX_DEPTH; i++) {
@@ -49,6 +51,7 @@ bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, 
 	double t = hint->fastIntersect(ray_to_light);
 	if (t > 0 && t < dist_to_light) {
 	    Stats::getUniqueInstance()->inc(STATS_SHADOW_HINT_HIT);
+	    shadow_cache_hint_hit->inc();
 	    return true;
 	}
     }
@@ -68,6 +71,7 @@ bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, 
     }
 
     // Finally do a real intersection test
+    shadow_rays_cast->inc();
     Stats::getUniqueInstance()->inc(STATS_SHADOW_RAYS_CAST);
     hint = space->intersectForShadow(ray_to_light,dist_to_light);
     putHint(depth,hint);

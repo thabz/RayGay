@@ -17,6 +17,10 @@
 #include "materials/material.h"
 #include "space/kdtree.h"
 
+CounterStats* Raytracer::total_rays_cast = new CounterStats("Raytracer","Total camera rays cast");
+CounterStats* Raytracer::primary_rays_cast = new CounterStats("Raytracer","Primary rays cast");
+CounterStats* Raytracer::secondary_rays_cast = new CounterStats("Raytracer","Secondary rays cast");
+
 Raytracer::Raytracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, unsigned int thread_id) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
 }
 
@@ -37,8 +41,9 @@ RGBA Raytracer::getPixel(const Vector2& v) {
     }
 }
 
+
 RGBA Raytracer::traceSub(const bool intersected, Intersection& intersection, const Ray& ray, const int depth) {
-    Stats::getUniqueInstance()->inc(STATS_TOTAL_CAMERA_RAYS_CAST);
+    total_rays_cast->inc();
     RGBA color; 
     double intersect_distance = HUGE_DOUBLE;
 

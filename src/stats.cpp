@@ -97,3 +97,90 @@ void Stats::endTimer(string key) {
     endTimes[key] = time(NULL);
 }
 
+///////////////////////////////////////////////////
+// Statistics
+///////////////////////////////////////////////////
+
+vector<Statistics*> Statistics::stats;
+
+Statistics::Statistics(string g, string n) 
+{
+    group = g;
+    name = n;
+    stats.push_back(this);
+}
+
+void Statistics::put(string group, string name, double value)
+{
+    CounterStats* c = new CounterStats(group,name);
+    c->put(value);
+}
+
+Statistics::~Statistics() 
+{
+
+}
+
+void Statistics::dumpAll()
+{
+    for(uint i = 0; i < stats.size(); i++) {
+	cout << stats[i]->group << "/" << stats[i]->name << ": ";
+	stats[i]->out();
+	cout << endl;
+    }
+}
+
+///////////////////////////////////////////////////
+// TimerStats 
+///////////////////////////////////////////////////
+
+TimerStats::TimerStats(string group, string name) : Statistics(group,name)
+{
+}
+
+void TimerStats::startTimer()
+{
+    begin_time = time(NULL);
+}
+
+void TimerStats::stopTimer()
+{
+    end_time = time(NULL);
+}
+
+void TimerStats::out() const 
+{
+    long secs = end_time - begin_time;
+    cout << setfill('0') << setw(2) << secs / 60;
+    cout << ":";
+    cout << setfill('0') << setw(2) << secs % 60;
+}
+
+///////////////////////////////////////////////////
+// CounterStats 
+///////////////////////////////////////////////////
+
+CounterStats::CounterStats(string group, string name) : Statistics(group,name)
+{
+    value = 0.0;
+}
+
+void CounterStats::inc() 
+{
+    value++;
+}
+
+void CounterStats::inc(double amount)
+{
+    value += amount;
+}
+
+void CounterStats::put(double v)
+{
+    value = v;
+}
+
+void CounterStats::out() const {
+    cout << long(value);
+}
+

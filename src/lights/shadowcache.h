@@ -5,6 +5,7 @@
 #define LIGHTS_SHADOW_CACHE_MAX_DEPTH 32
 
 #include <vector>
+#include "stats.h"
 
 using namespace std;
 
@@ -31,6 +32,10 @@ class ShadowCache {
 	// Data
 	Object* hints[LIGHTS_SHADOW_CACHE_MAX_DEPTH];
 	vector<Object*>* voxels[LIGHTS_SHADOW_CACHE_MAX_DEPTH];
+
+	// Stats
+	static CounterStats* shadow_rays_cast;
+	static CounterStats* shadow_cache_hint_hit;
 };
 
 #endif

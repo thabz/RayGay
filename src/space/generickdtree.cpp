@@ -173,8 +173,8 @@ void GenericKdTree<ObjectType>::prepare() {
     delete [] left_bobs;
     delete [] right_bobs;
     
-    Stats::getUniqueInstance()->put(STATS_KDTREE_DEPTH,max_depth);
-    Stats::getUniqueInstance()->put(STATS_KDTREE_NODES,nodes.size());
+    Statistics::put("Kd-tree","Depth",max_depth);
+    Statistics::put("Kd-tree","Nodes",nodes.size());
     //cout << "Size of KdNode: " << sizeof(KdNode) << endl;
     //cout << "Waste: " << (nodes.capacity() - nodes.size())*sizeof(KdNode) << endl;
     prepared = true;
