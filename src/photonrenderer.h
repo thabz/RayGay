@@ -34,7 +34,7 @@ class PhotonRenderer : public Renderer {
 
 	RGBA getPixel(const Vector2& v);
 
-	RGB shade(const Ray&, const Intersection&, int depth);
+	RGB shade(const Ray&, const Intersection&, const int depth);
 	RGBA trace(const Ray&, int depth);
 	RGBA traceSub(bool intersected, const Intersection& i, const Ray&, int depth);
 	RGBA tracePrimary(const Ray&);

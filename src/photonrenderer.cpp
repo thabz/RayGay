@@ -65,7 +65,7 @@ RGBA PhotonRenderer::trace(const Ray& ray, int depth) {
     return traceSub(intersected, i, ray, depth);
 }
 
-RGBA PhotonRenderer::traceSub(bool intersected, const Intersection& intersection, const Ray& ray, int depth) {
+RGBA PhotonRenderer::traceSub(bool intersected, const Intersection& intersection, const Ray& ray, const int depth) {
     Stats::getUniqueInstance()->inc(STATS_TOTAL_CAMERA_RAYS_CAST);
     RGBA color; 
     double intersect_distance;
@@ -137,7 +137,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 	    } 
 	}
     }
-    if (depth < 4) {
+    if (depth < 7) {
 	/* Bounce a reflection off the intersected object */
 	if (material->getKs() > 0 && reflection > 0) {
 	    Vector refl_vector = -1 * ray.getDirection();
@@ -224,7 +224,7 @@ RGB PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const
     Vector offset_point = point + (0.1*normal);
 
     RGB result = RGB(0.0,0.0,0.0);
-    *hmd = 0;
+    *hmd = HUGE_DOUBLE;
     double* rnd;
     qmc_sequence->reset();
     unsigned int gatherHits = 0;
@@ -242,9 +242,9 @@ RGB PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const
 	    RGB irra;
 	    double dist = (hitpoint-point).length();
 	    *hmd += 1.0 / dist;
-	//    if ( dist < renderersettings->estimate_radius && depth == 0 ) {
+	    //    if ( dist < renderersettings->estimate_radius && depth == 0 ) {
 	    if (false) {
-	        // If too close do additional level of path tracing
+		// If too close do additional level of path tracing
 		//irra += finalGather(hitpoint,hitnormal,dir,7, depth + 1);
 	    } else {
 		//irra += globalphotonmap->directIrradianceEstimate(hitpoint,hitnormal);
@@ -254,10 +254,12 @@ RGB PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const
 	    RGB diffuse_col = material->getDiffuseColor(inter);
 	    result += irra * diffuse_col;
 	}
+	}
+
+	if (gatherHits != 0) {
+	    result *= 1.0 / double(gatherRays);
+	    *hmd = double(gatherHits) / *hmd;
+	}
+	return result;
     }
-	
-    result *= 1.0 / double(gatherRays);
-    *hmd = double(gatherHits) / *hmd;
-    return result;
-}
 

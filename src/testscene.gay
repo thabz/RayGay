@@ -6,10 +6,8 @@ i = 0
 
 do {
    print i
-   i = i + 1
-   if (i > 5) {
-       print "Overfem aa"
-   }
+   print "xxx"
+   i = i +1
 } while (i < 10) 
 
 print "Slut" 
