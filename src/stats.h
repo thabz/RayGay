@@ -33,10 +33,14 @@ class Stats {
 	/// Remove all stats
 	void clear();
 
+	/// Switch stats off
+	void disable() { disabled = true; };
+
     private:
 	static Stats* Stats::uniqueInstance;
-	Stats() {};
+	Stats() {disabled = false; };
 	map<string,long> stats;
+        bool disabled;
 };
 
 

@@ -13,6 +13,8 @@ Stats* Stats::getUniqueInstance() {
 }
 
 void Stats::put(string key, long value) {
+    if (disabled) 
+	return;
     stats[key] = value;
 }
 
@@ -26,10 +28,14 @@ long Stats::get(string key) const {
 }
 
 void Stats::inc(string key) {
+    if (disabled) 
+	return;
     this->inc(key,1);
 }
 
 void Stats::inc(string key, long amount) {
+    if (disabled) 
+	return;
     map<string,long>::const_iterator p = stats.find(key);
     if (p != stats.end()) {
 	(stats.find(key)->second) += amount;

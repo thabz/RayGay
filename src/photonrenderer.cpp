@@ -37,7 +37,7 @@ void PhotonRenderer::init() {
     globalphotonmap->scale_photon_power(1.0/double(total_photons_num));
     globalphotonmap->balance();
     cout << "Precomputing irradiances..." << endl;
-    globalphotonmap->preComputeIrradiances(4);
+    //globalphotonmap->preComputeIrradiances(4);
     cout << "Done." << endl;
 
     causticsphotonmap->scale_photon_power(1.0/double(total_photons_num));

@@ -80,6 +80,7 @@ void Renderer::render(Image* img) {
 	cout << y << " / " << img_h << "          \r" << flush;
     }
     Stats::getUniqueInstance()->put("Rendering time (seconds)",time(NULL)-beginTime);
+    cout << "Rendering time (seconds): " << time(NULL)-beginTime << endl;
 }
 
 /**
