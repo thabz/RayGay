@@ -878,11 +878,15 @@ void cone_test() {
     Ray ray;
     vector<Intersection> all;
     Cone* c;
+    Vector n;
 
     // Cone along z-axis
     c = new Cone(Vector(0,0,0),Vector(0,0,1),1,0,true,NULL);
     assert(intersects(c,Vector(0,1000,0.5),Vector(0,-1,0)));
     assert(iPoint(c,Vector(0,1000,0.5),Vector(0,-1,0)) == Vector(0,0.5,0.5));
+    n = Vector(0,1,1);
+    n.normalize();
+    assert(iNormal(c,Vector(0,1000,0.5),Vector(0,-1,0)) == n);
     assert(!intersects(c,Vector(1,1000,0.5),Vector(0,-1,0)));
     assert(!intersects(c,Vector(0,1000,-0.1),Vector(0,-1,0)));
     assert(!intersects(c,Vector(0,1000,1.1),Vector(0,-1,0)));
@@ -894,22 +898,46 @@ void cone_test() {
     c = new Cone(Vector(0,0,-1),Vector(0,0,1),4,2,true,NULL);
     assert(intersects(c,Vector(0,1000,0),Vector(0,-1,0)));
     assert(iPoint(c,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,3,0));
+    assert(intersects(c,Vector(0,1000,-0.9),Vector(0,-1,0)));
+    assert(intersects(c,Vector(0,1000,0.9),Vector(0,-1,0)));
+    assert(intersects(c,Vector(0.01,1000,-0.9),Vector(0,-1,0)));
+    assert(intersects(c,Vector(0.01,1000,0.9),Vector(0,-1,0)));
+
+    c = new Cone(Vector(0,0,0),Vector(0,0,10),500,10,true,NULL);
+    assert(intersects(c,Vector(0,1000,0.1),Vector(0,-1,0)));
+    assert(intersects(c,Vector(0,1000,9.9),Vector(0,-1,0)));
+    assert(intersects(c,Vector(0.01,1000,9.9),Vector(0,-1,0)));
+    assert(intersects(c,Vector(0.01,1000,9.9),Vector(0,-1,0)));
+    assert(intersects(c,Vector(0,0,1000),Vector(0,0,-1)));
+    assert(iPoint(c,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,10));
+    assert(iNormal(c,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iPoint(c,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,0));
+    assert(iNormal(c,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
     
     // Cone along y-axis
     c = new Cone(Vector(0,0,0),Vector(0,1,0),2,4,true,NULL);
     assert(intersects(c,Vector(0,0.5,100),Vector(0,0,-1)));
     assert(iPoint(c,Vector(0,0.5,1000),Vector(0,0,-1)) == Vector(0,0.5,3));
 
+    c = new Cone(Vector(0,0,0),Vector(0,10,0),500,10,true,NULL);
+    assert(intersects(c,Vector(1000,0.1,0),Vector(-1,0,0)));
+    assert(intersects(c,Vector(1000,9.9,0),Vector(-1,0,0)));
+    assert(intersects(c,Vector(1000,9.9,10),Vector(-1,0,0)));
+    assert(intersects(c,Vector(1000,0.1,400),Vector(-1,0,0)));
+    assert(!intersects(c,Vector(1000,0.1,500),Vector(-1,0,0)));
+    assert(iPoint(c,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,10,0));
+    assert(iNormal(c,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
+    assert(iPoint(c,Vector(0,-1000,0),Vector(0,1,0)) == Vector(0,0,0));
+    assert(iNormal(c,Vector(0,-1000,0),Vector(0,1,0)) == Vector(0,-1,0));
+
     // Cone along y-axis
     c = new Cone(Vector(0,-1,0),Vector(0,1,0),2,4,true,NULL);
     assert(intersects(c,Vector(0,0,100),Vector(0,0,-1)));
-    cout << iPoint(c,Vector(0,0,1000),Vector(0,0,-1)) << endl;
     assert(iPoint(c,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,3));
     
     // Cone along x-axis
     c = new Cone(Vector(-1,0,0),Vector(1,0,0),2,4,true,NULL);
     assert(intersects(c,Vector(0,1000,0),Vector(0,-1,0)));
-    cout << iPoint(c,Vector(0,1000,0),Vector(0,-1,0)) << endl;
     assert(iPoint(c,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,3,0));
 
     // Intersection with caps (cone along z-axis)

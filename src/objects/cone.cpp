@@ -7,12 +7,13 @@
 #include "math/vector2.h"
 
 /**
- * Construct a cone object
+ * Construct a cone object.
  *
- * @param begin The bottom point
- * @param end	The top point
- * @param radius The radius of the cylinder
- * @param has_caps Whether caps should be checked for intersection too
+ * @param begin	    The bottom point
+ * @param end	    The top point
+ * @param radius_begin  The bottom radius of the cone 
+ * @param radius_end	The apex radius of the cone
+ * @param has_caps  Whether caps should be checked for intersection too
  * @param m Material
  */
 Cone::Cone(const Vector& begin, const Vector& end, double radius_begin, double radius_end, bool has_caps, const Material* m) : Solid (m) {
@@ -70,7 +71,7 @@ Vector Cone::getNormal(const Vector& local_point) const {
 	    return Vector(0,0,1);
 	}
     }
-    Vector normal = Vector(local_point[0],local_point[1],0);
+    Vector normal = Vector(local_point[0],local_point[1],(radius_begin-radius_end)/2);
     normal.normalize();
     return normal;
 }
@@ -115,7 +116,7 @@ unsigned int Cone::allPositiveRoots(const Ray& world_ray, double roots[2]) const
 
     double a = D_z*D_z* (r_B2 - 2*r_T*r_B + r_T2) - D_x*D_x - D_y*D_y;
     double b = 2*((O_z - 1)*D_z*r_B2 + 
-	       (1 - -2*O_z)*r_B*D_z*r_T + 
+	       (1 - 2*O_z)*r_B*D_z*r_T + 
 	       D_z*r_T2*O_z - D_x*O_x - D_y*O_y);
     double c = (O_z*O_z - 2*O_z + 1)*r_B2 + 
 	       (1 - O_z)*r_B*2*r_T*O_z +  
@@ -190,6 +191,5 @@ void Cone::allIntersections(const Ray& ray, vector<Intersection>& result) const 
 	result[0].isEntering(true);
 	result[1].isEntering(false);
     }
-    return;
 }
 
