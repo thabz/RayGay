@@ -353,14 +353,18 @@ bool contains(double* array, unsigned int num, double val) {
     return false;
 }
 
+// Problem: f(0.519886) = -2.67303e-05 != 0.
+
 bool check_roots(double A, double B, double C, double D, double* roots, int num) {
     double r;
     for(int i = 0; i < num; i++) {
 	r = roots[i];
 	double val = r*r*r*r + A*r*r*r + B*r*r + C*r + D;
-	if (!IS_EQUAL(val,double(0)))
+	if (!IS_ZERO(val)) {
+	    cout << "Problem: f(" << r << ") = " << val << " != 0." << endl;
 	    //if (fabs(val) > 0.001)
 	    return false;
+	}
     }
     return true;
 }
@@ -445,7 +449,8 @@ class solve_quartic_test : public Test {
 				    cout << roots[i] << " and ";
 				}
 				cout << endl;
-				exit(EXIT_FAILURE);
+				assertTrue(false);
+		//		exit(EXIT_FAILURE);
 			    }
 			}
 		    }
@@ -587,11 +592,11 @@ int main(int argc, char *argv[]) {
     suite.add("Binomial",new binomial_test());
     suite.add("Bernstein",new bernstein_polynomial_test());
     suite.add("Clamp",new clamp_test());
-    suite.add("Solve quartic",new solve_quartic_test());
     suite.add("Solve quadratic",new solve_quadratic_test());
     suite.add("Solve cubic",new solve_cubic_test());
     suite.add("Cubic root",new test_cubic_root());
     suite.add("Perturb vector",new perturb_vector_test());
+    suite.add("Solve quartic",new solve_quartic_test());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {
