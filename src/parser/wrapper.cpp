@@ -70,17 +70,19 @@ SCM lightsource2scm(Lightsource* lightsource) {
 }
 
 SCM mark_wrapper (SCM image_smob) {
-    cout << "mark_wrapper() called." << endl;
+    //cout << "mark_wrapper() called." << endl;
     return SCM_BOOL_F;
 }
 
 size_t free_wrapper(SCM image_smob) {
-    cout << "free_wrapper() called." << endl;
+    //cout << "free_wrapper() called." << endl;
     return 0;
 }
 
-int print_wrapper(SCM image_smob, SCM port, scm_print_state *pstate) {
-    cout << "print_wrapper() called." << endl;
+int print_wrapper(SCM object_smob, SCM port, scm_print_state *pstate) {
+    struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
+    char* type_s[] = { "","", "pathobject", "path", "material", "texture", "lightsource", "camera" };
+    cout << "#<" << type_s[o->type] << ">" << endl;
     return 1;
 }
 
