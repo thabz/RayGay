@@ -74,10 +74,11 @@ class Mesh : public ObjectCollection {
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection & i) const;
-	virtual Vector phong_normal(const Intersection & i) const;
 	virtual Material getMaterial() const;
 
+	/// Intersection with a boundingbox
 	virtual bool intersects(const BoundingBox& b) const;
+
 	/// The bounding box containing all faces of this mesh
 	virtual BoundingBox boundingBoundingBox() const;
 
@@ -98,7 +99,6 @@ class Mesh : public ObjectCollection {
 	Vector cornerAt(int i) { return corners[i]; };
 
 	void prepare();
-	Vector getInterpolationWeights(unsigned int tri, Vector p) const;
 
     private:
 	MeshType meshType;
@@ -110,6 +110,8 @@ class Mesh : public ObjectCollection {
 	void computeAdjacentTris();
 	void computeTriAreas();
 	void computeInterpolatedNormals();
+	virtual Vector phong_normal(const Intersection & i) const;
+	Vector getInterpolationWeights(unsigned int tri, Vector p) const;
 
 	std::vector<Vector> normals;
 	std::vector<Triangle*> triangles;

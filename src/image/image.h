@@ -8,29 +8,36 @@
 /// Holds an image or texture.
 class Image {
     public:
+	/// Constructs an empty image
         Image(long h, long w);
+	/// Constructs an image from rgbrgbrgb... data
 	Image(long h, long w, double* data);
+	/// Constructs an image from a tga-file
         Image(const std::string& filename);
+	/// Destructor
 	~Image();
 	/// Sets a pixel
         void setRGB(int x, int y, RGB& color); 
 	/// Gets a pixel
 	RGB getRGB(int x, int y) const;
-	/// Saves this image as a flat rgbrgb... stream
+	/// Saves this image as an uncompressed tga-file
 	void save(const std::string& filename) const;
+	/// Returns width of image
 	int getWidth() const { return width; };
+	/// Returns height of image
 	int getHeight() const { return height; };
 	/// Return a pixel where u and v in [0,1]
 	RGB getTexel(double u, double v) const;
+	/// Return a bicubic interpolated pixel where u and v in [0,1]
 	RGB getBiCubicTexel(double u, double v) const;
 
 	/// Converts image to grayscale
 	void grayscale();
 
-	/// Load a file (the caller must free the Image)
+	/// Load a tga-file (the caller must free the Image)
 	static Image* load(const std::string& filename);
 
-	/// Test
+	/// Internal test 
 	static void test();
 
     private:

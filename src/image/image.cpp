@@ -22,6 +22,9 @@ Image::Image(long w, long h, double* dataPtr) {
     data = dataPtr;
 }
 
+/**
+ * Frees the image data
+ */
 Image::~Image() {
     delete [] data;
 }
@@ -53,13 +56,21 @@ RGB Image::getRGBWrapped(int x, int y) const {
     return getRGB(x,y);
 }
 
+/**
+ * Returns a pixel from the image.
+ *
+ * @param u a value in [0,1]
+ * @param v a value in [0,1]
+ */
 RGB Image::getTexel(double u, double v) const {
     u -= int(u);
     v -= int(v);
     return getRGB(int(u*(width-1)),int(v*(height-1)));
 }
 
-// Using http://astronomy.swin.edu.au/~pbourke/colour/bicubic/
+/**
+ * Using http://astronomy.swin.edu.au/~pbourke/colour/bicubic/
+ */
 RGB Image::getBiCubicTexel(double u, double v) const {
     u -= int(u);
     v -= int(v);
@@ -90,6 +101,9 @@ double Image::biCubicP(double x) const {
 }
 
 
+/**
+ * Writes the image into a  24 bit uncompressed tga-file
+ */
 void Image::save(const std::string& filename) const {
     byte* bytes = new byte[height*width*3];
     byte Header[18];
@@ -143,6 +157,9 @@ void Image::save(const std::string& filename) const {
     delete [] bytes;
 }
 
+/**
+ * Loads the image from a tga 24 og 32 bit uncompressed tga-file.
+ */
 Image* Image::load(const std::string& filename) {
 
     FILE *Handle;
