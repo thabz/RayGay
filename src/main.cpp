@@ -25,6 +25,7 @@
 
 #include "photonrenderer.h"
 #include "raytracer.h"
+#include "pathtracer.h"
 
 #include "photon/globalphotonmap.h"
 #include "photon/causticsmap.h"
@@ -175,6 +176,8 @@ void work(string scenefile, string outputfile,int jobs) {
 	    renderer = new PhotonRenderer(renderersettings,img,scene,space,job_pool,0,globalphotonmap,causticsmap,irradiancecache);
 	} else if (renderersettings->renderertype == RendererSettings::RAYTRACER) {
 	    renderer = new Raytracer(renderersettings,img,scene,space,job_pool,0);
+	} else if (renderersettings->renderertype == RendererSettings::PATHTRACER) {
+	    renderer = new Pathtracer(renderersettings,img,scene,space,job_pool,0);
 	}
 	renderer->run();
     } else {
@@ -186,6 +189,8 @@ void work(string scenefile, string outputfile,int jobs) {
 		renderers[i] = new PhotonRenderer(renderersettings,img,scene,space,job_pool,i,globalphotonmap,causticsmap,irradiancecache);
 	    } else if (renderersettings->renderertype == RendererSettings::RAYTRACER) {
 		renderers[i] = new Raytracer(renderersettings,img,scene,space,job_pool,i);
+	    } else if (renderersettings->renderertype == RendererSettings::PATHTRACER) {
+		renderers[i] = new Pathtracer(renderersettings,img,scene,space,job_pool,i);
 	    } else {
 		throw_exception("Unknown renderer");
 	    }

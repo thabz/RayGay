@@ -124,7 +124,7 @@ ActionListNode* top_actions;
 %token tPRINT
 %token tRADIUS
 %token tRANDOM
-%token tRENDERER tRAYTRACER tPHOTONRENDERER
+%token tRENDERER tRAYTRACER tPHOTONRENDERER tPATHTRACER
 %token tROTATE tTRANSLATE tSCALE
 %token tREPEAT
 %token tSIN tCOS tABS tPI t2PI
@@ -293,6 +293,11 @@ Renderer	: tRENDERER tRAYTRACER
                 | tRENDERER tPHOTONRENDERER
                 {
                     renderer_settings->renderertype = RendererSettings::PHOTON_RENDERER;
+		    $$ = new NOPAction();
+		}
+                | tRENDERER tPATHTRACER
+                {
+                    renderer_settings->renderertype = RendererSettings::PATHTRACER;
 		    $$ = new NOPAction();
 		}
 		;

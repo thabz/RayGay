@@ -12,6 +12,7 @@ class RendererSettings {
 	enum RendererType {
 	    PHOTON_RENDERER,
 	    RAYTRACER,
+	    PATHTRACER,
 	    NONE 
 	};
 

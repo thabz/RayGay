@@ -95,6 +95,7 @@ num		return tNUM;
 necklace	return tNECKLACE;
 normalize	return tNORMALIZE;
 object		return tOBJECT;
+pathtracer	return tPATHTRACER;
 photonmap	return tPHOTONMAP;
 photonrenderer	return tPHOTONRENDERER;
 PI		return tPI;
