@@ -82,6 +82,7 @@ vector<Intersection> CSG::allIntersections(const Ray& ray) const {
 	    // Invert all directions of right
 	    for(unsigned int i = 0; i < right_int.size(); i++) {
 		right_int[i].isEntering(!right_int[i].isEntering());
+		right_int[i].flipNormal();
 	    }
 	    right_inside = !right_inside;
 	    if (right_int.empty() && !right_inside) return result;
@@ -178,7 +179,7 @@ Intersection CSG::_fullIntersect(const Ray& ray, const double t) const {
 		result = all.front();
 		//assert(IS_EQUAL(t,result.getT()));
 		if (result.getNormal() * ray.getDirection() > 0) {
-		    result.flipNormal();
+		   // result.flipNormal();
 		}
 	    } else {
 		throw_exception("This shouldn't happen...");
