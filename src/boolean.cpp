@@ -99,7 +99,7 @@ Vector Boolean::normal(const Intersection& i) const {
     throw unknownOp(_op);
 }
 
-Material Boolean::getMaterial() const {
+const Material& Boolean::getMaterial() const {
     return _material;
 }
 

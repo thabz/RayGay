@@ -10,7 +10,7 @@ Triangle::Triangle(Mesh* m) {
     mesh = m;
 }
 
-Material Triangle::getMaterial() const { 
+const Material& Triangle::getMaterial() const { 
     return mesh->getMaterial(); 
 }
 

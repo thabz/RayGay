@@ -74,7 +74,7 @@ class Mesh : public ObjectCollection {
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection & i) const;
-	virtual Material getMaterial() const;
+	virtual const Material& getMaterial() const;
 
 	/// Intersection with a boundingbox
 	virtual bool intersects(const BoundingBox& b) const;

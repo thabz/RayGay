@@ -270,7 +270,7 @@ bool Mesh::intersects(const BoundingBox& box) const {
     
 }
 
-Material Mesh::getMaterial() const {
+const Material& Mesh::getMaterial() const {
     return material;
 }
 

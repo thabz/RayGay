@@ -31,7 +31,7 @@ class Sphere : public BooleanOperand {
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection & i) const;
-	virtual Material getMaterial() const;
+	virtual const Material& getMaterial() const;
 
 	virtual bool onEdge(const Vector &p) const;
 	virtual bool inside(const Vector &p) const;

@@ -41,7 +41,7 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, int depth) {
     object* object = intersection.getObject();
     const Vector point = intersection.getPoint();
     Vector normal = object->normal(intersection);
-    Material material = object->getMaterial();
+    const Material& material = object->getMaterial();
     normal = material.bump(intersection,normal);
     double ambient_intensity = 0.2;
     RGB result_color = ambient_intensity * material.getDiffuseColor(intersection);

@@ -32,7 +32,7 @@ class Boolean : public BooleanOperand {
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection& i) const;
-	virtual Material getMaterial() const;
+	virtual const Material& getMaterial() const;
 	virtual bool intersects(const BoundingBox&) const;
 	virtual BoundingBox boundingBoundingBox() const;
 

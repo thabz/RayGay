@@ -73,7 +73,7 @@ Vector Sphere::normal(const Intersection& i) const {
     return normal;
 }
 
-Material Sphere::getMaterial() const {
+const Material& Sphere::getMaterial() const {
     return material;
 }
 
