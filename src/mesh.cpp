@@ -191,17 +191,27 @@ Vector Mesh::normal(const Intersection &i) const {
 }
 
 Vector Mesh::phong_normal(const Intersection &i) const {
-    // Hvert hjørnes vægt er den modsatte trekants areal.
     const Triangle* triangle = i.local_triangle;
     Tri* tri = tris[triangle->getTri()];
+    Vector result = Vector(0,0,0);
+    Vector weight = getInterpolationWeights(triangle->getTri(), i.point);
+    for(unsigned int j = 0; j < 3; j++) {
+	result = result + normals[tri->interpolated_normal[j]] * weight[j];
+    }
+    result.normalize();
+    return result;
+}
+
+Vector Mesh::getInterpolationWeights(unsigned int triIdx, Vector p) const {
+    // Hvert hjørnes vægt er den modsatte trekants areal.
+    Tri* tri = tris[triIdx];
     Vector result = Vector(0,0,0);
     unsigned int j,j2,j3;
     for(j = 0; j < 3; j++) {
 	j2 = (j + 1) % 3;
 	j3 = (j + 2) % 3;
-	result = result + normals[tri->interpolated_normal[j]] * (Vector::area(i.point,corners[tri->vertex[j2]],corners[tri->vertex[j3]]) / tri->area);
+	result[j] =  Vector::area(p,corners[tri->vertex[j2]],corners[tri->vertex[j3]]) / tri->area;
     }
-    result.normalize();
     return result;
 }
 

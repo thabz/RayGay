@@ -93,6 +93,7 @@ class Mesh : public ObjectCollection {
 	Vector cornerAt(int i) { return corners[i]; };
 
 	void prepare();
+	Vector getInterpolationWeights(unsigned int tri, Vector p) const;
 
     private:
 	MeshType meshType;
