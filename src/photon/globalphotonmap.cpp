@@ -4,6 +4,16 @@
 #include "photon/globalphotonmap.h"
 #include "stats.h"
 
+/**
+ * This is the constructor for the global photon map.
+ *
+ * To create the photon map it is necessary to specify the
+ * maximum number of photons that will be stored.
+ *
+ * @param max_phot The maximum number of photons that will be stored.
+ * @param max_dist Max distance to look for photons when doing an irradiance estimate
+ * @param estimate_photons Number of photons to use when doing an irradiance estimate
+ */
 GlobalPhotonMap::GlobalPhotonMap(const int size, double max_dist, int estimate_photons ) : PhotonMap<IrradiancePhoton>(size,max_dist,estimate_photons) {
 
 }
@@ -49,8 +59,18 @@ void GlobalPhotonMap::preComputeIrradiances(const int M) {
     }
 }
 
+/**
+ * Do irradiance estimate and store in photon
+ *
+ * @param photon The photon in question
+ */
 void GlobalPhotonMap::preComputeIrradiance(IrradiancePhoton* photon) {
-    // TODO: Do irradiance estimate and store in photon
+    Vector pos = photon->getPosition();
+    Vector normal = unpackVector(photon->normal_theta,photon->normal_phi);
+    Vector irradiance = irradiance_estimate(pos,normal);
+    for(int i = 0; i < 3; i++) {
+	photon->irradiance_estimate[i] = irradiance[i];
+    }
 }
 
 /**
@@ -60,6 +80,13 @@ void GlobalPhotonMap::preComputeIrradiance(IrradiancePhoton* photon) {
  * @param normal The surface normal at that point.
  */
 RGB GlobalPhotonMap::irradianceEstimate(const Vector& pos, const Vector& normal) {
+    double min_dist = max_dist;
 
+    return irradiance_estimate(pos,normal);
 }
 
+/*
+void locate_photon(IrradiancePhoton** best_photon, const Vector& pos, const Vector &normal, double* min_dist, const int index) const {
+
+}
+*/

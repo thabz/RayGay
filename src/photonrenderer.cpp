@@ -29,12 +29,16 @@ void PhotonRenderer::init() {
     this->causticsphotonmap = new CausticsMap(renderersettings->caustic_photons_num,renderersettings->estimate_radius,renderersettings->estimate_samples); 
 
     PhotonTracer* photontracer = new PhotonTracer(scene,space,globalphotonmap,causticsphotonmap);
+    cout << "Tracing photons..." << endl;
     photontracer->trace();
+    cout << "Done." << endl;
 
     int total_photons_num = renderersettings->global_photons_num + renderersettings->caustic_photons_num;
     globalphotonmap->scale_photon_power(1.0/double(total_photons_num));
     globalphotonmap->balance();
+    cout << "Precomputing irradiances..." << endl;
     globalphotonmap->preComputeIrradiances(4);
+    cout << "Done." << endl;
 
     causticsphotonmap->scale_photon_power(1.0/double(total_photons_num));
     causticsphotonmap->balance();
@@ -106,7 +110,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     result_color += finalGather(point,normal,ray.getDirection(),renderersettings->final_gather_rays,0);
 
     // Direct estimate from caustics map
-    result_color += causticsphotonmap->irradiance_estimate(point,normal);
+    result_color += causticsphotonmap->getFilteredIrradianceEstimate(point,normal);
     //result_color.clip();
     //return result_color;
 
@@ -189,7 +193,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 /// Final gathering does one step of path tracing
 Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const Vector& ray_dir, int gatherRays, int depth) const {
     if (gatherRays == 0) {
-	return globalphotonmap->irradiance_estimate(point,normal);
+	return globalphotonmap->irradianceEstimate(point,normal);
     }
 
     Vector result = Vector(0.0,0.0,0.0);
@@ -208,7 +212,7 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 	        // If too close do additional level of path tracing
 		result += finalGather(hitpoint,hitnormal,dir,gatherRays / 2, depth + 1);
 	    } else {
-		result += globalphotonmap->irradiance_estimate(hitpoint,hitnormal);
+		result += globalphotonmap->irradianceEstimate(hitpoint,hitnormal);
 	    }
 	}
     }

@@ -13,7 +13,7 @@
  *
  * @param max_phot The maximum number of photons that will be stored.
  * @param max_dist Max distance to look for photons when doing an irradiance estimate
- * @patam estimate_photons Number of photons to use when doing an irradiance estimate
+ * @param estimate_photons Number of photons to use when doing an irradiance estimate
  */
 template <class PhotonType>
 PhotonMap<PhotonType>::PhotonMap<PhotonType>( const int max_phot, double max_dist, int estimate_photons  )
@@ -461,4 +461,12 @@ void PhotonMap<PhotonType>::packVector(const Vector& dir, unsigned char* theta_d
 	*phi_dest = (unsigned char)phi;
 }
 
+template <class PhotonType>
+Vector PhotonMap<PhotonType>::unpackVector(unsigned char theta, unsigned char phi) const {
+    Vector result;
+    result[0] = sintheta[theta]*cosphi[phi];
+    result[1] = sintheta[theta]*sinphi[phi];
+    result[2] = costheta[theta];
+    return result;
+}
 

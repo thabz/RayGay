@@ -41,17 +41,6 @@ class PhotonMap {
 
 	virtual void balance(void);              // balance the kd-tree (before use!)
 
-	void storeit(const PhotonType& photon);
-
-	virtual Vector irradiance_estimate(
-		const Vector& pos,             // surface position
-		const Vector& normal           // surface normal at pos
-		) const;
-
-	virtual void locate_photons(
-		NearestPhotons<PhotonType>* const np,      // np is used to locate the photons
-		const int index ) const;       // call with index = 1
-
 	void photon_dir(
 		float *dir,                    // direction of photon (returned)
 		const PhotonType *p ) const;       // the photon
@@ -64,7 +53,7 @@ class PhotonMap {
 
     protected:
 	void packVector(const Vector& vector, unsigned char* theta, unsigned char* phi) const;
-	Vector unpackVector(unsigned char* theta, unsigned char* phi) const;
+	Vector unpackVector(unsigned char theta, unsigned char phi) const;
 	
 
     private:
@@ -89,7 +78,6 @@ class PhotonMap {
 	int half_stored_photons;
 	int max_photons;
 	int prev_scale;
-	double max_dist;
 	int estimate_photons;
 
 	float costheta[256];
@@ -103,6 +91,19 @@ class PhotonMap {
     protected:
 	int stored_photons;
 	PhotonType *photons;
+	double max_dist;
+
+	void storeit(const PhotonType& photon);
+
+	virtual Vector irradiance_estimate(
+		const Vector& pos,             // surface position
+		const Vector& normal           // surface normal at pos
+		) const;
+
+	virtual void locate_photons(
+		NearestPhotons<PhotonType>* const np,      // np is used to locate the photons
+		const int index ) const;       // call with index = 1
+
 
 };
 
