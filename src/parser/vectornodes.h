@@ -9,6 +9,8 @@
 
 class VectorNode : public SyntaxNode {
     public:
+	VectorNode() {
+	};
 	VectorNode(FloatNode* x, FloatNode* y, FloatNode* z) {
 	    this->x = x;
 	    this->y = y;
@@ -42,6 +44,41 @@ class VectorListNode : public SyntaxNode {
 
     private:
 	vector<VectorNode*> vectors;
+};
+
+class VectorLengthNode : public FloatNode {
+
+    public:
+	VectorLengthNode(VectorNode* v) {
+	    this->vecnode = v;
+	}
+
+	double eval() {
+	    return vecnode->eval().length();
+	}
+
+    private:
+	VectorNode* vecnode;
+};
+
+class VectorNormalizeNode : public VectorNode {
+
+    public:
+	VectorNormalizeNode(VectorNode* v) {
+	    this->vecnode = v;
+	}
+
+	Vector eval() {
+	    Vector result = vecnode->eval();
+	    if (IS_ZERO(result.length())) {
+               // TODO: Throw runtime exception
+	    }
+	    result.normalize();
+	    return result;
+	}
+
+    private:
+	VectorNode* vecnode;
 };
 
 #endif

@@ -107,6 +107,8 @@ ActionListNode* top_actions;
 %token tNAME
 %token tNONE
 %token tNUM
+%token tNORMALIZE
+%token tLENGTH
 %token tNOSHADOW
 %token tNECKLACE
 %token tOBJECT
@@ -142,10 +144,10 @@ ActionListNode* top_actions;
 %type <rgb> RGB
 %type <rgba> RGBA
 %type <texture> Texture
-%type <vector> Vector 
+%type <vector> Vector
 %type <vectorlist> VectorList
 %type <boolean> Bool 
-%type <expr> Expr Random
+%type <expr> Expr Random 
 %type <it> InterpolationType 
 %type <matrix> Rotate Translate Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
@@ -722,6 +724,10 @@ Vector		: '<' Expr ',' Expr ',' Expr '>'
                 { 
 		    $$ = new VectorNode($2,$4,$6); 
 		}
+                | tNORMALIZE '(' Vector ')'
+		{
+		    $$ = new VectorNormalizeNode($3);
+		}
                 ;
 
 VectorList	: Vector
@@ -809,6 +815,10 @@ Expr		: tSIN '(' Expr ')'
                 | tABS '(' Expr ')'
                 {
 		    $$ = new FloatAbsNode($3);
+		}
+                | tLENGTH '(' Vector ')'
+		{
+		    $$ = new VectorLengthNode($3);
 		}
                 | tPI 
                 {

@@ -6,6 +6,9 @@
 #include "parser/assignments.h"
 #include "parser/syntaxnode.h"
 
+/**
+ * These are syntax tree nodes whose eval returns floats (...well, doubles really)
+ */
 class FloatNode : public SyntaxNode {
 
     public:
@@ -141,5 +144,6 @@ class NamedFloatNode : public FloatNode {
     private:
 	string name;
 };
+
 
 #endif
