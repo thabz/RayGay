@@ -3,6 +3,7 @@
 #define POINTLIGHT_H
 
 #include "lights/lightsource.h"
+#include "lights/shadowcache.h"
 
 class RGB;
 class Matrix;
@@ -16,10 +17,10 @@ class Pointlight : public Lightsource {
     public:
 	/// Constructor
         Pointlight(const Vector& pos);
-	Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space) const;
+	Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space, unsigned int depth) const;
 
     private:
-	mutable Object* hint;
+	mutable ShadowCache shadowcache;
 };
 
 #endif

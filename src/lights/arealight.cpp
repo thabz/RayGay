@@ -55,7 +55,7 @@ Vector Arealight::getPosition(int i) const {
     return circles[i]->getPoint(t);
 }
 
-Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space) const {
+Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space, unsigned int depth) const {
     Lightinfo info;
     Vector direction_to_light;
     info.direction_to_light = position - inter.getPoint();

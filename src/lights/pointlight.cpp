@@ -7,27 +7,27 @@
 #include "stats.h"
 
 Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
-    hint = NULL;
 }
 
-Lightinfo Pointlight::getLightinfo(const Intersection& inter,const Vector& normal, SpaceSubdivider* space) const {
+Lightinfo Pointlight::getLightinfo(const Intersection& inter,const Vector& normal, SpaceSubdivider* space, unsigned int depth) const {
     // TODO: Move point ESPILON along normal to avoid selfshadowing.
     Lightinfo info;
     info.direction_to_light = position - inter.getPoint();
     double dist_to_light = info.direction_to_light.length();
-    info.direction_to_light.normalize();
+    info.direction_to_light = info.direction_to_light / dist_to_light;
     info.cos = info.direction_to_light * normal;
 
     if (info.cos > 0.0) {
 	Stats::getUniqueInstance()->inc("Shadow rays cast");
 	Ray ray_to_light = Ray(inter.getPoint(),info.direction_to_light,-1.0);
+	Object* hint = shadowcache.get(depth);
 	bool in = space->intersectForShadow(ray_to_light,hint,dist_to_light);
 
 	if (in) {
-	    hint = space->getLastIntersection()->getObject();
+	    shadowcache.put(depth,space->getLastIntersection()->getObject());
 	    info.intensity = 0.0;
 	} else {
-	    hint = NULL;
+	    shadowcache.put(depth,NULL);
 	    info.intensity = 1.0;
 	}
     }

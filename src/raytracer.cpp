@@ -42,12 +42,12 @@ RGBA Raytracer::tracePrimary(const Ray& ray) {
 }
 
 RGBA Raytracer::trace(const Ray& ray, int depth) {
+    Stats::getUniqueInstance()->inc("Secondary camera rays cast");
     bool intersected = space->intersect(ray);
     return traceSub(intersected, ray, depth);
 }
 
 RGBA Raytracer::traceSub(bool intersected, const Ray& ray, int depth) {
-    Stats::getUniqueInstance()->inc("Total camera rays cast");
     RGBA color; 
     Intersection intersection;
     double intersect_distance;
@@ -94,7 +94,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 	double attenuation = (*p)->getAttenuation(point);
 
 	if (attenuation > double(0)) {
-	    Lightinfo info = (*p)->getLightinfo(intersection,normal,space);
+	    Lightinfo info = (*p)->getLightinfo(intersection,normal,space,depth);
 	    if (info.cos > 0.0) {
 		RGB color = RGB(0.0,0.0,0.0);
 		// Check for blocking objects
