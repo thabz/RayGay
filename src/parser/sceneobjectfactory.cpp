@@ -162,12 +162,12 @@ SCM make_isosurface(SCM s_proc, SCM s_vec_lower, SCM s_vec_higher, SCM s_iso, SC
     return sceneobject2scm(iso_surface);
 }
 
-SCM make_mesh(SCM s_vertices, SCM s_triangles, SCM s_material)
+SCM make_mesh(SCM s_material, SCM s_vertices, SCM s_triangles)
 {
     char* proc = "make-mesh";
     uint length;
 
-    Material* material = scm2material(s_material, proc, 3);
+    Material* material = scm2material(s_material, proc, 1);
     Mesh* mesh = new Mesh(Mesh::MESH_PHONG, material);
 
     // Add the vertices
@@ -178,20 +178,26 @@ SCM make_mesh(SCM s_vertices, SCM s_triangles, SCM s_material)
 	Vector vertex = scm2vector(s_vertex, proc, 1);
 	mesh->addVertex(vertex);
     }
+    cout << "Vertices: " << length << endl;
 
     // Add the triangles
     assert(SCM_NFALSEP (scm_list_p (s_triangles)));
     length = scm_num2int(scm_length(s_triangles),0,"");
     Vector2 uv = Vector2(0,0);
     uint v[3];
-    for(uint i = 0; i < length; i++) {
-	SCM s_triangle = scm_list_ref(s_vertices, scm_int2num(i));
-	Vector triangle = scm2vector(s_triangle, proc, 2);
-	v[0] = uint(triangle[0]);
-	v[1] = uint(triangle[1]);
-	v[2] = uint(triangle[2]);
-	mesh->addTriangle(v);
+    try {
+	for(uint i = 0; i < length; i++) {
+	    SCM s_triangle = scm_list_ref(s_triangles, scm_int2num(i));
+	    Vector triangle = scm2vector(s_triangle, proc, 2);
+	    v[0] = uint(triangle[0]);
+	    v[1] = uint(triangle[1]);
+	    v[2] = uint(triangle[2]);
+	    mesh->addTriangle(v);
+	}
+    } catch (Exception e) {
+	scm_error(NULL, "make-mesh", e.getMessage().c_str(), SCM_UNSPECIFIED, NULL);
     }
+    cout << "Faces: " << length << endl;
 
     return sceneobject2scm(mesh);
 }
