@@ -1,5 +1,7 @@
 testmath
 testpaths
+testobjects
+testspace
 *.lo
 *.la
 Makefile
