@@ -16,8 +16,9 @@ Object* ShadowCache::get(unsigned int depth) const {
     }
 }
 
-    void ShadowCache::put(unsigned int depth, Object* object) {
-	if (depth < LIGHTS_SHADOW_CACHE_MAX_DEPTH)
-	    objectlist[depth] = object;
+void ShadowCache::put(unsigned int depth, Object* object) {
+    if (depth < LIGHTS_SHADOW_CACHE_MAX_DEPTH) {
+	objectlist[depth] = object;
     }
+}
 
