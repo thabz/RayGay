@@ -16,6 +16,7 @@ using namespace std;
 
 #define lookupDouble(s) scm_num2double(scm_variable_ref(scm_c_lookup(s)),0,"")
 #define lookupVector(s) scm2vector(scm_variable_ref(scm_c_lookup(s)),"",0)
+#define lookupRGBA(s) scm2rgba(scm_variable_ref(scm_c_lookup(s)),"",0)
 
 class test_parser : public Test {
     private:
@@ -58,6 +59,11 @@ class test_parser : public Test {
 
 	    assertTrue(lookupVector("test-rotate-1") == Vector(0,-1,0));
 	    assertTrue(lookupVector("test-rotate-2") == Vector(1,0,0));
+
+	    // RGBA tests
+	    assertTrue(lookupRGBA("color-white") == RGBA(1.,1,1,1));
+	    assertTrue(lookupRGBA("color-white") == RGB(1.,1,1));
+	    assertTrue(lookupRGBA("color-blue-trans") == RGBA(0,0,1,0.5));
 	}
 };
 

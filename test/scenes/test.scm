@@ -1,6 +1,8 @@
 
 (define test-define-1 10)
 
+; Testing vector math
+
 (define test-vdot-1 (vdot '(1 2 3) '(4 5 6)))
 (define test-vdot-2 (vdot '(3 -1 2) '(4 5 6)))
 
@@ -27,3 +29,7 @@
 (define test-rotate-1 (rotate '(1 0 0) '(0 0 1) 90))
 (define test-rotate-2 (rotate '(0 1 0) '(0 0 1) 90))
 
+; Testing RGBA
+
+(define color-white '(1 1 1))
+(define color-blue-trans '(0 0 1 0.5))
