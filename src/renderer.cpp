@@ -49,6 +49,7 @@ void Renderer::run() {
     RenderJob job;
     while (job_pool->getJob(&job)) {
 	render(job);
+	job_pool->markJobDone(&job);
     }
 }
 

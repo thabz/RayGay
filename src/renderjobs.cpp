@@ -32,6 +32,21 @@ bool RenderJobPool::getJob(RenderJob* job_dest) {
     return result;
 }
 
-void RenderJobPool::addJob(const RenderJob& job) {
+void RenderJobPool::addJob(RenderJob job) {
+    job.is_done = false;
     jobs.push_back(job);
+}
+
+void RenderJobPool::markJobDone(RenderJob* job) {
+    job->is_done = true;
+#ifdef HAVE_GTK
+    // Update preview window
+    pthread_mutex_lock(&mutex_jobs);
+    int x = job->begin_x;
+    int y = job->begin_y;
+    int w = job->end_x - x;
+    int h = job->end_y - y;
+    Environment::getUniqueInstance()->getPreviewWindow()->drawBlock(x,y,w,h);
+    pthread_mutex_unlock(&mutex_jobs);
+#endif    
 }

@@ -17,20 +17,24 @@ class RenderJob {
 	int begin_y;
 	int end_x;
 	int end_y;
+	bool is_done;
 };
 
 /**
  * The pool of renderjobs
  */
+
 class RenderJobPool {
 
     public:
 	/// Constructor
 	RenderJobPool();
 	/// Add a job to the pool.
-	void addJob(const RenderJob& job);
+	void addJob(RenderJob job);
 	/// Get next job to be done.
 	bool getJob(RenderJob* job_dest);
+	/// Marks a job done
+	void markJobDone(RenderJob* job);
 
     private:
 	std::vector<RenderJob> jobs;

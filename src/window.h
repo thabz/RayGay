@@ -16,9 +16,9 @@ class Image;
 class PreviewWindow {
 
     public:
-	PreviewWindow();
-	void setSize(int width, int height);
-	void drawBlock(Image* img, int x, int y, int w, int h);
+	PreviewWindow(int w, int h);
+	void drawBlock(int x, int y, int w, int h);
+	void setImage(Image* img) { this->image = img; };
 	void run();
 	void stop();
 	void setProgress(double progress);
@@ -26,8 +26,11 @@ class PreviewWindow {
     private:
 	pthread_t window_main_loop;
 	GtkWidget *window;
-	GtkWidget *drawing_area;
-	GdkPixbuf *pixbuf;
+	GtkWidget *darea;
+	
+	Image* image;
+	int width;
+	int height;
 };
 
 #endif /* PREVIEW_WINDOW_H */

@@ -147,6 +147,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     Vector2 img_size = getImageSize();
     scene->getCamera()->setImageSize(int(img_size[0]),int(img_size[1]));
     Image* img = new Image(int(img_size[0]),int(img_size[1]));
+    Environment::getUniqueInstance()->getPreviewWindow()->setImage(img);
 
     if (scene->getObjects().size() == 0) {
 	throw_exception("No objects in scene.");
@@ -240,10 +241,9 @@ void work(string scenefile, string outputfile, int jobs) {
     
     int frames_num = getRendererSettings()->anim_frames;
 #ifdef HAVE_GTK
-    PreviewWindow* preview_window = new PreviewWindow();
-    Environment::getUniqueInstance()->setPreviewWindow(preview_window);
     Vector2 size = getImageSize();
-    preview_window->setSize(int(size[0]),int(size[1]));
+    PreviewWindow* preview_window = new PreviewWindow(int(size[0]),int(size[1]));
+    Environment::getUniqueInstance()->setPreviewWindow(preview_window);
     preview_window->run();
 #endif
     if (frames_num == 1) {

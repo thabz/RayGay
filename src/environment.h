@@ -4,9 +4,9 @@
 
 #include "scene.h"
 #include "parser/objectcollector.h"
-#include "window.h"
 
 class ObjectCollector;
+class PreviewWindow;
 
 class Environment {
 
