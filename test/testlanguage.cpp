@@ -130,6 +130,13 @@ void test_vector_copy() {
     delete b;
 }
 
+void test_fmod() {
+//    cout << "fmod(1.2, 1) : " << fmod(1.2,1) << endl;
+//    cout << "fmod(2.2, 1) : " << fmod(2.2,1) << endl;
+//    cout << "fmod(3.0, 1) : " << fmod(3.0,1) << endl;
+//    cout << "fmod(-1.2, 1) : " << fmod(-1.2,1) << endl;
+}
+
 void test_vector_ref() {
     vector<int>* a = new vector<int>;
     a->push_back(1);
@@ -168,6 +175,7 @@ int main(int argc, char *argv[]) {
     test_sort_array();
     test_vector_copy();
     test_vector_ref();
+    test_fmod();
     test_vector_clear();
     return EXIT_SUCCESS;
 }

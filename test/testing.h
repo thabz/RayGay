@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include "exception.h"
+#include "math/constants.h"
 
 using namespace std;
 
