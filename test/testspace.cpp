@@ -9,6 +9,8 @@
 #include "boundingbox.h"
 #include "intersection.h"
 #include "ray.h"
+#include "bsp.h"
+#include "sphere.h"
 
 void boundingbox_test() {
     BoundingBox b;
@@ -95,9 +97,73 @@ void boundingbox_test() {
     assert(b.cutByPlane(2,-0.5) == 0);
 }
 
+void bsp_test() {
+    BSP bsp;
+    for(int x = -10; x <= 10; x++) {
+       for(int y = -10; y <= 10; y++) {
+           for(int z = -10; z <= 10; z++) {
+	      Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40));
+	      bsp.addObject(sx);
+	   }
+ 	}
+    }
+
+
+    bsp.addObject(new Sphere(Vector(0,-500,0),10,Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)));
+
+    bsp.prepare();
+
+    // Test intersection
+    Ray r = Ray(Vector(200,250,1000),Vector(0,0,-1),1);
+    assert(bsp.intersectForShadow(r) == true);
+    assert(bsp.intersect(r) == true);
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[0],200));
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[1],250));
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[2],210));
+
+    r = Ray(Vector(200,250,-1000),Vector(0,0,1),1);
+    assert(bsp.intersectForShadow(r) == true);
+    assert(bsp.intersect(r) == true);
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[0],200));
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[1],250));
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[2],-210));
+
+    r = Ray(Vector(-200,-150,1000),Vector(0,0,-1),1);
+    assert(bsp.intersectForShadow(r) == true);
+    assert(bsp.intersect(r) == true);
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[0],-200));
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[1],-150));
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[2],210));
+
+    r = Ray(Vector(0,1000,0),Vector(0,-1,0),1);
+    assert(bsp.intersectForShadow(r) == true);
+    assert(bsp.intersect(r) == true);
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[0],0));
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[1],260));
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[2],0));
+
+    r = Ray(Vector(0,-1000,0),Vector(0,1,0),1);
+    assert(bsp.intersectForShadow(r) == true);
+    assert(bsp.intersect(r) == true);
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[0],0));
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[1],-510));
+    assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[2],0));
+
+    r = Ray(Vector(300,250,-1000),Vector(0,0,1),1);
+    assert(bsp.intersectForShadow(r) == false);
+    assert(bsp.intersect(r) == false);
+
+    r = Ray(Vector(200,250,-1000),Vector(0,0,-1),1);
+    assert(bsp.intersectForShadow(r) == false);
+    assert(bsp.intersect(r) == false);
+
+}
+
 int main(int argc, char *argv[]) {
 
     boundingbox_test();
+    bsp_test();
+    BSP::test();
     return EXIT_SUCCESS;
 }
 
