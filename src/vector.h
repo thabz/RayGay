@@ -41,6 +41,10 @@ public:
     
     double operator*(const Vector &v) const; ///< Vector dot product (aka scalar product)
 
+    double x() const { return _vector[0]; };
+    double y() const { return _vector[1]; };
+    double z() const { return _vector[2]; };
+
     /// Comparator
     bool operator==(const Vector &v) const;
 
