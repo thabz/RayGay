@@ -4,6 +4,7 @@
 /**
  * Using the Marching Cubes algorithm.
  *
+ * @see http://www-public.tu-bs.de:8080/~y0013390/fast_iso/patch.html
  * @see http://www.exaflop.org/docs/marchcubes/ind.html
  */
 Intersection Volume::_intersect(const Ray& ray) const {
