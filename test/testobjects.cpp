@@ -519,6 +519,16 @@ void csg_test() {
     assert(iNormal(csg,Vector(0,0,0),Vector(0,0,1)) == Vector(0,0,-1));
     assert(iPoint(csg,Vector(0,0,0),Vector(0,0,-1)) == Vector(0,0,-5));
     assert(iNormal(csg,Vector(0,0,0),Vector(0,0,-1)) == Vector(0,0,1));
+
+    s1 = new Sphere(Vector(0,0,10),15,NULL);
+    s2 = new Sphere(Vector(0,0,-10),15,NULL);
+    csg = new CSG(s1,CSG::UNION,s2,NULL);
+    assert(iPoint(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-25));
+    assert(iNormal(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-1));
+    assert(iPoint(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-25));
+    assert(iNormal(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-1));
+    assert(iPoint(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,25));
+    assert(iNormal(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,1));
     
     ///////////////////////////////////////////////////////////////
     // Intersection 
@@ -733,6 +743,14 @@ void solidbox_test() {
     assert(intersects(b,Vector(-9,-19,-100),Vector(0,0,1)));
     assert(iPoint(b,Vector(-9,-19,-100),Vector(0,0,1)) == Vector(-9,-19,-30));
     assert(iNormal(b,Vector(-9,-19,-100),Vector(0,0,1)) == Vector(0,0,-1));
+
+    // Solidbox in CSG difference
+    SolidBox* b1 = new SolidBox(Vector(-20,350,-20),Vector(20,400,20),NULL);
+    SolidBox* b2 = new SolidBox(Vector(-15,395,-15),Vector(15,405,15),NULL);
+    CSG* csg = new CSG(b1,CSG::DIFFERENCE,b2,NULL);
+    assert(iPoint(csg,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,395,0));
+    assert(iNormal(csg,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
+
 }
 
 void ellipsoid_test() {
