@@ -35,33 +35,21 @@ RGBA Raytracer::getPixel(const Vector2& v) {
     }
 }
 
-RGBA Raytracer::tracePrimary(const Ray& ray) {
-    Stats::getUniqueInstance()->inc("Primary camera rays cast");
-    bool intersected = space->intersectPrimary(ray);
-    return traceSub(intersected, ray, 1);
-}
-
-RGBA Raytracer::trace(const Ray& ray, int depth) {
-    Stats::getUniqueInstance()->inc("Secondary camera rays cast");
-    bool intersected = space->intersect(ray);
-    return traceSub(intersected, ray, depth);
-}
-
-RGBA Raytracer::traceSub(bool intersected, const Ray& ray, int depth) {
+RGBA Raytracer::traceSub(const bool intersected, const Ray& ray, const int depth, const double weight) {
     RGBA color; 
     Intersection intersection;
     double intersect_distance;
 
     if (intersected) {
 	intersection = *(space->getLastIntersection());
-	intersect_distance = (intersection.getPoint() - ray.getOrigin()).length();
-	color = shade(ray,intersection,depth);
+	color = shade(ray,intersection,depth,weight);
     } else {
         color = scene->getBackgroundColor(ray);
 	intersect_distance = HUGE_DOUBLE;
     }
 
     if (scene->fogEnabled()) {
+	intersect_distance = (intersection.getPoint() - ray.getOrigin()).length();
 	double D = scene->getFogDistance();
 	double v = expf(-intersect_distance/D);
 	color =  (color * v) + (scene->getFogColor() * (1-v));
@@ -69,7 +57,7 @@ RGBA Raytracer::traceSub(bool intersected, const Ray& ray, int depth) {
     return color;
 }
 
-RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth) {
+RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int depth, const double weight) {
     Object* object = intersection.getObject();
     const Vector point = intersection.getPoint();
     Vector normal = object->normal(intersection);
@@ -129,13 +117,13 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 		int gloss_rays = material->glossRaysNum();
 		for(int i = 0; i < gloss_rays; i++) {
 		    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle),ray.getIndiceOfRefraction());
-		    refl_col += trace(refl_ray, depth + 1);
+		    refl_col += trace(refl_ray, depth + 1, weight);
 		}
 		refl_col *= 1.0/double(gloss_rays);
 	    } else {
 		/* Single reflected ray */
 		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
-		refl_col = trace(refl_ray, depth + 1);
+		refl_col = trace(refl_ray, depth + 1, reflection * weight);
 	    }
 	    result_color += reflection * refl_col;
 	}
@@ -147,7 +135,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 	    Vector T = ray.getDirection().refract(normal,ior);
 	    if (!(T == Vector(0,0,0))) {
 		Ray trans_ray = Ray(point+0.1*T,T,ior);
-		RGB trans_col = trace(trans_ray, depth + 1);
+		RGB trans_col = trace(trans_ray, depth + 1, transmission * weight);
 		result_color += transmission * trans_col;
 	    } else {
 		// Internal reflection, see page 757.
@@ -155,7 +143,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 		refl_vector = refl_vector.reflect(normal);
 		refl_vector.normalize();
 		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
-		RGB refl_col = trace(refl_ray, depth + 1);
+		RGB refl_col = trace(refl_ray, depth + 1, transmission*weight);
 		result_color += transmission * refl_col;
 	    }
 	}

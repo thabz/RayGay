@@ -2,6 +2,7 @@
 #define RAYTRACER_H
 
 #include "renderer.h"
+#include "space/spacesubdivider.h"
 
 class RGB;
 class Ray;
@@ -20,11 +21,29 @@ class Raytracer : public Renderer {
     private:
 	RGBA getPixel(const Vector2& v);
 
-	RGB shade(const Ray&, const Intersection&, int depth);
-	RGBA trace(const Ray&, int depth);
-	RGBA traceSub(bool intersected, const Ray&, int depth);
+	RGB shade(const Ray&, const Intersection&, const int depth, const double weight);
+	RGBA trace(const Ray&, const int depth, const double weight);
+	RGBA traceSub(const bool intersected, const Ray&, const int depth, const double weight);
 	RGBA tracePrimary(const Ray&);
 };
 
+inline
+RGBA Raytracer::tracePrimary(const Ray& ray) {
+    //Stats::getUniqueInstance()->inc("Primary camera rays cast");
+    bool intersected = space->intersectPrimary(ray);
+    return traceSub(intersected, ray, 1, 1.0);
+}
+
+inline
+RGBA Raytracer::trace(const Ray& ray, const int depth, const double weight) {
+    // Discard reflected ray if the amount of colour it
+    // contributes to the pixel is too small.
+    if (weight < 0.004) // 1 / 256 = 0.004
+	return RGBA(0,0,0,0.0);
+
+    //Stats::getUniqueInstance()->inc("Secondary camera rays cast");
+    bool intersected = space->intersect(ray);
+    return traceSub(intersected, ray, depth, weight);
+}
 
 #endif
