@@ -857,23 +857,23 @@ Vector		: '<' Expr ',' Expr ',' Expr '>'
 		{
 		    $$ = new VectorNormalizeNode($3);
 		}
-                | Vector '*' Expr
+                | '<' Vector '*' Expr '>'
 		{
-		    $$ = new VectorMultNode($1,$3);
+		    $$ = new VectorMultNode($2,$4);
 		}
-                | Expr '*' Vector 
+                | '<' Expr '*' Vector '>'
 		{
-		    $$ = new VectorMultNode($3,$1);
+		    $$ = new VectorMultNode($4,$2);
 		}
-                | Vector '+' Vector 
+                | '<' Vector '+' Vector '>'
 		{
-		    $$ = new VectorPlusNode($1,$3);
+		    $$ = new VectorPlusNode($2,$4);
 		}
-                | Vector '-' Vector 
+                | '<' Vector '-' Vector  '>'
 		{
-		    $$ = new VectorMinusNode($1,$3);
+		    $$ = new VectorMinusNode($2,$4);
 		}
-                | tVARNAME
+                | tVARNAME 
 		{
 		    $$ = new NamedVectorNode(*$1);
 		    delete $1;
@@ -1111,6 +1111,7 @@ void openfile(string filename) {
 
 void init_parser(string scenefile) {
     openfile(scenefile);
+    line_num = 1;
     renderer_settings = new RendererSettings();
     top_actions = new ActionListNode();
 }
