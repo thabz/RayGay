@@ -21,6 +21,7 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 		       object.cpp	\
 		       objectgroup.cpp	\
 		       ply.cpp		\
+		       solidbox.cpp	\
 		       sor.cpp		\
 		       sphere.cpp	\
 		       teapot.cpp	\
@@ -51,6 +52,7 @@ EXTRA_DIST = 3ds.h 		\
 	     ply.h		\
 	     sceneobject.h	\
 	     solid.h		\
+	     solidbox.h		\
 	     sor.h		\
 	     sphere.h		\
 	     teapot.h		\
