@@ -122,6 +122,53 @@ ostream & operator<<(ostream &os,const Matrix &m) {
     return os;
 }
 
+/*! 
+	\brief		Orientation transformation matrix
+	\ingroup	Math
+	\param      x	New orientation for +x
+	\param		y	New orientation for +y
+	\param		z	New orientation for +z
+*/
+Matrix Matrix::matrixOrient(const Vector &x,const Vector &y,const Vector &z)
+{
+	Matrix orient;
+
+	orient.set(0,0,x.x());
+	orient.set(0,1,x.y());
+	orient.set(0,2,x.z());
+
+	orient.set(1,0,y.x());
+	orient.set(1,1,y.y());
+	orient.set(1,2,y.z());
+
+	orient.set(2,0,z.x());
+	orient.set(2,1,z.y());
+	orient.set(2,2,z.z());
+
+	return orient;
+}
+
+/*! 
+	\brief		Orientation transformation matrix
+	\ingroup	Math
+	\param      direction	New orientation for +z
+	\param      up          New orientation for +y
+*/
+
+Matrix Matrix::matrixOrient(const Vector &direction,const Vector &up)
+{
+	assert(direction.norm()>0.0);
+	assert(up.norm()>0.0);
+
+	Vector d(direction);
+	d.normalize();
+
+	Vector u(up);
+	u.normalize();
+
+	return matrixOrient(Vector::xProduct(u,d),u,d);
+}
+
 /// Create a rotation transformation
 Matrix Matrix::matrixRotate(const Vector axis, const double angle) {
 	Matrix rotate;
