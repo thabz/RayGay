@@ -2,20 +2,26 @@
 %{
     /* C declarations */
 #include <string>    
+#include <map>    
+#include <cstdio>    
 #include "math/vector.h"
 #include "paths/spiral.h"
 #include "paths/circle.h"
+#include "paths/linesegment.h"
 #include "objects/sphere.h"    
 #include "objects/solidbox.h"    
 #include "objects/necklace.h"    
 #include "materials/material.h"    
 using namespace std;
 
+map<string,double> doubleMap;
+map<string,Path*> pathMap;
+
 void yyerror(string s);
 Path* getNamedPath(string* name);
 void setNamedPath(string* name, Path* path);
 double getNamedDouble(string* name);
-void setNamedDouble(string* name, double path);
+void setNamedDouble(string* name, double val);
 extern int yylex(void);
 
 %}
@@ -32,19 +38,21 @@ extern int yylex(void);
 %token <d> tFLOAT
 %token <c> tSTRING
 %token tCIRCLE
+%token tLINESEGMENT
 %token tMATERIAL
 %token tNAME
 %token tNECKLACE
+%token tPRINT
+%token tSOLIDBOX
 %token tSPHERE
 %token tSPIRAL
-%token tSOLIDBOX
 
 %type <d> Expr 
 %type <rgb> RGB
 %type <vector> Vector
 %type <object> Sphere SolidBox Necklace
 %type <material> MaterialDef NamedMaterial 
-%type <path> NamedPath Circle Spiral Path PathDef
+%type <path> NamedPath Circle Spiral Path PathDef LineSegment
 
 %left '+' '-'
 %left '*' '/'
@@ -57,6 +65,7 @@ Items		: /* Empty */
 
 Item		: Object
                 | AssignName
+		| Print
 		;
 
 AssignName	: tNAME tSTRING PathDef
@@ -117,7 +126,14 @@ NamedPath	: tSTRING
 
 PathDef		: Circle
                 | Spiral
+		| LineSegment
 		;
+
+LineSegment	: tLINESEGMENT '{' Vector Vector '}'
+                {
+		    $$ = new Linesegment(*$3,*$4);
+		}
+                ;
 
 Circle		: tCIRCLE '{' Vector Expr Vector '}'
                 {
@@ -146,6 +162,12 @@ RGB		: '<' Expr ',' Expr ',' Expr '>'
 		    $$ = new RGB($2,$4,$6); 
 		}
                 ; 		
+
+Print		: tPRINT Expr
+                {
+		    printf("%f\n",$2);
+		}
+                ;
 
 Expr		: tFLOAT 
                 {
@@ -185,17 +207,17 @@ void yyerror(string s) {
 }
 
 Path* getNamedPath(string* name) {
-
+    return pathMap[*name];
 }
 
 void setNamedPath(string* name, Path* path) {
-
+    pathMap[*name] = path;
 }
 
 double getNamedDouble(string* name) {
-
+    return doubleMap[*name];
 }
 
-void setNamedDouble(string* name, double path) {
-
+void setNamedDouble(string* name, double val) {
+    doubleMap[*name] = val;
 }
