@@ -45,11 +45,15 @@ void Mesh::addSelf(KdTree* space) {
 void Mesh::prepare() {
     if (prepared == true) return;
 
-    computeInterpolatedNormals();
-    prepared = true;
+    if (meshType == Mesh::MESH_PHONG) {
+	computeInterpolatedNormals();
+    }
+
     for(uint i = 0; i < triangles.size(); i++) {
 	triangles[i]->prepare();
     }
+
+    prepared = true;
 }
 
 // ----------------------------------------------------------------------------
@@ -144,52 +148,52 @@ void Mesh::addTriangle(const uint v[3], const Vector2 uv[3]) {
 
 void Mesh::computeInterpolatedNormals() {
 
-    if (meshType == Mesh::MESH_PHONG) {
-	uint face_num = faces.size() / 3;
-	uint vertex_num = corners.size();
-	vector<uint>* adj = new (vector<uint>)[vertex_num];
-	for(uint i = 0; i < face_num; i++) {
-	    for(uint j = 0; j < 3; j++) {
-		uint vertex_idx = faces[i*3+j];
-		adj[vertex_idx].push_back(i);
-	    }
-	}
+    assert(meshType == Mesh::MESH_PHONG);
 
-	i_normal_indices.reserve(face_num * 3);
-	
-	for(uint i = 0; i < face_num; i++) {
-	    Vector normal = normals[normal_indices->operator[](i)];
-	    for(uint j = 0; j < 3; j++) {
-		Vector interpolated_normal = normal;
-		int num = 1;
-		uint vertex_idx = faces[i*3+j];
-		vector<uint>& adj_faces = adj[vertex_idx];
-		uint fac_num = adj_faces.size();
-		for(uint v = 0; v < fac_num; v++) {
-		    uint other_face_idx = adj_faces[v];
-		    if (other_face_idx != i) {
-			Vector other_normal = normals[normal_indices->operator[](other_face_idx)];
-			if (other_normal * normal > PHONG_ANGLETHRESHOLD) {
-			    interpolated_normal += other_normal;
-			    num++;
-			}
+    uint face_num = faces.size() / 3;
+    uint vertex_num = corners.size();
+    vector<uint>* adj = new (vector<uint>)[vertex_num];
+    for(uint i = 0; i < face_num; i++) {
+	for(uint j = 0; j < 3; j++) {
+	    uint vertex_idx = faces[i*3+j];
+	    adj[vertex_idx].push_back(i);
+	}
+    }
+
+    i_normal_indices.reserve(face_num * 3);
+
+    for(uint i = 0; i < face_num; i++) {
+	Vector normal = normals[normal_indices->operator[](i)];
+	for(uint j = 0; j < 3; j++) {
+	    Vector interpolated_normal = normal;
+	    int num = 1;
+	    uint vertex_idx = faces[i*3+j];
+	    vector<uint>& adj_faces = adj[vertex_idx];
+	    uint fac_num = adj_faces.size();
+	    for(uint v = 0; v < fac_num; v++) {
+		uint other_face_idx = adj_faces[v];
+		if (other_face_idx != i) {
+		    Vector other_normal = normals[normal_indices->operator[](other_face_idx)];
+		    if (other_normal * normal > PHONG_ANGLETHRESHOLD) {
+			interpolated_normal += other_normal;
+			num++;
 		    }
 		}
-		uint index;
-		if (num > 1) {
-		    interpolated_normal.normalize();
-		    normals.push_back(interpolated_normal);
-		    index = normals.size() - 1;
-		} else {
-		    index = normal_indices->operator[](i);
-		}
-		i_normal_indices.push_back(index);
 	    }
+	    uint index;
+	    if (num > 1) {
+		interpolated_normal.normalize();
+		normals.push_back(interpolated_normal);
+		index = normals.size() - 1;
+	    } else {
+		index = normal_indices->operator[](i);
+	    }
+	    i_normal_indices.push_back(index);
 	}
-
-	delete [] adj;
-	delete normal_indices;
     }
+
+    delete [] adj;
+    delete normal_indices;
 }
 
 // TODO: Optimize by keeping a stl::set with all corners.
