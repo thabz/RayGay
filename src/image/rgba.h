@@ -74,14 +74,18 @@ RGBA RGBA::operator+(const RGBA& c) const {
 
 inline
 RGBA RGBA::operator+=(const RGBA& c) {
-    (*this) += c;
+    _vector[0] += c.r();
+    _vector[1] += c.g();
+    _vector[2] += c.b();
     alpha += c.a();
     return (*this);
 }
 
 inline
 RGBA RGBA::operator-=(const RGBA& c) {
-    (*this) -= c;
+    _vector[0] -= c.r();
+    _vector[1] -= c.g();
+    _vector[2] -= c.b();
     alpha -= c.a();
     return (*this);
 }
