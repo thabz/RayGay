@@ -23,7 +23,7 @@ if ($selectedmonth eq '') {
 my $calHTML = makeSidebar($selectedmonth,$selectedyear,@entries);
 
 my $HTML;
-$HTML .= '<tr><td><h1 style="color: black; font-family:arial,helvetica"><a href="index.cgi">RAYTRACER<i style="font-family:serif; font-weight:normal">Blog</i></a></h1></td></tr>';
+$HTML .= '<tr><td><h1 style="color: black; font-family:arial,helvetica,sans-serif"><a href="index.cgi">RAYTRACER<i style="font-family:serif; font-weight:normal">Blog</i></a></h1></td></tr>';
 $HTML .= '<tr><td>&nbsp;</td></tr>';
 $HTML .= '<tr><td>&nbsp;</td></tr>';
 
@@ -35,16 +35,16 @@ foreach my $entry (sort {$b cmp $a} @entries) {
     $date =~ s/\.html//;
     my $entryHTML = getEntry($entry);
     $HTML .= qq|<tr><td style="border-bottom: 1px dotted #999999; border-top: 1px dotted #999999">$date</td></tr>|;
-    $HTML .= qq|<tr><td width="20">&nbsp;</td></tr>|;
+    $HTML .= qq|<tr><td>&nbsp;</td></tr>|;
     $HTML .= qq|<tr><td align="justify">$entryHTML</td></tr>|;
-    $HTML .= qq|<tr><td width="20">&nbsp;</td></tr>|;
+    $HTML .= qq|<tr><td>&nbsp;</td></tr>|;
 }
 
 
 print <<"EOF";
 Content-type: text/html
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -104,7 +104,7 @@ div.vim {
        border: 1px solid #808060;
        color: #202020;
        padding: 10px;
-       font-family: LucidaTypewriter, Courier;       		
+       font-family: LucidaTypewriter, Courier, sans-serif;
        font-size: 10pt;
        white-space: pre;
 }
@@ -114,7 +114,7 @@ div.shell {
        border: 1px solid #8080c0;
        color: #c0c0c0;
        padding: 10px;
-       font-family: LucidaTypewriter;       		
+       font-family: LucidaTypewriter, Courier, sans-serif;
        font-size: 10pt;
        white-space: pre;
 }
@@ -129,7 +129,7 @@ code {
 
 span.title {
        color: #408080;
-       font-family: Arial,Helvetica,Sans;
+       font-family: Arial,Helvetica,Sans-serif;
        font-size: 1.1em;
 }
 
@@ -156,7 +156,6 @@ div.sidebar {
    bottom: 0;
    padding: 4px;
    border-left: 1px #a0a0a0 dotted;
-   align: center;
 }
 
 </style>
