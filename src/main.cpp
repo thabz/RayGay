@@ -88,8 +88,10 @@ void work(string scenefile, string outputfile,int jobs) {
     //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
     //scene->transform(n);
 
+    cout << "Preparing space..." << endl;
     KdTree* space = new KdTree();
     scene->initSpace(space);
+    cout << "Done." << endl;
 
     RendererSettings* renderersettings = importer.getRendererSettings();
     renderersettings->threads_num = jobs;
