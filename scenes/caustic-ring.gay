@@ -15,7 +15,7 @@ camera { position <200,500,1100>
 }
 
 photonmap {
- globalphotons 100000
+ globalphotons  10000000
  causticphotons 1000000
  estimateradius 100
  estimatesamples 300
@@ -55,7 +55,7 @@ $table_mat = material {
                specpow 0
             }
 
-solidbox { $table_mat <-1000,-100,-1000> <1000,0,1000> }
+box { $table_mat <-1000,-100,-1000> <1000,0,1000> }
 
 
 difference {
