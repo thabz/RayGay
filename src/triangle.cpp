@@ -107,5 +107,6 @@ BoundingBox Triangle::boundingBoundingBox() const {
 }
 	
 Vector2 Triangle::getUV(const Intersection& intersection) const {
-    // TODO: implement
+    return mesh->getUV(intersection);
 }
+

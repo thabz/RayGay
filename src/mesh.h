@@ -7,6 +7,7 @@
 
 #include "object.h"
 #include "math/vector.h"
+#include "math/vector2.h"
 #include "image/rgb.h"
 #include "boundingbox.h"
 #include "triangle.h"
@@ -35,8 +36,7 @@ class Mesh : public ObjectCollection {
 		Tri(int iV0, int iV1, int iV2);
 		int vertex[3];
 		int interpolated_normal[3];
-		double u1,u2,u3;
-		double v1,v2,v3;
+		Vector2 uv[3];
 		int normal_idx;
 		double area;
 		Edge* edge[3];
@@ -82,9 +82,12 @@ class Mesh : public ObjectCollection {
 	virtual BoundingBox boundingBoundingBox() const;
 
 	/// Add a triangle to the mesh
-	void addTriangle(const Vector* corners);
+	void addTriangle(const Vector* corners, const Vector2* uv);
 	/// Add a triangle to the mesh
         void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3);
+	/// Add a triangle to the mesh with uv-texture-coordinates
+        void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3, const Vector2& uv1, const Vector2& uv2,const Vector2& uv3);
+	Vector2 getUV(const Intersection &i) const;
 	/// Internal test
 	static void test();
 

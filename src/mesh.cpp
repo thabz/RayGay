@@ -7,6 +7,7 @@
 #include "mesh.h"
 #include "boundingbox.h"
 #include "math/matrix.h"
+#include "math/vector2.h"
 #include "intersection.h"
 #include "ray.h"
 #include "sphere.h"
@@ -53,8 +54,9 @@ void Mesh::prepare() {
 /**
  * Add a triangle to this mesh
  * @param c must a pointer to three Vectors
+ * @param uv must a pointer to three Vector2s
  */
-void Mesh::addTriangle(const Vector* c) {
+void Mesh::addTriangle(const Vector* c, const Vector2* uv) {
     Vector normal = Vector::xProduct(c[1] - c[0], c[2] - c[0]);
     normal.normalize();
     normals.push_back(normal);
@@ -77,6 +79,10 @@ void Mesh::addTriangle(const Vector* c) {
 
     triangles.push_back(t);
     t->setTri(triangles.size() - 1);
+
+    tri->uv[0] = uv[0];
+    tri->uv[1] = uv[1];
+    tri->uv[2] = uv[2];
 
     // Insert edges
     for(int i = 0; i < 3; i++) {
@@ -164,13 +170,31 @@ int Mesh::findExistingCorner(const Vector* c) const {
 /**
  * Add a triangle to this mesh
  */
+void Mesh::addTriangle(const Vector& c1, const Vector& c2, const Vector& c3,
+	const Vector2& uv1, const Vector2& uv2,const Vector2& uv3) {
+    Vector c[3];
+    c[0] = c1;
+    c[1] = c2;
+    c[2] = c3;
+    Vector2 uv[3];
+    uv[0] = uv1;
+    uv[1] = uv2;
+    uv[2] = uv3;
+    addTriangle(c,uv);
+}
+
+/**
+ * Add a triangle to this mesh
+ */
 void Mesh::addTriangle(const Vector& c1, const Vector& c2, const Vector& c3) {
     Vector c[3];
     c[0] = c1;
     c[1] = c2;
     c[2] = c3;
-    addTriangle(c);
+    Vector2 uv[3];
+    addTriangle(c,uv);
 }
+
 
 // ----------------------------------------------------------------------------
 void Mesh::transform(const Matrix& M) {
@@ -183,11 +207,19 @@ void Mesh::transform(const Matrix& M) {
     }
 }
 
+Vector2 Mesh::getUV(const Intersection &i) const {
+    const Triangle* triangle = i.local_triangle;
+    Tri* tri = tris[triangle->getTri()];
+    Vector weight = getInterpolationWeights(triangle->getTri(), i.point);
+    return tri->uv[0] * weight[0] +
+	tri->uv[1] * weight[1] +
+	tri->uv[2] * weight[2];
+}
 
 // ----------------------------------------------------------------------------
 Vector Mesh::normal(const Intersection &i) const {
     return phong_normal(i);
-//   return normals[i.local_triangle->normali];
+    //   return normals[i.local_triangle->normali];
 }
 
 Vector Mesh::phong_normal(const Intersection &i) const {
@@ -314,8 +346,7 @@ void Mesh::test() {
 
     Material mat = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Mesh mesh = Mesh(MESH_FLAT,mat);
-    Vector v[] = {Vector(-1,1,1),Vector(1,1,1),Vector(0,-1,-1)};
-    mesh.addTriangle(v);
+    mesh.addTriangle(Vector(-1,1,1),Vector(1,1,1),Vector(0,-1,-1));
     mesh.prepare();
     mesh.addParts(&bsp);
     bsp.prepare();
