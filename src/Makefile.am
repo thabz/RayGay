@@ -1,5 +1,5 @@
 
-SUBDIRS = materials paths lights
+SUBDIRS = materials paths lights #tests
 
 bin_PROGRAMS = tracer
 

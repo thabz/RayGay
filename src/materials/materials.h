@@ -9,4 +9,6 @@
 #define MATERIAL_SHINY_BLUE Material(RGB(0.2,0.2,1.0),0.75,RGB(1.0,1.0,1.0),0.20,30)
 #define MATERIAL_CHROME Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)
 
+#define MATERIAL_SHINY(rgb) Material(rgba,0.75,RGB(1.0,1.0,1.0),0.30,30)
+
 #endif
