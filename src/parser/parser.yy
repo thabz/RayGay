@@ -807,6 +807,7 @@ void init_parser() {
     scene = new Scene();
     renderer_settings = new RendererSettings();
     top_actions = new ActionListNode();
+    InterpreterEnv::getUniqueInstance()->setScene(scene);
 }
 
 void run_interpreter() {

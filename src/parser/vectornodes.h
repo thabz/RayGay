@@ -11,7 +11,7 @@ class VectorNode : public SyntaxNode {
 	VectorNode(FloatNode* x, FloatNode* y, FloatNode* z) {
 	    this->x = x;
 	    this->y = y;
-	    this->y = y;
+	    this->z = z;
 	}
 	Vector eval() {
 	    return Vector(x->eval(),y->eval(),z->eval());
