@@ -17,6 +17,7 @@
 #include "objects/mesh.h"
 #include "objects/extrusion.h"
 #include "objects/ellipsoid.h"
+#include "objects/heightfield.h"
 #include "objects/superellipsoid.h"
 #include "objects/box.h"
 #include "objects/necklace.h"
@@ -25,6 +26,8 @@
 #include "objects/tetrahedron.h"
 #include "objects/tessalation.h"
 #include "space/kdtree.h"
+#include "image/image.h"
+#include "image/texture.h"
 #include "paths/linesegment.h"
 #include "paths/circle.h"
 #include "testing.h"
@@ -262,7 +265,9 @@ class box_test : public Test {
 class mesh_test : public Test {
     public:
 	void run() {
-	    // Test clone
+	    ///////////////////////////////////////////////////////////////
+	    // Test Mesh::clone() 
+	    ///////////////////////////////////////////////////////////////
 	    Box* b1 = new Box(Vector(-1,-1,-1),Vector(1,1,1),NULL);
 	    Mesh* b2 = dynamic_cast<Mesh*>(b1->clone());
 	    assertTrue(b2 != NULL);
@@ -297,7 +302,6 @@ class mesh_test : public Test {
 	    r = Ray(Vector(10.5,10.5,100),Vector(0,0,-1),1);
 	    assertTrue(bsp->intersect(r,inter));
 	    assertEqualV(inter->getPoint(), Vector(10.5,10.5,1));
-
 	}
 };
 
@@ -1265,6 +1269,32 @@ class bounded_mesh_test : public Test {
 	}
 };
 
+class heightfield_test : public Test {
+    public: 
+	void run() {
+	    Image* img = new Image("gfx/water.jpg");
+	    Texture* texture = new Texture(img,Vector2(2,2),Texture::INTERPOLATION_BILINEAR);
+	    HeightField* h = new HeightField(texture, 10, 200, 200, 10, 10, NULL);
+	    h->prepare();
+
+	    KdTree* bsp = new KdTree();
+	    h->addSelf(bsp);
+	    bsp->prepare();
+	    Intersection* inter = new Intersection();
+	    Ray ray;
+	    ray = Ray(Vector(0,1000,0),Vector(0,-1,0),1);
+	    assertTrue(bsp->intersect(ray,inter));
+
+	    ray = Ray(Vector(95,1000,95),Vector(0,-1,0),1);
+	    assertTrue(bsp->intersect(ray,inter));
+	    ray = Ray(Vector(-95,1000,-95),Vector(0,-1,0),1);
+	    assertTrue(bsp->intersect(ray,inter));
+
+	    ray = Ray(Vector(105,1000,0),Vector(0,-1,0),1);
+	    assertFalse(bsp->intersect(ray,inter));
+	}
+};
+
 int main(int argc, char *argv[]) {
 
     TestSuite suite;
@@ -1283,6 +1313,7 @@ int main(int argc, char *argv[]) {
     suite.add("Tessalation",new tesselation_test());
     suite.add("Extrusion",new extrusion_test());
     suite.add("Mesh",new mesh_test());
+    suite.add("Heightfield",new heightfield_test());
     suite.add("Transformed instance",new transformed_instance_test());
     suite.add("Bounded mesh",new bounded_mesh_test());
     suite.run();

@@ -10,6 +10,9 @@ using namespace std;
 #undef assertTrue
 #define assertTrue(e) (_assertTrue((e),__FILE__,__LINE__,#e))
 
+#undef assertFalse
+#define assertFalse(e) (_assertTrue((!(e)),__FILE__,__LINE__,#e))
+
 #undef assertEqualF
 #define assertEqualF(e,f) (_assertTrue(IS_EQUAL((e),(f)),__FILE__,__LINE__,#e))
 
