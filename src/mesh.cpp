@@ -34,8 +34,8 @@ Mesh::~Mesh() {
 }
 
 void Mesh::prepare() const {
-    hierarchy = new Hierarchy(boundingBoundingBox()); 
-    //hierarchy = new BSP(); 
+    //hierarchy = new Hierarchy(boundingBoundingBox()); 
+    hierarchy = new BSP(); 
     for (vector<Triangle*>::const_iterator p = triangles.begin(); p != triangles.end(); p++) {
 	hierarchy->addObject(*p);
     }
