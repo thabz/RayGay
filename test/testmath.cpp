@@ -446,6 +446,20 @@ class solve_quartic_test : public Test {
 				    cout << roots[i] << " and ";
 				}
 				cout << endl;
+				double a = -B;
+				double b = A*C - 4*D;
+				double c = 4*B*D - C*C - A*A*D;
+				double cubic_roots[3];
+				//double tmp1, tmp2;
+				Math::solveCubic(a,b,c,cubic_roots);
+				double y = cubic_roots[0];
+				double R = 0.25*A*A - B + y;
+
+				cout << "R = " << R << endl;
+				cout << "R == 0: " << (IS_ZERO(R) ? "yes" : "no") << endl;
+
+				cout << endl;
+				cout << endl;
 				assertTrue(false);
 				//		exit(EXIT_FAILURE);
 			    }
@@ -487,7 +501,7 @@ class solve_cubic_test : public Test {
 	    assertTrue(contains(roots,3,-1));
 	    assertTrue(contains(roots,3,2));
 
-	    // x^3 - 8 = 0 = 
+	    // x^3 - 8 = 0 
 	    assertTrue(Math::solveCubic(0,0,-8,roots) == 1);
 	    assertTrue(contains(roots,1,2));
 
@@ -541,13 +555,43 @@ class solve_cubic_test : public Test {
 	    assertTrue(Math::solveCubic(0,0,0,roots) == 1);
 	    assertTrue(contains(roots,1,0));
 
+	    // x^3 - 3
+	    assertTrue(Math::solveCubic(0,0,-3,roots) == 1);
+	    assertTrue(contains(roots,1,cbrt(3.0)));
+	    
+	    /*
+	    double A = 0.0;
+	    double B = 0.0;
+	    double C = -3.0;
+	    double Q = (3.0 * B - A * A) / 9.0;
+	    double R = (9.0 * A * B - 27.0 * C - 2.0 * A * A * A) / 54.0;
+	    double D = Q * Q * Q + R * R;
+	    double sqrtD = sqrt(D);
+	    double S = cbrt(R + sqrtD);
+	    double T = cbrt(R - sqrtD);
+	    double r0 = S + T - A/3.0;
+	    double r1 =-0.5 * (S+T) - A/3.0;
+	    cout << "Q = " << Q << endl;
+	    cout << "R = " << R << endl;
+	    cout << "D = " << D << endl;
+	    cout << "sqrtD = " << sqrtD << endl;
+	    cout << "S = " << S << endl;
+	    cout << "T = " << T << endl;
+	    cout << "r0 = " << r0 << endl;
+	    cout << "r1 = " << r1 << endl;
+	    cout << "Equal = " << (IS_EQUAL(r0,r1) ? "yes" : "no") << endl;
+	    */
+
 	    int n = 5;
 	    int num;
 	    for(int A = -n; A < n; A++) {
 		for(int B = -n; B < n; B++) {
 		    for(int C = -n; C < n; C++) {
-			num = Math::solveCubic(A,B,C,roots);
-			if (!check_cubic_roots(A,B,C,roots,num)) {
+			double a = double(A);
+			double b = double(B);
+			double c = double(C);
+			num = Math::solveCubic(a,b,c,roots);
+			if (!check_cubic_roots(a,b,c,roots,num)) {
 			    cout << num << " roots found: ";
 			    for(int i = 0; i < num; i++) {
 				cout << roots[i] << " and ";
@@ -569,7 +613,8 @@ class solve_cubic_test : public Test {
 		double val = r*r*r + A*r*r + B*r + C;
 		if (!IS_ZERO(val)) {
 		    cout << "A,B,C = " << A << "," << B << "," << C << " failed." << endl;
-		    cout << "Problem: f(" << r << ") = " << val << " != 0." << endl;
+		    cout << "Roots found: " << num << endl;
+		    cout << "Cubic problem: f(" << r << ") = " << val << " != 0." << endl;
 		    //if (fabs(val) > 0.001)
 		    return false;
 		}
@@ -614,6 +659,9 @@ class solve_quadratic_test : public Test  {
 	    assertTrue(Math::solveQuadratic(1,0,-25,roots) == 2);
 	    assertTrue(contains(roots,2,5));
 	    assertTrue(contains(roots,2,-5));
+
+	    // -2*x^2 - 2 = 0
+	    assertTrue(Math::solveQuadratic(-2,0,-2,roots) == 0);
 
 	    int n = 5;
 	    int num;

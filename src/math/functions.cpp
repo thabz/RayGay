@@ -121,21 +121,25 @@ int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
     double b = A*C - 4*D;
     double c = 4*B*D - C*C - A*A*D;
     double cubic_roots[3];
-    long double tmp1, tmp2;
+    double tmp1, tmp2;
     solveCubic(a,b,c,cubic_roots);
-    long double y = cubic_roots[0];
-    long double R = 0.25*A*A - B + y;
+    double y = cubic_roots[0];
+    double R = 0.25*A*A - B + y;
     
     if (R < 0.0) 
 	return 0;
     
-    R = sqrtl(R);
+    if (IS_ZERO(R)) {
+	R = 0.0;
+    } else {
+	R = sqrt(R);
+    }
     
-    long double D2,E2;
+    double D2,E2;
     int num = 0;
     if (IS_ZERO(R)) {
 	tmp1 = 0.75*A*A - 2.0*B;
-	tmp2 = 2.0 * sqrtl(y*y - 4.0*D);
+	tmp2 = 2.0 * sqrt(y*y - 4.0*D);
 	D2 = tmp1 + tmp2;
 	E2 = tmp1 - tmp2;
     } else {
@@ -145,14 +149,14 @@ int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
 	E2 = tmp1 - tmp2;
     }
     if (D2 >= 0.0) {
-	D2 = sqrtl(D2);
-	roots[num++] = -(A/4.0) + (R/2.0) - (D2/2.0);
-	roots[num++] = -(A/4.0) + (R/2.0) + (D2/2.0);
+	D2 = sqrt(D2);
+	roots[num++] = 0.5 * (A * -0.5 + R - D2);
+	roots[num++] = 0.5 * (A * -0.5 + R + D2);
     }
     if (E2 >= 0.0) {
-	E2 = sqrtl(E2);
-	roots[num++] = -(A/4.0) - (R/2.0) - (E2/2.0);
-	roots[num++] = -(A/4.0) - (R/2.0) + (E2/2.0);
+	E2 = sqrt(E2);
+	roots[num++] = 0.5 * (A * -0.5 - R - E2);
+	roots[num++] = 0.5 * (A * -0.5 - R + E2);
     }
 
     // There are either zero, two or four roots. 
@@ -267,10 +271,13 @@ int Math::solveQuartic_Schaum(double A, double B, double C, double D, double* ro
  * @return the number of real roots
  * @see http://mathworld.wolfram.com/CubicEquation.html
  */
+#define FRAC_1_27 0.03703703703703703703703703703703703703703703703
+#define FRAC_1_6 0.16666666666666666666666666666666666666666666666
 int Math::solveCubic(double A, double B, double C, double* roots) {
-    long double Q = (3.0 * B - A * A) / 9.0;
-    long double R = (9.0 * A * B - 27.0 * C - 2.0 * A * A * A) / 54.0;
-    long double D = Q * Q * Q + R * R;
+    double Q = (3.0 * B - A * A) / 9.0;
+    //double R = (A * B * FRAC_1_6 - 0.5 * C -  A * A * A * FRAC_1_27);
+    double R = (9.0 * A * B - 27.0 * C - 2.0 * A * A * A) / 54.0;
+    double D = Q * Q * Q + R * R;
     if (D < 0.0) {
 	// Three real roots
 	double phi = acos(R / sqrt(-(Q*Q*Q)));
@@ -281,13 +288,20 @@ int Math::solveCubic(double A, double B, double C, double* roots) {
 	roots[2] = G * cos(phi/3.0 + 2*M_2PI/3.0) - H;
 	return 3;
     } else {
-	long double sqrtD = sqrtl(D);
-	long double S = cbrtl(R + sqrtD);
-	long double T = cbrtl(R - sqrtD);
-	roots[0] = S + T - A/3.0;
+	double sqrtD;
+	if (IS_ZERO(Q)) {
+	    sqrtD = R;
+	} else {
+	    sqrtD = sqrt(D);
+	}
+	double S = cbrt(R + sqrtD);
+	double T = cbrt(R - sqrtD);
+	double r0 = S + T - A/3.0;
+	roots[0] = r0;
 	if (IS_ZERO(D)) {
-	    roots[1] = -(S+T)/2 - A/3;
-	    return (IS_EQUAL(roots[1],roots[0])) ? 1 : 2;
+	    double r1 = -0.5 * (S+T) - A/3.0;
+	    roots[1] = r1;
+	    return (IS_EQUAL(r0,r1)) ? 1 : 2;
 	}
 	// D > 0 gives only one real root
 	return 1;
