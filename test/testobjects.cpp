@@ -8,6 +8,7 @@
 
 #include "boundingbox.h"
 #include "objects/sphere.h"
+#include "objects/csg.h"
 #include "objects/cylinder.h"
 #include "objects/boolean.h"
 #include "objects/mesh.h"
@@ -595,6 +596,98 @@ void transformed_instance_test() {
     //assert(!t2->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
 }
 
+void csg_test() {
+    ///////////////////////////////////////////////////////////////
+    // Union 
+    ///////////////////////////////////////////////////////////////
+    // Ray from outside
+    Sphere* s1 = new Sphere(Vector(0,0,10),15,NULL);
+    Sphere* s2 = new Sphere(Vector(0,0,-10),15,NULL);
+    Sphere* s3 = new Sphere(Vector(0,0,0),15,NULL);
+    CSG* csg = new CSG(s1,CSG::UNION,s2,NULL);
+    Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
+    vector<Intersection> all = csg->allIntersections(ray);
+    assert(all.size() == 2);
+    assert(all[0].getPoint() == Vector(0,0,25));
+    assert(all[1].getPoint() == Vector(0,0,-25));
+    CSG* csg2 = new CSG(csg,CSG::UNION,s3,NULL);
+    all = csg2->allIntersections(ray);
+    assert(all.size() == 2);
+    assert(all[0].getPoint() == Vector(0,0,25));
+    assert(all[1].getPoint() == Vector(0,0,-25));
+    Sphere* s4 = new Sphere(Vector(0,0,-50),10,NULL);
+    CSG* csg3 = new CSG(csg2,CSG::UNION,s4,NULL);
+    all = csg3->allIntersections(ray);
+    assert(all.size() == 4);
+    assert(all[0].getPoint() == Vector(0,0,25));
+    assert(all[1].getPoint() == Vector(0,0,-25));
+    assert(all[2].getPoint() == Vector(0,0,-40));
+    assert(all[3].getPoint() == Vector(0,0,-60));
+    // Ray from inside
+    ray = Ray(Vector(0,0,0),Vector(0,0,-1),-1);
+    all = csg3->allIntersections(ray);
+    assert(all.size() == 3);
+    assert(all[0].getPoint() == Vector(0,0,-25));
+    assert(all[1].getPoint() == Vector(0,0,-40));
+    assert(all[2].getPoint() == Vector(0,0,-60));
+
+    ///////////////////////////////////////////////////////////////
+    // Intersection 
+    ///////////////////////////////////////////////////////////////
+    csg = new CSG(s1,CSG::INTERSECTION,s3,NULL);
+    ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
+    all = csg->allIntersections(ray);
+    assert(all.size() == 2);
+    assert(all[0].getPoint() == Vector(0,0,15));
+    assert(all[1].getPoint() == Vector(0,0,-5));
+    assert(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,15));
+    assert(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-5));
+    assert(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+
+
+    ///////////////////////////////////////////////////////////////
+    // Difference 
+    ///////////////////////////////////////////////////////////////
+    csg = new CSG(s1,CSG::DIFFERENCE,s3,NULL);
+    ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
+    all = csg->allIntersections(ray);
+    assert(all.size() == 2);
+    assert(all[0].getPoint() == Vector(0,0,25));
+    assert(all[1].getPoint() == Vector(0,0,15));
+    assert(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,25));
+    assert(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,15));
+    cout << iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) << endl;
+    cout << (all[1].isEntering() ? "entering" : "not entering") << endl;
+    assert(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+    
+    // Test a sphere with three other spheres subtracted from its middle,
+    // front and back, so that the resulting object is hollow along the z-axis.
+
+    s1 = new Sphere(Vector(0,0,0),200.0,NULL);
+    s2 = new Sphere(Vector(0,0,0),180.0,NULL);
+    CSG* s = new CSG(s1,CSG::DIFFERENCE,s2,NULL); // Make it hollow
+    s3 = new Sphere(Vector(0,0,200),100.0,NULL); 
+    CSG* b4 = new CSG(s,CSG::DIFFERENCE,s3,NULL); // Cut front
+    s4 = new Sphere(Vector(0,0,-200),100.0,NULL); 
+    CSG* b5 = new CSG(b4,CSG::DIFFERENCE,s4,NULL); // Cut back
+    
+    Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
+    assert(intersects(s,r));
+    assert(intersects(s3,r));
+    assert(intersects(s4,r));
+    assert(intersects(b4,r));
+    r = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
+    assert(! intersects(b5,r));
+    r = Ray(Vector(0,0,0),Vector(0,0,1),1);
+    assert(! intersects(b5,r));
+ /*   i = b5->getLastIntersection();
+    cout << i->getPoint() << "  ...." << endl;
+    assert(!b5->inside(Vector(0,0,0)));
+    assert(!b5->onEdge(Vector(0,0,0)));*/
+}
+
 int main(int argc, char *argv[]) {
     transformed_instance_test();
     sphere_test();
@@ -610,6 +703,7 @@ int main(int argc, char *argv[]) {
     Mesh::test();
     test_3ds();
     boolean_test();
+    csg_test();
     return EXIT_SUCCESS;
 }
 

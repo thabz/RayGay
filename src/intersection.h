@@ -43,6 +43,8 @@ class Intersection {
         /// Surface normal at intersection point
 	const Vector& getNormal() const { return normal; };
 
+	void flipNormal() { normal *= -1.0; };
+
 	const Vector2& getUV() const { return uv; };
 
 	double getT() const { return t; }; 
