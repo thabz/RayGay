@@ -16,8 +16,6 @@ class Texture;
 class Lightsource;
 class Camera;
 
-static scm_t_bits wrapped_object_tag;
-
 enum wrapped_type {
     SCENEOBJECT = 2,
     PATH	= 3,
@@ -40,13 +38,7 @@ struct wrapped_object {
     wrapped_type type;
 };
 
-static SCM path2scm(Path* path) {
-    struct wrapped_object* object;
-    object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
-    object->path = path;
-    object->type = PATH;
-    SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
-}
+SCM path2scm(Path* path);
 
 static Path* scm2path(SCM object_smob, char* subr, int pos) {
     struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
@@ -64,13 +56,7 @@ static SceneObject* scm2sceneobject(SCM object_smob, char* subr, int pos) {
     return o->sceneobject;
 }
 
-static SCM sceneobject2scm(SceneObject* sceneobject) {
-    struct wrapped_object* object;
-    object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
-    object->sceneobject = sceneobject;
-    object->type = SCENEOBJECT;
-    SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
-}
+SCM sceneobject2scm(SceneObject* sceneobject);
 
 static Camera* scm2camera(SCM object_smob, char* subr, int pos) {
     struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
@@ -80,13 +66,7 @@ static Camera* scm2camera(SCM object_smob, char* subr, int pos) {
     return o->camera;
 }
 
-static SCM camera2scm(Camera* camera) {
-    struct wrapped_object* object;
-    object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
-    object->camera = camera;
-    object->type = CAMERA;
-    SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
-}
+SCM camera2scm(Camera* camera);
 
 static Texture* scm2texture(SCM object_smob, char* subr, int pos) {
     struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
@@ -96,21 +76,9 @@ static Texture* scm2texture(SCM object_smob, char* subr, int pos) {
     return o->texture;
 }
 
-static SCM texture2scm(Texture* texture) {
-    struct wrapped_object* object;
-    object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
-    object->type = TEXTURE; 
-    object->texture = texture;
-    SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
-}
+SCM texture2scm(Texture* texture);
 
-static SCM material2scm(Material* material) {
-    struct wrapped_object* object;
-    object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
-    object->material = material;
-    object->type = MATERIAL;
-    SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
-}
+SCM material2scm(Material* material);
 
 static Material* scm2material(SCM object_smob, char* subr, int pos) {
     struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
@@ -128,28 +96,14 @@ static Lightsource* scm2lightsource(SCM object_smob, char* subr, int pos) {
     return o->lightsource;
 }
 
-static SCM lightsource2scm(Lightsource* lightsource) {
-    struct wrapped_object* object;
-    object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
-    object->lightsource = lightsource;
-    object->type = LIGHTSOURCE;
-    SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
-}
+SCM lightsource2scm(Lightsource* lightsource);
 
 void init_wrapper_type();
 
-static bool isLightsource(SCM object_smob) {
-    struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
-    return o->type == LIGHTSOURCE;
-}
+bool isLightsource(SCM object_smob);
 
-static bool isSceneObject(SCM object_smob) {
-    struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
-    return o->type == SCENEOBJECT;
-}
+bool isSceneObject(SCM object_smob);
 
-static bool isWrappedObject(SCM obj) {
-    return (SCM_NFALSEP(SCM_SMOB_PREDICATE (wrapped_object_tag, obj)));
-}
+bool isWrappedObject(SCM obj);
 
 #endif

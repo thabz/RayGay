@@ -36,6 +36,18 @@ SCM TextureFactory::make_texture(SCM s_filename, SCM s_repeat_x, SCM s_repeat_y,
     return texture2scm(texture);
 }
 
+SCM TextureFactory::get_pixel(SCM s_texture, SCM s_x, SCM s_y) 
+{
+    char* proc = "get-pixel";
+    Texture* texture = scm2texture(s_texture, proc, 1);
+    double x = scm_num2double(s_x, 2, proc);
+    double y = scm_num2double(s_y, 2, proc);
+    RGB pixel = texture->getTexel(x,y);
+    return rgb2scm(pixel);
+}
+    
+
 void TextureFactory::register_procs() {
     scm_c_define_gsubr("make-texture",4,0,0,(SCM (*)()) TextureFactory::make_texture);
+    scm_c_define_gsubr("get-pixel",3,0,0,(SCM (*)()) TextureFactory::get_pixel);
 }
