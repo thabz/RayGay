@@ -146,45 +146,30 @@ void kdtree_test() {
     assert(bsp.intersectForShadow(r,10.0) == NULL);
     assert(bsp.intersect(r,&i) == true);
     assert(i.getPoint() == Vector(200,250,210));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[0],200));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[1],250));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[2],210));
 
     r = Ray(Vector(200,250,-1000),Vector(0,0,1),1);
     assert(bsp.intersectForShadow(r,HUGE_DOUBLE) != NULL);
     assert(bsp.intersectForShadow(r,10.0) == NULL);
     assert(bsp.intersect(r,&i) == true);
     assert(i.getPoint() == Vector(200,250,-210));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[0],200));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[1],250));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[2],-210));
 
     r = Ray(Vector(-200,-150,1000),Vector(0,0,-1),1);
     assert(bsp.intersectForShadow(r,HUGE_DOUBLE) != NULL);
     assert(bsp.intersectForShadow(r,10.0) == NULL);
     assert(bsp.intersect(r,&i) == true);
     assert(i.getPoint() == Vector(-200,-150,210));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[0],-200));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[1],-150));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[2],210));
 
     r = Ray(Vector(0,1000,0),Vector(0,-1,0),1);
     assert(bsp.intersectForShadow(r,HUGE_DOUBLE) != NULL);
     assert(bsp.intersectForShadow(r,10.0) == NULL);
     assert(bsp.intersect(r,&i) == true);
     assert(i.getPoint() == Vector(0,260,0));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[0],0));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[1],260));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[2],0));
 
     r = Ray(Vector(0,-1000,0),Vector(0,1,0),1);
     assert(bsp.intersectForShadow(r,HUGE_DOUBLE) != NULL);
     assert(bsp.intersectForShadow(r,10.0) == NULL);
     assert(bsp.intersect(r,&i) == true);
     assert(i.getPoint() == Vector(0,-510,0));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[0],0));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[1],-510));
-    //assert(IS_EQUAL(bsp.getLastIntersection()->getPoint()[2],0));
 
     r = Ray(Vector(300,250,-1000),Vector(0,0,1),1);
     assert(bsp.intersectForShadow(r,HUGE_DOUBLE) == NULL);
