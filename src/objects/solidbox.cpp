@@ -6,8 +6,9 @@ SolidBox::SolidBox(const Vector corner1, const Vector corner2, const Material* m
 }
 
 
-bool SolidBox::inside(const Vector &p) const {
-    return bbox.inside(p);
+bool SolidBox::inside(const Vector& point_world) const {
+    Vector point_local = pointToObject(point_world);
+    return bbox.inside(point_local);
 }
 
 BoundingBox SolidBox::boundingBoundingBox() const {
@@ -47,6 +48,10 @@ void SolidBox::transform(const Matrix& m) {
 double SolidBox::_fastIntersect(const Ray& world_ray) const {
     Ray local_ray = rayToObject(world_ray);
     Vector2 ts = bbox.intersect(local_ray);
+
+    if (ts[1] < ts[0])
+	return -1;
+
     if (ts[0] > EPSILON) {
 	return ts[0];
     } else if (ts[1] > EPSILON) {
