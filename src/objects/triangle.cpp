@@ -131,7 +131,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
       if (v < 0.0 || u + v > det)
 	 return -1.0;
    }
-#if 1  
+#if 0  
    // Backface culling
    else if (det < -EPSILON)
    {
