@@ -8,6 +8,7 @@
 #include "scene.h"
 #include "camera.h"
 #include "torus.h"
+#include "3ds.h"
 #include "box.h"
 #include "necklace.h"
 #include "cylinder.h"
@@ -283,6 +284,12 @@ void Importer::parse(const string& filename) {
 	    double R = readDouble(stream);
 	    double r = readDouble(stream);
 	    cur_object = new Torus(R,r,*m);
+	} else if (command == "3ds") {
+	    stream >> str1;
+	    Material* m = lookupMaterial(str1);
+	    double scale = readDouble(stream);
+	    string filename = readString(stream);
+	    cur_object = new ThreeDS(filename,scale,*m);
 	} else if (command == "cylinder") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
