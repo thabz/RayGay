@@ -92,6 +92,7 @@ bool Sphere::inside(const Vector& p) const {
 
 BoundingBox Sphere::boundingBoundingBox() const {
     Vector r = Vector(radius,radius,radius);
+    r += Vector(5*EPSILON,5*EPSILON,5*EPSILON);
     return BoundingBox(center - r, center + r);
 }
 
@@ -111,6 +112,27 @@ Vector2 Sphere::getUV(const Vector& point) const {
        u = 1 - (acos(p[0] / (sin((v) * M_PI))) / M_2PI); 
     }
     return Vector2(u,v);
+}
+
+/**
+ * Check to see if the sphere overlaps the voxel_bbox by
+ * finding the squared distance from the sphere to the bbox.
+ *
+ * J. Arvo: "A simple method for box-sphere intersection testing" in: A. Glassner (ed.), <i>Graphics Gems</i>, pp. 335-339, Academic Press, Boston, MA, 1990.
+ */
+int Sphere::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const {
+    double s;
+    double d = 0.0;
+    for(int i = 0; i < 3; i++) {
+	if (center[i] < voxel_bbox.minimum()[i]) {
+	    s = center[i] - voxel_bbox.minimum()[i];
+	    d += s*s;
+	} else if (center[i] > voxel_bbox.maximum()[i]) {
+	    s = center[i] - voxel_bbox.maximum()[i];
+	    d += s*s;
+	}
+    }
+    return d <= radius*radius + EPSILON ? 1 : -1;
 }
 
 SceneObject* Sphere::clone() const {
