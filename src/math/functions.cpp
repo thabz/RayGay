@@ -5,6 +5,7 @@
 
 #include "math/functions.h"
 #include "math/vector.h"
+#include "math/qmcsequence.h"
 
 /**
  * The binomial coefficient is defined as 
@@ -259,3 +260,25 @@ Vector Math::perturbVector(const Vector& axis, const double angle) {
     return result;
 }
 
+/**
+ * Pertubes a vector around another vector, ie. finds a random
+ * vection within a cone.
+ *
+ * @param axis normalized axis of the cone
+ * @param angle angle of the cone in radians
+ * @param qmc_sequence a 2-dimensional quasi-Monto-Carlo sequence to use for random numbers
+ */
+Vector Math::perturbVector(const Vector& axis, const double angle, QMCSequence* qmc_sequence) {
+    Vector result;
+    Vector axisP = axis.toPolar();
+    assert(IS_EQUAL(axisP[0],1)); // Check that axis was a unit-vector
+    do {
+	result = axisP;
+	double* rnds = qmc_sequence->getNext();
+	result[1] += (2*rnds[0] - 1)*angle;
+	result[2] += (2*rnds[1] - 1)*angle;
+	result = result.toRectangular();
+    } while (acos(result*axis) > angle);
+
+    return result;
+}

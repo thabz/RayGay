@@ -2,6 +2,7 @@
 #define MATH_FUNCTIONS_H
 
 class Vector;
+class QMCSequence;
 
 /// A library of math functions
 class Math {
@@ -27,6 +28,7 @@ class Math {
 	static int solveQuadratic(double A, double B, double C, double* roots);
 
 	static Vector perturbVector(const Vector& axis, const double angle);
+	static Vector perturbVector(const Vector& axis, const double angle, QMCSequence* qmc_sequence);
 };
 
 inline double Math::clamp(double a) {
