@@ -35,6 +35,8 @@ class object {
 	/// Get texture coordinates at an intersection
 	virtual void getUV(const Intersection& intersection, double* u, double* v) const = 0;
 
+	virtual void prepare();
+
     protected:
 	object();
 	virtual Intersection _intersect(const Ray& ray) const = 0;

@@ -24,3 +24,13 @@ Intersection object::intersect(const Ray& ray) const {
     }
     return last_intersection;
 }
+
+
+/**
+ * This gets called after construction but before any
+ * intersection methods are called.
+ */
+void object::prepare() {
+    // Default does nothing
+}
+
