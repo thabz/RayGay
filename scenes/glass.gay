@@ -2,8 +2,8 @@
 /*
  */
 
-renderer photonrenderer
 renderer raytracer
+renderer photonrenderer
 
 camera { position <200,500,1100>
          up <0,1,0> 
