@@ -30,9 +30,6 @@ ThreeDS::ThreeDS(const string& filename, const double scale) {
 
 void ThreeDS::init(const string& filename, const double scale) {
     this->scale = scale;
-#ifdef WORDS_BIGENDIAN
-    cout << "Big endian" << endl;
-#endif    
     load3ds(filename);
 }
 
@@ -101,13 +98,6 @@ long filelength(int f) {
     fstat(f, &buf);
     return buf.st_size;
 }
-
-/*
-unsigned int intSwap(unsigned int i) {
-    unsigned char b1, b2, b3, b4;
-    
-}
-*/
 
 unsigned int readUInt(FILE* file) {
     unsigned int dest = 0;
@@ -189,10 +179,10 @@ void ThreeDS::load3ds(const string& filename) {
 
 	l_chunk_id = readUShort(l_file);
 	//fread (&l_chunk_id, sizeof(unsigned short), 1, l_file); //Read the chunk header
-	printf("ChunkID: %04x\n",l_chunk_id); 
+	//printf("ChunkID: %04x\n",l_chunk_id); 
 	l_chunk_lenght = readUInt(l_file);
 	//fread (&l_chunk_lenght, sizeof(unsigned int), 1, l_file); //Read the lenght of the chunk
-	printf("ChunkLenght: %x\n",l_chunk_lenght);
+	//printf("ChunkLenght: %x\n",l_chunk_lenght);
 
 	switch (l_chunk_id)
 	{
