@@ -151,6 +151,9 @@ wireframe	return tWIREFRAME;
 "$"{varstring}	{ yylval.c = new string(yytext+sizeof(char),yyleng-1); 
                   return tVARNAME;
                 }
+"@"{varstring}	{ yylval.c = new string(yytext+sizeof(char),yyleng-1); 
+                  return tVECTORVARNAME;
+                }
 {qstring}	{ yylval.c = new string(yytext+sizeof(char),yyleng-2); 
                   return tQSTRING; 
 		}

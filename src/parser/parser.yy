@@ -90,7 +90,7 @@ ActionListNode* top_actions;
 }
 %token <d> tFLOAT
 %token <i> tINTEGER
-%token <c> tSTRING tQSTRING tVARNAME
+%token <c> tSTRING tQSTRING tVARNAME tVECTORVARNAME
 %token tAA
 %token tBACKGROUND
 %token tBICUBIC
@@ -259,7 +259,7 @@ Assignment	: tVARNAME tEQUAL PathDef
 		    $$ = new AssignFloatNode(*$1,$3);
 		    delete $1;
                 }
-                | tVARNAME tEQUAL Vector
+                | tVECTORVARNAME tEQUAL Vector
                 {
 		    $$ = new AssignVectorNode(*$1,$3);
 		    delete $1;
@@ -859,23 +859,23 @@ Vector		: '<' Expr ',' Expr ',' Expr '>'
 		{
 		    $$ = new VectorNormalizeNode($3);
 		}
-                | '<' Vector '*' Expr '>'
+                | Vector '*' Expr
 		{
-		    $$ = new VectorMultNode($2,$4);
+		    $$ = new VectorMultNode($1,$3);
 		}
-                | '<' Expr '*' Vector '>'
+                | Expr '*' Vector 
 		{
-		    $$ = new VectorMultNode($4,$2);
+		    $$ = new VectorMultNode($3,$1);
 		}
-                | '<' Vector '+' Vector '>'
+                | Vector '+' Vector 
 		{
-		    $$ = new VectorPlusNode($2,$4);
+		    $$ = new VectorPlusNode($1,$3);
 		}
-                | '<' Vector '-' Vector  '>'
+                | Vector '-' Vector 
 		{
-		    $$ = new VectorMinusNode($2,$4);
+		    $$ = new VectorMinusNode($1,$3);
 		}
-                | tVARNAME 
+                | tVECTORVARNAME 
 		{
 		    $$ = new NamedVectorNode(*$1);
 		    delete $1;
