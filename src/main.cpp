@@ -42,17 +42,10 @@ using namespace std;
 void testScene4() {
     Scene scene;
 
-#define NUM 6
-#define SIZE double(300.0)
-    for (int x = 0; x < NUM; x++) {
-	for (int y = 0; y < NUM; y++) {
-	    for (int z = 0; z < NUM; z++) {
-		Material mat = Material(RGB(double(x)/double(NUM), double(y)/double(NUM), double(z)/double(NUM)),0.90,RGB(1.0,1.0,1.0),0.70,70);
-		Sphere* s = new Sphere(Vector(SIZE*double(x)/double(NUM) - SIZE/2, SIZE*double(y)/double(NUM) - SIZE/2, SIZE*double(z)/double(NUM) - SIZE/2),20.0,mat);
-		scene.addObject(s);
-	    }
-	}
-    }
+    Material mat = blue;
+    mat.setTexturemap("earth.jpg");
+    Sphere s = Sphere(Vector(0,0,0),200.0,mat);
+    scene.addObject(&s);
 
     Lightsource light1 = Lightsource(Vector(-4000,4000,4000));
     Lightsource light2 = Lightsource(Vector(4000,3000,6000));
@@ -76,7 +69,7 @@ void testScene4() {
     time_t beginTime = time(NULL);
     cam.render(img);
     printf("Rendering took %ld seconds.\n",time(NULL) - beginTime);
-    img->save("hej.rgb");
+    img->save("out.png");
     delete img;
 }
 

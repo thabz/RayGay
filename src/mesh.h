@@ -46,6 +46,7 @@ class Mesh : public object {
 
 	virtual bool intersects(const Box& b);
 	virtual Box boundingBox();
+	virtual void getUV(const Intersection& intersection, double* u, double* v);
 
 	void addTriangle(const Vector* corners);
 

@@ -39,6 +39,8 @@ class Sphere : public object {
 	virtual bool intersects(const Box& b);
 	virtual Box boundingBox();
 
+	virtual void getUV(const Intersection& intersection, double* u, double* v);
+
         /// Internal test
 	static void test();
 

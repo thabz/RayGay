@@ -20,6 +20,11 @@ class Image {
 	void save(const std::string& filename);
 	int getWidth() { return width; };
 	int getHeight() { return height; };
+	/// Return a pixel where u and v in [0,1]
+	RGB getTexel(double u, double v);
+
+	/// Test
+	static void test();
 
     private:
 	int height;

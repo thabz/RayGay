@@ -127,6 +127,23 @@ Box Sphere::boundingBox() {
     return Box(center - r, center + r);
 }
 
+// See http://astronomy.swin.edu.au/~pbourke/texture/spheremap/
+void Sphere::getUV(const Intersection& intersection, double* u, double* v) {
+    Vector p = intersection.point - center;
+    p.normalize();
+    *v = acos(p[2]) / M_PI;
+    if (IS_ZERO(sin((*v) * M_PI))) {
+	*u = double(0.5);
+	return;
+    } 
+    if (p[1] >= 0.0) {
+       *u = acos(p[0] / (sin((*v) * M_PI))) / M_2PI; 
+    } else {
+       *u = 1 - (acos(p[0] / (sin((*v) * M_PI))) / M_2PI); 
+//       *u = (M_PI + acos(p[0] / (sin((*v) * M_PI)))) / M_2PI; 
+    }
+}
+
 void Sphere::test() {
     Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Sphere s = Sphere(Vector(0,0,0),10.0,m);

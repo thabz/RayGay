@@ -22,7 +22,7 @@ Hierarchy::Hierarchy(Box bbox, Hierarchy* parent) {
 
 Hierarchy::~Hierarchy() {
    for (vector<Hierarchy*>::iterator h = children.begin(); h != children.end(); h++) {
-//       delete *h;
+      // delete *h;
    }
 }
 

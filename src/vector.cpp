@@ -49,14 +49,14 @@ Vector operator/(const Vector &v, const double x) {
 void Vector::normalize() {
     double s = length();
 
-    if (s == 0)
+    if (IS_ZERO(s))
 	return;
 
-    double d = 1/s;
+    double d = double(1.0)/s;
     scale(d);
-
 }
 
+inline
 void Vector::scale(float s) {
     _vector[0] *= s;
     _vector[1] *= s;

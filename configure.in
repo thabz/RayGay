@@ -1,9 +1,19 @@
+
 AC_INIT(src/main.cpp) dnl a source file from your sub dir
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 
-PKG_CHECK_MODULES(GTKMM, gtkmm-2.0 >= 2.2)
-AC_SUBST(GTKMM_CFLAGS)
-AC_SUBST(GTKMM_LIBS)
+MAGIC_CONFIG="/usr/bin/Magick++-config"
+#MAGIC_CFLAGS=`$MAGIC_CONFIG --cxxflags --cppflags`
+MAGIC_CFLAGS=`/usr/bin/Magick++-config --cxxflags --cppflags | tr "\n" " "`
+MAGIC_LIBS=`/usr/bin/Magick++-config --ldflags --libs | tr "\n" " "`
+
+AC_SUBST(MAGIC_CFLAGS)
+AC_SUBST(MAGIC_LIBS)
+
+   
+#PKG_CHECK_MODULES(GTKMM, gtkmm-2.0 >= 2.2)
+#AC_SUBST(GTKMM_CFLAGS)
+#AC_SUBST(GTKMM_LIBS)
 
 PACKAGE=tracer
 VERSION=0.1

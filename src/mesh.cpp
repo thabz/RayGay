@@ -21,7 +21,6 @@ Mesh::Mesh(MeshType type, Material mat) {
 
 Mesh::~Mesh() {
     delete _boundingBox;
-
 }
 
 /**
@@ -165,6 +164,10 @@ Intersection Mesh::intersect_triangle(const Ray& ray,
    intersection.u = u;
    intersection.v = v;
    return intersection;
+}
+
+void Mesh::getUV(const Intersection& intersection, double* u, double* v) {
+    // TODO: Implement
 }
 
 void Mesh::test() {

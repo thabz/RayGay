@@ -88,7 +88,7 @@ RGB Camera::shade(const Ray& ray, Intersection& intersection, int depth) {
 	    Intersection inter = scene.intersect(ray_to_light);
 	    if (!inter.intersected) {
 		// Diffuse color
-		color = cos * material.getKd() * object->getDiffuseColor(point);
+		color = cos * material.getKd() * material.getDiffuseColor(intersection);
 
 		// Specular color (Phong)
 		Vector light_reflect = direction_to_light.reflect(normal);

@@ -21,7 +21,7 @@ class Intersection {
 	~Intersection();	
 
 	void setObject(object* obj) { o = obj; };
-	object* getObject() { return o; };
+	object* getObject() const { return o; };
 
 	Vector point;
 	Vector local_point; ///< The Intersection point in the objects own coordinate system. Optional.

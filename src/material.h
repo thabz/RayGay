@@ -5,6 +5,7 @@
 #include "rgb.h"
 
 class Intersection;
+class Image;
 
 enum material_types {
     MATERIAL_SOLID,
@@ -24,6 +25,7 @@ class Material {
 	RGB getDiffuseColor() { return _diffuseColor; };
 	void setDiffuseColor(RGB diffuseColor) { _diffuseColor = diffuseColor; }; ///< Set the diffuse color
 
+	void setTexturemap(const std::string& filename);
 	
 	RGB getSpecularColor() { return _specularColor; }; ///< Get the specular color
 	void setSpecularColor(RGB specularColor) { _specularColor = specularColor; };	///< Set the specular color
@@ -42,6 +44,7 @@ class Material {
 	/* See page 757 */
 	double transmission_coefficient; ///< The alpha channel (0 = solid, 1 = full transparent)
 	double indice_of_refraction; ///< vacuum = 1.0. Glas ~1.2. Other materials up to 2-3.
+
     private:
 	RGB _diffuseColor;
 	double _kd;
@@ -50,6 +53,8 @@ class Material {
         double _ks;
 
 	int _spec_coeff;
+	Image* texturemap;
+	Image* bumpmap;
 };
 
 #endif

@@ -42,6 +42,8 @@ class object {
 	/// Says whether the point belongs to the inside (and not the closure) of the object
 	virtual bool inside(const Vector &p) = 0;
 
+	virtual void getUV(const Intersection& intersection, double* u, double* v) = 0;
+
     protected:
 	object();
 	virtual Intersection _intersect(const Ray& ray) = 0;

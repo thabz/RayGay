@@ -175,6 +175,10 @@ Box Boolean::boundingBox() {
 
 }
 
+void Boolean::getUV(const Intersection& intersection, double* u, double* v) {
+    // TODO: Implement
+}
+
 void Boolean::test() {
     Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Sphere s1 = Sphere(Vector(-10,0,0),30.0,m);

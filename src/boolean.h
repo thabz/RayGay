@@ -33,6 +33,8 @@ class Boolean : public object {
 	virtual bool onEdge(const Vector &p);
 	virtual bool inside(const Vector &p);
 
+	virtual void getUV(const Intersection& intersection, double* u, double* v);
+
 	static void test();
     private:
 	object* _lhs;
