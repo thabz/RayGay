@@ -63,367 +63,389 @@ Vector iNormal(Object* o, const Vector& origin, const Vector& dir) {
  * This fires a bunch of rays at an object and checks
  * that the returned normals all have length one.
  */
-void normalCheck(Object* object, double radius) {
+bool normalCheck(Object* object, double radius) {
     int num = 10000;
     int checked = 0;
+    int failures = 0;
     for(int i = 0; i < num; i++) {
 	Vector v = Vector::randomUnitVector();
 	Vector pos = v * radius;
 	Vector dir = -1 * v;
 	Ray ray = Ray(pos,dir,-1);
 	if (intersects(object,ray)) {
-	    assert(IS_EQUAL(iNormal(object,ray).length(),1.0));
+	    if (!IS_EQUAL(iNormal(object,ray).length(),1.0)) {
+		failures++;
+	    };
 	    checked++;
 	}
     }
+    return failures == 0;
     //cout << "Checked normals: " << checked << endl;
+}
+
+/**
+ * This fires a bunch of rays at an object. And from
+ * each intersection point it fires another ray with
+ * the same direction. An object passing this test
+ * should be eligable for using as a transparent object.
+ */
+bool transparentCheck(Object* object, double radius) {
+    int failures = 0;
+
+    return failures == 0;
 }
 
 class sphere_test : public Test {
     public:
 	void run() {
-    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
-    Sphere s = Sphere(Vector(0,0,0),10.0,m);
+	    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+	    Sphere s = Sphere(Vector(0,0,0),10.0,m);
 
-    s = Sphere(Vector(0,0,0),60.0,m);
+	    s = Sphere(Vector(0,0,0),60.0,m);
 
-    /* Test intersection(ray) */
-    //assertTrue(intersects(&s,Vector(0,0,1000),Vector(0,0,-1)));
-    //assertTrue(IS_EQUAL(s.getLastIntersection()->getPoint()[2],60.0));
-    
-    assertTrue(intersects(&s,Vector(0,0,1000),Vector(0,0,-1)));
-    assertTrue(IS_EQUAL(iPoint(&s,Vector(0,0,1000),Vector(0,0,-1))[2],60.0));
+	    /* Test intersection(ray) */
+	    //assertTrue(intersects(&s,Vector(0,0,1000),Vector(0,0,-1)));
+	    //assertTrue(IS_EQUAL(s.getLastIntersection()->getPoint()[2],60.0));
 
-    //r = Ray(Vector(0,0,0),Vector(0,0,-1),1);
-   // assertTrue(s.intersect(r));
- //   assertTrue(IS_EQUAL( s.getLastIntersection()->getPoint()[2], -60.0));
+	    assertTrue(intersects(&s,Vector(0,0,1000),Vector(0,0,-1)));
+	    assertTrue(IS_EQUAL(iPoint(&s,Vector(0,0,1000),Vector(0,0,-1))[2],60.0));
 
-    assertTrue(intersects(&s,Vector(0,0,0),Vector(0,0,-1)));
-    assertTrue(IS_EQUAL(iPoint(&s,Vector(0,0,0),Vector(0,0,-1))[2],-60.0));
+	    //r = Ray(Vector(0,0,0),Vector(0,0,-1),1);
+	    // assertTrue(s.intersect(r));
+	    //   assertTrue(IS_EQUAL( s.getLastIntersection()->getPoint()[2], -60.0));
 
-    assertTrue(intersects(&s,Vector(0,0,-1000),Vector(0,0,1)));
-    assertTrue(IS_EQUAL(iPoint(&s,Vector(0,0,-1000),Vector(0,0,1))[2],-60.0));
+	    assertTrue(intersects(&s,Vector(0,0,0),Vector(0,0,-1)));
+	    assertTrue(IS_EQUAL(iPoint(&s,Vector(0,0,0),Vector(0,0,-1))[2],-60.0));
 
-    assertTrue(intersects(&s,Vector(0,0,-100),Vector(0,0,-1)) == false);
+	    assertTrue(intersects(&s,Vector(0,0,-1000),Vector(0,0,1)));
+	    assertTrue(IS_EQUAL(iPoint(&s,Vector(0,0,-1000),Vector(0,0,1))[2],-60.0));
 
-    assertTrue(intersects(&s,Vector(0,0,-60),Vector(0,0,-1)) == false);
+	    assertTrue(intersects(&s,Vector(0,0,-100),Vector(0,0,-1)) == false);
 
-    /* Test boundingBoundingBox() */
-    s = Sphere(Vector(0,0,0),20.0,m);
-    assertTrue(s.boundingBoundingBox().inside(BoundingBox(Vector(-20,-20,-20),Vector(20,20,20))));
+	    assertTrue(intersects(&s,Vector(0,0,-60),Vector(0,0,-1)) == false);
 
-    /* Test clone */
-    Object* s1 = new Sphere(Vector(0,0,0),20,m);
-    Object* s2 = dynamic_cast<Object*>(s1->clone());
-    s1->transform(Matrix::matrixTranslate(Vector(0,-100,0)));
-    s2->transform(Matrix::matrixTranslate(Vector(0,100,0)));
-    assertTrue(intersects(s1,Vector(0,-100,-1000),Vector(0,0,1)) == true);
-    assertTrue(intersects(s2,Vector(0,-100,-1000),Vector(0,0,1)) == false);
-    assertTrue(intersects(s1,Vector(0,100,-1000),Vector(0,0,1)) == false);
-    assertTrue(intersects(s2,Vector(0,100,-1000),Vector(0,0,1)) == true);
+	    /* Test boundingBoundingBox() */
+	    s = Sphere(Vector(0,0,0),20.0,m);
+	    assertTrue(s.boundingBoundingBox().inside(BoundingBox(Vector(-20,-20,-20),Vector(20,20,20))));
 
-    /* Test AllIntersections */
-    s = Sphere(Vector(0,0,0),20.0,m);
-    vector<Intersection> result;
-    Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
-    s.allIntersections(ray,result);
-    assertTrue(result.size() == 2);
-    assertTrue(result[0].getPoint() == Vector(0,0,20));
-    assertTrue(result[0].isEntering() == true);
-    assertTrue(result[1].getPoint() == Vector(0,0,-20));
-    assertTrue(result[1].isEntering() == false);
+	    /* Test clone */
+	    Object* s1 = new Sphere(Vector(0,0,0),20,m);
+	    Object* s2 = dynamic_cast<Object*>(s1->clone());
+	    s1->transform(Matrix::matrixTranslate(Vector(0,-100,0)));
+	    s2->transform(Matrix::matrixTranslate(Vector(0,100,0)));
+	    assertTrue(intersects(s1,Vector(0,-100,-1000),Vector(0,0,1)) == true);
+	    assertTrue(intersects(s2,Vector(0,-100,-1000),Vector(0,0,1)) == false);
+	    assertTrue(intersects(s1,Vector(0,100,-1000),Vector(0,0,1)) == false);
+	    assertTrue(intersects(s2,Vector(0,100,-1000),Vector(0,0,1)) == true);
 
-    ray = Ray(Vector(0,0,-100),Vector(0,0,1),-1);
-    result.clear();
-    s.allIntersections(ray,result);
-    assertTrue(result.size() == 2);
-    assertTrue(result[0].getPoint() == Vector(0,0,-20));
-    assertTrue(result[0].isEntering() == true);
-    assertTrue(result[1].getPoint() == Vector(0,0,20));
-    assertTrue(result[1].isEntering() == false);
+	    /* Test AllIntersections */
+	    s = Sphere(Vector(0,0,0),20.0,m);
+	    vector<Intersection> result;
+	    Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
+	    s.allIntersections(ray,result);
+	    assertTrue(result.size() == 2);
+	    assertTrue(result[0].getPoint() == Vector(0,0,20));
+	    assertTrue(result[0].isEntering() == true);
+	    assertTrue(result[1].getPoint() == Vector(0,0,-20));
+	    assertTrue(result[1].isEntering() == false);
 
-    ray = Ray(Vector(0,0,0),Vector(0,0,1),-1);
-    result.clear();
-    s.allIntersections(ray,result);
-    assertTrue(result.size() == 1);
-    assertTrue(result[0].getPoint() == Vector(0,0,20));
-    assertTrue(result[0].isEntering() == false);
+	    ray = Ray(Vector(0,0,-100),Vector(0,0,1),-1);
+	    result.clear();
+	    s.allIntersections(ray,result);
+	    assertTrue(result.size() == 2);
+	    assertTrue(result[0].getPoint() == Vector(0,0,-20));
+	    assertTrue(result[0].isEntering() == true);
+	    assertTrue(result[1].getPoint() == Vector(0,0,20));
+	    assertTrue(result[1].isEntering() == false);
 
-    ray = Ray(Vector(0,0,0),Vector(0,0,-1),-1);
-    result.clear();
-    s.allIntersections(ray,result);
-    assertTrue(result.size() == 1);
-    assertTrue(result[0].getPoint() == Vector(0,0,-20));
-    assertTrue(result[0].isEntering() == false);
+	    ray = Ray(Vector(0,0,0),Vector(0,0,1),-1);
+	    result.clear();
+	    s.allIntersections(ray,result);
+	    assertTrue(result.size() == 1);
+	    assertTrue(result[0].getPoint() == Vector(0,0,20));
+	    assertTrue(result[0].isEntering() == false);
 
-    // Test returned normals
-    s = Sphere(Vector(0,0,0),20.0,NULL);
-    normalCheck(&s,100);
-}
+	    ray = Ray(Vector(0,0,0),Vector(0,0,-1),-1);
+	    result.clear();
+	    s.allIntersections(ray,result);
+	    assertTrue(result.size() == 1);
+	    assertTrue(result[0].getPoint() == Vector(0,0,-20));
+	    assertTrue(result[0].isEntering() == false);
+
+	    // Test returned normals
+	    s = Sphere(Vector(0,0,0),20.0,NULL);
+	    assertTrue(normalCheck(&s,100));
+	}
 };
 
 class box_test : public Test {
     public: 
 	void run() {
-    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
-    Box* b = new Box(Vector(-1,-1,-1),Vector(1,1,1),m);
-    b->prepare();
-    assertTrue(b->getVertices()->size() == 8);
+	    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+	    Box* b = new Box(Vector(-1,-1,-1),Vector(1,1,1),m);
+	    b->prepare();
+	    assertTrue(b->getVertices()->size() == 8);
 
-    KdTree* bsp = new KdTree();
-    b->addSelf(bsp);
-    bsp->prepare();
-    Intersection* inter = new Intersection();
-    Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
-    assertTrue(bsp->intersect(r,inter));
-    assertTrue(inter->getPoint() == Vector(0,0,1));
-    assertTrue(inter->getUV() == Vector2(0.5,0.5));
+	    KdTree* bsp = new KdTree();
+	    b->addSelf(bsp);
+	    bsp->prepare();
+	    Intersection* inter = new Intersection();
+	    Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
+	    assertTrue(bsp->intersect(r,inter));
+	    assertTrue(inter->getPoint() == Vector(0,0,1));
+	    assertTrue(inter->getUV() == Vector2(0.5,0.5));
 
-    r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
-    assertTrue(bsp->intersect(r,inter));
-    assertTrue(inter->getPoint() == Vector(0,-1,0));
+	    r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
+	    assertTrue(bsp->intersect(r,inter));
+	    assertTrue(inter->getPoint() == Vector(0,-1,0));
 
-    /* Test second constructor */
-    b = new Box(Vector(0,0,0),2,2,2,m);
-    b->prepare();
-    assertTrue(b->getVertices()->size() == 8);
+	    /* Test second constructor */
+	    b = new Box(Vector(0,0,0),2,2,2,m);
+	    b->prepare();
+	    assertTrue(b->getVertices()->size() == 8);
 
-    bsp = new KdTree();
-    b->addSelf(bsp);
-    bsp->prepare();
+	    bsp = new KdTree();
+	    b->addSelf(bsp);
+	    bsp->prepare();
 
-    r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
-    assertTrue(bsp->intersect(r,inter));
-    assertTrue(inter->getPoint() == Vector(0,0,1));
+	    r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
+	    assertTrue(bsp->intersect(r,inter));
+	    assertTrue(inter->getPoint() == Vector(0,0,1));
 
-    r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
-    assertTrue(bsp->intersect(r,inter));
-    assertTrue(inter->getPoint() == Vector(0,-1,0));
+	    r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
+	    assertTrue(bsp->intersect(r,inter));
+	    assertTrue(inter->getPoint() == Vector(0,-1,0));
 
-    r = Ray(Vector(0,-100,1.5),Vector(0,1,0),1);
-    assertTrue(bsp->intersect(r,inter) == false);
+	    r = Ray(Vector(0,-100,1.5),Vector(0,1,0),1);
+	    assertTrue(bsp->intersect(r,inter) == false);
 
-    /* test clone() */
-    b = new Box(Vector(-1,-1,-1),Vector(1,1,1),m);
-    SceneObject* b2 = b->clone();
-    assertTrue(b2 != NULL);
-    b->transform(Matrix::matrixTranslate(Vector(0,10,0)));
-    b->prepare();
-    b2->prepare();
-    bsp = new KdTree();
-    b->addSelf(bsp);
-    b2->addSelf(bsp);
-    bsp->prepare();
+	    /* test clone() */
+	    b = new Box(Vector(-1,-1,-1),Vector(1,1,1),m);
+	    SceneObject* b2 = b->clone();
+	    assertTrue(b2 != NULL);
+	    b->transform(Matrix::matrixTranslate(Vector(0,10,0)));
+	    b->prepare();
+	    b2->prepare();
+	    bsp = new KdTree();
+	    b->addSelf(bsp);
+	    b2->addSelf(bsp);
+	    bsp->prepare();
 
-    Intersection i;
-    r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
-    assertTrue(bsp->intersect(r,&i));
-    r = Ray(Vector(0,10,100),Vector(0,0,-1),1);
-    assertTrue(bsp->intersect(r,&i));
-    r = Ray(Vector(0,5,100),Vector(0,0,-1),1);
-    assertTrue(!bsp->intersect(r,&i));
-}
+	    Intersection i;
+	    r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
+	    assertTrue(bsp->intersect(r,&i));
+	    r = Ray(Vector(0,10,100),Vector(0,0,-1),1);
+	    assertTrue(bsp->intersect(r,&i));
+	    r = Ray(Vector(0,5,100),Vector(0,0,-1),1);
+	    assertTrue(!bsp->intersect(r,&i));
+	}
 };
 
-void mesh_test() {
-}
+class mesh_test : public Test {
+    public:
+	void run() {
+	    Mesh::test();
+	}
+};
 
-void tetrahedron_test() {
-    Material* mat = new Material(RGB(.0,.0,.0),RGB(.0,.0,.0));
-    Tetrahedron t = Tetrahedron(Vector(0,0,0),100,mat);
-    assert(t.getEdges()->size() == 6);
-    assert(t.getVertices()->size() == 4);
-}
+class tetrahedron_test : public Test {
+    public:
+	void run() {
+	    Material* mat = new Material(RGB(.0,.0,.0),RGB(.0,.0,.0));
+	    Tetrahedron t = Tetrahedron(Vector(0,0,0),100,mat);
+	    assertTrue(t.getEdges()->size() == 6);
+	    assertTrue(t.getVertices()->size() == 4);
+	}
+};
 
-void tesselation_test() {
-    Material* mat = new Material(RGB(.0,.0,.0),RGB(.0,.0,.0));
+class tesselation_test : public Test {
+    public:
+	void run() {
+	    Material* mat = new Material(RGB(.0,.0,.0),RGB(.0,.0,.0));
 
-    // 4 triangles
-    Tessalation* t = new Tessalation(Vector(0,0,0),100,0,mat);
-    assert(t->getEdges()->size() == 6);
-    assert(t->getVertices()->size() == 4);
+	    // 4 triangles
+	    Tessalation* t = new Tessalation(Vector(0,0,0),100,0,mat);
+	    assertTrue(t->getEdges()->size() == 6);
+	    assertTrue(t->getVertices()->size() == 4);
 
-    // 12 triangles
-    t = new Tessalation(Vector(0,0,0),100,1,mat);
-    assert(t->getVertices()->size() == 8);
-    //cout << t->getEdges()->size() << endl;
-  //  assert(t->getEdges()->size() == 4 * 3);
+	    // 12 triangles
+	    t = new Tessalation(Vector(0,0,0),100,1,mat);
+	    assertTrue(t->getVertices()->size() == 8);
+	    //cout << t->getEdges()->size() << endl;
+	    //  assertTrue(t->getEdges()->size() == 4 * 3);
 
-    // 36 triangles
-    t = new Tessalation(Vector(0,0,0),100,2,mat);
-    assert(t->getVertices()->size() == 20);
+	    // 36 triangles
+	    t = new Tessalation(Vector(0,0,0),100,2,mat);
+	    assertTrue(t->getVertices()->size() == 20);
 
-    // 108 triangles
-    t = new Tessalation(Vector(0,0,0),100,3,mat);
-    assert(t->getVertices()->size() == 56);
-}
+	    // 108 triangles
+	    t = new Tessalation(Vector(0,0,0),100,3,mat);
+	    assertTrue(t->getVertices()->size() == 56);
+	}
+};
 
-void extrusion_test() {
+class extrusion_test : public Test {
+    public:
+	void run() {
 
-    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
-    // Check bounds 
-    Vector o = Vector(0,0,0);
-    Vector top = Vector(10,0,0);
-    BoundingBox b = BoundingBox(Vector(-1,-10,-10),Vector(11,10,10));
-	    
-    Extrusion* c = new Extrusion(o,top,9.0,5,m);
+	    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+	    // Check bounds 
+	    Vector o = Vector(0,0,0);
+	    Vector top = Vector(10,0,0);
+	    BoundingBox b = BoundingBox(Vector(-1,-10,-10),Vector(11,10,10));
 
-    c = new Extrusion(top,o,9.0,5,m);
+	    Extrusion* c = new Extrusion(o,top,9.0,5,m);
 
-    top = Vector(0,10,0);
-    b = BoundingBox(Vector(-10,-1,-10),Vector(10,11,10));
-    c = new Extrusion(o,top,5.0,5,m);
+	    c = new Extrusion(top,o,9.0,5,m);
 
-    // Check intersection 
-    c = new Extrusion(Vector(0,0,0),Vector(0,0,-10),5.0,3,m);
-    c->prepare();
-    KdTree* bsp = new KdTree();
-    c->addSelf(bsp);
-    bsp->prepare();
-    Intersection i;
-    Ray r = Ray(Vector(0.5,0.5,100),Vector(0,0,-1),1);
-    assert(bsp->intersect(r,&i));
+	    top = Vector(0,10,0);
+	    b = BoundingBox(Vector(-10,-1,-10),Vector(10,11,10));
+	    c = new Extrusion(o,top,5.0,5,m);
 
-    // Check generated mesh 
-    c = new Extrusion(Vector(0,0,0),Vector(0,0,-10),2.0,5,m);
-    c->prepare();
-    assert(c->getVertices()->size() == 5*2 + 2);
+	    // Check intersection 
+	    c = new Extrusion(Vector(0,0,0),Vector(0,0,-10),5.0,3,m);
+	    c->prepare();
+	    KdTree* bsp = new KdTree();
+	    c->addSelf(bsp);
+	    bsp->prepare();
+	    Intersection i;
+	    Ray r = Ray(Vector(0.5,0.5,100),Vector(0,0,-1),1);
+	    assertTrue(bsp->intersect(r,&i));
 
-    Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
-    Extrusion torus = Extrusion(circle1,100,16,10,new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
-    torus.prepare();
+	    // Check generated mesh 
+	    c = new Extrusion(Vector(0,0,0),Vector(0,0,-10),2.0,5,m);
+	    c->prepare();
+	    assertTrue(c->getVertices()->size() == 5*2 + 2);
 
-    assert(torus.getVertices()->size() == 16*10);
+	    Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
+	    Extrusion torus = Extrusion(circle1,100,16,10,new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
+	    torus.prepare();
 
-}
+	    assertTrue(torus.getVertices()->size() == 16*10);
+	}
+};
 
 class cylinder_test : public Test {
     public:
 	void run() {
-    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
-    Cylinder* cyl = new Cylinder(Vector(0,0,0),Vector(0,0,10),10,false,m);
+	    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+	    Cylinder* cyl = new Cylinder(Vector(0,0,0),Vector(0,0,10),10,false,m);
 
-    /* Test intersection() of z-axis aligned cylinder */
-    
-    assertTrue(intersects(cyl,Vector(0,-1000,5),Vector(0,1,0)));
-    assertTrue(iPoint(cyl,Vector(0,-1000,5),Vector(0,1,0)) == Vector(0,-10,5));
-    cout << iNormal(cyl,Vector(0,-1000,5),Vector(0,1,0)) << endl;
-    assertTrue(iNormal(cyl,Vector(0,-1000,5),Vector(0,1,0)) == Vector(0,-1,0));
+	    /* Test intersection() of z-axis aligned cylinder */
 
-    assertTrue(intersects(cyl,Vector(0,1000,5),Vector(0,-1,0)));
-    assertTrue(iPoint(cyl,Vector(0,1000,5),Vector(0,-1,0)) == Vector(0,10,5));
-    assertTrue(iNormal(cyl,Vector(0,1000,5),Vector(0,-1,0)) == Vector(0,1,0));
+	    assertTrue(intersects(cyl,Vector(0,-1000,5),Vector(0,1,0)));
+	    assertTrue(iPoint(cyl,Vector(0,-1000,5),Vector(0,1,0)) == Vector(0,-10,5));
+	    cout << iNormal(cyl,Vector(0,-1000,5),Vector(0,1,0)) << endl;
+	    assertTrue(iNormal(cyl,Vector(0,-1000,5),Vector(0,1,0)) == Vector(0,-1,0));
 
-    delete cyl;
+	    assertTrue(intersects(cyl,Vector(0,1000,5),Vector(0,-1,0)));
+	    assertTrue(iPoint(cyl,Vector(0,1000,5),Vector(0,-1,0)) == Vector(0,10,5));
+	    assertTrue(iNormal(cyl,Vector(0,1000,5),Vector(0,-1,0)) == Vector(0,1,0));
 
-    // Test a cylinder translated along the z-axis
-    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,false,m);
-    delete cyl;
-    
-    // Test an x-axis aligned cylinder
-    cyl = new Cylinder(Vector(2,0,0),Vector(10,0,0),10,false,m);
-    assertTrue(intersects(cyl,Vector(3,0,1000),Vector(0,0,-1)));
-    assertTrue(iPoint(cyl,Vector(3,0,1000),Vector(0,0,-1)) == Vector(3,0,10));
-    assertTrue(iNormal(cyl,Vector(3,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
-    
-    delete cyl;
-    
-    // Test an y-axis aligned cylinder
-    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,false,m);
-    assertTrue(intersects(cyl,Vector(0,3,1000),Vector(0,0,-1)));
-    assertTrue(iPoint(cyl,Vector(0,3,1000),Vector(0,0,-1)) == Vector(0,3,10));
-    assertTrue(iNormal(cyl,Vector(0,3,1000),Vector(0,0,-1)) == Vector(0,0,1));
+	    delete cyl;
 
-    assertTrue(intersects(cyl,Vector(0,0,100),Vector(0,0,-1)) == false);
-    delete cyl;
+	    // Test a cylinder translated along the z-axis
+	    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,false,m);
+	    delete cyl;
 
-    // test allIntersections
-    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
-    vector<Intersection> result;
-    Ray ray = Ray(Vector(0,5,1000),Vector(0,0,-1),-1);
-    cyl->allIntersections(ray,result);
-    assertTrue(result.size() == 2);
-    assertTrue(result[0].getPoint() == Vector(0,5,10));
-    assertTrue(result[1].getPoint() == Vector(0,5,-10));
-    
-    // Intersect with caps (z-axis aligned)
-    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,true,m);
-    ray = Ray(Vector(0,0,50),Vector(0,0,-1),-1);
-    result.clear();
-    cyl->allIntersections(ray,result);
-    assertTrue(result.size() == 2);
-    assertTrue(result[0].getPoint() == Vector(0,0,10));
-    assertTrue(result[0].getNormal() == Vector(0,0,1));
-    assertTrue(result[1].getPoint() == Vector(0,0,2));
-    assertTrue(result[1].getNormal() == Vector(0,0,-1));
+	    // Test an x-axis aligned cylinder
+	    cyl = new Cylinder(Vector(2,0,0),Vector(10,0,0),10,false,m);
+	    assertTrue(intersects(cyl,Vector(3,0,1000),Vector(0,0,-1)));
+	    assertTrue(iPoint(cyl,Vector(3,0,1000),Vector(0,0,-1)) == Vector(3,0,10));
+	    assertTrue(iNormal(cyl,Vector(3,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
 
-    // Intersect with caps (y-axis aligned)
-    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
-    ray = Ray(Vector(0,50,1),Vector(0,-1,0),-1);
-    result.clear();
-    cyl->allIntersections(ray,result);
-    assertTrue(result.size() == 2);
-    assertTrue(result[0].getPoint() == Vector(0,10,1));
-    assertTrue(result[0].getNormal() == Vector(0,1,0));
-    assertTrue(result[1].getPoint() == Vector(0,2,1));
-    assertTrue(result[1].getNormal() == Vector(0,-1,0));
-    assertTrue(iPoint(cyl,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,10,0));
-    assertTrue(iNormal(cyl,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
-    assertTrue(iPoint(cyl,Vector(1,1000,1),Vector(0,-1,0)) == Vector(1,10,1));
-    assertTrue(iNormal(cyl,Vector(1,1000,1),Vector(0,-1,0)) == Vector(0,1,0));
+	    delete cyl;
 
-    // Test clone()
-    Object* s1 = new Cylinder(Vector(2,0,0),Vector(10,0,0),10,true,m);
-    Object* s2 = dynamic_cast<Object*>(s1->clone());
-    s1->transform(Matrix::matrixTranslate(Vector(0,-100,0)));
-    s2->transform(Matrix::matrixTranslate(Vector(0,100,0)));
-    assertTrue(intersects(s1,Vector(5,-100,-1000),Vector(0,0,1)) == true);
-    assertTrue(intersects(s2,Vector(5,-100,-1000),Vector(0,0,1)) == false);
-    assertTrue(intersects(s1,Vector(5,100,-1000),Vector(0,0,1)) == false);
-    assertTrue(intersects(s2,Vector(5,100,-1000),Vector(0,0,1)) == true);
+	    // Test an y-axis aligned cylinder
+	    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,false,m);
+	    assertTrue(intersects(cyl,Vector(0,3,1000),Vector(0,0,-1)));
+	    assertTrue(iPoint(cyl,Vector(0,3,1000),Vector(0,0,-1)) == Vector(0,3,10));
+	    assertTrue(iNormal(cyl,Vector(0,3,1000),Vector(0,0,-1)) == Vector(0,0,1));
 
-    // Rays with origin on surface
-    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
-    assertTrue(!intersects(cyl,Vector(0,10,0),Vector(0,1,0)));
-    assertTrue(intersects(cyl,Vector(0,10,0),Vector(0,-1,0)));
-    assertTrue(iPoint(cyl,Vector(0,10,0),Vector(0,-1,0)) == Vector(0,2,0));
-    assertTrue(iPoint(cyl,Vector(0,2,0),Vector(0,1,0)) == Vector(0,10,0));
-    delete cyl;
+	    assertTrue(intersects(cyl,Vector(0,0,100),Vector(0,0,-1)) == false);
+	    delete cyl;
 
-    // Ray with origin inside cylinder
-    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,true,m);
-    assertTrue(intersects(cyl,Vector(0,0,5),Vector(0,0,1)));
-    assertTrue(iPoint(cyl,Vector(0,0,5),Vector(0,0,1)) == Vector(0,0,10));
-    assertTrue(iNormal(cyl,Vector(0,0,5),Vector(0,0,1)) == Vector(0,0,1));
-    assertTrue(intersects(cyl,Vector(0,0,5),Vector(0,1,0)));
-    assertTrue(iPoint(cyl,Vector(0,0,5),Vector(0,1,0)) == Vector(0,10,5));
-    assertTrue(iNormal(cyl,Vector(0,0,5),Vector(0,1,0)) == Vector(0,1,0));
+	    // test allIntersections
+	    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
+	    vector<Intersection> result;
+	    Ray ray = Ray(Vector(0,5,1000),Vector(0,0,-1),-1);
+	    cyl->allIntersections(ray,result);
+	    assertTrue(result.size() == 2);
+	    assertTrue(result[0].getPoint() == Vector(0,5,10));
+	    assertTrue(result[1].getPoint() == Vector(0,5,-10));
 
-    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
-    assertTrue(intersects(cyl,Vector(0,5,0),Vector(0,1,0)));
-    assertTrue(iPoint(cyl,Vector(0,5,0),Vector(0,1,0)) == Vector(0,10,0));
-    assertTrue(iNormal(cyl,Vector(0,5,0),Vector(0,1,0)) == Vector(0,1,0));
+	    // Intersect with caps (z-axis aligned)
+	    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,true,m);
+	    ray = Ray(Vector(0,0,50),Vector(0,0,-1),-1);
+	    result.clear();
+	    cyl->allIntersections(ray,result);
+	    assertTrue(result.size() == 2);
+	    assertTrue(result[0].getPoint() == Vector(0,0,10));
+	    assertTrue(result[0].getNormal() == Vector(0,0,1));
+	    assertTrue(result[1].getPoint() == Vector(0,0,2));
+	    assertTrue(result[1].getNormal() == Vector(0,0,-1));
 
-    // Scaled cylinder
-    cyl = new Cylinder(Vector(0,0,0),Vector(0,1,0),1,true,m);
-    cyl->transform(Matrix::matrixScale(Vector(3,10,2)));
-    assertTrue(intersects(cyl,Vector(0,5,100),Vector(0,0,-1)));
-    assertTrue(iPoint(cyl,Vector(0,5,100),Vector(0,0,-1)) == Vector(0,5,2));
-    assertTrue(iNormal(cyl,Vector(0,5,100),Vector(0,0,-1)) == Vector(0,0,1));
-    assertTrue(iPoint(cyl,Vector(1000,5,0),Vector(-1,0,0)) == Vector(3,5,0));
-    assertTrue(iNormal(cyl,Vector(1000,5,0),Vector(-1,0,0)) == Vector(1,0,0));
+	    // Intersect with caps (y-axis aligned)
+	    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
+	    ray = Ray(Vector(0,50,1),Vector(0,-1,0),-1);
+	    result.clear();
+	    cyl->allIntersections(ray,result);
+	    assertTrue(result.size() == 2);
+	    assertTrue(result[0].getPoint() == Vector(0,10,1));
+	    assertTrue(result[0].getNormal() == Vector(0,1,0));
+	    assertTrue(result[1].getPoint() == Vector(0,2,1));
+	    assertTrue(result[1].getNormal() == Vector(0,-1,0));
+	    assertTrue(iPoint(cyl,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,10,0));
+	    assertTrue(iNormal(cyl,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,1,0));
+	    assertTrue(iPoint(cyl,Vector(1,1000,1),Vector(0,-1,0)) == Vector(1,10,1));
+	    assertTrue(iNormal(cyl,Vector(1,1000,1),Vector(0,-1,0)) == Vector(0,1,0));
 
-    cyl = new Cylinder(Vector(-3,-10,-4),Vector(1,10,3),1,true,m);
-    cyl->transform(Matrix::matrixScale(Vector(3,10,2)));
-    normalCheck(cyl,1000);
-}
+	    // Test clone()
+	    Object* s1 = new Cylinder(Vector(2,0,0),Vector(10,0,0),10,true,m);
+	    Object* s2 = dynamic_cast<Object*>(s1->clone());
+	    s1->transform(Matrix::matrixTranslate(Vector(0,-100,0)));
+	    s2->transform(Matrix::matrixTranslate(Vector(0,100,0)));
+	    assertTrue(intersects(s1,Vector(5,-100,-1000),Vector(0,0,1)) == true);
+	    assertTrue(intersects(s2,Vector(5,-100,-1000),Vector(0,0,1)) == false);
+	    assertTrue(intersects(s1,Vector(5,100,-1000),Vector(0,0,1)) == false);
+	    assertTrue(intersects(s2,Vector(5,100,-1000),Vector(0,0,1)) == true);
+
+	    // Rays with origin on surface
+	    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
+	    assertTrue(!intersects(cyl,Vector(0,10,0),Vector(0,1,0)));
+	    assertTrue(intersects(cyl,Vector(0,10,0),Vector(0,-1,0)));
+	    assertTrue(iPoint(cyl,Vector(0,10,0),Vector(0,-1,0)) == Vector(0,2,0));
+	    assertTrue(iPoint(cyl,Vector(0,2,0),Vector(0,1,0)) == Vector(0,10,0));
+	    delete cyl;
+
+	    // Ray with origin inside cylinder
+	    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,true,m);
+	    assertTrue(intersects(cyl,Vector(0,0,5),Vector(0,0,1)));
+	    assertTrue(iPoint(cyl,Vector(0,0,5),Vector(0,0,1)) == Vector(0,0,10));
+	    assertTrue(iNormal(cyl,Vector(0,0,5),Vector(0,0,1)) == Vector(0,0,1));
+	    assertTrue(intersects(cyl,Vector(0,0,5),Vector(0,1,0)));
+	    assertTrue(iPoint(cyl,Vector(0,0,5),Vector(0,1,0)) == Vector(0,10,5));
+	    assertTrue(iNormal(cyl,Vector(0,0,5),Vector(0,1,0)) == Vector(0,1,0));
+
+	    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
+	    assertTrue(intersects(cyl,Vector(0,5,0),Vector(0,1,0)));
+	    assertTrue(iPoint(cyl,Vector(0,5,0),Vector(0,1,0)) == Vector(0,10,0));
+	    assertTrue(iNormal(cyl,Vector(0,5,0),Vector(0,1,0)) == Vector(0,1,0));
+
+	    // Scaled cylinder
+	    cyl = new Cylinder(Vector(0,0,0),Vector(0,1,0),1,true,m);
+	    cyl->transform(Matrix::matrixScale(Vector(3,10,2)));
+	    assertTrue(intersects(cyl,Vector(0,5,100),Vector(0,0,-1)));
+	    assertTrue(iPoint(cyl,Vector(0,5,100),Vector(0,0,-1)) == Vector(0,5,2));
+	    assertTrue(iNormal(cyl,Vector(0,5,100),Vector(0,0,-1)) == Vector(0,0,1));
+	    assertTrue(iPoint(cyl,Vector(1000,5,0),Vector(-1,0,0)) == Vector(3,5,0));
+	    assertTrue(iNormal(cyl,Vector(1000,5,0),Vector(-1,0,0)) == Vector(1,0,0));
+
+	    cyl = new Cylinder(Vector(-3,-10,-4),Vector(1,10,3),1,true,m);
+	    cyl->transform(Matrix::matrixScale(Vector(3,10,2)));
+	    assertTrue(normalCheck(cyl,1000));
+	}
 };
-
-void test_3ds() {
-    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
-    ThreeDS* chair = new ThreeDS("../3ds/egg-chair.3ds",1.0,m);
-    assert(chair != NULL);
-}
 
 class objectgroup_test : public Test {
     public:
@@ -512,311 +534,314 @@ class torus_test : public Test {
 	    // Test normals
 	    t = new Torus(10,1,m);
 	    t->transform(Matrix::matrixScale(Vector(2,3,4)));
-	    normalCheck(t,1000);
+	    assertTrue(normalCheck(t,1000));
 	}
 };
 
-void transformed_instance_test() {
-    Sphere* s = new Sphere(Vector(0,0,0),10.0,NULL);
-    TransformedInstance* t1 = new TransformedInstance(s);
-    t1->transform(Matrix::matrixTranslate(Vector(100,0,0)));
-    TransformedInstance* t2 = new TransformedInstance(s);
-    t2->transform(Matrix::matrixTranslate(Vector(-100,0,0)));
-    assert(intersects(t1,Vector(100,0,1000),Vector(0,0,-1)));
-    assert(!intersects(t1,Vector(0,0,1000),Vector(0,0,-1)));
+class transformed_instance_test : public Test {
+    public:
+	void run() {
+	    Sphere* s = new Sphere(Vector(0,0,0),10.0,NULL);
+	    TransformedInstance* t1 = new TransformedInstance(s);
+	    t1->transform(Matrix::matrixTranslate(Vector(100,0,0)));
+	    TransformedInstance* t2 = new TransformedInstance(s);
+	    t2->transform(Matrix::matrixTranslate(Vector(-100,0,0)));
+	    assert(intersects(t1,Vector(100,0,1000),Vector(0,0,-1)));
+	    assert(!intersects(t1,Vector(0,0,1000),Vector(0,0,-1)));
 
-    assert(intersects(t2,Vector(-100,0,1000),Vector(0,0,-1)));
-    assert(!intersects(t2,Vector(0,0,1000),Vector(0,0,-1)));
+	    assert(intersects(t2,Vector(-100,0,1000),Vector(0,0,-1)));
+	    assert(!intersects(t2,Vector(0,0,1000),Vector(0,0,-1)));
 
-    //assert(t1->intersect(Ray,0)));
-    //assert(!t1->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
-    //assert(t2->intersect(Ray(Vector(-100,0,1000),Vector(0,0,-1),0)));
-    //assert(!t2->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
-}
+	    //assert(t1->intersect(Ray,0)));
+	    //assert(!t1->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
+	    //assert(t2->intersect(Ray(Vector(-100,0,1000),Vector(0,0,-1),0)));
+	    //assert(!t2->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
+	}
+};
 
 class csg_test : public Test {
     public:
 	void run() {
-    ///////////////////////////////////////////////////////////////
-    // Union 
-    ///////////////////////////////////////////////////////////////
-    // Ray from outside
-    Sphere* s1 = new Sphere(Vector(0,0,10),15,NULL);
-    Sphere* s2 = new Sphere(Vector(0,0,-10),15,NULL);
-    Sphere* s3 = new Sphere(Vector(0,0,0),15,NULL);
-    Solid* csg = new CSGUnion(s1,s2,NULL);
-    Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
-    vector<Intersection> all;
-    csg->allIntersections(ray,all);
-    assertTrue(all.size() == 2);
-    assertTrue(all[0].getPoint() == Vector(0,0,25));
-    assertTrue(all[1].getPoint() == Vector(0,0,-25));
-    CSGUnion* csg2 = new CSGUnion(csg,s3,NULL);
-    all.clear();
-    csg2->allIntersections(ray,all);
-    assertTrue(all.size() == 2);
-    assertTrue(all[0].getPoint() == Vector(0,0,25));
-    assertTrue(all[1].getPoint() == Vector(0,0,-25));
-    Sphere* s4 = new Sphere(Vector(0,0,-50),10,NULL);
-    CSGUnion* csg3 = new CSGUnion(csg2,s4,NULL);
-    all.clear();
-    csg3->allIntersections(ray,all);
-    assertTrue(all.size() == 4);
-    assertTrue(all[0].getPoint() == Vector(0,0,25));
-    assertTrue(all[1].getPoint() == Vector(0,0,-25));
-    assertTrue(all[2].getPoint() == Vector(0,0,-40));
-    assertTrue(all[3].getPoint() == Vector(0,0,-60));
-    // Ray from inside
-    ray = Ray(Vector(0,0,0),Vector(0,0,-1),-1);
-    all.clear();
-    csg3->allIntersections(ray,all);
-    assertTrue(all.size() == 3);
-    assertTrue(all[0].getPoint() == Vector(0,0,-25));
-    assertTrue(all[1].getPoint() == Vector(0,0,-40));
-    assertTrue(all[2].getPoint() == Vector(0,0,-60));
+	    ///////////////////////////////////////////////////////////////
+	    // Union 
+	    ///////////////////////////////////////////////////////////////
+	    // Ray from outside
+	    Sphere* s1 = new Sphere(Vector(0,0,10),15,NULL);
+	    Sphere* s2 = new Sphere(Vector(0,0,-10),15,NULL);
+	    Sphere* s3 = new Sphere(Vector(0,0,0),15,NULL);
+	    Solid* csg = new CSGUnion(s1,s2,NULL);
+	    Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
+	    vector<Intersection> all;
+	    csg->allIntersections(ray,all);
+	    assertTrue(all.size() == 2);
+	    assertTrue(all[0].getPoint() == Vector(0,0,25));
+	    assertTrue(all[1].getPoint() == Vector(0,0,-25));
+	    CSGUnion* csg2 = new CSGUnion(csg,s3,NULL);
+	    all.clear();
+	    csg2->allIntersections(ray,all);
+	    assertTrue(all.size() == 2);
+	    assertTrue(all[0].getPoint() == Vector(0,0,25));
+	    assertTrue(all[1].getPoint() == Vector(0,0,-25));
+	    Sphere* s4 = new Sphere(Vector(0,0,-50),10,NULL);
+	    CSGUnion* csg3 = new CSGUnion(csg2,s4,NULL);
+	    all.clear();
+	    csg3->allIntersections(ray,all);
+	    assertTrue(all.size() == 4);
+	    assertTrue(all[0].getPoint() == Vector(0,0,25));
+	    assertTrue(all[1].getPoint() == Vector(0,0,-25));
+	    assertTrue(all[2].getPoint() == Vector(0,0,-40));
+	    assertTrue(all[3].getPoint() == Vector(0,0,-60));
+	    // Ray from inside
+	    ray = Ray(Vector(0,0,0),Vector(0,0,-1),-1);
+	    all.clear();
+	    csg3->allIntersections(ray,all);
+	    assertTrue(all.size() == 3);
+	    assertTrue(all[0].getPoint() == Vector(0,0,-25));
+	    assertTrue(all[1].getPoint() == Vector(0,0,-40));
+	    assertTrue(all[2].getPoint() == Vector(0,0,-60));
 
-    s1 = new Sphere(Vector(0,0,10),5,NULL);
-    s2 = new Sphere(Vector(0,0,-10),5,NULL);
-    csg = new CSGUnion(s1,s2,NULL);
+	    s1 = new Sphere(Vector(0,0,10),5,NULL);
+	    s2 = new Sphere(Vector(0,0,-10),5,NULL);
+	    csg = new CSGUnion(s1,s2,NULL);
 
-    assertTrue(iPoint(csg,Vector(0,0,0),Vector(0,0,1)) == Vector(0,0,5));
-    assertTrue(iNormal(csg,Vector(0,0,0),Vector(0,0,1)) == Vector(0,0,-1));
-    assertTrue(iPoint(csg,Vector(0,0,0),Vector(0,0,-1)) == Vector(0,0,-5));
-    assertTrue(iNormal(csg,Vector(0,0,0),Vector(0,0,-1)) == Vector(0,0,1));
+	    assertTrue(iPoint(csg,Vector(0,0,0),Vector(0,0,1)) == Vector(0,0,5));
+	    assertTrue(iNormal(csg,Vector(0,0,0),Vector(0,0,1)) == Vector(0,0,-1));
+	    assertTrue(iPoint(csg,Vector(0,0,0),Vector(0,0,-1)) == Vector(0,0,-5));
+	    assertTrue(iNormal(csg,Vector(0,0,0),Vector(0,0,-1)) == Vector(0,0,1));
 
-    s1 = new Sphere(Vector(0,0,10),15,NULL);
-    s2 = new Sphere(Vector(0,0,-10),15,NULL);
-    csg = new CSGUnion(s1,s2,NULL);
-    assertTrue(iPoint(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-25));
-    assertTrue(iNormal(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-1));
-    assertTrue(iPoint(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-25));
-    assertTrue(iNormal(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-1));
-    assertTrue(iPoint(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,25));
-    assertTrue(iNormal(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,1));
+	    s1 = new Sphere(Vector(0,0,10),15,NULL);
+	    s2 = new Sphere(Vector(0,0,-10),15,NULL);
+	    csg = new CSGUnion(s1,s2,NULL);
+	    assertTrue(iPoint(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-25));
+	    assertTrue(iNormal(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-1));
+	    assertTrue(iPoint(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-25));
+	    assertTrue(iNormal(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-1));
+	    assertTrue(iPoint(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,25));
+	    assertTrue(iNormal(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,1));
 
-    // Testing the constructor taking a vector<Solid*>
-    vector<Solid*> solids;
+	    // Testing the constructor taking a vector<Solid*>
+	    vector<Solid*> solids;
 
-    solids.push_back(s1);
-    solids.push_back(s2);
-    csg = new CSGUnion(&solids,NULL);
-    assertTrue(iPoint(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-25));
-    assertTrue(iNormal(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-1));
-    assertTrue(iPoint(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-25));
-    assertTrue(iNormal(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-1));
-    assertTrue(iPoint(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,25));
-    assertTrue(iNormal(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,1));
+	    solids.push_back(s1);
+	    solids.push_back(s2);
+	    csg = new CSGUnion(&solids,NULL);
+	    assertTrue(iPoint(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-25));
+	    assertTrue(iNormal(csg,Vector(0,0,25),Vector(0,0,-1)) == Vector(0,0,-1));
+	    assertTrue(iPoint(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-25));
+	    assertTrue(iNormal(csg,Vector(0,0,5),Vector(0,0,-1)) == Vector(0,0,-1));
+	    assertTrue(iPoint(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,25));
+	    assertTrue(iNormal(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,1));
 
-    solids.clear();
-    // A group of ball that all intersect
-    for(int i = 0; i <= 100; i++) {
-	solids.push_back(new Sphere(Vector(0,0,i),2,NULL));
-    }
-    csg = new CSGUnion(&solids,NULL);
-    assertTrue(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,102));
-    assertTrue(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
-    assertTrue(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-2));
-    assertTrue(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
-    assertTrue(intersects(csg,Vector(0,0,50),Vector(0,0,-1)));
+	    solids.clear();
+	    // A group of ball that all intersect
+	    for(int i = 0; i <= 100; i++) {
+		solids.push_back(new Sphere(Vector(0,0,i),2,NULL));
+	    }
+	    csg = new CSGUnion(&solids,NULL);
+	    assertTrue(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,102));
+	    assertTrue(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+	    assertTrue(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-2));
+	    assertTrue(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+	    assertTrue(intersects(csg,Vector(0,0,50),Vector(0,0,-1)));
 
-    assertTrue(iPoint(csg,Vector(0,0,50),Vector(0,0,1)) == Vector(0,0,102));
-    assertTrue(iNormal(csg,Vector(0,0,50),Vector(0,0,1)) == Vector(0,0,1));
+	    assertTrue(iPoint(csg,Vector(0,0,50),Vector(0,0,1)) == Vector(0,0,102));
+	    assertTrue(iNormal(csg,Vector(0,0,50),Vector(0,0,1)) == Vector(0,0,1));
 
-    all.clear();
-    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
-    csg->allIntersections(ray,all);
-    assertTrue(all.size() == 2);
-    assertTrue(all[0].getPoint() == Vector(0,0,102));
-    assertTrue(all[1].getPoint() == Vector(0,0,-2));
+	    all.clear();
+	    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+	    csg->allIntersections(ray,all);
+	    assertTrue(all.size() == 2);
+	    assertTrue(all[0].getPoint() == Vector(0,0,102));
+	    assertTrue(all[1].getPoint() == Vector(0,0,-2));
 
-    solids.clear();
-    // A group that doesn't intersect
-    for(int i = 0; i <= 100; i++) {
-	solids.push_back(new Sphere(Vector(0,0,i),0.25,NULL));
-    }
-    csg = new CSGUnion(&solids,NULL);
-    assertTrue(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,100.25));
-    assertTrue(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
-    assertTrue(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-0.25));
-    assertTrue(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
-    all.clear();
-    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
-    csg->allIntersections(ray,all);
-    assertTrue(all.size() == 2*101);
-    assertTrue(all[0].getPoint() == Vector(0,0,100.25));
-    assertTrue(all[1].getPoint() == Vector(0,0,99.75));
+	    solids.clear();
+	    // A group that doesn't intersect
+	    for(int i = 0; i <= 100; i++) {
+		solids.push_back(new Sphere(Vector(0,0,i),0.25,NULL));
+	    }
+	    csg = new CSGUnion(&solids,NULL);
+	    assertTrue(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,100.25));
+	    assertTrue(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+	    assertTrue(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-0.25));
+	    assertTrue(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+	    all.clear();
+	    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+	    csg->allIntersections(ray,all);
+	    assertTrue(all.size() == 2*101);
+	    assertTrue(all[0].getPoint() == Vector(0,0,100.25));
+	    assertTrue(all[1].getPoint() == Vector(0,0,99.75));
 
-    ///////////////////////////////////////////////////////////////
-    // Intersection 
-    ///////////////////////////////////////////////////////////////
-    s1 = new Sphere(Vector(0,0,10),15,NULL);
-    s2 = new Sphere(Vector(0,0,-10),15,NULL);
-    s3 = new Sphere(Vector(0,0,0),15,NULL);
-    csg = new CSGIntersection(s1,s3,NULL);
-    ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
-    all.clear();
-    csg->allIntersections(ray,all);
-    assertTrue(all.size() == 2);
-    assertTrue(all[0].getPoint() == Vector(0,0,15));
-    assertTrue(all[0].getNormal() == Vector(0,0,1));
-    assertTrue(all[1].getPoint() == Vector(0,0,-5));
-    assertTrue(all[1].getNormal() == Vector(0,0,-1));
-    assertTrue(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,15));
-    assertTrue(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
-    assertTrue(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-5));
-    assertTrue(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+	    ///////////////////////////////////////////////////////////////
+	    // Intersection 
+	    ///////////////////////////////////////////////////////////////
+	    s1 = new Sphere(Vector(0,0,10),15,NULL);
+	    s2 = new Sphere(Vector(0,0,-10),15,NULL);
+	    s3 = new Sphere(Vector(0,0,0),15,NULL);
+	    csg = new CSGIntersection(s1,s3,NULL);
+	    ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
+	    all.clear();
+	    csg->allIntersections(ray,all);
+	    assertTrue(all.size() == 2);
+	    assertTrue(all[0].getPoint() == Vector(0,0,15));
+	    assertTrue(all[0].getNormal() == Vector(0,0,1));
+	    assertTrue(all[1].getPoint() == Vector(0,0,-5));
+	    assertTrue(all[1].getNormal() == Vector(0,0,-1));
+	    assertTrue(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,15));
+	    assertTrue(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+	    assertTrue(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-5));
+	    assertTrue(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
 
-    // Ray that misses
-    ray = Ray(Vector(0,1000,20),Vector(0,-1,0),-1);
-    all.clear();
-    csg->allIntersections(ray,all);
-    assertTrue(all.size() == 0);
-    assertTrue(!intersects(csg,Vector(0,1000,20),Vector(0,-1,0)));
-    assertTrue(intersects(csg,Vector(0,1000,14),Vector(0,-1,0)));
+	    // Ray that misses
+	    ray = Ray(Vector(0,1000,20),Vector(0,-1,0),-1);
+	    all.clear();
+	    csg->allIntersections(ray,all);
+	    assertTrue(all.size() == 0);
+	    assertTrue(!intersects(csg,Vector(0,1000,20),Vector(0,-1,0)));
+	    assertTrue(intersects(csg,Vector(0,1000,14),Vector(0,-1,0)));
 
-    // Ray that misses
-    ray = Ray(Vector(0,1000,-10),Vector(0,-1,0),-1);
-    all.clear();
-    csg->allIntersections(ray,all);
-    assertTrue(all.size() == 0);
-    assertTrue(!intersects(csg,Vector(0,1000,-10),Vector(0,-1,0)));
-    assertTrue(intersects(csg,Vector(0,1000,-3),Vector(0,-1,0)));
+	    // Ray that misses
+	    ray = Ray(Vector(0,1000,-10),Vector(0,-1,0),-1);
+	    all.clear();
+	    csg->allIntersections(ray,all);
+	    assertTrue(all.size() == 0);
+	    assertTrue(!intersects(csg,Vector(0,1000,-10),Vector(0,-1,0)));
+	    assertTrue(intersects(csg,Vector(0,1000,-3),Vector(0,-1,0)));
 
-    // Void intersection
-    s1 = new Sphere(Vector(0,0,10),5,NULL);
-    s2 = new Sphere(Vector(0,0,-10),5,NULL);
-    csg = new CSGIntersection(s1,s2,NULL);
-    assertTrue(!intersects(csg,Vector(0,0,1000),Vector(0,0,-1)));
-    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
-    all.clear();
-    csg->allIntersections(ray,all);
-    assertTrue(all.size() == 0);
+	    // Void intersection
+	    s1 = new Sphere(Vector(0,0,10),5,NULL);
+	    s2 = new Sphere(Vector(0,0,-10),5,NULL);
+	    csg = new CSGIntersection(s1,s2,NULL);
+	    assertTrue(!intersects(csg,Vector(0,0,1000),Vector(0,0,-1)));
+	    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+	    all.clear();
+	    csg->allIntersections(ray,all);
+	    assertTrue(all.size() == 0);
 
-    ///////////////////////////////////////////////////////////////
-    // Difference 
-    ///////////////////////////////////////////////////////////////
-    s1 = new Sphere(Vector(0,0,10),15,NULL);
-    s2 = new Sphere(Vector(0,0,0),15,NULL);
-    csg = new CSGDifference(s1,s2,NULL);
-    ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
-    all.clear();
-    csg->allIntersections(ray,all);
-    assertTrue(all.size() == 2);
-    assertTrue(all[0].getPoint() == Vector(0,0,25));
-    assertTrue(all[0].getNormal() == Vector(0,0,1));
-    assertTrue(all[1].getPoint() == Vector(0,0,15));
-    assertTrue(all[1].getNormal() == Vector(0,0,-1));
-    assertTrue(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,25));
-    assertTrue(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
-    assertTrue(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,15));
-    assertTrue(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
-    assertTrue(!intersects(csg,Vector(0,0,25.1),Vector(0,0,1)));
-    assertTrue(!intersects(csg,Vector(0,0,25),Vector(0,0,1)));
-    assertTrue(!intersects(csg,Vector(0,0,14),Vector(0,0,-1)));
-    assertTrue(!intersects(csg,Vector(0,0,14.99),Vector(0,0,-1)));
-    assertTrue(!intersects(csg,Vector(0,0,15),Vector(0,0,-1)));
+	    ///////////////////////////////////////////////////////////////
+	    // Difference 
+	    ///////////////////////////////////////////////////////////////
+	    s1 = new Sphere(Vector(0,0,10),15,NULL);
+	    s2 = new Sphere(Vector(0,0,0),15,NULL);
+	    csg = new CSGDifference(s1,s2,NULL);
+	    ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
+	    all.clear();
+	    csg->allIntersections(ray,all);
+	    assertTrue(all.size() == 2);
+	    assertTrue(all[0].getPoint() == Vector(0,0,25));
+	    assertTrue(all[0].getNormal() == Vector(0,0,1));
+	    assertTrue(all[1].getPoint() == Vector(0,0,15));
+	    assertTrue(all[1].getNormal() == Vector(0,0,-1));
+	    assertTrue(iPoint(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,25));
+	    assertTrue(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
+	    assertTrue(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,15));
+	    assertTrue(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+	    assertTrue(!intersects(csg,Vector(0,0,25.1),Vector(0,0,1)));
+	    assertTrue(!intersects(csg,Vector(0,0,25),Vector(0,0,1)));
+	    assertTrue(!intersects(csg,Vector(0,0,14),Vector(0,0,-1)));
+	    assertTrue(!intersects(csg,Vector(0,0,14.99),Vector(0,0,-1)));
+	    assertTrue(!intersects(csg,Vector(0,0,15),Vector(0,0,-1)));
 
-    // Test a sphere with three other spheres subtracted from its middle,
-    // front and back, so that the resulting object is hollow along the z-axis.
+	    // Test a sphere with three other spheres subtracted from its middle,
+	    // front and back, so that the resulting object is hollow along the z-axis.
 
-    s1 = new Sphere(Vector(0,0,0),200.0,NULL);
-    s2 = new Sphere(Vector(0,0,0),180.0,NULL);
-    Solid* s = new CSGDifference(s1,s2,NULL); // Make it hollow
-    s3 = new Sphere(Vector(0,0,200),100.0,NULL); 
-    Solid* b4 = new CSGDifference(s,s3,NULL); // Cut front
-    s4 = new Sphere(Vector(0,0,-200),100.0,NULL); 
-    Solid* b5 = new CSGDifference(b4,s4,NULL); // Cut back
+	    s1 = new Sphere(Vector(0,0,0),200.0,NULL);
+	    s2 = new Sphere(Vector(0,0,0),180.0,NULL);
+	    Solid* s = new CSGDifference(s1,s2,NULL); // Make it hollow
+	    s3 = new Sphere(Vector(0,0,200),100.0,NULL); 
+	    Solid* b4 = new CSGDifference(s,s3,NULL); // Cut front
+	    s4 = new Sphere(Vector(0,0,-200),100.0,NULL); 
+	    Solid* b5 = new CSGDifference(b4,s4,NULL); // Cut back
 
-    Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-    assertTrue(intersects(s,r));
-    assertTrue(intersects(s3,r));
-    assertTrue(intersects(s4,r));
-    assertTrue(intersects(b4,r));
-    r = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
-    assertTrue(! intersects(b5,r));
-    r = Ray(Vector(0,0,0),Vector(0,0,1),1);
-    assertTrue(! intersects(b5,r));
+	    Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
+	    assertTrue(intersects(s,r));
+	    assertTrue(intersects(s3,r));
+	    assertTrue(intersects(s4,r));
+	    assertTrue(intersects(b4,r));
+	    r = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
+	    assertTrue(! intersects(b5,r));
+	    r = Ray(Vector(0,0,0),Vector(0,0,1),1);
+	    assertTrue(! intersects(b5,r));
 
-    // Test a hollow sphere
-    s1 = new Sphere(Vector(0,0,0),30,NULL);
-    s2 = new Sphere(Vector(0,0,0),29,NULL);
-    csg = new CSGDifference(s1,s2,NULL); // Make it hollow
-    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
-    all.clear();
-    csg->allIntersections(ray,all);
-    assertTrue(all.size() == 4);
-    assertTrue(all[0].getPoint() == Vector(0,0,30));
-    assertTrue(all[1].getPoint() == Vector(0,0,29));
-    assertTrue(all[2].getPoint() == Vector(0,0,-29));
-    assertTrue(all[3].getPoint() == Vector(0,0,-30));
-    assertTrue(all[0].isEntering() == true);
-    assertTrue(all[1].isEntering() == false);
-    assertTrue(all[2].isEntering() == true);
-    assertTrue(all[3].isEntering() == false);
-    assertTrue(all[0].getNormal() == Vector(0,0,1));
-    assertTrue(all[1].getNormal() == Vector(0,0,-1));
-    assertTrue(all[2].getNormal() == Vector(0,0,1));
-    assertTrue(all[3].getNormal() == Vector(0,0,-1));
+	    // Test a hollow sphere
+	    s1 = new Sphere(Vector(0,0,0),30,NULL);
+	    s2 = new Sphere(Vector(0,0,0),29,NULL);
+	    csg = new CSGDifference(s1,s2,NULL); // Make it hollow
+	    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+	    all.clear();
+	    csg->allIntersections(ray,all);
+	    assertTrue(all.size() == 4);
+	    assertTrue(all[0].getPoint() == Vector(0,0,30));
+	    assertTrue(all[1].getPoint() == Vector(0,0,29));
+	    assertTrue(all[2].getPoint() == Vector(0,0,-29));
+	    assertTrue(all[3].getPoint() == Vector(0,0,-30));
+	    assertTrue(all[0].isEntering() == true);
+	    assertTrue(all[1].isEntering() == false);
+	    assertTrue(all[2].isEntering() == true);
+	    assertTrue(all[3].isEntering() == false);
+	    assertTrue(all[0].getNormal() == Vector(0,0,1));
+	    assertTrue(all[1].getNormal() == Vector(0,0,-1));
+	    assertTrue(all[2].getNormal() == Vector(0,0,1));
+	    assertTrue(all[3].getNormal() == Vector(0,0,-1));
 
 
-    // Test a hollow ellipsoid
-    Ellipsoid* e1 = new Ellipsoid(Vector(0,0,0),Vector(10,20,30),NULL);
-    Ellipsoid* e2 = new Ellipsoid(Vector(0,0,0),Vector(9,19,29),NULL);
-    csg = new CSGDifference(e1,e2,NULL);
-    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
-    all.clear();
-    csg->allIntersections(ray,all);
-    assertTrue(all.size() == 4);
-    assertTrue(all[0].getPoint() == Vector(0,0,30));
-    assertTrue(all[1].getPoint() == Vector(0,0,29));
-    assertTrue(all[2].getPoint() == Vector(0,0,-29));
-    assertTrue(all[3].getPoint() == Vector(0,0,-30));
-    assertTrue(all[0].getNormal() == Vector(0,0,1));
-    assertTrue(all[1].getNormal() == Vector(0,0,-1));
-    assertTrue(all[2].getNormal() == Vector(0,0,1));
-    assertTrue(all[3].getNormal() == Vector(0,0,-1));
-    assertTrue(all[0].isEntering() == true);
-    assertTrue(all[1].isEntering() == false);
-    assertTrue(all[2].isEntering() == true);
-    assertTrue(all[3].isEntering() == false);
-    // Rays with origin on edges
-    assertTrue(iPoint(csg,Vector(0,0,30),Vector(0,0,-1)) == Vector(0,0,29));
-    assertTrue(iNormal(csg,Vector(0,0,30),Vector(0,0,-1)) == Vector(0,0,-1));
-    assertTrue(iPoint(csg,Vector(0,0,29),Vector(0,0,-1)) == Vector(0,0,-29));
-    assertTrue(iNormal(csg,Vector(0,0,29),Vector(0,0,-1)) == Vector(0,0,1));
-    assertTrue(iPoint(csg,Vector(0,0,-29),Vector(0,0,-1)) == Vector(0,0,-30));
-    assertTrue(iNormal(csg,Vector(0,0,-29),Vector(0,0,-1)) == Vector(0,0,-1));
-    assertTrue(!intersects(csg,Vector(0,0,-30),Vector(0,0,-1)));
+	    // Test a hollow ellipsoid
+	    Ellipsoid* e1 = new Ellipsoid(Vector(0,0,0),Vector(10,20,30),NULL);
+	    Ellipsoid* e2 = new Ellipsoid(Vector(0,0,0),Vector(9,19,29),NULL);
+	    csg = new CSGDifference(e1,e2,NULL);
+	    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+	    all.clear();
+	    csg->allIntersections(ray,all);
+	    assertTrue(all.size() == 4);
+	    assertTrue(all[0].getPoint() == Vector(0,0,30));
+	    assertTrue(all[1].getPoint() == Vector(0,0,29));
+	    assertTrue(all[2].getPoint() == Vector(0,0,-29));
+	    assertTrue(all[3].getPoint() == Vector(0,0,-30));
+	    assertTrue(all[0].getNormal() == Vector(0,0,1));
+	    assertTrue(all[1].getNormal() == Vector(0,0,-1));
+	    assertTrue(all[2].getNormal() == Vector(0,0,1));
+	    assertTrue(all[3].getNormal() == Vector(0,0,-1));
+	    assertTrue(all[0].isEntering() == true);
+	    assertTrue(all[1].isEntering() == false);
+	    assertTrue(all[2].isEntering() == true);
+	    assertTrue(all[3].isEntering() == false);
+	    // Rays with origin on edges
+	    assertTrue(iPoint(csg,Vector(0,0,30),Vector(0,0,-1)) == Vector(0,0,29));
+	    assertTrue(iNormal(csg,Vector(0,0,30),Vector(0,0,-1)) == Vector(0,0,-1));
+	    assertTrue(iPoint(csg,Vector(0,0,29),Vector(0,0,-1)) == Vector(0,0,-29));
+	    assertTrue(iNormal(csg,Vector(0,0,29),Vector(0,0,-1)) == Vector(0,0,1));
+	    assertTrue(iPoint(csg,Vector(0,0,-29),Vector(0,0,-1)) == Vector(0,0,-30));
+	    assertTrue(iNormal(csg,Vector(0,0,-29),Vector(0,0,-1)) == Vector(0,0,-1));
+	    assertTrue(!intersects(csg,Vector(0,0,-30),Vector(0,0,-1)));
 
-    // Test a hollow ellipsoid with top cut off
-    SolidBox* box = new SolidBox(Vector(-100,5,-100),Vector(100,50,100),NULL);
-    Solid* cup = new CSGDifference(csg,box,NULL);
-    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
-    all.clear();
-    cup->allIntersections(ray,all);
-    assertTrue(all.size() == 4);
-    assertTrue(all[0].getPoint() == Vector(0,0,30));
-    assertTrue(all[1].getPoint() == Vector(0,0,29));
-    assertTrue(all[2].getPoint() == Vector(0,0,-29));
-    assertTrue(all[3].getPoint() == Vector(0,0,-30));
-    assertTrue(all[0].getNormal() == Vector(0,0,1));
-    assertTrue(all[1].getNormal() == Vector(0,0,-1));
-    assertTrue(all[2].getNormal() == Vector(0,0,1));
-    assertTrue(all[3].getNormal() == Vector(0,0,-1));
-    ray = Ray(Vector(0,1000,0),Vector(0,-1,0),-1);
-    all.clear();
-    cup->allIntersections(ray,all);
-    assertTrue(all.size() == 2);
-    assertTrue(all[0].getPoint() == Vector(0,-19,0));
-    assertTrue(all[1].getPoint() == Vector(0,-20,0));
-    assertTrue(all[0].getNormal() == Vector(0,1,0));
-    assertTrue(all[1].getNormal() == Vector(0,-1,0));
-    assertTrue(iPoint(cup,Vector(0,200,0),Vector(0,-1,0)) == Vector(0,-19,0));
-    assertTrue(iNormal(cup,Vector(0,200,0),Vector(0,-1,0)) == Vector(0,1,0));
-    assertTrue(iPoint(cup,Vector(0,-19,0),Vector(0,-1,0)) == Vector(0,-20,0));
-    assertTrue(iNormal(cup,Vector(0,-19,0),Vector(0,-1,0)) == Vector(0,-1,0));
-    assertTrue(!intersects(csg,Vector(0,-20,0),Vector(0,-1,0)));
-}
+	    // Test a hollow ellipsoid with top cut off
+	    SolidBox* box = new SolidBox(Vector(-100,5,-100),Vector(100,50,100),NULL);
+	    Solid* cup = new CSGDifference(csg,box,NULL);
+	    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+	    all.clear();
+	    cup->allIntersections(ray,all);
+	    assertTrue(all.size() == 4);
+	    assertTrue(all[0].getPoint() == Vector(0,0,30));
+	    assertTrue(all[1].getPoint() == Vector(0,0,29));
+	    assertTrue(all[2].getPoint() == Vector(0,0,-29));
+	    assertTrue(all[3].getPoint() == Vector(0,0,-30));
+	    assertTrue(all[0].getNormal() == Vector(0,0,1));
+	    assertTrue(all[1].getNormal() == Vector(0,0,-1));
+	    assertTrue(all[2].getNormal() == Vector(0,0,1));
+	    assertTrue(all[3].getNormal() == Vector(0,0,-1));
+	    ray = Ray(Vector(0,1000,0),Vector(0,-1,0),-1);
+	    all.clear();
+	    cup->allIntersections(ray,all);
+	    assertTrue(all.size() == 2);
+	    assertTrue(all[0].getPoint() == Vector(0,-19,0));
+	    assertTrue(all[1].getPoint() == Vector(0,-20,0));
+	    assertTrue(all[0].getNormal() == Vector(0,1,0));
+	    assertTrue(all[1].getNormal() == Vector(0,-1,0));
+	    assertTrue(iPoint(cup,Vector(0,200,0),Vector(0,-1,0)) == Vector(0,-19,0));
+	    assertTrue(iNormal(cup,Vector(0,200,0),Vector(0,-1,0)) == Vector(0,1,0));
+	    assertTrue(iPoint(cup,Vector(0,-19,0),Vector(0,-1,0)) == Vector(0,-20,0));
+	    assertTrue(iNormal(cup,Vector(0,-19,0),Vector(0,-1,0)) == Vector(0,-1,0));
+	    assertTrue(!intersects(csg,Vector(0,-20,0),Vector(0,-1,0)));
+	}
 };
 
 class solidbox_test : public Test {
@@ -897,7 +922,7 @@ class solidbox_test : public Test {
 
 
 	    b = new SolidBox(Vector(-10,-20,-30),Vector(40,50,60),NULL);
-	    normalCheck(b,200);
+	    assertTrue(normalCheck(b,200));
 	}
 };
 
@@ -947,7 +972,7 @@ class ellipsoid_test : public Test {
 	    assertTrue(!all[1].isEntering());
 
 	    e = new Ellipsoid(Vector(0,0,0),Vector(10,20,30),NULL);
-	    normalCheck(e,100);
+	    assertTrue(normalCheck(e,100));
 	}
 };
 
@@ -1054,7 +1079,7 @@ class cone_test : public Test {
 
 	    // Checking normals
 	    c = new Cone(Vector(0,0,0),Vector(0,0,10),500,10,true,NULL);
-	    normalCheck(c,1000);
+	    assertTrue(normalCheck(c,1000));
 	}
 };
 
@@ -1147,19 +1172,11 @@ class superellipsoid_test : public Test {
 	    // Check normals
 	    s = new SuperEllipsoid(0.2,0.2,100,0.0001,NULL);
 	    s->transform(Matrix::matrixScale(Vector(10,30,40)));
-	    normalCheck(s,1000);
+	    assertTrue(normalCheck(s,1000));
 	}
 };
 
 int main(int argc, char *argv[]) {
-    transformed_instance_test();
-    mesh_test();
-    tetrahedron_test();
-    tesselation_test();
-    extrusion_test();
-
-    Mesh::test();
-    test_3ds();
 
     TestSuite suite;
 
@@ -1173,6 +1190,11 @@ int main(int argc, char *argv[]) {
     suite.add("Object group",new objectgroup_test());
     suite.add("Superellipsoid",new superellipsoid_test());
     suite.add("CSG",new csg_test());
+    suite.add("Tetrahedron",new tetrahedron_test());
+    suite.add("Tessalation",new tesselation_test());
+    suite.add("Extrusion",new extrusion_test());
+    suite.add("Mesh",new mesh_test());
+    suite.add("Transformed instance",new transformed_instance_test());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {
