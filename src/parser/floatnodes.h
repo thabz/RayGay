@@ -207,9 +207,10 @@ class NamedFloatNode : public FloatNode {
 	    this->name = name;
 	}
 
-	virtual ~NamedFloatNode() {}; // TODO: delete from assigments
+	virtual ~NamedFloatNode() {};
 
 	double eval() {
+	    // TODO: Runtime error stuff if variable not defined
 	    return Assignments::getUniqueInstance()->getNamedFloat(name);
 	}
 	

@@ -11,6 +11,7 @@ class BoolNode : public SyntaxNode {
 
     public:
 	virtual bool eval() = 0;
+	virtual ~BoolNode() { };
 };
 
 class BoolAndNode : public BoolNode {
@@ -19,6 +20,11 @@ class BoolAndNode : public BoolNode {
 	    this->left = left;
 	    this->right = right;
 	}
+
+	virtual ~BoolAndNode() {
+	    delete left;
+	    delete right;
+	};
 
 	bool eval() {
 	    return left->eval() && right->eval();
@@ -35,6 +41,11 @@ class BoolOrNode : public BoolNode  {
 	    this->left = left;
 	    this->right = right;
 	}
+	
+	virtual ~BoolOrNode() { 
+	    delete left;
+	    delete right;
+	};
 
 	bool eval() {
 	    return left->eval() || right->eval();
@@ -52,6 +63,11 @@ class BoolLessThanFNode : public BoolNode  {
 	    this->right = right;
 	}
 
+	virtual ~BoolLessThanFNode() { 
+	    delete left;
+	    delete right;
+	};
+
 	bool eval() {
 	    return left->eval() < right->eval();
 	}
@@ -67,6 +83,11 @@ class BoolGreaterThanFNode : public BoolNode  {
 	    this->left = left;
 	    this->right = right;
 	}
+
+	virtual ~BoolGreaterThanFNode() { 
+	    delete left;
+	    delete right;
+	};
 
 	bool eval() {
 	    return left->eval() > right->eval();
@@ -84,6 +105,11 @@ class BoolEqualsFNode : public BoolNode  {
 	    this->right = right;
 	}
 
+	virtual ~BoolEqualsFNode() { 
+	    delete left;
+	    delete right;
+	};
+
 	bool eval() {
 	    return left->eval() == right->eval();
 	}
@@ -98,6 +124,10 @@ class BoolNotNode : public BoolNode  {
 	BoolNotNode(BoolNode* node) {
 	    this->node = node;
 	}
+
+	virtual ~BoolNotNode() { 
+	    delete node;
+	};
 
 	bool eval() {
 	    return !(node->eval());

@@ -30,6 +30,7 @@ class SceneObjectNode : public SyntaxNode {
 
     public:
 	virtual SceneObject* eval() = 0;
+	virtual ~SceneObjectNode() {}
 };
 
 
@@ -504,7 +505,7 @@ class NamedSceneObjectNode : public SceneObjectNode {
 	    this->name = name;
 	}
 
-	virtual ~NamedSceneObjectNode() {}; // TODO: delete from assignments?
+	virtual ~NamedSceneObjectNode() {};
 
 	SceneObject* eval() {
 	    return Assignments::getUniqueInstance()->getNamedSceneObject(name)->clone();

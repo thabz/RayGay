@@ -22,10 +22,13 @@
 #include "parser/lightnodes.h"    
 #include "parser/cameranode.h"    
 #include "parser/boolnodes.h"    
+#include "parser/fileposition.h"    
 #include "parser.h"
 using namespace std;
 
 int line_num = 1;
+vector<FilePosition> fileposition_stack;
+
 %}
 
 alpha	[a-zA-Z]
@@ -42,9 +45,9 @@ qstring \"([^\n\"])*\"
 "/*"		BEGIN(comment);
 <comment>[^*\n]*        /* eat anything that's not a '*' */
 <comment>"*"+[^*/\n]*   /* eat up '*'s not followed by '/'s */
-<comment>\n             line_num++;
+<comment>\n             fileposition_stack.front().incLineNum();
 <comment>"*"+"/"        BEGIN(INITIAL);
-\n		line_num++;
+\n		fileposition_stack.front().incLineNum();
 aa		return tAA;
 abs		return tABS;
 area		return tAREA;

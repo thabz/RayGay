@@ -49,13 +49,14 @@
 #include "renderersettings.h"
 #include "environment.h"
 #include "parser/objectcollector.h"
+#include "parser/fileposition.h"
 
 using namespace std;
 
 void yyerror(string s);
 void yywarning(string s);
 extern int yylex(void);
-extern int line_num;
+extern vector<FilePosition> fileposition_stack;
 
 CameraNode* camera;
 RendererSettings* renderer_settings;
@@ -86,7 +87,6 @@ ActionListNode* top_actions;
 	PathNode* path;
 	VectorListNode* vectorlist;
 	BoolNode* boolean;
-	ObjectListNode* objlist;
 	string* c;
 	Texture::InterpolationType it;
 	FuncCallArgs* funccallargs;
@@ -182,7 +182,6 @@ ActionListNode* top_actions;
 %type <action> AddCamera AddObject AddLight Background Settings Print Image
 %type <action> FuncCall FuncDecl
 %type <actionlist> ActionList
-%type <objlist> SolidObjects
 %type <funccallargs> FuncCallArgs
 %type <value> FuncCallArg
 %type <funcargsdecls> FuncArgsDecls
@@ -520,7 +519,7 @@ Material 	: NamedMaterial
 
 NamedMaterial   : tVARNAME
                 {
-		    $$ = new NamedMaterialNode(*$1);
+		    $$ = new NamedMaterialNode(*$1,fileposition_stack.front());
 		    delete $1;
 		}
                 ;
@@ -680,36 +679,6 @@ ObjectGroup	: tGROUP '{' ActionList '}'
 		    $$ = new ObjectGroupNode($3);
 		}
                 ;
-
-		/*
-GroupItems	: GroupItem
-                {
-		    ObjectGroupNode* og = new ObjectGroupNode();
-		    og->addSceneObjectNode($1);
-		    $$ = og;
-		}
-                | GroupItems GroupItem
-                {
-		    ObjectGroupNode* og = dynamic_cast<ObjectGroupNode*>($1);
-		    og->addSceneObjectNode($2);
-		    $$ = og;
-		}
-		;		
-
-GroupItem	: Object;
-*/
-SolidObjects	: SolidObject
-                {
-		    $$ = new ObjectListNode();
-		    $$->addSceneObjectNode($1);
-		}
-                | SolidObjects SolidObject
-		{
-		    ObjectListNode* g = dynamic_cast<ObjectListNode*>($1);
-		    g->addSceneObjectNode($2);
-		    $$ = g;
-		}
-		;
 
 Extrusion	: tEXTRUSION '{' Material Path Expr Expr Expr '}'
                 {
@@ -943,7 +912,7 @@ Vector		: '<' Expr ',' Expr ',' Expr '>'
 		}
                 | tNORMALIZE '(' Vector ')'
 		{
-		    $$ = new VectorNormalizeNode($3);
+		    $$ = new VectorNormalizeNode($3,fileposition_stack.front());
 		}
                 | Vector '*' Expr
 		{
@@ -1170,15 +1139,15 @@ Bool		: Expr '<' Expr
     /* Additional C code */
 
 void yyerror(string s) {
-    string filename = "";
-    cout << filename << ":" << line_num << ":"
+    FilePosition f = fileposition_stack.front();
+    cout << f.getFilename() << ":" << f.getLineNum() << ":"
 	 << " error: " << s << endl;
     exit(1);
 }
 
 void yywarning(string s) {
-    string filename = "";
-    cout << filename << ":" << line_num << ":"
+    FilePosition f = fileposition_stack.front();
+    cout << f.getFilename() << ":" << f.getLineNum() << ":"
 	 << " warning: " << s << endl;
 }
 
@@ -1204,7 +1173,7 @@ void openfile(string filename) {
 
 void init_parser(string scenefile) {
     openfile(scenefile);
-    line_num = 1;
+    fileposition_stack.push_back(scenefile);
     renderer_settings = new RendererSettings();
     top_actions = new ActionListNode();
     Environment::getUniqueInstance()->getObjectCollector()->reset();

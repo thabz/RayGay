@@ -6,6 +6,7 @@
 #include "math/vector.h"
 #include "parser/syntaxnode.h"
 #include "parser/floatnodes.h"
+#include "parser/fileposition.h"
 
 /**
  * Nodes for doing operations on Vector
@@ -13,6 +14,11 @@
 class VectorNode : public ValueNode {
     public:
 	VectorNode() { 
+	    this->x = NULL;
+	    this->y = NULL;
+	    this->z = NULL;
+	}
+	VectorNode(FilePosition pos) : ValueNode(pos) {
 	    this->x = NULL;
 	    this->y = NULL;
 	    this->z = NULL;
@@ -92,7 +98,7 @@ class VectorLengthNode : public FloatNode {
 class VectorNormalizeNode : public VectorNode {
 
     public:
-	VectorNormalizeNode(VectorNode* v) {
+	VectorNormalizeNode(VectorNode* v, FilePosition pos) : VectorNode(pos) {
 	    this->vecnode = v;
 	}
 
@@ -103,8 +109,7 @@ class VectorNormalizeNode : public VectorNode {
 	Vector eval() {
 	    Vector result = vecnode->eval();
 	    if (IS_ZERO(result.length())) {
-               // TODO: Throw runtime exception
-	       return Vector(0,0,0);
+		runtime_error("Can't normalize a zero vector");
 	    }
 	    result.normalize();
 	    return result;
@@ -188,7 +193,7 @@ class NamedVectorNode : public VectorNode {
 	    this->name = name;
 	}
 
-	virtual ~NamedVectorNode() {}; // TODO: delete from assigments
+	virtual ~NamedVectorNode() {};
 
 	Vector eval() {
 	    return Assignments::getUniqueInstance()->getNamedVector(name);

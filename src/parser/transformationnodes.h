@@ -16,6 +16,8 @@ class TransformationNode : public SyntaxNode {
 	virtual Matrix eval() {
 	    return Matrix();
 	}
+
+	virtual ~TransformationNode() { }
 };
 
 class TransformationsMultNode : public TransformationNode {

@@ -18,6 +18,7 @@ class PathNode : public SyntaxNode {
 
     public:
 	virtual Path* eval() = 0;
+	virtual ~PathNode() {};
 };
 
 class CircleNode : public PathNode {
@@ -26,6 +27,12 @@ class CircleNode : public PathNode {
 	    this->center = center;
 	    this->radius = r;
 	    this->up = up;
+	}
+
+	virtual ~CircleNode() {
+	    delete center;
+	    delete radius;
+	    delete up;
 	}
 
 	Path* eval() {
@@ -48,6 +55,11 @@ class LinesegmentNode : public PathNode {
 	    this->to = to;
 	}
 
+	virtual ~LinesegmentNode() {
+	    delete from;
+	    delete to;
+	}
+
 	Path* eval() {
 	    Vector f = from->eval();
 	    Vector t = to->eval();
@@ -66,6 +78,13 @@ class SpiralNode : public PathNode {
 	    this->radius = radius;
 	    this->windings = windings;
 	    this->offset = offset;
+	}
+
+	virtual ~SpiralNode() {
+	    delete path;
+	    delete radius;
+	    delete windings;
+	    delete offset;
 	}
 
 	Path* eval() {
@@ -103,6 +122,10 @@ class CatmullRomSplineNode : public PathNode {
     public:
 	CatmullRomSplineNode(VectorListNode* vectors) {
 	    this->vectors = vectors;
+	}
+
+	virtual ~CatmullRomSplineNode() {
+	    delete vectors;
 	}
 
 	Path* eval() {

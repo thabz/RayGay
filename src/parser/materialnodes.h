@@ -6,23 +6,18 @@
 #include "materials/material.h"
 #include "parser/syntaxnode.h"
 #include "parser/rgbnodes.h"
+#include "parser/fileposition.h"
 #include "image/texture.h"
 #include "exception.h"
 
 class MaterialNode : public SyntaxNode {
     public:
 	MaterialNode() {
-	    diffuse_texture = NULL;
-	    bump_texture = NULL;
-	    diffuse_rgb = NULL;
-	    specular_rgb = NULL;
-	    Kd = NULL;
-	    Ks = NULL;
-	    Kt = NULL;
-	    eta = NULL;
-	    specpow = NULL;
-	    gloss_angle = NULL;
-	    gloss_num = NULL;
+	    reset();
+	}
+
+	MaterialNode(FilePosition pos) : SyntaxNode(pos) {
+	    reset();
 	}
 
 	virtual ~MaterialNode() {
@@ -110,6 +105,20 @@ class MaterialNode : public SyntaxNode {
 	Texture* diffuse_texture;
 	Texture* bump_texture;
 	FloatNode* bump_height;
+
+	void reset() {
+	    diffuse_texture = NULL;
+	    bump_texture = NULL;
+	    diffuse_rgb = NULL;
+	    specular_rgb = NULL;
+	    Kd = NULL;
+	    Ks = NULL;
+	    Kt = NULL;
+	    eta = NULL;
+	    specpow = NULL;
+	    gloss_angle = NULL;
+	    gloss_num = NULL;
+	}
 };
 
 class MaterialNullNode : public MaterialNode {
@@ -119,11 +128,11 @@ class MaterialNullNode : public MaterialNode {
 
 class NamedMaterialNode : public MaterialNode {
     public:
-	NamedMaterialNode(string name) {
+	NamedMaterialNode(string name, FilePosition pos) : MaterialNode(pos) {
 	    this->name = name;
 	}
 
-	virtual ~NamedMaterialNode() {}; // TODO: delete from assigments
+	virtual ~NamedMaterialNode() {};
 
 	Material* eval();
 	

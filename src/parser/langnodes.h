@@ -22,11 +22,13 @@ using namespace std;
 class ActionNode : public SyntaxNode {
     public:
 	virtual void eval() = 0;
+	virtual ~ActionNode() {};
 };
 
 class NOPAction	: public ActionNode {
     public:
 	void eval() {};
+	virtual ~NOPAction() {};
 };
 
 class FloatPrintNode : public ActionNode {
@@ -555,6 +557,11 @@ class FuncCallNode : public ActionNode {
 	FuncCallNode(Function* function, FuncCallArgs* args) {
 	    this->function = function;
 	    this->args = args;
+	}
+	
+	virtual ~FuncCallNode() {
+	    delete function;
+	    delete args;
 	}
 
 	void eval() {

@@ -22,6 +22,8 @@ class LightNode : public SyntaxNode {
 
     public:
 	virtual Lightsource* eval() = 0;
+	virtual ~LightNode() {};
+
 };
 
 class ArealightNode : public LightNode {
