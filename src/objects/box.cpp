@@ -31,6 +31,12 @@ void Box::prepareBox(const Vector a, const Vector b) {
     Vector c6 = Vector(c2[0],c2[1],c7[2]);
     Vector c8 = Vector(c2[0],c7[1],c7[2]);
 
+    Vector2 uv1 = Vector2(0.0,0.0);
+    Vector2 uv2 = Vector2(0.0,1.0);
+    Vector2 uv3 = Vector2(1.0,0.0);
+    Vector2 uv4 = Vector2(1.0,1.0);
+    // TODO: addTriangles with uv-coordinates
+
     Mesh::addTriangle(c1,c2,c3); Mesh::addTriangle(c2,c4,c3);
     Mesh::addTriangle(c2,c6,c4); Mesh::addTriangle(c6,c8,c4);
     Mesh::addTriangle(c5,c6,c2); Mesh::addTriangle(c1,c5,c2);
