@@ -27,6 +27,7 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 		       tetrahedron.cpp	\
 		       torus.cpp	\
 		       transformedinstance.cpp	\
+		       transformer.cpp	\
 		       triangle.cpp	\
 		       wireframe.cpp
 
@@ -55,6 +56,7 @@ EXTRA_DIST = 3ds.h 		\
 	     tetrahedron.h	\
 	     torus.h		\
 	     transformedinstance.h	\
+	     transformer.h	\
 	     triangle.h 	\
 	     wireframe.h
 
