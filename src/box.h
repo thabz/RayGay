@@ -18,9 +18,6 @@ class Box : public Mesh {
 
 	/// Destructor
 	~Box();
-
-	/// An internal test
-	static void test();
 };
 
 #endif

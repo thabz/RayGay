@@ -15,6 +15,7 @@
 #include "tetrahedron.h"
 #include "tessalation.h"
 #include "booleanoperand.h"
+#include "bsp.h"
 
 void sphere_test() {
     Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
@@ -138,9 +139,27 @@ void boolean_test() {
     assert(IS_EQUAL(b.normal(i)[2],1.0));
 }
 
+void box_test() {
+    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Box b = Box(Vector(-1,-1,-1),Vector(1,1,1),m);
+    b.prepare();
+    BSP bsp = BSP();
+    b.addParts(&bsp);
+    bsp.prepare();
+    Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
+    assert(bsp.intersect(r).intersected);
+    assert(bsp.intersect(r).point == Vector(0,0,1));
+
+    r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
+    assert(bsp.intersect(r).intersected);
+    assert(bsp.intersect(r).point == Vector(0,-1,0));
+}
+
 int main(int argc, char *argv[]) {
     sphere_test();
     boolean_test();
+    box_test();
+
     Mesh::test();
     Box::test();
     Cylinder::test();
