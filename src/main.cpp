@@ -37,6 +37,7 @@
 #include "linesegment.h"
 #include "circle.h"
 #include "cylinder.h"
+#include "arealight.h"
 
 using namespace std;
 
@@ -50,28 +51,33 @@ void testScene4() {
 
     Material mat = blue;
  //   mat.setTexturemap("earth.jpg");
-    Sphere s = Sphere(Vector(0,50,0),100.0,chrome);
+    Sphere s = Sphere(Vector(0,50,0),130.0,chrome);
     scene.addObject(&s);
 
+    /*
     Cylinder cyl = Cylinder(Vector(-200,-50,200),Vector(-200,50,200),100.0,6,blue);
     scene.addObject(&cyl);
-    
+    */
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));
     Spotlight light2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
-    scene.addLight(&light1);
+    Arealight area1 = Arealight(Vector(-2000,2000,2000),Vector(1,-1,-1),1000,40,0.05);
+    Arealight area2 = Arealight(Vector(2000,2000,2000),Vector(-1,-1,-1),1000,40,0.05);
+    scene.addLight(&area1);
+    scene.addLight(&area2);
+ //   scene.addLight(&light1);
  //   scene.addLight(&light2);
-    scene.addLight(&light3);
+ //   scene.addLight(&light3);
     
     Box b = Box(Vector(-300,-150,-300),Vector(300,-100,300),green); /* Floor */
     scene.addObject(&b);
     
     Box b2 = Box(Vector(100,-50,100),Vector(150,100,150),red);
-    scene.addObject(&b2);
+    //scene.addObject(&b2);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
-//    scene.transform(n);
+    scene.transform(n);
 
     scene.setBackgroundColor(RGB(0.1,0.1,0.3));
 

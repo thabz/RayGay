@@ -1,6 +1,7 @@
 
 #include "linesegment.h"
 #include "vector.h"
+#include "matrix.h"
 #include <cassert>
 
 Linesegment::Linesegment(const Vector& begin, const Vector& end) {
@@ -19,6 +20,12 @@ Vector Linesegment::getTangent(double t) const {
     return tgt;
 }
 
+void Linesegment::transform(const Matrix& m) {
+    b = m * b;
+    e = m * e;
+    tgt = m * tgt;
+}
+	
 void Linesegment::test() {
     Vector b1 = Vector(-10,-10,-10);
     Vector b2 = Vector(10,10,10);

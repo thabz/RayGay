@@ -2,6 +2,7 @@
 #define PATH_H
 
 class Vector;
+class Matrix;
 
 /// Abstract path
 class Path {
@@ -21,6 +22,9 @@ class Path {
 
 	/// Return true if the endpoint equals the beginpoint
 	bool isClosed() const;
+
+	/// Transform the path
+	virtual void transform(const Matrix& m) = 0;
 };
 
 #endif

@@ -5,6 +5,7 @@
 #include "vector.h"
 #include "rgb.h"
 #include "lightsource.h"
+#include "lightinfo.h"
 
 class RGB;
 class Matrix;
@@ -15,8 +16,9 @@ class Ray;
 class Pointlight : public Lightsource {
 
     public:
+	/// Constructor
         Pointlight(const Vector& pos);
-	double getIntensity(const Vector& direction_to_light, double cos) const;
+	Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, const Scene& scene) const;
 	const Vector& getPosition() const { return position; };
 
 	void transform(const Matrix& m);

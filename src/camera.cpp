@@ -73,26 +73,21 @@ RGB Camera::shade(const Ray& ray, Intersection& intersection, int depth) {
     const Vector point = intersection.point;
     const Vector normal = object->normal(intersection);
     Material material = object->getMaterial();
-    RGB result_color;
+    double ambient_intensity = 0.2;
+    RGB result_color = ambient_intensity * material.getDiffuseColor(intersection);
     vector<Lightsource*> lights = scene.getLightsources();
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	RGB color = RGB(0.0,0.0,0.0);
-	Vector light_pos = (*p)->getPosition();;
-	RGB ambient_color = RGB(1.0,1.0,1.0);
-	Vector direction_to_light = light_pos - point;
-	direction_to_light.normalize();
-	double cos = direction_to_light * normal;
-	if (cos > 0.0) {
+	Lightinfo info = (*p)->getLightinfo(intersection,normal,scene);
+	if (info.cos > 0.0) {
 	    // Check for blocking objects
-	    Ray ray_to_light = Ray(point,direction_to_light,-1.0);
-	    Intersection inter = scene.intersect(ray_to_light);
-	    if (!inter.intersected) {
-		double intensity = (*p)->getIntensity(direction_to_light,cos);
+	    if (info.intensity > 0.0) {
+		double intensity = info.intensity;
 		// Diffuse color
-		color =  intensity * cos * material.getKd() * material.getDiffuseColor(intersection);
+		color =  intensity * info.cos * material.getKd() * material.getDiffuseColor(intersection);
 
 		// Specular color (Phong)
-		Vector light_reflect = direction_to_light.reflect(normal);
+		Vector light_reflect = info.direction_to_light.reflect(normal);
 		light_reflect.normalize();
 		double rv = light_reflect * (-1 * ray.direction);
 		if (rv > 0.0) {

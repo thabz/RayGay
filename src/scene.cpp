@@ -50,7 +50,7 @@ std::vector<Lightsource*> Scene::getLightsources() {
     return lights;   
 }
 
-Intersection Scene::intersect(const Ray& ray) {
+Intersection Scene::intersect(const Ray& ray) const {
     return hierarchy->intersect(ray);
 }
 

@@ -11,7 +11,8 @@ class Linesegment : public Path {
 	Linesegment(const Vector& begin, const Vector& end);
 	Vector getPoint(double t) const;
 	Vector getTangent(double t) const;
-	
+        void transform(const Matrix& m);
+
 	/// Internal test
 	static void test();
 

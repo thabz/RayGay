@@ -14,10 +14,10 @@
 
 #include <math.h>
 
-#define M_PI		3.14159265358979323846
-#define M_PI_DEG	(M_PI/180.0)
-#define M_DEG_PI	(180.0/M_PI)
-#define M_2PI           (2.0*M_PI)
+//#define M_PI            3.141592653589793238462643383276
+#define M_2PI           6.283185307179586476925286766552  /* 2 * M_PI */
+#define M_PI_DEG	0.017453292519943295769236907684  /* M_PI/180.0 */
+#define M_DEG_PI	35.342917352885173932704738061855 /* 180.0/M_PI */
 
 #define HUGE_DOUBLE	double(1e+20)
 #define EPSILON		double(1e-5)

@@ -39,6 +39,11 @@ Vector Circle::getTangent(double t) const {
     return m * result;
 }
 
+void Circle::transform(const Matrix& m) {
+    c = m * c;
+    n = m.extractRotation() * n;
+}
+
 void Circle::test() {
     int num = 100;
     Vector points[100];

@@ -3,6 +3,7 @@
 
 #include "vector.h"
 #include "lightsource.h"
+#include "lightinfo.h"
 
 class Matrix;
 
@@ -10,8 +11,9 @@ class Matrix;
 class Spotlight : public Lightsource {
 
     public:
+	/// Constructor
 	Spotlight(const Vector& pos, const Vector& direction, double angle, double cut_angle);
-	double getIntensity(const Vector& direction_to_light, double cos) const;
+	Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, const Scene& scene) const;
 	const Vector& getPosition() const { return _pos; };
         void transform(const Matrix& m);
 
