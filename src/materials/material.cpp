@@ -4,7 +4,7 @@
 #include "image/rgb.h"
 #include "image/image.h"
 #include "intersection.h"
-#include "object.h"
+#include "objects/object.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
 

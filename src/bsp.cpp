@@ -4,14 +4,14 @@
 #include <list>
 
 #include "bsp.h"
-#include "object.h"
+#include "objects/object.h"
 #include "ray.h"
 #include "intersection.h"
 #include "boundingbox.h"
 #include "stats.h"
 
 // For test
-#include "sphere.h"
+#include "objects/sphere.h"
 
 Object* BSP::last_primary_intersected_object = NULL;
 

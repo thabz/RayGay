@@ -7,7 +7,7 @@
 #include "globalphotonmap.h"
 #include "spacesubdivider.h"
 #include "scene.h"
-#include "object.h"
+#include "objects/object.h"
 #include "ray.h"
 #include "intersection.h"
 #include "lights/lightsource.h"

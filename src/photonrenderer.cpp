@@ -8,7 +8,7 @@
 #include "math/matrix.h"
 #include "ray.h"
 #include "intersection.h"
-#include "object.h"
+#include "objects/object.h"
 #include "image/rgb.h"
 #include "scene.h"
 #include "camera.h"

@@ -1,13 +1,13 @@
 
-SUBDIRS = materials paths lights math image photon filters
+SUBDIRS = materials paths lights math image photon filters objects
 
 #--------------------------------------
 
 noinst_LIBRARIES = libtracer.a
 
-libtracer_a_SOURCES = camera.cpp sphere.cpp intersection.cpp ray.cpp scene.cpp boolean.cpp box.cpp object.cpp mesh.cpp tetrahedron.cpp triangle.cpp cylinder.cpp renderer.cpp raytracer.cpp necklace.cpp tessalation.cpp boundingbox.cpp bsp.cpp  stats.cpp extrusion.cpp wireframe.cpp objectgroup.cpp bezierpatch.cpp teapot.cpp 3ds.cpp importer.cpp torus.cpp photonrenderer.cpp photonmapdump.cpp kdtree.cpp sor.cpp
+libtracer_a_SOURCES = camera.cpp intersection.cpp ray.cpp scene.cpp renderer.cpp raytracer.cpp boundingbox.cpp bsp.cpp stats.cpp importer.cpp photonrenderer.cpp photonmapdump.cpp kdtree.cpp 
 
-libtracer_a_LIBADD = photon/libphoton.a paths/libpaths.a lights/liblights.a materials/libmaterials.a math/libmath.a image/libimage.a 
+libtracer_a_LIBADD = photon/libphoton.a lights/liblights.a materials/libmaterials.a math/libmath.a image/libimage.a  objects/libobjects.a paths/libpaths.a 
 
 #--------------------------------------
 
@@ -15,7 +15,7 @@ bin_PROGRAMS = tracer
 
 tracer_SOURCES = main.cpp 
 
-tracer_LDADD = libtracer.a photon/libphoton.a paths/libpaths.a lights/liblights.a materials/libmaterials.a math/libmath.a image/libimage.a  filters/libfilters.a
+tracer_LDADD = libtracer.a photon/libphoton.a lights/liblights.a materials/libmaterials.a math/libmath.a image/libimage.a  filters/libfilters.a objects/libobjects.a paths/libpaths.a 
 
 #--------------------------------------
 

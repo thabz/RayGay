@@ -4,9 +4,9 @@
 
 #include "spacesubdivider.h"
 #include "intersection.h"
-#include "object.h"
 #include "ray.h"
 #include <vector>
+#include "objects/object.h"
 
 #define BSP_MAX 2
 

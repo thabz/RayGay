@@ -11,7 +11,7 @@
 #include "ray.h"
 #include "bsp.h"
 #include "kdtree.h"
-#include "sphere.h"
+#include "objects/sphere.h"
 #include "math/vector2.h"
 
 void boundingbox_test() {

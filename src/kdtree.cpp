@@ -5,7 +5,7 @@
 #include "kdtree.h"
 #include "intersection.h"
 #include "ray.h"
-#include "object.h"
+#include "objects/object.h"
 #include "ray.h"
 #include "stats.h"
 #include "boundingbox.h"

@@ -1,10 +1,9 @@
-#ifndef EXTRUSION_H 
-#define EXTRUSION_H
+#ifndef OBJECTS_EXTRUSION_H 
+#define OBJECTS_EXTRUSION_H
 
-#include "mesh.h"
-
-class Vector;
-class Path;
+#include "objects/mesh.h"
+#include "paths/path.h"
+#include "paths/circle.h"
 
 /// An extrusion object
 class Extrusion : public Mesh {

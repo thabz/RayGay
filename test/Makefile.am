@@ -3,6 +3,7 @@ INCLUDES = -I$(top_srcdir)/src
 
 LDADD = $(top_srcdir)/src/libtracer.a \
 	    $(top_srcdir)/src/materials/libmaterials.a \
+	    $(top_srcdir)/src/objects/libobjects.a \
 	    $(top_srcdir)/src/paths/libpaths.a \
 	    $(top_srcdir)/src/lights/liblights.a \
 	    $(top_srcdir)/src/image/libimage.a \

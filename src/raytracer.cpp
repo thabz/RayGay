@@ -7,7 +7,7 @@
 #include "math/functions.h"
 #include "ray.h"
 #include "intersection.h"
-#include "object.h"
+#include "objects/object.h"
 #include "image/rgb.h"
 #include "math/matrix.h"
 #include "scene.h"

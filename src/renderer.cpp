@@ -8,11 +8,11 @@
 #include "scene.h"
 #include "image/rgb.h"
 #include "image/rgba.h"
-#include "object.h"
+#include "objects/object.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
 #include "spacesubdivider.h"
-#include "objectcollection.h"
+#include "objects/objectcollection.h"
 
 Renderer::Renderer(RendererSettings* settings, Scene* scene, SpaceSubdivider* spc) {
     this->scene = scene;
