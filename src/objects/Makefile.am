@@ -9,6 +9,7 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 		       box.cpp		\
 		       cylinder.cpp	\
 		       extrusion.cpp	\
+		       heightfield.cpp	\
 		       mesh.cpp		\
 		       necklace.cpp	\
 		       object.cpp	\
@@ -29,6 +30,7 @@ EXTRA_DIST = 3ds.h 		\
 	     box.h		\
 	     cylinder.h		\
 	     extrusion.h	\
+	     heightfield.h	\
 	     mesh.h		\
 	     object.h		\
 	     necklace.h		\
