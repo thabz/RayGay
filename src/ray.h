@@ -32,8 +32,12 @@ class Ray {
 	/// Get a point on the ray
 	Vector getPoint(const double t) const { return origin + t * direction; };
 
-	bool isinside;
+	bool isCaustic() const;
 
+	/// Number of specular bounces since leaving light
+        int specularBounces;
+	int diffuseBounces;
+	
     private:
 	long id;
 	static long seq;
@@ -41,7 +45,6 @@ class Ray {
 	Vector inv_direction; 
 	Vector origin; ///< The rays origin
 	Vector direction; ///< Unit vector of rays direction
-
 };
 
 #endif

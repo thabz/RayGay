@@ -25,17 +25,17 @@ PhotonRenderer::PhotonRenderer(RendererSettings* settings,  Scene* scene, SpaceS
 }
 
 void PhotonRenderer::init() {
-    int PHOTON_NUM = renderersettings->photons_num;
-    this->globalphotonmap = new GlobalPhotonMap(PHOTON_NUM);
-    this->causticsphotonmap = new CausticsMap(PHOTON_NUM); 
+    this->globalphotonmap = new GlobalPhotonMap(renderersettings->global_photons_num);
+    this->causticsphotonmap = new CausticsMap(renderersettings->caustic_photons_num); 
 
     PhotonTracer* photontracer = new PhotonTracer(scene,space,globalphotonmap,causticsphotonmap);
-    photontracer->trace(PHOTON_NUM);
+    photontracer->trace();
 
-    globalphotonmap->scale_photon_power(1.0/double(PHOTON_NUM));
+    globalphotonmap->scale_photon_power(1.0/double(renderersettings->global_photons_num));
     globalphotonmap->balance();
+    globalphotonmap->preComputeIrradiances(4);
 
-    causticsphotonmap->scale_photon_power(1.0/double(PHOTON_NUM));
+    causticsphotonmap->scale_photon_power(1.0/double(renderersettings->caustic_photons_num));
     causticsphotonmap->balance();
 
     delete photontracer;
@@ -95,10 +95,12 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 
     RGB result_color = RGB(0.0,0.0,0.0);
 
+    // Indirect diffuse light from global photonmap
     result_color += finalGather(point,normal,ray.getDirection(),renderersettings->final_gather_rays);
+    // Caustics from caustics map
+    result_color += causticsphotonmap->irradiance_estimate(point,normal,renderersettings->estimate_radius,renderersettings->estimate_samples);
     //result_color.clip();
     //return result_color;
-    // TODO: Add radiance_estimate from caustics map
 
     vector<Lightsource*> lights = scene->getLightsources();
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {

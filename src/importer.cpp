@@ -250,7 +250,9 @@ void Importer::parse(const string& filename) {
 	    string name = readString(stream);
 	    int value = readInt(stream);
 	    if (name == "photons") {
-		renderer_settings->photons_num = value;
+		renderer_settings->global_photons_num = value;
+	    } else if (name == "causticphotons") {
+		renderer_settings->caustic_photons_num = value;
 	    } else if (name == "estimate-radius") {
 		renderer_settings->estimate_radius = value;
 	    } else if (name == "estimate-samples") {

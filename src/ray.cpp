@@ -5,8 +5,9 @@ long Ray::seq = 0;
 
 Ray::Ray() {
     id = ++seq;
-    isinside = false;
     indice_of_refraction = 1.0;
+    specularBounces = 0;
+    diffuseBounces = 0;
 }
 
 Ray::Ray(Vector o, Vector d, double indice) {
@@ -16,7 +17,12 @@ Ray::Ray(Vector o, Vector d, double indice) {
     inv_direction[0] = d[0] != 0.0 ? 1/d[0] : HUGE_DOUBLE;
     inv_direction[1] = d[1] != 0.0 ? 1/d[1] : HUGE_DOUBLE;
     inv_direction[2] = d[2] != 0.0 ? 1/d[2] : HUGE_DOUBLE;
-    isinside = false;
     id = ++seq;
+    specularBounces = 0;
+    diffuseBounces = 0;
 }
 
+/// Says whether this ray has travelled a LS+ path
+bool Ray::isCaustic() const {
+    return diffuseBounces == 0 && specularBounces > 0;
+}

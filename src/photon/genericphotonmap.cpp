@@ -223,7 +223,7 @@ void PhotonMap<PhotonType>::locate_photons(
 template <class PhotonType>
 void PhotonMap<PhotonType>::storeit(const PhotonType& photon) {
 
-    if (stored_photons>=max_photons)
+    if (isFull())
 	return;
 
     stored_photons++;

@@ -40,31 +40,29 @@ PhotonTracer::~PhotonTracer() {
     delete qmcsequence;
 }
 
-void PhotonTracer::trace(int max_photons) {
+void PhotonTracer::trace() {
     time_t beginTime = time(NULL);
     Ray ray;
     const std::vector<Lightsource*>& lights = scene->getLightsources();
     int ligths_num = lights.size();
-    int storedPhotons = 0;
     int i = 0;
-    while (storedPhotons < max_photons) {
+    while ((!globalphotonmap->isFull()) || (!causticsmap->isFull())) {
 	i = (i + 1) % ligths_num;
 	Lightsource* light = lights[i];
 	Vector light_power = light->getPower();
-	storedPhotons += trace(light->getRandomPhotonRay(),light_power,0);
+	trace(light->getRandomPhotonRay(),light_power,0);
     }
-    Stats::getUniqueInstance()->put("Photons stored",max_photons);
     Stats::getUniqueInstance()->put("Photontracing time (seconds)",time(NULL)-beginTime);
 }
 
-int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
+void PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
     if (bounces > MAX_BOUNCES) 
-	return 0;
+	return;
 
     Stats::getUniqueInstance()->inc("Photon rays traced");
     if (!space->intersect(ray)) {
 	Stats::getUniqueInstance()->inc("Photons lost in void");
-	return 0;
+	return;
     }
     Intersection* intersection = space->getLastIntersection();
     const Material& material = intersection->getObject()->getMaterial();
@@ -73,37 +71,59 @@ int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
     double ran = RANDOM(0,1);
     if (ran < material.getKd()) {
 	// Store photon
-	if (bounces > 0) 
-	    globalphotonmap->store(power,point,ray.getDirection(),normal);
-	// Reflect diffusely 
-	Vector dir = normal.randomHemisphere();
-	Ray new_ray = Ray(point + 0.1*dir,dir,-1);
-	power = power;// * material.getDiffuseColor(*intersection);
-	return trace(new_ray, power, bounces + 1) + 1;
+	if (bounces > 0) {
+	    if (ray.isCaustic()) {
+		causticsmap->store(power,point,ray.getDirection());
+	    } else {
+		globalphotonmap->store(power,point,ray.getDirection(),normal);
+	    }
+	}
+	if (globalphotonmap->isFull()) {
+	    return; // Quick escape when only caustics are interesting
+	} else {
+	    // Reflect diffusely 
+	    Vector dir = normal.randomHemisphere();
+	    Ray new_ray = Ray(point + 0.1*dir,dir,-1);
+	    new_ray.specularBounces = ray.specularBounces;
+	    new_ray.diffuseBounces = ray.diffuseBounces + 1;
+	    power = power; // TODO: Modify power
+	    return trace(new_ray, power, bounces + 1);
+	}
     } else if (ran < material.getKd() + material.getKs()) {
 	// Reflect specularly
 	Vector dir = -1 * ray.getDirection();
 	dir = dir.reflect(normal);
 	Ray new_ray = Ray(point+0.1*dir,dir,0);
+	new_ray.specularBounces = ray.specularBounces + 1;
+	new_ray.diffuseBounces = ray.diffuseBounces;
 	return trace(new_ray, power, bounces + 1);
     } else if (ran < material.getKt() + material.getKd() + material.getKs()) {
 	double ior = material.getEta();
 	Vector T = ray.getDirection().refract(normal,ior);
 	if (!(T == Vector(0,0,0))) {
 	    Ray new_ray = Ray(point+0.1*T,T,ior);
+	    new_ray.specularBounces = ray.specularBounces + 1;
+	    new_ray.diffuseBounces = ray.diffuseBounces;
 	    return trace(new_ray, power, bounces + 1);
 	} else {
 	    // Total internal reflection
 	    Vector dir = -1 * ray.getDirection();
 	    dir = dir.reflect(normal);
 	    Ray new_ray = Ray(point+0.1*dir,dir,0);
+	    new_ray.specularBounces = ray.specularBounces + 1;
+	    new_ray.diffuseBounces = ray.diffuseBounces;
 	    return trace(new_ray, power, bounces + 1);
 	}
     } else {
 	// Store photon
-	if (bounces > 0) 
-	    globalphotonmap->store(power,point,ray.getDirection(),normal);
-	return 1;
+	if (bounces > 0) {
+	    if (ray.isCaustic()) {
+		causticsmap->store(power,point,ray.getDirection());
+	    } else {
+		globalphotonmap->store(power,point,ray.getDirection(),normal);
+	    }
+	}
+	return;
     }
 }
 

@@ -11,7 +11,8 @@ class RendererSettings {
 	    RAYTRACER
 	};
 
-	int photons_num;
+	int global_photons_num;
+	int caustic_photons_num;
 	int estimate_radius;
 	int estimate_samples;
 	int final_gather_rays;
@@ -19,7 +20,8 @@ class RendererSettings {
 };
 
 inline RendererSettings::RendererSettings() {
-    photons_num = 10000;
+    global_photons_num = 10000;
+    caustic_photons_num = 0;
     estimate_radius = 30;
     estimate_samples = 300;
     final_gather_rays = 10;

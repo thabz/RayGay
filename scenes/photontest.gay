@@ -6,9 +6,10 @@ renderer photonrenderer
 #renderer raytracer
 
 photonmap photons 100000
-photonmap estimate-radius 10
-photonmap estimate-samples 10
-photonmap final-gather-rays 20
+photonmap causticphotons 10000
+photonmap estimate-radius 50
+photonmap estimate-samples 200
+photonmap final-gather-rays 0
 
 camera-position 0 180 1100
 camera-up 0 1 0
@@ -24,16 +25,12 @@ background 0.1 0.1 0.3
 
 # light behind wall
 light point 200 280 -150 5000 5000 5000
-cylinder $dullwhite 50  200 150 -150   200 300 -150
-
-light point -200 280 -150 5000 5000 5000
-cylinder $dullwhite 50  -200 150 -150   -200 300 -150
 
 # light near camera
 #light point 100 280 300 50000 50000 50000
 
 sphere $green 60  0 -240 0
-#sphere $glass 100  -180 -200 180 
+sphere $glass 100  -180 -200 180 
 
 # Floor
 box $dullgreen -300 -350 -300    300 -300 1200
@@ -52,7 +49,7 @@ box $dullred -350 -300 -300    -300 300 1200
 # Right wall
 box $dullblue 300 -300 -300    330 300 1200
 # Wall behind camera
-box $dullwhite -300 -150 1200    300 200 1230
+box $dullwhite -300 -300 1200    300 300 1230
 
 # Table
 box $dullwhite 100 -75 -300  300 -25 -100

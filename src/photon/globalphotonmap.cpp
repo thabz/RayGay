@@ -1,14 +1,15 @@
 
 #include <cassert>
 
-#include "globalphotonmap.h"
+#include "photon/globalphotonmap.h"
+#include "stats.h"
 
 GlobalPhotonMap::GlobalPhotonMap(const int size) : PhotonMap<IrradiancePhoton>(size) {
 
 }
 
 /**
- * Store a photon in the photon map
+ * Store a photon in the global photon map
  * 
  * @param power photon power
  * @param pos photon position
@@ -17,12 +18,16 @@ GlobalPhotonMap::GlobalPhotonMap(const int size) : PhotonMap<IrradiancePhoton>(s
  */
 void GlobalPhotonMap::store( const Vector& power, const Vector& pos, const Vector& dir, const Vector& normal)
 {
+    if (isFull())
+	return;
+
     IrradiancePhoton photon;
     photon.setPower(power);
     photon.setPosition(pos);
     packVector(dir,&photon.theta,&photon.phi);
     packVector(normal,&photon.normal_theta,&photon.normal_phi);
     storeit(photon);
+    Stats::getUniqueInstance()->inc("Global Photons stored");
 }
 
 /**

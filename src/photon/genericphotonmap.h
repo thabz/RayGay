@@ -61,6 +61,8 @@ class PhotonMap {
 
 	PhotonType* list() const { return photons; };
 
+	bool isFull() const { return stored_photons >= max_photons; };
+
     protected:
 	void packVector(const Vector& vector, unsigned char* theta, unsigned char* phi) const;
 	Vector unpackVector(unsigned char* theta, unsigned char* phi) const;
