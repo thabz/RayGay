@@ -5,7 +5,10 @@
 #include "math/matrix.h"
 
 /**
- * Superclass for objects that handles world->local coordinate transformations.
+ * This is the superclass for objects that can't be transformed. 
+ *
+ * This class holds a world to object transformation, that are applied to
+ * all rays before intersecting them.
  *
  * For many objects, such as cylinder and cone, it is much easier doing 
  * ray-object intersection if the object is placed along eg. the z-axis
