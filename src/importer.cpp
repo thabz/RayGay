@@ -240,6 +240,10 @@ void Importer::parse(const string& filename) {
 	    cur_material->enableGloss(rays,angle);
 	} else if (command == "texturemap") {
 	    cur_material->setTexturemap(readString(stream));
+	} else if (command == "bumpmap") {
+	    string filename = readString(stream);
+	    double height = readDouble(stream);
+	    cur_material->setBumpmap(filename,height);
 	} else if (command == "name") {
 	    object_name = readString(stream);
 	    naming_object = true;
