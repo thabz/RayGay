@@ -2,15 +2,17 @@
 AC_INIT(src/main.cpp) dnl a source file from your sub dir
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 
-AC_SUBST(MAGIC_CFLAGS)
-AC_SUBST(MAGIC_LIBS)
-
 PACKAGE=tracer
 VERSION=0.1
 
 AC_PROG_CXX
 AC_PROG_RANLIB
 AC_PROG_LIBTOOL
+AC_C_BIGENDIAN
+AC_CHECK_LIB(pthread, pthread_create,THRLIBS="$THRLIBS -lpthread")
+AC_CHECK_HEADERS(pthread.h)
+
+AC_SUBST(THRLIBS)    
 
 CPPFLAGS="$CPPFLAGS -O3 -Wall -march=i686"
 #CPPFLAGS="$CPPFLAGS -O4 -Wall -march=i686 -msse -mfpmath=sse"
