@@ -29,10 +29,15 @@
 #include "photon/photontracer.h"
 #include "photon/irradiancecache.h"
 
+#include "parser/parser.h"
+
 #include "renderersettings.h"
 #include "renderjobs.h"
 
 using namespace std;
+
+extern FILE* yyin;
+extern void yyparse();
 
 void preparePhotonMaps(Scene* scene,
 	               KdTree* space,
@@ -170,8 +175,12 @@ int main(int argc, char *argv[]) {
     int c;
     opterr = 0;
     int jobs = 1;
-    while ((c = getopt (argc, argv, "vhj:")) != -1) {
+    int parser_to_use = 0;
+    while ((c = getopt (argc, argv, "nvhj:")) != -1) {
 	switch(c) {
+	    case 'n':
+		parser_to_use = 1;
+		break;
 	    case 'h':
 		print_usage();
 		return EXIT_SUCCESS;
@@ -205,12 +214,18 @@ int main(int argc, char *argv[]) {
 	outfile = string(argv[optind+1]);
     }
     srand(1); // Make sure rand is seeded consistently.
-    try {
-	work(scenefile,outfile,jobs); 
-    } catch (Exception e) {
-	cout << "Exception: " << e.getMessage() 
-	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
-	return EXIT_FAILURE;
+
+    if (parser_to_use == 1) {
+	yyin = fopen(scenefile.c_str(),"r");
+	yyparse();
+    } else {
+	try {
+	    work(scenefile,outfile,jobs); 
+	} catch (Exception e) {
+	    cout << "Exception: " << e.getMessage() 
+		<< " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
+	    return EXIT_FAILURE;
+	}
     }
     return EXIT_SUCCESS;
 }

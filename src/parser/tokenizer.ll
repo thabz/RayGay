@@ -20,6 +20,7 @@ string	{alpha}({alpha}|{digit}|{special})*
 %%
 [ \t\n]		;
 circle		return tCIRCLE;
+difference 	return tDIFFERENCE;
 linesegment	return tLINESEGMENT;
 material	return tMATERIAL;
 name		return tNAME;
@@ -28,10 +29,15 @@ print		return tPRINT;
 solidbox	return tSOLIDBOX;
 sphere		return tSPHERE;
 spiral		return tSPIRAL;
+torus		return tTORUS;
+"\#.*\n"		/* Eat up comments */
 {digit}+ |
 {digit}+"."{digit}+ { yylval.d = atof(yytext); return tFLOAT;}
 {string}	{ yylval.c = new string(yytext); return tSTRING; }
+.		return yytext[0];
 
 %%
-
+int yywrap() {
+    return 1;
+}
 
