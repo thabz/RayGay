@@ -38,6 +38,11 @@ Renderer::Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree*
     }
 }
 
+Renderer::~Renderer() {
+    row1.clear();
+    row2.clear();
+}
+
 void Renderer::run() {
     RenderJob job;
     while (job_pool->getJob(&job)) {
@@ -211,6 +216,10 @@ Renderer::PixelBlock::PixelBlock(const unsigned int size) {
     reset();
 }
 
+Renderer::PixelBlock::~PixelBlock() {
+ //   delete  color;
+ //   delete  active;
+}
 
 inline
 void Renderer::PixelBlock::reset() {

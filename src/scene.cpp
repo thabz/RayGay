@@ -34,6 +34,8 @@ Scene::~Scene() {
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	delete *p;
     }
+    objects.clear();
+    lights.clear();
 }
 
 void Scene::addObject(SceneObject* obj) {
