@@ -12,7 +12,9 @@
  * @param tolerance the a-value in Greg Wards text.
  * @param bbox the bounding box of the scene 
  */
-IrradianceCache::IrradianceCache(const BoundingBox& bbox, double tolerance = 0.1) 
+IrradianceCache::IrradianceCache(
+	const BoundingBox& bbox, 
+	double tolerance = 0.1) 
 {
     this->tolerance = tolerance;
     this->inv_tolerance = 1.0 / tolerance;
@@ -21,7 +23,11 @@ IrradianceCache::IrradianceCache(const BoundingBox& bbox, double tolerance = 0.1
 }
 
 
-void IrradianceCache::putEstimate(const Vector& point, const Vector& normal, const RGB& irradiance, const double hmd) 
+void IrradianceCache::putEstimate(
+	const Vector& point, 
+	const Vector& normal, 
+	const RGB& irradiance, 
+	const double hmd) 
 {
     pthread_mutex_lock(&mutex);
     Stats::getUniqueInstance()->inc(STATS_IRRADIANCE_CACHE_SIZE);
@@ -29,7 +35,10 @@ void IrradianceCache::putEstimate(const Vector& point, const Vector& normal, con
     pthread_mutex_unlock(&mutex);
 }
 
-bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB* dest) const 
+bool IrradianceCache::getEstimate(
+	const Vector& point, 
+	const Vector& normal, 
+	RGB* dest) const 
 {
     RGB result = RGB(0.0,0.0,0.0);
     double weight_sum = 0;
@@ -64,7 +73,10 @@ bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB
     }
 }
 
-void IrradianceCache::traverseOctree(const HierarchyNode* const node, const Vector& point, vector<const CacheNode*>* result) const 
+void IrradianceCache::traverseOctree(
+	const HierarchyNode* const node, 
+	const Vector& point, 
+	vector<const CacheNode*>* result) const 
 {
     // Add cache_nodes to result
     for(uint i = 0; i < node->cache_nodes.size(); i++) {
@@ -90,7 +102,12 @@ void IrradianceCache::traverseOctree(const HierarchyNode* const node, const Vect
 /**
  * Constructor for a cache node.
  */
-IrradianceCache::CacheNode::CacheNode(const Vector& point, const Vector &normal, const RGB& irradiance, double hmd, double a) 
+IrradianceCache::CacheNode::CacheNode(
+	const Vector& point, 
+	const Vector &normal, 
+	const RGB& irradiance, 
+	double hmd, 
+	double a) 
 {
     for(int i = 0; i < 3; i++) {
 	this->point[i] = point[i];
@@ -107,14 +124,18 @@ IrradianceCache::CacheNode::CacheNode(const Vector& point, const Vector &normal,
  *
  * Using Henrik Wann Jensens interpretation.
  */
-double IrradianceCache::CacheNode::getWeight(const Vector& x, const Vector& n) const 
+double IrradianceCache::CacheNode::getWeight(
+	const Vector& x, 
+	const Vector& n) const 
 {
     double d1 = (x - getPoint()).length() / hmd;
     double d2 = sqrt(1.0 - n*getNormal());
     return 1.0 / (d1 + d2);
 }
 
-IrradianceCache::HierarchyNode::HierarchyNode(const BoundingBox& bbox, uint depth) 
+IrradianceCache::HierarchyNode::HierarchyNode(
+	const BoundingBox& bbox, 
+	uint depth) 
 {
     this->bbox = bbox;
     this->isSplit = false;
@@ -122,7 +143,8 @@ IrradianceCache::HierarchyNode::HierarchyNode(const BoundingBox& bbox, uint dept
     this->length = bbox.maximum()[0] - bbox.minimum()[0];
 }
 
-void IrradianceCache::HierarchyNode::add(const CacheNode& node) 
+void IrradianceCache::HierarchyNode::add(
+	const CacheNode& node) 
 {
     if (depth > IRRADIANCE_OCTREE_MAX_DEPTH || node.getSquaredRadius()*2 > length*length) {
 	cache_nodes.push_back(node);
