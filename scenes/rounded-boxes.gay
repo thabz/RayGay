@@ -1,4 +1,6 @@
 
+/* Dette er scenen brugt til 2004-09-13 aka tracer64big.png */
+
 renderer raytracer
 renderer photonrenderer
 
