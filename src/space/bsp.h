@@ -1,6 +1,6 @@
 
-#ifndef BSP_H
-#define BSP_H
+#ifndef SPACE_BSP_H
+#define SPACE_BSP_H
 
 #include "spacesubdivider.h"
 #include "intersection.h"

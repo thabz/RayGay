@@ -1,6 +1,6 @@
 
-#ifndef KD_TREE
-#define KD_TREE
+#ifndef SPACE_KD_TREE_H
+#define SPACE_KD_TREE_H
 
 #include "math/vector.h"
 #include "spacesubdivider.h"
