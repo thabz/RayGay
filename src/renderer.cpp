@@ -12,7 +12,6 @@
 #include "math/matrix.h"
 #include "math/vector2.h"
 #include "space/kdtree.h"
-#include "objects/objectcollection.h"
 #include "materials/material.h"
 
 Renderer::Renderer(RendererSettings* settings, Scene* scene, KdTree* spc) {

@@ -12,16 +12,18 @@
 #include "boundingbox.h"
 #include "triangle.h"
 #include "edgekey.h"
-#include "objectcollection.h"
+#include "objectgroup.h"
 
 class KdTree;
 class Linesegment;
 class Material;
 
 /// An object consisting of a mesh of triangles
-class Mesh : public ObjectCollection {
+class Mesh : public ObjectGroup {
 
     public:
+
+	void addObject(SceneObject* obj) {};
 	
 	class Tri;
 	/// A class for storing edges

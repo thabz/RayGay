@@ -16,12 +16,12 @@ class ObjectGroup : public SceneObject {
 	virtual void addSelf(KdTree* space);
 
 	/// Prepare object
-	void prepare();
+	virtual void prepare();
 
 	virtual SceneObject* clone() const;
 	
 	/// Add an object to this group
-	void addObject(SceneObject* obj);
+	virtual void addObject(SceneObject* obj);
 
     protected:
 

@@ -9,7 +9,6 @@
 #include "image/texture.h"
 #include "image/rgba.h"
 #include "math/vector2.h"
-#include "objects/objectcollection.h"
 #include "objects/sphere.h"
 #include "objects/object.h"
 #include "stats.h"

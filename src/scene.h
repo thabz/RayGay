@@ -14,7 +14,6 @@ class Matrix;
 class Sphere;
 class Image;
 class Texture;
-class ObjectCollection;
 class Camera;
 class KdTree;
 
