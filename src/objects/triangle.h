@@ -8,7 +8,6 @@ class BoundingBox;
 class Mesh;
 class Intersection;
 class Matrix;
-class Vector2;
 
 /// The triangle of a Mesh
 class Triangle : public Object {
