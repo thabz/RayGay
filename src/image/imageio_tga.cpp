@@ -52,18 +52,18 @@ void TgaIO::save(const Image* const image, const std::string& filename) const {
     }
     FILE* outfile = fopen(filename.c_str(),"wb");
     if (outfile == NULL) {
-	std::cout << "Error opening " << filename;
 	delete [] bytes;
-	return;
+	throw_exception("Error opening " + filename);
     }
     fseek(outfile,0,0);
     fwrite(Header,1,18,outfile);
     fseek(outfile,18,0);
     int bytes_saved = fwrite(bytes,sizeof(byte),width*height*4,outfile);
 
-    std::cout << bytes_saved << " bytes written" << std::endl;
-    if (bytes_saved < width*height*4) 
-	std::cout << "Error saving file" << std::endl;
+    //std::cout << bytes_saved << " bytes written" << std::endl;
+    if (bytes_saved < width*height*4) {
+	throw_exception("Error saving file " + filename);
+    }
     fclose(outfile);
     delete [] bytes;
 }

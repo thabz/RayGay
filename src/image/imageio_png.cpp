@@ -1,5 +1,6 @@
 #include "image/image.h"
 #include "image/imageio_png.h"
+#include "exception.h"
 #include <cassert>
 #include <iostream>
 #include <string>
@@ -22,7 +23,7 @@ void PngIO::save(const Image* const image, const std::string& filename) const {
     /* open the file */
     fp = fopen(filename.c_str(), "wb");
     if (fp == NULL)
-	return; // TODO: Throw exception
+	throw_exception("Error saving " + filename);
 
     /* Create and initialize the png_struct with the desired error handler
      * functions.  If you want to use the default stderr and longjump method,
@@ -36,7 +37,7 @@ void PngIO::save(const Image* const image, const std::string& filename) const {
     if (png_ptr == NULL)
     {
 	fclose(fp);
-	return; // TODO: Throw exception
+	throw_exception("Error saving " + filename);
     }
 
     /* Allocate/initialize the image information data.  REQUIRED */
@@ -45,7 +46,7 @@ void PngIO::save(const Image* const image, const std::string& filename) const {
     {
 	fclose(fp);
 	png_destroy_write_struct(&png_ptr,  png_infopp_NULL);
-	return; // TODO: Throw exception
+	throw_exception("Error saving " + filename);
     }
 
     /* Set error handling.  REQUIRED if you aren't supplying your own
@@ -56,7 +57,7 @@ void PngIO::save(const Image* const image, const std::string& filename) const {
 	/* If we get here, we had a problem reading the file */
 	fclose(fp);
 	png_destroy_write_struct(&png_ptr, &info_ptr);
-	return; // TODO: Throw exception
+	throw_exception("Error saving " + filename);
     }
 
     png_init_io(png_ptr, fp);
@@ -117,7 +118,7 @@ Image* PngIO::load(const std::string& filename) {
     int bit_depth, color_type, interlace_type;
     FILE *fp;
     if ((fp = fopen(filename.c_str(), "rb")) == NULL)
-	return NULL;
+	throw_exception("Error opening " + filename);
 
     png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
 	    (png_voidp) NULL, NULL, NULL);
@@ -125,7 +126,7 @@ Image* PngIO::load(const std::string& filename) {
     if (png_ptr == NULL)
     {
 	fclose(fp);
-	return NULL;
+	throw_exception("Error opening " + filename);
     }
 
     /* Allocate/initialize the memory for image information.  REQUIRED. */
@@ -134,7 +135,7 @@ Image* PngIO::load(const std::string& filename) {
     {
 	fclose(fp);
 	png_destroy_read_struct(&png_ptr, png_infopp_NULL, png_infopp_NULL);
-	return NULL;
+	throw_exception("Error opening " + filename);
     }
 
     if (setjmp(png_jmpbuf(png_ptr)))
@@ -143,7 +144,7 @@ Image* PngIO::load(const std::string& filename) {
 	png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
 	fclose(fp);
 	/* If we get here, we had a problem reading the file */
-	return (NULL);
+	throw_exception("Error reading " + filename);
     }
 
     png_init_io(png_ptr, fp);
