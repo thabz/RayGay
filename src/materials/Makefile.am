@@ -5,4 +5,4 @@ lib_LTLIBRARIES = libmaterials.la
 
 libmaterials_la_SOURCES = material.cpp 
 
-EXTRA_DIST = material.h 	
+EXTRA_DIST = material.h materials.h

@@ -48,24 +48,21 @@
 #include "lights/spotlight.h"
 #include "lights/arealight.h"
 
-using namespace std;
+#include "materials/materials.h"
 
-#define red Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30)
-#define green Material(RGB(0.2,1.0,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30)
-#define blue Material(RGB(0.2,0.2,1.0),0.75,RGB(1.0,1.0,1.0),0.20,30)
-#define chrome Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)
+using namespace std;
 
 void testScene4() {
     Scene scene;
 
-    Material mat = blue;
+    Material mat = MATERIAL_SHINY_BLUE;
  //   mat.setTexturemap("earth.jpg");
-    Sphere s1 = Sphere(Vector(200,50,200),130.0,chrome);
-    Sphere s2 = Sphere(Vector(-200,50,200),130.0,chrome);
-    Sphere s3 = Sphere(Vector(200,50,-200),130.0,chrome);
-    Sphere s4 = Sphere(Vector(-200,50,-200),130.0,chrome);
-    Sphere s5 = Sphere(Vector(0,150,0),130.0,chrome);
-    //Cylinder c1 = Cylinder(Vector(0,0,0),Vector(0,200,0),130,10,red);
+    Sphere s1 = Sphere(Vector(200,50,200),130.0,MATERIAL_CHROME);
+    Sphere s2 = Sphere(Vector(-200,50,200),130.0,MATERIAL_CHROME);
+    Sphere s3 = Sphere(Vector(200,50,-200),130.0,MATERIAL_CHROME);
+    Sphere s4 = Sphere(Vector(-200,50,-200),130.0,MATERIAL_CHROME);
+    Sphere s5 = Sphere(Vector(0,150,0),130.0,MATERIAL_CHROME);
+    //Cylinder c1 = Cylinder(Vector(0,0,0),Vector(0,200,0),130,10,MATERIAL_SHINY_RED);
  /*   scene.addObject(&s1);
     scene.addObject(&s2);
     scene.addObject(&s3);
@@ -76,7 +73,7 @@ void testScene4() {
     for(int x = -10; x <= 10; x += 5) {
        for(int y = -10; y <= 10; y += 5) {
            for(int z = -10; z <= 10; z += 5) {
-	      //Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,chrome);
+	      //Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,MATERIAL_CHROME);
 	//      scene.addObject(sx);
 	   }
  	}
@@ -86,16 +83,16 @@ void testScene4() {
     Spiral spiral = Spiral(&circle1,100,10);
     Spiral spiral2 = Spiral(&spiral,30,100,0.5);
 
-    //Cylinder* torus = new Cylinder(circle1,100,50,30,blue);
+    //Cylinder* torus = new Cylinder(circle1,100,50,30,MATERIAL_SHINY_BLUE);
  //   scene.addObject(torus);
 
-    Tessalation tet = Tessalation(Vector(0,100,0),250,1,blue);
-    //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,blue);
+    Tessalation tet = Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
+    //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,MATERIAL_SHINY_BLUE);
     std::vector<Linesegment>* edges = tet.getEdges();
     cout << "Edges : " << edges->size() << endl;
     for(unsigned int i = 0; i < edges->size(); i++) {
 	Linesegment line = (*edges)[i];
-	Cylinder* c = new Cylinder(line.begin(),line.end(),10.0,4,red);
+	Cylinder* c = new Cylinder(line.begin(),line.end(),10.0,4,MATERIAL_SHINY_RED);
 	scene.addObject(c);
     }
     delete edges;
@@ -103,12 +100,12 @@ void testScene4() {
     vector<Vector>* vertices = tet.getVertices();
     for(unsigned int i = 0; i < vertices->size(); i++) {
 	Vector c = (*vertices)[i];
-        Sphere* s = new Sphere(c,20.0,blue);
+        Sphere* s = new Sphere(c,20.0,MATERIAL_SHINY_BLUE);
 	scene.addObject(s);
     }
     delete vertices;
 
-    //Cylinder* tube = new Cylinder(spiral,10,16,200,chrome);
+    //Cylinder* tube = new Cylinder(spiral,10,16,200,MATERIAL_CHROME);
    // scene.addObject(tube); 
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
@@ -122,7 +119,7 @@ void testScene4() {
     scene.addLight(&light1);
     scene.addLight(&light3);
     
-    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),green); /* Floor */
+    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); /* Floor */
     scene.addObject(&b);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
