@@ -76,7 +76,8 @@ Vector Material::bump(const Intersection& i, const Vector& normal) const {
 
 double Material::getBumpValue(double u, double v) const {
     RGB col = bumpmap->getBiCubicTexel(u,v);
-    double val = col[0]; // val = col.length();
+    //double val = col[0];
+    double val = col.length();
     if (bumpHeight < 0) val = 1 - val;
     return val;
 }
