@@ -96,7 +96,7 @@ Vector Vector::randomUnitVector() {
     Vector v;
     do {
 	v = Vector(RANDOM(-1,1),RANDOM(-1,1),RANDOM(-1,1));
-    } while (v.length() > 1.0);
+    } while (v.norm() > 1.0);
 
     v.normalize();
     return v;

@@ -49,7 +49,7 @@ public:
     /// Vector division
     Vector operator/(const double x) const;
     /// Assigment
-    Vector& operator=(const Vector& v);
+    const Vector& operator=(const Vector& v);
     
 
     /// Returns the scalar product v1 x v2
@@ -213,7 +213,7 @@ double Vector::length() const {
 }
 
 inline
-Vector& Vector::operator=(const Vector& v) {
+const Vector& Vector::operator=(const Vector& v) {
     _vector[0] = v._vector[0];
     _vector[1] = v._vector[1];
     _vector[2] = v._vector[2];
