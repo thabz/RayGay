@@ -4,6 +4,9 @@
 
 #include "materials/material.h"
 
+/**
+ * A marble procedural texture.
+ */
 class Marble : public Material {
     public:
 	Marble(const RGB& color1, const RGB& color2);

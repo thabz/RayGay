@@ -4,6 +4,7 @@
 
 using namespace std;
 
+/// The unique singleton instance
 Stats* Stats::uniqueInstance = NULL;
 
 Stats* Stats::getUniqueInstance() {

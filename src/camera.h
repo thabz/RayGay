@@ -7,7 +7,10 @@
 
 class Ray;
 
-/// Datavalue class for a camera which currently just is a position and a direction.
+/**
+ * A camera implementation.
+ * The camera supplies camera rays.
+ */
 class Camera {
     public:
 	Camera(); 

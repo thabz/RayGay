@@ -4,6 +4,9 @@
 
 #include "materials/material.h"
 
+/**
+ * A plastic material.
+ */
 class Plastic : public Material {
 
     public:

@@ -1,6 +1,9 @@
 
 #include "materials/material.h"
 
+/**
+ * A checkerboard procedural texture.
+ */
 class Checker : public Material {
 
     public:

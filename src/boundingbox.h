@@ -82,6 +82,7 @@ class BoundingBox {
 	/// Says whether this bounding box intersects a sphere
 	bool intersectSphere(const Vector& center, double squared_radius) const;
 
+	/// The center point of the box
 	Vector center() const;
 
     private:

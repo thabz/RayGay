@@ -21,7 +21,7 @@ class Renderer {
     public:
 	Renderer(RendererSettings* settings, Scene* scene, SpaceSubdivider* space);
 
-	/// Initializer the renderer
+	/// Initialize the renderer
 	virtual void init() = 0;
 
 	/// Render a scene into an image

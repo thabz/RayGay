@@ -2,6 +2,9 @@
 #ifndef RENDERER_SETTINGS
 #define RENDERER_SETTINGS
 
+/**
+ * Structure for storing settings for the renderers.
+ */
 class RendererSettings {
     public:
 	RendererSettings();

@@ -4,6 +4,9 @@
 
 #include "materials/material.h"
 
+/**
+ * A wood procedural texture.
+ */
 class Wood : public Material {
     public:
 	Wood(const RGB& color1, const RGB& color2);
