@@ -104,14 +104,14 @@ void readscanline(FILE* handle, RGBA* dest, int width, int bpp, bool rle) {
 		// Process run-length packet
 		RGBA color = readpixel(handle,bpp);
 		for(int i = 0; i < count; i++) {
-		    if (pixels_read + i > width)
+		    if (pixels_read + i >= width)
 			continue; // Safety
 		    dest[pixels_read + i] = color;
 		}
 	    } else {
 		// Process raw packet
 		for(int i = 0; i < count; i++) {
-		    if (pixels_read + i > width)
+		    if (pixels_read + i >= width)
 			continue; // Safety
 		    dest[pixels_read + i] = readpixel(handle,bpp);
 		}
@@ -144,14 +144,16 @@ Image* TgaIO::load(const std::string& filename) {
 
 
     int bpp = int(Header[16]) / 8; // Bytes per pixel
-    if (Header[1] != 0 || Header[2] & 7 != 2 || bpp < 3 ) {
-        cout << "Error reading " << filename << ": Only 24 or 32 bit truecolor RGB is supported" << endl;
+
+    // Says whether the data is rle encoded
+    bool rle = int(Header[2]) >> 3 == 1;
+    cout << "bpp: " << bpp << (rle ? " (rle)" : "") << endl;
+
+    if (Header[1] != 0 || int(Header[2]) & 7 != 2 || bpp == 2 ) {
+        cout << "Error reading " << filename << ": Only 8, 24 or 32 bit truecolor RGB is supported" << endl;
         exit(EXIT_FAILURE);
     }
     
-    // Says whether the data is rle encoded
-    bool rle = int(Header[2]) == 10;
-    cout << "bpp: " << bpp << (rle ? " (rle)" : "") << endl;
 
     long width = ((long) Header[13] << 8) + Header[12];
     long height = ((long) Header[15] << 8) + Header[14];
@@ -161,7 +163,7 @@ Image* TgaIO::load(const std::string& filename) {
     fseek(Handle, 18, 0);
 
     Image* image = new Image(width,height);
-    RGBA* line = new RGBA[width+1];
+    RGBA* line = new RGBA[width];
     for(int y = 0; y < height ; y++) {
 	readscanline(Handle,line,width,bpp,rle);
         for(int x = 0; x < width; x++) {
