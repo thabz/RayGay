@@ -20,3 +20,10 @@
 
 (define test-vnormalize-1 (vnormalize '(1 2 3)))
 (define test-vnormalize-2 (vnormalize '(4 -2 2)))
+
+(define test-translate-1 (translate '(1 1 1) '(1 2 3)))
+(define test-translate-2 (translate '(2 2 2) '(-1 -2 -3)))
+
+(define test-rotate-1 (rotate '(1 0 0) '(0 0 1) 90))
+(define test-rotate-2 (rotate '(0 1 0) '(0 0 1) 90))
+

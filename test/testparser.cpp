@@ -52,6 +52,12 @@ class test_parser : public Test {
 	    v1.normalize();
 	    assertTrue(lookupVector("test-vnormalize-2") == v1);
 	    delete p;
+
+	    assertTrue(lookupVector("test-translate-1") == Vector(2,3,4));
+	    assertTrue(lookupVector("test-translate-2") == Vector(1,0,-1));
+
+	    assertTrue(lookupVector("test-rotate-1") == Vector(0,-1,0));
+	    assertTrue(lookupVector("test-rotate-2") == Vector(1,0,0));
 	}
 };
 

@@ -11,25 +11,37 @@ SCM TransformationFactory::rotate(SCM s_obj, SCM s_axis, SCM s_angle)
     Vector axis = scm2vector(s_axis, "rotate", 2);
     double angle = scm_num2double(s_angle,3,"rotate");
     Matrix matrix = Matrix::matrixRotate(axis,angle);
-    transform(s_obj, matrix, "rotate");
-    return s_obj;
+    return transform(s_obj, matrix, "rotate");
 }
 
 SCM TransformationFactory::translate(SCM s_obj, SCM s_translation) 
 {
     Vector translation = scm2vector(s_translation, "translate", 2);
     Matrix matrix = Matrix::matrixTranslate(translation);
-    transform(s_obj, matrix, "translate");
-    return s_obj;
+    return transform(s_obj, matrix, "translate");
 }
 
 /**
- * Transforms a scene object or a list of sceneobjects.
+ * Transforms a scene object, a vector or a list of sceneobjects.
  */
-void TransformationFactory::transform(SCM s_obj, const Matrix& m, char* subr) 
+SCM TransformationFactory::transform(SCM s_obj, const Matrix& m, char* subr) 
 {
-    vector<SCM> objs;
+    // Tjek if it's a vector
+    if (SCM_NFALSEP (scm_list_p(s_obj))) {
+	if (3 == scm_num2int(scm_length(s_obj),0,"")) {
+	    bool is_num = true;
+	    for(uint i = 0; i < 3; i++) {
+		SCM thing = scm_list_ref(s_obj, scm_int2num(i));
+		is_num &= SCM_NFALSEP(scm_number_p(thing));
+	    }
+	    if (is_num) {
+		Vector v = scm2vector(s_obj, subr, 0);
+		return vector2scm(m * v);
+	    }
+	}
+    }
     
+    vector<SCM> objs;
     if (SCM_NFALSEP (scm_list_p(s_obj))) {
 	uint num = scm_num2int(scm_length(s_obj),0,"");
 	for(uint i = 0; i < num; i++) {
@@ -45,6 +57,7 @@ void TransformationFactory::transform(SCM s_obj, const Matrix& m, char* subr)
 	SceneObject* object = scm2sceneobject(objs[i], subr, i + 1);
 	object->transform(m);
     }
+    return s_obj;
 }
 
 void TransformationFactory::register_procs() 

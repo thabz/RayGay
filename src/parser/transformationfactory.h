@@ -15,7 +15,7 @@ class TransformationFactory {
 	static void register_procs();
 
     private:
-	static void transform(SCM obj, const Matrix& m, char* subr);
+	static SCM transform(SCM obj, const Matrix& m, char* subr);
 };
 
 #endif
