@@ -1,9 +1,10 @@
 
 
-#include "image.h"
+#include "image/image.h"
 #include "image/imageio_tga.h"
 #include "image/imageio_jpeg.h"
 #include "image/imageio_png.h"
+#include "exception.h"
 #include <cassert>
 #include <iostream>
 #include <cmath>
@@ -11,6 +12,7 @@
 #include "math/vector2.h"
 
 #define byte unsigned char
+#undef VERBOSE
 
 using namespace std;
 
@@ -71,8 +73,7 @@ ImageIO* getImageIO(const std::string& filename) {
     } else if (filename.find(".png") != string::npos) {
 	io = new PngIO();
     } else {
-	cout << "Unknown fileformat." << endl;
-        exit(EXIT_FAILURE);
+	throw_exception(filename + " has unknown fileformat.");
     }
     return io;
 }
@@ -93,7 +94,10 @@ Image* Image::load(const std::string& filename) {
     ImageIO* io = getImageIO(filename);
     Image* image = io->load(filename);
     delete io;
+
+#if VERBOSE    
     cout << "Loaded " << filename << " " << image->getWidth() << "x" << image->getHeight() << endl;
+#endif    
     return image;
 }
 

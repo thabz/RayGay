@@ -4,6 +4,7 @@
 
 #include "math/vector.h"
 #include "image/rgb.h"
+#include "exception.h"
 
 
 /**
@@ -27,8 +28,7 @@ PhotonMap<PhotonType>::PhotonMap<PhotonType>( const int max_phot, double max_dis
     photons = (PhotonType*)malloc( sizeof( PhotonType ) * ( max_photons+1 ) );
 
     if (photons == NULL) {
-	std::cerr << "Out of memory initializing photon map." << std::endl;
-	exit(-1);
+	throw_exception("Out of memory initializing photon map.");
     }
 
     bbox_min[0] = bbox_min[1] = bbox_min[2] = 1e8f;

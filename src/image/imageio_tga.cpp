@@ -1,6 +1,7 @@
 
 #include "image/imageio_tga.h"
 #include "image/image.h"
+#include "exception.h"
 #include <cassert>
 #include <iostream>
 #include <string>
@@ -135,8 +136,7 @@ Image* TgaIO::load(const std::string& filename) {
     byte Header[18];
     Handle = fopen(filename.c_str(), "rb");
     if(Handle == NULL) {
-        cout << "Error opening " << filename << endl;
-        exit(EXIT_FAILURE);
+        throw_exception("Error opening " + filename);
     }
 
     fseek(Handle, 0, 0);
@@ -150,10 +150,9 @@ Image* TgaIO::load(const std::string& filename) {
     cout << "bpp: " << bpp << (rle ? " (rle)" : "") << endl;
 
     if (Header[1] != 0 || int(Header[2]) & 7 != 2 || bpp == 2 ) {
-        cout << "Error reading " << filename << ": Only 8, 24 or 32 bit truecolor RGB is supported" << endl;
-        exit(EXIT_FAILURE);
+        throw_exception("Error opening " + filename + 
+		        ": Only 8, 24 or 32 bit truecolor RGB is supported");
     }
-    
 
     long width = ((long) Header[13] << 8) + Header[12];
     long height = ((long) Header[15] << 8) + Header[14];

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "objects/ply.h"
+#include "exception.h"
 
 using namespace std;
 
@@ -29,8 +30,7 @@ Ply::Ply(const std::string& filename, const double scale, const Material* m) : M
     std::ifstream stream(filename.c_str());
 
     if (stream.fail()) {
-    	std::cerr << "Unable to open " << filename << std::endl;
-        exit(EXIT_FAILURE);
+	throw_exception("Unable to open " + filename);
     }
     
     int face_num = -1;

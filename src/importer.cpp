@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "importer.h"
+#include "exception.h"
 #include "scene.h"
 #include "camera.h"
 #include "objects/torus.h"
@@ -66,8 +67,7 @@ void Importer::putNamedObject(const string& key, SceneObject* obj) {
 SceneObject* Importer::getNamedObject(const string& key) {
     SceneObject* result = named_objects[key];
     if (result == NULL) {
-	cerr << "Unknown named object '" << key << "'" << endl;
-        exit(EXIT_FAILURE);
+	throw_exception("Unknown named object '" + key + "'");
     }
     return result;
 }
@@ -138,8 +138,7 @@ Texture* readTexture(std::ifstream& stream) {
 Material* Importer::lookupMaterial(const string& material_name) {
     Material* material = materials[material_name];
     if (material == NULL) {
-	cerr << "Unknown material '" << material_name << "'" << endl;
-        exit(EXIT_FAILURE);
+	throw_exception("Unknown material '" + material_name + "'");
     }
     return material;
 }
@@ -147,8 +146,7 @@ Material* Importer::lookupMaterial(const string& material_name) {
 Path* Importer::lookupPath(const string& path_name) {
     Path* path = paths[path_name];
     if (path == NULL) {
-	cerr << "Unknown path '" << path_name << "'" << endl;
-        exit(EXIT_FAILURE);
+	throw_exception("Unknown path '" + path_name + "'");
     }
     return path;
 }
@@ -161,8 +159,7 @@ void Importer::parse(const string& filename) {
     std::ifstream stream(filename.c_str());
 
     if (stream.fail()) {
-    	std::cerr << "Unable to open " << filename << std::endl;
-        exit(EXIT_FAILURE);
+	throw_exception("Unable to open " + filename);
     }
 
     // Change cwd to this files parent folder
@@ -219,8 +216,7 @@ void Importer::parse(const string& filename) {
 		double size = readDouble(stream);
 		cur_material = new Checker(mat1,mat2,size);
 	    } else {
-		cout << "Unknown materialtype: " << mat_type << endl;
-		exit(EXIT_FAILURE);
+		throw_exception("Unknown materialtype: " + mat_type);
 	    }
 	    registerMaterial(str1,cur_material);
 	} else if (command == "image-width") {
@@ -304,8 +300,7 @@ void Importer::parse(const string& filename) {
 		assert(cur_group != NULL);
 		cur_object = cur_group;
 	    } else {
-		cout << "Why end here?" << endl;
-		exit(EXIT_FAILURE);
+		throw_exception("Why end here?");
 	    }
 	} else if (command == "object") {
 	    object_name = readString(stream);
@@ -315,8 +310,8 @@ void Importer::parse(const string& filename) {
 	    SceneObject* sobj = getNamedObject(object_name);
 	    Object* obj = dynamic_cast<Object*>(sobj);
 	    if (obj == NULL) {
-		cout << "Error creating transformed instance: " << object_name << " is not an Object." << endl;
-		exit(EXIT_FAILURE);
+		throw_exception("Error creating transformed instance: " + 
+			        object_name + " is not an Object.");
 	    }
 	    cur_object = new TransformedInstance(obj);
 	} else if (command == "bound") {
@@ -324,8 +319,7 @@ void Importer::parse(const string& filename) {
 	    SceneObject* sobj = getNamedObject(group_name);
 	    ObjectGroup* obj = dynamic_cast<ObjectGroup*>(sobj);
 	    if (obj == NULL) {
-		cout << "Error creating Bound: " << group_name << " is not an ObjectGroup." << endl;
-		exit(EXIT_FAILURE);
+		throw_exception("Error creating Bound: " + group_name + " is not an ObjectGroup.");
 	    }
 	    cur_object = new Bound(obj);
 	} else if (command == "circle") {
@@ -372,8 +366,7 @@ void Importer::parse(const string& filename) {
 	    } else if (name == "photonrenderer") {
 		renderer_settings->renderertype = RendererSettings::PHOTON_RENDERER;
 	    } else {
-		cout << "Unknown renderer" << endl;
-		exit(EXIT_FAILURE);
+		throw_exception("Unknown renderer");
 	    }
 	} else if (command == "light") {
 	    string type = readString(stream);
@@ -407,8 +400,7 @@ void Importer::parse(const string& filename) {
 		l = new Spotlight(pos,look_at,angle,cut_angle);
 		l->setPower(power);
 	    } else {
-		cout << "Unknown type of light" << endl;
-		exit(EXIT_FAILURE);
+		throw_exception("Unknown type of light: " + type);
 	    }
 	    scene->addLight(l);
 	} else if (command == "extrusion") {
@@ -497,8 +489,7 @@ void Importer::parse(const string& filename) {
 	    SceneObject* sobj = getNamedObject(mesh_name);
 	    Mesh* mesh = dynamic_cast<Mesh*>(sobj);
 	    if (mesh == NULL) {
-		cout << "Error creating wireframe: " << mesh_name << " is not a Mesh." << endl;
-		exit(EXIT_FAILURE);
+		throw_exception("Error creating wireframe: " + mesh_name + " is not a Mesh.");
 	    }
 	    Material* material = lookupMaterial(readString(stream));
 	    double radius = readDouble(stream);
@@ -532,8 +523,7 @@ void Importer::parse(const string& filename) {
 	    while (stream.get() != '\n') {
 	    }
 	} else {
-            cerr << "Unknown " << command << endl;
-	    exit(EXIT_FAILURE);
+	    throw_exception("Unknown keyword" + command);
 	}
 
 	// TODO: Last object in a group is currently ignored...

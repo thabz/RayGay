@@ -1,6 +1,7 @@
 
 #include "image/imageio_jpeg.h"
 #include "image/image.h"
+#include "exception.h"
 #include <cassert>
 #include <iostream>
 #include <string>
@@ -12,8 +13,7 @@
 using namespace std;
 
 void JpegIO::save(const Image* const image, const std::string& filename) const {
-    cout << "JPEG saving not implemented " << __FILE__ << __LINE__ << endl;
-    return;
+    throw_exception("JPEG saving not implemented.");
 }
 
 struct my_error_mgr {
@@ -56,8 +56,7 @@ Image* JpegIO::load(const std::string& filename) {
     JSAMPARRAY buffer;          /* Output row buffer */
 
     if ((infile = fopen(filename.c_str(), "rb")) == NULL) {
-	cout << "Can't open " << filename;
-        exit(EXIT_FAILURE);
+	throw_exception("Unable to open " + filename);
     }
                                                                                
     cinfo.err = jpeg_std_error(&jerr.pub);

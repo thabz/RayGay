@@ -10,6 +10,7 @@
 //#include <unistd.h>
 
 #include "stats.h"
+#include "exception.h"
 
 #include "importer.h"
 
@@ -77,15 +78,13 @@ void work(string scenefile, string outputfile,int jobs) {
     //Stats::getUniqueInstance()->disable();
     Stats::getUniqueInstance()->put(STATS_THREADS,jobs);
 
-    cout << "Reading " << scenefile << endl;
     Importer importer(scenefile);
     Scene* scene = importer.getScene();
-    cout << "Done." << endl;
 
     Vector2 img_size = importer.getImageSize();
     Image* img = new Image(int(img_size[0]),int(img_size[1]));
 
-    Matrix n = Matrix::matrixRotate(Vector(1,1,0),21.0);
+    //Matrix n = Matrix::matrixRotate(Vector(1,1,0),21.0);
     //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
     //scene->transform(n);
 
@@ -106,8 +105,7 @@ void work(string scenefile, string outputfile,int jobs) {
     } else if (renderersettings->renderertype == RendererSettings::RAYTRACER) {
 	renderer = new Raytracer(renderersettings,scene,space);
     } else {
-	cout << "main.cpp: Unknown renderer" << endl;
-	exit(EXIT_FAILURE);
+	throw_exception("Unknown renderer");
     }
 
     RenderJob job;
@@ -168,7 +166,13 @@ int main(int argc, char *argv[]) {
 	outfile = string(argv[optind+1]);
     }
     srand(1); // Make sure rand is seeded consistently.
-    work(scenefile,outfile,jobs); 
+    try {
+       work(scenefile,outfile,jobs); 
+    } catch (Exception e) {
+	cout << "Exception: " << e.getMessage() 
+	     << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
+	return EXIT_FAILURE;
+    }
     return EXIT_SUCCESS;
 }
 

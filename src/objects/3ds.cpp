@@ -5,15 +5,18 @@
 #include <cstdlib>
 #include <sys/stat.h>
 
-#include "3ds.h"
+#include "objects/3ds.h"
+#include "objects/mesh.h"
 #include "math/vector.h"
 #include "math/vector2.h"
-#include "mesh.h"
 #include "image/rgb.h"
+#include "exception.h"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#undef VERBOSE
 
 using namespace std;
 
@@ -38,7 +41,9 @@ void ThreeDS::createMesh() {
     unsigned long faces_size = faces.size();
     unsigned long vertices_size = vertices.size();
     if (faces_size == 0 || vertices_size == 0) {
+#if VERBOSE	
 	cout << "Ignored submesh" << endl;
+#endif	
 	return;
     }
 
@@ -168,8 +173,7 @@ void ThreeDS::load3ds(const string& filename) {
 
     l_file = fopen (filename.c_str(), "rb");
     if (l_file == NULL) {
-        cout << "Error opening " << filename << endl;
-        exit(EXIT_FAILURE);
+	throw_exception("Error opening " + filename);
     }
 
     while (ftell (l_file) < filelength (fileno (l_file))) //Loop to scan the whole file
@@ -302,7 +306,9 @@ void ThreeDS::load3ds(const string& filename) {
 		// the (4120) face list.
 		//-------------------------------------------
 	    case 0x4130:
+#if VERBOSE
 		cout << "4130 found" << endl;
+#endif		
 		fseek(l_file, l_chunk_lenght-6, SEEK_CUR);
 		break;
 
@@ -375,7 +381,9 @@ void ThreeDS::load3ds(const string& filename) {
 		    i++;
 		} while (l_char != '\0' && i < 1024);
 		//fseek(l_file, l_chunk_lenght-6, SEEK_CUR); // Skip name
+#if VERBOSE		
 		cout << "Material name: " << name << endl;
+#endif		
 		break;
 		
 		// Ambient color
@@ -398,7 +406,9 @@ void ThreeDS::load3ds(const string& filename) {
 		unsigned char rgb[3];
 		fread(rgb,sizeof(rgb),1,l_file);
 		cur_color = RGB(rgb[0],rgb[1],rgb[2]);
+#if VERBOSE		
 		cout << "24bit color found: " << cur_color << endl;
+#endif		
 		switch (state_inside_color_type) {
 		    case 'A':
 			// TODO: Set ambient color
@@ -418,7 +428,9 @@ void ThreeDS::load3ds(const string& filename) {
 		rgbf[2] = readFloat(l_file);
 		//fread(rgbf,sizeof(rgbf),1,l_file);
 		cur_color = RGB(rgbf[0],rgbf[1],rgbf[2]);
+#if VERBOSE		
 		cout << "True color found: " << cur_color << endl;
+#endif
 		switch (state_inside_color_type) {
 		    case 'A':
 			// TODO: Set ambient color

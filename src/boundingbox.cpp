@@ -202,7 +202,7 @@ Vector* BoundingBox::getCorners() const {
     if (corners != NULL) return corners;
     corners = new Vector[8];
     Vector* c = corners;
-    if (c == NULL) exit(1);
+    assert(c != NULL);
     c[0] = Vector(_c1[0],_c1[1],_c1[2]);
     c[1] = Vector(_c1[0],_c1[1],_c2[2]);
     c[2] = Vector(_c1[0],_c2[1],_c1[2]);
