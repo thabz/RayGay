@@ -12,7 +12,7 @@ ActionListNode::ActionListNode() {
 };
 
 ActionListNode::~ActionListNode() {
-    for(unsigned int i = 0; i < actions.size(); i++) {
+    for(uint i = 0; i < actions.size(); i++) {
 	delete actions[i];
     }
 }
@@ -22,7 +22,7 @@ void ActionListNode::addAction(ActionNode* action) {
 }
 
 void ActionListNode::eval() {
-    for(unsigned int i = 0; i < actions.size(); i++) {
+    for(uint i = 0; i < actions.size(); i++) {
 	actions[i]->eval();
     }
 }
@@ -130,7 +130,7 @@ SceneObject* UnionNode::eval() {
     // Pop collector and insert into a Union* result;
     vector<Solid*> solids;
     vector<SceneObject*> sos = oc->pop();
-    for(unsigned int i = 0; i < sos.size(); i++) {
+    for(uint i = 0; i < sos.size(); i++) {
 	Solid* s = dynamic_cast<Solid*>(sos[i]);
 	if (s == NULL) {
 	    // TODO: Runtime exception ("A union can only contain solids")
@@ -167,12 +167,12 @@ SceneObject* BlobNode::eval() {
     double iso_v = iso->eval();
     double accuracy_v = accuracy->eval();
     double weight_v = weight->eval();
-    unsigned int steps_v = (unsigned int)(steps->eval());
+    uint steps_v = (uint)(steps->eval());
     Material* m = material->eval();
     Blob* blob = new Blob(iso_v,steps_v,accuracy_v,m);
     ObjectGroup* og = dynamic_cast<ObjectGroup*>(spheres->eval());
     vector<SceneObject*> spheres_v = og->getObjects();
-    for(unsigned int i = 0; i < spheres_v.size(); i++) {
+    for(uint i = 0; i < spheres_v.size(); i++) {
 	Sphere* s = dynamic_cast<Sphere*>(spheres_v[i]);
 	if (s == NULL) {
 	    // TODO: Runtime exception ("A blob can only contain spheres")
@@ -204,7 +204,7 @@ SceneObject* ObjectGroupNode::eval() {
     // Pop collector and insert into a ObjectGroup* result;
     vector<SceneObject*> nodes = oc->pop();
     ObjectGroup* result = new ObjectGroup();
-    for(unsigned int i = 0; i < nodes.size(); i++) {
+    for(uint i = 0; i < nodes.size(); i++) {
 	result->addObject(nodes[i]);
     }
     return result;

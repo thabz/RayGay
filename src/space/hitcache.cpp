@@ -2,7 +2,7 @@
 #include "space/hitcache.h"
 #include <cstdlib>
 
-HitCache::HitCache(unsigned int size) {
+HitCache::HitCache(uint size) {
     this->size = size;
     this->first = 0;
     entries = new Entry[size];
@@ -34,7 +34,7 @@ void HitCache::removeEntry(void* fromObject) {
 
 inline
 int HitCache::findEntryIndex(void* fromObject) const {
-    for(unsigned int i = 0; i < size; i++) {
+    for(uint i = 0; i < size; i++) {
 	if (entries[i].fromObject == fromObject)
 	    return i;
     }

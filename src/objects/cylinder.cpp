@@ -40,7 +40,7 @@ BoundingBox Cylinder::boundingBoundingBox() const {
 
 double Cylinder::_fastIntersect(const Ray& ray) const {
     double roots[2];
-    unsigned int num = allPositiveRoots(ray,roots);
+    uint num = allPositiveRoots(ray,roots);
     return num == 0 ? -1 : roots[0];
 }
 
@@ -90,8 +90,8 @@ Vector Cylinder::getNormal(const Vector& local_point) const {
  * Afterwards we must check that Ray(t) where t is a root
  * are within the z-axis interval that defines the lenght of the cylinder.
  */
-unsigned int Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
-    unsigned int roots_found = 0;
+uint Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
+    uint roots_found = 0;
 
     Ray local_ray = rayToObject(world_ray);
 
@@ -161,9 +161,9 @@ SceneObject* Cylinder::clone() const {
 
 void Cylinder::allIntersections(const Ray& ray, vector<Intersection>& result) const {
     double roots[2];
-    unsigned int num = allPositiveRoots(ray,roots);
+    uint num = allPositiveRoots(ray,roots);
     result.reserve(num);
-    for(unsigned int i = 0; i < num; i++) {
+    for(uint i = 0; i < num; i++) {
 	Intersection inter = fullIntersect(ray,roots[i]);
 	result.push_back(inter);
     }

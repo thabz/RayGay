@@ -11,6 +11,7 @@
 #include "math/vector2.h"
 #include "image/rgb.h"
 #include "exception.h"
+#include "types.h"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -38,8 +39,8 @@ void ThreeDS::init(const string& filename, const double scale) {
 
 void ThreeDS::createMesh() {
 
-    unsigned long faces_size = faces.size();
-    unsigned long vertices_size = vertices.size();
+    ulong faces_size = faces.size();
+    ulong vertices_size = vertices.size();
     if (faces_size == 0 || vertices_size == 0) {
 #if VERBOSE	
 	cout << "Ignored submesh" << endl;
@@ -54,7 +55,7 @@ void ThreeDS::createMesh() {
     assert(faces_size % 3 == 0);
 
     // Transform all vertices
-    for(unsigned int i = 0; i < vertices_size/3; i++) {
+    for(uint i = 0; i < vertices_size/3; i++) {
 	Vector v = getVertex(i);
 	//v = mesh_matrix * v;
 	v = scale * v;
@@ -67,9 +68,9 @@ void ThreeDS::createMesh() {
     // Add the faces to this Mesh
     Vector verts[3]; 
     Vector2 uvs[3]; 
-    for(unsigned int i = 0; i < faces_size/3; i++) {
+    for(uint i = 0; i < faces_size/3; i++) {
 	for(int j = 0; j < 3; j++) {
-	    unsigned short idx = faces[i * 3 +j];
+	    ushort idx = faces[i * 3 +j];
 	    verts[j] = getVertex(idx);
 	    if (hasMapcoords)
 		uvs[j] = getUV(idx);
@@ -88,13 +89,13 @@ void ThreeDS::createMesh() {
     mesh_matrix = Matrix();
 }
 
-Vector ThreeDS::getVertex(const unsigned short index) const {
-    unsigned short i = index * 3;
+Vector ThreeDS::getVertex(const ushort index) const {
+    ushort i = index * 3;
     return Vector(vertices[i+0],vertices[i+1],vertices[i+2]);
 }
 
-Vector2 ThreeDS::getUV(const unsigned short index) const {
-    unsigned short i = index * 2;
+Vector2 ThreeDS::getUV(const ushort index) const {
+    ushort i = index * 2;
     return Vector2(map_coords[i+0],map_coords[i+1]);
 }
 
@@ -104,33 +105,33 @@ long filelength(int f) {
     return buf.st_size;
 }
 
-unsigned int readUInt(FILE* file) {
-    unsigned int dest = 0;
+uint readUInt(FILE* file) {
+    uint dest = 0;
 #ifdef WORDS_BIGENDIAN
-    dest  =  (unsigned int) (fgetc(file) & 0xff);
-    dest |= ((unsigned int) (fgetc(file) & 0xff)) << 0x08;
-    dest |= ((unsigned int) (fgetc(file) & 0xff)) << 0x10;
-    dest |= ((unsigned int) (fgetc(file) & 0xff)) << 0x18;
+    dest  =  (uint) (fgetc(file) & 0xff);
+    dest |= ((uint) (fgetc(file) & 0xff)) << 0x08;
+    dest |= ((uint) (fgetc(file) & 0xff)) << 0x10;
+    dest |= ((uint) (fgetc(file) & 0xff)) << 0x18;
 #else
-    fread (&dest, sizeof(unsigned int), 1, file);
+    fread (&dest, sizeof(uint), 1, file);
 #endif
     return dest;
 }
 
-unsigned short readUShort(FILE* file) {
-    unsigned short dest;
+ushort readUShort(FILE* file) {
+    ushort dest;
 #ifdef WORDS_BIGENDIAN
-    dest  =  (unsigned short) (fgetc(file) & 0xff);
-    dest |= ((unsigned short) (fgetc(file) & 0xff)) << 0x08;
+    dest  =  (ushort) (fgetc(file) & 0xff);
+    dest |= ((ushort) (fgetc(file) & 0xff)) << 0x08;
 #else
-    fread (&dest, sizeof(unsigned short), 1, file);
+    fread (&dest, sizeof(ushort), 1, file);
 #endif    
     return dest;
 }
 
-unsigned char readUChar(FILE* file) {
-    unsigned char dest;
-    fread (&dest, sizeof(unsigned char), 1, file);
+uchar readUChar(FILE* file) {
+    uchar dest;
+    fread (&dest, sizeof(uchar), 1, file);
     return dest;
 }
 
@@ -140,7 +141,7 @@ float readFloat(FILE* file) {
 #ifdef WORDS_BIGENDIAN    
     union {
 	float f;
-	unsigned char b[4];
+	uchar b[4];
     } dat1, dat2;
     dat1.f = dest;
     dat2.b[0] = dat1.b[3];
@@ -163,13 +164,13 @@ void ThreeDS::load3ds(const string& filename) {
 
     FILE *l_file; //File pointer
 
-    unsigned short l_chunk_id; //Chunk identifier
-    unsigned int l_chunk_lenght; //Chunk lenght
+    ushort l_chunk_id; //Chunk identifier
+    uint l_chunk_lenght; //Chunk lenght
 
-    unsigned char l_char; //Char variable
-    unsigned short l_qty; //Number of elements in each chunk
+    uchar l_char; //Char variable
+    ushort l_qty; //Number of elements in each chunk
 
-    unsigned short l_face_flags; //Flag that stores some face information
+    ushort l_face_flags; //Flag that stores some face information
 
     l_file = fopen (filename.c_str(), "rb");
     if (l_file == NULL) {
@@ -182,10 +183,10 @@ void ThreeDS::load3ds(const string& filename) {
 	//getch(); //Insert this command for debug (to wait for keypress for each chuck reading)
 
 	l_chunk_id = readUShort(l_file);
-	//fread (&l_chunk_id, sizeof(unsigned short), 1, l_file); //Read the chunk header
+	//fread (&l_chunk_id, sizeof(ushort), 1, l_file); //Read the chunk header
 	//printf("ChunkID: %04x\n",l_chunk_id); 
 	l_chunk_lenght = readUInt(l_file);
-	//fread (&l_chunk_lenght, sizeof(unsigned int), 1, l_file); //Read the lenght of the chunk
+	//fread (&l_chunk_lenght, sizeof(uint), 1, l_file); //Read the lenght of the chunk
 	//printf("ChunkLenght: %x\n",l_chunk_lenght);
 
 	switch (l_chunk_id)
@@ -237,13 +238,13 @@ void ThreeDS::load3ds(const string& filename) {
 		//--------------- TRI_VERTEXL ---------------
 		// Description: Vertices list
 		// Chunk ID: 4110 (hex)
-		// Chunk Lenght: 1 x unsigned short (number of vertices) 
+		// Chunk Lenght: 1 x ushort (number of vertices) 
 		//             + 3 x float (vertex coordinates) x (number of vertices)
 		//             + sub chunks
 		//-------------------------------------------
 	    case 0x4110: 
 		l_qty = readUShort(l_file);
-		//fread (&l_qty, sizeof (unsigned short), 1, l_file);
+		//fread (&l_qty, sizeof (ushort), 1, l_file);
 		//p_object->vertices_qty = l_qty;
 #if VERBOSE		
 		printf("Number of vertices: %d\n",l_qty);
@@ -269,13 +270,13 @@ void ThreeDS::load3ds(const string& filename) {
 		//--------------- TRI_FACEL1 ----------------
 		// Description: Polygons (faces) list
 		// Chunk ID: 4120 (hex)
-		// Chunk Lenght: 1 x unsigned short (number of polygons) 
-		//             + 3 x unsigned short (polygon points) x (number of polygons)
+		// Chunk Lenght: 1 x ushort (number of polygons) 
+		//             + 3 x ushort (polygon points) x (number of polygons)
 		//             + sub chunks
 		//-------------------------------------------
 	    case 0x4120:
 		l_qty = readUShort(l_file);
-		//fread (&l_qty, sizeof (unsigned short), 1, l_file);
+		//fread (&l_qty, sizeof (ushort), 1, l_file);
 		//p_object->polygons_qty = l_qty;
 #if VERBOSE		
 		printf("Number of polygons: %d\n",l_qty); 
@@ -283,20 +284,20 @@ void ThreeDS::load3ds(const string& filename) {
 		for (i = 0; i < l_qty; i++)
 		{
 		    for (int j = 0; j < 3; j++) {
-			unsigned short val = readUShort(l_file);
+			ushort val = readUShort(l_file);
 			faces.push_back(val);
 
 		    }
 		    /*
-		    fread (&p_object->polygon[i].a, sizeof (unsigned short), 1, l_file);
+		    fread (&p_object->polygon[i].a, sizeof (ushort), 1, l_file);
 		    printf("Polygon point a: %d\n",p_object->polygon[i].a);
-		    fread (&p_object->polygon[i].b, sizeof (unsigned short), 1, l_file);
+		    fread (&p_object->polygon[i].b, sizeof (ushort), 1, l_file);
 		    printf("Polygon point b: %d\n",p_object->polygon[i].b);
-		    fread (&p_object->polygon[i].c, sizeof (unsigned short), 1, l_file);
+		    fread (&p_object->polygon[i].c, sizeof (ushort), 1, l_file);
 		    printf("Polygon point c: %d\n",p_object->polygon[i].c);
 		    */
 		    l_face_flags = readUShort(l_file);
-		    //fread (&l_face_flags, sizeof (unsigned short), 1, l_file);
+		    //fread (&l_face_flags, sizeof (ushort), 1, l_file);
 		    //printf("Face flags: %x\n",l_face_flags);
 		}
 		break;
@@ -319,13 +320,13 @@ void ThreeDS::load3ds(const string& filename) {
 		//------------- TRI_MAPPINGCOORS ------------
 		// Description: Vertices list
 		// Chunk ID: 4140 (hex)
-		// Chunk Lenght: 1 x unsigned short (number of mapping points) 
+		// Chunk Lenght: 1 x ushort (number of mapping points) 
 		//             + 2 x float (mapping coordinates) x (number of mapping points)
 		//             + sub chunks
 		//-------------------------------------------
 	    case 0x4140:
 		l_qty = readUShort(l_file);
-		//fread (&l_qty, sizeof (unsigned short), 1, l_file);
+		//fread (&l_qty, sizeof (ushort), 1, l_file);
 		for (i=0; i < l_qty; i++)
 		{
 		    for (int j = 0; j < 2; j++) {
@@ -377,7 +378,7 @@ void ThreeDS::load3ds(const string& filename) {
 		state_inside_color_type = ' ';
 
 		// Read material name
-		unsigned char name[1024];
+		uchar name[1024];
 		i = 0;
 		do {
 		    fread (&l_char, 1, 1, l_file);
@@ -407,7 +408,7 @@ void ThreeDS::load3ds(const string& filename) {
 		
 		// A color found
 	    case 0x0011:
-		unsigned char rgb[3];
+		uchar rgb[3];
 		fread(rgb,sizeof(rgb),1,l_file);
 		cur_color = RGB(rgb[0],rgb[1],rgb[2]);
 #if VERBOSE		

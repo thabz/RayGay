@@ -29,13 +29,13 @@ Mesh::Mesh(MeshType type, const Material* mat) {
 
 // ----------------------------------------------------------------------------
 Mesh::~Mesh() {
-    for(unsigned int i = 0; i < triangles.size(); i++) {
+    for(uint i = 0; i < triangles.size(); i++) {
 	delete triangles[i];
     }
 }
 
 void Mesh::addSelf(KdTree* space) {
-    for(unsigned int i = 0; i < triangles.size(); i++) {
+    for(uint i = 0; i < triangles.size(); i++) {
 	space->addObject(triangles[i]);
     }
 }
@@ -45,7 +45,7 @@ void Mesh::prepare() {
 
     computeInterpolatedNormals();
     prepared = true;
-    for(unsigned int i = 0; i < triangles.size(); i++) {
+    for(uint i = 0; i < triangles.size(); i++) {
 	triangles[i]->prepare();
     }
 }
@@ -90,7 +90,7 @@ void Mesh::addQuad(const Vector* corners, const Vector2* uv) {
  * @param point the vertex to add
  * @return index of the new vertex
  */
-unsigned int Mesh::addVertex(const Vector& point) {
+uint Mesh::addVertex(const Vector& point) {
     corners.push_back(point);
     return corners.size() -1;
 }
@@ -109,7 +109,7 @@ void Mesh::addTriangle(int v[3], const Vector2 uv[3]) {
     Vector normal = Vector::xProduct(c[1] - c[0], c[2] - c[0]);
     normal.normalize();
     normals.push_back(normal);
-    unsigned int normal_idx = normals.size() - 1;
+    uint normal_idx = normals.size() - 1;
 
     faces.push_back(v[0]);
     faces.push_back(v[1]);
@@ -132,9 +132,9 @@ void Mesh::addTriangle(int v[3], const Vector2 uv[3]) {
 
 /*
 void Mesh::computeAdjacentTris() {
-    for(unsigned int i = 0; i < tris.size(); i++) {
+    for(uint i = 0; i < tris.size(); i++) {
 	Tri* tri = tris[i];
-	for(unsigned int e = 0; e < 3; e++) {
+	for(uint e = 0; e < 3; e++) {
 	    Tri* adj;
 	    Edge* edge = tri->edge[e];
 	    if (edge->triangle[0] == tri) {
@@ -206,11 +206,11 @@ void Mesh::computeInterpolatedNormals() {
 
 #if 0
 	    Vector normal = normals[tri->normal_idx];
-	    for(unsigned int j = 0; j < 3; j++) {
+	    for(uint j = 0; j < 3; j++) {
 		Vertex vertex = vertices[tri->vertex[j]];
 	    int num = 1;
 	    Vector interpolated_normal = normal;
-	    for(unsigned int v = 0; v < vertex.tris.size(); v++) {
+	    for(uint v = 0; v < vertex.tris.size(); v++) {
 		Tri* other_tri = vertex.tris[v];
 		Vector other_normal = normals[other_tri->normal_idx];
 		if (other_tri != tri &&
@@ -233,8 +233,8 @@ void Mesh::computeInterpolatedNormals() {
 
 // TODO: Optimize by keeping a stl::set with all corners.
 int Mesh::findExistingCorner(const Vector* c) const {
-    unsigned int size = corners.size();
-    for(unsigned int i = 0; i < size; i++) {
+    uint size = corners.size();
+    for(uint i = 0; i < size; i++) {
 	if (corners[i] == *c) return i;
     }
     return -1;
@@ -292,7 +292,7 @@ Vector Mesh::phong_normal(const Triangle* const triangle, double u, double v) co
     const Tri& tri = tris[triangle->getTri()];
     Vector result = Vector(0,0,0);
     Vector weight = Vector(1-u-v,u,v);
-    for(unsigned int j = 0; j < 3; j++) {
+    for(uint j = 0; j < 3; j++) {
 	result += normals[tri.interpolated_normal[j]] * weight[j];
     }
     result.normalize();
@@ -312,7 +312,7 @@ Vector2 Mesh::getUV(const Triangle* triangle, double u, double v) const {
 
 std::vector<Vector>* Mesh::getVertices() {
     std::vector<Vector>* result = new std::vector<Vector>;
-    for(unsigned int i = 0; i < corners.size(); i++) {
+    for(uint i = 0; i < corners.size(); i++) {
 	result->push_back(corners[i]);
     }
     return result;
@@ -325,7 +325,7 @@ std::vector<Vector>* Mesh::getVertices() {
 std::vector<Linesegment>* Mesh::getEdges() {
     EdgeMapType edgeMap;
 
-    for(unsigned int t = 0; t < tris.size(); t++) {
+    for(uint t = 0; t < tris.size(); t++) {
 	const Tri& tri = tris[t];
 	// Insert all edges into edgeMap
 	for(int i = 0; i < 3; i++) {
@@ -352,12 +352,12 @@ std::vector<Linesegment>* Mesh::getEdges() {
 SceneObject* Mesh::clone() const {
     Mesh* clone = new Mesh(meshType,material);
     // Copy triangles and that's it.
-    unsigned int num = triangles.size();
+    uint num = triangles.size();
     Vector vs[3];
     Vector2 uvs[3];
-    for (unsigned int i = 0; i < num; i++) {
+    for (uint i = 0; i < num; i++) {
 	const Tri& tri = tris[i];
-	for (unsigned int j = 0; j < 3; j++) {
+	for (uint j = 0; j < 3; j++) {
 	    vs[j] = cornerAt(tri.vertex[j]);
 	    uvs[j] = tri.uv[j];
 	}

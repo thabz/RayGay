@@ -13,7 +13,7 @@
  * @param segments The number of segments to use
  * @param m Material
  */
-Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, unsigned int segments, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
+Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, uint segments, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
 
     Vector direction = end - begin;
     direction.normalize();
@@ -24,8 +24,8 @@ Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, unsi
     b.getPoints(segments,bp);
     e.getPoints(segments,ep);
     
-    for(unsigned int i = 0; i < segments; i++) {
-	unsigned int j = (i + 1) % segments;
+    for(uint i = 0; i < segments; i++) {
+	uint j = (i + 1) % segments;
 	// Discs
 	addTriangle(begin,bp[j],bp[i]);
 	addTriangle(end,ep[i],ep[j]);
@@ -37,7 +37,7 @@ Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, unsi
     delete [] ep;
 }
 
-Extrusion::Extrusion(const Path& path, double radius, unsigned int segments, unsigned int pieces, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
+Extrusion::Extrusion(const Path& path, double radius, uint segments, uint pieces, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
     assert(pieces > 2);
 
     // TODO: Don't add straight vectors. Use indices.
@@ -45,7 +45,7 @@ Extrusion::Extrusion(const Path& path, double radius, unsigned int segments, uns
     Vector* cp = new Vector[segments];  // Points on current circle
     Vector* pp = new Vector[segments];  // Points on previous circle
     double last_t = 0;
-    for (unsigned int p = 0; p < pieces; p++) {
+    for (uint p = 0; p < pieces; p++) {
 	double t = double(p) / double(pieces);
 	Vector c = path.getPoint(t);
 	Vector n = path.getTangent(t);
@@ -56,8 +56,8 @@ Extrusion::Extrusion(const Path& path, double radius, unsigned int segments, uns
 	    last_t = t;
 	} else {
 	    circle.getPoints(segments,cp);
-	    for(unsigned int i = 0; i < segments; i++) {
-		unsigned int j = (i + 1) % segments;
+	    for(uint i = 0; i < segments; i++) {
+		uint j = (i + 1) % segments;
 		double ti = double(i) / double(segments);
 		double tj = double(j) / double(segments);
 		addTriangle(pp[j],cp[j],cp[i],
@@ -70,8 +70,8 @@ Extrusion::Extrusion(const Path& path, double radius, unsigned int segments, uns
 	last_t = t;
     }
     if (path.isClosed()) {
-	for(unsigned int i = 0; i < segments; i++) {
-	    unsigned int j = (i + 1) % segments;
+	for(uint i = 0; i < segments; i++) {
+	    uint j = (i + 1) % segments;
 	    double ti = double(i) / double(segments);
 	    double tj = double(j) / double(segments);
 	    addTriangle(pp[j],bp[j],bp[i],

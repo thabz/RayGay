@@ -1,7 +1,7 @@
 
 #include "tessalation.h"
 
-Tessalation::Tessalation(const Vector center, const double radius, const unsigned int num, const Material* mat) : Mesh(Mesh::MESH_FLAT,mat) {
+Tessalation::Tessalation(const Vector center, const double radius, const uint num, const Material* mat) : Mesh(Mesh::MESH_FLAT,mat) {
 
     max_splits = num;
     this->radius = radius;
@@ -19,7 +19,7 @@ Tessalation::Tessalation(const Vector center, const double radius, const unsigne
     split(MPM, PPP, PMM, 1);
 }
 
-void Tessalation::split(const Vector& v1, const Vector& v2, const Vector& v3, unsigned int depth) {
+void Tessalation::split(const Vector& v1, const Vector& v2, const Vector& v3, uint depth) {
     if (depth > max_splits) {
 	Mesh::addTriangle(v1,v2,v3);
     } else {

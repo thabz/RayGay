@@ -1,4 +1,5 @@
 
+#include "types.h"
 #include "photon/irradiancecache.h"
 #include "stats.h"
 
@@ -62,7 +63,7 @@ bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB
 
 void IrradianceCache::traverseOctree(const HierarchyNode* const node, const Vector& point, vector<const CacheNode*>* result) const {
     // Add cache_nodes to result
-    for(unsigned int i = 0; i < node->cache_nodes.size(); i++) {
+    for(uint i = 0; i < node->cache_nodes.size(); i++) {
 	const CacheNode* const cnode = &(node->cache_nodes[i]);
 	if ((point - cnode->getPoint()).norm() <= cnode->getSquaredRadius()) {
 	    result->push_back(cnode);
@@ -71,7 +72,7 @@ void IrradianceCache::traverseOctree(const HierarchyNode* const node, const Vect
 
     if (node->isSplit) {
 	// traverse children
-	for(unsigned int i = 0; i < 8; i++) {
+	for(uint i = 0; i < 8; i++) {
 	    const HierarchyNode* child = node->children[i];
 	    // FIXME: Simpler test possible
 	    if (child->bbox.insideOrTouching(point)) {
@@ -107,7 +108,7 @@ double IrradianceCache::CacheNode::getWeight(const Vector& x, const Vector& n) c
     return 1.0 / (d1 + d2);
 }
 
-IrradianceCache::HierarchyNode::HierarchyNode(const BoundingBox& bbox, unsigned int depth) {
+IrradianceCache::HierarchyNode::HierarchyNode(const BoundingBox& bbox, uint depth) {
     this->bbox = bbox;
     this->isSplit = false;
     this->depth = depth;
@@ -124,7 +125,7 @@ void IrradianceCache::HierarchyNode::add(const CacheNode& node) {
 	// Find how many and which siblings this node fits in
 	bool accepted[8];
 	int accepted_count = 0;
-	for(unsigned int j = 0; j < 8; j++) {
+	for(uint j = 0; j < 8; j++) {
 	    accepted[j] = false;
 	    HierarchyNode* const child = children[j];
 	    if (child->bbox.intersectSphere(node.getPoint(),node.getSquaredRadius())) {
@@ -138,7 +139,7 @@ void IrradianceCache::HierarchyNode::add(const CacheNode& node) {
 	    cache_nodes.push_back(node);
 	} else {
 	    // Put it in siblings
-	    for(unsigned int j = 0; j < 8; j++) {
+	    for(uint j = 0; j < 8; j++) {
 		if (accepted[j]) {
 		    children[j]->add(node);
 		}
@@ -167,7 +168,7 @@ void IrradianceCache::HierarchyNode::add(const CacheNode& node) {
 
 IrradianceCache::HierarchyNode::~HierarchyNode() {
     if (isSplit) {
-	for (unsigned int i = 0; i < 8; i++) {
+	for (uint i = 0; i < 8; i++) {
 	    delete children[i];
 	}
     }

@@ -16,6 +16,7 @@
 #include "objects/ellipsoid.h"
 #include "objects/transformedinstance.h"
 #include "objects/torus.h"
+#include "types.h"
 
 //---------------------------------------------------------------------
 // MeshNode
@@ -42,7 +43,7 @@ SceneObject* MeshNode::eval() {
     Mesh* mesh = new Mesh(type, material->eval());
     /// Add vertices
     vector<Vector> a = vertices->eval();
-    for(unsigned int i = 0; i < a.size(); i++) {
+    for(uint i = 0; i < a.size(); i++) {
 	mesh->addVertex(a[i]);
     }
     BoundingBox bbox = BoundingBox(a);
@@ -51,7 +52,7 @@ SceneObject* MeshNode::eval() {
     /// Add triangles 
     a = triangles->eval();
     int v[3];
-    for(unsigned int i = 0; i < a.size(); i++) {
+    for(uint i = 0; i < a.size(); i++) {
 	v[0] = int(a[i][0]);
 	v[1] = int(a[i][1]);
 	v[2] = int(a[i][2]);
@@ -131,7 +132,7 @@ SuperEllipsoidNode::~SuperEllipsoidNode() {
 SceneObject* SuperEllipsoidNode::eval() {
     double _n1 = n1->eval();
     double _n2 = n2->eval();
-    unsigned int _steps = (unsigned int) steps->eval();
+    uint _steps = (uint) steps->eval();
     double _accuracy = accuracy->eval();
     Material* m = material->eval();
     return new SuperEllipsoid(_n1,_n2,_steps,_accuracy,m);
@@ -245,8 +246,8 @@ ExtrusionNode::~ExtrusionNode() {
 SceneObject* ExtrusionNode::eval() {
     Path* p = path->eval();
     double r = radius->eval();
-    unsigned int segs = (unsigned int) segments->eval();
-    unsigned int pies = (unsigned int) pieces->eval();
+    uint segs = (uint) segments->eval();
+    uint pies = (uint) pieces->eval();
     Material* m = material->eval();
     return new Extrusion(*p,r,segs,pies,m);
 }

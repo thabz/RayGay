@@ -2,6 +2,7 @@
 #ifndef SPACE_KD_TREE_H
 #define SPACE_KD_TREE_H
 
+#include "types.h"
 #include "math/vector.h"
 #include "boundingbox.h"
 #include <vector>
@@ -44,13 +45,13 @@ class KdTree {
 	struct KdNode {
 	    union {
 		// Left child when not a leaf. Right child is left + 1.
-		unsigned int left;  
+		uint left;  
 		// Enclosed objects when this is a leaf
 		Object** objects;
 	    };
 	    union {
 		// Number of objects when this is a leaf
-		unsigned int num;
+		uint num;
 		// Position of splitting plane
 		float splitPlane;
 	    };
@@ -70,23 +71,23 @@ class KdTree {
 		int dim; //> Output
 		double axis; //> Output
 		int current_sort_dim;
-		unsigned int left_index; //> Output
-		unsigned int right_index; //> Output
+		uint left_index; //> Output
+		uint right_index; //> Output
 	};
 
 	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
 	Object* intersectForShadow_real(const Ray&,const double) const;
-	BoundingBox enclosure(BoundedObject** bobs, unsigned int num) const;
+	BoundingBox enclosure(BoundedObject** bobs, uint num) const;
 	BoundingBox world_bbox;
-	bool findBestSplitPlane(unsigned int size, const BoundingBox& bbox, CostResult& result) const;
-	void findBestSplitPlane(unsigned int size, const BoundingBox& bbox, CostResult& result, int split_dim) const;
+	bool findBestSplitPlane(uint size, const BoundingBox& bbox, CostResult& result) const;
+	void findBestSplitPlane(uint size, const BoundingBox& bbox, CostResult& result, int split_dim) const;
 	// The recursive prepare method
-	void prepare(unsigned int num, const BoundingBox& bbox, unsigned int depth, const unsigned int dest_idx);
+	void prepare(uint num, const BoundingBox& bbox, uint depth, const uint dest_idx);
 
 	// The kd-tree nodes
 	vector<KdNode> nodes;
 
-	unsigned int max_depth;
+	uint max_depth;
 	bool prepared;
 
 	std::vector<Object*>* added_objects;

@@ -10,7 +10,7 @@
  * @param resolution The number of quads to generate for each patch
  * @param material The material to use
  */
-Teapot::Teapot(const Vector& pos, double scale, unsigned int resolution, const Material* material) {
+Teapot::Teapot(const Vector& pos, double scale, uint resolution, const Material* material) {
     double vertices[16*3*32] = 
 {
 -80.00,0.00,30.00,-80.00,-44.80,30.00,-44.80,-80.00,30.00,0.00,-80.00,30.00,
@@ -175,9 +175,9 @@ Teapot::Teapot(const Vector& pos, double scale, unsigned int resolution, const M
 };
 
     Vector temp[16];
-    for(unsigned int i = 0; i < 32; i++) {
-	for(unsigned int j = 0; j < 16; j++) {
-	    unsigned int vertex = (i * 16 + j) * 3;
+    for(uint i = 0; i < 32; i++) {
+	for(uint j = 0; j < 16; j++) {
+	    uint vertex = (i * 16 + j) * 3;
 	    Vector v = Vector(vertices[vertex + 0],
 		              vertices[vertex + 1],
 			      vertices[vertex + 2]);

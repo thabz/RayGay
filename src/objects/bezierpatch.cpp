@@ -10,16 +10,16 @@
  * @param yResolution Number of quads down
  * @param material The material to use
  */
-BezierPatch::BezierPatch(Vector* points, const unsigned int xResolution, const unsigned int yResolution, const Material* material) : Mesh(Mesh::MESH_FLAT,material) {
+BezierPatch::BezierPatch(Vector* points, const uint xResolution, const uint yResolution, const Material* material) : Mesh(Mesh::MESH_FLAT,material) {
  //   this->controlPoints = new Vector[16];
-    for(unsigned int i = 0; i < 16; i++) {
+    for(uint i = 0; i < 16; i++) {
 	controlPoints[i] = points[i];
     }
     Vector2 uvs[4];
     Vector verts[4];
 
-    for(unsigned int x = 0; x < xResolution; x++) {
-	for(unsigned int y = 0; y < yResolution; y++) {
+    for(uint x = 0; x < xResolution; x++) {
+	for(uint y = 0; y < yResolution; y++) {
 	    double u1 = double(x) / double(xResolution);
 	    double u2 = double(x+1) / double(xResolution);
 	    double v1 = double(y) / double(yResolution);
@@ -36,11 +36,11 @@ BezierPatch::BezierPatch(Vector* points, const unsigned int xResolution, const u
     }
 }
 
-const Vector& BezierPatch::getControlPoint(unsigned int i, unsigned int j) const {
+const Vector& BezierPatch::getControlPoint(uint i, uint j) const {
     return controlPoints[i + j * 4];
 }
 
-double B(unsigned int n, double u) {
+double B(uint n, double u) {
     double nu = 1 - u;
     switch(n) {
 	case 0:
@@ -60,8 +60,8 @@ Vector BezierPatch::getPoint(const Vector2& c) const {
     const double u = c[0];
     const double v = c[1];
     Vector result = Vector(0,0,0);
-    for (unsigned int i = 0; i < 4; i++) {
-	for (unsigned int j = 0; j < 4; j++) {
+    for (uint i = 0; i < 4; i++) {
+	for (uint j = 0; j < 4; j++) {
 	    result += getControlPoint(i,j) * B(i,u) * B(j,v);
 	}
     }
