@@ -1292,6 +1292,16 @@ class heightfield_test : public Test {
 
 	    ray = Ray(Vector(105,1000,0),Vector(0,-1,0),1);
 	    assertFalse(bsp->intersect(ray,inter));
+
+	    // Firing lots of rays
+	    for(int i = 0; i < 1000; i++) {
+		double r1 = RANDOM(-99,99);
+		double r2 = RANDOM(30,4000);
+		double r3 = RANDOM(-99,99);
+
+		ray = Ray(Vector(r1,r2,r3),Vector(0,-1,0),1);
+		assertTrue(bsp->intersect(ray,inter));
+	    }
 	}
 };
 
