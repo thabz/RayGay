@@ -31,14 +31,8 @@ Tetrahedron::~Tetrahedron() {
 void Tetrahedron::test() {
     Material mat = Material(RGB(0,0,0),RGB(0,0,0));
     Tetrahedron t = Tetrahedron(Vector(0,0,0),100,mat);
-    t.prepare();
-    vector<Linesegment>* edges = t.getEdges();
-    assert(edges->size() == 6);
-    delete edges;
-
-    vector<Vector>* vertices = t.getVertices();
-    assert(vertices->size() == 4);
-    delete vertices;
+    assert(t.getEdges()->size() == 6);
+    assert(t.getVertices()->size() == 4);
 
     cout << "Tetrahedron::test() done." << endl;
 }
