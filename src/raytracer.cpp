@@ -92,7 +92,7 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 	    } 
 	}
     }
-    if (depth < 4) {
+    if (depth < 5) {
 	/* Bounce a reflection off the intersected object */
 	if (material.getKs() > 0) {
 	    Vector refl_vector = -1 * ray.getDirection();
@@ -118,20 +118,15 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 
 	/* Should we send a ray through the intersected object? */
 	if (material.transmission_coefficient > 0.0) {
-	    // Calculate refraction vector (page 757)
-	//    double mat_indice = ray.isinside ? 1.0 : material.indice_of_refraction;
-	    double mat_indice = material.indice_of_refraction;
-	    double my = ray.getIndiceOfRefraction() / material.indice_of_refraction;
-	    Vector I = -1 * ray.getDirection();
-	    double n = normal * I;
-	    double p = my*my*(1 - n*n);
-	    if (p < 1) {
-		// No internal reflection (page 758)
-		Vector T = (my*n - sqrt(1 - p))*normal - my*I;
-		Ray trans_ray = Ray(point+0.1*T,T,mat_indice);
-		trans_ray.isinside = true;
+	    // TODO: Use the ior the rays holds to allow eg. glass in water.
+	    double ior = material.indice_of_refraction;
+	    Vector T = ray.getDirection().refract(normal,ior);
+	    if (!(T == Vector(0,0,0))) {
+		Ray trans_ray = Ray(point+0.1*T,T,ior);
 		RGB trans_col = trace(trans_ray, depth + 1);
-		result_color = result_color + material.transmission_coefficient * trans_col;
+		result_color += material.transmission_coefficient * trans_col;
+	    } else {
+		// TODO: Internal reflection, see page 757.
 	    }
 	}
     }

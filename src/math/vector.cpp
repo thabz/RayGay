@@ -131,4 +131,27 @@ Vector Vector::randomUnitVector() {
     return v;
 }
 
+/**
+ * Returns this vector refracted around a normal.
+ *
+ * @param normal the normal
+ * @param ior indice of refraction
+ *
+ * @see page 757
+ */
+Vector Vector::refract(const Vector& normal, double ior) const {
+    Vector N;
+    Vector I = -1 * (*this);
+    if ((*this) * normal > double(0)) {
+	N = -1 * normal;
+    } else {
+	N = normal;
+	ior = double(1.0)/ior;
+    }
+    double IdotN = (*this) * N;
+    double k = 1.0 - ior*ior*(1.0 - IdotN*IdotN);
+    Vector T = (k < 0) ? Vector(0,0,0) : (ior*I + (ior*IdotN - sqrt(k))*N);
+    T.normalize();
+    return T;
+}
 

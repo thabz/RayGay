@@ -71,6 +71,9 @@ public:
 
     // Convert from polar to rectangular coordinates
     Vector toRectangular() const;
+    
+    // Returns this vector refracted around a normal
+    Vector refract(const Vector& normal, double ior) const;
 
     static Vector randomUnitVector();
 
