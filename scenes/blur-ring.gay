@@ -1,0 +1,32 @@
+
+# Comment
+# Comment comment
+
+include materials.gay
+
+renderer raytracer
+
+camera-position 500 500 1000
+camera-up 0 1 0
+camera-lookat 200 200 400
+camera-field-of-view 45
+camera-aa 4
+camera-dof 60.0 300
+
+image-ratio 4 3
+image-width 1600
+background rgba 0.1 0.1 0.3 1.0
+
+light point 100 1300 1300 1 1 1
+#light point -400 3000 500 1 1 1
+
+# Floor
+box $slate_tiles -700 -50 -700  700 0 700
+
+#box $dullblue -700 -50 -700  700 0 700
+#box $dullyellow -750 -50 -750  750 -0.01 750
+
+circle $circle 0 200 0 400 0 1 0
+necklace $blue $circle 9 100
+extrusion $chrome $circle 20 16 50 
+
