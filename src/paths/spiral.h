@@ -26,8 +26,6 @@ class Spiral : public Path {
 	/// Transform the path
 	void transform(const Matrix& m);
 
-	static void test();
-
     private:
 
 	Path* center;
