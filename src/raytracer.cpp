@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <cassert>
 
 #include "math/vector.h"
 #include "math/functions.h"
@@ -153,16 +154,17 @@ RGB Raytracer::calculate_reflection(const Ray& ray, const Intersection& intersec
 	/* Distributed reflection */
 	double max_angle = material->glossMaxAngle();
 	int gloss_rays = material->glossRaysNum();
+	assert(gloss_rays > 0);
 	gloss_sequence->reset();
-	RGB refl_col_tmp;
 
 	//gloss_rays /= depth;
 
-
+#if 0
 	/* Adaptive sampling. Only if the first half of the reflection rays
 	 * vary too much, do we fire off the second half. */
 	int num = 0;
 	bool needs_more = false;
+	RGB refl_col_tmp;
 
 	for(int i = 0; i < gloss_rays/8; i++) {
 	    Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle,gloss_sequence),ray.getIndiceOfRefraction());
@@ -181,6 +183,15 @@ RGB Raytracer::calculate_reflection(const Ray& ray, const Intersection& intersec
 	    }
 	}
 	refl_col *= 1.0 / double(num);
+#else
+    for(int i = 0; i < gloss_rays; i++) {
+	Ray refl_ray = Ray(point,Math::perturbVector(refl_vector,max_angle,gloss_sequence),ray.getIndiceOfRefraction());
+	refl_col += trace(refl_ray, depth + 1);
+    }
+    refl_col *= 1.0 / double(gloss_rays);
+
+
+#endif	
     } else {
 	/* Single reflected ray */
 	Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
