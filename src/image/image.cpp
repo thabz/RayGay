@@ -44,7 +44,7 @@ void Image::setRGBA(int x, int y, const RGBA& c) {
     assert(0 <= x && x < width);
     assert(0 <= y && y < height);
     */
-    int offset = (y*width + x)*4;
+    unsigned int offset = (y*width + x)*4;
 
     data[offset++] = c.r();
     data[offset++] = c.g();
@@ -88,6 +88,38 @@ RGB Image::getTexel(double u, double v) const {
 }
 
 /**
+ * Get a bilinear interpolated texel.
+ *
+ * @see http://www.gamedev.net/reference/articles/article669.asp
+ */
+RGB Image::getBiLinearTexel(double u, double v) const {
+    u -= int(u);
+    v -= int(v);
+    double x = u*(width-1);
+    double y = v*(height-1);
+    int xi = int(x); int yi = int(y);
+    double dx = x - xi; double dy = y - yi;
+
+    double ul = (1.0 - dx) * (1.0 - dy);
+    double ll = (1.0 - dx) * dy;
+    double ur = dx * (1.0 - dy);
+    double lr = dx * dy;
+
+    if (xi < width - 1 && yi < height - 1) {
+	return getRGBA(xi,yi) * ul +
+	       getRGBA(xi,yi+1) * ll +
+	       getRGBA(xi+1,yi) * ur +
+	       getRGBA(xi+1,yi+1) * lr;
+
+    } else {
+	return getRGBWrapped(xi,yi) * ul +
+	       getRGBWrapped(xi,yi+1) * ll +
+	       getRGBWrapped(xi+1,yi) * ur +
+	       getRGBWrapped(xi+1,yi+1) * lr;
+    }
+}
+
+/**
  * Get a bicubic interpolated texel.
  *
  * @see http://astronomy.swin.edu.au/~pbourke/colour/bicubic/
@@ -123,6 +155,7 @@ RGB Image::getBiCubicTexel(double u, double v) const {
     return result / 36.0;
 }
 
+//#define BiCubicP(x) fdim(x,0)
 #define BiCubicP(x) (x) > 0 ? (x) : 0
 
 inline

@@ -39,8 +39,13 @@ class Image {
 	int getWidth() const { return width; };
 	/// Returns height of image
 	int getHeight() const { return height; };
+
 	/// Return a pixel where u and v in [0,1]
 	RGB getTexel(double u, double v) const;
+	
+	/// Return a bilinear interpolated pixel where u and v in [0,1]
+	RGB getBiLinearTexel(double u, double v) const;
+	
 	/// Return a bicubic interpolated pixel where u and v in [0,1]
 	RGB getBiCubicTexel(double u, double v) const;
 
