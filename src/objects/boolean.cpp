@@ -3,6 +3,7 @@
 #include "boundingbox.h"
 #include "booleanoperand.h"
 #include "math/vector2.h"
+#include "exception.h"
 
 Boolean::Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, const Material* m) : BooleanOperand(m) {
     _lhs = lhs;
@@ -86,7 +87,7 @@ Intersection Boolean::_intersect(const Ray& ray) const {
 	    }
 	    break;
     }
-    throw unknownOp(_op);
+    throw_exception("Unknown boolean operation: " + _op);
 }
 
 void Boolean::transform(const Matrix& m) {
@@ -107,7 +108,7 @@ bool Boolean::onEdge(const Vector &p) const {
                    (_lhs->onEdge(p) && _rhs->inside(p)) ||
 		   (_rhs->onEdge(p) && _lhs->onEdge(p));
     }
-    throw unknownOp(_op);
+    throw_exception("Unknown boolean operation: " + _op);
 }
 
 bool Boolean::inside(const Vector &p) const {
@@ -120,7 +121,7 @@ bool Boolean::inside(const Vector &p) const {
 	case BOOLEAN_INTERSECTION:
 	    return _lhs->inside(p) && _rhs->inside(p);
 	default: 
-	    throw unknownOp(_op);
+	    throw_exception("Unknown boolean operation: " + _op);
     }
     
 }
@@ -134,7 +135,7 @@ BoundingBox Boolean::boundingBoundingBox() const {
 	case BOOLEAN_DIFFERENCE:
 	    return _lhs->boundingBoundingBox(); // TODO: Could be smaller
     }
-    throw unknownOp(_op);
+	    throw_exception("Unknown boolean operation: " + _op);
 }
 
 SceneObject* Boolean::clone() const {
