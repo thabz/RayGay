@@ -129,6 +129,13 @@ void Importer::parse() {
 	    cur_material->setKs(readDouble(stream));
 	} else if (command == "texturemap") {
 	    cur_material->setTexturemap(readString(stream));
+	} else if (command == "circle") {
+	    stream >> str1;
+	    Vector center = readVector(stream);
+	    double radius = readDouble(stream);
+	    Vector normal = readVector(stream);
+	    Circle* circle = new Circle(center,radius,normal);
+	    paths[str1] = circle;
 	} else if (command == "linesegment") {
 	    stream >> str1;
 	    Vector c1 = readVector(stream);
