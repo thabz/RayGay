@@ -16,6 +16,8 @@
 #include "tessalation.h"
 #include "booleanoperand.h"
 #include "bsp.h"
+#include "paths/linesegment.h"
+#include "paths/circle.h"
 
 void sphere_test() {
     Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
@@ -175,6 +177,82 @@ void box_test() {
     assert(bsp.intersect(r));
     assert(bsp.getLastIntersection()->getPoint() == Vector(0,-1,0));
 
+    r = Ray(Vector(0,-100,1.5),Vector(0,1,0),1);
+    assert(bsp.intersect(r) == false);
+}
+
+void mesh_test() {
+
+}
+
+void tetrahedron_test() {
+    Material mat = Material(RGB(0,0,0),RGB(0,0,0));
+    Tetrahedron t = Tetrahedron(Vector(0,0,0),100,mat);
+    assert(t.getEdges()->size() == 6);
+    assert(t.getVertices()->size() == 4);
+}
+
+void tesselation_test() {
+    Material mat = Material(RGB(0,0,0),RGB(0,0,0));
+
+    // 4 triangles
+    Tessalation* t = new Tessalation(Vector(0,0,0),100,0,mat);
+    assert(t->getEdges()->size() == 6);
+    assert(t->getVertices()->size() == 4);
+
+    // 12 triangles
+    t = new Tessalation(Vector(0,0,0),100,1,mat);
+    assert(t->getVertices()->size() == 8);
+    cout << t->getEdges()->size() << endl;
+  //  assert(t->getEdges()->size() == 4 * 3);
+
+    // 36 triangles
+    t = new Tessalation(Vector(0,0,0),100,2,mat);
+    assert(t->getVertices()->size() == 20);
+
+    // 108 triangles
+    t = new Tessalation(Vector(0,0,0),100,3,mat);
+    assert(t->getVertices()->size() == 56);
+}
+
+void cylinder_test() {
+
+    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    // Check bounds 
+    Vector o = Vector(0,0,0);
+    Vector top = Vector(10,0,0);
+    BoundingBox b = BoundingBox(Vector(-1,-10,-10),Vector(11,10,10));
+	    
+    Cylinder* c = new Cylinder(o,top,9.0,5,m);
+    assert(b.inside(c->boundingBoundingBox()));
+
+    c = new Cylinder(top,o,9.0,5,m);
+    assert(b.inside(c->boundingBoundingBox()));
+
+    top = Vector(0,10,0);
+    b = BoundingBox(Vector(-10,-1,-10),Vector(10,11,10));
+    c = new Cylinder(o,top,5.0,5,m);
+    assert(b.inside(c->boundingBoundingBox()));
+
+    // Check intersection 
+    c = new Cylinder(Vector(0,0,0),Vector(0,0,-10),5.0,3,m);
+    c->prepare();
+    BSP bsp = BSP();
+    c->addParts(&bsp);
+    bsp.prepare();
+    Ray r = Ray(Vector(0.5,0.5,100),Vector(0,0,-1),1);
+    assert(bsp.intersect(r));
+
+    // Check generated mesh 
+    c = new Cylinder(Vector(0,0,0),Vector(0,0,-10),2.0,5,m);
+    c->prepare();
+    assert(c->getVertices()->size() == 5*2 + 2);
+
+    Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
+    Cylinder torus = Cylinder(circle1,100,16,10,Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
+    torus.prepare();
+
+    assert(torus.getVertices()->size() == 16*10);
 
 }
 
@@ -182,12 +260,13 @@ int main(int argc, char *argv[]) {
     sphere_test();
     boolean_test();
     box_test();
+    mesh_test();
+    tetrahedron_test();
+    tesselation_test();
+    cylinder_test();
 
     Mesh::test();
     Box::test();
-    Cylinder::test();
-    Tetrahedron::test();
-    Tessalation::test();
     return EXIT_SUCCESS;
 }
 

@@ -14,12 +14,6 @@ class Cylinder : public Mesh {
     	Cylinder(const Vector& begin, const Vector& end, double radius, unsigned int segments, Material m);
 
         Cylinder(const Path& path, double radius, unsigned int segments, unsigned int pieces, Material m);
-	/// Destructor
-    	virtual ~Cylinder();
-
-	/// Internal test
- 	static void test();
-
 };
 
 #endif

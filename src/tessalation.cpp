@@ -1,8 +1,5 @@
 
 #include "tessalation.h"
-#include <iostream>
-#include <cassert>
-#include "paths/linesegment.h"
 
 Tessalation::Tessalation(const Vector center, const double radius, const unsigned int num, Material mat) : Mesh(Mesh::MESH_FLAT,mat) {
 
@@ -38,19 +35,3 @@ void Tessalation::split(const Vector& v1, const Vector& v2, const Vector& v3, un
     }
 }
 
-using namespace std;
-
-void Tessalation::test() {
-    Material mat = Material(RGB(0,0,0),RGB(0,0,0));
-
-    Tessalation t = Tessalation(Vector(0,0,0),100,0,mat);
-    assert(t.getEdges()->size() == 6);
-    assert(t.getVertices()->size() == 4);
-
-    t = Tessalation(Vector(0,0,0),100,1,mat);
-    assert(t.getVertices()->size() == 8);
-    //assert(t.getEdges()->size() == 12);
-
-    cout << "Tessalation::test() done." << endl;
-
-}
