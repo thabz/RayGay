@@ -95,6 +95,34 @@ long filelength(int f) {
     return buf.st_size;
 }
 
+unsigned int readUInt(FILE* file) {
+    unsigned int dest;
+    fread (&dest, sizeof(unsigned int), 1, file);
+    return dest;
+}
+
+unsigned short readUShort(FILE* file) {
+    unsigned short dest;
+#ifdef WORDS_BIGENDIAN
+
+#else
+    fread (&dest, sizeof(unsigned short), 1, file);
+#endif    
+    return dest;
+}
+
+unsigned char readUChar(FILE* file) {
+    unsigned char dest;
+    fread (&dest, sizeof(unsigned char), 1, file);
+    return dest;
+}
+
+float readFloat(FILE* file) {
+    float dest;
+    fread (&dest, sizeof(float), 1, file);
+    return dest;
+}
+
 void ThreeDS::load3ds(const string& filename) {
     bool state_inside_object_block = false;
     bool state_inside_material_block = false;
@@ -125,9 +153,11 @@ void ThreeDS::load3ds(const string& filename) {
     {
 	//getch(); //Insert this command for debug (to wait for keypress for each chuck reading)
 
-	fread (&l_chunk_id, 2, 1, l_file); //Read the chunk header
+	l_chunk_id = readUShort(l_file);
+	//fread (&l_chunk_id, sizeof(unsigned short), 1, l_file); //Read the chunk header
 	//printf("ChunkID: %x\n",l_chunk_id); 
-	fread (&l_chunk_lenght, 4, 1, l_file); //Read the lenght of the chunk
+	l_chunk_lenght = readUInt(l_file);
+	//fread (&l_chunk_lenght, sizeof(unsigned int), 1, l_file); //Read the lenght of the chunk
 	//printf("ChunkLenght: %x\n",l_chunk_lenght);
 
 	switch (l_chunk_id)
@@ -184,7 +214,8 @@ void ThreeDS::load3ds(const string& filename) {
 		//             + sub chunks
 		//-------------------------------------------
 	    case 0x4110: 
-		fread (&l_qty, sizeof (unsigned short), 1, l_file);
+		l_qty = readUShort(l_file);
+		//fread (&l_qty, sizeof (unsigned short), 1, l_file);
 		//p_object->vertices_qty = l_qty;
 		printf("Number of vertices: %d\n",l_qty);
 		for (i=0; i<l_qty; i++)
@@ -213,14 +244,14 @@ void ThreeDS::load3ds(const string& filename) {
 		//             + sub chunks
 		//-------------------------------------------
 	    case 0x4120:
-		fread (&l_qty, sizeof (unsigned short), 1, l_file);
+		l_qty = readUShort(l_file);
+		//fread (&l_qty, sizeof (unsigned short), 1, l_file);
 		//p_object->polygons_qty = l_qty;
 		printf("Number of polygons: %d\n",l_qty); 
 		for (i = 0; i < l_qty; i++)
 		{
 		    for (int j = 0; j < 3; j++) {
-			unsigned short val;
-			fread(&val, sizeof(unsigned short), 1, l_file);
+			unsigned short val = readUShort(l_file);
 			faces.push_back(val);
 
 		    }
@@ -232,7 +263,8 @@ void ThreeDS::load3ds(const string& filename) {
 		    fread (&p_object->polygon[i].c, sizeof (unsigned short), 1, l_file);
 		    printf("Polygon point c: %d\n",p_object->polygon[i].c);
 		    */
-		    fread (&l_face_flags, sizeof (unsigned short), 1, l_file);
+		    l_face_flags = readUShort(l_file);
+		    //fread (&l_face_flags, sizeof (unsigned short), 1, l_file);
 		    //printf("Face flags: %x\n",l_face_flags);
 		}
 		break;
@@ -272,14 +304,14 @@ void ThreeDS::load3ds(const string& filename) {
 		// Read 
 		for (i=0; i < 3; i++) {
 		    for (int j = 0; j < 3; j++) {
-			float val;
-			fread(&val, sizeof(float), 1, l_file);
+			float val = readFloat(l_file);
+			//fread(&val, sizeof(float), 1, l_file);
 			mesh_matrix.set(j,i,val);
 		    }
 		}
 		for (i=0; i < 3; i++) {
-		    float val;
-		    fread(&val, sizeof(float), 1, l_file);
+		    float val = readFloat(l_file);
+		    //fread(&val, sizeof(float), 1, l_file);
 		    mesh_matrix.set(3,i,val);
 		}
 		//cout << mesh_matrix << endl;
