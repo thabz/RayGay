@@ -18,13 +18,22 @@ bool isWrappedObject(SCM obj) {
 }
 
 bool isLightsource(SCM object_smob) {
-    struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
-    return o->type == LIGHTSOURCE;
+    if (isWrappedObject(object_smob)) {
+	struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
+	return o->type == LIGHTSOURCE;
+    } else {
+	return false;
+    }
 }
 
-bool isSceneObject(SCM object_smob) {
-    struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
-    return o->type == SCENEOBJECT;
+bool isSceneObject(SCM object_smob) 
+{
+    if (isWrappedObject(object_smob)) {
+	struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
+	return o->type == SCENEOBJECT;
+    } else {
+	return false;
+    }
 }
 
 SCM path2scm(Path* path) {
