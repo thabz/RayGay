@@ -1,0 +1,67 @@
+
+renderer raytracer
+
+camera { position <1400,2000,2000>
+         up <0,1,0> 
+         lookat <0,0,0> 
+	 fov 45
+	 aa 0
+}
+
+image { width 1600 aspect 4 3 }
+
+background <0.3,0.3,0.9,1.0>
+
+/*
+light { point <3000,12000,12000> power <1,1,1> } 
+light { point <-3000,12000,12000> power <1,1,1> } 
+*/
+
+light { sky 20000 10 power <1,1,1> }
+
+$brown = material {
+    diffuse <0.7,0.4,0.2>
+    kd 1.0
+    ks 0.0
+}
+
+$grey85 = material {
+    diffuse <0.85,0.85,0.85>
+    kd 1.0
+    ks 0.0
+}
+
+$chrome = material {
+    diffuse <0.8,0.8,0.8>
+    kd 0.2
+    specular <1.0,1.0,1.0>
+    ks 0.8
+    specpow 30
+}
+
+
+box { 
+    $grey85
+    <-1700,-51,-1700>
+    <1700,0,1700>	  
+}
+
+$x = -1500
+do {
+   $z = -1500
+   do {
+       extrusion { $grey85
+	       circle { <0,0,0> 40 <0,1,0> }
+	       20 12 20 }
+	       rotate <1,0,0> 180*($x/1500)
+	       rotate <0,0,1> 180*($z/1500)
+               translate <$x,200,$z>	       
+      /* sphere { $grey85 45 <$x,200,$z>}*/
+      $z += 150
+   } while ($z < 1500)
+   $x += 150
+} while ($x < 1500)
+
+
+
+
