@@ -507,7 +507,7 @@ void KdTree::findBestSplitPlane(uint size, const BoundingBox& bbox, CostResult& 
     assert(d == 0 || d == 1 || d == 2);
 
     double split;
-    Vector bbox_lenghts = bbox.maximum() - bbox.minimum();
+    Vector bbox_lenghts = bbox.lengths();
     double lowest_cost = 0.9*size*bbox.area();
 
     double cap_a = 2 * bbox_lenghts[(d+1)%3] * bbox_lenghts[(d+2)%3];
@@ -544,9 +544,9 @@ void KdTree::findBestSplitPlane(uint size, const BoundingBox& bbox, CostResult& 
 
 	if (used_right) r++;
 
-	if (split < bbox.maximum()[d] && split > bbox.minimum()[d]) {
-	    double left_area = cap_a + (split - bbox.minimum()[d])*cap_p;
-	    double right_area = cap_a + (bbox.maximum()[d] - split)*cap_p;
+	if (split < bbox.maximum(d) && split > bbox.minimum(d)) {
+	    double left_area = cap_a + (split - bbox.minimum(d))*cap_p;
+	    double right_area = cap_a + (bbox.maximum(d) - split)*cap_p;
 	    double cost = left_area * l + right_area * (size -r);
 	    if (cost < lowest_cost) {  
 		result.dim = d;
@@ -580,8 +580,7 @@ bool KdTree::findBestSplitPlane(uint num, const BoundingBox& bbox, CostResult& r
 	}
     } else {
 	// Find best split in largest dimension
-	Vector bbox_lenghts = bbox.maximum() - bbox.minimum();
-	int d = bbox_lenghts.largestDimension();
+	int d = bbox.lengths().largestDimension();
 	findBestSplitPlane(num, bbox,result, d);
     }
 
