@@ -94,7 +94,6 @@ void Circle::test() {
 
     c = Circle(Vector(0,10,0),10,Vector(0,1,0));
     assert(c.getPoint(0) == Vector(-10,10,0));
-    std::cout << c.getTangent(0) << std::endl;
     assert(c.getTangent(0) == Vector(0,0,1));
     assert(c.getPoint(0.25) == Vector(0,10,10));
     assert(c.getTangent(0.25) == Vector(1,0,0));
