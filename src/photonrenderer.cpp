@@ -18,6 +18,7 @@
 #include "photon/globalphotonmap.h"
 #include "photon/causticsmap.h"
 #include "photon/photontracer.h"
+#include "photon/irradiancecache.h"
 #include "renderersettings.h"
 #include "math/halton.h"
 
@@ -50,8 +51,10 @@ void PhotonRenderer::init() {
     Stats::getUniqueInstance()->endTimer("Precomputing irradiance");
     cout << "Done." << endl;
 
-
     delete photontracer;
+    
+    //irradiance_cache = new IrradianceCache(space->getWorldBoundingBox(),5);
+    irradiance_cache = new IrradianceCache(BoundingBox(),renderersettings->cache_tolerance);
 
     qmc_sequence = new Halton(2,2);
 }
@@ -117,7 +120,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     RGB result_color = RGB(0.0,0.0,0.0);
 
     // Indirect diffuse light by one step of path tracing
-    result_color += material_diffuse * finalGather(point,normal,ray.getDirection(),renderersettings->final_gather_rays,0);
+    result_color += material_diffuse * getDiffuseIrradiance(point,normal,ray.getDirection());
 
     // Direct estimate from caustics map
     result_color += material_diffuse * causticsphotonmap->getFilteredIrradianceEstimate(point,normal);
@@ -200,8 +203,25 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
+/**
+ * Find the diffuse irradiance at a point.
+ *
+ * This uses the IrradianceCache.
+ */
+RGB PhotonRenderer::getDiffuseIrradiance(const Vector& point, const Vector& normal, const Vector& ray_dir) const {
+
+    RGB irradiance = irradiance_cache->getEstimate(point,normal);
+
+    if (irradiance.r() < 0) {
+	double hmd;
+	irradiance = finalGather(point, normal, ray_dir, renderersettings->final_gather_rays, 0, &hmd);
+	irradiance_cache->putEstimate(point,normal,irradiance,hmd);
+    }
+    return irradiance;
+}
+
 /// Final gathering does one step of path tracing
-Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const Vector& ray_dir, int gatherRays, int depth) const {
+Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const Vector& ray_dir, int gatherRays, int depth, double* hmd) const {
     if (gatherRays == 0) {
 	return globalphotonmap->irradianceEstimate(point,normal);
     }
@@ -219,10 +239,12 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 	    Vector hitpoint = inter->getPoint();
 	    Vector hitnormal = inter->getObject()->normal(*inter);
 	    RGB irra;
-	//    if ((hitpoint-point).length() < renderersettings->estimate_radius && depth == 0 ) {
+	    double dist = (hitpoint-point).length();
+	    *hmd += 1.0 / dist;
+	//    if ( dist < renderersettings->estimate_radius && depth == 0 ) {
 	    if (false) {
 	        // If too close do additional level of path tracing
-		irra += finalGather(hitpoint,hitnormal,dir,gatherRays / 2, depth + 1);
+		//irra += finalGather(hitpoint,hitnormal,dir,gatherRays / 2, depth + 1);
 	    } else {
 		//irra += globalphotonmap->directIrradianceEstimate(hitpoint,hitnormal);
 		irra += globalphotonmap->irradianceEstimate(hitpoint,hitnormal);
@@ -234,6 +256,7 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
     }
 	
     result *= 1.0 / double(gatherRays);
+    *hmd = 1.0 / *hmd;
     return result;
 }
 

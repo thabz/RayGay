@@ -27,6 +27,7 @@ inline RendererSettings::RendererSettings() {
     estimate_samples = 300;
     final_gather_rays = 10;
     renderertype = RAYTRACER;
+    cache_tolerance = 0.1;
 }
 
 #endif

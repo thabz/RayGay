@@ -1,5 +1,6 @@
 
 #include "photon/irradiancecache.h"
+#include "stats.h"
 
 /**
  * Constructor.
@@ -14,6 +15,7 @@ IrradianceCache::IrradianceCache(const BoundingBox& bbox, double tolerance) {
 }
 
 void IrradianceCache::putEstimate(const Vector& point, const Vector& normal, const RGB& irrandiance, const double hmd) {
+    Stats::getUniqueInstance()->inc("Irradiance cache size");
     hierarchy_top->cache_nodes.push_back(CacheNode(point,normal,irrandiance,hmd,tolerance));
 }
 
@@ -26,8 +28,8 @@ RGB IrradianceCache::getEstimate(const Vector& point, const Vector& normal) cons
     for(int i = 0; i < nodes_num; i++) {
 	const CacheNode* node = &(hierarchy_top->cache_nodes[i]);
 	double dist = (point - node->getPoint()).norm();
-	if (dist > node->getSquaredRadius())
-	    continue;
+	//if (dist > node->getSquaredRadius())
+	//    continue;
 
 	weight = node->getWeight(point,normal);
 	if (weight < inv_tolerance)
@@ -37,9 +39,11 @@ RGB IrradianceCache::getEstimate(const Vector& point, const Vector& normal) cons
 	weight_sum += weight;
 	found++;
     }
-    if (found >= 3) {
+    if (found > 2) {
+	Stats::getUniqueInstance()->inc("Irradiance cache hits");
 	return result / weight_sum;
     } else {
+	Stats::getUniqueInstance()->inc("Irradiance cache misses");
 	return RGB(-1.0,-1.0,-1.0);
     }
 }

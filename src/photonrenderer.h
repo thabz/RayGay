@@ -11,6 +11,7 @@ class PhotonSettings;
 class GlobalPhotonMap;
 class CausticsMap;
 class QMCSequence;
+class IrradianceCache;
 
 /**
  * Implementation of Renderer that supply a raytracer using photonmaps.
@@ -30,6 +31,7 @@ class PhotonRenderer : public Renderer {
 	/// The photonmap to use
 	GlobalPhotonMap* globalphotonmap;
 	CausticsMap* causticsphotonmap;
+	IrradianceCache* irradiance_cache;
 
 	QMCSequence* qmc_sequence;
 
@@ -39,7 +41,8 @@ class PhotonRenderer : public Renderer {
 	RGBA trace(const Ray&, int depth);
 	RGBA traceSub(bool intersected, const Ray&, int depth);
 	RGBA tracePrimary(const Ray&);
-	Vector finalGather(const Vector& point, const Vector& normal,const Vector& raydir, int gatherRays, int depth) const;
+	RGB getDiffuseIrradiance(const Vector& point, const Vector& normal, const Vector& ray_dir) const;
+	Vector finalGather(const Vector& point, const Vector& normal,const Vector& raydir, int gatherRays, int depth, double* hmd) const;
 };
 
 
