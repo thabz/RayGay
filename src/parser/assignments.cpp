@@ -30,6 +30,14 @@ void Assignments::setNamedFloat(string name, double val) {
     floatMap[name] = val;
 }
 
+Vector Assignments::getNamedVector(string name) {
+    return vectorMap[name];
+}
+
+void Assignments::setNamedVector(string name, Vector v) {
+    vectorMap[name] = v;
+}
+
 SceneObject* Assignments::getNamedSceneObject(string name) {
     SceneObject* result = objectMap[name];
     if (result == NULL) {

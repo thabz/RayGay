@@ -242,6 +242,10 @@ Assignment	: tSTRING '=' PathDef
                 {
 		    $$ = new AssignFloatNode(*$1,$3);
                 }
+                | tSTRING '=' Vector
+                {
+		    $$ = new AssignVectorNode(*$1,$3);
+                }
                 | tSTRING '=' MaterialDef 
                 {
 		    $$ = new AssignMaterialNode(*$1,$3);
@@ -727,6 +731,10 @@ Vector		: '<' Expr ',' Expr ',' Expr '>'
                 | tNORMALIZE '(' Vector ')'
 		{
 		    $$ = new VectorNormalizeNode($3);
+		}
+                | tSTRING
+		{
+		    $$ = new NamedVectorNode(*$1);
 		}
                 ;
 

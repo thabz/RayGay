@@ -81,5 +81,21 @@ class VectorNormalizeNode : public VectorNode {
 	VectorNode* vecnode;
 };
 
+class NamedVectorNode : public VectorNode {
+    public:
+	NamedVectorNode(string name) {
+	    this->name = name;
+	}
+
+	virtual ~NamedVectorNode() {}; // TODO: delete from assigments
+
+	Vector eval() {
+	    return Assignments::getUniqueInstance()->getNamedVector(name);
+	}
+	
+    private:
+	string name;
+};
+
 #endif
 

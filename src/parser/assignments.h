@@ -4,6 +4,7 @@
 
 #include <string>
 #include <map>
+#include "math/vector.h"
 
 class Path;
 class SceneObject;
@@ -21,6 +22,9 @@ class Assignments {
 
 	double getNamedFloat(string name);
 	void setNamedFloat(string name, double val);
+
+	Vector getNamedVector(string name);
+	void setNamedVector(string name, Vector val);
 	
 	Material* getNamedMaterial(string name);
 	void setNamedMaterial(string name, Material* material);
@@ -32,6 +36,7 @@ class Assignments {
 	Assignments(); 
 
 	map<string,double> floatMap;
+	map<string,Vector> vectorMap;
 	map<string,Path*> pathMap;
 	map<string,Material*> materialMap;
 	map<string,SceneObject*> objectMap;

@@ -66,6 +66,23 @@ class AssignFloatNode : public ActionNode {
 	string name;
 };
 
+class AssignVectorNode : public ActionNode {
+    public:
+	AssignVectorNode(string name, VectorNode* node) {
+	    this->name = name;
+	    this->node = node;
+	}
+
+	virtual ~AssignVectorNode() { delete node; }
+
+	void eval() {
+	    Assignments::getUniqueInstance()->setNamedVector(name,node->eval());
+	}
+    private:
+	VectorNode* node;
+	string name;
+};
+
 class AssignPathNode : public ActionNode {
     public:
 	AssignPathNode(string name, PathNode* node) {
