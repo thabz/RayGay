@@ -1,5 +1,6 @@
 
 #include "space/hitcache.h"
+#include "types.h"
 #include <cstdlib>
 
 HitCache::HitCache(uint size) {

@@ -21,7 +21,8 @@ libtracer_la_SOURCES = \
 		      pathtracer.cpp 	\
 		      environment.cpp 	\
 		      window.h		\
-		      window.cpp	\
+		      window-gtk.h	\
+		      window-gtk.cpp	\
 		      window-icon.h	
 
 libtracer_la_LIBADD = parser/libparser.la photon/libphoton.la lights/liblights.la materials/libmaterials.la collections/libcollections.la objects/libobjects.la paths/libpaths.la math/libmath.la  image/libimage.la space/libspace.la shaders/libshaders.la cameras/libcameras.la filters/libfilters.la
