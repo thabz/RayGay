@@ -32,6 +32,8 @@ class Object : public SceneObject {
 	/// The smallest box containing this object
 	virtual BoundingBox boundingBoundingBox() const = 0;
 
+        virtual int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
+	
 	/// Prepares the object before rendering
 	virtual void prepare();
 

@@ -15,6 +15,25 @@ void Object::addSelf(KdTree* space) {
 }
 
 /**
+ * Refine an intersection. This is used when pruning the Kd-Tree.
+ * Many objects have empty space in their bounding boxes. If an
+ * voxel only intersects empty space in an objects bounding box
+ * the objects can safely be removed from said voxel during pruning.
+ *
+ * This methods allows for a more refined test of whether an object
+ * lies in a voxel's bounding box.
+ *
+ * @param voxel_bbox The bounding box of the voxel
+ * @param obj_bbox This object's own bounding box
+ * @return 0 if this test should be ignored
+ *         1 if intersection
+ *         -1 if no intersection
+ */
+int Object::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const {
+    return 0;
+}
+
+/**
  * This gets called after construction but before any
  * intersection methods are called.
  */
