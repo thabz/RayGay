@@ -28,7 +28,7 @@ SHORT_NAMES            = NO
 HIDE_SCOPE_NAMES       = NO
 VERBATIM_HEADERS       = YES
 SHOW_INCLUDE_FILES     = YES
-JAVADOC_AUTOBRIEF      = NO
+JAVADOC_AUTOBRIEF      = YES
 MULTILINE_CPP_IS_BRIEF = NO
 DETAILS_AT_TOP         = NO
 INHERIT_DOCS           = YES
@@ -131,7 +131,7 @@ TREEVIEW_WIDTH         = 250
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
-GENERATE_LATEX         = NO 
+GENERATE_LATEX         = YES
 LATEX_OUTPUT           = latex
 LATEX_CMD_NAME         = latex
 MAKEINDEX_CMD_NAME     = makeindex
