@@ -147,7 +147,7 @@ Image* TgaIO::load(const std::string& filename) {
 
     // Says whether the data is rle encoded
     bool rle = int(Header[2]) >> 3 == 1;
-    cout << "bpp: " << bpp << (rle ? " (rle)" : "") << endl;
+    //cout << "bpp: " << bpp << (rle ? " (rle)" : "") << endl;
 
     if (Header[1] != 0 || int(Header[2]) & 7 != 2 || bpp == 2 ) {
         throw_exception("Error opening " + filename + 

@@ -245,7 +245,9 @@ void ThreeDS::load3ds(const string& filename) {
 		l_qty = readUShort(l_file);
 		//fread (&l_qty, sizeof (unsigned short), 1, l_file);
 		//p_object->vertices_qty = l_qty;
+#if VERBOSE		
 		printf("Number of vertices: %d\n",l_qty);
+#endif		
 		for (i=0; i<l_qty; i++)
 		{
 		    for (int j = 0; j < 3; j++) {
@@ -275,7 +277,9 @@ void ThreeDS::load3ds(const string& filename) {
 		l_qty = readUShort(l_file);
 		//fread (&l_qty, sizeof (unsigned short), 1, l_file);
 		//p_object->polygons_qty = l_qty;
+#if VERBOSE		
 		printf("Number of polygons: %d\n",l_qty); 
+#endif		
 		for (i = 0; i < l_qty; i++)
 		{
 		    for (int j = 0; j < 3; j++) {
