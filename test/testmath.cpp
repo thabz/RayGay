@@ -658,6 +658,18 @@ class brents_method : public Test  {
 	    assertTrue(IS_EQUAL(root,-7.0));
 	    assertTrue(IS_ZERO(my_poly(root)));
 
+	    // x^3 + 2*x^2 - 29*x - 30 = (x+1)*(x+6)*(x-5)
+	    Polynomial poly = Polynomial(1,2,-29,-30);
+	    rf = RootFinder(RootFinder::BRENTS_METHOD,EPSILON,&poly);
+	    assertTrue(rf.solve(-0.9,-1.1,&root));
+	    assertTrue(IS_EQUAL(root,-1.0));
+	    assertTrue(IS_ZERO(poly(root)));
+	    assertTrue(rf.solve(4.1,5.4,&root));
+	    assertTrue(IS_EQUAL(root,5.0));
+	    assertTrue(IS_ZERO(poly(root)));
+	    assertTrue(rf.solve(-10,-5,&root));
+	    assertTrue(IS_EQUAL(root,-6.0));
+	    assertTrue(IS_ZERO(poly(root)));
 	}
 };
 
