@@ -144,6 +144,8 @@ void box_test() {
     Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Box b = Box(Vector(-1,-1,-1),Vector(1,1,1),m);
     b.prepare();
+    assert(b.getVertices()->size() == 8);
+
     BSP bsp = BSP();
     b.addParts(&bsp);
     bsp.prepare();
@@ -159,6 +161,8 @@ void box_test() {
     /* Test second constructor */
     b = Box(Vector(0,0,0),2,2,2,m);
     b.prepare();
+    //assert(b.getVertices()->size() == 8);
+
     bsp = BSP();
     b.addParts(&bsp);
     bsp.prepare();
