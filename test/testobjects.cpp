@@ -79,8 +79,8 @@ bool normalCheck(Object* object, double radius) {
 	    checked++;
 	}
     }
-    return failures == 0;
     //cout << "Checked normals: " << checked << endl;
+    return failures == 0;
 }
 
 /**
@@ -91,7 +91,23 @@ bool normalCheck(Object* object, double radius) {
  */
 bool transparentCheck(Object* object, double radius) {
     int failures = 0;
+    int num = 10000;
+    int checked = 0;
+    for(int i = 0; i < num; i++) {
+	Vector v = Vector::randomUnitVector();
+	Vector pos = v * radius;
+	Vector dir = -1 * v;
+	Ray ray = Ray(pos,dir,-1);
+	while (intersects(object,ray)) {
+	    if (iPoint(object,ray) == pos)
+		failures++;
 
+	    pos = iPoint(object,ray);
+	    ray = Ray(pos,dir,-1);
+	    checked++;
+	}
+    }
+    //cout << "Checked points: " << checked << endl;
     return failures == 0;
 }
 
@@ -175,6 +191,7 @@ class sphere_test : public Test {
 	    // Test returned normals
 	    s = Sphere(Vector(0,0,0),20.0,NULL);
 	    assertTrue(normalCheck(&s,100));
+	    assertTrue(transparentCheck(&s,100));
 	}
 };
 
@@ -444,6 +461,7 @@ class cylinder_test : public Test {
 	    cyl = new Cylinder(Vector(-3,-10,-4),Vector(1,10,3),1,true,m);
 	    cyl->transform(Matrix::matrixScale(Vector(3,10,2)));
 	    assertTrue(normalCheck(cyl,1000));
+	    assertTrue(transparentCheck(cyl,1000));
 	}
 };
 
@@ -534,7 +552,8 @@ class torus_test : public Test {
 	    // Test normals
 	    t = new Torus(10,1,m);
 	    t->transform(Matrix::matrixScale(Vector(2,3,4)));
-	    assertTrue(normalCheck(t,1000));
+	    assertTrue(normalCheck(t,100));
+	    assertTrue(transparentCheck(t,100));
 	}
 };
 
@@ -546,16 +565,11 @@ class transformed_instance_test : public Test {
 	    t1->transform(Matrix::matrixTranslate(Vector(100,0,0)));
 	    TransformedInstance* t2 = new TransformedInstance(s);
 	    t2->transform(Matrix::matrixTranslate(Vector(-100,0,0)));
-	    assert(intersects(t1,Vector(100,0,1000),Vector(0,0,-1)));
-	    assert(!intersects(t1,Vector(0,0,1000),Vector(0,0,-1)));
+	    assertTrue(intersects(t1,Vector(100,0,1000),Vector(0,0,-1)));
+	    assertTrue(!intersects(t1,Vector(0,0,1000),Vector(0,0,-1)));
 
-	    assert(intersects(t2,Vector(-100,0,1000),Vector(0,0,-1)));
-	    assert(!intersects(t2,Vector(0,0,1000),Vector(0,0,-1)));
-
-	    //assert(t1->intersect(Ray,0)));
-	    //assert(!t1->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
-	    //assert(t2->intersect(Ray(Vector(-100,0,1000),Vector(0,0,-1),0)));
-	    //assert(!t2->intersect(Ray(Vector(0,0,1000),Vector(0,0,-1),0)));
+	    assertTrue(intersects(t2,Vector(-100,0,1000),Vector(0,0,-1)));
+	    assertTrue(!intersects(t2,Vector(0,0,1000),Vector(0,0,-1)));
 	}
 };
 
@@ -599,6 +613,9 @@ class csg_test : public Test {
 	    assertTrue(all[0].getPoint() == Vector(0,0,-25));
 	    assertTrue(all[1].getPoint() == Vector(0,0,-40));
 	    assertTrue(all[2].getPoint() == Vector(0,0,-60));
+
+	    assertTrue(normalCheck(csg3,1000));
+	    assertTrue(transparentCheck(csg3,1000));
 
 	    s1 = new Sphere(Vector(0,0,10),5,NULL);
 	    s2 = new Sphere(Vector(0,0,-10),5,NULL);
@@ -678,6 +695,10 @@ class csg_test : public Test {
 	    s2 = new Sphere(Vector(0,0,-10),15,NULL);
 	    s3 = new Sphere(Vector(0,0,0),15,NULL);
 	    csg = new CSGIntersection(s1,s3,NULL);
+
+	    assertTrue(normalCheck(csg,1000));
+	    assertTrue(transparentCheck(csg,1000));
+	    
 	    ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
 	    all.clear();
 	    csg->allIntersections(ray,all);
@@ -762,6 +783,9 @@ class csg_test : public Test {
 	    r = Ray(Vector(0,0,0),Vector(0,0,1),1);
 	    assertTrue(! intersects(b5,r));
 
+	    assertTrue(normalCheck(b5,1000));
+	    assertTrue(transparentCheck(b5,1000));
+
 	    // Test a hollow sphere
 	    s1 = new Sphere(Vector(0,0,0),30,NULL);
 	    s2 = new Sphere(Vector(0,0,0),29,NULL);
@@ -841,6 +865,9 @@ class csg_test : public Test {
 	    assertTrue(iPoint(cup,Vector(0,-19,0),Vector(0,-1,0)) == Vector(0,-20,0));
 	    assertTrue(iNormal(cup,Vector(0,-19,0),Vector(0,-1,0)) == Vector(0,-1,0));
 	    assertTrue(!intersects(csg,Vector(0,-20,0),Vector(0,-1,0)));
+
+	    assertTrue(normalCheck(csg,1000));
+	    assertTrue(transparentCheck(csg,1000));
 	}
 };
 
@@ -923,6 +950,7 @@ class solidbox_test : public Test {
 
 	    b = new SolidBox(Vector(-10,-20,-30),Vector(40,50,60),NULL);
 	    assertTrue(normalCheck(b,200));
+	    assertTrue(transparentCheck(b,200));
 	}
 };
 
@@ -973,6 +1001,7 @@ class ellipsoid_test : public Test {
 
 	    e = new Ellipsoid(Vector(0,0,0),Vector(10,20,30),NULL);
 	    assertTrue(normalCheck(e,100));
+	    assertTrue(transparentCheck(e,100));
 	}
 };
 
@@ -1080,6 +1109,7 @@ class cone_test : public Test {
 	    // Checking normals
 	    c = new Cone(Vector(0,0,0),Vector(0,0,10),500,10,true,NULL);
 	    assertTrue(normalCheck(c,1000));
+	    assertTrue(transparentCheck(c,1000));
 	}
 };
 
@@ -1173,6 +1203,7 @@ class superellipsoid_test : public Test {
 	    s = new SuperEllipsoid(0.2,0.2,100,0.0001,NULL);
 	    s->transform(Matrix::matrixScale(Vector(10,30,40)));
 	    assertTrue(normalCheck(s,1000));
+	    assertTrue(transparentCheck(s,1000));
 	}
 };
 
