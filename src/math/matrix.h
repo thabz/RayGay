@@ -127,15 +127,15 @@ class Matrix {
 inline
 Vector Matrix::operator*(const Vector &v) const {
 
-    double prod[4] = { 0,0,0,0 };
+    double prod[3];
+    double div;
     const double *m = _matrix;
 
     prod[0] = m11*v[0] + m12*v[1] + m13*v[2] + m14;
     prod[1] = m21*v[0] + m22*v[1] + m23*v[2] + m24;
     prod[2] = m31*v[0] + m32*v[1] + m33*v[2] + m34;
-    prod[3] = m41*v[0] + m42*v[1] + m43*v[2] + m44;
-
-    double div = 1.0 / prod[3];
+    div     = m41*v[0] + m42*v[1] + m43*v[2] + m44;
+    div = 1.0 / div;
 
     return Vector(prod[0]*div,prod[1]*div,prod[2]*div);
 }
