@@ -15,24 +15,26 @@ linesegment line1 0 0 0    0 500 0
 
 material green
 diffuse 0.2 0.8 0.2
-kd 0.9
+kd 0.5
 specular 1.0 1.0 1.0
-ks 0.1
-specpow 20
+ks 0.5
+specpow 30
 
 material red 
 diffuse 0.8 0.2 0.2
-kd 0.9
+kd 0.5
 specular 1.0 0.2 0.2
-ks 0.0
+ks 0.5
 specpow 30
 
-sphere red 100   0 50 0
+#sphere red 100   0 50 0
 
 box green -300 -200 -300    300 -150 300
 
-cylinder red 100    0 -150 0     0 50 0 
+#cylinder red 100    0 -150 0     0 50 0 
 
-linesegment line1 -300 -200 300    -300 300 300
-spiral spiral1 line1 20 3 0
+linesegment line1 0 -100 0    0 300 0
+spiral spiral1 line1 50 3 0
+spiral spiral2 line1 50 3 0.5
 necklace green spiral1 20 30
+necklace red spiral2 20 30
