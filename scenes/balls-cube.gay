@@ -1,0 +1,82 @@
+
+renderer photonrenderer
+
+camera { position <600,550,1000>
+         up <0,1,0> 
+         lookat <0,0,0> 
+	 fov 45
+	 aa 4
+}
+
+photonmap {
+ globalphotons 1000000
+ causticphotons 10000
+ estimateradius 20
+ estimatesamples 300
+ finalgatherrays 100
+ cachetolerance 0.1
+}
+
+
+image { width 1024 aspect 4 3 }
+
+background <0.0,0.0,0.0,1.0>
+
+/* light { point <100,1300,1300> power <1,1,1> }  */
+ light { spot <1000,5000,1300> <0,0,0> 7 5 power <1000000,1000000,1000000> } 
+
+ $white = material {
+     diffuse <1,1,1>
+     kd 1.0
+     specular <1.0,1.0,1.0>
+     ks 0.0
+     kt 0.0
+     specpow 30
+ }
+
+ $box = group {
+                 sphere { $white 5 <-40,0,-40> }
+		 cylinder { $white 5 <-40,-300,-40> <-40,0,-40> }
+                 sphere { $white 5 <40,0,-40> }
+		 cylinder { $white 5 <40,-300,-40> <40,0,-40> }
+                 sphere { $white 5 <-40,0,40> }
+		 cylinder { $white 5 <-40,-300,40> <-40,0,40> }
+                 sphere { $white 5 <40,0,40> }
+		 cylinder { $white 5 <40,-300,40> <40,0,40> }
+
+		 cylinder { $white 5 <-40,0,-40> <40,0,-40> }
+		 cylinder { $white 5 <-40,0,40> <40,0,40> }
+		 cylinder { $white 5 <40,0,-40> <40,0,40> }
+		 cylinder { $white 5 <-40,0,-40> <-40,0,40> }
+
+                 box { $white <-40,-300,-40> <40,5,40>}
+
+                 box { $white <-45,-300,-40> <45,0,40>}
+                 box { $white <-40,-300,-45> <40,0,45>}
+              }
+
+$x = -1200
+repeat (30) {
+    $z = -1200
+    repeat (30) {
+       $topy = random(200,300)
+	   object $box translate <$x,$topy,$z>
+/*       box { $white <$x+10,-100,$z+10> <$x + 100, $topy, $z+100>}*/
+
+       if (random(1) < 0.3) {
+       sphere {
+          material {
+            diffuse <random(1),random(1),random(1)>
+            kd 0.4
+            specular <1.0,1.0,1.0>
+            ks 0.6
+            specpow 30
+	   }
+           30 <0,0,0>
+           } translate <$x,$topy+35,$z>
+       }
+       
+       $z = 100 + $z
+    }
+    $x = 100 + $x
+}
