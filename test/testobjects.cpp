@@ -544,6 +544,7 @@ void csg_test() {
     assert(iNormal(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,1));
     
     solids.clear();
+    // A group of ball that all intersect
     for(int i = 0; i <= 100; i++) {
 	solids.push_back(new Sphere(Vector(0,0,i),2,NULL));
     }
@@ -552,6 +553,11 @@ void csg_test() {
     assert(iNormal(csg,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
     assert(iPoint(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-2));
     assert(iNormal(csg,Vector(0,0,-1000),Vector(0,0,1)) == Vector(0,0,-1));
+    assert(intersects(csg,Vector(0,0,50),Vector(0,0,-1)));
+
+    assert(iPoint(csg,Vector(0,0,50),Vector(0,0,1)) == Vector(0,0,102));
+    assert(iNormal(csg,Vector(0,0,50),Vector(0,0,1)) == Vector(0,0,1));
+
     all.clear();
     ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
     csg->allIntersections(ray,all);
@@ -560,6 +566,7 @@ void csg_test() {
     assert(all[1].getPoint() == Vector(0,0,-2));
 
     solids.clear();
+    // A group that doesn't intersect
     for(int i = 0; i <= 100; i++) {
 	solids.push_back(new Sphere(Vector(0,0,i),0.25,NULL));
     }
