@@ -1,6 +1,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <list>
 
 #include "bsp.h"
 #include "object.h"
@@ -25,9 +26,34 @@ void BSP::prepare() {
 	// Find the cutplane_dimension and cutplane_value
 	BoundingBox bbox = enclosure();
 	//std::cout << bbox << std::endl;
-	cutplane_dimension = largestDimension(bbox);
-	cutplane_value = ((bbox.maximum()[cutplane_dimension]) + 
-                          (bbox.minimum()[cutplane_dimension])) / 2.0;
+	//cutplane_dimension = largestDimension(bbox);
+	
+	/*cutplane_value = ((bbox.maximum()[cutplane_dimension]) + 
+                          (bbox.minimum()[cutplane_dimension])) / 2.0;*/
+
+	//cutplane_value = median(cutplane_dimension);
+
+	Vector best_measure = Vector(0,HUGE_DOUBLE,0);
+	int best_dim = -1;
+	double best_val = 1;
+	for(int i = 0; i < 3; i++) {
+	    double val = median(i);
+	    Vector measure = measureSplit(i,val);
+	    if (measure[1] < best_measure[1] &&
+		measure[0] <  objects.size() &&
+		measure[2] <  objects.size()) {
+		best_dim = i;
+		best_val = val;
+		best_measure = measure;
+	    }
+	}
+	if (best_dim != -1) {
+	    cutplane_dimension = best_dim;
+	    cutplane_value = best_val;
+	} else {
+	    cutplane_dimension = largestDimension(bbox);
+	    cutplane_value = median(cutplane_dimension);
+	}
 
 	lower = new BSP();
 	higher = new BSP();
@@ -35,17 +61,21 @@ void BSP::prepare() {
 	unsigned int size = objects.size();
 
 	// Put all objects into lower- or higher_objects
+	int l = 0; int m = 0; int h = 0;
 	for(unsigned int i = 0; i < size; i++) {
 	    object* obj = objects[i];
 	    BoundingBox bbox = obj->boundingBoundingBox();
 	    int cut_val = bbox.cutByPlane(cutplane_dimension, cutplane_value);
 	    if (cut_val == -1) {
 		lower->addObject(obj);
+		l++;
 	    } else if (cut_val == 1) {
 		higher->addObject(obj);
+		h++;
 	    } else {
 		lower->addObject(obj);
 		higher->addObject(obj);
+		m++;
 	    }
 	}
 	
@@ -55,6 +85,7 @@ void BSP::prepare() {
 	    delete lower;
 	    delete higher;
 	} else {
+	    std::cout << size << ": " << l << " " << m << " " << h << std::endl;
 	    objects.clear();
 	    assert(objects.size() == 0);
 	    // Recursive prepare()
@@ -81,6 +112,42 @@ Intersection BSP::intersectForShadow(const Ray& ray, const object* hint) const {
     } else {
         return intersectForShadow(ray);
     }
+}
+
+double BSP::median(int d) const {
+    std::list<double> L;
+    for(unsigned int i = 0; i < objects.size(); i++) {
+	    object* obj = objects[i];
+	    BoundingBox bbox = obj->boundingBoundingBox();
+	    double c = (bbox.maximum()[d] + bbox.minimum()[d]) / 2.0;
+	    L.push_back(c);
+    }
+    L.sort();
+    unsigned int size = L.size();
+    assert(size == objects.size());
+    // Return L[size/2]
+    unsigned int i = 0;
+    for (std::list<double>::iterator h = L.begin(); h != L.end(); h++) {
+	if (i++ > size/2) return *h;
+    }
+    exit(0);
+}
+
+Vector BSP::measureSplit(int dim, double val) const {
+    Vector result = Vector(0,0,0);
+    for(unsigned int i = 0; i < objects.size(); i++) {
+	object* obj = objects[i];
+	BoundingBox bbox = obj->boundingBoundingBox();
+	int cut_val = bbox.cutByPlane(dim, val);
+	if (cut_val == -1) {
+	    result[0]++;
+	} else if (cut_val == 1) {
+	    result[2]++;
+	} else {
+	    result[1]++;
+	}
+    }
+    return result;
 }
 
 /*******************

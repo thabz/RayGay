@@ -44,6 +44,8 @@ class BSP : public SpaceSubdivider {
 
 	/// Returns [0..2] for x, y or z being the widest side of the box.
 	static int BSP::largestDimension(const BoundingBox& box);
+	double median(int dimension) const;
+	Vector measureSplit(const int dim, const double val) const;
 	Intersection intersect(const Ray&,double,double) const;
 	Intersection intersect_recurse(const Ray&,double,double) const;
 };
