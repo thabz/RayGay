@@ -172,15 +172,16 @@ const Intersection BSP::intersect(const Ray& ray, const double min_t, const doub
         Intersection tmp;
 	double cur_t = HUGE_DOUBLE;
 	for (unsigned int i=0; i < objects.size(); i++) {
-	    objects[i]->intersect(ray);
-	    tmp = *(objects[i]->getLastIntersection());
-	    if (tmp.isIntersected() && tmp.getT() < cur_t) {
-		result = tmp;
-		cur_t = tmp.getT();
+	    if (objects[i]->intersect(ray)) {
+		tmp = *(objects[i]->getLastIntersection());
+		if (tmp.getT() < cur_t) {
+		    result = tmp;
+		    cur_t = tmp.getT();
+		}
 	    }
 	}
     } else {
-        result = intersect_recurse(ray,min_t,max_t);
+	result = intersect_recurse(ray,min_t,max_t);
     }
     return result;
 }
