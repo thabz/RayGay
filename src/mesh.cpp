@@ -81,6 +81,9 @@ void Mesh::addTriangle(const Vector* c) {
     tris.push_back(tri);
     tri->normal_idx = t->normali;
 
+    triangles.push_back(t);
+    t->setTri(triangles.size() - 1);
+
     // Insert edges
     for(int i = 0; i < 3; i++) {
 	int j = (i + 1) % 3;
@@ -94,11 +97,13 @@ void Mesh::addTriangle(const Vector* c) {
 	    edge->triangle[1] = tri;
 	}
 	tri->edge[i] = edge;
+    }
+    
+    // Add to tris-list at each vertex
+    for(int i = 0; i < 3; i++) {
 	vertices[t->vertex[i]].tris.push_back(tri);
     }
     
-    triangles.push_back(t);
-    t->setTri(triangles.size() - 1);
 }
 
 void Mesh::computeAdjacentTris() {
@@ -155,7 +160,8 @@ void Mesh::computeTriAreas() {
 int Mesh::findExistingCorner(const Vector* c) const {
     unsigned int size = corners.size();
     for(unsigned int i = 0; i < size; i++) {
-	if ((corners[i] - *c).norm() < 0.5) return i;
+	//if ((corners[i] - *c).norm() < 0.5) return i;
+	if (corners[i] == *c) return i;
     }
     return -1;
 }
@@ -333,6 +339,8 @@ void Mesh::test() {
     torus.prepare();
 
     assert(torus.corners.size() == 16*10);
+    assert(torus.vertices.size() == 16*10);
+
     for(unsigned int i = 0; i < torus.tris.size(); i++) {
 	Tri* tri = torus.tris[i];
 	assert(tri->normal_idx != -1);
@@ -343,6 +351,10 @@ void Mesh::test() {
 	}
     }
 
+    for(unsigned int i = 0; i < torus.vertices.size(); i++) {
+	Vertex v = torus.vertices[i];
+	assert(v.tris.size() == 6);
+    }
 
     cout << "Mesh::test() done." << endl;
 }

@@ -113,6 +113,12 @@ void Cylinder::test() {
     c.prepare();
     assert(c.corners.size() == 5*2 + 2);
 
+    Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
+    Cylinder torus = Cylinder(circle1,100,16,10,Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
+    torus.prepare();
+
+    assert(torus.corners.size() == 16*10);
+
     cout << "Cylinder::test() done." << endl;
 }
 
