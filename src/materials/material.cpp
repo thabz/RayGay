@@ -119,3 +119,6 @@ void Material::enableGloss(unsigned int gloss_rays, double gloss_angle) {
     this->gloss_angle_rad = DEG2RAD(gloss_angle);
 }
 
+bool Material::requiresUV() const {
+    return texture_diffuse != NULL || texture_bump != NULL;
+}

@@ -64,6 +64,8 @@ class Material {
 	void setNoShadow(bool b) { no_shadow = b; };
 	bool noShadow() const { return no_shadow; };
 
+	bool requiresUV() const;
+
     protected:
 	double getBumpValue(double u, double v) const;
 	Vector2 scaleUV(const Vector2& v) const;

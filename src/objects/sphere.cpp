@@ -5,6 +5,7 @@
 #include "sphere.h"
 #include "ray.h"
 #include "intersection.h"
+#include "materials/material.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
 #include "image/rgb.h"
@@ -39,7 +40,14 @@ Intersection Sphere::_fullIntersect(const Ray& ray, const double t) const {
     Vector p = ray.getPoint(t);
     Vector n = p - center;
     n.normalize();
-    Vector2 uv = Vector2(0,0); //getUV(p);
+    Vector2 uv;
+    if (getMaterial()->requiresUV()) {
+	cout << "Req UV" << endl;
+    }
+    if (getMaterial() != NULL && getMaterial()->requiresUV()) {
+	cout << "Getting UV" << endl;
+	uv = getUV(p);
+    } 
     return Intersection(p,t,n,uv);
 }
 
