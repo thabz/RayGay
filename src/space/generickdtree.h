@@ -81,8 +81,8 @@ class GenericKdTree {
 	void findBestSplitPlane(uint size, const BoundingBox& bbox, CostResult& result, int split_dim) const;
 
 
-	BoundedObject<ObjectType>** /*restrict*/ left_bobs;
-	BoundedObject<ObjectType>** /*restrict*/ right_bobs;
+	BoundedObject<ObjectType>** restrict left_bobs;
+	BoundedObject<ObjectType>** restrict right_bobs;
 
 	std::vector<ObjectType*>* added_objects;
 };
