@@ -20,4 +20,4 @@ TODO:
 * Support for separate night and day textures.
 * Mathematical cylinder
 + Bicubic interpolation of textures
-* Support for u,v coordinates in meshes
++ Support for u,v coordinates in meshes
