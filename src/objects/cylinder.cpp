@@ -20,12 +20,10 @@ Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, bool h
     this->has_caps = has_caps;
 
     Vector axis = end - begin;
-    Matrix scale = Matrix::matrixScale(Vector(radius,radius,axis.length()));
-    Matrix translation = Matrix::matrixTranslate(begin);
-    Matrix rotation = Matrix::matrixOrient(axis);
-    rotation = rotation.inverse();
 
-    transform(scale * rotation * translation);
+    transform(Matrix::matrixScale(Vector(radius,radius,axis.length())));
+    transform(Matrix::matrixOrient(axis).inverse());
+    transform(Matrix::matrixTranslate(begin));
 }
 
 void Cylinder::transform(const Matrix& m) {
