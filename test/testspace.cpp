@@ -128,14 +128,14 @@ void bsp_test() {
     for(int x = -10; x <= 10; x++) {
        for(int y = -10; y <= 10; y++) {
            for(int z = -10; z <= 10; z++) {
-	      Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40));
+	      Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,new Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40));
 	      bsp.addObject(sx);
 	   }
  	}
     }
 
 
-    bsp.addObject(new Sphere(Vector(0,-500,0),10,Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)));
+    bsp.addObject(new Sphere(Vector(0,-500,0),10,new Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)));
 
     bsp.prepare();
 
@@ -198,14 +198,14 @@ void kdtree_test() {
     for(int x = -10; x <= 10; x++) {
        for(int y = -10; y <= 10; y++) {
            for(int z = -10; z <= 10; z++) {
-	      Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40));
+	      Sphere* sx = new Sphere(Vector(x*20,y*20+50,z*20),10,new Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40));
 	      bsp.addObject(sx);
 	   }
  	}
     }
 
 
-    bsp.addObject(new Sphere(Vector(0,-500,0),10,Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)));
+    bsp.addObject(new Sphere(Vector(0,-500,0),10,new Material(RGB(0.8,0.8,0.8),0.7,RGB(1.0,1.0,1.0),0.80,40)));
 
     bsp.prepare();
 

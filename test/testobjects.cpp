@@ -23,8 +23,19 @@
 #include "paths/linesegment.h"
 #include "paths/circle.h"
 
+bool intersects(Object* o, const Vector& origin, const Vector& dir) {
+    Ray ray = Ray(origin,dir,1);
+    return o->intersect(ray);
+}
+
+Vector iPoint(Object* o, const Vector& origin, const Vector& dir) {
+    Ray ray = Ray(origin,dir,1);
+    assert(o->intersect(ray));
+    return o->getLastIntersection()->getPoint();
+}
+
 void sphere_test() {
-    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Sphere s = Sphere(Vector(0,0,0),10.0,m);
     assert(s.inside(Vector(0,0,0)));
     assert(s.inside(Vector(9,0,0)));
@@ -85,7 +96,7 @@ void sphere_test() {
 }
 
 void boolean_test() {
-    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Sphere* s1 = new Sphere(Vector(-10,0,0),30.0,m);
     Sphere* s2 = new Sphere(Vector(10,0,0),30.0,m);
 
@@ -221,7 +232,7 @@ void boolean_test() {
 }
 
 void box_test() {
-    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Box* b = new Box(Vector(-1,-1,-1),Vector(1,1,1),m);
     b->prepare();
     assert(b->getVertices()->size() == 8);
@@ -281,14 +292,14 @@ void mesh_test() {
 }
 
 void tetrahedron_test() {
-    Material mat = Material(RGB(.0,.0,.0),RGB(.0,.0,.0));
+    Material* mat = new Material(RGB(.0,.0,.0),RGB(.0,.0,.0));
     Tetrahedron t = Tetrahedron(Vector(0,0,0),100,mat);
     assert(t.getEdges()->size() == 6);
     assert(t.getVertices()->size() == 4);
 }
 
 void tesselation_test() {
-    Material mat = Material(RGB(.0,.0,.0),RGB(.0,.0,.0));
+    Material* mat = new Material(RGB(.0,.0,.0),RGB(.0,.0,.0));
 
     // 4 triangles
     Tessalation* t = new Tessalation(Vector(0,0,0),100,0,mat);
@@ -312,7 +323,7 @@ void tesselation_test() {
 
 void extrusion_test() {
 
-    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     // Check bounds 
     Vector o = Vector(0,0,0);
     Vector top = Vector(10,0,0);
@@ -344,7 +355,7 @@ void extrusion_test() {
     assert(c->getVertices()->size() == 5*2 + 2);
 
     Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
-    Extrusion torus = Extrusion(circle1,100,16,10,Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
+    Extrusion torus = Extrusion(circle1,100,16,10,new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
     torus.prepare();
 
     assert(torus.getVertices()->size() == 16*10);
@@ -352,7 +363,7 @@ void extrusion_test() {
 }
 
 void cylinder_test() {
-    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Cylinder* cyl = new Cylinder(Vector(0,0,0),Vector(0,0,10),10,m);
 
     /* Test inside() and onEdge() */
@@ -438,7 +449,7 @@ void test_3ds() {
 
 void objectgroup_test() {
     // Test clone()
-    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Linesegment segment = Linesegment(Vector(0,0,0),Vector(0,0,100)); 
     Necklace* g1 = new Necklace(segment,10,10,m);
     SceneObject* g2 = g1->clone();
@@ -459,7 +470,7 @@ void objectgroup_test() {
 }
 
 void torus_test() {
-    Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Torus* t = new Torus(10,1,m);
 
     // inside
