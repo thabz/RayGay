@@ -5,6 +5,7 @@
 #include "math/vector.h"
 #include "spacesubdivider.h"
 #include "boundingbox.h"
+#include "objects/object.h"
 #include <vector>
 
 class Ray;
@@ -19,7 +20,9 @@ class Object;
 class KdTree : public SpaceSubdivider {
 
     public:
+	/// Constructor
 	KdTree();
+	/// Desctructor
 	virtual ~KdTree();
 	bool intersect(const Ray& ray) const; ///< Returns the nearest intersection
 	bool intersectPrimary(const Ray& ray) const; ///< Returns the nearest intersection
@@ -30,6 +33,7 @@ class KdTree : public SpaceSubdivider {
 	void addObject(Object* obj); ///< Place a object in the kd-tree 
 	void prepare();
 
+	/// The BoundingBox around all objects added to the tree
 	BoundingBox boundingBox() const { return world_bbox; };
 
     private:

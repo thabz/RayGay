@@ -11,7 +11,7 @@
 #include "objects/object.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
-#include "spacesubdivider.h"
+#include "space/spacesubdivider.h"
 #include "objects/objectcollection.h"
 #include "materials/material.h"
 

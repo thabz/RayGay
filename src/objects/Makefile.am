@@ -41,8 +41,8 @@ EXTRA_DIST = 3ds.h 		\
 	     heightfield.h	\
 	     isosurface.h	\
 	     mesh.h		\
-	     object.h		\
 	     necklace.h		\
+	     object.h		\
 	     objectcollection.h	\
 	     objectgroup.h	\
 	     sceneobject.h	\

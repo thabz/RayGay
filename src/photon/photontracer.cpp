@@ -5,7 +5,7 @@
 #include "photontracer.h"
 #include "causticsmap.h"
 #include "globalphotonmap.h"
-#include "spacesubdivider.h"
+#include "space/spacesubdivider.h"
 #include "scene.h"
 #include "objects/object.h"
 #include "ray.h"

@@ -6,7 +6,6 @@
 
 #include "intersection.h"
 #include "sceneobject.h"
-#include "spacesubdivider.h"
 
 class Matrix;
 class Ray;
@@ -14,6 +13,7 @@ class Vector;
 class Vector2;
 class BoundingBox;
 class Material;
+class SpaceSubdivider;
 
 /// The abstract superclass of all objects in the scene that can be rendered.
 
@@ -40,7 +40,7 @@ class Object : public SceneObject {
 	/// Prepares the object before rendering
 	virtual void prepare();
 
-	void addSelf(SpaceSubdivider* space) { space->addObject((Object*)this); };
+	void addSelf(SpaceSubdivider* space);
 
 	/// Returns last successful intersection
 	Intersection* getLastIntersection() const { return &last_intersection; }; 

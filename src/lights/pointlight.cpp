@@ -3,7 +3,7 @@
 #include "lights/lightinfo.h"
 #include "math/matrix.h"
 #include "intersection.h"
-#include "spacesubdivider.h"
+#include "space/spacesubdivider.h"
 #include "stats.h"
 
 Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {

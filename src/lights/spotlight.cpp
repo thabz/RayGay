@@ -2,7 +2,7 @@
 #include "lights/spotlight.h"
 #include "math/matrix.h"
 #include "intersection.h"
-#include "spacesubdivider.h"
+#include "space/spacesubdivider.h"
 #include "stats.h"
 #include "math/functions.h"
 #include "math/halton.h"

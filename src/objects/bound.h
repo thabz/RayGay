@@ -2,9 +2,8 @@
 #ifndef OBJECTS_BOUND_H
 #define OBJECTS_BOUND_H
 
+#include "space/kdtree.h"
 #include "objects/object.h"
-#include "spacesubdivider.h"
-#include "kdtree.h"
 
 class ObjectGroup;
 class Intersection;

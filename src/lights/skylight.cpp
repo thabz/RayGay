@@ -2,7 +2,7 @@
 #include "skylight.h"
 #include "math/functions.h"
 #include "intersection.h"
-#include "spacesubdivider.h"
+#include "space/spacesubdivider.h"
 
 Skylight::Skylight (double radius, int num) : Lightsource(Vector(0,0,0)) {
     this->radius = radius;

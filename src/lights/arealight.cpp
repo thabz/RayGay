@@ -4,7 +4,7 @@
 #include "lights/arealight.h"
 #include "paths/circle.h"
 #include "intersection.h"
-#include "spacesubdivider.h"
+#include "space/spacesubdivider.h"
 #include "stats.h"
 #include "math/vector.h"
 
