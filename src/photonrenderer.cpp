@@ -209,11 +209,13 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
  * This uses the IrradianceCache.
  */
 RGB PhotonRenderer::getDiffuseIrradiance(const Vector& point, const Vector& normal, const Vector& ray_dir) const {
+    double hmd;
+
+    return finalGather(point, normal, ray_dir, renderersettings->final_gather_rays, 0, &hmd);
 
     RGB irradiance = irradiance_cache->getEstimate(point,normal);
 
     if (irradiance.r() < 0) {
-	double hmd;
 	irradiance = finalGather(point, normal, ray_dir, renderersettings->final_gather_rays, 0, &hmd);
 	irradiance_cache->putEstimate(point,normal,irradiance,hmd);
     }
