@@ -1093,6 +1093,7 @@ class constants_test : public Test {
 
     public:
 	void run() {
+	    // Constants
 	    assertEqualF(M_SQRT3*M_SQRT3, 3);
 	    assertEqualF(M_SQRT3, sqrt(double(3)));
 	    assertEqualF(FRAC_1_6, 1.0 / 6.0);
@@ -1101,6 +1102,14 @@ class constants_test : public Test {
 	    assertEqualF(FRAC_2_3, 2.0 / 3.0);
 	    assertEqualF(FRAC_1_27, 1.0 / 27.0);
 	    assertEqualF(FRAC_1_54, 1.0 / 54.0);
+
+	    // SAME_SIGN
+	    assertTrue(SAME_SIGN(0,1));
+	    assertTrue(SAME_SIGN(1,2));
+	    assertTrue(SAME_SIGN(1,0));
+	    assertTrue(SAME_SIGN(-1,-2));
+	    assertFalse(SAME_SIGN(-1,0));
+	    assertFalse(SAME_SIGN(-1,2));
 	}
 };
 
