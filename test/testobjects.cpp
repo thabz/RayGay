@@ -567,6 +567,47 @@ void csg_test() {
     assert(! intersects(b5,r));
     r = Ray(Vector(0,0,0),Vector(0,0,1),1);
     assert(! intersects(b5,r));
+
+    // Test a hollow sphere
+    s1 = new Sphere(Vector(0,0,0),30,NULL);
+    s2 = new Sphere(Vector(0,0,0),29,NULL);
+    csg = new CSG(s1,CSG::DIFFERENCE,s2,NULL); // Make it hollow
+    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+    all = csg->allIntersections(ray);
+    assert(all.size() == 4);
+    assert(all[0].getPoint() == Vector(0,0,30));
+    assert(all[1].getPoint() == Vector(0,0,29));
+    assert(all[2].getPoint() == Vector(0,0,-29));
+    assert(all[3].getPoint() == Vector(0,0,-30));
+    assert(all[0].isEntering() == true);
+    assert(all[1].isEntering() == false);
+    assert(all[2].isEntering() == true);
+    assert(all[3].isEntering() == false);
+    assert(all[0].getNormal() == Vector(0,0,1));
+    assert(all[1].getNormal() == Vector(0,0,-1));
+    assert(all[2].getNormal() == Vector(0,0,1));
+    assert(all[3].getNormal() == Vector(0,0,-1));
+
+
+    // Test a hollow ellipsoid
+    Ellipsoid* e1 = new Ellipsoid(Vector(0,0,0),Vector(10,20,30),NULL);
+    Ellipsoid* e2 = new Ellipsoid(Vector(0,0,0),Vector(9,19,29),NULL);
+    csg = new CSG(e1,CSG::DIFFERENCE,e2,NULL);
+    ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+    all = csg->allIntersections(ray);
+    assert(all.size() == 4);
+    assert(all[0].getPoint() == Vector(0,0,30));
+    assert(all[1].getPoint() == Vector(0,0,29));
+    assert(all[2].getPoint() == Vector(0,0,-29));
+    assert(all[3].getPoint() == Vector(0,0,-30));
+    assert(all[0].getNormal() == Vector(0,0,1));
+    assert(all[1].getNormal() == Vector(0,0,-1));
+    assert(all[2].getNormal() == Vector(0,0,1));
+    assert(all[3].getNormal() == Vector(0,0,-1));
+    assert(all[0].isEntering() == true);
+    assert(all[1].isEntering() == false);
+    assert(all[2].isEntering() == true);
+    assert(all[3].isEntering() == false);
 }
 
 void solidbox_test() {
@@ -629,6 +670,16 @@ void ellipsoid_test() {
     assert(iNormal(e,Vector(0,0,1000),Vector(0,0,-1)) == Vector(0,0,1));
     assert(iPoint(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(10,0,0));
     assert(iNormal(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(1,0,0));
+
+    Ray ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
+    vector<Intersection> all = e->allIntersections(ray);
+    assert(all.size() == 2);
+    assert(all[0].getPoint() == Vector(0,0,30));
+    assert(all[0].getNormal() == Vector(0,0,1));
+    assert(all[1].getPoint() == Vector(0,0,-30));
+    assert(all[1].getNormal() == Vector(0,0,-1));
+    assert(all[0].isEntering());
+    assert(!all[1].isEntering());
 }
 
 int main(int argc, char *argv[]) {
