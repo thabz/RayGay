@@ -13,11 +13,11 @@
 #include <config.h>
 #endif
 
+#include <cstdlib>
+#include <ctime>
+#include <cstdio>
 #include <iostream>
-#include <stdlib.h>
 #include <vector>
-#include <time.h>
-#include <stdio.h>
 
 #include "stats.h"
 

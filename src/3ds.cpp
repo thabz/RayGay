@@ -1,8 +1,8 @@
 
 #include <iostream>
 #include <cassert>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <sys/stat.h>
 
 #include "3ds.h"
