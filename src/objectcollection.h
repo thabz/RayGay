@@ -14,6 +14,8 @@ class ObjectCollection {
 
 	/// Adds this or all subobjects to a space
 	virtual void addParts(SpaceSubdivider* space) = 0;
+
+	virtual void prepare() = 0;
 };
 
 #endif

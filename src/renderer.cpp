@@ -26,6 +26,7 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
     // Add all objectcollections in scene to spacesubdivider
     std::vector<ObjectCollection*> objectcols = scene->getObjectCollections();
     for (vector<ObjectCollection*>::iterator p = objectcols.begin(); p != objectcols.end(); p++) {
+	(*p)->prepare();
 	(*p)->addParts(space);
     }
 

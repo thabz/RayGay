@@ -11,12 +11,13 @@
 #include "boundingbox.h"
 #include "triangle.h"
 #include "edgekey.h"
+#include "objectcollection.h"
 
 class SpaceSubdivider;
 class Linesegment;
 
 /// An object consisting of a mesh of triangles
-class Mesh : public object {
+class Mesh : public ObjectCollection {
 
     public:
 	
@@ -65,6 +66,9 @@ class Mesh : public object {
 	
 	/// Destructor
 	virtual ~Mesh();
+	
+	/// Adds this or all subobjects to a space
+	void addParts(SpaceSubdivider* space);
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection & i) const;
@@ -74,7 +78,6 @@ class Mesh : public object {
 	virtual bool intersects(const BoundingBox& b) const;
 	/// The bounding box containing all faces of this mesh
 	virtual BoundingBox boundingBoundingBox() const;
-	virtual void getUV(const Intersection& intersection, double* u, double* v) const;
 
 	/// Add a triangle to the mesh
 	void addTriangle(const Vector* corners);
@@ -89,12 +92,13 @@ class Mesh : public object {
 	Vector normalAt(int i) { return normals[i]; };
 	Vector cornerAt(int i) { return corners[i]; };
 
+	void prepare();
+
     private:
 	MeshType meshType;
 	Material material;
 	mutable BoundingBox* _boundingBoundingBox;
-	virtual Intersection _intersect(const Ray& ray) const;
-	SpaceSubdivider* hierarchy;
+	//virtual Intersection _intersect(const Ray& ray) const;
 	bool prepared;
 	int findExistingCorner(const Vector* c) const;
 	void computeAdjacentTris();
@@ -108,8 +112,6 @@ class Mesh : public object {
 	std::vector<Vertex> vertices;
 	std::vector<Vector> corners;
 
-    protected:
-	void prepare();
 
 };
 

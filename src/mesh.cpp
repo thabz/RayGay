@@ -27,24 +27,21 @@ Mesh::Mesh(MeshType type, const Material& mat) {
     material = mat;
     _boundingBoundingBox = NULL;
     prepared = false;
-    hierarchy = NULL;
 }
 
 // ----------------------------------------------------------------------------
 Mesh::~Mesh() {
     delete _boundingBoundingBox;
-    delete hierarchy;
+}
+
+void Mesh::addParts(SpaceSubdivider* space) {
+    for(unsigned int i = 0; i < triangles.size(); i++) {
+	space->addObject(triangles[i]);
+    }
 }
 
 void Mesh::prepare() {
     if (prepared == true) return;
-
-    //hierarchy = new Hierarchy(boundingBoundingBox()); 
-    hierarchy = new BSP(); 
-    for (vector<Triangle*>::const_iterator p = triangles.begin(); p != triangles.end(); p++) {
-	hierarchy->addObject(*p);
-    }
-    hierarchy->prepare();
 
     computeAdjacentTris();
     computeInterpolatedNormals();
@@ -253,17 +250,6 @@ BoundingBox Mesh::boundingBoundingBox() const {
     return *_boundingBoundingBox;
 }
 
-// ----------------------------------------------------------------------------
-Intersection Mesh::_intersect(const Ray& ray) const {
-    return hierarchy->intersect(ray);
-}
-
-
-// ----------------------------------------------------------------------------
-void Mesh::getUV(const Intersection& intersection, double* u, double* v) const {
-    // TODO: Implement
-}
-
 std::vector<Vector>* Mesh::getVertices() {
     std::vector<Vector>* result = new std::vector<Vector>;
     for(unsigned int i = 0; i < corners.size(); i++) {
@@ -314,27 +300,31 @@ Mesh::Vertex::Vertex(int iV) {
 
 // ----------------------------------------------------------------------------
 void Mesh::test() {
+    BSP bsp = BSP();
+
     Material mat = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     Mesh mesh = Mesh(MESH_FLAT,mat);
     Vector v[] = {Vector(-1,1,1),Vector(1,1,1),Vector(0,-1,-1)};
     mesh.addTriangle(v);
     mesh.prepare();
+    mesh.addParts(&bsp);
+    bsp.prepare();
 
     assert(mesh.edgeMap.size() == 3);
 
     // Test intersection
     Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),0.0);
-    Intersection i = mesh.intersect(ray);
+    Intersection i = bsp.intersect(ray);
     assert(i.point == Vector(0,0,0));
     assert(i.intersected);
     assert(i.t == 100.0);
 
     ray = Ray(Vector(0,0,100),Vector(0,0,1),0.0);
-    i = mesh.intersect(ray);
+    i = bsp.intersect(ray);
     assert(!i.intersected);
 
     ray = Ray(Vector(0,0,-100),Vector(0,0,-1),0.0);
-    i = mesh.intersect(ray);
+    i = bsp.intersect(ray);
     assert(!i.intersected);
 
     // Test torus
@@ -352,7 +342,7 @@ void Mesh::test() {
 	for(unsigned int j = 0; j < 3; j++) {
 	   assert(tri->interpolated_normal[j] != -1);
 	   assert(tri->vertex[j] != -1);
-	   for (int k = 0; k < 3; k++) {
+	   for (unsigned int k = 0; k < 3; k++) {
 	       if (k != j) {
 		   assert(tri->interpolated_normal[k] != tri->interpolated_normal[j]);
 	       }

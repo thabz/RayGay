@@ -25,6 +25,8 @@ class Necklace : public ObjectCollection {
 	/// Adds this or all subobjects to a space
 	void addParts(SpaceSubdivider* space);
 
+	void prepare() {};
+
     private:
 	std::vector<object*> objects;
 	int _num;
