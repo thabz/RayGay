@@ -777,6 +777,39 @@ class brents_method : public Test  {
 	}
 };
 
+class regula_falsi : public Test  {
+    public:
+	void run() {
+	    sinFunc my_sin = sinFunc();
+	    polyFunc my_poly = polyFunc();
+	    double root;
+
+	    // sin(x)
+	    RootFinder rf = RootFinder(RootFinder::REGULA_FALSI,0.001,&my_sin);
+            assertTrue(rf.solve(M_PI-0.5, M_PI+0.5, &root));
+	    assertTrue(fabs(my_sin(root)) < 0.001);
+            assertTrue(rf.solve(M_PI-0.01, 2*M_PI-0.01, &root));
+	    assertTrue(fabs(my_sin(root)) < 0.001);
+            assertTrue(rf.solve(M_PI-0.5, M_PI+0.1, &root));
+	    assertTrue(fabs(my_sin(root)) < 0.001);
+            assertFalse(rf.solve(M_PI+0.1, M_PI+0.2, &root));
+            assertFalse(rf.solve(M_PI/2.0-0.1, M_PI/2.0+0.2, &root));
+
+	    // (x-4)*(x-6)*(x+7)
+	    rf = RootFinder(RootFinder::REGULA_FALSI,EPSILON,&my_poly);
+	    assertTrue(rf.solve(3.9,4.2,&root));
+	    assertTrue(IS_EQUAL(root,4.0));
+	    assertTrue(IS_ZERO(my_poly(root)));
+	    assertTrue(rf.solve(5.2,6.4,&root));
+	    assertTrue(IS_EQUAL(root,6.0));
+	    assertTrue(IS_ZERO(my_poly(root)));
+	    assertTrue(rf.solve(-10,-2,&root));
+	    assertTrue(IS_EQUAL(root,-7.0));
+	    assertTrue(IS_ZERO(my_poly(root)));
+
+	}
+};
+
 class bisection : public Test  {
     public:
 	void run() {
@@ -820,13 +853,15 @@ class rootfinding_test: public Test  {
 	    double tole = EPSILON;
 	    RootFinder brent = RootFinder(RootFinder::BRENTS_METHOD,tole,&my_sin);
 	    RootFinder bisec = RootFinder(RootFinder::BISECTION,tole,&my_sin);
+	    RootFinder false1 = RootFinder(RootFinder::REGULA_FALSI,tole,&my_sin);
 
 	    cout << "Brent, sin: " << brent.solve(M_PI-0.7, M_PI+0.5, &root) << endl;
 	    cout << "Bisec, sin: " << bisec.solve(M_PI-0.7, M_PI+0.5, &root) << endl;
+	    cout << "Regula, sin: " << false1.solve(M_PI-0.7, M_PI+0.5, &root) << endl;
 
 	    RootFinder brent2 = RootFinder(RootFinder::BRENTS_METHOD,tole,&my_poly);
 	    RootFinder bisec2 = RootFinder(RootFinder::BISECTION,tole,&my_poly);
-	    RootFinder false2 = RootFinder(RootFinder::FALSE_POSITION,tole,&my_poly);
+	    RootFinder false2 = RootFinder(RootFinder::REGULA_FALSI,tole,&my_poly);
 
 	    cout << "Brent, poly: " << brent2.solve(M_PI, 4.26, &root) << endl;
 	    cout << "Bisec, poly: " << bisec2.solve(M_PI, 4.26, &root) << endl;
@@ -1087,6 +1122,7 @@ int main(int argc, char *argv[]) {
     suite.add("Solve quartic",new solve_quartic_test());
     suite.add("Brent's method",new brents_method());
     suite.add("Bisection",new bisection());
+    suite.add("Regula falsi",new regula_falsi());
     suite.add("Polynomials",new polynomials());
     suite.add("Sturm sequence",new sturm_sequence_test());
     suite.add("Quaternion",new quaternion_test());

@@ -81,36 +81,36 @@ int RootFinder::bisection(double t_begin, double t_end, double* root) {
  *
  * @see http://mathworld.wolfram.com/BrentsMethod.html
  */
-int RootFinder::brents_method(double x1, double x3, double* root) {
-    double x2;
+int RootFinder::brents_method(double a, double c, double* root) {
+    double b;
     double R,S,T;
     double P,Q;
-    double fx1,fx2,fx3;
+    double fa,fb,fc;
 
-    x2 = 0.5 * (x1+x3);
+    b = 0.5 * (a+c);
 
-    fx1 = f(x1);
-    fx2 = f(x2);
-    fx3 = f(x3);
+    fa = f(a);
+    fb = f(b);
+    fc = f(c);
 
-    if (SAME_SIGN(fx1, fx3))
+    if (SAME_SIGN(fa, fc))
 	return false;
 
     uint i = 3;
-    T = fx1 / fx3;
+    T = fa / fc;
     while(i++ < MAX_ITER) {
 	
-	R = fx2 / fx3;
-	S = fx2 / fx1;
+	R = fb / fc;
+	S = fb / fa;
 	
-	P = S*(T*(R-T)*(x3-x2)-(1-R)*(x2-x1));
+	P = S*(T*(R-T)*(c-b)-(1-R)*(b-a));
 	Q = (T-1)*(R-1)*(S-1);
 
-	x2 = x2 + (P / Q);
+	b = b + (P / Q);
 
-	fx2 = f(x2);
-	if (fabs(fx2) < tolerance) {
-	    *root = x2;
+	fb = f(b);
+	if (fabs(fb) < tolerance) {
+	    *root = b;
 	    return i;
 	}
     }
