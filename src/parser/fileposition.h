@@ -20,6 +20,8 @@ class FilePosition {
 	    this->line_num = 0;
 	}
 
+	~FilePosition() {}
+
 	string getFilename() const { return filename; };
 	unsigned int getLineNum() const { return line_num; };
 
