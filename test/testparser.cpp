@@ -54,8 +54,19 @@ void test_vector_ops() {
     delete p;
 }
 
+void test_functions() {
+    Parser* p = new Parser("scenes/functions.gay");
+    p->parse();
+    p->execute();
+    assert_equal(lookup_float("a"),5);
+
+    delete p;
+
+}
+
 int main(int argc, char *argv[]) {
     test_vector_ops();
     test_float_ops();
+    test_functions();
     return EXIT_SUCCESS;
 }
