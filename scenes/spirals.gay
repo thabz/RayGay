@@ -1,0 +1,30 @@
+
+include materials.gay
+
+renderer raytracer
+
+camera-position 300 1000 1500
+camera-up 0 1 0
+camera-lookat 0 0 0
+camera-field-of-view 45
+camera-aa 0
+
+image-ratio 4 3
+image-width 640
+
+background rgba 0.1 0.1 0.3 1.0
+
+light area 2000 2800 1500 -1 -1 -0.5 3000000 3000000 3000000 100 50 0.01
+#light point 2000 2800 1500 3000000 3000000 3000000
+
+circle $circle 0 200 0 400 0 1 0
+spiral $spiral0 $circle 100 12 0
+
+spiral $spiral1 $spiral0 50 200 0
+spiral $spiral2 $spiral0 50 200 0.5
+
+necklace $blue $spiral1 4000 15
+necklace $red $spiral2 4000 15
+
+box $dullgreen -3000 -50 -3000    3000 0 3000
+
