@@ -15,7 +15,7 @@
 #define VERBOSE
 #define SANITY_CHECK
 
-#define KD_TREE_MAX 8
+#define KD_TREE_MAX 2
 #define KD_TREE_MAX_DEPTH 100
 
 KdTree::KdTree() {
