@@ -18,4 +18,6 @@ Necklace::Necklace(const Path* path, int num, double r, const Material* material
 	Sphere* s = new Sphere(c[i],r,material);
 	addObject(s);
     }
+
+    delete [] c;
 }
