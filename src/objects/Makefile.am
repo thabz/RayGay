@@ -11,6 +11,7 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 		       bound.cpp	\
 		       bound.h		\
 		       box.cpp		\
+		       csg.cpp		\
 		       cylinder.cpp	\
 		       extrusion.cpp	\
 		       heightfield.cpp	\
@@ -38,6 +39,7 @@ EXTRA_DIST = 3ds.h 		\
              booleanoperand.h	\
 	     bound.h		\
 	     box.h		\
+	     csg.h		\
 	     cylinder.h		\
 	     extrusion.h	\
 	     heightfield.h	\
@@ -48,6 +50,7 @@ EXTRA_DIST = 3ds.h 		\
 	     objectgroup.h	\
 	     ply.h		\
 	     sceneobject.h	\
+	     solid.h		\
 	     sor.h		\
 	     sphere.h		\
 	     teapot.h		\
