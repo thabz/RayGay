@@ -5,7 +5,6 @@
 
 #include <stdlib.h>
 #include <iostream>
-#include <cassert>
 
 #include "math/vector.h"
 #include "math/vector2.h"
@@ -18,8 +17,6 @@ using namespace std;
 class vector_test : public Test {
 
     public:
-	vector_test(string name) : Test(name) {};
-
 	void run() {
 	    /*
 	       cout << "Size of short: " << sizeof(short) << endl;
@@ -139,7 +136,6 @@ class vector_test : public Test {
 
 class vector2_test : public Test {
     public:
-	vector2_test(string name) : Test(name) {};
 	void run() {
 	    Vector2 v = Vector2(1.0,2.0);
 	    assertTrue(v[0] == 1);
@@ -159,7 +155,6 @@ class vector2_test : public Test {
 
 class matrix_test : public Test {
     public:
-	matrix_test(string name) : Test(name) {};
 	void run() {
 	    /* Test inverse() */
 	    Matrix id,res;
@@ -281,7 +276,6 @@ class matrix_test : public Test {
 
 class binomial_test : public Test {
     public:
-	binomial_test(string name) : Test(name) {};
 	void run() {
 	    assertTrue(Math::binomialCoefficient(7,-3) == 0);
 	    assertTrue(Math::binomialCoefficient(-7,3) == 0);
@@ -300,7 +294,6 @@ class binomial_test : public Test {
 // See http://mathworld.wolfram.com/BernsteinPolynomial.html
 class bernstein_polynomial_test : public Test {
     public:
-	bernstein_polynomial_test(string name) : Test(name) {};
 	void run() {
 	    // 1
 	    assertTrue(IS_EQUAL(Math::bernsteinPolynomial(0,0,0.5),1));
@@ -328,7 +321,6 @@ class bernstein_polynomial_test : public Test {
 
 class clamp_test : public Test {
     public:
-	clamp_test(string name) : Test(name) {};
 	void run() {
 	    assertTrue(Math::clamp(0.5) == 0.5);
 	    assertTrue(Math::clamp(0.0) == 0.0);
@@ -341,7 +333,6 @@ class clamp_test : public Test {
 // Test cubic root
 class test_cubic_root : public Test {
     public:
-	test_cubic_root(string name) : Test(name) {};
 	void run() {
 	    assertTrue(IS_EQUAL(cbrt(125),5));
 	    assertTrue(IS_EQUAL(cbrt( 64),4));
@@ -379,8 +370,6 @@ bool check_roots(double A, double B, double C, double D, double* roots, int num)
 class solve_quartic_test : public Test {
 
     public:
-	solve_quartic_test(string name) : Test(name) {};
-
 	void run() {
 	    double roots[4];
 
@@ -468,7 +457,6 @@ class solve_quartic_test : public Test {
 
 class solve_cubic_test : public Test {
     public:
-	solve_cubic_test(string name) : Test(name) {};
 	void run() {
 	    double roots[3];
 
@@ -537,7 +525,6 @@ class solve_cubic_test : public Test {
 class solve_quadratic_test : public Test  {
 
     public:
-	solve_quadratic_test(string name) : Test(name) {};
 	void run() {
 	    double roots[2];
 	    assertTrue(Math::solveQuadratic(1,0,0,roots) == 1);
@@ -576,7 +563,6 @@ class solve_quadratic_test : public Test  {
 
 class perturb_vector_test : public Test  {
     public:
-	perturb_vector_test(string name) : Test(name) {};
 	void run() {
 	    double max_angle = DEG2RAD(10.0);
 	    for(int i = 0; i < 10000; i++) {
@@ -595,17 +581,17 @@ int main(int argc, char *argv[]) {
 
     TestSuite suite;
 
-    suite.add(new vector_test("Vector"));
-    suite.add(new vector2_test("Vector2"));
-    suite.add(new matrix_test("Matrix"));
-    suite.add(new binomial_test("Binomial"));
-    suite.add(new bernstein_polynomial_test("Bernstein"));
-    suite.add(new clamp_test("Clamp"));
-    suite.add(new solve_quartic_test("Solve quartic"));
-    suite.add(new solve_quadratic_test("Solve quadratic"));
-    suite.add(new solve_cubic_test("Solve cubic"));
-    suite.add(new test_cubic_root("Cubic root"));
-    suite.add(new perturb_vector_test("Perturb vector"));
+    suite.add("Vector",new vector_test());
+    suite.add("Vector2",new vector2_test());
+    suite.add("Matrix",new matrix_test());
+    suite.add("Binomial",new binomial_test());
+    suite.add("Bernstein",new bernstein_polynomial_test());
+    suite.add("Clamp",new clamp_test());
+    suite.add("Solve quartic",new solve_quartic_test());
+    suite.add("Solve quadratic",new solve_quadratic_test());
+    suite.add("Solve cubic",new solve_cubic_test());
+    suite.add("Cubic root",new test_cubic_root());
+    suite.add("Perturb vector",new perturb_vector_test());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {

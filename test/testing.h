@@ -13,7 +13,8 @@ using namespace std;
 class Test {
 
     public:
-	Test(string name);
+	Test();
+	void setName(string name);
 	virtual ~Test() {};
 	virtual void run() = 0;
 	void _assertTrue(bool expr, char* filename, int line, char* expr_code);
@@ -31,7 +32,7 @@ class Test {
 class TestSuite {
 
     public:
-	void add(Test* test);
+	void add(string name, Test* test);
 	void run();
 	void printStatus();
 	bool hasFailures();
@@ -61,15 +62,19 @@ bool TestSuite::hasFailures() {
     return result;
 }
 
-void TestSuite::add(Test* test) {
+void TestSuite::add(string name, Test* test) {
+    test->setName(name);
     tests.push_back(test);
 }
 
-Test::Test(string name) {
-    this->name = name;
+Test::Test() {
     total_asserts = 0;
     failed_asserts = 0;
     succeded_asserts = 0;
+}
+
+void Test::setName(string name) {
+    this->name = name;
 }
 
 void Test::_assertTrue(bool expr, char* filename, int line, char* expr_code) {
