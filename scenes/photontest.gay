@@ -9,7 +9,7 @@ photonmap globalphotons 100000
 photonmap causticphotons 0
 photonmap estimate-radius 20
 photonmap estimate-samples 300
-photonmap final-gather-rays 500
+photonmap final-gather-rays 50
 photonmap cache-tolerance 0.1
 
 camera-position 0 0 500
@@ -24,7 +24,7 @@ image-width 320
 background 0.1 0.1 0.3 1.0
 
 # light behind wall
-light point 0 290 0 600000 600000 600000
+light point 0 290 0 900000 900000 900000
 
 
 # Floor
@@ -32,7 +32,7 @@ box $dullwhite -300 -350 -300    300 -300 600
 # Ceiling 
 box $dullwhite -300 300 -300    300 350 600
 # Backwall
-box $dullblue -300 -300 -330    301 300 -300
+box $dullblue -301 -300 -330    300 300 -300
 # Left wall
 box $dullred -350 -300 -300    -300 300 600
 # Right wall
@@ -40,7 +40,8 @@ box $dullgreen 300 -300 -300    330 300 600
 # Wall behind camera
 box $dullwhite -300 -300 600    300 300 630
 
-#box $dullwhite -290 -300 -100    300 300 100 
+#box $dullyellow -100 -300 -100    100 100 100 rotate 0 1 0 10 translate -100 0 -100
 
-sphere $dullwhite 100 150 -200 -150 
+sphere $dullwhite 100 150 -200 250 
 
+box $dullwhite -300 -200 -300        300 -150   100

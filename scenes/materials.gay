@@ -61,6 +61,12 @@ specular 1.0 1.0 1.0
 ks 0.0
 specpow 0
 
+material $dullyellow
+diffuse 1.0 1.0 0.4
+kd 0.8
+specular 1.0 1.0 1.0
+ks 0.0
+specpow 0
 
 material $dullwhite
 diffuse 1.0 1.0 1.0
