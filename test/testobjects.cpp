@@ -42,7 +42,11 @@ bool intersects(Object* o, const Vector& origin, const Vector& dir) {
 
 Vector iPoint(Object* o, const Ray& ray) {
     double t = o->fastIntersect(ray);
-    assert(t > 0);
+    if (t <= 0) {
+	cout << "assert failed: t < 0!" << endl;
+	return Vector(-1,-1,-1);
+    }
+    //assert(t > 0);
     return o->fullIntersect(ray,t).getPoint();
 }
 
@@ -53,7 +57,10 @@ Vector iPoint(Object* o, const Vector& origin, const Vector& dir) {
 
 Vector iNormal(Object* o, const Ray& ray) {
     double t = o->fastIntersect(ray);
-    assert(t > 0);
+    if (t <= 0) {
+	cout << "assert failed: t < 0!" << endl;
+	return Vector(-1,-1,-1);
+    }
     Intersection i = o->fullIntersect(ray,t);
     return i.getNormal();
 }
