@@ -22,8 +22,9 @@ Renderer::Renderer(RendererSettings* settings, Scene* scene, KdTree* spc) {
 }
 
 /**
- * Render the scene into an image
- * TODO: Jitter the samples within the grid.
+ * Render the scene into an image.
+ *
+ * \todo Jitter the samples within the grid.
  * 
  * @param job The job to render
  */

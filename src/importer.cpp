@@ -154,7 +154,11 @@ Path* Importer::lookupPath(const string& path_name) {
 void Importer::registerMaterial(const string& name, Material* material) {
     materials[name] = material;
 }
-
+/**
+ * Parse a scene file.
+ *
+ * \todo Last object in a group is currently ignored...
+ */
 void Importer::parse(const string& filename) {
     std::ifstream stream(filename.c_str());
 
@@ -526,7 +530,7 @@ void Importer::parse(const string& filename) {
 	    throw_exception("Unknown keyword" + command);
 	}
 
-	// TODO: Last object in a group is currently ignored...
+	/// 
 	if (cur_object != NULL) {
 	    if (naming_object && grouping == 0) {
 		putNamedObject(object_name,cur_object);

@@ -12,7 +12,12 @@ class Intersection;
 class Ray;
 class Vector2;
 
-/// A cylinder object
+/** 
+ * A cylinder object
+ * 
+ * \todo Implement caps
+ * \todo Let Transformer class handle ray-transformations
+ */
 class Cylinder : public BooleanOperand {
 
     public:
