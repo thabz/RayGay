@@ -67,46 +67,29 @@ void testScene4() {
     //mat.setTexturemap("blueplasma.tga");
     mat.setRepeatX(10);
     mat.setRepeatY(4);
-    Sphere s1 = Sphere(Vector(200,50,200),130.0,mat);
-    Sphere s2 = Sphere(Vector(-200,50,200),130.0,mat);
-    Sphere s3 = Sphere(Vector(200,50,-200),130.0,mat);
-    Sphere s4 = Sphere(Vector(-200,50,-200),130.0,mat);
-    Sphere s5 = Sphere(Vector(0,150,0),130.0,mat);
-    //Extrusion c1 = Extrusion(Vector(0,0,0),Vector(0,200,0),130,10,MATERIAL_SHINY_RED);
+
+    Sphere* s1 = new Sphere(Vector(0,0,0),200.0,MATERIAL_SHINY_BLUE);
+    Sphere* s2 = new Sphere(Vector(0,0,0),180.0,MATERIAL_SHINY_BLUE);
+    Boolean* s = new Boolean(s1,Boolean::BOOLEAN_DIFFERENCE,s2,MATERIAL_SHINY_BLUE);
+    Cylinder* cx = new Cylinder(Vector(-300,0,0),Vector(300,0,0),120,MATERIAL_SHINY_BLUE);
+    Cylinder* cy = new Cylinder(Vector(0,-300,0),Vector(0,300,0),120,MATERIAL_SHINY_BLUE);
+    Cylinder* cz = new Cylinder(Vector(0,0,-300),Vector(0,0,300),120,MATERIAL_SHINY_BLUE);
+    Boolean* b1 = new Boolean(s,Boolean::BOOLEAN_DIFFERENCE,cz,MATERIAL_SHINY_BLUE);
+    Boolean* b2 = new Boolean(b1,Boolean::BOOLEAN_DIFFERENCE,cx,MATERIAL_SHINY_BLUE);
+    Boolean* b3 = new Boolean(b2,Boolean::BOOLEAN_DIFFERENCE,cy,MATERIAL_SHINY_BLUE);
+
+    Sphere* s3 = new Sphere(Vector(0,0,200),150.0,MATERIAL_SHINY_BLUE);
+    Boolean* b4 = new Boolean(s,Boolean::BOOLEAN_DIFFERENCE,s3,MATERIAL_SHINY_BLUE);
+    Sphere* s4 = new Sphere(Vector(0,200,0),150.0,MATERIAL_SHINY_BLUE);
+    Boolean* b5 = new Boolean(b4,Boolean::BOOLEAN_DIFFERENCE,s4,MATERIAL_SHINY_BLUE);
+    scene.addObject(b5);
+
+    Sphere* mid = new Sphere(Vector(0,0,0),30.0,MATERIAL_SHINY_RED);
+    scene.addObject(mid);
     
-/*    scene.addObject(&s1);
-    scene.addObject(&s2);
-    scene.addObject(&s3);
-    scene.addObject(&s4);
-    scene.addObject(&s5);
-  */  
-  //  scene.addObject(&c1);
-
-    Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
-    Spiral spiral = Spiral(&circle1,100,10);
-    Spiral spiral2 = Spiral(&spiral,30,100,0.5);
-
-    Extrusion* torus = new Extrusion(circle1,100,50,30,mat);
-    //scene.addObject(torus);
-
-    Tessalation* tet = new Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
-    Wireframe* wire = new Wireframe(tet,20.0,MATERIAL_SHINY_BLUE);
-    //scene.addObject(wire);
-
-    Vector points[5] = { Vector(100,-100,200),Vector(300,300,0),Vector(100,200,-500),Vector(-300,250,0),Vector(-200,200,300) };
-    BezierSpline* spline = new BezierSpline(points,5);
-    Extrusion* tube = new Extrusion(*spline,20,16,200,MATERIAL_SHINY_RED);
-    //scene.addObject(tube); 
-    for(int i = 0; i < 5; i++) {
-	Sphere* s = new Sphere(points[i],20.0,MATERIAL_SHINY_BLUE);
-	//scene.addObject(s); 
-    }
-
-    //Extrusion* tube = new Extrusion(spiral,10,16,200,MATERIAL_CHROME);
-    //scene.addObject(tube); 
-
     // Use this when making fog later.
     
+    /*
     for(int x = -1000; x <= 1000; x += 60) {
 	for(int z = -1000; z <= 1000; z += 60) {
 	    Box* b = new Box(Vector(x,0,z),40.0,40.0,40.0,MATERIAL_SHINY_BLUE);
@@ -114,12 +97,13 @@ void testScene4() {
 	    scene.addObject(s);
 	}
     }
-    
+    */
+
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
-    light1.setAttenuation(4000,3);
+   // light1.setAttenuation(4000,3);
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));
-    light3.setAttenuation(4000,3);
+    //light3.setAttenuation(4000,3);
     Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
     Arealight area1 = Arealight(Vector(-4000,4000,4000),Vector(1,-1,-1),1000,40,0.10);
     Arealight area2 = Arealight(Vector(4000,4000,4000),Vector(-1,-1,-1),1000,40,0.10);
@@ -129,7 +113,7 @@ void testScene4() {
     scene.addLight(&light1);
     scene.addLight(&light3);
     
-    Box b = Box(Vector(-1000,-200,-1000),Vector(1000,-150,1000),MATERIAL_SHINY_GREEN); /* Floor */
+    Box b = Box(Vector(-400,-200,-400),Vector(400,-150,400),MATERIAL_SHINY_GREEN); /* Floor */
     scene.addObject(&b);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
