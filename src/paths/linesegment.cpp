@@ -4,6 +4,12 @@
 #include "paths/linesegment.h"
 #include "math/matrix.h"
 
+/**
+ * Constructor
+ * 
+ * @param begin Where the linesegment begins
+ * @param end Where the linesegment ends
+ */
 Linesegment::Linesegment(const Vector& begin, const Vector& end) {
     b = begin;
     e = end;

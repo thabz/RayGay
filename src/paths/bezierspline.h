@@ -6,9 +6,9 @@
 #include "math/vector.h"
 #include "math/matrix.h"
 
-/// A Beziér-spline path
-
 /**
+ * A Beziér-spline path.
+ *
  * Given a set of \f$ n+1 \f$ control points \f$ P_0, P_1, ..., P_n \f$ the
  * corresponding Beziér-curve is defined by
  * \f[ C(t) = \sum_{i=0}^n P_i B_{i,n}(t) \f]
