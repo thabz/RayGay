@@ -5,9 +5,9 @@
    
 + Get a Meshs triangles into hierarchy as separate nodes.
 + Refactor Material to provide hookups for procedural textures
-* More accurate Triangle-BoundingBox intersection code
-* Hierarchy will never exit when more than 8 objects intersect a the same point.
-* Implement onEdge() and inside() for Mesh class.
++ More accurate Triangle-BoundingBox intersection code
++ Hierarchy will never exit when more than 8 objects intersect a the same point.
+- Implement onEdge() and inside() for Mesh class.
 + Adaptive supersampling til antialias
 + BSP
 + Cylinder 
@@ -43,7 +43,7 @@
 * Structured Importance Sampling of Environment Maps
   http://graphics.ucsd.edu/papers/structured/
 * ELK
-
+* Swept sphere: http://www.acm.org/pubs/tog/GraphicsGems/gemsv/ch5-4/sweep.cpp
 
 ///////////////////////////////////////////
 // Compiling into assembler source
