@@ -45,10 +45,9 @@ RGB Image::getRGB(int x, int y) const {
 RGB Image::getRGBWrapped(int x, int y) const {
     x = x % width;
     y = y % height;
-
-    double *p = &data[3*(y*width + x)];
-    RGB rgb = RGB(p[0],p[1],p[2]);
-    return rgb;
+    if (x < 0) x = width + x;
+    if (y < 0) y = height + y;
+    return getRGB(x,y);
 }
 
 RGB Image::getTexel(double u, double v) const {
@@ -56,8 +55,6 @@ RGB Image::getTexel(double u, double v) const {
     if (u > 1.0) u = 1.0;
     if (v < 0.0) v = 0.0;
     if (v > 1.0) v = 1.0;
-    assert(width > 0);
-    assert(height > 0);
     return getRGB(int(u*(width-1)),int(v*(height-1)));
 }
 
@@ -67,8 +64,6 @@ RGB Image::getBiCubicTexel(double u, double v) const {
     if (u > 1.0) u = 1.0;
     if (v < 0.0) v = 0.0;
     if (v > 1.0) v = 1.0;
-    assert(width > 0);
-    assert(height > 0);
     double x = u*(width-1);
     double y = v*(height-1);
     int i = int(x); int j = int(y);
@@ -163,6 +158,8 @@ Image* Image::load(const std::string& filename) {
     
     long width = ((long) Header[13] << 8) + Header[12];
     long height = ((long) Header[15] << 8) + Header[14];
+    assert(width > 0);
+    assert(height > 0);
     byte* bytes = new byte[width*height*3];
 
     fseek(Handle, 18, 0);
@@ -180,6 +177,7 @@ Image* Image::load(const std::string& filename) {
     }
 
     delete [] bytes;
+    cout << "Loaded " << filename << " " << width << "x" << height << endl;
     return new Image(width,height,data);
 }
 

@@ -85,7 +85,7 @@ void BSP::prepare() {
 	    delete lower;
 	    delete higher;
 	} else {
-	    std::cout << size << ": " << l << " " << m << " " << h << std::endl;
+	//    std::cout << size << ": " << l << " " << m << " " << h << std::endl;
 	    objects.clear();
 	    assert(objects.size() == 0);
 	    // Recursive prepare()

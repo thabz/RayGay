@@ -40,8 +40,9 @@ RGB Raytracer::trace(const Ray& ray, int depth) {
 RGB Raytracer::shade(const Ray& ray, Intersection& intersection, int depth) {
     object* object = intersection.getObject();
     const Vector point = intersection.point;
-    const Vector normal = object->normal(intersection);
+    Vector normal = object->normal(intersection);
     Material material = object->getMaterial();
+    normal = material.bump(intersection,normal);
     double ambient_intensity = 0.2;
     RGB result_color = ambient_intensity * material.getDiffuseColor(intersection);
     vector<Lightsource*> lights = scene->getLightsources();
@@ -70,7 +71,7 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, int depth) {
     }
     if (depth < 4) {
         /* Bounce a reflection off the intersected object */
-	if (1 == 1) {
+	if (material.getKs() > 0) {
 	    Vector refl_vector = -1 * ray.direction;
 	    refl_vector = refl_vector.reflect(normal);
 	    refl_vector.normalize();

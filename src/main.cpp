@@ -56,12 +56,13 @@ void testScene4() {
     Scene scene;
 
     Material mat = MATERIAL_SHINY_BLUE;
- //   mat.setTexturemap("earth.jpg");
-    Sphere s1 = Sphere(Vector(200,50,200),130.0,MATERIAL_CHROME);
-    Sphere s2 = Sphere(Vector(-200,50,200),130.0,MATERIAL_CHROME);
-    Sphere s3 = Sphere(Vector(200,50,-200),130.0,MATERIAL_CHROME);
-    Sphere s4 = Sphere(Vector(-200,50,-200),130.0,MATERIAL_CHROME);
-    Sphere s5 = Sphere(Vector(0,150,0),130.0,MATERIAL_CHROME);
+    mat.setBumpmap("dotbump.tga",0.5);
+    mat.setKs(0);
+    Sphere s1 = Sphere(Vector(200,50,200),130.0,mat);
+    Sphere s2 = Sphere(Vector(-200,50,200),130.0,mat);
+    Sphere s3 = Sphere(Vector(200,50,-200),130.0,mat);
+    Sphere s4 = Sphere(Vector(-200,50,-200),130.0,mat);
+    Sphere s5 = Sphere(Vector(0,150,0),130.0,mat);
     //Cylinder c1 = Cylinder(Vector(0,0,0),Vector(0,200,0),130,10,MATERIAL_SHINY_RED);
     
     scene.addObject(&s1);
@@ -73,6 +74,7 @@ void testScene4() {
   //  scene.addObject(&c1);
 
     scene.setEnvironmentMap("stbp.tga");
+  //  scene.setEnvironmentMap("bump.tga");
     
     Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
     Spiral spiral = Spiral(&circle1,100,10);

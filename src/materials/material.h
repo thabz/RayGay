@@ -27,9 +27,10 @@ class Material {
 
 	RGB getSpecularColor() const { return _specularColor; }; ///< Get the specular color
 	void setSpecularColor(RGB specularColor) { _specularColor = specularColor; };	///< Set the specular color
+	Vector bump(const Intersection& i, const Vector& normal) const;
 
 	void setTexturemap(const std::string& filename);
-	void setBumpmap(const std::string& filename);
+	void setBumpmap(const std::string& filename, double bumpHeight);
 	
 	virtual RGB getDiffuseColor(const Intersection& i) const;
 
@@ -47,6 +48,9 @@ class Material {
 	double indice_of_refraction; ///< vacuum = 1.0. Glas ~1.2. Other materials up to 2-3.
 
     private:
+	double getBumpValue(double u, double v) const;
+
+	    /* Fields */
 	RGB _diffuseColor;
 	double _kd;
 
@@ -54,6 +58,10 @@ class Material {
         double _ks;
 
 	int _spec_coeff;
+
+	double bumpHeight;
+	int bumpRepeatU;
+	int bumpRepeatV;
 	Image* texturemap;
 	Image* bumpmap;
 };
