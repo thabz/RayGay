@@ -13,6 +13,13 @@
 Renderer::Renderer() {
 }
 
+/**
+ * Render the scene into an image
+ * 
+ * @param sc The scene to render
+ * @param img The image to place pixels on
+ * @param spc The space containing the objects of the scene
+ */
 void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
     time_t beginTime;
     scene = sc;

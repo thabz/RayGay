@@ -7,15 +7,14 @@
 class RGB;
 class Image;
 
-/**
- * An abstract class all renderers must implement.
- */
+///  An abstract class all renderers must implement.
 class Renderer {
 
     public:
 	/// Render a scene into an image
 	void render(Scene* scene, Image*, SpaceSubdivider* space);
-	void dumpStats() const;
+
+	/// Destructor
 	virtual ~Renderer() {};
 
     private:
@@ -26,6 +25,8 @@ class Renderer {
 	Renderer();
 	/// The scene to be rendered can be accessed from implementations of Renderer.
 	Scene* scene;
+
+	/// The space containing the objects of the scene to render
 	SpaceSubdivider* space;
 };
 
