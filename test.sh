@@ -2,4 +2,4 @@
 
 echo $ARGV
 
-make && ./src/tracer scenes/skylight.gay out.tga && convert out.tga out.png && eog out.png
+make && ./src/tracer scenes/testscene.gay out.png && eog out.png
