@@ -1,6 +1,8 @@
 /* coherent noise function over 1, 2 or 3 dimensions */
 /* (copyright Ken Perlin) */
 
+#include "materials/perlin.h"
+
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
@@ -193,5 +195,27 @@ static void init(void)
 		for (j = 0 ; j < 3 ; j++)
 			g3[B + i][j] = g3[i][j];
 	}
+}
+
+double Perlin::noise(const Vector& pos) 
+{
+    float flo[3];
+    flo[0] = pos[0];
+    flo[1] = pos[1];
+    flo[2] = pos[2];
+    return noise3(flo);
+}
+
+Vector Perlin::noise3d(const Vector& p, double off) 
+{
+    double x = noise(p - Vector(off,0,0)) - 
+	       noise(p + Vector(off,0,0));
+    double y = noise(p - Vector(0,off,0)) - 
+	       noise(p + Vector(0,off,0));
+    double z = noise(p - Vector(0,0,off)) - 
+	       noise(p + Vector(0,0,off));
+    Vector normal = Vector(x,y,z);
+    normal.normalize();
+    return  normal;
 }
 

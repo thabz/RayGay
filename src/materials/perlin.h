@@ -1,6 +1,13 @@
 #ifndef PERLIN_H
 #define PERLIN_H
 
-float noise3(float vec[3]);
+#include "math/vector.h"
+
+class Perlin {
+
+    public:
+	static double noise(const Vector& pos);
+	static Vector noise3d(const Vector& pos, double offset);
+};
 
 #endif

@@ -37,7 +37,7 @@ RGBA Raytracer::getPixel(const Vector2& v) {
     }
 }
 
-RGBA Raytracer::traceSub(const bool intersected, const Intersection& intersection, const Ray& ray, const int depth) {
+RGBA Raytracer::traceSub(const bool intersected, Intersection& intersection, const Ray& ray, const int depth) {
     Stats::getUniqueInstance()->inc(STATS_TOTAL_CAMERA_RAYS_CAST);
     RGBA color; 
     double intersect_distance = HUGE_DOUBLE;
@@ -61,20 +61,15 @@ RGBA Raytracer::traceSub(const bool intersected, const Intersection& intersectio
     return color;
 }
 
-RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, const int depth) {
+RGB Raytracer::shade(const Ray& ray, Intersection& intersection, const int depth) {
     Lightinfo info;
     Object* const object = intersection.getObject();
     const Vector point = intersection.getPoint();
+    
     Vector normal = intersection.getNormal();
-
-    if (normal * ray.getDirection() > 0) {
-	normal = -1 * normal;
-    }
-
     const Material* material = object->getMaterial();
-
     normal = material->bump(intersection,normal);
-
+    intersection.setNormal(normal);
     
     double ambient_intensity = 0.2;
     RGB result_color = material->getDiffuseColor(intersection) * ambient_intensity;

@@ -17,17 +17,22 @@ SCM random2(SCM s_min, SCM s_max)
 SCM noise(SCM s_point) 
 {
     Vector point = scm2vector(s_point,"noise",1);
-    float vec[3];
-    vec[0] = point[0];
-    vec[1] = point[1];
-    vec[2] = point[2];
-    double n = noise3(vec);
+    double n = Perlin::noise(point);
     return scm_double2num(n);
+}
+
+SCM noise3d(SCM s_point, SCM s_offset) 
+{
+    Vector point = scm2vector(s_point,"noise3d",1);
+    double offset = scm_num2double(s_offset, 2, "noise3d");
+    Vector v = Perlin::noise3d(point, offset);
+    return vector2scm(v);
 }
 
 void MathFactory::register_procs()
 {
     scm_c_define_gsubr("random2",2,0,0, (SCM (*)()) random2);
     scm_c_define_gsubr("noise",1,0,0, (SCM (*)()) noise);
+    scm_c_define_gsubr("noise3d",2,0,0, (SCM (*)()) noise3d);
 }
 
