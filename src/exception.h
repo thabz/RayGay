@@ -4,8 +4,15 @@
 
 #include <string>
 
+/**
+ * This macro is used to actually throw an exception. It is used
+ * in order to make sure that source code file and line is stored correctly.
+ */
 #define throw_exception(s) throw Exception(s,__FILE__,__LINE__)
 
+/**
+ * All exceptions throw this class.
+ */
 class Exception {
 
     public:
