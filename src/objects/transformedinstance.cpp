@@ -2,32 +2,20 @@
 #include "objects/transformedinstance.h"
 #include "math/vector2.h"
 #include "boundingbox.h"
+#include "intersection.h"
 
-TransformedInstance::TransformedInstance(Object* object) : Object(object->getMaterial()) {
+TransformedInstance::TransformedInstance(Object* object) : Transformer(object->getMaterial()) {
     this->object = object;
 }
 
-TransformedInstance::TransformedInstance(Object* object, Material* material) : Object(material) {
+TransformedInstance::TransformedInstance(Object* object, Material* material) : Transformer(material) {
     this->object = object;
 }
 
-void TransformedInstance::transform(const Matrix& m) {
-    transformation = transformation * m;
-    inverse_transformation = transformation.inverse();
-    rotation = transformation.extractRotation();
-    inverse_rotation = rotation.inverse();
-}
-
-Intersection TransformedInstance::_intersect(const Ray& ray) const {
-    Vector Rd = inverse_rotation * ray.getDirection();
-    Vector Ro = inverse_transformation * ray.getOrigin();
-    Ray local_ray = Ray(Ro,Rd,ray.getIndiceOfRefraction());
-    if (object->intersect(local_ray)) {
+Intersection TransformedInstance::localIntersect(const Ray& ray) const {
+    if (object->intersect(ray)) {
 	Intersection* inter = object->getLastIntersection();
-	Vector point = transformation * inter->getPoint();
-	// TODO: If scaling allowed, calculate a new t
-	double t = inter->getT();
-	Intersection result = Intersection(point,t);
+	Intersection result = Intersection(*inter);
 	result.setObject(inter->getObject());
 	result.setLocalObject(inter->getLocalObject());
 	return result;
@@ -36,28 +24,16 @@ Intersection TransformedInstance::_intersect(const Ray& ray) const {
     }
 }
 
-Vector2 TransformedInstance::getUV(const Intersection& i) const {
-    Vector point = inverse_transformation * i.getPoint();
-    Intersection inter = Intersection(point,i.getT());
-    return object->getUV(inter);
+Vector2 TransformedInstance::localGetUV(const Intersection& i) const {
+    return object->getUV(i);
 }
 
-Vector TransformedInstance::normal(const Intersection &i) const {
-    Vector point = inverse_transformation * i.getPoint();
-    Intersection inter = Intersection(point,i.getT());
-    Vector normal = object->normal(inter);
-    return rotation * normal;
+Vector TransformedInstance::localNormal(const Intersection &i) const {
+    return object->normal(i);
 }
 
-BoundingBox TransformedInstance::boundingBoundingBox() const {
-    BoundingBox bbox = object->boundingBoundingBox();
-    Vector* corners = bbox.getCorners();
-    for(int i = 0; i < 8; i++) {
-	corners[i] = transformation * corners[i];
-    }
-    bbox = BoundingBox::enclosure(corners,8);
-    delete [] corners;
-    return bbox;
+BoundingBox TransformedInstance::localBoundingBoundingBox() const {
+    return object->boundingBoundingBox();
 }
 
 SceneObject* TransformedInstance::clone() const {

@@ -23,8 +23,10 @@ class Transformer : public Object {
 	BoundingBox boundingBoundingBox() const;
 
 
-    private:
+    protected:
         Transformer(const Material* material);
+
+    private:
 	Intersection _intersect(const Ray& ray) const;
 
 	virtual Intersection localIntersect(const Ray& ray) const = 0;

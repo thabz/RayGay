@@ -2,8 +2,7 @@
 #ifndef OBJECTS_TRANSFORMED_INSTANCE_H
 #define OBJECTS_TRANSFORMED_INSTANCE_H
 
-#include "objects/object.h"
-#include "math/matrix.h"
+#include "objects/transformer.h"
 
 /**
  * A transformed instance of an object.
@@ -12,32 +11,20 @@
  * around the scene in different positions, with
  * only one instance being kept in memory.
  */
-class TransformedInstance : public Object {
+class TransformedInstance : public Transformer {
 
     public:
 	TransformedInstance(Object* object);
 	TransformedInstance(Object* object, Material* material);
-
-	Vector normal(const Intersection &i) const;
-	
-	void transform(const Matrix& m);
-	
-	BoundingBox boundingBoundingBox() const;
-
-	Vector2 getUV(const Intersection& i) const;
-
 	SceneObject* clone() const;
 
     private:
-	virtual Intersection _intersect(const Ray& ray) const;
-	void prepareMatrices();
+	Vector localNormal(const Intersection &i) const;
+	BoundingBox localBoundingBoundingBox() const;
+	Vector2 localGetUV(const Intersection& i) const;
+	virtual Intersection localIntersect(const Ray& ray) const;
 
 	Object* object;
-	Matrix transformation;
-	Matrix inverse_transformation;
-	Matrix rotation; /// The rotation part extracted from the transformation
-	Matrix inverse_rotation;
-	Matrix scene_transformation;
 };
 
 #endif
