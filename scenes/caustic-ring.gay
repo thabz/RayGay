@@ -1,7 +1,8 @@
 
-/*************
- *  En kommentar
- ************/
+/*
+ * Dette er scenen bag tracer50big.png som 
+ * findes på bloggen 2004-06-16.
+ */
 
 /*renderer raytracer*/
 renderer photonrenderer
