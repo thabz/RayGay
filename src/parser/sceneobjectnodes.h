@@ -10,6 +10,7 @@
 #include "objects/solidbox.h"
 #include "objects/box.h"
 #include "objects/csg.h"
+#include "objects/cylinder.h"
 #include "objects/extrusion.h"
 #include "objects/mesh.h"
 #include "objects/wireframe.h"
@@ -88,6 +89,31 @@ class TorusNode : public SceneObjectNode {
 	MaterialNode* material;
 };
 
+class CylinderNode : public SceneObjectNode {
+
+    public:
+	CylinderNode(VectorNode* begin, VectorNode* end, FloatNode* radius, MaterialNode* mat) {
+	    this->begin = begin;
+	    this->end = end;
+	    this->radius = radius;
+	    this->material = mat;
+	}
+
+	SceneObject* eval() {
+	    Vector v1 = begin->eval();
+	    Vector v2 = end->eval();
+	    double r = radius->eval();
+	    Material* m = material->eval();
+	    return new Cylinder(v1,v2,r,true,m);
+	}
+
+    private:
+	VectorNode* begin;
+	VectorNode* end;
+	FloatNode* radius;
+	MaterialNode* material;
+};
+
 class NecklaceNode : public SceneObjectNode {
 
     public:
@@ -157,7 +183,6 @@ class BoxNode : public SceneObjectNode {
 	VectorNode* c1;
 	VectorNode* c2;
 	MaterialNode* material;
-
 };
 
 class ExtrusionNode : public SceneObjectNode {
@@ -291,6 +316,32 @@ class NamedSceneObject : public SceneObjectNode {
 
     private:
 	string name;
+};
+
+class ObjectGroupNode : public SceneObjectNode {
+    public:
+	ObjectGroupNode() {};
+
+	virtual ~ObjectGroupNode() {
+	    for(unsigned int i = 0; i < nodes.size(); i++) {
+		delete nodes[i];
+	    }
+	}
+
+	void addSceneObjectNode(SceneObjectNode* node) {
+	    nodes.push_back(node);
+	}
+
+	SceneObject* eval() {
+	    ObjectGroup* result = new ObjectGroup();
+	    for(unsigned int i = 0; i < nodes.size(); i++) {
+		result->addObject(nodes[i]->eval());
+	    }
+	    return result;
+	}
+
+    private:
+	vector<SceneObjectNode*> nodes;
 };
 
 #endif
