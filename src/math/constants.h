@@ -36,6 +36,9 @@
 #define IS_LESS_THAN(a,b) 	IS_POSITIVE(((b) - (a)))
 #define IS_GREATER_THAN(a,b) 	IS_POSITIVE(((a) - (b)))
 
+// Convert x from degrees [0,360] to radians [0,2*PI]
 #define DEG2RAD(x)	((x/360.0)*M_2PI)
 
+// A random double in [a,b]
+#define RANDOM(a,b) 	(((b)-(a))*(double(rand())/RAND_MAX) + (a))
 #endif

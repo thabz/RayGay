@@ -70,7 +70,9 @@ void testScene4() {
     mat.setRepeatX(10);
     mat.setRepeatY(4);
 
-    Sphere* s = new Sphere(Vector(0,50,0),200.0,MATERIAL_SHINY_RED);
+    Material red = MATERIAL_SHINY_RED;
+    red.enableGloss(4,30.0);
+    Sphere* s = new Sphere(Vector(0,0,0),150.0,red);
     scene.addObject(s);
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
@@ -87,7 +89,7 @@ void testScene4() {
     scene.addLight(&light3);
     
     Material chrome = MATERIAL_CHROME;
-    chrome.enableGloss(20,10.0);
+    chrome.enableGloss(4,30.0);
 
     Box b = Box(Vector(-500,-200,-500),Vector(500,-150,500),chrome); /* Floor */
     scene.addObject(&b);
@@ -99,7 +101,7 @@ void testScene4() {
     scene.setBackgroundColor(RGB(0.1,0.1,0.3));
 
     Camera cam = Camera(Vector(0,0,1500),Vector(0,0,-1));
-    cam.enableAdaptiveSupersampling(3);
+    cam.enableAdaptiveSupersampling(4);
     scene.setCamera(&cam);
     
     Image* img = new Image(640,480);

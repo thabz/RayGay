@@ -32,7 +32,7 @@ Arealight::Arealight(const Vector& pos, const Vector& dir, double radius, int nu
     for(int i = 0; i < num; i++) {
 	double r = radius*sqrt(double(i)/(num-1));
 	circles.push_back(new Circle(pos,r,dir));
-	ts.push_back((double(rand()) / RAND_MAX));
+	ts.push_back(RANDOM(0,1));
 	hints.push_back(NULL);
     }
 }
@@ -49,7 +49,7 @@ void Arealight::transform(const Matrix& m) {
 
 Vector Arealight::getPosition(int i) const {
     assert(i < num);
-    double j = jitter * (double(rand()) / RAND_MAX);
+    double j = jitter * RANDOM(0,1);
     double t = (ts[i] + j) - int(ts[i] + j);
     return circles[i]->getPoint(t);
 }

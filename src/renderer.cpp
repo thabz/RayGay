@@ -16,6 +16,7 @@ Renderer::Renderer() {
 
 /**
  * Render the scene into an image
+ * TODO: Jitter the samples within the grid.
  * 
  * @param sc The scene to render
  * @param img The image to place pixels on
