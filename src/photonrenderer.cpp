@@ -70,9 +70,9 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     RGB result_color = RGB(0.0,0.0,0.0);
     vector<Lightsource*> lights = scene->getLightsources();
 
-    result_color += gatherIrradiance(point,normal);
-    //result_color.clip();
-    //return result_color;
+    result_color += gatherIrradiance(point,normal,ray.getDirection());
+ //   result_color.clip();
+ //   return result_color;
     // TODO: Add radiance_estimate from caustics map
     for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);
@@ -166,13 +166,14 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
-Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal) const {
+Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal, const Vector& ray_dir) const {
     if (photonsettings->final_gather_rays == 0) {
 	return M_PI * photonmap->irradiance_estimate(point,normal,photonsettings->estimate_radius,photonsettings->estimate_samples) * 5000*100;
     }
 
     Vector result = Vector(0.0,0.0,0.0);
 
+    /*
     NearestPhotons np;
     np.dist2 = (float*)alloca( sizeof(float)*(photonsettings->final_gather_rays+1) );
     np.index = (const Photon**)alloca( sizeof(Photon*)*(photonsettings->final_gather_rays+1) );
@@ -184,14 +185,15 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
     np.got_heap = 0;
     np.dist2[0] = photonsettings->estimate_radius * photonsettings->estimate_radius;
     photonmap->locate_photons(&np,1);
-
     if (np.found < 4) return result;
+*/
+    Vector reflected = (-1 * ray_dir).reflect(normal);
     
-    //for (int i = 0; i < FINAL_GATHER_RAYS; i++) {
-    for (int i = 1; i < np.found; i++) {
-	const Photon* p = np.index[i];
-	Vector dir = double(-1) * photonmap->photon_dir(p);
-	//Vector dir = Math::perturbVector(normal,DEG2RAD(89));
+    for (int i = 0; i < photonsettings->final_gather_rays; i++) {
+ //   for (int i = 1; i < np.found; i++) {
+	//const Photon* p = np.index[i];
+	//Vector dir = double(-1) * photonmap->photon_dir(p);
+	Vector dir = Math::perturbVector(reflected,DEG2RAD(30));
 
 	Ray ray = Ray(point+0.1*dir,dir,-1);
 	if (space->intersect(ray)) {
@@ -204,8 +206,8 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
 	}
     }
 	
-    //result *= M_PI / double(FINAL_GATHER_RAYS);
-    result *= double(M_PI) / double(np.found - 1);
+    result *= M_PI / double(photonsettings->final_gather_rays);
+    //result *= double(M_PI) / double(np.found - 1);
     result *= 5000;
     //result *= double(1) / M_PI;
     return result;

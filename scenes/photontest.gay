@@ -2,19 +2,19 @@
 
 include materials.gay
 
-photonmap photons 1000000
+photonmap photons 100000
 photonmap estimate-radius 50
-photonmap estimate-samples 500
-photonmap final-gather-rays 64
+photonmap estimate-samples 300
+photonmap final-gather-rays 25
 
 camera-position 0 180 1100
 camera-up 0 1 0
 camera-lookat 0 0 0
 camera-field-of-view 60
-camera-aa 4
+camera-aa 0
 
 image-ratio 4 3
-image-width 640
+image-width 320
 
 background 0.1 0.1 0.3
 
@@ -51,6 +51,8 @@ box $dullblue 300 -300 -300    330 300 1200
 box $dullwhite -300 -150 1200    300 200 1230
 
 # Table
-box $dullwhite 100 -100 -300  300 -150 -100
+box $dullwhite 100 -75 -300  300 -25 -100
+
+sphere $red 100 50 -200 -200
 
 #sphere $green 50  -200 -250 150
