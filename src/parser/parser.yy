@@ -1001,7 +1001,28 @@ void yywarning(string s) {
 	 << " warning: " << s << endl;
 }
 
-void init_parser() {
+extern FILE* yyin;
+
+void openfile(string filename) {
+    yyin = fopen(filename.c_str(),"r");
+    if (yyin == NULL) {
+	throw_exception("File not found: " + filename);
+    }
+
+    // Change cwd to this files parent folder
+    char original_working_dir[1024];
+    getcwd(original_working_dir,1024);
+    string original_cwds = string(original_working_dir);
+    string cwds = string(original_working_dir) + "/" + filename;
+    cout << "Reading " << cwds << endl;
+    int idx = cwds.find_last_of('/');
+    cwds.resize(idx);
+    cout << "CWD: " << cwds << endl;
+    chdir(cwds.c_str());
+}
+
+void init_parser(string scenefile) {
+    openfile(scenefile);
     scene = new Scene();
     renderer_settings = new RendererSettings();
     top_actions = new ActionListNode();
@@ -1023,4 +1044,5 @@ Scene* getScene() {
 RendererSettings* getRendererSettings() {
     return renderer_settings;
 }
+
 
