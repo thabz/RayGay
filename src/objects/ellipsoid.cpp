@@ -25,6 +25,7 @@ Intersection Ellipsoid::_fullIntersect(const Ray& world_ray, const double t) con
 double Ellipsoid::_fastIntersect(const Ray& world_ray) const {
     Ray local_ray = rayToObject(world_ray);
     double res = sphere->fastIntersect(local_ray);
+    return res / local_ray.t_scale;
     return (res > 0) ? res / local_ray.t_scale : -1;
 }
 
@@ -34,10 +35,13 @@ SceneObject* Ellipsoid::clone() const {
 
 vector<Intersection> Ellipsoid::allIntersections(const Ray& world_ray) const {
     Ray local_ray = rayToObject(world_ray);
-    vector<Intersection> result = sphere->allIntersections(local_ray);
-    for(unsigned int i = 0; i < result.size(); i++) {
-	result[i] = intersectionToWorld(result[i]);
+    vector<Intersection> result1 = sphere->allIntersections(local_ray);
+    vector<Intersection> result2;
+    for(unsigned int i = 0; i < result1.size(); i++) {
+	Intersection is = intersectionToWorld(result1[i]);
+	is.setT(is.getT() / local_ray.t_scale);
+	result2.push_back(is);
     }
-    return result;
+    return result2;
 }
 
