@@ -312,6 +312,8 @@ void solve_quartic_test() {
 
     // x^4 + 10*x^3 - 250*x - 625 = (x+5)*(x+5)*(x-5)*(x+5)
     assert(Math::solveQuartic(10,0,-250,-625,roots) == 2);
+    cout << roots[0] << endl;
+    cout << roots[1] << endl;
     assert(contains(roots,2,5));
     assert(contains(roots,2,-5));
 }

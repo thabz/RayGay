@@ -55,10 +55,38 @@ int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
     double sqrt1 = sqrt(A*A - 4*B + 4*y);
     double sqrt2 = sqrt(y*y - 4*D);
 
-    int num = solveQuadratic(1,(A + sqrt1)/2.0,(y - sqrt2)/2.0,roots);
-    num += solveQuadratic(1,(A - sqrt1)/2.0,(y + sqrt2)/2.0,&(roots[num]));
-    // TODO: prune duplicates
-    return num;
+    int num1 = solveQuadratic(1,(A + sqrt1)/2.0,(y - sqrt2)/2.0,roots);
+    int num2 = solveQuadratic(1,(A - sqrt1)/2.0,(y + sqrt2)/2.0,&(roots[num1]));
+
+    // prune duplicate roots
+    if (num1 == 1 && num2 == 1) {
+	if (IS_EQUAL(roots[0],roots[1])) {
+	    num2 = 0;
+	}
+    } else if (num1 == 1 && num2 == 2) {
+	if (IS_EQUAL(roots[0],roots[1] || IS_EQUAL(roots[0],roots[2]))) {
+	    roots[0] = roots[2];
+	    num1 = 0;
+	}
+    } else if (num1 == 2 && num2 == 1) {
+	if (IS_EQUAL(roots[0],roots[2]) || IS_EQUAL(roots[1],roots[2])) {
+	    num2 = 0;
+	}
+    } else if (num1 == 2 && num2 == 2) {
+	if (IS_EQUAL(roots[0],roots[3]) || IS_EQUAL(roots[1],roots[3])) {
+	    num2--;
+	}
+	if (IS_EQUAL(roots[0],roots[2]) || IS_EQUAL(roots[1],roots[2])) {
+	    if (num2 == 1) {
+		num2--;
+	    } else {
+		roots[2] = roots[3];
+		num2--;
+	    }
+	}
+
+    }
+    return num1+num2;
 }
 
 /**
