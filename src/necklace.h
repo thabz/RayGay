@@ -12,9 +12,7 @@ class BoundingBox;
 class object;
 class SpaceSubdivider;
 
-/**
- * An object consisting of Spheres sitting on a path.
- */
+/// An object consisting of Spheres sitting on a path.
 class Necklace : public ObjectCollection {
 
     public:

@@ -15,6 +15,8 @@ using namespace std;
 void vector_test() {
     // Test area()
     assert(0.5 == Vector::area(Vector(1,1,1), Vector(2,1,1), Vector(1,2,1)));
+
+    cout << "vector test() done." << endl;
 }
 
 void matrix_test() {
@@ -32,7 +34,7 @@ void matrix_test() {
     res = op3*id*op3.inverse();
     assert(res.isIdentity());
 
-    cout << "Matrix::test() done." << endl;
+    cout << "matrix test() done." << endl;
 }
 
 int main(int argc, char *argv[]) {

@@ -12,11 +12,11 @@ class Linesegment : public Path {
 	Vector getTangent(double t) const;
         void transform(const Matrix& m);
 
+	/// Returns begin point
 	Vector begin() const { return b; };
+	
+	/// Returns end point
 	Vector end() const { return e; };
-
-	/// Internal test
-	static void test();
 
     private:
 	Vector b;

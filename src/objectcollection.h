@@ -5,6 +5,7 @@
 class Matrix;
 class SpaceSubdivider;
 
+/// An object that create other objects to be rendered.
 class ObjectCollection {
 
     public:
