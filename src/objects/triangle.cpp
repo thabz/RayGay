@@ -130,7 +130,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
       /* calculate U parameter and test bounds */
       u = DOT(tvec,pvec);
 
-      if (u < EPSILON || u > det)
+      if (u < 0 || u > det)
 	 return -1.0;
       
       /* prepare to test V parameter */
@@ -138,7 +138,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
       
       /* calculate V parameter and test bounds */
       v = DOT(ray.getDirection(),qvec);
-      if (v < EPSILON || u + v > det)
+      if (v < 0 || u + v > det)
 	 return -1.0;
    }
 #if 0 
