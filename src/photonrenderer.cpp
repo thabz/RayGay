@@ -166,14 +166,13 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
     return result_color;
 }
 
-#define FINAL_GATHER_RAYS 10
+#define FINAL_GATHER_RAYS 20
 #define ESTIMATE_RADIUS 50
 #define ESTIMATE_PHOTONS 500
-#define MULTIPLIER 3.0
 
 Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal) const {
     if (FINAL_GATHER_RAYS == 0) {
-	return MULTIPLIER * photonmap->irradiance_estimate(point,normal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS);
+	return M_PI * photonmap->irradiance_estimate(point,normal,ESTIMATE_RADIUS,ESTIMATE_PHOTONS);
     }
     Vector result = Vector(0.0,0.0,0.0);
     for (int i = 0; i < FINAL_GATHER_RAYS; i++) {
@@ -190,8 +189,7 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
 	    result += scene->getBackgroundColor(ray);
 	}
     }
-    result *= 1.0/double(FINAL_GATHER_RAYS);
-    result *= MULTIPLIER;
+    result *= M_PI / double(FINAL_GATHER_RAYS);
     return result;
 }
 
