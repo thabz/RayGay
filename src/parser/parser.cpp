@@ -70,7 +70,9 @@ SCM Parser::lookup(string var_name) {
 void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
     // Populate sceneobjects and lights
     SCM list = lookup("scene");
-    assert(SCM_NFALSEP (scm_list_p (list)));
+    if (SCM_FALSEP (scm_list_p (list))) {
+	scm_error(NULL, "internal-populate-scene", "The variable 'scene' is not a list", SCM_UNSPECIFIED, NULL);
+    }
     uint length = scm_num2int(scm_length(list),0,"internal-populate-scene");
 
     //cout << "Scene objects: " << length << endl;
@@ -126,7 +128,9 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
     // Set settings
     SCM s_settings = lookup("settings");
     if (!SCM_NULLP(s_settings)) {
-	assert(SCM_NFALSEP (scm_list_p (s_settings)));
+	if (SCM_FALSEP (scm_list_p (s_settings))) {
+	    scm_error(NULL, "internal-populate-scene", "The variable 'settings' is not a list", SCM_UNSPECIFIED, NULL);
+    }
 	uint length = scm_num2int(scm_length(s_settings),0,"");
 
 	assert(length % 2 == 0);

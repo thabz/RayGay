@@ -25,7 +25,9 @@ using namespace std;
 SCM CameraFactory::make_pinhole_camera(SCM s_options) {
     Camera* camera = new Pinhole();
 
-    assert(SCM_NFALSEP (scm_list_p (s_options)));
+    if (SCM_FALSEP (scm_list_p (s_options))) {
+	scm_wrong_type_arg ("make-pinhole-camera", 1, s_options);
+    }
     uint length = scm_num2int(scm_length(s_options),0,"");
     
     assert(length % 2 == 0);
