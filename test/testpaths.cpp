@@ -98,6 +98,18 @@ class linesegment_test : public Test {
 	    assertTrue(p[0] == n);
 
 	    assertTrue(!l.isClosed());
+
+	    // Test distance methods
+	    b1 = Vector(-10,0,0);
+	    b2 = Vector(10,0,0);
+	    l = Linesegment(b1,b2);
+
+	    assertTrue(IS_EQUAL(l.distance(Vector(0,1,0)), 1));
+	    assertTrue(IS_EQUAL(l.distance(Vector(-5,-1,0)), 1));
+	    assertTrue(IS_EQUAL(l.distance(Vector(-11,0,0)), 1));
+	    assertTrue(IS_EQUAL(l.distance(Vector(-12,0,0)), 2));
+	    assertTrue(IS_EQUAL(l.distance(Vector(11,0,0)), 1));
+	    assertTrue(IS_EQUAL(l.distance(Vector(12,0,0)), 2));
 	}
 };
 

@@ -19,6 +19,12 @@ class Linesegment : public Path {
 	/// Returns end point
 	Vector end() const { return e; };
 
+	/// Returns the squared distance from p to the linesegment
+	double sqrDistance(const Vector& p) const;
+	
+	/// Returns the distance from p to the linesegment
+	double distance(const Vector& p) const;
+
     private:
 	Vector b;
 	Vector e;
