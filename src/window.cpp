@@ -17,6 +17,9 @@ int darea_width;
 int darea_height;
 guchar* rgbbuf;
 bool window_open;
+double zoom_scale;
+int zoom_center_x;
+int zoom_center_y;
 
 gboolean on_darea_expose (GtkWidget *widget,
 	GdkEventExpose *event,
@@ -40,6 +43,10 @@ PreviewWindow::PreviewWindow(int width, int height) {
     darea_width = width;
     darea_height = height;
     this->image = NULL;
+
+    zoom_scale = 4;
+    zoom_center_x = width / 2;
+    zoom_center_y = height / 2;
 
     g_thread_init(NULL);
     gdk_threads_init();
