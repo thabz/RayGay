@@ -25,8 +25,11 @@ class RenderJob {
 class RenderJobPool {
 
     public:
+	/// Constructor
 	RenderJobPool();
+	/// Add a job to the pool.
 	void addJob(const RenderJob& job);
+	/// Get next job to be done.
 	bool getJob(RenderJob* job_dest);
 
     private:

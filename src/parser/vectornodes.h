@@ -7,6 +7,9 @@
 #include "parser/syntaxnode.h"
 #include "parser/floatnodes.h"
 
+/**
+ * Nodes for doing operations on Vector
+ */
 class VectorNode : public SyntaxNode {
     public:
 	VectorNode() {

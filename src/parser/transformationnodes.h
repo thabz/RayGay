@@ -2,11 +2,15 @@
 #ifndef PARSER_TRANSFORMATION_NODES
 #define PARSER_TRANSFORMATION_NODES
 
+#include "parser/syntaxnode.h"
 #include "parser/vectornodes.h"
 #include "parser/floatnodes.h"
 #include "math/matrix.h"
 
-class TransformationNode {
+/**
+ * Nodes for handling transformations.
+ */
+class TransformationNode : public SyntaxNode {
 
     public:
 	virtual Matrix eval() {

@@ -15,6 +15,9 @@
 #include "lights/pointlight.h"
 #include "lights/skylight.h"
 
+/**
+ * A node whose eval() constructs a Lightsource.
+ */
 class LightNode : public SyntaxNode {
 
     public:

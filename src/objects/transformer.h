@@ -7,7 +7,7 @@
 
 
 /**
- * This is the superclass for objects that can't be transformed. 
+ * This is the superclass for objects that can't be transformed by themselves.
  *
  * This class holds a world to object transformation and its inverse.
  *
@@ -20,6 +20,7 @@
 class Transformer {
 
     public:
+	/// Apply a transformation
 	virtual void transform(const Matrix& m);
 
     protected:

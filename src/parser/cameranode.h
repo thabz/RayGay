@@ -7,6 +7,9 @@
 #include "parser/vectornodes.h"
 #include "parser/syntaxnode.h"
 
+/**
+ * A node whose eval() constructs a Camera.
+ */
 class CameraNode : public SyntaxNode {
 
     public:

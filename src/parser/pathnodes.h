@@ -11,6 +11,9 @@
 #include "paths/linesegment.h"
 #include "paths/catmullromspline.h"
 
+/**
+ * Nodes for handling paths.
+ */
 class PathNode : public SyntaxNode {
 
     public:

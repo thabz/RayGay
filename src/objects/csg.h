@@ -10,12 +10,14 @@
 class CSG : public Solid {
 
     public:
+	/// Types of operations used in CSG.
 	enum CSGOperation {
 	    UNION,       ///< Points that are in either object
 	    DIFFERENCE,  ///< All points in lhs unless they're in rhs too
 	    INTERSECTION ///< Points that are in common
 	};
 
+	/// Constructor
 	CSG(Solid* left, CSGOperation op, Solid* right, const Material* mat); 
 	bool inside(const Vector& point) const;
 	vector<Intersection> allIntersections(const Ray& ray) const;

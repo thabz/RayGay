@@ -19,6 +19,9 @@
 #include "parser/materialnodes.h"
 #include "parser/pathnodes.h"
 
+/**
+ * Nodes for handling scene-objects.
+ */
 class SceneObjectNode : public SyntaxNode {
 
     public:

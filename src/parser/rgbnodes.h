@@ -7,6 +7,9 @@
 #include "image/rgba.h"
 #include "image/rgb.h"
 
+/**
+ * Nodes for doing operations on colors
+ */
 class RGBNode : public SyntaxNode {
     public:
 	RGBNode(FloatNode* r, FloatNode* g, FloatNode* b) {
@@ -23,6 +26,9 @@ class RGBNode : public SyntaxNode {
 	FloatNode* b;
 };
 
+/**
+ * Nodes for doing operations on colors with alpha
+ */
 class RGBANode : public SyntaxNode {
     public:
 	RGBANode(FloatNode* r, FloatNode* g, FloatNode* b, FloatNode* a) {

@@ -6,6 +6,8 @@
  * The surface is \f$ f(x,y,z) = 1 \f$ and the interior is \f$ f(x,y,z) < 1 \f$
  * 
  * @see http://astronomy.swin.edu.au/~pbourke/surfaces/superellipse/
+ *
+ * \todo Finish implementation
  */
 class SuperElliopsoid : public IsoSurface {
 

@@ -15,7 +15,9 @@
 
 using namespace std;
 
-// Nodes with no return value and only sideeffects
+/**
+ * Nodes with no return value and only sideeffects
+ */
 class ActionNode : public SyntaxNode {
     public:
 	virtual void eval() = 0;

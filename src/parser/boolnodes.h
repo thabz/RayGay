@@ -2,7 +2,12 @@
 #ifndef PARSER_BOOL_NODES_H
 #define PARSER_BOOL_NODES_H
 
-class BoolNode {
+#include "parser/syntaxnode.h"
+
+/**
+ * Nodes for doing boolean operations.
+ */
+class BoolNode : public SyntaxNode {
 
     public:
 	virtual bool eval() = 0;
