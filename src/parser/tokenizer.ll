@@ -3,6 +3,8 @@
 
 #include <string>    
 #include "math/vector.h"
+#include "image/rgba.h"
+#include "image/texture.h"
 #include "paths/spiral.h"
 #include "paths/circle.h"
 #include "objects/sphere.h"    
@@ -20,6 +22,9 @@ string	{alpha}({alpha}|{digit}|{special})*
 %%
 [ \t\n]		;
 aa		return tAA;
+background	return tBACKGROUND;
+bicubic 	return tBICUBIC;
+bilinear 	return tBILINEAR;
 camera		return tCAMERA;
 circle		return tCIRCLE;
 cylinder	return tCYLINDER;
@@ -32,13 +37,18 @@ lookat		return tLOOKAT;
 linesegment	return tLINESEGMENT;
 material	return tMATERIAL;
 name		return tNAME;
+none		return tNONE;
 necklace	return tNECKLACE;
+photontracer	return tPHOTONTRACER;
 print		return tPRINT;
 position	return tPOSITION;
+raytracer	return tRAYTRACER;
+renderer	return tRENDERER;
 rotate		return tROTATE;
 solidbox	return tSOLIDBOX;
 sphere		return tSPHERE;
 spiral		return tSPIRAL;
+texture		return tTEXTURE;
 translate	return tTRANSLATE;
 torus		return tTORUS;
 union		return tUNION;

@@ -19,6 +19,7 @@
 
 #include "scene.h"
 #include "image/image.h"
+#include "image/texture.h"
 #include "space/kdtree.h"
 
 #include "photonrenderer.h"
@@ -216,18 +217,18 @@ int main(int argc, char *argv[]) {
     }
     srand(1); // Make sure rand is seeded consistently.
 
-    if (parser_to_use == 1) {
-	init_parser();
-	yyin = fopen(scenefile.c_str(),"r");
-	yyparse();
-    } else {
-	try {
+    try {
+	if (parser_to_use == 1) {
+	    init_parser();
+	    yyin = fopen(scenefile.c_str(),"r");
+	    yyparse();
+	} else {
 	    work(scenefile,outfile,jobs); 
-	} catch (Exception e) {
-	    cout << "Exception: " << e.getMessage() 
-		<< " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
-	    return EXIT_FAILURE;
 	}
+    } catch (Exception e) {
+	cout << "Exception: " << e.getMessage() 
+	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
+	return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
 }

@@ -4,6 +4,10 @@
 #include <string>    
 #include <map>    
 #include <cstdio>    
+#include "image/rgba.h"
+#include "image/rgb.h"
+#include "image/image.h"
+#include "image/texture.h"
 #include "math/matrix.h"
 #include "math/vector.h"
 #include "paths/spiral.h"
@@ -49,15 +53,21 @@ RendererSettings* renderer_settings;
         double d;
 	Vector* vector;
 	RGB* rgb;
+	RGBA* rgba;
+	Texture* texture;
 	Material* material;
 	SceneObject* object;
 	Matrix* matrix;
 	Path* path;
 	string* c;
+	Texture::InterpolationType it;
 }
 %token <d> tFLOAT
 %token <c> tSTRING
 %token tAA
+%token tBACKGROUND
+%token tBICUBIC
+%token tBILINEAR
 %token tCAMERA
 %token tCIRCLE
 %token tCYLINDER
@@ -70,13 +80,18 @@ RendererSettings* renderer_settings;
 %token tLOOKAT
 %token tMATERIAL
 %token tNAME
+%token tNONE
 %token tNECKLACE
+%token tPHOTONTRACER
 %token tPOSITION
 %token tPRINT
+%token tRAYTRACER
+%token tRENDERER
 %token tROTATE
 %token tSOLIDBOX
 %token tSPHERE
 %token tSPIRAL
+%token tTEXTURE
 %token tTORUS
 %token tTRANSLATE
 %token tUNION
@@ -84,10 +99,13 @@ RendererSettings* renderer_settings;
 
 %type <d> Expr 
 %type <rgb> RGB
+%type <rgba> RGBA
+%type <texture> Texture
 %type <vector> Vector 
+%type <it> InterpolationType 
 %type <matrix> Rotate Translate Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
-%type <object> Intersection Union TransObject Object Extrusion
+%type <object> Intersection Union Object Extrusion
 %type <material> MaterialDef NamedMaterial Material
 %type <path> NamedPath Circle Spiral Path PathDef LineSegment
 
@@ -100,13 +118,15 @@ Items		: /* Empty */
                 | Items Item
 		;
 
-Item		: TransObject
+Item		: Object
                 {
 		    scene->addObject($1);
 		}
                 | AssignName
 		| Print
 		| Camera
+		| Renderer
+		| Background
 		;
 
 AssignName	: tSTRING '=' PathDef
@@ -121,6 +141,26 @@ AssignName	: tSTRING '=' PathDef
                 {
 		    setNamedMaterial($1, $3);
                 }
+                ;
+
+Renderer	: tRENDERER tRAYTRACER
+                {
+                    renderer_settings->renderertype = RendererSettings::RAYTRACER;
+		}
+                | tRENDERER tPHOTONTRACER
+                {
+                    renderer_settings->renderertype = RendererSettings::PHOTON_RENDERER;
+		}
+		;
+
+Background	: tBACKGROUND RGBA
+                {
+		    scene->setBackground(*$2);
+		}
+                | tBACKGROUND Texture
+		{
+		    scene->setBackground($2);
+		}
                 ;
 
 Camera		: tCAMERA '{' CameraSettings '}'
@@ -182,6 +222,11 @@ MaterialDef     : tMATERIAL '{' RGB '}'
 Object		: SolidObject
                 | Necklace 
 		| Extrusion
+		| Object Transformations
+                {
+		    $$ = $1;
+		    $$->transform(*$2);
+                }
 		;
 
 SolidObject	: Sphere
@@ -191,18 +236,12 @@ SolidObject	: Sphere
                 | Union
 		| Torus
 		| Cylinder
-		;
-
-TransObject 	: Object Transformations
+		| SolidObject Transformations
                 {
 		    $$ = $1;
-		    if ($2 != (Matrix*)NULL) {
-			$$->transform(*$2);
-		    }
+		    $$->transform(*$2);
 		}
-                | Object
 		;
-
 
 Extrusion	: tEXTRUSION '{' Material Path Expr Expr Expr '}'
                 {
@@ -296,10 +335,15 @@ Union		: tUNION '{' Material SolidObject SolidObject '}'
                 ;
 
 Transformations	: /* Empty */
+                {
+		    $$ = new Matrix();
+		}
                 | Transformations Transformation
                 {
 		    Matrix m = (*$1) * (*$2);
 		    $$ = new Matrix(m);
+		    delete $1;
+		    delete $2;
 		}
 		;
 
@@ -319,7 +363,11 @@ Translate	: tTRANSLATE '{' Vector '}'
 		    Matrix m  = Matrix::matrixTranslate(*$3);
 		    $$ = new Matrix(m);
 		}
-                ;
+                | tTRANSLATE Vector
+                {
+		    Matrix m  = Matrix::matrixTranslate(*$2);
+		    $$ = new Matrix(m);
+		};
 
 Path		: NamedPath
                 | PathDef
@@ -358,6 +406,28 @@ Spiral		: tSPIRAL '{' Path Expr Expr '}'
 		}
 		;
 
+Texture		: tTEXTURE '{' tSTRING Expr Expr InterpolationType '}'
+                {
+		    Image* img = new Image(*$3);
+		    $$ = new Texture(img,Vector2($4,$5),$6);
+		}
+                ;
+
+InterpolationType
+                : tNONE
+                {
+		    $$ = Texture::INTERPOLATION_NONE;
+		}
+                | tBILINEAR
+                {
+		    $$ = Texture::INTERPOLATION_BILINEAR;
+		}
+		| tBICUBIC
+                {
+		    $$ = Texture::INTERPOLATION_BICUBIC;
+		}
+		;
+
 Vector		: '<' Expr ',' Expr ',' Expr '>' 
                 { 
 		    $$ = new Vector($2,$4,$6); 
@@ -367,6 +437,12 @@ Vector		: '<' Expr ',' Expr ',' Expr '>'
 RGB		: '<' Expr ',' Expr ',' Expr '>' 
                 { 
 		    $$ = new RGB($2,$4,$6); 
+		}
+                ; 		
+		
+RGBA		: '<' Expr ',' Expr ',' Expr ',' Expr '>' 
+                { 
+		    $$ = new RGBA($2,$4,$6,$8); 
 		}
                 ; 		
 
@@ -442,6 +518,5 @@ void init_parser() {
     camera = new Camera();
     scene = new Scene();
     scene->setCamera(camera);
-
-
+    renderer_settings = new RendererSettings();
 }
