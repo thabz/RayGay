@@ -46,7 +46,7 @@ class Triangle : public Object {
 	Intersection _intersect(const Ray& ray) const;
 	Mesh* mesh;
 	int _tri_idx;
-	Vector edge1, edge2, vert0;
+	double edge1[3], edge2[3], vert0[3];
 };
 
 

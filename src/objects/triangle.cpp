@@ -28,28 +28,43 @@ Intersection Triangle::_intersect(const Ray& ray) const {
     return Intersection();
 }
 
-void Triangle::prepare() {
-   vert0 = mesh->cornerAt(vertex[0]);
-   const Vector& vert1 = mesh->cornerAt(vertex[1]);
-   const Vector& vert2 = mesh->cornerAt(vertex[2]);
-
-   edge1 = vert1 - vert0;
-   edge2 = vert2 - vert0;
-}
-
 #define CROSS(dest,v1,v2) \
           dest[0]=v1[1]*v2[2]-v1[2]*v2[1]; \
           dest[1]=v1[2]*v2[0]-v1[0]*v2[2]; \
           dest[2]=v1[0]*v2[1]-v1[1]*v2[0];
+#define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
+#define SUB(dest,v1,v2) \
+          dest[0]=v1[0]-v2[0]; \
+          dest[1]=v1[1]-v2[1]; \
+          dest[2]=v1[2]-v2[2]; 
+
+void Triangle::prepare() {
+   const Vector& v0 = mesh->cornerAt(vertex[0]);
+   vert0[0] = v0[0];
+   vert0[1] = v0[1];
+   vert0[2] = v0[2];
+   const Vector& vert1 = mesh->cornerAt(vertex[1]);
+   const Vector& vert2 = mesh->cornerAt(vertex[2]);
+
+   SUB(edge1,vert1,vert0);
+   SUB(edge2,vert2,vert0);
+}
+
 // ----------------------------------------------------------------------------
 Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
     
    // Fast code from http://www.ce.chalmers.se/staff/tomasm/code/
+   const Vector& vert0 = mesh->cornerAt(vertex[0]);
+   const Vector& vert1 = mesh->cornerAt(vertex[1]);
+   const Vector& vert2 = mesh->cornerAt(vertex[2]);
+   Vector edge1 = vert1 - vert0;
+   Vector edge2 = vert2 - vert0;
 
    Vector tvec, pvec, qvec;
    double det,inv_det;
    double u,v;
    double t;
+
 
    // begin calculating determinant - also used to calculate U parameter 
    CROSS(pvec, ray.getDirection(), edge2);
@@ -90,11 +105,6 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
    return intersection;
 }
 
-#define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
-#define SUB(dest,v1,v2) \
-          dest[0]=v1[0]-v2[0]; \
-          dest[1]=v1[1]-v2[1]; \
-          dest[2]=v1[2]-v2[2]; 
 // ----------------------------------------------------------------------------
 double Triangle::_fastIntersect(const Ray& ray) const {
    /* Fast code from http://www.ce.chalmers.se/staff/tomasm/code/ */
