@@ -482,6 +482,16 @@ void torus_test() {
     assert(!t->onEdge(Vector(-10,0,0)));
     assert(!t->onEdge(Vector(0,0,-10)));
     assert(!t->onEdge(Vector(11,0.1,0)));
+
+    // intersect
+    Ray ray = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
+    assert(t->intersect(ray));
+
+    ray = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
+    assert(t->intersect(ray));
+
+    ray = Ray(Vector(0,1000,0),Vector(0,-1,0),1);
+    assert(!t->intersect(ray));
 }
 
 int main(int argc, char *argv[]) {

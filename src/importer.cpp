@@ -7,6 +7,7 @@
 #include "importer.h"
 #include "scene.h"
 #include "camera.h"
+#include "torus.h"
 #include "box.h"
 #include "necklace.h"
 #include "cylinder.h"
@@ -263,6 +264,12 @@ void Importer::parse(const string& filename) {
 	    double r = readDouble(stream);
 	    Vector c = readVector(stream);
 	    cur_object = new Sphere(c,r,*m);
+	} else if (command == "torus") {
+	    stream >> str1;
+	    Material* m = lookupMaterial(str1);
+	    double R = readDouble(stream);
+	    double r = readDouble(stream);
+	    cur_object = new Torus(R,r,*m);
 	} else if (command == "cylinder") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);

@@ -27,13 +27,48 @@ Torus::Torus(double R, double r, Material m) {
  * @see http://www.robots.ox.ac.uk/~awf/graphics/ray-torus.html
  */
 Intersection Torus::_intersect(const Ray& ray) const {
-    // TODO: Implement
-    return Intersection();
+    double xo = ray.getOrigin().x();
+    double yo = ray.getOrigin().y();
+    double zo = ray.getOrigin().z();
+    double xd = ray.getDirection().x();
+    double yd = ray.getDirection().y();
+    double zd = ray.getDirection().z();
+
+    double a = r;
+    double b = R;
+
+    double on = ray.getOrigin().norm(); // Origin norm
+    double dn = ray.getDirection().norm(); // Direction norm
+    double od = (xo*xd+yo*yd+zo*zd); 
+    double rr = on-(a*a+b*b);
+
+
+    double a4 = dn*dn;
+    double a3 = 4*od*dn;
+    double a2 = 2*dn*rr + 4*od-4*a*a*zd*zd;
+    double a1 = 4*od*rr + 8*a*a*zo*zd;
+    double a0 = rr*rr - 4*a*a*(b*b-zo*zo);
+
+    a1 /= a0;
+    a2 /= a0;
+    a3 /= a0;
+    a4 /= a0;
+    double roots[4];
+    int num = Math::solveQuartic(a1,a2,a3,a4,roots);
+    if (num == 0) {
+	return Intersection();
+    } else {
+	double t = roots[0];
+	return Intersection(ray.getPoint(t),t);
+    }
 }
 
+
 /**
+ * Finds the normal at a point of intersection.
+ *
+ * @param i an positive intersection with this torus
  * @see http://research.microsoft.com/~hollasch/cgindex/render/raytorus.html
- * TODO: test
  */
 Vector Torus::normal(const Intersection& i) const {
     Vector x = i.getPoint();
@@ -90,8 +125,15 @@ Vector2 Torus::getUV(const Intersection& intersection) const {
 
 }
 
-bool Torus::intersects(const BoundingBox& b) const {
-
+bool Torus::intersects(const BoundingBox& bb) const {
+    Vector* c = boundingBoundingBox().getCorners();
+    bool result = false;
+    for(int i = 0; i < 8; i++) {
+	if (bb.inside(c[i]) || bb.onEdge(c[i]))
+	    result = true;
+    }
+    delete [] c;
+    return result;
 }
 
 SceneObject* Torus::clone() const {
