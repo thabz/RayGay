@@ -57,11 +57,12 @@ void Camera::enableAdaptiveSupersampling(unsigned int depth) {
  * Enables depth of field.
  * 
  * @param aperture The radius of the circle of confusion.
- * @param samples number of rays in oversampling
+ * @param samples Number of rays in oversampling
+ * @param focalpoint The focal point
  */
-void Camera::enableDoF(double aperture, int samples) {
+void Camera::enableDoF(double aperture, int samples, const Vector& focalpoint ) {
     this->dof_aperture = aperture;
-    this->dof_length = (position-look_at).length();
+    this->dof_length = (position-focalpoint).length();
     this->dof_samples = samples;
     this->dof_enabled = true;
     this->dof_sample_count = 0;

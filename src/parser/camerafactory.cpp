@@ -9,6 +9,19 @@
 
 using namespace std;
 
+/**
+ * Create a pinhole camera.
+ *
+ * Usage:
+ *
+ *  (make-pinhole-camera 
+ *   '( pos (-2700 2700 20)
+ *      lookat (0 -200 0)
+ *      up (0 1 0)
+ *      fov 45
+ *      dof (150.0 30 (-750 0 0))
+ *      aa 0))
+ */
 SCM CameraFactory::make_pinhole_camera(SCM s_options) {
     Camera* camera = new Pinhole();
 
@@ -42,7 +55,14 @@ SCM CameraFactory::make_pinhole_camera(SCM s_options) {
 	    int aa = scm_num2int(s_value,0,"");
 	    camera->enableAdaptiveSupersampling(aa);
 	} else if (key == "dof") {
-	    // TODO: Handle the two parameters of dof
+	    SCM scms[3];
+	    for(uint i = 0; i < 3; i++) {
+		scms[i] = scm_list_ref(s_value, scm_int2num(i));
+	    }
+	    double aperture = scm_num2double(scms[0], 0, "");
+	    int samples = scm_num2int(scms[1], 0, "");
+	    Vector focalpoint = scm2vector(scms[2], "", 0);
+	    camera->enableDoF(aperture, samples, focalpoint);
 	} else {
 	    cout << "Unknown camera option: " << key << endl;
 	}

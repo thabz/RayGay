@@ -46,7 +46,7 @@ class Camera {
 	void enableAdaptiveSupersampling(unsigned int depth);
 
 	/// Enable depth of field
-	void enableDoF(double aperture, int samples);
+	void enableDoF(double aperture, int samples, const Vector& focalpoint);
 
 	/// Says whether depth of field is enabled
 	bool isDoFEnabled() const { return dof_enabled; };

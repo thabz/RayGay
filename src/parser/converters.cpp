@@ -16,6 +16,20 @@ Vector scm2vector(SCM s_vector, char* subr, int pos) {
     return result;
 }
 
+Vector2 scm2vector2(SCM s_vector, char* subr, int pos) {
+    if (!((SCM_NFALSEP (scm_list_p (s_vector))) &&
+    (scm_num2int(scm_length(s_vector), pos, subr) == 2))) {
+	scm_wrong_type_arg(subr,pos,s_vector);
+    }
+
+    double res[2];
+    SCM s_value;
+    for(uint i = 0; i < 2; i++) {
+	s_value = scm_list_ref(s_vector, scm_int2num(i));
+	res[i] = scm_num2double(s_value, pos, subr);
+    }
+    return Vector2(res[0], res[1]);
+}
 
 SCM vector2scm(Vector vector) {
     SCM v0 = scm_double2num(vector[0]);
