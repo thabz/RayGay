@@ -23,4 +23,8 @@ box $chess -700 -50 -700  700 0 700
 #sphere $wood 300 -300 300 0
 #sphere $marble 300 300 300 0
 
-3ds $dullyellow 20 3ds/pig.3ds rotate 1 0 0 90 rotate 0 1 0 90
+#3ds $dullyellow 20 3ds/pig.3ds rotate 1 0 0 90 rotate 0 1 0 90
+
+#box $helloworld -200 0 -200         200 400 200 rotate 0 1 0 45
+box $plaster -200 0 -200         200 400 200 rotate 0 1 0 45
+

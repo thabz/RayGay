@@ -103,7 +103,21 @@ specular 1.0 1.0 1.0
 ks 0.2
 specpow 15
 
-#material $chess checker $dullgreen $dullblue 50
-material $chess checker $blue $red 100
+material $chess checker $dullgreen $dullblue 100
+#material $chess checker $blue $red 100
 kd 1.0
 ks 0.0
+
+material $helloworld plastic 1.0 1.0 1.0
+texturemap gfx/halloworld.tga
+kd 1.0
+ks 0.0
+
+material $plaster plastic 1.0 1.0 1.0
+texturemap gfx/plaster.tga
+bumpmap gfx/plasterbump.tga 30.0
+kd 1.0
+ks 0.0
+
+
+
