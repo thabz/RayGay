@@ -54,7 +54,7 @@ void PhotonRenderer::init() {
     delete photontracer;
     
     //irradiance_cache = new IrradianceCache(space->getWorldBoundingBox(),5);
-    BoundingBox bbox = BoundingBox(Vector(-400,-400,-400),Vector(400,400,400));
+    BoundingBox bbox = BoundingBox(Vector(-733,-733,-733),Vector(733,733,733));
     irradiance_cache = new IrradianceCache(bbox,renderersettings->cache_tolerance);
 
     qmc_sequence = new Halton(2,2);
@@ -218,9 +218,10 @@ RGB PhotonRenderer::getDiffuseIrradiance(const Vector& point, const Vector& norm
     bool success = irradiance_cache->getEstimate(point,normal,&irradiance);
 
     if (!success) {
+    //if (!success || RANDOM(0,100) < 1.0) {
 	irradiance = finalGather(point, normal, ray_dir, renderersettings->final_gather_rays, 0, &hmd);
 	irradiance_cache->putEstimate(point,normal,irradiance,hmd);
-	irradiance = RGB(100.0,100.0,100.0);
+//	irradiance = RGB(10000.0,10000.0,10000.0);
     } 
     return irradiance;
 }
@@ -242,7 +243,7 @@ Vector PhotonRenderer::finalGather(const Vector& point, const Vector& normal, co
 	Vector dir = normal.randomHemisphere(rnd[0],rnd[1]);
 	//Vector dir = Math::perturbVector(normal,89);
 
-	Ray ray = Ray(point+0.1*dir,dir,-1);
+	Ray ray = Ray(offset_point,dir,-1);
 	if (space->intersect(ray)) {
 	    gatherHits++;
 	    Intersection* inter = space->getLastIntersection();

@@ -70,9 +70,9 @@ void work(string scenefile, string outputfile) {
     Vector2 img_size = importer.getImageSize();
     Image* img = new Image(int(img_size[0]),int(img_size[1]));
 
-    Matrix n = Matrix::matrixRotate(Vector(0,1,0),2.0);
+    Matrix n = Matrix::matrixRotate(Vector(1,1,0),21.0);
     //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
-    //  scene->transform(n);
+    scene->transform(n);
 
     //SpaceSubdivider* space = new KdTree();
     SpaceSubdivider* space = new KdTree();

@@ -108,6 +108,13 @@ void vector_test() {
     w = Vector(20,31,42);
     assert(IS_EQUAL((v-w).norm(),(w-v).norm()));
 
+    // Test scalar
+    v = Vector(10,10,10);
+    v.normalize();
+    assert(IS_EQUAL(v*v,1));
+
+    v = Vector(0,0,1);
+    assert(IS_EQUAL(v*v,1));
 }
 
 void vector2_test() {
