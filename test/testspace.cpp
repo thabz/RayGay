@@ -159,26 +159,26 @@ class boundingbox_test : public Test {
 	    BoundingBox b_left;
 	    BoundingBox b_right;
 	    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
-	    b.split(&b_left, &b_right, 0, 0.0);
+	    b.split(b_left, b_right, 0, 0.0);
 	    assertTrue(b_left.minimum() == Vector(-1,-1,-1));
 	    assertTrue(b_left.maximum() == Vector(0,1,1));
 	    assertTrue(b_right.minimum() == Vector(0,-1,-1));
 	    assertTrue(b_right.maximum() == Vector(1,1,1));
 
-	    b.split(&b_left, &b_right, 1, 0.0);
+	    b.split(b_left, b_right, 1, 0.0);
 	    assertTrue(b_left.minimum() == Vector(-1,-1,-1));
 	    assertTrue(b_left.maximum() == Vector(1,0,1));
 	    assertTrue(b_right.minimum() == Vector(-1,0,-1));
 	    assertTrue(b_right.maximum() == Vector(1,1,1));
 
-	    b.split(&b_left, &b_right, 2, 0.0);
+	    b.split(b_left, b_right, 2, 0.0);
 	    assertTrue(b_left.minimum() == Vector(-1,-1,-1));
 	    assertTrue(b_left.maximum() == Vector(1,1,0));
 	    assertTrue(b_right.minimum() == Vector(-1,-1,0));
 	    assertTrue(b_right.maximum() == Vector(1,1,1));
 
 	    b = BoundingBox(Vector(0,0,0),Vector(2,2,2));
-	    b.split(&b_left, &b_right, 0, 0.5);
+	    b.split(b_left, b_right, 0, 0.5);
 	    assertTrue(b_left.minimum() == Vector(0,0,0));
 	    assertTrue(b_left.maximum() == Vector(0.5,2,2));
 	    assertTrue(b_right.minimum() == Vector(0.5,0,0));
