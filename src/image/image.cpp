@@ -148,5 +148,3 @@ void Image::grayscale() {
     }
 }
 
-void Image::test() {
-}

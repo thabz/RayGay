@@ -37,7 +37,6 @@ void TgaIO::save(const Image* const image, const std::string& filename) const {
     Header[15] = ((long) height >> 8);
     Header[16] = 32;
     Header[17] = 0;
-
     
     RGBA color;
 
@@ -68,6 +67,65 @@ void TgaIO::save(const Image* const image, const std::string& filename) const {
     delete [] bytes;
 }
 
+RGBA readpixel(FILE* handle, int bpp) {
+    byte data[4];
+    fread(data,1,bpp,handle);
+    RGBA result;
+    switch(bpp) {
+	case 3:
+	    result = RGBA(data[2],data[1],data[0],1.0);
+	    break;
+	case 4:
+	    result = RGBA(data[2],data[1],data[0],data[3]);
+	    break;
+	case 1:
+	    result = RGBA(data[0],data[0],data[0],1.0);
+	    break;
+    }
+    result *= double(1.0/255.0);
+    return result;
+}
+
+/**
+ * @param handle The open file handle
+ * @param dest an array of width length for storing RGBA values
+ * @param width pixels per line
+ * @param rle whether the data is compressed
+ * @param bpp bytes per pixel (3 or 4)
+ */
+void readscanline(FILE* handle, RGBA* dest, int width, int bpp, bool rle) {
+    if (rle) {
+	int pixels_read = 0;
+	byte repcount;
+	do {
+	    fread(&repcount,1,1,handle);
+	    int count = (int(repcount) & 127) + 1;
+	    if (int(repcount) > 127) {
+		// Process run-length packet
+		RGBA color = readpixel(handle,bpp);
+		for(int i = 0; i < count; i++) {
+		    if (pixels_read + i > width)
+			continue; // Safety
+		    dest[pixels_read + i] = color;
+		}
+	    } else {
+		// Process raw packet
+		for(int i = 0; i < count; i++) {
+		    if (pixels_read + i > width)
+			continue; // Safety
+		    dest[pixels_read + i] = readpixel(handle,bpp);
+		}
+	    }
+	    pixels_read += count;
+	} while (pixels_read < width);
+    } else {
+	// Read an uncompressed line
+	for(int x = 0; x < width; x++) {
+	    dest[x] = readpixel(handle,bpp);
+	}
+    }
+}
+
 /**
  * Loads the image from a tga 24 og 32 bit uncompressed tga-file.
  */
@@ -86,34 +144,32 @@ Image* TgaIO::load(const std::string& filename) {
 
 
     int bpp = int(Header[16]) / 8; // Bytes per pixel
-        cout << "bpp: " << bpp << endl;
-    if (Header[2] != 2 || bpp < 3 ) {
-        cout << "Error reading " << filename << ": Only 24 or 32 bit noncompressed RGB is supported" << endl;
+    if (Header[1] != 0 || Header[2] & 7 != 2 || bpp < 3 ) {
+        cout << "Error reading " << filename << ": Only 24 or 32 bit truecolor RGB is supported" << endl;
         exit(EXIT_FAILURE);
     }
     
+    // Says whether the data is rle encoded
+    bool rle = int(Header[2]) == 10;
+    cout << "bpp: " << bpp << (rle ? " (rle)" : "") << endl;
+
     long width = ((long) Header[13] << 8) + Header[12];
     long height = ((long) Header[15] << 8) + Header[14];
     assert(width > 0);
     assert(height > 0);
-    byte* bytes = new byte[width*height*bpp];
 
     fseek(Handle, 18, 0);
-    fread(bytes, bpp, width*height, Handle);
-    fclose(Handle);
 
     Image* image = new Image(width,height);
+    RGBA* line = new RGBA[width+1];
     for(int y = 0; y < height ; y++) {
+	readscanline(Handle,line,width,bpp,rle);
         for(int x = 0; x < width; x++) {
-	    long offset = ((height-1-y)*width + x)*bpp;
-	    RGBA color = RGBA(bytes[offset+2] / 255.0,
-		              bytes[offset+1] / 255.0,
-		              bytes[offset+0] / 255.0,double(1));
-	    image->setRGBA(x,y,color);
+	    image->setRGBA(x,height-1-y,line[x]);
 	}
     }
-
-    delete [] bytes;
+    //fread(bytes, bpp, width*height, Handle);
+    fclose(Handle);
     cout << "Loaded " << filename << " " << width << "x" << height << endl;
     return image;
 }
