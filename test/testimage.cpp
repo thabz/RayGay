@@ -32,6 +32,7 @@ void test_rgba() {
 }
 
 void test_png() {
+    // Test basic save and load
     RGB color = RGB(1.0,0.0,1.0);
 
     Image* img = new Image(10,20);
@@ -45,6 +46,16 @@ void test_png() {
     remove("test.png");
     delete img;
     delete img2;
+
+    // Load 24 bit png 
+    img = Image::load("gfx/rgb.png");
+    assert(img->getRGBA(0,0) == RGB(1.0,0,0));
+    delete img;
+    
+    // Test load of png with palette
+    img = Image::load("gfx/withpalette.png");
+    assert(img->getRGBA(0,0) == RGB(1.0,0,0));
+    delete img;
 }
 
 void test_tga() {
