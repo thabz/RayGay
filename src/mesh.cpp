@@ -18,6 +18,7 @@
 #include "bsp.h"
 #include "circle.h"
 #include "cylinder.h"
+#include "linesegment.h"
 
 #define PHONG_ANGLETHRESHOLD 0.4226f // Smoothing threshold approx. 65 Deegrees :) 
 
@@ -259,6 +260,22 @@ Intersection Mesh::_intersect(const Ray& ray) const {
 void Mesh::getUV(const Intersection& intersection, double* u, double* v) const {
     // TODO: Implement
 }
+
+std::vector<Vector>* Mesh::getVertices() {
+    std::vector<Vector>* result = new std::vector<Vector>;
+    for(int i = 0; i < corners.size(); i++) {
+	result->push_back(corners[i]);
+    }
+    return result;
+}
+
+std::vector<Linesegment>* Mesh::getEdges() {
+    std::vector<Linesegment>* result = new std::vector<Linesegment>;
+    for(EdgeMapType::iterator h = edgeMap.begin(); h != edgeMap.end(); h++) {
+	// TODO: Retrieve all values in the map.
+    }
+}
+
 
 // ----------------------------------------------------------------------------
 Mesh::Edge::Edge(int iV0, int iV1) {

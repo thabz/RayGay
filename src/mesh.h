@@ -14,6 +14,7 @@
 #include "edgekey.h"
 
 class SpaceSubdivider;
+class Linesegment;
 
 /// An object consisting of a mesh of triangles
 class Mesh : public object {
@@ -82,6 +83,9 @@ class Mesh : public object {
         void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3);
 	/// Internal test
 	static void test();
+
+	std::vector<Vector>* getVertices();
+	std::vector<Linesegment>* getEdges();
 
 	Vector normalAt(int i) { return normals[i]; };
 	Vector cornerAt(int i) { return corners[i]; };
