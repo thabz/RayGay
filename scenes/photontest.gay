@@ -6,8 +6,8 @@ renderer photonrenderer
 #renderer raytracer
 
 photonmap photons 100000
-photonmap estimate-radius 40
-photonmap estimate-samples 100
+photonmap estimate-radius 10
+photonmap estimate-samples 10
 photonmap final-gather-rays 20
 
 camera-position 0 180 1100

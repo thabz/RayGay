@@ -11,6 +11,7 @@
 #include "paths/circle.h"
 #include "paths/line.h"
 #include "paths/bezierspline.h"
+#include "paths/catmullromspline.h"
 #include "boundingbox.h"
 
 using namespace std;
@@ -151,12 +152,25 @@ void arc_test() {
     cout << "arc_test() not written." << endl;
 }
 
+void catmullromspline_test() {
+    int num = 5;
+    Vector p[5] = { Vector(1,1,1),Vector(10,10,2),Vector(50,20,10),Vector(3,4,6),Vector(5,2,5) };
+    CatmullRomSpline* spline = new CatmullRomSpline(p,num);
+    
+    // A Catmull-Rom spline passes through all but first and last control points
+    assert(spline->getPoint(0) == p[1]);
+    assert(spline->getPoint(1) == p[3]);
+    assert(spline->getPoint(0.5) == p[2]);
+}
+
 int main(int argc, char *argv[]) {
     linesegment_test();
     circle_test();
     line_test();
     bezierspline_test();
     arc_test();
+    catmullromspline_test();
+
     return EXIT_SUCCESS;
 }
 

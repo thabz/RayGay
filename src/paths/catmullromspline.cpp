@@ -21,12 +21,33 @@ CatmullRomSpline::CatmullRomSpline(const std::vector<Vector>& points) {
     assert(points_num > 3);
 }
 
+/**
+ * Constructor. 
+ *
+ * The constructor takes an array of \f$ N+1 \f$ control points. Note that
+ * the curve only passes through points \f$ P_1, P_2, \ldots, P_{N-1} \f$.
+ *
+ * The endpoints \f$ P_0 \f$ and \f$ P_N \f$ only specify the
+ * initial and terminating tangents.
+ *
+ * @param points the control points \f$ P_0, P_1, \ldots, P_N \f$
+ */
+CatmullRomSpline::CatmullRomSpline(Vector* points, unsigned int num) {
+    assert(num > 3);
+    points_num = num;
+
+    for(unsigned int i = 0; i < num; i++) {
+	P.push_back(points[i]);
+    }
+}
+
 CatmullRomSpline::~CatmullRomSpline() {
     P.clear();
 }
 
 Vector CatmullRomSpline::getPoint(double t) const {
     unsigned int i = segmentBegin(t);
+    t = adjustT(t);
     double tt = t*t;
     double ttt = tt*t;
     return 0.5* ((-ttt + 2*tt - t)   * P[i-1] +
@@ -37,6 +58,7 @@ Vector CatmullRomSpline::getPoint(double t) const {
 
 Vector CatmullRomSpline::getTangent(double t) const {
     unsigned int i = segmentBegin(t);
+    t = adjustT(t);
     double tt = t*t;
     return 0.5* ((-3*tt + 4*t - 1)   * P[i-1] +
 	         (9*tt - 10*t)       * P[i]   +
@@ -53,6 +75,10 @@ void CatmullRomSpline::transform(const Matrix& m) {
 unsigned int CatmullRomSpline::segmentBegin(const double t) const {
     // TODO: Test!
     int segments = points_num - 3;
-    return int(t / segments);
+    return int(t * segments) + 1;
 }
 
+double CatmullRomSpline::adjustT(const double t) const {
+    int segments = points_num - 3;
+    return fmod(t, double(segments));
+}
