@@ -19,7 +19,7 @@ class Material {
 	Material(); ///< Default constructor
 	Material(RGB diffuseColor, RGB specularColor);
         Material(RGB diffuseColor, double kd, RGB specularColor, double ks, int spec_coeff);
-	~Material(); ///< Default destructor
+	virtual ~Material(); ///< Default destructor
 
 	/*!  Get the diffuse color */
 	RGB getDiffuseColor() const { return _diffuseColor; };

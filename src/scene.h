@@ -21,7 +21,7 @@ class Scene {
 
     public:
 	Scene();
-	~Scene();	
+	virtual ~Scene();	
 	void addObject(object* obj);
 	void addObject(ObjectCollection* obj);
 	void addLight(Lightsource* light);

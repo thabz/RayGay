@@ -28,7 +28,7 @@ class Hierarchy : public SpaceSubdivider {
 	Hierarchy(BoundingBox bbox);
 
 	/// Destructor
-	~Hierarchy();
+	virtual ~Hierarchy();
 
 	void addObject(object* obj); ///< Place a object in the hierarchy
 	Intersection intersect(const Ray& ray) const; ///< Calculate an intersection with the hierarchy

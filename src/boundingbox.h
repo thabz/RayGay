@@ -17,7 +17,7 @@ class BoundingBox {
     public:
 	BoundingBox();
 	BoundingBox(const Vector corner1, const Vector corner2);
-	~BoundingBox();
+	virtual ~BoundingBox();
 
 	virtual Intersection intersect(const Ray& ray) const;
 	virtual bool checkIntersect(const Ray& ray) const;
