@@ -44,6 +44,12 @@ void PhotonRenderer::init() {
     qmc_sequence = new Halton(2,2);
 }
 
+PhotonRenderer::~PhotonRenderer() {
+    delete qmc_sequence;
+    delete globalphotonmap;
+    delete causticsphotonmap;
+}
+
 RGB PhotonRenderer::getPixel(const Vector2& v) {
     Ray ray = scene->getCamera()->getRay(v[0],v[1]);
     return tracePrimary(ray);

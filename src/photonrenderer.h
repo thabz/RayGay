@@ -20,6 +20,8 @@ class PhotonRenderer : public Renderer {
     public:
 	/// Default constructor
 	PhotonRenderer(RendererSettings* settings, Scene* scene, SpaceSubdivider* spc);
+	// Destructor
+	virtual ~PhotonRenderer();
 
 	/// This populates the photon maps
 	void init();
