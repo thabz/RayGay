@@ -298,8 +298,8 @@ void SceneObjectFactory::register_procs()
     scm_c_define_gsubr("make-bezierpatch",4,0,0,
 	    (SCM (*)()) make_bezierpatch);
     scm_c_define_gsubr("make-difference",2,1,0,
-	    (SCM (*)()) make_bezierpatch);
+	    (SCM (*)()) make_difference);
     scm_c_define_gsubr("make-intersection",2,1,0,
-	    (SCM (*)()) make_bezierpatch);
+	    (SCM (*)()) make_intersection);
 }
 

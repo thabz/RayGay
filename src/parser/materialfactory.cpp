@@ -39,6 +39,9 @@ SCM MaterialFactory::make_material(SCM s_options) {
 	} else if (key == "kd") {
 	    double d = scm_num2double(s_value,0,"");
 	    material->setKd(d);
+	} else if (key == "eta") {
+	    double d = scm_num2double(s_value,0,"");
+	    material->setEta(d);
 	} else if (key == "normal") {
 	    SchemeNormalPerturber* perturber = new SchemeNormalPerturber(s_value);
 	    material->setNormalPerturber(perturber);

@@ -22,7 +22,7 @@ class RendererSettings {
 	/// The maximum number of caustic photons to store
 	int caustic_photons_num;
 	/// The estimate radius when doing an irrandiance estimate from the photonmaps
-	int estimate_radius;
+	double estimate_radius;
 	/// The maximum number of photons to consider when doing an irrandiance estimate from the photonmaps
 	int estimate_samples;
 	/// The number of rays to shoot when doing final gathering

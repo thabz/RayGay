@@ -25,6 +25,7 @@ Parser::Parser(string filename) {
     scm_init_guile();
     init_wrapper_type();
     // Globals
+    scm_c_define("settings", SCM_EOL);
     scm_c_define("scene", SCM_EOL);
     scm_c_define("camera", SCM_EOL);
     scm_c_define("renderer", SCM_EOL);
@@ -97,10 +98,10 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	string r_string = scm2string(s_renderer);
 	if (r_string == "raytracer") {
 	    type = RendererSettings::RAYTRACER;
-	} else if (r_string == "photontracer") {
-	    type = RendererSettings::RAYTRACER;
+	} else if (r_string == "photonrenderer") {
+	    type = RendererSettings::PHOTON_RENDERER;
 	} else if (r_string == "pathtracer") {
-	    type = RendererSettings::RAYTRACER;
+	    type = RendererSettings::PATHTRACER;
 	} else {
 	    type = RendererSettings::NONE;
 	    scm_error(NULL, "internal-setting-renderer", ("Unknown renderertype: " + r_string).c_str(), SCM_UNSPECIFIED, NULL);
@@ -119,6 +120,41 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	if (renderersettings->renderertype != RendererSettings::NONE) {
 	    cout << "No camera defined. Disabled rendering." << endl;
 	    renderersettings->renderertype = RendererSettings::NONE;
+	}
+    }
+    
+    // Set settings
+    SCM s_settings = lookup("settings");
+    if (!SCM_NULLP(s_settings)) {
+	//assert(SCM_NFALSEP (scm_list_p (s_settings)));
+	uint length = scm_num2int(scm_length(s_settings),0,"");
+
+	assert(length % 2 == 0);
+	uint argc = length / 2;
+	cout << "Args: " << argc << endl;
+
+	for(uint i = 0; i < argc; i++) {
+	    char* key_c = gh_symbol2newstr(scm_list_ref(s_settings, scm_int2num(i*2)),NULL);
+	    string key = string(key_c);
+	    SCM s_value = scm_list_ref(s_settings, scm_int2num(i*2+1));
+	    double value = scm_num2double(s_value,0,"");
+	    if (key == "globalphotons") {
+		renderersettings->global_photons_num = int(value);
+	    } else if (key == "causticphotons") {
+		renderersettings->caustic_photons_num = int(value);
+	    } else if (key == "estimateradius") {
+		renderersettings->estimate_radius = int(value);
+	    } else if (key == "estimateradius") {
+		renderersettings->estimate_radius = value;
+	    } else if (key == "estimatesamples") {
+		renderersettings->estimate_samples = int(value);
+	    } else if (key == "finalgatherrays") {
+		renderersettings->final_gather_rays = int(value);
+	    } else if (key == "cachetolerance") {
+		renderersettings->cache_tolerance = value;
+	    } else {
+		cout << "Unknown setting: " << key << endl;
+	    }
 	}
     }
 
