@@ -6,11 +6,11 @@ include materials.gay
 
 renderer raytracer
 
-camera-position 0 0 1500
+camera-position 200 500 1500
 camera-up 0 1 0
 camera-lookat 0 0 0
 camera-field-of-view 45
-camera-aa 4
+camera-aa 0
 
 image-ratio 4 3
 image-width 640
