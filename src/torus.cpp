@@ -23,43 +23,51 @@ Torus::Torus(double R, double r, Material m) {
     this->material = m;
 }
 
-/**
- * @see http://www.robots.ox.ac.uk/~awf/graphics/ray-torus.html
- */
 Intersection Torus::_intersect(const Ray& ray) const {
-    double xo = ray.getOrigin().x();
-    double yo = ray.getOrigin().y();
-    double zo = ray.getOrigin().z();
+
+    Vector O = ray.getOrigin();
+
+    // Move ray's origin closer to torus to improve accuracy.
+    // Trick learned from http://www.hassings.dk/l3/povtorus/povtorus.html
+    //
+    // We moved O to a point on a bounding sphere with radisu R + r + r
+    double BoundingRadius = R + r + r;
+    double distP = O.norm();
+    double closer = 0.0;
+    if (distP > BoundingRadius) {
+	distP = sqrt(distP);
+	closer = distP - BoundingRadius;
+	O += closer * ray.getDirection();
+    }
+    
+    double xo = O.x();
+    double yo = O.y();
+    double zo = O.z();
     double xd = ray.getDirection().x();
     double yd = ray.getDirection().y();
     double zd = ray.getDirection().z();
 
-    double a = r;
-    double b = R;
+    double R2 = R*R;
+    double r2 = r*r;
+    double Py2 = yo*yo;
+    double Dy2 = yd*yd;
+    double pdy2 = yo * yd;
 
-    double on = ray.getOrigin().norm(); // Origin norm
-    double dn = ray.getDirection().norm(); // Direction norm
-    double od = (xo*xd+yo*yd+zo*zd); 
-    double rr = on-(a*a+b*b);
+    double k1 = xo*xo + zo*zo + Py2 - R2 -r2;
+    double k2 = xo*xd + zo*zd + pdy2;
 
+    double a1 = 4.0 * k2;
+    double a2 = 2.0 * (k1 + 2.0 * (k2 * k2 + R2 * Dy2));
+    double a3 = 4.0 * (k2 * k1 + 2.0 * R2 * pdy2);
+    double a4 = k1 * k1 + 4.0 * R2 * (Py2 - r2);
 
-    double a4 = dn*dn;
-    double a3 = 4*od*dn;
-    double a2 = 2*dn*rr + 4*od-4*a*a*zd*zd;
-    double a1 = 4*od*rr + 8*a*a*zo*zd;
-    double a0 = rr*rr - 4*a*a*(b*b-zo*zo);
-
-    a1 /= a0;
-    a2 /= a0;
-    a3 /= a0;
-    a4 /= a0;
     double roots[4];
     int num = Math::solveQuartic(a1,a2,a3,a4,roots);
     if (num == 0) {
 	return Intersection();
     } else {
 	double t = roots[0];
-	return Intersection(ray.getPoint(t),t);
+	return Intersection(ray.getPoint(t + closer),t + closer);
     }
 }
 

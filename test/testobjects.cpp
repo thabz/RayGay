@@ -484,13 +484,24 @@ void torus_test() {
     assert(!t->onEdge(Vector(11,0.1,0)));
 
     // intersect
+    Intersection* i;
     Ray ray = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
     assert(t->intersect(ray));
+    i = t->getLastIntersection();
+    assert(i->getPoint() == Vector(0,0,11));
+    assert(t->normal(*i) == Vector(0,0,1));
 
     ray = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
     assert(t->intersect(ray));
+    i = t->getLastIntersection();
+    assert(i->getPoint() == Vector(0,0,-11));
+    assert(t->normal(*i) == Vector(0,0,-1));
 
-    ray = Ray(Vector(0,1000,0),Vector(0,-1,0),1);
+    ray = Ray(Vector(0,1000,0),Vector(0,-1,0),1); // In middle
+    assert(!t->intersect(ray));
+    ray = Ray(Vector(0,1000,11.1),Vector(0,-1,0),1); // Close by
+    assert(!t->intersect(ray));
+    ray = Ray(Vector(1000,11.1,0),Vector(-1,0,0),1); // Close by
     assert(!t->intersect(ray));
 }
 
