@@ -12,17 +12,12 @@
 #include "boundingbox.h"
 #include "math/vector2.h"
 
-#define VERBOSE
-#define SANITY_CHECK
-
 #define KD_TREE_MAX 2
 #define KD_TREE_MAX_DEPTH 50
 // Don't check for best split in all 3 dimensions when number
 // of objects in a node exceeds this value. Then just use largest
 // dimension of bbox as best dimension.
 #define KD_TREE_MAX_ELEMENTS_IN_FULL_SPLIT_CHECK 25
-
-#define NO_STATS
 
 /*
  * Macros for accessing the packed KdNode.
@@ -51,9 +46,7 @@ KdTree::~KdTree() {
 }
 
 void KdTree::addObject(Object* obj) {
-#ifndef NO_STATS    
     Stats::getUniqueInstance()->inc(STATS_KDTREE_OBJECTS_ADDED);
-#endif    
     added_objects->push_back(obj);
 }
 
@@ -123,13 +116,9 @@ void KdTree::prepare() {
     delete [] left_bobs;
     delete [] right_bobs;
     
-#ifndef NO_STATS
     Stats::getUniqueInstance()->put(STATS_KDTREE_DEPTH,max_depth);
     Stats::getUniqueInstance()->put(STATS_KDTREE_NODES,nodes.size());
-#endif    
-    cout << "Nodes in kd-tree: " << nodes.size() << endl;
-    cout << "Depth: " << max_depth << endl;
-    cout << "Size of KdNode: " << sizeof(KdNode) << endl;
+    //cout << "Size of KdNode: " << sizeof(KdNode) << endl;
     //cout << "Waste: " << (nodes.capacity() - nodes.size())*sizeof(KdNode) << endl;
     prepared = true;
 }
