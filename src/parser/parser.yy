@@ -30,6 +30,12 @@
 #include "objects/wireframe.h"    
 #include "objects/torus.h"    
 #include "materials/material.h"    
+#include "parser/floatnodes.h"    
+#include "parser/syntaxnode.h"    
+#include "parser/vectornodes.h"    
+#include "parser/rgbnodes.h"    
+#include "parser/langnodes.h"    
+#include "parser/transformationnodes.h"    
 
 #include "camera.h"    
 #include "exception.h"    
