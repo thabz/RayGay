@@ -103,6 +103,9 @@ class Mesh : public ObjectGroup {
 	
 	virtual SceneObject* clone() const;
 
+	void hintVertexNum(uint num);
+	void hintFaceNum(uint num);
+
     private:
 	MeshType meshType;
 	bool prepared;
@@ -123,9 +126,6 @@ class Mesh : public ObjectGroup {
 	// 3 indices into normals for each face
 	std::vector<uint> i_normal_indices;
 
-    protected:
-	void hintVertexNum(uint num);
-	void hintFaceNum(uint num);
 };
 
 inline
