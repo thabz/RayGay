@@ -55,10 +55,6 @@ void CSGIntersection::transform(const Matrix& m) {
  */
 void CSGDifference::allIntersections(const Ray& ray, vector<Intersection>& result) const {
     vector<Intersection> left_int;
-    vector<Intersection> right_int;
-    unsigned int l = 0;
-    unsigned int r = 0;
-
     bool left_inside = false;
     left->allIntersections(ray,left_int);
     if (left_int.empty()) return;
@@ -66,6 +62,7 @@ void CSGDifference::allIntersections(const Ray& ray, vector<Intersection>& resul
 	left_inside = !left_int.front().isEntering();
     }
 
+    vector<Intersection> right_int;
     bool right_inside = false;
     right->allIntersections(ray,right_int);
     if (right_int.size() > 0) {
@@ -80,9 +77,10 @@ void CSGDifference::allIntersections(const Ray& ray, vector<Intersection>& resul
     right_inside = !right_inside;
     if (right_int.empty() && !right_inside) return;
     
-    result.reserve(left_int.size() + right_int.size());
-
     // Merge intersections while preserving order
+    unsigned int l = 0;
+    unsigned int r = 0;
+    result.reserve(left_int.size() + right_int.size());
     while (l < left_int.size() && r < right_int.size()) {
 	if (left_int[l].getT() < right_int[r].getT()) {
 	    Intersection i = left_int[l];
