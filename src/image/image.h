@@ -24,6 +24,9 @@ class Image {
 	RGB getTexel(double u, double v) const;
 	RGB getBiCubicTexel(double u, double v) const;
 
+	/// Converts image to grayscale
+	void grayscale();
+
 	/// Load a file (the caller must free the Image)
 	static Image* load(const std::string& filename);
 

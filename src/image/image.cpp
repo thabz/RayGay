@@ -193,5 +193,23 @@ Image* Image::load(const std::string& filename) {
     return new Image(width,height,data);
 }
 
+/**
+ * Grayscale the image.
+ * 
+ * Using the formula from ITU-R Recommendation BT.709, "Basic Parameter Values for the Studio and for International Programme Exchange (1990) [formerly CCIR Rec. 709] 
+ */
+void Image::grayscale() {
+    RGB col;
+    RGB res;
+    for(int y = 0; y < height ; y++) {
+        for(int x = 0; x < width; x++) {
+	    col = getRGB(x,y);
+            double gray = 0.2125 * col.r() + 0.7154 * col.g() + 0.0721 * col.b(); 
+	    res = RGB(gray,gray,gray);
+	    setRGB(x,y,res);
+	}
+    }
+}
+
 void Image::test() {
 }
