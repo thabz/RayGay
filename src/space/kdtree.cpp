@@ -52,6 +52,14 @@ Object* KdTree::intersectForShadow(const Ray& ray, double max_t) const {
     }
 }
 
+class compareAreaDesc {
+    public:
+	bool operator()(Object const* p1, Object const* p2)
+	{
+	    return p1->area() < p2->area();
+	}
+};
+
 
 void KdTree::prepare() {
     world_bbox = enclosure(added_objects);
@@ -78,6 +86,7 @@ void KdTree::prepare() {
 	    node.right = &(nodes[old.right]);
 	} else {
 	    node.objects = old.objects;
+	    sort(node.objects->begin(),node.objects->end(),compareAreaDesc());
 	}
 	nodes[i] = node;
     }
