@@ -10,6 +10,7 @@
 class Circle : public Path {
 
     public:
+	/// Constructor
 	Circle(const Vector& center, double radius, const Vector& normal);
 	virtual ~Circle() {};
 	Vector getPoint(double t) const;

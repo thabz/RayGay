@@ -8,6 +8,7 @@
 class Linesegment : public Path {
 
     public:
+	/// Constructor
 	Linesegment(const Vector& begin, const Vector& end);
 	Vector getPoint(double t) const;
 	Vector getTangent(double t) const;
