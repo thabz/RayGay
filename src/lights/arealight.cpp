@@ -4,8 +4,9 @@
 #include "lights/arealight.h"
 #include "paths/circle.h"
 #include "intersection.h"
-#include "space/kdtree.h"
 #include "math/vector.h"
+
+class KdTree;
 
 /**
  * Constructs an area light

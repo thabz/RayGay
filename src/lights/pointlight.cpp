@@ -1,9 +1,9 @@
 
 #include "lights/pointlight.h"
 #include "lights/lightinfo.h"
-#include "math/matrix.h"
 #include "intersection.h"
-#include "space/kdtree.h"
+
+class KdTree;
 
 Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
 }

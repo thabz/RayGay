@@ -3,7 +3,8 @@
 #include "math/functions.h"
 #include "math/halton.h"
 #include "intersection.h"
-#include "space/kdtree.h"
+
+class KdTree;
 
 Skylight::Skylight (double radius, int num) : Lightsource(Vector(0,0,0)) {
     this->radius = radius;
