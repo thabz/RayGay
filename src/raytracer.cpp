@@ -27,9 +27,9 @@ RGB Raytracer::getPixel(double x, double y) {
 
 
 RGB Raytracer::trace(const Ray& ray, int depth) {
-    Intersection intersection = space->intersect(ray);
     RGB color; // Set to scene's ambient color
-    if (intersection.isIntersected()) {
+    if (space->intersect(ray)) {
+	Intersection intersection = *(space->getLastIntersection());
 	color = shade(ray,intersection,depth);
     } else {
         color = scene->getBackgroundColor(ray);

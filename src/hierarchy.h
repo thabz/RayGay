@@ -17,7 +17,8 @@ class Ray;
  * Implementation of a bounding volume hierarchy.
  * This is basically a tree of BoundingBox at the joins and object as leafs.
  */
-class Hierarchy : public SpaceSubdivider {
+// TODO: Fix så nedarvning kan lade sig gøre
+class Hierarchy { //: public SpaceSubdivider {
     friend std::ostream & operator<< (std::ostream &os, Hierarchy &x);
 
     public:

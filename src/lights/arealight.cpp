@@ -68,12 +68,12 @@ Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& norma
 	    direction_to_light.normalize();
 
 	    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
-	    Intersection in = space->intersectForShadow(ray_to_light,hints[i]);
-	    if (in.isIntersected()) {
+	    // TODO: Fix brug af hints[i] herunder
+	    if (space->intersectForShadow(ray_to_light,hints[i])) {
 		count++;
 		hints[i] = NULL;
 	    } else {
-		hints[i] = in.getObject();
+		hints[i] = space->getLastIntersection()->getObject();
 	    }
 	}
 	info.intensity = double(count) / num;

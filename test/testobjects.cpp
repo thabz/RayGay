@@ -30,16 +30,17 @@ void sphere_test() {
 
     s = Sphere(Vector(0,0,0),60.0,m);
 
+    /* Test intersection(ray) */
     Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-    s.intersect(r);
+    assert(s.intersect(r));
     assert(IS_EQUAL(s.getLastIntersection()->getPoint()[2],60.0));
 
     r = Ray(Vector(0,0,0),Vector(0,0,-1),1);
-    s.intersect(r);
+    assert(s.intersect(r));
     assert(IS_EQUAL( s.getLastIntersection()->getPoint()[2], -60.0));
 
     r = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
-    s.intersect(r);
+    assert(s.intersect(r));
     assert(IS_EQUAL( s.getLastIntersection()->getPoint()[2], -60.0));
 
     r = Ray(Vector(0,0,-100),Vector(0,0,-1),1);
@@ -132,11 +133,11 @@ void boolean_test() {
     b = Boolean(&s1,Boolean::BOOLEAN_DIFFERENCE,&s2,m);
 
     Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-    b.intersect(r);
-    Intersection i = *(b.getLastIntersection());
+    assert(b.intersect(r));
+    Intersection* i = b.getLastIntersection();
 
-    assert(IS_EQUAL(i.getPoint()[2],20.0));
-    assert(Vector(0,0,1) == b.normal(i));
+    assert(IS_EQUAL(i->getPoint()[2],20.0));
+    assert(Vector(0,0,1) == b.normal(*i));
 }
 
 void box_test() {
@@ -147,12 +148,12 @@ void box_test() {
     b.addParts(&bsp);
     bsp.prepare();
     Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
-    assert(bsp.intersect(r).isIntersected());
-    assert(bsp.intersect(r).getPoint() == Vector(0,0,1));
+    assert(bsp.intersect(r));
+    assert(bsp.getLastIntersection()->getPoint() == Vector(0,0,1));
 
     r = Ray(Vector(0,-100,0),Vector(0,1,0),1);
-    assert(bsp.intersect(r).isIntersected());
-    assert(bsp.intersect(r).getPoint() == Vector(0,-1,0));
+    assert(bsp.intersect(r));
+    assert(bsp.getLastIntersection()->getPoint() == Vector(0,-1,0));
 }
 
 int main(int argc, char *argv[]) {

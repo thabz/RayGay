@@ -22,12 +22,15 @@ class BSP : public SpaceSubdivider {
 	virtual ~BSP() {};
 	void addObject(object* obj); ///< Place a object in the BSP tree 
 
-	Intersection intersect(const Ray& ray) const; ///< Returns the nearest intersection
-	Intersection intersectForShadow(const Ray& ray) const; ///< Returns any intersection 
-	Intersection intersectForShadow(const Ray& ray, const object* hint) const; ///< Returns any intersection but hint-object is checked for intersection first.
+	bool intersect(const Ray& ray) const; ///< Returns the nearest intersection
+	bool intersectForShadow(const Ray& ray) const; ///< Returns any intersection 
+	bool intersectForShadow(const Ray& ray, const object* hint) const; ///< Returns any intersection but hint-object is checked for intersection first.
 
 	/// This gets called after all objects are added and before any intersection methods are called.
 	void prepare();
+
+	Intersection* getLastIntersection() const { return last_intersection; };
+
 	
         /// Internal test
 	static void test();
@@ -39,6 +42,8 @@ class BSP : public SpaceSubdivider {
 	BSP* lower;
 	BSP* higher;
 
+	mutable Intersection* last_intersection;
+
 	/// Returns the smallest bbox containing all objects of this node
 	BoundingBox enclosure() const;
 
@@ -47,10 +52,10 @@ class BSP : public SpaceSubdivider {
 	double median(int dimension) const;
 	Vector measureSplit(const int dim, const double val) const;
 
-	const Intersection intersect(const Ray&,const double,const double) const;
-	const Intersection intersect_recurse(const Ray&,const double,const double) const;
-	const Intersection intersectForShadow(const Ray&,const double,const double) const;
-	const Intersection intersectForShadow_recurse(const Ray&,const double,const double) const;
+	Intersection intersect(const Ray&,const double,const double) const;
+	Intersection intersect_recurse(const Ray&,const double,const double) const;
+	Intersection intersectForShadow(const Ray&,const double,const double) const;
+	Intersection intersectForShadow_recurse(const Ray&,const double,const double) const;
 };
 
 #endif
