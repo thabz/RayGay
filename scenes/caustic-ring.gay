@@ -29,7 +29,7 @@ background <0.0,0.0,0.0,1.0>
 
 light { spot <1000,1000,400> <0,0,0> 16 13 power <100000,100000,100000> } 
 
-chrome = material {
+$chrome = material {
                diffuse <0.8,0.8,0.8>
                kd 0.2
                specular <1.0,1.0,1.0>
@@ -37,17 +37,17 @@ chrome = material {
                specpow 30
             }
 
-glass = material {
-diffuse <0,0,0>
-kd 0.0
-specular <1,1,1>
-ks 0.5
-specpow 30
-eta 1.33
-kt 0.5
+$glass = material {
+   		diffuse <0,0,0>
+		kd 0.0
+		specular <1,1,1>
+		ks 0.5
+		specpow 30
+		eta 1.33
+		kt 0.5
 }
 
-table_mat = material {
+$table_mat = material {
                diffuse <1.0,0.5,0.2>
                kd 0.95
                specular <1.0,1.0,1.0>
@@ -55,16 +55,16 @@ table_mat = material {
                specpow 0
             }
 
-solidbox { table_mat <-1000,-100,-1000> <1000,0,1000> }
+solidbox { $table_mat <-1000,-100,-1000> <1000,0,1000> }
 
 
 difference {
-	chrome
+	$chrome
 	cylinder { 300 <0,0,0>  <0,100,0> }
 	cylinder { 290 <0,-20,0>  <0,120,0> }
 }
 
-sphere { glass 50 <0,50,0> }
+sphere { $glass 50 <0,50,0> }
 
 
 /* cylinder { chrome 100 <0,0,0>  <0,100,0> } */
