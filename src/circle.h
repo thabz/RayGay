@@ -24,6 +24,7 @@ class Circle : public Path {
 	Vector n;
 	double r;
 	Matrix m;
+	Matrix orient;
 };
 
 

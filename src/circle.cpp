@@ -1,5 +1,7 @@
 
 #include <cassert>
+#include <iostream>
+
 #include "path.h"
 #include "vector.h"
 #include "circle.h"
@@ -24,6 +26,7 @@ Circle::Circle(const Vector& center, double radius, const Vector& normal) {
     Vector x = Vector(1,0,0);
     Vector a = n == y ? x : y;
     m = Matrix::matrixOrient(n,Vector::xProduct(a,n));
+    orient = m;
     m = m * Matrix::matrixTranslate(center);
 }
 
@@ -36,7 +39,7 @@ Vector Circle::getPoint(double t) const {
 Vector Circle::getTangent(double t) const {
     double rad = M_2PI * t;
     Vector result = Vector(-sin(rad),cos(rad),0);
-    return m * result;
+    return orient * result;
 }
 
 void Circle::transform(const Matrix& m) {
@@ -77,4 +80,30 @@ void Circle::test() {
     c.getPoints(num,points);
     b = BoundingBox(Vector(-11,-1,-11),Vector(11,1,11));
     assert(b.inside(points,num));
+
+    /* Test tangent */
+    c = Circle(Vector(0,0,0),10,Vector(0,1,0));
+    assert(c.getPoint(0) == Vector(-10,0,0));
+    assert(c.getTangent(0) == Vector(0,0,1));
+    assert(c.getPoint(0.25) == Vector(0,0,10));
+    assert(c.getTangent(0.25) == Vector(1,0,0));
+    assert(c.getPoint(0.5) == Vector(10,0,0));
+    assert(c.getTangent(0.5) == Vector(0,0,-1));
+    assert(c.getPoint(0.75) == Vector(0,0,-10));
+    assert(c.getTangent(0.75) == Vector(-1,0,0));
+
+    c = Circle(Vector(0,10,0),10,Vector(0,1,0));
+    assert(c.getPoint(0) == Vector(-10,10,0));
+    std::cout << c.getTangent(0) << std::endl;
+    assert(c.getTangent(0) == Vector(0,0,1));
+    assert(c.getPoint(0.25) == Vector(0,10,10));
+    assert(c.getTangent(0.25) == Vector(1,0,0));
+    assert(c.getPoint(0.5) == Vector(10,10,0));
+    assert(c.getTangent(0.5) == Vector(0,0,-1));
+    assert(c.getPoint(0.75) == Vector(0,10,-10));
+    assert(c.getTangent(0.75) == Vector(-1,0,0));
+
+
+    /* Done */
+    std::cout << "Circle::test() done." << std::endl;
 }
