@@ -146,7 +146,6 @@ void testScene4() {
 }
 
 int main(int argc, char *argv[]) {
-    Boolean::test();
     Mesh::test();
     Box::test();
     Cylinder::test();

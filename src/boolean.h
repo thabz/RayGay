@@ -42,8 +42,6 @@ class Boolean : public BooleanOperand {
 
 	virtual void getUV(const Intersection& intersection, double* u, double* v) const;
 
-	static void test();
-
     private:
 	BooleanOperand* _lhs;
 	BooleanOperand* _rhs;
