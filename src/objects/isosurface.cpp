@@ -21,46 +21,19 @@ void IsoSurface::_fullIntersect(const Ray& world_ray, const double t, Intersecti
     intersectionToWorld(result);
 }
 
-#define func(x) (evaluateFunction(local_ray.getPoint(x)) - iso)
+#define func(x) (evaluateFunction(ray.getPoint(x)) - iso)
+#define MAX_ITER 200
 
-double IsoSurface::_fastIntersect(const Ray& world_ray) const {
-
-    Ray local_ray = rayToObject(world_ray);
-    double res = -1;
-    
-    const BoundingBox& bbox = this->_boundingBoundingBox();
-    Vector2 inout = bbox.intersect(local_ray);
-    double t_begin = fmax(inout[0],accuracy);
-    double t_end = inout[1] + accuracy;
-    if (t_end > t_begin) {
-	
-	int start_sign = SIGN(func(t_begin));
-	double t_step = (t_end - t_begin) / double(steps);
-
-	for(double t = t_begin; t <= t_end; t += t_step) {
-	    if (SIGN(func(t)) != start_sign) {
-		res = refine(local_ray,t-t_step,t);
-		break;
-	    }
-	}
-    }
-
-    if (res > EPSILON) {
-	return res / local_ray.t_scale;
-    } else {
-	return -1;
-    }
-}
-
-#undef func
-
-#define func(x) (iso - evaluateFunction(ray.getPoint(x)))
-#define MAX_ITER 100
-double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
+double IsoSurface::refine(const Ray& ray, double t_begin, double t_end, double f_t_end) const {
     double f_t_begin = func(t_begin);
-    double f_t_end = func(t_end);
     double f_t_mid, t_mid;
     uint i = 0;
+
+    if (fabs(f_t_begin) < EPSILON)
+	return t_begin;
+	    
+    if (fabs(f_t_end) < EPSILON)
+	return t_end;
 
     //assert(!SAME_SIGN(f_t_begin, f_t_end));
 
@@ -81,9 +54,41 @@ double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
 	}
 
     }
-    return 0;
+    // Refinement failed. Return the best guess.
+    return 0.5 * (t_begin + t_end);
 }
-#undef func
+
+double IsoSurface::_fastIntersect(const Ray& world_ray) const {
+
+    Ray ray = rayToObject(world_ray);
+    double res = -1;
+    
+    const BoundingBox& bbox = this->_boundingBoundingBox();
+    Vector2 inout = bbox.intersect(ray);
+    double t_begin = fmax(inout[0],accuracy);
+    double t_end = inout[1] + accuracy;
+    if (t_end > t_begin) {
+	
+	int start_sign = SIGN(func(t_begin));
+	double t_step = (t_end - t_begin) / double(steps);
+	double f_t;
+
+	for(double t = t_begin; t <= t_end; t += t_step) {
+	    f_t = func(t);
+	    if (SIGN(f_t) != start_sign) {
+		res = refine(ray,t-t_step,t,f_t);
+		break;
+	    }
+	}
+    }
+
+    if (res > EPSILON) {
+	return res / ray.t_scale;
+    } else {
+	return -1;
+    }
+}
+
 
 
 /**

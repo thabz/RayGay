@@ -25,7 +25,7 @@ class IsoSurface : public Object, public Transformer {
     public:
 	bool intersects(const BoundingBox& b) const;
 	void transform(const Matrix& m);
-	// Return the bounding box in world space coordinates
+	/// Return the bounding box in world space coordinates
 	BoundingBox boundingBoundingBox() const;
 
     protected:
@@ -37,23 +37,17 @@ class IsoSurface : public Object, public Transformer {
 	double _fastIntersect(const Ray& ray) const;
 	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 
-	// Returns the bounding box in object space coordinates
+	/// Returns the bounding box in object space coordinates
 	virtual BoundingBox _boundingBoundingBox() const = 0;
 
     private:
 	virtual Vector normal(const Vector& p) const;
-	bool inside(const Vector& v) const;
-	double refine(const Ray& ray, double t_begin, double t_end) const;
+	double refine(const Ray& ray, double t_begin, double t_end, double f_t_end) const;
 	unsigned int steps;
 	double accuracy;
 	double iso;
 
 };
-
-inline
-bool IsoSurface::inside(const Vector& v) const {
-    return evaluateFunction(v) >= iso;
-}
 
 #endif
 
