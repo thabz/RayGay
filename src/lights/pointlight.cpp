@@ -11,6 +11,7 @@ Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
 }
 
 Lightinfo Pointlight::getLightinfo(const Intersection& inter,const Vector& normal, SpaceSubdivider* space) const {
+    // TODO: Move point ESPILON along normal to avoid selfshadowing.
     Lightinfo info;
     info.direction_to_light = position - inter.getPoint();
     double dist_to_light = info.direction_to_light.length();
