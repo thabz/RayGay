@@ -1,9 +1,10 @@
 
 #include <cmath>
 #include "math/rootfinder.h"
+#include <float.h>
 
-#define MAX_ITER 10000
-#define DBL_EPSILON 2.2204460492503131e-16
+#define MAX_ITER 100
+
 /*
 RootFinder::RootFinder(Method method, double tolerance, double (*function) (double)) {
     this->method = method;
@@ -79,7 +80,9 @@ int RootFinder::bisection(double t_begin, double t_end, double* root) {
  * bracketing, interval bisection, and inverse quadratic interpolation. 
  * It is sometimes known as the van Wijngaarden-Deker-Brent method.
  *
- * @see http://mathworld.wolfram.com/BrentsMethod.html
+ * Using the algorithm from Numerical Recipes in FORTRAN.
+ *
+ * @see http://www.library.cornell.edu/nr/cbookfpdf.html
  */
 int RootFinder::brents_method(double x1, double x2, double* root) {
     double a,b,c;
