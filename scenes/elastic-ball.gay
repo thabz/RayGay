@@ -1,0 +1,64 @@
+
+$radius = 500
+@center = <0,$radius,0>
+
+renderer raytracer
+
+camera { position <1000,500,1800>
+         up <0,1,0> 
+         lookat @center
+	 fov 45
+	 aa 4
+}
+
+image { width 1600 aspect 4 3 }
+
+background <0.94,0.80,0.06,1.0>
+
+/* light { sky 10000 300 power <1,1,1> } */
+/* light { point <100,1300,1300> power <1,1,1> }  */
+light { area <100,1300,1300> <-0.1,-1,-1> 500 80 0.1 power <1,1,1> }
+
+$ground = material {
+    diffuse <0.8,0.3,0.264>
+    kd 0.5
+    specular <1.0,1.0,1.0>
+    ks 0.5
+    specpow 15
+}
+
+$chrome = material {
+    diffuse <0.85,0.85,0.85>
+    kd 0.5
+    specular <0.85,0.85,0.85>
+    ks 0.5
+    specpow 45
+}
+
+$red = material {
+    diffuse <0.90,0.20,0.01>
+    kd 0.8
+    specular <0.5,0.5,0.5>
+    ks 0.2
+    specpow 45
+}
+
+sphere { $ground
+      100000
+      <0,-100000,0>
+} 
+
+repeat (200) {
+extrusion {
+    $chrome
+    circle { <0,0,0> $radius <0,1,0> }
+    random (1,5)
+    12 
+    50
+} 
+    rotate <1,0,0> random(0,180)
+    rotate <0,0,1> random(0,180)
+    translate @center
+}
+
+sphere { $red ($radius-100) @center } 
