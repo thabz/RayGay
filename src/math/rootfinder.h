@@ -12,7 +12,7 @@ class RootFinder {
 	enum Method {
 	    BISECTION,
 	    BRENTS_METHOD,
-	    FALSE_POSITION
+	    REGULA_FALSI
 	};
 
 	RootFinder(Method method, double tolerance, Function<double,double>* f); 
@@ -21,7 +21,7 @@ class RootFinder {
     protected:
 	int bisection(double t1, double t2, double* root);
 	int brents_method(double t1, double t2, double* root);
-	int false_position(double t1, double t2, double* root);
+	int regula_falsi(double t1, double t2, double* root);
 
 
     private:

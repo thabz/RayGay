@@ -2,7 +2,7 @@
 #include <cmath>
 #include "math/rootfinder.h"
 
-#define MAX_ITER 1000
+#define MAX_ITER 10000
 
 /*
 RootFinder::RootFinder(Method method, double tolerance, double (*function) (double)) {
@@ -30,8 +30,8 @@ int RootFinder::solve(double t1, double t2, double* root) {
 	    return bisection(t1, t2, root);
 	case BRENTS_METHOD: 
 	    return brents_method(t1, t2, root);
-	case FALSE_POSITION: 
-	    return false_position(t1, t2, root);
+	case REGULA_FALSI: 
+	    return regula_falsi(t1, t2, root);
         default: 
 	    return false;			    
     }
@@ -97,13 +97,13 @@ int RootFinder::brents_method(double x1, double x3, double* root) {
 	return false;
 
     uint i = 3;
+    T = fx1 / fx3;
     while(i++ < MAX_ITER) {
 	
 	R = fx2 / fx3;
 	S = fx2 / fx1;
-	T = fx1 / fx3;
 	
-	P = S*(R*(R-T)*(x3-x2)-(1-R)*(x2-x1));
+	P = S*(T*(R-T)*(x3-x2)-(1-R)*(x2-x1));
 	Q = (T-1)*(R-1)*(S-1);
 
 	x2 = x2 + (P / Q);
@@ -118,22 +118,38 @@ int RootFinder::brents_method(double x1, double x3, double* root) {
 }
 
 /**
- * Method of False Position.
- *
- * This code is untested!
+ * Regula falsi aka method of False Position.
  *
  * @see http://mathworld.wolfram.com/MethodofFalsePosition.html
  */
 
-int RootFinder::false_position(double t1, double t2, double* root) {
-    double xn1 = t1;
-    double xn = t2;
-    int i = 0;
-    while (fabs(f(xn)) > tolerance && i++ < MAX_ITER) {
-	xn = t1 - ((xn1 - t1) / (f(xn1) - f(t1)))*f(t1);
-	xn1 = xn;
+int RootFinder::regula_falsi(double t_begin, double t_end, double* root) {
+    double t_mid = 0.5 * (t_begin + t_end);
+    double f_t_begin = f(t_begin);
+    double f_t_end = f(t_end);
+    double f_t_mid = f(t_mid);
+    uint i = 3;
+
+    if (SAME_SIGN(f_t_begin, f_t_end))
+	return false;
+    
+    while (i++ < MAX_ITER) {
+	if (SAME_SIGN(f_t_begin, f_t_mid)) {
+	    t_begin = t_mid;
+	    f_t_begin = f_t_mid;
+	} else {
+	    t_end = t_mid;
+	    f_t_end = f_t_mid;
+	}
+
+	t_mid = ( f_t_end * t_begin - f_t_begin * t_end ) / ( f_t_end - f_t_begin );
+	f_t_mid = f(t_mid);
+
+	if (fabs(f_t_mid) < tolerance) {
+	    *root = t_mid;
+	    return i;
+	}
     }
-    *root = xn;
-    return i;
+    return false;
 }
 
