@@ -5,10 +5,6 @@ bin_PROGRAMS = tracer
 
 tracer_SOURCES = main.cpp camera.cpp sphere.cpp vector.cpp matrix.cpp intersection.cpp ray.cpp scene.cpp image.cpp rgb.cpp boolean.cpp perlin.cpp boundingbox.cpp box.cpp hierarchy.cpp object.cpp mesh.cpp tetrahedron.cpp triangle.cpp cylinder.cpp pixelstore.cpp renderer.cpp raytracer.cpp bsp.cpp necklace.cpp tessalation.cpp
 
-tracer_DEPENDENCIES = materials/libmaterials.la \
-                      paths/libpaths.la \
-		      lights/liblights.la
-
 tracer_LDADD = materials/libmaterials.la \
 	       paths/libpaths.la \
 	       lights/liblights.la
