@@ -213,6 +213,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     delete img;
     delete space;
     delete scene;
+    delete job_pool;
     Stats::getUniqueInstance()->dump();
 }
 
