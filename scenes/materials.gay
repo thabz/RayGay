@@ -26,3 +26,11 @@ kd 0.5
 specular 1.0 1.0 1.0
 ks 0.5
 specpow 15
+
+material $dullred
+diffuse 0.8 0.2 0.2
+kd 1.0
+specular 1.0 1.0 1.0
+ks 0.0
+specpow 0
+

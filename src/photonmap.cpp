@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include "photonmap.h"
+#include "math/vector.h"
 
 
 /**
@@ -216,6 +217,21 @@ void PhotonMap :: locate_photons(
     }
 }
 
+void PhotonMap::store(
+		const Vector& power,          // photon power
+		const Vector& pos,            // photon position
+		const Vector& dir ) {          // photon direction
+    float powe[3];
+    float posi[3];
+    float dire[3];
+    for(int i = 0; i < 3; i++) {
+	powe[i] = power[i];
+	posi[i] = pos[i];
+	dire[i] = dir[i];
+    }
+
+    store(powe,posi,dire);
+}
 
 /**
  * Call this function to store a photon.

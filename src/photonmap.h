@@ -2,6 +2,8 @@
 #ifndef PHOTON_MAP
 #define PHOTON_MAP
 
+class Vector;
+
 /**
  * This is the photon
  * The power is not compressed so the
@@ -42,6 +44,11 @@ class PhotonMap {
 		const float power[3],          // photon power
 		const float pos[3],            // photon position
 		const float dir[3] );          // photon direction
+
+	void store(
+		const Vector& power,          // photon power
+		const Vector& pos,            // photon position
+		const Vector& dir );          // photon direction
 
 	void scale_photon_power(
 		const float scale );           // 1/(number of emitted photons)
