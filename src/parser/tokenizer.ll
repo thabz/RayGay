@@ -52,6 +52,7 @@ abs		return tABS;
 area		return tAREA;
 aspect		return tASPECT;
 background	return tBACKGROUND;
+bezierspline	return tBEZIERSPLINE;
 bicubic 	return tBICUBIC;
 bilinear 	return tBILINEAR;
 blob		return tBLOB;

@@ -11,6 +11,7 @@
 #include "paths/spiral.h"
 #include "paths/linesegment.h"
 #include "paths/catmullromspline.h"
+#include "paths/bezierspline.h"
 
 /**
  * Nodes for handling paths.
@@ -142,5 +143,23 @@ class CatmullRomSplineNode : public PathNode {
 	VectorListNode* vectors;
 };
 
+class BezierSplineNode : public PathNode {
+    public:
+	BezierSplineNode(VectorListNode* vectors) {
+	    this->vectors = vectors;
+	}
+
+	virtual ~BezierSplineNode() {
+	    delete vectors;
+	}
+
+	Path* eval() {
+	    vector<Vector> ctrl_points = vectors->eval();
+	    return new BezierSpline(ctrl_points);
+	}
+
+    private:
+	VectorListNode* vectors;
+};
 
 #endif

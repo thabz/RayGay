@@ -116,7 +116,7 @@ ActionListNode* top_actions;
 %token tFUNCTION
 %token tGROUP
 %token tIMAGE tWIDTH tHEIGHT tASPECT
-%token tLINESEGMENT tSPIRAL tCIRCLE tCATMULLROMSPLINE
+%token tLINESEGMENT tSPIRAL tCIRCLE tCATMULLROMSPLINE tBEZIERSPLINE
 %token tKD tKS tKT tSPECPOW tGLOSS
 %token tLIGHT tAREA tSPOT tPOINT tSKY tPOWER
 %token tMIN tMAX
@@ -183,7 +183,8 @@ ActionListNode* top_actions;
 %type <material> MaterialDef NamedMaterial Material
 %type <light> LightDef Lightsource 
 %type <light> Arealight Spotlight Pointlight Skylight
-%type <path> NamedPath Circle Spiral Path PathDef LineSegment CatmullRomSpline
+%type <path> NamedPath Circle Spiral Path PathDef 
+%type <path> LineSegment CatmullRomSpline BezierSpline
 %type <camera> Camera
 %type <action> MainAddAction MainAction Assignment Renderer ConfAction
 %type <action> RepeatStmt IfStmt WhileStmt Action ModStmt OpAssignment
@@ -885,6 +886,7 @@ NamedPath	: tVARNAME
 PathDef		: Circle
                 | Spiral
 		| CatmullRomSpline
+		| BezierSpline
 		| LineSegment
 		;
 
@@ -893,6 +895,13 @@ CatmullRomSpline : tCATMULLROMSPLINE '{' VectorList '}'
 		    $$ = new CatmullRomSplineNode($3);
 		}
                 ;
+
+BezierSpline    : tBEZIERSPLINE '{' VectorList '}'
+                {
+		    $$ = new BezierSplineNode($3);
+		}
+                ;
+
 
 LineSegment	: tLINESEGMENT '{' Vector Vector '}'
                 {
