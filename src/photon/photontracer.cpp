@@ -70,6 +70,9 @@ void PhotonTracer::trace() {
 	Lightsource* light = lights[i];
 	RGB light_power = light->getPower();
 	trace(light->getRandomPhotonRay(),light_power,0);
+	cout << "Global: " << globalphotonmap->size();
+	cout << "   Caustic: " << causticsmap->size();
+	cout << "          \r" << flush;
     }
 }
 
