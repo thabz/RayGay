@@ -170,8 +170,9 @@ BoundingBox Triangle::boundingBoundingBox() const {
     tri[1] = mesh->cornerAt(_tri_idx,1);
     tri[2] = mesh->cornerAt(_tri_idx,2);
     BoundingBox b = BoundingBox::enclosure(tri,3);
-    //b.growPercentage(0.1);
     b.grow(100000.0 * EPSILON);
+    b.growPercentage(0.1);
+    //b.grow(100000.0 * EPSILON);
     return b;
 }
 
@@ -209,27 +210,24 @@ double Triangle::area() const {
   if(x2<min) min=x2;\
   if(x2>max) max=x2;
 
-int planeBoxOverlap(float normal[3],float d, Vector maxbox)
+int planeBoxOverlap(double normal[3], double d, Vector maxbox)
 {
-  int q;
-  float vmin[3],vmax[3];
-  for(q=X;q<=Z;q++)
-  {
-    if(normal[q]>0.0f)
+    int q;
+    double vmin[3],vmax[3];
+    for(q=X;q<=Z;q++)
     {
-      vmin[q]=-maxbox[q];
-      vmax[q]=maxbox[q];
+	if(normal[q] > 0.0) {
+	    vmin[q]=-maxbox[q];
+	    vmax[q]=maxbox[q];
+	} else {
+	    vmin[q]=maxbox[q];
+	    vmax[q]=-maxbox[q];
+	}
     }
-    else
-    {
-      vmin[q]=maxbox[q];
-      vmax[q]=-maxbox[q];
-    }
-  }
-  if(DOT(normal,vmin)+d>0.0f) return 0;
-  if(DOT(normal,vmax)+d>=0.0f) return 1;
+    if(DOT(normal,vmin)+d > 0.0) return 0;
+    if(DOT(normal,vmax)+d >= 0.0) return 1;
 
-  return 0;
+    return 0;
 }
 
 
@@ -289,9 +287,9 @@ int triBoxOverlap(Vector boxcenter,Vector boxhalfsize,Vector triverts[3])
   /*    2) normal of the triangle */
   /*    3) crossproduct(edge from tri, {x,y,z}-directin) */
   /*       this gives 3x3=9 more tests */
-   float v0[3],v1[3],v2[3];
-   float min,max,d,p0,p1,p2,rad,fex,fey,fez;
-   float normal[3],e0[3],e1[3],e2[3];
+   double v0[3],v1[3],v2[3];
+   double min,max,d,p0,p1,p2,rad,fex,fey,fez;
+   double normal[3],e0[3],e1[3],e2[3];
 
    /* This is the fastest branch on Sun */
    /* move everything so that the boxcenter is in (0,0,0) */
