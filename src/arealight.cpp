@@ -5,8 +5,8 @@
 #include "constants.h"
 #include "circle.h"
 #include "intersection.h"
-#include "scene.h"
 #include "object.h"
+#include "spacesubdivider.h"
 
 /**
  * Constructs an area light
@@ -57,7 +57,7 @@ Vector Arealight::getPosition(int i) const {
     return circles[i]->getPoint(t);
 }
 
-Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& normal, const Scene& scene) const {
+Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& normal, const SpaceSubdivider& space) const {
     Lightinfo info;
     Vector direction_to_light;
     info.direction_to_light = position - inter.point;
@@ -70,7 +70,7 @@ Lightinfo Arealight::getLightinfo(const Intersection& inter, const Vector& norma
 	    direction_to_light.normalize();
 
 	    Ray ray_to_light = Ray(inter.point,direction_to_light,-1.0);
-	    Intersection i2 = scene.intersectForShadow(ray_to_light,hints[i]);
+	    Intersection i2 = space.intersectForShadow(ray_to_light,hints[i]);
 	    if (!i2.intersected) {
 		count++;
 		hints[i] = NULL;
