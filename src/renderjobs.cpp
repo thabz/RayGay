@@ -24,6 +24,9 @@ RenderJobPool::RenderJobPool(int w, int h, int initial_cell_size) {
 }
 
 void RenderJobPool::init(int w, int h, int cell_size) {
+    Environment* env = Environment::getUniqueInstance();
+    bool hasWindow = env->hasPreviewWindow();
+
     RenderJob job;
     double count = 0;
     for(int y = 0; y < (h / cell_size)+1; y++) {
@@ -37,7 +40,12 @@ void RenderJobPool::init(int w, int h, int cell_size) {
 		job.begin_x < job.end_x && 
 		job.begin_y < job.end_y) {
 		job.importance = 1000000 + cell_size*cell_size + (count++);
-		job.type = RenderJob::NEED_PREVIEW;
+		
+		if (hasWindow) {
+		    job.type = RenderJob::NEED_PREVIEW;
+		} else {
+		    job.type = RenderJob::NEED_FULL_RENDER;
+		}
 		addJob(job);
 	    }
 	}
