@@ -25,13 +25,12 @@ double IsoSurface::_fastIntersect(const Ray& world_ray) const {
     const BoundingBox& bbox = this->_boundingBoundingBox();
     Vector2 inout = bbox.intersect(local_ray);
     double t_end = inout[1];
-    if (t_end >= 0) {
-	double t_begin = inout[0];
-	double t_step = (t_end - t_begin) / double(steps);
-
+    double t_begin = inout[0];
+    if (t_end >= 0 && t_end > t_begin) {
 	if (inside(local_ray.getPoint(t_begin))) {
 	    res = t_begin;
 	} else {
+	    double t_step = (t_end - t_begin) / double(steps);
 	    for(double t = t_begin; t <= t_end; t += t_step) {
 		if (inside(local_ray.getPoint(t))) {
 		    res = refine(local_ray,t-t_step,t);
