@@ -33,7 +33,13 @@ class FloatPrintNode : public ActionNode {
 	FloatPrintNode(FloatNode* node) {
 	    this->node = node;
 	}
+	
+	virtual ~FloatPrintNode() {
+	    delete node;
+	}
+	
 	void eval() { cout << node->eval() << endl; };
+	
     private:
 	FloatNode* node;
 };
@@ -47,6 +53,12 @@ class SetBackgroundNode : public ActionNode {
 
 	SetBackgroundNode(Texture* texture) {
 	    this->texture = texture;
+	}
+
+	virtual ~SetBackgroundNode() {
+	    if (texture != NULL) {
+		delete texture;
+	    }
 	}
 
 	void eval() {
@@ -151,7 +163,9 @@ class AssignSceneObjectNode : public ActionNode {
 	    this->node = node;
 	}
 
-	virtual ~AssignSceneObjectNode() { delete node; }
+	virtual ~AssignSceneObjectNode() { 
+	    delete node; 
+	}
 
 	void eval() {
 	    Assignments::getUniqueInstance()->setNamedSceneObject(name,node->eval());
@@ -202,6 +216,10 @@ class AddSceneObjectToSceneNode : public ActionNode {
 	    this->node = node;
 	}
 
+	virtual ~AddSceneObjectToSceneNode() {
+	    delete node;
+	}
+
 	void eval() {
 	    Environment::getUniqueInstance()->getScene()->addObject(node->eval());
 	}
@@ -216,6 +234,10 @@ class AddLightToSceneNode : public ActionNode {
 	    this->node = node;
 	}
 
+	virtual ~AddLightToSceneNode() {
+	    delete node;
+	}
+
 	void eval() {
 	    Environment::getUniqueInstance()->getScene()->addLight(node->eval());
 	}
@@ -228,6 +250,10 @@ class AddCameraToSceneNode : public ActionNode {
     public:
 	AddCameraToSceneNode(CameraNode* cam) {
 	    this->cam = cam;
+	}
+
+	virtual ~AddCameraToSceneNode() {
+	    delete cam;
 	}
 
 	void eval() {
@@ -387,6 +413,11 @@ class ModifyNamedFloatActionNode : public ActionNode {
 	ModifyNamedFloatActionNode(FloatNode* node) {
 	    this->node = node;
 	}
+	
+	virtual ~ModifyNamedFloatActionNode() {
+	    delete node;
+	}
+	
 	void eval() {
 	    node->eval();
 	}

@@ -28,6 +28,7 @@ class ArealightNode : public LightNode {
     public:
 	ArealightNode(VectorNode* pos, VectorNode* dir, FloatNode* radius, FloatNode* num, FloatNode* jitter, RGBNode* power);
 
+	virtual ~ArealightNode();
 	Lightsource* eval();
 
     private:
@@ -42,6 +43,7 @@ class ArealightNode : public LightNode {
 class SpotlightNode : public LightNode {
     public:
 	SpotlightNode(VectorNode* pos, VectorNode* look_at, FloatNode* angle, FloatNode* cut_angle, RGBNode* power);
+	virtual ~SpotlightNode();
 
 	Lightsource* eval();
 
@@ -56,19 +58,18 @@ class SpotlightNode : public LightNode {
 class PointlightNode : public LightNode {
     public:
 	PointlightNode(VectorNode* pos, RGBNode* power);
+	virtual ~PointlightNode();
 	Lightsource* eval();
 
     private:
 	VectorNode* position;
-	VectorNode* look_at;
-	FloatNode* angle;
-	FloatNode* cut_angle;
 	RGBNode* power;
 };
 
 class SkylightNode : public LightNode {
     public:
 	SkylightNode(FloatNode* radius, FloatNode* num, RGBNode* power);
+	virtual ~SkylightNode();
 	Lightsource* eval();
 
     private:

@@ -17,9 +17,17 @@ class RGBNode : public SyntaxNode {
 	    this->g = g;
 	    this->b = b;
 	}
+
+	virtual ~RGBNode() {
+	    delete r;
+	    delete g;
+	    delete b;
+	}
+
 	RGB eval() {
 	    return RGB(r->eval(),g->eval(),b->eval());
-	};
+	}
+
     private:
 	FloatNode* r;
 	FloatNode* g;
@@ -36,6 +44,13 @@ class RGBANode : public SyntaxNode {
 	    this->g = g;
 	    this->b = b;
 	    this->a = a;
+	}
+
+	virtual ~RGBANode() {
+	    delete r;
+	    delete g;
+	    delete b;
+	    delete a;
 	}
 
 	RGBA eval() {

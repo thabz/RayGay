@@ -74,6 +74,10 @@ class VectorLengthNode : public FloatNode {
 	    this->vecnode = v;
 	}
 
+	virtual ~VectorLengthNode() {
+	    delete vecnode;
+	}
+
 	double eval() {
 	    return vecnode->eval().length();
 	}
@@ -87,6 +91,10 @@ class VectorNormalizeNode : public VectorNode {
     public:
 	VectorNormalizeNode(VectorNode* v) {
 	    this->vecnode = v;
+	}
+
+	virtual ~VectorNormalizeNode() {
+	    delete vecnode;
 	}
 
 	Vector eval() {
@@ -111,6 +119,11 @@ class VectorMultNode : public VectorNode {
 	    this->scale = f;
 	}
 
+	virtual ~VectorMultNode() {
+	    delete vecnode;
+	    delete scale;
+	}
+
 	Vector eval() {
 	    return scale->eval() * vecnode->eval();
 	}
@@ -128,6 +141,11 @@ class VectorPlusNode : public VectorNode {
 	    this->right = right;
 	}
 
+	virtual ~VectorPlusNode() {
+	    delete left;
+	    delete right;
+	}
+
 	Vector eval() {
 	    return left->eval() + right->eval();
 	}
@@ -143,6 +161,11 @@ class VectorMinusNode : public VectorNode {
 	VectorMinusNode(VectorNode* left, VectorNode* right) {
 	    this->left = left;
 	    this->right = right;
+	}
+
+	virtual ~VectorMinusNode() {
+	    delete left;
+	    delete right;
 	}
 
 	Vector eval() {

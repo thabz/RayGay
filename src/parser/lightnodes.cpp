@@ -29,6 +29,15 @@ Lightsource* ArealightNode::eval() {
     return light;
 }
 
+ArealightNode::~ArealightNode() {
+    delete position;
+    delete direction;
+    delete radius;
+    delete num;
+    delete jitter;
+    delete power;
+}
+
 SpotlightNode::SpotlightNode(VectorNode* pos, VectorNode* look_at, FloatNode* angle, FloatNode* cut_angle, RGBNode* power) {
     this->position = pos;
     this->look_at = look_at;
@@ -47,6 +56,13 @@ Lightsource* SpotlightNode::eval() {
     return light;
 }
 
+SpotlightNode::~SpotlightNode() {
+    delete position;
+    delete look_at;
+    delete angle;
+    delete cut_angle;
+    delete power;
+}
 
 PointlightNode::PointlightNode(VectorNode* pos, RGBNode* power) {
     this->position = pos;
@@ -58,6 +74,11 @@ Lightsource* PointlightNode::eval() {
     Pointlight* light = new Pointlight(pos);
     light->setPower(power->eval());
     return light;
+}
+
+PointlightNode::~PointlightNode() {
+    delete position;
+    delete power;
 }
 
 SkylightNode::SkylightNode(FloatNode* radius, FloatNode* num, RGBNode* power) {
@@ -75,3 +96,8 @@ Lightsource* SkylightNode::eval() {
     return light;
 }
 
+SkylightNode::~SkylightNode() {
+    delete radius;
+    delete num;
+    delete power;
+}

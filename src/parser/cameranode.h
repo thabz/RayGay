@@ -24,6 +24,18 @@ class CameraNode : public SyntaxNode {
 	    aa = NULL;
 	}
 
+	virtual ~CameraNode() {
+	    if (position != NULL) delete position;
+	    if (look_at != NULL) delete look_at;
+	    if (up != NULL) delete up;
+	    if (fov != NULL) delete fov;
+	    if (aa != NULL) delete aa;
+	    if (dof_num != NULL) {
+		delete dof_num;
+		delete dof_aperture;
+	    }
+	}
+
 	void setPosition(VectorNode* position) {
 	    this->position = position;
 	}

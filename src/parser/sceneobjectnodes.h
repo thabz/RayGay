@@ -40,6 +40,12 @@ class ObjectListNode {
 	    nodes.push_back(node);
 	}
 
+	virtual ~ObjectListNode() {
+	    for(unsigned int i = 0; i < nodes.size(); i++) {
+		delete nodes[i];
+	    }
+	}
+
 	vector<SceneObject*> eval() {
 	    vector<SceneObject*> result;
 	    for(unsigned int i = 0; i < nodes.size(); i++) {
@@ -58,6 +64,11 @@ class TransformedSceneObjectNode : public SceneObjectNode {
 	TransformedSceneObjectNode(SceneObjectNode* obj, TransformationNode* t) {
 	    this->obj = obj;
 	    this->transformation = t;
+	}
+
+	virtual ~TransformedSceneObjectNode() {
+	    delete obj;
+	    delete transformation;
 	}
 
 	SceneObject* eval() {
@@ -79,6 +90,12 @@ class SphereNode : public SceneObjectNode {
 	    this->center = center;
 	    this->radius = r;
 	    this->material = mat;
+	}
+
+	virtual ~SphereNode() {
+	    delete center;
+	    delete radius;
+	    delete material;
 	}
 
 	SceneObject* eval() {
@@ -103,6 +120,12 @@ class EllipsoidNode : public SceneObjectNode {
 	    this->material = mat;
 	}
 
+	virtual ~EllipsoidNode() {
+	    delete center;
+	    delete radii;
+	    delete material;
+	}
+
 	SceneObject* eval() {
 	    Vector c = center->eval();
 	    Vector r = radii->eval();
@@ -123,6 +146,12 @@ class TorusNode : public SceneObjectNode {
 	    this->R = R;
 	    this->r = r;
 	    this->material = mat;
+	}
+
+	virtual ~TorusNode() {
+	    delete R;
+	    delete r;
+	    delete material;
 	}
 
 	SceneObject* eval() {
@@ -146,6 +175,13 @@ class CylinderNode : public SceneObjectNode {
 	    this->end = end;
 	    this->radius = radius;
 	    this->material = mat;
+	}
+
+	virtual ~CylinderNode() {
+	    delete begin;
+	    delete end;
+	    delete radius;
+	    delete material;
 	}
 
 	SceneObject* eval() {
@@ -172,6 +208,14 @@ class ConeNode : public SceneObjectNode {
 	    this->radius_begin = radius_begin;
 	    this->radius_end = radius_end;
 	    this->material = mat;
+	}
+
+	virtual ~ConeNode() {
+	    delete begin;
+	    delete end;
+	    delete radius_begin;
+	    delete radius_end;
+	    delete material;
 	}
 
 	SceneObject* eval() {
@@ -201,6 +245,13 @@ class NecklaceNode : public SceneObjectNode {
 	    this->material = mat;
 	}
 
+	virtual ~NecklaceNode() {
+	    delete path;
+	    delete num;
+	    delete radius;
+	    delete material;
+	}
+
 	SceneObject* eval() {
 	    Path* p = path->eval();
 	    int n = int(num->eval());
@@ -226,6 +277,12 @@ class SolidBoxNode : public SceneObjectNode {
 	    this->material = mat;
 	}
 
+	virtual ~SolidBoxNode() {
+	    delete c1;
+	    delete c2;
+	    delete material;
+	}
+	
 	SceneObject* eval() {
 	    Vector v1 = c1->eval();
 	    Vector v2 = c2->eval();
@@ -247,6 +304,12 @@ class BoxNode : public SceneObjectNode {
 	    this->c1 = c1;
 	    this->c2 = c2;
 	    this->material = mat;
+	}
+
+	virtual ~BoxNode() {
+	    delete c1;
+	    delete c2;
+	    delete material;
 	}
 
 	SceneObject* eval() {
@@ -271,6 +334,14 @@ class ExtrusionNode : public SceneObjectNode {
 	    this->segments = segments;
 	    this->pieces = pieces;
 	    this->material = mat;
+	}
+
+	virtual ~ExtrusionNode() {
+	    delete path;
+	    delete radius;
+	    delete segments;
+	    delete pieces;
+	    delete material;
 	}
 
 	SceneObject* eval() {
@@ -300,6 +371,12 @@ class DifferenceNode : public SceneObjectNode {
 	    this->material = mat;
 	}
 
+	virtual ~DifferenceNode() {
+	    delete left;
+	    delete right;
+	    delete material;
+	}
+
 	SceneObject* eval() {
 	    Solid* s1 = dynamic_cast<Solid*>(left->eval());
 	    Solid* s2 = dynamic_cast<Solid*>(right->eval());
@@ -319,6 +396,11 @@ class UnionNode : public SceneObjectNode {
 	UnionNode(ObjectListNode* nodes, MaterialNode* mat) {
 	    this->nodes = nodes;
 	    this->material = mat;
+	}
+
+	virtual ~UnionNode() {
+	    delete nodes;
+	    delete material;
 	}
 
 	SceneObject* eval() {
@@ -350,6 +432,12 @@ class IntersectionNode : public SceneObjectNode {
 	    this->material = mat;
 	}
 
+	virtual ~IntersectionNode() {
+	    delete left;
+	    delete right;
+	    delete material;
+	}
+
 	SceneObject* eval() {
 	    Solid* s1 = dynamic_cast<Solid*>(left->eval());
 	    Solid* s2 = dynamic_cast<Solid*>(right->eval());
@@ -372,6 +460,12 @@ class WireframeNode : public SceneObjectNode {
 	    this->material = mat;
 	}
 
+	virtual ~WireframeNode() {
+	    delete obj;
+	    delete radius;
+	    delete material;
+	}
+
 	SceneObject* eval() {
 	    Mesh* mesh = dynamic_cast<Mesh*>(obj->eval());
 	    double r = radius->eval();
@@ -392,6 +486,10 @@ class MeshNode : public SceneObjectNode {
 	    this->triangles = tris;
 	    this->material = m;
 	    this->eval_done = false;
+	}
+
+	virtual ~MeshNode() {
+	    delete material;
 	}
 
 	/**

@@ -1119,6 +1119,10 @@ void run_interpreter() {
     top_actions->eval();
 }
 
+void delete_interpreter() {
+    delete top_actions;
+}
+
 Vector2 getImageSize() {
     return image_size;
 }

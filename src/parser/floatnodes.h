@@ -31,6 +31,10 @@ class FloatPlusNode : public FloatNode {
 	    this->left = left;
 	    this->right = right;
 	}
+	virtual ~FloatPlusNode() {
+	    delete left;
+	    delete right;
+	}
 	double eval() { return left->eval() + right->eval(); };
     private:
 	FloatNode* left;
@@ -42,6 +46,10 @@ class FloatMinusNode : public FloatNode {
 	FloatMinusNode(FloatNode* left, FloatNode* right ) {
 	    this->left = left;
 	    this->right = right;
+	}
+	virtual ~FloatMinusNode() {
+	    delete left;
+	    delete right;
 	}
 	double eval() { return left->eval() - right->eval(); };
     private:
@@ -55,6 +63,10 @@ class FloatDivNode : public FloatNode {
 	    this->left = left;
 	    this->right = right;
 	}
+	virtual ~FloatDivNode() {
+	    delete left;
+	    delete right;
+	}
 	double eval() { return left->eval() / right->eval(); };
     private:
 	FloatNode* left;
@@ -67,6 +79,10 @@ class FloatMultNode : public FloatNode {
 	    this->left = left;
 	    this->right = right;
 	}
+	virtual ~FloatMultNode() {
+	    delete left;
+	    delete right;
+	}
 	double eval() { return left->eval() * right->eval(); };
     private:
 	FloatNode* left;
@@ -78,6 +94,9 @@ class FloatNegNode : public FloatNode {
 	FloatNegNode(FloatNode* node) {
 	    this->node = node;
 	}
+	virtual ~FloatNegNode() {
+	    delete node;
+	}
 	double eval() { return -(node->eval()); };
     private:
 	FloatNode* node;
@@ -87,6 +106,9 @@ class FloatSinNode : public FloatNode {
     public:
 	FloatSinNode(FloatNode* node) {
 	    this->node = node;
+	}
+	virtual ~FloatSinNode() {
+	    delete node;
 	}
 	double eval() { return sin(node->eval()); };
     private:
@@ -98,6 +120,9 @@ class FloatCosNode : public FloatNode {
 	FloatCosNode(FloatNode* node) {
 	    this->node = node;
 	}
+	virtual ~FloatCosNode() {
+	    delete node;
+	}
 	double eval() { return cos(node->eval()); };
     private:
 	FloatNode* node;
@@ -107,6 +132,9 @@ class FloatAbsNode : public FloatNode {
     public:
 	FloatAbsNode(FloatNode* node) {
 	    this->node = node;
+	}
+	virtual ~FloatAbsNode() {
+	    delete node;
 	}
 	double eval() { return fabs(node->eval()); };
     private:
@@ -118,6 +146,11 @@ class FloatRandomNode : public FloatNode {
 	FloatRandomNode(FloatNode* from, FloatNode* to) {
 	    this->from = from;
 	    this->to = to;
+	}
+
+	virtual ~FloatRandomNode() {
+	    delete from;
+	    delete to;
 	}
 
 	double eval() {

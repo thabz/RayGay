@@ -25,6 +25,11 @@ class TransformationsMultNode : public TransformationNode {
 	    this->t2 = t2;
 	}
 
+	virtual ~TransformationsMultNode() {
+	    delete t1;
+	    delete t2;
+	}
+
 	Matrix eval() {
 	    return t1->eval() * t2->eval();
 	}
@@ -40,6 +45,11 @@ class RotateNode : public TransformationNode {
 	RotateNode(VectorNode* vec, FloatNode* angle) {
 	    this->vec = vec;
 	    this->angle = angle;
+	}
+
+	virtual ~RotateNode() {
+	    delete vec;
+	    delete angle;
 	}
 
 	Matrix eval() {
@@ -59,6 +69,10 @@ class TranslateNode : public TransformationNode {
 	    this->vec = vec;
 	}
 
+	virtual ~TranslateNode() {
+	    delete vec;
+	}
+
 	Matrix eval() {
 	    Vector v = vec->eval();
 	    return Matrix::matrixTranslate(v);
@@ -72,6 +86,10 @@ class ScaleNode : public TransformationNode {
     public:
 	ScaleNode(VectorNode* vec) {
 	    this->vec = vec;
+	}
+
+	virtual ~ScaleNode() {
+	    delete vec;
 	}
 
 	Matrix eval() {

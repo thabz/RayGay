@@ -51,6 +51,7 @@ using namespace std;
 extern FILE* yyin;
 extern void yyparse();
 extern void run_interpreter();
+extern void delete_interpreter();
 extern void init_parser(string filename);
 extern Vector2 getImageSize();
 extern RendererSettings* getRendererSettings();
@@ -237,6 +238,7 @@ void work(string scenefile, string outputfile, int jobs) {
 	    render_frame(frame,file_prefix + outputfile,jobs);
 	}
     }
+    delete_interpreter();
 }
 
 void print_usage() {
