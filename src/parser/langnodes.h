@@ -36,6 +36,19 @@ class FloatPrintNode : public ActionNode {
 	FloatNode* node;
 };
 
+class StringPrintNode : public ActionNode {
+    public:
+	StringPrintNode(string text) {
+	    this->text = text;
+	}
+
+	virtual ~StringPrintNode() {  }
+	
+	void eval() { cout << text << endl; };
+    private:
+	string text;
+};
+
 class AssignFloatNode : public ActionNode {
     public:
 	AssignFloatNode(string name, FloatNode* node) {

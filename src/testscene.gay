@@ -1,7 +1,6 @@
 
 
-a = 10
-print a
+print "Start"
 
 i = 0
 
@@ -9,9 +8,9 @@ do {
    print i
    i = i + 1
    if (i > 5) {
-       print 5
+       print "Overfem aa"
    }
 } while (i < 10) 
 
-print 5
+print "Slut" 
 

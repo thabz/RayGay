@@ -32,6 +32,7 @@ alpha	[a-zA-Z]
 digit	[0-9]
 special	[\.\_-]
 string	{alpha}({alpha}|{digit}|{special})*
+qstring \"([^\n\"])*\"
 %x comment
 
 %%
@@ -123,6 +124,7 @@ wireframe	return tWIREFRAME;
 
 {digit}+ |
 {digit}+"."{digit}+ { yylval.d = atof(yytext); return tFLOAT;}
+{qstring}	{ yylval.c = new string(yytext+sizeof(char),yyleng-2); return tQSTRING; }
 {string}	{ yylval.c = new string(yytext); return tSTRING; }
 .		return yytext[0];
 

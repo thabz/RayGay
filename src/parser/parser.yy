@@ -84,7 +84,7 @@ ActionListNode* top_actions;
 }
 %token <d> tFLOAT
 %token <i> tINTEGER
-%token <c> tSTRING
+%token <c> tSTRING tQSTRING
 %token tAA
 %token tBACKGROUND
 %token tBICUBIC
@@ -137,7 +137,7 @@ ActionListNode* top_actions;
 %token tFALSE tTRUE
 %token tBOOL_OR tBOOL_NOT tBOOL_AND tEQUALS
 
-%type <c> Filename
+//%type <c> QuotedString
 %type <rgb> RGB
 %type <rgba> RGBA
 %type <texture> Texture
@@ -687,16 +687,10 @@ Spiral		: tSPIRAL '{' Path Expr Expr '}'
 		}
 		;
 
-Texture		: tTEXTURE '{' Filename tFLOAT tFLOAT InterpolationType '}'
+Texture		: tTEXTURE '{' tQSTRING tFLOAT tFLOAT InterpolationType '}'
                 {
 		    Image* img = new Image(*$3);
 		    $$ = new Texture(img,Vector2($4,$5),$6);
-		}
-                ;
-
-Filename	: '"' tSTRING '"'
-                {
-                    $$ = $2;
 		}
                 ;
 
@@ -736,6 +730,10 @@ RGBA		: '<' Expr ',' Expr ',' Expr ',' Expr '>'
 Print		: tPRINT Expr
                 {
 		    $$ = new FloatPrintNode($2);
+		}
+                | tPRINT tQSTRING
+                {
+		    $$ = new StringPrintNode(*$2);
 		}
                 ;
 
