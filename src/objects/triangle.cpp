@@ -90,12 +90,18 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
    return intersection;
 }
 
+#define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
+#define SUB(dest,v1,v2) \
+          dest[0]=v1[0]-v2[0]; \
+          dest[1]=v1[1]-v2[1]; \
+          dest[2]=v1[2]-v2[2]; 
 // ----------------------------------------------------------------------------
 double Triangle::_fastIntersect(const Ray& ray) const {
    /* Fast code from http://www.ce.chalmers.se/staff/tomasm/code/ */
    //const Vector& vert0 = mesh->cornerAt(vertex[0]);
 
-   Vector tvec, pvec, qvec;
+   double tvec[3], pvec[3], qvec[3];
+
    double det;
    double u,v;
 
@@ -103,17 +109,18 @@ double Triangle::_fastIntersect(const Ray& ray) const {
    CROSS(pvec,ray.getDirection(),edge2);
 
    /* if determinant is near zero, ray lies in plane of triangle */
-   det = edge1 * pvec;
+   det = DOT(edge1,pvec);
 
    if (det < EPSILON)
    {
        return -1;
    } else {
       /* calculate distance from vert0 to ray origin */
-      tvec = ray.getOrigin() - vert0;
+      SUB(tvec,ray.getOrigin(),vert0)
       
       /* calculate U parameter and test bounds */
-      u = tvec * pvec;
+      u = DOT(tvec,pvec);
+
       if (u < 0.0 || u > det)
 	 return -1;
       
@@ -121,7 +128,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
       CROSS(qvec,tvec,edge1);
       
       /* calculate V parameter and test bounds */
-      v = ray.getDirection() * qvec;
+      v = DOT(ray.getDirection(),qvec);
       if (v < 0.0 || u + v > det)
 	 return -1;
    }
@@ -153,7 +160,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 
    /* calculate t, ray intersects triangle */
    double inv_det = 1.0 / det;
-   return (edge2 * qvec) * inv_det;
+   return DOT(edge2,qvec) * inv_det;
 }
     
 Vector Triangle::normal(const Intersection &i) const {
