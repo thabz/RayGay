@@ -26,7 +26,7 @@ class KdNode {
 	    // Left child when not a leaf. Right child is left + 1.
 	    uint left;  
 	    // Enclosed objects when this is a leaf
-	    ObjectType** restrict objects;
+	    ObjectType** objects;
 	};
 	union {
 	    // Number of objects when this is a leaf
@@ -98,8 +98,8 @@ class GenericKdTree {
 	void findBestSplitPlane(uint size, const BoundingBox& bbox, CostResult& result, int split_dim) const;
 
 
-	BoundedObject<ObjectType>** restrict left_bobs;
-	BoundedObject<ObjectType>** restrict right_bobs;
+	BoundedObject<ObjectType>** left_bobs;
+	BoundedObject<ObjectType>** right_bobs;
 
 	std::vector<ObjectType*>* added_objects;
 };
