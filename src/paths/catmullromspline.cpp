@@ -21,6 +21,10 @@ CatmullRomSpline::CatmullRomSpline(const std::vector<Vector>& points) {
     assert(points_num > 3);
 }
 
+CatmullRomSpline::~CatmullRomSpline() {
+    P.clear();
+}
+
 Vector CatmullRomSpline::getPoint(double t) const {
     unsigned int i = segmentBegin(t);
     double tt = t*t;
@@ -40,13 +44,13 @@ Vector CatmullRomSpline::getTangent(double t) const {
 	         (3*tt - 2*t)        * P[i+2]);
 }
 
-void transform(const Matrix& m) {
-    for(int i = 0; i < points_num; i++) {
+void CatmullRomSpline::transform(const Matrix& m) {
+    for(unsigned int i = 0; i < points_num; i++) {
 	P[i] = m * P[i];
     }
 }
 
-unsigned int segmentBegin(const double t) {
+unsigned int CatmullRomSpline::segmentBegin(const double t) const {
     // TODO: Test!
     int segments = points_num - 3;
     return int(t / segments);
