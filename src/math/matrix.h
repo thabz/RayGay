@@ -101,4 +101,43 @@ class Matrix {
 	}
 };
 
+#define MAT(m,r,c) (m)[(c)*4+(r)]
+#define m11 MAT(m,0,0)
+#define m12 MAT(m,0,1)
+#define m13 MAT(m,0,2)
+#define m14 MAT(m,0,3)
+#define m21 MAT(m,1,0)
+#define m22 MAT(m,1,1)
+#define m23 MAT(m,1,2)
+#define m24 MAT(m,1,3)
+#define m31 MAT(m,2,0)
+#define m32 MAT(m,2,1)
+#define m33 MAT(m,2,2)
+#define m34 MAT(m,2,3)
+#define m41 MAT(m,3,0)
+#define m42 MAT(m,3,1)
+#define m43 MAT(m,3,2)
+#define m44 MAT(m,3,3)
+
+/**
+ * Multiply this with a vector
+ * 
+ * \todo Can be optimized by unrolling loops.
+ */
+inline
+Vector Matrix::operator*(const Vector &v) const {
+
+    double prod[4] = { 0,0,0,0 };
+    const double *m = _matrix;
+
+    prod[0] = m11*v[0] + m12*v[1] + m13*v[2] + m14;
+    prod[1] = m21*v[0] + m22*v[1] + m23*v[2] + m24;
+    prod[2] = m31*v[0] + m32*v[1] + m33*v[2] + m34;
+    prod[3] = m41*v[0] + m42*v[1] + m43*v[2] + m44;
+
+    double div = 1.0 / prod[3];
+
+    return Vector(prod[0]*div,prod[1]*div,prod[2]*div);
+}
+
 #endif

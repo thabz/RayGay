@@ -64,27 +64,6 @@ Matrix Matrix::matrixTranslate(const Vector trans) {
     return translate;
 }
 
-/**
- * Multiply this with a vector
- * 
- * \todo Can be optimized by unrolling loops.
- */
-Vector Matrix::operator*(const Vector &v) const {
-
-    double prod[4] = { 0,0,0,0 };
-
-    for (int r=0;r<4;r++) {
-	for (int c=0;c<3;c++) {
-	    prod[r] += v[c]*get(c,r);
-	}
-	prod[r] += get(3,r);
-    }
-
-    double div = 1.0 / prod[3];
-
-    return Vector(prod[0]*div,prod[1]*div,prod[2]*div);
-}
-
 /// Multiply matrix with matrix 
 Matrix Matrix::operator*(const Matrix &m) const {
 
