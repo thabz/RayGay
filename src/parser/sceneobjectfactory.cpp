@@ -2,6 +2,8 @@
 #include "parser/sceneobjectfactory.h"
 #include "parser/converters.h"
 #include "parser/wrapper.h"
+
+#include "parser/schemeisosurface.h"
 #include "objects/sphere.h"
 #include "objects/ellipsoid.h"
 #include "objects/box.h"
@@ -140,6 +142,23 @@ SCM SceneObjectFactory::make_blob(SCM s_iso, SCM s_steps, SCM s_accuracy, SCM s_
     return sceneobject2scm(blob);
 }
 
+SCM SceneObjectFactory::make_isosurface(SCM s_proc, SCM s_vec_lower, SCM s_vec_higher, SCM s_iso, SCM s_steps, SCM s_accuracy, SCM s_material)
+{
+    char* proc = "make-isosurface";
+
+    Vector lower = scm2vector (s_vec_lower, proc, 2);
+    Vector higher = scm2vector (s_vec_higher, proc, 3);
+    double iso = scm_num2double(s_iso, 4, proc);
+    int steps = scm_num2int(s_steps, 5, proc);
+    double accuracy = scm_num2double(s_accuracy, 6, proc);
+    Material* material = scm2material(s_material, proc, 7);
+
+    BoundingBox bbox = BoundingBox(lower,higher);
+
+    SchemeIsosurface* iso_surface  = new SchemeIsosurface(s_proc, bbox, steps, accuracy, iso, material);
+    return sceneobject2scm(iso_surface);
+}
+
 void SceneObjectFactory::register_procs() 
 {
     scm_c_define_gsubr("make-sphere",3,0,0,
@@ -160,5 +179,7 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) SceneObjectFactory::make_heightfield);
     scm_c_define_gsubr("make-blob",5,0,0,
 	    (SCM (*)()) SceneObjectFactory::make_blob);
+    scm_c_define_gsubr("make-isosurface",7,0,0,
+	    (SCM (*)()) SceneObjectFactory::make_isosurface);
 }
 
