@@ -4,6 +4,9 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
+echo "Now running libtoolize"
+libtoolize
+
 echo "Now running aclocal"
 aclocal 
 
