@@ -11,6 +11,7 @@
 
 #include <string> 
 #include <iostream>
+#include <cassert>
 #include "matrix.h"
 #include "vector.h"
 #include "constants.h"

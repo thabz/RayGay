@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cassert>
 
 #include "mesh.h"
 #include "boundingbox.h"

@@ -1,6 +1,8 @@
 
 
 #include <iostream>
+#include <cassert>
+
 #include "cylinder.h"
 #include "circle.h"
 
