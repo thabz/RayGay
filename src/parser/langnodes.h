@@ -9,9 +9,9 @@
 #include "parser/lightnodes.h"
 #include "parser/cameranode.h"
 #include "parser/assignments.h"
-#include "parser/interpreterenv.h"
 #include "parser/boolnodes.h"
 #include "exception.h"
+#include "environment.h"
 
 using namespace std;
 
@@ -36,6 +36,31 @@ class FloatPrintNode : public ActionNode {
 	void eval() { cout << node->eval() << endl; };
     private:
 	FloatNode* node;
+};
+
+class SetBackgroundNode : public ActionNode {
+    public:
+	SetBackgroundNode(RGBA color) {
+	    this->color = color;
+	    this->texture = NULL;
+	}
+
+	SetBackgroundNode(Texture* texture) {
+	    this->texture = texture;
+	}
+
+	void eval() {
+	    Scene* scene = Environment::getUniqueInstance()->getScene();
+	    if (texture == NULL) {
+		scene->setBackground(color);
+	    } else {
+		scene->setBackground(texture);
+	    }
+	}
+
+    private:
+	RGBA color;
+	Texture* texture;
 };
 
 class StringPrintNode : public ActionNode {
@@ -178,7 +203,7 @@ class AddSceneObjectToSceneNode : public ActionNode {
 	}
 
 	void eval() {
-	    InterpreterEnv::getUniqueInstance()->getScene()->addObject(node->eval());
+	    Environment::getUniqueInstance()->getScene()->addObject(node->eval());
 	}
 
     private:
@@ -192,7 +217,7 @@ class AddLightToSceneNode : public ActionNode {
 	}
 
 	void eval() {
-	    InterpreterEnv::getUniqueInstance()->getScene()->addLight(node->eval());
+	    Environment::getUniqueInstance()->getScene()->addLight(node->eval());
 	}
 
     private:
@@ -206,7 +231,7 @@ class AddCameraToSceneNode : public ActionNode {
 	}
 
 	void eval() {
-	    InterpreterEnv::getUniqueInstance()->getScene()->setCamera(cam->eval());
+	    Environment::getUniqueInstance()->getScene()->setCamera(cam->eval());
 	}
 
     private:

@@ -35,8 +35,13 @@ class RendererSettings {
 	RendererType renderertype;
 	/// The number of threads to spawn
 	int threads_num;
+	/// Frames in animation
+	int anim_frames;
 };
 
+/**
+ * Constructor which insert default-settings.
+ */
 inline RendererSettings::RendererSettings() {
     global_photons_num = 10000;
     caustic_photons_num = 0;
@@ -48,6 +53,7 @@ inline RendererSettings::RendererSettings() {
     threads_num = 1;
     renderertype = NONE;
     camera_paths = 10;
+    anim_frames = 1;
 }
 
 #endif

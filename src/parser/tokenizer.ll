@@ -73,6 +73,7 @@ eta		return tETA;
 extrusion	return tEXTRUSION;
 finalgatherrays return tFINALGATHERRAYS;
 fov		return tFOV;
+frames		return tFRAMES;
 globalphotons  	return tGLOBALPHOTONS;
 gloss		return tGLOSS;
 group		return tGROUP;

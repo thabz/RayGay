@@ -25,6 +25,15 @@ Scene::Scene() {
 }
 
 Scene::~Scene() {
+    if (environmentMap != NULL) {
+	delete environmentMap;
+    }
+    for (vector<SceneObject*>::iterator p = objects.begin(); p != objects.end(); p++) {
+	delete *p;
+    }
+    for (vector<Lightsource*>::iterator p = lights.begin(); p != lights.end(); p++) {
+	delete *p;
+    }
 }
 
 void Scene::addObject(SceneObject* obj) {

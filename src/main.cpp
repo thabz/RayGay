@@ -53,7 +53,6 @@ extern void yyparse();
 extern void run_interpreter();
 extern void init_parser(string filename);
 extern Vector2 getImageSize();
-extern Scene* getScene();
 extern RendererSettings* getRendererSettings();
 
 //Assignments* global_assigments = new Assignments();
@@ -120,27 +119,22 @@ void* renderThreadDo(void* obj) {
     return NULL;
 }
 
-void work(string scenefile, string outputfile,int jobs) {
-    Stats::getUniqueInstance()->clear();
-    //Stats::getUniqueInstance()->disable();
-    Stats::getUniqueInstance()->put(STATS_THREADS,jobs);
+void render_frame(int cur_frame, string outputfile, int jobs) {
 
-    char original_working_dir[1024];
-    getcwd(original_working_dir,1024);
+    RendererSettings* renderersettings = getRendererSettings();
 
-    init_parser(scenefile);
-    yyparse();
+    Scene* scene = new Scene();
+    Environment::getUniqueInstance()->setScene(scene);
+
+    Assignments::getUniqueInstance()->setNamedFloat("frame",double(cur_frame));
+    Assignments::getUniqueInstance()->setNamedFloat("clock",double(cur_frame)/double(renderersettings->anim_frames));
     run_interpreter();
 
-    chdir(original_working_dir);
-    
-    RendererSettings* renderersettings = getRendererSettings();
+
     if (renderersettings->renderertype == RendererSettings::NONE) {
 	return;
     }
 
-
-    Scene* scene = getScene();
     Vector2 img_size = getImageSize();
     scene->getCamera()->setImageSize(int(img_size[0]),int(img_size[1]));
     Image* img = new Image(int(img_size[0]),int(img_size[1]));
@@ -171,6 +165,10 @@ void work(string scenefile, string outputfile,int jobs) {
     Stats::getUniqueInstance()->beginTimer("Rendering");
 
     if (renderersettings->threads_num == 1) {
+	// If only one thread is wanted we don't spawn a render-thread
+	// but keep the rendering in-process. This allows for profiling 
+	// with gprof, which doesn't support profiling of multithreaded 
+	// programs.
 	Renderer* renderer = NULL;
 	if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
 	    renderer = new PhotonRenderer(renderersettings,img,scene,space,job_pool,0,globalphotonmap,causticsmap,irradiancecache);
@@ -206,7 +204,35 @@ void work(string scenefile, string outputfile,int jobs) {
 
     img->save(outputfile);
     delete img;
+    delete space;
+    delete scene;
     Stats::getUniqueInstance()->dump();
+}
+
+void work(string scenefile, string outputfile, int jobs) {
+    Stats::getUniqueInstance()->clear();
+    //Stats::getUniqueInstance()->disable();
+    Stats::getUniqueInstance()->put(STATS_THREADS,jobs);
+
+    char original_working_dir[1024];
+    getcwd(original_working_dir,1024);
+
+    init_parser(scenefile);
+    yyparse();
+
+    chdir(original_working_dir);
+    
+    int frames_num = getRendererSettings()->anim_frames;
+    if (frames_num == 1) {
+	render_frame(0,outputfile,jobs);
+    } else {
+	char file_prefix[50];
+	for (int frame = 0; frame < frames_num; frame++) {
+	    cout << "Rendering frame " << frame << "/" << frames_num << endl;
+	    sprintf(file_prefix,"%05d",frame);
+	    render_frame(frame,file_prefix + outputfile,jobs);
+	}
+    }
 }
 
 void print_usage() {

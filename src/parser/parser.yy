@@ -45,8 +45,8 @@
 
 #include "camera.h"    
 #include "exception.h"    
-#include "scene.h"    
 #include "renderersettings.h"
+#include "environment.h"
 
 using namespace std;
 
@@ -56,7 +56,6 @@ extern int yylex(void);
 extern int line_num;
 
 CameraNode* camera;
-Scene* scene;
 RendererSettings* renderer_settings;
 MaterialNode* tmpMaterial;
 Vector2 image_size = Vector2(640,480);
@@ -105,6 +104,7 @@ ActionListNode* top_actions;
 %token tELLIPSOID
 %token tEXTRUSION
 %token tFOV
+%token tFRAMES
 %token tGROUP
 %token tIMAGE tWIDTH tHEIGHT tASPECT
 %token tLINESEGMENT tSPIRAL tCIRCLE tCATMULLROMSPLINE
@@ -307,13 +307,11 @@ Renderer	: tRENDERER tRAYTRACER
 
 Background	: tBACKGROUND RGBA
                 {
-		    scene->setBackground($2->eval()); // TODO: Hack
-		    $$ = new NOPAction();
+		    $$ = new SetBackgroundNode($2->eval());
 		}
                 | tBACKGROUND Texture
 		{
-		    scene->setBackground($2);
-		    $$ = new NOPAction();
+		    $$ = new SetBackgroundNode($2);
 		}
                 ;
 
@@ -354,6 +352,10 @@ Setting		: tGLOBALPHOTONS tFLOAT
 		| tPATHS tFLOAT
 		{
 		    renderer_settings->camera_paths = int($2);
+		}
+		| tFRAMES tFLOAT
+		{
+		    renderer_settings->anim_frames = int($2);
 		}
 		;
 
@@ -1089,10 +1091,8 @@ void openfile(string filename) {
 
 void init_parser(string scenefile) {
     openfile(scenefile);
-    scene = new Scene();
     renderer_settings = new RendererSettings();
     top_actions = new ActionListNode();
-    InterpreterEnv::getUniqueInstance()->setScene(scene);
 }
 
 void run_interpreter() {
@@ -1101,10 +1101,6 @@ void run_interpreter() {
 
 Vector2 getImageSize() {
     return image_size;
-}
-
-Scene* getScene() {
-    return scene;
 }
 
 RendererSettings* getRendererSettings() {
