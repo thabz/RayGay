@@ -9,6 +9,7 @@
 #include "objects/torus.h"
 #include "objects/extrusion.h"
 #include "objects/heightfield.h"
+#include "objects/blob.h"
 
 
 SCM SceneObjectFactory::make_sphere(SCM s_center, SCM s_radius, SCM s_material) 
@@ -93,6 +94,41 @@ SCM SceneObjectFactory::make_heightfield(SCM s_texture, SCM s_box, SCM s_w_div, 
     return sceneobject2scm(hf);
 }
 
+SCM SceneObjectFactory::make_blob(SCM s_iso, SCM s_steps, SCM s_accuracy, SCM s_material, SCM s_atoms)
+{
+    char* proc = "make-blob";
+    double iso = scm_num2double(s_iso, 1, proc);
+    int steps = scm_num2int(s_steps, 2, proc);
+    double accuracy = scm_num2double(s_accuracy, 3, proc);
+    Material* material = scm2material(s_material, proc, 4);
+
+    Blob* blob = new Blob(iso, steps, accuracy, material);
+
+    // Add the atoms
+    assert(SCM_NFALSEP (scm_list_p (s_atoms)));
+    uint length = scm_num2int(scm_length(s_atoms),0,"");
+    assert (length % 3 == 0);
+    length /= 3;
+    
+    SCM s_center;
+    SCM s_weight;
+    SCM s_radius;
+    Vector center;
+    double weight;
+    double radius;
+    for(uint i = 0; i < length; i++) {
+	s_center = scm_list_ref(s_atoms, scm_int2num(3*i + 0));
+	s_radius = scm_list_ref(s_atoms, scm_int2num(3*i + 1));
+	s_weight = scm_list_ref(s_atoms, scm_int2num(3*i + 2));
+	center = scm2vector(s_center, proc, 5);
+	radius = scm_num2double(s_radius, 5, proc);
+	weight = scm_num2double(s_weight, 5, proc);
+	blob->addAtom(center, radius, weight);
+    }
+
+    return sceneobject2scm(blob);
+}
+
 void SceneObjectFactory::register_procs() 
 {
     scm_c_define_gsubr("make-sphere",3,0,0,
@@ -109,5 +145,7 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) SceneObjectFactory::make_extrusion);
     scm_c_define_gsubr("make-heightfield",5,0,0,
 	    (SCM (*)()) SceneObjectFactory::make_heightfield);
+    scm_c_define_gsubr("make-blob",5,0,0,
+	    (SCM (*)()) SceneObjectFactory::make_blob);
 }
 
