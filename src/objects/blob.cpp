@@ -7,16 +7,31 @@
 // BlobAtom code
 ////////////////////////////////////////////////////////////////////////
 
-BlobAtom::BlobAtom(double radius, double weight, const Vector& center) {
+BlobAtom::BlobAtom(double radius, double weight) 
+{
     this->radius = radius;
     this->weight = weight;
-    this->center = center;
     this->radius_squared = radius * radius;
 }
 
-BoundingBox BlobAtom::boundingBoundingBox() const {
+////////////////////////////////////////////////////////////////////////
+// BlobAtomSphere code
+////////////////////////////////////////////////////////////////////////
+
+BlobAtomSphere::BlobAtomSphere(double radius, double weight, const Vector& center) : BlobAtom(radius, weight) 
+{
+    this->center = center;
+}
+
+BoundingBox BlobAtomSphere::boundingBoundingBox() const 
+{
     Vector rrr = Vector(radius,radius,radius);
     return BoundingBox(center-rrr,center+rrr);
+}
+
+double BlobAtomSphere::squaredDistToPoint(const Vector& point) const 
+{
+    return (center - point).norm();
 }
 
 /**
@@ -25,7 +40,7 @@ BoundingBox BlobAtom::boundingBoundingBox() const {
  *
  * J. Arvo: "A simple method for box-sphere intersection testing" in: A. Glassner (ed.), <i>Graphics Gems</i>, pp. 335-339, Academic Press, Boston, MA, 1990.
  */
-int BlobAtom::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const {
+int BlobAtomSphere::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const {
     double s;
     double d = 0.0;
     for(int i = 0; i < 3; i++) {
@@ -37,7 +52,34 @@ int BlobAtom::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_b
 	    d += s*s;
 	}
     }
-    return d <= radius*radius + EPSILON ? 1 : -1;
+    return d <= radius_squared + EPSILON ? 1 : -1;
+}
+
+////////////////////////////////////////////////////////////////////////
+// BlobAtomCylinder code
+////////////////////////////////////////////////////////////////////////
+
+BlobAtomCylinder::BlobAtomCylinder(double radius, double weight, const Vector& from, const Vector& to) : BlobAtom(radius, weight) 
+{
+    this->from = from;
+    this->to = to;
+}
+
+BoundingBox BlobAtomCylinder::boundingBoundingBox() const 
+{
+    BoundingBox bbox = BoundingBox(from,to);
+    bbox.grow(radius);
+    return bbox;
+}
+
+double BlobAtomCylinder::squaredDistToPoint(const Vector& point) const 
+{
+    // TODO: Implement
+    return 0;
+}
+
+int BlobAtomCylinder::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const {
+    return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -73,7 +115,7 @@ double BlobTree::eval(const Vector& point) const {
     BlobAtom* b;
     for(uint i = 0; i < num; i++) {
 	b = node->objects[i];
-	double rr = (b->center - point).norm();
+	double rr = b->squaredDistToPoint(point);
 	double RR = b->radius_squared;
 	if (rr >= RR) {
 	    continue;
@@ -107,14 +149,14 @@ Blob::~Blob() {
 }
 
 /**
- * Add an atom to the blob.
+ * Add an spherical atom to the blob.
  * 
  * @param center center of the sphere
  * @param radius radius of the sphere
  * @param weight weight to use
  */
 void Blob::addAtom(const Vector& center, double radius, double weight) {
-    tree->addObject(new BlobAtom(radius, weight, center));
+    tree->addObject(new BlobAtomSphere(radius, weight, center));
 }
 
 void Blob::prepare() {

@@ -11,14 +11,39 @@
 class BlobAtom 
 {
     public:
-	BlobAtom(double radius, double weight, const Vector& center);
-	BoundingBox boundingBoundingBox() const;
-	int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
+	BlobAtom(double radius, double weight);
+	virtual BoundingBox boundingBoundingBox() const = 0;
+	virtual double squaredDistToPoint(const Vector& point) const = 0;
+	virtual int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const = 0;
 	
 	double radius;
 	double radius_squared;
 	double weight;
+};
+
+class BlobAtomSphere : public BlobAtom {
+
+    public:
+	BlobAtomSphere(double radius, double weight, const Vector& center);
+	BoundingBox boundingBoundingBox() const;
+	double squaredDistToPoint(const Vector& point) const;
+	int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
+
+    private:
 	Vector center;
+};
+
+class BlobAtomCylinder: public BlobAtom {
+
+    public:
+	BlobAtomCylinder(double radius, double weight, const Vector& from, const Vector& to);
+	BoundingBox boundingBoundingBox() const;
+	double squaredDistToPoint(const Vector& point) const;
+	int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
+
+    private:
+	Vector from;
+	Vector to;
 };
 
 class BlobTree : public GenericKdTree<BlobAtom>
