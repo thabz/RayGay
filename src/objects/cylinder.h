@@ -26,7 +26,6 @@ class Cylinder : public Solid, public Transformer {
 	~Cylinder() {};
 	void transform(const Matrix& m);
 
-	bool onEdge(const Vector &p) const;
 	bool inside(const Vector &p) const;
 
 	BoundingBox boundingBoundingBox() const;
@@ -38,7 +37,6 @@ class Cylinder : public Solid, public Transformer {
 	double _fastIntersect(const Ray& ray) const;
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
 	Intersection _intersect(const Ray& ray) const;
-	void prepareMatrices();
 
 	Vector begin;
 	Vector end;
