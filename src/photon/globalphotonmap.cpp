@@ -137,11 +137,11 @@ void GlobalPhotonMap::locate_photon(locatePhotonArgs* const args, const int inde
 	dist2 += dist1*dist1;
 
 	if (dist2 < args->smallest_dist) {
-	    //    Vector n = unpackVector(p->normal_theta,p->normal_phi);
-	    //   if ((n * args->normal) > 0.9) {
-	    args->smallest_dist = dist2;
-	    args->smallest_index = index;
-	    //  }
+	    Vector n = unpackVector(p->normal_theta,p->normal_phi);
+	    if ((n * args->normal) > 0.9) {
+		args->smallest_dist = dist2;
+		args->smallest_index = index;
+	    }
 	}
     }
 }
