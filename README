@@ -65,7 +65,7 @@ Transcode:
 http://www.theorie.physik.uni-goettingen.de/%7Eostreich/transcode/html/anim.html
 
 $ find frames -type f > list
-$ transcode -i list -x imlist,null -g 640x480 -y xvid,null -f 25 -o movie.avi -H 0
+$ transcode -z -i list -x imlist,null -g 640x480 -y xvid,null -f 25 -o movie.avi -H 0
 
 erstat evt. xvid med dixv5
 
