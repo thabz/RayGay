@@ -1,7 +1,7 @@
 
+#include "objects/bound.h"
 #include "space/kdtree.h"
 #include "boundingbox.h"
-#include "objects/bound.h"
 #include "objects/objectgroup.h"
 #include "math/vector2.h"
 #include "materials/plastic.h"

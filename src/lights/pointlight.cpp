@@ -4,7 +4,6 @@
 #include "math/matrix.h"
 #include "intersection.h"
 #include "space/kdtree.h"
-#include "objects/object.h"
 
 Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
 }

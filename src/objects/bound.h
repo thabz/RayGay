@@ -2,8 +2,8 @@
 #ifndef OBJECTS_BOUND_H
 #define OBJECTS_BOUND_H
 
-#include "space/kdtree.h"
 #include "objects/object.h"
+#include "space/kdtree.h"
 #include "intersection.h"
 
 class ObjectGroup;
