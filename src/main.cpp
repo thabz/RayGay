@@ -33,6 +33,7 @@
 #include "mesh.h"
 #include "spotlight.h"
 #include "constants.h"
+#include "box.h"
 
 using namespace std;
 
@@ -46,22 +47,23 @@ void testScene4() {
 
     Material mat = blue;
     mat.setTexturemap("earth.jpg");
-    Sphere s = Sphere(Vector(0,0,0),200.0,mat);
+    Sphere s = Sphere(Vector(0,100,0),200.0,mat);
     scene.addObject(&s);
 
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
-    Spotlight light2 = Spotlight(Vector(0,0,500),Vector(0,0,-1),DEG2RAD(30.0),DEG2RAD(10.0));
-//    scene.addLight(&light1);
+    Spotlight light2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
+    scene.addLight(&light1);
     scene.addLight(&light2);
 
-    /*
     
-    BoundingBoxobject b = BoundingBoxobject(BoundingBox(Vector(-300,-150,-300),Vector(300,-100,300)),green);
+    
+    Box b = Box(Vector(-300,-150,-300),Vector(300,-100,300),green);
     scene.addObject(&b);
-*/
 
-    Matrix n = Matrix::matrixRotate(Vector(1,1,0),-40.0);
-    n = n * Matrix::matrixTranslate(Vector(0,0,200));
+
+    
+    Matrix n = Matrix::matrixRotate(Vector(1,0,0),-40.0);
+//    n = n * Matrix::matrixTranslate(Vector(0,0,200));
     scene.transform(n);
 
     scene.setBackgroundColor(RGB(0.1,0.1,0.3));

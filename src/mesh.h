@@ -52,8 +52,10 @@ class Mesh : public object {
 	virtual BoundingBox boundingBoundingBox();
 	virtual void getUV(const Intersection& intersection, double* u, double* v);
 
+	/// Add a triangle to the mesh
 	void addTriangle(const Vector* corners);
-
+	/// Add a triangle to the mesh
+        void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3);
 	/// Internal test
 	static void test();
 

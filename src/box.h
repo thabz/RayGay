@@ -14,7 +14,11 @@ class Material;
 class Box : public object {
 
     public:
+	/// Constructs a box with extremities at corner1 and corner2
 	Box(const Vector corner1, const Vector corner2, Material mat);
+	/// Constructs a box 
+	Box(const Vector center, double width, double height, double depth, Material m);
+	/// Destructor
 	~Box();
 
 	virtual void transform(const Matrix& m) { mesh->transform(m); };
@@ -28,11 +32,12 @@ class Box : public object {
 	virtual bool intersects(const BoundingBox& b) { return mesh->intersects(b); };
 	virtual BoundingBox boundingBoundingBox() {return mesh->boundingBoundingBox(); };
 
-	virtual void getUV(const Intersection& intersection, double* u, double* v) {return mesh->getUV(intersection, u, v); };
+	void getUV(const Intersection& intersection, double* u, double* v) { mesh->getUV(intersection, u, v); };
 
 
     private:
 	Mesh* mesh;
+	Intersection _intersect(const Ray& ray) { return mesh->intersect(ray); };
 
 };
 

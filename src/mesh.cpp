@@ -42,6 +42,14 @@ void Mesh::addTriangle(const Vector* c) {
     triangles.push_back(t);
 }
 
+void Mesh::addTriangle(const Vector& c1, const Vector& c2, const Vector& c3) {
+    Vector c[3];
+    c[0] = c1;
+    c[1] = c2;
+    c[2] = c3;
+    addTriangle(c);
+}
+
 void Mesh::transform(const Matrix& M) {
     for (vector<Vector>::iterator p = corners.begin(); p != corners.end(); p++) {
 	(*p) = M * (*p);
