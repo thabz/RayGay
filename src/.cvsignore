@@ -6,3 +6,4 @@ Makefile
 .libs
 *.swp
 *.lo
+*.la

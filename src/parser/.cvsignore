@@ -1,11 +1,13 @@
 tokenizer.cc
 parser.h
 parser.cc
+.lib
 Makefile.in
 Makefile
 .deps
 *.swp
 *.o
 *.lo
+*.la
 *.a
 
