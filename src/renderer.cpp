@@ -122,7 +122,7 @@ void Renderer::renderPreview(const RenderJob& job) {
  * Find the colors of all pixels of the job and write 
  * into the target image.
  *
- * \todo Jitter the samples within the grid.
+ * TODO: Jitter the samples within the grid.
  * 
  * @param job The job to render
  */

@@ -18,7 +18,7 @@
  *
  * Implementerer http://www.acm.org/jgt/papers/HavranKopalBittnerZara97/ som er den bedste BSP-traversal algorithme.
  *
- * \todo Make a destructor that delete nodes recursively beginning at top_node.
+ * TODO: Make a destructor that delete nodes recursively beginning at top_node.
  */
 class KdTree : public GenericKdTree<Object> {
 

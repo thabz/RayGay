@@ -61,7 +61,7 @@ double SolidBox::_fastIntersect(const Ray& world_ray) const {
     }
 }
 
-/// \todo: Find UV-coordinates.
+// TODO: Find UV-coordinates.
 Intersection SolidBox::_fullIntersect(const Ray& world_ray, const double t) const {
     Ray local_ray = rayToObject(world_ray);
     Vector point = local_ray.getPoint(t*local_ray.t_scale);

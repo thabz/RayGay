@@ -60,7 +60,7 @@ Intersection Bound::fullIntersect(const Ray& ray, double t) const {
 }
 
 /**
- * \todo Inefficient method 
+ * TODO: Inefficient method 
  */
 double Bound::fastIntersect(const Ray& ray) const {
     Intersection result;

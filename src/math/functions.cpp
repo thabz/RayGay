@@ -68,7 +68,7 @@ static uint binomialTable[17][17] = {
  * Using table lookup for n,k < 17.
  * Otherwise using a slow recursive function.
  *
- * \todo Convert recursion into loop.
+ * TODO: Convert recursion into loop.
  *
  * @see http://www.brpreiss.com/books/opus4/html/page467.html for a O(n^2) version.
  */
