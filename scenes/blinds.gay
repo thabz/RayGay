@@ -1,5 +1,8 @@
 # A scene for testing photon mapping
 
+# Render-times:
+# 2004-05-10:  32:46
+
 include materials.gay
 
 renderer photonrenderer
