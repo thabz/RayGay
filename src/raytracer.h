@@ -30,7 +30,7 @@ class Raytracer : public Renderer {
 
 inline
 RGBA Raytracer::tracePrimary(const Ray& ray) {
-   // Stats::getUniqueInstance()->inc("Primary camera rays cast");
+    Stats::getUniqueInstance()->inc(STATS_PRIMARY_RAYS_CAST);
     Intersection i;
     bool intersected = space->intersectPrimary(ray,&i);
     return traceSub(intersected, i, ray, 1);
@@ -38,12 +38,7 @@ RGBA Raytracer::tracePrimary(const Ray& ray) {
 
 inline
 RGBA Raytracer::trace(const Ray& ray, const int depth) {
-    // Discard reflected ray if the amount of colour it
-    // contributes to the pixel is too small.
-    //if (weight < 0.004) // 1 / 256 = 0.004
-    //	return RGBA(0,0,0,0.0);
-
-    //Stats::getUniqueInstance()->inc("Secondary camera rays cast");
+    Stats::getUniqueInstance()->inc(STATS_SECONDARY_RAYS_CAST);
     Intersection i;
     bool intersected = space->intersect(ray,&i);
     return traceSub(intersected, i, ray, depth);

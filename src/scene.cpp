@@ -27,7 +27,7 @@ Scene::~Scene() {
 }
 
 void Scene::addObject(SceneObject* obj) {
-    Stats::getUniqueInstance()->inc("SCENE: Objects added");
+    Stats::getUniqueInstance()->inc(STATS_SCENE_OBJECTS_ADDED);
     objects.push_back(obj);
 }
 

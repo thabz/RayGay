@@ -18,7 +18,7 @@ IrradianceCache::IrradianceCache(const BoundingBox& bbox, double tolerance = 0.1
 }
 
 void IrradianceCache::putEstimate(const Vector& point, const Vector& normal, const RGB& irradiance, const double hmd) {
-    Stats::getUniqueInstance()->inc("Irradiance cache size");
+    Stats::getUniqueInstance()->inc(STATS_IRRADIANCE_CACHE_SIZE);
     hierarchy_top->add(CacheNode(point,normal,irradiance,hmd,tolerance));
 }
 
@@ -43,11 +43,11 @@ bool IrradianceCache::getEstimate(const Vector& point, const Vector& normal, RGB
 	}
     }
     if (found > 0) {
-	Stats::getUniqueInstance()->inc("Irradiance cache hits");
+	Stats::getUniqueInstance()->inc(STATS_IRRADIANCE_CACHE_HITS);
 	*dest = result / weight_sum;
 	return true;
     } else {
-	Stats::getUniqueInstance()->inc("Irradiance cache misses");
+	Stats::getUniqueInstance()->inc(STATS_IRRADIANCE_CACHE_MISSES);
 	return false;
     }
 }
@@ -104,7 +104,6 @@ IrradianceCache::HierarchyNode::HierarchyNode(const BoundingBox& bbox, unsigned 
     this->isSplit = false;
     this->depth = depth;
     this->length = bbox.maximum()[0] - bbox.minimum()[0];
-    Stats::getUniqueInstance()->inc("Irradiance cache octree nodes");
 }
 
 void IrradianceCache::HierarchyNode::add(const CacheNode& node) {

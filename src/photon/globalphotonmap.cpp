@@ -38,7 +38,7 @@ void GlobalPhotonMap::store( const RGB& power, const Vector& pos, const Vector& 
     packVector(dir,&photon.theta,&photon.phi);
     packVector(normal,&photon.normal_theta,&photon.normal_phi);
     storeit(photon);
-    Stats::getUniqueInstance()->inc("Global Photons stored");
+    Stats::getUniqueInstance()->inc(STATS_GLOBAL_PHOTONS_STORED);
 }
 
 /**

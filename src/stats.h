@@ -11,10 +11,27 @@
 
 using namespace std;
 
-/// A helper class for counting statistics
+enum StatsKey {
+    STATS_PRIMARY_RAYS_CAST,
+    STATS_SECONDARY_RAYS_CAST,
+    STATS_SHADOW_RAYS_CAST,
+    STATS_SHADOW_HINT_HIT,
+    STATS_SHADOW_VOXEL_HIT,
+    STATS_PHOTON_RAYS_TRACED,
+    STATS_PHOTONS_LOST_IN_VOID,
+    STATS_GLOBAL_PHOTONS_STORED,
+    STATS_CAUSTIC_PHOTONS_STORED,
+    STATS_KDTREE_OBJECTS_ADDED,
+    STATS_SCENE_OBJECTS_ADDED,
+    STATS_IRRADIANCE_CACHE_SIZE,
+    STATS_IRRADIANCE_CACHE_HITS,
+    STATS_IRRADIANCE_CACHE_MISSES,
+    STATS_TOTAL_CAMERA_RAYS_CAST,
+    STATS_LAST
+};
+
 /**
- * The stats class is basically a hashmap of string and incremental
- * counts of the different strings.
+ * A helper class for counting statistics
  */ 
 class Stats {
 
@@ -22,18 +39,17 @@ class Stats {
 	/// Returns the singleton
 	static Stats* getUniqueInstance();
 	/// Inserts a value
-	void put(string key, long value);
+	void put(StatsKey, long value);
 	/// Gets a value
-	long get(string key) const;
+	long get(StatsKey key) const;
 	/// Increases a value by one
-	void inc(string key);
+	void inc(StatsKey key);
 	/// Increases a value by an amount
-	void inc(string key,long amount);
+	void inc(StatsKey key, long amount);
 	/// Prints out the stats
 	void dump() const;
 	/// Remove all stats
 	void clear();
-
 
 	/// Begin a time measure
 	void beginTimer(string key);
@@ -44,13 +60,12 @@ class Stats {
 	void disable() { disabled = true; };
 
     private:
+	Stats();
 	static Stats* Stats::uniqueInstance;
-	Stats() {disabled = false; };
-	map<string,long> stats;
+	long* stats;
 	map<string,time_t> beginTimes;
 	map<string,time_t> endTimes;
-        bool disabled;
+	bool disabled;
 };
-
 
 #endif /* STATS_H */

@@ -4,6 +4,25 @@
 
 using namespace std;
 
+
+string StatsStrings[] = {
+    "Primary rays cast",
+    "Secondary rays cast",
+    "Shadow rays cast",
+    "Shadow cache hint hit",
+    "Shadow cache voxel hit",
+    "Photon rays cast",
+    "Photons lost in void",
+    "Global photons stored",
+    "Caustic photons stored",
+    "Kd-tree objects added",
+    "Scene objects added",
+    "Irradiance cache size",
+    "Irradiance cache hits",
+    "Irradiance cache misses",
+    "Total camera rays cast"
+};
+
 /// The unique singleton instance
 Stats* Stats::uniqueInstance = NULL;
 
@@ -14,49 +33,35 @@ Stats* Stats::getUniqueInstance() {
     return uniqueInstance;
 }
 
-void Stats::put(string key, long value) {
-    if (disabled) 
-	return;
-    stats[key] = value;
+Stats::Stats() {
+    disabled = false;
+    stats = new long[STATS_LAST+1];
+    clear();
 }
 
-long Stats::get(string key) const {
-    map<string,long>::const_iterator p = stats.find(key);
-    if (p != stats.end()) {
-	return p->second;
-    } else {
-	return 0;
+void Stats::put(StatsKey key, long value) {
+    if (!disabled) {
+	stats[key] = value;
     }
 }
 
-void Stats::inc(string key) {
-    if (disabled) 
-	return;
-    this->inc(key,1);
-}
-
-void Stats::inc(string key, long amount) {
-    if (disabled) 
-	return;
-    map<string,long>::const_iterator p = stats.find(key);
-    if (p != stats.end()) {
-	(stats.find(key)->second) += amount;
-    } else {
-	put(key,amount);
-    }
+long Stats::get(StatsKey key) const {
+    return stats[key];
 }
 
 void Stats::clear() {
-    stats.clear();
+    for(int i = 0; i < STATS_LAST; i++) {
+	stats[i] = 0;
+    }
 }
 
 void Stats::dump() const {
     // Print key/value pairs
     map<string,long>::const_iterator cur_entry;
-    for (cur_entry = stats.begin();
-	    cur_entry != stats.end();
-	    cur_entry++) {
-	cout << cur_entry->first << ": " << cur_entry->second << endl;
+    for(int i = 0; i < STATS_LAST; i++) {
+	if (stats[i] > 0) {
+	    cout << StatsStrings[i] << ": " << stats[i] << endl;
+	}
     }
 
     // Print time measures
@@ -74,6 +79,11 @@ void Stats::dump() const {
 	    cout << endl;
 	}
     }
+}
+
+void Stats::inc(StatsKey key) {
+    stats[key]++;
+
 }
 
 void Stats::beginTimer(string key) {

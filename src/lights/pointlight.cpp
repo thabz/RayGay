@@ -5,7 +5,6 @@
 #include "intersection.h"
 #include "space/spacesubdivider.h"
 #include "objects/object.h"
-#include "stats.h"
 
 Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
 }
@@ -24,7 +23,6 @@ void Pointlight::getLightinfo(const Intersection& inter,const Vector& normal, Sp
     info->cos = info->direction_to_light * normal;
 
     if (info->cos > 0.0) {
-	Stats::getUniqueInstance()->inc("Shadow rays cast");
 	Ray ray_to_light = Ray(inter.getPoint(),info->direction_to_light,-1.0);
 	bool occluded = shadowcache.occluded(ray_to_light,dist_to_light,depth,space);
 	info->intensity = occluded ? 0.0 : 1.0;

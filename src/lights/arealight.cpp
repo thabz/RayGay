@@ -5,7 +5,6 @@
 #include "paths/circle.h"
 #include "intersection.h"
 #include "space/spacesubdivider.h"
-#include "stats.h"
 #include "math/vector.h"
 
 /**
@@ -71,7 +70,6 @@ void Arealight::getLightinfo(const Intersection& inter,const Vector& normal, Spa
 	    }
 	    direction_to_light *= 1.0/dist_to_light;
 
-	    Stats::getUniqueInstance()->inc("Shadow rays cast");
 	    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
 
 	    bool occluded = shadowcaches[i].occluded(ray_to_light,dist_to_light,depth,space);

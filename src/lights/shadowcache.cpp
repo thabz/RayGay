@@ -4,6 +4,7 @@
 #include "lights/shadowcache.h"
 #include "space/spacesubdivider.h"
 #include "ray.h"
+#include "stats.h"
 
 ShadowCache::ShadowCache() {
     for(int i = 0; i < LIGHTS_SHADOW_CACHE_MAX_DEPTH; i++) {
@@ -47,6 +48,7 @@ bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, 
     if (hint != NULL) {
 	double t = hint->fastIntersect(ray_to_light);
 	if (t > 0 && t < dist_to_light) {
+	    Stats::getUniqueInstance()->inc(STATS_SHADOW_HINT_HIT);
 	    return true;
 	}
     }
@@ -59,12 +61,14 @@ bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, 
 	for(unsigned int i = 0; i < size; i++) {
            double t = objects[i]->fastIntersect(ray_to_light);
 	   if (t > 0 && t < dist_to_light) {
+	       Stats::getUniqueInstance()->inc(STATS_SHADOW_VOXEL_HIT);
                return true;
 	   }
 	}
     }
 
     // Finally do a real intersection test
+    Stats::getUniqueInstance()->inc(STATS_SHADOW_RAYS_CAST);
     hint = space->intersectForShadow(ray_to_light,dist_to_light);
     putHint(depth,hint);
     putVoxel(depth,NULL);

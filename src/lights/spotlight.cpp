@@ -3,7 +3,6 @@
 #include "math/matrix.h"
 #include "intersection.h"
 #include "space/spacesubdivider.h"
-#include "stats.h"
 #include "math/functions.h"
 #include "math/halton.h"
 
@@ -36,7 +35,6 @@ void Spotlight::getLightinfo(const Intersection& inter,const Vector& normal, Spa
     info->direction_to_light.normalize();
     info->cos = info->direction_to_light * normal;
     if (info->cos > 0.0) {
-	Stats::getUniqueInstance()->inc("Shadow rays cast");
 	Ray ray_to_light = Ray(inter.getPoint(),info->direction_to_light,-1.0);
 	bool in = space->intersectForShadow(ray_to_light,dist_to_light);
 	info->intensity =  in ? 0.0 : 1.0;

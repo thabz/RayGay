@@ -34,7 +34,7 @@ void CausticsMap::store( const RGB& power, const Vector& pos, const Vector& dir)
     packVector(dir,&photon.theta,&photon.phi);
     storeit(photon);
 
-    Stats::getUniqueInstance()->inc("Caustic photons stored");
+    Stats::getUniqueInstance()->inc(STATS_CAUSTIC_PHOTONS_STORED);
 }
 
 /**

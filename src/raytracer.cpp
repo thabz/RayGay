@@ -36,6 +36,7 @@ RGBA Raytracer::getPixel(const Vector2& v) {
 }
 
 RGBA Raytracer::traceSub(const bool intersected, const Intersection& intersection, const Ray& ray, const int depth) {
+    Stats::getUniqueInstance()->inc(STATS_TOTAL_CAMERA_RAYS_CAST);
     RGBA color; 
     double intersect_distance = HUGE_DOUBLE;
 

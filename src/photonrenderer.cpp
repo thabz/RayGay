@@ -75,20 +75,21 @@ RGBA PhotonRenderer::getPixel(const Vector2& v) {
 }
 
 RGBA PhotonRenderer::tracePrimary(const Ray& ray) {
-    Stats::getUniqueInstance()->inc("Primary camera rays cast");
+    Stats::getUniqueInstance()->inc(STATS_PRIMARY_RAYS_CAST);
     Intersection i;
     bool intersected = space->intersectPrimary(ray,&i);
     return traceSub(intersected, i, ray, 1);
 }
 
 RGBA PhotonRenderer::trace(const Ray& ray, int depth) {
+    Stats::getUniqueInstance()->inc(STATS_SECONDARY_RAYS_CAST);
     Intersection i;
     bool intersected = space->intersect(ray,&i);
     return traceSub(intersected, i, ray, depth);
 }
 
 RGBA PhotonRenderer::traceSub(bool intersected, const Intersection& intersection, const Ray& ray, int depth) {
-    Stats::getUniqueInstance()->inc("Total camera rays cast");
+    Stats::getUniqueInstance()->inc(STATS_TOTAL_CAMERA_RAYS_CAST);
     RGBA color; 
     double intersect_distance;
 
