@@ -126,12 +126,11 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
     // Set settings
     SCM s_settings = lookup("settings");
     if (!SCM_NULLP(s_settings)) {
-	//assert(SCM_NFALSEP (scm_list_p (s_settings)));
+	assert(SCM_NFALSEP (scm_list_p (s_settings)));
 	uint length = scm_num2int(scm_length(s_settings),0,"");
 
 	assert(length % 2 == 0);
 	uint argc = length / 2;
-	cout << "Args: " << argc << endl;
 
 	for(uint i = 0; i < argc; i++) {
 	    char* key_c = gh_symbol2newstr(scm_list_ref(s_settings, scm_int2num(i*2)),NULL);
