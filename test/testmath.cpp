@@ -753,10 +753,20 @@ class polynomials : public Test  {
 	    assertTrue(Polynomial(7,6,4,2) - Polynomial(1,2) == Polynomial(7,6,3,0));
 	    assertTrue(Polynomial(7) - Polynomial(0,1,2,3) == Polynomial(-1,-2,4));
 
-	    // Multiplication
+	    // Multiplication by scalar
 	    assertTrue(Polynomial(7,6,4,2) * 2.0 == Polynomial(14,12,8,4));
 	    assertTrue(Polynomial(1,2,3,4) * 0.0 == Polynomial(0));
 	    
+	    // Multiplication by polynomial
+	    //     (x+1)*(x+6)*(x-5) = x^3 + 2*x^2 - 29*x - 30 
+	    //           (x+6)*(x-5) = x^2 + x - 30
+	    //     (x+1)*(x+6)       = x^2 + 7*x + 6
+	    assertTrue(Polynomial(1,1) * Polynomial(1,6) == Polynomial(1,7,6));
+	    assertTrue(Polynomial(1,1) * Polynomial(1,6) * Polynomial(1,-5) == Polynomial(1,2,-29,-30));
+	    assertTrue(Polynomial(1,6) * Polynomial(1,-5) == Polynomial(1,1,-30));
+	    assertTrue(Polynomial(1,6,7) * Polynomial(1,0) == Polynomial(1,6,7,0));
+	    assertTrue(Polynomial(1,6,7) * Polynomial(1,0,0) == Polynomial(1,6,7,0,0));
+
 	    // Division 
 	    assertTrue(Polynomial(4,2,1) / 2.0 == Polynomial(2,1,0.5));
 	    assertTrue(Polynomial(8) / 4.0 == Polynomial(2.0));

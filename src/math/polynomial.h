@@ -70,6 +70,7 @@ class Polynomial : public Function<double, double> {
 
 	Polynomial operator+(const Polynomial& p) const;
 	Polynomial operator-(const Polynomial& p) const;
+	Polynomial operator*(const Polynomial& p) const;
 	Polynomial operator*(double c) const;
 	Polynomial operator/(double c) const;
 

@@ -249,3 +249,17 @@ void Polynomial::reduce() {
     }
 }
 
+Polynomial Polynomial::operator*(const Polynomial& other) const {
+    double result_coeffs[num+other.num];
+    for(uint i = 0; i < num+other.num; i++) {
+	result_coeffs[i] = 0.0;
+    }
+
+    for(uint i = 0; i < num; i++) {
+	for(uint j = 0; j < other.num; j++) {
+	    result_coeffs[i+j] += other.coefficients[j] * coefficients[i];
+	}
+    }
+
+    return Polynomial(result_coeffs, num + other.num);
+}
