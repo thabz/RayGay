@@ -1,4 +1,5 @@
 
+#include <unistd.h>
 #include "importer.h"
 #include "scene.h"
 #include <fstream>
@@ -19,10 +20,12 @@
 #include "materials/material.h"
 
 Importer::Importer(const std::string& filename) {
-    this->filename = filename;
     ratio = -1;
     scene = new Scene();
-    parse();
+    Camera* camera = new Camera();
+    scene->setCamera(camera);
+
+    parse(filename);
 }
 
 Vector2 Importer::getImageSize() const {
@@ -96,13 +99,23 @@ Material* Importer::initMaterial(const string& material_name) {
     return new_material;
 }
 
-void Importer::parse() {
+void Importer::parse(const string& filename) {
     std::ifstream stream(filename.c_str());
 
     if (stream.bad()) {
     	std::cerr << "Unable to open " << filename << std::endl;
         exit(EXIT_FAILURE);
     }
+
+    // Change cwd to this files parent folder
+    char original_working_dir[1024];
+    getcwd(original_working_dir,1024);
+    string original_cwds = string(original_working_dir);
+    string cwds = string(original_working_dir) + "/" + filename;
+    cout << "Reading " << cwds << endl;
+    int idx = cwds.find_last_of('/');
+    cwds.resize(idx);
+    chdir(cwds.c_str());
 
     Material* cur_material = new Material();
     RGB cur_rgb;
@@ -115,9 +128,7 @@ void Importer::parse() {
     bool naming_object = false;
     string object_name;
     SceneObject* cur_object = NULL;
-
-    Camera* camera = new Camera();
-    scene->setCamera(camera);
+    Camera* camera = scene->getCamera();
 
     while(!stream.eof()) {
 	stream >> command;
@@ -267,6 +278,9 @@ void Importer::parse() {
 	    Vector axis = readVector(stream);
 	    Matrix m = Matrix::matrixTranslate(axis);
 	    obj->transform(m);
+	} else if (command == "include") {
+	    string filename = readString(stream);
+	    parse(filename);
 	} else if (command[0] == '#') {
 	    // Comment. Ignore rest of line.
 	    while (stream.get() != '\n') {
@@ -286,5 +300,6 @@ void Importer::parse() {
 	    cur_object = NULL;
 	}
     }
+    chdir(original_cwds.c_str());
 }
 

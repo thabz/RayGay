@@ -2,6 +2,8 @@
 # Comment
 # Comment comment
 
+include materials.gay
+
 camera-position 0 0 1500
 camera-up 0 1 0
 camera-lookat 0 0 0
@@ -23,26 +25,6 @@ light point  4000 4000 4000
 
 linesegment $line1 0 0 0    0 500 0
 
-material $blue
-diffuse 0.2 0.2 0.8
-kd 0.5
-specular 1.0 1.0 1.0
-ks 0.5
-specpow 15
-
-material $green
-diffuse 0.2 0.8 0.2
-kd 0.5
-specular 1.0 1.0 1.0
-ks 0.5
-specpow 15
-
-material $red 
-diffuse 0.8 0.2 0.2
-kd 0.5
-specular 1.0 1.0 1.0
-ks 0.5
-specpow 15
 
 #sphere red 100   0 50 0
 
@@ -54,5 +36,5 @@ circle $circle1 0 0 0 300 0 1 0
 spiral $spiral1 $circle1 50 4 0
 spiral $spiral2 $circle1 50 4 0.5
 
-
 extrusion $blue $spiral1 50 16 100
+

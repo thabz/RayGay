@@ -20,15 +20,13 @@ class Importer {
 	Vector2 getImageSize() const;
 
     private:
-	void parse();
+	void parse(const string& filename);
 	Path* lookupPath(const string& name);
 	Material* lookupMaterial(const string& name);
 	Material* initMaterial(const string& name);
-
 	void putNamedObject(const string& key, SceneObject* obj);
 	SceneObject* getNamedObject(const string& key);
 
-	string filename;
 	map<string,Material*> materials;
 	map<string,Path*> paths;
 	map<string,SceneObject*> named_objects;

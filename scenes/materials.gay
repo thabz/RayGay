@@ -1,0 +1,21 @@
+
+material $blue
+diffuse 0.2 0.2 0.8
+kd 0.5
+specular 1.0 1.0 1.0
+ks 0.5
+specpow 15
+
+material $green
+diffuse 0.2 0.8 0.2
+kd 0.5
+specular 1.0 1.0 1.0
+ks 0.5
+specpow 15
+
+material $red 
+diffuse 0.8 0.2 0.2
+kd 0.5
+specular 1.0 1.0 1.0
+ks 0.5
+specpow 15
