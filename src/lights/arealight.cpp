@@ -2,7 +2,6 @@
 #include "arealight.h"
 #include <cassert>
 #include <stdlib.h>
-#include "constants.h"
 #include "paths/circle.h"
 #include "intersection.h"
 #include "object.h"

@@ -1,7 +1,5 @@
 
 #include "linesegment.h"
-#include "vector.h"
-#include "matrix.h"
 #include <cassert>
 
 Linesegment::Linesegment(const Vector& begin, const Vector& end) {

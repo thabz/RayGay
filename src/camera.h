@@ -1,13 +1,9 @@
 #ifndef CAMERA_H 
 #define CAMERA_H
 
-#include "vector.h"
+#include "math/vector.h"
 
 class Matrix;
-class Intersection;
-class Ray;
-class RGB;
-class Image;
 
 /**
  *  Datavalue class for a camera which currently just is

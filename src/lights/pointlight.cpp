@@ -1,7 +1,6 @@
 
 #include "pointlight.h"
-#include "vector.h"
-#include "matrix.h"
+#include "math/matrix.h"
 #include "rgb.h"
 #include "intersection.h"
 #include "lightinfo.h"

@@ -4,12 +4,10 @@
 #include <iostream>
 #include <cassert>
 
-#include "vector.h"
 #include "ray.h"
 #include "intersection.h"
-#include "matrix.h"
+#include "math/matrix.h"
 #include "rgb.h"
-#include "constants.h"
 #include "mesh.h"
 
 Box::Box(const Vector a, const Vector b, Material mat) : Mesh(Mesh::MESH_FLAT,mat) {

@@ -3,13 +3,10 @@
 #include <cassert>
 
 #include "sphere.h"
-#include "vector.h"
 #include "ray.h"
 #include "intersection.h"
-#include "matrix.h"
+#include "math/matrix.h"
 #include "rgb.h"
-#include "constants.h"
-#include "perlin.h"
 #include "boundingbox.h"
 #include "object.h"
 

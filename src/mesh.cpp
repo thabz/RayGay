@@ -6,10 +6,7 @@
 
 #include "mesh.h"
 #include "boundingbox.h"
-#include "constants.h"
-#include "rgb.h"
-#include "vector.h"
-#include "matrix.h"
+#include "math/matrix.h"
 #include "intersection.h"
 #include "ray.h"
 #include "sphere.h"

@@ -1,6 +1,5 @@
+
 #include "ray.h"
-#include "vector.h"
-#include "constants.h"
 
 long Ray::seq = 0;
 

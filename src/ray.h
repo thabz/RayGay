@@ -2,7 +2,7 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include "vector.h"
+#include "math/vector.h"
 
 /// Describing a ray, that is an origin and a direction Vector.
 class Ray {

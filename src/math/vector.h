@@ -13,6 +13,7 @@
 #define VECTOR_H
 
 #include <iosfwd>
+#include "math/constants.h"
 
 /// Implements a vector
 

@@ -19,5 +19,6 @@ AC_OUTPUT(Makefile \
 	  src/materials/Makefile \
 	  src/paths/Makefile \
 	  src/lights/Makefile \
+	  src/math/Makefile \
 	  src/tests/Makefile \
 	  test/Makefile)

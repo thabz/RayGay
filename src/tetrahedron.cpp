@@ -1,11 +1,12 @@
 
 #include "tetrahedron.h"
-#include "mesh.h"
-#include "vector.h"
-#include <math.h>
+
 #include <iostream>
 #include <cassert>
 #include <vector>
+#include <math.h>
+
+#include "math/vector.h"
 #include "paths/linesegment.h"
 
 using namespace std;

@@ -6,7 +6,7 @@
 #include <iosfwd>
 
 #include "object.h"
-#include "vector.h"
+#include "math/vector.h"
 #include "rgb.h"
 #include "boundingbox.h"
 #include "triangle.h"

@@ -2,8 +2,6 @@
 #include <cassert>
 
 #include "spiral.h"
-#include "vector.h"
-#include "matrix.h"
 #include "circle.h"
 
 Spiral::Spiral(Path* path, double radius, double windings) {

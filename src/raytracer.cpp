@@ -3,12 +3,12 @@
 #include <iostream>
 #include <math.h>
 
-#include "vector.h"
+#include "math/vector.h"
 #include "ray.h"
 #include "intersection.h"
 #include "object.h"
 #include "rgb.h"
-#include "matrix.h"
+#include "math/matrix.h"
 #include "scene.h"
 #include "image.h"
 #include "lights/lightsource.h"

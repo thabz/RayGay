@@ -1,11 +1,9 @@
 
 #include <math.h>
 #include "spotlight.h"
-#include "vector.h"
-#include "matrix.h"
+#include "math/matrix.h"
 #include "rgb.h"
 #include <cassert>
-#include "constants.h"
 #include <iostream>
 #include "intersection.h"
 #include "lightinfo.h"

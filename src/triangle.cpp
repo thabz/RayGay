@@ -1,7 +1,5 @@
 
-#include "constants.h"
 #include "triangle.h"
-#include "intersection.h"
 #include "intersection.h"
 #include "ray.h"
 #include "mesh.h"

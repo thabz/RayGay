@@ -1,11 +1,11 @@
 
-SUBDIRS = materials paths lights #tests
+SUBDIRS = materials paths lights math #tests
 
 bin_PROGRAMS = tracer
 
-tracer_SOURCES = main.cpp camera.cpp sphere.cpp vector.cpp matrix.cpp intersection.cpp ray.cpp scene.cpp image.cpp rgb.cpp boolean.cpp boundingbox.cpp box.cpp hierarchy.cpp object.cpp mesh.cpp tetrahedron.cpp triangle.cpp cylinder.cpp pixelstore.cpp renderer.cpp raytracer.cpp bsp.cpp necklace.cpp tessalation.cpp
+tracer_SOURCES = main.cpp camera.cpp sphere.cpp intersection.cpp ray.cpp scene.cpp image.cpp rgb.cpp boolean.cpp boundingbox.cpp box.cpp hierarchy.cpp object.cpp mesh.cpp tetrahedron.cpp triangle.cpp cylinder.cpp pixelstore.cpp renderer.cpp raytracer.cpp bsp.cpp necklace.cpp tessalation.cpp
 
-tracer_LDADD = paths/libpaths.a lights/liblights.a materials/libmaterials.a	
+tracer_LDADD = paths/libpaths.a lights/liblights.a materials/libmaterials.a math/libmath.a
 
 #tracer_LIBADD = materials/libmaterials.a	       
 
@@ -18,7 +18,6 @@ EXTRA_DIST = boolean.h 		\
 	     hierarchy.h 	\
 	     intersection.h 	\
 	     image.h		\
-	     matrix.h 		\
 	     mesh.h		\
 	     necklace.h		\
 	     objectcollection.h	\
@@ -32,8 +31,7 @@ EXTRA_DIST = boolean.h 		\
 	     tessalation.h	\
 	     tetrahedron.h	\
              transformable.h 	\	
-	     triangle.h		\
-	     vector.h 		
+	     triangle.h		
 
 run:
 	sh test.sh

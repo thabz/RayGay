@@ -1,7 +1,7 @@
 #ifndef BOUNDINGBOX_H
 #define BOUNDINGBOX_H
 
-#include "vector.h"
+#include "math/vector.h"
 #include <iosfwd>
 
 class Intersection;

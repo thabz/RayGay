@@ -2,7 +2,6 @@
 #define LINESEGMENT_H
 
 #include "path.h"
-#include "vector.h"
 
 /// A linesegment path
 class Linesegment : public Path {

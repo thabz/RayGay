@@ -1,13 +1,9 @@
 
 #include <cassert>
 #include <iostream>
-
-#include "path.h"
-#include "vector.h"
-#include "circle.h"
-#include "matrix.h"
 #include "math.h"
-#include "constants.h"
+
+#include "circle.h"
 #include "boundingbox.h"
 
 /**

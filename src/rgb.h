@@ -2,7 +2,7 @@
 #ifndef RGB_H
 #define RGB_H
 
-#include "vector.h"
+#include "math/vector.h"
 
 ///Holds a color
 /**

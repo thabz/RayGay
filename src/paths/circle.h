@@ -3,8 +3,6 @@
 #define CIRCLE_H
 
 #include "path.h"
-#include "vector.h"
-#include "matrix.h"
 
 /// A circle path
 class Circle : public Path {

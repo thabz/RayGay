@@ -1,7 +1,6 @@
 #ifndef SPOTLIGHT_H
 #define SPOTLIGHT_H
 
-#include "vector.h"
 #include "lightsource.h"
 #include "lightinfo.h"
 

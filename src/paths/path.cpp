@@ -1,7 +1,7 @@
 
 #include <cassert>
 #include "path.h"
-#include "vector.h"
+#include "math/vector.h"
 
 void Path::getPoints(int num, Vector* out) const {
     assert(num > 1);

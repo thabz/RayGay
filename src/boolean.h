@@ -2,7 +2,7 @@
 #define BOOLEAN_H
 
 #include "object.h"
-#include "vector.h"
+#include "math/vector.h"
 #include "booleanoperand.h"
 
 class Intersection;

@@ -19,8 +19,9 @@
 #include <time.h>
 #include <stdio.h>
 
-#include "vector.h"
-#include "matrix.h"
+#include "math/vector.h"
+#include "math/matrix.h"
+
 #include "sphere.h"
 #include "scene.h"
 #include "camera.h"
@@ -29,7 +30,6 @@
 #include "image.h"
 #include "boolean.h"
 #include "mesh.h"
-#include "constants.h"
 #include "box.h"
 #include "tetrahedron.h"
 #include "tessalation.h"

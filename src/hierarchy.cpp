@@ -7,7 +7,6 @@
 #include "boundingbox.h"
 #include "intersection.h"
 #include "ray.h"
-#include "constants.h"
 
 using namespace std;
 

@@ -3,7 +3,7 @@
 
 #include <iosfwd>
 
-#include "vector.h"
+#include "math/vector.h"
 #include "ray.h"
 
 class object;

@@ -7,7 +7,6 @@
 #include "ray.h"
 #include "intersection.h"
 #include "boundingbox.h"
-#include "constants.h"
 
 // For test
 #include "sphere.h"

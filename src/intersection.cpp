@@ -1,7 +1,5 @@
 
 #include "intersection.h"
-#include "vector.h"
-
 
 Intersection::Intersection(const Vector& p, double s) {
     point = p;

@@ -3,8 +3,6 @@
 #include <iostream>
 #include <cassert>
 #include "sphere.h" /* For test only */
-#include "perlin.h"
-#include "constants.h"
 #include "boundingbox.h"
 #include "booleanoperand.h"
 #include "object.h"

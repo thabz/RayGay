@@ -1,13 +1,11 @@
 #include <iostream>
 
 #include "scene.h"
-#include "matrix.h"
 #include "object.h"
 #include "lights/lightsource.h"
 #include "intersection.h"
 #include "ray.h"
 #include "hierarchy.h"
-#include "constants.h"
 #include "objectcollection.h"
 
 using namespace std;

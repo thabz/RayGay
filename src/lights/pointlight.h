@@ -2,10 +2,7 @@
 #ifndef POINTLIGHT_H 
 #define POINTLIGHT_H
 
-#include "vector.h"
-#include "rgb.h"
 #include "lightsource.h"
-#include "lightinfo.h"
 
 class RGB;
 class Matrix;

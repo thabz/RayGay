@@ -2,7 +2,7 @@
 #ifndef LIGHTSOURCE_H
 #define LIGHTSOURCE_H
 
-#include "vector.h"
+#include "math/vector.h"
 #include "rgb.h"
 #include "lightinfo.h"
 

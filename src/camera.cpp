@@ -1,9 +1,6 @@
 
 #include "camera.h"
-
-#include "vector.h"
-#include "matrix.h"
-
+#include "math/matrix.h"
 
 Camera::Camera(Vector p, Vector d) {
     position = p;
