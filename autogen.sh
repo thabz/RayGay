@@ -10,13 +10,17 @@ aclocal
 echo "Now running libtoolize"
 libtoolize --force
 
-
 echo "Now running automake"
 automake --add-missing 
 
 echo "Now running autoconf"
 autoconf
 
+echo "Now running autoheader"
+autoheader
+
 echo "Now run ./configure followed by make. "
-#$srcdir/configure 
+$srcdir/configure 
+
+echo "Type make to build raygay"
 
