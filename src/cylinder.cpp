@@ -45,7 +45,7 @@ Cylinder::Cylinder(const Path& path, double radius, unsigned int segments, unsig
     Vector* bp = new Vector[segments];  // Points on begin circle
     Vector* cp = new Vector[segments];  // Points on current circle
     Vector* pp = new Vector[segments];  // Points on previous circle
-
+    double last_t = 0;
     for (unsigned int p = 0; p < pieces; p++) {
 	double t = double(p) / double(pieces);
 	Vector c = path.getPoint(t);
@@ -54,21 +54,31 @@ Cylinder::Cylinder(const Path& path, double radius, unsigned int segments, unsig
 	if (p == 0) {
 	    circle.getPoints(segments,bp);
 	    circle.getPoints(segments,pp);
+	    last_t = t;
 	} else {
 	    circle.getPoints(segments,cp);
 	    for(unsigned int i = 0; i < segments; i++) {
 		unsigned int j = (i + 1) % segments;
-		addTriangle(pp[j],cp[j],cp[i]);
-		addTriangle(pp[i],pp[j],cp[i]);
+		double ti = double(i) / double(segments);
+		double tj = double(j) / double(segments);
+		addTriangle(pp[j],cp[j],cp[i],
+			    Vector2(last_t,tj),Vector2(t,tj),Vector2(t,ti));
+		addTriangle(pp[i],pp[j],cp[i],
+			    Vector2(last_t,ti),Vector2(last_t,tj),Vector2(t,ti));
 	    }
 	    circle.getPoints(segments,pp);
 	}
+	last_t = t;
     }
     if (path.isClosed()) {
 	for(unsigned int i = 0; i < segments; i++) {
 	    unsigned int j = (i + 1) % segments;
-	    addTriangle(pp[j],bp[j],bp[i]);
-	    addTriangle(pp[i],pp[j],bp[i]);
+	    double ti = double(i) / double(segments);
+	    double tj = double(j) / double(segments);
+	    addTriangle(pp[j],bp[j],bp[i],
+		    Vector2(last_t,tj),Vector2(0,tj),Vector2(0,ti));
+	    addTriangle(pp[i],pp[j],bp[i],
+		    Vector2(last_t,ti),Vector2(last_t,tj),Vector2(0,ti));
 	}
     } else {
 	// TODO: Add begin (bp) and end (pp) discs

@@ -58,8 +58,8 @@ void testScene4() {
 
     Material mat = MATERIAL_SHINY_BLUE;
     mat.setBumpmap("dotbump.tga",2.0);
-    mat.setRepeatX(1);
-    mat.setRepeatY(1);
+    mat.setRepeatX(5);
+    mat.setRepeatY(2);
     Sphere s1 = Sphere(Vector(200,50,200),130.0,mat);
     Sphere s2 = Sphere(Vector(-200,50,200),130.0,mat);
     Sphere s3 = Sphere(Vector(200,50,-200),130.0,mat);
@@ -67,20 +67,20 @@ void testScene4() {
     Sphere s5 = Sphere(Vector(0,150,0),130.0,mat);
     //Cylinder c1 = Cylinder(Vector(0,0,0),Vector(0,200,0),130,10,MATERIAL_SHINY_RED);
     
-    scene.addObject(&s1);
+/*    scene.addObject(&s1);
     scene.addObject(&s2);
     scene.addObject(&s3);
     scene.addObject(&s4);
     scene.addObject(&s5);
-    
+  */  
   //  scene.addObject(&c1);
 
     Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
     Spiral spiral = Spiral(&circle1,100,10);
     Spiral spiral2 = Spiral(&spiral,30,100,0.5);
 
-    Cylinder* torus = new Cylinder(circle1,100,50,30,MATERIAL_CHROME);
-    //scene.addObject(torus);
+    Cylinder* torus = new Cylinder(circle1,100,50,30,mat);
+    scene.addObject(torus);
 
     Tessalation tet = Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
     //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,MATERIAL_SHINY_BLUE);
