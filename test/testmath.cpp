@@ -714,10 +714,20 @@ class bisection : public Test  {
 class polynomials : public Test  {
     public:
 	void run() {
+            // Order
+	    assertTrue(Polynomial(7,3,4,5).order() == 3);
+	    assertTrue(Polynomial(0,3,4,5).order() == 2);
+	    assertTrue(Polynomial(3,4,5).order() == 2);
+	    assertTrue(Polynomial(4,5).order() == 1);
+	    assertTrue(Polynomial(4).order() == 0);
+	    
 	    // Derivation
 	    assertTrue(Polynomial(7,3,4,5).derivative() == Polynomial(21,6,4));
 	    assertTrue(Polynomial(3,4,5).derivative() == Polynomial(6,4));
 	    assertTrue(Polynomial(1,2).derivative() == Polynomial(1));
+	    assertTrue(Polynomial(5.0).derivative() == Polynomial(0.0));
+	    assertTrue(Polynomial(5.0).derivative().order() == 0);
+	    assertTrue(Polynomial(0.0).derivative() == Polynomial(0.0));
 	    assertFalse(Polynomial(1,2).derivative() == Polynomial(5));
 
 	    // Evaluation
@@ -733,6 +743,24 @@ class polynomials : public Test  {
 	    assertTrue(Polynomial(0,0,2,3,5) == Polynomial(2,3,5));
 	    assertTrue(Polynomial(1,0,2,3) == Polynomial(1,0,2,3));
 	    assertFalse(Polynomial(1,0,2,3) == Polynomial(0,0,2,3));
+
+	    // Adding and subtracting
+	    assertTrue(Polynomial(1,2,3) + Polynomial(7,6,4,2) == Polynomial(7,7,6,5));
+	    assertTrue(Polynomial(7,6,4,2) + Polynomial(1,2) == Polynomial(7,6,5,4));
+	    assertTrue(Polynomial(7) + Polynomial(0,1,2,3) == Polynomial(1,2,10));
+	    assertTrue(Polynomial(4,7) + Polynomial(-4,-7) == Polynomial(0));
+
+	    assertTrue(Polynomial(7,6,4,2) - Polynomial(1,2) == Polynomial(7,6,3,0));
+	    assertTrue(Polynomial(7) - Polynomial(0,1,2,3) == Polynomial(-1,-2,4));
+
+	    // Multiplication
+	    assertTrue(Polynomial(7,6,4,2) * 2.0 == Polynomial(14,12,8,4));
+	    assertTrue(Polynomial(1,2,3,4) * 0.0 == Polynomial(0));
+	    
+	    // Division 
+	    assertTrue(Polynomial(4,2,1) / 2.0 == Polynomial(2,1,0.5));
+	    assertTrue(Polynomial(8) / 4.0 == Polynomial(2.0));
+
 	}
 };
 

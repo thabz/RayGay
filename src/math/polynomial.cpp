@@ -1,6 +1,8 @@
 
 #include <cassert>
+#include <cstdlib>
 #include "math/polynomial.h"
+#include "math/constants.h"
 
 Polynomial::Polynomial(double* coefficients, uint num) {
     assert(num >= 1);
@@ -82,6 +84,9 @@ double Polynomial::eval(const double& x) const {
 }
 
 Polynomial Polynomial::derivative() const {
+    if (num == 1) 
+	return Polynomial(0.0);
+
     double c[num-1];
     for(uint i = 1; i < num; i++) {
 	c[i-1] = coefficients[i] * i;
@@ -96,6 +101,47 @@ bool Polynomial::operator==(const Polynomial& p) const {
 	    return false;
     }
     return true;
+}
+
+Polynomial Polynomial::operator+(const Polynomial& p) const {
+    uint new_num = MAX(p.num, num);
+    double* new_coefs = (double*)alloca(new_num * sizeof(double));
+    for(uint i = 0; i < new_num; i++) {
+	double q = 0.0;
+	if (i < num) q += coefficients[i];
+	if (i < p.num) q += p.coefficients[i];
+	new_coefs[i] = q;
+    }
+    return Polynomial(new_coefs,new_num);
+}
+
+Polynomial Polynomial::operator-(const Polynomial& p) const {
+    uint new_num = MAX(p.num, num);
+    double* new_coefs = (double*)alloca(new_num * sizeof(double));
+    for(uint i = 0; i < new_num; i++) {
+	double q = 0.0;
+	if (i < num) q += coefficients[i];
+	if (i < p.num) q -= p.coefficients[i];
+	new_coefs[i] = q;
+    }
+    return Polynomial(new_coefs,new_num);
+}
+
+Polynomial Polynomial::operator*(double c) const {
+    double* new_coefs = (double*)alloca(num * sizeof(double));
+    for(uint i = 0; i < num; i++) {
+	new_coefs[i] = coefficients[i] * c;
+    }
+    return Polynomial(new_coefs,num);
+}
+
+Polynomial Polynomial::operator/(double c) const {
+    assert(!IS_ZERO(c));
+    double* new_coefs = (double*)alloca(num * sizeof(double));
+    for(uint i = 0; i < num; i++) {
+	new_coefs[i] = coefficients[i] / c;
+    }
+    return Polynomial(new_coefs,num);
 }
 
 /**

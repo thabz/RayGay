@@ -45,6 +45,11 @@ class Polynomial : public Function<double, double> {
 	/// Comparator
 	bool operator==(const Polynomial& p) const;
 
+	Polynomial operator+(const Polynomial& p) const;
+	Polynomial operator-(const Polynomial& p) const;
+	Polynomial operator*(double c) const;
+	Polynomial operator/(double c) const;
+
     private:
 	void reduce();
 	
