@@ -356,6 +356,15 @@ void cylinder_test() {
     cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
     assert(intersects(cyl,Vector(0,5,0),Vector(0,1,0)));
     assert(iPoint(cyl,Vector(0,5,0),Vector(0,1,0)) == Vector(0,10,0));
+
+    // Scaled cylinder
+    cyl = new Cylinder(Vector(0,0,0),Vector(0,1,0),1,true,m);
+    cyl->transform(Matrix::matrixScale(Vector(3,10,2)));
+    assert(intersects(cyl,Vector(0,5,100),Vector(0,0,-1)));
+    assert(iPoint(cyl,Vector(0,5,100),Vector(0,0,-1)) == Vector(0,5,2));
+    assert(iNormal(cyl,Vector(0,5,100),Vector(0,0,-1)) == Vector(0,0,1));
+    assert(iPoint(cyl,Vector(1000,5,0),Vector(-1,0,0)) == Vector(3,5,0));
+    assert(iNormal(cyl,Vector(1000,5,0),Vector(-1,0,0)) == Vector(1,0,0));
 }
 
 void test_3ds() {
