@@ -153,7 +153,7 @@ Vector BSP::measureSplit(int dim, double val) const {
 /*******************
  * Private stuff   *
  *******************/
-Intersection BSP::intersectForShadow(const Ray& ray, double min_t, double max_t) const {
+const Intersection BSP::intersectForShadow(const Ray& ray, const double min_t, const double max_t) const {
     Intersection result = Intersection();
     if (objects.size() > 0) {
         Intersection tmp;
@@ -170,7 +170,7 @@ Intersection BSP::intersectForShadow(const Ray& ray, double min_t, double max_t)
     return result;
 }
 
-Intersection BSP::intersect(const Ray& ray, double min_t, double max_t) const {
+const Intersection BSP::intersect(const Ray& ray, const double min_t, const double max_t) const {
     Intersection result = Intersection();
     if (objects.size() > 0) {
         Intersection tmp;
@@ -189,10 +189,8 @@ Intersection BSP::intersect(const Ray& ray, double min_t, double max_t) const {
     return result;
 }
 
-Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) const {
-    Intersection none = Intersection();
-
-    if (max_t <= min_t) return none;
+const Intersection BSP::intersect_recurse(const Ray& ray, const double min_t, const double max_t) const {
+    if (max_t <= min_t) return Intersection();
 
     Vector o = ray.getOrigin() + min_t * ray.getDirection();
     
@@ -239,10 +237,8 @@ Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) 
      }
 }
 
-Intersection BSP::intersectForShadow_recurse(const Ray& ray, double min_t, double max_t) const {
-    Intersection none = Intersection();
-
-    if (max_t <= min_t) return none;
+const Intersection BSP::intersectForShadow_recurse(const Ray& ray, const double min_t, const double max_t) const {
+    if (max_t <= min_t) return Intersection();
 
     Vector o = ray.getOrigin() + min_t * ray.getDirection();
     

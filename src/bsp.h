@@ -46,10 +46,11 @@ class BSP : public SpaceSubdivider {
 	static int BSP::largestDimension(const BoundingBox& box);
 	double median(int dimension) const;
 	Vector measureSplit(const int dim, const double val) const;
-	Intersection intersect(const Ray&,double,double) const;
-	Intersection intersect_recurse(const Ray&,double,double) const;
-	Intersection intersectForShadow(const Ray&,double,double) const;
-	Intersection intersectForShadow_recurse(const Ray&,double,double) const;
+
+	const Intersection intersect(const Ray&,const double,const double) const;
+	const Intersection intersect_recurse(const Ray&,const double,const double) const;
+	const Intersection intersectForShadow(const Ray&,const double,const double) const;
+	const Intersection intersectForShadow_recurse(const Ray&,const double,const double) const;
 };
 
 #endif
