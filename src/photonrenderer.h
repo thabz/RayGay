@@ -8,7 +8,8 @@ class Ray;
 class Object;
 class Intersection;
 class PhotonSettings;
-
+class GlobalPhotonMap;
+class CausticsMap;
 
 /**
  * Implementation of Renderer that supply a raytracer using photonmaps.
@@ -17,11 +18,15 @@ class PhotonRenderer : public Renderer {
 
     public:
 	/// Default constructor
-	PhotonRenderer(PhotonSettings* photonsettings, PhotonMap* photonmap);
+	PhotonRenderer(PhotonSettings* photonsettings);
+
+	/// This populates the photon maps
+	void init(Scene* scene, SpaceSubdivider* space);
 
     private:
 	/// The photonmap to use
-	PhotonMap* photonmap;
+	GlobalPhotonMap* globalphotonmap;
+	CausticsMap* causticsphotonmap;
 	PhotonSettings* photonsettings;
 
 	RGB getPixel(const Vector2& v);

@@ -13,9 +13,6 @@
 #include "spacesubdivider.h"
 #include "objectcollection.h"
 
-Renderer::Renderer() {
-}
-
 /**
  * Render the scene into an image
  * TODO: Jitter the samples within the grid.

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <cmath>
 
-#include "photonmap.h"
 #include "math/vector.h"
 #include "image/rgb.h"
 
@@ -14,13 +13,14 @@
  *
  * @param max_phot The maximum number of photons that will be stored.
  */
-PhotonMap :: PhotonMap( const int max_phot )
+template <class PhotonType>
+PhotonMap<PhotonType>::PhotonMap<PhotonType>( const int max_phot )
 {
     stored_photons = 0;
     prev_scale = 1;
     max_photons = max_phot;
 
-    photons = (Photon*)malloc( sizeof( Photon ) * ( max_photons+1 ) );
+    photons = (PhotonType*)malloc( sizeof( PhotonType ) * ( max_photons+1 ) );
 
     if (photons == NULL) {
 	std::cerr << "Out of memory initializing photon map." << std::endl;
@@ -47,15 +47,17 @@ PhotonMap :: PhotonMap( const int max_phot )
 /**
  * Destructor
  */
-PhotonMap :: ~PhotonMap() {
-    free( photons );
+template <class PhotonType>
+PhotonMap<PhotonType>:: ~PhotonMap<PhotonType>() {
+    free(photons);
 }
 
 
 /**
  * Returns the direction of a photon
  */
-void PhotonMap :: photon_dir( float *dir, const Photon *p ) const
+template <class PhotonType>
+void PhotonMap<PhotonType>::photon_dir( float *dir, const PhotonType *p ) const
 {
     dir[0] = sintheta[p->theta]*cosphi[p->phi];
     dir[1] = sintheta[p->theta]*sinphi[p->phi];
@@ -65,7 +67,8 @@ void PhotonMap :: photon_dir( float *dir, const Photon *p ) const
 /**
  * Computes an irradiance estimate at a given surface position
  */
-Vector PhotonMap :: irradiance_estimate(
+template <class PhotonType>
+Vector PhotonMap<PhotonType>::irradiance_estimate(
 	const Vector& pos,             // surface position
 	const Vector& normal,          // surface normal at pos
 	const float max_dist,          // max distance to look for photons
@@ -87,7 +90,8 @@ Vector PhotonMap :: irradiance_estimate(
  * Computes an irradiance estimate
  * at a given surface position
  */
-void PhotonMap :: irradiance_estimate(
+template <class PhotonType>
+void PhotonMap<PhotonType>::irradiance_estimate(
 	float irrad[3],                // returned irradiance
 	const float pos[3],            // surface position
 	const float normal[3],         // surface normal at pos
@@ -96,9 +100,9 @@ void PhotonMap :: irradiance_estimate(
 {
     irrad[0] = irrad[1] = irrad[2] = 0.0;
 
-    NearestPhotons np;
+    NearestPhotons<PhotonType> np;
     np.dist2 = (float*)alloca( sizeof(float)*(nphotons+1) );
-    np.index = (const Photon**)alloca( sizeof(Photon*)*(nphotons+1) );
+    np.index = (const PhotonType**)alloca( sizeof(PhotonType*)*(nphotons+1) );
 
     np.pos[0] = pos[0]; np.pos[1] = pos[1]; np.pos[2] = pos[2];
     np.max = nphotons;
@@ -117,7 +121,7 @@ void PhotonMap :: irradiance_estimate(
 
     // sum irradiance from all photons
     for (int i=1; i<=np.found; i++) {
-	const Photon *p = np.index[i];
+	const PhotonType *p = np.index[i];
 	// the photon_dir call and following if can be omitted (for speed)
 	// if the scene does not have any thin surfaces
 	photon_dir( pdir, p );
@@ -140,11 +144,12 @@ void PhotonMap :: irradiance_estimate(
  * Finds the nearest photons in the
  * photon map given the parameters in np
  */
-void PhotonMap :: locate_photons(
-	NearestPhotons *const np,
+template <class PhotonType>
+void PhotonMap<PhotonType>::locate_photons(
+	NearestPhotons<PhotonType> *const np,
 	const int index ) const
 {
-    const Photon *p = &photons[index];
+    const PhotonType *p = &photons[index];
     float dist1;
 
     if (index<half_stored_photons) {
@@ -184,7 +189,7 @@ void PhotonMap :: locate_photons(
 	    if (np->got_heap==0) { // Do we need to build the heap?
 		// Build heap
 		float dst2;
-		const Photon *phot;
+		const PhotonType *phot;
 		int half_found = np->found>>1;
 		for ( int k=half_found; k>=1; k--) {
 		    parent=k;
@@ -239,7 +244,8 @@ void PhotonMap :: locate_photons(
  * @param pos The position of the photon
  * @param dir The direction of the photon
  */
-void PhotonMap::store(
+template <class PhotonType>
+void PhotonMap<PhotonType>::store(
 		const Vector& power,          // photon power
 		const Vector& pos,            // photon position
 		const Vector& dir ) {          // photon direction
@@ -265,7 +271,8 @@ void PhotonMap::store(
  * @param pos The position of the photon
  * @param dir The direction of the photon
  */
-void PhotonMap :: store(
+template <class PhotonType>
+void PhotonMap<PhotonType>::store(
 	const float power[3],
 	const float pos[3],
 	const float dir[3] )
@@ -274,7 +281,7 @@ void PhotonMap :: store(
 	return;
 
     stored_photons++;
-    Photon *const node = &photons[stored_photons];
+    PhotonType *const node = &photons[stored_photons];
 
     for (int i=0; i<3; i++) {
 	node->pos[i] = pos[i];
@@ -310,7 +317,8 @@ void PhotonMap :: store(
  *
  * @param scale should be 1/(#emitted photons).
  */
-void PhotonMap :: scale_photon_power( const float scale ) {
+template <class PhotonType>
+void PhotonMap<PhotonType>::scale_photon_power( const float scale ) {
     for (int i=prev_scale; i<=stored_photons; i++) {
 	photons[i].power[0] *= scale;
 	photons[i].power[1] *= scale;
@@ -326,12 +334,13 @@ void PhotonMap :: scale_photon_power( const float scale ) {
  * This function should be called before the photon map
  * is used for rendering.
  */
-void PhotonMap :: balance(void)
+template <class PhotonType>
+void PhotonMap<PhotonType>::balance(void)
 {
     if (stored_photons>1) {
 	// allocate two temporary arrays for the balancing procedure
-	Photon **pa1 = (Photon**)malloc(sizeof(Photon*)*(stored_photons+1));
-	Photon **pa2 = (Photon**)malloc(sizeof(Photon*)*(stored_photons+1));
+	PhotonType **pa1 = (PhotonType**)malloc(sizeof(PhotonType*)*(stored_photons+1));
+	PhotonType **pa2 = (PhotonType**)malloc(sizeof(PhotonType*)*(stored_photons+1));
 
 	for (int i=0; i<=stored_photons; i++)
 	    pa2[i] = &photons[i];
@@ -341,7 +350,7 @@ void PhotonMap :: balance(void)
 
 	// reorganize balanced kd-tree (make a heap)
 	int d, j=1, foo=1;
-	Photon foo_photon = photons[j];
+	PhotonType foo_photon = photons[j];
 
 	for (int i=1; i<=stored_photons; i++) {
 	    d=pa1[j]-photons;
@@ -369,7 +378,15 @@ void PhotonMap :: balance(void)
 }
 
 
-#define swap(ph,a,b) { Photon *ph2=ph[a]; ph[a]=ph[b]; ph[b]=ph2; }
+//#define swap(ph,a,b) { PhotonType *ph2=ph[a]; ph[a]=ph[b]; ph[b]=ph2; }
+
+template <class PhotonType>
+void  PhotonMap<PhotonType>::swap(PhotonType** ph, int a, int b) {
+    PhotonType *ph2=ph[a];
+    ph[a]=ph[b];
+    ph[b]=ph2; 
+}
+
 
 /**
  * Splits the photon array into two separate pieces around the median. 
@@ -380,8 +397,9 @@ void PhotonMap :: balance(void)
  * criteria is the axis (indicated by the axis parameter)
  * (inspired by routine in "Algorithms in C++" by Sedgewick)
  */
-void PhotonMap :: median_split(
-	Photon **p,
+template <class PhotonType>
+void PhotonMap<PhotonType>::median_split(
+	PhotonType **p,
 	const int start,               // start of photon block in array
 	const int end,                 // end of photon block in array
 	const int median,              // desired median number
@@ -415,9 +433,10 @@ void PhotonMap :: median_split(
 
 // See "Realistic image synthesis using Photon Mapping" chapter 6
 // for an explanation of this function
-void PhotonMap :: balance_segment(
-	Photon **pbal,
-	Photon **porg,
+template <class PhotonType>
+void PhotonMap<PhotonType>::balance_segment(
+	PhotonType **pbal,
+	PhotonType **porg,
 	const int index,
 	const int start,
 	const int end )
@@ -485,7 +504,8 @@ void PhotonMap :: balance_segment(
     }	
 }
 
-Vector PhotonMap::photon_dir(const Photon* p) const {
+template <class PhotonType>
+Vector PhotonMap<PhotonType>::photon_dir(const PhotonType* p) const {
     float dir[3];
     photon_dir(dir,p);
     return Vector(dir[0],dir[1],dir[2]);

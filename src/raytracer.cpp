@@ -126,7 +126,8 @@ RGB Raytracer::shade(const Ray& ray, const Intersection& intersection, int depth
 		RGB trans_col = trace(trans_ray, depth + 1);
 		result_color += material.transmission_coefficient * trans_col;
 	    } else {
-		// TODO: Internal reflection, see page 757.
+		// Internal reflection, see page 757.
+		// We should reflect ray instead.
 	    }
 	}
     }

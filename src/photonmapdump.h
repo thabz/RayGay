@@ -4,12 +4,12 @@
 
 class Scene;
 class Image;
-class PhotonMap;
+class GlobalPhotonMap;
 
 class PhotonMapDump {
 
     public:
-	void render(Scene* scene, Image* img, PhotonMap* photonmap, int num);
+	void render(Scene* scene, Image* img, GlobalPhotonMap* photonmap, int num);
 
 };
 

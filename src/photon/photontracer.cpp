@@ -4,7 +4,8 @@
 #include <time.h>
 
 #include "photontracer.h"
-#include "photonmap.h"
+#include "causticsmap.h"
+#include "globalphotonmap.h"
 #include "spacesubdivider.h"
 #include "scene.h"
 #include "object.h"
@@ -17,7 +18,7 @@
 #include "math/halton.h"
 #include "stats.h"
 
-#define MAX_BOUNCES 20
+#define MAX_BOUNCES 50
 
 using namespace std;
 
@@ -27,10 +28,11 @@ using namespace std;
  * This is responsible for getting photons from the lightsources,
  * tracing them through the scene and stored them in the photonmap
  */
-PhotonTracer::PhotonTracer(Scene* scene, SpaceSubdivider* space, PhotonMap* photonmap) {
+PhotonTracer::PhotonTracer(Scene* scene, SpaceSubdivider* space, GlobalPhotonMap* globalphotonmap, CausticsMap* causticsmap) {
     this->scene = scene;
     this->space = space;
-    this->photonmap = photonmap;
+    this->causticsmap = causticsmap;
+    this->globalphotonmap = globalphotonmap;
     this->qmcsequence = new Halton(2,2);
 }
 
@@ -79,7 +81,7 @@ int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
     if (ran < material.getKd()) {
 	// Store photon
 	if (bounces > 0) 
-	    photonmap->store(power,intersection->getPoint(),ray.getDirection());
+	    globalphotonmap->store(power,intersection->getPoint(),ray.getDirection());
 
 	// Reflect diffusely 
 	//Vector reflected_direction = Math::perturbVector(normal,DEG2RAD(89),qmcsequence);
@@ -109,7 +111,7 @@ int PhotonTracer::trace(const Ray& ray, RGB power, int bounces) {
     } else {
 	// Store photon
 	if (bounces > 0) 
-	    photonmap->store(power,intersection->getPoint(),ray.getDirection());
+	    globalphotonmap->store(power,intersection->getPoint(),ray.getDirection());
 	return 1;
     }
 }

@@ -27,28 +27,13 @@
 #include "math/matrix.h"
 
 #include "scene.h"
-#include "ray.h"
-#include "intersection.h"
 #include "image/image.h"
-#include "raytracer.h"
 #include "bsp.h"
 #include "kdtree.h"
 
-#include "paths/linesegment.h"
-#include "paths/spiral.h"
-#include "paths/circle.h"
-#include "paths/bezierspline.h"
-
-#include "lights/pointlight.h"
-#include "lights/spotlight.h"
-#include "lights/arealight.h"
-
-#include "materials/materials.h"
-
-#include "photon/photonmap.h"
-#include "photon/photontracer.h"
-#include "photonmapdump.h"
 #include "photonrenderer.h"
+#include "raytracer.h"
+
 #include "photonsettings.h"
 
 
@@ -74,27 +59,15 @@ void work(string scenefile, string outputfile) {
     PhotonSettings* photonsettings = importer.getPhotonSettings();
 
 #define PHOTON_CODE
-//#define PHOTONS_DUMP
 
 #ifdef PHOTON_CODE
-    int PHOTON_NUM = photonsettings->photons_num;
-    PhotonMap* photonmap = new PhotonMap(PHOTON_NUM);    
-    PhotonTracer* photontracer = new PhotonTracer(scene,space,photonmap);
-    photontracer->trace(PHOTON_NUM);
-    photonmap->scale_photon_power(1.0/double(PHOTON_NUM));
-    photonmap->balance();
-    #ifdef PHOTONS_DUMP
-       PhotonMapDump dumper;
-       dumper.render(scene,img,photonmap,PHOTON_NUM);
-    #else
-       PhotonRenderer renderer = PhotonRenderer(photonsettings,photonmap);
-       renderer.render(scene,img,space);
-    #endif
+    Renderer* renderer = new PhotonRenderer(photonsettings);
 #else
-    Raytracer raytracer = Raytracer();
-    raytracer.render(scene,img,space);
+    Renderer* renderer = new Raytracer();
 #endif
-    
+    renderer->init(scene,space);
+    renderer->render(scene,img,space);
+
     img->save(outputfile);
     delete img;
     Stats::getUniqueInstance()->dump();

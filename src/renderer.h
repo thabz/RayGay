@@ -10,12 +10,16 @@
 class RGB;
 class Image;
 class SpaceSubdivider;
-class PhotonMap;
 
 ///  An abstract class all renderers must implement.
 class Renderer {
 
     public:
+	Renderer() {};
+
+	/// Initializer the renderer
+	virtual void init(Scene* scene, SpaceSubdivider* space) = 0;
+
 	/// Render a scene into an image
 	void render(Scene* scene, Image*, SpaceSubdivider* space);
 
@@ -49,7 +53,6 @@ class Renderer {
 	std::vector<PixelBlock> row2;
 
     protected:
-	Renderer();
 	/// The scene to be rendered can be accessed from implementations of Renderer.
 	Scene* scene;
 

@@ -14,12 +14,31 @@
 #include "camera.h"
 #include "image/image.h"
 #include "lights/lightsource.h"
-#include "photon/photonmap.h"
+
+#include "photon/globalphotonmap.h"
+#include "photon/causticsmap.h"
+#include "photon/photontracer.h"
 #include "photonsettings.h"
 
-PhotonRenderer::PhotonRenderer(PhotonSettings* photonsettings, PhotonMap* photonmap) : Renderer() {
-    this->photonmap = photonmap;
+PhotonRenderer::PhotonRenderer(PhotonSettings* photonsettings) : Renderer() {
     this->photonsettings = photonsettings;
+}
+
+void PhotonRenderer::init(Scene* scene, SpaceSubdivider* space) {
+    int PHOTON_NUM = photonsettings->photons_num;
+    this->globalphotonmap = new GlobalPhotonMap(PHOTON_NUM);
+    this->causticsphotonmap = new CausticsMap(PHOTON_NUM); 
+
+    PhotonTracer* photontracer = new PhotonTracer(scene,space,globalphotonmap,causticsphotonmap);
+    photontracer->trace(PHOTON_NUM);
+
+    globalphotonmap->scale_photon_power(1.0/double(PHOTON_NUM));
+    globalphotonmap->balance();
+
+    causticsphotonmap->scale_photon_power(1.0/double(PHOTON_NUM));
+    causticsphotonmap->balance();
+
+    delete photontracer;
 }
 
 RGB PhotonRenderer::getPixel(const Vector2& v) {
@@ -168,7 +187,7 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 
 Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& normal, const Vector& ray_dir) const {
     if (photonsettings->final_gather_rays == 0) {
-	return M_PI * photonmap->irradiance_estimate(point,normal,photonsettings->estimate_radius,photonsettings->estimate_samples) * 5000*100;
+	return M_PI * globalphotonmap->irradiance_estimate(point,normal,photonsettings->estimate_radius,photonsettings->estimate_samples) * 5000*100;
     }
 
     Vector result = Vector(0.0,0.0,0.0);
@@ -202,7 +221,7 @@ Vector PhotonRenderer::gatherIrradiance(const Vector& point, const Vector& norma
 	    Vector hitnormal = inter->getObject()->normal(*inter);
 	    double cos = normal * dir;
 	    // TODO: If too close use another recursive final gather instead for estimate
-	    result += photonsettings->estimate_radius * cos * photonmap->irradiance_estimate(hitpoint,hitnormal,photonsettings->estimate_radius,photonsettings->estimate_samples);
+	    result += photonsettings->estimate_radius * cos * globalphotonmap->irradiance_estimate(hitpoint,hitnormal,photonsettings->estimate_radius,photonsettings->estimate_samples);
 	}
     }
 	

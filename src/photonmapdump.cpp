@@ -3,9 +3,9 @@
 #include "scene.h"
 #include "camera.h"
 #include "image/image.h"
-#include "photon/photonmap.h"
+#include "photon/globalphotonmap.h"
 
-void PhotonMapDump::render(Scene* scene, Image* image, PhotonMap* photonmap, int num) {
+void PhotonMapDump::render(Scene* scene, Image* image, GlobalPhotonMap* photonmap, int num) {
 
     Camera* camera = scene->getCamera();
     Photon* photons = photonmap->list();
