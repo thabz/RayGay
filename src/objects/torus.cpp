@@ -94,6 +94,10 @@ double Torus::_fastIntersect(const Ray& ray) const {
 /**
  * Finds the normal at a point of intersection.
  *
+ * The normal of a point P on the torus has the direction of a vector which
+ * ends in P and begins in the nearest point on the circle created by the
+ * major radius.
+ *
  * @param i an positive intersection with this torus
  * @see http://research.microsoft.com/~hollasch/cgindex/render/raytorus.html
  */
