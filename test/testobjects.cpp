@@ -212,7 +212,7 @@ void box_test() {
     assert(b->getVertices()->size() == 8);
 
     BSP bsp = BSP();
-    b->addParts(&bsp);
+    b->addSelf(&bsp);
     bsp.prepare();
     Ray r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
     assert(bsp.intersect(r));
@@ -229,7 +229,7 @@ void box_test() {
     assert(b->getVertices()->size() == 8);
 
     bsp = BSP();
-    b->addParts(&bsp);
+    b->addSelf(&bsp);
     bsp.prepare();
 
     r = Ray(Vector(0,0,100),Vector(0,0,-1),1);
@@ -301,7 +301,7 @@ void extrusion_test() {
     c = new Extrusion(Vector(0,0,0),Vector(0,0,-10),5.0,3,m);
     c->prepare();
     BSP bsp = BSP();
-    c->addParts(&bsp);
+    c->addSelf(&bsp);
     bsp.prepare();
     Ray r = Ray(Vector(0.5,0.5,100),Vector(0,0,-1),1);
     assert(bsp.intersect(r));

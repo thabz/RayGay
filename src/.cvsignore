@@ -3,5 +3,3 @@ Makefile.in
 Makefile
 .deps
 .libs
-*.tga
-*.png

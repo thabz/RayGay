@@ -52,12 +52,3 @@ EXTRA_DIST = 3ds.h		\
 	     triangle.h 	\
 	     wireframe.h
 
-run:
-	sh test.sh
-
-view:
-	eog out.png
-
-run-simple:
-	./tracer
-

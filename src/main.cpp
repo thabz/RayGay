@@ -60,10 +60,12 @@
 
 using namespace std;
 
-void work() {
+void work(string scenefile, string outputfile) {
     Stats::getUniqueInstance()->clear();
-    Importer importer("testscene.gay");
+    cout << "Reading " << scenefile << endl;
+    Importer importer(scenefile);
     Scene* scene = importer.getScene();
+    cout << "Done." << endl;
 
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
@@ -80,11 +82,15 @@ void work() {
     img->save("out.tga");
     delete img;
     Stats::getUniqueInstance()->dump();
-
 }
 
 int main(int argc, char *argv[]) {
-    work(); 
+    cout << "Raygay version 0.1" << endl;
+    if (argc < 3) {
+	cout << "USAGE: tracer <scenefile.ray> <outputfile.tga>" << endl;
+	return EXIT_FAILURE;
+    }
+    work(string(argv[1]),string(argv[2])); 
     return EXIT_SUCCESS;
 }
 
