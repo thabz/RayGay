@@ -32,14 +32,6 @@ class Mesh : public ObjectGroup {
 	        int vertex[2];
 	};
 
-	/// A class for storing triangles
-	struct Tri {
-	    int vertex[3];
-	    int interpolated_normal[3];
-	    Vector2 uv[3];
-	    int normal_idx;
-	};
-
 	/// The types of meshes
 	enum MeshType {
 	    MESH_FLAT,
@@ -49,9 +41,6 @@ class Mesh : public ObjectGroup {
 	/// Helper type
 	typedef std::map<EdgeKey,Edge*> EdgeMapType;
 
-	/// Default constructor
-//	Mesh();
-	
 	/// Constructor
 	Mesh(MeshType type, const Material* mat);
 	
@@ -64,7 +53,7 @@ class Mesh : public ObjectGroup {
 	virtual void transform(const Matrix& m);
 
 	/// Returns a (possibly) phong-interpolated normal
-	Vector normal(const Triangle* const triangle, double u, double v) const;
+	Vector normal(const uint face_idx, double u, double v) const;
 	
 	/// Material of the mesh 
 	virtual const Material* getMaterial() const;
@@ -85,27 +74,27 @@ class Mesh : public ObjectGroup {
 	unsigned int addVertex(const Vector& point);
 
 	/// Add a triangle by vertex indices
-	void addTriangle(int v[3], const Vector2 uv[3]);
+	void addTriangle(const uint v[3], const Vector2 uv[3]);
 	
 	/// Add a triangle by vertex indices
 	void addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 uv1, const Vector2 uv2);
 	
 	/// Add a triangle by vertex indices
-	void addTriangle(int v[3]);
+	void addTriangle(const uint v[3]);
 	
 	/// A vector of all vertices
 	std::vector<Vector>* getVertices();
 
 	/// A vector of all unique edges
 	std::vector<Linesegment>* getEdges();
-
-	/// Index into normals
-	const Vector& normalAt(unsigned int i) const { return normals[i]; };
+	
+	/// Index into face vertices
+	const Vector& cornerAt(uint tri_idx, uint i) const;
+	
 	/// Index into vertices 
-	const Vector& cornerAt(unsigned int i) const { return corners[i]; };
-	const Vector& cornerAt(int tri_idx, unsigned int i) const;
+	const Vector& cornerAt(uint i) const { return corners[i]; };
 
-	Vector2 getUV(const Triangle* triangle, double u, double v) const;
+	Vector2 getUV(const uint face_idx, double u, double v) const;
 
 	void prepare();
 	virtual SceneObject* clone() const;
@@ -114,25 +103,26 @@ class Mesh : public ObjectGroup {
 	MeshType meshType;
 	bool prepared;
 	int findExistingCorner(const Vector* c) const;
-	void computeAdjacentTris();
 	void computeInterpolatedNormals();
-	Vector phong_normal(const Triangle* const triangle, double u, double v) const;
+	Vector phong_normal(const uint face_idx, double u, double v) const;
 	std::vector<Triangle*> triangles;
-	std::vector<Tri> tris;
 
 	const Material* material;
 
-	// New data structure
 	std::vector<Vector> normals;
 	std::vector<Vector> corners;
-	std::vector<unsigned int> faces;
-	std::vector<unsigned int> normal_indices;
+	std::vector<Vector2> uv_coords;
+	// 3 indices into corners for each face
+	std::vector<uint> faces;
+	// 1 index into normals for each face
+	std::vector<uint>* normal_indices;
+	// 3 indices into normals for each face
+	std::vector<uint> i_normal_indices;
 };
 
 inline
-const Vector& Mesh::cornerAt(int tri_idx, unsigned int i) const {
-    const Tri& tri = tris[tri_idx];
-    return corners[tri.vertex[i]];
+const Vector& Mesh::cornerAt(uint tri_idx, unsigned int i) const {
+    return corners[faces[3 * tri_idx + i]];
 }
 
 #endif

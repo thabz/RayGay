@@ -26,6 +26,7 @@ Mesh::Mesh(MeshType type, const Material* mat) {
     meshType = type;
     prepared = false;
     material = mat;
+    normal_indices = new vector<uint>;
 }
 
 // ----------------------------------------------------------------------------
@@ -59,7 +60,7 @@ void Mesh::prepare() {
  */
 void Mesh::addTriangle(const Vector* c, const Vector2* uv) {
 
-    int verts[3];
+    uint verts[3];
 
     for(int i = 0; i < 3; i++) {
 	int new_index = findExistingCorner(&c[i]);
@@ -96,13 +97,13 @@ uint Mesh::addVertex(const Vector& point) {
     return corners.size() -1;
 }
 
-void Mesh::addTriangle(int v[3]) {
+void Mesh::addTriangle(const uint v[3]) {
     Vector2 uv[3];
     addTriangle(v,uv);
 }
 
 void Mesh::addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 uv1, const Vector2 uv2) {
-    int v[3];
+    uint v[3];
     Vector2 uv[3];
     v[0] = v0; v[1] = v1; v[2] = v2;
     uv[0] = uv0; uv[1] = uv1; uv[2] = uv2;
@@ -110,13 +111,21 @@ void Mesh::addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 
 }
 
 
-void Mesh::addTriangle(int v[3], const Vector2 uv[3]) {
+void Mesh::addTriangle(const uint v[3], const Vector2 uv[3]) {
 
     // Check vertex indices are within bounds
-    int max_idx = corners.size() - 1;
+    uint max_idx = corners.size() - 1;
     if (v[0] > max_idx || v[1] > max_idx || v[2] > max_idx) {
 	throw_exception("Vertex index out of bounds.");
     }
+
+    faces.push_back(v[0]);
+    faces.push_back(v[1]);
+    faces.push_back(v[2]);
+
+    uv_coords.push_back(uv[0]);
+    uv_coords.push_back(uv[1]);
+    uv_coords.push_back(uv[2]);
 
     Vector c[3];
     c[0] = cornerAt(v[0]);
@@ -127,57 +136,16 @@ void Mesh::addTriangle(int v[3], const Vector2 uv[3]) {
     normals.push_back(normal);
     uint normal_idx = normals.size() - 1;
 
-    faces.push_back(v[0]);
-    faces.push_back(v[1]);
-    faces.push_back(v[2]);
+    normal_indices->push_back(normal_idx);
 
-    Tri tri;
-    tri.normal_idx = normal_idx;
-    tri.uv[0] = uv[0];
-    tri.uv[1] = uv[1];
-    tri.uv[2] = uv[2];
-    tri.vertex[0] = v[0];
-    tri.vertex[1] = v[1];
-    tri.vertex[2] = v[2];
-    tris.push_back(tri);
-
-    Triangle* t = new Triangle(this);
-    t->setTri(tris.size() - 1);
+    Triangle* t = new Triangle(this, (faces.size() / 3) - 1);
     triangles.push_back(t);
 }
 
-/*
-void Mesh::computeAdjacentTris() {
-    for(uint i = 0; i < tris.size(); i++) {
-	Tri* tri = tris[i];
-	for(uint e = 0; e < 3; e++) {
-	    Tri* adj;
-	    Edge* edge = tri->edge[e];
-	    if (edge->triangle[0] == tri) {
-		adj = edge->triangle[1];
-	    } else {
-		adj = edge->triangle[0];
-	    }
-	    tri->triangle[e] = adj;
-	}
-    }
-}
-*/
-
 void Mesh::computeInterpolatedNormals() {
 
-    if (meshType == Mesh::MESH_FLAT) {
-	cout << "Using flat normals" << endl;
-	for(uint i = 0; i < tris.size(); i++) {
-	    Tri& tri = tris[i];
-	    tri.interpolated_normal[0] = tri.normal_idx;
-	    tri.interpolated_normal[1] = tri.normal_idx;
-	    tri.interpolated_normal[2] = tri.normal_idx;
-	}
-    } else {
-	cout << "Finding interpolated normals" << endl;
-	assert(tris.size() == faces.size() / 3);
-	uint face_num = tris.size();
+    if (meshType == Mesh::MESH_PHONG) {
+	uint face_num = faces.size() / 3;
 	uint vertex_num = corners.size();
 	vector<uint>* adj = new (vector<uint>)[vertex_num];
 	for(uint i = 0; i < face_num; i++) {
@@ -187,64 +155,41 @@ void Mesh::computeInterpolatedNormals() {
 	    }
 	}
 
+	i_normal_indices.reserve(face_num * 3);
+	
 	for(uint i = 0; i < face_num; i++) {
-	    Tri* tri = &(tris[i]);
-	    Vector normal = normals[tri->normal_idx];
+	    Vector normal = normals[normal_indices->operator[](i)];
 	    for(uint j = 0; j < 3; j++) {
 		Vector interpolated_normal = normal;
 		int num = 1;
 		uint vertex_idx = faces[i*3+j];
-		vector<uint> adj_faces = adj[vertex_idx];
+		vector<uint>& adj_faces = adj[vertex_idx];
 		uint fac_num = adj_faces.size();
 		for(uint v = 0; v < fac_num; v++) {
 		    uint other_face_idx = adj_faces[v];
 		    if (other_face_idx != i) {
-			Vector other_normal = normals[tris[other_face_idx].normal_idx];
+			Vector other_normal = normals[normal_indices->operator[](other_face_idx)];
 			if (other_normal * normal > PHONG_ANGLETHRESHOLD) {
 			    interpolated_normal += other_normal;
 			    num++;
 			}
 		    }
 		}
+		uint index;
 		if (num > 1) {
 		    interpolated_normal.normalize();
 		    normals.push_back(interpolated_normal);
-		    tri->interpolated_normal[j] = normals.size() - 1;
+		    index = normals.size() - 1;
 		} else {
-		    tri->interpolated_normal[j] = tri->normal_idx;
+		    index = normal_indices->operator[](i);
 		}
+		i_normal_indices.push_back(index);
 	    }
 	}
 
 	delete [] adj;
-	cout << "So far, so good." << endl;
+	delete normal_indices;
     }
-
-#if 0
-	    Vector normal = normals[tri->normal_idx];
-	    for(uint j = 0; j < 3; j++) {
-		Vertex vertex = vertices[tri->vertex[j]];
-	    int num = 1;
-	    Vector interpolated_normal = normal;
-	    for(uint v = 0; v < vertex.tris.size(); v++) {
-		Tri* other_tri = vertex.tris[v];
-		Vector other_normal = normals[other_tri->normal_idx];
-		if (other_tri != tri &&
-			other_normal * normal > PHONG_ANGLETHRESHOLD) {
-		    interpolated_normal = interpolated_normal + other_normal;
-		    num++;
-		}
-	    }
-	    if (num > 1) {
-		interpolated_normal.normalize();
-		normals.push_back(interpolated_normal);
-		tri->interpolated_normal[j] = normals.size() -1;
-	    } else {
-		tri->interpolated_normal[j] = tri->normal_idx;
-	    }
-	}
-    }
-#endif	
 }
 
 // TODO: Optimize by keeping a stl::set with all corners.
@@ -298,18 +243,20 @@ void Mesh::transform(const Matrix& M) {
 }
 
 // ----------------------------------------------------------------------------
-Vector Mesh::normal(const Triangle* const triangle, double u, double v) const {
-    return phong_normal(triangle,u,v);
- //      return normals[triangle->normali]; // Flat
+Vector Mesh::normal(const uint face_idx, double u, double v) const {
+    if (meshType == Mesh::MESH_PHONG) {
+	return phong_normal(face_idx,u,v);
+    } else {
+	return normals[face_idx];
+    }
 }
 
-Vector Mesh::phong_normal(const Triangle* const triangle, double u, double v) const {
-    //const Triangle* triangle = (Triangle*) i.getLocalObject();
-    const Tri& tri = tris[triangle->getTri()];
+Vector Mesh::phong_normal(const uint face_idx, double u, double v) const {
+    uint offset = face_idx * 3;
     Vector result = Vector(0,0,0);
     Vector weight = Vector(1-u-v,u,v);
     for(uint j = 0; j < 3; j++) {
-	result += normals[tri.interpolated_normal[j]] * weight[j];
+	result += normals[i_normal_indices[offset + j]] * weight[j];
     }
     result.normalize();
     return result;
@@ -319,11 +266,11 @@ const Material* Mesh::getMaterial() const {
     return material;
 }
 
-Vector2 Mesh::getUV(const Triangle* triangle, double u, double v) const {
-    const Tri& tri = tris[triangle->getTri()];
-    return tri.uv[0] * (1-u-v) +
-           tri.uv[1] * u +
-           tri.uv[2] * v;
+Vector2 Mesh::getUV(const uint face_idx, double u, double v) const {
+    uint offset = face_idx * 3;
+    return uv_coords[offset + 0] * (1-u-v) +
+           uv_coords[offset + 1] * u +
+           uv_coords[offset + 2] * v;
 }
 
 std::vector<Vector>* Mesh::getVertices() {
@@ -341,15 +288,16 @@ std::vector<Vector>* Mesh::getVertices() {
 std::vector<Linesegment>* Mesh::getEdges() {
     EdgeMapType edgeMap;
 
-    for(uint t = 0; t < tris.size(); t++) {
-	const Tri& tri = tris[t];
+    uint faces_num = faces.size() / 3;
+
+    for(uint t = 0; t < faces_num; t++) {
 	// Insert all edges into edgeMap
 	for(int i = 0; i < 3; i++) {
 	    int j = (i + 1) % 3;
-	    EdgeKey key = EdgeKey(tri.vertex[i],tri.vertex[j]);
+	    EdgeKey key = EdgeKey(faces[t*3+i],faces[t*3+j]);
 	    Edge* edge = edgeMap[key];
 	    if (edge == NULL) {
-		edge = new Edge(tri.vertex[i],tri.vertex[j]);
+		edge = new Edge(faces[t*3+i],faces[t*3+j]);
 		edgeMap[key] = edge;
 	    }
 	}
@@ -367,17 +315,15 @@ std::vector<Linesegment>* Mesh::getEdges() {
 // TODO: Can be much more effective by using addVertex.
 SceneObject* Mesh::clone() const {
     Mesh* clone = new Mesh(meshType,material);
+    clone->corners = corners;
+
+
+    clone->faces = faces;
+    *clone->normal_indices = *normal_indices;
     // Copy triangles and that's it.
-    uint num = triangles.size();
-    Vector vs[3];
-    Vector2 uvs[3];
+    uint num = faces.size() / 3;
     for (uint i = 0; i < num; i++) {
-	const Tri& tri = tris[i];
-	for (uint j = 0; j < 3; j++) {
-	    vs[j] = cornerAt(tri.vertex[j]);
-	    uvs[j] = tri.uv[j];
-	}
-	clone->addTriangle(vs,uvs);
+	clone->addTriangle(&faces[i*3],&uv_coords[i*3]);
     }
     return clone;
 }

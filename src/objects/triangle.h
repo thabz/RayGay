@@ -14,18 +14,13 @@ class Triangle : public Object {
 
     public:
 	/// Constructor
-	Triangle(Mesh* m);
+	Triangle(Mesh* m, uint tri_index);
 
 	void transform(const Matrix& m) { };
 	const Material* getMaterial() const;
 	BoundingBox boundingBoundingBox() const;
 
 	void prepare();
-
-	/// Get index into mesh' array of Tris
-	int getTri() const;
-	/// Set index into mesh' array of Tris
-	void setTri(int);
 
 	virtual SceneObject* clone() const { return NULL; };
 	double _fastIntersect(const Ray& ray) const;

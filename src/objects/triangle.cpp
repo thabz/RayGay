@@ -11,20 +11,13 @@
 
 
 
-Triangle::Triangle(Mesh* m) : Object(NULL) {
+Triangle::Triangle(Mesh* m, uint tri_index) : Object(NULL) {
     mesh = m;
+    _tri_idx = tri_index;
 }
 
 const Material* Triangle::getMaterial() const { 
     return mesh->getMaterial(); 
-}
-
-void Triangle::setTri(int tri_idx) {
-    _tri_idx = tri_idx; 
-}
-
-int Triangle::getTri() const{
-    return _tri_idx;
 }
 
 #define CROSS(dest,v1,v2) \
@@ -91,8 +84,8 @@ Intersection Triangle::_fullIntersect(const Ray& ray, const double t2) const {
    u /= det;
    v /= det;
    
-   Vector2 uv = mesh->getUV(this,u,v);
-   Vector normal = mesh->normal(this,u,v);
+   Vector2 uv = mesh->getUV(_tri_idx,u,v);
+   Vector normal = mesh->normal(_tri_idx,u,v);
    return Intersection(ray.getPoint(t2),t2,normal,uv);
 }
 
