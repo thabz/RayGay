@@ -70,77 +70,138 @@ void sphere_test() {
 
 void boolean_test() {
     Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
-    Sphere s1 = Sphere(Vector(-10,0,0),30.0,m);
-    Sphere s2 = Sphere(Vector(10,0,0),30.0,m);
+    Sphere* s1 = new Sphere(Vector(-10,0,0),30.0,m);
+    Sphere* s2 = new Sphere(Vector(10,0,0),30.0,m);
 
     /* Test BOOLEAN_UNION */
-    Boolean b = Boolean(&s1,Boolean::BOOLEAN_UNION,&s2,m);
-    assert(b.inside(Vector(0,0,0)));
-    assert(b.inside(Vector(39,0,0)));
-    assert(b.onEdge(Vector(40,0,0)));
-    assert(!b.inside(Vector(40,0,0)));
-    assert(b.inside(Vector(-20,0,0)));
+    Boolean* b = new Boolean(s1,Boolean::BOOLEAN_UNION,s2,m);
+    assert(b->inside(Vector(0,0,0)));
+    assert(b->inside(Vector(39,0,0)));
+    assert(b->onEdge(Vector(40,0,0)));
+    assert(!b->inside(Vector(40,0,0)));
+    assert(b->inside(Vector(-20,0,0)));
 
-    assert(b.onEdge(Vector(-40,0,0)));
-    assert(b.onEdge(Vector(10,30,0)));
+    assert(b->onEdge(Vector(-40,0,0)));
+    assert(b->onEdge(Vector(10,30,0)));
 
-    assert(!b.onEdge(Vector(-20,0,0)));
-    assert(!b.onEdge(Vector(20,0,0)));
-    assert(!b.onEdge(Vector(0,0,0)));
+    assert(!b->onEdge(Vector(-20,0,0)));
+    assert(!b->onEdge(Vector(20,0,0)));
+    assert(!b->onEdge(Vector(0,0,0)));
 
     /* Test BOOLEAN_INTERSECTION */
-    b = Boolean(&s1,Boolean::BOOLEAN_INTERSECTION,&s2,m);
-    assert(b.inside(Vector(0,0,0)));
-    assert(b.inside(Vector(19,0,0)));
-    assert(b.inside(Vector(-19,0,0)));
-    assert(!b.inside(Vector(39,0,0)));
-    assert(!b.inside(Vector(-39,0,0)));
-    assert(!b.inside(Vector(20,0,0)));
-    assert(!b.inside(Vector(-20,0,0)));
+    b = new Boolean(s1,Boolean::BOOLEAN_INTERSECTION,s2,m);
+    assert(b->inside(Vector(0,0,0)));
+    assert(b->inside(Vector(19,0,0)));
+    assert(b->inside(Vector(-19,0,0)));
+    assert(!b->inside(Vector(39,0,0)));
+    assert(!b->inside(Vector(-39,0,0)));
+    assert(!b->inside(Vector(20,0,0)));
+    assert(!b->inside(Vector(-20,0,0)));
 
-    assert(!b.onEdge(Vector(-40,0,0)));
-    assert(!b.onEdge(Vector(40,0,0)));
-    assert(!b.onEdge(Vector(0,0,0)));
-    assert(b.onEdge(Vector(-20,0,0)));
-    assert(b.onEdge(Vector(20,0,0)));
+    assert(!b->onEdge(Vector(-40,0,0)));
+    assert(!b->onEdge(Vector(40,0,0)));
+    assert(!b->onEdge(Vector(0,0,0)));
+    assert(b->onEdge(Vector(-20,0,0)));
+    assert(b->onEdge(Vector(20,0,0)));
     
     /* Test BOOLEAN_DIFFERENCE */
-    b = Boolean(&s1,Boolean::BOOLEAN_DIFFERENCE,&s2,m);
-    assert(!b.inside(Vector(-40,0,0)));
-    assert(b.inside(Vector(-39,0,0)));
-    assert(b.inside(Vector(-21,0,0)));
-    assert(!b.inside(Vector(-20,0,0)));
-    assert(!b.inside(Vector(0,0,0)));
-    assert(!b.inside(Vector(40,0,0)));
-    assert(!b.inside(Vector(39,0,0)));
+    b = new Boolean(s1,Boolean::BOOLEAN_DIFFERENCE,s2,m);
+    assert(!b->inside(Vector(-40,0,0)));
+    assert(b->inside(Vector(-39,0,0)));
+    assert(b->inside(Vector(-21,0,0)));
+    assert(!b->inside(Vector(-20,0,0)));
+    assert(!b->inside(Vector(0,0,0)));
+    assert(!b->inside(Vector(40,0,0)));
+    assert(!b->inside(Vector(39,0,0)));
 
-    assert(!b.onEdge(Vector(-41,0,0)));
-    assert(b.onEdge(Vector(-40,0,0)));
-    assert(!b.onEdge(Vector(-39,0,0)));
-    assert(!b.onEdge(Vector(-21,0,0)));
-    assert(b.onEdge(Vector(-20,0,0)));
-    assert(!b.onEdge(Vector(-19,0,0)));
-    assert(!b.onEdge(Vector(0,0,0)));
-    assert(!b.onEdge(Vector(20,0,0)));
-    assert(!b.onEdge(Vector(40,0,0)));
+    assert(!b->onEdge(Vector(-41,0,0)));
+    assert(b->onEdge(Vector(-40,0,0)));
+    assert(!b->onEdge(Vector(-39,0,0)));
+    assert(!b->onEdge(Vector(-21,0,0)));
+    assert(b->onEdge(Vector(-20,0,0)));
+    assert(!b->onEdge(Vector(-19,0,0)));
+    assert(!b->onEdge(Vector(0,0,0)));
+    assert(!b->onEdge(Vector(20,0,0)));
+    assert(!b->onEdge(Vector(40,0,0)));
 
-    Sphere s3 = Sphere(Vector(-10,0,0),10.0,m);
-    Sphere s4 = Sphere(Vector(10,0,0),10.0,m);
-    b = Boolean(&s3,Boolean::BOOLEAN_INTERSECTION,&s4,m);
-    assert(b.onEdge(Vector(0,0,0)));
+    Sphere* s3 = new Sphere(Vector(-10,0,0),10.0,m);
+    Sphere* s4 = new Sphere(Vector(10,0,0),10.0,m);
+    b = new Boolean(s3,Boolean::BOOLEAN_INTERSECTION,s4,m);
+    assert(b->onEdge(Vector(0,0,0)));
 
     /* Intersection test */
-    s1 = Sphere(Vector(0,0,0),60.0,m);
-    s2 = Sphere(Vector(0,0,60),40.0,m);
+    s1 = new Sphere(Vector(0,0,0),60.0,m);
+    s2 = new Sphere(Vector(0,0,60),40.0,m);
 
-    b = Boolean(&s1,Boolean::BOOLEAN_DIFFERENCE,&s2,m);
+    b = new Boolean(s1,Boolean::BOOLEAN_DIFFERENCE,s2,m);
 
     Ray r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
-    assert(b.intersect(r));
-    Intersection* i = b.getLastIntersection();
+    assert(b->intersect(r));
+    Intersection* i = b->getLastIntersection();
 
-    assert(IS_EQUAL(i->getPoint()[2],20.0));
-    assert(Vector(0,0,1) == b.normal(*i));
+    assert(i->getPoint() == Vector(0,0,20));
+    assert(b->normal(*i) == Vector(0,0,1));
+
+    r = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
+    assert(b->intersect(r));
+    i = b->getLastIntersection();
+    assert(i->getPoint() == Vector(0,0,-60));
+    assert(b->normal(*i) == Vector(0,0,-1));
+
+    // Test a sphere with three other spheres subtracted from its middle,
+    // front and back, so that the resulting object is hollow along the z-axis.
+
+    s1 = new Sphere(Vector(0,0,0),200.0,m);
+    s2 = new Sphere(Vector(0,0,0),180.0,m);
+    Boolean* s = new Boolean(s1,Boolean::BOOLEAN_DIFFERENCE,s2,m); // Make it hollow
+    assert(!s->inside(Vector(0,0,0)));
+    assert(!s->onEdge(Vector(0,0,0)));
+    assert(s->inside(Vector(0,0,190)));
+    assert(!s->onEdge(Vector(0,0,190)));
+    assert(s->onEdge(Vector(0,0,180)));
+    assert(!s->inside(Vector(0,0,180)));
+    assert(s->onEdge(Vector(0,0,200)));
+    assert(!s->inside(Vector(0,0,200)));
+    assert(s->inside(Vector(0,0,-190)));
+    assert(s->inside(Vector(0,190,0)));
+    assert(s->inside(Vector(190,0,0)));
+
+    s3 = new Sphere(Vector(0,0,200),100.0,m); // Cut front
+    Boolean* b4 = new Boolean(s,Boolean::BOOLEAN_DIFFERENCE,s3,m);
+    assert(s->inside(Vector(0,0,190)));
+    assert(s->inside(Vector(0,0,-190)));
+    assert(!b4->inside(Vector(0,0,190)));
+    assert(!b4->onEdge(Vector(0,0,190)));
+    assert(b4->inside(Vector(0,0,-190)));
+    assert(b4->inside(Vector(0,190,0)));
+    
+    s4 = new Sphere(Vector(0,0,-200),100.0,m); // Cut back
+    Boolean* b5 = new Boolean(b4,Boolean::BOOLEAN_DIFFERENCE,s4,m);
+    assert(!b5->inside(Vector(0,0,190)));
+    assert(!b5->onEdge(Vector(0,0,190)));
+    assert(!b5->inside(Vector(0,0,-190)));
+    assert(!b5->inside(Vector(0,0,-250)));
+    assert(!b5->onEdge(Vector(0,0,-190)));
+    assert(!b5->onEdge(Vector(0,0,-200)));
+    assert(!b5->onEdge(Vector(0,0,-300)));
+    assert(b5->inside(Vector(0,190,0)));
+    assert(b5->inside(Vector(0,-190,0)));
+    assert(b5->onEdge(Vector(0,200,0)));
+    assert(b5->onEdge(Vector(0,-200,0)));
+    assert(!b5->inside(Vector(0,0,0)));
+    assert(!b5->onEdge(Vector(0,0,0)));
+    
+    r = Ray(Vector(0,0,1000),Vector(0,0,-1),1);
+    assert(s->intersect(r));
+    assert(s3->intersect(r));
+    assert(s4->intersect(r));
+    assert(b4->intersect(r));
+    r = Ray(Vector(0,0,-1000),Vector(0,0,1),1);
+    assert(!b5->intersect(r));
+ /*   i = b5->getLastIntersection();
+    cout << i->getPoint() << "  ...." << endl;
+    assert(!b5->inside(Vector(0,0,0)));
+    assert(!b5->onEdge(Vector(0,0,0)));*/
 }
 
 void box_test() {
