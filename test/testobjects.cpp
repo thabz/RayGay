@@ -1029,7 +1029,6 @@ void cone_test() {
 }
 
 void superellipsoid_test() {
-    cout << "Testing superellipsoid" << endl;
     // Unscaled instance at origin
     SuperEllipsoid* s = new SuperEllipsoid(0.2,0.2,100,0.0001,NULL);
     assert(intersects(s,Vector(0,0,1000),Vector(0,0,-1)));
