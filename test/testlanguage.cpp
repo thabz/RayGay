@@ -93,6 +93,21 @@ void test_sort() {
     assert(tal[2] == 10);
     assert(tal[3] == 15);
     assert(tal[4] == 20);
+
+    // Test pointer sagert
+    sort((&tal)->begin(),(&tal)->end(),compareAreaAsc());
+
+    // Test sortering af tom vector
+    vector<int> tom;
+    sort(tom.begin(),tom.end(),compareAreaAsc());
+    assert(tom.empty());
+    sort((&tom)->begin(),(&tom)->end(),compareAreaAsc());
+
+    tom.push_back(1);
+    sort(tom.begin(),tom.end(),compareAreaAsc());
+    assert(tom.size() == 1);
+
+
 }
 
 int main(int argc, char *argv[]) {
