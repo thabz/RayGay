@@ -63,6 +63,11 @@ class Scene {
 	/// Sets the environmentmap
 	void setEnvironmentMap(const std::string& filename);
 
+	void setFog(const RGB& color, const double distance);
+	bool fogEnabled() const { return fog_enabled; };
+	RGB getFogColor() const { return fog_color; };
+	double getFogDistance() const { return fog_distance; };
+
     private:
 	std::vector<Lightsource*> lights;
 	std::vector<object*> objects;
@@ -71,6 +76,10 @@ class Scene {
 	Sphere* environmentSphere;
 	Camera* camera;
 	RGB bg_color;
+
+	bool fog_enabled;
+	RGB fog_color;
+	double fog_distance;
 };
 
 #endif

@@ -17,6 +17,7 @@ using namespace std;
 
 Scene::Scene() {
     environmentMap = NULL;
+    fog_enabled = false;
 }
 
 Scene::~Scene() {
@@ -90,3 +91,10 @@ std::vector<object*> Scene::getObjects() {
 std::vector<ObjectCollection*> Scene::getObjectCollections() {
     return objectcollections;   
 }
+
+void Scene::setFog(const RGB& color, const double distance) {
+    this->fog_color = color;
+    this->fog_distance = distance;
+    this->fog_enabled = true;
+}
+

@@ -30,11 +30,21 @@ RGB Raytracer::getPixel(double x, double y) {
 RGB Raytracer::trace(const Ray& ray, int depth) {
     Stats::getUniqueInstance()->inc("Total camera rays cast");
     RGB color; // Set to scene's ambient color
-    if (space->intersect(ray)) {
-	Intersection intersection = *(space->getLastIntersection());
+    Intersection intersection;
+    bool intersected = space->intersect(ray);
+
+    if (intersected) {
+	intersection = *(space->getLastIntersection());
 	color = shade(ray,intersection,depth);
     } else {
         color = scene->getBackgroundColor(ray);
+    }
+
+    if (intersected && scene->fogEnabled()) {
+	double d = (intersection.getPoint() - ray.getOrigin()).length();
+	double D = scene->getFogDistance();
+	double v = exp(-d/D);
+	color = v * color + (1-v) * scene->getFogColor();
     }
     return color;
 }
