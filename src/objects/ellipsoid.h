@@ -8,8 +8,6 @@
 
 /**
  * An ellipsoid object.
- * 
- * \todo Finish implementation.
  */
 class Ellipsoid : public Solid, public Transformer {
     public:
