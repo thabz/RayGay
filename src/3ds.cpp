@@ -1,0 +1,323 @@
+
+#include <iostream>
+#include <cassert>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+
+#include "3ds.h"
+#include "math/vector.h"
+#include "math/vector2.h"
+#include "mesh.h"
+
+using namespace std;
+
+ThreeDS::ThreeDS(const string& filename, const double scale, const Material& material)  {
+    this->material = material;
+    this->force_my_material = true;
+    init(filename,scale);
+}
+
+ThreeDS::ThreeDS(const string& filename, const double scale) {
+    this->force_my_material = false;
+    init(filename,scale);
+}
+
+void ThreeDS::init(const string& filename, const double scale) {
+    this->scale = scale;
+    load3ds(filename);
+}
+
+void ThreeDS::createMesh() {
+    Mesh* mesh = new Mesh(Mesh::MESH_FLAT,material);
+
+    unsigned long faces_size = faces.size();
+    unsigned long vertices_size = vertices.size();
+
+    assert(vertices_size % 3 == 0);
+    assert(faces_size % 3 == 0);
+
+    // Transform all vertices
+    for(unsigned int i = 0; i < vertices_size/3; i++) {
+	Vector v = getVertex(i);
+	//v = mesh_matrix * v;
+	v = scale * v;
+	vertices[i*3+0] = float(v[0]);
+	vertices[i*3+1] = float(v[1]);
+	vertices[i*3+2] = float(v[2]);
+    }
+    
+    // Add the faces to this Mesh
+    Vector verts[3]; 
+    Vector2 uvs[3]; 
+    for(unsigned int i = 0; i < faces_size/3; i++) {
+	for(int j = 0; j < 3; j++) {
+	    unsigned short idx = faces[i * 3 +j];
+	    verts[j] = getVertex(idx);
+	    uvs[j] = getUV(idx);
+	}
+	mesh->addTriangle(verts,uvs);
+    }
+    this->addObject(mesh);
+
+    vertices.clear();
+    faces.clear();
+    map_coords.clear();
+    mesh_matrix = Matrix();
+}
+
+Vector ThreeDS::getVertex(const unsigned short index) const {
+    unsigned short i = index * 3;
+    return Vector(vertices[i+0],vertices[i+1],vertices[i+2]);
+}
+
+Vector2 ThreeDS::getUV(const unsigned short index) const {
+    unsigned short i = index * 2;
+    return Vector2(map_coords[i+0],map_coords[i+1]);
+}
+
+long filelength(int f) {
+    struct stat buf;
+    fstat(f, &buf);
+    return buf.st_size;
+}
+
+void ThreeDS::load3ds(const string& filename) {
+    state_inside_object_block = false;
+
+    int i; //Index variable
+
+    FILE *l_file; //File pointer
+
+    unsigned short l_chunk_id; //Chunk identifier
+    unsigned int l_chunk_lenght; //Chunk lenght
+
+    unsigned char l_char; //Char variable
+    unsigned short l_qty; //Number of elements in each chunk
+
+    unsigned short l_face_flags; //Flag that stores some face information
+
+    l_file = fopen (filename.c_str(), "rb");
+    if (l_file == NULL) {
+        cout << "Error opening " << filename << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    while (ftell (l_file) < filelength (fileno (l_file))) //Loop to scan the whole file
+	//while(!EOF)
+    {
+	//getch(); //Insert this command for debug (to wait for keypress for each chuck reading)
+
+	fread (&l_chunk_id, 2, 1, l_file); //Read the chunk header
+	printf("ChunkID: %x\n",l_chunk_id); 
+	fread (&l_chunk_lenght, 4, 1, l_file); //Read the lenght of the chunk
+	printf("ChunkLenght: %x\n",l_chunk_lenght);
+
+	switch (l_chunk_id)
+	{
+	    //----------------- MAIN3DS -----------------
+	    // Description: Main chunk, contains all the other chunks
+	    // Chunk ID: 4d4d 
+	    // Chunk Lenght: 0 + sub chunks
+	    //-------------------------------------------
+	    case 0x4d4d: 
+		break;    
+
+		//----------------- EDIT3DS -----------------
+		// Description: 3D Editor chunk, objects layout info 
+		// Chunk ID: 3d3d (hex)
+		// Chunk Lenght: 0 + sub chunks
+		//-------------------------------------------
+	    case 0x3d3d:
+		break;
+
+		//--------------- EDIT_OBJECT ---------------
+		// Description: Object block, info for each object
+		// Chunk ID: 4000 (hex)
+		// Chunk Lenght: len(object name) + sub chunks
+		//-------------------------------------------
+	    case 0x4000: 
+		if (state_inside_object_block) {
+		    createMesh();
+		}
+		state_inside_object_block = true;
+		mesh_matrix = Matrix();
+
+		i = 0;
+		do {
+		    fread (&l_char, 1, 1, l_file);
+		    //p_object->name[i]=l_char;
+		    i++;
+		} while (l_char != '\0' && i<20);
+		break;
+
+		//--------------- OBJ_TRIMESH ---------------
+		// Description: Triangular mesh, contains chunks for 3d mesh info
+		// Chunk ID: 4100 (hex)
+		// Chunk Lenght: 0 + sub chunks
+		//-------------------------------------------
+	    case 0x4100:
+		break;
+
+		//--------------- TRI_VERTEXL ---------------
+		// Description: Vertices list
+		// Chunk ID: 4110 (hex)
+		// Chunk Lenght: 1 x unsigned short (number of vertices) 
+		//             + 3 x float (vertex coordinates) x (number of vertices)
+		//             + sub chunks
+		//-------------------------------------------
+	    case 0x4110: 
+		fread (&l_qty, sizeof (unsigned short), 1, l_file);
+		//p_object->vertices_qty = l_qty;
+		printf("Number of vertices: %d\n",l_qty);
+		for (i=0; i<l_qty; i++)
+		{
+		    for (int j = 0; j < 3; j++) {
+			float val;
+			fread(&val,sizeof(float),1,l_file);
+			vertices.push_back(val);
+		    }
+		    /*
+		    fread (&p_object->vertex[i].x, sizeof(float), 1, l_file);
+		    printf("Vertices list x: %f\n",p_object->vertex[i].x);
+		    fread (&p_object->vertex[i].y, sizeof(float), 1, l_file);
+		    printf("Vertices list y: %f\n",p_object->vertex[i].y);
+		    fread (&p_object->vertex[i].z, sizeof(float), 1, l_file);
+		    printf("Vertices list z: %f\n",p_object->vertex[i].z);
+		    */
+		}
+		break;
+
+		//--------------- TRI_FACEL1 ----------------
+		// Description: Polygons (faces) list
+		// Chunk ID: 4120 (hex)
+		// Chunk Lenght: 1 x unsigned short (number of polygons) 
+		//             + 3 x unsigned short (polygon points) x (number of polygons)
+		//             + sub chunks
+		//-------------------------------------------
+	    case 0x4120:
+		fread (&l_qty, sizeof (unsigned short), 1, l_file);
+		//p_object->polygons_qty = l_qty;
+		printf("Number of polygons: %d\n",l_qty); 
+		for (i = 0; i < l_qty; i++)
+		{
+		    for (int j = 0; j < 3; j++) {
+			unsigned short val;
+			fread(&val, sizeof(unsigned short), 1, l_file);
+			faces.push_back(val);
+
+		    }
+		    /*
+		    fread (&p_object->polygon[i].a, sizeof (unsigned short), 1, l_file);
+		    printf("Polygon point a: %d\n",p_object->polygon[i].a);
+		    fread (&p_object->polygon[i].b, sizeof (unsigned short), 1, l_file);
+		    printf("Polygon point b: %d\n",p_object->polygon[i].b);
+		    fread (&p_object->polygon[i].c, sizeof (unsigned short), 1, l_file);
+		    printf("Polygon point c: %d\n",p_object->polygon[i].c);
+		    */
+		    fread (&l_face_flags, sizeof (unsigned short), 1, l_file);
+		    //printf("Face flags: %x\n",l_face_flags);
+		}
+		break;
+
+		//------------- TRI_MAPPINGCOORS ------------
+		// Description: Vertices list
+		// Chunk ID: 4140 (hex)
+		// Chunk Lenght: 1 x unsigned short (number of mapping points) 
+		//             + 2 x float (mapping coordinates) x (number of mapping points)
+		//             + sub chunks
+		//-------------------------------------------
+	    case 0x4140:
+		fread (&l_qty, sizeof (unsigned short), 1, l_file);
+		for (i=0; i < l_qty; i++)
+		{
+		    for (int j = 0; j < 2; j++) {
+			float val;
+			fread(&val, sizeof(float), 1, l_file);
+			map_coords.push_back(val);
+		    }
+		    /*
+		    fread (&p_object->mapcoord[i].u, sizeof (float), 1, l_file);
+		    printf("Mapping list u: %f\n",p_object->mapcoord[i].u);
+		    fread (&p_object->mapcoord[i].v, sizeof (float), 1, l_file);
+		    printf("Mapping list v: %f\n",p_object->mapcoord[i].v);
+		    */
+		}
+		break;
+		
+		//------------- TRI_MAPPINGCOORS ------------
+		// Description: MESH MATRIX
+		// Chunk ID: 4160 (hex)
+		// Chunk Lenght: 9 x float a 3x3 rotation matrix 
+		//             + 3 x float a translation vector
+		//-------------------------------------------
+	    case 0x4160:
+		// Read 
+		for (i=0; i < 3; i++) {
+		    for (int j = 0; j < 3; j++) {
+			float val;
+			fread(&val, sizeof(float), 1, l_file);
+			mesh_matrix.set(j,i,val);
+		    }
+		}
+		for (i=0; i < 3; i++) {
+		    float val;
+		    fread(&val, sizeof(float), 1, l_file);
+		    mesh_matrix.set(3,i,val);
+		}
+		cout << mesh_matrix << endl;
+
+		break;
+
+		//----------- Skip unknow chunks ------------
+		//We need to skip all the chunks that currently we don't use
+		//We use the chunk lenght information to set the file pointer
+		//to the same level next chunk
+		//-------------------------------------------
+	    default:
+		fseek(l_file, l_chunk_lenght-6, SEEK_CUR);
+	} 
+    }
+    fclose (l_file); // Closes the file stream
+ //   return (1); // Returns ok
+}
+
+/*
+The following are the most important chunks in a 3ds file. Please note the hierarchy among the various elements:
+
+MAIN CHUNK 0x4D4D
+   3D EDITOR CHUNK 0x3D3D
+      OBJECT BLOCK 0x4000
+         TRIANGULAR MESH 0x4100
+            VERTICES LIST 0x4110
+            FACES DESCRIPTION 0x4120
+               FACES MATERIAL 0x4130
+            MAPPING COORDINATES LIST 0x4140
+               SMOOTHING GROUP LIST 0x4150
+            LOCAL COORDINATES SYSTEM 0x4160
+         LIGHT 0x4600
+            SPOTLIGHT 0x4610
+         CAMERA 0x4700
+      MATERIAL BLOCK 0xAFFF
+         MATERIAL NAME 0xA000
+         AMBIENT COLOR 0xA010
+         DIFFUSE COLOR 0xA020
+         SPECULAR COLOR 0xA030
+         TEXTURE MAP 1 0xA200
+         BUMP MAP 0xA230
+         REFLECTION MAP 0xA220
+         [SUB CHUNKS FOR EACH MAP]
+            MAPPING FILENAME 0xA300
+            MAPPING PARAMETERS 0xA351
+      KEYFRAMER CHUNK 0xB000
+         MESH INFORMATION BLOCK 0xB002
+         SPOT LIGHT INFORMATION BLOCK 0xB007
+         FRAMES (START AND END) 0xB008
+            OBJECT NAME 0xB010
+            OBJECT PIVOT POINT 0xB013
+            POSITION TRACK 0xB020
+            ROTATION TRACK 0xB021
+            SCALE TRACK 0xB022
+            HIERARCHY POSITION 0xB030
+
+*/	    

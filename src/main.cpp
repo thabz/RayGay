@@ -33,6 +33,7 @@
 #include "boolean.h"
 #include "mesh.h"
 #include "box.h"
+#include "3ds.h"
 #include "cylinder.h"
 #include "tetrahedron.h"
 #include "tessalation.h"
@@ -210,12 +211,62 @@ void test_columns() {
 
 }
 
+void test_3ds() {
+    Stats::getUniqueInstance()->clear();
+    Scene scene;
+    
+    Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
+   // light1.setAttenuation(4000,3);
+    Pointlight light3 = Pointlight(Vector(4000,4000,4000));
+    //light3.setAttenuation(4000,3);
+    Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
+    Arealight area1 = Arealight(Vector(-4000,4000,4000),Vector(1,-1,-1),1000,40,0.10);
+    Arealight area2 = Arealight(Vector(4000,4000,4000),Vector(-1,-1,-1),1000,40,0.10);
+    //scene.addLight(&area1);
+    //scene.addLight(&area2);
+    //scene.addLight(&spotlight2);
+    scene.addLight(&light1);
+    scene.addLight(&light3);
+    
+    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); // Floor
+    scene.addObject(&b);
+
+    //ThreeDS* o = new ThreeDS("../3ds/tower4.3ds",1,MATERIAL_DULL_BLUE);
+    ThreeDS* egg = new ThreeDS("../3ds/egg-chair.3ds",10,MATERIAL_DULL_BLUE);
+    Matrix ma = Matrix::matrixRotate(Vector(1,0,0),90);
+    ma = ma * Matrix::matrixTranslate(Vector(0,-135,0));
+    egg->transform(ma);
+    scene.addObject(egg);
+    
+    Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
+    n = n * Matrix::matrixTranslate(Vector(0,0,-500));
+    scene.transform(n);
+
+    scene.setBackgroundColor(RGB(0.1,0.1,0.3));
+
+    Camera cam = Camera(Vector(0,0,1500),Vector(0,0,-1));
+    scene.setCamera(&cam);
+    
+    Image* img = new Image(640,480);
+    //SpaceSubdivider* space = new Hierarchy();
+    SpaceSubdivider* space = new BSP();
+
+    Raytracer raytracer = Raytracer();
+
+    raytracer.render(&scene,img,space);
+    
+    img->save("out.tga");
+    delete img;
+    Stats::getUniqueInstance()->dump();
+
+}
+
 int main(int argc, char *argv[]) {
     PixelStore::test();
     BSP::test();
     cout << "Tests done." << endl;
     // Test scene stuff
-    testScene4();
+    test_3ds();
 
     return EXIT_SUCCESS;
 }

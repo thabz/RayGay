@@ -30,6 +30,11 @@ Mesh::Mesh(MeshType type, const Material& mat) {
     prepared = false;
 }
 
+Mesh::Mesh() {
+    _boundingBoundingBox = NULL;
+    prepared = false;
+}
+
 // ----------------------------------------------------------------------------
 Mesh::~Mesh() {
     delete _boundingBoundingBox;

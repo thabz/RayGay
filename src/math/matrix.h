@@ -75,15 +75,16 @@ class Matrix {
 	/// Orientation transformation matrix
         static Matrix matrixOrient(const Vector &direction,const Vector &up);
 
+	inline void set(const int col,const int row,const double val) {
+	    _matrix[col*4+row] = val;
+	}
+
     private:
 	double _matrix[16];
 	static double _identity[16];
 
 	static void invertMatrixGeneral(const double *in, double *out);
 
-	inline void set(const int col,const int row,const double val) {
-	    _matrix[col*4+row] = val;
-	}
 
 	inline double get(const int col,const int row) const {
 	    return _matrix[col*4+row];
