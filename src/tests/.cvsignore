@@ -1,0 +1,8 @@
+testmath
+testpaths
+*.lo
+*.la
+Makefile
+Makefile.in
+.libs
+.deps
