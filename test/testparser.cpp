@@ -33,8 +33,8 @@ class test_parser : public Test {
 	    assertTrue(IS_EQUAL(lookupDouble("test-vdot-1"),4 + 10 + 18));
 	    assertTrue(IS_EQUAL(lookupDouble("test-vdot-2"),12 - 5 + 12));
 
-	    assertTrue(IS_EQUAL(lookupDouble("test-vlength-1"),sqrtl(1.0+4+9)));
-	    assertTrue(IS_EQUAL(lookupDouble("test-vlength-2"),sqrtl(16+4+4)));
+	    assertTrue(IS_EQUAL(lookupDouble("test-vlength-1"),sqrt(double(1.0+4+9))));
+	    assertTrue(IS_EQUAL(lookupDouble("test-vlength-2"),sqrt(double(16.0+4+4))));
 
 	    assertTrue(lookupVector("test-vscale-1") == Vector(2,4,6));
 	    assertTrue(lookupVector("test-vscale-2") == Vector(12,-6,6));
