@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include "objects/transformer.h"
+#include "transformer.h"
 
 Transformer::Transformer() {
     transformed = false;

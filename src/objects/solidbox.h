@@ -3,7 +3,7 @@
 #define OBJECTS_SOLID_BOX_H
 
 #include "objects/solid.h"
-#include "objects/transformer.h"
+#include "transformer.h"
 
 /**
  * A box not build with triangles.

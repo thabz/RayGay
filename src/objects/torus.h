@@ -3,7 +3,7 @@
 #define TORUS_H
 
 #include "objects/solid.h"
-#include "objects/transformer.h"
+#include "transformer.h"
 
 /**
  * A mathematical torus.

@@ -19,6 +19,8 @@ libtracer_la_SOURCES = \
 		      photonmapdump.cpp \
 		      renderjobs.cpp 	\
 		      pathtracer.cpp 	\
+		      transformer.cpp	\
+		      transformer.h	\
 		      environment.cpp 	\
 		      window.h		
 

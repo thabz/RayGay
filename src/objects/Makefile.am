@@ -60,8 +60,6 @@ libobjects_la_SOURCES = \
 		       torus.cpp	\
 		       transformedinstance.h	\
 		       transformedinstance.cpp	\
-		       transformer.h	\
-		       transformer.cpp	\
 		       triangle.h 	\
 		       triangle.cpp	\
 		       wireframe.h	\

@@ -2,7 +2,7 @@
 #ifndef OBJECTS_TRANSFORMED_INSTANCE_H
 #define OBJECTS_TRANSFORMED_INSTANCE_H
 
-#include "objects/transformer.h"
+#include "transformer.h"
 #include "objects/object.h"
 
 /**

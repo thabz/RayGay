@@ -3,7 +3,7 @@
 #define OBJECTS_ELLIPSOID_H
 
 #include "objects/solid.h"
-#include "objects/transformer.h"
+#include "transformer.h"
 #include "objects/sphere.h"
 
 /**

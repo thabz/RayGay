@@ -3,7 +3,7 @@
 #define OBJECTS_ISOSURFACE_H
 
 #include "objects/object.h"
-#include "objects/transformer.h"
+#include "transformer.h"
 
 /**
  * An isosurface is points described by a function. This is also called
