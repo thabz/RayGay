@@ -3,6 +3,7 @@
 #define TORUS_H
 
 #include "booleanoperand.h"
+#include "math/matrix.h"
 
 /**
  * A mathematical torus.
@@ -63,9 +64,17 @@ class Torus : public BooleanOperand {
 
     private:
 	virtual Intersection _intersect(const Ray& ray) const;
+	void prepareMatrices();
+
 	double r;
 	double R;
 	Material material;
+
+	Matrix transformation;
+	Matrix inverse_transformation;
+	Matrix rotation; /// The rotation part extracted from the transformation
+	Matrix inverse_rotation;
+	Matrix scene_transformation;
 };
 
 #endif

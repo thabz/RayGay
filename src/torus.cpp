@@ -21,31 +21,47 @@ Torus::Torus(double R, double r, Material m) {
     this->R = R;
     this->r = r;
     this->material = m;
+    this->transformation = Matrix();
+    prepareMatrices();
 }
+
+void Torus::prepareMatrices() {
+    inverse_transformation = transformation.inverse();
+    rotation = transformation.extractRotation();
+    inverse_rotation = rotation.inverse();
+}
+
+void Torus::transform(const Matrix& m) {
+    transformation = transformation * m;
+    scene_transformation = scene_transformation * m;
+    prepareMatrices();
+}
+
 
 Intersection Torus::_intersect(const Ray& ray) const {
 
-    Vector O = ray.getOrigin();
+    Vector Rd = inverse_rotation * ray.getDirection();
+    Vector Ro = inverse_transformation * ray.getOrigin();
 
     // Move ray's origin closer to torus to improve accuracy.
     // Trick learned from http://www.hassings.dk/l3/povtorus/povtorus.html
     //
     // We moved O to a point on a bounding sphere with radisu R + r + r
     double BoundingRadius = R + r + r;
-    double distP = O.norm();
+    double distP = Ro.norm();
     double closer = 0.0;
     if (distP > BoundingRadius) {
 	distP = sqrt(distP);
 	closer = distP - BoundingRadius;
-	O += closer * ray.getDirection();
+	Ro += closer * ray.getDirection();
     }
     
-    double xo = O.x();
-    double yo = O.y();
-    double zo = O.z();
-    double xd = ray.getDirection().x();
-    double yd = ray.getDirection().y();
-    double zd = ray.getDirection().z();
+    double xo = Ro.x();
+    double yo = Ro.y();
+    double zo = Ro.z();
+    double xd = Rd.x();
+    double yd = Rd.y();
+    double zd = Rd.z();
 
     double R2 = R*R;
     double r2 = r*r;
@@ -67,7 +83,7 @@ Intersection Torus::_intersect(const Ray& ray) const {
 	return Intersection();
     } else {
 	double t = roots[0];
-	return Intersection(ray.getPoint(t + closer),t + closer);
+	return Intersection(transformation * ray.getPoint(t + closer),t + closer);
     }
 }
 
@@ -79,12 +95,13 @@ Intersection Torus::_intersect(const Ray& ray) const {
  * @see http://research.microsoft.com/~hollasch/cgindex/render/raytorus.html
  */
 Vector Torus::normal(const Intersection& i) const {
-    Vector x = i.getPoint();
+    Vector x = inverse_transformation * i.getPoint();
     Vector p = Vector(x.x(),x.y(),0);
     p.normalize();
     p = R * p;
     Vector result = x-p;
     result.normalize();
+    result = rotation * result;
     return result;
 }
 
@@ -93,7 +110,8 @@ Vector Torus::normal(const Intersection& i) const {
  *
  * @param p the point the check for
  */
-bool Torus::onEdge(const Vector &p) const {
+bool Torus::onEdge(const Vector &point) const {
+    Vector p = inverse_transformation * point;
     Vector Q = Vector(p[0],0,p[2]);
     double l = Q.length();
     if (IS_ZERO(l)) {
@@ -103,7 +121,8 @@ bool Torus::onEdge(const Vector &p) const {
     return IS_EQUAL((p-X).length(),r);
 }
 
-bool Torus::inside(const Vector &p) const {
+bool Torus::inside(const Vector &point) const {
+    Vector p = inverse_transformation * point;
     Vector Q = Vector(p[0],0,p[2]);
     double l = Q.length();
     if (IS_ZERO(l)) {
@@ -114,14 +133,11 @@ bool Torus::inside(const Vector &p) const {
     return (p-X).length() < r;
 }
 
-void Torus::transform(const Matrix& m) {
-
-}
-
 BoundingBox Torus::boundingBoundingBox() const {
     double min = -R-r;
     double max = R+r;
-    return BoundingBox(Vector(min,min,min),Vector(max,max,max));
+    return BoundingBox(scene_transformation * Vector(min,min,min),
+	    scene_transformation * Vector(max,max,max));
 
 }
 
@@ -130,7 +146,8 @@ const Material& Torus::getMaterial() const {
 }
 
 Vector2 Torus::getUV(const Intersection& intersection) const {
-
+    // TODO: Implement
+    return Vector2(0,0);
 }
 
 bool Torus::intersects(const BoundingBox& bb) const {
