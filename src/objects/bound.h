@@ -3,9 +3,10 @@
 #define OBJECTS_BOUND_H
 
 #include "objects/object.h"
+#include "spacesubdivider.h"
+#include "kdtree.h"
 
 class ObjectGroup;
-class KdTree;
 class Intersection;
 
 /**

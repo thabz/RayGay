@@ -9,6 +9,7 @@ libobjects_a_SOURCES = 3ds.cpp 		\
 		       boolean.cpp 	\
 		       booleanoperand.cpp 	\
 		       bound.cpp	\
+		       bound.h		\
 		       box.cpp		\
 		       cylinder.cpp	\
 		       extrusion.cpp	\

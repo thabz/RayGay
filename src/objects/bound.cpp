@@ -1,5 +1,6 @@
 
-#include "kdtree.h"
+#include "bsp.h"
+#include "boundingbox.h"
 #include "objects/bound.h"
 #include "objects/objectgroup.h"
 #include "math/vector2.h"
