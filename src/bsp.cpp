@@ -82,21 +82,20 @@ Intersection BSP::intersectForShadow(const Ray& ray, const object* hint) const {
     return result.intersected ? result : intersectForShadow(ray);
 }
 
-
-
 /*******************
  * Private stuff   *
  *******************/
 Intersection BSP::intersect(const Ray& ray, double min_t, double max_t) const {
     Intersection result = Intersection();
     if (objects.size() > 0) {
+        Intersection tmp;
 	double cur_t = HUGE_DOUBLE;
-	for(int i=0; i < objects.size(); i++) {
+	for (int i=0; i < objects.size(); i++) {
 	    object* obj = objects[i];
-	    Intersection i = obj->intersect(ray);
-	    if (i.intersected && i.t < cur_t) {
-		result = i;
-		cur_t = i.t;
+	    tmp = obj->intersect(ray);
+	    if (tmp.intersected && tmp.t < cur_t) {
+		result = tmp;
+		cur_t = tmp.t;
 	    }
 	}
     } else {
@@ -106,36 +105,42 @@ Intersection BSP::intersect(const Ray& ray, double min_t, double max_t) const {
 }
 
 Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) const {
-    if (max_t <= min_t) return Intersection();
+    Intersection none = Intersection();
 
-    //TODO: Use max_t somewhere
+    if (max_t <= min_t) return none;
+
     Vector o = ray.origin + min_t * ray.direction;
 
+    /*
     if (o[cutplane_dimension] < cutplane_value && 
 	ray.direction[cutplane_dimension] <= 0) {
         return lower->intersect(ray,min_t,max_t);
     } else if (o[cutplane_dimension] > cutplane_value && 
 	ray.direction[cutplane_dimension] >= 0) {
         return higher->intersect(ray,min_t,max_t);
-    } else {
-	// Ray intersects cutplane (TODO: Check for zero-division case)
+    } else {*/
 	double intersect_t = (cutplane_value - ray.origin[cutplane_dimension]) / ray.direction[cutplane_dimension];
 	if (intersect_t > max_t) intersect_t = max_t;
 	if (intersect_t < min_t) intersect_t = min_t;
 
+	//Intersection intersection1 = lower->intersect(ray,min_t,intersect_t);
+	//Intersection intersection2 = higher->intersect(ray,intersect_t,max_t);
+	
 	Intersection intersection1;
 	Intersection intersection2;
 
 	if (o[cutplane_dimension] < cutplane_value) {
+	    // Ray is crossing the plane from a lower value
 	    intersection1 = lower->intersect(ray,min_t,intersect_t);
 	    intersection2 = higher->intersect(ray,intersect_t,max_t);
 	} else {
+	    // Ray is crossing the plane from a higher value
 	    intersection1 = higher->intersect(ray,min_t,intersect_t);
 	    intersection2 = lower->intersect(ray,intersect_t,max_t);
 	}
-
+	
 	if (intersection1.intersected && intersection2.intersected) {
-	    if(intersection1.t < intersection2.t) {
+	    if (intersection1.t < intersection2.t) {
 		return intersection1;
 	    } else {
 		return intersection2;
@@ -147,10 +152,8 @@ Intersection BSP::intersect_recurse(const Ray& ray, double min_t, double max_t) 
 		return intersection2;
 	    }
 	}
-    }
+     //}
 }
-
-
 
 BoundingBox BSP::enclosure() const {
     assert(objects.size() > 0);

@@ -7,7 +7,7 @@
 #include "object.h"
 #include <vector>
 
-#define BSP_MAX 8
+#define BSP_MAX 4
 
 class Ray;
 
