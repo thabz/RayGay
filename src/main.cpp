@@ -87,13 +87,13 @@ void testScene4() {
     Extrusion* torus = new Extrusion(circle1,100,50,30,mat);
     //scene.addObject(torus);
 
-    Tessalation tet = Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
+    Tessalation tet = Tessalation(Vector(0,100,0),250,3,MATERIAL_SHINY_BLUE);
     //Tetrahedron tet = Tetrahedron(Vector(0,100,0),200,MATERIAL_SHINY_BLUE);
     std::vector<Linesegment>* edges = tet.getEdges();
     cout << "Edges : " << edges->size() << endl;
     for(unsigned int i = 0; i < edges->size(); i++) {
 	Linesegment line = (*edges)[i];
-	Extrusion* c = new Extrusion(line.begin(),line.end(),20.0,20,MATERIAL_SHINY_RED);
+	Cylinder* c = new Cylinder(line.begin(),line.end(),20.0,MATERIAL_SHINY_RED);
 	//scene.addObject(c);
     }
     delete edges;
@@ -102,7 +102,9 @@ void testScene4() {
     for(unsigned int i = 0; i < vertices->size(); i++) {
 	Vector c = (*vertices)[i];
         Sphere* s = new Sphere(c,20.0,MATERIAL_SHINY_RED);
-	//scene.addObject(s);
+	scene.addObject(s);
+        Cylinder* cyl = new Cylinder(Vector(0,100,0),c,20.0,MATERIAL_SHINY_RED);
+	scene.addObject(cyl);
     }
     delete vertices;
 
@@ -120,10 +122,6 @@ void testScene4() {
 	}
     }
     */
-
-    Cylinder* cyl = new Cylinder(Vector(0,-100,0),Vector(0,100,0),50,MATERIAL_SHINY_BLUE);
-    scene.addObject(cyl);
-    
     
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));

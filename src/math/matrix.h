@@ -24,17 +24,14 @@ class Matrix {
         /// The default constructor creates an identity
 	Matrix();
 
-        /// Copy constructor
-	Matrix(const Matrix &matrix);
-
-        /// Default destructor
-	~Matrix();
-
         /// Reset matrix to the identity
 	void identity();
 
         /// Same as reset()
 	void reset();
+
+	/// Fills matrix with 0's
+	void clear();
 	
 	/// Says whether this matrix is the identity
 	bool isIdentity() const;
@@ -61,13 +58,21 @@ class Matrix {
 	bool operator!=(const Matrix &m) const;
 
 	/// Rotate angle degrees around axis
-	static Matrix matrixRotate(const Vector axis,const double angle);
+	static Matrix matrixRotate(const Vector axis, const double angle);
+
+	/// Rotate around the three axises
+	static Matrix matrixRotate(const Vector angles);
 
 	/// Translate along a vector
 	static Matrix matrixTranslate(const Vector trans);
 
+	/// Rotate v onto the positive z-axis
+	static Matrix matrixOrient(const Vector& v);
 
+	/// Orientation transformation matrix
 	static Matrix matrixOrient(const Vector &x,const Vector &y,const Vector &z);
+	
+	/// Orientation transformation matrix
         static Matrix matrixOrient(const Vector &direction,const Vector &up);
 
     private:

@@ -25,11 +25,11 @@ Cylinder::Cylinder(const Vector& begin, const Vector& end, double radius, Materi
     Vector endt = end - begin;
     this->height = endt.length();
 
-    transformation = Matrix::matrixTranslate(begin);
-    Matrix rot = Matrix::matrixOrient(endt,Vector(0,1,0));
-    rot = rot.inverse();
+    Matrix translation = Matrix::matrixTranslate(begin);
+    rotation = Matrix::matrixOrient(endt);
+    rotation = rotation.inverse();
     
-    transformation =  rot * transformation;
+    transformation =  rotation * translation;
     prepareMatrices();
 }
 
@@ -40,14 +40,16 @@ void Cylinder::prepareMatrices() {
 }
 
 void Cylinder::transform(const Matrix& m) {
-    transformation = m * transformation;
+    transformation = transformation * m;
+    scene_transformation = scene_transformation * m;
     prepareMatrices();
 }
 
 Vector Cylinder::normal(const Intersection & i) const {
-    Vector p = i.getPoint();
+    Vector p = inverse_transformation * i.getPoint();
     p[2] = 0;
     p.normalize();
+    p = rotation * p;
     return p;
 }
 
@@ -55,6 +57,9 @@ const Material& Cylinder::getMaterial() const {
     return material;
 }
 
+/**
+ * Returns whether \f$\sqrt{x^2 +y^2} = r \f$ or is on end discs
+ */
 bool Cylinder::onEdge(const Vector &point) const {
    Vector p = inverse_transformation * point;
    return (IS_EQUAL(p[0]*p[0] + p[1]*p[1], rr)
@@ -65,6 +70,9 @@ bool Cylinder::onEdge(const Vector &point) const {
 		  || IS_EQUAL(p[2],double(0)))); /* On end discs */
 }
 
+/**
+ * Returns whether \f$\sqrt{x^2 +y^2} < r \f$ where point = \f$(x,y,z)\f$
+ */
 bool Cylinder::inside(const Vector &point) const {
    Vector p = inverse_transformation * point;
    return    p[0]*p[0] + p[1]*p[1] < rr 
@@ -90,6 +98,8 @@ bool Cylinder::intersects(const BoundingBox& bb) const {
 
 BoundingBox Cylinder::boundingBoundingBox() const {
     Vector rv = Vector(r,r,r);
+    Vector real_begin = scene_transformation * begin;
+    Vector real_end = scene_transformation * end;
     return BoundingBox(begin-rv,end+rv);
 }
 

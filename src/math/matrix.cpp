@@ -31,14 +31,6 @@ Matrix::Matrix(){
     reset();
 }
 
-
-Matrix::Matrix(const Matrix &matrix) {
-    (*this) = matrix;
-}
-
-Matrix::~Matrix(){
-}
-
 void Matrix::reset() {
     memcpy(_matrix,_identity,16*sizeof(double));
 }
@@ -47,8 +39,14 @@ void Matrix::identity() {
     reset();
 }
 
+void Matrix::clear() {
+    for(unsigned int i = 0; i < 16; i++) {
+	_matrix[i] = 0;
+    }
+}
+
 bool Matrix::isIdentity() const {
-    for(int i = 0; i < 16; i++) {
+    for(unsigned int i = 0; i < 16; i++) {
 	if (!IS_EQUAL(_matrix[i],_identity[i]))
 	    return false;
     }
@@ -143,12 +141,41 @@ bool Matrix::operator!=(const Matrix& m) const {
 
 }
 
+/**
+ * Create a transformation matrix that places v in the positive z-axis
+ */ 
+Matrix Matrix::matrixOrient(const Vector& v) {
+    Matrix r;
+    double D = v.length();
+    double a = v[0] / D; 
+    double b = v[1] / D; 
+    double c = v[2] / D; 
+    double d = sqrtf(b*b + c*c);
+    if (IS_ZERO(v[1]) && IS_ZERO(v[2])) {
+	// d == 0, so rotate +90 degrees around y-axis
+	r.set(0,0,0);
+	r.set(2,0,-a);
+	r.set(0,2,a);
+	r.set(2,2,0);
+    } else {
+	r.set(0,0,d),
+	r.set(1,0,-a*b/d);
+	r.set(2,0,-a*c/d);
+	r.set(1,1,c/d);
+	r.set(2,1,-b/d);
+	r.set(0,2,a),
+	r.set(1,2,b);
+	r.set(2,2,c);
+    }
+    return  r;
+}
+
 /*! 
-  \brief		Orientation transformation matrix
+  \brief	Orientation transformation matrix
   \ingroup	Math
-  \param      x	New orientation for +x
-  \param		y	New orientation for +y
-  \param		z	New orientation for +z
+  \param      	x	New orientation for +x
+  \param	y	New orientation for +y
+  \param	z	New orientation for +z
   */
 Matrix Matrix::matrixOrient(const Vector &x,const Vector &y,const Vector &z)
 {
@@ -170,12 +197,11 @@ Matrix Matrix::matrixOrient(const Vector &x,const Vector &y,const Vector &z)
 }
 
 /*! 
-	\brief		Orientation transformation matrix
-	\ingroup	Math
-	\param      direction	New orientation for +z
-	\param      up          New orientation for +y
+	\brief     Orientation transformation matrix
+	\ingroup   Math
+	\param	   direction	New orientation for +z
+	\param     up           New orientation for +y
 */
-
 Matrix Matrix::matrixOrient(const Vector &direction,const Vector &up)
 {
 	assert(direction.norm()>0.0);
@@ -188,6 +214,18 @@ Matrix Matrix::matrixOrient(const Vector &direction,const Vector &up)
 	u.normalize();
 
 	return matrixOrient(Vector::xProduct(u,d),u,d);
+}
+
+/**
+ * Create a rotation transformation
+ *
+ * @param angles The coordinates are the angles to rotate around each of the three axis
+ */
+Matrix Matrix::matrixRotate(const Vector angles) {
+    Matrix x = matrixRotate(Vector(1,0,0),angles[0]);
+    Matrix y = matrixRotate(Vector(0,1,0),angles[1]);
+    Matrix z = matrixRotate(Vector(0,0,1),angles[2]);
+    return x * y * z;
 }
 
 /// Create a rotation transformation

@@ -74,6 +74,19 @@ Vector Vector::xProduct(const Vector& v1, const Vector& v2) {
    	          v1[0]*v2[1] - v1[1]*v2[0]);
 }
 
+/**
+ * Convert to polar aka spherical coordinates.
+ *
+ * @return (r,theta,phi) where r is the distance from the origin, theta is the angle around y and phi is the angle around z.
+ */
+Vector Vector::toPolar() const {
+    double r = this->length();
+    assert (!IS_ZERO(r));
+    double phi = _vector[0] == 0 ? 0 : atan(_vector[1] / _vector[0]);
+    double theta = acos(_vector[2] / r);
+    return Vector(r,theta,phi);
+}
+
 double Vector::area(const Vector& v0, const Vector& v1, const Vector& v2) {
     return xProduct(v1-v0,v2-v0).length() / 2.0;
 }

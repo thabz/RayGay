@@ -44,6 +44,7 @@ class Cylinder : public object {
 	Matrix inverse_transformation;
 	Matrix rotation; /// The rotation part extracted from the transformation
 	Matrix inverse_rotation;
+	Matrix scene_transformation;
 
 	double r; /// Radius
 	double rr; /// Squared radius

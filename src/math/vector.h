@@ -58,6 +58,9 @@ public:
     /// Comparator
     bool operator==(const Vector &v) const;
 
+    /// Convert to polar coordinates where the resulting vector is (r,phi,theta)
+    Vector toPolar() const;
+
 protected:
     double _vector[3]; ///< The x,y,z components of the vector
 };
