@@ -32,6 +32,7 @@ AC_C_BIGENDIAN
 AC_C_INLINE
 AC_C_RESTRICT
 AC_HEADER_TIME
+AC_C_LONG_DOUBLE
 AC_CHECK_HEADERS(pthread.h)
 AC_CHECK_HEADERS(jpeglib.h)    
 AC_CHECK_HEADERS(png.h)    
@@ -62,7 +63,6 @@ GUILE_PROGS
 GUILE_FLAGS
 AC_SUBST(GUILE_CFLAGS)
 AC_SUBST(GUILE_LDFLAGS)
-
 
 if test "x$PKG_CONFIG" != "xno"; then
    echo -n "checking for gtk+2.0... "
