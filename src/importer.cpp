@@ -111,7 +111,7 @@ Material* Importer::initMaterial(const string& material_name) {
 void Importer::parse(const string& filename) {
     std::ifstream stream(filename.c_str());
 
-    if (stream.bad()) {
+    if (stream.fail()) {
     	std::cerr << "Unable to open " << filename << std::endl;
         exit(EXIT_FAILURE);
     }
