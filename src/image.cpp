@@ -2,38 +2,21 @@
 
 #include "image.h"
 #include <cassert>
-#include <Magick++.h>
 #include <iostream>
-#include <stdio.h>
 #include <math.h>
 
 using namespace std;
 
-Image::Image(int w, int h) {
+Image::Image(long w, long h) {
     height = h;
     width = w;
     data = new double[w*h*3];
 }
 
-Image::Image(int w, int h, double* dataPtr) {
+Image::Image(long w, long h, double* dataPtr) {
     height = h;
     width = w;
     data = dataPtr;
-}
-
-Image::Image(const std::string& filename) {
-    try {
-	Magick::Image img;
-	img.read(filename);
-	width = img.columns();
-	height = img.rows();
-	assert(width > 0);
-	assert(height > 0);
-	data = new double[width*height*3];
-	img.write(0,0,width,height,"RGB",Magick::DoublePixel,data);
-    } catch (Magick::Exception& error) {
-	cout << "Caught exception: " << error.what() << endl;
-    }
 }
 
 Image::~Image() {
@@ -68,17 +51,39 @@ RGB Image::getTexel(double u, double v) {
     assert(height > 0);
     return getRGB(int(u*(width-1)),int(v*(height-1)));
 }
-/*
+
 #define byte unsigned char
+
 void Image::save(const std::string& filename) {
     byte* bytes = new byte[height*width*3];
+    byte Header[18];
+
+    Header[0] = 0;
+    Header[1] = 0;
+    Header[2] = 2;
+    Header[3] = 0;
+    Header[4] = 0;
+    Header[5] = 0;
+    Header[6] = 0;
+    Header[7] = 0;
+    Header[8] = 0;
+    Header[9] = 0;
+    Header[10] = 0;
+    Header[11] = 0;
+    Header[12] = width;
+    Header[13] = ((long) width >> 8);
+    Header[14] = height;
+    Header[15] = ((long) height >> 8);
+    Header[16] = 24;
+    Header[17] = 0;
     RGB color = RGB(0.0,0.0,0.0);
-    for(int y = 0; y < height; y++) {
+
+    for(int y = 0; y < height ; y++) {
         for(int x = 0; x < width; x++) {
-            color = getRGB(x,y);
-	    bytes[3*(x + y * width) + 0] = (byte)(round(color.r()*255));
+            color = getRGB(x,(height - 1) - y);
+	    bytes[3*(x + y * width) + 0] = (byte)(round(color.b()*255));
 	    bytes[3*(x + y * width) + 1] = (byte)(round(color.g()*255));
-	    bytes[3*(x + y * width) + 2] = (byte)(round(color.b()*255));
+	    bytes[3*(x + y * width) + 2] = (byte)(round(color.r()*255));
 	}
     }
     FILE* outfile = fopen(filename.c_str(),"wb");
@@ -87,30 +92,53 @@ void Image::save(const std::string& filename) {
 	delete [] bytes;
 	return;
     }
+    fseek(outfile,0,0);
+    fwrite(Header,1,18,outfile);
+    fseek(outfile,18,0);
     int bytes_saved = fwrite(bytes,sizeof(byte),width*height*3,outfile);
+
     std::cout << bytes_saved << " bytes written" << std::endl;
     if (bytes_saved < width*height*3) 
 	std::cout << "Error saving file" << std::endl;
     fclose(outfile);
     delete [] bytes;
 }
-*/
 
-void Image::save(const std::string& filename) {
-    Magick::Image img = Magick::Image(width,height,"RGB",Magick::DoublePixel,data);
-    img.write(filename);
+Image* Image::load(const std::string& filename) {
+
+    FILE *Handle;
+    byte Header[18];
+    Handle = fopen(filename.c_str(), "rb");
+    if(Handle == NULL) {
+        cout << "Error: can't open " << filename << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    fseek(Handle, 0, 0);
+    fread(Header, 1, 18, Handle);
+
+    
+    long width = ((long) Header[13] << 8) + Header[12];
+    long height = ((long) Header[15] << 8) + Header[14];
+    byte* bytes = new byte[width*height*3];
+
+    fseek(Handle, 18, 0);
+    fread(bytes, 3, width*height, Handle);
+    fclose(Handle);
+
+    double* data = new double[width*height*3];
+    for(int y = 0; y < height ; y++) {
+        for(int x = 0; x < width; x++) {
+	    long offset = ((height-1-y)*width + x)*3;
+	    data[(y*width + x)*3 + 0] = bytes[offset+2] / double(255.0);
+	    data[(y*width + x)*3 + 1] = bytes[offset+1] / double(255.0);
+	    data[(y*width + x)*3 + 2] = bytes[offset+0] / double(255.0);
+	}
+    }
+
+    delete [] bytes;
+    return new Image(width,height,data);
 }
 
 void Image::test() {
-    Image img = Image("earth.jpg");
-    Image out = Image(400,200);
-    RGB col;
-
-    for(double x = 0; x < 400; x++) {
-        for(double y = 0; y < 200; y++) {
-	    col = img.getTexel(x / 400.0, y / 200.0);
-	    out.setRGB(int(x),int(y),col);
-	}
-    }
-    out.save("test.png");
 }

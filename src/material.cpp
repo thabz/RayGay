@@ -44,9 +44,9 @@ RGB Material::getDiffuseColor(const Intersection& i) const {
 }
 
 void Material::setTexturemap(const std::string& filename) {
-    texturemap = new Image(filename);
+    texturemap = Image::load(filename);
 }
 
 void Material::setBumpmap(const std::string& filename) {
-    bumpmap = new Image(filename);
+    bumpmap = Image::load(filename);
 }

@@ -8,8 +8,8 @@
 /// Holds an image or texture.
 class Image {
     public:
-        Image(int h, int w);
-	Image(int h, int w, double* data);
+        Image(long h, long w);
+	Image(long h, long w, double* data);
         Image(const std::string& filename);
 	~Image();
 	/// Sets a pixel
@@ -23,12 +23,15 @@ class Image {
 	/// Return a pixel where u and v in [0,1]
 	RGB getTexel(double u, double v);
 
+	/// Load a file (the caller must free the Image)
+	static Image* load(const std::string& filename);
+
 	/// Test
 	static void test();
 
     private:
-	int height;
-	int width;
+	long height;
+	long width;
 	double *data;
 };
 
