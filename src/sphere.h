@@ -12,6 +12,7 @@
 class Intersection;
 class Ray;
 class Matrix;
+class Vector2;
 
 /// A sphere object
 class Sphere : public BooleanOperand {
@@ -38,7 +39,7 @@ class Sphere : public BooleanOperand {
 	virtual bool intersects(const BoundingBox& b) const;
 	virtual BoundingBox boundingBoundingBox() const;
 
-	virtual void getUV(const Intersection& intersection, double* u, double* v) const;
+	virtual Vector2 getUV(const Intersection& intersection) const;
 
     private:
 	Vector center;

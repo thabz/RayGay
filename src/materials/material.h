@@ -6,6 +6,7 @@
 
 class Intersection;
 class Image;
+class Vector2;
 
 enum material_types {
     MATERIAL_SOLID,
@@ -51,6 +52,7 @@ class Material {
 
     private:
 	double getBumpValue(double u, double v) const;
+	Vector2 scaleUV(const Vector2& v) const;
 
 	    /* Fields */
 	RGB _diffuseColor;

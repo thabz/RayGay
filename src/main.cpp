@@ -58,8 +58,8 @@ void testScene4() {
 
     Material mat = MATERIAL_SHINY_BLUE;
     mat.setBumpmap("dotbump.tga",2.0);
-    mat.setRepeatX(2);
-    mat.setRepeatY(2);
+    mat.setRepeatX(1);
+    mat.setRepeatY(1);
     Sphere s1 = Sphere(Vector(200,50,200),130.0,mat);
     Sphere s2 = Sphere(Vector(-200,50,200),130.0,mat);
     Sphere s3 = Sphere(Vector(200,50,-200),130.0,mat);

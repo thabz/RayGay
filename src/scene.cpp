@@ -7,6 +7,7 @@
 #include "ray.h"
 #include "sphere.h"
 #include "image/image.h"
+#include "math/vector2.h"
 #include "hierarchy.h"
 #include "objectcollection.h"
 #include "materials/materials.h"
@@ -53,7 +54,8 @@ RGB Scene::getBackgroundColor(const Ray& ray) const {
     } else {
 	Intersection i = environmentSphere->intersect(ray);
 	double u,v;
-	i.getObject()->getUV(i,&u,&v);
+	Vector2 uv = i.getObject()->getUV(i);
+	u = uv[0]; v = uv[1];
         u -= int(u);
 	v -= int(v);
 	return environmentMap->getBiCubicTexel(u,v);

@@ -3,6 +3,7 @@
 #include "intersection.h"
 #include "ray.h"
 #include "mesh.h"
+#include "math/vector2.h"
 
 
 Triangle::Triangle(Mesh* m) {
@@ -105,8 +106,6 @@ BoundingBox Triangle::boundingBoundingBox() const {
     return BoundingBox::enclosure(tri,3);
 }
 	
-void Triangle::getUV(const Intersection& intersection, double* u, double* v) const {
-    *u = intersection.u;
-    *v = intersection.v;
-
+Vector2 Triangle::getUV(const Intersection& intersection) const {
+    // TODO: implement
 }

@@ -6,6 +6,7 @@
 #include "boundingbox.h"
 #include "booleanoperand.h"
 #include "object.h"
+#include "math/vector2.h"
 
 Boolean::Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, Material m) {
     _lhs = lhs;
@@ -158,7 +159,7 @@ BoundingBox Boolean::boundingBoundingBox() const {
     throw unknownOp(_op);
 }
 
-void Boolean::getUV(const Intersection& intersection, double* u, double* v) const {
+Vector2 Boolean::getUV(const Intersection& intersection) const {
     // TODO: Implement
 }
 

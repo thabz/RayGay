@@ -8,6 +8,7 @@ class BoundingBox;
 class Mesh;
 class Intersection;
 class Matrix;
+class Vector2;
 
 /// The triangle of a Mesh
 class Triangle : public object {
@@ -21,7 +22,7 @@ class Triangle : public object {
 	Material getMaterial() const;
 	bool intersects(const BoundingBox&) const;
 	BoundingBox boundingBoundingBox() const;
-	void getUV(const Intersection& intersection, double* u, double* v) const;
+	Vector2 getUV(const Intersection& intersection) const;
 
 
 	int getTri() const;

@@ -6,6 +6,7 @@
 #include "ray.h"
 #include "intersection.h"
 #include "math/matrix.h"
+#include "math/vector2.h"
 #include "image/rgb.h"
 #include "boundingbox.h"
 #include "object.h"
@@ -118,18 +119,20 @@ BoundingBox Sphere::boundingBoundingBox() const {
 }
 
 // See http://astronomy.swin.edu.au/~pbourke/texture/spheremap/
-void Sphere::getUV(const Intersection& intersection, double* u, double* v) const {
+Vector2 Sphere::getUV(const Intersection& intersection) const {
     Vector p = intersection.point - center;
     p.normalize();
-    *v = acos(p[1]) / M_PI;
-    if (IS_ZERO(sin((*v) * M_PI))) {
-	*u = double(0.5);
-	return;
+    double u,v;
+    v = acos(p[1]) / M_PI;
+    if (IS_ZERO(sin((v) * M_PI))) {
+	u = double(0.5);
+	return Vector2(u,v);
     } 
     if (p[2] <= 0.0) {
-       *u = acos(p[0] / (sin((*v) * M_PI))) / M_2PI; 
+       u = acos(p[0] / (sin((v) * M_PI))) / M_2PI; 
     } else {
-       *u = 1 - (acos(p[0] / (sin((*v) * M_PI))) / M_2PI); 
+       u = 1 - (acos(p[0] / (sin((v) * M_PI))) / M_2PI); 
     }
+    return Vector2(u,v);
 }
 

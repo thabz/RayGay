@@ -40,7 +40,7 @@ class Boolean : public BooleanOperand {
 	virtual bool onEdge(const Vector &p) const;
 	virtual bool inside(const Vector &p) const;
 
-	virtual void getUV(const Intersection& intersection, double* u, double* v) const;
+	virtual Vector2 getUV(const Intersection& intersection) const;
 
     private:
 	BooleanOperand* _lhs;

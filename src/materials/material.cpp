@@ -5,6 +5,7 @@
 #include "intersection.h"
 #include "object.h"
 #include "math/matrix.h"
+#include "math/vector2.h"
 #include "math.h"
 
 Material::Material() {
@@ -43,14 +44,21 @@ Material::~Material() {
 
 RGB Material::getDiffuseColor(const Intersection& i) const {
     if (texturemap != NULL) {
-	double u,v;
-	i.getObject()->getUV(i,&u,&v);
-        u -= int(u);
-	v -= int(v);
-	return texturemap->getBiCubicTexel(u,v);
+	Vector2 uv = i.getObject()->getUV(i);
+	uv = scaleUV(uv);
+	return texturemap->getBiCubicTexel(uv[0],uv[0]);
     } else {
         return getDiffuseColor();
     }
+}
+
+Vector2 Material::scaleUV(const Vector2& uv) const {
+    double u = uv[0];
+    double v = uv[1];
+    u -= int(u);
+    v -= int(v);
+    u *= repeatX; v *= repeatY;
+    return Vector2(u,v);
 }
 
 Vector Material::bump(const Intersection& i, const Vector& normal) const {
@@ -58,11 +66,9 @@ Vector Material::bump(const Intersection& i, const Vector& normal) const {
 	return normal;
     } else {
 	double u,v,w,h;
-	i.getObject()->getUV(i,&u,&v);
-        u -= int(u);
-	v -= int(v);
-	
-	u *= repeatX; v *= repeatY;
+	Vector2 uv = i.getObject()->getUV(i);
+	uv = scaleUV(uv);
+	u = uv[0]; v = uv[1];
 	    
 	w = bumpmap->getWidth();
 	h = bumpmap->getHeight();

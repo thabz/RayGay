@@ -14,6 +14,8 @@
 
 #include <math.h>
 
+#define Float double
+
 //#define M_PI            3.141592653589793238462643383276
 #define M_2PI           6.283185307179586476925286766552  /* 2 * M_PI */
 #define M_PI_DEG	0.017453292519943295769236907684  /* M_PI/180.0 */

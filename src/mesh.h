@@ -35,6 +35,8 @@ class Mesh : public ObjectCollection {
 		Tri(int iV0, int iV1, int iV2);
 		int vertex[3];
 		int interpolated_normal[3];
+		double u1,u2,u3;
+		double v1,v2,v3;
 		int normal_idx;
 		double area;
 		Edge* edge[3];

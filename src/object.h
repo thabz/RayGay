@@ -8,6 +8,7 @@
 class Matrix;
 class Ray;
 class Vector;
+class Vector2;
 class BoundingBox;
 
 /// The abstract superclass of all objects in the scene that can be rendered.
@@ -33,7 +34,7 @@ class object {
 	virtual BoundingBox boundingBoundingBox() const = 0;
 	
 	/// Get texture coordinates at an intersection
-	virtual void getUV(const Intersection& intersection, double* u, double* v) const = 0;
+	virtual Vector2 getUV(const Intersection& intersection) const = 0;
 
 	virtual void prepare();
 
