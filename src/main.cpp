@@ -109,7 +109,11 @@ void work(string scenefile, string outputfile,int jobs) {
 	cout << "main.cpp: Unknown renderer" << endl;
 	exit(EXIT_FAILURE);
     }
-    renderer->render(img);
+
+    RenderJob job;
+    job.target = img;
+    job.thread_id = 0;
+    renderer->render(job);
 
     img->save(outputfile);
     delete img;

@@ -25,11 +25,10 @@ Renderer::Renderer(RendererSettings* settings, Scene* scene, SpaceSubdivider* sp
  * Render the scene into an image
  * TODO: Jitter the samples within the grid.
  * 
- * @param sc The scene to render
- * @param img The image to place pixels on
- * @param spc The space containing the objects of the scene
+ * @param job The job to render
  */
-void Renderer::render(Image* img) {
+void Renderer::render(const RenderJob& job) {
+    Image* img = job.target;
     Camera* camera = scene->getCamera();
     aa_enabled = camera->isAAEnabled();
     aa_depth = camera->getAADepth();
@@ -246,3 +245,9 @@ Vector2 Renderer::fresnel(Vector normal, const Vector& ray_dir, const Material* 
     return Vector2(reflection,transmission);
 
 }
+
+void getTile(int tile_num, int width, int height, int* begin_x, int* end_x, int*  begin_y, int* end_y) {
+
+}
+
+	

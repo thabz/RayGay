@@ -16,6 +16,12 @@ class SpaceSubdivider;
 class Material;
 class Vector2;
 
+class RenderJob {
+    public:
+	Image* target;
+	int thread_id;
+};
+
 ///  An abstract class all renderers must implement.
 class Renderer {
 
@@ -23,10 +29,11 @@ class Renderer {
 	Renderer(RendererSettings* settings, Scene* scene, SpaceSubdivider* space);
 
 	/// Render a scene into an image
-	void render(Image*);
+	void render(const RenderJob& job);
 
 	/// Destructor
 	virtual ~Renderer() {};
+
 
     private:
 	/// The public render-method uses this to render the image. Subclasses must implement this.
