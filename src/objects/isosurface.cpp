@@ -86,24 +86,22 @@ double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
  * @param t_begin an outside t
  * @param t_end an inside t
  */
-double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
+double IsoSurface::refine(const Ray& ray, double x1, double x3) const {
 
-#define f(x) (evaluateFunction(ray.getPoint(x)) - iso)
+#define func(x) (evaluateFunction(ray.getPoint(x)) - iso)
 #define sign(x) ((x) >= 0 ? 1 : -1)    
 #define MAX_ITER 10000    
 
-    double x1,x2,x3;
+    double x2;
     double R,S,T;
     double P,Q;
     double fx1,fx2,fx3;
 
-    x1 = t_begin;
-    x2 = 0.5 * (t_begin + t_end);
-    x3 = t_end;
+    x2 = 0.5 * (x1 + x3);
 
-    fx1 = f(x1);
-    fx2 = f(x2);
-    fx3 = f(x3);
+    fx1 = func(x1);
+    fx2 = func(x2);
+    fx3 = func(x3);
 
     assert(sign(fx1) != sign(fx3));
 
@@ -119,7 +117,7 @@ double IsoSurface::refine(const Ray& ray, double t_begin, double t_end) const {
 
 	x2 = x2 + (P / Q);
 
-	fx2 = f(x2);
+	fx2 = func(x2);
 	if (fabs(fx2) < accuracy) {
 	    return x2;
 	}
