@@ -28,7 +28,6 @@ RGB IrradianceCache::getEstimate(const Vector& point, const Vector& normal) cons
 	    continue;
 
 	weight = node->getWeight(point,normal);
-
 	if (weight < inv_tolerance)
 	    continue;
 	
@@ -37,7 +36,7 @@ RGB IrradianceCache::getEstimate(const Vector& point, const Vector& normal) cons
 	found++;
     }
     if (found >= 3) {
-	return result;
+	return result / weight_sum;
     } else {
 	return RGB(-1.0,-1.0,-1.0);
     }
