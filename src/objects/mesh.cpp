@@ -241,13 +241,8 @@ void Mesh::addTriangle(const Vector& c1, const Vector& c2, const Vector& c3) {
 
 // ----------------------------------------------------------------------------
 void Mesh::transform(const Matrix& M) {
-    for (vector<Vector>::iterator p = corners.begin(); p != corners.end(); p++) {
-	(*p) = M * (*p);
-    }
-    Matrix rot = M.extractRotation();
-    for (vector<Vector>::iterator p = normals.begin(); p != normals.end(); p++) {
-	(*p) =  rot * (*p);
-    }
+    corners.transform(M);
+    normals.transform(M);
 }
 
 // ----------------------------------------------------------------------------

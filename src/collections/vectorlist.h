@@ -14,7 +14,7 @@ class VectorList {
 
     public:
 	VectorList();
-	unsigned int size() const { return v.size(); };
+	unsigned int size() const;
 	Vector get(const unsigned int i) const;
 	void get(const unsigned int i, Vector& dest) const;
 	void get(const unsigned int i, double dest[3]) const;
@@ -22,20 +22,25 @@ class VectorList {
 	unsigned int push_back(const Vector& w);
         void transform(const Matrix& M);
 	Vector operator[](const unsigned int i) const;
+	void reserve(uint num);
 
     private:
 	std::vector<double> v;
 };
 
+inline 
+VectorList::VectorList() {
+}
+
 inline
 Vector VectorList::get(unsigned int i) const {
-    unsigned int k = i * 3;
+    uint k = i * 3;
     return Vector(v[k],v[k+1],v[k+2]);
 }
 
 inline
 void VectorList::get(unsigned int i, Vector& dest) const {
-    unsigned int k = i * 3;
+    uint k = i * 3;
     dest[0] = v[k+0];
     dest[1] = v[k+1];
     dest[2] = v[k+2];
@@ -43,7 +48,7 @@ void VectorList::get(unsigned int i, Vector& dest) const {
 
 inline
 void VectorList::get(unsigned int i, double dest[3]) const {
-    unsigned int k = i * 3;
+    uint k = i * 3;
     dest[0] = v[k+0];
     dest[1] = v[k+1];
     dest[2] = v[k+2];
@@ -51,7 +56,7 @@ void VectorList::get(unsigned int i, double dest[3]) const {
 
 inline
 void VectorList::set(const unsigned int i, const Vector& w) {
-    unsigned int k = i * 3;
+    uint k = i * 3;
     v[k+0] = w[0];
     v[k+1] = w[1];
     v[k+2] = w[2];
@@ -59,8 +64,13 @@ void VectorList::set(const unsigned int i, const Vector& w) {
 
 inline
 Vector VectorList::operator[](const unsigned int i) const {
-    unsigned int k = i * 3;
+    uint k = i * 3;
     return Vector(v[k],v[k+1],v[k+2]);
+}
+
+inline
+uint VectorList::size() const {
+    return v.size() / 3;
 }
 
 #endif

@@ -12,6 +12,7 @@
 #include "triangle.h"
 #include "edgekey.h"
 #include "objectgroup.h"
+#include "collections/vectorlist.h"
 
 class KdTree;
 class Linesegment;
@@ -92,13 +93,13 @@ class Mesh : public ObjectGroup {
 	std::vector<Linesegment>* getEdges();
 	
 	/// Index into face vertices
-	const Vector& cornerAt(uint tri_idx, uint i) const;
+	Vector cornerAt(uint tri_idx, uint i) const;
 	
 	/// Index into face vertices
 	void cornerAt(uint tri_idx, uint i, double dest[3]) const;
 	
 	/// Index into vertices 
-	const Vector& cornerAt(uint i) const { return corners[i]; };
+	Vector cornerAt(uint i) const { return corners[i]; };
 
 	Vector2 getUV(const uint face_idx, double u, double v) const;
 
@@ -119,8 +120,8 @@ class Mesh : public ObjectGroup {
 
 	const Material* material;
 
-	std::vector<Vector> normals;
-	std::vector<Vector> corners;
+	VectorList normals;
+	VectorList corners;
 	std::vector<Vector2> uv_coords;
 	// 3 indices into corners for each face
 	std::vector<uint> faces;
@@ -130,13 +131,13 @@ class Mesh : public ObjectGroup {
 };
 
 inline
-const Vector& Mesh::cornerAt(uint tri_idx, unsigned int i) const {
+Vector Mesh::cornerAt(uint tri_idx, unsigned int i) const {
     return corners[faces[3 * tri_idx + i]];
 }
 
 inline
 void Mesh::cornerAt(uint tri_idx, unsigned int i, double dest[3]) const {
-    corners[faces[3 * tri_idx + i]].toArray(dest);
+    corners.get(faces[3 * tri_idx + i],dest);
 }
 
 #endif
