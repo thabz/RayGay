@@ -4,20 +4,15 @@
 
 #include "math/vector.h"
 #include "boundingbox.h"
-#include "objects/object.h"
 #include <vector>
 
-/*
-class Ray;
-class Intersection;
 class Object;
-*/
 
-	class BoundedObject {
-	    public:
-		Object* object;
-		BoundingBox bbox;
-	};
+class BoundedObject {
+    public:
+	Object* object;
+	BoundingBox bbox;
+};
 
 /**
  * k-dimensional tree.

@@ -1,6 +1,7 @@
 #include <cassert>
 #include <list>
 
+#include "objects/object.h"
 #include "kdtree.h"
 #include "intersection.h"
 #include "ray.h"
@@ -114,9 +115,6 @@ void KdTree::prepare() {
 	}
 	nodes[i] = node;
     }
-    cout << "tmp_nodes capacity: " << tmp_nodes->capacity() << endl;
-    cout << "size of TmpNode: " << sizeof(KdNodeTmp) << endl;
-    cout << "Waste: " << sizeof(KdNodeTmp) * tmp_nodes->capacity() << endl;
     delete tmp_nodes;
 }
 
@@ -177,7 +175,7 @@ void KdTree::prepare(int curNode_idx,int depth) {
     lower.bobjects->reserve(splitResult.left_index);
     for(unsigned int i = 0; i < splitResult.left_index; i++) {
 	BoundedObject& bobject = splitResult.left_bobjects->operator[](i);
-	if (bobject.bbox.minimum()[curNode->axis]-EPSILON < curNode->splitPlane)
+	if (bobject.object->intersects(curNode->bbox,bobject.bbox) >= 0) 
 	    lower.bobjects->push_back(bobject);
     }
     delete splitResult.left_bobjects;
@@ -186,7 +184,7 @@ void KdTree::prepare(int curNode_idx,int depth) {
     higher.bobjects->reserve(splitResult.right_bobjects->size() - splitResult.right_index);
     for(unsigned int i = splitResult.right_index; i < splitResult.right_bobjects->size(); i++) {
 	BoundedObject& bobject = splitResult.right_bobjects->operator[](i);
-	if (bobject.bbox.maximum()[curNode->axis]+EPSILON > curNode->splitPlane)
+	if (bobject.object->intersects(curNode->bbox,bobject.bbox) >= 0) 
 	    higher.bobjects->push_back(bobject);
     }
     delete splitResult.right_bobjects;
