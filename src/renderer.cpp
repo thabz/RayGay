@@ -55,18 +55,18 @@ void Renderer::render(const RenderJob& job) {
     PixelBlock* cur_block;
     PixelBlock* prev_block;
     RGBA color;
-    for (int y = 0; y < img_h; y++) {
-	if (y != 0) {
+    for (int y = job.begin_y; y < job.end_y; y++) {
+	if (y != job.begin_y) {
 	    // Swap row buffers
 	    tmp_row_ptr = cur_row_ptr;
 	    cur_row_ptr = prev_row_ptr;
 	    prev_row_ptr = tmp_row_ptr;
 	    prepareCurRow(cur_row_ptr,prev_row_ptr,block_size);
 	}
-	for (int x = 0; x < img_w; x++) {
+	for (int x = job.begin_x; x < job.end_x; x++) {
 	    if (aa_enabled) {
 		cur_block = &((*cur_row_ptr)[x]);
-		if (x != 0) {
+		if (x != job.begin_x) {
 		    prev_block = &((*cur_row_ptr)[x - 1]);
 		    prepareCurBlock(cur_block,prev_block,block_size);
 		}

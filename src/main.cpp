@@ -113,6 +113,10 @@ void work(string scenefile, string outputfile,int jobs) {
     RenderJob job;
     job.target = img;
     job.thread_id = 0;
+    job.begin_x = 0;
+    job.begin_y = 0;
+    job.end_x = img->getWidth();
+    job.end_y = img->getHeight();
     renderer->render(job);
 
     img->save(outputfile);
