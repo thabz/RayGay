@@ -83,6 +83,7 @@ public:
 
     Vector randomHemisphere() const;
     Vector randomHemisphere(const double rnd1, const double rnd2) const;
+    Vector randomHemisphere(const double rnd1, const double rnd2, double jitter) const;
 
     static Vector randomUnitVector();
     int largestDimension() const;

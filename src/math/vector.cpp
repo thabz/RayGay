@@ -147,6 +147,12 @@ Vector Vector::randomHemisphere() const {
     return randomHemisphere(RANDOM(0,1),RANDOM(0,1));
 }
 
+Vector Vector::randomHemisphere(const double rnd1, const double rnd2, double jitter) const {
+    double a1 = (1.0 - jitter) * rnd1 + RANDOM(0,jitter);
+    double a2 = (1.0 - jitter) * rnd2 + RANDOM(0,jitter);
+    return randomHemisphere(a1,a2);
+}
+
 int Vector::largestDimension() const {
     if (_vector[0] > _vector[1]) {
 	return _vector[0] > _vector[2] ? 0 : 2;
