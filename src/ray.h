@@ -34,12 +34,13 @@ class Ray {
 
 	bool isCaustic() const;
 
+	mutable double t_scale;
+
 	/// Number of specular bounces since leaving light
         int specularBounces;
 	int diffuseBounces;
 	void* fromObject;
 
-	mutable double t_scale;
 	
     private:
 	long id;
@@ -47,6 +48,9 @@ class Ray {
 	double indice_of_refraction; 
 	Vector origin; ///< The rays origin
 	Vector direction; ///< Unit vector of rays direction
+
+    public:
+
 
 };
 

@@ -59,11 +59,11 @@ class Intersection {
 	void isEntering(bool entering) { this->entering = entering; };
 	bool isEntering() const { return this->entering; };
     private:
-	Object* o; 
 	Vector point;
 	Vector normal;
 	Vector2 uv;
 	double t;
+	Object* o; 
 	bool entering;
 };
 

@@ -14,8 +14,8 @@
 class Object;
 
 struct BoundedObject {
-	Object* object;
 	BoundingBox bbox;
+	Object* object;
 };
 
 /**
@@ -64,16 +64,16 @@ class KdTree {
 	};
 
 	struct StackElem {
+	    double restrict pb[3];   // coordinates of entry/exit point
 	    const KdNode* restrict node;   // pointer to far child
 	    float t;        // the entry/exit signed distance
 	    int prev;       // pointer to previus stack item
-	    double restrict pb[3];   // coordinates of entry/exit point
 	};
 
 	// The I/O data for the findBestSplitPlane method
 	struct CostResult {
-		int dim; //> Output
 		double axis; //> Output
+		int dim; //> Output
 		int current_sort_dim;
 		uint left_index; //> Output
 		uint right_index; //> Output
@@ -82,22 +82,24 @@ class KdTree {
 	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
 	Object* intersectForShadow_real(const Ray&,const double) const;
 	BoundingBox enclosure(BoundedObject** bobs, uint num) const;
-	BoundingBox world_bbox;
 	bool findBestSplitPlane(uint size, const BoundingBox& bbox, CostResult& result) const;
 	void findBestSplitPlane(uint size, const BoundingBox& bbox, CostResult& result, int split_dim) const;
 	// The recursive prepare method
 	void prepare(uint num, const BoundingBox& bbox, uint depth, const uint dest_idx);
 
 	// The kd-tree nodes
+	BoundingBox world_bbox;
 	vector<KdNode> nodes;
+
+	std::vector<Object*>* added_objects;
+
+
+	BoundedObject** restrict left_bobs;
+	BoundedObject** restrict right_bobs;
 
 	uint max_depth;
 	bool prepared;
 
-	std::vector<Object*>* added_objects;
-
-	BoundedObject** restrict left_bobs;
-	BoundedObject** restrict right_bobs;
 };
 
 
