@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <cassert>
+#include <vector>
 
 #include "importer.h"
 #include "scene.h"
@@ -10,6 +11,7 @@
 #include "torus.h"
 #include "3ds.h"
 #include "box.h"
+#include "sor.h"
 #include "necklace.h"
 #include "cylinder.h"
 #include "extrusion.h"
@@ -293,6 +295,17 @@ void Importer::parse(const string& filename) {
 	    int segments = readInt(stream);
 	    int pieces = readInt(stream);
 	    cur_object = new Extrusion(*p,r,segments,pieces,*m);
+	} else if (command == "sor") {
+	    Material* m = lookupMaterial(readString(stream));
+	    int segments = readInt(stream);
+	    int points_num = readInt(stream);
+	    vector<Vector2> points = vector<Vector2>(points_num);
+	    
+	    for(int i = 0; i < points_num; i++) {
+		Vector2 v = Vector2(readDouble(stream),readDouble(stream));
+		points.push_back(v);
+	    }
+	    cur_object = new SurfaceOfRevolution(points,segments,*m);
 	} else if (command == "sphere") {
 	    stream >> str1;
 	    Material* m = lookupMaterial(str1);
