@@ -1178,10 +1178,10 @@ void init_parser(string scenefile) {
     fileposition_stack.push_back(scenefile);
     renderer_settings = new RendererSettings();
     top_actions = new ActionListNode();
-    Environment::getUniqueInstance()->getObjectCollector()->reset();
 }
 
 void run_interpreter() {
+    Environment::getUniqueInstance()->getObjectCollector()->reset();
     try {
 	top_actions->eval();
     } catch (RuntimeException e) {
