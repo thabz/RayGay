@@ -12,7 +12,7 @@ void Pointlight::getLightinfo(const Intersection& inter, KdTree* space, Lightinf
     
     // Move intersection point ESPILON along surface normal to 
     // avoid selfshadowing.
-    Vector surface_point = inter.getPoint() + 10*EPSILON * inter.getNormal();
+    Vector surface_point = inter.getPoint() + 50*EPSILON * inter.getNormal();
     
     info->direction_to_light = position - surface_point;
     double dist_to_light = info->direction_to_light.length();
