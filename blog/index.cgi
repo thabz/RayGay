@@ -17,6 +17,10 @@ my @entries = grep { !/^\./ && !/CVS/ } readdir(DIR);
 closedir(DIR);
 
 my $HTML;
+$HTML .= '<tr><td><h1 style="font-family:arial,helvetica">RAYTRACER<i style="font-family:serif; font-weight:normal">Blog</i></h1></td></tr>';
+$HTML .= '<tr><td>&nbsp;</td></tr>';
+$HTML .= '<tr><td>&nbsp;</td></tr>';
+
 my $i = 0;
 foreach my $entry (sort {$b cmp $a} @entries) {
 #   last if ++$i > 10;
@@ -35,7 +39,7 @@ Content-type: text/html
 
 <html>
 <head>
-<title>Blog</title>
+<title>RAYTRACER Blog</title>
 <style>
 body {
       /* font-family: "Trebuchet MS",Georgia,Helvetica,Arial; */
@@ -152,7 +156,7 @@ div.sidebar {
 <body>
 
 <table width="100%"><tr>
-<td valign="top">
+<td valign="top" align="center">
 <table width="400">
 $HTML
 </table>
