@@ -1,0 +1,3 @@
+<h>Flere optimeringer</h>
+<p>Smed <tt>-g -O3 -Wall -ffast-math -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing</tt> efter gcc og rendertiden er nu på 2:35.</p>
+<p>Hele 70% af tiden bruges den lille <tt>double Triangle::_fastIntersect(Ray const&amp;) const</tt>. 20% bruges i BSP-træet og 10% bruges på at beregne pæne farver.</p>
