@@ -122,13 +122,12 @@ Vector operator*(const double x, const Vector &v) {
  */
 Vector Vector::randomUnitVector() {
     Vector v;
-    while (true) {
+    do {
 	v = Vector(RANDOM(-1,1),RANDOM(-1,1),RANDOM(-1,1));
-	if (v.length() <= 1.0) {
-	    v.normalize();
-	    return v;
-	}
-    }
+    } while (v.length() > 1.0);
+
+    v.normalize();
+    return v;
 }
 
 

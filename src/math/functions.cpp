@@ -249,13 +249,13 @@ Vector Math::perturbVector(const Vector& axis, const double angle) {
     Vector result;
     Vector axisP = axis.toPolar();
     assert(IS_EQUAL(axisP[0],1)); // Check that axis was a unit-vector
-    while (true) {
+    do {
 	result = axisP;
 	result[1] += RANDOM(-angle,angle);
 	result[2] += RANDOM(-angle,angle);
 	result = result.toRectangular();
-	if (acos(result*axis) < angle)
-	    return result;
-    }
+    } while (acos(result*axis) > angle);
+
+    return result;
 }
 
