@@ -286,8 +286,8 @@ bool check_roots(double A, double B, double C, double D, double* roots, int num)
     for(int i = 0; i < num; i++) {
 	r = roots[i];
 	double val = r*r*r*r + A*r*r*r + B*r*r + C*r + D;
-	//if (!IS_EQUAL(val,double(0)))
-	if (fabs(val) > 0.001)
+	if (!IS_EQUAL(val,double(0)))
+	//if (fabs(val) > 0.001)
 	    return false;
     }
     return true;
