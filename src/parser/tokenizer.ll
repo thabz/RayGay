@@ -25,6 +25,7 @@ circle		return tCIRCLE;
 cylinder	return tCYLINDER;
 difference 	return tDIFFERENCE;
 dof		return tDOF;
+extrusion	return tEXTRUSION;
 fov		return tFOV;
 intersection	return tINTERSECTION;
 lookat		return tLOOKAT;

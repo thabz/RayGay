@@ -10,6 +10,7 @@
 #include "paths/circle.h"
 #include "paths/linesegment.h"
 #include "objects/cylinder.h"    
+#include "objects/extrusion.h"    
 #include "objects/sphere.h"    
 #include "objects/csg.h"    
 #include "objects/solid.h"    
@@ -62,6 +63,7 @@ RendererSettings* renderer_settings;
 %token tCYLINDER
 %token tDOF
 %token tDIFFERENCE
+%token tEXTRUSION
 %token tFOV
 %token tINTERSECTION
 %token tLINESEGMENT
@@ -85,7 +87,7 @@ RendererSettings* renderer_settings;
 %type <vector> Vector 
 %type <matrix> Rotate Translate Transformation Transformations
 %type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
-%type <object> Intersection Union TransObject Object
+%type <object> Intersection Union TransObject Object Extrusion
 %type <material> MaterialDef NamedMaterial Material
 %type <path> NamedPath Circle Spiral Path PathDef LineSegment
 
@@ -179,6 +181,7 @@ MaterialDef     : tMATERIAL '{' RGB '}'
 
 Object		: SolidObject
                 | Necklace 
+		| Extrusion
 		;
 
 SolidObject	: Sphere
@@ -200,6 +203,12 @@ TransObject 	: Object Transformations
                 | Object
 		;
 
+
+Extrusion	: tEXTRUSION '{' Material Path Expr Expr Expr '}'
+                {
+		    $$ = new Extrusion(*$4,$5,(int)$6,(int)$7,$3);
+		}
+                ;
 
 Cylinder	: tCYLINDER '{' Material Expr Vector Vector '}'
                 {
