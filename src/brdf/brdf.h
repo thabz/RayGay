@@ -1,4 +1,7 @@
 
+#ifndef BRDF_H
+#define BRDF_H
+
 #include "math/vector.h"
 
 /**
@@ -18,8 +21,13 @@
  */
 class BRDF {
 
-    double brdf(const Vector& wi, const Vector& wo, const Vector& normal) = 0;
+    public:
 
-    /* Probability density function */
-    Vector pdf(const Vector& normal, const Vector& incoming) = 0;
-}
+	/// The bidirectional reflectance distribution function
+	double f(const Vector& wi, const Vector& wo, const Vector& normal) = 0;
+
+	/// The probability density function
+	Vector pdf(const Vector& normal, const Vector& incoming) = 0;
+};
+
+#endif
