@@ -10,8 +10,15 @@ AC_PROG_CXX
 AC_PROG_RANLIB
 AC_PROG_LIBTOOL
 AC_C_BIGENDIAN
-AC_CHECK_LIB(pthread, pthread_create,THRLIBS="$THRLIBS -lpthread")
+
+AC_HEADER_DIRENT
+
 AC_CHECK_HEADERS(pthread.h)
+AC_CHECK_HEADERS(jpeglib.h)    
+
+LIBS="$LIBS -lm"    
+AC_CHECK_LIB(pthread, pthread_create,LIBS="-lpthread $LIBS")
+AC_CHECK_LIB(jpeg, jpeg_read_header,LIBS="-ljpeg $LIBS")
 
 AC_SUBST(THRLIBS)    
 
