@@ -28,11 +28,30 @@ libtracer_a_LIBADD = parser/libparser.a photon/libphoton.a lights/liblights.a ma
 
 #--------------------------------------
 
-bin_PROGRAMS = tracer
+bin_PROGRAMS = tracer bench
 
 tracer_SOURCES = main.cpp
 
 tracer_LDADD =  parser/libparser.a 	\
+		libtracer.a 		\
+    		space/libspace.a 	\
+		collections/libcollections.a \
+    		photon/libphoton.a 	\
+		lights/liblights.a 	\
+		materials/libmaterials.a \
+		math/libmath.a 		\
+		filters/libfilters.a 	\
+		objects/libobjects.a 	\
+		shaders/libshaders.a  	\
+		paths/libpaths.a  	\
+		cameras/libcameras.a  	\
+		image/libimage.a
+
+#--------------------------------------
+
+bench_SOURCES = bench-main.cpp
+
+bench_LDADD =  parser/libparser.a 	\
 		libtracer.a 		\
     		space/libspace.a 	\
 		collections/libcollections.a \

@@ -1,4 +1,5 @@
 tracer
+bench
 Makefile.in
 Makefile
 .deps
