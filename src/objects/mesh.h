@@ -96,6 +96,14 @@ class Mesh : public ObjectGroup {
 	
 	/// Add a triangle to the mesh with uv-texture-coordinates
         void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3, const Vector2& uv1, const Vector2& uv2,const Vector2& uv3);
+
+	void addVertex(const Vector& point);
+
+	/// Add a triangle by vertex indices
+	void addTriangle(int v[3], Vector2 uv[3]);
+	
+	/// Add a triangle by vertex indices
+	void addTriangle(int v[3]);
 	
 	/// Internal test
 	static void test();

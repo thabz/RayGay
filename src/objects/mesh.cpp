@@ -121,6 +121,64 @@ void Mesh::addQuad(const Vector* corners, const Vector2* uv) {
 	        uv[0],uv[2],uv[3]);
 }
 
+void Mesh::addVertex(const Vector& point) {
+    corners.push_back(point);
+    int new_index = corners.size() -1;
+    vertices.push_back(Vertex(new_index));
+}
+
+void Mesh::addTriangle(int v[3]) {
+    Vector2 uv[3];
+    addTriangle(v,uv);
+}
+
+void Mesh::addTriangle(int v[3], Vector2 uv[3]) {
+    Vector c[3];
+    c[0] = cornerAt(v[0]);
+    c[1] = cornerAt(v[1]);
+    c[2] = cornerAt(v[2]);
+    Vector normal = Vector::xProduct(c[1] - c[0], c[2] - c[0]);
+    normal.normalize();
+    normals.push_back(normal);
+    Triangle* t = new Triangle(this);
+    t->normali = normals.size() - 1;
+    t->vertex[0] = v[0];
+    t->vertex[1] = v[1];
+    t->vertex[2] = v[2];
+
+    Tri* tri = new Tri(t->vertex[0],t->vertex[1],t->vertex[2]);
+    tris.push_back(tri);
+    tri->normal_idx = t->normali;
+
+    triangles.push_back(t);
+    t->setTri(triangles.size() - 1);
+
+    tri->uv[0] = uv[0];
+    tri->uv[1] = uv[1];
+    tri->uv[2] = uv[2];
+
+    // Insert edges
+    for(int i = 0; i < 3; i++) {
+	int j = (i + 1) % 3;
+	EdgeKey key = EdgeKey(t->vertex[i],t->vertex[j]);
+	Edge* edge = edgeMap[key];
+	if (edge == NULL) {
+	    edge = new Edge(t->vertex[i],t->vertex[j]);
+	    edge->triangle[0] = tri;
+	    edgeMap[key] = edge;
+	} else {
+	    edge->triangle[1] = tri;
+	}
+	tri->edge[i] = edge;
+    }
+    
+    // Add to tris-list at each vertex
+    for(int i = 0; i < 3; i++) {
+	vertices[t->vertex[i]].tris.push_back(tri);
+    }
+
+}
+
 void Mesh::computeAdjacentTris() {
     for(unsigned int i = 0; i < tris.size(); i++) {
 	Tri* tri = tris[i];
@@ -168,7 +226,6 @@ void Mesh::computeInterpolatedNormals() {
 int Mesh::findExistingCorner(const Vector* c) const {
     unsigned int size = corners.size();
     for(unsigned int i = 0; i < size; i++) {
-	//if ((corners[i] - *c).norm() < 0.5) return i;
 	if (corners[i] == *c) return i;
     }
     return -1;
