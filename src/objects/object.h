@@ -51,10 +51,6 @@ class Object : public SceneObject {
 	virtual double _fastIntersect(const Ray& ray) const = 0;
 
     private:	
-	/// Id of the last ray that successfully intersected this object
-	mutable long last_ray;
-	/// The ray's t-value at that intersection
-	mutable double last_t;
 	/// The material of this object
 	const Material* material;
 };
@@ -71,25 +67,13 @@ Intersection Object::fullIntersect(const Ray& ray, const double t) const {
  *
  *  @param ray the Ray to intersect with
  *  @return positive distance along ray if and only if an intersection occured; otherwise -1 is returned.
- *  
- *  This is basically a caching proxy around the private _fastIntersect(Ray)
- *  method in subclasses, where the real intersection tests are done.
  *
- *  Because an object can exist in several bounding boxes we end up shooting
- *  the same ray at the same object several times. Therefore each ray
- *  is assigned an unique id which allows us to reuse previous object-ray
- *  intersection results.
- *
- *  This technique is also called mailboxing.
+ * I used to do mailboxing here, but with the new Kd-Tree traversal 
+ * algorithm mailboxing didn't add anything.
  */
 inline
 double Object::fastIntersect(const Ray& ray) const {
-    if (ray.getId() != last_ray) {
-	last_t = _fastIntersect(ray);
-	last_ray = ray.getId();
-	return last_t;
-    }
-    return last_t;
+    return _fastIntersect(ray);
 }
 
 #endif

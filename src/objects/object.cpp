@@ -7,7 +7,6 @@
 #include "object.h"
 
 Object::Object(const Material* material) {
-   last_ray = -1;
    this->material = material;
 }
 
