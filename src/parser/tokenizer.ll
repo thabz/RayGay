@@ -17,12 +17,21 @@
 using namespace std;
 
 %}
+
 alpha	[a-zA-Z]
 digit	[0-9]
 special	[\.\_-]
 string	{alpha}({alpha}|{digit}|{special})*
+%x comment
+
 %%
 [ \t\n]		;
+"/*"		BEGIN(comment);
+<comment>[^*\n]*        /* eat anything that's not a '*' */
+<comment>"*"+[^*/\n]*   /* eat up '*'s not followed by '/'s */
+<comment>\n             ;
+<comment>"*"+"/"        BEGIN(INITIAL);
+
 aa		return tAA;
 area		return tAREA;
 aspect		return tASPECT;
@@ -89,7 +98,6 @@ up		return tUP;
 width		return tWIDTH;
 wireframe	return tWIREFRAME;
 
-"\#.*\n"		/* Eat up comments */
 {digit}+ |
 {digit}+"."{digit}+ { yylval.d = atof(yytext); return tFLOAT;}
 {string}	{ yylval.c = new string(yytext); return tSTRING; }
