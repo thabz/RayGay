@@ -32,18 +32,21 @@ void KdTree::addObject(Object* obj) {
 inline
 bool KdTree::intersect(const Ray& ray) const {
     Vector2 h = world_bbox.intersect(ray);
+    h = Vector2(0,HUGE_DOUBLE);
     return intersect(ray,h[0],h[1]);
 }
 
 inline
 bool KdTree::intersectPrimary(const Ray& ray) const {
     Vector2 h = world_bbox.intersect(ray);
+    h = Vector2(0,HUGE_DOUBLE);
     return intersect(ray,h[0],h[1]);
 }
 
 inline
 bool KdTree::intersectForShadow(const Ray& ray) const {
     Vector2 h = world_bbox.intersect(ray);
+    h = Vector2(0,HUGE_DOUBLE);
     return intersectForShadow(ray,h[0],h[1]);
 }
 
@@ -57,9 +60,9 @@ bool KdTree::intersectForShadow(const Ray& ray, const Object* hint) const {
 }
 
 // TODO: Write a faster intersect for shadows
-//bool KdTree::intersectForShadow(const Ray& ray,double a, double b) const {
-//    return intersect(ray,a,b);
-//}
+bool KdTree::intersectForShadow(const Ray& ray,double a, double b) const {
+    return intersect(ray,a,b);
+}
 
 void KdTree::prepare() {
     world_bbox = enclosure(added_objects);
@@ -159,6 +162,8 @@ void KdTree::prepare(int curNode_idx,int depth) {
 
 /**
  * Implementation of the recursive $f[ TA_rec^B $f] algorithm.
+ * See http://sgi.felk.cvut.cz/~havran/phdthesis.html
+ * See http://www.acm.org/jgt/papers/HavranKopalBittnerZara97/TA-B.html
  */
 bool KdTree::intersect(const Ray& ray, double a, double b) const {
 
@@ -189,16 +194,18 @@ bool KdTree::intersect(const Ray& ray, double a, double b) const {
 		    curNode = curNode->left;
 		    continue;
 		}
+		
 		/*
 		if (stack[exPt].pb[axis] == splitVal) { //TODO: Wierd!
 		    curNode = curNode->right;
 		    continue;
 		}
 		*/
+		
 		farChild = curNode->right;
 		curNode = curNode->left;
 	    } else {
-		if (splitVal < stack[exPt].pb[axis]) {
+		if (splitVal <= stack[exPt].pb[axis]) {
 		    curNode = curNode->right;
 		    continue;
 		}
@@ -219,24 +226,26 @@ bool KdTree::intersect(const Ray& ray, double a, double b) const {
 	    stack[exPt].node = farChild;
 	    stack[exPt].pb[axis] = splitVal;
 	    int nextAxis = (axis+1) % 3;
-	    int prevAxis = (axis-1+3) % 3;
+	    int prevAxis = (axis+2) % 3;
 	    stack[exPt].pb[nextAxis] = ray.getOrigin()[nextAxis] + 
 		                       t * ray.getDirection()[nextAxis];
 	    stack[exPt].pb[prevAxis] = ray.getOrigin()[prevAxis] +
 		                       t * ray.getDirection()[prevAxis];
 	} /* while curNode not a leaf */
 
-	// TODO: Intersect with all objects in list, discarding
+	// Intersect with all objects in list, discarding
 	// those lying before stack[enPt].t or farther than stack[exPt].t
 	Object* object_hit = NULL;
 	if (curNode->objects->size() > 0) {
 	    const vector<Object*> &objects = *(curNode->objects);
 	    double smallest_t = HUGE_DOUBLE;
 	    for (unsigned int i = 0; i < objects.size(); i++) {
-		if (objects[i]->intersect(ray) && 
-			objects[i]->getLastIntersection()->getT() < smallest_t) {
-		    smallest_t = objects[i]->getLastIntersection()->getT();
-		    object_hit = objects[i];
+		if (objects[i]->intersect(ray)) {
+		    double i_t =  objects[i]->getLastIntersection()->getT();
+		    if (i_t < smallest_t && i_t > stack[enPt].t && i_t < stack[exPt].t) {
+			smallest_t = objects[i]->getLastIntersection()->getT();
+			object_hit = objects[i];
+		    }
 		}
 	    }
 	}
@@ -244,7 +253,7 @@ bool KdTree::intersect(const Ray& ray, double a, double b) const {
 	    last_intersection = object_hit->getLastIntersection();
 	    return true;
 	}
-	
+
 	enPt = exPt;
 
 	curNode = stack[exPt].node;
@@ -266,14 +275,14 @@ int KdTree::largestDimension(const BoundingBox& box) {
     double z = box.maximum()[2] - box.minimum()[2];
     double max = MAX(x,MAX(y,z));
     if (IS_EQUAL(x,max)) {
-	    return 0;
+	return 0;
     } else if (IS_EQUAL(y,max)) {
-	    return 1;
+	return 1;
     } else if (IS_EQUAL(z,max)) {
-	    return 2;
+	return 2;
     } else {
 	return -1;
-       // Throw an exception
+	// Throw an exception
     }
 }
 
@@ -281,7 +290,7 @@ BoundingBox KdTree::enclosure(std::vector<Object*>* objects) const {
     assert(objects->size() > 0);
     BoundingBox result = (*objects)[0]->boundingBoundingBox(); 
     for(unsigned int i = 1; i < objects->size(); i++) {
-        result = BoundingBox::doUnion(result,(*objects)[i]->boundingBoundingBox());
+	result = BoundingBox::doUnion(result,(*objects)[i]->boundingBoundingBox());
     }
     return result;
 }
@@ -289,10 +298,10 @@ BoundingBox KdTree::enclosure(std::vector<Object*>* objects) const {
 double KdTree::objectMedian(std::vector<Object*>* objects, int d) const {
     std::list<double> L;
     for(unsigned int i = 0; i < objects->size(); i++) {
-	    Object* obj = (*objects)[i];
-	    BoundingBox bbox = obj->boundingBoundingBox();
-	    double c = (bbox.maximum()[d] + bbox.minimum()[d]) / 2.0;
-	    L.push_back(c);
+	Object* obj = (*objects)[i];
+	BoundingBox bbox = obj->boundingBoundingBox();
+	double c = (bbox.maximum()[d] + bbox.minimum()[d]) / 2.0;
+	L.push_back(c);
     }
     L.sort();
     unsigned int size = L.size();
@@ -308,88 +317,4 @@ double KdTree::objectMedian(std::vector<Object*>* objects, int d) const {
 double KdTree::spacialMedian(std::vector<Object*>* objects, int d) const {
     BoundingBox box = enclosure(objects);
     return (box.minimum()[d] + box.maximum()[d]) / 2.0;
-}
-/**
- * Implementation of the recursive $f[ TA_rec^B $f] algorithm.
- */
-bool KdTree::intersectForShadow(const Ray& ray, double a, double b) const {
-
-    double t;
-    KdNode *farChild, *curNode;
-    curNode = nodes;
-    int enPt = 0;
-    stack[enPt].t = a;
-
-    if (a >= 0.0) 
-	stack[enPt].pb = ray.getOrigin() + ray.getDirection() * a;
-    else 
-	stack[enPt].pb = ray.getOrigin();
-
-    int exPt = 1;
-    stack[exPt].t = b;
-    stack[exPt].pb = ray.getOrigin() + ray.getDirection() * b;
-    stack[exPt].node = NULL;
-
-    while (curNode != NULL) {
-	while (curNode->axis >= 0) {
-	    /* Current node is not a leaf */
-	    double splitVal = curNode->splitPlane;
-	    int axis = curNode->axis; // ?
-
-	    if (stack[enPt].pb[axis] <= splitVal) {
-		if (stack[exPt].pb[axis] <= splitVal) {
-		    curNode = curNode->left;
-		    continue;
-		}
-		if (stack[exPt].pb[axis] == splitVal) { //TODO: Wierd!
-		    curNode = curNode->right;
-		    continue;
-		}
-		farChild = curNode->right;
-		curNode = curNode->left;
-	    } else {
-		if (splitVal < stack[exPt].pb[axis]) {
-		    curNode = curNode->right;
-		    continue;
-		}
-		farChild = curNode->left;
-		curNode = curNode->right;
-	    }
-
-	    t = (splitVal - ray.getOrigin()[axis]) / ray.getDirection()[axis];
-
-	    int tmp = exPt;
-	    exPt++;
-
-	    if (exPt == enPt)
-		exPt++;
-
-	    stack[exPt].prev = tmp;
-	    stack[exPt].t = t;
-	    stack[exPt].node = farChild;
-	    stack[exPt].pb[axis] = splitVal;
-	    int nextAxis = (axis+1) % 3;
-	    int prevAxis = (axis-1+3) % 3;
-	    stack[exPt].pb[nextAxis] = ray.getOrigin()[nextAxis] + 
-		                       t * ray.getDirection()[nextAxis];
-	    stack[exPt].pb[prevAxis] = ray.getOrigin()[prevAxis] +
-		                       t * ray.getDirection()[prevAxis];
-	} /* while curNode not a leaf */
-
-	// TODO: Intersect with all objects in list, discarding
-	// those lying before stack[enPt].t or farther than stack[exPt].t
-	if (curNode->objects->size() > 0) {
-	    const vector<Object*> &objects = *(curNode->objects);
-	    for (unsigned int i = 0; i < objects.size(); i++) {
-		if (objects[i]->intersect(ray))
-		    return true;
-	    }
-	}
-	
-	enPt = exPt;
-
-	curNode = stack[exPt].node;
-	exPt = stack[enPt].prev;
-    } /* while curNode != end of nodes */
-    return false;
 }
