@@ -13,6 +13,7 @@
 # precalc sager i Triangle::_fastIntersect: 4:30
 # inline Object::fastIntersect: 4:04
 # Backface culling in Triangle::_fastIntersect: 3:00
+# Compiler flags: 2:37
 
 include materials.gay
 
