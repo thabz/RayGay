@@ -54,7 +54,8 @@ void PhotonRenderer::init() {
     delete photontracer;
     
     //irradiance_cache = new IrradianceCache(space->getWorldBoundingBox(),5);
-    irradiance_cache = new IrradianceCache(BoundingBox(),renderersettings->cache_tolerance);
+    BoundingBox bbox = BoundingBox(Vector(-10000,-10000,-10000),Vector(10000,10000,10000));
+    irradiance_cache = new IrradianceCache(bbox,renderersettings->cache_tolerance);
 
     qmc_sequence = new Halton(2,2);
 }
@@ -211,14 +212,15 @@ RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int 
 RGB PhotonRenderer::getDiffuseIrradiance(const Vector& point, const Vector& normal, const Vector& ray_dir) const {
     double hmd;
 
-    return finalGather(point, normal, ray_dir, renderersettings->final_gather_rays, 0, &hmd);
+ //   return finalGather(point, normal, ray_dir, renderersettings->final_gather_rays, 0, &hmd);
 
-    RGB irradiance = irradiance_cache->getEstimate(point,normal);
+    RGB irradiance;
+    bool success = irradiance_cache->getEstimate(point,normal,&irradiance);
 
-    if (irradiance.r() < 0) {
+    if (!success) {
 	irradiance = finalGather(point, normal, ray_dir, renderersettings->final_gather_rays, 0, &hmd);
 	irradiance_cache->putEstimate(point,normal,irradiance,hmd);
-    }
+    } 
     return irradiance;
 }
 

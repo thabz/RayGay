@@ -5,6 +5,8 @@
 
 #include "boundingbox.h"
 
+#define IRRADIANCE_OCTREE_MAX_NODES 16
+
 using namespace std;
 
 /**
@@ -26,8 +28,10 @@ class IrradianceCache {
 	 *
 	 * @param point the point we want diffuse irradiance estimate at
 	 * @param normal the surface normal at point
+	 * @param dest the irradiance estimate is returned here
+	 * @return whether a irradiance estimate with a sufficiently high weight was found
 	 */
-	RGB getEstimate(const Vector& point, const Vector& normal) const;
+         bool getEstimate(const Vector& point, const Vector& normal, RGB* dest) const;
 
 	/**
 	 * Insert an estimate into the cache.
@@ -44,11 +48,11 @@ class IrradianceCache {
 	 *
 	 * @param point the point where the final gather was done
 	 * @param normal the surface normal at point
-	 * @param irrancance the result of the final gather
+	 * @param irradiance the result of the final gather
 	 * @param hmd the harmonic mean distance to the objects that was hit by final gather rays.
 	 * 
 	 */
-	void putEstimate(const Vector& point, const Vector& normal, const RGB& irrandiance, const double hmd);
+	void putEstimate(const Vector& point, const Vector& normal, const RGB& irradiance, const double hmd);
 
     private:
 
@@ -79,6 +83,7 @@ class IrradianceCache {
 	class HierarchyNode {
 	    public:
 		HierarchyNode(const BoundingBox& bbox);
+		~HierarchyNode();
 		void add(const CacheNode& node);
 		void split();
 
