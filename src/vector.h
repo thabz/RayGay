@@ -18,11 +18,7 @@
 
 class Vector {
     friend std::ostream & operator<< (std::ostream &os, const Vector &x);
-    friend Vector operator/(const Vector &v, const double x);
     friend Vector operator*(const double x, const Vector &v);
-    friend Vector operator*(const Vector &v, const double x);
-    friend Vector operator-(const Vector &v1, const Vector &v2);
-    friend Vector operator+(const Vector &v1, const Vector &v2);
 
 
 public:
@@ -37,9 +33,13 @@ public:
 
     double &operator[](const int i); ///< Index into coordinates
     const double &operator[](const int i) const; ///< Index into coordinates
+    double operator*(const Vector &v) const; ///< Vector dot product (aka scalar product)
+    Vector operator+(const Vector &v) const;
+    Vector operator-(const Vector &v) const;
+    Vector operator*(const double x) const;
+    Vector operator/(const double x) const;
     static Vector xProduct (const Vector& v1, const Vector& v2); ///< Returns the scalar product v1 &times; v2
     
-    double operator*(const Vector &v) const; ///< Vector dot product (aka scalar product)
 
     double x() const { return _vector[0]; };
     double y() const { return _vector[1]; };
@@ -54,5 +54,49 @@ public:
 protected:
     double _vector[3]; ///< The x,y,z components of the vector
 };
+
+inline
+Vector Vector::operator+(const Vector &v) const {
+    return Vector(v[0] + _vector[0], v[1] + _vector[1], v[2] + _vector[2]);
+}
+
+inline
+Vector Vector::operator-(const Vector &v) const {
+    return Vector( _vector[0] - v[0], _vector[1] - v[1], _vector[2] - v[2]);
+}
+
+inline
+Vector Vector::operator*(const double x) const {
+    return Vector( x*_vector[0], x*_vector[1], x*_vector[2]);
+}
+
+inline
+double &Vector::operator[](const int i) {
+    //assert(i>=0 && i<3);
+    return _vector[i];
+}
+
+inline
+const double &Vector::operator[](const int i) const {
+    //assert(i>=0 && i<3);
+    return _vector[i];
+}
+
+inline
+double Vector::operator*(const Vector &x) const {
+    return _vector[0]*x[0] + _vector[1]*x[1] + _vector[2]*x[2];
+}
+
+inline
+Vector::Vector() {
+    _vector[0] = _vector[1] = _vector[2] = 0;
+}
+
+inline
+Vector::Vector(double x, double y, double z) {
+    _vector[0] = x;
+    _vector[1] = y;
+    _vector[2] = z; 
+}
 
 #endif

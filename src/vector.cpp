@@ -17,33 +17,8 @@
 
 using namespace std;
 
-Vector::Vector() {
-    _vector[0] = _vector[1] = _vector[2] = 0;
-}
-
-Vector::Vector(double x, double y, double z) {
-    _vector[0] = x;
-    _vector[1] = y;
-    _vector[2] = z; 
-}
 
 Vector::~Vector() {
-}
-
-double &Vector::operator[](const int i) {
-    assert(i>=0 && i<3);
-    return _vector[i];
-}
-
-const double &Vector::operator[](const int i) const {
-    assert(i>=0 && i<3);
-    return _vector[i];
-}
-
-Vector operator/(const Vector &v, const double x) {
-    assert(x != 0.0);
-    const double inv = 1.0/x;
-    return v*inv;
 }
 
 void Vector::normalize() {
@@ -56,7 +31,6 @@ void Vector::normalize() {
     scale(d);
 }
 
-inline
 void Vector::scale(float s) {
     _vector[0] *= s;
     _vector[1] *= s;
@@ -85,10 +59,11 @@ ostream & operator<<(ostream &os, const Vector &x) {
     return os;
 }
 
-// Dot-product aka 
 
-double Vector::operator*(const Vector &x) const {
-    return _vector[0]*x[0] + _vector[1]*x[1] + _vector[2]*x[2];
+Vector Vector::operator/(const double x) const {
+    assert(x != 0.0);
+    const double inv = 1.0/x;
+    return (*this)*inv;
 }
 
 bool Vector::operator==(const Vector& x) const {
@@ -96,7 +71,6 @@ bool Vector::operator==(const Vector& x) const {
 	   IS_EQUAL(x[1],_vector[1]) &&
            IS_EQUAL(x[2],_vector[2]);
 }
-
 
 Vector Vector::xProduct(const Vector& v1, const Vector& v2) {
     return Vector(v1[1]*v2[2] - v1[2]*v2[1],
@@ -107,19 +81,8 @@ Vector Vector::xProduct(const Vector& v1, const Vector& v2) {
 // Friends 
 // ---------------------------------------
 
-Vector operator-(const Vector &v1, const Vector &v2) {
-    return Vector(v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2]);
-}
-
-Vector operator+(const Vector &v1, const Vector &v2) {
-    return Vector(v1[0] + v2[0], v1[1] + v2[1], v1[2] + v2[2]);
-}
-
 Vector operator*(const double x, const Vector &v) {
     return v*x;
 }
 
-Vector operator*(const Vector &v, const double x) {
-    return Vector( x*v._vector[0], x*v._vector[1], x*v._vector[2]);
-}
 
