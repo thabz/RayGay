@@ -127,11 +127,14 @@ bool Boolean::inside(const Vector &p) const {
 	case BOOLEAN_UNION: 
 	    return _lhs->inside(p) || _rhs->inside(p);
 	case BOOLEAN_DIFFERENCE:
+	    //return _lhs->inside(p) && (!_rhs->inside(p)) && (!_rhs->onEdge(p));
 	    return _lhs->inside(p) && !_rhs->inside(p) && !_rhs->onEdge(p);
 	case BOOLEAN_INTERSECTION:
 	    return _lhs->inside(p) && _rhs->inside(p);
+	default: 
+	    throw unknownOp(_op);
     }
-    throw unknownOp(_op);
+    
 }
 
 bool Boolean::intersects(const BoundingBox& box) const {
