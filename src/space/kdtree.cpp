@@ -123,14 +123,15 @@ void KdTree::prepare(int curNode_idx,int depth) {
     }
     
     // Find the best axis to split node at
-    int best_dim = -1;
-    double best_val;
-    findBestSplitPlane(curNode->bbox,curNode->bobjects,&best_dim,&best_val);
-    curNode->axis = best_dim;
-    curNode->splitPlane = best_val;
-    if (best_dim == -1) {
-	// Leaf
-	return;
+    CostResult splitResult;
+    splitResult.left_bobjects = curNode->bobjects;
+    splitResult.right_bobjects = curNode->bobjects;
+    splitResult.dim = -1;
+    findBestSplitPlane(curNode->bbox,splitResult);
+    curNode->axis = splitResult.dim;
+    curNode->splitPlane = splitResult.axis;
+    if (curNode->axis == -1) {
+	return; // Leaf
     }
 
     tmp_nodes.push_back(KdNodeTmp());
@@ -143,26 +144,17 @@ void KdTree::prepare(int curNode_idx,int depth) {
     KdNodeTmp& lower = tmp_nodes[curNode->left];
     KdNodeTmp& higher = tmp_nodes[curNode->right];
 
-    curNode->bbox.split(&(lower.bbox), &(higher.bbox), best_dim, best_val);
+    curNode->bbox.split(&(lower.bbox), &(higher.bbox), curNode->axis, curNode->splitPlane);
 
-    // Put all objects into lower- or higher_objects
-    vector<BoundedObject>::iterator p = curNode->bobjects.begin();
-    while (p != curNode->bobjects.end()) {
-	BoundedObject obj = *p;
-	if (obj.object == NULL)
-	    continue;
-	const BoundingBox bbox = obj.bbox;
-	int cut_val = bbox.cutByPlane(curNode->axis, curNode->splitPlane);
-	if (cut_val == -1) {
-	    lower.bobjects.push_back(obj);
-	} else if (cut_val == 1) {
-	    higher.bobjects.push_back(obj);
-	} else {
-	    lower.bobjects.push_back(obj);
-	    higher.bobjects.push_back(obj);
-	}
-	p++;
+    // Move into lower
+    for(unsigned int i = 0; i < splitResult.left_index; i++) {
+	lower.bobjects.push_back(splitResult.left_bobjects[i]);
     }
+    // Move into higher
+    for(unsigned int i = splitResult.right_index; i < splitResult.right_bobjects.size(); i++) {
+	higher.bobjects.push_back(splitResult.right_bobjects[i]);
+    }
+    
     curNode->bobjects.clear();
 
     // Recurse into child nodes
@@ -489,39 +481,88 @@ double KdTree::evaluateCost(const BoundingBox& bbox, const std::vector<BoundedOb
     }
 }
 
-void KdTree::findBestSplitPlane(const BoundingBox& bbox, const std::vector<BoundedObject>& bobjects,int* best_dim, double* best_axis) const {
-    (*best_dim) = -1;
+int g_d;
+
+class cmpL {
+    public:
+	bool operator()(const BoundedObject& p1, const BoundedObject& p2) {
+	    return p1.bbox.minimum()[g_d] < p2.bbox.minimum()[g_d];
+	}
+};
+
+class cmpR {
+    public:
+	bool operator()(const BoundedObject& p1, const BoundedObject& p2) {
+	    return p1.bbox.maximum()[g_d] < p2.bbox.maximum()[g_d];
+	}
+};
+
+void KdTree::findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const {
+    result.dim = -1;
+    result.left_index = 0;
+    result.right_index = 0;
+
     double lowest_cost = HUGE_DOUBLE;
-    double axis;
-    unsigned int size = bobjects.size();
+    double split;
+    unsigned int size = result.left_bobjects.size();
+    if (size == 0) 
+	return;
+    assert(result.left_bobjects.size() == result.right_bobjects.size());
+
     double max_cost = 1.0*size*bbox.area();
     for(int d = 0; d < 3; d++) {
-	double from = bbox.minimum()[d];
-	double to = bbox.maximum()[d];
-	// Eval cost at boundaries of all objects
-	for(unsigned int i = 0; i < size; i++) {
-	    BoundingBox o_bbox = bobjects[i].bbox;
-	    Vector mea;
+	g_d = d;
+	sort(result.left_bobjects.begin(), result.left_bobjects.end(), cmpL());
+	sort(result.right_bobjects.begin(), result.right_bobjects.end(), cmpR());
 
-	    axis = o_bbox.minimum()[d];
-	    if (axis > from && axis < to) {
-		double cost = evaluateCost(bbox,bobjects,d,axis,&mea);
-		if (cost < lowest_cost && cost < max_cost) {  
-			(*best_dim) = d;
-			(*best_axis) = axis;
-			lowest_cost = cost;
-		} 
-	    }
-	    axis = o_bbox.maximum()[d];
-	    if (axis > from && axis < to) {
-		double cost = evaluateCost(bbox,bobjects,d,axis,&mea);
-		if (cost < lowest_cost && cost < max_cost) {  
-		    (*best_dim) = d;
-		    (*best_axis) = axis;
-		    lowest_cost = cost;
+	unsigned int l = 0;
+	unsigned int r = 0;
+	while (l < size || r < size) {
+	    bool used_right;
+	    if (l < size && r < size) {
+		double rsplit = result.right_bobjects[r].bbox.maximum()[d];
+		double lsplit = result.left_bobjects[l].bbox.minimum()[d];
+		if (rsplit < lsplit) {
+		    split = rsplit;
+		    used_right = true;
+		} else {
+		    split = lsplit;
+		    used_right = false;
+		}
+	    } else {
+		if (l == size) {
+		    split = result.right_bobjects[r].bbox.maximum()[d];
+		    used_right = true;
+		} else {
+		    split = result.left_bobjects[l].bbox.minimum()[d];
+		    used_right = false;
 		}
 	    }
+
+	    if (used_right) r++;
+
+	    if (split <= bbox.maximum()[d] && split >= bbox.minimum()[d]) {
+		BoundingBox lbox;
+		BoundingBox rbox;
+		bbox.split(&lbox,&rbox,d,split);
+		double cost = lbox.area() * l + rbox.area() * (size -r);
+		if (cost < lowest_cost && cost < max_cost) {  
+		    result.dim = d;
+		    result.axis = split;
+		    lowest_cost = cost;
+		    result.left_index = l;
+		    result.right_index = r;
+		} 
+	    }
+
+	    if (!used_right) l++;
 	}
+    }
+    if (result.dim != -1) {
+	//cout << "Split " << size << " into " << result.left_index << "," << size - result.right_index << endl;
+	g_d = result.dim;
+	sort(result.left_bobjects.begin(), result.left_bobjects.end(), cmpL());
+	sort(result.right_bobjects.begin(), result.right_bobjects.end(), cmpR());
     }
 }
 

@@ -15,6 +15,12 @@ class Object;
 #define KD_TREE_MAX 3
 #define KD_TREE_MAX_DEPTH 100
 
+	class BoundedObject {
+	    public:
+		Object* object;
+		BoundingBox bbox;
+	};
+
 /**
  * k-dimensional tree.
  *
@@ -39,6 +45,7 @@ class KdTree {
 	/// The BoundingBox around all objects added to the tree
 	BoundingBox boundingBox() const { return world_bbox; };
 
+
     private:
 	class KdNode {
 	    public:
@@ -53,11 +60,6 @@ class KdTree {
 		KdNode();
 	};
 	
-	class BoundedObject {
-	    public:
-		Object* object;
-		BoundingBox bbox;
-	};
 	
 	class KdNodeTmp {
 	    public:
@@ -78,6 +80,16 @@ class KdTree {
 	    int prev;       // pointer to previus stack item
 	};
 
+	class CostResult {
+	    public:
+		int dim;
+		double axis;
+		vector<BoundedObject> left_bobjects;
+		vector<BoundedObject> right_bobjects;
+		unsigned int left_index;
+		unsigned int right_index;
+	};
+
 	bool intersect(const Ray& ray, Intersection* result, const double a, const double b) const;
 	Object* intersectForShadow_real(const Ray&,const double) const;
 	int largestDimension(const BoundingBox& box) const;
@@ -87,7 +99,7 @@ class KdTree {
 	double spacialMedian(std::vector<Object*>* objects, int d) const;
 	Vector measureSplit(const std::vector<BoundedObject>& bobjects, int dim, double val) const;
 	double evaluateCost(const BoundingBox& bbox, const std::vector<BoundedObject>& objects, int dim, double val, Vector* measure) const;
-	void KdTree::findBestSplitPlane(const BoundingBox& bbox, const std::vector<BoundedObject>& objects,int* best_dim, double* best_axis) const;
+	void findBestSplitPlane(const BoundingBox& bbox, CostResult& result) const;
 
 	void prepare(int curNode_idx, int depth);
 
@@ -99,6 +111,7 @@ class KdTree {
 	bool prepared;
 
 };
+
 
 #endif
 
