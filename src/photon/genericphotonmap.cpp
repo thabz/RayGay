@@ -122,6 +122,8 @@ Vector PhotonMap<PhotonType>::irradiance_estimate(
 /**
  * Finds the nearest photons in the
  * photon map given the parameters in np
+ *
+ * TODO: Make this non-recursive
  */
 template <class PhotonType>
 void PhotonMap<PhotonType>::locate_photons(
