@@ -5,11 +5,13 @@
 #include <iostream>
 #include "camera.h"
 #include "box.h"
+#include "necklace.h"
 #include "cylinder.h"
 #include "extrusion.h"
 #include "sphere.h"
 #include "paths/linesegment.h"
 #include "paths/circle.h"
+#include "paths/spiral.h"
 #include "lights/pointlight.h"
 #include "materials/material.h"
 
@@ -130,6 +132,15 @@ void Importer::parse() {
 	    Vector c2 = readVector(stream);
 	    Linesegment* l = new Linesegment(c1,c2);
 	    paths[str1] = l;
+	} else if (command == "spiral") {
+	    stream >> str1;
+	    stream >> str2;
+	    Path* p = lookupPath(str2);
+	    double radius = readDouble(stream);
+	    double windings = readDouble(stream);
+	    double offset = readDouble(stream);
+	    Spiral* spiral = new Spiral(p,radius,windings,offset);
+	    paths[str1] = spiral;
 	} else if (command == "pointlight") {
 	    Vector c = readVector(stream);
 	    Pointlight* l = new Pointlight(c);
@@ -164,6 +175,15 @@ void Importer::parse() {
 	    Vector c2 = readVector(stream);
 	    Box* box = new Box(c1,c2,*m);
 	    scene->addObject(box);
+	} else if (command == "necklace") {
+	    stream >> str1;
+	    Material* m = lookupMaterial(str1);
+	    stream >> str1;
+	    Path* p = lookupPath(str1);
+	    int num = readInt(stream);
+	    double r = readDouble(stream);
+	    Necklace* necklace = new Necklace(*p,num,r,*m);
+	    scene->addObject(necklace);
 	} else if (command[0] == '#') {
 	    // Comment. Ignore rest of line.
 	    while (stream.get() != '\n') {

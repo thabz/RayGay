@@ -255,8 +255,6 @@ void read() {
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
     scene->transform(n);
 
-    scene->setBackgroundColor(RGB(0.1,0.1,0.3));
-
     Camera cam = Camera(Vector(0,0,1500),Vector(0,0,-1));
     cam.enableAdaptiveSupersampling(4);
     scene->setCamera(&cam);

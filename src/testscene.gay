@@ -24,14 +24,15 @@ material red
 diffuse 0.8 0.2 0.2
 kd 0.9
 specular 1.0 0.2 0.2
-ks 0.1
+ks 0.0
 specpow 30
 
-sphere red 100   0.00 50.00 0.00
+sphere red 100   0 50 0
 
 box green -300 -200 -300    300 -150 300
 
 cylinder red 100    0 -150 0     0 50 0 
 
-extrusion green line1 10 10 10
-
+linesegment line1 -300 -200 300    -300 300 300
+spiral spiral1 line1 20 3 0
+necklace green spiral1 20 30
