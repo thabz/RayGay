@@ -21,6 +21,13 @@ class Boolean : public BooleanOperand {
 	    BOOLEAN_INTERSECTION ///< Points that are in common
 	};
 
+	class unknownOp {
+	    public:
+		BooleanOp op;
+		unknownOp(BooleanOp op) { this->op = op; };
+
+	};
+
 	Boolean(BooleanOperand* lhs, BooleanOp op, BooleanOperand* rhs, Material material);
 	virtual ~Boolean() {};
 

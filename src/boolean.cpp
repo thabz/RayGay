@@ -73,7 +73,7 @@ Intersection Boolean::_intersect(const Ray& ray) const {
 	    }
 	    break;
     }
-    return empty; // FIXME: Throw an exception instead
+    throw unknownOp(_op);
 }
 
 void Boolean::transform(const Matrix& m) {
@@ -99,6 +99,7 @@ Vector Boolean::normal(const Intersection& i) const {
 		return -1 * _rhs->normal(i);
 	    }
     }
+    throw unknownOp(_op);
 }
 
 Material Boolean::getMaterial() const {
@@ -118,6 +119,7 @@ bool Boolean::onEdge(const Vector &p) const {
                    (_lhs->onEdge(p) && _rhs->inside(p)) ||
 		   (_rhs->onEdge(p) && _lhs->onEdge(p));
     }
+    throw unknownOp(_op);
 }
 
 bool Boolean::inside(const Vector &p) const {
@@ -129,6 +131,7 @@ bool Boolean::inside(const Vector &p) const {
 	case BOOLEAN_INTERSECTION:
 	    return _lhs->inside(p) && _rhs->inside(p);
     }
+    throw unknownOp(_op);
 }
 
 bool Boolean::intersects(const BoundingBox& box) const {
@@ -140,6 +143,7 @@ bool Boolean::intersects(const BoundingBox& box) const {
 	case BOOLEAN_DIFFERENCE:
 	    return _lhs->intersects(box);
     }
+    throw unknownOp(_op);
 }
 
 BoundingBox Boolean::boundingBoundingBox() const {
@@ -151,7 +155,7 @@ BoundingBox Boolean::boundingBoundingBox() const {
 	case BOOLEAN_DIFFERENCE:
 	    return _lhs->boundingBoundingBox(); // TODO: Could be smaller
     }
-
+    throw unknownOp(_op);
 }
 
 void Boolean::getUV(const Intersection& intersection, double* u, double* v) const {
