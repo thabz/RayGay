@@ -165,6 +165,21 @@ void test_vector_clear() {
     //cout << "capacity: " << a->capacity() << endl;
 }
 
+void test_shift() {
+    uint a = 50;
+    uint b;
+
+    b = a << 2 | 3;
+
+    assert(b >> 2 == 50);
+    assert((b & 3) == 3);
+    
+    a = 20;
+    b = (a << 2) | 1;
+
+    assert(b >> 2 == 20);
+    assert((b & 3) == 0x1);
+}
 
 int main(int argc, char *argv[]) {
 
@@ -177,6 +192,7 @@ int main(int argc, char *argv[]) {
     test_vector_ref();
     test_fmod();
     test_vector_clear();
+    test_shift();
     return EXIT_SUCCESS;
 }
 
