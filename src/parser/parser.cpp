@@ -42,7 +42,21 @@ Parser::Parser(string filename) {
 }
 
 void Parser::run() {
-    scm_c_primitive_load(filename.c_str());
+    char original_working_dir[1024];
+
+    // Change cwd to this files parent folder
+    getcwd(original_working_dir,1024);
+    string original_cwds = string(original_working_dir);
+    string cwd = string(original_working_dir) + "/" + filename;
+    string filename_clean = string(cwd);
+    int idx = cwd.find_last_of('/');
+    cwd.resize(idx);
+    filename_clean = filename_clean.substr(idx+1, filename_clean.length());
+    chdir(cwd.c_str());
+
+    scm_c_primitive_load(filename_clean.c_str());
+
+    chdir(original_working_dir);
 }
 
 SCM Parser::lookup(string var_name) {

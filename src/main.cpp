@@ -298,19 +298,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 
 void work(string scenefile, string outputfile, int jobs) {
 
-    char original_working_dir[1024];
-
-    // Change cwd to this files parent folder
-    getcwd(original_working_dir,1024);
-    string original_cwds = string(original_working_dir);
-    string cwd = string(original_working_dir) + "/" + scenefile;
-    string filename = string(cwd);
-    int idx = cwd.find_last_of('/');
-    cwd.resize(idx);
-    filename = filename.substr(idx+1, filename.length());
-    chdir(cwd.c_str());
-
-    parser = new Parser(filename);
+    parser = new Parser(scenefile);
     
     int frames_num = getRendererSettings()->anim_frames;
     Environment* env = Environment::getUniqueInstance();
@@ -331,7 +319,6 @@ void work(string scenefile, string outputfile, int jobs) {
 	preview_window->stop();
     }
 
-    chdir(original_working_dir);
 }
 
 void print_usage() {
