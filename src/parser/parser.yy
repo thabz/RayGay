@@ -4,10 +4,12 @@
 #include <string>    
 #include <map>    
 #include <cstdio>    
+#include "math/matrix.h"
 #include "math/vector.h"
 #include "paths/spiral.h"
 #include "paths/circle.h"
 #include "paths/linesegment.h"
+#include "objects/cylinder.h"    
 #include "objects/sphere.h"    
 #include "objects/csg.h"    
 #include "objects/solid.h"    
@@ -40,27 +42,35 @@ void setNamedMaterial(string* name, Material* material);
 	RGB* rgb;
 	Material* material;
 	SceneObject* object;
+	Matrix* matrix;
 	Path* path;
 	string* c;
 }
 %token <d> tFLOAT
 %token <c> tSTRING
 %token tCIRCLE
+%token tCYLINDER
 %token tDIFFERENCE
+%token tINTERSECTION
 %token tLINESEGMENT
 %token tMATERIAL
 %token tNAME
 %token tNECKLACE
 %token tPRINT
+%token tROTATE
 %token tSOLIDBOX
 %token tSPHERE
 %token tSPIRAL
 %token tTORUS
+%token tTRANSLATE
+%token tUNION
 
 %type <d> Expr 
 %type <rgb> RGB
 %type <vector> Vector
-%type <object> Sphere SolidBox Necklace Difference SolidObject Torus
+%type <matrix> Rotate Translate Transformation Transformations
+%type <object> Sphere SolidBox Necklace Difference SolidObject Torus Cylinder
+%type <object> Intersection Union TransObject Object
 %type <material> MaterialDef NamedMaterial Material
 %type <path> NamedPath Circle Spiral Path PathDef LineSegment
 
@@ -73,7 +83,7 @@ Items		: /* Empty */
                 | Items Item
 		;
 
-Item		: Object
+Item		: TransObject
                 | AssignName
 		| Print
 		;
@@ -122,16 +132,42 @@ Object		: SolidObject
 SolidObject	: Sphere
                 | SolidBox
                 | Difference 
+                | Intersection
+                | Union
 		| Torus
+		| Cylinder
 		;
-		
-SolidBox	: tSOLIDBOX NamedMaterial Vector Vector
-                {
-		    $$ = new SolidBox(*$3,*$4,$2);
-		}
-                ;
 
-Necklace 	: tNECKLACE '{' NamedMaterial Path Expr Expr '}'
+TransObject 	: Object Transformations
+                {
+		    $$ = $1;
+		    if ($2 != (Matrix*)NULL) {
+			$$->transform(*$2);
+		    }
+		}
+                | Object
+		;
+
+
+Cylinder	: tCYLINDER '{' Material Expr Vector Vector '}'
+                {
+		    $$ = new Cylinder(*$5,*$6,$4,true,$3);
+		}
+                | tCYLINDER '{' Expr Vector Vector '}'
+                {
+		    $$ = new Cylinder(*$4,*$5,$3,true,NULL);
+		};
+		
+SolidBox	: tSOLIDBOX '{' Material Vector Vector '}'
+                {
+		    $$ = new SolidBox(*$4,*$5,$3);
+		}
+                | tSOLIDBOX '{' Vector Vector '}'
+                {
+		    $$ = new SolidBox(*$3,*$4,NULL);
+		};
+
+Necklace 	: tNECKLACE '{' Material Path Expr Expr '}'
                 {
 		    $$ = new Necklace($4,int($5),$6,$3);
 		}
@@ -156,7 +192,7 @@ Torus		: tTORUS '{' Expr Expr '}'
 		    $$ = new Torus($4,$5,$3);
 		}
 
-Difference 	: tDIFFERENCE '{' NamedMaterial SolidObject SolidObject '}'
+Difference 	: tDIFFERENCE '{' Material SolidObject SolidObject '}'
                 {
 		    Solid* s1 = dynamic_cast<Solid*>($4);
 		    Solid* s2 = dynamic_cast<Solid*>($5);
@@ -167,6 +203,60 @@ Difference 	: tDIFFERENCE '{' NamedMaterial SolidObject SolidObject '}'
 		    Solid* s1 = dynamic_cast<Solid*>($3);
 		    Solid* s2 = dynamic_cast<Solid*>($4);
 		    $$ = new CSG(s1,CSG::DIFFERENCE,s2,NULL);
+		}
+                ;
+
+Intersection	: tINTERSECTION '{' Material SolidObject SolidObject '}'
+                {
+		    Solid* s1 = dynamic_cast<Solid*>($4);
+		    Solid* s2 = dynamic_cast<Solid*>($5);
+		    $$ = new CSG(s1,CSG::INTERSECTION,s2,$3);
+		}
+                | tINTERSECTION '{' SolidObject SolidObject '}'
+                {
+		    Solid* s1 = dynamic_cast<Solid*>($3);
+		    Solid* s2 = dynamic_cast<Solid*>($4);
+		    $$ = new CSG(s1,CSG::INTERSECTION,s2,NULL);
+		}
+                ;
+
+Union		: tUNION '{' Material SolidObject SolidObject '}'
+                {
+		    Solid* s1 = dynamic_cast<Solid*>($4);
+		    Solid* s2 = dynamic_cast<Solid*>($5);
+		    $$ = new CSG(s1,CSG::UNION,s2,$3);
+		}
+                | tUNION '{' SolidObject SolidObject '}'
+                {
+		    Solid* s1 = dynamic_cast<Solid*>($3);
+		    Solid* s2 = dynamic_cast<Solid*>($4);
+		    $$ = new CSG(s1,CSG::UNION,s2,NULL);
+		}
+                ;
+
+Transformations	: /* Empty */
+                | Transformations Transformation
+                {
+		    Matrix m = (*$1) * (*$2);
+		    $$ = new Matrix(m);
+		}
+		;
+
+Transformation  : Rotate
+                | Translate
+		;
+
+Rotate		: tROTATE '{' Vector Expr '}'
+                {
+		    Matrix m = Matrix::matrixRotate(*$3,$4);
+		    $$ = new Matrix(m);
+		}
+                ;
+
+Translate	: tTRANSLATE '{' Vector '}'
+                {
+		    Matrix m  = Matrix::matrixTranslate(*$3);
+		    $$ = new Matrix(m);
 		}
                 ;
 

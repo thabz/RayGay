@@ -20,16 +20,21 @@ string	{alpha}({alpha}|{digit}|{special})*
 %%
 [ \t\n]		;
 circle		return tCIRCLE;
+cylinder	return tCYLINDER;
 difference 	return tDIFFERENCE;
+intersection	return tINTERSECTION;
 linesegment	return tLINESEGMENT;
 material	return tMATERIAL;
 name		return tNAME;
 necklace	return tNECKLACE;
 print		return tPRINT;
+rotate		return tROTATE;
 solidbox	return tSOLIDBOX;
 sphere		return tSPHERE;
 spiral		return tSPIRAL;
+translate	return tTRANSLATE;
 torus		return tTORUS;
+union		return tUNION;
 "\#.*\n"		/* Eat up comments */
 {digit}+ |
 {digit}+"."{digit}+ { yylval.d = atof(yytext); return tFLOAT;}
