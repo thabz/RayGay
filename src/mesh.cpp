@@ -275,10 +275,17 @@ std::vector<Vector>* Mesh::getVertices() {
     return result;
 }
 
+/**
+ * Returns a vector of all unique edges in the mesh. 
+ * An edge is represented as a Linesegment.
+ */
 std::vector<Linesegment>* Mesh::getEdges() {
+    
     std::vector<Linesegment>* result = new std::vector<Linesegment>;
     for(EdgeMapType::iterator h = edgeMap.begin(); h != edgeMap.end(); h++) {
-	// TODO: Retrieve all values in the map.
+	Edge* edge = h->second;
+	Linesegment s = Linesegment(corners[edge->vertex[0]],corners[edge->vertex[1]]);
+	result->push_back(s);
     }
     return result;
 }
