@@ -2,6 +2,7 @@
 #include "intersection.h"
 #include "vector.h"
 
+
 Intersection::Intersection() {
     intersected = false;
 }
@@ -10,9 +11,6 @@ Intersection::Intersection(const Vector& p, double s) {
     point = p;
     t = s;
     intersected = true;
-}
-
-Intersection::~Intersection() {
 }
 
 ostream & operator<<(ostream &os, const Intersection &i) {

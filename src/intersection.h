@@ -18,7 +18,6 @@ class Intersection {
     public:
 	Intersection();
 	Intersection(const Vector& point, double t);
-	~Intersection();	
 
 	void setObject(object* obj) { o = obj; };
 	object* getObject() const { return o; };
