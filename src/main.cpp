@@ -62,13 +62,13 @@ void testScene4() {
     Sphere s3 = Sphere(Vector(200,50,-200),130.0,chrome);
     Sphere s4 = Sphere(Vector(-200,50,-200),130.0,chrome);
     Sphere s5 = Sphere(Vector(0,150,0),130.0,chrome);
-    Cylinder c1 = Cylinder(Vector(0,50,0),Vector(0,400,0),130,10,blue);
+    //Cylinder c1 = Cylinder(Vector(0,0,0),Vector(0,200,0),130,10,red);
  /*   scene.addObject(&s1);
     scene.addObject(&s2);
     scene.addObject(&s3);
     scene.addObject(&s4);
-    scene.addObject(&s5);*/
-    //scene.addObject(&c1);
+    scene.addObject(&s5);
+    scene.addObject(&c1);*/
 
     for(int x = -10; x <= 10; x += 5) {
        for(int y = -10; y <= 10; y += 5) {
@@ -79,35 +79,44 @@ void testScene4() {
  	}
     }
 
-    Circle circle1 = Circle(Vector(0,25,0),200,Vector(0,1,0));
-    Spiral spiral = Spiral(&circle1,100,5);
-    Necklace* lace = new Necklace(spiral,200,20.0,chrome);
-    scene.addObject(lace);
+    Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
+    Spiral spiral = Spiral(&circle1,150,5);
+    Necklace* lace = new Necklace(spiral,50,30.0,chrome);
+    //scene.addObject(lace);
 
     Spiral spiral2 = Spiral(&spiral,30,100);
-    Necklace* smalllace = new Necklace(spiral2,3000,5,red);
-    scene.addObject(smalllace);
+    Necklace* smalllace = new Necklace(spiral2,3000,5.0,red);
+    //scene.addObject(smalllace);
+
+    spiral2 = Spiral(&spiral,30,100,0.5);
+    smalllace = new Necklace(spiral2,3000,5.0,blue);
+    //scene.addObject(smalllace);
+
+    Cylinder* tube = new Cylinder(spiral,25,16,200,red);
+    scene.addObject(tube); // TODO: Denne skal renderes engang
     
+    Cylinder* torus = new Cylinder(circle1,100,16,10,red);
+    //scene.addObject(torus);
+
+    Cylinder* c1 = new Cylinder(Vector(-200,50,0),Vector(200,50,0),130,10,red);
+    //scene.addObject(c1);
    /*
     Cylinder cyl = Cylinder(Vector(-200,-50,200),Vector(-200,50,200),100.0,6,blue);
     scene.addObject(&cyl);
     */
     Pointlight light1 = Pointlight(Vector(-4000,4000,4000));
     Pointlight light3 = Pointlight(Vector(4000,4000,4000));
-    Spotlight light2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
+    Spotlight spotlight2 = Spotlight(Vector(500,500,500),Vector(0,0,-1),DEG2RAD(10.0),DEG2RAD(8.0));
     Arealight area1 = Arealight(Vector(-2000,2000,2000),Vector(1,-1,-1),1000,50,0.10);
     Arealight area2 = Arealight(Vector(2000,2000,2000),Vector(-1,-1,-1),1000,40,0.10);
     //scene.addLight(&area1);
     //scene.addLight(&area2);
+    //scene.addLight(&spotlight2);
     scene.addLight(&light1);
-    //scene.addLight(&light2);
     scene.addLight(&light3);
     
-    Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),green); /* Floor */
+    Box b = Box(Vector(-400,-200,-400),Vector(400,-150,400),green); /* Floor */
     scene.addObject(&b);
-    
-    Box b2 = Box(Vector(100,-50,100),Vector(150,100,150),red);
-    //scene.addObject(&b2);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
@@ -119,8 +128,8 @@ void testScene4() {
     scene.setCamera(&cam);
     
     Image* img = new Image(640,480);
-    SpaceSubdivider* space = new Hierarchy();
-    //SpaceSubdivider* space = new BSP();
+    //SpaceSubdivider* space = new Hierarchy();
+    SpaceSubdivider* space = new BSP();
 
     Raytracer raytracer = Raytracer();
 
@@ -133,6 +142,7 @@ void testScene4() {
 }
 
 int main(int argc, char *argv[]) {
+    Vector::test();
     Sphere::test();
     Boolean::test();
     BoundingBox::test();

@@ -19,6 +19,7 @@ void Renderer::render(Scene* sc, Image* img, SpaceSubdivider* spc) {
     // Add all objects in scene to spacesubdivider
     std::vector<object*> objects = scene->getObjects();
     for (vector<object*>::iterator p = objects.begin(); p != objects.end(); p++) {
+	(*p)->prepare();
 	space->addObject(*p);
     }
     //

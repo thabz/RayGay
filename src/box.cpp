@@ -32,6 +32,7 @@ Box::Box(const Vector a, const Vector b, Material mat) : Mesh(Mesh::MESH_FLAT,ma
     Mesh::addTriangle(c6,c5,c7); Mesh::addTriangle(c6,c7,c8);
     Mesh::addTriangle(c5,c1,c7); Mesh::addTriangle(c1,c3,c7);
     Mesh::addTriangle(c3,c4,c7); Mesh::addTriangle(c4,c8,c7);
+    Mesh::prepare();
 }
 
 Box::Box(const Vector c, double width, double height, double depth, Material m): Mesh(Mesh::MESH_FLAT,m) {

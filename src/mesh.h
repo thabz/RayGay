@@ -2,6 +2,7 @@
 #define MESH_H
 
 #include <vector>
+#include <map>
 #include <iosfwd>
 
 #include "object.h"
@@ -10,6 +11,7 @@
 #include "material.h"
 #include "boundingbox.h"
 #include "triangle.h"
+#include "edgekey.h"
 
 class SpaceSubdivider;
 
@@ -17,11 +19,43 @@ class SpaceSubdivider;
 class Mesh : public object {
 
     public:
+	
+	class Tri;
+        class Edge {
+	    public:
+		Edge(int iV0, int iV1);
+
+	        int vertex[2];
+   	        Tri* triangle[2];
+	};
+
+	class Tri {
+	    public:
+		Tri(int iV0, int iV1, int iV2);
+		int vertex[3];
+		int interpolated_normal[3];
+		int normal_idx;
+		double area;
+		Edge* edge[3];
+		// Adjacent tris
+		Tri* triangle[3];
+	};
+
+	class Vertex {
+	    public:
+		Vertex(int iV);
+		// Tris meeting at this vertex
+		std::vector<Tri*> tris; // Denne kan slette efter computeInterpo.. 
+		int index;
+	};
+	
         /// The types of meshes
 	enum MeshType {
 	    MESH_FLAT,
 	    MESH_INTERPOLATED
 	};
+
+	typedef std::map<EdgeKey,Edge*> EdgeMapType;
 
 	/// Default constructor
 	Mesh();
@@ -34,6 +68,7 @@ class Mesh : public object {
 
 	virtual void transform(const Matrix& m);
 	virtual Vector normal(const Intersection & i) const;
+	virtual Vector phong_normal(const Intersection & i) const;
 	virtual Material getMaterial() const;
 
 	virtual bool intersects(const BoundingBox& b) const;
@@ -57,13 +92,23 @@ class Mesh : public object {
 	Material material;
 	mutable BoundingBox* _boundingBoundingBox;
 	virtual Intersection _intersect(const Ray& ray) const;
-	void prepare() const;
-	mutable SpaceSubdivider* hierarchy;
-	mutable bool prepared;
+	SpaceSubdivider* hierarchy;
+	bool prepared;
+	int findExistingCorner(const Vector* c) const;
+	void computeAdjacentTris();
+	void computeTriAreas();
+	void computeInterpolatedNormals();
 
 	std::vector<Vector> corners;
 	std::vector<Vector> normals;
 	std::vector<Triangle*> triangles;
+	EdgeMapType edgeMap;
+	std::vector<Tri*> tris;
+	std::vector<Vertex> vertices;
+
+    protected:
+	void prepare();
+
 };
 
 #endif

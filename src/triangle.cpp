@@ -15,6 +15,14 @@ Material Triangle::getMaterial() const {
     return mesh->getMaterial(); 
 }
 
+void Triangle::setTri(int tri_idx) {
+    _tri_idx = tri_idx; 
+}
+
+int Triangle::getTri() const{
+    return _tri_idx;
+}
+
 // ----------------------------------------------------------------------------
 Intersection Triangle::_intersect(const Ray& ray) const {
    /* Fast code from http://www.ce.chalmers.se/staff/tomasm/code/ */
@@ -76,7 +84,7 @@ Intersection Triangle::_intersect(const Ray& ray) const {
 }
     
 Vector Triangle::normal(const Intersection &i) const {
-    return mesh->normalAt(normali);
+    return mesh->normal(i);
 };
 
 bool Triangle::intersects(const BoundingBox& bb) const {
