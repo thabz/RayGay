@@ -147,7 +147,9 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     Vector2 img_size = getImageSize();
     scene->getCamera()->setImageSize(int(img_size[0]),int(img_size[1]));
     Image* img = new Image(int(img_size[0]),int(img_size[1]));
+#ifdef HAVE_GTK    
     Environment::getUniqueInstance()->getPreviewWindow()->setImage(img);
+#endif
 
     if (scene->getObjects().size() == 0) {
 	throw_exception("No objects in scene.");
@@ -170,7 +172,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 
     // Create and prepare job pool
     RenderJobPool* job_pool = new RenderJobPool();
-    prepareJobPool(job_pool,img,64);
+    prepareJobPool(job_pool,img,32);
 
     if (renderersettings->anim_frames == 1) {
 	cout << "Still render (" << img->getWidth() << "x" << img->getHeight() << ")" << endl;

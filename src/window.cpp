@@ -6,6 +6,7 @@
 #ifdef HAVE_GTK
 
 #include <cassert>
+#include <iostream>
 #include "image/image.h"
 #include "window.h"
 #include "window-icon.h"
@@ -13,20 +14,23 @@
 int darea_width;
 int darea_height;
 guchar* rgbbuf;
+bool window_open;
 
-gboolean
-on_darea_expose (GtkWidget *widget,
-		 GdkEventExpose *event,
-		 gpointer user_data)
-{
-  gdk_draw_rgb_image (widget->window, 
-	              widget->style->fg_gc[GTK_STATE_NORMAL],
-		      0, 0, darea_width, darea_height,
-		      GDK_RGB_DITHER_MAX, rgbbuf, darea_width * 3);
-  gtk_widget_queue_draw(widget);
-
-  return TRUE;
+gboolean on_darea_expose (GtkWidget *widget,
+	GdkEventExpose *event,
+	gpointer user_data) {
+    gdk_draw_rgb_image (widget->window, 
+	    widget->style->fg_gc[GTK_STATE_NORMAL],
+	    0, 0, darea_width, darea_height,
+	    GDK_RGB_DITHER_NONE, rgbbuf, darea_width * 3);
+    return FALSE;
 }
+
+gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
+    window_open = false;
+    return FALSE;
+}
+
 
 PreviewWindow::PreviewWindow(int width, int height) {
     this->width = width;
@@ -45,19 +49,22 @@ PreviewWindow::PreviewWindow(int width, int height) {
 
     // Prepare the drawable
     rgbbuf = new guchar[width*height*3];
-    rgbbuf[0] = 255;
-    rgbbuf[1] = 255;
-    rgbbuf[2] = 255;
     darea = gtk_drawing_area_new ();
+
+    gtk_widget_set_double_buffered(darea,false);
     gtk_widget_set_size_request (darea, width, height);
     gtk_container_add (GTK_CONTAINER (window), darea);
     gtk_signal_connect (GTK_OBJECT (darea), "expose-event",
-                      GTK_SIGNAL_FUNC (on_darea_expose), NULL);
+	    GTK_SIGNAL_FUNC (on_darea_expose), NULL);
+    gtk_signal_connect (GTK_OBJECT (window), "delete_event",
+	    GTK_SIGNAL_FUNC (delete_event), NULL);
+    gtk_widget_show(darea);
 }
 
 void* window_thread_do(void* obj) {
     GtkWidget* window = (GtkWidget*) obj;
     gtk_widget_show_all(window);
+    window_open = true;
     gtk_main();
     return NULL;
 }
@@ -67,35 +74,40 @@ void PreviewWindow::run() {
 }
 
 void PreviewWindow::stop() {
-    pthread_join(window_main_loop, NULL);
+    if (window_open) {
+	pthread_join(window_main_loop, NULL);
+    }
 }
 
 void PreviewWindow::drawBlock(int xb, int yb, int w, int h) {
+    std::cout << xb << "," << yb << "        " << std::endl;
     assert(image != NULL);
-    for(int y = 0; y < h; y++) {
-	for(int x = 0; x < w; x++) {
-	    RGBA col = image->getRGBA(x+xb,y+yb);
-	    guchar* p = rgbbuf + ((y+yb)*width + (x+xb))*3;
-	    p[0] = (guchar) (255 * col.r());
-	    p[1] = (guchar) (255 * col.g());
-	    p[2] = (guchar) (255 * col.b());
-	//    p[3] = (guchar) (255 * col.a());
+    if (window_open) {
+	for(int y = 0; y < h; y++) {
+	    for(int x = 0; x < w; x++) {
+		RGBA col = image->getRGBA(x+xb,y+yb);
+		guchar* p = rgbbuf + ((y+yb)*width + (x+xb))*3;
+		p[0] = col.r() > 1.0 ? 255 : (guchar) (255.0 * col.r());
+		p[1] = col.g() > 1.0 ? 255 : (guchar) (255.0 * col.g());
+		p[2] = col.b() > 1.0 ? 255 : (guchar) (255.0 * col.b());
+		//    p[3] = (guchar) (255 * col.a());
+	    }
 	}
+	guchar* p = rgbbuf + 3*((100*width) + 100);
+	p[0] = 255;
+	p[1] = 255;
+	p[2] = 255;
+	gtk_widget_queue_draw_area(window,xb,yb,w,h);
     }
-    rgbbuf[0] = 255;
-    rgbbuf[1] = 255;
-    rgbbuf[2] = 255;
-    rgbbuf[3] = 0;
-    rgbbuf[4] = 0;
-    rgbbuf[5] = 255;
-    // TODO: Refresh drawing_area
 }
 
 void PreviewWindow::setProgress(double progress) {
-    int p = int(100.0 * progress);
-    char title[1000];
-    sprintf(title,"RayGay (%d%%)",p);
-    gtk_window_set_title(GTK_WINDOW(window),title);
+    if (window_open) {
+	int p = int(100.0 * progress);
+	char title[1000];
+	sprintf(title,"RayGay (%d%%)",p);
+	gtk_window_set_title(GTK_WINDOW(window),title);
+    }
 }
 
 #endif
