@@ -9,3 +9,14 @@
 (define test-vlength-1 (vlength '(1 2 3)))
 (define test-vlength-2 (vlength '(4 -2 2)))
 
+(define test-vscale-1 (vscale '(1 2 3) 2))
+(define test-vscale-2 (vscale '(4 -2 2) 3))
+
+(define test-vplus-1 (v+ '(1 2 3) '(2 5 9)))
+(define test-vplus-2 (v+ '(4 -2 2) '(4 5 6)))
+
+(define test-vminus-1 (v- '(1 2 3) '(2 5 9)))
+(define test-vminus-2 (v- '(4 -2 2) '(4 5 6)))
+
+(define test-vnormalize-1 (vnormalize '(1 2 3)))
+(define test-vnormalize-2 (vnormalize '(4 -2 2)))

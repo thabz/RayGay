@@ -5,6 +5,7 @@
 
 #include "testing.h"
 #include "parser/parser.h"
+#include "parser/converters.h"
 #include <cstdlib>
 #include <cmath>
 #include <cassert>
@@ -14,9 +15,11 @@
 using namespace std;
 
 #define lookupDouble(s) scm_num2double(scm_variable_ref(scm_c_lookup(s)),0,"")
-#define lookupVector(s) scm2vector(scm_variable_ref(scm_c_lookup(s)),0,"")
+#define lookupVector(s) scm2vector(scm_variable_ref(scm_c_lookup(s)),"",0)
 
 class test_parser : public Test {
+    private:
+	Vector v1;
     public: 
 	void run() {
 	    Parser* p = new Parser(getLoadPrefix() + "/scenes/test.scm");
@@ -32,6 +35,22 @@ class test_parser : public Test {
 
 	    assertTrue(IS_EQUAL(lookupDouble("test-vlength-1"),sqrtl(1.0+4+9)));
 	    assertTrue(IS_EQUAL(lookupDouble("test-vlength-2"),sqrtl(16+4+4)));
+
+	    assertTrue(lookupVector("test-vscale-1") == Vector(2,4,6));
+	    assertTrue(lookupVector("test-vscale-2") == Vector(12,-6,6));
+
+	    assertTrue(lookupVector("test-vplus-1") == Vector(3,7,12));
+	    assertTrue(lookupVector("test-vplus-2") == Vector(8,3,8));
+
+	    assertTrue(lookupVector("test-vminus-1") == Vector(-1,-3,-6));
+	    assertTrue(lookupVector("test-vminus-2") == Vector(0,-7,-4));
+
+	    v1 = Vector(1,2,3);
+	    v1.normalize();
+	    assertTrue(lookupVector("test-vnormalize-1") == v1);
+	    v1 = Vector(4,-2,2);
+	    v1.normalize();
+	    assertTrue(lookupVector("test-vnormalize-2") == v1);
 	    delete p;
 	}
 };

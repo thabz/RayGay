@@ -40,9 +40,30 @@ SCM vdot(SCM s_v1, SCM s_v2)
 SCM vcross(SCM s_v1, SCM s_v2) 
 {
     Vector v1 = scm2vector(s_v1,"vcross",1);
-    Vector v2 = scm2vector(s_v1,"vcross",2);
+    Vector v2 = scm2vector(s_v2,"vcross",2);
     Vector cross = Vector::xProduct(v1,v2);
     return vector2scm(cross);
+}
+
+SCM vnormalize(SCM s_v) 
+{
+    Vector v = scm2vector(s_v,"vnormalize",1);
+    v.normalize();
+    return vector2scm(v);
+}
+
+SCM vplus(SCM s_v1, SCM s_v2) 
+{
+    Vector v1 = scm2vector(s_v1,"v+",1);
+    Vector v2 = scm2vector(s_v2,"v+",2);
+    return vector2scm(v1 + v2);
+}
+
+SCM vminus(SCM s_v1, SCM s_v2) 
+{
+    Vector v1 = scm2vector(s_v1,"v-",1);
+    Vector v2 = scm2vector(s_v2,"v-",2);
+    return vector2scm(v1 - v2);
 }
 
 SCM vlength(SCM s_v) 
@@ -50,6 +71,13 @@ SCM vlength(SCM s_v)
     Vector v = scm2vector(s_v,"vlength",1);
     double length = v.length();
     return scm_double2num(length);
+}
+
+SCM vscale(SCM s_v, SCM s_k) 
+{
+    Vector v = scm2vector(s_v,"vscale",1);
+    double k = scm_num2double(s_k, 2, "vscale");
+    return vector2scm(v * k);
 }
 
 void MathFactory::register_procs()
@@ -61,5 +89,9 @@ void MathFactory::register_procs()
     scm_c_define_gsubr("vdot",2,0,0, (SCM (*)()) vdot);
     scm_c_define_gsubr("vcross",2,0,0, (SCM (*)()) vcross);
     scm_c_define_gsubr("vlength",1,0,0, (SCM (*)()) vlength);
+    scm_c_define_gsubr("vscale",2,0,0, (SCM (*)()) vscale);
+    scm_c_define_gsubr("vnormalize",1,0,0, (SCM (*)()) vnormalize);
+    scm_c_define_gsubr("v+",2,0,0, (SCM (*)()) vplus);
+    scm_c_define_gsubr("v-",2,0,0, (SCM (*)()) vminus);
 }
 
