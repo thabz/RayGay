@@ -20,6 +20,8 @@ Lightinfo Pointlight::getLightinfo(const Intersection& inter,const Vector& norma
     if (info.cos > 0.0) {
 	Stats::getUniqueInstance()->inc("Shadow rays cast");
 	Ray ray_to_light = Ray(inter.getPoint(),info.direction_to_light,-1.0);
+	// TODO: Move hint-checking away from space and into shadowcache code
+	// TODO: Check other objects in hints voxel
 	Object* hint = shadowcache.get(depth);
 	bool in = space->intersectForShadow(ray_to_light,hint,dist_to_light);
 
