@@ -20,6 +20,7 @@ Material::Material(RGB diffuseColor, RGB specularColor) {
    texturemap = NULL;
    bumpmap = NULL;
    indice_of_refraction = 3;
+   repeatY = 1; repeatX = 1;
 }
 
 Material::Material(RGB diffuseColor, double kd, RGB specularColor, double ks, int spec_coeff) {
@@ -32,6 +33,7 @@ Material::Material(RGB diffuseColor, double kd, RGB specularColor, double ks, in
    texturemap = NULL;
    bumpmap = NULL;
    indice_of_refraction = 3;
+   repeatY = 1; repeatX = 1;
 }
 
 Material::~Material() {
@@ -59,8 +61,12 @@ Vector Material::bump(const Intersection& i, const Vector& normal) const {
 	i.getObject()->getUV(i,&u,&v);
         u -= int(u);
 	v -= int(v);
+	
+	u *= repeatX; v *= repeatY;
+	    
 	w = bumpmap->getWidth();
 	h = bumpmap->getHeight();
+
 	Vector v0 = Vector(0,0,getBumpValue(u,v));
 	Vector v1 = Vector(0,-1,getBumpValue(u,v+1.0/h));
 	Vector v2 = Vector(1,0,getBumpValue(u+1.0/w,v));

@@ -31,6 +31,8 @@ class Material {
 
 	void setTexturemap(const std::string& filename);
 	void setBumpmap(const std::string& filename, double bumpHeight);
+	void setRepeatX(const unsigned int repeatX) { this->repeatX = repeatX; };
+	void setRepeatY(const unsigned int repeatY) { this->repeatY = repeatY; };
 	
 	virtual RGB getDiffuseColor(const Intersection& i) const;
 
@@ -60,8 +62,7 @@ class Material {
 	int _spec_coeff;
 
 	double bumpHeight;
-	int bumpRepeatU;
-	int bumpRepeatV;
+	unsigned int repeatX; unsigned int repeatY;
 	Image* texturemap;
 	Image* bumpmap;
 };

@@ -54,19 +54,15 @@ RGB Image::getRGBWrapped(int x, int y) const {
 }
 
 RGB Image::getTexel(double u, double v) const {
-    if (u < 0.0) u = 0.0;
-    if (u > 1.0) u = 1.0;
-    if (v < 0.0) v = 0.0;
-    if (v > 1.0) v = 1.0;
+    u -= int(u);
+    v -= int(v);
     return getRGB(int(u*(width-1)),int(v*(height-1)));
 }
 
 // Using http://astronomy.swin.edu.au/~pbourke/colour/bicubic/
 RGB Image::getBiCubicTexel(double u, double v) const {
-    if (u < 0.0) u = 0.0;
-    if (u > 1.0) u = 1.0;
-    if (v < 0.0) v = 0.0;
-    if (v > 1.0) v = 1.0;
+    u -= int(u);
+    v -= int(v);
     double x = u*(width-1);
     double y = v*(height-1);
     int i = int(x); int j = int(y);
