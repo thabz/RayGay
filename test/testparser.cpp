@@ -14,17 +14,24 @@
 using namespace std;
 
 #define lookupDouble(s) scm_num2double(scm_variable_ref(scm_c_lookup(s)),0,"")
+#define lookupVector(s) scm2vector(scm_variable_ref(scm_c_lookup(s)),0,"")
 
 class test_parser : public Test {
     public: 
 	void run() {
 	    Parser* p = new Parser(getLoadPrefix() + "/scenes/test.scm");
 	    
-	    scm_c_define("__a", scm_double2num(30));
+	    scm_c_define("test-predefined-a", scm_double2num(30));
 	    p->run();
 
-	    assertTrue(IS_EQUAL(lookupDouble("__a"),30));
-	    assertTrue(IS_EQUAL(lookupDouble("a"),10));
+	    assertTrue(IS_EQUAL(lookupDouble("test-predefined-a"),30));
+	    assertTrue(IS_EQUAL(lookupDouble("test-define-1"),10));
+
+	    assertTrue(IS_EQUAL(lookupDouble("test-vdot-1"),4 + 10 + 18));
+	    assertTrue(IS_EQUAL(lookupDouble("test-vdot-2"),12 - 5 + 12));
+
+	    assertTrue(IS_EQUAL(lookupDouble("test-vlength-1"),sqrtl(1.0+4+9)));
+	    assertTrue(IS_EQUAL(lookupDouble("test-vlength-2"),sqrtl(16+4+4)));
 	    delete p;
 	}
 };
