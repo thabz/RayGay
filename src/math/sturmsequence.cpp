@@ -4,7 +4,10 @@
 SturmSequence::SturmSequence(const Polynomial& polynomial) {
     f.push_back(polynomial);
     f.push_back(polynomial.derivative());
-    // TODO: Create rest of sequence
+    if (f[1].order() != 0) {
+	// TODO: Create rest of sequence
+    };
+    
 }
 
 void SturmSequence::eval(double x, double* dest) const {
@@ -31,6 +34,10 @@ uint SturmSequence::signChanges(double x) const {
     return result;
 }
 
+/**
+ * Calculate number of distinct real roots in the interval \f$ ]a,b[ \f$.
+ * a and b must not be roots of the polynomial.
+ */
 uint SturmSequence::rootCount(double a, double b) const {
     uint changes_a = signChanges(a);
     uint changes_b = signChanges(b);

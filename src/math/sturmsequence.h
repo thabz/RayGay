@@ -17,7 +17,7 @@ class SturmSequence {
 	/// Constructor
 	SturmSequence(const Polynomial& polynomial);
 
-	/// Calculate number of roots in the interval \f$ ]a,b[ \f$
+	/// Calculate number of distinct real roots in the interval \f$ ]a,b[ \f$
 	uint rootCount(double a, double b) const;
 
     private:
