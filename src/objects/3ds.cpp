@@ -15,8 +15,8 @@ using namespace std;
 
 ThreeDS::ThreeDS(const string& filename, const double scale, const Material* material) {
     this->force_my_material = true;
-    init(filename,scale);
     this->material = material;
+    init(filename,scale);
 }
 
 ThreeDS::ThreeDS(const string& filename, const double scale) {
@@ -30,11 +30,17 @@ void ThreeDS::init(const string& filename, const double scale) {
 }
 
 void ThreeDS::createMesh() {
-    Mesh* mesh = new Mesh(Mesh::MESH_FLAT,material);
 
     unsigned long faces_size = faces.size();
     unsigned long vertices_size = vertices.size();
+    if (faces_size == 0 || vertices_size == 0) {
+	cout << "Ignored submesh" << endl;
+	return;
+    }
 
+    assert(material != NULL);
+
+    Mesh* mesh = new Mesh(Mesh::MESH_FLAT,material);
     assert(vertices_size % 3 == 0);
     assert(faces_size % 3 == 0);
 
