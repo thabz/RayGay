@@ -1,0 +1,106 @@
+# A scene for testing photon mapping
+
+include materials.gay
+
+renderer photonrenderer
+#renderer raytracer
+
+photonmap globalphotons 400000
+photonmap causticphotons 500
+photonmap estimate-radius 30
+photonmap estimate-samples 300
+photonmap final-gather-rays 100
+
+camera-position 100 180 1100
+camera-up 0 1 0
+camera-lookat 0 0 0
+camera-field-of-view 60
+camera-aa 0
+
+image-ratio 4 3
+image-width 160
+
+background 0.1 0.1 0.3
+
+
+# light behind wall
+light point 200 280 -150 1000000 1000000 1000000
+#light area 200 280 -150 -1 -1 1 500000 500000 500000   50 64  0.01
+
+# light near camera
+#light point 100 280 300 50000 50000 50000
+
+#sphere $glass 100  -180 -200 180 
+
+# Floor
+box $dullwhite -300 -350 -300    300 -300 1200
+# Ceiling 
+box $dullwhite -300 300 -300    300 350 1200
+# Backwall
+box $dullwhite -300 -300 -330    300 300 -300
+# Left wall
+box $dullwhite -350 -300 -300    -300 300 1200
+# Right wall
+box $dullwhite 300 -300 -300    330 300 1200
+# Wall behind camera
+box $dullwhite -300 -300 1200    300 300 1230
+
+# Backwall (right half)
+box $dullwhite 200 -310 -30    300 310 0
+# Backwall (left half)
+box $dullwhite -300 -310 -30    -200 310 0
+# Backwall (top half)
+box $dullwhite -350 200 -30    350 320 0
+# Bottom wall
+box $dullwhite -200 -300 -30          200 -100 0
+
+# Blinds
+cylinder $dullwhite 5    -200 -75 -15       200 -75 -15
+cylinder $dullwhite 5    -200 -50 -15       200 -50 -15
+cylinder $dullwhite 5    -200 -25 -15       200 -25 -15
+cylinder $dullwhite 5    -200 0 -15       200 0 -15
+cylinder $dullwhite 5    -200 25 -15       200 25 -15
+cylinder $dullwhite 5    -200 50 -15       200 50 -15
+cylinder $dullwhite 5    -200 75 -15       200 75 -15
+cylinder $dullwhite 5    -200 100 -15       200 100 -15
+cylinder $dullwhite 5    -200 125 -15       200 125 -15
+cylinder $dullwhite 5    -200 150 -15       200 150 -15
+cylinder $dullwhite 5    -200 175 -15       200 175 -15
+
+# Vindueskarm
+box $dullwhite -200 200 0               200 215 15
+box $dullwhite -200 -115 0               200 -100 35
+box $dullwhite -215 -115 0                 -200 215 15
+box $dullwhite 200 -115 0                 215 215 15
+
+# Table
+box $dullwhite -250 -145 0      250 -130 200
+cylinder $dullwhite 15 -200 -300 170              -200 -145 170
+cylinder $dullwhite 15 -200 -300 30              -200 -145 30
+cylinder $dullwhite 15 200 -300 170              200 -145 170
+cylinder $dullwhite 15 200 -300 30              200 -145 30
+sphere $glass 50  -60 -80 100
+sphere $red 20    -130 -110 170
+
+# shelfs
+box $dullwhite -300 200 50            -250 215 550
+box $dullwhite -300 100 50            -250 115 550
+box $dullwhite -300 000 50            -250 015 550 rotate 1 0 0 -5
+box $dullwhite -300 -100 50            -250 -85 550
+
+# Hyldeknægte
+box $dullwhite -300 185 100                   -270 200 115
+box $dullwhite -300 185 500                   -270 200 485
+
+box $dullwhite -300 85 100                   -270 100 115
+box $dullwhite -300 85 500                   -270 100 485
+
+box $dullwhite -300 -15 100                   -270 0 115
+box $dullwhite -15 0 0  15 15 15 rotate 0 1 0 35 translate -265 -85 500
+
+box $dullwhite -300 -115 100                   -270 -100 115
+box $dullwhite -300 -115 500                   -270 -100 485
+
+sphere $red 25 -275 240 100
+sphere $blue 25 -275 140 200
+sphere $green 25 -275 -60 400
