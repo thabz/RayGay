@@ -15,7 +15,8 @@ class Matrix;
  * passes through all but the first and last control points. The curve is
  * \f$ C^1 \f$ continuous which means that the first derivative has no 
  * discontinuities in the tangent direction and magnitude. The curve is not
- * \f$ C^2 \f$ continuous as the second derivative is a linear interpolation.
+ * \f$ C^2 \f$ continuous as the second derivative is a linear interpolation
+ * between the control points.
  *
  * The Catmull-Rom spline from the segment \f$P_i\f$ to \f$P_{i+1}\f$ is defined as
  *
@@ -24,9 +25,14 @@ class Matrix;
  *            \frac{-3t^3 + 4t^2 + t}{2}P_{i+1} +
  *            \frac{t^3 - t^2}{2}P_{i+2}  \f]
  *
- * for \f$ t \in [0,1] \f$. The spline interpolates the positions \f$P_i\f$ to \f$P_{i+1}\f$ as \f$ f(0) = P_i \f$ and \f$ f(1) = P_{i+1} \f$.
+ * for \f$ t \in [0,1] \f$. 
  *
- * The derivative is 
+ * The spline interpolates the positions \f$P_i\f$ to \f$P_{i+1}\f$ as 
+ *
+ * \f[ f(0) = P_i \f] 
+ * \f[ f(1) = P_{i+1} \f]
+ *
+ * The first-order derivative is 
  *
  * \f[ f'(t) = \frac{-3t^2 + 4t - 1}{2}P_{i-1} +
  *            \frac{9t^2 - 10t}{2}P_{i} +
@@ -49,8 +55,9 @@ class CatmullRomSpline : public Path {
 	void transform(const Matrix& m);
 
     private:
-	int points_num;
-	std::vector<Vector> points;
+	unsigned int segmentBegin(const double t);
+	unsigned int points_num;
+	std::vector<Vector> P;
 };
 
 #endif
