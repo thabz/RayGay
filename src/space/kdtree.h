@@ -38,8 +38,8 @@ class KdTree : public GenericKdTree<Object> {
     private:
 	struct StackElem {
 	    double pb[3];   // coordinates of entry/exit point
+	    double t;        // the entry/exit signed distance
 	    const KdNode<Object>* node;   // pointer to far child
-	    float t;        // the entry/exit signed distance
 	    int prev;       // pointer to previus stack item
 	};
 

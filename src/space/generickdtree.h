@@ -22,6 +22,12 @@ template<class ObjectType>
 class KdNode {
     public:
 	union {
+	    // Enclosed objects when this is a leaf
+	    ObjectType** objects;
+	    // Position of splitting plane when not a leaf
+	    float splitPlane;
+	};
+	union {
 	    // [30 bits left/num | 2 bits axis]
 	    
 	    // Left child when not a leaf. Right child is left + 1.
@@ -32,13 +38,6 @@ class KdNode {
 	    // Axis where x,y,z is 0,1,2 and 3 denotes a leaf is 
 	    // packed into left/num as first two bits.
 	};
-	union {
-	    // Enclosed objects when this is a leaf
-	    ObjectType** objects;
-	    // Position of splitting plane when not a leaf
-	    float splitPlane;
-	};
-	//short axis;
 
 	void initLeafNode(uint num, ObjectType** objects);
 	void initInteriorNode(uint axis, float plane, uint left);
