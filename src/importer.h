@@ -13,6 +13,9 @@ class Vector2;
 class SceneObject;
 class PhotonSettings;
 
+/**
+ * Reads a .gay file and constructs a Scene
+ */
 class Importer {
 
     public:

@@ -36,6 +36,7 @@ class Lightsource {
 	/// Returns center of lightsource
 	const Vector getPosition() const { return position; };
 
+	/// Shoot a photon ray from this lightsource
 	virtual Ray getRandomPhotonRay() const;
 
     protected:
