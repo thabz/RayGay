@@ -24,6 +24,7 @@ linesegment	return tLINESEGMENT;
 material	return tMATERIAL;
 name		return tNAME;
 necklace	return tNECKLACE;
+print		return tPRINT;
 solidbox	return tSOLIDBOX;
 sphere		return tSPHERE;
 spiral		return tSPIRAL;
