@@ -15,6 +15,7 @@
 #include "objects/ply.h"
 #include "objects/blob.h"
 #include "objects/box.h"
+#include "objects/solidbox.h"
 #include "objects/sor.h"
 #include "objects/necklace.h"
 #include "objects/cylinder.h"
@@ -537,6 +538,12 @@ void Importer::parse(const string& filename) {
 	    Vector c1 = readVector(stream);
 	    Vector c2 = readVector(stream);
 	    cur_object = new Box(c1,c2,m);
+	} else if (command == "solidbox") {
+	    stream >> str1;
+	    Material* m = lookupMaterial(str1);
+	    Vector c1 = readVector(stream);
+	    Vector c2 = readVector(stream);
+	    cur_object = new SolidBox(c1,c2,m);
 	} else if (command == "wireframe") {
 	    string mesh_name = readString(stream);
 	    SceneObject* sobj = getNamedObject(mesh_name);
@@ -576,7 +583,7 @@ void Importer::parse(const string& filename) {
 	    while (stream.get() != '\n') {
 	    }
 	} else {
-	    throw_exception("Unknown keyword" + command);
+	    throw_exception("Unknown keyword: " + command);
 	}
 
 	/// 
