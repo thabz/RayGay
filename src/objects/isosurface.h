@@ -5,7 +5,11 @@
 #include "objects/object.h"
 
 /**
- * An isosurface is points described by a function.
+ * An isosurface is points described by a function. This is also called
+ * an implicit surface.
+ *
+ * The surface uses a function from \f$ \Re^3 \f$ to \f$ \Re \f$ to classify 
+ * points as inside, on or outside.
  *
  * An isosurface is any collection of points satisfying
  * \f[ f(x,y,z) - K = 0 \f]
