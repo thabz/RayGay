@@ -26,7 +26,7 @@
 #include "lights/arealight.h"
 #include "lights/spotlight.h"
 #include "lights/skylight.h"
-#include "materials/material.h"
+#include "materials/materials.h"
 #include "image/rgba.h"
 #include "image/image.h"
 #include "math/vector2.h"
