@@ -23,7 +23,7 @@ if ($selectedmonth eq '') {
 my $calHTML = makeSidebar($selectedmonth,$selectedyear,@entries);
 
 my $HTML;
-$HTML .= '<tr><td><h1 style="font-family:arial,helvetica">RAYTRACER<i style="font-family:serif; font-weight:normal">Blog</i></h1></td></tr>';
+$HTML .= '<tr><td><a href="index.cgi"><h1 style="color: black; font-family:arial,helvetica">RAYTRACER<i style="font-family:serif; font-weight:normal">Blog</i></h1></a></td></tr>';
 $HTML .= '<tr><td>&nbsp;</td></tr>';
 $HTML .= '<tr><td>&nbsp;</td></tr>';
 
