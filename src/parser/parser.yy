@@ -45,7 +45,6 @@
 #include "parser/function.h"    
 #include "parser/runtimeexception.h"    
 
-#include "camera.h"    
 #include "exception.h"    
 #include "renderersettings.h"
 #include "environment.h"
@@ -133,6 +132,7 @@ ActionListNode* top_actions;
 %token tOBJECT
 %token tPATHS
 %token tPHOTONMAP
+%token tPINHOLE
 %token tPOSITION tLOOKAT tUP
 %token tPOW
 %token tPRINT
@@ -148,6 +148,7 @@ ActionListNode* top_actions;
 %token tSUPERELLIPSOID
 %token tTEXTURE
 %token tTORUS
+%token tTYPE
 %token tWIREFRAME
 %token tUNION tDIFFERENCE tINTERSECTION
 %token tGLOBALPHOTONS 
@@ -476,7 +477,7 @@ AddCamera	: Camera
 
 Camera		: tCAMERA '{' 
                 {
-		    camera = new CameraNode();
+		    camera = new CameraNode(curPos());
 		}
                 CameraSettings '}'
                 {
@@ -511,6 +512,10 @@ CameraSetting   : tPOSITION Vector
                 | tAA Expr 
                 {
 		    camera->enableAA($2);
+		}
+                | tTYPE tQSTRING
+                {
+		    camera->setType(*$2);
 		}
                 ;
 

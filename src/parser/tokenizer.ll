@@ -135,6 +135,7 @@ texture		return tTEXTURE;
 translate	return tTRANSLATE;
 triangles	return tTRIANGLES;
 torus		return tTORUS;
+type		return tTYPE;
 union		return tUNION;
 up		return tUP;
 vertices	return tVERTICES;

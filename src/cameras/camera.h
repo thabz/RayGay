@@ -20,7 +20,7 @@ class Camera {
 	Camera(Vector position, Vector lookAt, Vector up, double fieldOfView, int width, int height);
 
 	/// Desctructor
-	~Camera();
+	virtual ~Camera();
 
 	/// Transform the camera
 	void transform(const Matrix& m);
@@ -61,14 +61,14 @@ class Camera {
 	unsigned int getAADepth() const { return aa_depth; };
 
 	/// Get a ray going through the screen
-	Ray getRay(const double x, const double y);
+	virtual Ray getRay(const double x, const double y) = 0;
 
 	void setImageSize(int width, int height) { this->width = width; this->height = height; };
 
 	/// Project a 3D point to the 2D screen
 	Vector2 project(const Vector& p) const;
 
-    private:
+    protected:
 	void init();
 	// General camera 
 	Vector position;

@@ -12,7 +12,7 @@
 #include "objects/object.h"
 #include "image/rgb.h"
 #include "scene.h"
-#include "camera.h"
+#include "cameras/camera.h"
 #include "image/image.h"
 #include "lights/lightsource.h"
 #include "stats.h"

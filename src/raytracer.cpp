@@ -11,7 +11,7 @@
 #include "image/rgb.h"
 #include "math/matrix.h"
 #include "scene.h"
-#include "camera.h"
+#include "cameras/camera.h"
 #include "lights/lightsource.h"
 #include "materials/material.h"
 #include "space/kdtree.h"

@@ -1,7 +1,7 @@
 
 #include "photonmapdump.h"
 #include "scene.h"
-#include "camera.h"
+#include "cameras/camera.h"
 #include "image/image.h"
 #include "photon/globalphotonmap.h"
 

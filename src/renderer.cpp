@@ -4,7 +4,7 @@
 
 #include "renderer.h"
 #include "exception.h"
-#include "camera.h"
+#include "cameras/camera.h"
 #include "image/image.h"
 #include "scene.h"
 #include "image/rgb.h"

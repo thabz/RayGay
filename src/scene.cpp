@@ -3,7 +3,7 @@
 #include <cassert>
 
 #include "scene.h"
-#include "camera.h"
+#include "cameras/camera.h"
 #include "lights/lightsource.h"
 #include "intersection.h"
 #include "ray.h"

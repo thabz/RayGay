@@ -2,10 +2,14 @@
 #ifndef PARSER_CAMERA_NODE_H
 #define PARSER_CAMERA_NODE_H
 
-#include "camera.h"
+#include <string>
+#include "cameras/camera.h"
+#include "cameras/pinhole.h"
 #include "parser/floatnodes.h"
 #include "parser/vectornodes.h"
 #include "parser/syntaxnode.h"
+
+using namespace std;
 
 /**
  * A node whose eval() constructs a Camera.
@@ -14,7 +18,7 @@ class CameraNode : public SyntaxNode {
 
     public:
 
-	CameraNode() {
+	CameraNode(FilePosition pos) : SyntaxNode(pos) {
 	    position = NULL;
 	    look_at = NULL;
 	    up = NULL;
@@ -51,6 +55,10 @@ class CameraNode : public SyntaxNode {
 	void enableAA(FloatNode* aa) {
 	    this->aa = aa;
 	}
+	void setType(string type) {
+	    // TOOD: Check for known types
+	    this->type = type;
+	}
 	void enableDoF(FloatNode* dof_aperture, FloatNode* dof_num) {
 	    this->dof_aperture = dof_aperture;
 	    this->dof_num = dof_num;
@@ -58,7 +66,12 @@ class CameraNode : public SyntaxNode {
 
 
 	Camera* eval() {
-	    Camera* result = new Camera();
+	    Camera* result = NULL;
+	    if (type == "pinhole" || type == "") {
+		result = new Pinhole();
+	    } else {
+		runtime_error("Unknown type of camera: " + type);
+	    }
 	    if (position != NULL) result->setPosition(position->eval());
 	    if (look_at != NULL) result->setLookAt(look_at->eval());
 	    if (up != NULL) result->setUp(up->eval());
@@ -78,6 +91,7 @@ class CameraNode : public SyntaxNode {
 	FloatNode* dof_num;
 	FloatNode* dof_aperture;
 	FloatNode* aa;
+	string type;
 };
 
 #endif
