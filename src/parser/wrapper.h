@@ -5,6 +5,9 @@
 #include <cassert>
 #include <libguile.h>
 #include <guile/gh.h>
+#include <iostream>
+
+using namespace std;
 
 class SceneObject;
 class Path;
@@ -146,7 +149,7 @@ static bool isSceneObject(SCM object_smob) {
 }
 
 static bool isWrappedObject(SCM obj) {
-    return (SCM_FALSEP(SCM_SMOB_PREDICATE (wrapped_object_tag, obj)));
+    return (SCM_NFALSEP(SCM_SMOB_PREDICATE (wrapped_object_tag, obj)));
 }
 
 #endif
