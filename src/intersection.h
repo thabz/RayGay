@@ -45,6 +45,12 @@ class Intersection {
 	
         /// Set surface normal at intersection point
 	void setNormal(const Vector& normal) { this->normal = normal; };
+	
+        /// Get surface normal at intersection point
+	const Vector& getOriginalNormal() const { return o_normal; };
+	
+        /// Set surface normal at intersection point
+	void setOriginalNormal(const Vector& n) { this->o_normal = n; };
 
 	/// Flip direction of normal
 	void flipNormal() { normal *= -1.0; };
@@ -61,6 +67,7 @@ class Intersection {
     private:
 	Vector point;
 	Vector normal;
+	Vector o_normal;
 	Vector2 uv;
 	double t;
 	Object* o; 

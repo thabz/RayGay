@@ -67,6 +67,7 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, const int depth
     const Vector point = intersection.getPoint();
     
     Vector normal = intersection.getNormal();
+    intersection.setOriginalNormal(normal);
     const Material* material = object->getMaterial();
     normal = material->bump(intersection,normal);
     intersection.setNormal(normal);
