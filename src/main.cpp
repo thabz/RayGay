@@ -69,6 +69,40 @@ void abortRenderingCB() {
     }
 }
 
+enum windowToolkitId {
+    GTK,
+    COCOA,
+    NONE
+};
+
+int getWindowToolkit() {
+#ifdef HAVE_GTK
+    return GTK;
+#endif
+#ifdef HAVE_COCOA
+    return COCOA;
+#endif    
+    return NONE;
+}
+
+PreviewWindow* windowFactory(int w, int h) {
+    PreviewWindow* result;
+    switch (getWindowToolkit()) {
+	case GTK:
+	    result = new PreviewWindowGTK(w, h, abortRenderingCB);
+	    break;
+	case COCOA:
+	    throw_exception("COCOA Toolkit not supported");
+	    break;
+	case NONE:
+	default:
+	    result = NULL;
+	    break;
+    }
+    return result;
+}
+
+
 //Assignments* global_assigments = new Assignments();
 
 void preparePhotonMaps(Scene* scene,
@@ -276,9 +310,7 @@ void work(string scenefile, string outputfile, int jobs) {
     PreviewWindow* preview_window = NULL;
     if (env->hasPreviewWindow()) {
 	Vector2 size = getImageSize();
-#ifdef HAVE_GTK
-	preview_window = new PreviewWindowGTK(int(size[0]),int(size[1]), abortRenderingCB);
-#endif
+	preview_window = windowFactory(int(size[0]),int(size[1]));
 	env->setPreviewWindow(preview_window);
 	preview_window->run();
     }
@@ -312,11 +344,11 @@ void print_usage() {
 
 int main(int argc, char *argv[]) {
     Environment* env = Environment::getUniqueInstance();
-#ifdef HAVE_GTK
-    env->hasPreviewWindow(true);
-#else
-    env->hasPreviewWindow(false);
-#endif
+    if (getWindowToolkit() != NONE) {
+	env->hasPreviewWindow(true);
+    } else {
+	env->hasPreviewWindow(false);
+    }
 
     // Use getopt to parse arguments.
     int c;
