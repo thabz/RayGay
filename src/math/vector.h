@@ -15,8 +15,7 @@
 #include <iosfwd>
 #include "math/constants.h"
 
-/// Implements a vector
-
+/// Implements a 3D vector
 class Vector {
     friend std::ostream & operator<< (std::ostream &os, const Vector &x);
     friend Vector operator*(const double x, const Vector &v);
@@ -34,11 +33,15 @@ public:
     double &operator[](const int i); ///< Index into coordinates
     const double &operator[](const int i) const; ///< Index into coordinates
     double operator*(const Vector &v) const; ///< Vector dot product (aka scalar product)
+    /// Vector addition
     Vector operator+(const Vector &v) const;
+    /// Vector subtraction 
     Vector operator-(const Vector &v) const;
+    /// Vector multiplication
     Vector operator*(const double x) const;
+    /// Vector division
     Vector operator/(const double x) const;
-    static Vector xProduct (const Vector& v1, const Vector& v2); ///< Returns the scalar product v1 &times; v2
+    static Vector xProduct (const Vector& v1, const Vector& v2); ///< Returns the scalar product v1 x v2
 
     static double area(const Vector& v0, const Vector& v1, const Vector& v2);  ///< The area of the triangle with the vertices v0, v1 and v2
     bool operator()(const Vector* v1, const Vector* v2) const {

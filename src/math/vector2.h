@@ -4,15 +4,23 @@
 
 #include "math/constants.h"
 
+/// Implements a 2D vector
 class Vector2 {
     public:
+	/// Constructs the origin
 	Vector2();
+
+	/// Constructor
 	Vector2(Float x, Float y);
 
 	Float &operator[](const int i); ///< Index into coordinates
 	const Float &operator[](const int i) const; ///< Index into coordinates
+
+	/// Scale vector
 	Vector2 operator*(const Float x) const;
-	Vector2 operator+(const Vector2 &v) const;
+
+	/// Add two vectors
+	Vector2 operator+(const Vector2 &v) const; 
 	bool operator==(const Vector2 &v) const; ///< Comparator
 
 	bool operator()(const Vector2* v1, const Vector2* v2) const {
@@ -20,7 +28,7 @@ class Vector2 {
 	}
 
     protected:
-	Float _vector[2];
+	Float _vector[2]; ///< The x,y components of the vector
 };
 
 inline

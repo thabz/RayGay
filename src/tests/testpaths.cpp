@@ -100,6 +100,8 @@ void line_test() {
     assert(l1.isParallel(l3));
     assert(l2.isParallel(l3));
     assert(l3.isParallel(l3));
+    assert(l3.contains(Vector(2,2,2)));
+    assert(l3.contains(Vector(-2,-2,-2)));
 
     l1 = Line(Vector(5,0,0),Vector(10,0,0));
     assert(IS_EQUAL(l1.distance(Vector(0,1,0)),1.0));
