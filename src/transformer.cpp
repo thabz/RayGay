@@ -4,6 +4,7 @@
 
 Transformer::Transformer() {
     transformed = false;
+    scaled = false;
 }
 
 void Transformer::transform(const Matrix& m) {
@@ -12,9 +13,8 @@ void Transformer::transform(const Matrix& m) {
     Matrix rotation = transformation.extractRotation();
     inverse_rotation = rotation.inverse();
     normal_transformation = inverse_rotation.transpose();
-    if (!transformation.isIdentity()) {
-	transformed = true;
-    }
+    transformed = !transformation.isIdentity();
+    scaled = transformation.isScaled();
 }
 
 Vector Transformer::pointToObject(const Vector& p) const {

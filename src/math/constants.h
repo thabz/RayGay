@@ -45,11 +45,13 @@
 #define MIN(x,y)	((x) < (y) ? (x) : (y))
 #define MAX(x,y)	((x) > (y) ? (x) : (y))
 
-#define IS_POSITIVE(p)	(p > -EPSILON)
-#define IS_NEGATIVE(p)	(p < EPSILON)
+#define IS_POSITIVE(p)	((p) > -EPSILON)
+#define IS_NEGATIVE(p)	((p) < EPSILON)
 
 #define IS_ZERO(p)	(fabs(p) < EPSILON)
+#define IS_NZERO(p)	(fabs(p) >= EPSILON)
 #define IS_EQUAL(x,y)	(IS_ZERO((x)-(y)))
+#define IS_NEQUAL(x,y)	(IS_NZERO((x)-(y)))
 
 #define IS_LESS_THAN(a,b) 	IS_POSITIVE(((b) - (a)))
 #define IS_GREATER_THAN(a,b) 	IS_POSITIVE(((a) - (b)))

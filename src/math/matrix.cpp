@@ -53,6 +53,15 @@ bool Matrix::isIdentity() const {
     return true;
 }
 
+bool Matrix::isScaled() const {
+    double m00 = get(0,0);
+    double m11 = get(1,1);
+    double m22 = get(2,2);
+    return IS_NEQUAL(m00,1.0) ||
+ 	   IS_NEQUAL(m11,1.0) ||
+    	   IS_NEQUAL(m22,1.0);
+}
+
 /// Create a translations transformation
 Matrix Matrix::matrixTranslate(const Vector trans) {
     Matrix translate;

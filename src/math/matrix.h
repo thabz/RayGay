@@ -35,6 +35,9 @@ class Matrix {
 	
 	/// Says whether this matrix is the identity
 	bool isIdentity() const;
+
+	/// Says whether this matrix contains scaling
+	bool isScaled() const;
 	
         /// Returns the inverse to this matrix
 	Matrix inverse() const;

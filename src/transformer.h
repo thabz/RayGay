@@ -41,6 +41,7 @@ class Transformer {
 	Matrix inverse_rotation;
 	Matrix normal_transformation;
 	bool transformed;
+	bool scaled;
 };
 
 inline
@@ -49,8 +50,13 @@ Ray Transformer::rayToObject(const Ray& ray) const {
 	
     Vector o = inverse_transformation * ray.getOrigin();
     Vector d = inverse_rotation * ray.getDirection();
-    double l = d.length();
-    d = d / l;
+    double l;
+    if (scaled) {
+	l = d.length();
+	d = d / l;
+    } else {
+	l = 1.0;
+    }
     double ior = ray.getIndiceOfRefraction();
     Ray result = Ray(o,d,ior);
     result.t_scale = l;
