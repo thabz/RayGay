@@ -5,6 +5,7 @@
 #include "spacesubdivider.h"
 #include "stats.h"
 #include "math/functions.h"
+#include "math/halton.h"
 
 /**
  * @param pos The position of the spotlight
@@ -17,6 +18,11 @@ Spotlight::Spotlight(const Vector& pos, const Vector& look_at, double angle, dou
     _dir.normalize();
     _angle = DEG2RAD(angle);
     _cut_angle = DEG2RAD(cut_angle);
+    _qmc = new Halton(2,2);
+}
+
+Spotlight::~Spotlight() {
+    delete _qmc;
 }
 
 void Spotlight::transform(const Matrix& m) {
@@ -55,6 +61,6 @@ Lightinfo Spotlight::getLightinfo(const Intersection& inter, const Vector& norma
 }
 
 Ray Spotlight::getRandomPhotonRay() const {
-    Vector dir = Math::perturbVector(_dir,_angle);
+    Vector dir = Math::perturbVector(_dir,_angle,_qmc);
     return Ray(this->getPosition(),dir,0);
 }

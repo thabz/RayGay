@@ -4,6 +4,7 @@
 #include "lightsource.h"
 
 class Matrix;
+class QMCSequence;
 
 /// A directional Lightsource with a soft cutoff angle
 class Spotlight : public Lightsource {
@@ -11,6 +12,7 @@ class Spotlight : public Lightsource {
     public:
 	/// Constructor
 	Spotlight(const Vector& pos, const Vector& look_at, double angle, double cut_angle);
+	virtual ~Spotlight();
 	Lightinfo getLightinfo(const Intersection& inter, const Vector& normal, SpaceSubdivider* space) const;
 	void transform(const Matrix& m);
 	Ray getRandomPhotonRay() const;
@@ -19,6 +21,7 @@ class Spotlight : public Lightsource {
 	Vector _dir;
 	double _angle;
 	double _cut_angle;
+	QMCSequence* _qmc;
 };
 
 #endif
