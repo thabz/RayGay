@@ -203,8 +203,12 @@ double Polynomial::leadingCoefficient() const {
  * @see http://www.sosmath.com/algebra/factor/fac01/fac01.html
  */
 Polynomial Polynomial::division(const Polynomial& divisor, Polynomial& remainder) const {
-    assert(divisor.order() > 0);
     assert(!(divisor.order() == 0 && IS_ZERO(divisor.coefficients[0])));
+
+    if (divisor.order() == 0) {
+	remainder = Polynomial(0);
+	return *this / divisor.coefficient(0);
+    }
 
     double quotient_coeffs[num];
     for(uint i = 0; i < num; i++) quotient_coeffs[i] = 0.0;

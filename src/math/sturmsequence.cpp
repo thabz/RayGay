@@ -1,8 +1,10 @@
 
 #include <iostream>
+#include <cassert>
 #include "math/sturmsequence.h"
 
 SturmSequence::SturmSequence(const Polynomial& polynomial) {
+    assert(f.size() == 0);
     Polynomial pol0 = Polynomial(0.0);
     f.push_back(polynomial);
     f.push_back(polynomial.derivative());

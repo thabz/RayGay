@@ -28,8 +28,8 @@
  * For any real value \f$ u \f$, consider the sequence of values 
  * \f$ P_i(u) \f$ for all \f$ i \f$. Let \f$ F(u) \f$ be the number 
  * of times this sequence changes sign, for a particular value of 
- * \f$ u \f$. Now, Sturm's theorem says that the number of roots of P
- * in the interval \f$ ]a,b[ \f$ is the absolute value of 
+ * \f$ u \f$. Now, Sturm's theorem says that the number of distinct 
+ * roots of \f$ P \f$ in the interval \f$ ]a,b[ \f$ is the absolute value of 
  * \f$ F(b) - F(a) \f$.
  *
  * This is an implementation of that method.
