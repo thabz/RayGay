@@ -454,6 +454,18 @@ void solve_quadratic_test() {
     assert(contains(roots,2,-5));
 }
 
+void perturb_vector_test() {
+    double max_angle = 10.0;
+    for(int i = 0; i < 10000; i++) {
+	Vector axis = Vector(RANDOM(-1,1),RANDOM(-1,1),RANDOM(-1,1));
+	Vector perturbed = Math::perturbVector(axis,max_angle);
+	axis.normalize();
+	perturbed.normalize();
+	double angle = acos(axis*perturbed);
+	assert(angle <= DEG2RAD(max_angle*2));
+    }
+}
+
 int main(int argc, char *argv[]) {
     vector_test();
     vector2_test();
@@ -465,5 +477,6 @@ int main(int argc, char *argv[]) {
     solve_quadratic_test();
     solve_cubic_test();
     solve_quartic_test();
+    perturb_vector_test();
     return EXIT_SUCCESS;
 }

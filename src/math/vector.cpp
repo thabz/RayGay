@@ -87,6 +87,16 @@ Vector Vector::toPolar() const {
     return Vector(r,theta,phi);
 }
 
+/**
+ * Converts from polar (r,theta,phi) to rectangular (x,y,z) coordinates
+ */
+Vector Vector::toRectangular() const {
+    double x = _vector[0] * sin(_vector[1]) * cos(_vector[2]);
+    double y = _vector[0] * sin(_vector[1]) * sin(_vector[2]);
+    double z = _vector[0] * cos(_vector[1]);
+    return Vector(x,y,z);
+}
+
 double Vector::area(const Vector& v0, const Vector& v1, const Vector& v2) {
     return xProduct(v1-v0,v2-v0).length() / 2.0;
 }

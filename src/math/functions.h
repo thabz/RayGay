@@ -1,6 +1,8 @@
 #ifndef MATH_FUNCTIONS_H
 #define MATH_FUNCTIONS_H
 
+class Vector;
+
 /// A library of math functions
 class Math {
 
@@ -23,6 +25,8 @@ class Math {
 
 	/// Solves quadratic equation
 	static int solveQuadratic(double A, double B, double C, double* roots);
+
+	static Vector perturbVector(const Vector& axis, const double angle);
 };
 
 inline double Math::clamp(double a) {

@@ -66,8 +66,11 @@ public:
     /// Comparator
     bool operator==(const Vector &v) const;
 
-    /// Convert to polar coordinates where the resulting vector is (r,phi,theta)
+    /// Convert from rectangular to polar coordinates
     Vector toPolar() const;
+
+    // Convert from polar to rectangular coordinates
+    Vector toRectangular() const;
 
 protected:
     double _vector[3]; ///< The x,y,z components of the vector

@@ -5,7 +5,6 @@
 
 #include "math/functions.h"
 #include "math/vector.h"
-//#include "math/solvequartic.h"
 
 /**
  * The binomial coefficient is defined as 
@@ -239,4 +238,13 @@ int Math::solveQuadratic(double A, double B, double C, double* roots) {
     }
 }
 
+Vector Math::perturbVector(const Vector& axis, const double angle) {
+    Vector axisP = axis.toPolar();
+    double rad = DEG2RAD(angle) / 2.0;
+    double rnd1 = RANDOM(-rad,rad);
+    double rnd2 = RANDOM(-rad,rad);
+    axisP[1] += rnd1;
+    axisP[2] += rnd2;
+    return axisP.toRectangular();
+}
 
