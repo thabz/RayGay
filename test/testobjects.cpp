@@ -313,8 +313,6 @@ void cylinder_test() {
     ray = Ray(Vector(0,0,50),Vector(0,0,-1),-1);
     result = cyl->allIntersections(ray);
     assert(result.size() == 2);
-    cout << result[0].getPoint() << endl;
-    cout << result[1].getPoint() << endl;
     assert(result[0].getPoint() == Vector(0,0,10));
     assert(result[0].getNormal() == Vector(0,0,1));
     assert(result[1].getPoint() == Vector(0,0,2));
@@ -325,12 +323,20 @@ void cylinder_test() {
     ray = Ray(Vector(0,50,1),Vector(0,-1,0),-1);
     result = cyl->allIntersections(ray);
     assert(result.size() == 2);
-    cout << result[0].getPoint() << endl;
-    cout << result[1].getPoint() << endl;
     assert(result[0].getPoint() == Vector(0,10,1));
     assert(result[0].getNormal() == Vector(0,1,0));
     assert(result[1].getPoint() == Vector(0,2,1));
     assert(result[1].getNormal() == Vector(0,-1,0));
+
+    // Test clone()
+    Object* s1 = new Cylinder(Vector(2,0,0),Vector(10,0,0),10,true,m);
+    Object* s2 = dynamic_cast<Object*>(s1->clone());
+    s1->transform(Matrix::matrixTranslate(Vector(0,-100,0)));
+    s2->transform(Matrix::matrixTranslate(Vector(0,100,0)));
+    assert(intersects(s1,Vector(5,-100,-1000),Vector(0,0,1)) == true);
+    assert(intersects(s2,Vector(5,-100,-1000),Vector(0,0,1)) == false);
+    assert(intersects(s1,Vector(5,100,-1000),Vector(0,0,1)) == false);
+    assert(intersects(s2,Vector(5,100,-1000),Vector(0,0,1)) == true);
 }
 
 void test_3ds() {
