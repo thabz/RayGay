@@ -36,7 +36,7 @@
 #include "tetrahedron.h"
 #include "tessalation.h"
 #include "paths/circle.h"
-#include "cylinder.h"
+#include "extrusion.h"
 #include "pixelstore.h"
 #include "raytracer.h"
 #include "bsp.h"
@@ -69,7 +69,7 @@ void testScene4() {
     Sphere s3 = Sphere(Vector(200,50,-200),130.0,mat);
     Sphere s4 = Sphere(Vector(-200,50,-200),130.0,mat);
     Sphere s5 = Sphere(Vector(0,150,0),130.0,mat);
-    //Cylinder c1 = Cylinder(Vector(0,0,0),Vector(0,200,0),130,10,MATERIAL_SHINY_RED);
+    //Extrusion c1 = Extrusion(Vector(0,0,0),Vector(0,200,0),130,10,MATERIAL_SHINY_RED);
     
 /*    scene.addObject(&s1);
     scene.addObject(&s2);
@@ -83,7 +83,7 @@ void testScene4() {
     Spiral spiral = Spiral(&circle1,100,10);
     Spiral spiral2 = Spiral(&spiral,30,100,0.5);
 
-    Cylinder* torus = new Cylinder(circle1,100,50,30,mat);
+    Extrusion* torus = new Extrusion(circle1,100,50,30,mat);
     //scene.addObject(torus);
 
     Tessalation tet = Tessalation(Vector(0,100,0),250,1,MATERIAL_SHINY_BLUE);
@@ -92,7 +92,7 @@ void testScene4() {
     cout << "Edges : " << edges->size() << endl;
     for(unsigned int i = 0; i < edges->size(); i++) {
 	Linesegment line = (*edges)[i];
-	Cylinder* c = new Cylinder(line.begin(),line.end(),20.0,20,MATERIAL_SHINY_RED);
+	Extrusion* c = new Extrusion(line.begin(),line.end(),20.0,20,MATERIAL_SHINY_RED);
 	scene.addObject(c);
     }
     delete edges;
@@ -105,7 +105,7 @@ void testScene4() {
     }
     delete vertices;
 
-    //Cylinder* tube = new Cylinder(spiral,10,16,200,MATERIAL_CHROME);
+    //Extrusion* tube = new Extrusion(spiral,10,16,200,MATERIAL_CHROME);
    // scene.addObject(tube); 
 
 

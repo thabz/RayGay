@@ -15,7 +15,7 @@
 #include "hierarchy.h"
 #include "bsp.h"
 #include "paths/circle.h"
-#include "cylinder.h"
+#include "extrusion.h"
 #include "paths/linesegment.h"
 
 #define PHONG_ANGLETHRESHOLD 0.4226f // Smoothing threshold approx. 65 Deegrees :) 
@@ -371,7 +371,7 @@ void Mesh::test() {
 
     // Test torus
     Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
-    Cylinder torus = Cylinder(circle1,100,16,10,Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
+    Extrusion torus = Extrusion(circle1,100,16,10,Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
     torus.prepare();
 
     assert(torus.corners.size() == 16*10);

@@ -10,7 +10,7 @@
 #include "sphere.h"
 #include "boolean.h"
 #include "mesh.h"
-#include "cylinder.h"
+#include "extrusion.h"
 #include "box.h"
 #include "tetrahedron.h"
 #include "tessalation.h"
@@ -215,7 +215,7 @@ void tesselation_test() {
     assert(t->getVertices()->size() == 56);
 }
 
-void cylinder_test() {
+void extrusion_test() {
 
     Material m = Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
     // Check bounds 
@@ -223,19 +223,19 @@ void cylinder_test() {
     Vector top = Vector(10,0,0);
     BoundingBox b = BoundingBox(Vector(-1,-10,-10),Vector(11,10,10));
 	    
-    Cylinder* c = new Cylinder(o,top,9.0,5,m);
+    Extrusion* c = new Extrusion(o,top,9.0,5,m);
     assert(b.inside(c->boundingBoundingBox()));
 
-    c = new Cylinder(top,o,9.0,5,m);
+    c = new Extrusion(top,o,9.0,5,m);
     assert(b.inside(c->boundingBoundingBox()));
 
     top = Vector(0,10,0);
     b = BoundingBox(Vector(-10,-1,-10),Vector(10,11,10));
-    c = new Cylinder(o,top,5.0,5,m);
+    c = new Extrusion(o,top,5.0,5,m);
     assert(b.inside(c->boundingBoundingBox()));
 
     // Check intersection 
-    c = new Cylinder(Vector(0,0,0),Vector(0,0,-10),5.0,3,m);
+    c = new Extrusion(Vector(0,0,0),Vector(0,0,-10),5.0,3,m);
     c->prepare();
     BSP bsp = BSP();
     c->addParts(&bsp);
@@ -244,12 +244,12 @@ void cylinder_test() {
     assert(bsp.intersect(r));
 
     // Check generated mesh 
-    c = new Cylinder(Vector(0,0,0),Vector(0,0,-10),2.0,5,m);
+    c = new Extrusion(Vector(0,0,0),Vector(0,0,-10),2.0,5,m);
     c->prepare();
     assert(c->getVertices()->size() == 5*2 + 2);
 
     Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
-    Cylinder torus = Cylinder(circle1,100,16,10,Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
+    Extrusion torus = Extrusion(circle1,100,16,10,Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.20,30));
     torus.prepare();
 
     assert(torus.getVertices()->size() == 16*10);
@@ -263,7 +263,7 @@ int main(int argc, char *argv[]) {
     mesh_test();
     tetrahedron_test();
     tesselation_test();
-    cylinder_test();
+    extrusion_test();
 
     Mesh::test();
     Box::test();
