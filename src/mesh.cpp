@@ -352,6 +352,11 @@ void Mesh::test() {
 	for(unsigned int j = 0; j < 3; j++) {
 	   assert(tri->interpolated_normal[j] != -1);
 	   assert(tri->vertex[j] != -1);
+	   for (int k = 0; k < 3; k++) {
+	       if (k != j) {
+		   assert(tri->interpolated_normal[k] != tri->interpolated_normal[j]);
+	       }
+	   }
 	}
     }
 
