@@ -113,17 +113,20 @@ ImageIO* getImageIO(const std::string& filename) {
 /**
  * Writes the image into a  24 bit uncompressed tga-file
  */
-void Image::save(const std::string& filename) const {
-    // Clip RGBA values to be in [0,1]
+void Image::save(const std::string& filename) {
+    clipColors();
+    ImageIO* io = getImageIO(filename);
+    io->save(this,filename);
+    delete io;
+}
+
+// Clip RGBA values to be in [0,1]
+void Image::clipColors() {
     unsigned int num = (unsigned int)(getWidth()*getHeight()*4);
     for(unsigned int i = 0; i < num; i++) {
 	if (data[i] < 0) data[i] = 0;
 	if (data[i] > 1) data[i] = 1;
     }
-
-    ImageIO* io = getImageIO(filename);
-    io->save(this,filename);
-    delete io;
 }
 
 /**

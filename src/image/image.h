@@ -36,8 +36,8 @@ class Image {
 	    IMAGE_FLOAT* p = &data[4*(y*width + x)];
 	    return RGBA(*(p++),*(p++),*(p++),*p);
 	};
-	/// Saves this image as an uncompressed tga-file
-	void save(const std::string& filename) const;
+	/// Saves this image 
+	void save(const std::string& filename);
 	/// Returns width of image
 	int getWidth() const { return width; };
 	/// Returns height of image
@@ -45,6 +45,9 @@ class Image {
 
 	/// Converts image to grayscale
 	void grayscale();
+
+	/// Clip colors
+	void clipColors();
 
 	/// Copy the content of other into this image
 	void copy(Image* other);
