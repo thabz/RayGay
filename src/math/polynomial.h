@@ -31,7 +31,11 @@ class Polynomial {
 	/// Comparator
 	bool operator==(const Polynomial& p) const;
 
+	
+
     private:
+	void reduce();
+	
 	uint num;
 	// Eg. c[2]x^2 + c[1]x + c[0]
 	double* coefficients;

@@ -15,6 +15,7 @@
  * 
  * Implemented as a slow recursive function.
  *
+ * TODO: Use for table lookup for small values eg. n,k < 16
  * @see http://www.brpreiss.com/books/opus4/html/page467.html for a O(n^2) version.
  */
 unsigned long Math::binomialCoefficient(long n, long k) {

@@ -80,3 +80,9 @@ bool Polynomial::operator==(const Polynomial& p) const {
     return true;
 }
 
+void Polynomial::reduce() {
+    while (num > 1 && IS_ZERO(coefficients[num-1])) {
+	num--;
+    }
+}
+
