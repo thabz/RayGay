@@ -412,6 +412,10 @@ void solve_quadratic_test() {
 
     assert(Math::solveQuadratic(0,5,10,roots) == 1);
     assert(contains(roots,1,-2));
+
+    assert(Math::solveQuadratic(1,0,-25,roots) == 2);
+    assert(contains(roots,2,5));
+    assert(contains(roots,2,-5));
 }
 
 int main(int argc, char *argv[]) {
