@@ -40,7 +40,7 @@ qstring \"([^\n\"])*\"
 %x comment
 
 %%
-[ \t]		;
+[ \t\r]		;
 "/*"		BEGIN(comment);
 <comment>[^*\n]*        /* eat anything that's not a '*' */
 <comment>"*"+[^*/\n]*   /* eat up '*'s not followed by '/'s */
