@@ -29,6 +29,8 @@ TODO:
 * Adaptive arealights
 * Adaptive gloss
 + Mathematical torus.
+* Fix the numerical error in the final gather near wall edges
+  See http://www.asimov.de/Studienarbeit/tracer.html
 
 
 * Scaling of all objects: See http://www.cl.cam.ac.uk/Teaching/2000/AGraphHCI/SMEG/node2.html#SECTION00024000000000000000
