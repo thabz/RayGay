@@ -77,10 +77,18 @@ void test_tga() {
     delete img2;
 }
 
+void test_jpg() {
+    Image* img = new Image("gfx/simple.jpg");
+    assert(img->getWidth() == 10);
+    assert(img->getHeight() == 10);
+    delete img;
+}
+
 int main(int argc, char *argv[]) {
 
     test_rgba();
     test_tga();
     test_png();
+    test_jpg();
     return EXIT_SUCCESS;
 }
