@@ -1,5 +1,6 @@
 
 #include "paths/line.h"
+#include <math.h>
 
 /**
  * Constructor takes two points that the line pass
@@ -12,12 +13,21 @@ Line::Line(const Vector& a, const Vector& b) {
     this->b = b;
 }
 
+double Line::sqrDistance(const Vector& p) const {
+    Vector diff = p - a;
+    Vector dir = getDirection();
+    double sqrlen = dir.norm();
+    double t = (diff * dir ) / sqrlen;
+    diff = diff - t * dir;
+    return diff.norm();
+}
+
 double Line::distance(const Vector& p) const {
-    // TODO: Implement
+    return sqrt(sqrDistance(p));
 }
 
 bool Line::contains(const Vector& p) const {
-    return IS_ZERO(distance(p));
+    return IS_ZERO(sqrDistance(p));
 }
 
 bool Line::isParallel(const Line& other) const {

@@ -9,6 +9,7 @@
 #include "paths/linesegment.h"
 #include "paths/spiral.h"
 #include "paths/circle.h"
+#include "paths/line.h"
 #include "boundingbox.h"
 
 void circle_test() {
@@ -90,10 +91,30 @@ void linesegment_test() {
     assert(!l.isClosed());
 }
 
-int main(int argc, char *argv[]) {
+void line_test() {
+    Line l1 = Line(Vector(1,1,1),Vector(2,2,2));
+    Line l2 = Line(Vector(2,2,2),Vector(1,1,1));
+    assert(l1 == l2);
 
+    Line l3 = Line(Vector(3,3,3),Vector(4,4,4));
+    assert(l1.isParallel(l3));
+    assert(l2.isParallel(l3));
+    assert(l3.isParallel(l3));
+
+    l1 = Line(Vector(5,0,0),Vector(10,0,0));
+    assert(IS_EQUAL(l1.distance(Vector(0,1,0)),1.0));
+    assert(IS_EQUAL(l1.distance(Vector(0,-2,0)),2.0));
+    assert(IS_EQUAL(l1.distance(Vector(1,0,0)),0.0));
+    assert(l1.contains(Vector(-10000,0,0)));
+    assert(!l1.contains(Vector(0,0,10000)));
+    assert(!l1.contains(Vector(1,1,0)));
+
+}
+
+int main(int argc, char *argv[]) {
     linesegment_test();
     circle_test();
+    line_test();
     return EXIT_SUCCESS;
 }
 
