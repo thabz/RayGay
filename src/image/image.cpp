@@ -4,6 +4,9 @@
 #include <cassert>
 #include <iostream>
 #include <math.h>
+#include <memory.h>
+
+#define byte unsigned char
 
 using namespace std;
 
@@ -90,11 +93,11 @@ double Image::biCubicP(double x) const {
    return x > 0 ? x : 0; 
 }
 
-#define byte unsigned char
 
 void Image::save(const std::string& filename) {
     byte* bytes = new byte[height*width*3];
     byte Header[18];
+    memset(&Header,0,18);
 
     Header[0] = 0;
     Header[1] = 0;
@@ -114,6 +117,8 @@ void Image::save(const std::string& filename) {
     Header[15] = ((long) height >> 8);
     Header[16] = 24;
     Header[17] = 0;
+
+    
     RGB color = RGB(0.0,0.0,0.0);
 
     for(int y = 0; y < height ; y++) {
@@ -155,21 +160,28 @@ Image* Image::load(const std::string& filename) {
     fseek(Handle, 0, 0);
     fread(Header, 1, 18, Handle);
 
+
+    int bpp = int(Header[16]) / 8; // Bytes per pixel
+        cout << "bpp: " << bpp << endl;
+    if (Header[2] != 2 || bpp < 3 ) {
+        cout << "Error reading " << filename << ": Only 24 or 32 bit noncompressed RGB is supported" << endl;
+        exit(EXIT_FAILURE);
+    }
     
     long width = ((long) Header[13] << 8) + Header[12];
     long height = ((long) Header[15] << 8) + Header[14];
     assert(width > 0);
     assert(height > 0);
-    byte* bytes = new byte[width*height*3];
+    byte* bytes = new byte[width*height*bpp];
 
     fseek(Handle, 18, 0);
-    fread(bytes, 3, width*height, Handle);
+    fread(bytes, bpp, width*height, Handle);
     fclose(Handle);
 
     double* data = new double[width*height*3];
     for(int y = 0; y < height ; y++) {
         for(int x = 0; x < width; x++) {
-	    long offset = ((height-1-y)*width + x)*3;
+	    long offset = ((height-1-y)*width + x)*bpp;
 	    data[(y*width + x)*3 + 0] = bytes[offset+2] / double(255.0);
 	    data[(y*width + x)*3 + 1] = bytes[offset+1] / double(255.0);
 	    data[(y*width + x)*3 + 2] = bytes[offset+0] / double(255.0);

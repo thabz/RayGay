@@ -54,10 +54,10 @@ using namespace std;
 
 void testScene4() {
     Scene scene;
+ //   scene.setEnvironmentMap("stbp.tga");
 
     Material mat = MATERIAL_SHINY_BLUE;
-    mat.setBumpmap("dotbump.tga",0.5);
-    mat.setKs(0);
+    mat.setBumpmap("dotbump.tga",1.0);
     Sphere s1 = Sphere(Vector(200,50,200),130.0,mat);
     Sphere s2 = Sphere(Vector(-200,50,200),130.0,mat);
     Sphere s3 = Sphere(Vector(200,50,-200),130.0,mat);
@@ -73,9 +73,6 @@ void testScene4() {
     
   //  scene.addObject(&c1);
 
-    scene.setEnvironmentMap("stbp.tga");
-  //  scene.setEnvironmentMap("bump.tga");
-    
     Circle circle1 = Circle(Vector(0,75,0),200,Vector(0,1,0));
     Spiral spiral = Spiral(&circle1,100,10);
     Spiral spiral2 = Spiral(&spiral,30,100,0.5);
@@ -117,7 +114,7 @@ void testScene4() {
     scene.addLight(&light3);
     
     Box b = Box(Vector(-300,-200,-300),Vector(300,-150,300),MATERIAL_SHINY_GREEN); /* Floor */
-    //scene.addObject(&b);
+    scene.addObject(&b);
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));
