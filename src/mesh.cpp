@@ -130,7 +130,7 @@ void Mesh::computeInterpolatedNormals() {
 	    Vertex vertex = vertices[tri->vertex[j]];
 	    int num = 1;
 	    Vector interpolated_normal = normal;
-	    for(unsigned int v=0; v < vertex.tris.size(); v++) {
+	    for(unsigned int v = 0; v < vertex.tris.size(); v++) {
 		Tri* other_tri = vertex.tris[v];
 		Vector other_normal = normals[other_tri->normal_idx];
 		if (other_tri != tri &&
@@ -355,6 +355,14 @@ void Mesh::test() {
 	Vertex v = torus.vertices[i];
 	assert(v.tris.size() == 6);
     }
+
+    assert(torus.normals.size() == 4 * torus.tris.size());
+   
+    for(unsigned int i = 0; i < torus.normals.size(); i++) {
+	Vector normal = torus.normals[i];
+	assert(IS_EQUAL(normal.norm(),double(1.0)));
+    }
+
 
     cout << "Mesh::test() done." << endl;
 }

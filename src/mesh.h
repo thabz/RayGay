@@ -91,7 +91,6 @@ class Mesh : public object {
 	Vector cornerAt(int i) { return corners[i]; };
 
     private:
-
 	MeshType meshType;
 	Material material;
 	mutable BoundingBox* _boundingBoundingBox;
