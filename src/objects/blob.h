@@ -28,7 +28,9 @@
  *
  * where \f$ r_i \f$ is 
  * 
+ * TODO: Use Soft Objects if they're faster. See Paul Bourkes site below.
  *
+ * @see http://astronomy.swin.edu.au/~pbourke/modelling/implicitsurf/
  * @see http://www.dcs.shef.ac.uk/graphics/publications/implicit/overview.ps
  */
 class Blob : public IsoSurface {
