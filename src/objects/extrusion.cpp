@@ -13,7 +13,7 @@
  * @param segments The number of segments to use
  * @param m Material
  */
-Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, unsigned int segments, Material* m) : Mesh(Mesh::MESH_FLAT,m) {
+Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, unsigned int segments, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
 
     Vector direction = end - begin;
     direction.normalize();
@@ -37,7 +37,7 @@ Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, unsi
     delete [] ep;
 }
 
-Extrusion::Extrusion(const Path& path, double radius, unsigned int segments, unsigned int pieces, Material* m) : Mesh(Mesh::MESH_FLAT,m) {
+Extrusion::Extrusion(const Path& path, double radius, unsigned int segments, unsigned int pieces, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
     assert(pieces > 2);
 
     Vector* bp = new Vector[segments];  // Points on begin circle
