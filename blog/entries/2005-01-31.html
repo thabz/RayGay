@@ -12,10 +12,10 @@
 
 (define num 48)
 
-(let itery ((y (* -1 num)))
+(let itery ((y (- num)))
   (if (not(= y num))
     (begin 
-      (let iterx ((x (* -1 num)))
+      (let iterx ((x (- num)))
 	(if (not(= x num))
 	  (begin
 	    (append! 
@@ -30,7 +30,7 @@
 			img 
 			(/ (+ x num) (* 2 num)) 
 			(/ (+ y num) (* 2 num)))
-		      'kd 0.8
+		      'kd 1.0
 		      'ks 0.0)))))
 	    (iterx (+ x 1)))))
       (itery (+ y 1)))))
