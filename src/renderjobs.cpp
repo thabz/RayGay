@@ -100,7 +100,7 @@ void RenderJobPool::markJobDone(RenderJob* job) {
 	    job->type = RenderJob::NEED_FULL_RENDER;
 	    jobs.push_back(job);
 	} else {
-	    double new_importance = (variance * job->area()) / 4;
+	    double new_importance = 1000 + (variance * job->area()) / 4;
 	    int center_x = (job->end_x + job->begin_x) / 2;
 	    int center_y = (job->end_y + job->begin_y) / 2;
 	    RenderJob* job1 = new RenderJob(job->begin_x,center_x,job->begin_y,center_y);
