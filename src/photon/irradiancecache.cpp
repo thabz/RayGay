@@ -24,7 +24,7 @@ RGB IrradianceCache::getEstimate(const Vector& point, const Vector& normal) cons
     for(int i = 0; i < nodes_num; i++) {
 	const CacheNode* node = &nodes[i];
 	double dist = (point - node->getPoint()).norm();
-	if (dist > node->getRadius())
+	if (dist > node->getSquaredRadius())
 	    continue;
 
 	weight = node->getWeight(point,normal);
@@ -39,7 +39,7 @@ RGB IrradianceCache::getEstimate(const Vector& point, const Vector& normal) cons
     if (found >= 3) {
 	return result;
     } else {
-	return RGB(-1,-1,-1);
+	return RGB(-1.0,-1.0,-1.0);
     }
 }
 
