@@ -37,6 +37,16 @@ void CausticsMap::store( const Vector& power, const Vector& pos, const Vector& d
     Stats::getUniqueInstance()->inc("Caustic photons stored");
 }
 
+/**
+ * Using the Gaussian filter where each photon is miltiplied by
+ *
+ * w(d_p) = a ( 1 - \frac{1 - e^{(dp^2)/(2r^2) }}{ 1- e^{-b} }
+ *
+ * where
+ *
+ * d_p is the distance between x and the photon and a = 0.918 and
+ * b = 1.953
+ */
 RGB CausticsMap::getFilteredIrradianceEstimate(const Vector& point, const Vector& normal) const {
     return irradiance_estimate(point,normal);
 }
