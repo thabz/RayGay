@@ -65,6 +65,7 @@ Matrix Matrix::matrixTranslate(const Vector trans) {
 }
 
 /// Multiply this with a vector
+// TODO: Kan optimeres voldsomt ved at rulle løkkerne ud
 Vector Matrix::operator*(const Vector &v) const {
 
     double prod[4] = { 0,0,0,0 };
