@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
+#include <unistd.h>
 
 #include "stats.h"
 
@@ -66,6 +67,9 @@ void work(string scenefile, string outputfile) {
 }
 
 int main(int argc, char *argv[]) {
+    // TODO: Use getopt to parse arguments.
+    // See http://www.si.hhs.nl/~bertn/gnu_libc/libc_389.html
+
     cout << "Raygay version 0.1" << endl;
     if (argc < 3) {
 	cout << "USAGE: tracer <scenefile.ray> <outputfile.tga>" << endl;
