@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "renderer.h"
+#include "exception.h"
 #include "camera.h"
 #include "image/image.h"
 #include "scene.h"
@@ -54,13 +55,64 @@ void Renderer::run() {
 }
 
 /**
- * Render the scene into an image.
+ * Render a job.
+ *
+ * @param job The job to render
+ */
+void Renderer::render(const RenderJob& job) {
+    if (job.type == RenderJob::NEED_PREVIEW) {
+	renderPreview(job);
+    } else if (job.type == RenderJob::NEED_FULL_RENDER) {
+	renderFull(job);
+    } else {
+	throw_exception("Unknown type of render job.");
+    }
+}
+
+/**
+ * Find the colors of the corner-pixels of the job and 
+ * plot a gradient into the target image.
+ *
+ * @param job The job to render
+ */
+void Renderer::renderPreview(const RenderJob& job) {
+
+    // Find the corner colors 
+    job.ul = getPixel(Vector2(job.begin_x,job.begin_y));
+    job.ur = getPixel(Vector2(job.end_x,job.begin_y));
+    job.ll = getPixel(Vector2(job.begin_x,job.end_y));
+    job.lr = getPixel(Vector2(job.end_x,job.end_y));
+    
+    // Plot the gradient
+    int w = job.end_x - job.begin_x;
+    int h = job.end_y - job.begin_y;
+    int img_h = img->getHeight();
+    for(int y = 0; y < h; y++) {
+	for(int x = 0; x < w; x++) {
+	    double dx = double(x) / double (w);
+	    double dy = double(y) / double (h);
+	    RGBA u = dx * job.ur + (1-dx) * job.ul;
+	    RGBA l = dx * job.lr + (1-dx) * job.ll;
+	    RGBA c = dy * l + (1-dy) * u;
+
+	    int img_x = x + job.begin_x;
+	    int img_y = y + job.begin_y;
+	    img->setRGBA(img_x, img_h - img_y - 1, c);
+	 //   img->setRGBA(img_x, img_y, job.ul);
+	}
+    }
+    return;
+}
+
+/**
+ * Find the colors of all pixels of the job and write 
+ * into the target image.
  *
  * \todo Jitter the samples within the grid.
  * 
  * @param job The job to render
  */
-void Renderer::render(const RenderJob& job) {
+void Renderer::renderFull(const RenderJob& job) {
     Camera* camera = scene->getCamera();
     aa_enabled = camera->isAAEnabled();
     aa_depth = camera->getAADepth();

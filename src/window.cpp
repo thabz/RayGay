@@ -6,10 +6,12 @@
 #ifdef HAVE_GTK
 
 #include <cassert>
+#include <pthread.h>
 #include <iostream>
 #include "image/image.h"
 #include "window.h"
 #include "window-icon.h"
+#include <glib.h>
 
 int darea_width;
 int darea_height;
@@ -23,7 +25,7 @@ gboolean on_darea_expose (GtkWidget *widget,
 	    widget->style->fg_gc[GTK_STATE_NORMAL],
 	    0, 0, darea_width, darea_height,
 	    GDK_RGB_DITHER_NONE, rgbbuf, darea_width * 3);
-    return FALSE;
+    return TRUE;
 }
 
 gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data) {
@@ -38,6 +40,9 @@ PreviewWindow::PreviewWindow(int width, int height) {
     darea_width = width;
     darea_height = height;
     this->image = NULL;
+
+    g_thread_init(NULL);
+    gdk_threads_init();
     gtk_init(NULL,NULL);
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_default_size(GTK_WINDOW(window),width,height);
@@ -88,7 +93,6 @@ void PreviewWindow::stop() {
 }
 
 void PreviewWindow::drawBlock(int xb, int yb, int w, int h) {
-    std::cout << xb << "," << yb << "        " << std::endl;
     assert(image != NULL);
     if (window_open) {
 	for(int y = 0; y < h; y++) {
@@ -101,17 +105,23 @@ void PreviewWindow::drawBlock(int xb, int yb, int w, int h) {
 		//    p[3] = (guchar) (255 * col.a());
 	    }
 	}
+	gdk_threads_enter();
 	gtk_widget_queue_draw_area(window,xb,yb,w,h);
+	gdk_flush();
+	gdk_threads_leave();
     }
 }
 
 void PreviewWindow::setProgress(double progress) {
     if (window_open) {
+	gdk_threads_enter();
 	gtk_progress_bar_set_fraction(progress_bar,progress);
 	int p = int(100.0 * progress);
 	char title[1000];
 	sprintf(title,"RayGay (%d%%)",p);
 	gtk_window_set_title(GTK_WINDOW(window),title);
+	gdk_flush();
+	gdk_threads_leave();
     }
 }
 

@@ -101,6 +101,7 @@ void preparePhotonMaps(Scene* scene,
 
 void prepareJobPool(RenderJobPool* pool, Image* img, int cell_size) {
     RenderJob job;
+    double count = 0;
     for(int y = 0; y < (img->getHeight() / cell_size)+1; y++) {
 	job.begin_y = y*cell_size;
 	job.end_y = min((y+1)*cell_size,img->getHeight());
@@ -111,6 +112,8 @@ void prepareJobPool(RenderJobPool* pool, Image* img, int cell_size) {
 		job.begin_y < img->getHeight() &&
 		job.begin_x < job.end_x && 
 		job.begin_y < job.end_y) {
+		job.importance = 1000000 + cell_size*cell_size + (count++);
+		job.type = RenderJob::NEED_PREVIEW;
 		pool->addJob(job);
 	    }
 	}
@@ -172,7 +175,7 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 
     // Create and prepare job pool
     RenderJobPool* job_pool = new RenderJobPool();
-    prepareJobPool(job_pool,img,32);
+    prepareJobPool(job_pool,img,64);
 
     if (renderersettings->anim_frames == 1) {
 	cout << "Still render (" << img->getWidth() << "x" << img->getHeight() << ")" << endl;

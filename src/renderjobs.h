@@ -3,7 +3,8 @@
 #define RENDERJOB_POOL
 
 #include <pthread.h>
-#include <vector>
+#include <deque>
+#include "image/rgba.h"
 class Image;
 
 /**
@@ -13,11 +14,30 @@ class Image;
  */
 class RenderJob {
     public:
+	enum JobType {
+	    NEED_PREVIEW,
+	    NEED_FULL_RENDER,
+	    IS_DONE
+	};
+	RenderJob() {};
+	RenderJob(int b_x, int e_x, int b_y, int e_y) {
+	    begin_x = b_x;
+	    end_x = e_x;
+	    begin_y = b_y;
+	    end_y = e_y;
+	}
 	int begin_x;
 	int begin_y;
 	int end_x;
 	int end_y;
-	bool is_done;
+	/// The state of the job
+	JobType type;
+	/// Upperleft, upperright, lowerleft, lowerright colors of block
+	mutable RGBA ul,ur,ll,lr;
+	/// The most important jobs will be rendered first
+	double importance;
+	/// The pixelarea that this job spans
+	int area() { return (end_x - begin_x) * (end_y - begin_y); };
 };
 
 /**
@@ -37,7 +57,7 @@ class RenderJobPool {
 	void markJobDone(RenderJob* job);
 
     private:
-	std::vector<RenderJob> jobs;
+	std::deque<RenderJob*> jobs;
 	unsigned int next_job;
 	pthread_mutex_t mutex_jobs;
 };
