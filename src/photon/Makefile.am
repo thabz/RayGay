@@ -7,6 +7,7 @@ libphoton_a_SOURCES = photon.cpp globalphotonmap.cpp causticsmap.cpp photontrace
 
 EXTRA_DIST = photon.h		\
     	     genericphotonmap.h	\
+    	     genericphotonmap.cpp	\
     	     globalphotonmap.h	\
 	     irradiancecache.h	\
     	     photontracer.h	\

@@ -10,5 +10,5 @@ EXTRA_DIST = vector.h 	\
 	     functions.h \
 	     halton.h	\
              matrix.h 	\
-	     solvequartic.h	\
+             qmcsequence.h 	\
 	     constants.h

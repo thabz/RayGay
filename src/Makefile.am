@@ -26,14 +26,12 @@ EXTRA_DIST = boundingbox.h	\
 	     importer.h		\
 	     intersection.h 	\
 	     kdtree.h		\
-	     photonmap.h	\
 	     photonmapdump.h	\
 	     photonrenderer.h	\
-	     photonsettings.h	\
-	     photontracer.h	\
 	     ray.h 		\
 	     raytracer.h 	\
 	     renderer.h 	\
+	     renderersettings.h	\
 	     scene.h 		\
 	     spacesubdivider.h	\
 	     stats.h
