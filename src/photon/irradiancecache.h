@@ -3,7 +3,7 @@
 #include "image/rgb.h"
 #include <vector>
 
-class BoundingBox;
+#include "boundingbox.h"
 
 using namespace std;
 
@@ -75,9 +75,21 @@ class IrradianceCache {
 		double squared_radius;
 	};
 
-	vector<CacheNode> nodes;
+	class HierarchyNode {
+	    public:
+		HierarchyNode(const BoundingBox& bbox);
+		void add(const CacheNode& node);
+		void split();
+
+		BoundingBox box;
+		HierarchyNode* children[8];
+		vector<CacheNode> cache_nodes;
+		bool isLeaf;
+	};
+
 	double tolerance;
 	double inv_tolerance;
+	HierarchyNode* hierarchy_top;
 };
 
 

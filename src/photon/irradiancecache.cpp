@@ -1,6 +1,5 @@
 
 #include "photon/irradiancecache.h"
-#include "boundingbox.h"
 
 /**
  * Constructor.
@@ -11,20 +10,21 @@
 IrradianceCache::IrradianceCache(const BoundingBox& bbox, double tolerance) {
     this->tolerance = tolerance;
     this->inv_tolerance = 1.0 / tolerance;
+    this->hierarchy_top = new HierarchyNode(bbox);
 }
 
 void IrradianceCache::putEstimate(const Vector& point, const Vector& normal, const RGB& irrandiance, const double hmd) {
-    nodes.push_back(CacheNode(point,normal,irrandiance,hmd,tolerance));
+    hierarchy_top->cache_nodes.push_back(CacheNode(point,normal,irrandiance,hmd,tolerance));
 }
 
 RGB IrradianceCache::getEstimate(const Vector& point, const Vector& normal) const {
-    int nodes_num = nodes.size();
+    int nodes_num = hierarchy_top->cache_nodes.size();
     RGB result = RGB(0.0,0.0,0.0);
     double weight_sum = 0;
     double weight;
     int found = 0;
     for(int i = 0; i < nodes_num; i++) {
-	const CacheNode* node = &nodes[i];
+	const CacheNode* node = &(hierarchy_top->cache_nodes[i]);
 	double dist = (point - node->getPoint()).norm();
 	if (dist > node->getSquaredRadius())
 	    continue;
@@ -65,4 +65,33 @@ double IrradianceCache::CacheNode::getWeight(const Vector& x, const Vector& n) c
     double d1 = (x - point).length() / hmd;
     double d2 = sqrt(1.0 - n*normal);
     return 1.0 / (d1 + d2);
+}
+
+IrradianceCache::HierarchyNode::HierarchyNode(const BoundingBox& bbox) {
+    this->box = bbox;
+    this->isLeaf = true;
+    for(int i = 0; i < 8; i++) {
+	children[i] = NULL;
+    }
+}
+
+void IrradianceCache::HierarchyNode::add(const CacheNode& node) {
+    if (isLeaf) {
+	cache_nodes.push_back(node);
+	// TODO: call split() if this node holds too many children
+    } else {
+	// TODO: add node to children if they want them.
+    }
+}
+
+void IrradianceCache::HierarchyNode::split() {
+    // TODO: Create 8 children with right bbox'
+
+    // TODO: add node to children if they want them
+    unsigned int nodes_num = cache_nodes.size();
+    for (unsigned int i = 0; i < nodes_num; i++) {
+
+    }
+    cache_nodes.clear();
+    isLeaf = false;
 }
