@@ -237,6 +237,10 @@ void test_3ds() {
     ma = ma * Matrix::matrixTranslate(Vector(0,-135,0));
     egg->transform(ma);
     scene.addObject(egg);
+
+  //  ThreeDS* boxer = new ThreeDS("../3ds/boxer/boxer.3ds",1.0/100,MATERIAL_DULL_BLUE);
+    //scene.addObject(boxer);
+
     
     Matrix n = Matrix::matrixRotate(Vector(1,1,0),-20.0);
     n = n * Matrix::matrixTranslate(Vector(0,0,-500));

@@ -30,6 +30,13 @@ class RGB : public Vector {
 	    Vector::_vector[2] = v[2];
 	};
 
+	RGB(unsigned char r, unsigned char g, unsigned char b) {
+	    Vector::_vector[0] = double(r) / 255.0;
+	    Vector::_vector[1] = double(g) / 255.0;
+	    Vector::_vector[2] = double(b) / 255.0;
+
+	}
+
 	void clip(); ///< Clips color components to be in the [0,1] range
 
 	/// The red component

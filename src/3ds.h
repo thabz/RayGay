@@ -33,12 +33,12 @@ class ThreeDS : public ObjectGroup {
 	std::vector<float> vertices;
 	std::vector<float> map_coords;
 	std::vector<unsigned short> faces;
+	std::vector<Material> materials;
+
 	double scale;
 	Material material;
 	bool force_my_material;
 	Matrix mesh_matrix;
-
-	bool state_inside_object_block;
 };
 
 #endif

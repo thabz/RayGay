@@ -9,6 +9,7 @@
 #include "math/vector.h"
 #include "math/vector2.h"
 #include "mesh.h"
+#include "image/rgb.h"
 
 using namespace std;
 
@@ -83,7 +84,11 @@ long filelength(int f) {
 }
 
 void ThreeDS::load3ds(const string& filename) {
-    state_inside_object_block = false;
+    bool state_inside_object_block = false;
+    bool state_inside_material_block = false;
+    Material cur_material;
+    RGB cur_color;
+    char state_inside_color_type = ' ';
 
     int i; //Index variable
 
@@ -269,7 +274,74 @@ void ThreeDS::load3ds(const string& filename) {
 
 		break;
 
-		//----------- Skip unknow chunks ------------
+	    case 0xAFFF:
+		break;
+
+	    case 0xA000:
+                if (state_inside_material_block) {
+		    materials.push_back(cur_material);
+		}
+		state_inside_material_block = true;
+		state_inside_color_type = ' ';
+
+		// TODO: Read material name
+		fseek(l_file, l_chunk_lenght-6, SEEK_CUR); // Skip name
+		break;
+		
+		// Ambient color
+	    case 0xA010:
+		state_inside_color_type = 'A';
+		break;
+
+		// Diffuse color
+	    case 0xA020:
+		state_inside_color_type = 'D';
+		break;
+
+		// Specular color
+	    case 0xA030:
+		state_inside_color_type = 'S';
+		break;
+		
+		// A color found
+	    case 0x0011:
+		unsigned char rgb[3];
+		fread(rgb,sizeof(rgb),1,l_file);
+		cur_color = RGB(rgb[0],rgb[1],rgb[2]);
+		cout << "24bit color found: " << cur_color << endl;
+		switch (state_inside_color_type) {
+		    case 'A':
+			// TODO: Set ambient color
+			break;
+		    case 'D':
+			cur_material.setDiffuseColor(cur_color);
+			break;
+		    case 'S':
+			cur_material.setSpecularColor(cur_color);
+			break;
+		}
+		break;
+	    case 0x0010:
+		float rgbf[3];
+		fread(rgbf,sizeof(rgbf),1,l_file);
+		cur_color = RGB(rgbf[0],rgbf[1],rgbf[2]);
+		cout << "True color found: " << cur_color << endl;
+		switch (state_inside_color_type) {
+		    case 'A':
+			// TODO: Set ambient color
+			break;
+		    case 'D':
+			cur_material.setDiffuseColor(cur_color);
+			break;
+		    case 'S':
+			cur_material.setSpecularColor(cur_color);
+			break;
+		}
+		break;
+
+
+
+		//----------- Skip unknown chunks ------------
 		//We need to skip all the chunks that currently we don't use
 		//We use the chunk lenght information to set the file pointer
 		//to the same level next chunk
@@ -278,6 +350,7 @@ void ThreeDS::load3ds(const string& filename) {
 		fseek(l_file, l_chunk_lenght-6, SEEK_CUR);
 	} 
     }
+    createMesh();
     fclose (l_file); // Closes the file stream
  //   return (1); // Returns ok
 }
