@@ -178,6 +178,12 @@ void boundingbox_test() {
     assert(b_right.minimum() == Vector(0.5,0,0));
     assert(b_right.maximum() == Vector(2,2,2));
 
+    ////////////////////////////////////////////////////////
+    // Test copy constructor
+    ////////////////////////////////////////////////////////
+    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+    BoundingBox a = b;
+    assert(a.maximum() == b.maximum());
 }
 
 void kdtree_test() {
