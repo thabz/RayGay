@@ -6,10 +6,11 @@
 Halton::Halton(int base, int dim) {
     invBase = new double[dim];
     values = new double[dim];
+    this->dim = dim;
     double v = RANDOM(0,1);
     for (int i = 0; i < dim; i++) {
 	values[i] = v;
-	invBase[i] = 1.0 / base;
+	invBase[i] = 1.0 / double(base);
 	base = nextPrime(base);
     }
 }
