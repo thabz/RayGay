@@ -1,5 +1,5 @@
 
-SUBDIRS = materials paths lights math image #tests
+SUBDIRS = materials paths lights math image tests
 
 #--------------------------------------
 
