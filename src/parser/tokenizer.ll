@@ -141,8 +141,8 @@ wireframe	return tWIREFRAME;
 "/="		return tDIVEQUAL;
 
 {digit}+ |
-{digit}+"."{digit}+ |
-{digit}+"."{digit}+"e"[-\+]{digit}+   { yylval.d = atof(yytext); return tFLOAT;}
+"-"?{digit}+"."{digit}+ |
+"-"?{digit}+"."{digit}+"e"[-\+]{digit}+   { yylval.d = atof(yytext); return tFLOAT;}
 "$"{varstring}	{ yylval.c = new string(yytext+sizeof(char),yyleng-1); 
                   return tVARNAME;
                 }
