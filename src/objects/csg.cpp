@@ -185,7 +185,7 @@ Intersection CSG::_fullIntersect(const Ray& ray, const double t) const {
 		result = all.front();
 		//assert(IS_EQUAL(t,result.getT()));
 		if (result.getNormal() * ray.getDirection() > 0) {
-	//	    result.flipNormal();
+		    result.flipNormal();
 		}
 	    } else {
 		throw_exception("This shouldn't happen...");

@@ -100,11 +100,11 @@ vector<Intersection> Sphere::allIntersections(const Ray& ray) const {
 	       result.push_back(i2);
 	       result.push_back(i1);
 	   }
-       } else if (t1 <= 0 && t2 > EPSILON) {
+       } else if (t1 <= EPSILON && t2 > EPSILON) {
 	   Intersection i2 = fullIntersect(ray,t2);
 	   i2.isEntering(false);
 	   result.push_back(i2);
-       } else if (t2 <= 0 && t1 > EPSILON) {
+       } else if (t2 <= EPSILON && t1 > EPSILON) {
 	   Intersection i1 = fullIntersect(ray,t1);
 	   i1.isEntering(false);
 	   result.push_back(i1);
