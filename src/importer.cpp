@@ -249,7 +249,7 @@ void Importer::parse(const string& filename) {
 	} else if (command == "photonmap") {
 	    string name = readString(stream);
 	    int value = readInt(stream);
-	    if (name == "photons") {
+	    if (name == "globalphotons") {
 		renderer_settings->global_photons_num = value;
 	    } else if (name == "causticphotons") {
 		renderer_settings->caustic_photons_num = value;

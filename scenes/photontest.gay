@@ -5,7 +5,7 @@ include materials.gay
 renderer photonrenderer
 #renderer raytracer
 
-photonmap photons 100000
+photonmap globalphotons 0
 photonmap causticphotons 10000
 photonmap estimate-radius 50
 photonmap estimate-samples 200
