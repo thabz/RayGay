@@ -163,8 +163,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 #endif   
 
    /* calculate t, ray intersects triangle */
-   double inv_det = 1.0 / det;
-   return DOT(edge2,qvec) * inv_det;
+   return DOT(edge2,qvec) / det;
 }
     
 Vector Triangle::normal(const Intersection &i) const {
