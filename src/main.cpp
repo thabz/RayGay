@@ -89,8 +89,8 @@ void work(string scenefile, string outputfile) {
     //   n = n * Matrix::matrixTranslate(Vector(0,0,-500));
     //scene->transform(n);
 
-    SpaceSubdivider* space = new KdTree();
-    //SpaceSubdivider* space = new BSP();
+    //SpaceSubdivider* space = new KdTree();
+    SpaceSubdivider* space = new BSP();
     scene->initSpace(space);
 
     RendererSettings* renderersettings = importer.getRendererSettings();

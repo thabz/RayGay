@@ -4,6 +4,8 @@
 
 #include "objects/mesh.h"
 
+class Image;
+
 /**
  * A heightfield.
  */

@@ -13,6 +13,7 @@
 #include "kdtree.h"
 #include "objects/sphere.h"
 #include "math/vector2.h"
+#include "materials/material.h"
 
 void boundingbox_test() {
     BoundingBox b;

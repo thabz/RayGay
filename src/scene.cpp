@@ -12,7 +12,6 @@
 #include "objects/objectcollection.h"
 #include "objects/sphere.h"
 #include "objects/object.h"
-#include "materials/material.h"
 #include "stats.h"
 #include "spacesubdivider.h"
 

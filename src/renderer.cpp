@@ -13,6 +13,7 @@
 #include "math/vector2.h"
 #include "spacesubdivider.h"
 #include "objects/objectcollection.h"
+#include "materials/material.h"
 
 Renderer::Renderer(RendererSettings* settings, Scene* scene, SpaceSubdivider* spc) {
     this->scene = scene;

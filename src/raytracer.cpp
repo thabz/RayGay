@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "image/image.h"
 #include "lights/lightsource.h"
+#include "materials/material.h"
 
 Raytracer::Raytracer(RendererSettings* settings, Scene* scene, SpaceSubdivider* spc) : Renderer(settings,scene,spc) {
 }

@@ -92,9 +92,6 @@ ks 0.5
 gloss 100 10.0
 specpow 15
 
-material $chess checker $dullgreen $dullblue 50
-kd 1.0
-ks 0.0
 
 material $wood wood 0.8 0.9 0.3    0.7 0.8 0.3
 kd 1.0
@@ -104,4 +101,9 @@ material $marble marble 0.8 0.9 0.3    0.7 0.8 0.3
 kd 0.8
 specular 1.0 1.0 1.0
 ks 0.2
+specpow 15
 
+#material $chess checker $dullgreen $dullblue 50
+material $chess checker $blue $red 100
+kd 1.0
+ks 0.0

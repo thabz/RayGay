@@ -5,7 +5,6 @@
 #include <vector>
 #include "math/vector2.h"
 #include "mesh.h"
-#include "materials/material.h"
 
 using namespace std;
 

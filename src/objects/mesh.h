@@ -16,6 +16,7 @@
 
 class SpaceSubdivider;
 class Linesegment;
+class Material;
 
 /// An object consisting of a mesh of triangles
 class Mesh : public ObjectCollection {

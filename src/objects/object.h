@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "materials/material.h"
 #include "intersection.h"
 #include "sceneobject.h"
 #include "spacesubdivider.h"

@@ -4,7 +4,6 @@
 #include "sphere.h"
 #include "cylinder.h"
 #include "paths/linesegment.h"
-#include "materials/material.h"
 #include "objectgroup.h"
 #include <vector>
 

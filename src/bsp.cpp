@@ -9,6 +9,7 @@
 #include "intersection.h"
 #include "boundingbox.h"
 #include "stats.h"
+#include "materials/material.h"
 
 // For test
 #include "objects/sphere.h"

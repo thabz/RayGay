@@ -1,6 +1,5 @@
 #include "teapot.h"
 #include "math/vector.h"
-#include "materials/material.h"
 #include "bezierpatch.h"
 
 /**

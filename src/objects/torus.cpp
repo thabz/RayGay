@@ -4,7 +4,6 @@
 #include "torus.h"
 #include "ray.h"
 #include "boundingbox.h"
-#include "materials/material.h"
 #include "math/functions.h"
 #include "math/vector2.h"
 

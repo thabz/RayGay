@@ -4,7 +4,6 @@
 
 #include "objects/isosurface.h"
 #include "boundingbox.h"
-#include "materials/material.h"
 #include <vector>
 
 /**
