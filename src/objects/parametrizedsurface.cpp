@@ -23,7 +23,7 @@ void ParametrizedSurface::prepare() {
     hintVertexNum(uVerticesNum * vVerticesNum);
 
     for(uint ui = 0; ui < uVerticesNum; ui++) {
-	for(uint vi = 0; vi < uVerticesNum; vi++) {
+	for(uint vi = 0; vi < vVerticesNum; vi++) {
 	    double u = double(ui) / uRes;
 	    double v = double(vi) / vRes;
 	    Vector vertex = eval(u, v);
@@ -31,7 +31,7 @@ void ParametrizedSurface::prepare() {
 	}
     }
 
-    hintFaceNum(uRes * vRes * 2);
+    hintFaceNum(uRes * vRes);
 
     uint c[4];
     Vector2 uvs[4];
@@ -46,14 +46,20 @@ void ParametrizedSurface::prepare() {
 	    double v2 = (1 + v) * vStep;
 
 	    uvs[0] = Vector2(u1,v1);
-	    uvs[1] = Vector2(u2,v1);
+	    uvs[1] = Vector2(u1,v2);
 	    uvs[2] = Vector2(u2,v2);
-	    uvs[3] = Vector2(u1,v2);
+	    uvs[3] = Vector2(u2,v1);
 
-	    c[0] = (u+0) + (v+0) * uVerticesNum;
-	    c[1] = (u+1) + (v+0) * uVerticesNum;
-	    c[2] = (u+1) + (v+1) * uVerticesNum;
-	    c[3] = (u+0) + (v+1) * uVerticesNum;
+	    /*
+	    c[0] = (u + 0) + (v + 0) * uVerticesNum;
+	    c[1] = (u + 1) + (v + 0) * uVerticesNum;
+	    c[2] = (u + 1) + (v + 1) * uVerticesNum;
+	    c[3] = (u + 0) + (v + 1) * uVerticesNum;
+	    */
+	    c[0] = (v + 0) + (u + 0) * vVerticesNum;
+	    c[1] = (v + 1) + (u + 0) * vVerticesNum;
+	    c[2] = (v + 1) + (u + 1) * vVerticesNum;
+	    c[3] = (v + 0) + (u + 1) * vVerticesNum;
 
 	    addQuad(c,uvs);
 	}
