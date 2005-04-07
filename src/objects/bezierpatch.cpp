@@ -6,15 +6,15 @@
  * Constructor for a Bézier patch.
  *
  * @param points A pointer to 16 Vectors
- * @param xResolution Number of quads across
- * @param yResolution Number of quads down
+ * @param uResolution Number of quads across
+ * @param vResolution Number of quads down
  * @param material The material to use
  */
 BezierPatch::BezierPatch(
 	const vector<Vector> &points, 
-	const uint xResolution, 
-	const uint yResolution, 
-	const Material* material) : ParametrizedSurface(xResolution, yResolution, false, false, material) {
+	const uint uResolution, 
+	const uint vResolution, 
+	const Material* material) : ParametrizedSurface(uResolution, vResolution, false, false, material) {
     for(uint i = 0; i < 16; i++) {
 	controlPoints[i] = points[i];
     }
