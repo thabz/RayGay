@@ -4,6 +4,7 @@
 #include "parser/wrapper.h"
 
 #include "parser/schemeisosurface.h"
+#include "parser/schemeparametrizedsurface.h"
 #include "objects/sphere.h"
 #include "objects/ellipsoid.h"
 #include "objects/box.h"
@@ -196,6 +197,20 @@ SCM make_isosurface(SCM s_proc, SCM s_vec_lower, SCM s_vec_higher, SCM s_iso, SC
 
     SchemeIsosurface* iso_surface  = new SchemeIsosurface(s_proc, bbox, steps, accuracy, iso, material);
     return sceneobject2scm(iso_surface);
+}
+
+SCM make_parametrized_surface(SCM s_proc, SCM s_u_res, SCM s_v_res, SCM s_u_close, SCM s_v_close, SCM s_material)
+{
+    char* proc = "make-parametrized-surface";
+
+    uint uRes = scm_num2int(s_u_res, 2, proc);
+    uint vRes = scm_num2int(s_v_res, 3, proc);
+    bool uClose = SCM_FALSEP(s_u_close);
+    bool vClose = SCM_FALSEP(s_v_close);
+    Material* material = scm2material(s_material, proc, 6);
+
+    SchemeParametrizedSurface* surface  = new SchemeParametrizedSurface(s_proc, uRes, vRes, uClose, vClose, material);
+    return sceneobject2scm(surface);
 }
 
 SCM make_mesh(SCM s_material, SCM s_vertices, SCM s_triangles)

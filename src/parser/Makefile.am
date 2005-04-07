@@ -15,6 +15,8 @@ libparser_la_SOURCES = pathfactory.cpp		\
 		       schemeisosurface.cpp	\
 		       schemenormalperturber.h	\
 		       schemenormalperturber.cpp \
+		       schemeparametrizedsurface.h \
+		       schemeparametrizedsurface.cpp \
 		       lightsourcefactory.h	\
 		       lightsourcefactory.cpp	\
 		       transformationfactory.h	\
