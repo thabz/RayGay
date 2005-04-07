@@ -205,8 +205,8 @@ SCM make_parametrized_surface(SCM s_proc, SCM s_u_res, SCM s_v_res, SCM s_u_clos
 
     uint uRes = scm_num2int(s_u_res, 2, proc);
     uint vRes = scm_num2int(s_v_res, 3, proc);
-    bool uClose = SCM_FALSEP(s_u_close);
-    bool vClose = SCM_FALSEP(s_v_close);
+    bool uClose = SCM_NFALSEP(s_u_close);
+    bool vClose = SCM_NFALSEP(s_v_close);
     Material* material = scm2material(s_material, proc, 6);
 
     SchemeParametrizedSurface* surface  = new SchemeParametrizedSurface(s_proc, uRes, vRes, uClose, vClose, material);
@@ -341,5 +341,7 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) make_difference);
     scm_c_define_gsubr("make-intersection",2,1,0,
 	    (SCM (*)()) make_intersection);
+    scm_c_define_gsubr("make-parametrized-surface",6,0,0,
+	    (SCM (*)()) make_parametrized_surface);
 }
 
