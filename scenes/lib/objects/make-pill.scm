@@ -5,6 +5,6 @@
 ;;
 (define (make-pill from to radius material)
   (list (make-sphere from radius material)
-	(make-cylinder from to radius material)
+	(make-uncapped-cylinder from to radius material)
 	(make-sphere to radius material)))
 
