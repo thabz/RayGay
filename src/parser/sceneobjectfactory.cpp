@@ -105,6 +105,22 @@ SCM make_cylinder(SCM s_begin, SCM s_end, SCM s_radius, SCM s_material)
     return sceneobject2scm(cylinder);
 }
 
+SCM make_uncapped_cylinder(SCM s_begin, SCM s_end, SCM s_radius, SCM s_material) 
+{
+    char* proc = "make-uncapped-cylinder";
+    Vector begin = scm2vector(s_begin, proc, 1);
+    Vector end = scm2vector(s_end, proc, 2);
+    double radius = scm_num2double(s_radius, 3, proc);
+    Material* material;
+    if (SCM_UNBNDP (s_material) || SCM_FALSEP (s_material)) {
+        material = NULL;
+    } else {
+	material = scm2material(s_material,proc,4);
+    }
+    Cylinder* cylinder = new Cylinder(begin, end, radius, false, material);
+    return sceneobject2scm(cylinder);
+}
+
 /**
  * @param s_circle a path in the (x,y)-plane
  */
@@ -323,6 +339,8 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) make_solid_box);
     scm_c_define_gsubr("make-cylinder",3,1,0,
 	    (SCM (*)()) make_cylinder);
+    scm_c_define_gsubr("make-uncapped-cylinder",3,1,0,
+	    (SCM (*)()) make_uncapped_cylinder);
     scm_c_define_gsubr("make-torus",2,1,0,
 	    (SCM (*)()) make_torus);
     scm_c_define_gsubr("make-extrusion",6,0,0,
