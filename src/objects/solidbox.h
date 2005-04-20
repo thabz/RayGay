@@ -20,12 +20,12 @@ class SolidBox : public Solid, public Transformer {
 	bool inside(const Vector &p) const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
-	BoundingBox boundingBoundingBox() const;
+	AABox getBoundingBox() const;
 	SceneObject* clone() const;
 	void transform(const Matrix& m);
 
     private:
-	BoundingBox bbox;
+	AABox bbox;
 
 	double _fastIntersect(const Ray& ray) const;
 	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;

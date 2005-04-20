@@ -4,7 +4,7 @@
 #include "solid.h"
 #include "object.h"
 #include "math/vector.h"
-#include "boundingbox.h"
+#include "aabox.h"
 
 class Intersection;
 class Ray;
@@ -31,12 +31,14 @@ class Sphere : public Solid {
 
 	virtual void transform(const Matrix& m);
 
-	virtual BoundingBox boundingBoundingBox() const;
+	virtual AABox getBoundingBox() const;
+
+	AABox getContainedBox() const;
 
 	virtual SceneObject* clone() const;
 	double _fastIntersect(const Ray& ray) const;
 	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
-	int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
+	int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
 	Vector2 getUV(const Vector& normal) const;

@@ -23,10 +23,10 @@
 class IsoSurface : public Object, public Transformer {
 
     public:
-	bool intersects(const BoundingBox& b) const;
+	bool intersects(const AABox& b) const;
 	void transform(const Matrix& m);
 	/// Return the bounding box in world space coordinates
-	BoundingBox boundingBoundingBox() const;
+	AABox getBoundingBox() const;
 
     protected:
 	/// Constructor
@@ -38,7 +38,7 @@ class IsoSurface : public Object, public Transformer {
 	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 
 	/// Returns the bounding box in object space coordinates
-	virtual BoundingBox _boundingBoundingBox() const = 0;
+	virtual AABox _getBoundingBox() const = 0;
 
     private:
 	virtual Vector normal(const Vector& p) const;

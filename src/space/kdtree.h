@@ -8,7 +8,7 @@
 
 #include "types.h"
 #include "math/vector.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include <vector>
 #include "space/generickdtree.h"
 #include "objects/object.h"

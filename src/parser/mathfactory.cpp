@@ -80,6 +80,11 @@ SCM vscale(SCM s_v, SCM s_k)
     return vector2scm(v * k);
 }
 
+SCM vrandomunit() {
+    Vector v = Vector::randomUnitVector();
+    return vector2scm(v);
+}
+
 void MathFactory::register_procs()
 {
     scm_c_define_gsubr("random2",2,0,0, (SCM (*)()) random2);
@@ -91,6 +96,7 @@ void MathFactory::register_procs()
     scm_c_define_gsubr("vlength",1,0,0, (SCM (*)()) vlength);
     scm_c_define_gsubr("vscale",2,0,0, (SCM (*)()) vscale);
     scm_c_define_gsubr("vnormalize",1,0,0, (SCM (*)()) vnormalize);
+    scm_c_define_gsubr("vrandomunit",0,0,0, (SCM (*)()) vrandomunit);
     scm_c_define_gsubr("v+",2,0,0, (SCM (*)()) vplus);
     scm_c_define_gsubr("v-",2,0,0, (SCM (*)()) vminus);
 }

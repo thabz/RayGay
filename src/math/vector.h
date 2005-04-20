@@ -40,6 +40,8 @@ public:
     Vector& operator+=(const Vector &v);
     /// Vector subtraction 
     Vector operator-(const Vector &v) const;
+    /// Vector negation 
+    Vector operator-() const;
     /// Vector subtraction 
     Vector& operator-=(const Vector &v);
     /// Vector multiplication
@@ -136,6 +138,11 @@ Vector& Vector::operator-=(const Vector &v) {
    _vector[1] -= v._vector[1];
    _vector[2] -= v._vector[2];
    return *this;
+}
+
+inline
+Vector Vector::operator-() const {
+    return Vector(-_vector[0], -_vector[1], -_vector[2]);
 }
 
 inline

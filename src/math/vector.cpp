@@ -118,7 +118,7 @@ Vector Vector::refract(const Vector& normal, double ior) const {
     Vector N;
     Vector I = (*this);
     if ((*this) * normal > double(0)) {
-	N = -1 * normal;
+	N = -normal;
     } else {
 	N = normal;
 	ior = double(1.0)/ior;

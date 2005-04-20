@@ -1,7 +1,7 @@
 
 #include <cassert>
 #include "objects/csg.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "exception.h"
 #include <algorithm>
 
@@ -31,10 +31,10 @@ SceneObject* CSGUnion::clone() const {
     return new CSGUnion(lhs, rhs, this->getMaterial());
 }
 
-BoundingBox CSGUnion::boundingBoundingBox() const {
-    BoundingBox rb = right->boundingBoundingBox();
-    BoundingBox lb = left->boundingBoundingBox();
-    return BoundingBox::doUnion(rb,lb);
+AABox CSGUnion::getBoundingBox() const {
+    AABox rb = right->getBoundingBox();
+    AABox lb = left->getBoundingBox();
+    return AABox::doUnion(rb,lb);
 }
 
 void CSGUnion::transform(const Matrix& m) {

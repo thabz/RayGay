@@ -3,7 +3,7 @@
 #include <iostream>
 #include "torus.h"
 #include "ray.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "math/functions.h"
 #include "math/vector2.h"
 
@@ -113,10 +113,10 @@ Vector Torus::normal(const Vector& point) const {
     return result;
 }
 
-BoundingBox Torus::boundingBoundingBox() const {
+AABox Torus::getBoundingBox() const {
     double tmin = -R - r;
     double tmax = R + r;
-    BoundingBox bbox = BoundingBox(Vector(tmin,tmin,tmin), Vector(tmax,tmax,tmax));
+    AABox bbox = AABox(Vector(tmin,tmin,tmin), Vector(tmax,tmax,tmax));
     return bboxToWorld(bbox);
 }
 

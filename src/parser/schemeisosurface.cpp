@@ -1,13 +1,13 @@
 
 #include "parser/schemeisosurface.h"
 
-SchemeIsosurface::SchemeIsosurface(SCM procedure_name, BoundingBox bbox, unsigned int steps, double accuracy, double iso, Material* mat) : IsoSurface(steps, accuracy, iso, mat)
+SchemeIsosurface::SchemeIsosurface(SCM procedure_name, AABox bbox, unsigned int steps, double accuracy, double iso, Material* mat) : IsoSurface(steps, accuracy, iso, mat)
 {
     this->bbox = bbox;
     this->procedure_name = procedure_name;
 }
 
-BoundingBox SchemeIsosurface::_boundingBoundingBox() const {
+AABox SchemeIsosurface::_getBoundingBox() const {
     return bbox;
 }
 

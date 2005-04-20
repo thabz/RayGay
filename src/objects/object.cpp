@@ -29,7 +29,7 @@ void Object::addSelf(KdTree* space) {
  *         1 if intersection
  *         -1 if no intersection
  */
-int Object::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const {
+int Object::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const {
     return 0;
 }
 

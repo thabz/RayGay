@@ -30,14 +30,14 @@ Vector Transformer::dirToObject(const Vector& d) const {
 }
 
 
-BoundingBox Transformer::bboxToWorld(const BoundingBox& bbox) const {
+AABox Transformer::bboxToWorld(const AABox& bbox) const {
     if (!transformed) return bbox;
 
     Vector* corners = bbox.getCorners();
     for(int i = 0; i < 8; i++) {
 	corners[i] = pointToWorld(corners[i]);
     }
-    BoundingBox result = BoundingBox::enclosure(corners,8);
+    AABox result = AABox::enclosure(corners,8);
     delete [] corners;
     return result;
 }

@@ -42,7 +42,7 @@ class Triangle : public Object {
 
 	void transform(const Matrix& m) { };
 	const Material* getMaterial() const;
-	BoundingBox boundingBoundingBox() const;
+	AABox getBoundingBox() const;
 
 	void prepare();
 
@@ -50,7 +50,7 @@ class Triangle : public Object {
 	double _fastIntersect(const Ray& ray) const;
 	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 	double area() const;
-        int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
+        int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
 	//static TriangleVertexCache vertex_cache;
 
     private:

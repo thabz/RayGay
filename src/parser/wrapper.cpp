@@ -26,6 +26,15 @@ bool isLightsource(SCM object_smob) {
     }
 }
 
+bool isMaterial(SCM object_smob) {
+    if (isWrappedObject(object_smob)) {
+	struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
+	return o->type == MATERIAL;
+    } else {
+	return false;
+    }
+}
+
 bool isSceneObject(SCM object_smob) 
 {
     if (isWrappedObject(object_smob)) {

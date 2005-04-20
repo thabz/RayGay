@@ -50,7 +50,7 @@ class Torus : public Solid, public Transformer {
 
 	virtual void transform(const Matrix& m);
 
-	virtual BoundingBox boundingBoundingBox() const;
+	virtual AABox getBoundingBox() const;
 
 	virtual SceneObject* clone() const;
 

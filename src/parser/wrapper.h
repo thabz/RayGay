@@ -105,6 +105,8 @@ void init_wrapper_type();
 
 bool isLightsource(SCM object_smob);
 
+bool isMaterial(SCM object_smob);
+
 bool isSceneObject(SCM object_smob);
 
 bool isTexture(SCM object_smob);

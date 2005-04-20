@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "cylinder.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "math/vector2.h"
 
 /**
@@ -32,11 +32,11 @@ void Cylinder::transform(const Matrix& m) {
     Transformer::transform(m);
 }
 
-BoundingBox Cylinder::boundingBoundingBox() const {
+AABox Cylinder::getBoundingBox() const {
     Vector mini = Vector(-radius,-radius,0);
     Vector maxi = Vector(radius,radius,height);
-    BoundingBox bbox = BoundingBox(mini,maxi);
-    bbox.growPercentage(0.01);
+    AABox bbox = AABox(mini,maxi);
+    bbox.growPercentage(0.0001);
     return bboxToWorld(bbox);
 }
 

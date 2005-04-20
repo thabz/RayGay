@@ -20,17 +20,24 @@
 
 using namespace std;
 
+char* VAR_SETTINGS = "__settings__";
+char* VAR_SCENE = "__scene__";
+char* VAR_CAMERA = "__camera__";
+char* VAR_RENDERER = "__renderer__";
+char* VAR_IMAGESIZE = "__image-size__";
+char* VAR_BACKGROUND = "__background__";
+
 Parser::Parser(string filename) {
     this->filename = filename; 
     scm_init_guile();
     init_wrapper_type();
     // Globals
-    scm_c_define("settings", SCM_EOL);
-    scm_c_define("scene", SCM_EOL);
-    scm_c_define("camera", SCM_EOL);
-    scm_c_define("renderer", SCM_EOL);
-    scm_c_define("image-size", SCM_EOL);
-    scm_c_define("background", SCM_EOL);
+    scm_c_define(VAR_SETTINGS, SCM_EOL);
+    scm_c_define(VAR_SCENE, SCM_EOL);
+    scm_c_define(VAR_CAMERA, SCM_EOL);
+    scm_c_define(VAR_RENDERER, SCM_EOL);
+    scm_c_define(VAR_IMAGESIZE, SCM_EOL);
+    scm_c_define(VAR_BACKGROUND, SCM_EOL);
 
     // My procedures
     PathFactory::register_procs();
@@ -69,7 +76,7 @@ SCM Parser::lookup(string var_name) {
 
 void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
     // Populate sceneobjects and lights
-    SCM list = lookup("scene");
+    SCM list = lookup(VAR_SCENE);
     if (SCM_FALSEP (scm_list_p (list))) {
 	scm_error(NULL, "internal-populate-scene", "The variable 'scene' is not a list", SCM_UNSPECIFIED, NULL);
     }
@@ -94,7 +101,7 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
     }
 
     // Get renderer
-    SCM s_renderer = lookup("renderer");
+    SCM s_renderer = lookup(VAR_RENDERER);
     RendererSettings::RendererType type;
     if (!SCM_NULLP(s_renderer)) {
 	string r_string = scm2string(s_renderer);
@@ -114,7 +121,7 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
     renderersettings->renderertype = type;
 
     // Populate camera
-    SCM s_camera = lookup("camera");
+    SCM s_camera = lookup(VAR_CAMERA);
     if (!SCM_NULLP(s_camera)) {
 	Camera* camera = scm2camera(s_camera, "internal-get-camera", 0);
 	scene->setCamera(camera);
@@ -126,7 +133,7 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
     }
     
     // Set settings
-    SCM s_settings = lookup("settings");
+    SCM s_settings = lookup(VAR_SETTINGS);
     if (!SCM_NULLP(s_settings)) {
 	if (SCM_FALSEP (scm_list_p (s_settings))) {
 	    scm_error(NULL, "internal-populate-scene", "The variable 'settings' is not a list", SCM_UNSPECIFIED, NULL);
@@ -161,7 +168,7 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	}
     }
 
-    SCM s_image_size = lookup("image-size");
+    SCM s_image_size = lookup(VAR_IMAGESIZE);
     if (!SCM_NULLP(s_image_size)) {
 	assert(SCM_NFALSEP (scm_list_p (s_image_size)));
 	assert(scm_num2int(scm_length(s_image_size),0,"") == 2);
@@ -173,7 +180,7 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	renderersettings->image_height = h;
     }
 
-    SCM s_background = lookup("background");
+    SCM s_background = lookup(VAR_BACKGROUND);
     if (!SCM_NULLP(s_background)) {
 	char* subr = "internal: setting scene background";
 	if (isWrappedObject(s_background)) {

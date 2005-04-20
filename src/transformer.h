@@ -3,7 +3,7 @@
 
 #include "math/matrix.h"
 #include "math/matrix3.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "ray.h"
 #include "intersection.h"
 
@@ -33,7 +33,7 @@ class Transformer {
 	Vector normalToWorld(const Vector& d) const;
 	Ray rayToObject(const Ray& ray) const;
 	void intersectionToWorld(Intersection& i) const;
-	BoundingBox bboxToWorld(const BoundingBox& bbox) const;
+	AABox bboxToWorld(const AABox& bbox) const;
 
     private:
 	Matrix transformation;

@@ -13,7 +13,7 @@
  * @param bbox the bounding box of the scene 
  */
 IrradianceCache::IrradianceCache(
-	const BoundingBox& bbox, 
+	const AABox& bbox, 
 	double tolerance = 0.1) 
 {
     this->tolerance = tolerance;
@@ -134,7 +134,7 @@ double IrradianceCache::CacheNode::getWeight(
 }
 
 IrradianceCache::HierarchyNode::HierarchyNode(
-	const BoundingBox& bbox, 
+	const AABox& bbox, 
 	uint depth) 
 {
     this->bbox = bbox;
@@ -190,7 +190,7 @@ void IrradianceCache::HierarchyNode::split()
     Vector* corners = bbox.getCorners();
     Vector center = bbox.center();
     for(int i = 0; i < 8; i++) {
-	children[i] = new HierarchyNode(BoundingBox(center,corners[i]),depth + 1);
+	children[i] = new HierarchyNode(AABox(center,corners[i]),depth + 1);
     }
     delete [] corners;
 

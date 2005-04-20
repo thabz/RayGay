@@ -209,7 +209,7 @@ SCM make_isosurface(SCM s_proc, SCM s_vec_lower, SCM s_vec_higher, SCM s_iso, SC
     double accuracy = scm_num2double(s_accuracy, 6, proc);
     Material* material = scm2material(s_material, proc, 7);
 
-    BoundingBox bbox = BoundingBox(lower,higher);
+    AABox bbox = AABox(lower,higher);
 
     SchemeIsosurface* iso_surface  = new SchemeIsosurface(s_proc, bbox, steps, accuracy, iso, material);
     return sceneobject2scm(iso_surface);
@@ -283,6 +283,39 @@ SCM make_bezierpatch(SCM s_points, SCM s_xres, SCM s_yres, SCM s_material)
     return sceneobject2scm(patch);
 }
 
+SCM make_union(SCM s_things) 
+{
+    char* proc = "make-union";
+    Material* material;
+
+    assert(SCM_NFALSEP (scm_list_p (s_things)));
+    uint length = scm_num2int(scm_length(s_things),0,"");
+
+    SCM s_last_thing = scm_list_ref(s_things, scm_int2num(length-1));
+
+    if (isMaterial(s_last_thing)) {
+	material = scm2material(s_last_thing, "", 0);
+	length--;
+	SCM kaj = scm_list_head(s_things, scm_int2num(length));
+	s_things = kaj;
+    } else {
+	material = NULL;
+    }
+
+    vector<Solid*> solids;
+
+    for(uint i = 0; i < length; i++) {
+	SCM s_solid = scm_list_ref(s_things, scm_int2num(i));
+	SceneObject* so_solid = scm2sceneobject(s_solid, proc, i+1);
+	Solid* solid = dynamic_cast<Solid*>(so_solid);
+	if (solid == NULL) scm_wrong_type_arg(proc, i+1, s_solid);
+	solids.push_back(solid);
+    }
+
+    CSGUnion* csg = new CSGUnion(&solids, material);
+    return sceneobject2scm(csg);
+}
+
 SCM make_difference(SCM s_left, SCM s_right, SCM s_material) 
 {
     char* proc = "make-difference";
@@ -327,6 +360,21 @@ SCM make_intersection(SCM s_left, SCM s_right, SCM s_material)
     return sceneobject2scm(intersection);
 }
 
+SCM bounding_box(SCM s_obj) 
+{
+    char* proc = "bounding-box";
+
+    SceneObject* sceneobj = scm2sceneobject(s_obj,proc,1);
+    Object* obj = dynamic_cast<Object*>(sceneobj);
+    if (obj == NULL) scm_wrong_type_arg(proc,1,s_obj);
+    AABox bbox = obj->getBoundingBox();
+    Vector v1 = bbox.minimum();
+    Vector v2 = bbox.maximum();
+    SCM s_v1 = vector2scm(v1);
+    SCM s_v2 = vector2scm(v2);
+    return scm_list_2(s_v1,s_v2);
+}
+
 void SceneObjectFactory::register_procs() 
 {
     scm_c_define_gsubr("make-sphere",2,1,0,
@@ -359,7 +407,11 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) make_difference);
     scm_c_define_gsubr("make-intersection",2,1,0,
 	    (SCM (*)()) make_intersection);
+    scm_c_define_gsubr("make-union",0,0,1,
+	    (SCM (*)()) make_union);
     scm_c_define_gsubr("make-parametrized-surface",6,0,0,
 	    (SCM (*)()) make_parametrized_surface);
+    scm_c_define_gsubr("bounding-box",1,0,0,
+	    (SCM (*)()) bounding_box);
 }
 

@@ -11,7 +11,7 @@ class Matrix;
 class Ray;
 class Vector;
 class Vector2;
-class BoundingBox;
+class AABox;
 class Material;
 class KdTree;
 
@@ -30,9 +30,9 @@ class Object : public SceneObject {
 	virtual const Material* getMaterial() const { return material; }; 
 
 	/// The smallest box containing this object
-	virtual BoundingBox boundingBoundingBox() const = 0;
+	virtual AABox getBoundingBox() const = 0;
 
-        virtual int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
+        virtual int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
 	
 	/// Prepares the object before rendering
 	virtual void prepare();

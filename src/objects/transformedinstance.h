@@ -18,7 +18,7 @@ class TransformedInstance : public Object, public Transformer {
 	TransformedInstance(Object* object);
 	TransformedInstance(Object* object, Material* material);
 
-	BoundingBox boundingBoundingBox() const;
+	AABox getBoundingBox() const;
 	SceneObject* clone() const;
 	void transform(const Matrix& m);
 

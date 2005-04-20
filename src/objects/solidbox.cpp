@@ -2,11 +2,11 @@
 #include "objects/solidbox.h"
 
 SolidBox::SolidBox(const Vector corner1, const Vector corner2, const Material* mat) : Solid(mat) {
-    bbox = BoundingBox(corner1,corner2);
+    bbox = AABox(corner1,corner2);
 }
 
-BoundingBox SolidBox::boundingBoundingBox() const {
-    BoundingBox result = bboxToWorld(bbox);
+AABox SolidBox::getBoundingBox() const {
+    AABox result = bboxToWorld(bbox);
     result.grow(20*EPSILON);
     return result;
 }

@@ -9,7 +9,7 @@
 #include "ray.h"
 #include "stats.h"
 #include "exception.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "math/vector2.h"
 
 #define KD_TREE_MAX 1

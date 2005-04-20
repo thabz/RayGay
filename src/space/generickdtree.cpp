@@ -35,17 +35,17 @@ void GenericKdTree<ObjectType>::addObject(ObjectType* obj) {
 }
 
 template<class ObjectType>
-BoundingBox GenericKdTree<ObjectType>::enclosure(BoundedObject<ObjectType>** bobs, uint num) const {
+AABox GenericKdTree<ObjectType>::enclosure(BoundedObject<ObjectType>** bobs, uint num) const {
     assert(num > 0);
-    BoundingBox result = bobs[0]->bbox; 
+    AABox result = bobs[0]->bbox; 
     for(uint i = 1; i < num; i++) {
-	result = BoundingBox::doUnion(result,bobs[i]->bbox);
+	result = AABox::doUnion(result,bobs[i]->bbox);
     }
     return result;
 }
 
 template<class ObjectType>
-void GenericKdTree<ObjectType>::findBestSplitPlane(uint size, const BoundingBox& bbox, CostResult& result, int d) const {
+void GenericKdTree<ObjectType>::findBestSplitPlane(uint size, const AABox& bbox, CostResult& result, int d) const {
     assert(d == 0 || d == 1 || d == 2);
 
     double split;
@@ -104,7 +104,7 @@ void GenericKdTree<ObjectType>::findBestSplitPlane(uint size, const BoundingBox&
 }
 
 template<class ObjectType>
-bool GenericKdTree<ObjectType>::findBestSplitPlane(uint num, const BoundingBox& bbox, CostResult& result) const {
+bool GenericKdTree<ObjectType>::findBestSplitPlane(uint num, const AABox& bbox, CostResult& result) const {
     result.dim = -1;
     result.left_index = 0;
     result.right_index = 0;
@@ -154,7 +154,7 @@ void GenericKdTree<ObjectType>::prepare() {
 
     for(uint i = 0; i < num; i++) {
 	bobs[i].object = added_objects->operator[](i);
-	bobs[i].bbox = added_objects->operator[](i)->boundingBoundingBox();
+	bobs[i].bbox = added_objects->operator[](i)->getBoundingBox();
 	left_bobs[i] = &(bobs[i]);
     }
 
@@ -181,7 +181,7 @@ void GenericKdTree<ObjectType>::prepare() {
 }
 
 template<class ObjectType>
-void GenericKdTree<ObjectType>::prepare(uint num, const BoundingBox& bbox, uint depth, const uint dest_idx) {
+void GenericKdTree<ObjectType>::prepare(uint num, const AABox& bbox, uint depth, const uint dest_idx) {
 
     assert(dest_idx < nodes.size());
 
@@ -215,8 +215,8 @@ void GenericKdTree<ObjectType>::prepare(uint num, const BoundingBox& bbox, uint 
 	    new_right_idx = nodes.size() - 1;
 
 	    // Find bounding boxes for the two children
-	    BoundingBox lower_bbox;
-	    BoundingBox higher_bbox;
+	    AABox lower_bbox;
+	    AABox higher_bbox;
 	    if (!bbox.split(lower_bbox, higher_bbox, axis, splitPlane)) {
 		throw_exception("Split plane outside bbox of node");
 	    }

@@ -23,10 +23,10 @@ BlobAtomSphere::BlobAtomSphere(double radius, double weight, const Vector& cente
     this->center = center;
 }
 
-BoundingBox BlobAtomSphere::boundingBoundingBox() const 
+AABox BlobAtomSphere::getBoundingBox() const 
 {
     Vector rrr = Vector(radius,radius,radius);
-    return BoundingBox(center-rrr,center+rrr);
+    return AABox(center-rrr,center+rrr);
 }
 
 inline
@@ -41,7 +41,7 @@ double BlobAtomSphere::squaredDistToPoint(const Vector& point) const
  *
  * J. Arvo: "A simple method for box-sphere intersection testing" in: A. Glassner (ed.), <i>Graphics Gems</i>, pp. 335-339, Academic Press, Boston, MA, 1990.
  */
-int BlobAtomSphere::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const {
+int BlobAtomSphere::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const {
     double s;
     double d = 0.0;
     for(int i = 0; i < 3; i++) {
@@ -67,9 +67,9 @@ BlobAtomCylinder::BlobAtomCylinder(double radius, double weight, const Vector& f
     this->to = to;
 }
 
-BoundingBox BlobAtomCylinder::boundingBoundingBox() const 
+AABox BlobAtomCylinder::getBoundingBox() const 
 {
-    BoundingBox bbox = BoundingBox(from,to);
+    AABox bbox = AABox(from,to);
     bbox.grow(radius);
     return bbox;
 }
@@ -92,7 +92,7 @@ double BlobAtomCylinder::squaredDistToPoint(const Vector& point) const
     return (nearest - point).norm();
 }
 
-int BlobAtomCylinder::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const {
+int BlobAtomCylinder::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const {
     return 0;
 }
 
@@ -202,7 +202,7 @@ SceneObject* Blob::clone() const {
     return result;
 }
 
-BoundingBox Blob::_boundingBoundingBox() const 
+AABox Blob::_getBoundingBox() const 
 {
     return tree->boundingBox();
 }

@@ -139,7 +139,8 @@ void preparePhotonMaps(Scene* scene,
     delete photontracer;
     
     //irradiance_cache = new IrradianceCache(space->getWorldBoundingBox(),5);
-    BoundingBox bbox = BoundingBox(Vector(-733,-733,-733),Vector(733,733,733));
+    // TODO: Woa! What's this crap!?
+    AABox bbox = AABox(Vector(-733,-733,-733),Vector(733,733,733));
     (*irradiancecache) = new IrradianceCache(bbox,renderersettings->cache_tolerance);
 }
 

@@ -13,7 +13,7 @@ void Halfspace::transform(const Matrix& m)
     normal = m.extractRotation() * normal;
 }
 
-BoundingBox Halfspace::boundingBoundingBox() const 
+AABox Halfspace::getBoundingBox() const 
 {
 }
 
@@ -30,7 +30,7 @@ Intersection Halfspace::_fullIntersect(const Ray& ray, const double t) const
 {
 }
 
-int Halfspace::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const 
+int Halfspace::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const 
 {
 }
 

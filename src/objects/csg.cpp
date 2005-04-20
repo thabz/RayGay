@@ -1,7 +1,7 @@
 
 #include <cassert>
 #include "objects/csg.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "exception.h"
 
 CSGIntersection::CSGIntersection(Solid* left, Solid* right, const Material* mat) : Solid(mat) {
@@ -24,15 +24,15 @@ SceneObject* CSGDifference::clone() const {
     return new CSGDifference(lhs, rhs, this->getMaterial());
 }
 
-BoundingBox CSGDifference::boundingBoundingBox() const {
-    BoundingBox rb = right->boundingBoundingBox();
-    BoundingBox lb = left->boundingBoundingBox();
-    return lb;
+AABox CSGDifference::getBoundingBox() const {
+    AABox rb = right->getContainedBox();
+    AABox lb = left->getBoundingBox();
+    return AABox::doDifference(lb, rb);
 }
-BoundingBox CSGIntersection::boundingBoundingBox() const {
-    BoundingBox rb = right->boundingBoundingBox();
-    BoundingBox lb = left->boundingBoundingBox();
-    return BoundingBox::doIntersection(rb,lb);
+AABox CSGIntersection::getBoundingBox() const {
+    AABox rb = right->getBoundingBox();
+    AABox lb = left->getBoundingBox();
+    return AABox::doIntersection(rb,lb);
 }
 
 void CSGDifference::transform(const Matrix& m) {

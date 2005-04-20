@@ -13,7 +13,7 @@ libtracer_la_SOURCES = \
 		      scene.cpp 	\
 		      renderer.cpp 	\
 		      raytracer.cpp 	\
-		      boundingbox.cpp 	\
+		      aabox.cpp 	\
 		      stats.cpp 	\
 		      photonrenderer.cpp \
 		      photonmapdump.cpp \
@@ -42,7 +42,7 @@ bench_LDADD = libtracer.la
 
 #--------------------------------------
 
-EXTRA_DIST = boundingbox.h	\
+EXTRA_DIST = aabox.h	\
 	     edgekey.h		\
 	     environment.h	\
 	     intersection.h 	\

@@ -23,10 +23,15 @@ class Solid : public Object {
 	 * @param result the intersections are added here.
 	 */
 	virtual void allIntersections(const Ray& ray, vector<Intersection>& result) const = 0;
+
+	/**
+	 * Returns largest AABox inscribed in this object.
+	 */
+	virtual AABox getContainedBox() const;
+
     protected:
 	/// Protected constructor
 	Solid(const Material* mat) : Object(mat) {};
-
 };
 
 #endif

@@ -1,7 +1,7 @@
 
 #include "objects/transformedinstance.h"
 #include "ray.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "intersection.h"
 
 TransformedInstance::TransformedInstance(Object* object) : Object(object->getMaterial()) {
@@ -23,8 +23,8 @@ double TransformedInstance::_fastIntersect(const Ray& ray) const {
     return object->fastIntersect(local_ray);
 }
 
-BoundingBox TransformedInstance::boundingBoundingBox() const {
-    return bboxToWorld(object->boundingBoundingBox());
+AABox TransformedInstance::getBoundingBox() const {
+    return bboxToWorld(object->getBoundingBox());
 }
 
 SceneObject* TransformedInstance::clone() const {

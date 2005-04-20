@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "cone.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "math/vector2.h"
 
 /**
@@ -40,11 +40,11 @@ void Cone::transform(const Matrix& m) {
     Transformer::transform(m);
 }
 
-BoundingBox Cone::boundingBoundingBox() const {
+AABox Cone::getBoundingBox() const {
     double r = max(radius_end,radius_begin);
     Vector mini = Vector(-r,-r,0);
     Vector maxi = Vector(r,r,1);
-    BoundingBox bbox = BoundingBox(mini,maxi);
+    AABox bbox = AABox(mini,maxi);
     bbox.grow(10*EPSILON);
     return bboxToWorld(bbox);
 }

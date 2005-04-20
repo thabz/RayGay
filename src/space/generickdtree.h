@@ -7,7 +7,7 @@
 #endif
 
 #include <vector>
-#include "boundingbox.h"
+#include "aabox.h"
 
 /*
  * Macros for accessing the packed KdNode.
@@ -50,7 +50,7 @@ class KdNode {
 template<class ObjectType>
 class BoundedObject {
     public:
-	BoundingBox bbox;
+	AABox bbox;
 	ObjectType* object;
 };
 
@@ -67,16 +67,16 @@ class GenericKdTree {
 	
 	void prepare();
 	
-	/// The BoundingBox around all objects added to the tree
-	BoundingBox boundingBox() const { return world_bbox; };
+	/// The AABox around all objects added to the tree
+	AABox boundingBox() const { return world_bbox; };
 
     protected:
 	/// Constructor
 	GenericKdTree(uint max_depth, uint max_objs);
 
-	BoundingBox enclosure(BoundedObject<ObjectType>** bobs, uint num) const;
+	AABox enclosure(BoundedObject<ObjectType>** bobs, uint num) const;
 
-	BoundingBox world_bbox;
+	AABox world_bbox;
 	uint max_depth;
 
 	// The kd-tree nodes
@@ -97,10 +97,10 @@ class GenericKdTree {
 	};
 	
 	// The recursive prepare method
-	void prepare(uint num, const BoundingBox& bbox, uint depth, const uint dest_idx);
+	void prepare(uint num, const AABox& bbox, uint depth, const uint dest_idx);
 
-	bool findBestSplitPlane(uint size, const BoundingBox& bbox, CostResult& result) const;
-	void findBestSplitPlane(uint size, const BoundingBox& bbox, CostResult& result, int split_dim) const;
+	bool findBestSplitPlane(uint size, const AABox& bbox, CostResult& result) const;
+	void findBestSplitPlane(uint size, const AABox& bbox, CostResult& result, int split_dim) const;
 
 
 	BoundedObject<ObjectType>** left_bobs;

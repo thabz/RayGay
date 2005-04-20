@@ -3,7 +3,7 @@
 #include <cassert>
 #include "objects/isosurface.h"
 #include "intersection.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "math/vector2.h"
 
 using namespace std;
@@ -57,7 +57,7 @@ double IsoSurface::_fastIntersect(const Ray& world_ray) const {
     Ray ray = rayToObject(world_ray);
     double res = -1;
     
-    const BoundingBox& bbox = this->_boundingBoundingBox();
+    const AABox& bbox = this->_getBoundingBox();
     Vector2 inout = bbox.intersect(ray);
     double t_begin = fmax(inout[0],accuracy);
     double t_end = inout[1] + accuracy;
@@ -104,16 +104,16 @@ Vector IsoSurface::normal(const Vector& p) const {
     return  normal;
 }
 
-bool IsoSurface::intersects(const BoundingBox& b) const {
-    return b.inside(boundingBoundingBox());
+bool IsoSurface::intersects(const AABox& b) const {
+    return b.inside(getBoundingBox());
 }
 
 void IsoSurface::transform(const Matrix& m) {
     Transformer::transform(m);
 }
 
-BoundingBox IsoSurface::boundingBoundingBox() const {
-    BoundingBox result = bboxToWorld(_boundingBoundingBox());
+AABox IsoSurface::getBoundingBox() const {
+    AABox result = bboxToWorld(_getBoundingBox());
     result.grow(20*EPSILON);
     return result;
 }

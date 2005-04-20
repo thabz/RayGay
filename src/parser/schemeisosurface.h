@@ -7,16 +7,16 @@
 
 class SchemeIsosurface : public IsoSurface {
     public:
-	SchemeIsosurface(SCM procedure_name, BoundingBox bbox, unsigned int steps, double accuracy, double iso, Material* mat);
+	SchemeIsosurface(SCM procedure_name, AABox bbox, unsigned int steps, double accuracy, double iso, Material* mat);
 	SceneObject* clone() const;
 
     protected:
-	BoundingBox _boundingBoundingBox() const;
+	AABox _getBoundingBox() const;
 	double evaluateFunction(const Vector& point) const;
 
     private:
 	SCM procedure_name;
-	BoundingBox bbox;
+	AABox bbox;
 };
 
 #endif

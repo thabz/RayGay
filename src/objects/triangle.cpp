@@ -6,7 +6,7 @@
 #include "math/vector2.h"
 #include <math.h>
 #include <stdio.h>
-#include "boundingbox.h"
+#include "aabox.h"
 #include "exception.h"
 
 
@@ -210,13 +210,14 @@ double Triangle::_fastIntersect(const Ray& ray) const {
    return cv->last_t;
 }
     
-BoundingBox Triangle::boundingBoundingBox() const {
+AABox Triangle::getBoundingBox() const {
     Vector tri[3];
     tri[0] = mesh->cornerAt(_tri_idx,0);
     tri[1] = mesh->cornerAt(_tri_idx,1);
     tri[2] = mesh->cornerAt(_tri_idx,2);
-    BoundingBox b = BoundingBox::enclosure(tri,3);
+    AABox b = AABox::enclosure(tri,3);
     b.grow(100000.0 * EPSILON);
+    // TODO: Woa! Too much.
     b.growPercentage(0.1);
     //b.grow(100000.0 * EPSILON);
     return b;
@@ -398,7 +399,7 @@ int triBoxOverlap(const Vector& boxcenter, const Vector& boxhalfsize, Vector tri
    return 1;   /* box and triangle overlaps */
 }
 
-int Triangle::intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const {
+int Triangle::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const {
     Vector triverts[3];
     triverts[0] = mesh->cornerAt(_tri_idx,0);
     triverts[1] = mesh->cornerAt(_tri_idx,1);

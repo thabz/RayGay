@@ -10,21 +10,21 @@ class Ray;
 class Matrix;
 class Vector2;
 
-/// An axis-aligned bounding box.
+/// An axis-aligned box. Usually used for bounding stuff.
 
-class BoundingBox {
+class AABox {
 
-    friend std::ostream & operator<< (std::ostream &os, const BoundingBox &b);
+    friend std::ostream & operator<< (std::ostream &os, const AABox &b);
 
     public:
         /// Constructor
-	BoundingBox();
+	AABox();
 	
         /// Constructor
-	BoundingBox(const Vector corner1, const Vector corner2);
+	AABox(const Vector corner1, const Vector corner2);
 	
         /// Constructor
-	BoundingBox(const std::vector<Vector>& swarm);
+	AABox(const std::vector<Vector>& swarm);
 
 	/// Returns (tmin,tmax) of intersection
 	Vector2 intersect(const Ray& ray) const;
@@ -48,7 +48,7 @@ class BoundingBox {
 	bool inside(const Vector* points, int num) const;
 
 	/// Tests whether another boundingbox is inside this
-	bool inside(const BoundingBox& b) const;
+	bool inside(const AABox& b) const;
 
         /// Tests whether this bbox is in back, front or is intersected by a axis-aligned plane.
 	int cutByPlane(int cutplane_dimension, double cutplane_value) const;
@@ -66,13 +66,16 @@ class BoundingBox {
 	const double maximum(const unsigned int i) const { return _c2[i]; };
 
 	/// Returns the smallest box that contains b1 and b2.
-	static BoundingBox doUnion(const BoundingBox& b1, const BoundingBox& b2); 
+	static AABox doUnion(const AABox& b1, const AABox& b2); 
 
 	/// Returns the smallest box that b1 and b2 have in common.
-	static BoundingBox doIntersection(const BoundingBox& b1, const BoundingBox& b2);
+	static AABox doIntersection(const AABox& b1, const AABox& b2);
+	
+	/// Returns the smallest box that contains b1 - b2.
+	static AABox doDifference(const AABox& b1, const AABox& b2);
 
 	/// Returns the smallest box that inclose the points
-	static BoundingBox enclosure(Vector* points, int num);
+	static AABox enclosure(Vector* points, int num);
 
 	/// Returns a length 8 array of the corners
 	Vector* getCorners() const; 
@@ -87,7 +90,7 @@ class BoundingBox {
 	void growPercentage(double amount);
 	
 	/// Comparator
-        bool operator==(const BoundingBox &b) const;
+        bool operator==(const AABox &b) const;
 
 	/// Says whether this bounding box intersects a sphere
 	bool intersectSphere(const Vector& center, double squared_radius) const;
@@ -96,7 +99,7 @@ class BoundingBox {
 	Vector center() const;
 
 	// Split this bbox into two by a axis-aligned plane
-	bool split(BoundingBox& left, BoundingBox& right, const unsigned int dim, const double axis) const; 
+	bool split(AABox& left, AABox& right, const unsigned int dim, const double axis) const; 
 
 	// Lengths of the three sides
 	Vector lengths() const;

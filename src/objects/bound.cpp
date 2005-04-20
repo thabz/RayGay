@@ -1,7 +1,7 @@
 
 #include "objects/bound.h"
 #include "space/kdtree.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "objects/objectgroup.h"
 #include "math/vector2.h"
 #include "materials/plastic.h"
@@ -22,7 +22,7 @@ void Bound::transform(const Matrix& m) {
     group->transform(m);
 }
 
-BoundingBox Bound::boundingBoundingBox() const {
+AABox Bound::getBoundingBox() const {
     return tree->boundingBox();
 }
 

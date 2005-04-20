@@ -21,7 +21,7 @@ class Bound : public Object {
 
 	void transform(const Matrix& m);
 
-	BoundingBox boundingBoundingBox() const;
+	AABox getBoundingBox() const;
 
 	Vector2 getUV(const Intersection& i) const;
 

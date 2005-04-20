@@ -1,7 +1,7 @@
 
 #include <cmath>
 #include "objects/superellipsoid.h"
-#include "boundingbox.h"
+#include "aabox.h"
 
 class Material;
 
@@ -22,9 +22,9 @@ SceneObject* SuperEllipsoid::clone() const {
     return result;
 }
 
-BoundingBox SuperEllipsoid::_boundingBoundingBox() const {
-    BoundingBox bbox = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
-    bbox.growPercentage(0.01);
+AABox SuperEllipsoid::_getBoundingBox() const {
+    AABox bbox = AABox(Vector(-1,-1,-1),Vector(1,1,1));
+    bbox.growPercentage(1.0);
     return bbox;
 }
 

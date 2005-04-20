@@ -21,7 +21,7 @@ class SuperEllipsoid : public IsoSurface {
 	SceneObject* clone() const;
 
     protected:
-	BoundingBox _boundingBoundingBox() const;
+	AABox _getBoundingBox() const;
 
     private:
 	double evaluateFunction(const Vector& v) const;

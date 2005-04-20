@@ -5,16 +5,16 @@
 #include <vector>
 
 #include "objects/isosurface.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "space/generickdtree.h"
 
 class BlobAtom 
 {
     public:
 	BlobAtom(double radius, double weight);
-	virtual BoundingBox boundingBoundingBox() const = 0;
+	virtual AABox getBoundingBox() const = 0;
 	virtual double squaredDistToPoint(const Vector& point) const = 0;
-	virtual int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const = 0;
+	virtual int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const = 0;
 	
 	double radius;
 	double radius_squared;
@@ -25,9 +25,9 @@ class BlobAtomSphere : public BlobAtom {
 
     public:
 	BlobAtomSphere(double radius, double weight, const Vector& center);
-	BoundingBox boundingBoundingBox() const;
+	AABox getBoundingBox() const;
 	double squaredDistToPoint(const Vector& point) const;
-	int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
+	int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
 
     private:
 	Vector center;
@@ -37,9 +37,9 @@ class BlobAtomCylinder: public BlobAtom {
 
     public:
 	BlobAtomCylinder(double radius, double weight, const Vector& from, const Vector& to);
-	BoundingBox boundingBoundingBox() const;
+	AABox getBoundingBox() const;
 	double squaredDistToPoint(const Vector& point) const;
-	int intersects(const BoundingBox& voxel_bbox, const BoundingBox& obj_bbox) const;
+	int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
 
     private:
 	Vector from;
@@ -94,7 +94,7 @@ class Blob : public IsoSurface
 
     protected:
 	double evaluateFunction(const Vector& point) const;
-	BoundingBox _boundingBoundingBox() const;
+	AABox _getBoundingBox() const;
 
     private:
 	BlobTree* tree;

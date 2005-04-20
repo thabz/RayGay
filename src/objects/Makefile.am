@@ -40,6 +40,7 @@ libobjects_la_SOURCES = \
 		       parametrizedsurface.cpp \
 		       sceneobject.h	\
 		       solid.h		\
+		       solid.cpp	\
 		       solidbox.h	\
 		       solidbox.cpp	\
 		       sor.h		\

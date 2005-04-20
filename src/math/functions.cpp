@@ -328,7 +328,7 @@ int Math::solveQuadratic(double A, double B, double C, double* roots) {
     double D = B*B - 4*A*C;
     if (D < 0) {
 	return 0;
-    } else if (IS_EQUAL(D,0)) {
+    } else if (IS_ZERO(D)) {
 	roots[0] = -B / (2.0 * A);
 	return 1;
     } else {

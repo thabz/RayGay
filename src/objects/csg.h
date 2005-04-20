@@ -21,7 +21,7 @@ class CSGUnion : public Solid {
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
 	void transform(const Matrix& m);
-	BoundingBox boundingBoundingBox() const;
+	AABox getBoundingBox() const;
 	SceneObject* clone() const;
 
     private:
@@ -45,7 +45,7 @@ class CSGDifference : public Solid {
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
 	void transform(const Matrix& m);
-	BoundingBox boundingBoundingBox() const;
+	AABox getBoundingBox() const;
 	SceneObject* clone() const;
 
     private:
@@ -69,7 +69,7 @@ class CSGIntersection : public Solid {
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
 	void transform(const Matrix& m);
-	BoundingBox boundingBoundingBox() const;
+	AABox getBoundingBox() const;
 	SceneObject* clone() const;
 
     private:

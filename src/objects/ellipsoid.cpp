@@ -1,6 +1,6 @@
 
 #include "objects/ellipsoid.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "materials/material.h"
 
 Ellipsoid::Ellipsoid(const Vector& center, const Vector& radii, Material* material) : Solid(material) {
@@ -15,8 +15,8 @@ void Ellipsoid::transform(const Matrix& m) {
     Transformer::transform(m);
 }
 
-BoundingBox Ellipsoid::boundingBoundingBox() const {
-    return bboxToWorld(sphere->boundingBoundingBox());
+AABox Ellipsoid::getBoundingBox() const {
+    return bboxToWorld(sphere->getBoundingBox());
 }
 
 void Ellipsoid::_fullIntersect( const Ray& world_ray, const double t, Intersection& result) const {

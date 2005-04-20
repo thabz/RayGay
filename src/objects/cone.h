@@ -4,7 +4,7 @@
 #include "math/matrix.h"
 #include "math/vector.h"
 #include "object.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "solid.h"
 #include "transformer.h"
 
@@ -24,7 +24,7 @@ class Cone : public Solid, public Transformer {
 	~Cone() {};
 	void transform(const Matrix& m);
 
-	BoundingBox boundingBoundingBox() const;
+	AABox getBoundingBox() const;
 
 	SceneObject* clone() const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;

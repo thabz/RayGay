@@ -13,7 +13,7 @@ class Ellipsoid : public Solid, public Transformer {
     public:
 	Ellipsoid(const Vector& center, const Vector& radii, Material* material);
 	void transform(const Matrix& m);
-	BoundingBox boundingBoundingBox() const;
+	AABox getBoundingBox() const;
 	SceneObject* clone() const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 

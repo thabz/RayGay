@@ -1,5 +1,5 @@
 
-#include "boundingbox.h"
+#include "aabox.h"
 
 #include <iosfwd>
 #include <iostream>
@@ -14,10 +14,10 @@
 #include "image/rgb.h"
 
 
-BoundingBox::BoundingBox() {
+AABox::AABox() {
 }
 
-BoundingBox::BoundingBox(const Vector c1, const Vector c2) {
+AABox::AABox(const Vector c1, const Vector c2) {
     _c1[0] = fmin(c1[0],c2[0]);
     _c1[1] = fmin(c1[1],c2[1]);
     _c1[2] = fmin(c1[2],c2[2]);
@@ -26,7 +26,7 @@ BoundingBox::BoundingBox(const Vector c1, const Vector c2) {
     _c2[2] = fmax(c1[2],c2[2]);
 }
 
-BoundingBox::BoundingBox(const std::vector<Vector>& swarm) {
+AABox::AABox(const std::vector<Vector>& swarm) {
     int num = swarm.size();
     if (num < 2) throw_exception("At least two Vectors are needed");
     for(int i = 0; i < num; i++) {
@@ -40,7 +40,7 @@ BoundingBox::BoundingBox(const std::vector<Vector>& swarm) {
     }
 }
 
-bool BoundingBox::inside(const Vector &p) const {
+bool AABox::inside(const Vector &p) const {
     return p[0] > _c1[0] &&
 	   p[0] < _c2[0] &&
 	   p[1] > _c1[1] &&
@@ -49,7 +49,7 @@ bool BoundingBox::inside(const Vector &p) const {
 	   p[2] < _c2[2];
 }
 
-bool BoundingBox::insideOrTouching(const Vector &p) const {
+bool AABox::insideOrTouching(const Vector &p) const {
     return p[0] >= _c1[0] &&
 	   p[0] <= _c2[0] &&
 	   p[1] >= _c1[1] &&
@@ -58,11 +58,11 @@ bool BoundingBox::insideOrTouching(const Vector &p) const {
 	   p[2] <= _c2[2];
 }
 
-Vector BoundingBox::center() const {
+Vector AABox::center() const {
     return 0.5 * (Vector(_c1[0],_c1[1],_c1[2]) + Vector(_c2[0],_c2[1],_c2[2]));
 }
 
-bool BoundingBox::inside(const Vector* points, int num) const {
+bool AABox::inside(const Vector* points, int num) const {
     assert(num > 0);
     for(int i = 0; i < num; i++) {
 	if (!inside(points[i])) return false;
@@ -71,11 +71,11 @@ bool BoundingBox::inside(const Vector* points, int num) const {
 
 }
 
-bool BoundingBox::inside(const BoundingBox& b) const {
+bool AABox::inside(const AABox& b) const {
     return inside(b.minimum()) && inside(b.maximum());
 }
 
-bool BoundingBox::onEdge(const Vector &p) const {
+bool AABox::onEdge(const Vector &p) const {
     bool p0bounded = p[0] >= _c1[0] && p[0] <= _c2[0];
     bool p1bounded = p[1] >= _c1[1] && p[1] <= _c2[1];
     bool p2bounded = p[2] >= _c1[2] && p[2] <= _c2[2];
@@ -102,7 +102,7 @@ bool BoundingBox::onEdge(const Vector &p) const {
  * 
  * Fast algorithm from http://www.cs.utah.edu/~awilliam/box/
  */
-Vector2 BoundingBox::intersect(const Ray& ray) const {
+Vector2 AABox::intersect(const Ray& ray) const {
     const Vector& B = ray.getOrigin();
     const Vector& v_inv = ray.getInverseDirection();
     const Vector& v = ray.getDirection();
@@ -146,7 +146,7 @@ Vector2 BoundingBox::intersect(const Ray& ray) const {
     return Vector2(tmin,tmax);
 }
 
-bool BoundingBox::checkIntersect(const Ray& ray) const {
+bool AABox::checkIntersect(const Ray& ray) const {
     const Vector& B = ray.getOrigin();
     const Vector& v_inv = ray.getInverseDirection();
     const Vector& v = ray.getDirection();
@@ -190,7 +190,7 @@ bool BoundingBox::checkIntersect(const Ray& ray) const {
     return ( (tmax < HUGE_DOUBLE) && (tmax > -1 ) );
 }
 
-Vector BoundingBox::normal(const Vector& p) const {
+Vector AABox::normal(const Vector& p) const {
     if (IS_EQUAL(p[0],_c1[0])) {
 	    return Vector(-1,0,0);
     } else if (IS_EQUAL(p[0],_c2[0])) {
@@ -212,7 +212,7 @@ Vector BoundingBox::normal(const Vector& p) const {
 /**
  * The array must be deleted after use.
  */
-Vector* BoundingBox::getCorners() const {
+Vector* AABox::getCorners() const {
     Vector* corners = new Vector[8];
     Vector* c = corners;
     assert(c != NULL);
@@ -227,28 +227,52 @@ Vector* BoundingBox::getCorners() const {
     return c;
 }
 
-BoundingBox BoundingBox::doUnion(const BoundingBox& b1, const BoundingBox& b2) {
+AABox AABox::doUnion(const AABox& b1, const AABox& b2) {
     Vector mini = Vector(fmin(b1._c1[0],b2._c1[0]),
 	                 fmin(b1._c1[1],b2._c1[1]),
 			 fmin(b1._c1[2],b2._c1[2]));
     Vector maxi = Vector(fmax(b1._c2[0],b2._c2[0]),
 	                 fmax(b1._c2[1],b2._c2[1]),
 			 fmax(b1._c2[2],b2._c2[2]));
-    return BoundingBox(mini,maxi);
+    return AABox(mini,maxi);
 }
 
 // This should return NULL is they don't intersect...!
-BoundingBox BoundingBox::doIntersection(const BoundingBox& b1, const BoundingBox& b2) {
+AABox AABox::doIntersection(const AABox& b1, const AABox& b2) {
     Vector mini = Vector(fmax(b1._c1[0],b2._c1[0]),
 	                 fmax(b1._c1[1],b2._c1[1]),
 			 fmax(b1._c1[2],b2._c1[2]));
     Vector maxi = Vector(fmin(b1._c2[0],b2._c2[0]),
 	                 fmin(b1._c2[1],b2._c2[1]),
 			 fmin(b1._c2[2],b2._c2[2]));
-    return BoundingBox(mini,maxi);
+    return AABox(mini,maxi);
 }
 
-BoundingBox BoundingBox::enclosure(Vector* points, int num) {
+AABox AABox::doDifference(const AABox& a, const AABox& b)
+{
+    AABox result = a;
+
+    for (uint x = 0; x < 3; x++) {
+	uint y = (x + 1) % 3;
+	uint z = (x + 2) % 3;
+
+	// Handling x axis for maximum
+	if (a._c1[x] < b._c1[x] && a._c2[x] > b._c1[x] && a._c2[x] < b._c2[x] &&
+		a._c1[y] > b._c1[y] && a._c1[z] > b._c1[z] &&
+		a._c2[y] < b._c2[y] && a._c2[z] < b._c2[z])
+	    result._c2[x] = b._c1[x];
+
+	// Handling x axis for minimum
+	if (a._c1[x] < b._c2[x] && a._c2[x] > b._c2[x] && a._c1[x] > b._c1[x] &&
+		a._c1[y] > b._c1[y] && a._c1[z] > b._c1[z] &&
+		a._c2[y] < b._c2[y] && a._c2[z] < b._c2[z])
+	result._c1[x] = b._c2[x];
+    }
+	    
+    return result;
+}
+
+AABox AABox::enclosure(Vector* points, int num) {
     Vector mini = Vector(HUGE_DOUBLE,HUGE_DOUBLE,HUGE_DOUBLE);
     Vector maxi = Vector(-HUGE_DOUBLE,-HUGE_DOUBLE,-HUGE_DOUBLE);
     for(int i = 0; i < num; i++) {
@@ -257,19 +281,19 @@ BoundingBox BoundingBox::enclosure(Vector* points, int num) {
 	    maxi[j] = fmax(maxi[j],points[i][j]);
 	}
     }
-    return BoundingBox(mini,maxi);
+    return AABox(mini,maxi);
 }
 
 
 
-bool BoundingBox::operator==(const BoundingBox &b) const {
+bool AABox::operator==(const AABox &b) const {
     return b.minimum() == minimum() && b.maximum() == maximum();
 }
 
 /**
  * The surfacearea of all six faces.
  */
-double BoundingBox::area() const {
+double AABox::area() const {
     double w = _c2[0] - _c1[0];
     double h = _c2[1] - _c1[1];
     double d = _c2[2] - _c1[2];
@@ -284,7 +308,7 @@ double BoundingBox::area() const {
  * 
  * @return 1 (higher), -1 (lower) or 0 (intersects)
  */
-int BoundingBox::cutByPlane(int cutplane_dimension, double cutplane_value) const {
+int AABox::cutByPlane(int cutplane_dimension, double cutplane_value) const {
     assert(cutplane_dimension == 0 || cutplane_dimension == 1 || cutplane_dimension == 2);
     const double min = minimum(cutplane_dimension);
     const double max = maximum(cutplane_dimension);
@@ -297,12 +321,12 @@ int BoundingBox::cutByPlane(int cutplane_dimension, double cutplane_value) const
     }
 }
 
-ostream & operator<<(ostream &os, const BoundingBox &b) {
+ostream & operator<<(ostream &os, const AABox &b) {
     os << "Boundingbox:(" << b.minimum() << ',' << b.maximum() << ')';
     return os;
 }
 
-void BoundingBox::grow(double nudge) {
+void AABox::grow(double nudge) {
     assert(nudge >= 0.0);
     _c1[0] -= nudge;
     _c1[1] -= nudge;
@@ -312,15 +336,16 @@ void BoundingBox::grow(double nudge) {
     _c2[2] += nudge;
 }
 
-Vector BoundingBox::lengths() const {
+Vector AABox::lengths() const {
     return Vector(_c2[0]-_c1[0],_c2[1]-_c1[1],_c2[2]-_c1[2]);
 }
 
 /**
  * @param percent where 0.01 is 1%
  */
-void BoundingBox::growPercentage(double percent) {
+void AABox::growPercentage(double percent) {
      Vector l = lengths();
+     percent /= 100.0;
      _c1[0] -= percent * l[0];
      _c1[1] -= percent * l[1];
      _c1[2] -= percent * l[2];
@@ -330,7 +355,7 @@ void BoundingBox::growPercentage(double percent) {
 }
 
 // Stolen from http://www.gamasutra.com/features/19991018/Gomez_4.htm
-bool BoundingBox::intersectSphere(const Vector& center, double squared_radius) const {
+bool AABox::intersectSphere(const Vector& center, double squared_radius) const {
     double s, d = 0;
 
     for (int i = 0; i < 3; i++) {
@@ -345,7 +370,7 @@ bool BoundingBox::intersectSphere(const Vector& center, double squared_radius) c
     return d <= squared_radius;
 }
 
-bool BoundingBox::split(BoundingBox& left, BoundingBox& right, const unsigned int dim, const double axis) const {
+bool AABox::split(AABox& left, AABox& right, const unsigned int dim, const double axis) const {
     if (axis > maximum(dim) || axis < minimum(dim)) {
 	return false;
     }
@@ -355,8 +380,8 @@ bool BoundingBox::split(BoundingBox& left, BoundingBox& right, const unsigned in
     Vector split_min = minimum();
     split_min[dim] = axis;
 
-    left = BoundingBox(minimum(),split_max);
-    right = BoundingBox(split_min,maximum());
+    left = AABox(minimum(),split_max);
+    right = AABox(split_min,maximum());
     return true;
 }
 
