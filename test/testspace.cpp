@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include "stats.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "intersection.h"
 #include "ray.h"
 #include "space/kdtree.h"
@@ -18,15 +18,16 @@
 
 class boundingbox_test : public Test {
 
+    private:
+	AABox a,b,c;
+
     public: 
 	void run() {
 
-
-	    BoundingBox b;
 	    ////////////////////////////////////////////////////////
 	    // Test normal() 
 	    ////////////////////////////////////////////////////////
-	    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+	    b = AABox(Vector(-1,-1,-1),Vector(1,1,1));
 	    assertTrue(b.normal(Vector(1,0,0))[0] = 1);
 	    assertTrue(b.normal(Vector(-1,0,0))[0] = -1);
 	    assertTrue(b.normal(Vector(0,1,0))[1] = 1);
@@ -34,13 +35,13 @@ class boundingbox_test : public Test {
 	    assertTrue(b.normal(Vector(0.5,0.2,1))[2] = 1);
 	    assertTrue(b.normal(Vector(0,0,-1))[2] = -1);
 
-	    b = BoundingBox(Vector(-100,-10,-100),Vector(100,10,100));
+	    b = AABox(Vector(-100,-10,-100),Vector(100,10,100));
 	    assertTrue(b.normal(Vector(-100,0,-100))[0] = -1);
 
 	    ////////////////////////////////////////////////////////
 	    // Test onEdge() 
 	    ////////////////////////////////////////////////////////
-	    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+	    b = AABox(Vector(-1,-1,-1),Vector(1,1,1));
 	    assertTrue(b.onEdge(Vector(-1,-1,-1)));
 	    assertTrue(b.onEdge(Vector(-1,0,0)));
 	    assertTrue(b.onEdge(Vector(1,0,0)));
@@ -54,7 +55,7 @@ class boundingbox_test : public Test {
 	    ////////////////////////////////////////////////////////
 	    // Test inside() 
 	    ////////////////////////////////////////////////////////
-	    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+	    b = AABox(Vector(-1,-1,-1),Vector(1,1,1));
 	    assertTrue(b.inside(Vector(0,0,0)));
 	    assertTrue(b.inside(Vector(0.5,0.2,-0.3)));
 	    assertTrue(!b.inside(Vector(1,0.2,-0.3)));
@@ -65,7 +66,7 @@ class boundingbox_test : public Test {
 	    ////////////////////////////////////////////////////////
 	    // Test intersection 
 	    ////////////////////////////////////////////////////////
-	    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+	    b = AABox(Vector(-1,-1,-1),Vector(1,1,1));
 	    Ray r;
 
 	    r = Ray(Vector(0.5,0.5,60),Vector(0,0,-1),1);
@@ -105,18 +106,18 @@ class boundingbox_test : public Test {
 	    ////////////////////////////////////////////////////////
 	    // Test doUnion 
 	    ////////////////////////////////////////////////////////
-	    BoundingBox b1 = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
-	    BoundingBox b2 = BoundingBox(Vector(-2,-2,-2),Vector(0,0,0));
-	    BoundingBox bu = BoundingBox::doUnion(b1,b2);
-	    assertTrue(BoundingBox(Vector(-2,-2,-2),Vector(1,1,1)) == bu);
+	    AABox b1 = AABox(Vector(-1,-1,-1),Vector(1,1,1));
+	    AABox b2 = AABox(Vector(-2,-2,-2),Vector(0,0,0));
+	    AABox bu = AABox::doUnion(b1,b2);
+	    assertTrue(AABox(Vector(-2,-2,-2),Vector(1,1,1)) == bu);
 
-	    BoundingBox bi = BoundingBox::doIntersection(b1,b2);
-	    assertTrue(BoundingBox(Vector(-1,-1,-1),Vector(0,0,0)) == bi);
+	    AABox bi = AABox::doIntersection(b1,b2);
+	    assertTrue(AABox(Vector(-1,-1,-1),Vector(0,0,0)) == bi);
 
 	    ////////////////////////////////////////////////////////
 	    // Test cutByPlane 
 	    ////////////////////////////////////////////////////////
-	    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+	    b = AABox(Vector(-1,-1,-1),Vector(1,1,1));
 	    assertTrue(b.cutByPlane(0,10) == -1);
 	    assertTrue(b.cutByPlane(1,10) == -1);
 	    assertTrue(b.cutByPlane(2,10) == -1);
@@ -130,19 +131,19 @@ class boundingbox_test : public Test {
 	    ////////////////////////////////////////////////////////
 	    // Test center() 
 	    ////////////////////////////////////////////////////////
-	    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+	    b = AABox(Vector(-1,-1,-1),Vector(1,1,1));
 	    assertTrue(b.center() == Vector(0,0,0));
-	    b = BoundingBox(Vector(0,0,0),Vector(2,2,2));
+	    b = AABox(Vector(0,0,0),Vector(2,2,2));
 	    assertTrue(b.center() == Vector(1,1,1));
-	    b = BoundingBox(Vector(0,0,0),Vector(4,2,2));
+	    b = AABox(Vector(0,0,0),Vector(4,2,2));
 	    assertTrue(b.center() == Vector(2,1,1));
-	    b = BoundingBox(Vector(10,10,10),Vector(20,20,20));
+	    b = AABox(Vector(10,10,10),Vector(20,20,20));
 	    assertTrue(b.center() == Vector(15,15,15));
 
 	    ////////////////////////////////////////////////////////
 	    // Test intersectSphere()
 	    ////////////////////////////////////////////////////////
-	    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+	    b = AABox(Vector(-1,-1,-1),Vector(1,1,1));
 	    assertTrue(b.intersectSphere(Vector(0,0,0),10*10));
 	    assertTrue(b.intersectSphere(Vector(0,0,0),2*2));
 	    assertTrue(b.intersectSphere(Vector(0,0,0),0.5*0.5));
@@ -158,19 +159,19 @@ class boundingbox_test : public Test {
 	    ////////////////////////////////////////////////////////
 	    // Test area()
 	    ////////////////////////////////////////////////////////
-	    b = BoundingBox(Vector(0,0,0),Vector(1,1,1));
+	    b = AABox(Vector(0,0,0),Vector(1,1,1));
 	    assertTrue(b.area() == 6*1);
-	    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+	    b = AABox(Vector(-1,-1,-1),Vector(1,1,1));
 	    assertTrue(b.area() == 6*4);
-	    b = BoundingBox(Vector(0,0,0),Vector(3,3,3));
+	    b = AABox(Vector(0,0,0),Vector(3,3,3));
 	    assertTrue(b.area() == 6*9);
 
 	    ////////////////////////////////////////////////////////
 	    // Test split()
 	    ////////////////////////////////////////////////////////
-	    BoundingBox b_left;
-	    BoundingBox b_right;
-	    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
+	    AABox b_left;
+	    AABox b_right;
+	    b = AABox(Vector(-1,-1,-1),Vector(1,1,1));
 	    b.split(b_left, b_right, 0, 0.0);
 	    assertTrue(b_left.minimum() == Vector(-1,-1,-1));
 	    assertTrue(b_left.maximum() == Vector(0,1,1));
@@ -189,7 +190,7 @@ class boundingbox_test : public Test {
 	    assertTrue(b_right.minimum() == Vector(-1,-1,0));
 	    assertTrue(b_right.maximum() == Vector(1,1,1));
 
-	    b = BoundingBox(Vector(0,0,0),Vector(2,2,2));
+	    b = AABox(Vector(0,0,0),Vector(2,2,2));
 	    b.split(b_left, b_right, 0, 0.5);
 	    assertTrue(b_left.minimum() == Vector(0,0,0));
 	    assertTrue(b_left.maximum() == Vector(0.5,2,2));
@@ -199,9 +200,33 @@ class boundingbox_test : public Test {
 	    ////////////////////////////////////////////////////////
 	    // Test copy constructor
 	    ////////////////////////////////////////////////////////
-	    b = BoundingBox(Vector(-1,-1,-1),Vector(1,1,1));
-	    BoundingBox a = b;
+	    b = AABox(Vector(-1,-1,-1),Vector(1,1,1));
+	    a = b;
 	    assertTrue(a.maximum() == b.maximum());
+
+	    ////////////////////////////////////////////////////////
+	    // Test doDifference
+	    ////////////////////////////////////////////////////////
+	    a = AABox(Vector(-1,-1,-1), Vector(1,1,1));
+	    b = AABox(Vector(0.5,-2,-2), Vector(2,2,2));
+	    c = AABox::doDifference(a,b);
+	    assertTrue(c.maximum() == Vector(0.5,1,1));
+	    assertTrue(c.minimum() == a.minimum());
+
+	    b = AABox(Vector(-2,-2,-10), Vector(2,2,0));
+	    c = AABox::doDifference(a,b);
+	    assertTrue(c.minimum() == Vector(-1,-1,0));
+	    assertTrue(c.maximum() == a.maximum());
+
+	    b = AABox(Vector(-1.1,-1.1,-1.1), Vector(2,-0.5,2));
+	    c = AABox::doDifference(a,b);
+	    assertTrue(c.minimum() == Vector(-1,-0.5,-1));
+	    assertTrue(c.maximum() == a.maximum());
+
+	    b = AABox(Vector(0.5,-2,-2),Vector(0.6,2,2));
+	    c = AABox::doDifference(a,b);
+	    assertTrue(c.minimum() == a.minimum());
+	    assertTrue(c.maximum() == a.maximum());
 	}
 };
 

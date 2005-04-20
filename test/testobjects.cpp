@@ -6,7 +6,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "boundingbox.h"
+#include "aabox.h"
 #include "materials/material.h"
 #include "objects/bound.h"
 #include "objects/sphere.h"
@@ -155,9 +155,9 @@ class sphere_test : public Test {
 
 	    assertTrue(intersects(&s,Vector(0,0,-60),Vector(0,0,-1)) == false);
 
-	    /* Test boundingBoundingBox() */
+	    /* Test getBoundingBox() */
 	    s = Sphere(Vector(0,0,0),20.0,m);
-	    assertTrue(s.boundingBoundingBox().inside(BoundingBox(Vector(-20,-20,-20),Vector(20,20,20))));
+	    assertTrue(s.getBoundingBox().inside(AABox(Vector(-20,-20,-20),Vector(20,20,20))));
 
 	    /* Test clone */
 	    Object* s1 = new Sphere(Vector(0,0,0),20,m);
@@ -360,14 +360,14 @@ class extrusion_test : public Test {
 	    // Check bounds 
 	    Vector o = Vector(0,0,0);
 	    Vector top = Vector(10,0,0);
-	    BoundingBox b = BoundingBox(Vector(-1,-10,-10),Vector(11,10,10));
+	    AABox b = AABox(Vector(-1,-10,-10),Vector(11,10,10));
 
 	    Extrusion* c = new Extrusion(o,top,9.0,5,m);
 
 	    c = new Extrusion(top,o,9.0,5,m);
 
 	    top = Vector(0,10,0);
-	    b = BoundingBox(Vector(-10,-1,-10),Vector(10,11,10));
+	    b = AABox(Vector(-10,-1,-10),Vector(10,11,10));
 	    c = new Extrusion(o,top,5.0,5,m);
 
 	    // Check intersection 
@@ -918,6 +918,18 @@ class csg_test : public Test {
 
 	    assertTrue(normalCheck(csg,1000));
 	    assertTrue(transparentCheck(csg,1000));
+
+	    // Test boundingbox shrinkage with CSG difference
+	    s1 = new Sphere(Vector(0,0,0),800,NULL);
+	    s2 = new Sphere(Vector(1000,0,0),990,NULL);
+	    csg = new CSGDifference(s1,s1,NULL);
+
+	    assertTrue(s2->getBoundingBox().area() > 10+s2->getContainedBox().area());
+	    assertTrue(s2->getContainedBox().area() > 10);
+
+	    assertTrue(csg->getBoundingBox().area() < 10+s1->getBoundingBox().area());
+	    
+
 	}
 };
 

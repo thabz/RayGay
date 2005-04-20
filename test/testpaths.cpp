@@ -11,7 +11,7 @@
 #include "paths/line.h"
 #include "paths/bezierspline.h"
 #include "paths/catmullromspline.h"
-#include "boundingbox.h"
+#include "aabox.h"
 #include "testing.h"
 
 using namespace std;
@@ -21,13 +21,13 @@ class circle_test : public Test {
 	void run() {
 	    int num = 100;
 	    Vector points[100];
-	    BoundingBox b;
+	    AABox b;
 
 	    /* Test at origin */
 	    Circle c = Circle(Vector(0,0,0),10,Vector(0,0,1));
 	    assertTrue(c.isClosed());
 	    c.getPoints(num,points);
-	    b = BoundingBox(Vector(-11,-11,-1),Vector(11,11,1));
+	    b = AABox(Vector(-11,-11,-1),Vector(11,11,1));
 	    assertTrue(b.inside(points,num));
 
 
@@ -35,21 +35,21 @@ class circle_test : public Test {
 	    c = Circle(Vector(10,10,0),10,Vector(0,0,1));
 	    assertTrue(c.isClosed());
 	    c.getPoints(num,points);
-	    b = BoundingBox(Vector(-1,-1,-1),Vector(21,21,1));
+	    b = AABox(Vector(-1,-1,-1),Vector(21,21,1));
 	    assertTrue(b.inside(points,num));
 
 	    /* Test direction along x */
 	    c = Circle(Vector(0,0,0),10,Vector(1,0,0));
 	    assertTrue(c.isClosed());
 	    c.getPoints(num,points);
-	    b = BoundingBox(Vector(-1,-11,-11),Vector(1,11,11));
+	    b = AABox(Vector(-1,-11,-11),Vector(1,11,11));
 	    assertTrue(b.inside(points,num));
 
 	    /* Test direction along y */
 	    c = Circle(Vector(0,0,0),10,Vector(0,1,0));
 	    assertTrue(c.isClosed());
 	    c.getPoints(num,points);
-	    b = BoundingBox(Vector(-11,-1,-11),Vector(11,1,11));
+	    b = AABox(Vector(-11,-1,-11),Vector(11,1,11));
 	    assertTrue(b.inside(points,num));
 
 	    /* Test tangent */

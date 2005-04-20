@@ -75,6 +75,10 @@ class vector_test : public Test {
 
 	    assertTrue(Vector::xProduct(v,w) == Vector::xProduct(w,v));
 
+	    v = Vector(1,2,3);
+	    assertEqualV(-v, Vector(-1,-2,-3));
+	    assertEqualV(v + -v, Vector(0,0,0));
+
 	    // Test polar coordinates
 	    v = Vector(1,0,0);
 	    w = v.toPolar();
