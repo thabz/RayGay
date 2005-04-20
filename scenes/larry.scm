@@ -1,12 +1,11 @@
 
-(load "globals.scm")
-(load "objects.scm")
+(load "lib/raygay.scm")
 
-(set! image-size '(1024 1024))
-(set! background '(0.3 0.6 0.7))
+(set-image-size '(1024 1024))
+(set-background '(0.3 0.6 0.7))
 
-(set! renderer "raytracer")
-(set! camera 
+(set-renderer "raytracer")
+(set-camera 
   (make-pinhole-camera 
     '( pos (10 1000 3000)
        lookat (0 0 0)
@@ -35,12 +34,9 @@
        specpow 30)))
 
 
-(set! scene (list (make-pointlight '(500 1300 1300))))
-;(append! scene (list (make-pointlight '(-500 1500 1300))))
+(add-to-scene (make-pointlight '(500 1300 1300)))
 
-(define img 
- (make-texture 
-  "gfx/larry.jpg" 1.0 1.0 "none"))
+(define img (make-texture "gfx/larry.jpg" 1.0 1.0 "none"))
 
 (define num 48)
 
@@ -50,9 +46,7 @@
       (let iterx ((x (* -1 num)))
 	(if (not(= x num))
 	  (begin
-	    (append! 
-	      scene
-	      (list 
+	   (add-to-scene
 		(make-sphere
 		  (list (* x 20) (* y -20) 0) 15.0
 		  (make-material 
@@ -63,11 +57,7 @@
 			(/ (+ x num) (* 2 num)) 
 			(/ (+ y num) (* 2 num)))
 		      'kd 1.0
-		      'ks 0.0)))))
+		      'ks 0.0))))
 	    (iterx (+ x 1)))))
       (itery (+ y 1)))))
 
-
-
-(display "End of patch.work")
-(newline)

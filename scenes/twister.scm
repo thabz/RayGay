@@ -1,13 +1,13 @@
 
-(load "globals.scm")
-(load "objects.scm")
 
-(set! image-size '(800 600))
+(load "lib/raygay.scm")
+
+(set-image-size '(800 600))
 ;(set! background '(0.3 0.6 0.7))
-(set! background (make-texture "gfx/goldensunset.jpg" 1 1 "bilinear"))
+(set-background (make-texture "gfx/goldensunset.jpg" 1 1 "bilinear"))
 
-(set! renderer "raytracer")
-(set! camera 
+(set-renderer "raytracer")
+(set-camera 
   (make-pinhole-camera 
     '( pos (-2000 2000 30)
        lookat (0 200 0)
@@ -36,7 +36,7 @@
        specpow 30)))
 
 
-(set! scene (list (make-pointlight '(500 1300 1300))))
+(add-to-scene (make-pointlight '(500 1300 1300)))
 ;(append! scene (list (make-pointlight '(-500 1500 1300))))
 
 ;(append!
@@ -50,13 +50,9 @@
 (define num 50)
 (define twirls 3.5)
 
-(append! 
- scene 
- (list 
+(add-to-scene    
   (make-extrusion 
    (make-circle '(0 300 0) 400 '(0 1 0))
    (make-ellipse '(0 0 0) 100 200 '(0 0 1))
-   5 100 500 chrome)))
+   5 100 500 chrome))
 
-(display "End of mobius.scm")
-(newline)

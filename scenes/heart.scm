@@ -1,16 +1,15 @@
 
-(load "globals.scm")
-(load "objects.scm")
+(load "lib/raygay.scm")
 
 (define balls 3000)
 (define size 3)
 (define radius (* 100 100 100))    
 
-(set! image-size '(640 480))
-(set! background '(0.94 0.7 0.06))
+(set-image-size '(640 480))
+(set-background '(0.94 0.7 0.06))
 
-(set! renderer "raytracer")
-(set! camera 
+(set-renderer "raytracer")
+(set-camera 
   (make-pinhole-camera 
     '( pos (0 600 1800)
        lookat (0 0 0)
@@ -26,11 +25,10 @@
        ks 0.1
        specpow 15)))
 
-;(set! scene (list (make-pointlight '(500 500 1300))))
-(set! scene (list (make-arealight '(500 500 1300) '(-0.5 -0.5 -1) 500 80 0.1)))
+(add-to-scene (make-arealight '(500 500 1300) '(-0.5 -0.5 -1) 500 80 0.1))
 
-(append!
-  scene (list (make-box '(-1000000 -500 -1000000) '(1000000 -400 1000000) ground)))
+(add-to-scene
+  (make-box '(-1000000 -500 -1000000) '(1000000 -400 1000000) ground))
 
 
 (let loop ((i 0))
@@ -43,9 +41,7 @@
 		 (* y y z z z))))
       (if (negative? v)
 	(begin
-	  (append!
-	    scene 
-	    (list 
+	 (add-to-scene
 	      (make-ellipsoid 
 		(list (* y 400) (* z 400) (* x 400))
 		(list (random2 10 30) (random2 10 30) (random2 10 30))
@@ -56,7 +52,7 @@
 		    'kd 0.8
 		    'specular (list 0.5 0.5 0.5)
 		    'ks 0.2
-		    'specpow 25)))))
+		    'specpow 25))))
 	  (loop (+ i 1)))
 	(loop i)))))
 

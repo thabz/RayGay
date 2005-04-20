@@ -1,37 +1,43 @@
 
 (load "globals.scm")
+(load "lib/objects/make-rounded-cylinder.scm")
 
-(define red-mat 
- (make-material
-  '( "diffuse" (0.8 0.4 0.4)
-      "kd" 0.8
-      "ks" 0.2)))
+(set! image-size '(1600 1200))
+;(set! background (make-texture "gfx/goodmorning.jpg" 1 1 "bilinear"))
+;(set! background (make-texture "gfx/alltrans.png" 1 1 "none"))
+(set! background '(0.337 0.417 0.527))
 
-(define kurt '(7 9 13))
+(set! renderer "raytracer")
+(set! camera 
+  (make-pinhole-camera 
+    '( pos (2 10 20)
+       lookat (0 2.5 0)
+       up (0 1 0)
+       fov 45
+       aa 4)))
 
-;; Tilføjer en kugle    
-(define a 21)
+(define (perturb-noise P N)
+ (let ((pnoise (noise3d (vscale P 5) 0.001)))
+  (v+ N (vscale pnoise 0.1))))
+    
+(define (perturb P N)
+  (list (+ (.x N) (* 0.05 (+ 1 (sin (* (.x P) 6 )))))
+	(+ (.y N) (* 0.05 (+ 1 (sin (* (.y P) 5 )))))
+	(+ 0.0 (.z N))))
 
-(display #(a 0 0))    
+(define chrome
+  (make-material
+    (list 'diffuse '(1.0 1.0 1.0)
+	  'kd 0.8
+	  'specular '(1.0 1.0 1.0)
+	  'ks 0.2
+       'specpow 35
+       ;'normal perturb-noise 
+       )))
 
-;; Markerer renderer    
-;(set-renderer "raytracer")
-(define kugle (make-sphere '(0 50 0) 95 red-mat))
-(define boks (make-box '(0 50 0) '(10 60 10) red-mat))
-(define circle (make-circle (list . (a 1 10)) 20 '(0 1 0)))
-(define spiral (make-spiral circle 100 10 0.0))
 
-(make-bezierspline '((1 2 3) (3 4 5) (1 2 4)))
-;(make-texture "gfx/water.jpg" 1 1 "none")
+(set! scene (list (make-pointlight '(300 1300 1300))))
 
-(define (make-necklace num)
-  (let iter ((i num))
-    (cond ((= i 0) '())
-	  (else (append 
-		  (list . (i)) 
-		  (iter (- i 1)))))))
-
-(display (sequence 10))    
-(newline)
-(display (/ 1 2))
-(newline)
+(append!
+  scene
+   (make-rounded-cylinder 7 5 0.05 chrome))

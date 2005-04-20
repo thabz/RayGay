@@ -1,5 +1,6 @@
 
 (load "lib/raygay.scm")
+(load "lib/objects/make-rounded-box.scm")
 
 (set-image-size '(640 480))
 (set-background '(0.3 0.6 0.7))
@@ -7,11 +8,11 @@
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
-    '( pos (1000 1000 2000)
+    '( pos (200 1000 2000)
        lookat (0 100 0)
        up (0 1 0)
        fov 45
-       aa 4)))
+       aa 0)))
 
 (define brown
   (make-material
@@ -44,24 +45,9 @@
       '(1700 1 1700) 
       brown))
 
-(define num 50)
-(define twirls 1.5)
-
-(let iter ((i num))
-  (if (not(= i 0))
-    (begin
-     (add-to-scene
-	(rotate 
-	  (translate 
-	    (rotate
-	      (make-pill '(0 -200 0) '(0 200 0) 20 chrome)
-	      '(1 0 0) 
-	      (* i (/ (* 360 twirls) num)))
-	    '(0 250 500))
-	  '(0 1 0 )
-	  (* i (/ 360 num))))
-      (iter (- i 1)))))
-
-
-(display "End of mobius.scm")
-(newline)
+(add-to-scene
+  (make-difference
+    (make-solid-rounded-box '(-300 0 -300) '(300 300 300) 20 brown)
+    (make-sphere '(300 300 300) 200)
+    brown))
+  

@@ -1,11 +1,12 @@
 
+(load "lib/raygay.scm")
 (load "lib/objects/make-teapot.scm")
 
-(set! image-size '(640 480))
-(set! background '(0.3 0.6 0.7))
+(set-image-size '(640 480))
+(set-background '(0.3 0.6 0.7))
 
-(set! renderer "raytracer")
-(set! camera 
+(set-renderer "raytracer")
+(set-camera 
   (make-pinhole-camera 
     '( pos (200 200 400)
        lookat (0 50 0)
@@ -34,17 +35,9 @@
        specpow 30)))
 
 
-(set! scene (list (make-pointlight '(500 1300 1300))))
-(append! scene (list (make-pointlight '(-500 1500 1300))))
+(add-to-scene (make-pointlight '(500 1300 1300)))
+(add-to-scene (make-pointlight '(-500 1500 1300)))
 
-(append!
-  scene 
-  (list 
-    (make-box '(-1700 -51 -1700) '(1700 1 1700) brown)
-    ))
+(add-to-scene (make-box '(-1700 -51 -1700) '(1700 1 1700) brown))
 
-
-(append!
-  scene
-    (make-teapot 20 20 chrome)
-  )
+(add-to-scene (make-teapot 20 20 chrome))

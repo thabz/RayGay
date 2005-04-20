@@ -2,11 +2,13 @@
 ; Dette er scenen bag tracer50big.png som 
 ; findes på bloggen 2004-06-16.
 
-(set! image-size '(640 480))
-(set! background '(0.1 0.1 0.3))
+(load "lib/raygay.scm")
 
-(set! renderer "photonrenderer")
-(set! camera 
+(set-image-size '(640 480))
+(set-background '(0.1 0.1 0.3))
+
+(set-renderer "photonrenderer")
+(set-camera 
   (make-pinhole-camera 
     '( pos 	(200 500 1100)
        up 	(0 1 0)
@@ -14,7 +16,7 @@
        fov 	45
        aa 	4)))
 
-(set! settings 
+(set-settings 
  '( globalphotons  	1000
     causticphotons 	100000
     estimateradius 	30
@@ -22,12 +24,11 @@
     finalgatherrays 	0
     cachetolerance 	0.1))
 
-(set! image-size '(640 480))
-(set! background '(0.0 0.0 0.0))
+(set-image-size '(640 480))
+(set-background '(0.0 0.0 0.0))
 
-(set! scene 
- (list 
-  (make-spotlight '(1000 1000 400) '(0 0 0) 16 13 '(100000 100000 100000))))
+(add-to-scene
+  (make-spotlight '(1000 1000 400) '(0 0 0) 16 13 '(100000 100000 100000)))
 
 (define chrome
   (make-material
@@ -54,7 +55,7 @@
        ks 	0
        specpow 	0)))
 
-(append! scene
+(add-to-scene
 	 (list 
 	   (make-box '(-1000 -100 -1000) '(1000 0 1000) table_mat)
 	   (make-difference

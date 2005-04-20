@@ -1,13 +1,15 @@
 
-(load "globals.scm")
+(load "lib/raygay.scm")
 (load "lib/objects/make-rounded-box.scm")
+(load "lib/objects/make-rounded-cylinder.scm")
 
-(set! image-size '(1024 768))
+(set-image-size '(1600 1200))
+;(set! image-size '(640 480))
 ;(set! background (make-texture "gfx/goodmorning.jpg" 1 1 "bilinear"))
-(set! background '(0.76 0.62 0.42))
+(set-background '(0.76 0.62 0.42))
 
-(set! renderer "raytracer")
-(set! camera 
+(set-renderer "raytracer")
+(set-camera 
   (make-pinhole-camera 
     '( pos (4 15 40)
        lookat (0 0 0)
@@ -48,18 +50,22 @@
 
 
 
-(set! scene (list (make-arealight '(1300 1300 1300) '(-1 -1 -1) 200 80 0.1)))
-(append! scene (list (make-arealight '(1300 1300 1300) '(-1 -1 -1) 200 80 0.1)))
+(add-to-scene (make-arealight '(1300 1300 1300) '(-1 -1 -1) 200 80 0.1))
+(add-to-scene (make-arealight '(1300 1300 1300) '(-1 -1 -1) 200 80 0.1))
 
-(append!
-  scene
+(add-to-scene
   (list 
    (make-sphere '(8 2 8) 2 chrome)
-   (make-cylinder '(-8 0 9) '(-8 4 9) 3 chrome)
    (translate
     (make-torus 3 1 chrome)
     '(2 1 14))
    (make-sphere '(0 4 0) 4 chrome)))
+
+(add-to-scene
+ (translate
+  (make-rounded-cylinder 5 3 0.1 chrome)
+  '(-8 0 9)))
+
 
 (define num 20)
 (define offset 4)
@@ -74,7 +80,7 @@
 	((z 0))
 	(if (< z num)
 	  (begin 
-	    (append! scene
+	   (add-to-scene
 		     (translate
 		       (make-rounded-box 
 			 (list (* offset x) 0 (* offset z))

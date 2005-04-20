@@ -1,11 +1,12 @@
 
+(load "lib/raygay.scm")
 (load "lib/l-system.scm")
 
-(set! image-size '(640 480))
-(set! background '(0.3 0.6 0.7))
+(set-image-size '(640 480))
+(set-background '(0.3 0.6 0.7))
 
-(set! renderer "raytracer")
-(set! camera 
+(set-renderer "raytracer")
+(set-camera 
   (make-pinhole-camera 
     '( pos (1000 1000 2000)
        lookat (0 500 0)
@@ -34,16 +35,14 @@
        specpow 30)))
 
 
-(set! scene (list (make-pointlight '(500 1300 1300))))
-(append! scene (list (make-pointlight '(-500 1500 1300))))
+(add-to-scene (make-pointlight '(500 1300 1300)))
+(add-to-scene (make-pointlight '(-500 1300 1300)))
 
-(append!
-  scene 
-  (list 
+(add-to-scene
     (make-box 
       '(-11700 -51 -11700) 
       '(11700 1 11700) 
-      green)))
+      green))
 
 
 (define rules
@@ -54,7 +53,7 @@
  '(( X . (F - [ [ X ] + X ] + F [ + F X ] - X))
      (F . (F F))))
 
-(append! scene
+(add-to-scene
  (make-l-system-object 
   22.5  ; angle
   15 ; length

@@ -29,7 +29,7 @@
      11.8)))
 
 ;; See http://mathworld.wolfram.com/GoursatsSurface.html
-(define (iso-goursats-surface a b c x y z)
+(define (iso-goursats-surfacex a b c x y z)
  (let* ((x2 (* x x))
        (y2 (* y y))
        (z2 (* z z))
@@ -37,8 +37,16 @@
   (+ (* x2 x2)
      (* y2 y2)
      (* z2 z2)
-     (* a (square sumxyz))
-     (* b sumxyz))))
+     (* a sumxyz sumxyz)
+     (* b sumxyz)
+     c)))
 
-(define (iso-torus r_major r_minor x y z)
- 0)
+;; This is a torus in the (x,y)-plane.
+;;
+;; See http://mathworld.wolfram.com/Torus.html
+(define (s-iso-torus r_major r_minor x y z)
+  (+ (square (- r_major
+		(sqrt (+ (* x x) (* y y)))))
+     (* z z)
+     (- (* r_minor r_minor))))
+
