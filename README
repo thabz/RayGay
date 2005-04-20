@@ -47,6 +47,7 @@
 * Swept sphere: http://www.acm.org/pubs/tog/GraphicsGems/gemsv/ch5-4/sweep.cpp
 + 'man 2 times' giver bedre syscall til tidsmåling
 * Thread local storage using pthread: Google for pthread_getspecific
+* Kig pÃ¥ 'oprofile' profileren. Er en Debian pakke.
 
 ///////////////////////////////////////////
 // Compiling into assembler source
