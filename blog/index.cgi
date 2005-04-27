@@ -170,9 +170,36 @@ div.sidebar {
 }
 
 </style>
+<script>
+function colorize() {
+    divs = document.getElementsByTagName("div");
+    for(i = 0; i < divs.length; i++) {
+	mydiv = divs[0];
+	if (mydiv.id == 'scheme') {
+	html = mydiv.innerHTML;
+	html = html.replace(/;(.*)\\\n/g,'<font color="#4040a0">;\\\$1</font>\\n');
+	html = html.replace(/([\\\( ]+)(-?[0-9]+\\\.?[0-9]*)/g,'\\\$1<font color="#a040a0">\\\$2</font>');
+	html = html.replace(/\\\(let\\\*/g,'<font color="#a04040">(<b>let*</b></font>');
+	html = html.replace(/\\\(let/g,'<font color="#a04040">(<b>let</b></font>');
+	html = html.replace(/\\\(list/g,'<font color="#a04040">(<b>list</b></font>');
+	html = html.replace(/\\\(define/g,'<font color="#a04040">(<b>define</b></font>');
+	html = html.replace(/\\\(append!/g,'<font color="#a04040">(<b>append!</b></font>');
+	html = html.replace(/\\\(begin/g,'<font color="#a04040">(<b>begin</b></font>');
+	html = html.replace(/\\\(if/g,'<font color="#a04040">(<b>if</b></font>');
+	html = html.replace(/\\\(\\\+/g,'<font color="#a04040">(<b>+</b></font>');
+	html = html.replace(/\\\(\\\-/g,'<font color="#a04040">(<b>-</b></font>');
+	html = html.replace(/\\\(\\\*/g,'<font color="#a04040">(<b>*</b></font>');
+	html = html.replace(/\\\(\\\//g,'<font color="#a04040">(<b>/</b></font>');
+	html = html.replace(/\\\(/g,'<font color="#4040a0">(</font>');
+	html = html.replace(/\\\)/g,'<font color="#4040a0">)</font>');
+	mydiv.innerHTML = html;
+	}
+    }
+}
+</script>
 <link REL="Shortcut Icon" HREF="favicon.png">
 </head>
-<body>
+<body onload="colorize()">
 
 <table width="100%"><tr>
 <td valign="top" align="center">
@@ -184,7 +211,6 @@ $HTML
 $calHTML
 </td>
 </tr></table>
-
 </body>
 </html>
 EOF

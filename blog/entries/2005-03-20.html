@@ -2,7 +2,7 @@
 <p>I materiale-definitioner kan man nu angive en funktion <b>R</b><sup>3</sup>&times;<b>R</b><sup>3</sup> &rarr; <b>R</b><sup>3</sup> i Scheme, som via callback manipulerer en overflades normalvektor. Dermed er det muligt at lave bumpmapping på overflader, som ikke har veldefinerede (u,v) mappings.</p>
 <p><a href="files/tracer77big.png"><img src="files/tracer77.png"></a>
 <p>Nedenstående funktion har som argumenter et overfladepunkt P og en normal N i dette punkt. Den returnerer blot N forskudt med lidt <a href="http://astronomy.swin.edu.au/~pbourke/texture/perlin/">Perlin-støj</a> i P for at give ovenstående materiale.</p>
-<div class="vim">; Perlin perturb
+<div id="scheme" class="vim">; Perlin perturb
 (define (perturb-noise P N)
     (v+ N (vscale 
 	   (noise3d (vscale P 5) 0.001)
