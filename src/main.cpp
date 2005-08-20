@@ -78,10 +78,6 @@ windowToolkitId availableWindowToolkit() {
     return NONE;
 }
 
-void parser_assign_var(string name, double value) {
-
-}
-
 PreviewWindow* windowFactory(int w, int h) {
     PreviewWindow* result;
     cout << "Toolkit: " << availableWindowToolkit() << endl;
@@ -176,8 +172,8 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
 
     Environment::getUniqueInstance()->setScene(scene);
 
-    parser_assign_var("frame",double(frame));
-    parser_assign_var("clock",double(frame)/double(frames));
+    parser->assignVariable("frame",double(frame));
+    parser->assignVariable("clock",double(frame)/double(frames));
 
     parser->run();
     parser->populate(scene,renderersettings);
@@ -229,7 +225,7 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
 	cout << "Still render (" << img_w << "x" << img_h << ")" << endl;
     } else {
 	cout << "Animation render (" << img_w << "x" << img_h 
-	     << ", " << frames << " frames)" << endl;
+	     << ", " << frame << " of " << frames << " frames)" << endl;
     }
 
     TimerStats* rendering_time = new TimerStats("Renderer","Time");

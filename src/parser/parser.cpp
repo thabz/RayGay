@@ -51,6 +51,10 @@ Parser::Parser(string filename) {
     SchemeFunctions::register_procs();
 }
 
+void Parser::assignVariable(string var, double value) {
+    scm_c_define(var.c_str(), scm_double2num(value));
+}
+
 void Parser::run() {
     char original_working_dir[1024];
 
