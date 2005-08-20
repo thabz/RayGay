@@ -163,7 +163,7 @@ void do_filtering(Image* image, FilterStack* filterstack) {
     cout << "Done." << endl;
 }
 
-void render_frame(int cur_frame, string outputfile, int jobs) {
+void render_frame(int frame, int frames, string outputfile, int jobs) {
 
     Stats::getUniqueInstance()->clear();
     Statistics::put("Renderer","Threads",jobs);
@@ -176,8 +176,8 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
 
     Environment::getUniqueInstance()->setScene(scene);
 
-    parser_assign_var("frame",double(cur_frame));
-    parser_assign_var("clock",double(cur_frame)/double(renderersettings->anim_frames));
+    parser_assign_var("frame",double(frame));
+    parser_assign_var("clock",double(frame)/double(frames));
 
     parser->run();
     parser->populate(scene,renderersettings);
@@ -225,11 +225,11 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     // Create and prepare job pool
     RenderJobPool* job_pool = new RenderJobPool(img_w,img_h,64);
 
-    if (renderersettings->anim_frames == 1) {
+    if (frames == 1) {
 	cout << "Still render (" << img_w << "x" << img_h << ")" << endl;
     } else {
 	cout << "Animation render (" << img_w << "x" << img_h 
-	     << ", " << renderersettings->anim_frames << " frames)" << endl;
+	     << ", " << frames << " frames)" << endl;
     }
 
     TimerStats* rendering_time = new TimerStats("Renderer","Time");
@@ -305,23 +305,18 @@ void render_frame(int cur_frame, string outputfile, int jobs) {
     Statistics::dumpAll();
 }
 
-void work(string scenefile, string outputfile, int jobs) {
+void work(string scenefile, string outputfile, int jobs, int frame, int frames) {
 
     parser = new Parser(scenefile);
     
     int frames_num = getRendererSettings()->anim_frames;
     Environment* env = Environment::getUniqueInstance();
 
-    if (frames_num == 1) {
-	render_frame(0,outputfile,jobs);
-    } else {
-	char file_prefix[50];
-	for (int frame = 0; frame < frames_num; frame++) {
-	    cout << "Rendering frame " << (frame+1) << "/" << frames_num << endl;
-	    sprintf(file_prefix,"%05d",frame);
-	    render_frame(frame,file_prefix + outputfile,jobs);
-	}
+    if (frames_num > 1) {
+        cout << "Rendering frame " << (frame+1) << "/" << frames_num << endl;
     }
+    render_frame(frame,frames,outputfile,jobs);
+
     // TODO: delete_interpreter();
 
     if (env->hasPreviewWindow() && preview_window != NULL) {
@@ -334,6 +329,8 @@ void print_usage() {
     cout << "Usage: tracer [OPTION...] SCENEFILENAME OUTPUTFILENAME" << endl;
     cout << "       -j NUM               Number of threads to run" << endl;
     cout << "       -x                   Disable preview window" << endl;
+    cout << "       -f NUM               Frame to render" << endl;
+    cout << "       -F NUM               Total number of frames" << endl;
     cout << "       -d                   Print debugging information" << endl;
     cout << "       -h                   Show this help message" << endl;
     cout << "       -v                   Show current versionnumber" << endl;
@@ -352,7 +349,9 @@ int main(int argc, char *argv[]) {
     int c;
     opterr = 0;
     int jobs = 1;
-    while ((c = getopt (argc, argv, "vdhxj:")) != -1) {
+    int frame_to_render = 0;
+    int frames_total = 0;
+    while ((c = getopt (argc, argv, "vdhxj:f:F:")) != -1) {
 	switch(c) {
 	    case 'h':
 		print_usage();
@@ -369,6 +368,20 @@ int main(int argc, char *argv[]) {
 	    case 'j':
 		if (sscanf(optarg,"%u",&jobs) != 1 || jobs < 1) {
 		    cerr << "Illegal -j option" << endl;
+		    print_usage();
+		    return EXIT_FAILURE;
+		};
+		break;
+	    case 'f':
+		if (sscanf(optarg,"%u",&frame_to_render) != 1 || frame_to_render < 0) {
+		    cerr << "Illegal -f option" << endl;
+		    print_usage();
+		    return EXIT_FAILURE;
+		};
+		break;
+	    case 'F':
+		if (sscanf(optarg,"%u",&frames_total) != 1 || frames_total < 0) {
+		    cerr << "Illegal -F option" << endl;
 		    print_usage();
 		    return EXIT_FAILURE;
 		};
@@ -395,7 +408,7 @@ int main(int argc, char *argv[]) {
     srand(1); // Make sure rand is seeded consistently.
 
     try {
-	work(scenefile, outfile, jobs); 
+	work(scenefile, outfile, jobs, frame_to_render, frames_total); 
     } catch (Exception e) {
 	cout << "Exception: " << e.getMessage() 
 	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
