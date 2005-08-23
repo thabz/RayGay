@@ -17,7 +17,7 @@
  * @param estimate_photons Number of photons to use when doing an irradiance estimate
  */
 template <class PhotonType>
-PhotonMap<PhotonType>::PhotonMap<PhotonType>( const int max_phot, double max_dist, int estimate_photons  )
+PhotonMap<PhotonType>::PhotonMap( const int max_phot, double max_dist, int estimate_photons  )
 {
     stored_photons = 0;
     prev_scale = 1;

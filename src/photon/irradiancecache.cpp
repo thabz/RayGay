@@ -1,5 +1,4 @@
 
-#include "types.h"
 #include "photon/irradiancecache.h"
 #include "stats.h"
 

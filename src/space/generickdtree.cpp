@@ -10,7 +10,7 @@
 #define KD_TREE_MAX_ELEMENTS_IN_FULL_SPLIT_CHECK 25
 
 template<class ObjectType>
-GenericKdTree<ObjectType>::GenericKdTree<ObjectType>(uint max_depth, uint max_objs) {
+GenericKdTree<ObjectType>::GenericKdTree(uint max_depth, uint max_objs) {
     this->opt_max_depth = max_depth;
     this->opt_max_objs = max_objs;
 
