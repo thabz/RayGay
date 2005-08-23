@@ -1,11 +1,28 @@
 #!/bin/sh
 
-# TODO: Argument testing
+# Testing arguments num
+if [ $# -lt 2 ]
+then
+    echo "USAGE: animation-render.sh SCENEFILE FRAMES"
+    exit 1
+fi
+
+FRAMES_NUM=$2
+SCENE_FILE=$1
+
+# Testing that scene-file exists
+if [ ! -f $SCENE_FILE ]
+then
+    echo "Error: $SCENE_FILE not found."
+    exit 1
+fi
 
 i=0
-while [ $i -lt $1 ]
+while [ $i -lt $FRAMES_NUM ]
 do
-   ./src/tracer $2 -f $i -F $1 -x kaj$i.png
-   echo $i
+   OUTPUT_FILE=output`printf %05d $i`.png
+   echo Rendering $SCENE_FILE frame $i of $FRAMES_NUM to $OUTPUT_FILE
+   ./src/tracer -f $i -F $FRAMES_NUM -x $SCENE_FILE $OUTPUT_FILE
    i=`expr $i + 1`
 done
+
