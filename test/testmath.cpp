@@ -1003,17 +1003,21 @@ class rootfinding_test: public Test  {
 	    RootFinder bisec = RootFinder(RootFinder::BISECTION,tole,&my_sin);
 	    RootFinder false1 = RootFinder(RootFinder::REGULA_FALSI,tole,&my_sin);
 
+	    /*
 	    cout << "Brent, sin: " << brent.solve(M_PI-0.7, M_PI+0.5, &root) << endl;
 	    cout << "Bisec, sin: " << bisec.solve(M_PI-0.7, M_PI+0.5, &root) << endl;
 	    cout << "Regula, sin: " << false1.solve(M_PI-0.7, M_PI+0.5, &root) << endl;
-
+	    */
+	
 	    RootFinder brent2 = RootFinder(RootFinder::BRENTS_METHOD,tole,&my_poly);
 	    RootFinder bisec2 = RootFinder(RootFinder::BISECTION,tole,&my_poly);
 	    RootFinder false2 = RootFinder(RootFinder::REGULA_FALSI,tole,&my_poly);
-
+	
+	    /*
 	    cout << "Brent, poly: " << brent2.solve(M_PI, 4.26, &root) << endl;
 	    cout << "Bisec, poly: " << bisec2.solve(M_PI, 4.26, &root) << endl;
 	    cout << "False, poly: " << false2.solve(M_PI, 4.26, &root) << endl;
+	    */
 
 	}
 };
