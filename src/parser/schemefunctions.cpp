@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <libguile.h>
+#include <cmath>
 #include "parser/schemefunctions.h"
 
 SCM iso_goursats_surface(SCM s_a, SCM s_b, SCM s_c, SCM s_x, SCM s_y, SCM s_z)
