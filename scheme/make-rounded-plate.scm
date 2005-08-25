@@ -1,0 +1,20 @@
+(define (make-rounded-plate halfwidth radius material)
+  (let* ((w (- halfwidth radius))
+	 (x+y+ (list w w 0))
+	 (x+y- (list w (- w) 0))
+	 (x-y- (list (- w) (- w) 0))
+	 (x-y+ (list (- w) w 0)))
+    (list (make-sphere x+y+ radius material)
+	  (make-sphere x+y- radius material)
+	  (make-sphere x-y- radius material)
+	  (make-sphere x-y+ radius material)
+	  (make-cylinder x+y+ x+y- radius material)
+	  (make-cylinder x+y- x-y- radius material)
+	  (make-cylinder x-y- x-y+ radius material)
+	  (make-cylinder x-y+ x+y+ radius material)
+	  ;	     (make-solid-box 
+	  ;	      (list (- w) (- w) (- radius))
+	  ;	      (list w w radius) material)
+	  )))
+
+
