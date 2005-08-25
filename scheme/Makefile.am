@@ -1,2 +1,2 @@
 
-pkgdata_DATA = *.scm
+dist_pkgdata_DATA = *.scm
