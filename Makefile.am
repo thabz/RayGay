@@ -1,5 +1,5 @@
 
-SUBDIRS = src test
+SUBDIRS = src test scheme
 
 doc:
 	cd @top_distdir@ && doxygen 
