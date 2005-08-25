@@ -26,7 +26,7 @@ autoconf
 
 
 echo "Now running configure"
-$srcdir/configure 
+$srcdir/configure $*
 
 echo "Type make to build raygay"
 
