@@ -2,5 +2,5 @@
 EXTRA_DIST = \
 	     rgb.png 	\
 	     simple.jpg \
-	     water.jpg	\
+	     water.tga	\
 	     withpalette.png
