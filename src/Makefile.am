@@ -28,7 +28,8 @@ libtracer_la_LIBADD = parser/libparser.la photon/libphoton.la lights/liblights.l
 
 #--------------------------------------
 
-bin_PROGRAMS = tracer bench
+bin_PROGRAMS = tracer 
+noinst_PROGRAMS = bench
 
 tracer_SOURCES = main.cpp window-gtk.cpp window-gtk.h window-icon.h
 #tracer_CXXFLAGS = $(GTK_CFLAGS) $(CXXFLAGS)
