@@ -4,6 +4,9 @@ aclocal.m4
 autom4te.cache
 config.log
 config.status
+config.sub
+config.h.in
+config.guess
 configure
 *.png
 *.tga
@@ -11,3 +14,4 @@ config.h
 libtool
 stamp-h
 stamp-h.in
+ltmain.sh
