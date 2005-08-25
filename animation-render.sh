@@ -22,7 +22,7 @@ while [ $i -lt $FRAMES_NUM ]
 do
    OUTPUT_FILE=output`printf %05d $i`.png
    echo Rendering $SCENE_FILE frame $i of $FRAMES_NUM to $OUTPUT_FILE
-   ./src/tracer -f $i -F $FRAMES_NUM -x $SCENE_FILE $OUTPUT_FILE
+   ./src/tracer -b -f $i -F $FRAMES_NUM $SCENE_FILE $OUTPUT_FILE
    i=`expr $i + 1`
 done
 

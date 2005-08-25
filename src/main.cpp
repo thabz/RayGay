@@ -342,7 +342,7 @@ void work(string scenefile, string outputfile, int jobs, int frame, int frames) 
 void print_usage() {
     cout << "Usage: tracer [OPTION...] SCENEFILENAME OUTPUTFILENAME" << endl;
     cout << "       -j NUM               Number of threads to run" << endl;
-    cout << "       -x                   Disable preview window" << endl;
+    cout << "       -b                   Run in background with no GUI" << endl;
     cout << "       -f NUM               Frame to render" << endl;
     cout << "       -F NUM               Total number of frames" << endl;
     cout << "       -d                   Print debugging information" << endl;
@@ -365,7 +365,7 @@ int main(int argc, char *argv[]) {
     int jobs = 1;
     int frame_to_render = 0;
     int frames_total = 0;
-    while ((c = getopt (argc, argv, "vdhxj:f:F:")) != -1) {
+    while ((c = getopt (argc, argv, "vdhbj:f:F:")) != -1) {
 	switch(c) {
 	    case 'h':
 		print_usage();
@@ -373,7 +373,7 @@ int main(int argc, char *argv[]) {
 	    case 'v':
 		cout << "Raygay 0.1" << endl;
 		return EXIT_SUCCESS;
-	    case 'x':
+	    case 'b':
 		env->hasPreviewWindow(false);
 		break;
 	    case 'd':
