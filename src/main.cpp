@@ -193,8 +193,11 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     parser->assignVariable("frame",double(frame));
     parser->assignVariable("clock",double(frame)/double(frames));
 
+    TimerStats* parser_timer = new TimerStats("Parser","Time");
+    parser_timer->startTimer();
     parser->run();
     parser->populate(scene,renderersettings);
+    parser_timer->stopTimer();
 
     if (renderersettings->renderertype == RendererSettings::NONE) {
 	return;
