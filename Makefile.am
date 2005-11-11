@@ -1,6 +1,8 @@
 
 SUBDIRS = src test scheme
 
+dist_bin_SCRIPTS=animation-render.sh
+
 doc:
 	cd @top_distdir@ && doxygen 
 
