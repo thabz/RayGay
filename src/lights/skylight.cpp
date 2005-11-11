@@ -17,7 +17,7 @@ Skylight::Skylight (double radius, int num) : Lightsource(Vector(0,0,0)) {
     }
 }
 
-void Skylight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, unsigned int depth) const {
+void Skylight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const {
     int count = 0;
     double cos_total = 0;
     double cos_tmp;

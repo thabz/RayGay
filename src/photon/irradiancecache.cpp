@@ -78,7 +78,7 @@ void IrradianceCache::traverseOctree(
 	vector<const CacheNode*>* result) const 
 {
     // Add cache_nodes to result
-    for(uint i = 0; i < node->cache_nodes.size(); i++) {
+    for(uint32_t i = 0; i < node->cache_nodes.size(); i++) {
 	const CacheNode* const cnode = &(node->cache_nodes[i]);
 	if ((point - cnode->getPoint()).norm() <= cnode->getSquaredRadius()) {
 	    result->push_back(cnode);
@@ -87,7 +87,7 @@ void IrradianceCache::traverseOctree(
 
     if (node->isSplit) {
 	// traverse children
-	for(uint i = 0; i < 8; i++) {
+	for(uint32_t i = 0; i < 8; i++) {
 	    const HierarchyNode* child = node->children[i];
 	    // FIXME: Simpler test possible
 	    if (child->bbox.insideOrTouching(point)) {
@@ -134,7 +134,7 @@ double IrradianceCache::CacheNode::getWeight(
 
 IrradianceCache::HierarchyNode::HierarchyNode(
 	const AABox& bbox, 
-	uint depth) 
+	uint32_t depth) 
 {
     this->bbox = bbox;
     this->isSplit = false;
@@ -154,7 +154,7 @@ void IrradianceCache::HierarchyNode::add(
 	// Find how many and which siblings this node fits in
 	bool accepted[8];
 	int accepted_count = 0;
-	for(uint j = 0; j < 8; j++) {
+	for(uint32_t j = 0; j < 8; j++) {
 	    accepted[j] = false;
 	    HierarchyNode* const child = children[j];
 	    if (child->bbox.intersectSphere(node.getPoint(),node.getSquaredRadius())) {
@@ -168,7 +168,7 @@ void IrradianceCache::HierarchyNode::add(
 	    cache_nodes.push_back(node);
 	} else {
 	    // Put it in siblings
-	    for(uint j = 0; j < 8; j++) {
+	    for(uint32_t j = 0; j < 8; j++) {
 		if (accepted[j]) {
 		    children[j]->add(node);
 		}
@@ -199,7 +199,7 @@ void IrradianceCache::HierarchyNode::split()
 IrradianceCache::HierarchyNode::~HierarchyNode() 
 {
     if (isSplit) {
-	for (uint i = 0; i < 8; i++) {
+	for (uint32_t i = 0; i < 8; i++) {
 	    delete children[i];
 	}
     }

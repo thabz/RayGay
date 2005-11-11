@@ -16,21 +16,15 @@
 class Exception {
 
     public:
-	Exception(std::string message, const char* srcfile, unsigned int srcline);
+	Exception(std::string message, const char* srcfile, uint32_t srcline);
 	std::string getMessage() { return message; };
 	std::string getSourceFile() { return sourcefile; };
-	unsigned int getSourceLine() { return sourceline; };
+	uint getSourceLine() { return sourceline; };
+
     private:
 	std::string message;
 	std::string sourcefile;
-	unsigned int sourceline;
+	uint sourceline;
 };
-
-inline
-Exception::Exception(std::string message, const char* srcfile, unsigned int srcline) {
-    this->message = message;
-    this->sourcefile = srcfile;
-    this->sourceline = srcline;
-}
 
 #endif

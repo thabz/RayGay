@@ -1,9 +1,8 @@
 
 #include "space/hitcache.h"
-#include "types.h"
 #include <cstdlib>
 
-HitCache::HitCache(uint size) {
+HitCache::HitCache(uint32_t size) {
     this->size = size;
     this->first = 0;
     entries = new Entry[size];
@@ -15,7 +14,7 @@ HitCache::~HitCache() {
 
 inline
 int HitCache::findEntryIndex(void* fromObject) const {
-    for(uint i = 0; i < size; i++) {
+    for(uint32_t i = 0; i < size; i++) {
 	if (entries[i].fromObject == fromObject)
 	    return i;
     }

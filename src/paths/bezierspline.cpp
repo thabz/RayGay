@@ -3,11 +3,11 @@
 #include "math/functions.h"
 #include <cassert>
 
-BezierSpline::BezierSpline(Vector* controlpoints, uint num) {
+BezierSpline::BezierSpline(Vector* controlpoints, uint32_t num) {
 
    assert(num > 2);
    this->num = num;
-   for(uint i = 0; i < num; i++) {
+   for(uint32_t i = 0; i < num; i++) {
        this->controlpoints.push_back(controlpoints[i]);
    }
 }
@@ -23,14 +23,14 @@ BezierSpline::~BezierSpline() {
 }
 
 void BezierSpline::transform(const Matrix& m) {
-   for(uint i = 0; i < num; i++) {
+   for(uint32_t i = 0; i < num; i++) {
        controlpoints[i] = m * controlpoints[i];
    }
 }
 
 Vector BezierSpline::getPoint(double t) const {
     Vector result = Vector(0,0,0);
-    for(uint i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	result += Math::bernsteinPolynomial(i,num-1,t) * getControlPoint(i);
     }
     return result;
@@ -45,7 +45,7 @@ Vector BezierSpline::getPoint(double t) const {
  */
 Vector BezierSpline::getTangent(double t) const {
     Vector result = Vector(0,0,0);
-    for(uint i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	result += num*(Math::bernsteinPolynomial(i-1,num-2,t) - Math::bernsteinPolynomial(i,num-2,t)) * getControlPoint(i);
     }
     result.normalize();

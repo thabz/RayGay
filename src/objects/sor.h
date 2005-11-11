@@ -16,7 +16,7 @@ using namespace std;
 class SurfaceOfRevolution : public Mesh {
     public:
 	/// Constructor
-	SurfaceOfRevolution(const vector<Vector2>& points, unsigned int segments, const Material* m);
+	SurfaceOfRevolution(const vector<Vector2>& points, uint32_t segments, const Material* m);
 };
 
 #endif

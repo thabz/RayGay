@@ -29,6 +29,8 @@ class Function {
 	TO operator()(const FROM& x) const {
 	    return eval(x);
 	}
+
+	virtual ~Function() {};
 };
 
 #endif

@@ -67,7 +67,7 @@ void Image::setRGBA(int x, int y, const RGBA& c) {
     assert(0 <= x && x < width);
     assert(0 <= y && y < height);
     */
-    unsigned int offset = (y*width + x)*4;
+    uint32_t offset = (y*width + x)*4;
 
     data[offset++] = c.r();
     data[offset++] = c.g();
@@ -123,8 +123,8 @@ void Image::save(const std::string& filename) {
 
 // Clip RGBA values to be in [0,1]
 void Image::clipColors() {
-    unsigned int num = (unsigned int)(getWidth()*getHeight()*4);
-    for(unsigned int i = 0; i < num; i++) {
+    uint32_t num = (uint32_t)(getWidth()*getHeight()*4);
+    for(uint32_t i = 0; i < num; i++) {
 	if (data[i] < 0) data[i] = 0;
 	if (data[i] > 1) data[i] = 1;
     }

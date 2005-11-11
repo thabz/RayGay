@@ -49,7 +49,7 @@ void Ellipsoid::allIntersections(const Ray& world_ray, vector<Intersection>& res
     Ray local_ray = rayToObject(world_ray);
     vector<Intersection> result1;
     sphere->allIntersections(local_ray,result1);
-    for(unsigned int i = 0; i < result1.size(); i++) {
+    for(uint32_t i = 0; i < result1.size(); i++) {
 	Intersection is = result1[i];
 	intersectionToWorld(is);
 	is.setT(is.getT() / local_ray.t_scale);

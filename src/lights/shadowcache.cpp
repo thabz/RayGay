@@ -15,7 +15,7 @@ ShadowCache::ShadowCache() {
     }
 }
 
-Object* ShadowCache::getHint(unsigned int depth) const {
+Object* ShadowCache::getHint(uint32_t depth) const {
     if (depth < LIGHTS_SHADOW_CACHE_MAX_DEPTH) {
 	return hints[depth];
     } else {
@@ -23,13 +23,13 @@ Object* ShadowCache::getHint(unsigned int depth) const {
     }
 }
 
-void ShadowCache::putHint(unsigned int depth, Object* object) {
+void ShadowCache::putHint(uint32_t depth, Object* object) {
     if (depth < LIGHTS_SHADOW_CACHE_MAX_DEPTH) {
 	hints[depth] = object;
     }
 }
 
-vector<Object*>* ShadowCache::getVoxel(unsigned int depth) const {
+vector<Object*>* ShadowCache::getVoxel(uint32_t depth) const {
     if (depth < LIGHTS_SHADOW_CACHE_MAX_DEPTH) {
 	return voxels[depth];
     } else {
@@ -37,14 +37,14 @@ vector<Object*>* ShadowCache::getVoxel(unsigned int depth) const {
     }
 }
 
-void ShadowCache::putVoxel(unsigned int depth, vector<Object*>* voxel) {
+void ShadowCache::putVoxel(uint32_t depth, vector<Object*>* voxel) {
     if (depth < LIGHTS_SHADOW_CACHE_MAX_DEPTH) {
 	voxels[depth] = voxel;
     }
 }
 
 
-bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, unsigned int depth, KdTree* space) {
+bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, uint32_t depth, KdTree* space) {
     // Check last shadowing object first
     Object* hint = getHint(depth);
     if (hint != NULL) {
@@ -59,9 +59,9 @@ bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, 
     // Check other objects in the same BSP-voxel
     vector<Object*>* voxel = getVoxel(depth);
     if (voxel != NULL) {
-	unsigned int size = voxel->size();
+	uint32_t size = voxel->size();
 	const vector<Object*> &objects = *(voxel);
-	for(unsigned int i = 0; i < size; i++) {
+	for(uint32_t i = 0; i < size; i++) {
            double t = objects[i]->fastIntersect(ray_to_light);
 	   if (t > 0 && t < dist_to_light) {
 	       Stats::getUniqueInstance()->inc(STATS_SHADOW_VOXEL_HIT);

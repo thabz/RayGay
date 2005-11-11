@@ -10,10 +10,10 @@ class Extrusion : public Mesh {
 
     public:
 	/// Constructor for a simple cylinder
-    	Extrusion(const Vector& begin, const Vector& end, double radius, unsigned int segments, Material* m);
+    	Extrusion(const Vector& begin, const Vector& end, double radius, uint32_t segments, Material* m);
 
 	/// Constructor
-        Extrusion(const Path& path, double radius, unsigned int segments, unsigned int pieces, Material* m);
+        Extrusion(const Path& path, double radius, uint32_t segments, uint32_t pieces, Material* m);
 
 	/// Constructor for generic extrusion
 	Extrusion::Extrusion(const Path& path, const Path& circle, uint segments, uint pieces, double twists, Material* m);

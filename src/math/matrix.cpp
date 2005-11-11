@@ -40,13 +40,13 @@ void Matrix::identity() {
 }
 
 void Matrix::clear() {
-    for(unsigned int i = 0; i < 16; i++) {
+    for(uint32_t i = 0; i < 16; i++) {
 	_matrix[i] = 0;
     }
 }
 
 bool Matrix::isIdentity() const {
-    for(unsigned int i = 0; i < 16; i++) {
+    for(uint32_t i = 0; i < 16; i++) {
 	if (!IS_EQUAL(_matrix[i],_identity[i]))
 	    return false;
     }

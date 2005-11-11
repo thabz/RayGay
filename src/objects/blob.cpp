@@ -107,7 +107,7 @@ BlobTree::BlobTree() : GenericKdTree<BlobAtom>(KD_TREE_MAX_DEPTH, KD_TREE_MAX) {
 }
 
 double BlobTree::eval(const Vector& point) const {
-    uint axis;
+    uint32_t axis;
     double value;
     const KdNode<BlobAtom>* node = getTopNode();
 
@@ -125,9 +125,9 @@ double BlobTree::eval(const Vector& point) const {
     // Find the blob value
     double sum = 0.0;
     const double one_ninth = 0.11111111111111111111111111111111111111; // 1 / 9
-    uint num = node->getObjectNum();
+    uint32_t num = node->getObjectNum();
     BlobAtom* b;
-    for(uint i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	b = node->objects[i];
 	double rr = b->squaredDistToPoint(point);
 	double RR = b->radius_squared;
@@ -154,7 +154,7 @@ double BlobTree::eval(const Vector& point) const {
  * @param accuracy the accuracy which is some low number
  * @param material material of the Blob
  */
-Blob::Blob(double iso, unsigned int steps, double accuracy, Material* material) : IsoSurface(steps,accuracy,iso,material) {
+Blob::Blob(double iso, uint32_t steps, double accuracy, Material* material) : IsoSurface(steps,accuracy,iso,material) {
     tree = new BlobTree();
 }
 

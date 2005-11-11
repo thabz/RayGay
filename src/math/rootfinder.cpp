@@ -49,7 +49,7 @@ int RootFinder::bisection(double t_begin, double t_end, double* root) {
     double f_t_begin = f(t_begin);
     double f_t_end = f(t_end);
     double f_t_mid;
-    uint i = 2;
+    uint32_t i = 2;
 
     if (SAME_SIGN(f_t_begin, f_t_end))
 	return false;
@@ -108,7 +108,7 @@ int RootFinder::brents_method(double x1, double x2, double* root) {
     if (SAME_SIGN(fa, fb))
 	return false;
 
-    uint i = 3;
+    uint32_t i = 3;
     while(i++ < MAX_ITER) {
 	ac_equal = false;
 
@@ -208,7 +208,7 @@ int RootFinder::regula_falsi(double t_begin, double t_end, double* root) {
     double f_t_begin = f(t_begin);
     double f_t_end = f(t_end);
     double f_t_mid;
-    uint i = 2;
+    uint32_t i = 2;
 
     if (SAME_SIGN(f_t_begin, f_t_end))
 	return false;

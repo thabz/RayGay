@@ -24,7 +24,7 @@ class QMCSequence;
 class Renderer {
 
     public:
-	Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree* space, RenderJobPool* job_pool, unsigned int thread_id);
+	Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree* space, RenderJobPool* job_pool, uint32_t thread_id);
 
 	/// Run
 	void run();
@@ -41,7 +41,7 @@ class Renderer {
 
 	class PixelBlock {
 	    public:
-		PixelBlock(const unsigned int size);
+		PixelBlock(const uint32_t size);
 		void cleanup();
 		void reset();
 		bool isActive(const int x, const int y) const { return active[y*size + x]; };
@@ -50,8 +50,8 @@ class Renderer {
 	    private:
 	        RGBA* color;
 		bool* active;
-		unsigned int size;
-		unsigned int size_squared;
+		uint32_t size;
+		uint32_t size_squared;
 	};
 	
 	/// Process a renderjob
@@ -59,18 +59,18 @@ class Renderer {
 	void renderPreview(const RenderJob& job);
 	void renderFull(const RenderJob& job);
 
-	RGBA getSubPixel(unsigned int curLevel, const Vector2& center, PixelBlock *block, double size, int x1, int y1, int x2, int y2);
-	void prepareCurRow(std::vector<PixelBlock>* cur_row, std::vector<PixelBlock>* prev_row, unsigned int blocksize);
-	void prepareCurBlock(PixelBlock* cur_block, PixelBlock* prev_block, unsigned int blocksize);
+	RGBA getSubPixel(uint32_t curLevel, const Vector2& center, PixelBlock *block, double size, int x1, int y1, int x2, int y2);
+	void prepareCurRow(std::vector<PixelBlock>* cur_row, std::vector<PixelBlock>* prev_row, uint32_t blocksize);
+	void prepareCurBlock(PixelBlock* cur_block, PixelBlock* prev_block, uint32_t blocksize);
 
 	bool aa_enabled;
-	unsigned int aa_depth;
+	uint32_t aa_depth;
 	std::vector<PixelBlock> row1;
 	std::vector<PixelBlock> row2;
 
 	Image* img;
 	RenderJobPool* job_pool;
-	unsigned int thread_id;
+	uint32_t thread_id;
 
     protected:
 	/// The scene to be rendered can be accessed from implementations of Renderer.

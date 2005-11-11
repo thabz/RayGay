@@ -78,8 +78,8 @@ Image* JpegIO::load(const std::string& filename) {
     jpeg_read_header(&cinfo, TRUE);
     jpeg_start_decompress(&cinfo);
 
-    unsigned int width = cinfo.output_width;
-    unsigned int height = cinfo.output_height;
+    uint32_t width = cinfo.output_width;
+    uint32_t height = cinfo.output_height;
 
     /* physical row width in output buffer */
     int row_stride = cinfo.output_width * cinfo.output_components;
@@ -90,11 +90,11 @@ Image* JpegIO::load(const std::string& filename) {
 
     Image* image = new Image(width,height);
     RGBA* line = new RGBA[width];
-    unsigned int y = 0;
+    uint32_t y = 0;
     while (cinfo.output_scanline < height) {
         jpeg_read_scanlines(&cinfo, buffer, 1);
         readLine(buffer[0], line, width, cinfo.output_components);
-        for(unsigned int x = 0; x < width; x++) {
+        for(uint32_t x = 0; x < width; x++) {
 	    image->setRGBA(x,y,line[x]);
 	}
 	y++;

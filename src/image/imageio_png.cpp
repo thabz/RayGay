@@ -193,10 +193,10 @@ Image* PngIO::load(const std::string& filename) {
     //cout << "Bytes per pixel: " << bpp << endl;
     assert(bpp == 4 || bpp == 3);
 
-    for (unsigned int y = 0; y < height; y++)
+    for (uint32_t y = 0; y < height; y++)
     {
 	png_read_rows(png_ptr, &rowp, png_bytepp_NULL, 1);
-	for(unsigned int x = 0; x < width; x++) {
+	for(uint32_t x = 0; x < width; x++) {
 	    RGBA col;
 	    if (bpp == 4) {
 		col = RGBA(rowp[4*x + 0] / 255.0,

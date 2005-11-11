@@ -55,17 +55,17 @@ class Matrix;
 class CatmullRomSpline : public Path {
     public:
 	CatmullRomSpline(const std::vector<Vector>& points);
-	CatmullRomSpline(Vector* points, unsigned int num);
+	CatmullRomSpline(Vector* points, uint32_t num);
 	virtual ~CatmullRomSpline();
 	Vector getPoint(double t) const;
 	Vector getTangent(double t) const;
 	void transform(const Matrix& m);
 
     private:
-	unsigned int segmentBegin(const double t) const;
+	uint32_t segmentBegin(const double t) const;
 	double adjustT(const double t) const;
 
-	unsigned int points_num;
+	uint32_t points_num;
 	std::vector<Vector> P;
 };
 

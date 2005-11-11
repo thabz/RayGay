@@ -25,8 +25,8 @@ void bench_ellipsoid_fast_intersect() {
     // Make some rays and some ellipsoids
     Ellipsoid* ellipsoids[1024];
     Ray* rays[1024];
-    uint num = 5000000;
-    for(uint i = 0; i < 1024; i++) {
+    uint32_t num = 5000000;
+    for(uint32_t i = 0; i < 1024; i++) {
 	Ellipsoid* e = new Ellipsoid(random_vectors[i],
 		                     Vector(RANDOM(2,3),RANDOM(2,3),RANDOM(2,3)),
 					 NULL);
@@ -39,7 +39,7 @@ void bench_ellipsoid_fast_intersect() {
     }
 
     double result = 0;
-    for(uint i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	result += ellipsoids[i & 1023]->fastIntersect(*rays[i & 1023]);
     }
     cout << result << endl;
@@ -54,7 +54,7 @@ void bench_vector() {
 	sum = sum + one;
 	sum = sum + two * 4.0;
 	sum = sum + two / 4.0;
-	for (uint j = 0; j < 20; j++) {
+	for (uint32_t j = 0; j < 20; j++) {
 	    sum = sum + sum / 3.0;
 	    sum = sum + sum / 8.0;
 	    sum = sum + sum / 0.5;
@@ -63,14 +63,14 @@ void bench_vector() {
     }
 }
 
-void bench(std::string name, void (*func)(void), uint repeat_num) {
+void bench(std::string name, void (*func)(void), uint32_t repeat_num) {
     cout << "Running benchmark \"" << name << "\"" << endl;
     double min = 100000;
     double max = -1;
     double avg = 0;
     clock_t ticks_before;
     clock_t ticks_after;
-    for(uint i = 0; i < repeat_num; i++) {
+    for(uint32_t i = 0; i < repeat_num; i++) {
 	ticks_before = clock();
 	func();
 	ticks_after = clock();
@@ -89,7 +89,7 @@ void bench(std::string name, void (*func)(void), uint repeat_num) {
 void init() {
     // Make sure rand is seeded consistently.
     srand(1); 
-    for(uint i = 0; i < 1000; i++) {
+    for(uint32_t i = 0; i < 1000; i++) {
 	random_doubles[i] = RANDOM(-1,1);
 	random_vectors[i] = Vector(RANDOM(-1,1),RANDOM(-1,1),RANDOM(-1,1));
     }

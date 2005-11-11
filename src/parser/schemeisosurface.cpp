@@ -1,7 +1,7 @@
 
 #include "parser/schemeisosurface.h"
 
-SchemeIsosurface::SchemeIsosurface(SCM procedure_name, AABox bbox, unsigned int steps, double accuracy, double iso, Material* mat) : IsoSurface(steps, accuracy, iso, mat)
+SchemeIsosurface::SchemeIsosurface(SCM procedure_name, AABox bbox, uint32_t steps, double accuracy, double iso, Material* mat) : IsoSurface(steps, accuracy, iso, mat)
 {
     this->bbox = bbox;
     this->procedure_name = procedure_name;

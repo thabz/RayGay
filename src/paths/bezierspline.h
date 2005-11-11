@@ -24,18 +24,18 @@ class BezierSpline : public Path {
 	/// Constructor
 	BezierSpline(const std::vector<Vector>& points);
 	/// Constructor
-	BezierSpline(Vector* controlpoints, unsigned int num);
+	BezierSpline(Vector* controlpoints, uint32_t num);
 	virtual ~BezierSpline();
 	Vector getPoint(double t) const;
 	Vector getTangent(double t) const;
         void transform(const Matrix& m);
 
 	/// Returns a controlpoint for 0 < n < num
-	Vector getControlPoint(unsigned int n) const { return controlpoints[n]; };
+	Vector getControlPoint(uint32_t n) const { return controlpoints[n]; };
 
     private:
 	std::vector<Vector> controlpoints;
-	unsigned int num;
+	uint32_t num;
 };
 
 

@@ -32,11 +32,11 @@ CatmullRomSpline::CatmullRomSpline(const std::vector<Vector>& points) {
  *
  * @param points the control points \f$ P_0, P_1, \ldots, P_N \f$
  */
-CatmullRomSpline::CatmullRomSpline(Vector* points, uint num) {
+CatmullRomSpline::CatmullRomSpline(Vector* points, uint32_t num) {
     assert(num > 3);
     points_num = num;
 
-    for(uint i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	P.push_back(points[i]);
     }
 }
@@ -46,7 +46,7 @@ CatmullRomSpline::~CatmullRomSpline() {
 }
 
 Vector CatmullRomSpline::getPoint(double t) const {
-    uint i = segmentBegin(t);
+    uint32_t i = segmentBegin(t);
     t = adjustT(t);
     double tt = t*t;
     double ttt = tt*t;
@@ -57,7 +57,7 @@ Vector CatmullRomSpline::getPoint(double t) const {
 }
 
 Vector CatmullRomSpline::getTangent(double t) const {
-    uint i = segmentBegin(t);
+    uint32_t i = segmentBegin(t);
     t = adjustT(t);
     double tt = t*t;
     Vector res;
@@ -70,17 +70,17 @@ Vector CatmullRomSpline::getTangent(double t) const {
 }
 
 void CatmullRomSpline::transform(const Matrix& m) {
-    for(uint i = 0; i < points_num; i++) {
+    for(uint32_t i = 0; i < points_num; i++) {
 	P[i] = m * P[i];
     }
 }
 
-uint CatmullRomSpline::segmentBegin(const double t) const {
+uint32_t CatmullRomSpline::segmentBegin(const double t) const {
     // TODO: Test!
-    uint segments = points_num - 3;
+    uint32_t segments = points_num - 3;
     if (t == 1) return segments + 1;
     if (t == 0) return 1;
-    return (uint)(floor(t * segments));
+    return (uint32_t)(floor(t * segments));
 }
 
 double CatmullRomSpline::adjustT(const double t) const {

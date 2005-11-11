@@ -63,7 +63,7 @@ class RGB  {
 	double &operator[](const int i); ///< Index into coordinates
 	const double &operator[](const int i) const; ///< Index into coordinates
 	/// Comparator
-	virtual bool operator==(const RGB &v) const;
+	bool operator==(const RGB &v) const;
 
 	/// Return brightness of color
 	double brightness() const;

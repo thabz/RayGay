@@ -30,7 +30,7 @@ class IsoSurface : public Object, public Transformer {
 
     protected:
 	/// Constructor
-	IsoSurface(unsigned int steps, double accuracy, double iso, Material* mat);
+	IsoSurface(uint32_t steps, double accuracy, double iso, Material* mat);
 	/// Evaluate the scalar field function defining this surface
 	virtual double evaluateFunction(const Vector& point) const = 0;
 
@@ -43,7 +43,7 @@ class IsoSurface : public Object, public Transformer {
     private:
 	virtual Vector normal(const Vector& p) const;
 	double refine(const Ray& ray, double t_begin, double t_end, double f_t_end) const;
-	unsigned int steps;
+	uint32_t steps;
 	double accuracy;
 	double iso;
 

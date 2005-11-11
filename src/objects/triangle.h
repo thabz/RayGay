@@ -55,8 +55,8 @@ class Triangle : public Object {
 
     private:
 	Mesh* mesh;
-	unsigned int _tri_idx;
-	mutable unsigned int last_cache_key;
+	uint32_t _tri_idx;
+	mutable uint32_t last_cache_key;
 };
 
 #endif

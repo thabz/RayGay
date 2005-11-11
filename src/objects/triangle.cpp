@@ -11,7 +11,7 @@
 
 
 
-Triangle::Triangle(Mesh* m, uint tri_index) : Object(NULL) {
+Triangle::Triangle(Mesh* m, uint32_t tri_index) : Object(NULL) {
     mesh = m;
     _tri_idx = tri_index;
     last_cache_key = 0;
@@ -25,13 +25,13 @@ Triangle::Triangle(Mesh* m, uint tri_index) : Object(NULL) {
 inline
 const CachedVertex* TriangleVertexCache::getCachedVertex(const Triangle* triangle) const
 {
-    unsigned int last_cache_key = triangle->last_cache_key;
+    uint32_t last_cache_key = triangle->last_cache_key;
     if (cached_vertices[last_cache_key].triangle == triangle) {
 	// Cache hit
 	return &cached_vertices[last_cache_key];
     } else {
 	// Cache miss
-	uint tri_idx = triangle->_tri_idx;
+	uint32_t tri_idx = triangle->_tri_idx;
 	Mesh* mesh = triangle->mesh;
 
 	// Get new key

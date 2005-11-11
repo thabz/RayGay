@@ -33,7 +33,7 @@ Mesh::~Mesh() {
 }
 
 void Mesh::addSelf(KdTree* space) {
-    for(uint i = 0; i < triangles.size(); i++) {
+    for(uint32_t i = 0; i < triangles.size(); i++) {
 	space->addObject(&triangles[i]);
     }
 }
@@ -45,7 +45,7 @@ void Mesh::prepare() {
 	computeInterpolatedNormals();
     }
 
-    for(uint i = 0; i < triangles.size(); i++) {
+    for(uint32_t i = 0; i < triangles.size(); i++) {
 	triangles[i].prepare();
     }
 
@@ -60,7 +60,7 @@ void Mesh::prepare() {
  */
 void Mesh::addTriangle(const Vector* c, const Vector2* uv) {
 
-    uint verts[3];
+    uint32_t verts[3];
 
     for(int i = 0; i < 3; i++) {
 	int new_index = findExistingCorner(&c[i]);
@@ -86,8 +86,8 @@ void Mesh::addQuad(const Vector* corners, const Vector2* uv) {
 	        uv[0],uv[2],uv[3]);
 }
 
-void Mesh::addQuad(const uint c[4], const Vector2 uv[4]) {
-    uint k[3];
+void Mesh::addQuad(const uint32_t c[4], const Vector2 uv[4]) {
+    uint32_t k[3];
     Vector2 uvk[3];
 
     k[0] = c[0]; k[1] = c[1]; k[2] = c[2];
@@ -105,18 +105,18 @@ void Mesh::addQuad(const uint c[4], const Vector2 uv[4]) {
  * @param point the vertex to add
  * @return index of the new vertex
  */
-uint Mesh::addVertex(const Vector& point) {
+uint32_t Mesh::addVertex(const Vector& point) {
     corners.push_back(point);
     return corners.size() -1;
 }
 
-void Mesh::addTriangle(const uint v[3]) {
+void Mesh::addTriangle(const uint32_t v[3]) {
     Vector2 uv[3];
     addTriangle(v,uv);
 }
 
 void Mesh::addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 uv1, const Vector2 uv2) {
-    uint v[3];
+    uint32_t v[3];
     Vector2 uv[3];
     v[0] = v0; v[1] = v1; v[2] = v2;
     uv[0] = uv0; uv[1] = uv1; uv[2] = uv2;
@@ -124,10 +124,10 @@ void Mesh::addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 
 }
 
 
-void Mesh::addTriangle(const uint v[3], const Vector2 uv[3]) {
+void Mesh::addTriangle(const uint32_t v[3], const Vector2 uv[3]) {
 
     // Check vertex indices are within bounds
-    uint max_idx = corners.size() - 1;
+    uint32_t max_idx = corners.size() - 1;
     if (v[0] > max_idx || v[1] > max_idx || v[2] > max_idx) {
 	char vs[200];
 	sprintf(vs, "Triangle (%d,%d,%d) out of bounds",v[0],v[1],v[2]);
@@ -157,28 +157,28 @@ void Mesh::computeInterpolatedNormals() {
 
     assert(meshType == Mesh::MESH_PHONG);
 
-    uint face_num = faces.size() / 3;
-    uint vertex_num = corners.size();
-    vector<uint>* adj = new vector<uint>[vertex_num];
-    for(uint i = 0; i < face_num; i++) {
-	for(uint j = 0; j < 3; j++) {
-	    uint vertex_idx = faces[i*3+j];
+    uint32_t face_num = faces.size() / 3;
+    uint32_t vertex_num = corners.size();
+    vector<uint32_t>* adj = new vector<uint32_t>[vertex_num];
+    for(uint32_t i = 0; i < face_num; i++) {
+	for(uint32_t j = 0; j < 3; j++) {
+	    uint32_t vertex_idx = faces[i*3+j];
 	    adj[vertex_idx].push_back(i);
 	}
     }
 
     i_normal_indices.reserve(face_num * 3);
 
-    for(uint i = 0; i < face_num; i++) {
+    for(uint32_t i = 0; i < face_num; i++) {
 	Vector normal = normals[i];
-	for(uint j = 0; j < 3; j++) {
+	for(uint32_t j = 0; j < 3; j++) {
 	    Vector interpolated_normal = normal;
 	    int num = 1;
-	    uint vertex_idx = faces[i*3+j];
-	    vector<uint>& adj_faces = adj[vertex_idx];
-	    uint fac_num = adj_faces.size();
-	    for(uint v = 0; v < fac_num; v++) {
-		uint other_face_idx = adj_faces[v];
+	    uint32_t vertex_idx = faces[i*3+j];
+	    vector<uint32_t>& adj_faces = adj[vertex_idx];
+	    uint32_t fac_num = adj_faces.size();
+	    for(uint32_t v = 0; v < fac_num; v++) {
+		uint32_t other_face_idx = adj_faces[v];
 		if (other_face_idx != i) {
 		    Vector other_normal = normals[other_face_idx];
 		    if (other_normal * normal > PHONG_ANGLETHRESHOLD) {
@@ -187,7 +187,7 @@ void Mesh::computeInterpolatedNormals() {
 		    }
 		}
 	    }
-	    uint index;
+	    uint32_t index;
 	    if (num > 1) {
 		interpolated_normal.normalize();
 		normals.push_back(interpolated_normal);
@@ -204,8 +204,8 @@ void Mesh::computeInterpolatedNormals() {
 
 // TODO: Optimize by keeping a stl::set with all corners.
 int Mesh::findExistingCorner(const Vector* c) const {
-    uint size = corners.size();
-    for(uint i = 0; i < size; i++) {
+    uint32_t size = corners.size();
+    for(uint32_t i = 0; i < size; i++) {
 	if (corners[i] == *c) return i;
     }
     return -1;
@@ -248,7 +248,7 @@ void Mesh::transform(const Matrix& M) {
 }
 
 // ----------------------------------------------------------------------------
-Vector Mesh::normal(const uint face_idx, double u, double v) const {
+Vector Mesh::normal(const uint32_t face_idx, double u, double v) const {
     if (meshType == Mesh::MESH_PHONG) {
 	return phong_normal(face_idx,u,v);
     } else {
@@ -256,11 +256,11 @@ Vector Mesh::normal(const uint face_idx, double u, double v) const {
     }
 }
 
-Vector Mesh::phong_normal(const uint face_idx, double u, double v) const {
-    uint offset = face_idx * 3;
+Vector Mesh::phong_normal(const uint32_t face_idx, double u, double v) const {
+    uint32_t offset = face_idx * 3;
     Vector result = Vector(0,0,0);
     Vector weight = Vector(1-u-v,u,v);
-    for(uint j = 0; j < 3; j++) {
+    for(uint32_t j = 0; j < 3; j++) {
 	result += normals[i_normal_indices[offset + j]] * weight[j];
     }
     result.normalize();
@@ -271,8 +271,8 @@ const Material* Mesh::getMaterial() const {
     return material;
 }
 
-Vector2 Mesh::getUV(const uint face_idx, double u, double v) const {
-    uint offset = face_idx * 3;
+Vector2 Mesh::getUV(const uint32_t face_idx, double u, double v) const {
+    uint32_t offset = face_idx * 3;
     return uv_coords[offset + 0] * (1-u-v) +
            uv_coords[offset + 1] * u +
            uv_coords[offset + 2] * v;
@@ -280,7 +280,7 @@ Vector2 Mesh::getUV(const uint face_idx, double u, double v) const {
 
 std::vector<Vector>* Mesh::getVertices() {
     std::vector<Vector>* result = new std::vector<Vector>;
-    for(uint i = 0; i < corners.size(); i++) {
+    for(uint32_t i = 0; i < corners.size(); i++) {
 	result->push_back(corners[i]);
     }
     return result;
@@ -293,9 +293,9 @@ std::vector<Vector>* Mesh::getVertices() {
 std::vector<Linesegment>* Mesh::getEdges() {
     EdgeMapType edgeMap;
 
-    uint faces_num = faces.size() / 3;
+    uint32_t faces_num = faces.size() / 3;
 
-    for(uint t = 0; t < faces_num; t++) {
+    for(uint32_t t = 0; t < faces_num; t++) {
 	// Insert all edges into edgeMap
 	for(int i = 0; i < 3; i++) {
 	    int j = (i + 1) % 3;
@@ -322,14 +322,14 @@ SceneObject* Mesh::clone() const {
     Mesh* clone = new Mesh(meshType,material);
 
     // Copy vertices
-    uint num = corners.size();
-    for(uint i = 0; i < num; i++) {
+    uint32_t num = corners.size();
+    for(uint32_t i = 0; i < num; i++) {
 	clone->addVertex(corners[i]);
     }
 
     // Copy triangles and that's it.
     num = faces.size() / 3;
-    for (uint i = 0; i < num; i++) {
+    for (uint32_t i = 0; i < num; i++) {
 	clone->addTriangle(&faces[i*3],&uv_coords[i*3]);
     }
     return clone;
@@ -348,7 +348,7 @@ Mesh::Edge::Edge(int iV0, int iV1) {
  * vertices a bit faster but also makes sure that the vertex-arrays are
  * the exact needed size.
  */
-void Mesh::hintVertexNum(uint num) {
+void Mesh::hintVertexNum(uint32_t num) {
     corners.reserve(num);
 }
 
@@ -357,7 +357,7 @@ void Mesh::hintVertexNum(uint num) {
  * faces a bit faster but also makes sure that the faces-arrays are
  * the exact needed size.
  */
-void Mesh::hintFaceNum(uint num) {
+void Mesh::hintFaceNum(uint32_t num) {
     normals.reserve(num);
     faces.reserve(3 * num);
     triangles.reserve(num);

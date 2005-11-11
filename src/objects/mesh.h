@@ -75,7 +75,7 @@ class Mesh : public ObjectGroup {
         void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3, const Vector2& uv1, const Vector2& uv2,const Vector2& uv3);
 
 	/// Adds a new vertex to the mesh
-	unsigned int addVertex(const Vector& point);
+	uint32_t addVertex(const Vector& point);
 
 	/// Add a triangle by vertex indices
 	void addTriangle(const uint v[3], const Vector2 uv[3]);
@@ -139,12 +139,12 @@ uint Mesh::facesNum() const {
 }
 
 inline
-Vector Mesh::cornerAt(uint tri_idx, unsigned int i) const {
+Vector Mesh::cornerAt(uint tri_idx, uint32_t i) const {
     return corners[faces[3 * tri_idx + i]];
 }
 
 inline
-void Mesh::cornerAt(uint tri_idx, unsigned int i, double dest[3]) const {
+void Mesh::cornerAt(uint tri_idx, uint32_t i, double dest[3]) const {
     corners.get(faces[3 * tri_idx + i],dest);
 }
 

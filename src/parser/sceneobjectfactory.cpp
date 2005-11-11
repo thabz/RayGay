@@ -164,13 +164,13 @@ SCM make_blob(SCM s_iso, SCM s_steps, SCM s_accuracy, SCM s_material, SCM s_atom
 
     // Add the atoms
     assert(SCM_NFALSEP (scm_list_p (s_atoms)));
-    uint atoms_num = scm_num2int(scm_length(s_atoms),0,"");
+    uint32_t atoms_num = scm_num2int(scm_length(s_atoms),0,"");
     
-    for(uint i = 0; i < atoms_num; i++) {
+    for(uint32_t i = 0; i < atoms_num; i++) {
 	SCM s_atom = scm_list_ref(s_atoms, scm_int2num(i));
 
 	assert(SCM_NFALSEP (scm_list_p (s_atom)));
-	uint length = scm_num2int(scm_length(s_atom),0,"");
+	uint32_t length = scm_num2int(scm_length(s_atom),0,"");
 
 	if (length == 3) {
 	    SCM s_center = scm_list_ref(s_atom, scm_int2num(0));
@@ -219,8 +219,8 @@ SCM make_parametrized_surface(SCM s_proc, SCM s_u_res, SCM s_v_res, SCM s_u_clos
 {
     char* proc = "make-parametrized-surface";
 
-    uint uRes = scm_num2int(s_u_res, 2, proc);
-    uint vRes = scm_num2int(s_v_res, 3, proc);
+    uint32_t uRes = scm_num2int(s_u_res, 2, proc);
+    uint32_t vRes = scm_num2int(s_v_res, 3, proc);
     bool uClose = SCM_NFALSEP(s_u_close);
     bool vClose = SCM_NFALSEP(s_v_close);
     Material* material = scm2material(s_material, proc, 6);
@@ -232,7 +232,7 @@ SCM make_parametrized_surface(SCM s_proc, SCM s_u_res, SCM s_v_res, SCM s_u_clos
 SCM make_mesh(SCM s_material, SCM s_vertices, SCM s_triangles)
 {
     char* proc = "make-mesh";
-    uint length;
+    uint32_t length;
 
     Material* material = scm2material(s_material, proc, 1);
     Mesh* mesh = new Mesh(Mesh::MESH_PHONG, material);
@@ -240,7 +240,7 @@ SCM make_mesh(SCM s_material, SCM s_vertices, SCM s_triangles)
     // Add the vertices
     assert(SCM_NFALSEP (scm_list_p (s_vertices)));
     length = scm_num2int(scm_length(s_vertices),0,"");
-    for(uint i = 0; i < length; i++) {
+    for(uint32_t i = 0; i < length; i++) {
 	SCM s_vertex = scm_list_ref(s_vertices, scm_int2num(i));
 	Vector vertex = scm2vector(s_vertex, proc, 1);
 	mesh->addVertex(vertex);
@@ -251,14 +251,14 @@ SCM make_mesh(SCM s_material, SCM s_vertices, SCM s_triangles)
     assert(SCM_NFALSEP (scm_list_p (s_triangles)));
     length = scm_num2int(scm_length(s_triangles),0,"");
     Vector2 uv = Vector2(0,0);
-    uint v[3];
+    uint32_t v[3];
     try {
-	for(uint i = 0; i < length; i++) {
+	for(uint32_t i = 0; i < length; i++) {
 	    SCM s_triangle = scm_list_ref(s_triangles, scm_int2num(i));
 	    Vector triangle = scm2vector(s_triangle, proc, 2);
-	    v[0] = uint(triangle[0]);
-	    v[1] = uint(triangle[1]);
-	    v[2] = uint(triangle[2]);
+	    v[0] = uint32_t(triangle[0]);
+	    v[1] = uint32_t(triangle[1]);
+	    v[2] = uint32_t(triangle[2]);
 	    mesh->addTriangle(v);
 	}
     } catch (Exception e) {
@@ -274,8 +274,8 @@ SCM make_bezierpatch(SCM s_points, SCM s_xres, SCM s_yres, SCM s_material)
     char* proc = "make-bezierpatch";
 
     vector<Vector> points = scm2vectorlist(s_points, proc,1);
-    uint xresolution = scm_num2int(s_xres, 2, proc);
-    uint yresolution = scm_num2int(s_yres, 3, proc);
+    uint32_t xresolution = scm_num2int(s_xres, 2, proc);
+    uint32_t yresolution = scm_num2int(s_yres, 3, proc);
     Material* material = scm2material(s_material, proc, 4);
 
     assert(points.size() == 16);
@@ -289,7 +289,7 @@ SCM make_union(SCM s_things)
     Material* material;
 
     assert(SCM_NFALSEP (scm_list_p (s_things)));
-    uint length = scm_num2int(scm_length(s_things),0,"");
+    uint32_t length = scm_num2int(scm_length(s_things),0,"");
 
     SCM s_last_thing = scm_list_ref(s_things, scm_int2num(length-1));
 
@@ -304,7 +304,7 @@ SCM make_union(SCM s_things)
 
     vector<Solid*> solids;
 
-    for(uint i = 0; i < length; i++) {
+    for(uint32_t i = 0; i < length; i++) {
 	SCM s_solid = scm_list_ref(s_things, scm_int2num(i));
 	SceneObject* so_solid = scm2sceneobject(s_solid, proc, i+1);
 	Solid* solid = dynamic_cast<Solid*>(so_solid);

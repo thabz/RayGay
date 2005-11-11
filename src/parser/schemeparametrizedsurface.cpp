@@ -4,8 +4,8 @@
 
 SchemeParametrizedSurface::SchemeParametrizedSurface(
 	SCM s_proc, 
-	uint uRes, 
-	uint vRes, 
+	uint32_t uRes, 
+	uint32_t vRes, 
 	bool uClose, 
 	bool vClose, 
 	Material* material) : 

@@ -11,13 +11,13 @@ using namespace std;
  */
 class BezierPatch : public ParametrizedSurface {
     public:
-	BezierPatch(const vector<Vector> &points, const unsigned int xResolution, unsigned int yResolution, const Material* material);
+	BezierPatch(const vector<Vector> &points, const uint32_t xResolution, uint32_t yResolution, const Material* material);
 
     protected:
 	Vector eval(double u, double v) const;
 
     private:
-	const Vector& getControlPoint(unsigned int i, unsigned int j) const;
+	const Vector& getControlPoint(uint32_t i, uint32_t j) const;
 	Vector controlPoints[16];
 };
 

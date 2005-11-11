@@ -15,6 +15,8 @@ class ImageIO {
 	virtual void save(const Image* const image, const std::string& filename) const = 0;
 	/// Load an image
 	virtual Image* load(const std::string& filename) = 0;
+
+	virtual ~ImageIO() {};
 };
 
 #endif

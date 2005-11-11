@@ -7,8 +7,8 @@ void FilterStack::push(Filter2D* filter) {
 }
 
 void FilterStack::apply(Image* image) {
-    unsigned int num = filters.size();
-    for(unsigned int i = 0; i < num; i++) {
+    uint32_t num = filters.size();
+    for(uint32_t i = 0; i < num; i++) {
 	filters[i]->apply(image);
     }
 }

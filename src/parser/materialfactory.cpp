@@ -9,12 +9,12 @@ SCM MaterialFactory::make_material(SCM s_options) {
     Material* material = new Material();
 
     assert(SCM_NFALSEP (scm_list_p (s_options)));
-    uint length = scm_num2int(scm_length(s_options),0,"");
+    uint32_t length = scm_num2int(scm_length(s_options),0,"");
     
     assert(length % 2 == 0);
-    uint argc = length / 2;
+    uint32_t argc = length / 2;
 
-    for(uint i = 0; i < argc; i++) {
+    for(uint32_t i = 0; i < argc; i++) {
 	size_t l;
 	char* key_c = gh_symbol2newstr(scm_list_ref(s_options, scm_int2num(i*2)),&l);
 	string key = string(key_c);

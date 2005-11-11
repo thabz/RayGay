@@ -5,7 +5,7 @@
 
 class Material;
 
-SuperEllipsoid::SuperEllipsoid(double n1, double n2, unsigned int steps, double accuracy, Material* m) : IsoSurface(steps,accuracy,-1,m) {
+SuperEllipsoid::SuperEllipsoid(double n1, double n2, uint32_t steps, double accuracy, Material* m) : IsoSurface(steps,accuracy,-1,m) {
     this->n1 = n1;
     this->n2 = n2;
 }

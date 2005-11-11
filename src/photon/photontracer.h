@@ -32,7 +32,7 @@ class PhotonTracer {
 	void printProgress();
 
 	pthread_mutex_t mutex_print;
-	unsigned int skip_print;
+	uint32_t skip_print;
 	Scene* scene;
 	KdTree* space;
 	CausticsMap* causticsmap;

@@ -29,7 +29,7 @@ class Lightsource {
 	 * @param info the structure to write the result into
 	 * @param depth the number of times the ray has been reflected or refracted
 	 */
-	virtual void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, unsigned int depth) const = 0;
+	virtual void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const = 0;
 	
 	/// Apply a transformation
         virtual void transform(const Matrix& m);
@@ -50,6 +50,8 @@ class Lightsource {
 	RGB getPower() const { return power; };
 	/// Set the power of this light
 	void setPower(const RGB& power) { this->power = power; };
+
+	virtual ~Lightsource() {};
 
     protected:
 	/// Position of the lightsource

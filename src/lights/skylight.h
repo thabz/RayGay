@@ -14,7 +14,7 @@ class Skylight: public Lightsource {
 	/// Constructor
 	Skylight(double radius, int num);
 	virtual ~Skylight() {};
-	void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, unsigned int depth) const;
+	void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const;
         void transform(const Matrix& m) {};
 
     private:

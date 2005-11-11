@@ -84,11 +84,11 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
     if (SCM_FALSEP (scm_list_p (list))) {
 	scm_error(NULL, "internal-populate-scene", "The variable 'scene' is not a list", SCM_UNSPECIFIED, NULL);
     }
-    uint length = scm_num2int(scm_length(list),0,"internal-populate-scene");
+    uint32_t length = scm_num2int(scm_length(list),0,"internal-populate-scene");
 
     //cout << "Scene objects: " << length << endl;
 
-    for(uint i = 0; i < length; i++) {
+    for(uint32_t i = 0; i < length; i++) {
 	SCM s_value = scm_list_ref(list, scm_int2num(i));
 	//assert(!SCM_NFALSEP (scm_list_p (s_value)));
 	if (isSceneObject(s_value)) {
@@ -142,12 +142,12 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	if (SCM_FALSEP (scm_list_p (s_settings))) {
 	    scm_error(NULL, "internal-populate-scene", "The variable 'settings' is not a list", SCM_UNSPECIFIED, NULL);
     }
-	uint length = scm_num2int(scm_length(s_settings),0,"");
+	uint32_t length = scm_num2int(scm_length(s_settings),0,"");
 
 	assert(length % 2 == 0);
-	uint argc = length / 2;
+	uint32_t argc = length / 2;
 
-	for(uint i = 0; i < argc; i++) {
+	for(uint32_t i = 0; i < argc; i++) {
 	    char* key_c = gh_symbol2newstr(scm_list_ref(s_settings, scm_int2num(i*2)),NULL);
 	    string key = string(key_c);
 	    SCM s_value = scm_list_ref(s_settings, scm_int2num(i*2+1));
@@ -177,9 +177,9 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	assert(SCM_NFALSEP (scm_list_p (s_image_size)));
 	assert(scm_num2int(scm_length(s_image_size),0,"") == 2);
 	SCM s_w = scm_list_ref(s_image_size, scm_int2num(0));
-	uint w = scm_num2int(s_w,0,"");
+	uint32_t w = scm_num2int(s_w,0,"");
 	SCM s_h = scm_list_ref(s_image_size, scm_int2num(1));
-	uint h = scm_num2int(s_h,0,"");
+	uint32_t h = scm_num2int(s_h,0,"");
 	renderersettings->image_width = w;
 	renderersettings->image_height = h;
     }

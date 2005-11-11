@@ -48,8 +48,8 @@ void ObjectGroup::addObject(SceneObject* obj) {
 
 SceneObject* ObjectGroup::clone() const {
     ObjectGroup* result = new ObjectGroup();
-    unsigned int num = this->objects.size();
-    for (unsigned int i = 0; i < num; i++) {
+    uint32_t num = this->objects.size();
+    for (uint32_t i = 0; i < num; i++) {
 	result->addObject(this->objects[i]->clone());
     }
     return result;

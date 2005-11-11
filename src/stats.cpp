@@ -121,7 +121,7 @@ Statistics::~Statistics()
 
 void Statistics::dumpAll()
 {
-    for(uint i = 0; i < stats.size(); i++) {
+    for(uint32_t i = 0; i < stats.size(); i++) {
 	cout << stats[i]->group << "/" << stats[i]->name << ": ";
 	stats[i]->out();
 	cout << endl;

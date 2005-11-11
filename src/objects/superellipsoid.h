@@ -17,7 +17,7 @@ class SuperEllipsoid : public IsoSurface {
 
     public:
 	/// Constructor
-	SuperEllipsoid(double n1, double n2, unsigned int steps, double accuracy, Material* m);
+	SuperEllipsoid(double n1, double n2, uint32_t steps, double accuracy, Material* m);
 	SceneObject* clone() const;
 
     protected:

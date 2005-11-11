@@ -30,7 +30,7 @@ PhotonRenderer::PhotonRenderer(RendererSettings* settings,
 	                       Scene* scene, 
 			       KdTree* spc, 
 			       RenderJobPool* job_pool,
-			       uint thread_id,
+			       uint32_t thread_id,
 			       GlobalPhotonMap* globalphotonmap, 
 			       CausticsMap* causticsmap, 
 			       IrradianceCache* irradiancecache) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
@@ -232,7 +232,7 @@ RGB PhotonRenderer::finalGather(const Vector& point, const Vector& normal, const
     *hmd = HUGE_DOUBLE;
     double* rnd;
     qmc_sequence->reset();
-    uint gatherHits = 0;
+    uint32_t gatherHits = 0;
     for (int i = 0; i < gatherRays; i++) {
 	rnd = qmc_sequence->getNext();
 	Vector dir = normal.randomHemisphere(rnd[0],rnd[1]);

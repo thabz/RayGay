@@ -24,7 +24,7 @@ class Transformer {
     public:
 	Transformer();
 	/// Apply a transformation
-	virtual void transform(const Matrix& m);
+	void transform(const Matrix& m);
 
     protected:
 	Vector pointToObject(const Vector& p) const;

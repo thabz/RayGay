@@ -252,9 +252,9 @@ AABox AABox::doDifference(const AABox& a, const AABox& b)
 {
     AABox result = a;
 
-    for (uint x = 0; x < 3; x++) {
-	uint y = (x + 1) % 3;
-	uint z = (x + 2) % 3;
+    for (uint32_t x = 0; x < 3; x++) {
+	uint32_t y = (x + 1) % 3;
+	uint32_t z = (x + 2) % 3;
 
 	// Handling x axis for maximum
 	if (a._c1[x] < b._c1[x] && a._c2[x] > b._c1[x] && a._c2[x] < b._c2[x] &&
@@ -370,7 +370,7 @@ bool AABox::intersectSphere(const Vector& center, double squared_radius) const {
     return d <= squared_radius;
 }
 
-bool AABox::split(AABox& left, AABox& right, const unsigned int dim, const double axis) const {
+bool AABox::split(AABox& left, AABox& right, const uint32_t dim, const double axis) const {
     if (axis > maximum(dim) || axis < minimum(dim)) {
 	return false;
     }

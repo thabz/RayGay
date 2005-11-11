@@ -15,14 +15,14 @@ Polynomial::Polynomial(const Polynomial& other) {
     init(other);
 }
 
-Polynomial::Polynomial(double* coefficients, uint num) {
+Polynomial::Polynomial(double* coefficients, uint32_t num) {
     assert(num >= 1);
     if (num < MAX_INLINE_COEFFS) {
 	this->coefficients = coefficients_inline;
     } else {
 	this->coefficients = new double[num];
     }
-    for(uint i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	this->coefficients[i] = coefficients[i];
     }
     this->num = num;
@@ -80,7 +80,7 @@ Polynomial::~Polynomial() {
     }
 }
 
-uint Polynomial::order() const {
+uint32_t Polynomial::order() const {
     return num - 1;
 }
 
@@ -106,7 +106,7 @@ Polynomial Polynomial::derivative() const {
 	return Polynomial(0.0);
 
     double c[num-1];
-    for(uint i = 1; i < num; i++) {
+    for(uint32_t i = 1; i < num; i++) {
 	c[i-1] = coefficients[i] * i;
     }
     return Polynomial(c,num-1);
@@ -114,7 +114,7 @@ Polynomial Polynomial::derivative() const {
 
 bool Polynomial::operator==(const Polynomial& p) const {
     if (p.num != num) return false;
-    for(uint i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	if (!IS_EQUAL(coefficients[i],p.coefficients[i]))
 	    return false;
     }
@@ -122,9 +122,9 @@ bool Polynomial::operator==(const Polynomial& p) const {
 }
 
 Polynomial Polynomial::operator+(const Polynomial& p) const {
-    uint new_num = MAX(p.num, num);
+    uint32_t new_num = MAX(p.num, num);
     double new_coefs[new_num];
-    for(uint i = 0; i < new_num; i++) {
+    for(uint32_t i = 0; i < new_num; i++) {
 	double q = 0.0;
 	if (i < num) q += coefficients[i];
 	if (i < p.num) q += p.coefficients[i];
@@ -134,9 +134,9 @@ Polynomial Polynomial::operator+(const Polynomial& p) const {
 }
 
 Polynomial Polynomial::operator-(const Polynomial& p) const {
-    uint new_num = MAX(p.num, num);
+    uint32_t new_num = MAX(p.num, num);
     double new_coefs[new_num];
-    for(uint i = 0; i < new_num; i++) {
+    for(uint32_t i = 0; i < new_num; i++) {
 	double q = 0.0;
 	if (i < num) q += coefficients[i];
 	if (i < p.num) q -= p.coefficients[i];
@@ -147,7 +147,7 @@ Polynomial Polynomial::operator-(const Polynomial& p) const {
 
 Polynomial Polynomial::operator*(double c) const {
     double new_coefs[num];
-    for(uint i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	new_coefs[i] = coefficients[i] * c;
     }
     return Polynomial(new_coefs,num);
@@ -156,7 +156,7 @@ Polynomial Polynomial::operator*(double c) const {
 Polynomial Polynomial::operator/(double c) const {
     assert(IS_NZERO(c));
     double new_coefs[num];
-    for(uint i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	new_coefs[i] = coefficients[i] / c;
     }
     return Polynomial(new_coefs,num);
@@ -169,9 +169,9 @@ Polynomial Polynomial::operator/(double c) const {
  * @param d the \f$ d \f$ above.
  * @return the \f$ g(x) \f$ above.
  */
-Polynomial Polynomial::timesX(uint d) const {
+Polynomial Polynomial::timesX(uint32_t d) const {
     double new_coefficients[num + d];
-    for(uint i = 0; i < num+d; i++) {
+    for(uint32_t i = 0; i < num+d; i++) {
 	if (i < d) {
 	    new_coefficients[i] = 0.0;
 	} else {
@@ -211,15 +211,15 @@ Polynomial Polynomial::division(const Polynomial& divisor, Polynomial& remainder
     }
 
     double quotient_coeffs[num];
-    for(uint i = 0; i < num; i++) quotient_coeffs[i] = 0.0;
+    for(uint32_t i = 0; i < num; i++) quotient_coeffs[i] = 0.0;
 
     double div_lead_q = divisor.leadingCoefficient();
-    uint div_lead_d = divisor.order();
+    uint32_t div_lead_d = divisor.order();
     remainder = *this;
     Polynomial remainder_2;
 
     do {
-	uint new_d = remainder.order() - div_lead_d;
+	uint32_t new_d = remainder.order() - div_lead_d;
 	double new_q = remainder.leadingCoefficient() / div_lead_q;
 	quotient_coeffs[new_d] = new_q;
 	Polynomial remainder_2 = divisor.timesX(new_d) * new_q;
@@ -243,12 +243,12 @@ void Polynomial::reduce() {
 Polynomial Polynomial::operator*(const Polynomial& other) const {
     double result_coeffs[num+other.num];
 
-    for(uint i = 0; i < num+other.num; i++) {
+    for(uint32_t i = 0; i < num+other.num; i++) {
 	result_coeffs[i] = 0.0;
     }
 
-    for(uint i = 0; i < num; i++) {
-	for(uint j = 0; j < other.num; j++) {
+    for(uint32_t i = 0; i < num; i++) {
+	for(uint32_t j = 0; j < other.num; j++) {
 	    result_coeffs[i+j] += other.coefficients[j] * coefficients[i];
 	}
     }
@@ -272,7 +272,7 @@ void Polynomial::init(const Polynomial& other) {
 	// Potential leak of existing coefficients here
 	this->coefficients = new double[num];
     }
-    for(uint i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	coefficients[i] = other.coefficients[i];
     }
     reduce();
@@ -280,7 +280,7 @@ void Polynomial::init(const Polynomial& other) {
 
 std::ostream & operator<<(std::ostream &os, const Polynomial &p) {
     os << "(";
-    for(uint i = 0; i <= p.order(); i++) {
+    for(uint32_t i = 0; i <= p.order(); i++) {
 	os << p.coefficient(p.order() - i);
 	if (i != p.order())
 	    os << ",";

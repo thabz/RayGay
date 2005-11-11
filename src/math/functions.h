@@ -1,6 +1,8 @@
 #ifndef MATH_FUNCTIONS_H
 #define MATH_FUNCTIONS_H
 
+#include "types.h"
+
 class Vector;
 class QMCSequence;
 class Vector2;
@@ -13,7 +15,7 @@ class Math {
 	static unsigned long binomialCoefficient(long n, long k);
 	
 	/// Calculate a value of a Bernstein polynomial
-	static double bernsteinPolynomial(unsigned int i, unsigned int n, double t);
+	static double bernsteinPolynomial(uint32_t i, uint32_t n, double t);
 	/// Clamps a to the [0,1] interval.
 	static double clamp(double a);
 

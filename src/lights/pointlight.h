@@ -16,7 +16,7 @@ class Pointlight : public Lightsource {
     public:
 	/// Constructor
         Pointlight(const Vector& pos);
-	void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, unsigned int depth) const;
+	void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const;
 
     private:
 	mutable ShadowCache shadowcache;

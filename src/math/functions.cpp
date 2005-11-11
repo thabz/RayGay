@@ -49,7 +49,7 @@ sub bino {
     }
 }
 */
-static uint binomialTable[17][17] = {
+static uint32_t binomialTable[17][17] = {
 {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 {1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 {1,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -99,7 +99,7 @@ unsigned long Math::binomialCoefficient(long n, long k) {
  * \f[ B_{i,n}(t) = {n \choose i} t^i (1-t)^{n-i} \quad \mbox{for } t \in {[0,1]} \qquad \f]
  * 
  */
-double Math::bernsteinPolynomial(unsigned int i, unsigned int n, double t) {
+double Math::bernsteinPolynomial(uint32_t i, uint32_t n, double t) {
     return binomialCoefficient(n,i) * pow(t,i) * pow((1-t),n-i);
 }
 

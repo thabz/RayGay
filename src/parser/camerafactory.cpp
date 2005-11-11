@@ -28,12 +28,12 @@ SCM CameraFactory::make_pinhole_camera(SCM s_options) {
     if (SCM_FALSEP (scm_list_p (s_options))) {
 	scm_wrong_type_arg ("make-pinhole-camera", 1, s_options);
     }
-    uint length = scm_num2int(scm_length(s_options),0,"");
+    uint32_t length = scm_num2int(scm_length(s_options),0,"");
     
     assert(length % 2 == 0);
-    uint argc = length / 2;
+    uint32_t argc = length / 2;
 
-    for(uint i = 0; i < argc; i++) {
+    for(uint32_t i = 0; i < argc; i++) {
 	size_t l;
 	char* key_c = gh_symbol2newstr(scm_list_ref(s_options, scm_int2num(i*2)),&l);
 	string key = string(key_c);
@@ -58,7 +58,7 @@ SCM CameraFactory::make_pinhole_camera(SCM s_options) {
 	    camera->enableAdaptiveSupersampling(aa);
 	} else if (key == "dof") {
 	    SCM scms[3];
-	    for(uint i = 0; i < 3; i++) {
+	    for(uint32_t i = 0; i < 3; i++) {
 		scms[i] = scm_list_ref(s_value, scm_int2num(i));
 	    }
 	    double aperture = scm_num2double(scms[0], 0, "");

@@ -75,7 +75,7 @@ vector<Renderer*> active_renderers;
 
 void abortRenderingCB() {
     cout << "Aborting render..." << endl;
-    for(unsigned int i = 0; i < active_renderers.size(); i++) {
+    for(uint32_t i = 0; i < active_renderers.size(); i++) {
 	active_renderers[i]->abort();
     }
 }

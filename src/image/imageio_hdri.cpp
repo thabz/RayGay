@@ -101,7 +101,7 @@ Image* HdriIO::load(const std::string& fileName)
     Image* result = new Image(w,h);
     for(int y = 0; y < h; y++) {
 	for(int x = 0; x < w; x++) {
-	    unsigned int offset = 3 * (y*w + x);
+	    uint32_t offset = 3 * (y*w + x);
 	    RGB col = RGB(data[offset + 0], 
 		            data[offset + 1], 
 			    data[offset + 2]);

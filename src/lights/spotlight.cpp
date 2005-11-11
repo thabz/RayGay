@@ -33,7 +33,7 @@ void Spotlight::transform(const Matrix& m) {
     _dir = m.extractRotation() * _dir;
 }
 
-void Spotlight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, unsigned int depth) const {
+void Spotlight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const {
     info->direction_to_light = this->getPosition() - inter.getPoint();
     double dist_to_light = info->direction_to_light.length();
     info->direction_to_light.normalize();

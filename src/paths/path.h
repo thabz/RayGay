@@ -11,6 +11,7 @@ class Matrix;
 class Path {
     
     public:
+	
 	/**
 	 * Get a point on the path where t in [0,1]
 	 *
@@ -39,6 +40,8 @@ class Path {
 	 * @param m a transformation matrix
 	 */
 	virtual void transform(const Matrix& m) = 0;
+
+	virtual ~Path() {};
 };
 
 #endif

@@ -2,7 +2,7 @@
 #include "sor.h"
 #include "paths/circle.h"
 
-SurfaceOfRevolution::SurfaceOfRevolution(const vector<Vector2>& _points, unsigned int segments, const Material* m) : Mesh (Mesh::MESH_FLAT,m) {
+SurfaceOfRevolution::SurfaceOfRevolution(const vector<Vector2>& _points, uint32_t segments, const Material* m) : Mesh (Mesh::MESH_FLAT,m) {
 
     int points_num = _points.size();
     assert( points_num >= 2);
@@ -29,8 +29,8 @@ SurfaceOfRevolution::SurfaceOfRevolution(const vector<Vector2>& _points, unsigne
 	b.getPoints(segments,bp);
 	e.getPoints(segments,ep);
 
-	for(unsigned int i = 0; i < segments; i++) {
-	    unsigned int j = (i + 1) % segments;
+	for(uint32_t i = 0; i < segments; i++) {
+	    uint32_t j = (i + 1) % segments;
 	    addTriangle(ep[j],bp[j],bp[i]);
 	    addTriangle(ep[i],ep[j],bp[i]);
 	}

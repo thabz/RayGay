@@ -10,7 +10,7 @@
 #define KD_TREE_MAX_ELEMENTS_IN_FULL_SPLIT_CHECK 25
 
 template<class ObjectType>
-GenericKdTree<ObjectType>::GenericKdTree(uint max_depth, uint max_objs) {
+GenericKdTree<ObjectType>::GenericKdTree(uint32_t max_depth, uint32_t max_objs) {
     this->opt_max_depth = max_depth;
     this->opt_max_objs = max_objs;
 
@@ -20,7 +20,7 @@ GenericKdTree<ObjectType>::GenericKdTree(uint max_depth, uint max_objs) {
 
 template<class ObjectType>
 GenericKdTree<ObjectType>::~GenericKdTree<ObjectType>() {
-    for(uint i = 0; i < nodes.size(); i++) {
+    for(uint32_t i = 0; i < nodes.size(); i++) {
 	if (nodes[i].isLeafNode() && nodes[i].getObjectNum() > 0) {
 	    delete [] nodes[i].objects;
 	}
@@ -35,17 +35,17 @@ void GenericKdTree<ObjectType>::addObject(ObjectType* obj) {
 }
 
 template<class ObjectType>
-AABox GenericKdTree<ObjectType>::enclosure(BoundedObject<ObjectType>** bobs, uint num) const {
+AABox GenericKdTree<ObjectType>::enclosure(BoundedObject<ObjectType>** bobs, uint32_t num) const {
     assert(num > 0);
     AABox result = bobs[0]->bbox; 
-    for(uint i = 1; i < num; i++) {
+    for(uint32_t i = 1; i < num; i++) {
 	result = AABox::doUnion(result,bobs[i]->bbox);
     }
     return result;
 }
 
 template<class ObjectType>
-void GenericKdTree<ObjectType>::findBestSplitPlane(uint size, const AABox& bbox, CostResult& result, int d) const {
+void GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t size, const AABox& bbox, CostResult& result, int d) const {
     assert(d == 0 || d == 1 || d == 2);
 
     double split;
@@ -59,8 +59,8 @@ void GenericKdTree<ObjectType>::findBestSplitPlane(uint size, const AABox& bbox,
     sort(right_bobs, right_bobs + size, cmpR<ObjectType>(d));
     result.current_sort_dim = d;
 
-    uint l = 0;
-    uint r = 0;
+    uint32_t l = 0;
+    uint32_t r = 0;
     bool used_right;
     double rsplit, lsplit;
     while (l < size || r < size) {
@@ -104,7 +104,7 @@ void GenericKdTree<ObjectType>::findBestSplitPlane(uint size, const AABox& bbox,
 }
 
 template<class ObjectType>
-bool GenericKdTree<ObjectType>::findBestSplitPlane(uint num, const AABox& bbox, CostResult& result) const {
+bool GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t num, const AABox& bbox, CostResult& result) const {
     result.dim = -1;
     result.left_index = 0;
     result.right_index = 0;
@@ -145,14 +145,14 @@ template<class ObjectType>
 void GenericKdTree<ObjectType>::prepare() {
     if (prepared) throw_exception("Already prepared.");
 
-    uint num = added_objects->size();
+    uint32_t num = added_objects->size();
     assert(num > 0);
     
     BoundedObject<ObjectType>* bobs = new BoundedObject<ObjectType>[num];
     left_bobs = new BoundedObject<ObjectType>*[num];
     right_bobs = new BoundedObject<ObjectType>*[num];
 
-    for(uint i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	bobs[i].object = added_objects->operator[](i);
 	bobs[i].bbox = added_objects->operator[](i)->getBoundingBox();
 	left_bobs[i] = &(bobs[i]);
@@ -181,7 +181,7 @@ void GenericKdTree<ObjectType>::prepare() {
 }
 
 template<class ObjectType>
-void GenericKdTree<ObjectType>::prepare(uint num, const AABox& bbox, uint depth, const uint dest_idx) {
+void GenericKdTree<ObjectType>::prepare(uint32_t num, const AABox& bbox, uint32_t depth, const uint32_t dest_idx) {
 
     assert(dest_idx < nodes.size());
 
@@ -189,8 +189,8 @@ void GenericKdTree<ObjectType>::prepare(uint num, const AABox& bbox, uint depth,
     int axis = -1;
     double splitPlane = 0;
 
-    uint new_left_idx = 0;
-    uint new_right_idx = 0;
+    uint32_t new_left_idx = 0;
+    uint32_t new_right_idx = 0;
 
     // Keep within max depth or minimum node size
     if (depth <= opt_max_depth && num > opt_max_objs) {
@@ -224,8 +224,8 @@ void GenericKdTree<ObjectType>::prepare(uint num, const AABox& bbox, uint depth,
 	    BoundedObject<ObjectType>* tmp;
 
 	    // Move into lower
-	    uint j = 0;
-	    for(uint i = 0; i < splitResult.left_index; i++) {
+	    uint32_t j = 0;
+	    for(uint32_t i = 0; i < splitResult.left_index; i++) {
 		BoundedObject<ObjectType>* bob = left_bobs[i];
 		if (bob->bbox.minimum(axis) < splitPlane) {
 		    if (bob->object->intersects(lower_bbox,bob->bbox) >= 0) {
@@ -242,7 +242,7 @@ void GenericKdTree<ObjectType>::prepare(uint num, const AABox& bbox, uint depth,
 
 	    // Move into higher
 	    j = 0;
-	    for(uint i = 0; i < num; i++) {
+	    for(uint32_t i = 0; i < num; i++) {
 		BoundedObject<ObjectType>* bob = left_bobs[i];
 		if (bob->bbox.maximum(axis) > splitPlane) {
 		    if (bob->object->intersects(higher_bbox,bob->bbox) >= 0) {
@@ -266,7 +266,7 @@ void GenericKdTree<ObjectType>::prepare(uint num, const AABox& bbox, uint depth,
 	ObjectType** objects;
 	if (num > 0) {
 	    objects = new ObjectType*[num];
-	    for(uint j = 0; j < num; j++) {
+	    for(uint32_t j = 0; j < num; j++) {
 		objects[j] = left_bobs[j]->object;
 	    }
 	} else {
@@ -285,14 +285,14 @@ void GenericKdTree<ObjectType>::prepare(uint num, const AABox& bbox, uint depth,
 /////////////////////////////////////////////////////////////////////
 
 template<class ObjectType>
-void KdNode<ObjectType>::initLeafNode(uint num, ObjectType** objects)
+void KdNode<ObjectType>::initLeafNode(uint32_t num, ObjectType** objects)
 {
     this->num = (num << 2) | 3;
     this->objects = objects;
 }
 
 template<class ObjectType>
-void KdNode<ObjectType>::initInteriorNode(uint axis, float plane, uint left)
+void KdNode<ObjectType>::initInteriorNode(uint32_t axis, float plane, uint32_t left)
 {
     assert(axis >= 0 && axis <= 2);
     this->splitPlane = plane;
@@ -306,7 +306,7 @@ bool KdNode<ObjectType>::isLeafNode() const
 }
 
 template<class ObjectType>
-uint KdNode<ObjectType>::getAxis() const 
+uint32_t KdNode<ObjectType>::getAxis() const 
 {
     return (num & 3);
 }
@@ -318,7 +318,7 @@ float KdNode<ObjectType>::getSplitValue() const
 }
 
 template<class ObjectType>
-uint KdNode<ObjectType>::getObjectNum() const 
+uint32_t KdNode<ObjectType>::getObjectNum() const 
 {
     return (num >> 2);
 }

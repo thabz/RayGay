@@ -3,8 +3,8 @@
 #include <cassert>
 
 ParametrizedSurface::ParametrizedSurface(
-	uint uRes, 
-	uint vRes, 
+	uint32_t uRes, 
+	uint32_t vRes, 
 	bool uClose, 
 	bool vClose, 
 	const Material* m) : Mesh(Mesh::MESH_PHONG, m) 
@@ -17,13 +17,13 @@ ParametrizedSurface::ParametrizedSurface(
 
 void ParametrizedSurface::prepare() {
 
-    uint uVerticesNum = uRes + (uClose ? 0 : 1);
-    uint vVerticesNum = vRes + (vClose ? 0 : 1);
+    uint32_t uVerticesNum = uRes + (uClose ? 0 : 1);
+    uint32_t vVerticesNum = vRes + (vClose ? 0 : 1);
 
     hintVertexNum(uVerticesNum * vVerticesNum);
 
-    for(uint ui = 0; ui < uVerticesNum; ui++) {
-	for(uint vi = 0; vi < vVerticesNum; vi++) {
+    for(uint32_t ui = 0; ui < uVerticesNum; ui++) {
+	for(uint32_t vi = 0; vi < vVerticesNum; vi++) {
 	    double u = double(ui) / uRes;
 	    double v = double(vi) / vRes;
 	    Vector vertex = eval(u, v);
@@ -33,13 +33,13 @@ void ParametrizedSurface::prepare() {
 
     hintFaceNum(uRes * vRes);
 
-    uint c[4];
+    uint32_t c[4];
     Vector2 uvs[4];
     double uStep = 1.0 / double(uRes);
     double vStep = 1.0 / double(vRes);
 
-    for(uint u = 0; u < uRes; u++) {
-	for(uint v = 0; v < vRes; v++) {
+    for(uint32_t u = 0; u < uRes; u++) {
+	for(uint32_t v = 0; v < vRes; v++) {
 	    double u1 = (0 + u) * uStep;
 	    double u2 = (1 + u) * uStep;
 	    double v1 = (0 + v) * vStep;

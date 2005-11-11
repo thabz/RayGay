@@ -14,7 +14,7 @@
  * @param segments The number of segments to use
  * @param m Material
  */
-Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, uint segments, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
+Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, uint32_t segments, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
 
     Vector direction = end - begin;
     direction.normalize();
@@ -25,8 +25,8 @@ Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, uint
     b.getPoints(segments,bp);
     e.getPoints(segments,ep);
     
-    for(uint i = 0; i < segments; i++) {
-	uint j = (i + 1) % segments;
+    for(uint32_t i = 0; i < segments; i++) {
+	uint32_t j = (i + 1) % segments;
 	// Discs
 	addTriangle(begin,bp[j],bp[i]);
 	addTriangle(end,ep[i],ep[j]);
@@ -38,12 +38,12 @@ Extrusion::Extrusion(const Vector& begin, const Vector& end, double radius, uint
     delete [] ep;
 }
 
-Extrusion::Extrusion(const Path& path, double radius, uint segments, uint pieces, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
+Extrusion::Extrusion(const Path& path, double radius, uint32_t segments, uint32_t pieces, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
     Circle circle = Circle(Vector(0,0,0),radius,Vector(0,0,1));
     init(path, circle, segments, pieces,5);
 }
 
-Extrusion::Extrusion(const Path& path, const Path& circle, uint segments, uint pieces, double twists, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
+Extrusion::Extrusion(const Path& path, const Path& circle, uint32_t segments, uint32_t pieces, double twists, Material* m) : Mesh(Mesh::MESH_PHONG,m) {
     init(path, circle, segments, pieces, twists);
 }
 
@@ -51,12 +51,12 @@ Extrusion::Extrusion(const Path& path, const Path& circle, uint segments, uint p
 /**
  * @param circle a path in the (x,y)-plane.
  */
-void Extrusion::init(const Path& path, const Path& circle, uint segments, uint pieces, double twists) {
+void Extrusion::init(const Path& path, const Path& circle, uint32_t segments, uint32_t pieces, double twists) {
     assert(pieces > 2);
 
     Vector cp[segments];
     double last_t = 0;
-    for (uint p = 0; p < pieces; p++) {
+    for (uint32_t p = 0; p < pieces; p++) {
 	double t = double(p) / double(pieces);
 	Vector c = path.getPoint(t);
 	Vector n = path.getTangent(t);
@@ -69,19 +69,19 @@ void Extrusion::init(const Path& path, const Path& circle, uint segments, uint p
 	                Matrix::matrixOrient(n).inverse() * 
 			Matrix::matrixTranslate(c);
 
-	for(uint i = 0; i < segments; i++) {
+	for(uint32_t i = 0; i < segments; i++) {
 	    cp[i] = matrix * cp[i];
 	}
 
-	for(uint i = 0; i < segments; i++) {
-	    uint k = addVertex(cp[i]);
+	for(uint32_t i = 0; i < segments; i++) {
+	    uint32_t k = addVertex(cp[i]);
 	    assert(k == p*segments + i);
 	}
 
 	if (p > 0) {
-	    uint p1 = p - 1;
-	    for(uint i = 0; i < segments; i++) {
-		uint j = (i + 1) % segments;
+	    uint32_t p1 = p - 1;
+	    for(uint32_t i = 0; i < segments; i++) {
+		uint32_t j = (i + 1) % segments;
 		double ti = double(i) / double(segments);
 		double tj = double(j) / double(segments);
 
@@ -95,8 +95,8 @@ void Extrusion::init(const Path& path, const Path& circle, uint segments, uint p
     }
     if (path.isClosed()) {
 	int p1 = pieces-1;
-	for(uint i = 0; i < segments; i++) {
-	    uint j = (i + 1) % segments;
+	for(uint32_t i = 0; i < segments; i++) {
+	    uint32_t j = (i + 1) % segments;
 	    double ti = double(i) / double(segments);
 	    double tj = double(j) / double(segments);
 

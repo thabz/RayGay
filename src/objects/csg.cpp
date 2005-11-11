@@ -70,7 +70,7 @@ void CSGDifference::allIntersections(const Ray& ray, vector<Intersection>& resul
     }
 
     // Invert all directions of right
-    for(uint i = 0; i < right_int.size(); i++) {
+    for(uint32_t i = 0; i < right_int.size(); i++) {
 	right_int[i].isEntering(!right_int[i].isEntering());
 	right_int[i].flipNormal();
     }
@@ -78,8 +78,8 @@ void CSGDifference::allIntersections(const Ray& ray, vector<Intersection>& resul
     if (right_int.empty() && !right_inside) return;
     
     // Merge intersections while preserving order
-    uint l = 0;
-    uint r = 0;
+    uint32_t l = 0;
+    uint32_t r = 0;
     result.reserve(left_int.size() + right_int.size());
     while (l < left_int.size() && r < right_int.size()) {
 	if (left_int[l].getT() < right_int[r].getT()) {
@@ -124,8 +124,8 @@ void CSGIntersection::allIntersections(const Ray& ray, vector<Intersection>& res
     
     // Merge intersections while preserving order
     result.reserve(left_int.size() + right_int.size());
-    uint l = 0;
-    uint r = 0;
+    uint32_t l = 0;
+    uint32_t r = 0;
     while (l < left_int.size() && r < right_int.size()) {
 	if (left_int[l].getT() < right_int[r].getT()) {
 	    Intersection i = left_int[l];

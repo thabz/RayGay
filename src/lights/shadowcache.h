@@ -20,14 +20,14 @@ class Object;
 class ShadowCache {
     public:
 	ShadowCache();
-	bool occluded(const Ray& ray_to_light, const double dist_to_light, unsigned int depth, KdTree* space);
+	bool occluded(const Ray& ray_to_light, const double dist_to_light, uint32_t depth, KdTree* space);
 
     private:
 	// Methods
-	Object* getHint(unsigned int depth) const;
-	void putHint(unsigned int depth, Object* object);
-	vector<Object*>* getVoxel(unsigned int depth) const;
-	void putVoxel(unsigned int depth, vector<Object*>* voxel);
+	Object* getHint(uint32_t depth) const;
+	void putHint(uint32_t depth, Object* object);
+	vector<Object*>* getVoxel(uint32_t depth) const;
+	void putVoxel(uint32_t depth, vector<Object*>* voxel);
 
 	// Data
 	Object* hints[LIGHTS_SHADOW_CACHE_MAX_DEPTH];

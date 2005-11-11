@@ -116,7 +116,7 @@ void Material::setBumpTexture(Texture* texture, double bumpHeight) {
  * @param gloss_ray Number of rays to sample. More rays means slower rendering but more accurate gloss.
  * @param gloss_angle Max angle of these rays in degrees
  */
-void Material::enableGloss(unsigned int gloss_rays, double gloss_angle) {
+void Material::enableGloss(uint32_t gloss_rays, double gloss_angle) {
     this->gloss_enabled = true;
     this->gloss_rays = gloss_rays;
     this->gloss_angle_rad = DEG2RAD(gloss_angle);

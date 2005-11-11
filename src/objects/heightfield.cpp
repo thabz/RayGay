@@ -8,8 +8,8 @@ HeightField::HeightField(
 	double height, 
 	double width, 
 	double depth, 
-	uint width_divisions, 
-	uint depth_divisions, 
+	uint32_t width_divisions, 
+	uint32_t depth_divisions, 
 	const Material* material) : ParametrizedSurface(width_divisions, depth_divisions, false, false, material) 
 {
     this->height = height;

@@ -11,7 +11,7 @@ CSGUnion::CSGUnion(Solid* left, Solid* right, const Material* mat) : Solid(mat) 
 }
 
 CSGUnion::CSGUnion(vector<Solid*>* solids, const Material* mat) : Solid(mat) {
-    uint size = solids->size();
+    uint32_t size = solids->size();
     if (size < 2) throw_exception("At least two solids are needed.");
     if (size == 2) {
 	this->left = solids->front();
@@ -19,7 +19,7 @@ CSGUnion::CSGUnion(vector<Solid*>* solids, const Material* mat) : Solid(mat) {
     } else {
 	this->left = solids->operator[](0);
 	this->right = solids->operator[](1);
-	for(uint i = 2; i < size; i++) {
+	for(uint32_t i = 2; i < size; i++) {
 	    this->right = new CSGUnion(this->right,solids->operator[](i),NULL);
 	}
     }
@@ -58,7 +58,7 @@ void CSGUnion::allIntersections(const Ray& ray, vector<Intersection>& result) co
 
     /*
     vector<Intersection> intersections;
-    uint i = 0;
+    uint32_t i = 0;
     while (i < left_int.size()) intersections.push_back(left_int[i++]);
     i = 0;
     while (i < right_int.size()) intersections.push_back(right_int[i++]);
@@ -81,8 +81,8 @@ void CSGUnion::allIntersections(const Ray& ray, vector<Intersection>& result) co
     return;
     */
 
-    uint l = 0;
-    uint r = 0;
+    uint32_t l = 0;
+    uint32_t r = 0;
     bool left_inside = false;
     bool right_inside = false;
     if (left_int.size() > 0) {

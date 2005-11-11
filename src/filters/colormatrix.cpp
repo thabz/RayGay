@@ -3,16 +3,16 @@
 #include "image/rgba.h"
 
 ColorMatrix::ColorMatrix() {
-    for(uint i = 0; i < 25; i++) {
+    for(uint32_t i = 0; i < 25; i++) {
 	matrix[i] = 0.0;
     }
-    for(uint i = 0; i < 5; i++) {
+    for(uint32_t i = 0; i < 5; i++) {
 	matrix[i*5+i] = 1.0;
     }
 }
 
 ColorMatrix::ColorMatrix(double c[25]) {
-    for(uint i = 0; i < 25; i++) {
+    for(uint32_t i = 0; i < 25; i++) {
 	matrix[i] = c[i];
     }
 }

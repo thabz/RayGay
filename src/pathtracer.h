@@ -18,7 +18,7 @@ class Pathtracer : public Renderer {
 
     public:
 	/// Default constructor
-	Pathtracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, unsigned int thread_id);
+	Pathtracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, uint32_t thread_id);
 
     private:
 	RGBA getPixel(const Vector2& v);

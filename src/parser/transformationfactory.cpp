@@ -30,7 +30,7 @@ SCM TransformationFactory::transform(SCM s_obj, const Matrix& m, char* subr)
     if (SCM_NFALSEP (scm_list_p(s_obj))) {
 	if (3 == scm_num2int(scm_length(s_obj),0,"")) {
 	    bool is_num = true;
-	    for(uint i = 0; i < 3; i++) {
+	    for(uint32_t i = 0; i < 3; i++) {
 		SCM thing = scm_list_ref(s_obj, scm_int2num(i));
 		is_num &= SCM_NFALSEP(scm_number_p(thing));
 	    }
@@ -43,8 +43,8 @@ SCM TransformationFactory::transform(SCM s_obj, const Matrix& m, char* subr)
     
     vector<SCM> objs;
     if (SCM_NFALSEP (scm_list_p(s_obj))) {
-	uint num = scm_num2int(scm_length(s_obj),0,"");
-	for(uint i = 0; i < num; i++) {
+	uint32_t num = scm_num2int(scm_length(s_obj),0,"");
+	for(uint32_t i = 0; i < num; i++) {
 	    SCM s_value = scm_list_ref(s_obj, scm_int2num(i));
 	    objs.push_back(s_value);
 	}
@@ -52,8 +52,8 @@ SCM TransformationFactory::transform(SCM s_obj, const Matrix& m, char* subr)
 	objs.push_back(s_obj);
     }
 
-    uint num = objs.size();
-    for(uint i = 0; i < num; i++) {
+    uint32_t num = objs.size();
+    for(uint32_t i = 0; i < num; i++) {
 	SceneObject* object = scm2sceneobject(objs[i], subr, i + 1);
 	object->transform(m);
     }

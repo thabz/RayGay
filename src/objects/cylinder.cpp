@@ -42,7 +42,7 @@ AABox Cylinder::getBoundingBox() const {
 
 double Cylinder::_fastIntersect(const Ray& ray) const {
     double roots[2];
-    uint num = allPositiveRoots(ray,roots);
+    uint32_t num = allPositiveRoots(ray,roots);
     return num == 0 ? -1 : roots[0];
 }
 
@@ -96,8 +96,8 @@ void Cylinder::_fullIntersect(const Ray& world_ray, const double t, Intersection
  * Afterwards we must check that Ray(t) where t is a root
  * are within the z-axis interval that defines the lenght of the cylinder.
  */
-uint Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
-    uint roots_found = 0;
+uint32_t Cylinder::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
+    uint32_t roots_found = 0;
 
     Ray local_ray = rayToObject(world_ray);
 
@@ -172,9 +172,9 @@ SceneObject* Cylinder::clone() const {
 
 void Cylinder::allIntersections(const Ray& ray, vector<Intersection>& result) const {
     double roots[2];
-    uint num = allPositiveRoots(ray,roots);
+    uint32_t num = allPositiveRoots(ray,roots);
     result.reserve(num);
-    for(uint i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	Intersection inter;
 	fullIntersect(ray,roots[i],inter);
 	result.push_back(inter);

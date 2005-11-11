@@ -57,7 +57,7 @@ Vector Arealight::getPosition(int i) const {
     return circles[i]->getPoint(t);
 }
 
-void Arealight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, unsigned int depth) const {
+void Arealight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const {
     Vector direction_to_light;
     info->direction_to_light = position - inter.getPoint();
     info->direction_to_light.normalize();
@@ -100,7 +100,7 @@ void Arealight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo
     }
 }
 
-bool Arealight::probeSublight(int i, const Intersection& inter, KdTree* space, unsigned int depth) const {
+bool Arealight::probeSublight(int i, const Intersection& inter, KdTree* space, uint32_t depth) const {
     Vector direction_to_light = getPosition(i) - inter.getPoint();
     double dist_to_light = direction_to_light.length();
     if (IS_ZERO(dist_to_light)) {

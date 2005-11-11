@@ -12,19 +12,19 @@
  */
 BezierPatch::BezierPatch(
 	const vector<Vector> &points, 
-	const uint uResolution, 
-	const uint vResolution, 
+	const uint32_t uResolution, 
+	const uint32_t vResolution, 
 	const Material* material) : ParametrizedSurface(uResolution, vResolution, false, false, material) {
-    for(uint i = 0; i < 16; i++) {
+    for(uint32_t i = 0; i < 16; i++) {
 	controlPoints[i] = points[i];
     }
 }
 
-const Vector& BezierPatch::getControlPoint(uint i, uint j) const {
+const Vector& BezierPatch::getControlPoint(uint32_t i, uint32_t j) const {
     return controlPoints[i * 4 + j];
 }
 
-double B(uint n, double u) {
+double B(uint32_t n, double u) {
     double nu = 1 - u;
     switch(n) {
 	case 0:
@@ -42,8 +42,8 @@ double B(uint n, double u) {
 
 Vector BezierPatch::eval(double u, double v) const {
     Vector result = Vector(0,0,0);
-    for (uint i = 0; i < 4; i++) {
-	for (uint j = 0; j < 4; j++) {
+    for (uint32_t i = 0; i < 4; i++) {
+	for (uint32_t j = 0; j < 4; j++) {
 	    result += getControlPoint(i,j) * B(i,u) * B(j,v);
 	}
     }

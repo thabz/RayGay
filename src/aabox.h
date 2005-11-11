@@ -60,10 +60,10 @@ class AABox {
 	const Vector maximum() const { return Vector(_c2[0],_c2[1],_c2[2]); };
 	
 	/// An x,y or z value from the corner with smallest x,y,z values
-	const double minimum(const unsigned int i) const { return _c1[i]; };
+	const double minimum(const uint32_t i) const { return _c1[i]; };
 	
 	/// An x,y or z value from the corner with biggest x,y,z values
-	const double maximum(const unsigned int i) const { return _c2[i]; };
+	const double maximum(const uint32_t i) const { return _c2[i]; };
 
 	/// Returns the smallest box that contains b1 and b2.
 	static AABox doUnion(const AABox& b1, const AABox& b2); 
@@ -99,7 +99,7 @@ class AABox {
 	Vector center() const;
 
 	// Split this bbox into two by a axis-aligned plane
-	bool split(AABox& left, AABox& right, const unsigned int dim, const double axis) const; 
+	bool split(AABox& left, AABox& right, const uint32_t dim, const double axis) const; 
 
 	// Lengths of the three sides
 	Vector lengths() const;

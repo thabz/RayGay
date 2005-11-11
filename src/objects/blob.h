@@ -84,7 +84,7 @@ class Blob : public IsoSurface
     
     public:
 	/// Constructor
-	Blob(double iso, unsigned int steps, double accuracy, Material* material);
+	Blob(double iso, uint32_t steps, double accuracy, Material* material);
 	~Blob();
 	void addAtom(const Vector& center, double radius, double weight);
 	void addAtom(const Vector& from, const Vector& to, double radius, double weight);

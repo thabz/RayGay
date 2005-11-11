@@ -52,7 +52,7 @@ class PhotonMap {
 
 	bool isFull() const { return stored_photons >= max_photons; };
 
-	unsigned int size() const { return stored_photons; };
+	uint32_t size() const { return stored_photons; };
 
     protected:
 	void packVector(const Vector& vector, unsigned char* theta, unsigned char* phi) const;

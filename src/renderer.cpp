@@ -16,7 +16,7 @@
 #include "materials/material.h"
 #include "math/halton.h"
 
-Renderer::Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, uint thread_id) {
+Renderer::Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, uint32_t thread_id) {
     this->scene = scene;
     this->space = spc;
     this->renderersettings = settings;
@@ -30,7 +30,7 @@ Renderer::Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree*
     Camera* camera = scene->getCamera();
     aa_enabled = camera->isAAEnabled();
     aa_depth = camera->getAADepth();
-    uint block_size = 1 + (1 << aa_depth);
+    uint32_t block_size = 1 + (1 << aa_depth);
     if (aa_enabled) {
 	int img_w = img->getWidth();
 	row1.reserve(img_w);
@@ -45,7 +45,7 @@ Renderer::Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree*
 Renderer::~Renderer() {
     delete gloss_sequence;
     
-    for(uint i = 0; i < row1.size(); i++) {
+    for(uint32_t i = 0; i < row1.size(); i++) {
 	row1[i].cleanup();
 	row2[i].cleanup();
     }
@@ -136,7 +136,7 @@ void Renderer::renderFull(const RenderJob& job) {
     int img_h = img->getHeight();
 
     // Prepare the two PixelBlock buffers
-    uint block_size = 1 + (1 << aa_depth);
+    uint32_t block_size = 1 + (1 << aa_depth);
     if (aa_enabled) {
 	for(int i = 0; i < img_w; i++) {
 	    row1[i].reset();
@@ -177,16 +177,16 @@ void Renderer::renderFull(const RenderJob& job) {
 /**
  * Clear cur_row and copy lowermost color values from prev_row into topmost color values in cur_row
  */
-void Renderer::prepareCurRow(std::vector<PixelBlock>* cur_row, std::vector<PixelBlock>* prev_row,uint blocksize) {
+void Renderer::prepareCurRow(std::vector<PixelBlock>* cur_row, std::vector<PixelBlock>* prev_row,uint32_t blocksize) {
     assert(cur_row->size() == prev_row->size());
-    uint width = cur_row->size();
+    uint32_t width = cur_row->size();
 
-    for(uint i = 0; i < width; i++) {
+    for(uint32_t i = 0; i < width; i++) {
 	PixelBlock& cur_row_block = cur_row->operator[](i);
 	PixelBlock& prev_row_block = prev_row->operator[](i);
 	cur_row_block.reset();
 	
-	for(uint j = 0; j < blocksize; j++) {
+	for(uint32_t j = 0; j < blocksize; j++) {
 	    if (prev_row_block.isActive(j,0)) {
 		cur_row_block.setColor(j,blocksize-1,prev_row_block.getColor(j,0));
 	    }
@@ -197,15 +197,15 @@ void Renderer::prepareCurRow(std::vector<PixelBlock>* cur_row, std::vector<Pixel
 /**
  * Copies rightmost subpixels from prev_block into leftmost subpixels in cur_block
  */
-void Renderer::prepareCurBlock(PixelBlock* cur_block, PixelBlock* prev_block, uint blocksize) {
-    for(uint i = 0; i < blocksize; i++) {
+void Renderer::prepareCurBlock(PixelBlock* cur_block, PixelBlock* prev_block, uint32_t blocksize) {
+    for(uint32_t i = 0; i < blocksize; i++) {
 	if (prev_block->isActive(blocksize-1,i)) {
 	    cur_block->setColor(0,i,prev_block->getColor(blocksize-1,i));
 	}
     }
 }
 
-RGBA Renderer::getSubPixel(uint curLevel, const Vector2& center, PixelBlock *block, double size, int x1, int y1, int x2, int y2) {
+RGBA Renderer::getSubPixel(uint32_t curLevel, const Vector2& center, PixelBlock *block, double size, int x1, int y1, int x2, int y2) {
 
     double halfsize = size / 2.0;
 
@@ -282,7 +282,7 @@ RGBA Renderer::getSubPixel(uint curLevel, const Vector2& center, PixelBlock *blo
     return (c1 + c2 + c3 + c4) * 0.25;
 }
 
-Renderer::PixelBlock::PixelBlock(const uint size) {
+Renderer::PixelBlock::PixelBlock(const uint32_t size) {
     this->size = size;
     this->size_squared = size*size;
     color = new RGBA[size*size]; 

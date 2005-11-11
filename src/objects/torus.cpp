@@ -35,11 +35,11 @@ void Torus::_fullIntersect(const Ray& world_ray, const double t, Intersection& r
 
 double Torus::_fastIntersect(const Ray& world_ray) const {
     double roots[4];
-    unsigned int num = allPositiveRoots(world_ray,roots);
+    uint32_t num = allPositiveRoots(world_ray,roots);
     return num == 0 ? -1 : roots[0];
 }
 
-unsigned int Torus::allPositiveRoots(const Ray& world_ray, double roots[4]) const {
+uint32_t Torus::allPositiveRoots(const Ray& world_ray, double roots[4]) const {
     Ray ray = rayToObject(world_ray);
 
     Vector Rd = ray.getDirection();

@@ -8,7 +8,7 @@
 
 using namespace std;
 
-IsoSurface::IsoSurface(uint steps, double accuracy, double iso, Material* mat) : Object(mat) {
+IsoSurface::IsoSurface(uint32_t steps, double accuracy, double iso, Material* mat) : Object(mat) {
     this->steps = steps;
     this->accuracy = accuracy;
     this->iso = iso;
@@ -27,7 +27,7 @@ void IsoSurface::_fullIntersect(const Ray& world_ray, const double t, Intersecti
 double IsoSurface::refine(const Ray& ray, double t_begin, double t_end, double f_t_end) const {
     double f_t_begin = func(t_begin);
     double f_t_mid, t_mid;
-    uint i = 0;
+    uint32_t i = 0;
 
     //assert(!SAME_SIGN(f_t_begin, f_t_end));
 

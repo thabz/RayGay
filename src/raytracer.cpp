@@ -21,7 +21,7 @@ CounterStats* Raytracer::total_rays_cast = new CounterStats("Raytracer","Total c
 CounterStats* Raytracer::primary_rays_cast = new CounterStats("Raytracer","Primary rays cast");
 CounterStats* Raytracer::secondary_rays_cast = new CounterStats("Raytracer","Secondary rays cast");
 
-Raytracer::Raytracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, unsigned int thread_id) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
+Raytracer::Raytracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, uint32_t thread_id) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
 }
 
 RGBA Raytracer::getPixel(const Vector2& v) {

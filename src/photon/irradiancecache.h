@@ -84,7 +84,7 @@ class IrradianceCache {
 
 	class HierarchyNode {
 	    public:
-		HierarchyNode(const AABox& bbox, unsigned int depth);
+		HierarchyNode(const AABox& bbox, uint32_t depth);
 		~HierarchyNode();
 		void add(const CacheNode& node);
 		void split();
@@ -92,7 +92,7 @@ class IrradianceCache {
 		AABox bbox;
 		HierarchyNode* children[8];
 		vector<CacheNode> cache_nodes;
-		unsigned int depth;
+		uint32_t depth;
 		float length;
 		bool isSplit;
 	};

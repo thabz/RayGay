@@ -51,7 +51,7 @@ AABox Cone::getBoundingBox() const {
 
 double Cone::_fastIntersect(const Ray& ray) const {
     double roots[2];
-    unsigned int num = allPositiveRoots(ray,roots);
+    uint32_t num = allPositiveRoots(ray,roots);
     return num == 0 ? -1 : roots[0];
 }
 
@@ -99,8 +99,8 @@ void Cone::_fullIntersect(const Ray& world_ray, const double t, Intersection& re
  * are within the z-axis interval [0,1] that defines the length of the cone.
  *
  */
-unsigned int Cone::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
-    unsigned int roots_found = 0;
+uint32_t Cone::allPositiveRoots(const Ray& world_ray, double roots[2]) const {
+    uint32_t roots_found = 0;
 
     Ray local_ray = rayToObject(world_ray);
 

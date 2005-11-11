@@ -20,7 +20,7 @@ class PhotonRenderer : public Renderer {
 
     public:
 	/// Default constructor
-	PhotonRenderer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, unsigned int thread_id, GlobalPhotonMap* globalphotonmap, CausticsMap* causticsmap, IrradianceCache* irradiancecache);
+	PhotonRenderer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, uint32_t thread_id, GlobalPhotonMap* globalphotonmap, CausticsMap* causticsmap, IrradianceCache* irradiancecache);
 	// Destructor
 	virtual ~PhotonRenderer();
 

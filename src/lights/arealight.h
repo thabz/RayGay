@@ -15,7 +15,7 @@ class Arealight : public Lightsource {
 	/// Constructor
 	Arealight(const Vector& pos, const Vector& dir, double radius, int num, double jitter);
 	virtual ~Arealight();
-	void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, unsigned int depth) const;
+	void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const;
         void transform(const Matrix& m);
 
     private:
@@ -26,7 +26,7 @@ class Arealight : public Lightsource {
 	int num;
 
 	Vector getPosition(int i) const;
-	bool probeSublight(int i, const Intersection& inter, KdTree* space, unsigned int depth) const;
+	bool probeSublight(int i, const Intersection& inter, KdTree* space, uint32_t depth) const;
 };
 
 #endif

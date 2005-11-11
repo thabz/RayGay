@@ -48,7 +48,7 @@ void Camera::init() {
     this->right.normalize();
 }
 
-void Camera::enableAdaptiveSupersampling(unsigned int depth) {
+void Camera::enableAdaptiveSupersampling(uint32_t depth) {
     aa_depth = depth;
     aa_enabled = depth == 0 ? false : true;
 }

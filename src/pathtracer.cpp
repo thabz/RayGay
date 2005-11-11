@@ -17,9 +17,9 @@
 #include "space/kdtree.h"
 #include "math/halton.h"
 
-Pathtracer::Pathtracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, unsigned int thread_id) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
+Pathtracer::Pathtracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, uint32_t thread_id) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
 
-    for(uint i = 0; i < MAX_DEPTH; i++) {
+    for(uint32_t i = 0; i < MAX_DEPTH; i++) {
 	seqs.push_back(new Halton(2,2));
     }
 }
@@ -37,7 +37,7 @@ RGBA Pathtracer::tracePrimary(const Ray& ray) {
     bool intersected = space->intersectPrimary(ray, i);
     if (intersected) {
 	// Reset the quasi monte carlo sequence for each trace depth
-	for(uint j = 0; j < MAX_DEPTH; j++) {
+	for(uint32_t j = 0; j < MAX_DEPTH; j++) {
 	    seqs[j]->reset();
 	}
 	int samples = renderersettings->camera_paths;

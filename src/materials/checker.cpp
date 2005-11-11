@@ -13,9 +13,9 @@ Checker::Checker(Material* mat1, Material* mat2, double size) : Material() {
 
 Material* Checker::materialAtPoint(const Vector& point) const {
     Vector p = point / (size+EPSILON);
-    unsigned int x = ((unsigned int) p.x()) % 2;
-    unsigned int y = ((unsigned int) p.y()) % 2;
-    unsigned int z = ((unsigned int) p.z()) % 2;
+    uint32_t x = ((uint32_t) p.x()) % 2;
+    uint32_t y = ((uint32_t) p.y()) % 2;
+    uint32_t z = ((uint32_t) p.z()) % 2;
     
     if (IS_NEGATIVE(p.x())) x ^= 1;
     if (IS_NEGATIVE(p.y())) y ^= 1;

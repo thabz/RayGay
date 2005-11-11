@@ -43,7 +43,7 @@ class Camera {
 	void setFieldOfView(double degrees);
 
 	/// Enable adaptive supersampling
-	void enableAdaptiveSupersampling(unsigned int depth);
+	void enableAdaptiveSupersampling(uint32_t depth);
 
 	/// Enable depth of field
 	void enableDoF(double aperture, int samples, const Vector& focalpoint);
@@ -57,7 +57,7 @@ class Camera {
 	/// Says whether adaptive antialias is enabled
 	bool isAAEnabled() const { return aa_enabled; }; 
 
-	unsigned int getAADepth() const { return aa_depth; };
+	uint32_t getAADepth() const { return aa_depth; };
 
 	/// Get a ray going through the screen
 	Ray getRay(const double x, const double y);
@@ -99,7 +99,7 @@ class Camera {
 
 	// Adaptive antialiasing
 	bool aa_enabled;
-	unsigned int aa_depth;
+	uint32_t aa_depth;
 };
 
 inline

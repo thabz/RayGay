@@ -9,7 +9,7 @@ Vector scm2vector(SCM s_vector, char* subr, int pos) {
 
     Vector result;
     SCM s_value;
-    for(uint i = 0; i < 3; i++) {
+    for(uint32_t i = 0; i < 3; i++) {
 	s_value = scm_list_ref(s_vector, scm_int2num(i));
 	result[i] = scm_num2double(s_value, pos, subr);
     }
@@ -30,7 +30,7 @@ RGBA scm2rgba(SCM s_vector, char* subr, int pos) {
 
     double r[4];
     SCM s_value;
-    for(uint i = 0; i < 4; i++) {
+    for(uint32_t i = 0; i < 4; i++) {
 	s_value = scm_list_ref(s_vector, scm_int2num(i));
 	r[i] = scm_num2double(s_value, pos, subr);
     }
@@ -45,7 +45,7 @@ Vector2 scm2vector2(SCM s_vector, char* subr, int pos) {
 
     double res[2];
     SCM s_value;
-    for(uint i = 0; i < 2; i++) {
+    for(uint32_t i = 0; i < 2; i++) {
 	s_value = scm_list_ref(s_vector, scm_int2num(i));
 	res[i] = scm_num2double(s_value, pos, subr);
     }
@@ -73,10 +73,10 @@ SCM rgb2scm(RGB rgb) {
 
 vector<Vector> scm2vectorlist(SCM s_vector_vector, char* subr, int pos) {
     assert(SCM_NFALSEP (scm_list_p (s_vector_vector)));
-    uint length = scm_num2int(scm_length(s_vector_vector),0,NULL);
+    uint32_t length = scm_num2int(scm_length(s_vector_vector),0,NULL);
     SCM s_vector;
     vector<Vector> result;
-    for(uint i = 0; i < length; i++) {
+    for(uint32_t i = 0; i < length; i++) {
 	s_vector = scm_list_ref(s_vector_vector,scm_int2num(i));
 	result.push_back(scm2vector(s_vector, subr, pos));
     }

@@ -8,7 +8,7 @@ class KdTree;
 Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
 }
 
-void Pointlight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, unsigned int depth) const {
+void Pointlight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const {
     
     // Move intersection point ESPILON along surface normal to 
     // avoid selfshadowing.
