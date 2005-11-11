@@ -326,7 +326,7 @@ void work(string scenefile, string outputfile, int jobs, int frame, int frames) 
 
     parser = new Parser(scenefile);
     
-    int frames_num = getRendererSettings()->anim_frames;
+    int frames_num = frames;//getRendererSettings()->anim_frames;
     Environment* env = Environment::getUniqueInstance();
 
     if (frames_num > 1) {
@@ -367,7 +367,7 @@ int main(int argc, char *argv[]) {
     opterr = 0;
     int jobs = 1;
     int frame_to_render = 0;
-    int frames_total = 0;
+    int frames_total = 1;
     while ((c = getopt (argc, argv, "vdhbj:f:F:")) != -1) {
 	switch(c) {
 	    case 'h':
