@@ -1,5 +1,5 @@
 
-SUBDIRS = src test scheme
+SUBDIRS = src test scenes scheme
 
 dist_bin_SCRIPTS=animation-render.sh
 
