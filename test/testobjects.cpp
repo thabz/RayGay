@@ -1275,12 +1275,12 @@ class bounded_mesh_test : public Test {
 	    // Basic intersections
 	    Tessalation* t = new Tessalation(Vector(0,0,0),100,5,NULL);
 	    Bound* b = new Bound(t);
-	    assertTrue(intersects(b,Vector(0,0,1000),Vector(0,0,-1)));
-	    assertTrue(intersects(b,Vector(0,0,-1000),Vector(0,0,1)));
-	    assertTrue(intersects(b,Vector(1000,0,0),Vector(-1,0,0)));
-	    assertTrue(intersects(b,Vector(-1000,0,0),Vector(1,0,0)));
-	    assertTrue(intersects(b,Vector(0,1000,0),Vector(0,-1,0)));
-	    assertTrue(intersects(b,Vector(0,-1000,0),Vector(0,1,0)));
+	    assertTrue(intersects(b,Vector(1,0,1000),Vector(0,0,-1)));
+	    assertTrue(intersects(b,Vector(0,1,-1000),Vector(0,0,1)));
+	    assertTrue(intersects(b,Vector(1000,1,0),Vector(-1,0,0)));
+	    assertTrue(intersects(b,Vector(-1000,1,1),Vector(1,0,0)));
+	    assertTrue(intersects(b,Vector(0,1000,1),Vector(0,-1,0)));
+	    assertTrue(intersects(b,Vector(0,-1000,1),Vector(0,1,0)));
 	    
 	    // Added to a Kd-tree.
 	    KdTree* bsp = new KdTree();
