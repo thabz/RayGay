@@ -23,14 +23,13 @@
 ;; Fixed SAH: 0:25
 ;; Omrokering i Triangle::_fastIntersect: 0:22
 
-(load "globals.scm")
-(load "objects.scm")
+(load "lib/raygay.scm")
 
-(set! image-size '(640 480))
-(set! background '(0.1 0.1 0.3))
+(set-image-size '(640 480))
+(set-background '(0.1 0.1 0.3))
 
-(set! renderer "raytracer")
-(set! camera 
+(set-renderer "raytracer")
+(set-camera 
   (make-pinhole-camera 
     '( pos (1000 1000 2000)
        up (0 1 0)
@@ -63,15 +62,14 @@
        ks 0.5)))
 
 
-(set! scene (list (make-pointlight '(100 1300 1300))))
+(add-to-scene (make-pointlight '(100 1300 1300)))
 
-(append! scene (list (make-box '(-700 -50 -700) '(700 0 700) blue)))
-(append! scene (list (make-box '(-750 -50 -750) '(750 -0.01 750) blue)))
+(add-to-scene (make-box '(-700 -50 -700) '(700 0 700) blue))
+(add-to-scene (make-box '(-750 -50 -750) '(750 -0.01 750) blue))
 
-(append! 
- scene 
- (list 
+(add-to-scene
   (make-extrusion 
    (make-spiral (make-circle '(0 300 0) 400 '(0 1 0))
    200 8 0)
-   50 12 100 red)))
+   50 12 100 red))
+
