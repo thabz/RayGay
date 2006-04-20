@@ -48,6 +48,7 @@
 + 'man 2 times' giver bedre syscall til tidsmåling
 * Thread local storage using pthread: Google for pthread_getspecific
 * Kig pÃ¥ 'oprofile' profileren. Er en Debian pakke.
+* Make a -D <Scheme-expr> option that evals before the scenefile is read.
 
 ///////////////////////////////////////////
 // Compiling into assembler source
