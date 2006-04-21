@@ -63,8 +63,10 @@
 using namespace std;
 
 RendererSettings* renderer_settings = new RendererSettings();
-Parser* parser = NULL;
+Parser* parser = new Parser();
 PreviewWindow* preview_window = NULL;
+std::string scenefile;
+
 
 
 RendererSettings* getRendererSettings() {
@@ -195,7 +197,7 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
 
     TimerStats* parser_timer = new TimerStats("Parser","Time");
     parser_timer->startTimer();
-    parser->run();
+    parser->parse_file(scenefile);
     parser->populate(scene,renderersettings);
     parser_timer->stopTimer();
 
@@ -322,9 +324,8 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     Statistics::dumpAll();
 }
 
-void work(string scenefile, string outputfile, int jobs, int frame, int frames) {
+void work(string outputfile, int jobs, int frame, int frames) {
 
-    parser = new Parser(scenefile);
     
     int frames_num = frames;//getRendererSettings()->anim_frames;
     Environment* env = Environment::getUniqueInstance();
@@ -348,6 +349,8 @@ void print_usage() {
     cout << "       -b                   Run in background with no GUI" << endl;
     cout << "       -f NUM               Frame to render" << endl;
     cout << "       -F NUM               Total number of frames" << endl;
+    cout << "       -e EXPR              Eval a Scheme-expr prior to" << endl;
+    cout << "                            parsing the scenefile" << endl;
     cout << "       -d                   Print debugging information" << endl;
     cout << "       -h                   Show this help message" << endl;
     cout << "       -v                   Show current versionnumber" << endl;
@@ -368,7 +371,7 @@ int main(int argc, char *argv[]) {
     int jobs = 1;
     int frame_to_render = 0;
     int frames_total = 1;
-    while ((c = getopt (argc, argv, "vdhbj:f:F:")) != -1) {
+    while ((c = getopt (argc, argv, "vdhbj:f:F:e:")) != -1) {
 	switch(c) {
 	    case 'h':
 		print_usage();
@@ -403,6 +406,9 @@ int main(int argc, char *argv[]) {
 		    return EXIT_FAILURE;
 		};
 		break;
+	    case 'e':
+		parser->parse_expr(optarg);
+		break;
 	    case '?':
 		cerr << "Unknown option -" << char(optopt) << endl << endl;
 		print_usage();
@@ -412,7 +418,6 @@ int main(int argc, char *argv[]) {
 	}
     }
 
-    string scenefile;
     string outfile;
     if (optind != argc - 2) {
 	cerr << "Not enough arguments" << endl << endl;
@@ -425,7 +430,7 @@ int main(int argc, char *argv[]) {
     srand(1); // Make sure rand is seeded consistently.
 
     try {
-	work(scenefile, outfile, jobs, frame_to_render, frames_total); 
+	work(outfile, jobs, frame_to_render, frames_total); 
     } catch (Exception e) {
 	cout << "Exception: " << e.getMessage() 
 	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;

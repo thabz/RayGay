@@ -27,8 +27,7 @@ char* VAR_RENDERER = "__renderer__";
 char* VAR_IMAGESIZE = "__image-size__";
 char* VAR_BACKGROUND = "__background__";
 
-Parser::Parser(string filename) {
-    this->filename = filename; 
+Parser::Parser() {
     scm_init_guile();
     init_wrapper_type();
     // Globals
@@ -55,7 +54,11 @@ void Parser::assignVariable(string var, double value) {
     scm_c_define(var.c_str(), scm_double2num(value));
 }
 
-void Parser::run() {
+void Parser::parse_expr(std::string expr) {
+    gh_eval_str(expr.c_str());
+}
+
+void Parser::parse_file(std::string filename) {
     char original_working_dir[1024];
 
     // Change cwd to this files parent folder

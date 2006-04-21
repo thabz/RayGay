@@ -10,13 +10,13 @@ class RendererSettings;
 
 class Parser {
     public:
-	Parser(std::string filename);
+	Parser();
 	void assignVariable(std::string var_name, double value);
 	void populate(Scene* scene, RendererSettings* renderersettings);
-	void run();
+	void parse_file(std::string filename);
+	void parse_expr(std::string expr);
 
     private:
-	std::string filename;
 	SCM lookup(std::string var_name);
 
 };
