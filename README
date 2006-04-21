@@ -48,7 +48,8 @@
 + 'man 2 times' giver bedre syscall til tidsmåling
 * Thread local storage using pthread: Google for pthread_getspecific
 * Kig pÃ¥ 'oprofile' profileren. Er en Debian pakke.
-* Make a -D <Scheme-expr> option that evals before the scenefile is read.
+* Make a Perl-like -e <Scheme-expr> option that evals the Scheme-expr before the scenefile is read. Use gh_eval_str(char *) to eval a string. Support multiple -e -e-options.
+* Maybe also support a Java-like -Dvariable=value property-option.
 
 ///////////////////////////////////////////
 // Compiling into assembler source
