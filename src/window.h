@@ -7,6 +7,7 @@ class Image;
 class PreviewWindow {
 
     public:
+	virtual ~PreviewWindow() {};
 	virtual void drawBlock(int x, int y, int w, int h) = 0;
 	virtual void setImage(Image* img) = 0;
 	virtual void run() = 0;
