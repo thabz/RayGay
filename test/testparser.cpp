@@ -23,10 +23,9 @@ class test_parser : public Test {
 	Vector v1;
     public: 
 	void run() {
-	    Parser* p = new Parser(getLoadPrefix() + "/scenes/test.scm");
-	    
+	    Parser* p = new Parser();
 	    scm_c_define("test-predefined-a", scm_double2num(30));
-	    p->run();
+	    p->parse_file(getLoadPrefix() + "/scenes/test.scm");
 
 	    assertTrue(IS_EQUAL(lookupDouble("test-predefined-a"),30));
 	    assertTrue(IS_EQUAL(lookupDouble("test-define-1"),10));
