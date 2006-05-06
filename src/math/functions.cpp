@@ -122,7 +122,7 @@ int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
     double c = 4*B*D - C*C - A*A*D;
     double cubic_roots[3];
     double tmp1, tmp2;
-    solveCubic(a,b,c,cubic_roots);
+    solveCubicSingle(a,b,c,cubic_roots);
     double y = cubic_roots[0];
     double R = 0.25*A*A - B + y;
     
@@ -182,6 +182,79 @@ int Math::solveQuartic(double A, double B, double C, double D, double* roots) {
 	}
     }
     return i;
+}
+
+/**
+ * Solves the quartic equation
+ *
+ * \f[ x^4 + Ax^3 + Bx^2 + Cx + D = 0 \f]
+ * 
+ * The smallest root greater than cut-off value is returned.
+ * 
+ * @param A, B, C, D real coefficients of the equation above.
+ * @param root where to write the roots
+ * @param cut the cut value.
+ * @return zero if no roots are found, non-zero otherwise.
+ *
+ * @see http://www.magic-software.com/ for method used.
+ */
+int Math::solveQuarticSingle(double A, double B, double C, double D, double cut, double* root) {
+    double roots[4];
+    double a = -B;
+    double b = A*C - 4*D;
+    double c = 4*B*D - C*C - A*A*D;
+    double cubic_roots[3];
+    double tmp1, tmp2;
+    solveCubicSingle(a,b,c,cubic_roots);
+    double y = cubic_roots[0];
+    double R = 0.25*A*A - B + y;
+    
+    if (R < 0.0) 
+	return 0;
+    
+    double D2,E2;
+    int num = 0;
+    if (IS_ZERO(R)) {
+	R = 0.0; // Fixes precision error
+	tmp1 = 0.75*A*A - 2.0*B;
+	tmp2 = 2.0 * sqrt(y*y - 4.0*D);
+	D2 = tmp1 + tmp2;
+	E2 = tmp1 - tmp2;
+    } else {
+	R = sqrt(R);
+	tmp1 = 0.75*A*A - R*R - 2.0*B;
+	tmp2 = (A*B - 2.0*C - 0.25*A*A*A) / R;
+	D2 = tmp1 + tmp2 ;
+	E2 = tmp1 - tmp2;
+    }
+    
+    if (D2 >= 0.0) {
+	D2 = sqrt(D2);
+	roots[num++] = 0.5 * (A * -0.5 + R - D2);
+	roots[num++] = 0.5 * (A * -0.5 + R + D2);
+    }
+    if (E2 >= 0.0) {
+	E2 = sqrt(E2);
+	roots[num++] = 0.5 * (A * -0.5 - R - E2);
+	roots[num++] = 0.5 * (A * -0.5 - R + E2);
+    }
+
+    // There are either zero, two or four roots. 
+    // If zero, we are done now.
+    // If two, they are already sorted as per construction above and just needs
+    // pruning.
+    // If four, they needs sorting and then pruning.
+
+    double result = HUGE_DOUBLE;
+    int found_one = 0;
+    for(int j = 0; j < num; j++) {
+	if (roots[j] < result && roots[j] > cut) {
+	    result = roots[j];
+	    found_one = 1;
+	}
+    }
+    *root = result;
+    return found_one;
 }
 
 /**
@@ -306,6 +379,52 @@ int Math::solveCubic(double A, double B, double C, double* roots) {
 	roots[0] = S + T - A/3.0;
 	return 1;
     }
+}
+
+/**
+ * Solves the cubic equation and return smallest root
+ *
+ * \f[ x^3 + Ax^2 + Bx + C = 0 \f]
+ *
+ * Every cubic equation has at least one real root.
+ * 
+ * @param A, B, C real coefficients of the equation above.
+ * @param roots an array of three doubles where the roots are stored
+ * @return the number of real roots
+ * @see http://mathworld.wolfram.com/CubicEquation.html
+ */
+double Math::solveCubicSingle(double A, double B, double C, double* roots) {
+    double Q = (3.0 * B - A * A) * FRAC_1_9;
+    double R = (9.0 * A * B - 27.0 * C - 2.0 * A * A * A) * FRAC_1_54;
+    double D = Q * Q * Q + R * R;
+    if (IS_ZERO(D)) {
+	// D == 0 gives two (maybe equal) real roots.
+	if (IS_ZERO(R)) {
+	    roots[0] = -A / 3.0;
+	} else {
+	    double S = cbrt(R);
+	    roots[0] = 2*S - A/3.0;;
+	}
+    } else if (D < 0) {
+	// D < 0 gives three real roots
+	double phi = acos(R / sqrt(-(Q*Q*Q)));
+	double G = 2.0 * sqrt(-Q);
+	double H = A / 3.0;
+	roots[0] = G * cos(phi/3.0) - H;
+    } else {
+	// D > 0 gives only one real root
+	double sqrtD, S, T;
+	if (IS_ZERO(Q)) {
+	    S = cbrt(2*R);
+	    T = 0.0;
+	} else {
+	    sqrtD = sqrt(D);
+	    S = cbrt(R + sqrtD);
+	    T = cbrt(R - sqrtD);
+	}
+	roots[0] = S + T - A/3.0;
+    }
+    return roots[0];
 }
 
 /**

@@ -528,6 +528,11 @@ class solve_quartic_test : public Test {
 	    assertTrue(IS_EQUAL(roots[1],2));
 	    assertTrue(IS_EQUAL(roots[2],3));
 	    assertTrue(IS_EQUAL(roots[3],4));
+	    
+	    Math::solveQuarticSingle(-10,35,-50,24,0.0,roots);
+	    assertTrue(IS_EQUAL(roots[0],1));
+	    Math::solveQuarticSingle(-10,35,-50,24,2.5,roots);
+	    assertTrue(IS_EQUAL(roots[0],3));
 
 	    // x^4 - 11*x^3 + 44*x^2 - 76*x + 48 = (x-2)*(x-2)*(x-3)*(x-4)
 	    assertTrue(Math::solveQuartic(-11,44,-76,48,roots) == 3);
@@ -547,6 +552,11 @@ class solve_quartic_test : public Test {
 	    assertTrue(IS_EQUAL(roots[0],-5));
 	    assertTrue(IS_EQUAL(roots[1],5));
 
+	    Math::solveQuarticSingle(0,-50,0,625,0.0,roots);
+	    assertTrue(IS_EQUAL(roots[0],5));
+	    Math::solveQuarticSingle(0,-50,0,625,-10.0,roots);
+	    assertTrue(IS_EQUAL(roots[0],-5));
+
 	    // x^4 - 100*x^3 + 3500*x^2 - 50000*x + 240000 = (x-10)*(x-20)*(x-30)*(x-40)
 	    assertTrue(Math::solveQuartic(-100,3500,-50000,240000,roots) == 4);
 	    assertTrue(IS_EQUAL(roots[0],10));
@@ -560,10 +570,17 @@ class solve_quartic_test : public Test {
 	    //  x^4 
 	    assertTrue(Math::solveQuartic(0,0,0,0,roots) == 1);
 	    assertTrue(IS_EQUAL(roots[0],0));
+	    assertTrue(Math::solveQuarticSingle(0,0,0,0,-1,roots) != 0);
+	    assertTrue(IS_EQUAL(roots[0],0));
+	    assertTrue(Math::solveQuarticSingle(0,0,0,0,EPSILON,roots) == 0);
 
 	    // x^4 - 4*x^3 + 6*x^2 - 4*x + 1 =  (x-1)(x-1)(x-1)(x-1)
 	    assertTrue(Math::solveQuartic(-4,6,-4,1,roots) == 1);
 	    assertTrue(IS_EQUAL(roots[0],1));
+	    assertTrue(Math::solveQuarticSingle(-4,6,-4,1,0.0,roots) != 0);
+	    assertTrue(IS_EQUAL(roots[0],1));
+	    assertTrue(Math::solveQuarticSingle(-4,6,-4,1,2.0,roots) == 0);
+	    assertTrue(Math::solveQuarticSingle(-4,6,-4,1,-1.0,roots) != 0);
 
 	    // x^4 - 10*x^3 + 250*x - 625 = (x-5)*(x-5)*(x-5)*(x+5)
 	    assertTrue(Math::solveQuartic(-10,0,250,-625,roots) == 2);

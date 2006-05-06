@@ -21,11 +21,18 @@ class Math {
 
 	/// Solves quartic equation
 	static int solveQuartic(double A, double B, double C, double D, double* roots);
+	
+	/// Solves quartic equation
+	static int solveQuarticSingle(double A, double B, double C, double D, double cut, double* root);
+
 	/// Solves quartic equation (invalid)
 	static int solveQuartic_Schaum(double A, double B, double C, double D, double* roots);
 	
 	/// Solves cubic equation
 	static int solveCubic(double A, double B, double C, double* roots);
+	
+	/// Solves cubic equation and return smallest root
+	static double solveCubicSingle(double A, double B, double C, double* root);
 
 	/// Solves quadratic equation
 	static int solveQuadratic(double A, double B, double C, double* roots);
