@@ -60,6 +60,7 @@ class test_png : public Test {
 	    img = new Image(getLoadPrefix() + "/gfx/rgb.png");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
+	    cout << "Color: " << img->getRGBA(0,0) << endl;
 	    assertTrue(img->getRGBA(0,0) == RGBA(1.0,0,0,1.0));
 	    delete img;
 
