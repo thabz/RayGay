@@ -1,0 +1,91 @@
+<html>
+<head>
+   <title>RayGay Scheme reference manual</title>
+   <link rel="stylesheet" href="reference.css" type="text/css">
+</head>
+<body>
+<h1>RayGay Scheme reference manual</h1>
+
+<h2>Vector operations</h2>
+
+<div class="function">
+<h3>vdot</h3>
+<p><tt>(vdot <i>vector</i> <i>vector</i>) &rarr; <i>real</i></tt></p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>vcross</h3>
+<p><tt>(vcross <i>vector</i> <i>vector</i>) &rarr; <i>vector</i></tt></p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>rotate</h3>
+<p><tt>(rotate <i>vector</i> axis angle) &rarr; <i>vector</i></tt></p>
+<p><tt>(rotate <i>object</i> axis angle) &rarr; <i>object</i></tt></p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>translate</h3>
+<p><tt>(translate <i>vector</i> translation) &rarr; <i>vector</i></tt></p>
+<p><tt>(translate <i>object</i> translation) &rarr; <i>object</i></tt></p>
+<pre>
+</pre>
+</div>
+
+<h2>Paths</h2>
+
+<div class="function">
+<h3>make-circle</h3>
+<p><tt>(make-circle center radius normal) &rarr; <i>path</i></tt></p>
+<pre>
+(make-circle '(0 0 0) 10 '(0 0 1))
+</pre>
+</div>
+
+<div class="function">
+<h3>make-ellipse</h3>
+<p><tt>(make-ellipse center radius-x radius-y normal) &rarr; <i>path</i></tt></p>
+<pre>
+(make-ellipse '(0 0 0) 10 20 '(0 0 1))
+</pre>
+</div>
+
+<div class="function">
+<h3>make-spiral</h3>
+<p><tt>(make-spiral <i>path</i> radius windings offset) &rarr; <i>path</i></tt></p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-bezierspline</h3>
+<p><tt>(make-bezierspline vectors) &rarr; <i>path</i></tt></p>
+<pre>
+(make-bezierspline ('(0 0 0) '(10 10 10) '(20 20 10)))
+</pre>
+</div>
+
+<div class="function">
+<h3>point-on-path</h3>
+<p><tt>(point-on-path <i>path</i> t) &rarr; vector</tt></p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>tangen-to-path</h3>
+<p><tt>(point-on-path <i>path</i> t) &rarr; vector</tt></p>
+<pre>
+</pre>
+</div>
+
+<h2>Objects</h2>
+
+</body>
+</html>
