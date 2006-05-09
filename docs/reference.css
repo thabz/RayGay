@@ -1,4 +1,8 @@
 
+body {
+    font-family: sans;
+    background-color: #f8f8f1;
+}
 
 div.function {
     border: 1px dotted black;
@@ -11,6 +15,11 @@ div.function h3 {
     padding: 2px;	    
 }
 
-div.function pre {
+span.functiondef {
+    color: #484840;
+    font-weight: bold;	   
+}
 
+span.functiondef i {
+    color: #888880;
 }

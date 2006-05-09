@@ -10,30 +10,30 @@
 
 <div class="function">
 <h3>vdot</h3>
-<p><tt>(vdot <i>vector</i> <i>vector</i>) &rarr; <i>real</i></tt></p>
+<p><span class="functiondef">(vdot <i>vector</i> <i>vector</i>) &rarr; <i>real</i></tt></p>
 <pre>
 </pre>
 </div>
 
 <div class="function">
 <h3>vcross</h3>
-<p><tt>(vcross <i>vector</i> <i>vector</i>) &rarr; <i>vector</i></tt></p>
+<p><span class="functiondef">(vcross <i>vector</i> <i>vector</i>) &rarr; <i>vector</i></tt></p>
 <pre>
 </pre>
 </div>
 
 <div class="function">
 <h3>rotate</h3>
-<p><tt>(rotate <i>vector</i> axis angle) &rarr; <i>vector</i></tt></p>
-<p><tt>(rotate <i>object</i> axis angle) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(rotate <i>vector</i>:vector <i>real</i>:axis <i>real</i>:angle) &rarr; <i>vector</i></tt></p>
+<p><span class="functiondef">(rotate <i>object</i> axis angle) &rarr; <i>object</i></tt></p>
 <pre>
 </pre>
 </div>
 
 <div class="function">
 <h3>translate</h3>
-<p><tt>(translate <i>vector</i> translation) &rarr; <i>vector</i></tt></p>
-<p><tt>(translate <i>object</i> translation) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(translate <i>vector</i> translation) &rarr; <i>vector</i></tt></p>
+<p><span class="functiondef">(translate <i>object</i> translation) &rarr; <i>object</i></tt></p>
 <pre>
 </pre>
 </div>
@@ -42,7 +42,7 @@
 
 <div class="function">
 <h3>make-circle</h3>
-<p><tt>(make-circle center radius normal) &rarr; <i>path</i></tt></p>
+<p><span class="functiondef">(make-circle <i>vector</i>:center <i>real</i>:radius <i>vector</i>:normal) &rarr; <i>path</i></tt></p>
 <pre>
 (make-circle '(0 0 0) 10 '(0 0 1))
 </pre>
@@ -50,7 +50,7 @@
 
 <div class="function">
 <h3>make-ellipse</h3>
-<p><tt>(make-ellipse center radius-x radius-y normal) &rarr; <i>path</i></tt></p>
+<p><span class="functiondef">(make-ellipse <i>vector</i>:center <i>real</i>:radius<sub>x</sub> <i>real</i>:radius<sub>y</sub> <i>vector</i>:normal) &rarr; <i>path</i></tt></p>
 <pre>
 (make-ellipse '(0 0 0) 10 20 '(0 0 1))
 </pre>
@@ -58,14 +58,14 @@
 
 <div class="function">
 <h3>make-spiral</h3>
-<p><tt>(make-spiral <i>path</i> radius windings offset) &rarr; <i>path</i></tt></p>
+<p><span class="functiondef">(make-spiral <i>path</i>:path radius windings offset) &rarr; <i>path</i></tt></p>
 <pre>
 </pre>
 </div>
 
 <div class="function">
 <h3>make-bezierspline</h3>
-<p><tt>(make-bezierspline vectors) &rarr; <i>path</i></tt></p>
+<p><span class="functiondef">(make-bezierspline vectors) &rarr; <i>path</i></tt></p>
 <pre>
 (make-bezierspline ('(0 0 0) '(10 10 10) '(20 20 10)))
 </pre>
@@ -73,19 +73,76 @@
 
 <div class="function">
 <h3>point-on-path</h3>
-<p><tt>(point-on-path <i>path</i> t) &rarr; vector</tt></p>
+<p><span class="functiondef">(point-on-path <i>path</i>:path t) &rarr; vector</tt></p>
 <pre>
 </pre>
 </div>
 
 <div class="function">
-<h3>tangen-to-path</h3>
-<p><tt>(point-on-path <i>path</i> t) &rarr; vector</tt></p>
+<h3>tangent-to-path</h3>
+<p><span class="functiondef">(point-on-path <i>path</i>:path t) &rarr; vector</tt></p>
 <pre>
 </pre>
 </div>
 
 <h2>Objects</h2>
+
+<div class="function">
+<h3>make-sphere</h3>
+<p><span class="functiondef">(make-sphere <i>vector</i>:center <i>real</i>:radius <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-ellipsoid</h3>
+<p><span class="functiondef">(make-ellipsoid <i>vector</i>:center <i>vector</i>:radii <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-torus</h3>
+<p><span class="functiondef">(make-torus <i>real</i>:R <i>real</i>:r <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p>Makes a torus placed in (0,0,0).</p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-box</h3>
+<p><span class="functiondef">(make-box <i>vector</i>:corner<sub>1</sub> <i>vector</i>:corner<sub>2</sub> <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-solid-box</h3>
+<p><span class="functiondef">(make-solid-box <i>vector</i>:corner<sub>1</sub> <i>vector</i>:corner<sub>2</sub> <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p>This can be used for CSG operations.</p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-cylinder</h3>
+<p><span class="functiondef">(make-cylinder <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-uncapped-cylinder</h3>
+<p><span class="functiondef">(make-uncapped-cylinder <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p>This is slightly faster than <tt>make-cylinder</tt> if the caps aren't needed.</p>
+</div>
+
+<div class="function">
+<h3>bounding-box</h3>
+<p><span class="functiondef">(bounding-box <i>object</i>:object ) &rarr; <i>(vector,vector)</i></tt></p>
+<p>Returns two corners describing the axis-aligned boundingbox of the object.</p>
+</div>
+
 
 </body>
 </html>
