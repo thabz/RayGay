@@ -23,9 +23,15 @@
 </div>
 
 <div class="function">
+<h3>bounding-box</h3>
+<p><span class="functiondef">(bounding-box <i>object</i>:object ) &rarr; <i>(vector,vector)</i></tt></p>
+<p>Returns two corners describing the axis-aligned boundingbox of the object.</p>
+</div>
+
+<div class="function">
 <h3>rotate</h3>
-<p><span class="functiondef">(rotate <i>vector</i>:vector <i>real</i>:axis <i>real</i>:angle) &rarr; <i>vector</i></tt></p>
-<p><span class="functiondef">(rotate <i>object</i> axis angle) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(rotate <i>vector</i>:vector <i>vector</i>:axis <i>real</i>:angle) &rarr; <i>vector</i></tt></p>
+<p><span class="functiondef">(rotate <i>object</i>:object <i>vector</i>:axis <i>real</i>:angle) &rarr; <i>object</i></tt></p>
 <pre>
 </pre>
 </div>
@@ -66,9 +72,11 @@
 <div class="function">
 <h3>make-bezierspline</h3>
 <p><span class="functiondef">(make-bezierspline vectors) &rarr; <i>path</i></tt></p>
+<p>
 <pre>
-(make-bezierspline ('(0 0 0) '(10 10 10) '(20 20 10)))
+(make-bezierspline '((0 0 0) (10 10 10) (20 20 10)))
 </pre>
+</p>
 </div>
 
 <div class="function">
@@ -138,11 +146,43 @@
 </div>
 
 <div class="function">
-<h3>bounding-box</h3>
-<p><span class="functiondef">(bounding-box <i>object</i>:object ) &rarr; <i>(vector,vector)</i></tt></p>
-<p>Returns two corners describing the axis-aligned boundingbox of the object.</p>
+<h3>make-extrusion</h3>
+<p><span class="functiondef">(make-extrusion <i>path</i>:path <i>path</i>:circle <i>real</i>:twists <i>int</i>:segments <i>real</i>:twists <i>material</i>:material) &rarr; <i>object</i></tt></p>
 </div>
 
+<div class="function">
+<h3>make-heightfield</h3>
+<p><span class="functiondef">(make-heightfield <i>texture</i>:heightmap <i>vector</i>:size<sub>xyz</sub> <i>int</i>:width-divisions <i>int</i>:depth-divisions  <i>material</i>:material) &rarr; <i>object</i></tt></p>
+</div>
+
+<div class="function">
+<h3>make-union</h3>
+<p><span class="functiondef">(make-union <i>object</i>:solid<sub>1</sub> <i>object</i>:solid<sub>2</sub> ... <i>object</i>:solid<sub>n</sub> <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(make-union <i>object</i>:solid<sub>1</sub> <i>object</i>:solid<sub>2</sub> ... <i>object</i>:solid<sub>n</sub>) &rarr; <i>object</i></tt></p>
+</div>
+
+<div class="function">
+<h3>make-difference</h3>
+<p><span class="functiondef">(make-difference <i>object</i>:solid<sub>L</sub> <i>object</i>:solid<sub>R</sub> <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(make-difference <i>object</i>:solid<sub>L</sub> <i>object</i>:solid<sub>R</sub>) &rarr; <i>object</i></tt></p>
+</div>
+
+<div class="function">
+<h3>make-intersection</h3>
+<p><span class="functiondef">(make-intersection <i>object</i>:solid<sub>L</sub> <i>object</i>:solid<sub>R</sub> <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(make-intersection <i>object</i>:solid<sub>L</sub> <i>object</i>:solid<sub>R</sub>) &rarr; <i>object</i></tt></p>
+</div>
+
+<div class="function">
+<h3>make-bezierpatch</h3>
+<p><span class="functiondef">(make-bezierpatch (<i>vector</i>:point<sub>1</sub> ... <i>vector</i>:point<sub>16</sub>) <i>int</i>:resolution<sub>x</sub> <i>int</i>:resolution<sub>y</sub> <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p>Makes a mesh of 2 &times; resolution<sub>x</sub> &times; resolution<sub>y</sub> triangles.</p>
+</div>
+
+<h2>Materials</h2>
+
+<hr>
+$Id$ Jesper Christensen, 2006.
 
 </body>
 </html>

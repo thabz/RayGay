@@ -5,11 +5,17 @@ body {
 }
 
 div.function {
-    border: 1px dotted black;
+    border: 1px solid #888880;
+    margin: 0.8em;	    
+    padding: 0;	    
+}
+
+div.function p {
+    padding: 0 0 0 0.5em;    
 }
 
 div.function h3 {
-    background-color: black;
+    background-color: #888880;
     color: white;
     margin: 0 0 0 0;
     padding: 2px;	    
