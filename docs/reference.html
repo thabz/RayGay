@@ -98,6 +98,7 @@
 <div class="function">
 <h3>make-sphere</h3>
 <p><span class="functiondef">(make-sphere <i>vector</i>:center <i>real</i>:radius <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(make-sphere <i>vector</i>:center <i>real</i>:radius) &rarr; <i>object</i></tt></p>
 <pre>
 </pre>
 </div>
@@ -105,6 +106,7 @@
 <div class="function">
 <h3>make-ellipsoid</h3>
 <p><span class="functiondef">(make-ellipsoid <i>vector</i>:center <i>vector</i>:radii <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(make-ellipsoid <i>vector</i>:center <i>vector</i>:radii) &rarr; <i>object</i></tt></p>
 <pre>
 </pre>
 </div>
@@ -112,6 +114,7 @@
 <div class="function">
 <h3>make-torus</h3>
 <p><span class="functiondef">(make-torus <i>real</i>:R <i>real</i>:r <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(make-torus <i>real</i>:R <i>real</i>:r) &rarr; <i>object</i></tt></p>
 <p>Makes a torus placed in (0,0,0).</p>
 <pre>
 </pre>
@@ -127,6 +130,7 @@
 <div class="function">
 <h3>make-solid-box</h3>
 <p><span class="functiondef">(make-solid-box <i>vector</i>:corner<sub>1</sub> <i>vector</i>:corner<sub>2</sub> <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(make-solid-box <i>vector</i>:corner<sub>1</sub> <i>vector</i>:corner<sub>2</sub>) &rarr; <i>object</i></tt></p>
 <p>This can be used for CSG operations.</p>
 <pre>
 </pre>
@@ -135,6 +139,7 @@
 <div class="function">
 <h3>make-cylinder</h3>
 <p><span class="functiondef">(make-cylinder <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(make-cylinder <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius) &rarr; <i>object</i></tt></p>
 <pre>
 </pre>
 </div>
@@ -142,7 +147,23 @@
 <div class="function">
 <h3>make-uncapped-cylinder</h3>
 <p><span class="functiondef">(make-uncapped-cylinder <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(make-uncapped-cylinder <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius) &rarr; <i>object</i></tt></p>
 <p>This is slightly faster than <tt>make-cylinder</tt> if the caps aren't needed.</p>
+</div>
+
+<div class="function">
+<h3>make-cone</h3>
+<p><span class="functiondef">(make-cone <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius<sub>begin</sub> <i>real</i>:radius<sub>end</sub> <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(make-cone <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius<sub>begin</sub> <i>real</i>:radius<sub>end</sub>) &rarr; <i>object</i></tt></p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-uncapped-cone</h3>
+<p><span class="functiondef">(make-uncapped-cone <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius<sub>begin</sub> <i>real</i>:radius<sub>end</sub> <i>material</i>:material) &rarr; <i>object</i></tt></p>
+<p><span class="functiondef">(make-uncapped-cone <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius<sub>begin</sub> <i>real</i>:radius<sub>end</sub>) &rarr; <i>object</i></tt></p>
+<p>This is slightly faster than <tt>make-cone</tt> if the caps aren't needed.</p>
 </div>
 
 <div class="function">
