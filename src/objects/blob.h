@@ -12,6 +12,7 @@ class BlobAtom
 {
     public:
 	BlobAtom(double radius, double weight);
+	virtual ~BlobAtom() {};
 	virtual AABox getBoundingBox() const = 0;
 	virtual double squaredDistToPoint(const Vector& point) const = 0;
 	virtual int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const = 0;
