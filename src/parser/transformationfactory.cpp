@@ -21,6 +21,13 @@ SCM TransformationFactory::translate(SCM s_obj, SCM s_translation)
     return transform(s_obj, matrix, "translate");
 }
 
+SCM TransformationFactory::scale(SCM s_obj, SCM s_scale) 
+{
+    Vector scale = scm2vector(s_scale, "scale", 2);
+    Matrix matrix = Matrix::matrixScale(scale);
+    return transform(s_obj, matrix, "scale");
+}
+
 /**
  * Transforms a scene object, a vector or a list of sceneobjects.
  */
@@ -64,4 +71,5 @@ void TransformationFactory::register_procs()
 {
     scm_c_define_gsubr("rotate",3,0,0,(SCM (*)()) TransformationFactory::rotate);
     scm_c_define_gsubr("translate",2,0,0,(SCM (*)()) TransformationFactory::translate);
+    scm_c_define_gsubr("scale",2,0,0,(SCM (*)()) TransformationFactory::scale);
 }

@@ -11,6 +11,7 @@ class TransformationFactory {
     public:
 	static SCM rotate(SCM obj, SCM axis, SCM angle);
 	static SCM translate(SCM obj, SCM translation);
+	static SCM scale(SCM obj, SCM scale);
 
 	static void register_procs();
 
