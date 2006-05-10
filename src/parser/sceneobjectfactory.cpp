@@ -10,6 +10,7 @@
 #include "objects/box.h"
 #include "objects/solidbox.h"
 #include "objects/cylinder.h"
+#include "objects/cone.h"
 #include "objects/torus.h"
 #include "objects/extrusion.h"
 #include "objects/heightfield.h"
@@ -119,6 +120,40 @@ SCM make_uncapped_cylinder(SCM s_begin, SCM s_end, SCM s_radius, SCM s_material)
     }
     Cylinder* cylinder = new Cylinder(begin, end, radius, false, material);
     return sceneobject2scm(cylinder);
+}
+
+SCM make_cone(SCM s_begin, SCM s_end, SCM s_radius_begin, SCM s_radius_end, SCM s_material) 
+{
+    char* proc = "make-cone";
+    Vector begin = scm2vector(s_begin, proc, 1);
+    Vector end = scm2vector(s_end, proc, 2);
+    double radius_begin = scm_num2double(s_radius_begin, 3, proc);
+    double radius_end = scm_num2double(s_radius_end, 4, proc);
+    Material* material;
+    if (SCM_UNBNDP (s_material) || SCM_FALSEP (s_material)) {
+        material = NULL;
+    } else {
+	material = scm2material(s_material,proc,5);
+    }
+    Cone* cone = new Cone(begin, end, radius_begin, radius_end, true, material);
+    return sceneobject2scm(cone);
+}
+
+SCM make_uncapped_cone(SCM s_begin, SCM s_end, SCM s_radius_begin, SCM s_radius_end, SCM s_material) 
+{
+    char* proc = "make-uncapped-cone";
+    Vector begin = scm2vector(s_begin, proc, 1);
+    Vector end = scm2vector(s_end, proc, 2);
+    double radius_begin = scm_num2double(s_radius_begin, 3, proc);
+    double radius_end = scm_num2double(s_radius_end, 4, proc);
+    Material* material;
+    if (SCM_UNBNDP (s_material) || SCM_FALSEP (s_material)) {
+        material = NULL;
+    } else {
+	material = scm2material(s_material,proc,5);
+    }
+    Cone* cone = new Cone(begin, end, radius_begin, radius_end, false, material);
+    return sceneobject2scm(cone);
 }
 
 /**
@@ -389,6 +424,10 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) make_cylinder);
     scm_c_define_gsubr("make-uncapped-cylinder",3,1,0,
 	    (SCM (*)()) make_uncapped_cylinder);
+    scm_c_define_gsubr("make-cone",4,1,0,
+	    (SCM (*)()) make_cone);
+    scm_c_define_gsubr("make-uncapped-cone",4,1,0,
+	    (SCM (*)()) make_uncapped_cone);
     scm_c_define_gsubr("make-torus",2,1,0,
 	    (SCM (*)()) make_torus);
     scm_c_define_gsubr("make-extrusion",6,0,0,
