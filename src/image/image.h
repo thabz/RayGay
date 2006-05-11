@@ -34,7 +34,8 @@ class Image {
 	/// Gets a pixel
 	RGBA getRGBA(const int x, const int y) const { 
 	    IMAGE_FLOAT* p = &data[4*(y*width + x)];
-	    return RGBA(*(p++),*(p++),*(p++),*p);
+	    return RGBA(p[0], p[1], p[2], p[3]);
+	//    return RGBA(*(p++),*(p++),*(p++),*p);
 	};
 	/// Saves this image 
 	void save(const std::string& filename);
