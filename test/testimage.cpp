@@ -42,26 +42,33 @@ class test_png : public Test {
     public:
 	void run() {
 	    // Test basic save and load
-	    RGB color = RGB(1.0,0.0,1.0);
+	    RGBA color = RGBA(1.0,0.0,0.5,1.0);
 
 	    Image* img = new Image(10,20);
 	    img->setRGBA(5,15,color);
+	    img->setRGBA(0,0,color);
+	    assertTrue(img->getRGBA(5,15) == color);
+	    assertTrue(img->getRGBA(0,0) == color);
 	    img->save(getLoadPrefix() + "/test.png");
 	    Image* img2 = Image::load(getLoadPrefix() + "/test.png");
 	    assertTrue(img2->getWidth() == 10);
 	    assertTrue(img2->getHeight() == 20);
 	    //cout << RGB(img2->getRGBA(5,15)) << endl;
-	    assertTrue(RGB(img2->getRGBA(5,15)) == color);
-	    remove((getLoadPrefix() + "/test.png").c_str());
+	    assertTrue(img2->getRGBA(5,15) == color);
+	    assertTrue(img2->getRGBA(0,0) == color);
+	    //remove((getLoadPrefix() + "/test.png").c_str());
 	    delete img;
 	    delete img2;
 
 	    // Load 24 bit png 
 	    img = new Image(getLoadPrefix() + "/gfx/rgb.png");
+	    img->save(getLoadPrefix() + "/rgb-kaj.png");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
 	    cout << "Color: " << img->getRGBA(0,0) << endl;
-	    assertTrue(img->getRGBA(0,0) == RGBA(1.0,0,0,1.0));
+	    cout << "Color: " << img->getRGBA(9,9) << endl;
+	    assertTrue(img->getRGBA(0,0) == RGB(1.0,0,0));
+	    assertTrue(img->getRGBA(9,9) == RGB(1.0,0,0));
 	    delete img;
 
 	    // Test load of png with palette
@@ -85,7 +92,7 @@ class test_tga : public Test {
 	    assertTrue(img2->getWidth() == 10);
 	    assertTrue(img2->getHeight() == 20);
 	    assertTrue(RGB(img2->getRGBA(5,15)) == color);
-	    remove((getLoadPrefix() + "/test.tga").c_str());
+	    //remove((getLoadPrefix() + "/test.tga").c_str());
 	    delete img;
 	    delete img2;
 	}
