@@ -1,12 +1,13 @@
 
 (load "globals.scm")
 (load "objects.scm")
+(load "lib/raygay.scm")
 
-(set! image-size '(640 480))
-(set! background '(0.3 0.6 0.7))
+(set-image-size '(640 480))
+(set-background '(0.3 0.6 0.7))
 
-(set! renderer "raytracer")
-(set! camera 
+(set-renderer "raytracer")
+(set-camera 
   (make-pinhole-camera 
     '( "pos" (1000 1000 2000)
        "lookat" (0 100 0)
@@ -35,16 +36,14 @@
        "specpow" 30)))
 
 
-(set! scene (list (make-pointlight '(500 1300 1300))))
-(append! scene (list (make-pointlight '(-500 1500 1300))))
+(add-to-scene (make-pointlight '(500 1300 1300)))
+(add-to-scene (make-pointlight '(-500 1500 1300)))
 
-(append!
-  scene 
-  (list 
+(add-to-scene
     (make-box 
       '(-1700 -51 -1700) 
       '(1700 1 1700) 
-      brown)))
+      brown))
 
 (define spiral
  (make-spiral
@@ -52,7 +51,6 @@
   100
   5 0.0))
 
-(append!
- scene
+(add-to-scene
  (make-necklace spiral 200 
   (lambda () (make-sphere '(0 0 0) 20 chrome))))
