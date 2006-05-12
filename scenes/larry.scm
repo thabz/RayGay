@@ -40,24 +40,20 @@
 
 (define num 48)
 
-(let itery ((y (* -1 num)))
-  (if (not(= y num))
-    (begin 
-      (let iterx ((x (* -1 num)))
-	(if (not(= x num))
-	  (begin
-	   (add-to-scene
-		(make-sphere
-		  (list (* x 20) (* y -20) 0) 15.0
-		  (make-material 
-		    (list 
-		      'diffuse 
-		      (get-pixel 
-			img 
-			(/ (+ x num) (* 2 num)) 
-			(/ (+ y num) (* 2 num)))
-		      'kd 1.0
-		      'ks 0.0))))
-	    (iterx (+ x 1)))))
-      (itery (+ y 1)))))
+(do ((y (- num) (+ 1 y)))
+  ((= y num))
+  (do ((x (- num) (+ 1 x)))
+    ((= x num))
+    (add-to-scene
+      (make-sphere
+	(list (* x 20) (* y -20) 0) 15.0
+	(make-material 
+	  (list 
+	    'diffuse 
+	    (get-pixel 
+	      img 
+	      (/ (+ x num) (* 2 num)) 
+	      (/ (+ y num) (* 2 num)))
+	    'kd 1.0
+	    'ks 0.0))))))
 
