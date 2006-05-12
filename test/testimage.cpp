@@ -38,6 +38,9 @@ class test_rgba : public Test {
 
 	    c = RGB(1.0,2.0,3.0);
 	    assertTrue(c.a() == 1);
+
+	    assertTrue(RGB(1.0,2.0,3.0) == RGBA(1.0,2.0,3.0,1.0));
+	    assertTrue(RGBA(1.0,2.0,3.0,1.0) == RGB(1.0,2.0,3.0));
 	}
 };
 
