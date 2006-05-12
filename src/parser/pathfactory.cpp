@@ -6,6 +6,7 @@
 #include "parser/wrapper.h"
 #include "paths/circle.h"
 #include "paths/ellipse.h"
+#include "paths/linesegment.h"
 #include "paths/bezierspline.h"
 #include "paths/catmullromspline.h"
 #include "paths/spiral.h"
@@ -40,6 +41,19 @@ SCM PathFactory::make_ellipse(SCM s_center, SCM s_radius1, SCM s_radius2, SCM s_
     double radius1 = scm_num2double(s_radius1,3,proc);
     double radius2 = scm_num2double(s_radius2,4,proc);
     return path2scm(new Ellipse(center, radius1, radius2, normal));
+}
+
+/**
+ * Linesegment-factory.
+ * 
+ * Usage:
+ *  (make-linesegment from to) -> path
+ */
+SCM PathFactory::make_linesegment(SCM s_from, SCM s_to) {
+    char* proc = "make-linesegment";
+    Vector from = scm2vector(s_from, proc, 1);
+    Vector to = scm2vector(s_to, proc, 2);
+    return path2scm(new Linesegment(from, to));
 }
 
 /**
@@ -91,6 +105,7 @@ SCM PathFactory::tangent_to_path(SCM s_path, SCM s_t) {
 void PathFactory::register_procs() {
     scm_c_define_gsubr("make-circle",3,0,0,(SCM (*)()) PathFactory::make_circle);
     scm_c_define_gsubr("make-ellipse",4,0,0,(SCM (*)()) PathFactory::make_ellipse);
+    scm_c_define_gsubr("make-linesegment",2,0,0,(SCM (*)()) PathFactory::make_linesegment);
     scm_c_define_gsubr("make-spiral",4,0,0,(SCM (*)()) PathFactory::make_spiral);
     scm_c_define_gsubr("make-bezierspline",1,0,0,(SCM (*)()) PathFactory::make_bezierspline);
     scm_c_define_gsubr("point-on-path",2,0,0,(SCM (*)()) PathFactory::point_on_path);
