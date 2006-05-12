@@ -1,11 +1,12 @@
 
+(load "lib/raygay.scm")
 (load "lib/objects/make-pill.scm")
 
-(set! image-size '(800 600))
-(set! background '(0.3 0.6 0.7))
+(set-image-size '(800 600))
+(set-background '(0.3 0.6 0.7))
 
-(set! renderer "raytracer")
-(set! camera 
+(set-renderer "raytracer")
+(set-camera 
   (make-pinhole-camera 
     '( pos (1000 1000 2000)
        lookat (0 100 0)
@@ -44,16 +45,14 @@
        'specpow 30)))
 
 
-(set! scene (list (make-pointlight '(500 2600 1300))))
-(append! scene (list (make-pointlight '(-500 2600 1300))))
+(add-to-scene (make-pointlight '(500 2600 1300)))
+(add-to-scene (make-pointlight '(-500 2600 1300)))
 
-(append!
-  scene 
-  (list 
+(add-to-scene
     (make-box 
       '(-1700 -51 -1700) 
       '(1700 -1 1700) 
-      brown)))
+      brown))
 
 (define PI 3.141592654)
 
@@ -66,7 +65,5 @@
 
    )))
 
-(append! scene
-	 (list 
-	   (make-parametrized-surface func 10 100 #f #f globus-mat)))
+(add-to-scene (make-parametrized-surface func 10 100 #f #f globus-mat))
 
