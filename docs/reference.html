@@ -63,6 +63,13 @@
 </div>
 
 <div class="function">
+<h3>make-linesegment</h3>
+<p><span class="functiondef">(make-linesegment <i>vector</i>:from <i>vector</i>:to) &rarr; <i>path</i></tt></p>
+<pre>
+</pre>
+</div>
+
+<div class="function">
 <h3>make-spiral</h3>
 <p><span class="functiondef">(make-spiral <i>path</i>:path radius windings offset) &rarr; <i>path</i></tt></p>
 <pre>
@@ -202,8 +209,31 @@
 
 <h2>Materials</h2>
 
+<h2>Scheme cheatsheet</h2>
+
+<h3>Iteration with <tt>do</tt></h3>
+
+<pre>
+(do ((x 0 (+ x 1)))
+  ((= x 10) x)
+    (display x)
+    (newline))
+
+(do ((var1 init1 step1)...)
+    (test expr ...)
+   command ...)
+</pre>
+The init expressions are assigned to the vars. Each iteration begins by
+evaluating test. 
+
+If the result is false the commands are run, then the steps evaluated and assigned to the vars and then the next iteration begins. If the result is true the exprs are evaluated and the last one is returned as the value of the do-expression.
+
+A step can the omitted. The init then works as a simple assignment of local vars.
+
+The example prints the numbers 0 to 10 and returns x which has the value 10.
 <hr>
 $Id$ Jesper Christensen, 2006.
+
 
 </body>
 </html>
