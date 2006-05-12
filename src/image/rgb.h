@@ -1,6 +1,6 @@
 
-#ifndef RGB_H
-#define RGB_H
+#ifndef IMAGE_RGB_H
+#define IMAGE_RGB_H
 
 #include <iostream>
 #include "math/constants.h"

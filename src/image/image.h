@@ -6,7 +6,7 @@
 #include "rgb.h"
 #include "rgba.h"
 
-#define IMAGE_FLOAT float
+#define IMAGE_FLOAT double 
 
 class Vector2;
 

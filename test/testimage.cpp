@@ -35,6 +35,9 @@ class test_rgba : public Test {
 	    assertTrue(c == RGBA(2.0,4.0,6.0,8.0));
 	    c = c / 2.0;
 	    assertTrue(c == RGBA(1.0,2.0,3.0,4.0));
+
+	    c = RGB(1.0,2.0,3.0);
+	    assertTrue(c.a() == 1);
 	}
 };
 
@@ -42,7 +45,7 @@ class test_png : public Test {
     public:
 	void run() {
 	    // Test basic save and load
-	    RGBA color = RGBA(1.0,0.0,0.5,1.0);
+	    RGBA color = RGBA(1.0,0.0,0.0,1.0);
 
 	    Image* img = new Image(10,20);
 	    img->setRGBA(5,15,color);
@@ -53,10 +56,10 @@ class test_png : public Test {
 	    Image* img2 = Image::load(getLoadPrefix() + "/test.png");
 	    assertTrue(img2->getWidth() == 10);
 	    assertTrue(img2->getHeight() == 20);
-	    //cout << RGB(img2->getRGBA(5,15)) << endl;
+	    //cout << img2->getRGBA(5,15) << endl;
 	    assertTrue(img2->getRGBA(5,15) == color);
 	    assertTrue(img2->getRGBA(0,0) == color);
-	    //remove((getLoadPrefix() + "/test.png").c_str());
+	    remove((getLoadPrefix() + "/test.png").c_str());
 	    delete img;
 	    delete img2;
 
@@ -65,8 +68,6 @@ class test_png : public Test {
 	    img->save(getLoadPrefix() + "/rgb-kaj.png");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
-	    cout << "Color: " << img->getRGBA(0,0) << endl;
-	    cout << "Color: " << img->getRGBA(9,9) << endl;
 	    assertTrue(img->getRGBA(0,0) == RGB(1.0,0,0));
 	    assertTrue(img->getRGBA(9,9) == RGB(1.0,0,0));
 	    delete img;
@@ -92,7 +93,7 @@ class test_tga : public Test {
 	    assertTrue(img2->getWidth() == 10);
 	    assertTrue(img2->getHeight() == 20);
 	    assertTrue(RGB(img2->getRGBA(5,15)) == color);
-	    //remove((getLoadPrefix() + "/test.tga").c_str());
+	    remove((getLoadPrefix() + "/test.tga").c_str());
 	    delete img;
 	    delete img2;
 	}

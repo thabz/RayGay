@@ -3,11 +3,14 @@
 #define IMAGE_RGBA_H
 
 #include "image/rgb.h"
+#include <iostream>
 
 /**
  * A color with an alpha channel.
  */
 class RGBA : public RGB {
+    friend std::ostream & operator<< (std::ostream &os, const RGBA &x);
+
     public:
 	/// Default constructor
 	RGBA();

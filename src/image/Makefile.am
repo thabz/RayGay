@@ -5,6 +5,7 @@ noinst_LTLIBRARIES = libimage.la
 
 libimage_la_SOURCES = image.cpp \
                      rgb.cpp \
+                     rgba.cpp \
                      texture.cpp \
 		     imageio_tga.cpp \
 		     imageio_hdri.cpp \
