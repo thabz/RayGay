@@ -4,9 +4,6 @@
 
 (load "lib/raygay.scm")
 
-(set-image-size '(640 480))
-(set-background '(0.1 0.1 0.3))
-
 (set-renderer "photonrenderer")
 (set-camera 
   (make-pinhole-camera 
@@ -24,6 +21,7 @@
     finalgatherrays 	0
     cachetolerance 	0.1))
 
+(set-image-size '(1600 1200))
 (set-image-size '(640 480))
 (set-background '(0.0 0.0 0.0))
 
