@@ -71,5 +71,7 @@
   (make-extrusion 
    (make-spiral (make-circle '(0 300 0) 400 '(0 1 0))
    200 8 0)
-   50 12 100 red))
+   (make-circle '(0 0 0) 50 '(0 0 1))
+   0
+   12 100 red))
 
