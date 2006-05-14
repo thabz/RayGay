@@ -297,7 +297,7 @@ double AABox::area() const {
     double w = _c2[0] - _c1[0];
     double h = _c2[1] - _c1[1];
     double d = _c2[2] - _c1[2];
-    return 2.0*w*h + 2.0*w*d + 2.0*h*d;
+    return 2.0 * (w*h + w*d + h*d);
 }
 
 /**
