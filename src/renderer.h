@@ -18,7 +18,7 @@ class KdTree;
 class Material;
 class Vector2;
 class QMCSequence;
-
+class Sampler;
 
 ///  An abstract class all renderers must implement.
 class Renderer {
@@ -34,39 +34,19 @@ class Renderer {
 	/// Destructor
 	virtual ~Renderer();
 
-
-    private:
 	/// The public render-method uses this to render the image. Subclasses must implement this.
 	virtual RGBA getPixel(const Vector2& c) = 0; 
 
-	class PixelBlock {
-	    public:
-		PixelBlock(const uint32_t size);
-		void cleanup();
-		void reset();
-		bool isActive(const int x, const int y) const { return active[y*size + x]; };
-		void setColor(const int x, const int y, const RGBA& c) { color[y*size + x] = c; active[y*size + x] = true;};
-		RGBA getColor(const int x, const int y) const { return color[y*size + x]; };
-	    private:
-	        RGBA* color;
-		bool* active;
-		uint32_t size;
-		uint32_t size_squared;
-	};
-	
+    private:
+
 	/// Process a renderjob
 	void render(const RenderJob& job);
 	void renderPreview(const RenderJob& job);
-	void renderFull(const RenderJob& job);
 
-	RGBA getSubPixel(uint32_t curLevel, const Vector2& center, PixelBlock *block, double size, int x1, int y1, int x2, int y2);
-	void prepareCurRow(std::vector<PixelBlock>* cur_row, std::vector<PixelBlock>* prev_row, uint32_t blocksize);
-	void prepareCurBlock(PixelBlock* cur_block, PixelBlock* prev_block, uint32_t blocksize);
+	Sampler* sampler;
 
 	bool aa_enabled;
 	uint32_t aa_depth;
-	std::vector<PixelBlock> row1;
-	std::vector<PixelBlock> row2;
 
 	Image* img;
 	RenderJobPool* job_pool;

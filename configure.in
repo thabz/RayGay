@@ -133,7 +133,9 @@ AC_OUTPUT(Makefile \
 	  src/cameras/Makefile \
 	  src/shaders/Makefile \
 	  src/collections/Makefile \
+	  src/samplers/Makefile \
 	  scheme/Makefile	\
+	  scenes/Makefile	\
 	  test/Makefile		\
 	  test/gfx/Makefile	\
 	  test/scenes/Makefile)

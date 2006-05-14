@@ -23,6 +23,8 @@
 ;; Fixed SAH: 0:25
 ;; Omrokering i Triangle::_fastIntersect: 0:22
 
+;; Rays per pixel: 3.92 (1203260 primary rays, 3867820 total rays)
+
 (load "lib/raygay.scm")
 
 (set-image-size '(640 480))
