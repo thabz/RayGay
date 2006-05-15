@@ -12,6 +12,10 @@ class CameraFactory {
     public:
 	static SCM make_pinhole_camera(SCM s_options);
 
+	static SCM make_whitted_adaptive_sampler(SCM s_options);
+
+	static SCM make_uniform_jitter_sampler(SCM s_options);
+
 	static void register_procs();
 
 };

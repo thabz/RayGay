@@ -56,6 +56,9 @@ SCM CameraFactory::make_pinhole_camera(SCM s_options) {
 	} else if (key == "aa") {
 	    int aa = scm_num2int(s_value,0,"");
 	    camera->enableAdaptiveSupersampling(aa);
+	} else if (key == "sampler") {
+	    Sampler* s = scm2sampler(s_value, "make-pinhole-camera", 2+2*i);
+	    camera->setSampler(s);
 	} else if (key == "dof") {
 	    SCM scms[3];
 	    for(uint32_t i = 0; i < 3; i++) {
@@ -72,7 +75,16 @@ SCM CameraFactory::make_pinhole_camera(SCM s_options) {
     return camera2scm(camera);
 }
 
+SCM CameraFactory::make_uniform_jitter_sampler(SCM s_options) {
+    return s_options;
+}
+
+SCM CameraFactory::make_whitted_adaptive_sampler(SCM s_options) {
+    return s_options;
+}
 
 void CameraFactory::register_procs() {
     scm_c_define_gsubr("make-pinhole-camera",1,0,0,(SCM (*)()) CameraFactory::make_pinhole_camera);
+    scm_c_define_gsubr("make-whitted-adaptive-sampler",1,0,0,(SCM (*)()) CameraFactory::make_whitted_adaptive_sampler);
+    scm_c_define_gsubr("make-uniform-jitter-sampler",1,0,0,(SCM (*)()) CameraFactory::make_uniform_jitter_sampler);
 }

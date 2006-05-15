@@ -35,6 +35,17 @@ bool isMaterial(SCM object_smob) {
     }
 }
 
+bool isSampler(SCM object_smob) 
+{
+    if (isWrappedObject(object_smob)) {
+	struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
+	return o->type == SAMPLER;
+    } else {
+	return false;
+    }
+}
+
+
 bool isSceneObject(SCM object_smob) 
 {
     if (isWrappedObject(object_smob)) {
@@ -67,6 +78,14 @@ SCM sceneobject2scm(SceneObject* sceneobject) {
     object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
     object->sceneobject = sceneobject;
     object->type = SCENEOBJECT;
+    SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
+}
+
+SCM sampler2scm(Sampler* sampler) {
+    struct wrapped_object* object;
+    object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
+    object->sampler = sampler;
+    object->type = SAMPLER;
     SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
 }
 

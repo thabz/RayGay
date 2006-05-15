@@ -5,9 +5,9 @@
 #include "math/vector.h"
 #include "math/vector2.h"
 #include "math/halton.h"
+#include "samplers/sampler.h"
 
 class Ray;
-class Sampler;
 
 /**
  * The abstract superclass of all cameras.
