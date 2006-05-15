@@ -24,6 +24,8 @@ class WhittedAdaptiveFactory : public SamplerFactory
  * If they return different colors, we'll subdivide the pixel into smaller
  * regions and treat the subpixel just as we did the entire pixel.
  * The number of subdivisions can be stopped at some maximum level.
+ * 
+ * TODO: contrastthreshold shoud be an option. "0.025" could be default.
  *
  * @see Whitted, Turner, "An Improved Illumination Model for Shaded Display", Comm.
 ACM, 23(6), June 1980, pp. 343-349.

@@ -5,6 +5,9 @@
 #include "renderjobs.h"
 #include "math/vector2.h"
 
+//#define aa_threshhold 0.02
+#define aa_threshhold 0.3
+
 WhittedAdaptive::WhittedAdaptive(Image* image, Renderer* renderer, uint32_t aa_depth) : Sampler(image,renderer) 
 {
     img_w = image->getWidth();
@@ -158,6 +161,9 @@ RGBA WhittedAdaptive::getSubPixel(uint32_t curLevel, const Vector2& center, Pixe
 	c4 = block->getColor(x2,y2);
     }
 
+    // TODO: Use brightness instead of sqrDistance below
+    // fabs(c2.brightness() - c1.brightness()) >= aa_threshold
+    // with aa_threshold = 0.025
     
     // Check if we need further supersampling
     if (curLevel <= aa_depth) {

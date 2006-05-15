@@ -9,9 +9,6 @@
 #include "renderersettings.h"
 #include "renderjobs.h"
 
-//#define aa_threshhold 0.02
-#define aa_threshhold 0.3
-
 class RGB;
 class Image;
 class KdTree;
