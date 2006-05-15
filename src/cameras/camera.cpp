@@ -7,6 +7,7 @@ Camera::Camera() {
     aa_enabled = false;
     dof_enabled = false;
     initialized = false;
+    sampler = NULL;
 }
 
 /**
@@ -27,6 +28,7 @@ Camera::Camera(Vector position, Vector lookAt, Vector up, double fieldOfView, in
     this->position = position;
     this->field_of_view_radians = DEG2RAD(fieldOfView);
     init();
+    this->sampler = NULL;
 }
 
 Camera::~Camera() {

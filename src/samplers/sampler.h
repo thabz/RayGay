@@ -18,6 +18,7 @@ class Sampler
 	virtual ~Sampler();
 
 	void abort();
+	virtual Sampler* clone() = 0;
 
     protected:
 	void setPixel(int x, int y, const RGBA& color);
@@ -25,7 +26,6 @@ class Sampler
 	RGBA sample(const Vector2& pos);
 	bool aborting;
 
-    private:
 	Image* image;
 	Renderer* renderer;
 };

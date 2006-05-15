@@ -7,6 +7,7 @@
 #include "math/halton.h"
 
 class Ray;
+class Sampler;
 
 /**
  * The abstract superclass of all cameras.
@@ -68,8 +69,17 @@ class Camera {
 	/// Project a 3D point to the 2D screen
 	Vector2 project(const Vector& p) const;
 
+        Sampler* getSamplerClone() {
+	    return sampler->clone();
+	}
+
+	void setSampler(Sampler* sampler) {
+	    this->sampler = sampler;
+	}
+	
     private:
 	void init();
+	Sampler* sampler;
 
     protected:
 	/// Get a ray going through the screen

@@ -11,6 +11,7 @@ class UniformJitter : public Sampler
 
 	virtual void render(const RenderJob& job);
 
+	Sampler* clone();
 };
 
 #endif

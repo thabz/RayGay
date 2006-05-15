@@ -9,6 +9,7 @@ class NonAASampler : public Sampler
     public:
 	NonAASampler(Image* image, Renderer* renderer);
 	void render(const RenderJob& job);
+	Sampler* clone();
 };
 
 #endif

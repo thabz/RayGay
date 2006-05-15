@@ -23,6 +23,7 @@ class WhittedAdaptive : public Sampler
     public:
 	WhittedAdaptive(Image* image, Renderer* renderer, uint32_t aa_depth);
 	~WhittedAdaptive();
+	Sampler* clone();
 
 	virtual void render(const RenderJob& job);
 

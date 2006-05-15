@@ -202,3 +202,7 @@ void WhittedAdaptive::PixelBlock::reset() {
     memset(active,(int)false,size_squared*sizeof(bool));
 }
 
+Sampler* WhittedAdaptive::clone() 
+{
+    return new WhittedAdaptive(image,renderer,aa_depth);
+}

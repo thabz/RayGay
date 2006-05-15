@@ -22,3 +22,8 @@ void UniformJitter::render(const RenderJob& job)
     }
 }
 
+Sampler* UniformJitter::clone() 
+{
+    return new UniformJitter(image,renderer);
+}
+

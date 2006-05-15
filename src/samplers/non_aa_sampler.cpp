@@ -21,3 +21,8 @@ void NonAASampler::render(const RenderJob& job)
 	}
     }
 }
+
+Sampler* NonAASampler::clone() 
+{
+    return new NonAASampler(image,renderer);
+}
