@@ -5,6 +5,16 @@
 #include "samplers/sampler.h"
 #include <vector>
 
+class WhittedAdaptiveFactory : public SamplerFactory
+{
+    public:
+	WhittedAdaptiveFactory(uint32_t aa_depth);
+	Sampler* createInstance(Image* img, Renderer* renderer);
+	
+    private:
+	uint32_t aa_depth;
+};
+
 /**
  * Implementation of Whitted's Adaptive Supersampling.
  *
@@ -20,14 +30,15 @@ ACM, 23(6), June 1980, pp. 343-349.
  */
 class WhittedAdaptive : public Sampler 
 {
+    friend Sampler* WhittedAdaptiveFactory::createInstance(Image*, Renderer*);
+
     public:
-	WhittedAdaptive(Image* image, Renderer* renderer, uint32_t aa_depth);
 	~WhittedAdaptive();
-	Sampler* clone();
 
 	virtual void render(const RenderJob& job);
 
     private:
+	WhittedAdaptive(Image* image, Renderer* renderer, uint32_t aa_depth);
 	uint32_t aa_depth;
 	int img_w, img_h;
 
@@ -52,8 +63,7 @@ class WhittedAdaptive : public Sampler
 	RGBA getSubPixel(uint32_t curLevel, const Vector2& center, PixelBlock *block, double size, int x1, int y1, int x2, int y2);
 	void prepareCurRow(std::vector<PixelBlock>* cur_row, std::vector<PixelBlock>* prev_row, uint32_t blocksize);
 	void prepareCurBlock(PixelBlock* cur_block, PixelBlock* prev_block, uint32_t blocksize);
-
-
 };
+
 
 #endif

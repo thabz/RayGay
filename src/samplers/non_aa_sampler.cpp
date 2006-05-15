@@ -22,7 +22,10 @@ void NonAASampler::render(const RenderJob& job)
     }
 }
 
-Sampler* NonAASampler::clone() 
+NonAASamplerFactory::NonAASamplerFactory() { }
+
+Sampler* NonAASamplerFactory::createInstance(Image* img, Renderer* renderer)
 {
-    return new NonAASampler(image,renderer);
+    return new NonAASampler(img, renderer);
 }
+

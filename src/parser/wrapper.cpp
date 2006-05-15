@@ -81,7 +81,7 @@ SCM sceneobject2scm(SceneObject* sceneobject) {
     SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
 }
 
-SCM sampler2scm(Sampler* sampler) {
+SCM sampler2scm(SamplerFactory* sampler) {
     struct wrapped_object* object;
     object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
     object->sampler = sampler;

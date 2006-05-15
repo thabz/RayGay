@@ -202,7 +202,12 @@ void WhittedAdaptive::PixelBlock::reset() {
     memset(active,(int)false,size_squared*sizeof(bool));
 }
 
-Sampler* WhittedAdaptive::clone() 
+WhittedAdaptiveFactory::WhittedAdaptiveFactory(uint32_t aa_depth)
 {
-    return new WhittedAdaptive(image,renderer,aa_depth);
+    this->aa_depth = aa_depth;
+}
+
+Sampler* WhittedAdaptiveFactory::createInstance(Image* img, Renderer* renderer)
+{
+    return new WhittedAdaptive(img, renderer, aa_depth);
 }

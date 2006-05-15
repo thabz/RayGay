@@ -6,6 +6,9 @@
 #include "parser/wrapper.h"
 #include "cameras/camera.h"
 #include "cameras/pinhole.h"
+#include "samplers/non_aa_sampler.h"
+#include "samplers/whitted_adaptive.h"
+#include "samplers/uniform_jitter.h"
 
 using namespace std;
 
@@ -55,10 +58,12 @@ SCM CameraFactory::make_pinhole_camera(SCM s_options) {
 	    camera->setFieldOfView(fov);
 	} else if (key == "aa") {
 	    int aa = scm_num2int(s_value,0,"");
+	    SamplerFactory* s = new WhittedAdaptiveFactory(aa);
+	    camera->setSamplerFactory(s);
 	    camera->enableAdaptiveSupersampling(aa);
 	} else if (key == "sampler") {
-	    Sampler* s = scm2sampler(s_value, "make-pinhole-camera", 2+2*i);
-	    camera->setSampler(s);
+	    SamplerFactory* s = scm2sampler(s_value, "make-pinhole-camera", 2+2*i);
+	    camera->setSamplerFactory(s);
 	} else if (key == "dof") {
 	    SCM scms[3];
 	    for(uint32_t i = 0; i < 3; i++) {
@@ -72,15 +77,27 @@ SCM CameraFactory::make_pinhole_camera(SCM s_options) {
 	    cout << "Unknown camera option: " << key << endl;
 	}
     }
+    if (camera->getSamplerFactory() == NULL) {
+	SamplerFactory* p = new NonAASamplerFactory();
+	camera->setSamplerFactory(p);
+    }
     return camera2scm(camera);
 }
 
-SCM CameraFactory::make_uniform_jitter_sampler(SCM s_options) {
-    return s_options;
+SCM CameraFactory::make_whitted_adaptive_sampler(SCM s_aa_depth)
+{
+    char* proc = "make-whitted-adaptive-sampler";
+    int aa_depth = scm_num2int(s_aa_depth, 1, proc);
+    SamplerFactory* sampler = new WhittedAdaptiveFactory(aa_depth);
+    return sampler2scm(sampler);
 }
 
-SCM CameraFactory::make_whitted_adaptive_sampler(SCM s_options) {
-    return s_options;
+SCM CameraFactory::make_uniform_jitter_sampler(SCM s_samples_sqrt) 
+{
+    char* proc = "make-uniform-jitter-sampler";
+    int samples_sqrt = scm_num2int(s_samples_sqrt, 1, proc);
+    SamplerFactory* sampler = new UniformJitterFactory(samples_sqrt);
+    return sampler2scm(sampler);
 }
 
 void CameraFactory::register_procs() {

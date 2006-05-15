@@ -15,7 +15,7 @@ class Material;
 class Texture;
 class Lightsource;
 class Camera;
-class Sampler;
+class SamplerFactory;
 
 enum wrapped_type {
     SCENEOBJECT = 2,
@@ -35,7 +35,7 @@ struct wrapped_object {
 	Texture* texture;
 	Lightsource* lightsource;
 	Camera* camera;
-	Sampler* sampler;
+	SamplerFactory* sampler;
 	void* obj;
     };
     wrapped_type type;
@@ -72,9 +72,9 @@ static Camera* scm2camera(SCM object_smob, char* subr, int pos) {
     return o->camera;
 }
 
-SCM sampler2scm(SceneObject* sceneobject);
+SCM sampler2scm(SamplerFactory* sampler_factory);
 
-static Sampler* scm2sampler(SCM object_smob, char* subr, int pos) {
+static SamplerFactory* scm2sampler(SCM object_smob, char* subr, int pos) {
     struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
     if (o->type != SAMPLER) {
 	scm_wrong_type_arg(subr, pos, object_smob);

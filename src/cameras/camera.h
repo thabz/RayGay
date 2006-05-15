@@ -69,17 +69,17 @@ class Camera {
 	/// Project a 3D point to the 2D screen
 	Vector2 project(const Vector& p) const;
 
-        Sampler* getSamplerClone() {
-	    return sampler->clone();
+        SamplerFactory* getSamplerFactory() {
+	    return sampler_factory;
 	}
 
-	void setSampler(Sampler* sampler) {
-	    this->sampler = sampler;
+	void setSamplerFactory(SamplerFactory* sampler_factory) {
+	    this->sampler_factory = sampler_factory;
 	}
 	
     private:
 	void init();
-	Sampler* sampler;
+	SamplerFactory* sampler_factory;
 
     protected:
 	/// Get a ray going through the screen

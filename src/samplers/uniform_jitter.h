@@ -4,14 +4,27 @@
 
 #include "samplers/sampler.h"
 
-class UniformJitter : public Sampler 
+class UniformJitterFactory: public SamplerFactory
 {
     public:
-	UniformJitter(Image* image, Renderer* renderer);
+	UniformJitterFactory(uint32_t samples_sqrt);
+	Sampler* createInstance(Image* img, Renderer* renderer);
+	
+    private:
+	uint32_t samples_sqrt;
+};
 
+class UniformJitter : public Sampler 
+{
+    friend Sampler* UniformJitterFactory::createInstance(Image*, Renderer*);
+
+    public:
 	virtual void render(const RenderJob& job);
+	
+    private:
+	UniformJitter(Image* image, Renderer* renderer, uint32_t samples_sqrt);
+	uint32_t samples_sqrt;
 
-	Sampler* clone();
 };
 
 #endif

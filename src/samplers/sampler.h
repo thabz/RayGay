@@ -9,21 +9,26 @@ class RenderJob;
 #include "math/vector2.h"
 #include "renderer.h"
 
+class SamplerFactory 
+{
+    public:
+	virtual Sampler* createInstance(Image* img, Renderer* renderer) = 0;
+	virtual ~SamplerFactory() {};
+};
+
 class Sampler 
 {
     public:
-	Sampler(Image* img, Renderer* renderer);
-
 	virtual void render(const RenderJob& job) = 0;
 	virtual ~Sampler();
 
 	void abort();
-	virtual Sampler* clone() = 0;
 
     protected:
 	void setPixel(int x, int y, const RGBA& color);
 	RGBA sample(double x, double y);
 	RGBA sample(const Vector2& pos);
+	Sampler(Image* img, Renderer* renderer);
 	bool aborting;
 
 	Image* image;

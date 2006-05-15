@@ -12,4 +12,11 @@ class NonAASampler : public Sampler
 	Sampler* clone();
 };
 
+class NonAASamplerFactory: public SamplerFactory
+{
+    public:
+	NonAASamplerFactory();
+	Sampler* createInstance(Image* img, Renderer* renderer);
+};
+
 #endif

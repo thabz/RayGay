@@ -31,11 +31,7 @@ Renderer::Renderer(RendererSettings* settings, Image* img, Scene* scene, KdTree*
     this->gloss_sequence = new Halton(2,2);
 
     Camera* camera = scene->getCamera();
-    if (camera->isAAEnabled()) {
-	sampler = new WhittedAdaptive(img, this,  camera->getAADepth());
-    } else {
-	sampler = new NonAASampler(img, this);
-    }
+    sampler = camera->getSamplerFactory()->createInstance(img,this);
 }
 
 Renderer::~Renderer() {
