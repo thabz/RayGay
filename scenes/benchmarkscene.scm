@@ -33,11 +33,11 @@
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
-    '( pos (1000 1000 2000)
-       up (0 1 0)
-       lookat (0 100 0)
-       fov 45
-       aa 4)))
+    (list 'pos '(1000 1000 2000)
+       'up '(0 1 0)
+       'lookat '(0 100 0)
+       'fov 45
+       'sampler (make-whitted-adaptive-sampler 4))))
 
 (define blue
   (make-material
