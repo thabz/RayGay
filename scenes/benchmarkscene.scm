@@ -22,6 +22,7 @@
 ;; Surface Area Heuristic cost function: 0:42
 ;; Fixed SAH: 0:25
 ;; Omrokering i Triangle::_fastIntersect: 0:22
+;; Whitted-adaptive supersamling baserede på luminance: 0:18
 
 ;; Rays per pixel: 3.92 (1203260 primary rays, 3867820 total rays)
 
@@ -37,7 +38,7 @@
        'up '(0 1 0)
        'lookat '(0 100 0)
        'fov 45
-       'sampler (make-whitted-adaptive-sampler 4))))
+       'sampler (make-whitted-adaptive-sampler 3))))
 
 (define blue
   (make-material
