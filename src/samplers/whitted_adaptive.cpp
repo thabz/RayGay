@@ -5,8 +5,8 @@
 #include "renderjobs.h"
 #include "math/vector2.h"
 
-//#define aa_threshhold 0.02
-#define aa_threshhold 0.3
+#define aa_threshhold 0.05
+//#define aa_threshhold 0.3
 
 WhittedAdaptive::WhittedAdaptive(Image* image, Renderer* renderer, uint32_t aa_depth) : Sampler(image,renderer) 
 {
@@ -162,17 +162,22 @@ RGBA WhittedAdaptive::getSubPixel(uint32_t curLevel, const Vector2& center, Pixe
     }
 
     // TODO: Use brightness instead of sqrDistance below
-    // fabs(c2.brightness() - c1.brightness()) >= aa_threshold
-    // with aa_threshold = 0.025
+    // fabs(c2.brightness() - c1.brightness()) >= aa_threshhold
+    // with aa_threshhold = 0.025
     
     // Check if we need further supersampling
     if (curLevel <= aa_depth) {
-	if (c1.sqrDistance(c2) >= aa_threshhold ||
-		c2.sqrDistance(c3) >= aa_threshhold ||
-		c3.sqrDistance(c4) >= aa_threshhold ||
-		c4.sqrDistance(c1) >= aa_threshhold ||
-		c1.sqrDistance(c3) >= aa_threshhold ||
-		c2.sqrDistance(c4) >= aa_threshhold) {
+
+#define TOO_FAR_APART(y,x) (fabs((x)-(y)) >= aa_threshhold)
+
+	double b1 = c1.brightness();
+	double b2 = c2.brightness();
+	double b3 = c3.brightness();
+	double b4 = c4.brightness();
+
+	if (TOO_FAR_APART(b1,b2) || TOO_FAR_APART(b2,b3) ||
+	    TOO_FAR_APART(b3,b4) || TOO_FAR_APART(b4,b1) ||
+            TOO_FAR_APART(b1,b3) || TOO_FAR_APART(b2,b4)) {	    
 
 	    // Center of this sub-block
 	    int xc = (x1 + x2) / 2;
