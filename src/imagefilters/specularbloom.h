@@ -2,7 +2,7 @@
 
 #define FILTER_SPECULAR_BLOOM_H
 
-#include "filters/filter.h"
+#include "imagefilters/imagefilter.h"
 
 /**
  * A filter applying specular bloom to an image.

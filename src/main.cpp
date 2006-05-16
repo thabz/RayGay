@@ -55,7 +55,7 @@
 #include "renderersettings.h"
 #include "renderjobs.h"
 
-#include "filters/filterstack.h"
+#include "imagefilters/filterstack.h"
 
 #include "window.h"
 #include "window-gtk.h"

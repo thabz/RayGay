@@ -1,6 +1,6 @@
 
-#include "filters/specularbloom.h"
-#include "filters/gaussianblur.h"
+#include "imagefilters/specularbloom.h"
+#include "imagefilters/gaussianblur.h"
 #include "image/image.h"
 
 SpecularBloom::SpecularBloom(double cutoff, double radius, double alpha) {

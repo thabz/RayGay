@@ -1,5 +1,5 @@
 
-#include "filters/colormatrix.h"
+#include "imagefilters/colormatrix.h"
 #include "image/rgba.h"
 
 ColorMatrix::ColorMatrix() {
