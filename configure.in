@@ -134,6 +134,7 @@ AC_OUTPUT(Makefile \
 	  src/shaders/Makefile \
 	  src/collections/Makefile \
 	  src/samplers/Makefile \
+	  src/filters/Makefile \
 	  scheme/Makefile	\
 	  scenes/Makefile	\
 	  test/Makefile		\

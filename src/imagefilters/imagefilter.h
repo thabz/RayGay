@@ -1,6 +1,6 @@
 
-#ifndef FILTER2D_H
-#define FILTER2D_H
+#ifndef IMAGEFILTERS_FILTER_H
+#define IMAGEFILTERS_FILTER_H
 
 class Image;
 
