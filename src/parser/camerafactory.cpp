@@ -9,6 +9,7 @@
 #include "samplers/non_aa_sampler.h"
 #include "samplers/whitted_adaptive.h"
 #include "samplers/uniform_jitter.h"
+#include "samplers/halton_sampler.h"
 
 using namespace std;
 
@@ -100,8 +101,17 @@ SCM CameraFactory::make_uniform_jitter_sampler(SCM s_samples_sqrt)
     return sampler2scm(sampler);
 }
 
+SCM CameraFactory::make_halton_sampler(SCM s_samples_num) 
+{
+    char* proc = "make-halton-sampler";
+    int samples_num = scm_num2int(s_samples_num, 1, proc);
+    SamplerFactory* sampler = new HaltonSamplerFactory(samples_num);
+    return sampler2scm(sampler);
+}
+
 void CameraFactory::register_procs() {
     scm_c_define_gsubr("make-pinhole-camera",1,0,0,(SCM (*)()) CameraFactory::make_pinhole_camera);
     scm_c_define_gsubr("make-whitted-adaptive-sampler",1,0,0,(SCM (*)()) CameraFactory::make_whitted_adaptive_sampler);
     scm_c_define_gsubr("make-uniform-jitter-sampler",1,0,0,(SCM (*)()) CameraFactory::make_uniform_jitter_sampler);
+    scm_c_define_gsubr("make-halton-sampler",1,0,0,(SCM (*)()) CameraFactory::make_uniform_jitter_sampler);
 }
