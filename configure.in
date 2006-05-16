@@ -125,7 +125,7 @@ AC_OUTPUT(Makefile \
 	  src/lights/Makefile \
 	  src/math/Makefile \
 	  src/image/Makefile \
-	  src/filters/Makefile \
+	  src/imagefilters/Makefile \
 	  src/parser/Makefile \
 	  src/photon/Makefile \
 	  src/objects/Makefile \

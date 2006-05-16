@@ -1,5 +1,5 @@
 
-#include "filters/matrixfilter.h"
+#include "imagefilters/matrixfilter.h"
 #include "image/image.h"
 
 MatrixFilter::MatrixFilter(const ColorMatrix& matrix) {

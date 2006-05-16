@@ -1,12 +1,12 @@
 #ifndef FILTER_GRAYSCALE_H
 #define FILTER_GRAYSCALE_H
 
-#include "filters/filter.h"
+#include "imagefilters/imagefilter.h"
 
 /**
  * A filter for grayscaling an image.
  */
-class Grayscale : public Filter2D {
+class Grayscale : public ImageFilter {
     public:
 	void apply(Image* image);
 };

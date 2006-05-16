@@ -9,7 +9,7 @@
  *
  * @see http://www.neilblevins.com/cg_education/specular_bloom/specular_bloom.htm
  */
-class SpecularBloom: public Filter2D {
+class SpecularBloom: public ImageFilter {
     public:
 	SpecularBloom(double cutoff, double radius, double alpha);
 	void apply(Image* image);

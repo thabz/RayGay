@@ -1,5 +1,5 @@
 
-SUBDIRS = materials paths lights math image photon filters objects space shaders parser cameras collections samplers
+SUBDIRS = materials paths lights math image photon imagefilters objects space shaders parser cameras collections samplers
 
 
 #--------------------------------------
@@ -25,7 +25,7 @@ libtracer_la_SOURCES = \
 		      environment.cpp 	\
 		      window.h		
 
-libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libphoton.la lights/liblights.la materials/libmaterials.la collections/libcollections.la objects/libobjects.la paths/libpaths.la math/libmath.la  image/libimage.la space/libspace.la shaders/libshaders.la cameras/libcameras.la filters/libfilters.la
+libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libphoton.la lights/liblights.la materials/libmaterials.la collections/libcollections.la objects/libobjects.la paths/libpaths.la math/libmath.la  image/libimage.la space/libspace.la shaders/libshaders.la cameras/libcameras.la imagefilters/libimagefilters.la
 
 #--------------------------------------
 

@@ -1,5 +1,5 @@
 
-#include "filters/grayscale.h"
+#include "imagefilters/grayscale.h"
 #include "image/image.h"
 #include <cstdio>    
 

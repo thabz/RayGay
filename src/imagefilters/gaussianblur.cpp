@@ -1,5 +1,5 @@
 
-#include "filters/gaussianblur.h"
+#include "imagefilters/gaussianblur.h"
 #include "image/image.h"
 #include <cassert>
 

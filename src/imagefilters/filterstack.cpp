@@ -1,8 +1,8 @@
 
-#include "filters/filterstack.h"
-#include "filters/filter.h"
+#include "imagefilters/filterstack.h"
+#include "imagefilters/imagefilter.h"
 
-void FilterStack::push(Filter2D* filter) {
+void FilterStack::push(ImageFilter* filter) {
     filters.push_back(filter);
 }
 

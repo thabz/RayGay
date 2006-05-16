@@ -6,17 +6,17 @@
 #include <vector>
 
 class Image;
-class Filter2D;
+class ImageFilter;
 
 class FilterStack {
 
     public:
 	
-	void push(Filter2D* filter);
+	void push(ImageFilter* filter);
 	void apply(Image* image);
 
     private:
-	std::vector<Filter2D*> filters;
+	std::vector<ImageFilter*> filters;
 };
 
 #endif

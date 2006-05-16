@@ -11,7 +11,8 @@
        'lookat '(0 300 0)
        'up '(0 1 0)
        'fov 45
-       'sampler (make-uniform-jitter-sampler 10))))
+       'sampler (make-halton-sampler 64))))
+;       'sampler (make-uniform-jitter-sampler 32))))
 
 (define chess-material
   (make-material

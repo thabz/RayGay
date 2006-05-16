@@ -1,6 +1,6 @@
 
-#include "filters/filter.h"
-#include "filters/colormatrix.h"
+#include "imagefilters/imagefilter.h"
+#include "imagefilters/colormatrix.h"
 #include "image/image.h"
 
 RGBA getMaskedPixel(Image* image, double* mask, int w, int h, int x, int y) {
@@ -26,7 +26,7 @@ RGBA getMaskedPixel(Image* image, double* mask, int w, int h, int x, int y) {
     return result;
 }
 
-void Filter2D::applyMask(Image* image, double* mask, int w, int h) {
+void ImageFilter::applyMask(Image* image, double* mask, int w, int h) {
     Image* result = new Image(image->getWidth(),image->getHeight());
     RGBA tmp;
 
@@ -44,7 +44,7 @@ void Filter2D::applyMask(Image* image, double* mask, int w, int h) {
     delete result;
 }
 
-void Filter2D::normalizeMask(double* mask, int w, int h) {
+void ImageFilter::normalizeMask(double* mask, int w, int h) {
     // Find sum of mask
     double sum = 0;
     for(int i = 0; i < w * h; i++) {

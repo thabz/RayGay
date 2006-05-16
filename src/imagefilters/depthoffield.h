@@ -2,7 +2,7 @@
 #ifndef FILTER_DEPTH_OF_FIELD
 #define FILTER_DEPTH_OF_FIELD
 
-#include "filter.h"
+#include "imagefilters/imagefilter.h"
 
 class Image;
 
@@ -11,7 +11,7 @@ class Image;
  *
  * TODO: Complete the implementation.
  */
-class DepthOfField : public Filter2D {
+class DepthOfField : public ImageFilter {
 
     public:
 	DepthOfField(Image* depth, double focus_depth, double near_radius, double far_radius);

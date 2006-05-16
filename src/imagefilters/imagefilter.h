@@ -7,7 +7,7 @@ class Image;
 /**
  * A filter for images
  */
-class Filter2D {
+class ImageFilter {
 
     public:
 	/// Apply the filter to an image
@@ -17,7 +17,7 @@ class Filter2D {
 	/// Perform convolution of mask on image
 	void applyMask(Image* image, double* mask, int w, int h);
 	void normalizeMask(double* mask, int w, int h);
-	virtual ~Filter2D() {};
+	virtual ~ImageFilter() {};
 };
 
 #endif
