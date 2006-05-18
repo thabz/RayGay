@@ -15,6 +15,7 @@
 #include "math/polynomial.h"
 #include "math/sturmsequence.h"
 #include "math/quaternion.h"
+#include "math/poisson_disc.h"
 #include "testing.h"
 
 using namespace std;
@@ -1282,6 +1283,30 @@ class constants_test : public Test {
 	}
 };
 
+class poisson_disc_test : public Test {
+
+    public:
+	void run() {
+	    Vector2* r = new Vector2[100];
+	    int num = PoissonDiscDistribution::createSet(10,10,0.5,100,r);
+	    cout << "Darts: " << num << endl;
+	    assertTrue(num <= 100);
+	    assertTrue(num > 10); 
+	    for(int i = 0; i < num; i++) {
+		assertTrue(r[i][0] >= 0);
+		assertTrue(r[i][1] >= 0);
+		assertTrue(r[i][0] <= 10);
+		assertTrue(r[i][1] <= 10);
+		for(int j = 0; j < num; j++) {
+		    if (j != i) {
+			assertTrue((r[i]-r[j]).norm() >= 0.5*0.5);
+		    }
+		}
+	    }
+	}
+};
+
+
 int main(int argc, char *argv[]) {
 
     TestSuite suite;
@@ -1306,6 +1331,7 @@ int main(int argc, char *argv[]) {
     suite.add("Sturm sequence",new sturm_sequence_test());
     suite.add("Quaternion",new quaternion_test());
     suite.add("RootFinding",new rootfinding_test());
+    suite.add("Poisson Disc",new poisson_disc_test());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {
