@@ -32,6 +32,9 @@ class Vector2 {
 	    return (*v1) == (*v2);
 	}
 
+	/// Returns squared length of vector
+	double norm() const;
+
     protected:
 	Float _vector[2]; ///< The x,y components of the vector
 };
@@ -77,6 +80,11 @@ inline
 const double &Vector2::operator[](const int i) const {
     //assert(i>=0 && i<3);
     return _vector[i];
+}
+
+inline 
+double Vector2::norm() const {
+    return _vector[0]*_vector[0] + _vector[1]*_vector[1];
 }
 
 #endif /* VECTOR2_H */
