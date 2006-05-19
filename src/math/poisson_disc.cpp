@@ -3,8 +3,11 @@
 #include <cassert>
 #include <cstdlib>
 #include "constants.h"
+#include <iostream>
 
-#define MAX_TRIES_PER_DART 10000
+using namespace std;
+
+#define MAX_TRIES_PER_DART 100000
 int PoissonDiscDistribution::createSet(double w, double h, double r, int num, Vector2* result)
 {
     assert(num > 0);
@@ -32,6 +35,7 @@ int PoissonDiscDistribution::createSet(double w, double h, double r, int num, Ve
 		tries++;
 	    }
 	}
+	//cout << "Tries: " << tries << endl;
     } while(i < num && found_one);
     return i;
 }
