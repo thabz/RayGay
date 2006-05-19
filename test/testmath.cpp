@@ -1300,7 +1300,7 @@ class poisson_disc_test : public Test {
 		assertTrue(r[i][1] <= 10);
 		for(int j = 0; j < num; j++) {
 		    if (j != i) {
-			assertTrue((r[i]-r[j]).norm() >= 0.5*0.5);
+			assertTrue((r[i]-r[j]).norm() >= 2*0.5*2*0.5);
 		    }
 		}
 	    }

@@ -15,7 +15,7 @@ int PoissonDiscDistribution::createSet(double w, double h, double r, int num, Ve
     Vector2 dart;
     bool found_one, dart_ok;
     int i = 0, j, tries;
-    double rr = r * r;
+    double min_dist_sqr = 2 * r * 2 * r;
     do {
 	tries = 0;
 	found_one = false;
@@ -24,7 +24,7 @@ int PoissonDiscDistribution::createSet(double w, double h, double r, int num, Ve
 	    dart_ok = true;
 	    for(j = 0; j < i && dart_ok; j++) {
 		double dist_sqr = (dart - result[j]).norm();
-		if (dist_sqr <= rr) {
+		if (dist_sqr <= min_dist_sqr) {
 		    dart_ok = false;
 		}
 	    }
