@@ -97,10 +97,10 @@ SCM make_poisson_set(SCM s_w, SCM s_h, SCM s_r,  SCM s_num) {
     SCM s_set = SCM_EOL;
     for(int i = 0; i < real_num; i++) {
 	double x = set[i][0];
-	double y = set[i][0];
+	double y = set[i][1];
 	SCM s_point = scm_list_2(scm_double2num(x), scm_double2num(y));
 	SCM s_point_wrap = scm_list_1(s_point);
-	scm_append(scm_list_2(s_set,s_point_wrap));
+	s_set = scm_append(scm_list_2(s_set,s_point_wrap));
     }
     return s_set;
 }
