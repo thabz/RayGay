@@ -26,11 +26,10 @@ class Vector2 {
 	/// Subtract two vectors
 	Vector2 operator-(const Vector2 &v) const; 
 	bool operator==(const Vector2 &v) const; ///< Comparator
+	bool operator!=(const Vector2& x) const; ///< Comparator
 
 	/// Comparator
-	bool operator()(const Vector2* v1, const Vector2* v2) const {
-	    return (*v1) == (*v2);
-	}
+	bool operator()(const Vector2* v1, const Vector2* v2) const;
 
 	/// Returns squared length of vector
 	double norm() const;
@@ -85,6 +84,23 @@ const double &Vector2::operator[](const int i) const {
 inline 
 double Vector2::norm() const {
     return _vector[0]*_vector[0] + _vector[1]*_vector[1];
+}
+
+inline
+bool Vector2::operator==(const Vector2& x) const {
+    return IS_EQUAL(x[0],_vector[0]) &&
+           IS_EQUAL(x[1],_vector[1]);
+}
+
+inline
+bool Vector2::operator!=(const Vector2& x) const {
+    return IS_NEQUAL(x[0],_vector[0]) ||
+           IS_NEQUAL(x[1],_vector[1]);
+}
+
+inline
+bool Vector2::operator()(const Vector2* v1, const Vector2* v2) const {
+    return (*v1) == (*v2);
 }
 
 #endif /* VECTOR2_H */
