@@ -15,6 +15,7 @@
 #include "math/polynomial.h"
 #include "math/sturmsequence.h"
 #include "math/quaternion.h"
+#include "math/interval.h"
 #include "math/poisson_disc.h"
 #include "testing.h"
 
@@ -1015,7 +1016,7 @@ class rootfinding_test: public Test  {
 	    sinFunc my_sin = sinFunc();
 	    polyFunc my_poly = polyFunc();
 
-	    double root;
+	    //double root;
 	    double tole = EPSILON;
 	    RootFinder brent = RootFinder(RootFinder::BRENTS_METHOD,tole,&my_sin);
 	    RootFinder bisec = RootFinder(RootFinder::BISECTION,tole,&my_sin);
@@ -1307,6 +1308,22 @@ class poisson_disc_test : public Test {
 	}
 };
 
+class interval_test : public Test {
+
+    public:
+	void run() {
+	    Interval i1 = Interval(2,4);
+	    Interval i2 = Interval(6,8);
+	    Interval i3 = Interval(3,7);
+	    assertTrue(i1 == Interval(2,4));
+	    assertFalse(i1 == i2);
+	    assertTrue(i1 != i3);
+
+	    assertTrue(IS_EQUAL(i1.length(), 2));
+	    assertTrue(IS_EQUAL(i2.length(), 2));
+	    assertTrue(IS_EQUAL(i3.length(), 4));
+	}
+};
 
 int main(int argc, char *argv[]) {
 
@@ -1333,6 +1350,7 @@ int main(int argc, char *argv[]) {
     suite.add("Quaternion",new quaternion_test());
     suite.add("RootFinding",new rootfinding_test());
     suite.add("Poisson Disc",new poisson_disc_test());
+    suite.add("Interval",new interval_test());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {

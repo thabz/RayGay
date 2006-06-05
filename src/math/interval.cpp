@@ -18,6 +18,15 @@ bool Interval::isEmpty() const
     return segments.size() == 0;
 }
 
+double Interval::length() const 
+{
+    double length = 0.0;
+    for(std::vector<double>::const_iterator p = segments.begin(); p != segments.end(); p += 2) {
+	length += (*(p+1) - *p);
+    }
+    return length;
+}
+
 void Interval::cleanUp() {
     for(std::vector<double>::iterator p = segments.begin(); p != segments.end(); p += 2) {
 	if ((*p) == 1 && (*(p+1)) == -1) {

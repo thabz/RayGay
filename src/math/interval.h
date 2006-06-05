@@ -16,6 +16,7 @@ class Interval
 	void add(double from, double to);
 	void subtract(const Interval& i);
 	void subtract(double from, double to);
+	double length() const;
 
 	bool operator==(const Interval &v) const;
 	bool operator!=(const Interval &v) const;
