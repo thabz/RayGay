@@ -1,14 +1,19 @@
 
 #include "math/interval.h"
+#include <iostream>
 
-Interval::Interval(uint32_t initial_capacity) : segments(2*initial_capacity) {
+using namespace std;
+
+Interval::Interval(uint32_t initial_capacity) {
+    segments.reserve(2*initial_capacity);
 }
 
-Interval::Interval() : segments(2) {
+Interval::Interval() {
 }
 
-Interval::Interval(double from, double to) : segments(2)
+Interval::Interval(double from, double to) 
 {
+    segments.reserve(2);
     segments.push_back(from);
     segments.push_back(to);
 }
@@ -78,6 +83,7 @@ done:
 
 void Interval::subtract(double f, double t)
 {
+    std::vector<double>::iterator s;
     /*
      * Cases:
      * 1: ---F--SSSSS---T---  Remove segment
@@ -87,35 +93,37 @@ void Interval::subtract(double f, double t)
      * 5: ---F---SSSTSSS----  Clip segment
      * 6: ---SSSFSSSTSSS----  Split segment
      */ 
-    Vector2 new_segment = Vector2(1,-1);
     for(uint32_t i = 0; i < getSegmentsNum(); i++) {
-	Vector2 s = getSegment(i);
+	s = segments.begin() + i * 2;
+//	cout << "Segment: [" << s[0] << "-" << s[1] << "]" << endl;
 	if (f > s[1] || t < s[0]) {
 	    // Case 2 and 3: ignore segment
 	    continue;
 	} 
 	else if (s[0] > f && s[1] < t) {
 	    // Case 1: remove segment
-	    s = Vector2(1,-1);
+	    segments.erase(s);
+	    segments.erase(s);
 	}
 	else if (f > s[0] && f < s[1] && t > s[1]) {
 	    // Case 4: Clip segment
-	    s[0] = f;
+	    s[1] = f;
 	}
 	else if (t > s[0] && t < s[1] && f < s[0]) {
 	    // Case 5: Clip segment
 	    s[0] = t;
+	    goto done;
 	} else if (f > s[0] && t < s[1]) {
 	    // Case 6: Split segment
+	    double e = s[1];
 	    s[1] = f;
-	    new_segment = Vector2(t,s[1]);
+	    segments.insert(s,t);
+	    s = segments.begin() + i * 2;
+	    segments.insert(s+1,e);
+	    goto done;
 	} 
-	setSegment(s,i);
     }
-    cleanUp();
-    if (new_segment != Vector2(1,-1)) {
-	add(new_segment[0], new_segment[1]);
-    }
+    done: return;
 }
 
 void Interval::add(const Interval& i) 
@@ -134,6 +142,14 @@ void Interval::subtract(const Interval& i)
 	s = i.getSegment(j);
 	subtract(s[0],s[1]);
     }
+}
+
+bool Interval::contains(double d) {
+    for(std::vector<double>::const_iterator p = segments.begin(); p != segments.end(); p += 2) {
+	if (IS_LESS_THAN(*p,d) && IS_GREATER_THAN(*(p+1),d))
+	    return true;
+    }
+    return false;
 }
 
 

@@ -1312,6 +1312,7 @@ class interval_test : public Test {
 
     public:
 	void run() {
+	    // Test == and !=
 	    Interval i1 = Interval(2,4);
 	    Interval i2 = Interval(6,8);
 	    Interval i3 = Interval(3,7);
@@ -1319,9 +1320,47 @@ class interval_test : public Test {
 	    assertFalse(i1 == i2);
 	    assertTrue(i1 != i3);
 
+	    // Test contains()
+	    assertTrue(i1.contains(3));
+	    assertFalse(i1.contains(1));
+	    assertFalse(i1.contains(5));
+	    assertTrue(i3.contains(4));
+	    assertTrue(i3.contains(6));
+	    assertFalse(i3.contains(1));
+	    assertFalse(i3.contains(8));
+
+	    // Test length()
 	    assertTrue(IS_EQUAL(i1.length(), 2));
 	    assertTrue(IS_EQUAL(i2.length(), 2));
 	    assertTrue(IS_EQUAL(i3.length(), 4));
+
+	    // Test subtract()
+	    i1.subtract(i2);
+	    assertTrue(i1 == Interval(2,4));   // Case 2
+	    i2.subtract(i1); 
+	    assertTrue(i2 == Interval(6,8));   // Case 3
+	    i1.subtract(3,7);
+	    assertTrue(i1 == Interval(2,3));
+	    i1 = Interval(2,4);
+	    i1.subtract(i3);
+	    assertTrue(i1 == Interval(2,3)); // Case 4
+	    i2.subtract(i3);
+	    assertTrue(i2 == Interval(7,8)); // Case 5
+	    i1 = Interval(1,10);
+	    i1.subtract(Interval(5,7));      // Case 6
+	    assertFalse(i1.contains(0.0));
+	    assertTrue(i1.contains(4.5));
+	    assertTrue(i1.contains(9));
+	    assertTrue(i1.contains(7.5));
+	    assertFalse(i1.contains(5.5));
+	    assertFalse(i1.contains(6.5));
+	    assertTrue(IS_EQUAL(i1.length(), 4+3));
+	    i1.subtract(Interval(4,8));     // Case 4 & 5 combined
+	    assertTrue(IS_EQUAL(i1.length(), 3+2));
+	    assertTrue(i1.contains(3.5));
+	    assertFalse(i1.contains(4.5));
+	    assertTrue(i1.contains(8.5));
+	    assertFalse(i1.contains(7.5));
 	}
 };
 
