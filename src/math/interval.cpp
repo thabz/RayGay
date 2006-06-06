@@ -117,9 +117,9 @@ void Interval::subtract(double f, double t)
 	    // Case 6: Split segment
 	    double e = s[1];
 	    s[1] = f;
-	    segments.insert(s,t);
+	    segments.insert(s+2,t);
 	    s = segments.begin() + i * 2;
-	    segments.insert(s+1,e);
+	    segments.insert(s+3,e);
 	    goto done;
 	} 
     }
@@ -169,3 +169,15 @@ bool Interval::operator==(const Interval& x) const {
 bool Interval::operator!=(const Interval& x) const {
     return !(*this == x);
 }
+
+ostream & operator<<(ostream &os, const Interval &v) {
+    if (v.isEmpty()) {
+	os << "NIL";
+    } else {
+	for(std::vector<double>::const_iterator p = v.segments.begin(); p != v.segments.end(); p += 2) {
+	    os << "[" << *p << "," << *(p+1) << "] ";
+	}
+    }
+    return os;
+}
+

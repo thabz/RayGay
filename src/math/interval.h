@@ -4,9 +4,12 @@
 
 #include "math/vector2.h"
 #include <vector>
+#include <iosfwd>
 
 class Interval 
 {
+    friend std::ostream & operator<< (std::ostream &os, const Interval &v);
+
     public:
 	Interval();
 	Interval(uint32_t initial_capacity);

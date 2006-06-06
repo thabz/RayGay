@@ -1361,6 +1361,10 @@ class interval_test : public Test {
 	    assertFalse(i1.contains(4.5));
 	    assertTrue(i1.contains(8.5));
 	    assertFalse(i1.contains(7.5));
+            i1.subtract(Interval(6,20));    // Case 1
+	    assertTrue(i1 == Interval(1,4));
+	    i1.subtract(Interval(-10,10));  // Case 1
+	    assertTrue(i1.isEmpty());
 	}
 };
 
