@@ -85,3 +85,32 @@ int PoissonDiscDistribution::BoundarySampling(double w, double h, double r, int 
 }
 
 */
+
+/*
+int PoissonDiscDistribution::BoundarySampling(double w, double h, double r, int num, Vector2* result) {
+    vector<Interval> boundaries;
+    vector<Vector2> centers;
+    uint32_t i = 0;
+
+    Vector2 initial_point = Vector2(RANDOM(0,w),RANDOM(0,h));
+    centers.push_back(initial_point);
+    boundaries.push_back(Interval(0,2*M_PI));
+    result[i++] = initial_point;
+	
+    while(! boundaries.empty() && i < num) {
+	double angle = boundaries[0].random();
+	Vector2 p = centers[0] + 2*r*Vector2(cos(angle),sin(angle));
+	result[i++] = p;
+
+	// Subtract the box [0,w]x[0,h] from p's boundary
+
+	// Subtract p's boundary from all other boundaries and vise-versa.
+
+	// push_back p's boundary to boundaries
+	// push_back p to centers
+
+	// Delete empty boundaries and their corresponding centers
+    }
+    return i;
+}
+*/
