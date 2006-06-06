@@ -21,6 +21,7 @@ class Interval
 	void subtract(double from, double to);
 	bool contains(double d);
 	double length() const;
+	double random() const;
 
 	bool operator==(const Interval &v) const;
 	bool operator!=(const Interval &v) const;
@@ -29,7 +30,6 @@ class Interval
 	Vector2 getSegment(int i) const;
 	void setSegment(Vector2 s, int i);
 	uint32_t getSegmentsNum() const;
-	void cleanUp();
 	std::vector<double> segments;
 };
 

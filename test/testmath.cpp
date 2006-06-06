@@ -1330,9 +1330,9 @@ class interval_test : public Test {
 	    assertFalse(i3.contains(8));
 
 	    // Test length()
-	    assertTrue(IS_EQUAL(i1.length(), 2));
-	    assertTrue(IS_EQUAL(i2.length(), 2));
-	    assertTrue(IS_EQUAL(i3.length(), 4));
+	    assertEqualF(i1.length(), 2);
+	    assertEqualF(i2.length(), 2);
+	    assertEqualF(i3.length(), 4);
 
 	    // Test subtract()
 	    i1.subtract(i2);
@@ -1354,9 +1354,9 @@ class interval_test : public Test {
 	    assertTrue(i1.contains(7.5));
 	    assertFalse(i1.contains(5.5));
 	    assertFalse(i1.contains(6.5));
-	    assertTrue(IS_EQUAL(i1.length(), 4+3));
+	    assertEqualF(i1.length(), 4+3);
 	    i1.subtract(Interval(4,8));     // Case 4 & 5 combined
-	    assertTrue(IS_EQUAL(i1.length(), 3+2));
+	    assertEqualF(i1.length(), 3+2);
 	    assertTrue(i1.contains(3.5));
 	    assertFalse(i1.contains(4.5));
 	    assertTrue(i1.contains(8.5));
@@ -1365,6 +1365,17 @@ class interval_test : public Test {
 	    assertTrue(i1 == Interval(1,4));
 	    i1.subtract(Interval(-10,10));  // Case 1
 	    assertTrue(i1.isEmpty());
+
+	    // Test random()
+	    i1 = Interval(0,100);
+	    i1.subtract(20,40);
+	    i1.subtract(50,70);
+	    i1.subtract(80,90);
+	    assertEqualF(i1.length(), 100 - 20 - 20 - 10);
+	    for(int i = 0; i < 10000; i++) {
+		double d = i1.random();
+		assertTrue(i1.contains(d));
+	    }
 	}
 };
 

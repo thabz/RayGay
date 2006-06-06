@@ -1,6 +1,7 @@
 
 #include "math/interval.h"
 #include <iostream>
+#include <cassert>
 
 using namespace std;
 
@@ -30,15 +31,6 @@ double Interval::length() const
 	length += (*(p+1) - *p);
     }
     return length;
-}
-
-void Interval::cleanUp() {
-    for(std::vector<double>::iterator p = segments.begin(); p != segments.end(); p += 2) {
-	if ((*p) == 1 && (*(p+1)) == -1) {
-	    segments.erase(p);
-	    segments.erase(p);
-	}
-    }
 }
 
 void Interval::add(double f, double t) 
@@ -144,7 +136,23 @@ void Interval::subtract(const Interval& i)
     }
 }
 
-bool Interval::contains(double d) {
+double Interval::random() const 
+{
+    assert(!isEmpty());
+    double d = RANDOM(0,length());
+    d += segments[0];
+    for(std::vector<double>::const_iterator p = segments.begin(); p != segments.end(); p += 2) {
+	if (IS_LESS_THAN(d,*(p+1))) {
+	    return d;
+	} else {
+	    d += *(p+2) - *(p+1);
+	}
+    }
+    assert(false);
+}
+
+bool Interval::contains(double d) 
+{
     for(std::vector<double>::const_iterator p = segments.begin(); p != segments.end(); p += 2) {
 	if (IS_LESS_THAN(*p,d) && IS_GREATER_THAN(*(p+1),d))
 	    return true;
