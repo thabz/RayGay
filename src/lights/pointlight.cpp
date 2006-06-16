@@ -2,13 +2,21 @@
 #include "lights/pointlight.h"
 #include "lights/lightinfo.h"
 #include "intersection.h"
+#include "lights/shadowcache.h"
 
 class KdTree;
 
 Pointlight::Pointlight(const Vector& pos) : Lightsource(pos) {
+    pthread_key_create(&shadowcache_key,NULL);	
 }
 
 void Pointlight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const {
+
+    ShadowCache* shadowcache = (ShadowCache*) pthread_getspecific(shadowcache_key);
+    if (shadowcache == NULL) {
+	shadowcache = new ShadowCache();
+	pthread_setspecific(shadowcache_key, shadowcache);
+    }
     
     // Move intersection point ESPILON along surface normal to 
     // avoid selfshadowing.
@@ -27,7 +35,7 @@ void Pointlight::getLightinfo(const Intersection& inter, KdTree* space, Lightinf
 
     if (info->cos > 0.0) {
 	Ray ray_to_light = Ray(surface_point,info->direction_to_light,-1.0);
-	bool occluded = shadowcache.occluded(ray_to_light,dist_to_light,depth,space);
+	bool occluded = shadowcache->occluded(ray_to_light,dist_to_light,depth,space);
 	info->intensity = occluded ? 0.0 : 1.0;
     }
 }
