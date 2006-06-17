@@ -78,7 +78,9 @@ vector<Renderer*> active_renderers;
 void abortRenderingCB() {
     cout << "Aborting render..." << endl;
     for(uint32_t i = 0; i < active_renderers.size(); i++) {
-	active_renderers[i]->abort();
+	if (active_renderers[i] != NULL) {
+	    active_renderers[i]->abort();
+	}
     }
 }
 
@@ -157,6 +159,7 @@ void preparePhotonMaps(Scene* scene,
     //irradiance_cache = new IrradianceCache(space->getWorldBoundingBox(),5);
     // TODO: Woa! What's this crap!? Use bbox = space->boundingBox() and grow by 10% maybe?
     AABox bbox = AABox(Vector(-733,-733,-733),Vector(733,733,733));
+    cout << "Warning! IrradianceCache only spans (-733,-733,-733) to (733,733,733). See main.cpp" << endl;
     (*irradiancecache) = new IrradianceCache(bbox,renderersettings->cache_tolerance);
 }
 
@@ -299,6 +302,7 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
 	// Wait for threads to finish
 	for(int i = 0; i < renderersettings->threads_num; i++) {
 	    pthread_join(threads[i], NULL);
+	    active_renderers[i] = NULL;
 	    delete renderers[i];
 	}
     }
