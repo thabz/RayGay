@@ -196,6 +196,7 @@ RGBA WhittedAdaptive::getSubPixel(uint32_t curLevel, const Vector2& center, Pixe
 }
 
 WhittedAdaptive::PixelBlock::PixelBlock(const uint32_t size) {
+    assert(size > 0);
     this->size = size;
     this->size_squared = size*size;
     color = new RGBA[size*size]; 
