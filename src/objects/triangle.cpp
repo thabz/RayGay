@@ -9,40 +9,47 @@
 #include "aabox.h"
 #include "exception.h"
 
+#define SUB(dest,v1,v2) \
+          dest[0]=v1[0]-v2[0]; \
+          dest[1]=v1[1]-v2[1]; \
+          dest[2]=v1[2]-v2[2]; 
+#define CROSS(dest,v1,v2) \
+          dest[0]=v1[1]*v2[2]-v1[2]*v2[1]; \
+          dest[1]=v1[2]*v2[0]-v1[0]*v2[2]; \
+          dest[2]=v1[0]*v2[1]-v1[1]*v2[0];
+#define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
 
 
 Triangle::Triangle(Mesh* m, uint32_t tri_index) : Object(NULL) {
     mesh = m;
     _tri_idx = tri_index;
-    last_cache_key = 0;
 }
 
-#define SUB(dest,v1,v2) \
-          dest[0]=v1[0]-v2[0]; \
-          dest[1]=v1[1]-v2[1]; \
-          dest[2]=v1[2]-v2[2]; 
-
 inline
-const CachedVertex* TriangleVertexCache::getCachedVertex(const Triangle* triangle) const
+CachedVertex* TriangleVertexCache::getCachedVertex(const Triangle* triangle) const
 {
-    uint32_t last_cache_key = triangle->last_cache_key;
-    if (cached_vertices[last_cache_key].triangle == triangle) {
+    CachedVertex* cached_vertices = (CachedVertex*) pthread_getspecific(pthread_key);
+    if (cached_vertices == NULL) {
+	cached_vertices = new CachedVertex[CACHE_ENTRIES];
+	for(int i = 0; i < CACHE_ENTRIES; i++) {
+	    cached_vertices[i].triangle = NULL;
+	}
+	pthread_setspecific(pthread_key, cached_vertices);
+    }
+
+    uint32_t key = triangle->_tri_idx & (CACHE_ENTRIES -1);
+    if (cached_vertices[key].triangle == triangle) {
 	// Cache hit
-	return &cached_vertices[last_cache_key];
+	return &cached_vertices[key];
     } else {
 	// Cache miss
 	uint32_t tri_idx = triangle->_tri_idx;
 	Mesh* mesh = triangle->mesh;
-
-	// Get new key
-	pthread_mutex_lock(&mutex);
-	next_free_slot = (next_free_slot + 1) & (CACHE_ENTRIES -1);
-	last_cache_key = next_free_slot;
-	pthread_mutex_unlock(&mutex);
-	CachedVertex* cv = &cached_vertices[last_cache_key];
-	triangle->last_cache_key = last_cache_key;
+	CachedVertex* cv = &cached_vertices[key];
 
 	cv->triangle = triangle;
+	cv->last_ray_id = -1;
+
 	mesh->cornerAt(tri_idx,0,cv->vert0);
 	mesh->cornerAt(tri_idx,1,cv->vert1);
 	mesh->cornerAt(tri_idx,2,cv->vert2);
@@ -57,16 +64,8 @@ const Material* Triangle::getMaterial() const {
     return mesh->getMaterial(); 
 }
 
-#define CROSS(dest,v1,v2) \
-          dest[0]=v1[1]*v2[2]-v1[2]*v2[1]; \
-          dest[1]=v1[2]*v2[0]-v1[0]*v2[2]; \
-          dest[2]=v1[0]*v2[1]-v1[1]*v2[0];
-#define DOT(v1,v2) (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2])
-
 void Triangle::prepare() {
 }
-
-// TODO: Use fast __thread aka thraed local storage instead of slow mutex protection.
 
 TriangleVertexCache vertex_cache;
 
@@ -126,29 +125,12 @@ double Triangle::_fastIntersect(const Ray& ray) const {
    double det;
    double u,v;
 
-   CachedVertex* cv;
-    if (vertex_cache.cached_vertices[last_cache_key].triangle == this) {
-	// Cache hit
-	cv = &vertex_cache.cached_vertices[last_cache_key];
-	if (ray.getId() == cv->last_ray_id)
-	    return cv->last_t;
-    } else {
-	// Cache miss
+   CachedVertex* cv = vertex_cache.getCachedVertex(this);
+   if (ray.getId() == cv->last_ray_id) {
+       return cv->last_t;
+   }
 
-	pthread_mutex_lock(&vertex_cache.mutex);
-	vertex_cache.next_free_slot = (vertex_cache.next_free_slot + 1) & (CACHE_ENTRIES - 1);
-	last_cache_key = vertex_cache.next_free_slot;
-	pthread_mutex_unlock(&vertex_cache.mutex);
-	cv = &vertex_cache.cached_vertices[last_cache_key];
-
-	cv->triangle = this;
-	mesh->cornerAt(_tri_idx,0,cv->vert0);
-	mesh->cornerAt(_tri_idx,1,cv->vert1);
-	mesh->cornerAt(_tri_idx,2,cv->vert2);
-	SUB(cv->edge1,cv->vert1,cv->vert0);
-	SUB(cv->edge2,cv->vert2,cv->vert0);
-    }
-    cv->last_ray_id = ray.getId();
+   cv->last_ray_id = ray.getId();
 
    /* begin calculating determinant - also used to calculate U parameter */
    CROSS(pvec,ray.getDirection(),cv->edge2);
@@ -410,9 +392,5 @@ int Triangle::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const {
 }
 
 TriangleVertexCache::TriangleVertexCache() {
-    next_free_slot = 0;
-    for(int i = 0; i < CACHE_ENTRIES; i++) {
-	cached_vertices[i].triangle = NULL;
-    }
-    pthread_mutex_init(&mutex,NULL);
+    pthread_key_create(&pthread_key,NULL);	
 }

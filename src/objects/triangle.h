@@ -11,7 +11,7 @@ class Intersection;
 class Matrix;
 class Triangle;
 
-#define CACHE_ENTRIES 1024
+#define CACHE_ENTRIES 512 
 
 struct CachedVertex {
     double vert0[3], vert1[3], vert2[3];
@@ -19,17 +19,15 @@ struct CachedVertex {
     const Triangle* triangle;
     long last_ray_id;
     double last_t;
-};
+}; // 140 bytes
 
 
 class TriangleVertexCache {
     public:
 	TriangleVertexCache();
-	const CachedVertex* getCachedVertex(const Triangle* triangle) const;
-	
-	mutable CachedVertex cached_vertices[CACHE_ENTRIES];
-	mutable int next_free_slot;
-	mutable pthread_mutex_t mutex;
+	CachedVertex* getCachedVertex(const Triangle* triangle) const;
+    private:
+	pthread_key_t pthread_key;
 };
 
 /// The triangle of a Mesh
@@ -56,7 +54,6 @@ class Triangle : public Object {
     private:
 	Mesh* mesh;
 	uint32_t _tri_idx;
-	mutable uint32_t last_cache_key;
 };
 
 #endif
