@@ -49,7 +49,6 @@ class Triangle : public Object {
 	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 	double area() const;
         int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
-	//static TriangleVertexCache vertex_cache;
 
     private:
 	Mesh* mesh;
