@@ -27,6 +27,9 @@ Pathtracer::Pathtracer(RendererSettings* settings, Image* img, Scene* scene, KdT
 RGBA Pathtracer::getPixel(const Vector2& v) {
     Camera* camera = scene->getCamera();
     Ray ray = camera->getRay(v[0],v[1]);
+    if (ray.ignore()) {
+	return RGBA(0,0,0,0);
+    }
     ray.fromObject = camera;
     return tracePrimary(ray);
 }

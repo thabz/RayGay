@@ -49,7 +49,11 @@ PhotonRenderer::~PhotonRenderer() {
 
 RGBA PhotonRenderer::getPixel(const Vector2& v) {
     Ray ray = scene->getCamera()->getRay(v[0],v[1]);
-    return tracePrimary(ray);
+    if (ray.ignore()) {
+	return RGBA(0,0,0,0);
+    } else {
+	return tracePrimary(ray);
+    }
 }
 
 RGBA PhotonRenderer::tracePrimary(const Ray& ray) {

@@ -33,6 +33,9 @@ class Raytracer : public Renderer {
 
 inline
 RGBA Raytracer::tracePrimary(const Ray& ray) {
+    if (ray.ignore()) {
+	return RGBA(0,0,0,0);
+    }
     primary_rays_cast->inc();
     Intersection i;
     bool intersected = space->intersectPrimary(ray, i);

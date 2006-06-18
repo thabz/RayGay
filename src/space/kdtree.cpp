@@ -19,6 +19,7 @@ KdTree::KdTree() : GenericKdTree<Object>(KD_TREE_MAX_DEPTH, KD_TREE_MAX) {
 }
 
 bool KdTree::intersect(const Ray& ray, Intersection& result) const {
+    assert(!ray.ignore());
     Vector2 h = world_bbox.intersect(ray);
     if (h[1] < h[0]) {
 	return false;
@@ -32,6 +33,7 @@ bool KdTree::intersect(const Ray& ray, Intersection& result) const {
 }
 
 bool KdTree::intersectPrimary(const Ray& ray, Intersection& result) const {
+    assert(!ray.ignore());
     Vector2 h = world_bbox.intersect(ray);
     if (h[1] < h[0]) {
 	return false;
@@ -45,6 +47,7 @@ bool KdTree::intersectPrimary(const Ray& ray, Intersection& result) const {
 }
 
 Object* KdTree::intersectForShadow(const Ray& ray, double max_t) const {
+    assert(!ray.ignore());
     Vector2 h = world_bbox.intersect(ray);
     if (h[1] < h[0]) {
 	return NULL;
