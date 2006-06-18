@@ -6,12 +6,13 @@
 LatLong::LatLong() : Camera () {
 }
 
-Ray LatLong::_getRay(const double x, const double y) {
-    double du = -au + ((2.0 * au * x) / (width));
-    double dv = -av + ((2.0 * av * y) / (height));
-    Vector dir = basis * Vector(du,dv,-1);
-    Vector pos = position;
+Ray LatLong::_getRay(const double x, const double y) 
+{
+    double theta = M_PI * (y / height);
+    double phi = M_2PI * (x / width) - M_PI;
+    Vector dir = Vector(sin(theta)*cos(phi), -cos(theta), sin(theta)*sin(phi));
+    dir = dir;
     dir.normalize();
-    return Ray(pos, dir, 1.0);
+    return Ray(position, dir, 1.0);
 }
 

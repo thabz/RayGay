@@ -5,8 +5,10 @@
 #include "cameras/camera.h"
 
 /**
- * A latitude/longitude camera. This basically renderers a 360 degree panoramic
+ * A latitude/longitude camera. This basically renderers a 360x180 degree panoramic
  * view of the scene.
+ *
+ * This creates environmentmaps.
  * 
  */
 class LatLong : public Camera {
