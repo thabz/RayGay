@@ -33,6 +33,7 @@ class Ray {
 	Vector getPoint(const double t) const { return origin + t * direction; };
 
 	bool isCaustic() const;
+	bool ignore() const { return id == -1; };
 
 	mutable double t_scale;
 

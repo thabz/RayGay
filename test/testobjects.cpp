@@ -126,6 +126,16 @@ bool transparentCheck(Object* object, double radius) {
     return failures == 0;
 }
 
+class ray_test : public Test {
+    public:
+	void run() {
+	    Ray ray = Ray();
+	    assertTrue(ray.ignore());
+	    ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
+	    assertFalse(ray.ignore());
+	}
+};
+
 class sphere_test : public Test {
     public:
 	void run() {
@@ -1346,6 +1356,7 @@ int main(int argc, char *argv[]) {
 
     TestSuite suite;
 
+    suite.add("Ray", new ray_test());
     suite.add("Sphere",new sphere_test());
     suite.add("Cylinder",new cylinder_test());
     suite.add("Torus",new torus_test());

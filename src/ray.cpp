@@ -4,7 +4,7 @@
 long Ray::seq = 0;
 
 Ray::Ray() {
-    id = ++seq;
+    id = -1;
     indice_of_refraction = 1.0;
     specularBounces = 0;
     diffuseBounces = 0;
