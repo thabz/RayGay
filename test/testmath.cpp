@@ -1227,6 +1227,11 @@ class quaternion_test : public Test  {
 	    assertTrue(p * 2 == Quaternion(2,4,6,8));
 	    assertTrue(q * 3 == Quaternion(6,9,12,15));
 
+	    assertTrue(p.sqr() == p * p);
+	    assertTrue(q.sqr() == q * q);
+	    assertTrue((q*p).sqr() == q * p * q * p);
+	    assertTrue((q+p).sqr() == (q+p) * (q + p));
+
 	    // Rotations
 	    q = Quaternion::rotation(Vector(0,0,1),90.0);
 	    assertEqualF(q.norm(), 1.0);

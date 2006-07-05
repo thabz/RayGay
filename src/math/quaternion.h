@@ -35,6 +35,7 @@ class Quaternion
 	bool operator!=(const Quaternion& b) const;
 	Quaternion conjugate() const;
 	Quaternion inverse() const;
+	Quaternion sqr() const;
 	double norm() const;
 	double norm_squared() const;
 	Vector rotate(const Vector& v) const;
@@ -108,6 +109,23 @@ Quaternion Quaternion::operator*(const Quaternion& b) const
 	    a1*b2 + a2*b1 + a3*b4 - a4*b3,
 	    a1*b3 - a2*b4 + a3*b1 + a4*b2,
 	    a1*b4 + a2*b3 - a3*b2 + a4*b1);
+}
+
+/**
+ * Returns the square of the quaternion.
+ *
+ * This is a optimized version of the * operator.
+ */
+inline
+Quaternion Quaternion::sqr() const 
+{
+    double a1d = 2 * a1;
+    return Quaternion(
+	    a1*a1 - a2*a2 - a3*a3 - a4*a4,
+	    a1d*a2,
+	    a1d*a3,
+	    a1d*a4);
+
 }
 
 bool Quaternion::operator==(const Quaternion& b) const 
