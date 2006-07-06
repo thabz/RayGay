@@ -16,6 +16,21 @@ Vector scm2vector(SCM s_vector, char* subr, int pos) {
     return result;
 }
 
+Quaternion scm2quaternion(SCM s_vector, char* subr, int pos) {
+    if (!((SCM_NFALSEP (scm_list_p (s_vector))) &&
+    (scm_num2int(scm_length(s_vector), pos, subr) == 4))) {
+	scm_wrong_type_arg(subr,pos,s_vector);
+    }
+
+    double r[4];
+    SCM s_value;
+    for(uint32_t i = 0; i < 3; i++) {
+	s_value = scm_list_ref(s_vector, scm_int2num(i));
+	r[i] = scm_num2double(s_value, pos, subr);
+    }
+    return Quaternion(r[0], r[1], r[2], r[3]);
+}
+
 RGBA scm2rgba(SCM s_vector, char* subr, int pos) {
     if (!((SCM_NFALSEP (scm_list_p (s_vector))))) {
 	scm_wrong_type_arg(subr,pos,s_vector);

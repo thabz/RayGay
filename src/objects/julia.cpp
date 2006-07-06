@@ -2,7 +2,7 @@
 
 #define max_d 3
 
-Julia::Julia(Quaternion c, uint32_t max_iter, uint32_t steps, double accuracy, double iso, Material* mat) : IsoSurface(steps,accuracy, iso, mat) {
+Julia::Julia(Quaternion c, uint32_t max_iter, uint32_t steps, double accuracy, Material* mat) : IsoSurface(steps,accuracy,0, mat) {
     this->c = c;
     this->max_iter = max_iter;
 }
@@ -32,4 +32,8 @@ AABox Julia::_getBoundingBox() const
 {
     return AABox(Vector(-max_d, -max_d, -max_d),
 	         Vector( max_d,  max_d,  max_d));
+}
+
+SceneObject* Julia::clone() const {
+    return new Julia(*this);
 }
