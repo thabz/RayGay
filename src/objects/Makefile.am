@@ -28,6 +28,8 @@ libobjects_la_SOURCES = \
 		       heightfield.cpp	\
 		       isosurface.h	\
 		       isosurface.cpp	\
+		       julia.h		\
+		       julia.cpp	\
 		       mesh.h		\
 		       mesh.cpp		\
 		       necklace.h	\

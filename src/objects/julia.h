@@ -12,12 +12,16 @@
  */
 class Julia : public IsoSurface 
 {
+    public:
+	Julia(Quaternion c, uint32_t max_iter, uint32_t steps, double accuracy, double iso, Material* mat);
 
     protected:
 	double evaluateFunction(const Vector& point) const;
+	AABox _getBoundingBox() const = 0;
 
     private:
 	Quaternion c;
+	uint32_t max_iter; 
 
 };
 
