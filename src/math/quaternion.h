@@ -23,7 +23,9 @@ class Quaternion
 	Quaternion(double a, double b, double c, double d);
 	/// Constructor
 	Quaternion(double s, const Vector& v);
+	Quaternion(const Vector& v, double s);
 	Quaternion operator+(const Quaternion& b) const;
+	Quaternion operator-(const Quaternion& b) const;
 	Quaternion operator*(const Quaternion& b) const;
 	/// Scale quaternion
 	Quaternion operator*(double b) const;
@@ -70,6 +72,15 @@ Quaternion::Quaternion(double s, const Vector& v)
     a4 = v[2];
 }
 
+inline
+Quaternion::Quaternion(const Vector& v, double s) 
+{
+    a1 = v[0];
+    a2 = v[1];
+    a3 = v[2];
+    a4 = s;
+}
+
 /**
  * Add two quaternions.
  */
@@ -77,6 +88,12 @@ inline
 Quaternion Quaternion::operator+(const Quaternion& b) const 
 {
     return Quaternion(a1 + b.a1, a2 + b.a2, a3 + b.a3, a4 + b.a4);
+}
+
+inline
+Quaternion Quaternion::operator-(const Quaternion& b) const 
+{
+    return Quaternion(a1 - b.a1, a2 - b.a2, a3 - b.a3, a4 - b.a4);
 }
 
 inline

@@ -19,6 +19,7 @@ class Julia : public IsoSurface
     protected:
 	double evaluateFunction(const Vector& point) const;
 	AABox _getBoundingBox() const;
+	Vector normal(const Vector& p) const;
 
     private:
 	Quaternion c;

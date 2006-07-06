@@ -39,12 +39,12 @@ class IsoSurface : public Object, public Transformer {
 
 	/// Returns the bounding box in object space coordinates
 	virtual AABox _getBoundingBox() const = 0;
+	double accuracy;
 
     private:
 	virtual Vector normal(const Vector& p) const;
 	double refine(const Ray& ray, double t_begin, double t_end, double f_t_end) const;
 	uint32_t steps;
-	double accuracy;
 	double iso;
 
 };
