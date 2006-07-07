@@ -33,28 +33,27 @@ Vector Julia::normal(const Vector& point) const
 {
     Quaternion z = Quaternion(point, 0);
 
-    Quaternion gx1 = z - Quaternion(accuracy, 0, 0, 0);
-    Quaternion gx2 = z + Quaternion(accuracy, 0, 0, 0);
-    Quaternion gy1 = z - Quaternion(0, accuracy, 0, 0);
-    Quaternion gy2 = z + Quaternion(0, accuracy, 0, 0);
-    Quaternion gz1 = z - Quaternion(0, 0, accuracy, 0);
-    Quaternion gz2 = z + Quaternion(0, 0, accuracy, 0);
+    Quaternion x1_delta = z - Quaternion(accuracy, 0, 0, 0);
+    Quaternion x2_delta = z + Quaternion(accuracy, 0, 0, 0);
+    Quaternion y1_delta = z - Quaternion(0, accuracy, 0, 0);
+    Quaternion y2_delta = z + Quaternion(0, accuracy, 0, 0);
+    Quaternion z1_delta = z - Quaternion(0, 0, accuracy, 0);
+    Quaternion z2_delta = z + Quaternion(0, 0, accuracy, 0);
 
     uint32_t i;
     for(i = 0; i < max_iter; i++) {
-	gx1 = gx1.sqr() + c;
-	gx2 = gx2.sqr() + c;
-	gy1 = gy1.sqr() + c;
-	gy2 = gy2.sqr() + c;
-	gz1 = gz1.sqr() + c;
-	gz2 = gz2.sqr() + c;
+	x1_delta = x1_delta.sqr() + c;
+	x2_delta = x2_delta.sqr() + c;
+	y1_delta = y1_delta.sqr() + c;
+	y2_delta = y2_delta.sqr() + c;
+	z1_delta = z1_delta.sqr() + c;
+	z2_delta = z2_delta.sqr() + c;
     }
 
-    double gradX = gx2.norm() - gx1.norm();
-    double gradY = gy2.norm() - gy1.norm();
-    double gradZ = gz2.norm() - gz1.norm();
-
-    Vector normal = Vector(gradX, gradY, gradZ);
+    Vector normal = Vector(
+	    x2_delta.norm() - x1_delta.norm(), 
+	    y2_delta.norm() - y1_delta.norm(), 
+	    z2_delta.norm() - z1_delta.norm());
     normal.normalize();
     return normal;
 }
