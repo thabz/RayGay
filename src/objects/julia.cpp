@@ -7,8 +7,6 @@ Julia::Julia(Quaternion c, uint32_t max_iter, uint32_t steps, double accuracy, M
     this->max_iter = max_iter;
 }
 
-// See:
-// http://graphics.cs.uiuc.edu/svn/kcrane/web/project_qjulia_source.html
 double Julia::evaluateFunction(const Vector& point) const 
 {
     Quaternion z = Quaternion(point, 0);
@@ -29,6 +27,13 @@ double Julia::evaluateFunction(const Vector& point) const
     }
 }
 
+/**
+ * Specialized function for finding normals. The Isosurface::normal()
+ * method won't work, because the evaluateFunction() above only returns
+ * descreet values.
+ *
+ * @see http://graphics.cs.uiuc.edu/svn/kcrane/web/project_qjulia_source.html
+ */
 Vector Julia::normal(const Vector& point) const
 {
     Quaternion z = Quaternion(point, 0);
