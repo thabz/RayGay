@@ -1,6 +1,7 @@
 #include "objects/julia.h"
 
 #define max_d 4
+#define w_axis_offset 0.8
 
 Julia::Julia(Quaternion c, uint32_t max_iter, uint32_t steps, double accuracy, Material* mat) : IsoSurface(steps,accuracy,0, mat) {
     this->c = c;
@@ -9,7 +10,7 @@ Julia::Julia(Quaternion c, uint32_t max_iter, uint32_t steps, double accuracy, M
 
 double Julia::evaluateFunction(const Vector& point) const 
 {
-    Quaternion z = Quaternion(point, 0);
+    Quaternion z = Quaternion(point, w_axis_offset);
 
     uint32_t i = 0;
     double d = 0;
@@ -36,7 +37,7 @@ double Julia::evaluateFunction(const Vector& point) const
  */
 Vector Julia::normal(const Vector& point) const
 {
-    Quaternion z = Quaternion(point, 0);
+    Quaternion z = Quaternion(point, w_axis_offset);
 
     Quaternion x1_delta = z - Quaternion(accuracy, 0, 0, 0);
     Quaternion x2_delta = z + Quaternion(accuracy, 0, 0, 0);
