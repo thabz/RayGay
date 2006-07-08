@@ -19,6 +19,7 @@
 #include "objects/bezierpatch.h"
 #include "objects/csg.h"
 #include "objects/julia.h"
+#include "objects/marchingcubes.h"
 
 
 SCM make_sphere(SCM s_center, SCM s_radius, SCM s_material) 
@@ -411,6 +412,19 @@ SCM make_julia(SCM s_c, SCM s_max_iter, SCM s_steps, SCM s_accuracy, SCM s_mater
     return sceneobject2scm(julia);
 }
 
+SCM make_marching_cubes(SCM s_isosurface, SCM s_subdivisions, SCM s_adaptive)
+{
+    char* proc = "make-marching-cubes";
+
+    SceneObject* sobj = scm2sceneobject(s_isosurface, proc, 1);
+    IsoSurface* isosurface = dynamic_cast<IsoSurface*>(sobj);
+    if (isosurface == NULL) scm_wrong_type_arg(proc,1,s_isosurface);
+    int subdivisions= scm_num2int(s_subdivisions, 3, proc);
+    bool adaptive = SCM_NFALSEP(s_adaptive);
+    MarchingCubes* marching = new MarchingCubes(isosurface, subdivisions, adaptive);
+    return sceneobject2scm(marching);
+}
+
 SCM bounding_box(SCM s_obj) 
 {
     char* proc = "bounding-box";
@@ -468,6 +482,8 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) make_parametrized_surface);
     scm_c_define_gsubr("make-julia",5,0,0,
 	    (SCM (*)()) make_julia);
+    scm_c_define_gsubr("make-marching-cubes",3,0,0,
+	    (SCM (*)()) make_marching_cubes);
     scm_c_define_gsubr("bounding-box",1,0,0,
 	    (SCM (*)()) bounding_box);
 }

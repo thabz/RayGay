@@ -354,19 +354,16 @@ void MarchingCubes::handleCube(const Vector& min, const Vector& max) {
     if (edges & (1<<11)) edgepoints[11] = refine(cubeverts[3], cubeverts[7]);
 
     int8_t idx[3];
-    uint32_t i = 0;
-    do {
+    
+    for(uint32_t i = 0; face_indices[cubeindex][i] != -1; i += 3) {
 	idx[0] = face_indices[cubeindex][i+0];
 	idx[1] = face_indices[cubeindex][i+1];
 	idx[2] = face_indices[cubeindex][i+2];
-	if (idx[0] != -1) {
-	    addTriangle(
-		    edgepoints[idx[0]],
-		    edgepoints[idx[1]],
-		    edgepoints[idx[2]]);
-	}
-	i += 3;
-    } while (idx[0] != -1);
+	addTriangle(
+		edgepoints[idx[0]],
+		edgepoints[idx[1]],
+		edgepoints[idx[2]]);
+    };
 }
 
 void MarchingCubes::prepare()
@@ -384,6 +381,7 @@ void MarchingCubes::prepare()
 	    }
 	}
     }
+    Mesh::prepare();
 }
 
 

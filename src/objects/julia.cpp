@@ -2,7 +2,7 @@
 #include "objects/julia.h"
 
 #define max_d 4
-#define w_axis_offset 0.8
+#define w_axis_offset 0.0
 
 Julia::Julia(Quaternion c, uint32_t max_iter, uint32_t steps, double accuracy, Material* mat) : IsoSurface(steps,accuracy,0, mat) {
     this->c = c;
