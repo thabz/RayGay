@@ -28,6 +28,8 @@ class IsoSurface : public Object, public Transformer {
 	/// Return the bounding box in world space coordinates
 	AABox getBoundingBox() const;
 
+	bool inside(const Vector& p) const;
+
     protected:
 	/// Constructor
 	IsoSurface(uint32_t steps, double accuracy, double iso, Material* mat);
@@ -39,6 +41,8 @@ class IsoSurface : public Object, public Transformer {
 
 	/// Returns the bounding box in object space coordinates
 	virtual AABox _getBoundingBox() const = 0;
+
+
 	double accuracy;
 
     private:
@@ -48,6 +52,11 @@ class IsoSurface : public Object, public Transformer {
 	double iso;
 
 };
+
+inline
+bool IsoSurface::inside(const Vector& p) const {
+    return evaluateFunction(p) - iso > 0;
+}
 
 #endif
 

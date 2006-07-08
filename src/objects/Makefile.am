@@ -30,6 +30,8 @@ libobjects_la_SOURCES = \
 		       isosurface.cpp	\
 		       julia.h		\
 		       julia.cpp	\
+		       marchingcubes.cpp \
+		       marchingcubes.h	\
 		       mesh.h		\
 		       mesh.cpp		\
 		       necklace.h	\
