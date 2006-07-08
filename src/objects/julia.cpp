@@ -1,3 +1,4 @@
+
 #include "objects/julia.h"
 
 #define max_d 4
@@ -6,6 +7,7 @@
 Julia::Julia(Quaternion c, uint32_t max_iter, uint32_t steps, double accuracy, Material* mat) : IsoSurface(steps,accuracy,0, mat) {
     this->c = c;
     this->max_iter = max_iter;
+    assert(max_iter > 0);
 }
 
 double Julia::evaluateFunction(const Vector& point) const 
