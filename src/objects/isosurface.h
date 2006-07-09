@@ -30,6 +30,8 @@ class IsoSurface : public Object, public Transformer {
 
 	bool inside(const Vector& p) const;
 
+	double getAccuracy() { return accuracy; };
+
     protected:
 	/// Constructor
 	IsoSurface(uint32_t steps, double accuracy, double iso, Material* mat);
