@@ -310,15 +310,16 @@ static uint16_t active_edges[256] =
     0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x000
 };
 
-#define MAX_ITER 100
+#define MAX_ITER 200
 #define inside(p) (isosurface->inside(p) ? 1 : 0)
 
 Vector MarchingCubes::refine(const Vector& a, const Vector& b) {
+    double accuracy = isosurface->getAccuracy();
     if (adaptive) {
 	Vector aa = a, bb = b, mid;
 
 	uint32_t i = 0;
-	while (i++ < MAX_ITER) {
+	while (i++ < MAX_ITER && (aa-bb).norm() > accuracy*accuracy) {
 	    mid = 0.5 * (aa + bb); 
 	    if (inside(mid) == inside(aa)) {
 		aa = mid;
@@ -374,9 +375,9 @@ void MarchingCubes::handleCube(const Vector& min, const Vector& max) {
 	idx[1] = face_indices[cubeindex][i+1];
 	idx[2] = face_indices[cubeindex][i+2];
 	addTriangle(
-		edgepoints[idx[2]],
+		edgepoints[idx[0]],
 		edgepoints[idx[1]],
-		edgepoints[idx[0]]);
+		edgepoints[idx[2]]);
     };
 }
 

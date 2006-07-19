@@ -33,7 +33,6 @@ class MarchingCubes : public Mesh
 	IsoSurface* isosurface;
 	uint32_t subdivisions;
 	bool adaptive;
-	
 };
 
 #endif
