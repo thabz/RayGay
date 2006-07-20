@@ -315,6 +315,7 @@ static uint16_t active_edges[256] =
 
 Vector MarchingCubes::refine(const Vector& a, const Vector& b) {
     double accuracy = isosurface->getAccuracy();
+    assert(inside(a) != inside(b));
     if (adaptive) {
 	Vector aa = a, bb = b, mid;
 
@@ -350,8 +351,6 @@ void MarchingCubes::handleCube(const Vector& min, const Vector& max) {
     for(uint32_t i = 0; i < 8; i++) {
 	cubeindex |= inside(cubeverts[i]) << i;
     }
-
-    if (cubeindex == 0 || cubeindex == 255) return;
 
     uint32_t edges = active_edges[cubeindex];
 
