@@ -15,6 +15,8 @@
 #include <algorithm>
 #include <cctype>
 
+#include "collections/lru_hash.h"
+
 using namespace std;
 
 void test_bool() {
@@ -165,6 +167,27 @@ void test_vector_clear() {
     //cout << "capacity: " << a->capacity() << endl;
 }
 
+void test_lru_hash() {
+    LRUHash<int,int> lru = LRUHash<int,int>(3);
+    lru.insert(1,101);
+    lru.insert(2,102);
+    lru.insert(3,103);
+    assert(*(lru.find(1)) == 101);
+    assert(*(lru.find(2)) == 102);
+    assert(*(lru.find(3)) == 103);
+    lru.insert(1,105);
+    assert(*(lru.find(1)) == 105);
+    assert(*(lru.find(2)) == 102);
+    assert(*(lru.find(3)) == 103);
+    lru.insert(4,106);
+    lru.insert(5,107);
+    assert(lru.find(1) == NULL);
+    assert(lru.find(2) == NULL);
+    assert(*(lru.find(3)) == 103);
+    assert(*(lru.find(4)) == 106);
+    assert(*(lru.find(5)) == 107);
+}
+
 void test_shift() {
     uint a = 50;
     uint b;
@@ -193,6 +216,7 @@ int main(int argc, char *argv[]) {
     test_fmod();
     test_vector_clear();
     test_shift();
+    test_lru_hash();
     return EXIT_SUCCESS;
 }
 
