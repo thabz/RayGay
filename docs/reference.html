@@ -6,9 +6,43 @@
 <body>
 <h1>RayGay Scheme reference manual</h1>
 
+<h2>Contents</h2>
+<h3>Vector operations</h3>
+<a href="#vdot">vdot</a>
+<a href="#vcross">vcross</a>
+<a href="#bounding-box">bounding-box</a>
+<a href="#rotate">rotate</a>
+<a href="#translate">translate</a>
+<h3>Paths</h3>
+<a href="#make-circle">make-circle</a>
+<a href="#make-eclipse">make-eclipse</a>
+<a href="#make-linesegment">make-linesegment</a>
+<a href="#make-spiral">make-spiral</a>
+<a href="#make-bezierspline">make-bezierspline</a>
+<a href="#point-on-path">point-on-path</a>
+<a href="#tangent-to-path">tangent-to-path</a>
+
+<h3>Objects</h3>
+<a href="#make-sphere">make-sphere</a>
+<a href="#make-ellipsoid">make-ellipsoid</a>
+<a href="#make-torus">make-torus</a>
+<a href="#make-box">make-box</a>
+<a href="#make-solid-box">make-solid-box</a>
+<a href="#make-cylinder">make-cylinder</a>
+<a href="#make-uncapped-cylinder">make-uncapped-cylinder</a>
+<a href="#make-cone">make-cone</a>
+<a href="#make-uncapped-cone">make-uncapped-cone</a>
+<a href="#make-extrusion">make-extrusion</a>
+<a href="#make-heightfield">make-heightfield</a>
+<a href="#make-union">make-union</a>
+<a href="#make-difference">make-difference</a>
+<a href="#make-intersection">make-intersection</a>
+<a href="#make-bezierpatch">make-bezierpatch</a>
+
 <h2>Vector operations</h2>
 
 <div class="function">
+<a name="vdot">
 <h3>vdot</h3>
 <p><span class="functiondef">(vdot <i>vector</i> <i>vector</i>) &rarr; <i>real</i></tt></p>
 <pre>
@@ -16,6 +50,7 @@
 </div>
 
 <div class="function">
+<a name="vcross">
 <h3>vcross</h3>
 <p><span class="functiondef">(vcross <i>vector</i> <i>vector</i>) &rarr; <i>vector</i></tt></p>
 <pre>
@@ -23,12 +58,14 @@
 </div>
 
 <div class="function">
+<a name="bounding-box">
 <h3>bounding-box</h3>
 <p><span class="functiondef">(bounding-box <i>object</i>:object ) &rarr; <i>(vector,vector)</i></tt></p>
 <p>Returns two corners describing the axis-aligned boundingbox of the object.</p>
 </div>
 
 <div class="function">
+<a name="rotate">
 <h3>rotate</h3>
 <p><span class="functiondef">(rotate <i>vector</i>:vector <i>vector</i>:axis <i>real</i>:angle) &rarr; <i>vector</i></tt></p>
 <p><span class="functiondef">(rotate <i>object</i>:object <i>vector</i>:axis <i>real</i>:angle) &rarr; <i>object</i></tt></p>
@@ -37,6 +74,7 @@
 </div>
 
 <div class="function">
+<a name="translate">
 <h3>translate</h3>
 <p><span class="functiondef">(translate <i>vector</i> translation) &rarr; <i>vector</i></tt></p>
 <p><span class="functiondef">(translate <i>object</i> translation) &rarr; <i>object</i></tt></p>

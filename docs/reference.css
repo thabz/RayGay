@@ -7,7 +7,7 @@ body {
 div.function {
     border: 1px solid #888880;
     margin: 0.8em;	    
-    padding: 0;	    
+    padding: 0;
 }
 
 div.function p {
@@ -28,4 +28,9 @@ span.functiondef {
 
 span.functiondef i {
     color: #888880;
+}
+
+a {
+	color: #888880;
+	text-decoration: none;
 }
