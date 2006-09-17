@@ -3,6 +3,7 @@
 #define MATH_POISSON_DISC
 
 #include "math/vector2.h"
+#include "math/interval.h"
 
 class PoissonDiscDistribution
 {
@@ -15,6 +16,9 @@ class PoissonDiscDistribution
 	 * @return the number of points found whis is &leq; num
 	 */
 	static int createSet(double w, double h, double r, int num, Vector2* result);
+
+    private:
+	static int BoundarySampling(double w, double h, double r, uint32_t num, Vector2* dest);
 };
 
 #endif
