@@ -85,6 +85,7 @@
 <h2>Paths</h2>
 
 <div class="function">
+<a name="make-circle">	
 <h3>make-circle</h3>
 <p><span class="functiondef">(make-circle <i>vector</i>:center <i>real</i>:radius <i>vector</i>:normal) &rarr; <i>path</i></tt></p>
 <pre>
@@ -93,6 +94,7 @@
 </div>
 
 <div class="function">
+<a name="make-ellipse">
 <h3>make-ellipse</h3>
 <p><span class="functiondef">(make-ellipse <i>vector</i>:center <i>real</i>:radius<sub>x</sub> <i>real</i>:radius<sub>y</sub> <i>vector</i>:normal) &rarr; <i>path</i></tt></p>
 <pre>
@@ -101,6 +103,7 @@
 </div>
 
 <div class="function">
+<a name="make-linesegment">
 <h3>make-linesegment</h3>
 <p><span class="functiondef">(make-linesegment <i>vector</i>:from <i>vector</i>:to) &rarr; <i>path</i></tt></p>
 <pre>
@@ -108,6 +111,7 @@
 </div>
 
 <div class="function">
+<a name="make-spiral">
 <h3>make-spiral</h3>
 <p><span class="functiondef">(make-spiral <i>path</i>:path radius windings offset) &rarr; <i>path</i></tt></p>
 <pre>
@@ -116,7 +120,8 @@
 
 <div class="function">
 <h3>make-bezierspline</h3>
-<p><span class="functiondef">(make-bezierspline vectors) &rarr; <i>path</i></tt></p>
+<a name="make-bezierspline">
+<p><span class="functiondef">(make-bezierspline <i>vector</i>:point<sub>1</sub> ... <i>vector</i>:point<sub>N</sub>) &rarr; <i>path</i></tt></p>
 <p>
 <pre>
 (make-bezierspline '((0 0 0) (10 10 10) (20 20 10)))
@@ -125,15 +130,17 @@
 </div>
 
 <div class="function">
+<a name="point-on-path">
 <h3>point-on-path</h3>
-<p><span class="functiondef">(point-on-path <i>path</i>:path t) &rarr; vector</tt></p>
+<p><span class="functiondef">(point-on-path <i>path</i>:path <i>real</i>:t) &rarr; vector</tt></p>
 <pre>
 </pre>
 </div>
 
 <div class="function">
+<a name="tangent-to-path">
 <h3>tangent-to-path</h3>
-<p><span class="functiondef">(point-on-path <i>path</i>:path t) &rarr; vector</tt></p>
+<p><span class="functiondef">(tangent-to-path <i>path</i>:path <i>real</i>:t) &rarr; vector</tt></p>
 <pre>
 </pre>
 </div>
@@ -141,6 +148,7 @@
 <h2>Objects</h2>
 
 <div class="function">
+<a name="make-sphere">
 <h3>make-sphere</h3>
 <p><span class="functiondef">(make-sphere <i>vector</i>:center <i>real</i>:radius <i>material</i>:material) &rarr; <i>object</i></tt></p>
 <p><span class="functiondef">(make-sphere <i>vector</i>:center <i>real</i>:radius) &rarr; <i>object</i></tt></p>
@@ -149,6 +157,7 @@
 </div>
 
 <div class="function">
+<a name="make-ellipsoid">
 <h3>make-ellipsoid</h3>
 <p><span class="functiondef">(make-ellipsoid <i>vector</i>:center <i>vector</i>:radii <i>material</i>:material) &rarr; <i>object</i></tt></p>
 <p><span class="functiondef">(make-ellipsoid <i>vector</i>:center <i>vector</i>:radii) &rarr; <i>object</i></tt></p>
