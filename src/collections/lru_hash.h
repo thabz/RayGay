@@ -10,39 +10,41 @@ using namespace std;
 
 /**
  * A least-recently-used map
+ * 
+ * The template parameters K and V are the key- and valuetype.
  */
-template <typename key_type, typename value_type> 
+template <typename K, typename V> 
 class LRUHash 
 {
     public:
 	LRUHash(uint32_t max_size);
-	void insert(const key_type& key, const value_type& value);
-	value_type* find(const key_type& key);
+	void insert(const K& key, const V& value);
+	V* find(const K& key);
 
     private:
-	typedef typename list<key_type>::iterator list_iter_type;
+	typedef typename list<K>::iterator list_iter_type;
 	// The values that we really store includes a pointer into the lru_list
 	struct internal_value {
 	    list_iter_type list_iter;
-	    value_type value;
+	    V value;
 	};
-	typedef typename map<key_type, internal_value>::iterator map_iter_type;
+	typedef typename map<K, internal_value>::iterator map_iter_type;
 	// Max number of keys in the hash at any given time
 	uint32_t max_size;
 	// A linked list of last recently used keys
-	list<key_type> lru_list;
+	list<K> lru_list;
 	// The wrapped hashmap
-	map<key_type, internal_value> table;
+	map<K, internal_value> table;
 
 };
 
-template <typename key_type, typename value_type> 
-LRUHash<key_type,value_type>::LRUHash(uint32_t max_size) : max_size(max_size)
+template <typename K, typename V> 
+LRUHash<K,V>::LRUHash(uint32_t max_size) : max_size(max_size)
 {
 };
 
-template <typename key_type, typename value_type> 
-value_type* LRUHash<key_type,value_type>::find(const key_type& key)
+template <typename K, typename V> 
+V* LRUHash<K,V>::find(const K& key)
 {
     map_iter_type map_iter = table.find(key);
     if (map_iter == table.end()) {
@@ -58,10 +60,10 @@ value_type* LRUHash<key_type,value_type>::find(const key_type& key)
 };
 
 
-template <typename key_type, typename value_type> 
-void LRUHash<key_type,value_type>::insert(const key_type& key, const value_type& value)
+template <typename K, typename V> 
+void LRUHash<K,V>::insert(const K& key, const V& value)
 {
-    value_type* val = find(key);
+    V* val = find(key);
 
     if (val != NULL) {
 	// Simple update the already hashed value
