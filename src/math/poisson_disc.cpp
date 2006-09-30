@@ -102,7 +102,7 @@ int PoissonDiscDistribution::BoundarySampling(double w, double h, double r, uint
 	    boundaries[j].subtract(new_boundary.getC(), new_boundary.getR());
 	}
 	
-	// TODO: Subtract the box [0,w]x[0,h] from p's boundary
+	// TODO: Subtract the box [0,w]x[0,h] from new boundary
 
 	// Store new bounary 
 	boundaries.push_back(new_boundary);
