@@ -57,25 +57,25 @@ AC_SUBST(PNG_LIBS)
 dnl -------------------------------------------------
 dnl Check for Guile
 dnl -------------------------------------------------
-GUILE_PROGS
-GUILE_FLAGS
-AC_SUBST(GUILE_CFLAGS)
-AC_SUBST(GUILE_LDFLAGS)
+#GUILE_PROGS
+#GUILE_FLAGS
+#AC_SUBST(GUILE_CFLAGS)
+#AC_SUBST(GUILE_LDFLAGS)
 
-if test "x$PKG_CONFIG" != "xno"; then
-   echo -n "checking for gtk+2.0... "
-   if pkg-config --exists gtk+-2.0; then
-        echo "yes"
-	pkg_modules="gtk+-2.0 >= 1.3"
-	PKG_CHECK_MODULES(GTK, [$pkg_modules])
-	AC_SUBST(GTK_CFLAGS)
-	AC_SUBST(GTK_LIBS)
+AC_PATH_PROG(PKG_CONFIG,pkg-config,
+[ echo "No pkg-config found. Ignoring GTK+ stuff."
+]
+,
+[
+if test `pkg-config --exists gtk+-2.0`; then
+	    pkg_modules="gtk+-2.0 >= 1.3" 
+	    PKG_CHECK_MODULES(GTK, [$pkg_modules]) 
+	    AC_SUBST(GTK_CFLAGS)
+	    AC_SUBST(GTK_LIBS)
         GTK_LIBS="$GTK_LIBS -lgthread-2.0"
         AC_DEFINE([HAVE_GTK],[1],[Found GTK+-2.0. Will build the preview window.])
-   else 
-    	echo "no"
-   fi    
 fi
+])
 
 dnl -------------------------------------------------
 dnl Add the CPU dependent compile optimizations
