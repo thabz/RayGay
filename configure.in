@@ -145,7 +145,10 @@ echo "--------------------------------------------------------------"
 echo "You can specify the target CPU to enable special optimizations"
 echo "Example: ./configure --target=<cpu>"
 echo
-echo "Where <cpu> can be: pentium3, pentium4"
+echo "Where <cpu> can be: pentium3, pentiu4, g4"
 echo 
 echo "--------------------------------------------------------------"
+
+echo "Fixing broken libtool in MacOS X 10.4 Tiger"
+perl -pi.bak -e 's/^whole_archive_flag_spec=.*/whole_archive_flag_spec=/g' libtool  
 
