@@ -57,10 +57,10 @@ AC_SUBST(PNG_LIBS)
 dnl -------------------------------------------------
 dnl Check for Guile
 dnl -------------------------------------------------
-#GUILE_PROGS
-#GUILE_FLAGS
-#AC_SUBST(GUILE_CFLAGS)
-#AC_SUBST(GUILE_LDFLAGS)
+GUILE_PROGS
+GUILE_FLAGS
+AC_SUBST(GUILE_CFLAGS)
+AC_SUBST(GUILE_LDFLAGS)
 
 AC_PATH_PROG(PKG_CONFIG,pkg-config,
 [ echo "No pkg-config found. Ignoring GTK+ stuff."
@@ -149,6 +149,4 @@ echo "Where <cpu> can be: pentium3, pentiu4, g4"
 echo 
 echo "--------------------------------------------------------------"
 
-echo "Fixing broken libtool in MacOS X 10.4 Tiger"
-perl -pi.bak -e 's/^whole_archive_flag_spec=.*/whole_archive_flag_spec=/g' libtool  
 
