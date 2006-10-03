@@ -7,4 +7,4 @@ Makefile
 *.lo
 *.la
 *.a
-
+.DS_Store
