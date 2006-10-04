@@ -77,6 +77,11 @@ if test `pkg-config --exists gtk+-2.0`; then
 fi
 ])
 
+darwin=`uname`
+if test "x$darwin" = "xDarwin"; then
+   AC_DEFINE([HAVE_DARWIN],[1],[System is Mac OS X])
+fi
+
 dnl -------------------------------------------------
 dnl Add the CPU dependent compile optimizations
 dnl -------------------------------------------------
