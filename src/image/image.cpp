@@ -8,6 +8,7 @@
 #include "image/imageio_jpeg.h"
 #include "image/imageio_png.h"
 #include "image/imageio_hdri.h"
+#include "image/imageio_darwin.h"
 #include "exception.h"
 #include <cassert>
 #include <iostream>
@@ -89,7 +90,7 @@ ImageIO* getImageIO(const std::string& filename) {
     ImageIO* io;
 
     if (filename.find(".jpg") != string::npos) {
-#ifdef HAVE_JPEGLIB_H	
+#ifdef HAVE_JPEGLIB_H && !OS_DARWIN	
 	io = new JpegIO();
 #elif OS_DARWIN
         io = new DarwinIO();
@@ -99,7 +100,7 @@ ImageIO* getImageIO(const std::string& filename) {
     } else if (filename.find(".tga") != string::npos) {
 	io = new TgaIO();
     } else if (filename.find(".png") != string::npos) {
-#ifdef HAVE_PNG_H	
+#ifdef HAVE_PNG_H && !OS_DARWIN	
 	io = new PngIO();
 #elif OS_DARWIN
         io = new DarwinIO();

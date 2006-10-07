@@ -8,7 +8,7 @@
 
 #ifdef OS_DARWIN
 
-#include "imageio.h"
+#include "image/imageio.h"
 #include <ApplicationServices/ApplicationServices.h>
 
 /**
@@ -19,7 +19,7 @@ class DarwinIO : public ImageIO {
 	void save(const Image* const image, const std::string& filename) const;
 	Image* load(const std::string& filename);
     private:
-        CFStringRef filenameToUTI(const string& filename) const 
+        CFStringRef filenameToUTI(const std::string& filename) const;
 };
 
 #endif
