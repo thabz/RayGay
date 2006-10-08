@@ -43,16 +43,34 @@ if test "x$PKG_CONFIG" = "xno"; then
    echo "You need to install pkg-config to compile GTK+ stuff."
 fi
 
+
+dnl -------------------------------------------------
+dnl Mac OS X 
+dnl -------------------------------------------------
+darwin=`uname`
+if test "x$darwin" = "xDarwin"; then
+   AC_DEFINE([OS_DARWIN],[1],[System is Mac OS X])
+#   LIBS="$LIBS -framework ApplicationServices"
+fi
+AM_CONDITIONAL(OS_DARWIN, test "x$darwin" = "xDarwin")
+AC_CHECK_HEADERS([ApplicationServices/ApplicationServices.h],[],[],[])
+
 dnl -------------------------------------------------
 dnl Check libraries needed
 dnl -------------------------------------------------
 LIBS="$LIBS -lm"    
 AC_CHECK_LIB(m, sin,,[AC_MSG_ERROR([math library is not found])],)
 AC_CHECK_LIB(pthread, pthread_create,LIBS="-lpthread $LIBS")
-AC_CHECK_LIB(jpeg, jpeg_read_header,JPEG_LIBS="-ljpeg")
-AC_CHECK_LIB(png, png_read_info, PNG_LIBS="-lpng")
-AC_SUBST(JPEG_LIBS)
-AC_SUBST(PNG_LIBS)
+
+dnl -------------------------------------------------
+dnl Image libs on non-Darwin
+dnl -------------------------------------------------
+if test "x$darwin" = "xLinux"; then
+   AC_CHECK_LIB(jpeg, jpeg_read_header,JPEG_LIBS="-ljpeg")
+   AC_CHECK_LIB(png, png_read_info, PNG_LIBS="-lpng")
+   AC_SUBST(JPEG_LIBS)
+   AC_SUBST(PNG_LIBS)
+fi
 
 dnl -------------------------------------------------
 dnl Check for Guile
@@ -76,11 +94,6 @@ if test `pkg-config --exists gtk+-2.0`; then
         AC_DEFINE([HAVE_GTK],[1],[Found GTK+-2.0. Will build the preview window.])
 fi
 ])
-
-darwin=`uname`
-if test "x$darwin" = "xDarwin"; then
-   AC_DEFINE([HAVE_DARWIN],[1],[System is Mac OS X])
-fi
 
 dnl -------------------------------------------------
 dnl Add the CPU dependent compile optimizations

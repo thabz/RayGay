@@ -90,25 +90,29 @@ ImageIO* getImageIO(const std::string& filename) {
     ImageIO* io;
 
     if (filename.find(".jpg") != string::npos) {
-#ifdef HAVE_JPEGLIB_H && !OS_DARWIN	
+#ifdef OS_DARWIN
+    io = new DarwinIO();
+#elif HAVE_JPEGLIB
 	io = new JpegIO();
-#elif OS_DARWIN
-        io = new DarwinIO();
 #else    
 	throw_exception("Support for JPEG-files is not compiled in.");
 #endif	
     } else if (filename.find(".tga") != string::npos) {
 	io = new TgaIO();
     } else if (filename.find(".png") != string::npos) {
-#ifdef HAVE_PNG_H && !OS_DARWIN	
-	io = new PngIO();
-#elif OS_DARWIN
+#ifdef OS_DARWIN	
         io = new DarwinIO();
+#elif HAVE_PNG
+    	io = new PngIO();
 #else
 	throw_exception("Support for PNG-files is not compiled in.");
 #endif	
     } else if (filename.find(".hdr") != string::npos) {
 	io = new HdriIO();
+#ifdef OS_DARWIN	
+    } else if (filename.find(".jp2") != string::npos) {
+    	io = new DarwinIO();
+#endif
     } else {
 	throw_exception(filename + " has unknown fileformat.");
     }

@@ -3,8 +3,6 @@ INCLUDES = -I$(top_srcdir)/src
 
 noinst_LTLIBRARIES = libimage.la
 
-#LIBS = -framework ApplicationServices
-
 libimage_la_SOURCES = image.cpp \
                      rgb.cpp \
                      rgba.cpp \
@@ -15,7 +13,8 @@ libimage_la_SOURCES = image.cpp \
 		     imageio_png.cpp \
 		     imageio_darwin.cpp
 
-libimage_la_LIBADD = @JPEG_LIBS@ @PNG_LIBS@		     
+libimage_la_LIBADD = @JPEG_LIBS@ @PNG_LIBS@
+libimage_la_LDFLAGS = -framework ApplicationServices		     
 
 EXTRA_DIST = image.h 		\
              imageio.h 		\
