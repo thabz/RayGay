@@ -12,6 +12,11 @@ void DarwinIO::save(const Image* const image, const std::string& filename) const
 {
     CGImageRef imageRef;
     // TODO: Create CFImage from imagedata.
+    // CGBitmapContextCreate...
+    // ..Plot
+    // CGImageRef CGBitmapContextCreateImage(CGContextRef)
+
+
     CFStringRef UTI = filenameToUTI(filename);
     CFStringRef path = CFStringCreateWithCString(NULL, filename.c_str(), kCFStringEncodingUTF8);
     CFURLRef url = CFURLCreateWithFileSystemPath (NULL, path, kCFURLPOSIXPathStyle, NULL);
@@ -34,6 +39,11 @@ Image* DarwinIO::load(const std::string& filename)
     long h = CGImageGetHeight(image);
     Image* result = new Image(w,h);
     // TODO: Copy image data
+
+    // CGContextRef context = CGBitmapContextCreate...
+    // CGContextDrawImage(context,rect,image);
+    // Kopier pixels fra contextens backing array
+
     return result;
 }
 
