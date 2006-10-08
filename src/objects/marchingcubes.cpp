@@ -314,13 +314,14 @@ static uint16_t active_edges[256] =
 #define inside(p) (isosurface->inside(p) ? 1 : 0)
 
 Vector MarchingCubes::refine(const Vector& a, const Vector& b) {
-    double accuracy = isosurface->getAccuracy();
+    double accuracy_sqr = isosurface->getAccuracy();
+    accuracy_sqr *= accuracy_sqr;
     assert(inside(a) != inside(b));
     if (adaptive) {
 	Vector aa = a, bb = b, mid;
 
 	uint32_t i = 0;
-	while (i++ < MAX_ITER && (aa-bb).norm() > accuracy*accuracy) {
+	while (i++ < MAX_ITER && (aa-bb).norm() > accuracy_sqr) {
 	    mid = 0.5 * (aa + bb); 
 	    if (inside(mid) == inside(aa)) {
 		aa = mid;
