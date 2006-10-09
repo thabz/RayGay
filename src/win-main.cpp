@@ -73,12 +73,16 @@ void createImage() {
         image->save("created.png");
 }
 
+void saveload() {
+        Image* image = Image::load("test.png");
+        image->save("test.jp2");
+}
 int main(int argc, char *argv[]) 
 {
         
     try {    
         cout << "Creating an image and saving it" << endl;
-        createImage();
+        saveload();
         cout << "It worked?" << endl;
     } catch (Exception e) {
 	cout << "Exception: " << e.getMessage() 
