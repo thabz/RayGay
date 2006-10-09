@@ -112,7 +112,12 @@ ImageIO* getImageIO(const std::string& filename) {
 #ifdef OS_DARWIN	
     } else if (filename.find(".jp2") != string::npos) {
     	io = new DarwinIO();
+    } else if (filename.find(".tif") != string::npos) {
+    	io = new DarwinIO();
+    } else if (filename.find(".tiff") != string::npos) {
+    	io = new DarwinIO();
 #endif
+
     } else {
 	throw_exception(filename + " has unknown fileformat.");
     }

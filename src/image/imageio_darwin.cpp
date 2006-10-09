@@ -21,23 +21,23 @@ void DarwinIO::save(const Image* const image, const std::string& filename) const
 
     unsigned long w = image->getWidth();
     unsigned long h = image->getHeight();
-    unsigned char* data = (unsigned char*)malloc(w * h * 4);
+    uint8_t* data = (uint8_t*)malloc(w * h * 4);
 
-    for( unsigned int y = 0; y < w; y++ ) {
+    for(uint32_t y = 0; y < h; y++ ) {
             for( unsigned int x = 0; x < w; x++ ) {
                     RGBA c = image->getRGBA(x,y);
                     c.clip();
-                    c *= 255;
-                    data[4*(x + y*w) + 0] = c.r();
-                    data[4*(x + y*w) + 1] = c.g();
-                    data[4*(x + y*w) + 2] = c.b();
-                    data[4*(x + y*w) + 3] = c.a();
+                    data[4*(x + y*w) + 0] = uint8_t(c.r()*255.0);
+                    data[4*(x + y*w) + 1] = uint8_t(c.g()*255.0);
+                    data[4*(x + y*w) + 2] = uint8_t(c.b()*255.0);
+                    data[4*(x + y*w) + 3] = uint8_t(c.a()*255.0);
             }
     }
 
     CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-    CGContextRef contextRef = CGBitmapContextCreate(data, w, h, 4, 4*w, 
+    CGContextRef contextRef = CGBitmapContextCreate(data, w, h, 8, 4*w, 
                                    colorSpace, kCGImageAlphaPremultipliedLast);
+
     CGImageRef imageRef = CGBitmapContextCreateImage(contextRef);  
 
     CFStringRef UTI = filenameToUTI(filename);
@@ -49,6 +49,7 @@ void DarwinIO::save(const Image* const image, const std::string& filename) const
     CGImageDestinationFinalize(imageDest);
     CFRelease(path);
     CFRelease(url);
+    cout << "Done" << endl;
 }
 
 Image* DarwinIO::load(const std::string& filename) 

@@ -13,6 +13,7 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 #include "image/image.h"
+#include "exception.h"
 
 using namespace std;
 
@@ -59,8 +60,33 @@ void saveSomeData()
         saveImageAsPNG(image, "data.png");
 }
 
+void createImage() {
+        Image* image = new Image(640,480);
+        for( unsigned int x = 0; x < 100; x += 1 )
+        {
+                for( unsigned int y = 0; y < 100; y += 1 )
+                {
+                        image->setRGBA(x+100,y+100,RGBA(x / 100.0, y / 100.0,0,0.5));
+                }
+                
+        }
+        image->save("created.png");
+}
+
 int main(int argc, char *argv[]) 
 {
+        
+    try {    
+        cout << "Creating an image and saving it" << endl;
+        createImage();
+        cout << "It worked?" << endl;
+    } catch (Exception e) {
+	cout << "Exception: " << e.getMessage() 
+	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
+	return EXIT_FAILURE;
+    }
+    
+/*
     cout << "Trying to read an imagefile using Quartz 2D" << endl;
 
     const char* filename = "test.jpg";
@@ -74,6 +100,6 @@ int main(int argc, char *argv[])
     saveImageAsPNG(image,"test-out.png");
 
     saveSomeData();
-    
+  */  
     return EXIT_SUCCESS;
 }

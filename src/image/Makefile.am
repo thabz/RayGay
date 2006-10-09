@@ -3,6 +3,9 @@ INCLUDES = -I$(top_srcdir)/src
 
 noinst_LTLIBRARIES = libimage.la
 
+LIBS = -framework ApplicationServices		     
+
+
 libimage_la_SOURCES = image.cpp \
                      rgb.cpp \
                      rgba.cpp \
