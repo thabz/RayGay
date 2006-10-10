@@ -52,6 +52,8 @@ void DarwinIO::save(const Image* const image, const std::string& filename) const
 
 Image* DarwinIO::load(const std::string& filename) 
 {
+#define TYPE uint8_t
+        
     CFStringRef path = CFStringCreateWithCString(NULL, filename.c_str(), kCFStringEncodingUTF8);
     CFURLRef url = CFURLCreateWithFileSystemPath (NULL, path, kCFURLPOSIXPathStyle, NULL);
     CGImageSourceRef source = CGImageSourceCreateWithURL(url, NULL);
@@ -63,22 +65,29 @@ Image* DarwinIO::load(const std::string& filename)
     CGImageAlphaInfo alpha_info = CGImageGetAlphaInfo(imageRef);
     Image* result = new Image(w,h);
     
-    uint8_t* data = (uint8_t*)malloc(w * h * 4);
+    TYPE* data = (TYPE*)malloc(w * h * 4 * sizeof(TYPE));
+    for( uint32_t i = 0; i < w*h*4; i += 4 )
+    {
+            data[i+0] = 0.0;
+            data[i+1] = 0.0;
+            data[i+2] = 0.0;
+            data[i+3] = 0.0;
+    }
+    CGBitmapInfo bitmapInfo = kCGImageAlphaPremultipliedLast;
+    if (sizeof(TYPE) == 4)
+        bitmapInfo = bitmapInfo | kCGBitmapFloatComponents;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-    CGContextRef contextRef = CGBitmapContextCreate(data, w, h, 8, 4*w, 
-                                   colorSpace, kCGImageAlphaPremultipliedLast);
-    CGSize size;
-    size.width = w;
-    size.height = h;
+    CGContextRef contextRef = CGBitmapContextCreate(data, w, h, sizeof(TYPE)*8, sizeof(TYPE)*4*w, 
+                                   colorSpace, bitmapInfo);
     CGRect rect;
     rect.origin = CGPointZero;
-    rect.size = size;
+    rect.size.width = w;
+    rect.size.height = h;
     CGContextDrawImage(contextRef,rect,imageRef);
-
+    alpha_info = kCGImageAlphaPremultipliedLast;
     for(uint32_t y = 0; y < h; y++ ) {
             for( uint32_t x = 0; x < w; x++ ) {
                     RGBA c;
-                    c.clip();
                     if (alpha_info == kCGImageAlphaNone || alpha_info == kCGImageAlphaNoneSkipLast) {
                             c = RGBA(double(data[4*(x + y*w) + 0]) / 255.0, 
                                     double(data[4*(x + y*w) + 1]) / 255.0,
@@ -115,10 +124,11 @@ Image* DarwinIO::load(const std::string& filename)
                                     double(data[4*(x + y*w) + 3]) / 255.0,
                                     1);
                     } else if (alpha_info == kCGImageAlphaPremultipliedLast) {
+                            double a = double(data[4*(x + y*w) + 3]) / 255.0;
                             c = RGBA(double(data[4*(x + y*w) + 0]) / 255.0, 
-                                    double(data[4*(x + y*w) + 1]) / 255.0,
-                                    double(data[4*(x + y*w) + 2]) / 255.0,
-                                    1);
+                                     double(data[4*(x + y*w) + 1]) / 255.0,
+                                     double(data[4*(x + y*w) + 2]) / 255.0,
+                                     a);
                     };
                     result->setRGBA(x,y,c);
             }
