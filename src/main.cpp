@@ -27,6 +27,7 @@
 #include <iostream>
 #include <vector>
 #include <unistd.h>
+#include <unistd.h>
 
 #include "stats.h"
 #include "exception.h"
@@ -358,7 +359,9 @@ void print_usage() {
     cout << "       -d                   Print debugging information" << endl;
     cout << "       -h                   Show this help message" << endl;
     cout << "       -v                   Show current versionnumber" << endl;
-
+    int a;
+    a = sysconf(_SC_NPROCESSORS_ONLN);
+    cout << "CPUs: " << a << endl;
 }
 
 int main(int argc, char *argv[]) {
