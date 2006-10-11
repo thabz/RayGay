@@ -36,24 +36,25 @@ AC_CHECK_HEADERS(jpeglib.h)
 AC_CHECK_HEADERS(png.h)    
 
 dnl -------------------------------------------------
-dnl Check for pkg-config
-dnl -------------------------------------------------
-AC_PATH_PROG(PKG_CONFIG,pkg-config,no)
-if test "x$PKG_CONFIG" = "xno"; then
-   echo "You need to install pkg-config to compile GTK+ stuff."
-fi
-
-
-dnl -------------------------------------------------
 dnl Mac OS X 
 dnl -------------------------------------------------
-darwin=`uname`
-if test "x$darwin" = "xDarwin"; then
+target_os=`uname`
+if test "x$target_os" = "xDarwin"; then
    AC_DEFINE([OS_DARWIN],[1],[System is Mac OS X])
 #   LIBS="$LIBS -framework ApplicationServices"
 fi
-AM_CONDITIONAL(OS_DARWIN, test "x$darwin" = "xDarwin")
+AM_CONDITIONAL(OS_DARWIN, test "x$target_os" = "xDarwin")
 AC_CHECK_HEADERS([ApplicationServices/ApplicationServices.h],[],[],[])
+
+dnl -------------------------------------------------
+dnl Image libs on Linux
+dnl -------------------------------------------------
+if test "x$target_os" = "xLinux"; then
+   AC_CHECK_LIB(jpeg, jpeg_read_header,JPEG_LIBS="-ljpeg")
+   AC_CHECK_LIB(png, png_read_info, PNG_LIBS="-lpng")
+   AC_SUBST(JPEG_LIBS)
+   AC_SUBST(PNG_LIBS)
+fi
 
 dnl -------------------------------------------------
 dnl Check libraries needed
@@ -63,16 +64,6 @@ AC_CHECK_LIB(m, sin,,[AC_MSG_ERROR([math library is not found])],)
 AC_CHECK_LIB(pthread, pthread_create,LIBS="-lpthread $LIBS")
 
 dnl -------------------------------------------------
-dnl Image libs on non-Darwin
-dnl -------------------------------------------------
-if test "x$darwin" = "xLinux"; then
-   AC_CHECK_LIB(jpeg, jpeg_read_header,JPEG_LIBS="-ljpeg")
-   AC_CHECK_LIB(png, png_read_info, PNG_LIBS="-lpng")
-   AC_SUBST(JPEG_LIBS)
-   AC_SUBST(PNG_LIBS)
-fi
-
-dnl -------------------------------------------------
 dnl Check for Guile
 dnl -------------------------------------------------
 GUILE_PROGS
@@ -80,20 +71,22 @@ GUILE_FLAGS
 AC_SUBST(GUILE_CFLAGS)
 AC_SUBST(GUILE_LDFLAGS)
 
-AC_PATH_PROG(PKG_CONFIG,pkg-config,
-[ echo "No pkg-config found. Ignoring GTK+ stuff."
-]
-,
-[
-if test `pkg-config --exists gtk+-2.0`; then
-	    pkg_modules="gtk+-2.0 >= 1.3" 
-	    PKG_CHECK_MODULES(GTK, [$pkg_modules]) 
-	    AC_SUBST(GTK_CFLAGS)
-	    AC_SUBST(GTK_LIBS)
-        GTK_LIBS="$GTK_LIBS -lgthread-2.0"
-        AC_DEFINE([HAVE_GTK],[1],[Found GTK+-2.0. Will build the preview window.])
+dnl -------------------------------------------------
+dnl Check for GTK
+dnl -------------------------------------------------
+dnl AC_PATH_PROG(PKG_CONFIG,pkg-config,no);
+dnl if test "x$PKG_CONFIG" = "xno"; then
+dnl   echo "You need to install pkg-config to compile GTK+ stuff."
+dnl fi
+PKG_PROG_PKG_CONFIG
+PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 1.3],[gtk_found="yes"],[gtk_found="no"]) 
+
+if test "x$gtk_found" = "xyes"; then
+   AC_DEFINE([HAVE_GTK],[1],[Found GTK+-2.0. Will build the preview window.])
+   AC_SUBST(GTK_CFLAGS)
+   AC_SUBST(GTK_LIBS)
+   GTK_LIBS="$GTK_LIBS -lgthread-2.0"
 fi
-])
 
 dnl -------------------------------------------------
 dnl Add the CPU dependent compile optimizations

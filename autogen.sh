@@ -8,7 +8,7 @@ echo "Now running autoheader"
 autoheader
 
 echo "Now running aclocal"
-aclocal $ACLOCAL_FLAGS
+aclocal $ACLOCAL_FLAGS -I m4
 
 if test `uname` = "Darwin"; then
    echo "Now running glibtoolize"
