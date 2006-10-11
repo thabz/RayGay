@@ -366,8 +366,9 @@ void work(string outputfile, int jobs, int frame, int frames) {
 }
 
 void print_usage() {
+    uint32_t cpus = getNumberOfCPUs();
     cout << "Usage: tracer [OPTION...] SCENEFILENAME OUTPUTFILENAME" << endl;
-    cout << "       -j NUM               Number of threads to run" << endl;
+    cout << "       -j NUM               Number of threads to run (default " << cpus << ")" << endl;
     cout << "       -b                   Run in background with no GUI" << endl;
     cout << "       -f NUM               Frame to render" << endl;
     cout << "       -F NUM               Total number of frames" << endl;
@@ -376,7 +377,6 @@ void print_usage() {
     cout << "       -d                   Print debugging information" << endl;
     cout << "       -h                   Show this help message" << endl;
     cout << "       -v                   Show current versionnumber" << endl;
-    cout << "CPUs: " << getNumberOfCPUs() << endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -390,7 +390,7 @@ int main(int argc, char *argv[]) {
     // Use getopt to parse arguments.
     int c;
     opterr = 0;
-    int jobs = 1;
+    int jobs = getNumberOfCPUs();
     int frame_to_render = 0;
     int frames_total = 1;
     while ((c = getopt (argc, argv, "vdhbj:f:F:e:")) != -1) {
