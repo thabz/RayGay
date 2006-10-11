@@ -92,7 +92,7 @@ ImageIO* getImageIO(const std::string& filename) {
     if (filename.find(".jpg") != string::npos) {
 #ifdef OS_DARWIN
     io = new DarwinIO();
-#elif HAVE_JPEGLIB
+#elif HAVE_JPEGLIB_H
 	io = new JpegIO();
 #else    
 	throw_exception("Support for JPEG-files is not compiled in.");
@@ -102,7 +102,7 @@ ImageIO* getImageIO(const std::string& filename) {
     } else if (filename.find(".png") != string::npos) {
 #ifdef OS_DARWIN	
         io = new DarwinIO();
-#elif HAVE_PNG
+#elif HAVE_PNG_H
     	io = new PngIO();
 #else
 	throw_exception("Support for PNG-files is not compiled in.");
