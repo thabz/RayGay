@@ -31,7 +31,10 @@ libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libpho
 LIBS = @DARWIN_LIBS@		     
 
 bin_PROGRAMS = tracer 
-noinst_PROGRAMS = bench win
+noinst_PROGRAMS = bench 
+if OS_DARWIN
+   noinst_PROGRAMS += win
+endif   
 
 tracer_SOURCES = main.cpp window-gtk.cpp window-gtk.h window-icon.h
 #tracer_CXXFLAGS = $(GTK_CFLAGS) $(CXXFLAGS)
