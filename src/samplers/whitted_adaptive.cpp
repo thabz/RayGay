@@ -195,6 +195,11 @@ RGBA WhittedAdaptive::getSubPixel(uint32_t curLevel, const Vector2& center, Pixe
     return (c1 + c2 + c3 + c4) * 0.25;
 }
 
+inline
+void WhittedAdaptive::PixelBlock::reset() {
+    memset(active,(int)false,size_squared*sizeof(bool));
+}
+
 WhittedAdaptive::PixelBlock::PixelBlock(const uint32_t size) {
     assert(size > 0);
     this->size = size;
@@ -207,11 +212,6 @@ WhittedAdaptive::PixelBlock::PixelBlock(const uint32_t size) {
 void WhittedAdaptive::PixelBlock::cleanup() {
     delete [] color;
     delete [] active;
-}
-
-inline
-void WhittedAdaptive::PixelBlock::reset() {
-    memset(active,(int)false,size_squared*sizeof(bool));
 }
 
 WhittedAdaptiveFactory::WhittedAdaptiveFactory(uint32_t aa_depth)
