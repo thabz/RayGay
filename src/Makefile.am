@@ -28,7 +28,7 @@ libtracer_la_SOURCES = \
 libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libphoton.la lights/liblights.la materials/libmaterials.la collections/libcollections.la objects/libobjects.la paths/libpaths.la math/libmath.la  image/libimage.la space/libspace.la shaders/libshaders.la cameras/libcameras.la imagefilters/libimagefilters.la filters/libfilters.la
 
 #--------------------------------------
-LIBS = -framework ApplicationServices		     
+LIBS = @DARWIN_LIBS@		     
 
 bin_PROGRAMS = tracer 
 noinst_PROGRAMS = bench win
@@ -45,7 +45,7 @@ bench_LDADD = libtracer.la
 if OS_DARWIN
    win_SOURCES = win-main.cpp
    win_LDADD = libtracer.la 
-   win_LDFLAGS = -framework ApplicationServices
+   win_LDFLAGS = @DARWIN_LIBS@
 endif
 
 #--------------------------------------

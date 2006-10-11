@@ -40,11 +40,12 @@ dnl Mac OS X
 dnl -------------------------------------------------
 target_os=`uname`
 if test "x$target_os" = "xDarwin"; then
+   AC_CHECK_HEADERS([ApplicationServices/ApplicationServices.h],[],[],[])
    AC_DEFINE([OS_DARWIN],[1],[System is Mac OS X])
-#   LIBS="$LIBS -framework ApplicationServices"
+   DARWIN_LIBS="-framework ApplicationServices"
+   AC_SUBST(DARWIN_LIBS)
 fi
 AM_CONDITIONAL(OS_DARWIN, test "x$target_os" = "xDarwin")
-AC_CHECK_HEADERS([ApplicationServices/ApplicationServices.h],[],[],[])
 
 dnl -------------------------------------------------
 dnl Image libs on Linux
