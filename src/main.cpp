@@ -381,7 +381,7 @@ int main(int argc, char *argv[]) {
 		print_usage();
 		return EXIT_SUCCESS;
 	    case 'v':
-		cout << "Raygay 0.1" << endl;
+		cout << "Raygay " << VERSION << endl;
 		return EXIT_SUCCESS;
 	    case 'b':
 		env->hasPreviewWindow(false);
