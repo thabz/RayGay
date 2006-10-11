@@ -27,7 +27,10 @@
 #include <iostream>
 #include <vector>
 #include <unistd.h>
-#include <unistd.h>
+
+#ifdef OS_DARWIN
+#include <Carbon/Carbon.h>
+#endif
 
 #include "stats.h"
 #include "exception.h"
@@ -121,6 +124,20 @@ PreviewWindow* windowFactory(int w, int h) {
     return result;
 }
 
+/**
+ * Returns number of CPUs runtime
+ * See http://www.ks.uiuc.edu/Research/vmd/doxygen/VMDThreads_8C-source.html
+ * for how to do this on other architectures.
+ */
+uint32_t getNumberOfCPUs() {
+    uint32_t a;
+#ifdef OS_DARWIN
+    a = MPProcessorsScheduled();
+#else
+    a = sysconf(_SC_NPROCESSORS_ONLN);
+#endif    
+    return a;
+}
 
 //Assignments* global_assigments = new Assignments();
 
@@ -359,9 +376,7 @@ void print_usage() {
     cout << "       -d                   Print debugging information" << endl;
     cout << "       -h                   Show this help message" << endl;
     cout << "       -v                   Show current versionnumber" << endl;
-    int a;
-    a = sysconf(_SC_NPROCESSORS_ONLN);
-    cout << "CPUs: " << a << endl;
+    cout << "CPUs: " << getNumberOfCPUs() << endl;
 }
 
 int main(int argc, char *argv[]) {
