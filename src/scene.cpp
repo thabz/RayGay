@@ -126,13 +126,18 @@ void Scene::setFog(const RGB& color, const double distance) {
 }
 
 void Scene::initSpace(KdTree* space) {
-    Stats::getUniqueInstance()->beginTimer("Preparing space");
+    TimerStats* timer = new TimerStats("Scene","Prepare objects");
+    timer->startTimer();
+
     for (vector<SceneObject*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	(*p)->prepare();
 	(*p)->addSelf(space);
     }
+    timer->stopTimer();
 
+    timer = new TimerStats("Scene","Prepare Kd-tree");
+    timer->startTimer();
     space->prepare();
+    timer->stopTimer();
     // TODO: Delete pointers to all scene objects they're unneeded.
-    Stats::getUniqueInstance()->endTimer("Preparing space");
 }

@@ -159,12 +159,12 @@ void preparePhotonMaps(Scene* scene,
 
     PhotonTracer* photontracer = new PhotonTracer(scene,space,(*globalphotonmap),(*causticsphotonmap));
 
-    cout << "Tracing photons..." << endl;
+    cout << "Tracing photons..." << flush;
     photontracer->trace(renderersettings->threads_num);
     cout << "Done." << endl;
 
     
-    cout << "Balancing photonmaps..." << endl;
+    cout << "Balancing photonmaps..." << flush;
     Stats::getUniqueInstance()->beginTimer("Balance photonmaps");
     int total_photons_num = renderersettings->global_photons_num + renderersettings->caustic_photons_num;
     (*globalphotonmap)->scale_photon_power(1.0/double(total_photons_num));
@@ -194,7 +194,7 @@ void* renderThreadDo(void* obj) {
 }
 
 void do_filtering(Image* image, FilterStack* filterstack) {
-    cout << "Applying filters..." << endl;
+    cout << "Applying filters... " << flush;
     filterstack->apply(image);
     
     Environment* env = Environment::getUniqueInstance();
@@ -236,7 +236,7 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
 	throw_exception("No objects in scene.");
     }
 
-    cout << "Preparing space..." << endl;
+    cout << "Preparing object and space... " << flush;
     KdTree* space = new KdTree();
     scene->initSpace(space);
     cout << "Done." << endl;
@@ -281,8 +281,6 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     TimerStats* rendering_time = new TimerStats("Renderer","Time");
     rendering_time->startTimer();
 
-    Stats::getUniqueInstance()->beginTimer("Rendering");
-    
     active_renderers.clear();
 
     if (renderersettings->threads_num == 1) {
@@ -330,9 +328,7 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
 	    delete renderers[i];
 	}
     }
-    Stats::getUniqueInstance()->endTimer("Rendering");
     rendering_time->stopTimer();
-
 
     // Apply filters if any
     FilterStack* filterstack = Environment::getUniqueInstance()->getFilterStack();
