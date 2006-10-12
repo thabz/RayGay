@@ -35,10 +35,20 @@ AC_CHECK_HEADERS(pthread.h)
 AC_CHECK_HEADERS(jpeglib.h)    
 AC_CHECK_HEADERS(png.h)    
 
+target_os=`uname`
+
+dnl -------------------------------------------------
+dnl Linux 
+dnl -------------------------------------------------
+if test "x$target_os" = "xLinux"; then
+   AC_DEFINE([OS_LINUX],[1],[System is Linux])
+fi
+AM_CONDITIONAL(OS_LINUX, test "x$target_os" = "xLinux")
+
+
 dnl -------------------------------------------------
 dnl Mac OS X 
 dnl -------------------------------------------------
-target_os=`uname`
 if test "x$target_os" = "xDarwin"; then
    AC_CHECK_HEADERS([ApplicationServices/ApplicationServices.h],[],[],[])
    AC_DEFINE([OS_DARWIN],[1],[System is Mac OS X])
@@ -48,7 +58,7 @@ fi
 AM_CONDITIONAL(OS_DARWIN, test "x$target_os" = "xDarwin")
 
 dnl -------------------------------------------------
-dnl Image libs on Linux
+dnl Image libs
 dnl -------------------------------------------------
 if test "x$target_os" = "xLinux"; then
    AC_CHECK_LIB(jpeg, jpeg_read_header,JPEG_LIBS="-ljpeg")

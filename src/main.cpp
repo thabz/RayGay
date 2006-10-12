@@ -133,8 +133,14 @@ uint32_t getNumberOfCPUs() {
     uint32_t a;
 #ifdef OS_DARWIN
     a = MPProcessorsScheduled();
-#else
+#elif OS_LINUX
     a = sysconf(_SC_NPROCESSORS_ONLN);
+#elif OS_SOLARIS
+    a = sysconf(_SC_NPROCESSORS_ONLN);
+#elif OS_IRIX
+    a = sysconf(_SC_NPROC_ONLN);
+#else
+    a = 1;
 #endif    
     return a;
 }
