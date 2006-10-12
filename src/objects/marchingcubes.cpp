@@ -316,7 +316,7 @@ static uint16_t active_edges[256] =
 Vector MarchingCubes::refine(const Vector& a, const Vector& b) {
     double accuracy_sqr = isosurface->getAccuracy();
     accuracy_sqr *= accuracy_sqr;
-    assert(inside(a) != inside(b));
+//    assert(inside(a) != inside(b));
     if (adaptive) {
 	Vector aa = a, bb = b, mid;
 
@@ -338,7 +338,7 @@ Vector MarchingCubes::refine(const Vector& a, const Vector& b) {
 
 void MarchingCubes::handleCube(const Vector& min, const Vector& max) {
     Vector cubeverts[8];
-    Vector edgepoints[12];
+    uint32_t edgepoints[12];
     cubeverts[0] = Vector(min[0],min[1],min[2]);
     cubeverts[1] = Vector(max[0],min[1],min[2]);
     cubeverts[2] = Vector(max[0],min[1],max[2]);
@@ -355,29 +355,26 @@ void MarchingCubes::handleCube(const Vector& min, const Vector& max) {
 
     uint32_t edges = active_edges[cubeindex];
 
-    if (edges & (1<< 0)) edgepoints[ 0] = refine(cubeverts[0], cubeverts[1]);
-    if (edges & (1<< 1)) edgepoints[ 1] = refine(cubeverts[1], cubeverts[2]);
-    if (edges & (1<< 2)) edgepoints[ 2] = refine(cubeverts[2], cubeverts[3]);
-    if (edges & (1<< 3)) edgepoints[ 3] = refine(cubeverts[3], cubeverts[0]);
-    if (edges & (1<< 4)) edgepoints[ 4] = refine(cubeverts[4], cubeverts[5]);
-    if (edges & (1<< 5)) edgepoints[ 5] = refine(cubeverts[5], cubeverts[6]);
-    if (edges & (1<< 6)) edgepoints[ 6] = refine(cubeverts[6], cubeverts[7]);
-    if (edges & (1<< 7)) edgepoints[ 7] = refine(cubeverts[7], cubeverts[4]);
-    if (edges & (1<< 8)) edgepoints[ 8] = refine(cubeverts[0], cubeverts[4]);
-    if (edges & (1<< 9)) edgepoints[ 9] = refine(cubeverts[1], cubeverts[5]);
-    if (edges & (1<<10)) edgepoints[10] = refine(cubeverts[2], cubeverts[6]);
-    if (edges & (1<<11)) edgepoints[11] = refine(cubeverts[3], cubeverts[7]);
+    if (edges & (1<< 0)) edgepoints[ 0] = addVertex(refine(cubeverts[0], cubeverts[1]));
+    if (edges & (1<< 1)) edgepoints[ 1] = addVertex(refine(cubeverts[1], cubeverts[2]));
+    if (edges & (1<< 2)) edgepoints[ 2] = addVertex(refine(cubeverts[2], cubeverts[3]));
+    if (edges & (1<< 3)) edgepoints[ 3] = addVertex(refine(cubeverts[3], cubeverts[0]));
+    if (edges & (1<< 4)) edgepoints[ 4] = addVertex(refine(cubeverts[4], cubeverts[5]));
+    if (edges & (1<< 5)) edgepoints[ 5] = addVertex(refine(cubeverts[5], cubeverts[6]));
+    if (edges & (1<< 6)) edgepoints[ 6] = addVertex(refine(cubeverts[6], cubeverts[7]));
+    if (edges & (1<< 7)) edgepoints[ 7] = addVertex(refine(cubeverts[7], cubeverts[4]));
+    if (edges & (1<< 8)) edgepoints[ 8] = addVertex(refine(cubeverts[0], cubeverts[4]));
+    if (edges & (1<< 9)) edgepoints[ 9] = addVertex(refine(cubeverts[1], cubeverts[5]));
+    if (edges & (1<<10)) edgepoints[10] = addVertex(refine(cubeverts[2], cubeverts[6]));
+    if (edges & (1<<11)) edgepoints[11] = addVertex(refine(cubeverts[3], cubeverts[7]));
 
-    int8_t idx[3];
+    uint32_t idx[3];
 
     for(uint32_t i = 0; face_indices[cubeindex][i] != -1; i += 3) {
-	idx[0] = face_indices[cubeindex][i+0];
-	idx[1] = face_indices[cubeindex][i+1];
-	idx[2] = face_indices[cubeindex][i+2];
-	addTriangle(
-		edgepoints[idx[0]],
-		edgepoints[idx[1]],
-		edgepoints[idx[2]]);
+	idx[0] = edgepoints[face_indices[cubeindex][i+0]];
+	idx[1] = edgepoints[face_indices[cubeindex][i+1]];
+	idx[2] = edgepoints[face_indices[cubeindex][i+2]];
+	addTriangle(idx);
     };
 }
 
