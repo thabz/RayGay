@@ -369,14 +369,8 @@ void MarchingCubes::handleCube(const Vector cubeverts[8], uint32_t cubeindex) {
     };
 }
 
-// TODO 1: Forudregn et stl::bitset<subdivisions^3> med inside(p) værdierne 
-// for alle punkterne i vores grid. Så behøver handleCube() ikke kalde 
-// inside() for hvert hjørne. Det giver ca. et 8x speedup mod 1MB RAM for
-// et 200x200x200 grid.
-// 
-// TODO 2: Opbevar kun et bitset for de sidste par planer i vores grid. Så
-// fylder et 200x200x200 grid kun 40k. Trick brug left shift << for at kopiere 
-// et plan tilbage.
+// TODO: Opbevar kun et bitset for de sidste par planer i vores grid. S�
+// fylder et 200x200x200 grid kun 40k modsat 1MB.
 void MarchingCubes::prepare()
 {
     uint32_t s = subdivisions;
@@ -388,6 +382,8 @@ void MarchingCubes::prepare()
     AABox bbox = isosurface->getBoundingBox();
     Vector steps = bbox.lengths() / subdivisions;
 
+    // Forudregn et bitmap med inside(p) v�rdierne 
+    // for alle punkterne i vores grid. 
     for(uint32_t xi = 0; xi < s; xi++) {
 	for(uint32_t yi = 0; yi < s; yi++) {
 	    for(uint32_t zi = 0; zi < s; zi++) {
