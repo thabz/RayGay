@@ -319,14 +319,18 @@ Vector MarchingCubes::refine(const Vector& a, const Vector& b) {
 //    assert(inside(a) != inside(b));
     if (adaptive) {
 	Vector aa = a, bb = b, mid;
-
+	uint32_t inside_aa, inside_mid;
 	uint32_t i = 0;
+	inside_aa = inside(aa);
 	while (i++ < MAX_ITER && (aa-bb).norm() > accuracy_sqr) {
 	    mid = 0.5 * (aa + bb); 
-	    if (inside(mid) == inside(aa)) {
+	    inside_mid = inside(mid);
+	    if (inside_mid == inside_aa) {
 		aa = mid;
+		inside_aa = inside_mid;
 	    } else {
 		bb = mid;
+		inside_aa = inside_aa;
 	    }
 	}
 	return 0.5 * (aa + bb);
