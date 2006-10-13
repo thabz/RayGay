@@ -346,7 +346,7 @@ void MarchingCubes::handleCube(const Vector cubeverts[8], uint32_t cubeindex) {
     uint32_t edgepoints[12];
     uint32_t edges = active_edges[cubeindex];
 
-    // TODO: Reuse vertices between calls to handleCube. The phong-normals are wrong.
+    // TODO: Reuse vertices between calls to handleCube. The phong-normals are wrong
     if (edges & (1<< 0)) edgepoints[ 0] = addVertex(refine(cubeverts[0], cubeverts[1]));
     if (edges & (1<< 1)) edgepoints[ 1] = addVertex(refine(cubeverts[1], cubeverts[2]));
     if (edges & (1<< 2)) edgepoints[ 2] = addVertex(refine(cubeverts[2], cubeverts[3]));
