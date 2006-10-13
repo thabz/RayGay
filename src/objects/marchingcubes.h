@@ -28,7 +28,7 @@ class MarchingCubes : public Mesh
 
     private:
 	Vector refine(const Vector& a, const Vector& b);
-	void handleCube(const Vector& min, const Vector& max);
+	void handleCube(const Vector cubeverts[8], uint32_t cubeindex);
 	
 	IsoSurface* isosurface;
 	uint32_t subdivisions;

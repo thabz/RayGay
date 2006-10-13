@@ -1,5 +1,8 @@
 
 #include "objects/marchingcubes.h"
+#include <bitset>
+
+using namespace std;
 
 MarchingCubes::MarchingCubes(IsoSurface* isosurface, uint32_t subdivisions, bool adaptive) : Mesh(Mesh::MESH_PHONG, isosurface->getMaterial()) {
     this->isosurface = isosurface;
@@ -339,24 +342,8 @@ Vector MarchingCubes::refine(const Vector& a, const Vector& b) {
     }
 }
 
-
-void MarchingCubes::handleCube(const Vector& min, const Vector& max) {
-    Vector cubeverts[8];
+void MarchingCubes::handleCube(const Vector cubeverts[8], uint32_t cubeindex) {
     uint32_t edgepoints[12];
-    cubeverts[0] = Vector(min[0],min[1],min[2]);
-    cubeverts[1] = Vector(max[0],min[1],min[2]);
-    cubeverts[2] = Vector(max[0],min[1],max[2]);
-    cubeverts[3] = Vector(min[0],min[1],max[2]);
-    cubeverts[4] = Vector(min[0],max[1],min[2]);
-    cubeverts[5] = Vector(max[0],max[1],min[2]);
-    cubeverts[6] = Vector(max[0],max[1],max[2]);
-    cubeverts[7] = Vector(min[0],max[1],max[2]);
-
-    uint32_t cubeindex = 0;
-    for(uint32_t i = 0; i < 8; i++) {
-	cubeindex |= inside(cubeverts[i]) << i;
-    }
-
     uint32_t edges = active_edges[cubeindex];
 
     if (edges & (1<< 0)) edgepoints[ 0] = addVertex(refine(cubeverts[0], cubeverts[1]));
@@ -392,16 +379,64 @@ void MarchingCubes::handleCube(const Vector& min, const Vector& max) {
 // et plan tilbage.
 void MarchingCubes::prepare()
 {
+    uint32_t s = subdivisions;
+    vector<bool> inouts;
+    inouts.reserve(s*s*s);	
+    Vector pos;
+    Vector cubeverts[8];
+
     AABox bbox = isosurface->getBoundingBox();
     Vector steps = bbox.lengths() / subdivisions;
-    for(uint32_t xi = 0; xi < subdivisions -1; xi++) {
-	for(uint32_t yi = 0; yi < subdivisions -1; yi++) {
-	    for(uint32_t zi = 0; zi < subdivisions -1; zi++) {
-		Vector pos = bbox.minimum();
+
+    for(uint32_t xi = 0; xi < s; xi++) {
+	for(uint32_t yi = 0; yi < s; yi++) {
+	    for(uint32_t zi = 0; zi < s; zi++) {
+		pos = bbox.minimum();
 		pos[0] += xi * steps[0];
 		pos[1] += yi * steps[1];
 		pos[2] += zi * steps[2];
-		handleCube(pos,pos+steps);
+		inouts[xi*s*s + yi*s + zi] = inside(pos);
+	    }
+	}
+    }
+
+    for(uint32_t xi = 0; xi < s -1; xi++) {
+	for(uint32_t yi = 0; yi < s -1; yi++) {
+	    for(uint32_t zi = 0; zi < s -1; zi++) {
+		pos = bbox.minimum();
+		pos[0] += xi * steps[0];
+		pos[1] += yi * steps[1];
+		pos[2] += zi * steps[2];
+		
+		Vector min = pos;
+		Vector max = pos + steps;
+	    	cubeverts[0] = Vector(min[0],min[1],min[2]);
+	    	cubeverts[1] = Vector(max[0],min[1],min[2]);
+	    	cubeverts[2] = Vector(max[0],min[1],max[2]);
+	    	cubeverts[3] = Vector(min[0],min[1],max[2]);
+	    	cubeverts[4] = Vector(min[0],max[1],min[2]);
+	    	cubeverts[5] = Vector(max[0],max[1],min[2]);
+	    	cubeverts[6] = Vector(max[0],max[1],max[2]);
+	    	cubeverts[7] = Vector(min[0],max[1],max[2]);
+	 	
+	 	bool in[8];
+	 	uint32_t mi[3] = {xi,yi,zi};
+	 	uint32_t ma[3] = {xi+1,yi+1,zi+1};
+	    	in[0] = inouts[mi[0]*s*s+mi[1]*s+mi[2]];
+	    	in[1] = inouts[ma[0]*s*s+mi[1]*s+mi[2]];
+	    	in[2] = inouts[ma[0]*s*s+mi[1]*s+ma[2]];
+	    	in[3] = inouts[mi[0]*s*s+mi[1]*s+ma[2]];
+	    	in[4] = inouts[mi[0]*s*s+ma[1]*s+mi[2]];
+	    	in[5] = inouts[ma[0]*s*s+ma[1]*s+mi[2]];
+	    	in[6] = inouts[ma[0]*s*s+ma[1]*s+ma[2]];
+	    	in[7] = inouts[mi[0]*s*s+ma[1]*s+ma[2]];
+
+	    	uint32_t cubeindex = 0;
+	    	for(uint32_t i = 0; i < 8; i++) {
+		    cubeindex |= (in[i] ? 1 : 0) << i;
+	    	}
+	    	
+		handleCube(cubeverts, cubeindex);
 	    }
 	}
     }
