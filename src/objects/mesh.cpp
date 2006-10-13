@@ -159,6 +159,8 @@ void Mesh::computeInterpolatedNormals() {
 
     uint32_t face_num = faces.size() / 3;
     uint32_t vertex_num = corners.size();
+    
+    // For each vertex create a list of its adjacent faces
     vector<uint32_t>* adj = new vector<uint32_t>[vertex_num];
     for(uint32_t i = 0; i < face_num; i++) {
 	for(uint32_t j = 0; j < 3; j++) {
@@ -168,7 +170,12 @@ void Mesh::computeInterpolatedNormals() {
     }
 
     i_normal_indices.reserve(face_num * 3);
-
+    
+    // FIXME 1: All interpolated normals are calculated and stored for each vertex that is 
+    // using it. Fix by setting i_normal_indices to {-1,-1,...} and do some clever reusing of
+    // data and setting multiple i_normal_indices at a time.
+    // FIXME 2: Store the new interpolated normals and reused plain normals in a new array
+    // so that we effectively can ditch the old unused plain normals.
     for(uint32_t i = 0; i < face_num; i++) {
 	Vector normal = normals[i];
 	for(uint32_t j = 0; j < 3; j++) {
@@ -189,10 +196,12 @@ void Mesh::computeInterpolatedNormals() {
 	    }
 	    uint32_t index;
 	    if (num > 1) {
+	        // Use a new interpolated normal    
 		interpolated_normal.normalize();
 		normals.push_back(interpolated_normal);
 		index = normals.size() - 1;
 	    } else {
+	        // Reuse the old plain normal    
 		index = i;
 	    }
 	    i_normal_indices.push_back(index);
@@ -256,6 +265,7 @@ Vector Mesh::normal(const uint32_t face_idx, double u, double v) const {
     }
 }
 
+// TODO: Unroll loop below
 Vector Mesh::phong_normal(const uint32_t face_idx, double u, double v) const {
     uint32_t offset = face_idx * 3;
     Vector result = Vector(0,0,0);
