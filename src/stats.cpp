@@ -4,6 +4,17 @@
 
 using namespace std;
 
+// UTF-8 strings of the Unicode block elements 2588-258F.
+string blocks[] = {
+     "\xe2\x96\x88", // ########
+     "\xe2\x96\x89", // #######_
+     "\xe2\x96\x8a", // ######__   
+     "\xe2\x96\x8b", // #####___   
+     "\xe2\x96\x8c", // ####____   
+     "\xe2\x96\x8d", // ###_____   
+     "\xe2\x96\x8e", // ##______   
+     "\xe2\x96\x8f", // #_______   
+};
 
 string StatsStrings[] = {
     "Primary rays cast",
