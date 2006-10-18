@@ -128,7 +128,8 @@ void Mesh::addTriangle(const uint32_t v[3], const Vector2 uv[3]) {
 
     // Check vertex indices are within bounds
     uint32_t max_idx = corners.size() - 1;
-    if (v[0] > max_idx || v[1] > max_idx || v[2] > max_idx) {
+    if (v[0] > max_idx || v[1] > max_idx || v[2] > max_idx ||
+        v[0] < 0 || v[1] < 0 || v[2] < 0) {
 	char vs[200];
 	sprintf(vs, "Triangle (%d,%d,%d) out of bounds",v[0],v[1],v[2]);
 	throw_exception(vs);
