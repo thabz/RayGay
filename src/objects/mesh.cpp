@@ -10,6 +10,7 @@
 #include "math/matrix.h"
 #include "math/vector2.h"
 #include "intersection.h"
+#include "profiler.h"
 #include "ray.h"
 #include "triangle.h"
 #include "paths/circle.h"
@@ -21,11 +22,16 @@
 
 using namespace std;
 
+static Profiler* interpolate_normals_profiler = NULL;
+
 // ----------------------------------------------------------------------------
 Mesh::Mesh(MeshType type, const Material* mat) {
     meshType = type;
     prepared = false;
     material = mat;
+    if (interpolate_normals_profiler == NULL) {
+        interpolate_normals_profiler = Profiler::create("Interpolate normals", "Prepare objects");            
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -42,7 +48,9 @@ void Mesh::prepare() {
     if (prepared == true) return;
 
     if (meshType == Mesh::MESH_PHONG) {
+        interpolate_normals_profiler->start();    
 	computeInterpolatedNormals();
+	interpolate_normals_profiler->stop();
     }
 
     for(uint32_t i = 0; i < triangles.size(); i++) {

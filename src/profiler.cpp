@@ -73,6 +73,7 @@ void Profiler::dump(Profiler* p, double percentage, uint32_t indent) {
 
     double children_total_time = 0;
     std::vector<Profiler*> children = findByParent(p->name);
+    // TODO: Sorter efter hvert barns last_begin
     for(uint32_t j = 0; j < children.size(); j++) {
         Profiler* q = children[j];
         children_total_time += q->secs() + 0.00001;

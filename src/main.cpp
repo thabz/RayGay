@@ -345,8 +345,10 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
 	Stats::getUniqueInstance()->endTimer("Applying filters");
     }
 
-
+    Profiler* save_profiler = Profiler::create("Saving image", "RayGay");
+    save_profiler->start();
     img->save(outputfile);
+    save_profiler->stop();
     delete img;
     delete space;
     delete scene;
