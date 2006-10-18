@@ -58,6 +58,7 @@
 
 #include "renderersettings.h"
 #include "renderjobs.h"
+#include "profiler.h"
 
 #include "imagefilters/filterstack.h"
 
@@ -346,6 +347,9 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     delete job_pool;
     Stats::getUniqueInstance()->dump();
     Statistics::dumpAll();
+    if (env->isProfilingEnabled()) {
+        Profiler::dump();
+    }
 }
 
 void work(string outputfile, int jobs, int frame, int frames) {
@@ -377,6 +381,7 @@ void print_usage() {
     cout << "       -e EXPR              Eval a Scheme-expr prior to" << endl;
     cout << "                            parsing the scenefile" << endl;
     cout << "       -d                   Print debugging information" << endl;
+    cout << "       -p                   Dump profile after run" << endl;
     cout << "       -h                   Show this help message" << endl;
     cout << "       -v                   Show current versionnumber" << endl;
 }
@@ -395,7 +400,7 @@ int main(int argc, char *argv[]) {
     int jobs = getNumberOfCPUs();
     int frame_to_render = 0;
     int frames_total = 1;
-    while ((c = getopt (argc, argv, "vdhbj:f:F:e:")) != -1) {
+    while ((c = getopt (argc, argv, "vpdhbj:f:F:e:")) != -1) {
 	switch(c) {
 	    case 'h':
 		print_usage();
@@ -408,6 +413,9 @@ int main(int argc, char *argv[]) {
 		break;
 	    case 'd':
 		env->isVerbose(true);
+		break;
+	    case 'p':
+		env->isProfilingEnabled(true);
 		break;
 	    case 'j':
 		if (sscanf(optarg,"%u",&jobs) != 1 || jobs < 1) {
