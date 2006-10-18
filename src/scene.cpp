@@ -13,6 +13,7 @@
 #include "objects/sphere.h"
 #include "objects/object.h"
 #include "stats.h"
+#include "profiler.h"
 #include "space/kdtree.h"
 
 using namespace std;
@@ -126,18 +127,17 @@ void Scene::setFog(const RGB& color, const double distance) {
 }
 
 void Scene::initSpace(KdTree* space) {
-    TimerStats* timer = new TimerStats("Scene","Prepare objects");
-    timer->startTimer();
-
+    Profiler* profiler = Profiler::create("Prepare objects","Prepare scene");
+    profiler->start();
     for (vector<SceneObject*>::iterator p = objects.begin(); p != objects.end(); p++) {
 	(*p)->prepare();
 	(*p)->addSelf(space);
     }
-    timer->stopTimer();
+    profiler->stop();
 
-    timer = new TimerStats("Scene","Prepare Kd-tree");
-    timer->startTimer();
+    profiler = Profiler::create("Prepare Kd-tree","Prepare scene");
+    profiler->start();
     space->prepare();
-    timer->stopTimer();
+    profiler->stop();
     // TODO: Delete pointers to all scene objects they're unneeded.
 }

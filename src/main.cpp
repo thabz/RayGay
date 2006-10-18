@@ -208,7 +208,8 @@ void do_filtering(Image* image, FilterStack* filterstack) {
 }
 
 void render_frame(int frame, int frames, string outputfile, int jobs) {
-
+    Profiler* profiler = Profiler::create("Prepare scene", "RayGay");
+    profiler->start();
     Stats::getUniqueInstance()->clear();
     Statistics::put("Renderer","Threads",jobs);
 
@@ -223,12 +224,14 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     parser->assignVariable("frame",double(frame));
     parser->assignVariable("clock",double(frame)/double(frames));
 
-    TimerStats* parser_timer = new TimerStats("Parser","Time");
-    parser_timer->startTimer();
+    Profiler* parser_profiler = Profiler::create("Parsing","Prepare scene");
+    parser_profiler->start();
+
     parser->parse_file(scenefile);
     parser->populate(scene,renderersettings);
-    parser_timer->stopTimer();
-
+    
+    parser_profiler->stop();
+    
     if (renderersettings->renderertype == RendererSettings::NONE) {
 	return;
     }
@@ -241,7 +244,7 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     KdTree* space = new KdTree();
     scene->initSpace(space);
     cout << "Done." << endl;
-
+    profiler->stop();
 
     int img_w = renderersettings->image_width;
     int img_h = renderersettings->image_height;
@@ -298,7 +301,10 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
 	    renderer = new Pathtracer(renderersettings,img,scene,space,job_pool,0);
 	}
 	active_renderers.push_back(renderer);
+	Profiler* p = Profiler::create("Rendering","RayGay");
+	p->start();
 	renderer->run();
+        p->stop();
 	delete renderer;
     } else {
 	// Spawn renderer threads
@@ -347,9 +353,6 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     delete job_pool;
     Stats::getUniqueInstance()->dump();
     Statistics::dumpAll();
-    if (env->isProfilingEnabled()) {
-        Profiler::dump();
-    }
 }
 
 void work(string outputfile, int jobs, int frame, int frames) {
@@ -460,9 +463,19 @@ int main(int argc, char *argv[]) {
 	outfile = string(argv[optind+1]);
     }
     srand(1); // Make sure rand is seeded consistently.
-
+    
+    if (env->isProfilingEnabled() && jobs != 1) {
+        cout << "Running in one thread because of profiling." << endl;
+        jobs = 1;    
+    }
     try {
-	work(outfile, jobs, frame_to_render, frames_total); 
+        Profiler* profiler = Profiler::create("RayGay","");
+        profiler->start();    
+	work(outfile, jobs, frame_to_render, frames_total);
+	profiler->stop();
+        if (env->isProfilingEnabled()) {
+            Profiler::dump();
+        }
     } catch (Exception e) {
 	cout << "Exception: " << e.getMessage() 
 	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;

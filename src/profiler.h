@@ -10,42 +10,35 @@ using namespace std;
 
 class Profiler {
     public:
-	static Profiler* create(string name, string parent = "") {
-	    Profiler* p = new Profiler(name,parent);
-	    profilers.push_back(p);
-	    return p;
-	}
+	static Profiler* create(string name, string parent = "");
 	
 	static void dump();
 
-	void begin();
-	void end();
-	double getSeconds();
+	void start();
+	void stop();
 	
     private:
-	Profiler(string n, string p) : name(n), parent(p)
-	{ accumulated_time = 0; };
+	Profiler(string n, string p);
+	static vector<Profiler*> findByParent(string n);
+	static uint32_t longestname();
+        static void dump(Profiler* p, double percentage, uint32_t indent);
+	double secs();
+
 	clock_t last_begin;
 	long accumulated_time;
 	string name;
 	string parent;
 	static vector<Profiler*> profilers;
-
 };
 
 inline
-void Profiler::begin() {
+void Profiler::start() {
     last_begin = clock();
 }
 
 inline
-void Profiler::end() {
+void Profiler::stop() {
     accumulated_time += (clock() - last_begin);
-}
-
-inline
-double Profiler::getSeconds() {
-    return double(accumulated_time) / double(CLOCKS_PER_SEC);
 }
 
 #endif
