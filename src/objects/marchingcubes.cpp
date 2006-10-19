@@ -1,13 +1,19 @@
 
 #include "objects/marchingcubes.h"
 #include <bitset>
+#include "profiler.h"
 
 using namespace std;
+
+static Profiler* prepare_profiler = NULL;
 
 MarchingCubes::MarchingCubes(IsoSurface* isosurface, uint32_t subdivisions, bool adaptive) : Mesh(Mesh::MESH_PHONG, isosurface->getMaterial()) {
     this->isosurface = isosurface;
     this->subdivisions = subdivisions;
     this->adaptive = adaptive;
+    if (prepare_profiler == NULL) {
+        prepare_profiler = Profiler::create("Marching cubes", "Prepare objects");            
+    }
 }
 
 
@@ -17,7 +23,7 @@ MarchingCubes::MarchingCubes(IsoSurface* isosurface, uint32_t subdivisions, bool
  * There are a maximum of 5 triangles to draw in each entry. Each
  * triangle is specified in the table by its 3 vertices.
  */
-int face_indices[256][16] =
+static const int face_indices[256][16] =
 {
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
     {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -277,7 +283,10 @@ int face_indices[256][16] =
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 };
 
-static uint16_t active_edges[256] = 
+// 256 entries of 12 bits that specifies which of the 12 edges 
+// of a cube that are to be used. The 8 bit corner inside/outside
+// state of the cubes is the index into this table.
+static const uint16_t active_edges[256] = 
 {
     0x000, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
     0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
@@ -316,6 +325,7 @@ static uint16_t active_edges[256] =
 #define MAX_ITER 200
 #define inside(p) (isosurface->inside(p) ? 1 : 0)
 
+// TODO: Newtonian approximation using the isosurface->evaluateFunction(p) instead
 Vector MarchingCubes::refine(const Vector& a, const Vector& b) {
     double accuracy_sqr = isosurface->getAccuracy();
     accuracy_sqr *= accuracy_sqr;
@@ -342,49 +352,61 @@ Vector MarchingCubes::refine(const Vector& a, const Vector& b) {
     }
 }
 
-void MarchingCubes::handleCube(const Vector cubeverts[8], uint32_t cubeindex) {
-    uint32_t edgepoints[12];
-    uint32_t edges = active_edges[cubeindex];
+uint32_t cube_index(const vector<bool>& inouts, uint32_t s, uint32_t xi, uint32_t yi, uint32_t zi) {
+ 	bool in[8];
+ 	uint32_t mi[3] = {xi,yi,zi};
+ 	uint32_t ma[3] = {xi+1,yi+1,zi+1};
+    	in[0] = inouts[mi[0]*s*s+mi[1]*s+mi[2]];
+    	in[1] = inouts[ma[0]*s*s+mi[1]*s+mi[2]];
+    	in[2] = inouts[ma[0]*s*s+mi[1]*s+ma[2]];
+    	in[3] = inouts[mi[0]*s*s+mi[1]*s+ma[2]];
+    	in[4] = inouts[mi[0]*s*s+ma[1]*s+mi[2]];
+    	in[5] = inouts[ma[0]*s*s+ma[1]*s+mi[2]];
+    	in[6] = inouts[ma[0]*s*s+ma[1]*s+ma[2]];
+    	in[7] = inouts[mi[0]*s*s+ma[1]*s+ma[2]];
 
-    // TODO: Reuse vertices between calls to handleCube. The phong-normals are wrong
-    if (edges & (1<< 0)) edgepoints[ 0] = addVertex(refine(cubeverts[0], cubeverts[1]));
-    if (edges & (1<< 1)) edgepoints[ 1] = addVertex(refine(cubeverts[1], cubeverts[2]));
-    if (edges & (1<< 2)) edgepoints[ 2] = addVertex(refine(cubeverts[2], cubeverts[3]));
-    if (edges & (1<< 3)) edgepoints[ 3] = addVertex(refine(cubeverts[3], cubeverts[0]));
-    if (edges & (1<< 4)) edgepoints[ 4] = addVertex(refine(cubeverts[4], cubeverts[5]));
-    if (edges & (1<< 5)) edgepoints[ 5] = addVertex(refine(cubeverts[5], cubeverts[6]));
-    if (edges & (1<< 6)) edgepoints[ 6] = addVertex(refine(cubeverts[6], cubeverts[7]));
-    if (edges & (1<< 7)) edgepoints[ 7] = addVertex(refine(cubeverts[7], cubeverts[4]));
-    if (edges & (1<< 8)) edgepoints[ 8] = addVertex(refine(cubeverts[0], cubeverts[4]));
-    if (edges & (1<< 9)) edgepoints[ 9] = addVertex(refine(cubeverts[1], cubeverts[5]));
-    if (edges & (1<<10)) edgepoints[10] = addVertex(refine(cubeverts[2], cubeverts[6]));
-    if (edges & (1<<11)) edgepoints[11] = addVertex(refine(cubeverts[3], cubeverts[7]));
-
-    uint32_t idx[3];
-
-    for(uint32_t i = 0; face_indices[cubeindex][i] != -1; i += 3) {
-	idx[0] = edgepoints[face_indices[cubeindex][i+0]];
-	idx[1] = edgepoints[face_indices[cubeindex][i+1]];
-	idx[2] = edgepoints[face_indices[cubeindex][i+2]];
-	addTriangle(idx);
-    };
+    	uint32_t cubeindex = 0;
+    	for(uint32_t i = 0; i < 8; i++) {
+	    cubeindex |= (in[i] ? 1 : 0) << i;
+    	}
+    	return cubeindex;
 }
+
+// This table specifies which two cube vertices are
+// at the end of each of the 12 cube edges.
+static const uint32_t connecting_lines[12][2] =  {
+    {0,1}, {1,2}, {2,3}, {3,0},
+    {4,5}, {5,6}, {6,7}, {7,4}, 
+    {0,4}, {1,5}, {2,6}, {3,7}
+};
+
+static const uint32_t offsets[12][4] = {
+    {0,0,0,0}, {1,0,0,1}, {1,0,1,0}, {0,0,1,1},
+    {0,1,0,0}, {1,1,0,1}, {1,1,1,0}, {0,1,1,1},
+    {0,0,0,2}, {1,0,0,2}, {1,0,1,2}, {0,0,1,2}        
+};
+
+#define si(s,x,y,z,i) ((x)*s*s*3 + (y)*s*3 + (z)*3 + i)
 
 // TODO: Opbevar kun et bitset for de sidste par planer i vores grid. Så
 // fylder et 200x200x200 grid kun 40k modsat 1MB.
 void MarchingCubes::prepare()
 {
+    prepare_profiler->start();
+            
     uint32_t s = subdivisions;
-    vector<bool> inouts;
-    inouts.reserve(s*s*s);	
-    Vector pos;
+    vector<bool> inouts = vector<bool>(s*s*s);
     Vector cubeverts[8];
 
+    // Indices of the vertices stored into the mesh. 
+    // These are used to construct the faces.
+    vector<int>* stored_vertices = new vector<int>(s*s*s*3, -1);
+    
+    // Precalculate a bitmap with the inside/outside states 
+    // of all points in the cubic lattice.
     AABox bbox = isosurface->getBoundingBox();
     Vector steps = bbox.lengths() / subdivisions;
-
-    // Forudregn et bitmap med inside(p) værdierne 
-    // for alle punkterne i vores grid. 
+    Vector pos;
     for(uint32_t xi = 0; xi < s; xi++) {
 	for(uint32_t yi = 0; yi < s; yi++) {
 	    for(uint32_t zi = 0; zi < s; zi++) {
@@ -392,14 +414,15 @@ void MarchingCubes::prepare()
 		pos[0] += xi * steps[0];
 		pos[1] += yi * steps[1];
 		pos[2] += zi * steps[2];
-		inouts[xi*s*s + yi*s + zi] = inside(pos);
+		inouts[xi*s*s + yi*s + zi] = (inside(pos) == 1);
 	    }
 	}
     }
 
-    for(uint32_t xi = 0; xi < s -1; xi++) {
-	for(uint32_t yi = 0; yi < s -1; yi++) {
-	    for(uint32_t zi = 0; zi < s -1; zi++) {
+    // Precalculate and store all vertices in the mesh
+    for(uint32_t xi = 0; xi < s-1; xi++) {
+	for(uint32_t yi = 0; yi < s-1; yi++) {
+	    for(uint32_t zi = 0; zi < s-1; zi++) {
 		pos = bbox.minimum();
 		pos[0] += xi * steps[0];
 		pos[1] += yi * steps[1];
@@ -407,6 +430,7 @@ void MarchingCubes::prepare()
 		
 		Vector min = pos;
 		Vector max = pos + steps;
+		
 	    	cubeverts[0] = Vector(min[0],min[1],min[2]);
 	    	cubeverts[1] = Vector(max[0],min[1],min[2]);
 	    	cubeverts[2] = Vector(max[0],min[1],max[2]);
@@ -416,27 +440,40 @@ void MarchingCubes::prepare()
 	    	cubeverts[6] = Vector(max[0],max[1],max[2]);
 	    	cubeverts[7] = Vector(min[0],max[1],max[2]);
 	 	
-	 	bool in[8];
-	 	uint32_t mi[3] = {xi,yi,zi};
-	 	uint32_t ma[3] = {xi+1,yi+1,zi+1};
-	    	in[0] = inouts[mi[0]*s*s+mi[1]*s+mi[2]];
-	    	in[1] = inouts[ma[0]*s*s+mi[1]*s+mi[2]];
-	    	in[2] = inouts[ma[0]*s*s+mi[1]*s+ma[2]];
-	    	in[3] = inouts[mi[0]*s*s+mi[1]*s+ma[2]];
-	    	in[4] = inouts[mi[0]*s*s+ma[1]*s+mi[2]];
-	    	in[5] = inouts[ma[0]*s*s+ma[1]*s+mi[2]];
-	    	in[6] = inouts[ma[0]*s*s+ma[1]*s+ma[2]];
-	    	in[7] = inouts[mi[0]*s*s+ma[1]*s+ma[2]];
-
-	    	uint32_t cubeindex = 0;
-	    	for(uint32_t i = 0; i < 8; i++) {
-		    cubeindex |= (in[i] ? 1 : 0) << i;
-	    	}
-	    	
-		handleCube(cubeverts, cubeindex);
+	    	uint32_t cubeindex = cube_index(inouts, s, xi, yi, zi);
+                uint32_t edges = active_edges[cubeindex];
+                
+                for(uint32_t i = 0; i < 12; i++) {
+                    int* address = &(*stored_vertices)[si(s, xi+offsets[i][0], yi+offsets[i][1], zi+offsets[i][2], offsets[i][3])];
+                    if ((edges & (1 << i)) && *address < 0) {
+                        *address = addVertex(refine(cubeverts[connecting_lines[i][0]], cubeverts[connecting_lines[i][1]]));    
+                    }        
+                }
 	    }
 	}
     }
+
+    // Define the faces of the mesh
+    for(uint32_t xi = 0; xi < s -1; xi++) {
+	for(uint32_t yi = 0; yi < s -1; yi++) {
+	    for(uint32_t zi = 0; zi < s -1; zi++) {
+
+                uint32_t cubeindex = cube_index(inouts, s, xi, yi, zi);
+                uint32_t idx[3], j;
+                for(uint32_t i = 0; face_indices[cubeindex][i] != -1; i += 3) {
+                    j = face_indices[cubeindex][i+0];
+            	    idx[0] = (*stored_vertices)[si(s, xi+offsets[j][0], yi+offsets[j][1], zi+offsets[j][2], offsets[j][3])];
+                    j = face_indices[cubeindex][i+1];
+            	    idx[1] = (*stored_vertices)[si(s, xi+offsets[j][0], yi+offsets[j][1], zi+offsets[j][2], offsets[j][3])];
+                    j = face_indices[cubeindex][i+2];
+            	    idx[2] = (*stored_vertices)[si(s, xi+offsets[j][0], yi+offsets[j][1], zi+offsets[j][2], offsets[j][3])];
+              	    addTriangle(idx);
+                };
+	    }
+	}
+    }
+    delete stored_vertices;
+    prepare_profiler->stop();
     Mesh::prepare();
 }
 
