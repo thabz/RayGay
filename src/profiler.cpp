@@ -88,7 +88,7 @@ void Profiler::dump(Profiler* p, double percentage, uint32_t indent) {
     double other_time = p->secs() - children_total_time;
     if (other_time > 0.01) {
        double percent = p->secs() > 0 ? (other_time / p->secs()) * percentage : 0.0;
-       cout << left << setfill('.') << setw(25) << (indent_s + "Other");
+       cout << left << setfill('.') << setw(25) << (indent_s + "  Other");
        cout << formatSecs(other_time);
        cout << formatPercentage(percent,GRAPH_LENGTH) << endl;
     }     
