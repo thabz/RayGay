@@ -7,6 +7,8 @@
 
 vector<Profiler*> Profiler::profilers;
 
+#define GRAPH_LENGTH 20
+
 // UTF-8 strings of the Unicode block elements 2588-258F.
 static const string blocks[] = {
      "\xe2\x96\x88", // ########
@@ -20,6 +22,7 @@ static const string blocks[] = {
      " "           , // ________
 };
 
+// TODO: Alternativt ... symbol er Unicode 22EF med UTF-8 E2 8B AF
 
 string formatSecs(double secs) {
     ostringstream os;
@@ -69,7 +72,7 @@ void Profiler::dump(Profiler* p, double percentage, uint32_t indent) {
 
     cout << left << setfill('.') << setw(25) << (indent_s + p->name);
     cout << formatSecs(p->secs());
-    cout << formatPercentage(percentage,10) << endl;
+    cout << formatPercentage(percentage,GRAPH_LENGTH) << endl;
 
     double children_total_time = 0;
     std::vector<Profiler*> children = findByParent(p->name);
@@ -87,7 +90,7 @@ void Profiler::dump(Profiler* p, double percentage, uint32_t indent) {
        double percent = p->secs() > 0 ? (other_time / p->secs()) * percentage : 0.0;
        cout << left << setfill('.') << setw(25) << (indent_s + "Other");
        cout << formatSecs(other_time);
-       cout << formatPercentage(percent,10) << endl;
+       cout << formatPercentage(percent,GRAPH_LENGTH) << endl;
     }     
     }
 }
