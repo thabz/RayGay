@@ -22,6 +22,8 @@ MarchingCubes::MarchingCubes(IsoSurface* isosurface, uint32_t subdivisions, bool
  *
  * There are a maximum of 5 triangles to draw in each entry. Each
  * triangle is specified in the table by its 3 vertices.
+ *
+ * This table is taken from Paul Bourke.
  */
 static const int face_indices[256][16] =
 {
@@ -286,6 +288,8 @@ static const int face_indices[256][16] =
 // 256 entries of 12 bits that specifies which of the 12 edges 
 // of a cube that are to be used. The 8 bit corner inside/outside
 // state of the cubes is the index into this table.
+//
+// This table is taken from Paul Bourke.
 static const uint16_t active_edges[256] = 
 {
     0x000, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
@@ -402,8 +406,14 @@ void MarchingCubes::prepare()
     // These are used to construct the faces.
     vector<int>* stored_vertices = new vector<int>(s*s*s*3, -1);
     
-    // Precalculate a bitmap with the inside/outside states 
+    // Precalculate a 3D bitmap with the inside/outside states 
     // of all points in the cubic lattice.
+    //
+    // TODO: Sometimes the boundingbox for the isosurface is too
+    // big. If we (early) can discover that some of the outer planes 
+    // in the lattice are all outside the isosurface, we can shrink 
+    // the bbox and make smaller steps - this allows for finer
+    // details. This ofcourse takes a recalculation of the bitmap.
     AABox bbox = isosurface->getBoundingBox();
     Vector steps = bbox.lengths() / subdivisions;
     Vector pos;
