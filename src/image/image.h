@@ -10,6 +10,9 @@
 
 class Vector2;
 
+#define xy2blockno(x,y) (((y)/block_size)*(blocks_w)+((x)/blocks_size))
+#define xy2offset(x,y) ((xy2blockno(x,y)*blocks_size*blocks_size) + (y*block_size) + x)*sizeof(IMAGE_FLOAT)*4
+
 /// Holds an image or texture.
 class Image {
     public:
@@ -59,9 +62,14 @@ class Image {
     private:
 	int height;
 	int width;
+	int block_size;
+	int blocks_w;
+	int blocks_h;
 	IMAGE_FLOAT *data;
 	bool use_mmap;
 
+	int alloc_size;
+	void calcBlocks(int h, int w);
 };
 
 #endif

@@ -49,6 +49,15 @@ Image::Image(const Image& other, bool use_mmap) : use_mmap(use_mmap) {
     memcpy(data,other.data, height * width * sizeof(IMAGE_FLOAT) * 4);
 }
 
+void Image::calcBlocks(int h, int w) {
+    block_size = 16;
+    blocks_w = w / block_size;
+    if (w % block_size != 0) blocks_w++;
+    blocks_h = h / blocks_h;
+    if (h % block_size != 0) blocks_h++;
+    alloc_size = block_size * block_size * blocks_w * blocks_h * 4 * sizeof(IMAGE_FLOAT);
+}
+
 /**
  * Frees the image data
  */
