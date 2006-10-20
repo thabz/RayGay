@@ -389,6 +389,7 @@ void print_usage() {
     cout << "       -p                   Dump profile after run" << endl;
     cout << "       -h                   Show this help message" << endl;
     cout << "       -v                   Show current versionnumber" << endl;
+    cout << "Pagesize : " << getpagesize() << " bytes" << endl;
 }
 
 int main(int argc, char *argv[]) {
