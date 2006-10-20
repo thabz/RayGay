@@ -57,7 +57,7 @@ class IsoSurface : public Object, public Transformer {
 
 inline
 bool IsoSurface::inside(const Vector& p) const {
-    return evaluateFunction(p) - iso > 0;
+    return evaluateFunction(p) - iso < 0;
 }
 
 #endif

@@ -45,13 +45,13 @@
 ;(append! scene (list (make-box '(-1700 -51 -1700) '(1700 -5 1700) brown)))
 
 (define (my-iso-chair x y z) 
- (* -1 (iso-chair 5 0.95 0.8 x y z)))
+ (iso-chair 5 0.95 0.8 x y z))
 
 (define (my-iso-torus x y z) 
- (* -1 (iso-torus 3 2 x y z)))
+ (iso-torus 3 2 x y z))
 
 (define (my-tangledcube x y z) 
- (* -1 (iso-tanglecube x y z)))
+ (iso-tanglecube x y z))
 
 (add-to-scene    
  (make-marching-cubes
