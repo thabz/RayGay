@@ -18,23 +18,15 @@
 #include <memory.h>
 #include "math/vector2.h"
 
-#define byte unsigned char
 #undef VERBOSE
 
 using namespace std;
 
-// TODO: map the floats as blocks sized getpagesize()
-
 Image::Image(long w, long h, bool use_mmap) : use_mmap(use_mmap) {
     height = h;
     width = w;
-    data = new IMAGE_FLOAT[w*h*4];
-}
-
-Image::Image(long w, long h, IMAGE_FLOAT* dataPtr) {
-    height = h;
-    width = w;
-    data = dataPtr;
+    calcBlocks(width,height);
+    data = new IMAGE_FLOAT[alloc_size];
 }
 
 Image::Image(const std::string& filename, bool use_mmap) : use_mmap(use_mmap) {
@@ -45,17 +37,18 @@ Image::Image(const std::string& filename, bool use_mmap) : use_mmap(use_mmap) {
 Image::Image(const Image& other, bool use_mmap) : use_mmap(use_mmap) {
     width = other.width;
     height = other.height;
-    data = new IMAGE_FLOAT[width * height * 4];
-    memcpy(data,other.data, height * width * sizeof(IMAGE_FLOAT) * 4);
+    calcBlocks(width,height);
+    data = new IMAGE_FLOAT[alloc_size];
+    memcpy(data, other.data, alloc_size*sizeof(IMAGE_FLOAT));
 }
 
-void Image::calcBlocks(int h, int w) {
+void Image::calcBlocks(int w, int h) {
     block_size = 16;
     blocks_w = w / block_size;
     if (w % block_size != 0) blocks_w++;
-    blocks_h = h / blocks_h;
+    blocks_h = h / block_size;
     if (h % block_size != 0) blocks_h++;
-    alloc_size = block_size * block_size * blocks_w * blocks_h * 4 * sizeof(IMAGE_FLOAT);
+    alloc_size = block_size * block_size * blocks_w * blocks_h * 4;
 }
 
 /**
@@ -70,7 +63,7 @@ void Image::copy(Image* other) {
 	other->getHeight() != this->getHeight()) {
 	throw_exception("Image-sizes must match.");
     }
-    memcpy(data,other->data, height * width * sizeof(IMAGE_FLOAT) * 4);
+    memcpy(data, other->data, alloc_size*sizeof(IMAGE_FLOAT));
 }
 
 
@@ -79,8 +72,7 @@ void Image::setRGBA(int x, int y, const RGBA& c) {
     assert(0 <= x && x < width);
     assert(0 <= y && y < height);
     */
-    uint32_t offset = (y*width + x)*4;
-
+    uint32_t offset = xy2offset(x,y);
     data[offset++] = c.r();
     data[offset++] = c.g();
     data[offset++] = c.b();
@@ -148,8 +140,7 @@ void Image::save(const std::string& filename) {
 
 // Clip RGBA values to be in [0,1]
 void Image::clipColors() {
-    uint32_t num = (uint32_t)(getWidth()*getHeight()*4);
-    for(uint32_t i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < alloc_size; i++) {
 	if (data[i] < 0) data[i] = 0;
 	if (data[i] > 1) data[i] = 1;
     }

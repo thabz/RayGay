@@ -10,17 +10,17 @@
 
 class Vector2;
 
-#define xy2blockno(x,y) (((y)/block_size)*(blocks_w)+((x)/blocks_size))
-#define xy2offset(x,y) ((xy2blockno(x,y)*blocks_size*blocks_size) + (y*block_size) + x)*sizeof(IMAGE_FLOAT)*4
+// TODO: Set block_size = 16 as constant. Then the divides and modulus below can be
+// done using shifts and and.
+
+#define blockno(x,y) (((y)/block_size)*blocks_w+((x)/block_size))
+#define xy2offset(x,y) (blockno(x,y)*block_size*block_size + (y%block_size)*block_size + (x%block_size))*4
 
 /// Holds an image or texture.
 class Image {
     public:
 	/// Constructs an empty image
         Image(long h, long w, bool use_mmap = false);
-	
-	/// Constructs an image from rgbrgbrgb... data
-	Image(long h, long w, IMAGE_FLOAT* data);
 	
 	// Constructs an image from a file
 	Image(const std::string& filename, bool use_mmap = false);
@@ -30,20 +30,25 @@ class Image {
 
 	/// Destructor
 	~Image();
+	
 	/// Sets a pixel
         void setRGBA(int x, int y, const RGBA& color); 
+        
 	/// Sets a pixel
         void setRGBA(const Vector2& p, const RGBA& color); 
+        
 	/// Gets a pixel
-	RGBA getRGBA(const int x, const int y) const { 
-	    IMAGE_FLOAT* p = &data[4*(y*width + x)];
-	    return RGBA(p[0], p[1], p[2], p[3]);
-	//    return RGBA(*(p++),*(p++),*(p++),*p);
+	RGBA getRGBA(const int x, const int y) const {
+	    uint32_t offset = xy2offset(x,y);
+	    return RGBA(data[offset+0],data[offset+1],data[offset+2],data[offset+3]);
 	};
+	
 	/// Saves this image 
 	void save(const std::string& filename);
+	
 	/// Returns width of image
 	int getWidth() const { return width; };
+	
 	/// Returns height of image
 	int getHeight() const { return height; };
 
@@ -68,8 +73,10 @@ class Image {
 	IMAGE_FLOAT *data;
 	bool use_mmap;
 
-	int alloc_size;
-	void calcBlocks(int h, int w);
+        // Size of image in number of IMAGE_FLOATS 
+	uint32_t alloc_size;
+	
+	void calcBlocks(int w, int h);
 };
 
 #endif

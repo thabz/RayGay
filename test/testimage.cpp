@@ -44,6 +44,31 @@ class test_rgba : public Test {
 	}
 };
 
+class test_image : public Test {
+    public:
+	void run() {
+	    RGBA r = RGBA(1,0,0,0);
+	    RGBA g = RGBA(0,1,0,0);
+	    RGBA b = RGBA(0,0,1,0);
+	    
+	    Image* img = new Image(128,256);
+	    
+	    img->setRGBA(10,10,r);
+	    assertTrue(img->getRGBA(10,10) == r);
+
+	    img->setRGBA(20,20,b);
+	    assertTrue(img->getRGBA(20,20) == b);
+
+	    img->setRGBA(127,128,g);
+	    assertTrue(img->getRGBA(127,128) == g);
+
+	    img->setRGBA(127,255,g);
+	    assertTrue(img->getRGBA(127,255) == g);
+	    
+        }
+
+};
+
 class test_png : public Test {
     public:
 	void run() {
@@ -91,8 +116,10 @@ class test_tga : public Test {
 
 	    Image* img = new Image(10,20);
 	    img->setRGBA(5,15,color);
+	    img->setRGBA(9,19,color);
 	    img->save(getLoadPrefix() + "/test.tga");
 	    Image* img2 = Image::load(getLoadPrefix() + "/test.tga");
+	    assertTrue(img2 != NULL);
 	    assertTrue(img2->getWidth() == 10);
 	    assertTrue(img2->getHeight() == 20);
 	    assertTrue(RGB(img2->getRGBA(5,15)) == color);
@@ -116,6 +143,7 @@ class test_jpg : public Test {
 int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("RGBA",new test_rgba());
+    suite.add("Image",new test_image());
     suite.add("TGA",new test_tga());
 #ifdef HAVE_PNG_H
     suite.add("PNG",new test_png());
