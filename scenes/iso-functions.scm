@@ -5,7 +5,6 @@
 
 ;; See http://mathworld.wolfram.com/Chair.html
 (define (iso-chair k a b x y z) 
-  ( * -1
   (- (square (+ (square x)
 		(square y)
 		(square z)
@@ -14,7 +13,7 @@
 	(- (square (- z k))
 	   (* 2 x x))
 	(- (square (+ z k))
-	   (* 2 y y ))))))
+	   (* 2 y y )))))
 
 ;; See http://mathworld.wolfram.com/Tanglecube.html
 (define (iso-tanglecube x y z)
