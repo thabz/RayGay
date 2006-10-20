@@ -14,16 +14,16 @@ class Vector2;
 class Image {
     public:
 	/// Constructs an empty image
-        Image(long h, long w);
+        Image(long h, long w, bool use_mmap = false);
 	
 	/// Constructs an image from rgbrgbrgb... data
 	Image(long h, long w, IMAGE_FLOAT* data);
 	
 	// Constructs an image from a file
-	Image(const std::string& filename);
+	Image(const std::string& filename, bool use_mmap = false);
 
 	// Copy constructor
-	Image(const Image& image);
+	Image(const Image& image, bool use_mmap = false);
 
 	/// Destructor
 	~Image();
@@ -60,6 +60,7 @@ class Image {
 	int height;
 	int width;
 	IMAGE_FLOAT *data;
+	bool use_mmap;
 
 };
 

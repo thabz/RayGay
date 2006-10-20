@@ -23,7 +23,7 @@
 
 using namespace std;
 
-Image::Image(long w, long h) {
+Image::Image(long w, long h, bool use_mmap) : use_mmap(use_mmap) {
     height = h;
     width = w;
     data = new IMAGE_FLOAT[w*h*4];
@@ -35,12 +35,12 @@ Image::Image(long w, long h, IMAGE_FLOAT* dataPtr) {
     data = dataPtr;
 }
 
-Image::Image(const std::string& filename) {
+Image::Image(const std::string& filename, bool use_mmap) : use_mmap(use_mmap) {
     Image* image = Image::load(filename);
     (*this) = (*image);
 }
 
-Image::Image(const Image& other) {
+Image::Image(const Image& other, bool use_mmap) : use_mmap(use_mmap) {
     width = other.width;
     height = other.height;
     data = new IMAGE_FLOAT[width * height * 4];
