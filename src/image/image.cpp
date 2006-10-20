@@ -23,6 +23,8 @@
 
 using namespace std;
 
+// TODO: map the floats as blocks sized getpagesize()
+
 Image::Image(long w, long h, bool use_mmap) : use_mmap(use_mmap) {
     height = h;
     width = w;
