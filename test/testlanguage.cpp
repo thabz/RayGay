@@ -9,11 +9,14 @@
 
 #include <cstdlib>
 #include <cassert>
+#include <cstdio>
+#include <fcntl.h>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <cctype>
+#include <sys/mman.h>
 
 #include "collections/lru_hash.h"
 
@@ -204,6 +207,44 @@ void test_shift() {
     assert((b & 3) == 0x1);
 }
 
+void test_mmap() {
+    char* filename = "test.bin";        
+    int file = open(filename, O_RDWR | O_CREAT | O_TRUNC, 00700);
+    if (file == -1) {
+        cout << "open failed" << endl;
+        exit(EXIT_FAILURE);    
+    }
+    size_t len = 100000;
+    lseek(file, len-1,SEEK_SET);
+    write(file, "", 1);
+    uint8_t* data = (uint8_t*) mmap(NULL, len, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0);
+    if (data == NULL) {
+        cout << "mmap failed" << endl;
+        exit(EXIT_FAILURE);    
+    }
+    for(uint32_t i = 0; i < len; i++) {
+        data[i] = uint8_t(i & 0xff);    
+    }
+    munmap(data, len);
+    close(file);
+    
+    int file2 = open(filename, O_RDONLY, 0);
+    if (file == -1) {
+        cout << "open 2 failed" << endl;
+        exit(EXIT_FAILURE);    
+    }
+    uint8_t* data2 = (uint8_t*) mmap(NULL, len, PROT_READ, MAP_SHARED, file2, 0);
+    if (data == NULL) {
+        cout << "mmap 2 failed" << endl;
+        exit(EXIT_FAILURE);    
+    }
+    for(uint32_t i = 0; i < len; i++) {
+        assert(data2[i] == uint8_t(i & 0xff));    
+    }
+    munmap(data2,len);
+    close(file2);
+}
+
 int main(int argc, char *argv[]) {
 
     test_bool();
@@ -217,6 +258,7 @@ int main(int argc, char *argv[]) {
     test_vector_clear();
     test_shift();
     test_lru_hash();
+    test_mmap();
     return EXIT_SUCCESS;
 }
 
