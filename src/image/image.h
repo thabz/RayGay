@@ -17,7 +17,8 @@ class Vector2;
 #define xy2offset(x,y) (blockno(x,y)*block_size*block_size + (y%block_size)*block_size + (x%block_size))*4
 
 /// Holds an image or texture.
-class Image {
+class Image 
+{
     public:
 	/// Constructs an empty image
         Image(long h, long w, bool use_mmap = false);

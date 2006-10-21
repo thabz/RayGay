@@ -47,7 +47,6 @@ void DarwinIO::save(const Image* const image, const std::string& filename) const
     CGImageDestinationFinalize(imageDest);
     CFRelease(path);
     CFRelease(url);
-    cout << "Done" << endl;
 }
 
 Image* DarwinIO::load(const std::string& filename) 
