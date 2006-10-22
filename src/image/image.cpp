@@ -123,6 +123,15 @@ ImageIO* getImageIO(const std::string& filename) {
     return io;
 }
 
+bool Image::supportsFormat(const std::string& filename) {
+    try {
+        ImageIO* io = getImageIO(filename);
+        delete io;
+        return true;    
+    } catch (Exception e) {
+        return false;            
+    }        
+}
 
 /**
  * Writes the image into a  24 bit uncompressed tga-file

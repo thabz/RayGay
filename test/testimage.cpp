@@ -175,12 +175,12 @@ int main(int argc, char *argv[]) {
     suite.add("Image",new test_image());
     suite.add("Image mmap'ed",new test_image_mmap());
     suite.add("TGA",new test_tga());
-#ifdef HAVE_PNG_H
-    suite.add("PNG",new test_png());
-#endif    
-#ifdef HAVE_JPEGLIB_H
-    suite.add("JPEG",new test_jpg());
-#endif    
+    if (Image::supportsFormat(".png")) {
+        suite.add("PNG",new test_png());
+    }
+    if (Image::supportsFormat(".jpg")) {
+        suite.add("JPEG",new test_jpg());
+    }
     suite.run();
     suite.printStatus();
 

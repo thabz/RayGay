@@ -66,6 +66,9 @@ class Image
 	/// Load a tga-file (the caller must free the Image)
 	static Image* load(const std::string& filename);
 
+        // Find whether we support the imageformat with the extension of the filename 
+        static bool supportsFormat(const std::string& filename);
+
     private:
 	int height;
 	int width;
