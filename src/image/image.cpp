@@ -51,7 +51,7 @@ Image::Image(const Image& other, Allocator::model_t alloc_model) {
  * Frees the image data
  */
 Image::~Image() {
-    Allocator::deallocate(data);
+    Allocator::free(data);
 }
 
 void Image::copy(Image* other) {

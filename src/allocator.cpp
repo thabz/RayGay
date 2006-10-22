@@ -52,11 +52,11 @@ void* Allocator::safe_allocate(size_t size, model_t type) {
 }
 
 void* Allocator::allocate_mmap(size_t size) {
-     FILE* file_handle = tmpfile();
-     int file = fileno(file_handle);
-     lseek(file, size-1, SEEK_SET);
-     write(file, "", 1);
-     void* result = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0);
+     FILE* file_handle = ::tmpfile();
+     int file = ::fileno(file_handle);
+     ::lseek(file, size-1, SEEK_SET);
+     ::write(file, "", 1);
+     void* result = ::mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0);
      if (result != NULL) {
          allocation_files.insert(make_pair(result,file));
      }
@@ -64,10 +64,10 @@ void* Allocator::allocate_mmap(size_t size) {
 }
 
 void* Allocator::allocate_malloc(size_t size) {
-     return malloc(size);        
+     return ::malloc(size);        
 }
 
-void Allocator::deallocate(void* ptr) {
+void Allocator::free(void* ptr) {
      if (ptr == NULL) {
          throw_exception("Trying to free a NULL pointer");    
      }
@@ -91,7 +91,7 @@ void Allocator::deallocate(void* ptr) {
 }
 
 void Allocator::free_malloc(void* ptr) {
-     free(ptr);        
+     ::free(ptr);        
 }
 
 void Allocator::free_mmap(void* ptr) {
@@ -99,6 +99,6 @@ void Allocator::free_mmap(void* ptr) {
      size_t size = map_iter->second;
      munmap(ptr, size);
      int file = allocation_files.find(ptr)->second;
-     close(file);
+     ::close(file);
      allocation_files.erase(ptr);         
 }
