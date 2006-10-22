@@ -1296,7 +1296,7 @@ class poisson_disc_test : public Test {
 	    Vector2* r = new Vector2[100];
 	    int req_num = 300;
 	    int num = PoissonDiscDistribution::createSet(10,10,0.5,req_num,r);
-	    cout << "Darts: " << num << endl;
+//	    cout << "Darts: " << num << endl;
 	    assertTrue(num <= req_num);
 	    assertTrue(num > 10); 
 	    for(int i = 0; i < num; i++) {

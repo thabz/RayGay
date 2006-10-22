@@ -7,23 +7,25 @@
 
 class Allocator {
     public:
-        enum {
+        enum model_t {
             MMAP_ONLY,
             MALLOC_ONLY,
             AUTO            
-        };        
+        };
         
-        static void* allocate(size_t size, uint32_t flags);
-        static void* safe_allocate(size_t size, uint32_t flags);
-        static void free(void* ptr);
+        static void* allocate(size_t size, model_t type);
+        static void* safe_allocate(size_t size, model_t type);
+        static void deallocate(void* ptr);
         
      private:        
         static void* allocate_mmap(size_t);
         static void* allocate_malloc(size_t);
         static void free_mmap(void* ptr);
         static void free_malloc(void* ptr);
-        static std::map<void*,uint32_t> allocation_types;
-        static std::map<void*,uint32_t> allocation_sizes;
+        static std::map<void*,model_t> allocation_types;
+        static std::map<void*,size_t> allocation_sizes;
+        static std::map<void*,int> allocation_files;
+        
 };
 
 #endif

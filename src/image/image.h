@@ -5,12 +5,13 @@
 #include <string>
 #include "rgb.h"
 #include "rgba.h"
+#include "allocator.h"
 
 #define IMAGE_FLOAT double 
 
 class Vector2;
 
-// TODO: Set block_size = 16 as constant. Then the divides and modulus below can be
+// TODO: Set block_size = 16 as compiletime constant. Then the divides and modulus below can be
 // done using shifts and and.
 
 #define blockno(x,y) (((y)/block_size)*blocks_w+((x)/block_size))
@@ -21,13 +22,13 @@ class Image
 {
     public:
 	/// Constructs an empty image
-        Image(long h, long w, bool use_mmap = false);
+        Image(long h, long w, Allocator::model_t = Allocator::AUTO);
 	
 	// Constructs an image from a file
-	Image(const std::string& filename, bool use_mmap = false);
+	Image(const std::string& filename, Allocator::model_t = Allocator::AUTO);
 
 	// Copy constructor
-	Image(const Image& image, bool use_mmap = false);
+	Image(const Image& image, Allocator::model_t = Allocator::AUTO);
 
 	/// Destructor
 	~Image();
@@ -72,12 +73,9 @@ class Image
 	int blocks_w;
 	int blocks_h;
 	IMAGE_FLOAT *data;
-	bool use_mmap;
 
         // Size of image in number of IMAGE_FLOATS 
 	uint32_t alloc_size;
-	
-	void calcBlocks(int w, int h);
 };
 
 #endif

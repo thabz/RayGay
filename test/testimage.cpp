@@ -65,9 +65,38 @@ class test_image : public Test {
 	    img->setRGBA(127,255,g);
 	    assertTrue(img->getRGBA(127,255) == g);
 	    
+	    delete img;
+	    
         }
 
 };
+
+class test_image_mmap : public Test {
+    public:
+	void run() {
+	    RGBA r = RGBA(1,0,0,0);
+	    RGBA g = RGBA(0,1,0,0);
+	    RGBA b = RGBA(0,0,1,0);
+	    
+	    Image* img = new Image(128,256,Allocator::MMAP_ONLY);
+	    
+	    img->setRGBA(10,10,r);
+	    assertTrue(img->getRGBA(10,10) == r);
+
+	    img->setRGBA(20,20,b);
+	    assertTrue(img->getRGBA(20,20) == b);
+
+	    img->setRGBA(127,128,g);
+	    assertTrue(img->getRGBA(127,128) == g);
+
+	    img->setRGBA(127,255,g);
+	    assertTrue(img->getRGBA(127,255) == g);
+	    
+	    delete img;
+        }
+
+};
+
 
 class test_png : public Test {
     public:
@@ -144,6 +173,7 @@ int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("RGBA",new test_rgba());
     suite.add("Image",new test_image());
+    suite.add("Image mmap'ed",new test_image_mmap());
     suite.add("TGA",new test_tga());
 #ifdef HAVE_PNG_H
     suite.add("PNG",new test_png());

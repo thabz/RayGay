@@ -1,6 +1,5 @@
 /*
  * This is a scratchpad for testing different C++ features...
- *
  */
 
 #ifdef HAVE_CONFIG_H

@@ -17,45 +17,41 @@
 #include <string>
 #include <memory.h>
 #include "math/vector2.h"
+#include "allocator.h"
 
 #undef VERBOSE
 
 using namespace std;
 
-Image::Image(long w, long h, bool use_mmap) : use_mmap(use_mmap) {
+Image::Image(long w, long h, Allocator::model_t alloc_model) {
     height = h;
     width = w;
-    calcBlocks(width,height);
-    data = new IMAGE_FLOAT[alloc_size];
-}
 
-Image::Image(const std::string& filename, bool use_mmap) : use_mmap(use_mmap) {
-    Image* image = Image::load(filename);
-    (*this) = (*image);
-}
-
-Image::Image(const Image& other, bool use_mmap) : use_mmap(use_mmap) {
-    width = other.width;
-    height = other.height;
-    calcBlocks(width,height);
-    data = new IMAGE_FLOAT[alloc_size];
-    memcpy(data, other.data, alloc_size*sizeof(IMAGE_FLOAT));
-}
-
-void Image::calcBlocks(int w, int h) {
     block_size = 16;
     blocks_w = w / block_size;
     if (w % block_size != 0) blocks_w++;
     blocks_h = h / block_size;
     if (h % block_size != 0) blocks_h++;
     alloc_size = block_size * block_size * blocks_w * blocks_h * 4;
+
+    data = (IMAGE_FLOAT*) Allocator::safe_allocate(alloc_size * sizeof(IMAGE_FLOAT), alloc_model);
+}
+
+Image::Image(const std::string& filename, Allocator::model_t alloc_model) {
+    Image* image = Image::load(filename);
+    (*this) = (*image);
+}
+
+Image::Image(const Image& other, Allocator::model_t alloc_model) {
+    Image(other.width, other.height, alloc_model);
+    memcpy(data, other.data, alloc_size*sizeof(IMAGE_FLOAT));
 }
 
 /**
  * Frees the image data
  */
 Image::~Image() {
-    delete [] data;
+    Allocator::deallocate(data);
 }
 
 void Image::copy(Image* other) {
