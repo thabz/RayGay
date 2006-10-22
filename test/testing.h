@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include "exception.h"
 #include "math/constants.h"
 
@@ -33,6 +34,7 @@ class Test {
 	void printStatus();
 	bool hasFailures();
 	string getLoadPrefix();
+	string getName();
 
     private:
 	string name;
@@ -57,7 +59,12 @@ class TestSuite {
 void TestSuite::run() {
     for(unsigned int i = 0; i < tests.size(); i++) {
 	try {
+	    cout << "    ";
+	    cout << setw(40) << left;
+	    cout << tests[i]->getName();
+	    cout << flush;        
 	    tests[i]->run();
+       	    tests[i]->printStatus();
 	} catch (Exception e) {
 	    cout << "Exception: " << e.getMessage() 
 		<< " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
@@ -67,10 +74,6 @@ void TestSuite::run() {
 }
 
 void TestSuite::printStatus() {
-    for(unsigned int i = 0; i < tests.size(); i++) {
-	cout << "   ";
-	tests[i]->printStatus();
-    }
 }
 
 bool TestSuite::hasFailures() {
@@ -99,6 +102,10 @@ void Test::setName(string name) {
     this->name = name;
 }
 
+string Test::getName() {
+    return name;        
+}
+
 void Test::_assertTrue(bool expr, char* filename, int line, char* expr_code) {
     total_asserts++;
     if (expr) {
@@ -118,7 +125,7 @@ void Test::_assertTrue(bool expr, char* filename, int line, char* expr_code) {
 }
 
 void Test::printStatus() {
-    cout << (failed_asserts > 0 ? "Failure for " : "Success for ") << name << ": ";
+    cout << (failed_asserts > 0 ? "Failure" : "Success") << ": ";
     cout << succeded_asserts << "/" << total_asserts << endl;
     if (failed_asserts > 0) {
 	for(unsigned int i = 0; i < failed_output.size(); i++) {
