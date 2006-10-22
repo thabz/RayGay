@@ -6,6 +6,8 @@
 class Matrix;
 class QMCSequence;
 
+// TODO: Make this use a thread_local shadow_cache.
+
 /// A directional Lightsource with a soft cutoff angle
 class Spotlight : public Lightsource {
 

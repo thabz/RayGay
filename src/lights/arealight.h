@@ -20,6 +20,7 @@ class Arealight : public Lightsource {
 
     private:
 	std::vector<Circle*> circles;
+	// TODO: Not threadsafe! Make this thread_local. Identical problem in skylight.
 	mutable std::vector<ShadowCache> shadowcaches;
 	std::vector<double> ts;
 	double jitter;
