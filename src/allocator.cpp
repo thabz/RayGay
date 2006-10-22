@@ -57,7 +57,7 @@ void* Allocator::allocate_mmap(size_t size) {
      ::lseek(file, size-1, SEEK_SET);
      ::write(file, "", 1);
      void* result = ::mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0);
-     if (result == -1) {
+     if (int(result) == -1) {
         result = NULL;     
      }
      if (result != NULL) {
