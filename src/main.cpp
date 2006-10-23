@@ -26,7 +26,10 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
+
+extern "C" {
 #include <unistd.h>
+}
 
 #ifdef OS_DARWIN
 #include <Carbon/Carbon.h>

@@ -4,6 +4,8 @@
 
 #include <cctype>
 #include <map>
+#include <vector>
+#include "math/vector.h"
 
 class Allocator {
     public:
@@ -16,7 +18,7 @@ class Allocator {
         static void* allocate(size_t size, model_t type);
         static void* safe_allocate(size_t size, model_t type);
         static void free(void* ptr);
-        
+
      private:        
         static void* allocate_mmap(size_t);
         static void* allocate_malloc(size_t);

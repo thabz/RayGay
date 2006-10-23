@@ -2,10 +2,10 @@
 #include <config.h>
 #endif
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <cassert>
-#include <time.h>
+#include <ctime>
 
 #define NUM_MULTS 1000000000
 #define NUM_DIVS 1000000000

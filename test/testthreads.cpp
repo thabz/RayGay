@@ -6,11 +6,12 @@
 #include <config.h>
 #endif
 
+extern "C" {
 #include <pthread.h>
-#include <iostream>
-
+}
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 
 using namespace std;
 

@@ -19,7 +19,7 @@ void TgaIO::save(const Image* const image, const std::string& filename) const {
 
     byte* bytes = new byte[height*width*4];
     byte Header[18];
-    memset(&Header,0,18);
+    ::memset(&Header,0,18);
 
     Header[0] = 0;
     Header[1] = 0;
@@ -51,27 +51,27 @@ void TgaIO::save(const Image* const image, const std::string& filename) const {
 	    bytes[4*(x + y * width) + 3] = (byte)(floor(color.a()*255 + 0.5));
 	}
     }
-    FILE* outfile = fopen(filename.c_str(),"wb");
+    FILE* outfile = ::fopen(filename.c_str(),"wb");
     if (outfile == NULL) {
 	delete [] bytes;
 	throw_exception("Error opening " + filename);
     }
-    fseek(outfile,0,0);
-    fwrite(Header,1,18,outfile);
-    fseek(outfile,18,0);
-    int bytes_saved = fwrite(bytes,sizeof(byte),width*height*4,outfile);
+    ::fseek(outfile,0,0);
+    ::fwrite(Header,1,18,outfile);
+    ::fseek(outfile,18,0);
+    int bytes_saved = ::fwrite(bytes,sizeof(byte),width*height*4,outfile);
 
     //std::cout << bytes_saved << " bytes written" << std::endl;
     if (bytes_saved < width*height*4) {
 	throw_exception("Error saving file " + filename);
     }
-    fclose(outfile);
+    ::fclose(outfile);
     delete [] bytes;
 }
 
 RGBA readpixel(FILE* handle, int bpp) {
     byte data[4];
-    fread(data,1,bpp,handle);
+    ::fread(data,1,bpp,handle);
     RGBA result;
     switch(bpp) {
 	case 3:
@@ -100,7 +100,7 @@ void readscanline(FILE* handle, RGBA* dest, int width, int bpp, bool rle) {
 	int pixels_read = 0;
 	byte repcount;
 	do {
-	    fread(&repcount,1,1,handle);
+	    ::fread(&repcount,1,1,handle);
 	    int count = (int(repcount) & 127) + 1;
 	    if (int(repcount) > 127) {
 		// Process run-length packet
@@ -135,13 +135,13 @@ Image* TgaIO::load(const std::string& filename) {
 
     FILE *Handle;
     byte Header[18];
-    Handle = fopen(filename.c_str(), "rb");
+    Handle = ::fopen(filename.c_str(), "rb");
     if(Handle == NULL) {
         throw_exception("Error opening " + filename);
     }
 
-    fseek(Handle, 0, 0);
-    fread(Header, 1, 18, Handle);
+    ::fseek(Handle, 0, 0);
+    ::fread(Header, 1, 18, Handle);
 
 
     int bpp = int(Header[16]) / 8; // Bytes per pixel
@@ -170,6 +170,6 @@ Image* TgaIO::load(const std::string& filename) {
 	    image->setRGBA(x,height-1-y,line[x]);
 	}
     }
-    fclose(Handle);
+    ::fclose(Handle);
     return image;
 }

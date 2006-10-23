@@ -6,18 +6,23 @@
 #include <config.h>
 #endif
 
+extern "C" {
+#include <sys/mman.h>
+#include <fcntl.h>
+}
+
 #include <cstdlib>
 #include <cassert>
 #include <cstdio>
-#include <fcntl.h>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <cctype>
-#include <sys/mman.h>
 
 #include "collections/lru_hash.h"
+#include "mmap_allocator.h"
+#include "math/vector.h"
 
 using namespace std;
 
@@ -244,6 +249,22 @@ void test_mmap() {
     close(file2);
 }
 
+void test_stl_mmap_allocator() {
+    vector<Vector> v1;
+    vector<Vector,mmap_allocator<Vector> > v2;
+    
+    for(uint32_t i = 0; i < 500; i++) {
+        Vector v = Vector(i,i,i);   
+        v1.push_back(v);
+        v2.push_back(v);
+    }        
+    for(uint32_t i = 0; i < 500; i++) {
+        assert(v1[i] == v2[i]);    
+    }
+    
+    
+}
+
 int main(int argc, char *argv[]) {
 
     test_bool();
@@ -258,6 +279,7 @@ int main(int argc, char *argv[]) {
     test_shift();
     test_lru_hash();
     test_mmap();
+    test_stl_mmap_allocator();
     return EXIT_SUCCESS;
 }
 

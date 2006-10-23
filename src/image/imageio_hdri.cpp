@@ -1,9 +1,11 @@
 
 #include <cmath>
 #include <cassert>
-#include <memory.h>
 #include <string>
 #include <cstdio>
+extern "C" {
+#include <memory.h>
+}
 
 #include "image/imageio_hdri.h"
 #include "exception.h"
@@ -32,24 +34,24 @@ Image* HdriIO::load(const std::string& fileName)
     char str[200];
     FILE *file;
 
-    file = fopen(fileName.c_str(), "rb");
+    file = ::fopen(fileName.c_str(), "rb");
     if (!file)
 	throw_exception("HDRI file named " + fileName + " not found.");
 
-    fread(str, 10, 1, file);
-    if (memcmp(str, "#?RADIANCE", 10)) {
-	fclose(file);
+    ::fread(str, 10, 1, file);
+    if (::memcmp(str, "#?RADIANCE", 10)) {
+	::fclose(file);
 	throw_exception(fileName + " is not a HDRI file.");
     }
 
-    fseek(file, 1, SEEK_CUR);
+    ::fseek(file, 1, SEEK_CUR);
 
     char cmd[2000];
     i = 0;
     char c = 0, oldc;
     while(true) {
 	oldc = c;
-	c = fgetc(file);
+	c = ::fgetc(file);
 	if (c == 0xa && oldc == 0xa)
 	    break;
 	cmd[i++] = c;
@@ -58,15 +60,15 @@ Image* HdriIO::load(const std::string& fileName)
     char reso[2000];
     i = 0;
     while(true) {
-	c = fgetc(file);
+	c = ::fgetc(file);
 	reso[i++] = c;
 	if (c == 0xa)
 	    break;
     }
 
     long w, h;
-    if (!sscanf(reso, "-Y %ld +X %ld", &h, &w)) {
-	fclose(file);
+    if (!::sscanf(reso, "-Y %ld +X %ld", &h, &w)) {
+	::fclose(file);
 	throw_exception("Couldn't read resolution of HDRI file " + fileName);
     }
     std::cout << "(w,h) = (" << w << "," << h << ")" << std::endl;
@@ -77,7 +79,7 @@ Image* HdriIO::load(const std::string& fileName)
 
     RGBE *scanline = new RGBE[w];
     if (!scanline) {
-	fclose(file);
+	::fclose(file);
 	throw_exception("Out of memory reading HDRI file '" + fileName + "'");
     }
 
@@ -93,7 +95,7 @@ Image* HdriIO::load(const std::string& fileName)
     assert(li == h);
 
     delete [] scanline;
-    fclose(file);
+    ::fclose(file);
 
     std::cout << "(w,h) = (" << w << "," << h << ")" << std::endl;
 
@@ -141,13 +143,13 @@ bool decrunch(RGBE *scanline, int len, FILE *file)
 
     i = fgetc(file);
     if (i != 2) {
-	fseek(file, -1, SEEK_CUR);
+	::fseek(file, -1, SEEK_CUR);
 	return oldDecrunch(scanline, len, file);
     }
 
-    scanline[0][G] = fgetc(file);
-    scanline[0][B] = fgetc(file);
-    i = fgetc(file);
+    scanline[0][G] = ::fgetc(file);
+    scanline[0][B] = ::fgetc(file);
+    i = ::fgetc(file);
 
     if (scanline[0][G] != 2 || scanline[0][B] & 128) {
 	scanline[0][R] = 2;
@@ -158,21 +160,21 @@ bool decrunch(RGBE *scanline, int len, FILE *file)
     // read each component
     for (i = 0; i < 4; i++) {
 	for (j = 0; j < len; ) {
-	    unsigned char code = fgetc(file);
+	    unsigned char code = ::fgetc(file);
 	    if (code > 128) { // run
 		code &= 127;
-		unsigned char val = fgetc(file);
+		unsigned char val = ::fgetc(file);
 		while (code--)
 		    scanline[j++][i] = val;
 	    }
 	    else  {	// non-run
 		while(code--)
-		    scanline[j++][i] = fgetc(file);
+		    scanline[j++][i] = ::fgetc(file);
 	    }
 	}
     }
 
-    return feof(file) ? false : true;
+    return ::feof(file) ? false : true;
 }
 
 bool oldDecrunch(RGBE *scanline, int len, FILE *file)
@@ -185,14 +187,14 @@ bool oldDecrunch(RGBE *scanline, int len, FILE *file)
 	scanline[0][G] = fgetc(file);
 	scanline[0][B] = fgetc(file);
 	scanline[0][E] = fgetc(file);
-	if (feof(file))
+	if (::feof(file))
 	    return false;
 
 	if (scanline[0][R] == 1 &&
 		scanline[0][G] == 1 &&
 		scanline[0][B] == 1) {
 	    for (i = scanline[0][E] << rshift; i > 0; i--) {
-		memcpy(&scanline[0][0], &scanline[-1][0], 4);
+		::memcpy(&scanline[0][0], &scanline[-1][0], 4);
 		scanline++;
 		len--;
 	    }

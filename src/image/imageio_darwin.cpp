@@ -5,8 +5,9 @@
 
 #ifdef OS_DARWIN
 
-#include "image/imageio_darwin.h"
 #include <ApplicationServices/ApplicationServices.h>
+
+#include "image/imageio_darwin.h"
 #include "exception.h"
 #include "image/image.h"
 

@@ -8,11 +8,13 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
+
+extern "C" {
 #include <unistd.h>
 #include <time.h>
+}
 
 #include "math/vector.h"
-
 #include "objects/ellipsoid.h"
 #include "ray.h"
 

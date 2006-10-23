@@ -5,16 +5,19 @@
 
 #ifdef HAVE_JPEGLIB_H
 
-#include "image/imageio_jpeg.h"
-#include "image/image.h"
-#include "exception.h"
 #include <cassert>
 #include <iostream>
 #include <string>
 #include <cstdio>
+extern "C" {
 #include <memory.h>
 #include <setjmp.h>
 #include <jpeglib.h>
+}
+
+#include "image/imageio_jpeg.h"
+#include "image/image.h"
+#include "exception.h"
 
 using namespace std;
 
@@ -61,7 +64,7 @@ Image* JpegIO::load(const std::string& filename) {
     FILE * infile;              /* source file */
     JSAMPARRAY buffer;          /* Output row buffer */
 
-    if ((infile = fopen(filename.c_str(), "rb")) == NULL) {
+    if ((infile = ::fopen(filename.c_str(), "rb")) == NULL) {
 	throw_exception("Unable to open " + filename);
     }
                                                                                
@@ -69,7 +72,7 @@ Image* JpegIO::load(const std::string& filename) {
     jerr.pub.error_exit = my_error_exit;
     if (setjmp(jerr.setjmp_buffer)) {
         jpeg_destroy_decompress(&cinfo);
-        fclose(infile);
+        ::fclose(infile);
         return NULL;
     }
                                                                                
@@ -102,7 +105,7 @@ Image* JpegIO::load(const std::string& filename) {
                                                                                
     jpeg_finish_decompress(&cinfo);
     jpeg_destroy_decompress(&cinfo);
-    fclose(infile);
+    ::fclose(infile);
     return image;
 
 }

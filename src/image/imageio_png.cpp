@@ -5,16 +5,18 @@
 
 #ifdef HAVE_PNG_H
 
-#include "image/image.h"
-#include "image/imageio_png.h"
-#include "exception.h"
 #include <cassert>
 #include <iostream>
 #include <string>
 #include <cstdio>
+extern "C" {
 #include <memory.h>
-//#include <setjmp.h>
 #include <png.h>
+}
+
+#include "image/image.h"
+#include "image/imageio_png.h"
+#include "exception.h"
 
 using namespace std;
 
@@ -28,7 +30,7 @@ void PngIO::save(const Image* const image, const std::string& filename) const {
     int height = image->getHeight();
 
     /* open the file */
-    fp = fopen(filename.c_str(), "wb");
+    fp = ::fopen(filename.c_str(), "wb");
     if (fp == NULL)
 	throw_exception("Error saving " + filename);
 
@@ -43,7 +45,7 @@ void PngIO::save(const Image* const image, const std::string& filename) const {
 
     if (png_ptr == NULL)
     {
-	fclose(fp);
+	::fclose(fp);
 	throw_exception("Error saving " + filename);
     }
 
@@ -51,7 +53,7 @@ void PngIO::save(const Image* const image, const std::string& filename) const {
     info_ptr = png_create_info_struct(png_ptr);
     if (info_ptr == NULL)
     {
-	fclose(fp);
+	::fclose(fp);
 	png_destroy_write_struct(&png_ptr,  png_infopp_NULL);
 	throw_exception("Error saving " + filename);
     }
@@ -62,7 +64,7 @@ void PngIO::save(const Image* const image, const std::string& filename) const {
     if (setjmp(png_jmpbuf(png_ptr)))
     {
 	/* If we get here, we had a problem reading the file */
-	fclose(fp);
+	::fclose(fp);
 	png_destroy_write_struct(&png_ptr, &info_ptr);
 	throw_exception("Error saving " + filename);
     }
@@ -115,7 +117,7 @@ png_set_text(png_ptr, info_ptr, text_ptr, 3);
     png_destroy_write_struct(&png_ptr, &info_ptr);
 
     /* close the file */
-    fclose(fp);
+    ::fclose(fp);
 }
 
 Image* PngIO::load(const std::string& filename) {
@@ -124,7 +126,7 @@ Image* PngIO::load(const std::string& filename) {
     png_uint_32 width, height;
     int bit_depth, color_type, interlace_type;
     FILE *fp;
-    if ((fp = fopen(filename.c_str(), "rb")) == NULL)
+    if ((fp = ::fopen(filename.c_str(), "rb")) == NULL)
 	throw_exception("Error opening " + filename);
 
     png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
@@ -132,7 +134,7 @@ Image* PngIO::load(const std::string& filename) {
 
     if (png_ptr == NULL)
     {
-	fclose(fp);
+	::fclose(fp);
 	throw_exception("Error opening " + filename);
     }
 
@@ -140,7 +142,7 @@ Image* PngIO::load(const std::string& filename) {
     info_ptr = png_create_info_struct(png_ptr);
     if (info_ptr == NULL)
     {
-	fclose(fp);
+	::fclose(fp);
 	png_destroy_read_struct(&png_ptr, png_infopp_NULL, png_infopp_NULL);
 	throw_exception("Error opening " + filename);
     }
@@ -149,7 +151,7 @@ Image* PngIO::load(const std::string& filename) {
     {
 	/* Free all of the memory associated with the png_ptr and info_ptr */
 	png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
-	fclose(fp);
+	::fclose(fp);
 	/* If we get here, we had a problem reading the file */
 	throw_exception("Error reading " + filename);
     }
@@ -219,7 +221,7 @@ Image* PngIO::load(const std::string& filename) {
     png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
 
     /* close the file */
-    fclose(fp);
+    ::fclose(fp);
 
     /* that's it */
     return result;

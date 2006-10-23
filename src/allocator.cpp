@@ -1,6 +1,7 @@
 
 #include "allocator.h"
 #include "exception.h"
+#include "mmap_allocator.h"
 #include <sys/mman.h>
 #include <cstdlib>
 #include <cstdio>
