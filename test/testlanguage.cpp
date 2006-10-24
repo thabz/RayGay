@@ -24,22 +24,30 @@ extern "C" {
 #include "mmap_allocator.h"
 #include "math/vector.h"
 
+#include "testing.h"
+
 using namespace std;
 
-void test_bool() {
-    bool t1 = true;
-    bool t2 = true;
-    bool f1 = false;
-    bool f2 = false;
+class test_bool : public Test {
+        public:
+        void run() {
+                bool t1 = true;
+                bool t2 = true;
+                bool f1 = false;
+                bool f2 = false;
 
-    assert(t1 && t2 == true);
-    assert(t1 && t2);
-    assert(t1 || f1);
-    assert(f1 || t1);
-    assert(f1 || f2 == false);
-}
+                assert(t1 && t2 == true);
+                assert(t1 && t2);
+                assert(t1 || f1);
+                assert(f1 || t1);
+                assert(f1 || f2 == false);
+        }
+};
 
-void test_modulo() {
+
+class test_modulo : public Test {
+        public:
+        void run() {
     assert((0 + 1) % 3 == 1);
     assert((1 + 1) % 3 == 2);
     assert((2 + 1) % 3 == 0);
@@ -48,13 +56,18 @@ void test_modulo() {
     assert((1 + 3 - 1) % 3 == 0);
     assert((2 + 3 - 1) % 3 == 1);
 }
+};
 
 
-void test_lowercase() {
+class test_lowercase : public Test {
+        public:
+        void run() {
     string s = "Ray Gay";
     transform(s.begin(),s.end(),s.begin(),(int(*)(int)) tolower);
     assert(s == "ray gay");
 }
+};
+
 
 class compareAreaDesc {
     public:
@@ -72,15 +85,23 @@ class compareAreaAsc {
 	}
 };
 
-void test_sort_array() {
+
+class test_sort_array: public Test {
+        public:
+        void run() {
     int tal[] = { 10, 5, 15, 0 ,20 };
     sort(tal,tal + 5);
     assert(tal[0] == 0);
     assert(tal[1] == 5);
     assert(tal[2] == 10);
 }
+};
 
-void test_sort() {
+
+class test_sort : public Test {
+        public:
+        void run() {
+
     // Test descending sortering
     vector<int> tal;
     tal.push_back(10);
@@ -122,8 +143,12 @@ void test_sort() {
     sort(tom.begin(),tom.end(),compareAreaAsc());
     assert(tom.size() == 1);
 }
+};
 
-void test_vector_copy() {
+
+class test_vector_copy : public Test {
+        public:
+        void run() {
     vector<int>* a = new vector<int>;
     vector<int>* b = new vector<int>;
     a->push_back(1);
@@ -138,15 +163,11 @@ void test_vector_copy() {
     delete a;
     delete b;
 }
+};
 
-void test_fmod() {
-//    cout << "fmod(1.2, 1) : " << fmod(1.2,1) << endl;
-//    cout << "fmod(2.2, 1) : " << fmod(2.2,1) << endl;
-//    cout << "fmod(3.0, 1) : " << fmod(3.0,1) << endl;
-//    cout << "fmod(-1.2, 1) : " << fmod(-1.2,1) << endl;
-}
-
-void test_vector_ref() {
+class test_vector_ref : public Test {
+        public:
+        void run() {
     vector<int>* a = new vector<int>;
     a->push_back(1);
     a->push_back(2);
@@ -160,8 +181,11 @@ void test_vector_ref() {
     b.clear();
     assert(a->size() == 0);
 }
+};
 
-void test_vector_clear() {
+class test_vector_clear : public Test {
+        public:
+        void run() {
     vector<int>* a = new vector<int>;
     for(int i = 0; i < 10000; i++) {
 	a->push_back(i);
@@ -173,8 +197,11 @@ void test_vector_clear() {
     a->reserve(0);
     //cout << "capacity: " << a->capacity() << endl;
 }
+};
 
-void test_lru_hash() {
+class test_lru_hash : public Test {
+        public:
+        void run() {
     LRUHash<int,int> lru = LRUHash<int,int>(3);
     lru.insert(1,101);
     lru.insert(2,102);
@@ -194,8 +221,12 @@ void test_lru_hash() {
     assert(*(lru.find(4)) == 106);
     assert(*(lru.find(5)) == 107);
 }
+};
 
-void test_shift() {
+class test_shift : public Test {
+        public:
+        void run() {
+
     uint a = 50;
     uint b;
 
@@ -210,8 +241,12 @@ void test_shift() {
     assert(b >> 2 == 20);
     assert((b & 3) == 0x1);
 }
+};
 
-void test_mmap() {
+class test_mmap : public Test {
+        public:
+        void run() {
+
     char* filename = "test.bin";        
     int file = open(filename, O_RDWR | O_CREAT | O_TRUNC, 00700);
     if (file == -1) {
@@ -248,8 +283,11 @@ void test_mmap() {
     munmap(data2,len);
     close(file2);
 }
+};
 
-void test_stl_mmap_allocator() {
+class test_stl_mmap_allocator : public Test {
+        public:
+        void run() {
     vector<Vector> v1;
     vector<Vector,mmap_allocator<Vector> > v2;
     
@@ -261,26 +299,33 @@ void test_stl_mmap_allocator() {
     for(uint32_t i = 0; i < 500; i++) {
         assert(v1[i] == v2[i]);    
     }
-    
-    
 }
+};
+
 
 int main(int argc, char *argv[]) {
+        TestSuite suite;
+        suite.add("Bool",new test_bool());
+        suite.add("Modulo",new test_modulo());
+        suite.add("Lowercase",new test_lowercase());
+        suite.add("Sort",new test_sort());
+        suite.add("Sort array",new test_sort_array());
+        suite.add("Vector copy",new test_vector_copy());
+        suite.add("Vector ref",new test_vector_ref());
+        suite.add("Vector clear",new test_vector_clear());
+        suite.add("Shift",new test_shift());
+        suite.add("LRU Hash",new test_lru_hash());
+        suite.add("mmap",new test_mmap());
+        suite.add("STL mmap alloc",new test_stl_mmap_allocator());
 
-    test_bool();
-    test_modulo();
-    test_lowercase();
-    test_sort();
-    test_sort_array();
-    test_vector_copy();
-    test_vector_ref();
-    test_fmod();
-    test_vector_clear();
-    test_shift();
-    test_lru_hash();
-    test_mmap();
-    test_stl_mmap_allocator();
-    return EXIT_SUCCESS;
+    suite.run();
+    suite.printStatus();
+
+    if (suite.hasFailures()) {
+	return EXIT_FAILURE;
+    } else {
+	return EXIT_SUCCESS;
+    }
 }
 
 
