@@ -56,6 +56,7 @@
 * Optionally mmap photonmaps.
 * Optionally mmap meshdata.
 * Optionally render bezierpatches directly without tessalating into triangles.
+* Undersøg om vi kan bruge valarray nogle steder...
 
 ///////////////////////////////////////////
 // Compiling into assembler source

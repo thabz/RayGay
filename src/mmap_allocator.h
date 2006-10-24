@@ -15,6 +15,9 @@ extern "C"
 
 /**
  * An STL allocator that uses mmap'ed tmp-files.
+ * 
+ * @see http://www.ddj.com/dept/cpp/184403759 for an excellent description of the 
+ * allocator interface and allocators in general.
  */
 template <typename T>
 class mmap_allocator : public std::allocator<T> {
@@ -78,19 +81,21 @@ class mmap_allocator : public std::allocator<T> {
       ::munmap((caddr_t) p, sizeof(T)*num);
       ::close(file);
     }
-
+    
     private:
         int file;   
 };
 
+  // Againt the norm two mmap_allocator's aren't interchangeable.
   template <typename T1, typename T2>
   bool operator == (mmap_allocator <T1> const &, mmap_allocator <T2> const &) throw () {
-    return true;
+    return false;
   }
 
+  // Againt the norm two mmap_allocator's aren't interchangeable.
   template <typename T1, typename T2>
   bool operator != (mmap_allocator <T1> const &, mmap_allocator <T2> const &) throw () {
-    return false;
+    return true;
   }
 
 #endif
