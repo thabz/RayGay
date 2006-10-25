@@ -1,6 +1,10 @@
 
 (load "lib/raygay.scm")
-
+        
+(set-settings 
+    '(image-storage "memory")
+)        
+                
 (set-image-size '(1024 768))
 (set-background '(1.0 1.0 1.0))
 
@@ -14,9 +18,10 @@
 ;       'sampler (make-halton-sampler 64))))
 ;       'sampler (make-uniform-jitter-sampler 32))))
         )))
+        
 (define chess-material
   (make-material
-    (list 'diffuse (make-texture "gfx/chess.png" 200 200 "none")
+    (list 'diffuse (make-texture "gfx/tidsel.jpg" 200 200 "none")
 	  'kd 1.0
 	  'ks 0.0)))
 

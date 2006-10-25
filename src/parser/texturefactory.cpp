@@ -5,10 +5,13 @@
 #include "image/image.h"
 #include "image/texture.h"
 #include "exception.h"
+#include "renderersettings.h"
 
 using namespace std;
 
 SCM TextureFactory::make_texture(SCM s_filename, SCM s_repeat_x, SCM s_repeat_y, SCM s_interpolation_type) {
+
+    RendererSettings* renderer_settings = RendererSettings::uniqueInstance();
 
     char* proc = "make-texture";
 
@@ -30,7 +33,7 @@ SCM TextureFactory::make_texture(SCM s_filename, SCM s_repeat_x, SCM s_repeat_y,
 
     Image* image = NULL;
     try {
-    	image = new Image(filename);
+    	image = new Image(filename, renderer_settings->image_alloc_model);
     } catch (Exception e) {
 	scm_error(NULL, "make-texture", e.getMessage().c_str(), SCM_UNSPECIFIED, NULL);
     }

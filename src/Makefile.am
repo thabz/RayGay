@@ -28,6 +28,7 @@ libtracer_la_SOURCES = \
 		      allocator.cpp	\
 		      allocator.h	\
 		      mmap_allocator.h	\
+		      renderersettings.cpp \
 		      window.h		
 
 libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libphoton.la lights/liblights.la materials/libmaterials.la collections/libcollections.la objects/libobjects.la paths/libpaths.la math/libmath.la  image/libimage.la space/libspace.la shaders/libshaders.la cameras/libcameras.la imagefilters/libimagefilters.la filters/libfilters.la

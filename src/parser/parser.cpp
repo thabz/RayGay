@@ -154,21 +154,38 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	    char* key_c = gh_symbol2newstr(scm_list_ref(s_settings, scm_int2num(i*2)),NULL);
 	    string key = string(key_c);
 	    SCM s_value = scm_list_ref(s_settings, scm_int2num(i*2+1));
-	    double value = scm_num2double(s_value,0,"");
 	    if (key == "globalphotons") {
-		renderersettings->global_photons_num = int(value);
+  	        uint32_t value = scm_num2int(s_value,0,"");
+		renderersettings->global_photons_num = value;
 	    } else if (key == "causticphotons") {
+      	        double value = scm_num2double(s_value,0,"");
 		renderersettings->caustic_photons_num = int(value);
 	    } else if (key == "estimateradius") {
+      	        double value = scm_num2double(s_value,0,"");
 		renderersettings->estimate_radius = int(value);
 	    } else if (key == "estimateradius") {
+      	        double value = scm_num2double(s_value,0,"");
 		renderersettings->estimate_radius = value;
 	    } else if (key == "estimatesamples") {
+      	        double value = scm_num2double(s_value,0,"");
 		renderersettings->estimate_samples = int(value);
 	    } else if (key == "finalgatherrays") {
+      	        double value = scm_num2double(s_value,0,"");
 		renderersettings->final_gather_rays = int(value);
 	    } else if (key == "cachetolerance") {
+      	        double value = scm_num2double(s_value,0,"");
 		renderersettings->cache_tolerance = value;
+    	    } else if (key == "image-storage") {
+    	        string s = scm2string(s_value);
+    	        if (s == "memory") {
+    	            renderersettings->image_alloc_model = Allocator::MALLOC_ONLY;    
+    	        } else if (s == "disc") {
+	            renderersettings->image_alloc_model = Allocator::MMAP_ONLY;    
+	        } else if (s == "auto") {
+    	            renderersettings->image_alloc_model = Allocator::AUTO;    
+    	        } else {
+        	    scm_error(NULL, "internal-settingsr", ("Unknown image-storage model: " + s).c_str(), SCM_UNSPECIFIED, NULL);
+    	        }
 	    } else {
 		cout << "Unknown setting: " << key << endl;
 	    }

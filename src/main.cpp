@@ -1,6 +1,6 @@
 
 /*
-    Copyright (C) 2005 Jesper Christensen <jesper@kalliope.org>
+    Copyright (C) 2004-2006 Jesper Christensen <jesper@kalliope.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ extern "C" {
 
 using namespace std;
 
-RendererSettings* renderer_settings = new RendererSettings();
+RendererSettings* renderer_settings = RendererSettings::uniqueInstance();
 Parser* parser = new Parser();
 PreviewWindow* preview_window = NULL;
 std::string scenefile;
@@ -253,7 +253,7 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     int img_h = renderersettings->image_height;
 
     scene->getCamera()->setImageSize(img_w,img_h);
-    Image* img = new Image(img_w, img_h);
+    Image* img = new Image(img_w, img_h, renderersettings->image_alloc_model);
 
     Environment* env = Environment::getUniqueInstance();
 

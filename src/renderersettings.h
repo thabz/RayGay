@@ -2,13 +2,16 @@
 #ifndef RENDERER_SETTINGS
 #define RENDERER_SETTINGS
 
+#include "allocator.h"
+
 /**
  * Structure for storing settings for the renderers.
  */
-class RendererSettings {
+class RendererSettings 
+{
     public:
-	RendererSettings();
-
+        static RendererSettings* uniqueInstance();
+   
 	/// The type of renderer
 	enum RendererType {
 	    PHOTON_RENDERER,
@@ -41,25 +44,13 @@ class RendererSettings {
 	int image_width;
 	/// Height of output image
 	int image_height;
+	/// Storage model for images (in-memory or mmap'ed)
+	Allocator::model_t image_alloc_model;
+	
+    private:	
+    	RendererSettings();
+        static RendererSettings* unique_instance;
 };
 
-/**
- * Constructor which insert default-settings.
- */
-inline RendererSettings::RendererSettings() {
-    global_photons_num = 10000;
-    caustic_photons_num = 0;
-    estimate_radius = 30;
-    estimate_samples = 300;
-    final_gather_rays = 10;
-    renderertype = RAYTRACER;
-    cache_tolerance = 0.1;
-    threads_num = 1;
-    renderertype = NONE;
-    camera_paths = 10;
-    anim_frames = 1;
-    image_width = 640;
-    image_height = 480;
-}
 
 #endif
