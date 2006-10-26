@@ -53,13 +53,20 @@ void* Allocator::safe_allocate(size_t size, model_t type) {
 }
 
 void* Allocator::allocate_mmap(size_t size) {
+     int res, file;
      FILE* file_handle = ::tmpfile();
-     int file = ::fileno(file_handle);
+     file = ::fileno(file_handle);
      if (file == -1) {
 	 throw_exception("Bad temp file");
      }
-     ::lseek(file, size-1, SEEK_SET);
-     ::write(file, "", 1);
+     res = ::lseek(file, size-1, SEEK_SET);
+     if (res == -1) {
+	 throw_exception("Couldn't seek in tmp file");
+     }
+     res = ::write(file, "", 1);
+     if (res == -1) {
+	 throw_exception("Couldn't write to tmp file");
+     }
      void* result = ::mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0);
      if (int(result) == -1) {
         result = NULL;     
