@@ -27,6 +27,8 @@ char* VAR_RENDERER = "__renderer__";
 char* VAR_IMAGESIZE = "__image-size__";
 char* VAR_BACKGROUND = "__background__";
 
+// TODO: (set-settings) should call a function a set the settings immediately.
+
 Parser::Parser() {
     scm_init_guile();
     init_wrapper_type();
