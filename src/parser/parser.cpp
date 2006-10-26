@@ -20,7 +20,6 @@
 
 using namespace std;
 
-char* VAR_SETTINGS = "__settings__";
 char* VAR_SCENE = "__scene__";
 char* VAR_CAMERA = "__camera__";
 char* VAR_RENDERER = "__renderer__";
@@ -33,12 +32,13 @@ Parser::Parser() {
     scm_init_guile();
     init_wrapper_type();
     // Globals
-    scm_c_define(VAR_SETTINGS, SCM_EOL);
     scm_c_define(VAR_SCENE, SCM_EOL);
     scm_c_define(VAR_CAMERA, SCM_EOL);
     scm_c_define(VAR_RENDERER, SCM_EOL);
     scm_c_define(VAR_IMAGESIZE, SCM_EOL);
     scm_c_define(VAR_BACKGROUND, SCM_EOL);
+
+    scm_c_define_gsubr("set-settings",1,0,0,(SCM (*)()) Parser::set_settings);
 
     // My procedures
     PathFactory::register_procs();
@@ -141,58 +141,6 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	}
     }
     
-    // Set settings
-    SCM s_settings = lookup(VAR_SETTINGS);
-    if (!SCM_NULLP(s_settings)) {
-	if (SCM_FALSEP (scm_list_p (s_settings))) {
-	    scm_error(NULL, "internal-populate-scene", "The variable 'settings' is not a list", SCM_UNSPECIFIED, NULL);
-    }
-	uint32_t length = scm_num2int(scm_length(s_settings),0,"");
-
-	assert(length % 2 == 0);
-	uint32_t argc = length / 2;
-
-	for(uint32_t i = 0; i < argc; i++) {
-	    char* key_c = gh_symbol2newstr(scm_list_ref(s_settings, scm_int2num(i*2)),NULL);
-	    string key = string(key_c);
-	    SCM s_value = scm_list_ref(s_settings, scm_int2num(i*2+1));
-	    if (key == "globalphotons") {
-  	        uint32_t value = scm_num2int(s_value,0,"");
-		renderersettings->global_photons_num = value;
-	    } else if (key == "causticphotons") {
-      	        double value = scm_num2double(s_value,0,"");
-		renderersettings->caustic_photons_num = int(value);
-	    } else if (key == "estimateradius") {
-      	        double value = scm_num2double(s_value,0,"");
-		renderersettings->estimate_radius = int(value);
-	    } else if (key == "estimateradius") {
-      	        double value = scm_num2double(s_value,0,"");
-		renderersettings->estimate_radius = value;
-	    } else if (key == "estimatesamples") {
-      	        double value = scm_num2double(s_value,0,"");
-		renderersettings->estimate_samples = int(value);
-	    } else if (key == "finalgatherrays") {
-      	        double value = scm_num2double(s_value,0,"");
-		renderersettings->final_gather_rays = int(value);
-	    } else if (key == "cachetolerance") {
-      	        double value = scm_num2double(s_value,0,"");
-		renderersettings->cache_tolerance = value;
-    	    } else if (key == "image-storage") {
-    	        string s = scm2string(s_value);
-    	        if (s == "memory") {
-    	            renderersettings->image_alloc_model = Allocator::MALLOC_ONLY;    
-    	        } else if (s == "disc") {
-	            renderersettings->image_alloc_model = Allocator::MMAP_ONLY;    
-	        } else if (s == "auto") {
-    	            renderersettings->image_alloc_model = Allocator::AUTO;    
-    	        } else {
-        	    scm_error(NULL, "internal-settingsr", ("Unknown image-storage model: " + s).c_str(), SCM_UNSPECIFIED, NULL);
-    	        }
-	    } else {
-		cout << "Unknown setting: " << key << endl;
-	    }
-	}
-    }
 
     SCM s_image_size = lookup(VAR_IMAGESIZE);
     if (!SCM_NULLP(s_image_size)) {
@@ -217,7 +165,66 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	    scene->setBackground(rgba);
 	}
     }
+}
 
-    // TODO: Set fog
+// TODO: Set fog
+
+SCM Parser::set_settings(SCM s_settings) 
+{
+    RendererSettings* renderersettings = RendererSettings::uniqueInstance();
+
+    if (!SCM_NULLP(s_settings)) {
+	if (SCM_FALSEP (scm_list_p (s_settings))) {
+	    scm_error(NULL, "set-settings", "The settings is not a list", SCM_UNSPECIFIED, NULL);
+	}
+	uint32_t length = scm_num2int(scm_length(s_settings),0,"");
+
+	assert(length % 2 == 0);
+	uint32_t argc = length / 2;
+
+	for(uint32_t i = 0; i < argc; i++) {
+	    char* key_c = gh_symbol2newstr(scm_list_ref(s_settings, scm_int2num(i*2)),NULL);
+	    string key = string(key_c);
+	    SCM s_value = scm_list_ref(s_settings, scm_int2num(i*2+1));
+	    if (key == "globalphotons") {
+		uint32_t value = scm_num2int(s_value,0,"");
+		renderersettings->global_photons_num = value;
+	    } else if (key == "causticphotons") {
+		double value = scm_num2double(s_value,0,"");
+		renderersettings->caustic_photons_num = int(value);
+	    } else if (key == "estimateradius") {
+		double value = scm_num2double(s_value,0,"");
+		renderersettings->estimate_radius = int(value);
+	    } else if (key == "estimateradius") {
+		double value = scm_num2double(s_value,0,"");
+		renderersettings->estimate_radius = value;
+	    } else if (key == "estimatesamples") {
+		double value = scm_num2double(s_value,0,"");
+		renderersettings->estimate_samples = int(value);
+	    } else if (key == "finalgatherrays") {
+		double value = scm_num2double(s_value,0,"");
+		renderersettings->final_gather_rays = int(value);
+	    } else if (key == "cachetolerance") {
+		double value = scm_num2double(s_value,0,"");
+		renderersettings->cache_tolerance = value;
+	    } else if (key == "image-storage") {
+		string s = scm2string(s_value);
+		cout << "Setting " << s << endl;
+		if (s == "memory") {
+		    renderersettings->image_alloc_model = Allocator::MALLOC_ONLY;    
+		} else if (s == "disc") {
+		    renderersettings->image_alloc_model = Allocator::MMAP_ONLY;    
+		} else if (s == "auto") {
+		    renderersettings->image_alloc_model = Allocator::AUTO;    
+		} else {
+		    scm_error(NULL, "set-settings", ("Unknown image-storage model: " + s).c_str(), SCM_UNSPECIFIED, NULL);
+		}
+	    } else {
+		cout << "Unknown setting: " << key << endl;
+	    }
+	}
+    }
+    return NULL;
+
 }
 

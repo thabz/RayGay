@@ -2,9 +2,21 @@
 (load "lib/raygay.scm")
         
 (set-settings 
-    '(image-storage "memory")
+    '(image-storage "disc")
 )        
-                
+
+(make-texture "gfx/tidsel.jpg" 200 200 "none")               
+(make-texture "gfx/tidsel.jpg" 200 200 "none")               
+(make-texture "gfx/tidsel.jpg" 200 200 "none")               
+(make-texture "gfx/tidsel.jpg" 200 200 "none")               
+(make-texture "gfx/tidsel.jpg" 200 200 "none")               
+(make-texture "gfx/tidsel.jpg" 200 200 "none")               
+(make-texture "gfx/tidsel.jpg" 200 200 "none")               
+(make-texture "gfx/tidsel.jpg" 200 200 "none")               
+(make-texture "gfx/tidsel.jpg" 200 200 "none")               
+(make-texture "gfx/tidsel.jpg" 200 200 "none")               
+(make-texture "gfx/tidsel.jpg" 200 200 "none")               
+
 (set-image-size '(1024 768))
 (set-background '(1.0 1.0 1.0))
 

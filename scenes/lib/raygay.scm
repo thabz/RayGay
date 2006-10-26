@@ -21,7 +21,4 @@
 (define (set-camera c)
   (set! __camera__ c))
 
-(define (set-settings s)
-  (set! __settings__ s))
-
 (load "objects.scm")    

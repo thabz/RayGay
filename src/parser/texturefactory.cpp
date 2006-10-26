@@ -32,6 +32,7 @@ SCM TextureFactory::make_texture(SCM s_filename, SCM s_repeat_x, SCM s_repeat_y,
     } else {
 	scm_error(NULL, "make-texture", ("Unknown interpolationtype: " + type_string).c_str(), SCM_UNSPECIFIED, NULL);
     }
+    cout << "Model: " << renderer_settings->image_alloc_model << endl;
 
     Image* image = NULL;
     try {
