@@ -54,8 +54,12 @@ void* Allocator::safe_allocate(size_t size, model_t type) {
 
 void* Allocator::allocate_mmap(size_t size) {
      int res, file;
-     FILE* file_handle = ::tmpfile();
-     file = ::fileno(file_handle);
+     cout << flush << endl; 
+     char templ[50] = "";
+     sprintf(templ, "%s", "/tmp/tracer-XXXXXX");
+     file = ::mkstemp(templ);
+     cout << "Filename " << templ << endl;
+     remove(templ);
      if (file == -1) {
 	 throw_exception("Bad temp file");
      }
