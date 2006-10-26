@@ -55,6 +55,9 @@ void* Allocator::safe_allocate(size_t size, model_t type) {
 void* Allocator::allocate_mmap(size_t size) {
      FILE* file_handle = ::tmpfile();
      int file = ::fileno(file_handle);
+     if (file == -1) {
+	 throw_exception("Bad temp file");
+     }
      ::lseek(file, size-1, SEEK_SET);
      ::write(file, "", 1);
      void* result = ::mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0);
