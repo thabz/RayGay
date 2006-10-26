@@ -50,7 +50,7 @@ void DarwinIO::save(const Image* const image, const std::string& filename) const
     CFRelease(url);
 }
 
-Image* DarwinIO::load(const std::string& filename) 
+Image* DarwinIO::load(const std::string& filename, Allocator::model_t model) 
 {
 #define TYPE uint8_t
         
@@ -63,7 +63,7 @@ Image* DarwinIO::load(const std::string& filename)
     uint64_t w = CGImageGetWidth(imageRef);
     uint64_t h = CGImageGetHeight(imageRef);
     CGImageAlphaInfo alpha_info = CGImageGetAlphaInfo(imageRef);
-    Image* result = new Image(w,h);
+    Image* result = new Image(w,h,model);
     
     TYPE* data = (TYPE*)malloc(w * h * 4 * sizeof(TYPE));
     for( uint32_t i = 0; i < w*h*4; i += 4 )

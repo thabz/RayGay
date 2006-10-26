@@ -409,7 +409,7 @@ int main(int argc, char *argv[]) {
     int jobs = getNumberOfCPUs();
     int frame_to_render = 0;
     int frames_total = 1;
-    while ((c = getopt (argc, argv, "vpdhbj:f:F:e:")) != -1) {
+    while ((c = getopt (argc, argv, "Vvpdhbj:f:F:e:")) != -1) {
 	switch(c) {
 	    case 'h':
 		print_usage();

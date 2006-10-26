@@ -5,18 +5,6 @@
     '(image-storage "disc")
 )        
 
-(make-texture "gfx/tidsel.jpg" 200 200 "none")               
-(make-texture "gfx/tidsel.jpg" 200 200 "none")               
-(make-texture "gfx/tidsel.jpg" 200 200 "none")               
-(make-texture "gfx/tidsel.jpg" 200 200 "none")               
-(make-texture "gfx/tidsel.jpg" 200 200 "none")               
-(make-texture "gfx/tidsel.jpg" 200 200 "none")               
-(make-texture "gfx/tidsel.jpg" 200 200 "none")               
-(make-texture "gfx/tidsel.jpg" 200 200 "none")               
-(make-texture "gfx/tidsel.jpg" 200 200 "none")               
-(make-texture "gfx/tidsel.jpg" 200 200 "none")               
-(make-texture "gfx/tidsel.jpg" 200 200 "none")               
-
 (set-image-size '(1024 768))
 (set-background '(1.0 1.0 1.0))
 
@@ -33,7 +21,7 @@
         
 (define chess-material
   (make-material
-    (list 'diffuse (make-texture "gfx/tidsel.jpg" 200 200 "none")
+    (list 'diffuse (make-texture "gfx/chess.png" 200 200 "none")
 	  'kd 1.0
 	  'ks 0.0)))
 

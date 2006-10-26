@@ -209,7 +209,6 @@ SCM Parser::set_settings(SCM s_settings)
 		renderersettings->cache_tolerance = value;
 	    } else if (key == "image-storage") {
 		string s = scm2string(s_value);
-		cout << "Setting " << s << endl;
 		if (s == "memory") {
 		    renderersettings->image_alloc_model = Allocator::MALLOC_ONLY;    
 		} else if (s == "disc") {

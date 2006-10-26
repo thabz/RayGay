@@ -120,7 +120,7 @@ png_set_text(png_ptr, info_ptr, text_ptr, 3);
     ::fclose(fp);
 }
 
-Image* PngIO::load(const std::string& filename) {
+Image* PngIO::load(const std::string& filename, Allocator::model_t model) {
     png_structp png_ptr;
     png_infop info_ptr;
     png_uint_32 width, height;
@@ -190,7 +190,7 @@ Image* PngIO::load(const std::string& filename) {
     png_byte row[png_get_rowbytes(png_ptr, info_ptr)];
     png_bytep rowp = row;
 
-    Image* result = new Image(width,height);
+    Image* result = new Image(width,height,model);
     int bpp = png_get_rowbytes(png_ptr,info_ptr) / width;
     //cout << "Bytes per pixel: " << bpp << endl;
     assert(bpp == 4 || bpp == 3);

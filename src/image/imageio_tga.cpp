@@ -131,7 +131,7 @@ void readscanline(FILE* handle, RGBA* dest, int width, int bpp, bool rle) {
 /**
  * Loads the image from a tga 24 og 32 bit uncompressed tga-file.
  */
-Image* TgaIO::load(const std::string& filename) {
+Image* TgaIO::load(const std::string& filename, Allocator::model_t model) {
 
     FILE *Handle;
     byte Header[18];
@@ -162,7 +162,7 @@ Image* TgaIO::load(const std::string& filename) {
 
     fseek(Handle, 18, 0);
 
-    Image* image = new Image(width,height);
+    Image* image = new Image(width,height,model);
     RGBA* line = new RGBA[width];
     for(int y = 0; y < height ; y++) {
 	readscanline(Handle,line,width,bpp,rle);

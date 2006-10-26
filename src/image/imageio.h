@@ -5,6 +5,7 @@
 class Image;
 #include <string>
 #include <cstdio>
+#include "allocator.h"
 
 /**
  * Image loaders must implement this interface.
@@ -14,7 +15,7 @@ class ImageIO {
 	/// Save an image
 	virtual void save(const Image* const image, const std::string& filename) const = 0;
 	/// Load an image
-	virtual Image* load(const std::string& filename) = 0;
+	virtual Image* load(const std::string& filename, Allocator::model_t = Allocator::AUTO) = 0;
 
 	virtual ~ImageIO() {};
 };

@@ -64,7 +64,7 @@ class Image
 	void copy(Image* other);
 
 	/// Load a tga-file (the caller must free the Image)
-	static Image* load(const std::string& filename);
+	static Image* load(const std::string& filename,  Allocator::model_t = Allocator::AUTO);
 
         // Find whether we support the imageformat with the extension of the filename 
         static bool supportsFormat(const std::string& filename);

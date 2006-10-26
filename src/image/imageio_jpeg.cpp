@@ -58,7 +58,7 @@ void readLine(unsigned char* buf, RGBA* line, int w, int bpp) {
     }
 }
 
-Image* JpegIO::load(const std::string& filename) {
+Image* JpegIO::load(const std::string& filename, Allocator::model_t model) {
     struct jpeg_decompress_struct cinfo;
     struct my_error_mgr jerr;
     FILE * infile;              /* source file */
@@ -91,7 +91,7 @@ Image* JpegIO::load(const std::string& filename) {
         ((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
                                                                                
 
-    Image* image = new Image(width,height);
+    Image* image = new Image(width,height,model);
     RGBA* line = new RGBA[width];
     uint32_t y = 0;
     while (cinfo.output_scanline < height) {

@@ -38,7 +38,7 @@ Image::Image(long w, long h, Allocator::model_t alloc_model) {
 }
 
 Image::Image(const std::string& filename, Allocator::model_t alloc_model) {
-    Image* image = Image::load(filename);
+    Image* image = Image::load(filename, alloc_model);
     (*this) = (*image);
 }
 
@@ -154,7 +154,7 @@ void Image::clipColors() {
 /**
  * Loads the image from a tga 24 og 32 bit uncompressed tga-file.
  */
-Image* Image::load(const std::string& filename) {
+Image* Image::load(const std::string& filename, Allocator::model_t model) {
 
     // Checking that file exists
     bool exists = false;
@@ -172,7 +172,7 @@ Image* Image::load(const std::string& filename) {
     ImageIO* io = getImageIO(filename);
 
     // Read image data
-    Image* image = io->load(filename);
+    Image* image = io->load(filename, model);
     delete io;
 
 #ifdef VERBOSE    

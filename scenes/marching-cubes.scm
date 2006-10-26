@@ -56,7 +56,7 @@
 (add-to-scene    
  (make-marching-cubes
   (make-isosurface 
-   my-tangledcube
+   my-iso-torus
    '(-6 -6 -6)
    '(6 6 6)
    0.0	; iso-value

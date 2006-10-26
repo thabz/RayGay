@@ -28,7 +28,7 @@ void HdriIO::save(const Image* const image, const std::string& filename) const {
     throw_exception("HDRI saving not implemented.");
 }
 
-Image* HdriIO::load(const std::string& fileName)
+Image* HdriIO::load(const std::string& fileName, Allocator::model_t model)
 {
     int i;
     char str[200];
@@ -100,7 +100,7 @@ Image* HdriIO::load(const std::string& fileName)
     std::cout << "(w,h) = (" << w << "," << h << ")" << std::endl;
 
     // Copy cols to image
-    Image* result = new Image(w,h);
+    Image* result = new Image(w,h,model);
     for(int y = 0; y < h; y++) {
 	for(int x = 0; x < w; x++) {
 	    uint32_t offset = 3 * (y*w + x);

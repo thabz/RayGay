@@ -20,7 +20,7 @@ class HdriIO : public ImageIO {
 	/// Save an image
 	void save(const Image* const image, const std::string& filename) const;
 	/// Load an image
-	Image* load(const std::string& filename);
+	Image* load(const std::string& filename, Allocator::model_t = Allocator::AUTO);
 };
 
 
