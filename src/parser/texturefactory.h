@@ -3,6 +3,9 @@
 #define PARSER_TEXTURE_FACTORY_H
 
 #include <libguile.h>
+#include <map>
+
+class Image;
 
 /**
  * Factory for texture-related Scheme-procedures.
@@ -13,6 +16,9 @@ class TextureFactory {
 	static SCM get_pixel(SCM s_texture, SCM s_x, SCM s_y);
 
 	static void register_procs();
+
+	static std::map<std::string,Image*> image_cache;
+
 };
 
 
