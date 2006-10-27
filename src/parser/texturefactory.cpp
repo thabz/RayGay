@@ -11,8 +11,6 @@ using namespace std;
 
 std::map<std::string,Image*> TextureFactory::image_cache;
 
-// TODO: Reuse images already loaded
-
 SCM TextureFactory::make_texture(SCM s_filename, SCM s_repeat_x, SCM s_repeat_y, SCM s_interpolation_type) {
 
     RendererSettings* renderer_settings = RendererSettings::uniqueInstance();
