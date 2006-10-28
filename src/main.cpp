@@ -191,10 +191,8 @@ void preparePhotonMaps(Scene* scene,
 
     delete photontracer;
     
-    //irradiance_cache = new IrradianceCache(space->getWorldBoundingBox(),5);
-    // TODO: Woa! What's this crap!? Use bbox = space->boundingBox() and grow by 10% maybe?
-    AABox bbox = AABox(Vector(-733,-733,-733),Vector(733,733,733));
-    cout << "Warning! IrradianceCache only spans (-733,-733,-733) to (733,733,733). See main.cpp" << endl;
+    AABox bbox = space->boundingBox();
+    bbox.growPercentage(10);
     (*irradiancecache) = new IrradianceCache(bbox,renderersettings->cache_tolerance);
 }
 
