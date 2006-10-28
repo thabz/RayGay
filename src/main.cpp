@@ -340,6 +340,12 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     }
     rendering_time->stopTimer();
 
+    if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
+        delete globalphotonmap;
+        delete causticsmap;
+        delete irradiancecache;
+    }
+    
     // Apply filters if any
     FilterStack* filterstack = Environment::getUniqueInstance()->getFilterStack();
     if (filterstack != NULL) {

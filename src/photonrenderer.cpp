@@ -43,8 +43,7 @@ PhotonRenderer::PhotonRenderer(RendererSettings* settings,
 
 PhotonRenderer::~PhotonRenderer() {
     delete qmc_sequence;
-    delete globalphotonmap;
-    delete causticsphotonmap;
+    delete gloss_sequence;
 }
 
 RGBA PhotonRenderer::getPixel(const Vector2& v) {
