@@ -85,4 +85,11 @@ void SolidBox::_fullIntersect(const Ray& world_ray, const double t, Intersection
     intersectionToWorld(result);
 }
 
+bool SolidBox::inside(const Vector &p) const 
+{
+    return bbox.inside(p);        
+}
+
+
+
  

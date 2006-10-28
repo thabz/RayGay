@@ -190,3 +190,9 @@ SceneObject* Sphere::clone() const {
     Sphere* result = new Sphere(*this);
     return result;
 }
+
+bool Sphere::inside(const Vector& p) const
+{
+     return (p - center).norm() < radius * radius;
+}
+

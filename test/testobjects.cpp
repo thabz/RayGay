@@ -141,6 +141,9 @@ class sphere_test : public Test {
 	void run() {
 	    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
 	    Sphere s = Sphere(Vector(0,0,0),10.0,m);
+	    assertTrue(s.inside(Vector(0,0,9)));
+	    assertTrue(s.inside(Vector(0,0,-9)));
+	    assertFalse(s.inside(Vector(0,9,9)));
 
 	    s = Sphere(Vector(0,0,0),60.0,m);
 
