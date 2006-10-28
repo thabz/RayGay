@@ -12,7 +12,7 @@
        lookat (0 50 0)
        up (0 1 0)
        fov 45
-       aa 4)))
+       aa 3)))
 
 (define brown
   (make-material
