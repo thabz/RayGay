@@ -61,7 +61,6 @@ void PhotonTracer::printProgress() {
 }
 
 void PhotonTracer::trace(int threads_num) {
-    Stats::getUniqueInstance()->beginTimer("Photontracing");
     pthread_t threads[threads_num];
     // Spawn threads
     for(int i=0; i < threads_num; i++) {
@@ -71,7 +70,6 @@ void PhotonTracer::trace(int threads_num) {
     for (int i=0; i<threads_num; i++) {
 	pthread_join(threads[i], NULL);
     }
-    Stats::getUniqueInstance()->endTimer("Photontracing");
 }
     
 void PhotonTracer::trace() {
