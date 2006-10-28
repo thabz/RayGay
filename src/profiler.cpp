@@ -64,19 +64,34 @@ void Profiler::dump() {
     dump(findByParent("")[0], 1.0, 0);
 }
 
+
+class ProfilerComparator {
+    public:
+	bool operator()(Profiler* const p1, Profiler* const p2)
+	{
+	    return p1->last_begin < p2->last_begin;
+	}
+};
+
+
 void Profiler::dump(Profiler* p, double percentage, uint32_t indent) {
     string indent_s = "";
     for(uint32_t i = 0; i < indent; i++) {
         indent_s += " ";            
     }
 
-    cout << left << setfill('.') << setw(25) << (indent_s + p->name);
+    // Print the profiler accumulated time
+    cout << left << setfill('.') << setw(30) << (indent_s + p->name) << " ";
     cout << formatSecs(p->secs());
     cout << formatPercentage(percentage,GRAPH_LENGTH) << endl;
 
     double children_total_time = 0;
     std::vector<Profiler*> children = findByParent(p->name);
-    // TODO: Sorter efter hvert barns last_begin
+    
+    // Sort children by their last_begin times
+    std::sort(children.begin(), children.end(), ProfilerComparator());
+    
+    // Print children recursively
     for(uint32_t j = 0; j < children.size(); j++) {
         Profiler* q = children[j];
         children_total_time += q->secs() + 0.00001;
@@ -84,14 +99,15 @@ void Profiler::dump(Profiler* p, double percentage, uint32_t indent) {
         dump(q, percent, indent+2);
     }
 
+    // Print rest of time as "Other"
     if (children.size() > 0) {
-    double other_time = p->secs() - children_total_time;
-    if (other_time > 0.01) {
-       double percent = p->secs() > 0 ? (other_time / p->secs()) * percentage : 0.0;
-       cout << left << setfill('.') << setw(25) << (indent_s + "  Other");
-       cout << formatSecs(other_time);
-       cout << formatPercentage(percent,GRAPH_LENGTH) << endl;
-    }     
+        double other_time = p->secs() - children_total_time;
+        if (other_time > 0.01) {
+           double percent = p->secs() > 0 ? (other_time / p->secs()) * percentage : 0.0;
+           cout << left << setfill('.') << setw(30) << (indent_s + "  Other ");
+           cout << formatSecs(other_time);
+           cout << formatPercentage(percent,GRAPH_LENGTH) << endl;
+        }     
     }
 }
 

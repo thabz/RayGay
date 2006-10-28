@@ -8,7 +8,9 @@
 
 using namespace std;
 
-class Profiler {
+
+class Profiler 
+{
     public:
 	static Profiler* create(string name, string parent = "");
 	
@@ -16,6 +18,8 @@ class Profiler {
 
 	void start();
 	void stop();
+
+	clock_t last_begin;
 	
     private:
 	Profiler(string n, string p);
@@ -24,7 +28,6 @@ class Profiler {
         static void dump(Profiler* p, double percentage, uint32_t indent);
 	double secs();
 
-	clock_t last_begin;
 	long accumulated_time;
 	string name;
 	string parent;
