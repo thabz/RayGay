@@ -254,6 +254,7 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     KdTree* space = new KdTree();
     scene->initSpace(space);
     cout << "Done." << endl;
+    profiler->stop();
 
     int img_w = renderersettings->image_width;
     int img_h = renderersettings->image_height;
@@ -280,7 +281,6 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
 	preparePhotonMaps(scene,space,renderersettings,&globalphotonmap,&causticsmap,&irradiancecache);
     }
-    profiler->stop();
 
     // Create and prepare job pool
     RenderJobPool* job_pool = new RenderJobPool(img_w,img_h,64);
