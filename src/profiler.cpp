@@ -22,8 +22,6 @@ static const string blocks[] = {
      " "           , // ________
 };
 
-// TODO: Alternativt ... symbol er Unicode 22EF med UTF-8 E2 8B AF
-
 string formatSecs(double secs) {
     ostringstream os;
     int whole_minutes = int(secs / 60);
