@@ -22,6 +22,7 @@ Halton::Halton(int base, int dim) {
 	invBase[i] = 1.0 / double(base);
 	base = nextPrime(base);
     }
+    pthread_mutex_init(&mutex,NULL);
 }
 
 Halton::~Halton() {
@@ -36,6 +37,7 @@ void Halton::reset() {
 }
 
 double* Halton::getNext() {
+    pthread_mutex_lock(&mutex);
     for (int i = 0; i < dim; i++) {
 	double r = 1.0 - values[i] - 1e-10;
 	if (invBase[i] < r)
@@ -50,6 +52,7 @@ double* Halton::getNext() {
 	    values[i] += ((hh + h) - 1.0);
 	}
     }
+    pthread_mutex_unlock(&mutex);
     return values;
 }
 

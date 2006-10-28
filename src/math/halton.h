@@ -3,6 +3,7 @@
 #define MATH_HALTON_H
 
 #include "math/qmcsequence.h"
+#include <pthread.h>
 
 /**
  * The Halton sequence.
@@ -23,6 +24,7 @@ class Halton : public QMCSequence {
 	double* invBase;
 	double* values;
 	int dim;
+	mutable pthread_mutex_t mutex;
 };
 
 #endif
