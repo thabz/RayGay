@@ -102,8 +102,9 @@ uint32_t Profiler::longestname() {
 vector<Profiler*> Profiler::findByParent(string s) {
     vector<Profiler*> result;        
     for(uint32_t i = 0; i < profilers.size(); i++) {
-        if (profilers[i]->parent == s) {
-            result.push_back(profilers[i]);        
+        Profiler * p = profilers[i];    
+        if (p->parent == s && p->secs() > 0) {
+            result.push_back(p);        
         }            
     }        
     return result;
