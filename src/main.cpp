@@ -157,30 +157,37 @@ void preparePhotonMaps(Scene* scene,
 	               GlobalPhotonMap** globalphotonmap,
 		       CausticsMap** causticsphotonmap,
 		       IrradianceCache** irradiancecache) {
+    Profiler* profiler;
 
     (*globalphotonmap) = new GlobalPhotonMap(renderersettings->global_photons_num,renderersettings->estimate_radius,renderersettings->estimate_samples);
     (*causticsphotonmap) = new CausticsMap(renderersettings->caustic_photons_num,renderersettings->estimate_radius,renderersettings->estimate_samples); 
 
     PhotonTracer* photontracer = new PhotonTracer(scene,space,(*globalphotonmap),(*causticsphotonmap));
 
+    profiler = Profiler::create("Tracing photons","Prepare scene");
+    profiler->start();
     cout << "Tracing photons..." << flush;
     photontracer->trace(renderersettings->threads_num);
     cout << "Done." << endl;
-
+    profiler->stop();
     
+    profiler = Profiler::create("Balance photonmaps","Prepare scene");
+    profiler->start();
     cout << "Balancing photonmaps..." << flush;
-    Stats::getUniqueInstance()->beginTimer("Balance photonmaps");
     int total_photons_num = renderersettings->global_photons_num + renderersettings->caustic_photons_num;
     (*globalphotonmap)->scale_photon_power(1.0/double(total_photons_num));
     (*globalphotonmap)->balance();
     (*causticsphotonmap)->scale_photon_power(1.0/double(total_photons_num));
     (*causticsphotonmap)->balance();
-    Stats::getUniqueInstance()->endTimer("Balance photonmaps");
     cout << "Done." << endl;
+    profiler->stop();
 
-    cout << "Precomputing irradiances..." << endl;
+    profiler = Profiler::create("Precompute irradiances","Prepare scene");
+    profiler->start();
+    cout << "Precomputing irradiances..." << flush;
     (*globalphotonmap)->preComputeIrradiances(4,renderersettings->threads_num);
     cout << "Done." << endl;
+    profiler->stop();
 
     delete photontracer;
     
@@ -247,7 +254,6 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     KdTree* space = new KdTree();
     scene->initSpace(space);
     cout << "Done." << endl;
-    profiler->stop();
 
     int img_w = renderersettings->image_width;
     int img_h = renderersettings->image_height;
@@ -274,6 +280,7 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
 	preparePhotonMaps(scene,space,renderersettings,&globalphotonmap,&causticsmap,&irradiancecache);
     }
+    profiler->stop();
 
     // Create and prepare job pool
     RenderJobPool* job_pool = new RenderJobPool(img_w,img_h,64);

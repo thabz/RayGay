@@ -11,7 +11,7 @@
        up 	(0 1 0)
        lookat 	(0 0 0)
        fov 	45
-       aa 	4)))
+       aa 	3)))
 
 (set-settings 
  '( globalphotons  	1000
