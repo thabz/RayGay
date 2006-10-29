@@ -118,6 +118,8 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	    type = RendererSettings::PHOTON_RENDERER;
 	} else if (r_string == "pathtracer") {
 	    type = RendererSettings::PATHTRACER;
+	} else if (r_string == "none") {
+    	    type = RendererSettings::NONE;
 	} else {
 	    type = RendererSettings::NONE;
 	    scm_error(NULL, "internal-setting-renderer", ("Unknown renderertype: " + r_string).c_str(), SCM_UNSPECIFIED, NULL);
