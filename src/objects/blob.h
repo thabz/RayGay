@@ -98,6 +98,7 @@ class Blob : public IsoSurface
 	AABox _getBoundingBox() const;
 
     private:
+        uint32_t num;
 	BlobTree* tree;
 };
 

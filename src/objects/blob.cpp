@@ -156,6 +156,7 @@ double BlobTree::eval(const Vector& point) const {
  */
 Blob::Blob(double iso, uint32_t steps, double accuracy, Material* material) : IsoSurface(steps,accuracy,iso,material) {
     tree = new BlobTree();
+    num = 0;
 }
 
 Blob::~Blob() {
@@ -171,6 +172,7 @@ Blob::~Blob() {
  */
 void Blob::addAtom(const Vector& center, double radius, double weight) {
     tree->addObject(new BlobAtomSphere(radius, weight, center));
+    num++;
 }
 
 /**
@@ -186,10 +188,14 @@ void Blob::addAtom(const Vector& from, const Vector& to, double radius, double w
 	addAtom(from, radius, weight);
     } else {
 	tree->addObject(new BlobAtomCylinder(radius, weight, from, to));
+	num++;
     }
 }
 
 void Blob::prepare() {
+    if (num == 0) {
+        throw_exception("No atoms in blob");
+    }
     tree->prepare();
 }
 
