@@ -35,15 +35,17 @@
 (define weight 1)
 (define num 200)
 
-(define atoms
-(let loop ((i 0))
-  (append (list (list (list (random2 -5 5) (random2 -5 5) (random2 -5 5))
-		       radius weight))
-  (if (< i num)
-    (loop (+ i 1))
-    '())))
+(define atoms '())
+(set! atoms (list (list (list (random2 -5 5) (random2 -5 5) (random2 -5 5))
+ 		       radius weight)))
+(do ((i 0 (+ 1 i)))
+   ((= i num))
+   (append! atoms (list (list (list (random2 -5 5) (random2 -5 5) (random2 -5 5))
+ 		       radius weight)))
 )
 
+;(for-each display atoms)
+        
 (add-to-scene
     (make-blob
       1.0  ; iso
