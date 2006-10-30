@@ -62,6 +62,8 @@ class RenderJobPool {
 	unsigned long pixels_fully_rendered;
 	unsigned long total_image_pixels;
 	pthread_mutex_t mutex_jobs;
+	pthread_mutex_t mutex_cout;
+	int last_percentage;
 
 };
 

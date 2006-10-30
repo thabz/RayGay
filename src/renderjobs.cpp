@@ -19,9 +19,11 @@
  */
 RenderJobPool::RenderJobPool(int w, int h, int initial_cell_size) {
     pthread_mutex_init(&mutex_jobs,NULL);
+    pthread_mutex_init(&mutex_cout,NULL);
     pixels_fully_rendered = 0;
     total_image_pixels = w * h;
     init(w,h,initial_cell_size);
+    last_percentage = -1;
 }
 
 void RenderJobPool::init(int w, int h, int cell_size) {
@@ -137,11 +139,18 @@ void RenderJobPool::markJobDone(RenderJob* job) {
 	job->type = RenderJob::IS_DONE;
 	delete job;
 	double progress = double(pixels_fully_rendered) / double(total_image_pixels);
-	if (Environment::getUniqueInstance()->hasPreviewWindow()) {
-	    Environment::getUniqueInstance()->getPreviewWindow()->setProgress(progress);
-	} else {
-	    int percentage = (int)(progress * 100);
-	    std::cout << "Progress: " << percentage << "%\r" << std::flush;
-	}
+        int percentage = (int)(progress * 100);
+	
+        if (percentage != last_percentage) {
+            last_percentage = percentage;        
+            if (Environment::getUniqueInstance()->hasPreviewWindow()) {
+                Environment::getUniqueInstance()->getPreviewWindow()->setProgress(progress);
+            } else {
+                pthread_mutex_lock(&mutex_cout);
+                int percentage = (int)(progress * 100);
+	        std::cout << "Progress: " << percentage << "%\r" << std::flush;
+                pthread_mutex_unlock(&mutex_cout);
+            }
+        }
     }
 }
