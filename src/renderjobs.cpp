@@ -5,10 +5,15 @@
 #include "renderjobs.h"
 #include <iostream>
 #include <algorithm>
+#include <string>
+#include <sstream>
+#include <iomanip>
 #include "environment.h"
 #include "window.h"
 #include "image/image.h"
 #include "math/constants.h"
+
+using namespace std;
 
 /**
  * Construct a new job pool and create inital tiles/jobs.
@@ -85,6 +90,37 @@ void RenderJobPool::addJob(RenderJob job) {
     jobs.push_back(new RenderJob(job));
 }
 
+// UTF-8 strings of the Unicode block elements 2588-258F.
+static const string blocks[] = {
+     "\xe2\x96\x88", // ########
+     "\xe2\x96\x89", // #######_
+     "\xe2\x96\x8a", // ######__   
+     "\xe2\x96\x8b", // #####___   
+     "\xe2\x96\x8c", // ####____   
+     "\xe2\x96\x8d", // ###_____   
+     "\xe2\x96\x8e", // ##______   
+     "\xe2\x96\x8f", // #_______   
+     " "           , // ________
+};
+
+string formatPercentage2(double p, int w) {
+    ostringstream os;
+//    os << setfill(' ') << setw(5) << int(p*100) << "%  ";
+    int eights = int(p * w * 8);
+    while (eights > 8) {
+        os << blocks[0];
+        eights -= 8;
+        w--;
+    }
+    os << blocks[8-eights];
+    w--;
+    while (--w > 0) {
+        os << blocks[7];    
+    }
+    return os.str();
+}
+
+
 void RenderJobPool::markJobDone(RenderJob* job) {
     if (Environment::getUniqueInstance()->hasPreviewWindow()) {
 	// Update preview window
@@ -147,10 +183,16 @@ void RenderJobPool::markJobDone(RenderJob* job) {
                 Environment::getUniqueInstance()->getPreviewWindow()->setProgress(progress);
             } else {
                 pthread_mutex_lock(&mutex_cout);
-                int percentage = (int)(progress * 100);
-	        std::cout << "Progress: " << percentage << "%\r" << std::flush;
+	        std::cout << "Progress:  ";
+	        std::cout << formatPercentage2(progress,50);
+                std::cout << setfill(' ') << setw(5) << percentage << "%  ";
+	        std::cout << "\r" << std::flush;
                 pthread_mutex_unlock(&mutex_cout);
             }
+            if (percentage == 100) {
+                std::cout << setfill(' ') << setw(70) << " \r" << std::flush;    
+            }
         }
+
     }
 }
