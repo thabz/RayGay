@@ -56,6 +56,8 @@ class Torus : public Solid, public Transformer {
 
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
+        bool inside(const Vector& point);
+
     private:
 	double _fastIntersect(const Ray& ray) const;
 	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;

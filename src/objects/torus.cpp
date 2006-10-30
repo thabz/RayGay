@@ -8,10 +8,11 @@
 #include "math/vector2.h"
 
 /**
- * Constructs a torus in zx-plane centered in origin.
+ * Constructs a torus symmetric about the y-axis, ie. placed in zx-plane centered in origin.
  *
- * @param R major radius aka outer radius
- * @param r minor radius aka inner radius
+ * @param R major radius aka outer radius or distance from center of the hole to
+            the center of the tube.
+ * @param r minor radius aka inner radius or radius of the tube
  * @param m material of the torus
  */
 Torus::Torus(double R, double r, const Material* m) : Solid(m) {
@@ -177,4 +178,10 @@ void Torus::allIntersections(const Ray& ray, vector<Intersection>& result) const
 	entering = !entering;
 	result.push_back(inter);
     }
+}
+
+bool Torus::inside(const Vector& point) {
+   Vector p = pointToObject(point);
+   double d = R - sqrt(p.x() * p.x() + p.z() * p.z());
+   return d * d + p.y() * p.y() - r * r < 0;
 }

@@ -591,6 +591,16 @@ class torus_test : public Test {
 	    assertTrue(!intersects(t,ray));
 	    ray = Ray(Vector(1000,11.1,0),Vector(-1,0,0),1); // Close by
 	    assertTrue(!intersects(t,ray));
+	    
+	    // inside()
+	    assertFalse(t->inside(Vector(0,0,0)));
+	    assertFalse(t->inside(Vector(0,0,8)));
+	    assertFalse(t->inside(Vector(0,0,12)));
+	    assertFalse(t->inside(Vector(8,0,0)));
+	    assertFalse(t->inside(Vector(12,0,0)));
+	    assertTrue(t->inside(Vector(0,0,10)));
+	    assertTrue(t->inside(Vector(10,0,0)));
+	    assertFalse(t->inside(Vector(10,0,10)));
 	    delete t;
 
 	    // Test allIntersections()
