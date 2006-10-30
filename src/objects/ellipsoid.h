@@ -17,6 +17,8 @@ class Ellipsoid : public Solid, public Transformer {
 	SceneObject* clone() const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
+        bool inside(const Vector& point) const;
+
     private:
 	double _fastIntersect(const Ray& ray) const;
 	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;

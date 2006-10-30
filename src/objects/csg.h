@@ -23,6 +23,8 @@ class CSGUnion : public Solid {
 	void transform(const Matrix& m);
 	AABox getBoundingBox() const;
 	SceneObject* clone() const;
+	
+        bool inside(const Vector& p) const;
 
     private:
 	Solid* left;
@@ -48,6 +50,8 @@ class CSGDifference : public Solid {
 	AABox getBoundingBox() const;
 	SceneObject* clone() const;
 
+        bool inside(const Vector& p) const;
+
     private:
 	Solid* left;
 	Solid* right;
@@ -71,6 +75,8 @@ class CSGIntersection : public Solid {
 	void transform(const Matrix& m);
 	AABox getBoundingBox() const;
 	SceneObject* clone() const;
+
+        bool inside(const Vector& p) const;
 
     private:
 	Solid* left;

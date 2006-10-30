@@ -29,6 +29,11 @@ class Solid : public Object {
 	 */
 	virtual AABox getContainedBox() const;
 
+        /**
+         * Says whether a point is inside the object
+         */
+        virtual bool inside(const Vector& p) const = 0;
+
     protected:
 	/// Protected constructor
 	Solid(const Material* mat) : Object(mat) {};

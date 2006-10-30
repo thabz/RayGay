@@ -57,3 +57,7 @@ void Ellipsoid::allIntersections(const Ray& world_ray, vector<Intersection>& res
     }
 }
 
+bool Ellipsoid::inside(const Vector& point) const {
+    Vector p = pointToObject(point);
+    return p.x() * p.x() + p.y() * p.y() + p.z() * p.z() < 1;        
+}

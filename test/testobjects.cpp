@@ -722,6 +722,13 @@ class csg_test : public Test {
 	    assertTrue(iPoint(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,25));
 	    assertTrue(iNormal(csg,Vector(0,0,-25),Vector(0,0,1)) == Vector(0,0,1));
 
+            // Testing inside()
+	    assertTrue(csg->inside(Vector(0,0,0)));
+	    assertTrue(csg->inside(Vector(0,0,10)));
+	    assertTrue(csg->inside(Vector(0,0,-10)));
+	    assertFalse(csg->inside(Vector(0,0,-26)));
+	    assertFalse(csg->inside(Vector(0,0,26)));
+
 	    // Testing the constructor taking a vector<Solid*>
 	    vector<Solid*> solids;
 
@@ -814,6 +821,12 @@ class csg_test : public Test {
 	    assertTrue(!intersects(csg,Vector(0,1000,-10),Vector(0,-1,0)));
 	    assertTrue(intersects(csg,Vector(0,1000,-3),Vector(0,-1,0)));
 
+            // inside()
+	    assertFalse(csg->inside(Vector(0,0,16)));
+	    assertTrue(csg->inside(Vector(0,0,14)));
+	    assertTrue(csg->inside(Vector(0,0,-4)));
+	    assertFalse(csg->inside(Vector(0,0,-6)));
+
 	    // Void intersection
 	    s1 = new Sphere(Vector(0,0,10),5,NULL);
 	    s2 = new Sphere(Vector(0,0,-10),5,NULL);
@@ -823,6 +836,13 @@ class csg_test : public Test {
 	    all.clear();
 	    csg->allIntersections(ray,all);
 	    assertTrue(all.size() == 0);
+
+            // inside()
+	    assertFalse(csg->inside(Vector(0,0,0)));
+	    assertFalse(csg->inside(Vector(0,0,10)));
+	    assertFalse(csg->inside(Vector(0,0,-10)));
+	    assertFalse(csg->inside(Vector(0,0,-26)));
+	    assertFalse(csg->inside(Vector(0,0,26)));
 
 	    ///////////////////////////////////////////////////////////////
 	    // Difference 
@@ -847,6 +867,13 @@ class csg_test : public Test {
 	    assertTrue(!intersects(csg,Vector(0,0,14),Vector(0,0,-1)));
 	    assertTrue(!intersects(csg,Vector(0,0,14.99),Vector(0,0,-1)));
 	    assertTrue(!intersects(csg,Vector(0,0,15),Vector(0,0,-1)));
+
+            // inside()
+	    assertFalse(csg->inside(Vector(0,0,26)));
+	    assertTrue(csg->inside(Vector(0,0,24)));
+	    assertTrue(csg->inside(Vector(0,0,16)));
+	    assertFalse(csg->inside(Vector(0,0,14)));
+	    assertFalse(csg->inside(Vector(0,0,0)));
 
 	    // Test a sphere with three other spheres subtracted from its middle,
 	    // front and back, so that the resulting object is hollow along the z-axis.
@@ -1066,6 +1093,14 @@ class ellipsoid_test : public Test {
 	    assertTrue(iPoint(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(10,0,0));
 	    assertTrue(iNormal(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(1,0,0));
 
+	    assertTrue(e->inside(Vector(2,-5,-1)));
+	    assertTrue(e->inside(Vector(0,0,25)));
+	    assertFalse(e->inside(Vector(0,0,35)));
+	    assertTrue(e->inside(Vector(9,0,0)));
+	    assertFalse(e->inside(Vector(11,0,0)));
+	    assertTrue(e->inside(Vector(0,-19,0)));
+	    assertFalse(e->inside(Vector(0,-21,0)));
+
 	    e = new Ellipsoid(Vector(0,0,0),Vector(2,5,6),NULL);
 	    e->transform(Matrix::matrixScale(Vector(5,4,5)));
 	    assertTrue(intersects(e,Vector(0,0,1000),Vector(0,0,-1)));
@@ -1076,12 +1111,24 @@ class ellipsoid_test : public Test {
 	    assertTrue(iPoint(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(10,0,0));
 	    assertTrue(iNormal(e,Vector(1000,0,0),Vector(-1,0,0)) == Vector(1,0,0));
 
+            // Translated
+ 	    e = new Ellipsoid(Vector(0,0,0),Vector(10,20,30),NULL);
+	    e->transform(Matrix::matrixTranslate(Vector(100,200,300)));
+	    assertTrue(e->inside(Vector(100,200,300)));
+	    assertFalse(e->inside(Vector(111,200,300)));
+	    assertTrue(e->inside(Vector(100,200,329)));
+	    assertFalse(e->inside(Vector(100,200,331)));
+
 	    // Scaled and translated
 	    e = new Ellipsoid(Vector(0,0,0),Vector(10,20,30),NULL);
 	    e->transform(Matrix::matrixScale(Vector(2,3,4)));
 	    e->transform(Matrix::matrixTranslate(Vector(30,20,10)));
 	    assertTrue(intersects(e,Vector(30,20,10),Vector(0,0,-1)));
 	    assertTrue(intersects(e,Vector(30,20,10),Vector(0,0,1)));
+	    assertTrue(e->inside(Vector(49,20,10)));
+	    assertFalse(e->inside(Vector(51,20,10)));
+	    assertTrue(e->inside(Vector(30,20,129)));
+	    assertFalse(e->inside(Vector(30,20,131)));
 
 	    // All intersections
 	    e = new Ellipsoid(Vector(0,0,0),Vector(2,5,6),NULL);

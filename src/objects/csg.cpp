@@ -45,6 +45,15 @@ void CSGIntersection::transform(const Matrix& m) {
     left->transform(m);
 }
 
+bool CSGIntersection::inside(const Vector& p) const {
+    return left->inside(p) && right->inside(p);        
+}
+
+bool CSGDifference::inside(const Vector& p) const {
+    return left->inside(p) && !right->inside(p);        
+}
+
+
 /**
  * Find all intersections.
  *
