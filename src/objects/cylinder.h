@@ -16,8 +16,8 @@ class Vector2;
 /** 
  * A cylinder object.
  *
- * In object space a cylinder begins at (0,0,0) ends at (0,0,1) and
- * have a radius of 1.
+ * In object space a cylinder begins at (0,0,0) ends at (0,0,height) and
+ * have a radius of radius.
  * 
  * Rays are automatically transformed from world space to object space
  * whenever needed.
@@ -34,6 +34,8 @@ class Cylinder : public Solid, public Transformer {
 
 	SceneObject* clone() const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
+
+        bool inside(const Vector& point);
 
     private:
 	double _fastIntersect(const Ray& ray) const;

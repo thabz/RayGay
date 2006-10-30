@@ -422,10 +422,23 @@ class cylinder_test : public Test {
 	    assertTrue(iPoint(cyl,Vector(0,1000,5),Vector(0,-1,0)) == Vector(0,10,5));
 	    assertTrue(iNormal(cyl,Vector(0,1000,5),Vector(0,-1,0)) == Vector(0,1,0));
 
+            // Test inside(p)
+            assertTrue(cyl->inside(Vector(0,0,1)));
+            assertTrue(cyl->inside(Vector(0,9,9)));
+            assertFalse(cyl->inside(Vector(9,9,9)));
+            assertFalse(cyl->inside(Vector(0,0,11)));
 	    delete cyl;
 
 	    // Test a cylinder translated along the z-axis
 	    cyl = new Cylinder(Vector(0,0,2),Vector(0,0,10),10,false,m);
+
+            // Test inside(p)
+            assertFalse(cyl->inside(Vector(0,0,2)));
+            assertTrue(cyl->inside(Vector(0,0,3)));
+            assertTrue(cyl->inside(Vector(0,9,9)));
+            assertFalse(cyl->inside(Vector(9,9,9)));
+            assertFalse(cyl->inside(Vector(0,0,11)));
+
 	    delete cyl;
 
 	    // Test an x-axis aligned cylinder
