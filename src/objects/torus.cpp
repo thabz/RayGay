@@ -180,7 +180,7 @@ void Torus::allIntersections(const Ray& ray, vector<Intersection>& result) const
     }
 }
 
-bool Torus::inside(const Vector& point) {
+bool Torus::inside(const Vector& point) const {
    Vector p = pointToObject(point);
    double d = R - sqrt(p.x() * p.x() + p.z() * p.z());
    return d * d + p.y() * p.y() - r * r < 0;

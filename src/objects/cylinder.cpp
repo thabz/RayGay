@@ -188,7 +188,7 @@ void Cylinder::allIntersections(const Ray& ray, vector<Intersection>& result) co
     return;
 }
 
-bool Cylinder::inside(const Vector& point) {
+bool Cylinder::inside(const Vector& point) const {
     Vector p = pointToObject(point);
     return p.z() > 0 && p.z() < height && (p.x()*p.x()+p.y()*p.y() < radius*radius);
 }

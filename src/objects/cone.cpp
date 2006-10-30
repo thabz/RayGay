@@ -202,3 +202,12 @@ void Cone::allIntersections(const Ray& ray, vector<Intersection>& result) const 
     }
 }
 
+bool Cone::inside(const Vector& point) const {
+    Vector p = pointToObject(point);
+    if (p.z() < 0 || p.z() > 1) {
+        return false;    
+    }
+    return p.x() * p.x() + p.y() * p.y() < radius_begin + p.z() * (radius_end-radius_begin);
+                   
+}
+

@@ -1125,7 +1125,12 @@ class cone_test : public Test {
 	    c = new Cone(Vector(0,0,0),Vector(0,0,1),4,2,true,NULL);
 	    assertTrue(intersects(c,Vector(0,1000,0.5),Vector(0,-1,0)));
 	    assertTrue(iPoint(c,Vector(0,1000,0.5),Vector(0,-1,0)) == Vector(0,3,0.5));
-
+	    assertFalse(c->inside(Vector(0,0,-1)));
+	    assertFalse(c->inside(Vector(0,0,2)));
+	    assertFalse(c->inside(Vector(0,3,1)));
+	    assertTrue(c->inside(Vector(0,0,0.5)));
+	    assertTrue(c->inside(Vector(1,1,0.5)));
+	    
 	    c = new Cone(Vector(0,0,-1),Vector(0,0,1),4,2,true,NULL);
 	    assertTrue(intersects(c,Vector(0,1000,0),Vector(0,-1,0)));
 	    assertTrue(iPoint(c,Vector(0,1000,0),Vector(0,-1,0)) == Vector(0,3,0));
@@ -1149,6 +1154,11 @@ class cone_test : public Test {
 	    c = new Cone(Vector(0,0,0),Vector(0,1,0),2,4,true,NULL);
 	    assertTrue(intersects(c,Vector(0,0.5,100),Vector(0,0,-1)));
 	    assertTrue(iPoint(c,Vector(0,0.5,1000),Vector(0,0,-1)) == Vector(0,0.5,3));
+            assertTrue(c->inside(Vector(0,0.5,0)));
+            assertTrue(c->inside(Vector(1,0.5,1)));
+	    assertFalse(c->inside(Vector(0,-1,0)));
+	    assertFalse(c->inside(Vector(0,2,0)));
+	    assertFalse(c->inside(Vector(0,0.2,3)));
 
 	    c = new Cone(Vector(0,0,0),Vector(0,10,0),500,10,true,NULL);
 	    assertTrue(intersects(c,Vector(1000,0.1,0),Vector(-1,0,0)));

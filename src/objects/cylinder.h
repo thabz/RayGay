@@ -35,7 +35,7 @@ class Cylinder : public Solid, public Transformer {
 	SceneObject* clone() const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
 
-        bool inside(const Vector& point);
+        bool inside(const Vector& point) const;
 
     private:
 	double _fastIntersect(const Ray& ray) const;
