@@ -105,9 +105,3 @@ int main(int argc, char *argv[]) {
     bench("Ellipsoid fast intersect", bench_ellipsoid_fast_intersect, 5);
     return EXIT_SUCCESS;
 }
-
-
-
-
-
-
