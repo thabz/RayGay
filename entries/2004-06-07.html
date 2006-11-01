@@ -1,0 +1,12 @@
+<h>CSG</h>
+<p>Har implementeret <i>constructive solid geometry</i>, så man kan lave mængde-matematik på solide 3D-objekter.</p>
+<p><a href="files/tracer49big.png"><img src="files/tracer49.png"></a></p>
+<p>Det røde bånd er konstrueret som en stor kugle <i>S<sub>1</sub></i> udhulet af en mindre kugle <i>S<sub>2</sub></i>. Snitmængden af dette med en flad kasse <i>B</i> skærer toppen og bunden af kuglerne. Båndet er altså (<i>S<sub>1</sub> - S<sub>2</sub></i>) &cap; <i>B</i>. Der er ikke brugt trekanter.</p>
+<p>Lige nu kan jeg kun bruge <tt>Sphere</tt> og <tt>Box</tt> til CSG. Snart kan jeg bruge <tt>Cylinder</tt> og endda <tt>Torus</tt>.</p>
+
+<h>Torus</h>
+<p>Har nemlig endelig fået fikset alle afrundingsfejl i min toruskode. Dette er en ægte torus, dvs. den er ikke bygget op af trekanter. Skæringer findes ved at løse en 4. grads-ligning.</p>
+<p><a href="files/tracer48big.png"><img src="files/tracer48.png"></a></p>
+
+<h>Rendertid</h>
+<p>Rendertiden for min benchmark er nede på 22 sekunder efter lidt omrokering hist og pist, samt pruning af mit Kd-træ.</p>
