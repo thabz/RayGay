@@ -13,17 +13,16 @@
 
 using namespace std;
 
-/**
- * TODO: Gå ikke omkring uint8_t men brug floats eller doubles.
- */
 void DarwinIO::save(const Image* const image, const std::string& filename) const
 {
     uint32_t w = image->getWidth();
     uint32_t h = image->getHeight();
     uint8_t* data = (uint8_t*)malloc(w * h * 4);
 
+    // The only CGImageBitmapInfo supported in Mac OS 10.4 seems to be 
+    // kCGImageAlphaPremultipliedLast so we got to multiply RGB with alpha below.
     for(uint32_t y = 0; y < h; y++ ) {
-            for( unsigned int x = 0; x < w; x++ ) {
+            for( uint32_t x = 0; x < w; x++ ) {
                     RGBA c = image->getRGBA(x,y);
                     c.clip();
                     data[4*(x + y*w) + 0] = uint8_t(c.r()*c.a()*255.0);
@@ -62,19 +61,17 @@ Image* DarwinIO::load(const std::string& filename, Allocator::model_t model)
     CFRelease(url);
     uint64_t w = CGImageGetWidth(imageRef);
     uint64_t h = CGImageGetHeight(imageRef);
-    CGImageAlphaInfo alpha_info = CGImageGetAlphaInfo(imageRef);
     Image* result = new Image(w,h,model);
     
     TYPE* data = (TYPE*)malloc(w * h * 4 * sizeof(TYPE));
-    for( uint32_t i = 0; i < w*h*4; i += 4 )
-    {
-            data[i+0] = 0.0;
-            data[i+1] = 0.0;
-            data[i+2] = 0.0;
-            data[i+3] = 0.0;
+    for( uint32_t i = 0; i < w*h*4; i += 4 ) {
+            data[i+0] = 0;
+            data[i+1] = 0;
+            data[i+2] = 0;
+            data[i+3] = 0;
     }
     CGBitmapInfo bitmapInfo = kCGImageAlphaPremultipliedLast;
-    if (sizeof(TYPE) == 4)
+    if (sizeof(TYPE) >= 4)
         bitmapInfo = bitmapInfo | kCGBitmapFloatComponents;
     CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
     CGContextRef contextRef = CGBitmapContextCreate(data, w, h, sizeof(TYPE)*8, sizeof(TYPE)*4*w, 
@@ -84,52 +81,19 @@ Image* DarwinIO::load(const std::string& filename, Allocator::model_t model)
     rect.size.width = w;
     rect.size.height = h;
     CGContextDrawImage(contextRef,rect,imageRef);
-    alpha_info = kCGImageAlphaPremultipliedLast;
+
     for(uint32_t y = 0; y < h; y++ ) {
             for( uint32_t x = 0; x < w; x++ ) {
                     RGBA c;
-                    if (alpha_info == kCGImageAlphaNone || alpha_info == kCGImageAlphaNoneSkipLast) {
-                            c = RGBA(double(data[4*(x + y*w) + 0]) / 255.0, 
-                                    double(data[4*(x + y*w) + 1]) / 255.0,
-                                    double(data[4*(x + y*w) + 2]) / 255.0,
-                                    1);
-                    } else if (alpha_info == kCGImageAlphaNoneSkipFirst) {
-                            c = RGBA(double(data[4*(x + y*w) + 1]) / 255.0, 
-                                    double(data[4*(x + y*w) + 2]) / 255.0,
-                                    double(data[4*(x + y*w) + 3]) / 255.0,
-                                    1);
-                    } else if (alpha_info == kCGImageAlphaFirst) {
-                            c = RGBA(double(data[4*(x + y*w) + 1]) / 255.0, 
-                                    double(data[4*(x + y*w) + 2]) / 255.0,
-                                    double(data[4*(x + y*w) + 3]) / 255.0,
-                                    double(data[4*(x + y*w) + 0]) / 255.0);
-                    } else if (alpha_info == kCGImageAlphaLast) {
-                            c = RGBA(double(data[4*(x + y*w) + 0]) / 255.0, 
-                                    double(data[4*(x + y*w) + 1]) / 255.0,
-                                    double(data[4*(x + y*w) + 2]) / 255.0,
-                                    double(data[4*(x + y*w) + 3]) / 255.0);
-                    } else if (alpha_info == kCGImageAlphaFirst) {
-                            c = RGBA(double(data[4*(x + y*w) + 1]) / 255.0, 
-                                    double(data[4*(x + y*w) + 2]) / 255.0,
-                                    double(data[4*(x + y*w) + 3]) / 255.0,
-                                    double(data[4*(x + y*w) + 0]) / 255.0);
-                    } else if (alpha_info == kCGImageAlphaOnly) {
-                            c = RGBA(double(data[4*(x + y*w) + 0]) / 255.0, 
-                                    double(data[4*(x + y*w) + 0]) / 255.0,
-                                    double(data[4*(x + y*w) + 0]) / 255.0,
-                                    double(data[4*(x + y*w) + 0]) / 255.0);
-                    } else if (alpha_info == kCGImageAlphaPremultipliedFirst) {
-                            c = RGBA(double(data[4*(x + y*w) + 1]) / 255.0, 
-                                    double(data[4*(x + y*w) + 2]) / 255.0,
-                                    double(data[4*(x + y*w) + 3]) / 255.0,
-                                    1);
-                    } else if (alpha_info == kCGImageAlphaPremultipliedLast) {
-                            double a = double(data[4*(x + y*w) + 3]) / 255.0;
-                            c = RGBA(double(data[4*(x + y*w) + 0]) / 255.0, 
-                                     double(data[4*(x + y*w) + 1]) / 255.0,
-                                     double(data[4*(x + y*w) + 2]) / 255.0,
-                                     a);
-                    };
+                    double a = double(data[4*(x + y*w) + 3]) / 255.0;
+                    if (IS_ZERO(a)) {
+                        c = RGBA(0,0,0,0);      
+                    } else {
+                        c = RGBA((double(data[4*(x + y*w) + 0]) / 255.0) / a, 
+                                 (double(data[4*(x + y*w) + 1]) / 255.0) / a,
+                                 (double(data[4*(x + y*w) + 2]) / 255.0) / a,
+                                 a);
+                    }             
                     result->setRGBA(x,y,c);
             }
     }
