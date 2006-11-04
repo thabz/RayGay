@@ -102,7 +102,7 @@ class test_png : public Test {
     public:
 	void run() {
 	    // Test basic save and load
-	    RGBA color = RGBA(1.0,0.0,0.0,1.0);
+	    RGBA color = RGBA(1.0,0.0,0.0,0.5);
 
 	    Image* img = new Image(10,20);
 	    img->setRGBA(5,15,color);
@@ -113,10 +113,10 @@ class test_png : public Test {
 	    Image* img2 = Image::load(getLoadPrefix() + "/test.png");
 	    assertTrue(img2->getWidth() == 10);
 	    assertTrue(img2->getHeight() == 20);
-	    //cout << img2->getRGBA(5,15) << endl;
+	    cout << img2->getRGBA(5,15) << endl;
 	    assertTrue(img2->getRGBA(5,15) == color);
 	    assertTrue(img2->getRGBA(0,0) == color);
-	    remove((getLoadPrefix() + "/test.png").c_str());
+	    ::remove((getLoadPrefix() + "/test.png").c_str());
 	    delete img;
 	    delete img2;
 
@@ -125,9 +125,11 @@ class test_png : public Test {
 	    img->save(getLoadPrefix() + "/rgb-kaj.png");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
+	    cout << endl <<  img->getRGBA(0,0) << endl;
 	    assertTrue(img->getRGBA(0,0) == RGB(1.0,0,0));
 	    assertTrue(img->getRGBA(9,9) == RGB(1.0,0,0));
 	    delete img;
+	    ::remove((getLoadPrefix() + "/rgb-kaj.png").c_str());
 
 	    // Test load of png with palette
 	    img = new Image(getLoadPrefix() + "/gfx/withpalette.png");
@@ -135,6 +137,7 @@ class test_png : public Test {
 	    assertTrue(img->getHeight() == 10);
 	    assertTrue(img->getRGBA(0,0) == RGBA(1.0,0,0,1.0));
 	    delete img;
+	    
 	}
 };
 
