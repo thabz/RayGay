@@ -479,6 +479,7 @@ int main(int argc, char *argv[]) {
 	scenefile = string(argv[optind]);
 	outfile = string(argv[optind+1]);
     }
+
     srand(1); // Make sure rand is seeded consistently.
     
     if (env->isProfilingEnabled() && jobs != 1) {
