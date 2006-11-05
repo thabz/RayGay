@@ -12,7 +12,7 @@
        lookat (0 0 -6)
        up (0 0 1)
        fov 45
-       aa 4)))
+       aa 3)))
 
 (define brown
   (make-material
@@ -55,7 +55,6 @@
       '(1700 -99 1700) 
       brown))
 
-(define PI 3.141592654)
 
 (define (func u01 v01)
   (let* ((u (* u01 8 PI))
