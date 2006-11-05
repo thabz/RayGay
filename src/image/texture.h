@@ -7,6 +7,7 @@
 #include "math/vector2.h"
 
 class Image;
+class Profiler;
 
 /**
  * A texture is a wrapper around Image.
@@ -55,6 +56,7 @@ class Texture {
 	long width, height;
 	Vector2 repeat_uv;
 	InterpolationType interpolation_type;
+	static Profiler* profiler;
 };
 
 #endif

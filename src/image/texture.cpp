@@ -1,6 +1,9 @@
 
 #include "image/texture.h"
 #include "image/image.h"
+#include "profiler.h"
+
+Profiler* Texture::profiler = NULL;
 
 /////////////////////////////////////////////////////
 // Public methods
@@ -17,6 +20,9 @@ Texture::Texture(Image* image, const Vector2& repeat_uv, InterpolationType it) {
     this->interpolation_type = it;
     this->width = image->getWidth();
     this->height = image->getHeight();
+    if (this->profiler == NULL) {
+        this->profiler = Profiler::create("Texture lookup", "Rendering");
+    }
 }
 
 /**
@@ -42,12 +48,14 @@ RGB Texture::getTexel(const Vector2& uv) const {
  * @param v second texel-coordinate
  */
 RGB Texture::getTexel(double u, double v) const {
+    profiler->start();        
     switch (interpolation_type) {
         case INTERPOLATION_NONE: return getNormalTexel(u,v);
         case INTERPOLATION_BILINEAR: return getBiLinearTexel(u,v);
         case INTERPOLATION_BICUBIC: return getBiCubicTexel(u,v);
 	default: throw "Unknown interpolationtype";
     }
+    profiler->stop();
 }
 
 void Texture::grayscale() {
