@@ -9,9 +9,17 @@
 
 #include "image/rgba.h"
 #include "image/image.h"
+#include "image/texture.h"
 #include "testing.h"
 
 using namespace std;
+
+
+#ifdef OS_DARWIN
+#define assertEqualColor(n,m) assertTrue((n - m).brightness() < 0.1)
+#else
+#define assertEqualColor(a,b) assertTrue(a == b)
+#endif
 
 class test_rgba : public Test {
     public:
@@ -65,6 +73,11 @@ class test_image : public Test {
 	    img->setRGBA(127,255,g);
 	    assertTrue(img->getRGBA(127,255) == g);
 	    
+	    img->clear(r);
+	    assertTrue(img->getRGBA(127,128) == r);
+	    assertTrue(img->getRGBA(127,255) == r);
+	    assertTrue(img->getRGBA(10,10) == r);
+	    assertTrue(img->getRGBA(20,20) == r);
 	    delete img;
 	    
         }
@@ -97,6 +110,21 @@ class test_image_mmap : public Test {
 
 };
 
+class test_texture : public Test {
+    public:
+	void run() {
+	    RGBA col = RGBA(1,0,0,1);
+    	    Image* img = new Image(32,32);
+    	    img->clear(col);
+    	    Texture* tex = new Texture(img, Vector2(1,1), Texture::INTERPOLATION_BICUBIC);
+    	    for(double x = 0; x < 2; x += 1.0 / 128) {
+                for(double y = 0; y < 2; y += 1.0 / 128) {
+                    RGBA c = tex->getTexel(x,y);        
+                    assertTrue(c == col);
+                }   	            
+    	    }
+        }
+};
 
 class test_png : public Test {
     public:
@@ -113,9 +141,9 @@ class test_png : public Test {
 	    Image* img2 = Image::load(getLoadPrefix() + "/test.png");
 	    assertTrue(img2->getWidth() == 10);
 	    assertTrue(img2->getHeight() == 20);
-	    cout << img2->getRGBA(5,15) << endl;
-	    assertTrue(img2->getRGBA(5,15) == color);
-	    assertTrue(img2->getRGBA(0,0) == color);
+	    //cout << img2->getRGBA(5,15) << endl;
+	    assertEqualColor(img2->getRGBA(5,15), color);
+	    assertEqualColor(img2->getRGBA(0,0), color);
 	    ::remove((getLoadPrefix() + "/test.png").c_str());
 	    delete img;
 	    delete img2;
@@ -125,9 +153,9 @@ class test_png : public Test {
 	    img->save(getLoadPrefix() + "/rgb-kaj.png");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
-	    cout << endl <<  img->getRGBA(0,0) << endl;
-	    assertTrue(img->getRGBA(0,0) == RGB(1.0,0,0));
-	    assertTrue(img->getRGBA(9,9) == RGB(1.0,0,0));
+	    //cout << endl <<  img->getRGBA(0,0) << endl;
+	    assertEqualColor(img->getRGBA(0,0), RGB(1.0,0,0));
+	    assertEqualColor(img->getRGBA(9,9), RGB(1.0,0,0));
 	    delete img;
 	    ::remove((getLoadPrefix() + "/rgb-kaj.png").c_str());
 
@@ -135,7 +163,7 @@ class test_png : public Test {
 	    img = new Image(getLoadPrefix() + "/gfx/withpalette.png");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
-	    assertTrue(img->getRGBA(0,0) == RGBA(1.0,0,0,1.0));
+	    assertEqualColor(img->getRGBA(0,0), RGBA(1.0,1,0,1.0));
 	    delete img;
 	    
 	}
@@ -177,6 +205,7 @@ int main(int argc, char *argv[]) {
     suite.add("RGBA",new test_rgba());
     suite.add("Image",new test_image());
     suite.add("Image mmap'ed",new test_image_mmap());
+    suite.add("Texture",new test_texture());
     suite.add("TGA",new test_tga());
     if (Image::supportsFormat(".png")) {
         suite.add("PNG",new test_png());
