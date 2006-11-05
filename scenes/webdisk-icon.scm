@@ -4,6 +4,7 @@
 
 (set-image-size '(96 96))
 (set-image-size '(2048 2048))
+(set-image-size '(256 256))
 (set-background '(0.3 0.6 0.7 0.0))
 
 (set-renderer "raytracer")

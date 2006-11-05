@@ -10,7 +10,7 @@
        lookat (0 100 0)
        up (0 1 0)
        fov 45
-       aa 4)))
+       aa 2)))
 
 
 (add-to-scene (make-pointlight '(100 1300 1300)))
@@ -49,7 +49,7 @@
    blue))
 
 (add-to-scene (translate (halvkugle) '(0 400 0)))
-(add-to-scene (translate (rotate (halvkugle) '(1 0 0) 180 ) '(0 100 0)))
+(add-to-scene (translate (flip-x (halvkugle)) '(0 100 0)))
 
 (define spiral
  (make-spiral
@@ -64,21 +64,18 @@
   12
   300
   blue))
-
-  
-; TODO make extrusion
-
+
 (define (foot)
     (make-ellipsoid '(0 0 0) '(150 100 200) blue))
 
 (add-to-scene
  (translate
-   (rotate (foot) '(0 1 0) -30)
+   (rotate-y (foot) -30)
    '(200 -200 100)))
 
 (add-to-scene
  (translate
-   (rotate (foot) '(0 1 0) 30)
+   (rotate-y (foot) 30)
    '(-200 -200 100)))
  
 (add-to-scene (make-sphere '(0 530 300) 100 blue))

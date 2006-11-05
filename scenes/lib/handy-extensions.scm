@@ -24,6 +24,18 @@
 ; Shortcut for rotating around the z-axis
 (define (rotate-z obj angle)
     (rotate obj z-axis angle))
+
+; Shortcut for rotating 180 degress around the x-axis
+(define (flip-x obj)
+    (rotate-x obj 180))        
+
+; Shortcut for rotating 180 degress around the y-axis
+(define (flip-y obj)
+    (rotate-y obj 180))        
+
+; Shortcut for rotating 180 degress around the z-axis
+(define (flip-z obj)
+    (rotate-z obj 180))        
                   
 ; Print followed by a newline                                            
 (define (displayln t)
