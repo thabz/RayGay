@@ -14,15 +14,12 @@ string StatsStrings[] = {
     "Photons lost in void",
     "Global photons stored",
     "Caustic photons stored",
-    "Kd-tree objects added",
     "Scene objects added",
     "Irradiance cache size",
     "Irradiance cache hits",
     "Irradiance cache misses",
     "Total camera rays cast",
-    "Threads",
-    "Kd-tree depth",
-    "Kd-tree nodes",
+    "Threads"
 };
 
 /// The unique singleton instance

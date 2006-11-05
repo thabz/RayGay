@@ -30,7 +30,6 @@ GenericKdTree<ObjectType>::~GenericKdTree<ObjectType>() {
 
 template<class ObjectType>
 void GenericKdTree<ObjectType>::addObject(ObjectType* obj) {
-    Stats::getUniqueInstance()->inc(STATS_KDTREE_OBJECTS_ADDED);
     added_objects->push_back(obj);
 }
 
@@ -147,6 +146,8 @@ void GenericKdTree<ObjectType>::prepare() {
 
     uint32_t num = added_objects->size();
     assert(num > 0);
+
+    Statistics::put("Kd-tree","Objects", num);
     
     BoundedObject<ObjectType>* bobs = new BoundedObject<ObjectType>[num];
     left_bobs = new BoundedObject<ObjectType>*[num];
