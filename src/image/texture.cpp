@@ -154,7 +154,7 @@ RGB Texture::getBiCubicTexel(double u, double v) const {
 	realx = beginx;
 	for(int m = -1; m <= 2; m++) {
 	    if (++realx > width) realx = 0;
-	    result += image->getRGBA(realx,realy) * (biCubicR(m-dx) * biCubicR(dy-n));
+	    result += getRGBWrapped(realx,realy) * (biCubicR(m-dx) * biCubicR(dy-n));
 	}
     }
     return result / 36.0;
