@@ -55,6 +55,7 @@
       '(1700 -99 1700) 
       brown))
 
+(define PI 3.141592654)
 
 (define (func u01 v01)
   (let* ((u (* u01 8 PI))
