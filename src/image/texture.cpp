@@ -150,11 +150,11 @@ RGB Texture::getBiCubicTexel(double u, double v) const {
     if (realy < 0) realy += height;
 
     for(int n = -1; n <= 2; n++) {
-	if (++realy > height) realy = 0;
+	if (++realy >= height) realy = 0;
 	realx = beginx;
 	for(int m = -1; m <= 2; m++) {
-	    if (++realx > width) realx = 0;
-	    result += getRGBWrapped(realx,realy) * (biCubicR(m-dx) * biCubicR(dy-n));
+	    if (++realx >= width) realx = 0;
+	    result += image->getRGBA(realx,realy) * (biCubicR(m-dx) * biCubicR(dy-n));
 	}
     }
     return result / 36.0;
