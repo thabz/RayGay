@@ -90,10 +90,11 @@ class GenericKdTree {
 	// The I/O data for the findBestSplitPlane method
 	struct CostResult {
 	    double axis; //> Output
-		int dim; //> Output
-		int current_sort_dim;
-		uint left_index; //> Output
-		uint right_index; //> Output
+	    int dim; //> Output
+	    int current_sort_dim;
+	    uint left_index; //> Output
+	    uint right_index; //> Output
+	    double cost;
 	};
 	
 	// The recursive prepare method

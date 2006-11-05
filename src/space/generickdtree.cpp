@@ -57,6 +57,7 @@ void GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t size, const AABox& b
     sort(left_bobs, left_bobs + size, cmpL<ObjectType>(d));
     sort(right_bobs, right_bobs + size, cmpR<ObjectType>(d));
     result.current_sort_dim = d;
+    result.dim = -1;
 
     uint32_t l = 0;
     uint32_t r = 0;
@@ -94,6 +95,7 @@ void GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t size, const AABox& b
 		result.axis = split;
 		result.left_index = l;
 		result.right_index = r;
+		result.cost = cost;
 		lowest_cost = cost;
 	    } 
 	}
@@ -104,6 +106,7 @@ void GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t size, const AABox& b
 
 template<class ObjectType>
 bool GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t num, const AABox& bbox, CostResult& result) const {
+
     result.dim = -1;
     result.left_index = 0;
     result.right_index = 0;
@@ -114,11 +117,25 @@ bool GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t num, const AABox& bb
     // Make a copy of the left bobjects pointer list for this node
     memcpy(right_bobs, left_bobs, num*sizeof(BoundedObject<ObjectType>*));
 
-
     if (num < KD_TREE_MAX_ELEMENTS_IN_FULL_SPLIT_CHECK) {
-	// Find best split in all 3 dimensions
+	// Find best split by testing all 3 dimensions
+        double best_cost = 10*num*bbox.area();
 	for(int d = 0; d < 3; d++) {
-	    findBestSplitPlane(num, bbox, result, d);
+	    CostResult tmp_result;
+	    tmp_result.left_index = 0;
+	    tmp_result.right_index = 0;
+    	    findBestSplitPlane(num, bbox, tmp_result, d);
+	    if (tmp_result.dim != -1 && tmp_result.cost < best_cost) {
+	        result = tmp_result;
+	        best_cost = tmp_result.cost;
+	    } else {
+	        result.current_sort_dim = tmp_result.current_sort_dim;
+	    }
+	}
+	if (result.dim != -1 && result.current_sort_dim != result.dim) {
+	    // Sort objects again
+	    sort(left_bobs, left_bobs + num, cmpL<ObjectType>(result.dim));
+	    result.current_sort_dim = result.dim;
 	}
     } else {
 	// Find best split in largest dimension
@@ -126,18 +143,7 @@ bool GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t num, const AABox& bb
 	findBestSplitPlane(num, bbox,result, d);
     }
 
-    if (result.dim == -1) {
-	// Not splitting has best cost
-	return false;
-    } else {
-	if (result.current_sort_dim != result.dim) {
-	    // Sort objects again
-	    sort(left_bobs, left_bobs + num, cmpL<ObjectType>(result.dim));
-	    //sort(right_bobs, right_bobs + num, cmpR(result.dim));
-	    result.current_sort_dim = result.dim;
-	}
-	return true;
-    }
+    return result.dim != -1;
 }
 
 template<class ObjectType>
@@ -203,6 +209,7 @@ void GenericKdTree<ObjectType>::prepare(uint32_t num, const AABox& bbox, uint32_
 	CostResult splitResult;
 
 	// Find the best axis to split node at
+	// or if not splitting has best cost
 	if (findBestSplitPlane(num, bbox,splitResult)) {
 
 	    // The current node will be split 
