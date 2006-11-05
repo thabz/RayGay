@@ -117,8 +117,8 @@ class test_texture : public Test {
     	    Image* img = new Image(32,32);
     	    img->clear(col);
     	    Texture* tex = new Texture(img, Vector2(1,1), Texture::INTERPOLATION_BICUBIC);
-    	    for(double x = 0; x < 2; x += 1.0 / 128) {
-                for(double y = 0; y < 2; y += 1.0 / 128) {
+    	    for(double x = 0; x < 1.5; x += 1.0 / 128) {
+                for(double y = 0; y < 1.5; y += 1.0 / 128) {
                     RGBA c = tex->getTexel(x,y);        
                     assertTrue(c == col);
                 }   	            
