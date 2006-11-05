@@ -76,6 +76,13 @@ Image* DarwinIO::load(const std::string& filename, Allocator::model_t model)
     CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
     CGContextRef contextRef = CGBitmapContextCreate(data, w, h, sizeof(TYPE)*8, sizeof(TYPE)*4*w, 
                                    colorSpace, bitmapInfo);
+
+
+    CGContextSetShouldAntialias (contextRef, false);
+    CGContextSetInterpolationQuality(contextRef, kCGInterpolationNone);
+
+
+
     CGRect rect;
     rect.origin = CGPointZero;
     rect.size.width = w;
