@@ -68,6 +68,9 @@ class Image
 
         // Find whether we support the imageformat with the extension of the filename 
         static bool supportsFormat(const std::string& filename);
+        
+        // Fill image with color
+        void clear(const RGBA& color);
 
     private:
 	int height;

@@ -196,3 +196,11 @@ void Image::grayscale() {
     }
 }
 
+void Image::clear(const RGBA& color) 
+{
+    for(int y = 0; y < height ; y++) {
+        for(int x = 0; x < width; x++) {
+           setRGBA(x,y,color);        
+        }
+    }
+}
