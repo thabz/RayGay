@@ -267,8 +267,12 @@ void Mesh::addTriangle(const Vector& c1, const Vector& c2, const Vector& c3) {
 // ----------------------------------------------------------------------------
 void Mesh::transform(const Matrix& M) {
     corners.transform(M);
-    normals.transform(M);
-    // TODO: if M is a scaling transform the recalculate normals
+    Matrix3 rotation = M.extractRotation();
+    normals.transform(rotation);
+    if (!rotation.isOrthogonal()) {
+        normals.normalize();
+       // TODO: if M is a scaling transform the recalculate normals
+    }
 }
 
 // ----------------------------------------------------------------------------
