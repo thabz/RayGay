@@ -263,6 +263,7 @@ void Mesh::addTriangle(const Vector& c1, const Vector& c2, const Vector& c3) {
 void Mesh::transform(const Matrix& M) {
     corners.transform(M);
     normals.transform(M);
+    // TODO: if M is a scaling transform the recalculate normals
 }
 
 // ----------------------------------------------------------------------------
