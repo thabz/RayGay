@@ -49,7 +49,7 @@ PLY::PLY(string filename, const Material* m) : Mesh(Mesh::MESH_PHONG, m)
     fstream file(filename.c_str(), ios::in);
     
     if (!file.is_open()) {
-        throw_exception("Error opening file.");     
+        throw_exception("Error opening file. Wrong filename?");     
     }
     
     file >> line;
@@ -66,6 +66,12 @@ PLY::PLY(string filename, const Material* m) : Mesh(Mesh::MESH_PHONG, m)
             } else if (string(line) == string("face")) {
                 file >> faces;
             }
+        }
+        if (string(line) == "format") {
+            file >> line;
+            if (string(line) != "ascii") {
+                throw_exception("Only PLY-files in ASCII format supported.");
+            }        
         }
         if (string(line) == "end_header") {
            done = true;        
