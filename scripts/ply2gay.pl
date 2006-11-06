@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Converts a .ply file to a .gay mesh
+# Converts a .ply file to a .scm mesh
 #
 # Format is described at:
 # http://astronomy.swin.edu.au/~pbourke/geomformats/ply/
@@ -38,20 +38,21 @@ print "Vertices: $vertices\n";
 print "Faces: $faces \n";
 
 # Print gay header
-print OUTPUT "mesh {\n";
+print OUTPUT "(make-mesh \n";
 
 # Convert vertices
-print OUTPUT "   vertices {\n";
+print OUTPUT "   '(\n";
 foreach my $i (1..$vertices) {
     $line = <INPUT>;
     $line =~ s/^\s*//;
     $line =~ s/\s*$//;
-    print OUTPUT "      <$line>\n";
+    $line =~ s/,/ /g; 
+    print OUTPUT "      ($line)\n";
 }
-print OUTPUT "   }\n"; # end of vertices
+print OUTPUT "   )\n"; # end of vertices
 
 # Convert faces
-print OUTPUT "   triangles {\n";
+print OUTPUT "   '(\n";
 foreach my $i (1..$faces) {
     $line = <INPUT>;
     $line =~ s/^\s*//;
@@ -61,9 +62,9 @@ foreach my $i (1..$faces) {
 	exit;
     }
     $line =~ s/3 //;
-    print OUTPUT "      <$line>\n";
+    $line =~ s/,/ /g; 
+    print OUTPUT "      ($line)\n";
 }
-print OUTPUT "   }\n"; # end of faces
+print OUTPUT "   )\n"; # end of faces
 
-print OUTPUT "}\n"; # end of mesh
-
+print OUTPUT ")\n"; # end of mesh
