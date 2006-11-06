@@ -49,7 +49,6 @@ void GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t size, const AABox& b
 
     double split;
     Vector bbox_lenghts = bbox.lengths();
-    double lowest_cost = 0.9*size*bbox.area();
 
     double cap_a = 2 * bbox_lenghts[(d+1)%3] * bbox_lenghts[(d+2)%3];
     double cap_p = 2 * bbox_lenghts[(d+1)%3] + 2 * bbox_lenghts[(d+2)%3];
@@ -90,13 +89,12 @@ void GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t size, const AABox& b
 	    double left_area = cap_a + (split - bbox.minimum(d))*cap_p;
 	    double right_area = cap_a + (bbox.maximum(d) - split)*cap_p;
 	    double cost = left_area * l + right_area * (size -r);
-	    if (cost < lowest_cost) {  
+	    if (cost < result.cost) {  
 		result.dim = d;
 		result.axis = split;
 		result.left_index = l;
 		result.right_index = r;
 		result.cost = cost;
-		lowest_cost = cost;
 	    } 
 	}
 
@@ -107,31 +105,21 @@ void GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t size, const AABox& b
 template<class ObjectType>
 bool GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t num, const AABox& bbox, CostResult& result) const {
 
-    result.dim = -1;
-    result.left_index = 0;
-    result.right_index = 0;
-
     if (num == 0) 
 	return false;
+
+    result.dim = -1;
+    // The cost of not splitting
+    result.cost = 0.9*num*bbox.area();
 
     // Make a copy of the left bobjects pointer list for this node
     memcpy(right_bobs, left_bobs, num*sizeof(BoundedObject<ObjectType>*));
 
     if (num < KD_TREE_MAX_ELEMENTS_IN_FULL_SPLIT_CHECK) {
-	// Find best split by testing all 3 dimensions
-        double best_cost = 10*num*bbox.area();
-	for(int d = 0; d < 3; d++) {
-	    CostResult tmp_result;
-	    tmp_result.left_index = 0;
-	    tmp_result.right_index = 0;
-    	    findBestSplitPlane(num, bbox, tmp_result, d);
-	    if (tmp_result.dim != -1 && tmp_result.cost < best_cost) {
-	        result = tmp_result;
-	        best_cost = tmp_result.cost;
-	    } else {
-	        result.current_sort_dim = tmp_result.current_sort_dim;
-	    }
-	}
+	// Find best split in all 3 dimensions
+	findBestSplitPlane(num, bbox, result, 0);
+	findBestSplitPlane(num, bbox, result, 1);
+	findBestSplitPlane(num, bbox, result, 2);
 	if (result.dim != -1 && result.current_sort_dim != result.dim) {
 	    // Sort objects again
 	    sort(left_bobs, left_bobs + num, cmpL<ObjectType>(result.dim));
