@@ -16,6 +16,7 @@
 #include "objects/heightfield.h"
 #include "objects/blob.h"
 #include "objects/mesh.h"
+#include "objects/ply.h"
 #include "objects/bezierpatch.h"
 #include "objects/csg.h"
 #include "objects/julia.h"
@@ -306,6 +307,15 @@ SCM make_mesh(SCM s_material, SCM s_vertices, SCM s_triangles)
     return sceneobject2scm(mesh);
 }
 
+SCM make_ply_mesh(SCM s_filename, SCM s_material)
+{
+    char* proc = "make-ply-mesh";
+    string filename = scm2string(s_filename);
+    Material* material = scm2material(s_material, proc, 2);
+    PLY* ply = new PLY(filename, material);
+    return sceneobject2scm(ply);
+}
+
 SCM make_bezierpatch(SCM s_points, SCM s_xres, SCM s_yres, SCM s_material) 
 {
     char* proc = "make-bezierpatch";
@@ -470,6 +480,8 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) make_isosurface);
     scm_c_define_gsubr("make-mesh",3,0,0,
 	    (SCM (*)()) make_mesh);
+    scm_c_define_gsubr("make-ply-mesh",2,0,0,
+	    (SCM (*)()) make_ply_mesh);
     scm_c_define_gsubr("make-bezierpatch",4,0,0,
 	    (SCM (*)()) make_bezierpatch);
     scm_c_define_gsubr("make-difference",2,1,0,

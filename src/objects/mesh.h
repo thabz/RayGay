@@ -68,6 +68,9 @@ class Mesh : public ObjectGroup {
 	/// Add a quad to the mesh
 	void addQuad(const uint c[4], const Vector2 uv[4]);
 
+	/// Add a quad to the mesh
+        void addQuad(const uint32_t c[4]);
+        
 	/// Add a triangle to the mesh
         void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3);
 	

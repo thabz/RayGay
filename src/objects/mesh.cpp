@@ -107,6 +107,11 @@ void Mesh::addQuad(const uint32_t c[4], const Vector2 uv[4]) {
     addTriangle(k,uvk);
 }
 
+void Mesh::addQuad(const uint32_t c[4]) {
+    Vector2 uvk[4];
+    addQuad(c,uvk);
+}
+
 /**
  * Adds a new vertex to the mesh.
  *
