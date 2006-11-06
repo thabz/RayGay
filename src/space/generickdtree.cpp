@@ -56,7 +56,6 @@ void GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t size, const AABox& b
     sort(left_bobs, left_bobs + size, cmpL<ObjectType>(d));
     sort(right_bobs, right_bobs + size, cmpR<ObjectType>(d));
     result.current_sort_dim = d;
-    result.dim = -1;
 
     uint32_t l = 0;
     uint32_t r = 0;
