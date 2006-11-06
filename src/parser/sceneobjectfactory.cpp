@@ -312,7 +312,12 @@ SCM make_ply_mesh(SCM s_filename, SCM s_material)
     char* proc = "make-ply-mesh";
     string filename = scm2string(s_filename);
     Material* material = scm2material(s_material, proc, 2);
-    PLY* ply = new PLY(filename, material);
+    PLY* ply;
+    try {
+        ply = new PLY(filename, material);
+    } catch (Exception e) {
+    	scm_error(NULL, proc, e.getMessage().c_str(), SCM_UNSPECIFIED, NULL);
+    }         
     return sceneobject2scm(ply);
 }
 

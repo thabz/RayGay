@@ -4,8 +4,6 @@
 #include <string>
 #include <fstream>
 
-#define PLY_DEBUG 1
-
 // PLY header format below
 /*
 ply
@@ -50,6 +48,10 @@ PLY::PLY(string filename, const Material* m) : Mesh(Mesh::MESH_PHONG, m)
     bool done = false;
     fstream file(filename.c_str(), ios::in);
     
+    if (!file.is_open()) {
+        throw_exception("Error opening file.");     
+    }
+    
     file >> line;
     if (string(line) != "ply") {
         throw_exception("Not a PLY file");            
@@ -61,16 +63,19 @@ PLY::PLY(string filename, const Material* m) : Mesh(Mesh::MESH_PHONG, m)
            file >> line;    
             if (string(line) == string("vertex")) {
                 file >> verts;
-                cout << "Verts: " << verts << endl;    
             } else if (string(line) == string("face")) {
                 file >> faces;
-                cout << "Faces: " << faces << endl;    
             }
         }
         if (string(line) == "end_header") {
            done = true;        
         }
     }
+    
+    cout << "Reading '" << filename << "' with " << verts << " vertices and " << faces << " faces..." << flush;
+    
+    hintVertexNum(verts);
+    hintFaceNum(faces);
 
     double x,y,z;
     while(verts-- > 0) {
@@ -96,6 +101,7 @@ PLY::PLY(string filename, const Material* m) : Mesh(Mesh::MESH_PHONG, m)
            throw_exception("Too many verts in face. Only 3 or 4 supported.");        
         }
     }
-
     file.close();
+    
+    cout << "Done." << endl;
 }
