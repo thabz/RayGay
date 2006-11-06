@@ -15,10 +15,10 @@
 using namespace std;
 
 
-#ifdef OS_DARWIN
+#if 1
 #define assertEqualColor(n,m) assertTrue((n - m).brightness() < 0.1)
 #else
-#define assertEqualColor(a,b) assertTrue(a == b)
+#define assertEqualColor(a,b) assertTrue((a) == (b))
 #endif
 
 class test_rgba : public Test {
@@ -130,7 +130,7 @@ class test_png : public Test {
     public:
 	void run() {
 	    // Test basic save and load
-	    RGBA color = RGBA(1.0,0.0,0.0,0.5);
+	    RGBA color = RGBA(1.0,0.0,0.0,128.0/255.0);
 
 	    Image* img = new Image(10,20);
 	    img->setRGBA(5,15,color);
@@ -141,7 +141,8 @@ class test_png : public Test {
 	    Image* img2 = Image::load(getLoadPrefix() + "/test.png");
 	    assertTrue(img2->getWidth() == 10);
 	    assertTrue(img2->getHeight() == 20);
-	    //cout << img2->getRGBA(5,15) << endl;
+	    cout << img2->getRGBA(5,15) << endl;
+	    cout << color << endl;
 	    assertEqualColor(img2->getRGBA(5,15), color);
 	    assertEqualColor(img2->getRGBA(0,0), color);
 	    ::remove((getLoadPrefix() + "/test.png").c_str());
