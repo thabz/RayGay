@@ -6,6 +6,7 @@
 #include <vector>
 
 class Matrix;
+class Matrix3;
 
 /**
  * A less memoryexpensive replacement for stl::vector<Vector>
@@ -21,6 +22,8 @@ class VectorList {
 	void set(const uint32_t i, const Vector& v);
 	uint32_t push_back(const Vector& w);
         void transform(const Matrix& M);
+        void transform(const Matrix3& M);
+        void normalize();
 	Vector operator[](const uint32_t i) const;
 	void reserve(uint num);
 

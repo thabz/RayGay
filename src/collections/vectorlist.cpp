@@ -1,6 +1,7 @@
 
 #include "vectorlist.h"
 #include "math/matrix.h"
+#include "math/matrix3.h"
 
 VectorList::VectorList() {
 }
@@ -19,6 +20,23 @@ void VectorList::transform(const Matrix& M) {
     }
 }
 
+void VectorList::transform(const Matrix3& M) {
+    uint32_t size = this->size();
+    for (uint32_t i = 0; i < size; i++) {
+	set(i, M * get(i));
+    }
+}
+
 void VectorList::reserve(uint32_t num) {
     v.reserve(num * 3);
+}
+
+void VectorList::normalize() {
+    uint32_t size = this->size();
+    for (uint32_t i = 0; i < size; i++) {
+        Vector v = get(i);
+        v.normalize();    
+    	set(i, v);
+    }
+        
 }
