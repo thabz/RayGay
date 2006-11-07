@@ -52,19 +52,36 @@ void DarwinIO::save(const Image* const image, const std::string& filename) const
 Image* DarwinIO::load(const std::string& filename, Allocator::model_t model) 
 {
 #define TYPE uint8_t
-        
     CFStringRef path = CFStringCreateWithCString(NULL, filename.c_str(), kCFStringEncodingUTF8);
     CFURLRef url = CFURLCreateWithFileSystemPath (NULL, path, kCFURLPOSIXPathStyle, NULL);
     CGImageSourceRef source = CGImageSourceCreateWithURL(url, NULL);
     CGImageRef imageRef = CGImageSourceCreateImageAtIndex(source, 0, NULL);
     CFRelease(path);
     CFRelease(url);
+
     uint64_t w = CGImageGetWidth(imageRef);
     uint64_t h = CGImageGetHeight(imageRef);
+    bool has_alpha = CGImageGetAlphaInfo(imageRef) != kCGImageAlphaNone;
+    CGBitmapInfo source_bitmap_info = CGImageGetBitmapInfo(imageRef);
+    bool uses_floats = source_bitmap_info & kCGBitmapFloatComponents != 0;
     
-    // TODO: Use floats when imageRef requires it. Also only use alpha when needed.
-    Image* result = new ImageImpl<uint8_t,4>(w,h,model);
+    Image* result;
+    if (has_alpha) {
+        if (uses_floats) {
+            result = new ImageImpl<float,4>(w,h,model);
+        } else {
+            result = new ImageImpl<uint8_t,4>(w,h,model);
+        }   
+    } else {
+        if (uses_floats) {
+            result = new ImageImpl<float,3>(w,h,model);
+        } else {
+            result = new ImageImpl<uint8_t,3>(w,h,model);
+        }   
+    }
     
+    // TODO: If uses_floats the malloc floats below and set kCGBitmapFloatComponents
+    // in the bitmapInfo.
     TYPE* data = (TYPE*)malloc(w * h * 4 * sizeof(TYPE));
     for( uint32_t i = 0; i < w*h*4; i += 4 ) {
             data[i+0] = 0;

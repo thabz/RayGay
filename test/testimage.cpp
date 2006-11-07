@@ -140,8 +140,8 @@ class test_png : public Test {
 	    Image* img2 = Image::load(getLoadPrefix() + "/test.png");
 	    assertTrue(img2->getWidth() == 10);
 	    assertTrue(img2->getHeight() == 20);
-	    cout << img2->getRGBA(5,15) << endl;
-	    cout << color << endl;
+	    //cout << img2->getRGBA(5,15) << endl;
+	    //cout << color << endl;
 	    assertEqualColor(img2->getRGBA(5,15), color);
 	    assertEqualColor(img2->getRGBA(0,0), color);
 	    ::remove((getLoadPrefix() + "/test.png").c_str());
