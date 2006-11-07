@@ -38,7 +38,7 @@ SCM TextureFactory::make_texture(SCM s_filename, SCM s_repeat_x, SCM s_repeat_y,
 	if (image_cache.find(filename) != image_cache.end()) {
 	    image = image_cache.find(filename)->second;
 	} else {
-    	    image = new Image(filename, renderer_settings->image_alloc_model);
+    	    image = Image::load(filename, renderer_settings->image_alloc_model);
 	    image_cache.insert(make_pair(filename,image));
 	}
     } catch (Exception e) {

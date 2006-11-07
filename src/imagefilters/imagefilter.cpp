@@ -1,7 +1,7 @@
 
 #include "imagefilters/imagefilter.h"
 #include "imagefilters/colormatrix.h"
-#include "image/image.h"
+#include "image/imageimpl.h"
 
 RGBA getMaskedPixel(Image* image, double* mask, int w, int h, int x, int y) {
 
@@ -27,7 +27,7 @@ RGBA getMaskedPixel(Image* image, double* mask, int w, int h, int x, int y) {
 }
 
 void ImageFilter::applyMask(Image* image, double* mask, int w, int h) {
-    Image* result = new Image(image->getWidth(),image->getHeight());
+    Image* result = new ImageImpl<double,4>(image->getWidth(),image->getHeight());
     RGBA tmp;
 
     int image_width = image->getWidth();
@@ -40,7 +40,7 @@ void ImageFilter::applyMask(Image* image, double* mask, int w, int h) {
 	}
     }
 
-    image->copy(result);
+    image->copy(*result);
     delete result;
 }
 

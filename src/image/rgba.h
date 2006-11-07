@@ -3,6 +3,7 @@
 #define IMAGE_RGBA_H
 
 #include "image/rgb.h"
+#include "math/functions.h"
 #include <iostream>
 
 /**
@@ -37,7 +38,8 @@ class RGBA : public RGB {
 	bool operator==(const RGBA& c) const;
 
 	RGBA& operator=(const RGBA& v);
-
+    
+        RGBA clamped() const;
     private:
 	double alpha;
 };
@@ -111,5 +113,14 @@ RGBA& RGBA::operator=(const RGBA& v) {
     alpha = v.alpha;
     return *this;
 }
+
+inline
+RGBA RGBA::clamped() const {
+    return RGBA(Math::clamp(_vector[0]),
+                Math::clamp(_vector[1]),
+                Math::clamp(_vector[2]),
+                Math::clamp(_vector[3]));
+}
+
 #endif
 

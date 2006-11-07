@@ -1,6 +1,6 @@
 
 #include "image/imageio_tga.h"
-#include "image/image.h"
+#include "image/imageimpl.h"
 #include "exception.h"
 #include <cassert>
 #include <iostream>
@@ -162,7 +162,7 @@ Image* TgaIO::load(const std::string& filename, Allocator::model_t model) {
 
     fseek(Handle, 18, 0);
 
-    Image* image = new Image(width,height,model);
+    Image* image = new ImageImpl<uint8_t,4>(width,height,model);
     RGBA* line = new RGBA[width];
     for(int y = 0; y < height ; y++) {
 	readscanline(Handle,line,width,bpp,rle);

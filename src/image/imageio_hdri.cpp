@@ -9,7 +9,7 @@ extern "C" {
 
 #include "image/imageio_hdri.h"
 #include "exception.h"
-#include "image/image.h"
+#include "image/imageimpl.h"
 
 typedef unsigned char RGBE[4];
 #define R			0
@@ -100,7 +100,7 @@ Image* HdriIO::load(const std::string& fileName, Allocator::model_t model)
     std::cout << "(w,h) = (" << w << "," << h << ")" << std::endl;
 
     // Copy cols to image
-    Image* result = new Image(w,h,model);
+    Image* result = new ImageImpl<float,3>(w,h,model);
     for(int y = 0; y < h; y++) {
 	for(int x = 0; x < w; x++) {
 	    uint32_t offset = 3 * (y*w + x);

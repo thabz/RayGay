@@ -9,7 +9,7 @@
 
 #include "image/imageio_darwin.h"
 #include "exception.h"
-#include "image/image.h"
+#include "image/imageimpl.h"
 
 using namespace std;
 
@@ -61,7 +61,7 @@ Image* DarwinIO::load(const std::string& filename, Allocator::model_t model)
     CFRelease(url);
     uint64_t w = CGImageGetWidth(imageRef);
     uint64_t h = CGImageGetHeight(imageRef);
-    Image* result = new Image(w,h,model);
+    Image* result = new ImageImpl<uint8_t,4>(w,h,model);
     
     TYPE* data = (TYPE*)malloc(w * h * 4 * sizeof(TYPE));
     for( uint32_t i = 0; i < w*h*4; i += 4 ) {

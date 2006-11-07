@@ -44,7 +44,7 @@ extern "C" {
 
 #include "scene.h"
 #include "cameras/camera.h"
-#include "image/image.h"
+#include "image/imageimpl.h"
 #include "image/texture.h"
 #include "space/kdtree.h"
 
@@ -258,7 +258,7 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     int img_h = renderersettings->image_height;
 
     scene->getCamera()->setImageSize(img_w,img_h);
-    Image* img = new Image(img_w, img_h, renderersettings->image_alloc_model);
+    Image* img = new ImageImpl<double,4>(img_w, img_h, renderersettings->image_alloc_model);
 
     Environment* env = Environment::getUniqueInstance();
 

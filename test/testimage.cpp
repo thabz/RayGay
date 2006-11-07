@@ -7,8 +7,7 @@
 #include <cstdio>
 #include <iostream>
 
-#include "image/rgba.h"
-#include "image/image.h"
+#include "image/imageimpl.h"
 #include "image/texture.h"
 #include "testing.h"
 
@@ -59,7 +58,7 @@ class test_image : public Test {
 	    RGBA g = RGBA(0,1,0,0);
 	    RGBA b = RGBA(0,0,1,0);
 	    
-	    Image* img = new Image(128,256);
+	    Image* img = new ImageImpl<double,4>(128,256);
 	    
 	    img->setRGBA(10,10,r);
 	    assertTrue(img->getRGBA(10,10) == r);
@@ -91,7 +90,7 @@ class test_image_mmap : public Test {
 	    RGBA g = RGBA(0,1,0,0);
 	    RGBA b = RGBA(0,0,1,0);
 	    
-	    Image* img = new Image(128,256,Allocator::MMAP_ONLY);
+	    Image* img = new ImageImpl<double,4>(128,256,Allocator::MMAP_ONLY);
 	    
 	    img->setRGBA(10,10,r);
 	    assertTrue(img->getRGBA(10,10) == r);
@@ -114,7 +113,7 @@ class test_texture : public Test {
     public:
 	void run() {
 	    RGBA col = RGBA(1,0,0,1);
-    	    Image* img = new Image(32,32);
+    	    Image* img = new ImageImpl<double,4>(32,32);
     	    img->clear(col);
     	    Texture* tex = new Texture(img, Vector2(1,1), Texture::INTERPOLATION_BICUBIC);
     	    for(double x = 0; x < 1.5; x += 1.0 / 128) {
@@ -132,7 +131,7 @@ class test_png : public Test {
 	    // Test basic save and load
 	    RGBA color = RGBA(1.0,0.0,0.0,128.0/255.0);
 
-	    Image* img = new Image(10,20);
+	    Image* img = new ImageImpl<double,4>(10,20);
 	    img->setRGBA(5,15,color);
 	    img->setRGBA(0,0,color);
 	    assertTrue(img->getRGBA(5,15) == color);
@@ -150,7 +149,7 @@ class test_png : public Test {
 	    delete img2;
 
 	    // Load 24 bit png 
-	    img = new Image(getLoadPrefix() + "/gfx/rgb.png");
+	    img = Image::load(getLoadPrefix() + "/gfx/rgb.png");
 	    img->save(getLoadPrefix() + "/rgb-kaj.png");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
@@ -161,7 +160,7 @@ class test_png : public Test {
 	    ::remove((getLoadPrefix() + "/rgb-kaj.png").c_str());
 
 	    // Test load of png with palette
-	    img = new Image(getLoadPrefix() + "/gfx/withpalette.png");
+	    img = Image::load(getLoadPrefix() + "/gfx/withpalette.png");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
 	    assertEqualColor(img->getRGBA(0,0), RGBA(1.0,1,0,1.0));
@@ -175,7 +174,7 @@ class test_tga : public Test {
 	void run() {
 	    RGB color = RGB(1.0,0.0,1.0);
 
-	    Image* img = new Image(10,20);
+	    Image* img = new ImageImpl<double,4>(10,20);
 	    img->setRGBA(5,15,color);
 	    img->setRGBA(9,19,color);
 	    img->save(getLoadPrefix() + "/test.tga");
@@ -193,7 +192,7 @@ class test_tga : public Test {
 class test_jpg : public Test {
     public:
 	void run() {
-	    Image* img = new Image(getLoadPrefix() + "/gfx/simple.jpg");
+	    Image* img = Image::load(getLoadPrefix() + "/gfx/simple.jpg");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
 	    delete img;

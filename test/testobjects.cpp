@@ -1388,7 +1388,7 @@ class bounded_mesh_test : public Test {
 class heightfield_test : public Test {
     public: 
 	void run() {
-	    Image* img = new Image(getLoadPrefix() + "/gfx/water.tga");
+	    Image* img = Image::load(getLoadPrefix() + "/gfx/water.tga");
 	    Texture* texture = new Texture(img,Vector2(2,2),Texture::INTERPOLATION_BILINEAR);
 	    HeightField* h = new HeightField(texture, 10, 200, 200, 10, 10, NULL);
 	    h->prepare();

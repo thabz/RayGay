@@ -19,70 +19,25 @@
 #include "math/vector2.h"
 #include "allocator.h"
 
-#undef VERBOSE
+#undef IMAGE_VERBOSE
 
 using namespace std;
 
-Image::Image(long w, long h, Allocator::model_t alloc_model) {
+Image::Image(long w, long h) {
     height = h;
     width = w;
-
-    block_size = 16;
-    blocks_w = w / block_size;
-    if (w % block_size != 0) blocks_w++;
-    blocks_h = h / block_size;
-    if (h % block_size != 0) blocks_h++;
-    alloc_size = block_size * block_size * blocks_w * blocks_h * 4;
-
-    data = (IMAGE_FLOAT*) Allocator::safe_allocate(alloc_size * sizeof(IMAGE_FLOAT), alloc_model);
 }
 
-Image::Image(const std::string& filename, Allocator::model_t alloc_model) {
-    Image* image = Image::load(filename, alloc_model);
-    (*this) = (*image);
-}
-
-Image::Image(const Image& other, Allocator::model_t alloc_model) {
-    Image(other.width, other.height, alloc_model);
-    memcpy(data, other.data, alloc_size*sizeof(IMAGE_FLOAT));
-}
-
-/**
- * Frees the image data
- */
 Image::~Image() {
-    Allocator::free(data);
-}
-
-void Image::copy(Image* other) {
-    if (other->getWidth() != this->getWidth() || 
-	other->getHeight() != this->getHeight()) {
-	throw_exception("Image-sizes must match.");
-    }
-    memcpy(data, other->data, alloc_size*sizeof(IMAGE_FLOAT));
-}
-
-
-void Image::setRGBA(int x, int y, const RGBA& c) {
-    /*
-    assert(0 <= x && x < width);
-    assert(0 <= y && y < height);
-    */
-    uint32_t offset = xy2offset(x,y);
-    data[offset++] = c.r();
-    data[offset++] = c.g();
-    data[offset++] = c.b();
-    data[offset] = c.a();
 }
 
 void Image::setRGBA(const Vector2& p, const RGBA& c) {
-    int x = int(p[0]);
-    int y = int(p[1]);
+    uint32_t x = int(p[0]);
+    uint32_t y = int(p[1]);
     if (x >= 0 && x < width && y >= 0 && y < height) {
 	setRGBA(x,y,c);
     }
 }
-
 
 // Caller must delete the returned ImageIO object
 ImageIO* getImageIO(const std::string& filename) {
@@ -145,11 +100,26 @@ void Image::save(const std::string& filename) {
 
 // Clip RGBA values to be in [0,1]
 void Image::clipColors() {
-    for(uint32_t i = 0; i < alloc_size; i++) {
-	if (data[i] < 0) data[i] = 0;
-	if (data[i] > 1) data[i] = 1;
+    for(uint32_t x = 0; x < width; x++) {
+        for(uint32_t y = 0; y < height; y++) {
+            setRGBA(x,y,getRGBA(x,y).clamped());
+        }    
     }
 }
+
+// Copy contents of source into this image
+void Image::copy(const Image& source)
+{
+    if (source.getWidth() != getWidth() || source.getHeight() != getHeight()) {
+        throw_exception("Image sizes doesn't match");
+    }        
+    for(uint32_t x = 0; x < width; x++) {
+        for(uint32_t y = 0; y < height; y++) {
+            setRGBA(x,y,source.getRGBA(x,y).clamped());
+        }    
+    }
+}
+
 
 /**
  * Loads the image from a tga 24 og 32 bit uncompressed tga-file.
@@ -157,16 +127,12 @@ void Image::clipColors() {
 Image* Image::load(const std::string& filename, Allocator::model_t model) {
 
     // Checking that file exists
-    bool exists = false;
     fstream fin;
     fin.open(filename.c_str(),ios::in);
-    if (fin.is_open()) {
-	exists = true;
-    }
-    fin.close();
-    if (!exists) {
+    if (!fin.is_open()) {
 	throw_exception("File " + filename + " not found.");
     }
+    fin.close();
 
     // Create a loader
     ImageIO* io = getImageIO(filename);
@@ -175,7 +141,7 @@ Image* Image::load(const std::string& filename, Allocator::model_t model) {
     Image* image = io->load(filename, model);
     delete io;
 
-#ifdef VERBOSE    
+#ifdef IMAGE_VERBOSE    
     cout << "Loaded " << filename << " " << image->getWidth() << "x" << image->getHeight() << endl;
 #endif    
     return image;
@@ -187,19 +153,17 @@ Image* Image::load(const std::string& filename, Allocator::model_t model) {
  * Using the formula from ITU-R Recommendation BT.709, "Basic Parameter Values for the Studio and for International Programme Exchange (1990) [formerly CCIR Rec. 709] 
  */
 void Image::grayscale() {
-    RGBA col;
-    for(int y = 0; y < height ; y++) {
-        for(int x = 0; x < width; x++) {
-	    col = getRGBA(x,y);
-	    setRGBA(x,y,col.toGrayscale());
+    for(uint32_t y = 0; y < height ; y++) {
+        for(uint32_t x = 0; x < width; x++) {
+	    setRGBA(x,y,getRGBA(x,y).toGrayscale());
 	}
     }
 }
 
 void Image::clear(const RGBA& color) 
 {
-    for(int y = 0; y < height ; y++) {
-        for(int x = 0; x < width; x++) {
+    for(uint32_t y = 0; y < height ; y++) {
+        for(uint32_t x = 0; x < width; x++) {
            setRGBA(x,y,color);        
         }
     }

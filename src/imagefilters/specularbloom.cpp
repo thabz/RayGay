@@ -1,7 +1,7 @@
 
 #include "imagefilters/specularbloom.h"
 #include "imagefilters/gaussianblur.h"
-#include "image/image.h"
+#include "image/imageimpl.h"
 
 SpecularBloom::SpecularBloom(double cutoff, double radius, double alpha) {
     this->cutoff = cutoff;
@@ -10,7 +10,7 @@ SpecularBloom::SpecularBloom(double cutoff, double radius, double alpha) {
 }
 
 void SpecularBloom::apply(Image* image) {
-    Image* glow = new Image(*image);
+    Image* glow = new ImageImpl<double,4>(*image);
 
     RGBA black = RGBA(0,0,0,0);
 
