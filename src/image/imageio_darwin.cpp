@@ -61,6 +61,8 @@ Image* DarwinIO::load(const std::string& filename, Allocator::model_t model)
     CFRelease(url);
     uint64_t w = CGImageGetWidth(imageRef);
     uint64_t h = CGImageGetHeight(imageRef);
+    
+    // TODO: Use floats when imageRef requires it. Also only use alpha when needed.
     Image* result = new ImageImpl<uint8_t,4>(w,h,model);
     
     TYPE* data = (TYPE*)malloc(w * h * 4 * sizeof(TYPE));
