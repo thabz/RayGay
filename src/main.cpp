@@ -258,7 +258,7 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     int img_h = renderersettings->image_height;
 
     scene->getCamera()->setImageSize(img_w,img_h);
-    Image* img = new ImageImpl<double,4>(img_w, img_h, renderersettings->image_alloc_model);
+    Image* img = new ImageImpl<float,4>(img_w, img_h, renderersettings->image_alloc_model);
 
     Environment* env = Environment::getUniqueInstance();
 
