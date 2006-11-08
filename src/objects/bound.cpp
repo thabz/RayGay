@@ -58,7 +58,8 @@ void Bound::fullIntersect(const Ray& ray, double t, Intersection& result) const 
 }
 
 /**
- * TODO: Inefficient method 
+ * TODO: Inefficient method
+ * KdTree needs a "double intersect(const Ray&)" method
  */
 double Bound::fastIntersect(const Ray& ray) const {
     Intersection result;
