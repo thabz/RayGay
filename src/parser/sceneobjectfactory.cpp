@@ -21,6 +21,8 @@
 #include "objects/csg.h"
 #include "objects/julia.h"
 #include "objects/marchingcubes.h"
+#include "objects/bound.h"
+#include "objects/transformedinstance.h"
 
 
 SCM make_sphere(SCM s_center, SCM s_radius, SCM s_material) 
@@ -440,6 +442,35 @@ SCM make_marching_cubes(SCM s_isosurface, SCM s_subdivisions, SCM s_adaptive)
     return sceneobject2scm(marching);
 }
 
+SCM make_bound(SCM s_objectgroup)
+{
+    char* proc = "make-bound";
+    SceneObject* sobj = scm2sceneobject(s_objectgroup, proc, 1);
+    ObjectGroup* objectgroup = dynamic_cast<ObjectGroup*>(sobj);
+    if (objectgroup == NULL) scm_wrong_type_arg(proc,1,s_objectgroup);
+    Bound* bound = new Bound(objectgroup);
+    return sceneobject2scm(bound);
+}
+
+SCM make_instance(SCM s_object, SCM s_material)
+{
+    char* proc = "make-instance";
+    SceneObject* sobj = scm2sceneobject(s_object, proc, 1);
+    Object* obj = dynamic_cast<Object*>(sobj);
+    if (obj == NULL) scm_wrong_type_arg(proc,1,s_object);
+
+    TransformedInstance* instance;
+    if (SCM_UNBNDP (s_material) || SCM_FALSEP (s_material)) {
+        instance = new TransformedInstance(obj);
+    } else {
+	Material* material = scm2material(s_material,proc,3);
+        instance = new TransformedInstance(obj, material);
+    }
+
+    return sceneobject2scm(instance);
+}
+
+
 SCM bounding_box(SCM s_obj) 
 {
     char* proc = "bounding-box";
@@ -501,6 +532,10 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) make_julia);
     scm_c_define_gsubr("make-marching-cubes",3,0,0,
 	    (SCM (*)()) make_marching_cubes);
+    scm_c_define_gsubr("make-bound",1,0,0,
+	    (SCM (*)()) make_bound);
+    scm_c_define_gsubr("make-instance",1,1,0,
+	    (SCM (*)()) make_instance);
     scm_c_define_gsubr("bounding-box",1,0,0,
 	    (SCM (*)()) bounding_box);
 }
