@@ -162,7 +162,13 @@ Image* TgaIO::load(const std::string& filename, Allocator::model_t model) {
 
     fseek(Handle, 18, 0);
 
-    Image* image = new ImageImpl<uint8_t,4>(width,height,model);
+    Image* image;
+    if (bpp == 4) {
+	image = new ImageImpl<uint8_t,4>(width,height,model);
+    } else {
+	image = new ImageImpl<uint8_t,3>(width,height,model);
+    }
+
     RGBA* line = new RGBA[width];
     for(int y = 0; y < height ; y++) {
 	readscanline(Handle,line,width,bpp,rle);

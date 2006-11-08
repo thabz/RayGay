@@ -226,3 +226,4 @@ void ImageImpl<uint8_t,4>::setRGBA(int x, int y, const RGBA& c)
 }
 
 #endif
+

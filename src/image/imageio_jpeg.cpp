@@ -16,7 +16,7 @@ extern "C" {
 }
 
 #include "image/imageio_jpeg.h"
-#include "image/image.h"
+#include "image/imageimpl.h"
 #include "exception.h"
 
 using namespace std;
@@ -91,7 +91,7 @@ Image* JpegIO::load(const std::string& filename, Allocator::model_t model) {
         ((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
                                                                                
 
-    Image* image = new Image(width,height,model);
+    Image* image = new ImageImpl<uint8_t,3>(width,height,model);
     RGBA* line = new RGBA[width];
     uint32_t y = 0;
     while (cinfo.output_scanline < height) {

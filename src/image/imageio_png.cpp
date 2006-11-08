@@ -14,7 +14,7 @@ extern "C" {
 #include <png.h>
 }
 
-#include "image/image.h"
+#include "image/imageimpl.h"
 #include "image/imageio_png.h"
 #include "exception.h"
 
@@ -189,11 +189,16 @@ Image* PngIO::load(const std::string& filename, Allocator::model_t model) {
  //   png_bytep row = (png_bytep) png_malloc(png_ptr, png_get_rowbytes(png_ptr, info_ptr));
     png_byte row[png_get_rowbytes(png_ptr, info_ptr)];
     png_bytep rowp = row;
-
-    Image* result = new Image(width,height,model);
     int bpp = png_get_rowbytes(png_ptr,info_ptr) / width;
-    //cout << "Bytes per pixel: " << bpp << endl;
     assert(bpp == 4 || bpp == 3);
+    //cout << "Bytes per pixel: " << bpp << endl;
+
+    Image* result;
+    if (bpp == 4) {
+	result = new ImageImpl<uint8_t,4>(width,height,model);
+    } else {
+	result = new ImageImpl<uint8_t,3>(width,height,model);
+    }
 
     for (uint32_t y = 0; y < height; y++)
     {

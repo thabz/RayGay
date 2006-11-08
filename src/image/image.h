@@ -53,7 +53,7 @@ class Image
              
     protected:
         Image(long h, long w);
-        Image();
+	Image() {};
         
     private: 
         uint32_t width;	    
