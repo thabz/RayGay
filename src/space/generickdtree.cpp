@@ -280,6 +280,7 @@ void GenericKdTree<ObjectType>::prepare(uint32_t num, const AABox& bbox, uint32_
 /////////////////////////////////////////////////////////////////////
 
 template<class ObjectType>
+inline
 void KdNode<ObjectType>::initLeafNode(uint32_t num, ObjectType** objects)
 {
     this->num = (num << 2) | 3;
@@ -287,6 +288,7 @@ void KdNode<ObjectType>::initLeafNode(uint32_t num, ObjectType** objects)
 }
 
 template<class ObjectType>
+inline
 void KdNode<ObjectType>::initInteriorNode(uint32_t axis, float plane, uint32_t left)
 {
     assert(axis >= 0 && axis <= 2);
@@ -295,24 +297,28 @@ void KdNode<ObjectType>::initInteriorNode(uint32_t axis, float plane, uint32_t l
 }
 
 template<class ObjectType>
+inline
 bool KdNode<ObjectType>::isLeafNode() const
 {
     return (left & 3) == 3;
 }
 
 template<class ObjectType>
+inline
 uint32_t KdNode<ObjectType>::getAxis() const 
 {
     return (num & 3);
 }
 
 template<class ObjectType>
+inline
 float KdNode<ObjectType>::getSplitValue() const 
 {
     return splitPlane;
 }
 
 template<class ObjectType>
+inline
 uint32_t KdNode<ObjectType>::getObjectNum() const 
 {
     return (num >> 2);
