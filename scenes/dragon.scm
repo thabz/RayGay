@@ -11,7 +11,7 @@
        lookat (0 0 0)
        up (0 1 0)
        fov 45
-       aa 3)))
+       aa 0)))
 
 (define green
   (make-material
@@ -59,14 +59,28 @@
       ((= z 5))
         (add-to-scene (make-jittered-box x z))))
 
-(add-to-scene
-  (translate
-   (rotate-y
-   (scale         
-   (make-ply-mesh "ply/dragon_vrip_res3.ply" green)
-;   (make-ply-mesh "ply/happy_vrip.ply" green)
-   '(40 40 40)) -30)
-   '(0 -2 1)))
 
-;(add-to-scene 
-;  (make-sphere '(0 3 0) 2.8 chrome))
+; True case: just a single dragon
+; False case: a load of them
+(define many #t)
+
+(if many
+   (define dragon (make-bound (scale (make-ply-mesh "ply/dragon_vrip_res3.ply" green) '(10 10 10)))))
+
+(if many
+    (do ((i 0 (+ i 1)))
+        ((= i 20))             
+        (add-to-scene 
+             (translate
+                 (rotate-y
+                     (make-instance dragon (pick-random-from-list materials))
+                     (random2 -90 90))
+              (list (random2 -4 4) -0.5 (random2 -4 4)))))
+
+     (add-to-scene
+         (translate
+            (rotate-y
+               (scale (make-ply-mesh "ply/dragon_vrip_res3.ply" green)          
+               '(40 40 40))
+            -30)
+          '(0 -2 1))))
