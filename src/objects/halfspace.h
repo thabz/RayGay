@@ -20,6 +20,7 @@ class Halfspace : public Solid {
 	Intersection _fullIntersect(const Ray& ray, const double t) const;
 	int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
+        bool inside(const Vector& p) const;
 
     private:
 	Vector point;
