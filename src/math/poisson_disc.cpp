@@ -64,6 +64,7 @@ class Boundary {
 	    return c + r * Vector2(cos(angle),sin(angle));
 	}
 
+	// Subtract a circle
 	void subtract(const Vector2& o_c, double o_r) {
 	    assert(IS_EQUAL(o_r,r));
             if ((o_c - c).norm() > 2*r*2*r) {
@@ -72,10 +73,15 @@ class Boundary {
 	    
 	    Vector2 middle = (c + o_c) * 0.5;
 	    double angle = acos(middle.length() / r);
-	    angle += acos(middle.length() / o_c[0]); // TODO: x kan vÃ¦re 0.
+	    angle += acos(middle.length() / o_c[0]); // TODO: x kan være 0.
 	    double from_angle = 0;
 	    double to_angle = 0;
 	    interval.subtract(from_angle,to_angle);
+	}
+	
+	// Subtract an 2D axis aligned box
+	void subtract(const Vector2& lower, const Vector& upper) {
+	   // TODO: implement     
 	}
     private:
 	Vector2 c;
@@ -102,7 +108,8 @@ int PoissonDiscDistribution::BoundarySampling(double w, double h, double r, uint
 	    boundaries[j].subtract(new_boundary.getC(), new_boundary.getR());
 	}
 	
-	// TODO: Subtract the box [0,w]x[0,h] from new boundary
+	// Subtract the box [0,w]x[0,h] from new boundary
+	new_boundary.subtract(Vector2(0,0), Vector2(w,h));
 
 	// Store new bounary 
 	boundaries.push_back(new_boundary);
