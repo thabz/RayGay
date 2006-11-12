@@ -12,7 +12,6 @@ Bound::Bound(ObjectGroup* group) : Object(NULL) {
     group->prepare();
     group->addSelf(tree);
     tree->prepare();
-    running = false;
 }
 
 void Bound::prepare() {
@@ -26,30 +25,10 @@ AABox Bound::getBoundingBox() const {
     return tree->boundingBox();
 }
 
-Vector Bound::normal(const Intersection &i) const {
-    // Not to be called
-    return Vector(1,0,0);
-}
-
-Vector2 Bound::getUV(const Intersection& i) const {
-    // Not to be called
-    return Vector2(-1,-1);
-}
-
 SceneObject* Bound::clone() const {
     ObjectGroup* new_group = dynamic_cast<ObjectGroup*>(group->clone());
     return new Bound(new_group);
 }
-
-/*
-const Material* Bound::getMaterial() const {
-    if (last_intersection.isIntersected()) {
-	return last_intersection.getObject()->getMaterial();
-    } else {
-	return NULL;
-    }
-}
-*/
 
 void Bound::fullIntersect(const Ray& ray, double t, Intersection& result) const {
     if (!tree->intersect(ray, result)) {
@@ -57,23 +36,10 @@ void Bound::fullIntersect(const Ray& ray, double t, Intersection& result) const 
     } 
 }
 
-/**
- * TODO: Inefficient method
- * KdTree needs a "double intersect(const Ray&)" method
- */
-double Bound::fastIntersect(const Ray& ray) const {
-    Intersection result;
-    if (tree->intersect(ray, result)) {
-	return result.getT();
-    } else {
-	return -1;
-    }
-}
-
 double Bound::_fastIntersect(const Ray& ray) const {
-    return fastIntersect(ray);
+    return tree->intersect(ray);         
 }
 
 void Bound::_fullIntersect(const Ray& ray, const double t, Intersection& result) const {
-    return fullIntersect(ray,t, result);
+    assert(false); // Shouldn't be called as we override Object::fullIntersect() 
 }

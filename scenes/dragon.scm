@@ -11,7 +11,7 @@
        lookat (0 0 0)
        up (0 1 0)
        fov 45
-       aa 0)))
+       aa 1)))
 
 (define green
   (make-material
@@ -65,11 +65,11 @@
 (define many #t)
 
 (if many
-   (define dragon (make-bound (scale (make-ply-mesh "ply/dragon_vrip_res3.ply" green) '(10 10 10)))))
+   (define dragon (make-bound (scale (make-ply-mesh "ply/dragon_vrip_res4.ply" green) '(12 12 12)))))
 
 (if many
     (do ((i 0 (+ i 1)))
-        ((= i 20))             
+        ((= i 40))
         (add-to-scene 
              (translate
                  (rotate-y
@@ -80,7 +80,7 @@
      (add-to-scene
          (translate
             (rotate-y
-               (scale (make-ply-mesh "ply/dragon_vrip_res3.ply" green)          
+               (scale (make-ply-mesh "ply/dragon_vrip_res2.ply" green)          
                '(40 40 40))
             -30)
           '(0 -2 1))))

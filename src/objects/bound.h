@@ -17,30 +17,23 @@ class Bound : public Object {
 	/// Constructor
 	Bound(ObjectGroup* group);
 
-	Vector normal(const Intersection &i) const;
-
 	void transform(const Matrix& m);
 
 	AABox getBoundingBox() const;
 
-	Vector2 getUV(const Intersection& i) const;
-
 	SceneObject* clone() const;
-
-	//const Material* getMaterial() const;
 
 	void prepare();
 
 	void fullIntersect(const Ray& ray, double t, Intersection& result) const;
-	double fastIntersect(const Ray& ray) const;
-	double _fastIntersect(const Ray& ray) const;
-	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
-	/// Never called
-	Intersection _intersect(const Ray& ray) const {return Intersection(); };
+
+
+    protected:
+    	double _fastIntersect(const Ray& ray) const;
+
+    	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 
     private:
-	bool running;
-	
 	KdTree* tree;
 	ObjectGroup* group;
 };

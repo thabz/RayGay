@@ -16,7 +16,7 @@
 /**
  * k-dimensional tree.
  *
- * Implementerer http://www.acm.org/jgt/papers/HavranKopalBittnerZara97/ som er den bedste BSP-traversal algorithme.
+ * Implementerer http://www.acm.org/jgt/papers/HavranKopalBittnerZara97/ som er den bedste BSP-traversal algoritme.
  *
  * TODO: Make a destructor that delete nodes recursively beginning at top_node.
  */
@@ -28,6 +28,9 @@ class KdTree : public GenericKdTree<Object> {
 	
 	/// Returns the nearest intersection
 	bool intersect(const Ray& ray, Intersection& result) const; 
+	
+	/// Returns the distance to nearest intersection
+	double intersect(const Ray& ray) const;
 	
 	/// Returns the nearest intersection
 	bool intersectPrimary(const Ray& ray, Intersection& result) const; 
@@ -44,10 +47,8 @@ class KdTree : public GenericKdTree<Object> {
 	};
 
 	bool intersect(const Ray& ray, Intersection& result, const double a, const double b) const;
-
+	double intersect(const Ray& ray, const double a, const double b) const;
 	Object* intersectForShadow_real(const Ray&,const double) const;
-
-
 };
 
 
