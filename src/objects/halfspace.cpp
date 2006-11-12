@@ -38,3 +38,7 @@ void Halfspace::allIntersections(const Ray& ray, vector<Intersection>& result) c
 {
 }
 
+bool Halfspace::inside(const Vector& p) const
+{
+        
+}
