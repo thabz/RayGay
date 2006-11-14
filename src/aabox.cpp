@@ -341,7 +341,7 @@ Vector AABox::lengths() const {
 }
 
 /**
- * @param percent where 0.01 is 1%
+ * @param percent where 1.0 is 1%
  */
 void AABox::growPercentage(double percent) {
      Vector l = lengths();
