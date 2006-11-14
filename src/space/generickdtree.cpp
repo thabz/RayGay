@@ -290,7 +290,7 @@ void KdNode<ObjectType>::initLeafNode(uint32_t num, ObjectType** objects)
 
 template<class ObjectType>
 inline
-void KdNode<ObjectType>::initInteriorNode(uint32_t axis, float plane, uint32_t left)
+void KdNode<ObjectType>::initInteriorNode(uint32_t axis, double plane, uint32_t left)
 {
     assert(axis >= 0 && axis <= 2);
     this->splitPlane = plane;
@@ -320,7 +320,7 @@ uint32_t KdNode<ObjectType>::getAxis() const
 
 template<class ObjectType>
 inline
-float KdNode<ObjectType>::getSplitValue() const 
+double KdNode<ObjectType>::getSplitValue() const 
 {
     return splitPlane;
 }

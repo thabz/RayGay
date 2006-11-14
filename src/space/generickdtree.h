@@ -43,9 +43,9 @@ class KdNode {
 
     public:
 	void initLeafNode(uint num, ObjectType** objects);
-	void initInteriorNode(uint axis, float plane, uint left);
+	void initInteriorNode(uint axis, double plane, uint left);
 	bool isLeafNode() const;
-	float getSplitValue() const;
+	double getSplitValue() const;
 	uint getObjectNum() const;
 	uint getAxis() const;
 	ObjectType* const* getObjects() const;
