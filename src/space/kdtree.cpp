@@ -219,7 +219,7 @@ bool KdTree::intersect(const Ray& ray, Intersection& result, const double a, con
 	    Object* object_hit = NULL;
 	    double smallest_t = stack[exPt].t;
 	    const double s_min_t = MAX(0.0,stack[enPt].t);
-	    Object** objects = curNode->getObjects();
+	    Object* const* objects = curNode->getObjects();
 	    for (uint32_t i = 0; i < object_num; i++) {
 		double i_t = objects[i]->fastIntersect(ray);
 		if (i_t > s_min_t && i_t < smallest_t) {
@@ -307,7 +307,7 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
 	uint32_t object_num = curNode->getObjectNum();
 	if (object_num > 0) {
 	    const double min_t = MAX(0.0,stack[enPt].t);
-	    Object** objects = curNode->getObjects();
+	    Object* const* objects = curNode->getObjects();
 	    for (uint32_t i = 0; i < object_num; i++) {
 		double i_t = objects[i]->fastIntersect(ray);
 		if (i_t > min_t && i_t < stack[exPt].t) {
@@ -471,7 +471,7 @@ double KdTree::intersect(const Ray& ray, const double a, const double b) const {
 	    Object* object_hit = NULL;
 	    double smallest_t = stack[exPt].t;
 	    const double s_min_t = MAX(0.0,stack[enPt].t);
-	    Object** objects = curNode->getObjects();
+	    Object* const* objects = curNode->getObjects();
 	    for (uint32_t i = 0; i < object_num; i++) {
 		double i_t = objects[i]->fastIntersect(ray);
 		if (i_t > s_min_t && i_t < smallest_t) {

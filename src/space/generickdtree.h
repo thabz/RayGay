@@ -36,7 +36,7 @@ class KdNode {
 	    // Enclosed objects when this is a leaf
 	    ObjectType** objects;
 	    // Enclosed object when this is a leaf with only one object
-	    ObjectType* object; // TODO: Use this
+	    ObjectType* object;
 	    // Position of splitting plane when not a leaf
 	    float splitPlane;
 	};
@@ -48,7 +48,7 @@ class KdNode {
 	float getSplitValue() const;
 	uint getObjectNum() const;
 	uint getAxis() const;
-	ObjectType** getObjects() const;
+	ObjectType* const* getObjects() const;
 	uint32_t getLeft() const;
 	~KdNode();
 };

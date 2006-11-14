@@ -127,7 +127,7 @@ double BlobTree::eval(const Vector& point) const {
     const double one_ninth = 0.11111111111111111111111111111111111111; // 1 / 9
     uint32_t num = node->getObjectNum();
     BlobAtom* b;
-    BlobAtom** objects = node->getObjects();
+    BlobAtom* const* objects = node->getObjects();
     for(uint32_t i = 0; i < num; i++) {
 	b = objects[i];
 	double rr = b->squaredDistToPoint(point);

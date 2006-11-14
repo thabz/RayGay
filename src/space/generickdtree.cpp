@@ -254,11 +254,13 @@ void GenericKdTree<ObjectType>::prepare(uint32_t num, const AABox& bbox, uint32_
 
     if (axis == -1) {
 	ObjectType** objects;
-	if (num > 0) {
+	if (num > 1) {
 	    objects = new ObjectType*[num];
 	    for(uint32_t j = 0; j < num; j++) {
 		objects[j] = left_bobs[j]->object;
 	    }
+	} else if (num == 1) {
+	    objects = &(left_bobs[0]->object);
 	} else {
 	    objects = NULL;
 	}
@@ -279,7 +281,11 @@ inline
 void KdNode<ObjectType>::initLeafNode(uint32_t num, ObjectType** objects)
 {
     this->num = (num << 2) | 3;
-    this->objects = objects;
+    if (num == 1) {
+	this->object = objects[0];
+    } else {
+	this->objects = objects;
+    }
 }
 
 template<class ObjectType>
@@ -328,9 +334,13 @@ uint32_t KdNode<ObjectType>::getObjectNum() const
 
 template<class ObjectType>
 inline
-ObjectType** KdNode<ObjectType>::getObjects() const 
+ObjectType* const* KdNode<ObjectType>::getObjects() const 
 {
-    return objects;
+    if (getObjectNum() == 1) {
+	return &object;
+    } else {
+    	return objects;
+    }
 }
 
 template<class ObjectType>
