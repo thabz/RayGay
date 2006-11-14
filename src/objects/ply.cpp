@@ -43,7 +43,7 @@ using namespace std;
 
 PLY::PLY(string filename, const Material* m) : Mesh(Mesh::MESH_PHONG, m)
 {
-    uint32_t faces, verts;        
+    uint32_t faces = 0, verts = 0;
     char line[2000];
     bool done = false;
     fstream file(filename.c_str(), ios::in);
@@ -76,6 +76,10 @@ PLY::PLY(string filename, const Material* m) : Mesh(Mesh::MESH_PHONG, m)
         if (string(line) == "end_header") {
            done = true;        
         }
+    }
+    
+    if (faces == 0 || verts == 0) {
+        throw_exception("Couldn't read number of faces or number of verts");    
     }
     
     cout << "Reading '" << filename << "' with " << verts << " vertices and " << faces << " faces..." << flush;
