@@ -20,11 +20,6 @@ GenericKdTree<ObjectType>::GenericKdTree(uint32_t max_depth, uint32_t max_objs) 
 
 template<class ObjectType>
 GenericKdTree<ObjectType>::~GenericKdTree<ObjectType>() {
-    for(uint32_t i = 0; i < nodes.size(); i++) {
-	if (nodes[i].isLeafNode() && nodes[i].getObjectNum() > 0) {
-	    delete [] nodes[i].objects;
-	}
-    }
     nodes.clear();
 }
 
@@ -305,6 +300,13 @@ bool KdNode<ObjectType>::isLeafNode() const
 
 template<class ObjectType>
 inline
+uint32_t KdNode<ObjectType>::getLeft() const
+{
+    return left >> 2;
+}
+
+template<class ObjectType>
+inline
 uint32_t KdNode<ObjectType>::getAxis() const 
 {
     return (num & 3);
@@ -324,3 +326,18 @@ uint32_t KdNode<ObjectType>::getObjectNum() const
     return (num >> 2);
 }
 
+template<class ObjectType>
+inline
+ObjectType** KdNode<ObjectType>::getObjects() const 
+{
+    return objects;
+}
+
+template<class ObjectType>
+inline
+KdNode<ObjectType>::~KdNode<ObjectType>() 
+{
+    if (isLeafNode() && getObjectNum() > 1) {
+	//delete [] getObjects();
+    }
+}

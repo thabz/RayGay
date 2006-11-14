@@ -14,13 +14,13 @@
  */
 //#define leftNode(node) (node->left == 0 ? NULL : &(nodes[node->left]))
 //#define rightNode(node) (node->left == 0 ? NULL : &(nodes[node->left+1]))
-#define leftNode(node) (&(nodes[(((node)->left) >> 2)]))
-#define rightNode(node) (&(nodes[(((node)->left) >> 2)+1]))
+#define leftNode(node) (&(nodes[(node)->getLeft()]))
+#define rightNode(node) (&(nodes[(node)->getLeft()+1]))
 #define getTopNode() (&(nodes[0]))
 
 template<class ObjectType>
 class KdNode {
-    public:
+    private:
 	union {
 	    // [30 bits left/num | 2 bits axis]
 	    
@@ -35,16 +35,22 @@ class KdNode {
 	union {
 	    // Enclosed objects when this is a leaf
 	    ObjectType** objects;
+	    // Enclosed object when this is a leaf with only one object
+	    ObjectType* object; // TODO: Use this
 	    // Position of splitting plane when not a leaf
 	    float splitPlane;
 	};
 
+    public:
 	void initLeafNode(uint num, ObjectType** objects);
 	void initInteriorNode(uint axis, float plane, uint left);
 	bool isLeafNode() const;
 	float getSplitValue() const;
 	uint getObjectNum() const;
 	uint getAxis() const;
+	ObjectType** getObjects() const;
+	uint32_t getLeft() const;
+	~KdNode();
 };
 
 template<class ObjectType>
