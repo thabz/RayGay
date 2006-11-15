@@ -59,13 +59,17 @@ double KdTree::intersect(const Ray& ray) const {
     }
 }
 
-Object* KdTree::intersectForShadow(const Ray& ray, double max_t) const {
+/**
+ * @param ignore Intersections against this object will be ignored. Useful
+ *               when wanting to avoid selfshadowing.
+ */ 
+Object* KdTree::intersectForShadow(const Ray& ray, double max_t, Object* ignore) const {
     assert(!ray.ignore());
     Vector2 h = world_bbox.intersect(ray);
     if (h[1] < h[0]) {
 	return NULL;
     } else {
-	return intersectForShadow_real(ray,min(max_t,h[1]));
+	return intersectForShadow_real(ray,min(max_t,h[1]),ignore);
     }
 }
 
@@ -241,7 +245,7 @@ bool KdTree::intersect(const Ray& ray, Intersection& result, const double a, con
     return false;
 }
 
-Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
+Object* KdTree::intersectForShadow_real(const Ray& ray, const double b, Object* ignore) const {
 
     StackElem* stack = (StackElem*)alloca(sizeof(StackElem)*(max_depth+2));
 
@@ -309,9 +313,11 @@ Object* KdTree::intersectForShadow_real(const Ray& ray, const double b) const {
 	    const double min_t = MAX(0.0,stack[enPt].t);
 	    Object* const* objects = curNode->getObjects();
 	    for (uint32_t i = 0; i < object_num; i++) {
-		double i_t = objects[i]->fastIntersect(ray);
-		if (i_t > min_t && i_t < stack[exPt].t) {
-		    return objects[i];
+		if (objects[i] != ignore) {
+		    double i_t = objects[i]->fastIntersect(ray);
+		    if (i_t > min_t && i_t < stack[exPt].t) {
+		        return objects[i];
+		    }
 		}
 	    }
 	}
