@@ -56,9 +56,4 @@ class Triangle : public Object {
 	uint32_t _tri_idx;
 };
 
-inline
-bool Triangle::canSelfshadow() const {
-    return false;
-}
-
 #endif

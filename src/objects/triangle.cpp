@@ -388,6 +388,11 @@ int Triangle::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const {
     return triBoxOverlap(boxcenter,boxhalfsize,triverts);
 }
 
+bool Triangle::canSelfshadow() const {
+    return false;
+}
+
 TriangleVertexCache::TriangleVertexCache() {
     pthread_key_create(&pthread_key,NULL);	
 }
+

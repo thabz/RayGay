@@ -65,7 +65,7 @@
 (define many #t)
 
 (if many
-   (define dragon (make-bound (scale (make-ply-mesh "ply/dragon_vrip_res4.ply" green) '(12 12 12)))))
+   (define dragon (make-bound (scale (make-ply-mesh "ply/dragon_vrip_res3.ply" green) '(12 12 12)))))
 
 (if many
     (do ((i 0 (+ i 1)))

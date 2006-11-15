@@ -68,7 +68,7 @@ RGBA Raytracer::traceSub(const bool intersected, Intersection& intersection, con
 
 RGB Raytracer::shade(const Ray& ray, Intersection& intersection, const int depth) {
     Lightinfo info;
-    Object* const object = intersection.getObject();
+    const Object* object = intersection.getObject();
     const Vector point = intersection.getPoint();
     
     Vector normal = intersection.getNormal();
@@ -150,7 +150,7 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, const int depth
 RGB Raytracer::calculate_reflection(const Ray& ray, const Intersection& intersection, const int depth, const Material* material) {
 
     Vector refl_vector = -1 * ray.getDirection();
-    Object* const object = intersection.getObject();
+    const Object* object = intersection.getObject();
     refl_vector = refl_vector.reflect(intersection.getNormal());
     refl_vector.normalize();
     Vector point = intersection.getPoint();

@@ -76,7 +76,7 @@ RGBA Pathtracer::traceSub(const bool intersected, const Intersection& intersecti
 
 RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const int depth) {
     Lightinfo info;
-    Object* const object = intersection.getObject();
+    const Object* object = intersection.getObject();
     const Vector point = intersection.getPoint();
     Vector normal = intersection.getNormal();
     const Material* material = object->getMaterial();

@@ -32,9 +32,9 @@ class Intersection {
 	 */
 	Intersection(const Vector& p, double t, const Vector& n, const Vector2& uvs);
 
-	void setObject(Object* obj) { o = obj; };
+	void setObject(const Object* obj) { o = obj; };
         /// The object that was intersected
-	Object* getObject() const { return o; };
+	const Object* getObject() const { return o; };
 
 	void setPoint(const Vector& point) { this->point = point; };
  	/// The intersection point
@@ -70,7 +70,7 @@ class Intersection {
 	Vector o_normal;
 	Vector2 uv;
 	double t;
-	Object* o; 
+	Object const* o; 
 	bool entering;
 };
 

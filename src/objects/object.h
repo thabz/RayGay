@@ -63,7 +63,8 @@ class Object : public SceneObject {
 inline
 void Object::fullIntersect(const Ray& ray, const double t, Intersection& result) const {
     _fullIntersect(ray, t, result);
-    result.setObject(const_cast<Object*>(this));
+//    result.setObject(const_cast<Object*>(this));
+    result.setObject(this);
 }
 
 /**
@@ -78,12 +79,6 @@ void Object::fullIntersect(const Ray& ray, const double t, Intersection& result)
 inline
 double Object::fastIntersect(const Ray& ray) const {
     return _fastIntersect(ray);
-}
-
-// TODO: Should this be a static to save memory?
-inline
-bool Object::canSelfshadow() const {
-    return true;
 }
 
 #endif

@@ -22,6 +22,7 @@ class TransformedInstance : public Object, public Transformer {
 	SceneObject* clone() const;
 	void transform(const Matrix& m);
 
+        void fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 
     private:
 	double _fastIntersect(const Ray& ray) const;
@@ -29,6 +30,12 @@ class TransformedInstance : public Object, public Transformer {
 
 	Object* object;
 };
+
+inline
+void TransformedInstance::fullIntersect(const Ray& ray, const double t, Intersection& result) const
+{
+    return _fullIntersect(ray,t,result);        
+}
 
 #endif
 

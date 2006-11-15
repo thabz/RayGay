@@ -92,7 +92,7 @@ RGBA PhotonRenderer::traceSub(bool intersected, const Intersection& intersection
 
 RGB PhotonRenderer::shade(const Ray& ray, const Intersection& intersection, int depth) {
     Lightinfo info;
-    Object* object = intersection.getObject();
+    const Object* object = intersection.getObject();
     const Vector point = intersection.getPoint();
     Vector normal = intersection.getNormal();
     const Material* material = object->getMaterial();

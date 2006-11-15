@@ -44,3 +44,7 @@ void Object::prepare() {
 double Object::area() const {
     return 1;
 }
+
+bool Object::canSelfshadow() const {
+    return true;
+}

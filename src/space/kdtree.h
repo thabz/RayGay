@@ -36,7 +36,7 @@ class KdTree : public GenericKdTree<Object> {
 	bool intersectPrimary(const Ray& ray, Intersection& result) const; 
 
 	/// Returns any intersection
-	Object* intersectForShadow(const Ray& ray, double max_t, Object* ignore = NULL) const;  
+	Object* intersectForShadow(const Ray& ray, double max_t, const Object* ignore = NULL) const;  
 
     private:
 	struct StackElem {
@@ -48,7 +48,7 @@ class KdTree : public GenericKdTree<Object> {
 
 	bool intersect(const Ray& ray, Intersection& result, const double a, const double b) const;
 	double intersect(const Ray& ray, const double a, const double b) const;
-	Object* intersectForShadow_real(const Ray&,const double, Object* ignore) const;
+	Object* intersectForShadow_real(const Ray&,const double, const Object* ignore) const;
 };
 
 

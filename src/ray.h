@@ -40,7 +40,7 @@ class Ray {
 	/// Number of specular bounces since leaving light
         int specularBounces;
 	int diffuseBounces;
-	void* fromObject;
+	const void* fromObject;
 
 	
     private:

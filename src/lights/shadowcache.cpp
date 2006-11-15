@@ -44,7 +44,7 @@ void ShadowCache::putVoxel(uint32_t depth, vector<Object*>* voxel) {
 }
 
 
-bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, uint32_t depth, KdTree* space, Object* ignore) {
+bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, uint32_t depth, KdTree* space, const Object* ignore) {
     // Check last shadowing object first
     Object* hint = getHint(depth);
     if (hint != NULL && hint != ignore) {
