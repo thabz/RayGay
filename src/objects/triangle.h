@@ -49,10 +49,16 @@ class Triangle : public Object {
 	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 	double area() const;
         int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
+	bool canSelfshadow() const;
 
     private:
 	Mesh* mesh;
 	uint32_t _tri_idx;
 };
+
+inline
+bool Triangle::canSelfshadow() const {
+    return false;
+}
 
 #endif
