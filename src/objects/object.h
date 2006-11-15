@@ -63,7 +63,6 @@ class Object : public SceneObject {
 inline
 void Object::fullIntersect(const Ray& ray, const double t, Intersection& result) const {
     _fullIntersect(ray, t, result);
-//    result.setObject(const_cast<Object*>(this));
     result.setObject(this);
 }
 
