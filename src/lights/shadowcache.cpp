@@ -44,10 +44,10 @@ void ShadowCache::putVoxel(uint32_t depth, vector<Object*>* voxel) {
 }
 
 
-bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, uint32_t depth, KdTree* space) {
+bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, uint32_t depth, KdTree* space, Object* ignore) {
     // Check last shadowing object first
     Object* hint = getHint(depth);
-    if (hint != NULL) {
+    if (hint != NULL && hint != ignore) {
 	double t = hint->fastIntersect(ray_to_light);
 	if (t > 0 && t < dist_to_light) {
 	    Stats::getUniqueInstance()->inc(STATS_SHADOW_HINT_HIT);
@@ -62,18 +62,20 @@ bool ShadowCache::occluded(const Ray& ray_to_light, const double dist_to_light, 
 	uint32_t size = voxel->size();
 	const vector<Object*> &objects = *(voxel);
 	for(uint32_t i = 0; i < size; i++) {
-           double t = objects[i]->fastIntersect(ray_to_light);
-	   if (t > 0 && t < dist_to_light) {
-	       Stats::getUniqueInstance()->inc(STATS_SHADOW_VOXEL_HIT);
-               return true;
-	   }
+	    if (objects[i] != ignore) {
+               double t = objects[i]->fastIntersect(ray_to_light);
+   	       if (t > 0 && t < dist_to_light) {
+	           Stats::getUniqueInstance()->inc(STATS_SHADOW_VOXEL_HIT);
+                   return true;
+	       }
+	    }
 	}
     }
 
     // Finally do a real intersection test
     shadow_rays_cast->inc();
     Stats::getUniqueInstance()->inc(STATS_SHADOW_RAYS_CAST);
-    hint = space->intersectForShadow(ray_to_light,dist_to_light);
+    hint = space->intersectForShadow(ray_to_light,dist_to_light,ignore);
     putHint(depth,hint);
     putVoxel(depth,NULL);
     return hint != NULL;
