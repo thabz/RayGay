@@ -147,6 +147,7 @@ void GenericKdTree<ObjectType>::prepare() {
 	left_bobs[i] = &(bobs[i]);
     }
 
+    // Clear list of added objects. Not needed anymore.
     delete added_objects;
     added_objects = NULL;
 
@@ -164,8 +165,9 @@ void GenericKdTree<ObjectType>::prepare() {
     
     Statistics::put("Kd-tree","Depth",max_depth);
     Statistics::put("Kd-tree","Nodes",nodes.size());
-    //cout << "Size of KdNode: " << sizeof(KdNode) << endl;
-    //cout << "Waste: " << (nodes.capacity() - nodes.size())*sizeof(KdNode) << endl;
+    //cout << "Size of KdNode: " << sizeof(KdNode<ObjectType>) << endl;
+    //cout << "Waste: " << (nodes.capacity() - nodes.size())*sizeof(KdNode<ObjectType>) << endl;
+    
     prepared = true;
 }
 

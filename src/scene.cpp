@@ -134,10 +134,11 @@ void Scene::initSpace(KdTree* space) {
 	(*p)->addSelf(space);
     }
     profiler->stop();
+    
+    objects.clear();
 
     profiler = Profiler::create("Prepare Kd-tree","Prepare scene");
     profiler->start();
     space->prepare();
     profiler->stop();
-    // TODO: Delete pointers to all scene objects they're unneeded.
 }
