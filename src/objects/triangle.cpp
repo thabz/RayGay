@@ -210,7 +210,7 @@ double Triangle::area() const {
     v[0] = mesh->cornerAt(_tri_idx,0);
     v[1] = mesh->cornerAt(_tri_idx,1);
     v[2] = mesh->cornerAt(_tri_idx,2);
-    return 2.0 * Vector::area(v[0],v[1],v[2]);
+    return 2.0 * Vector::area(v[0],v[1],v[2]);   // Area of front- and backsurface
 }
 
 
