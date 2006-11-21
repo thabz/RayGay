@@ -21,12 +21,14 @@ class Shader {
 	
 	// Helper methods
 	RGB trace(const Vector& P, const Vector& D);
+	double gather(const Vector& P, const Vector& N);
 	Vector refract(const Vector& I, const Vector& N, double ior);
 	Vector reflect(const Vector& I, const Vector& N);
 	Vector normalize(const Vector& v);
 	Vector faceforward(const Vector& N, const Vector& I);
 	double noise(const Vector& v);
 	RGB mix(const RGB& a, const RGB& b, double m);
+	double smoothstep(double maxi, double mini, double t);
 //	RGB spline(double t, const RGB& a, const RGB& b, ...);
 };
 
