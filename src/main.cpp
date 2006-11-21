@@ -369,25 +369,10 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     delete job_pool;
     Stats::getUniqueInstance()->dump();
     Statistics::dumpAll();
-}
-
-void work(string outputfile, int jobs, int frame, int frames) {
-
-    
-    int frames_num = frames;//getRendererSettings()->anim_frames;
-    Environment* env = Environment::getUniqueInstance();
-
-    if (frames_num > 1) {
-        cout << "Rendering frame " << (frame+1) << "/" << frames_num << endl;
-    }
-    render_frame(frame,frames,outputfile,jobs);
-
-    // TODO: delete_interpreter();
 
     if (env->hasPreviewWindow() && preview_window != NULL) {
 	preview_window->stop();
     }
-
 }
 
 void print_usage() {
@@ -488,8 +473,8 @@ int main(int argc, char *argv[]) {
     }
     try {
         Profiler* profiler = Profiler::create("RayGay","");
-        profiler->start();    
-	work(outfile, jobs, frame_to_render, frames_total);
+        profiler->start(); 
+	render_frame(frame_to_render, frames_total, outfile, jobs);
 	profiler->stop();
         if (env->isProfilingEnabled()) {
             Profiler::dump();
