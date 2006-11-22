@@ -8,7 +8,6 @@
 #include <cmath>
 
 using namespace std;
-#define byte unsigned char
 
 /**
  * Writes the image into a  24 bit uncompressed tga-file
@@ -17,8 +16,8 @@ void TgaIO::save(const Image* const image, const std::string& filename) const {
     int height = image->getHeight();
     int width = image->getWidth();
 
-    byte* bytes = new byte[height*width*4];
-    byte Header[18];
+    uint8_t* bytes = new uint8_t[height*width*4];
+    uint8_t Header[18];
     ::memset(&Header,0,18);
 
     Header[0] = 0;
@@ -45,10 +44,10 @@ void TgaIO::save(const Image* const image, const std::string& filename) const {
     for(int y = 0; y < height ; y++) {
         for(int x = 0; x < width; x++) {
             color = image->getRGBA(x,(height - 1) - y);
-	    bytes[4*(x + y * width) + 0] = (byte)(floor(color.b()*255 + 0.5));
-	    bytes[4*(x + y * width) + 1] = (byte)(floor(color.g()*255 + 0.5));
-	    bytes[4*(x + y * width) + 2] = (byte)(floor(color.r()*255 + 0.5));
-	    bytes[4*(x + y * width) + 3] = (byte)(floor(color.a()*255 + 0.5));
+	    bytes[4*(x+y*width)+0] = (uint8_t)(floor(color.b()*255 + 0.5));
+	    bytes[4*(x+y*width)+1] = (uint8_t)(floor(color.g()*255 + 0.5));
+	    bytes[4*(x+y*width)+2] = (uint8_t)(floor(color.r()*255 + 0.5));
+	    bytes[4*(x+y*width)+3] = (uint8_t)(floor(color.a()*255 + 0.5));
 	}
     }
     FILE* outfile = ::fopen(filename.c_str(),"wb");
@@ -59,7 +58,7 @@ void TgaIO::save(const Image* const image, const std::string& filename) const {
     ::fseek(outfile,0,0);
     ::fwrite(Header,1,18,outfile);
     ::fseek(outfile,18,0);
-    int bytes_saved = ::fwrite(bytes,sizeof(byte),width*height*4,outfile);
+    int bytes_saved = ::fwrite(bytes,sizeof(uint8_t),width*height*4,outfile);
 
     //std::cout << bytes_saved << " bytes written" << std::endl;
     if (bytes_saved < width*height*4) {
@@ -70,18 +69,24 @@ void TgaIO::save(const Image* const image, const std::string& filename) const {
 }
 
 RGBA readpixel(FILE* handle, int bpp) {
-    byte data[4];
+    uint8_t data[4];
     ::fread(data,1,bpp,handle);
     RGBA result;
     switch(bpp) {
 	case 3:
-	    result = RGBA(data[2],data[1],data[0],1.0);
+	    result = RGBA(data[2],data[1],data[0],255);
 	    break;
 	case 4:
 	    result = RGBA(data[2],data[1],data[0],data[3]);
 	    break;
+	case 2:
+             // For 16 bits each colour component is stored as 
+	     // 5 bits and the remaining bit is a binary alpha value. 
+	     //uint16_t d = data[1] << 8 + data[0];
+	     throw_exception("Two bpp is not implemented");
+	     break;
 	case 1:
-	    result = RGBA(data[0],data[0],data[0],1.0);
+	    result = RGBA(data[0],data[0],data[0],255);
 	    break;
     }
     result *= double(1.0/255.0);
@@ -98,7 +103,7 @@ RGBA readpixel(FILE* handle, int bpp) {
 void readscanline(FILE* handle, RGBA* dest, int width, int bpp, bool rle) {
     if (rle) {
 	int pixels_read = 0;
-	byte repcount;
+	uint8_t repcount;
 	do {
 	    ::fread(&repcount,1,1,handle);
 	    int count = (int(repcount) & 127) + 1;
@@ -134,13 +139,13 @@ void readscanline(FILE* handle, RGBA* dest, int width, int bpp, bool rle) {
 Image* TgaIO::load(const std::string& filename, Allocator::model_t model) {
 
     FILE *Handle;
-    byte Header[18];
+    uint8_t Header[18];
     Handle = ::fopen(filename.c_str(), "rb");
     if(Handle == NULL) {
         throw_exception("Error opening " + filename);
     }
 
-    ::fseek(Handle, 0, 0);
+    ::fseek(Handle, 0, SEEK_SET);
     ::fread(Header, 1, 18, Handle);
 
 
@@ -148,9 +153,11 @@ Image* TgaIO::load(const std::string& filename, Allocator::model_t model) {
 
     // Says whether the data is rle encoded
     bool rle = int(Header[2]) >> 3 == 1;
-    //cout << "bpp: " << bpp << (rle ? " (rle)" : "") << endl;
+    int datatype = int(Header[2]);
+ //   cout << "bpp: " << bpp << (rle ? " (rle)" : "") << endl;
+ //   cout << "header[2]: " << datatype << "." << endl;
 
-    if (Header[1] != 0 || int(Header[2]) & 7 != 2 || bpp == 2 ) {
+    if (Header[1] != 0 || datatype == 0 || datatype == 1 || datatype == 9 || datatype == 32 || datatype == 33 || bpp == 2 ) {
         throw_exception("Error opening " + filename + 
 		        ": Only 8, 24 or 32 bit truecolor RGB is supported");
     }
@@ -160,13 +167,20 @@ Image* TgaIO::load(const std::string& filename, Allocator::model_t model) {
     assert(width > 0);
     assert(height > 0);
 
-    fseek(Handle, 18, 0);
+    // Skip id field which is right after the header.
+    // Length of id field is header[0]
+    uint8_t skip_id_field = Header[0];
+    ::fseek(Handle, skip_id_field, SEEK_CUR);
 
     Image* image;
     if (bpp == 4) {
 	image = new ImageImpl<uint8_t,4>(width,height,model);
-    } else {
+    } else if (bpp == 3) {
 	image = new ImageImpl<uint8_t,3>(width,height,model);
+    } else if (bpp == 1) {
+	image = new ImageImpl<uint8_t,1>(width,height,model);
+    } else {
+	throw_exception("Error opening " + filename + ": Unsupported bytes per pixel.");
     }
 
     RGBA* line = new RGBA[width];

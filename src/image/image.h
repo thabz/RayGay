@@ -50,6 +50,8 @@ class Image
         void clear(const RGBA& color);
 
 	virtual ~Image();
+
+	virtual int cpp() const = 0;
              
     protected:
         Image(long h, long w);

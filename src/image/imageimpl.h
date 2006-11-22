@@ -25,6 +25,9 @@ class ImageImpl : public Image {
         void setRGBA(int x, int y, const RGBA& color);
         
         ~ImageImpl();
+
+	// Components per pixel (4,3 or 1)
+	int cpp() const { return N; };
         
     private:        
         uint32_t offset(int x, int y) const;    
@@ -163,6 +166,15 @@ RGBA ImageImpl<uint8_t,4>::getRGBA(int x, int y) const
 
 template<>
 inline
+RGBA ImageImpl<uint8_t,1>::getRGBA(int x, int y) const
+{
+    uint32_t o = offset(x,y);
+    double v = data[o] / 255.0;
+    return RGBA(v,v,v,1);
+}
+
+template<>
+inline
 void ImageImpl<double,3>::setRGBA(int x, int y, const RGBA& c)
 {
     uint32_t o = offset(x,y);
@@ -223,6 +235,14 @@ void ImageImpl<uint8_t,4>::setRGBA(int x, int y, const RGBA& c)
     data[o+1] = uint8_t(c.g() * 255);
     data[o+2] = uint8_t(c.b() * 255);
     data[o+3] = uint8_t(c.a() * 255);
+}
+
+template<>
+inline
+void ImageImpl<uint8_t,1>::setRGBA(int x, int y, const RGBA& c)
+{
+    uint32_t o = offset(x,y);
+    data[o] = uint8_t(c.r() * 255);
 }
 
 #endif

@@ -190,14 +190,18 @@ Image* PngIO::load(const std::string& filename, Allocator::model_t model) {
     png_byte row[png_get_rowbytes(png_ptr, info_ptr)];
     png_bytep rowp = row;
     int bpp = png_get_rowbytes(png_ptr,info_ptr) / width;
-    assert(bpp == 4 || bpp == 3);
-    //cout << "Bytes per pixel: " << bpp << endl;
+ //   cout << "Bytes per pixel: " << bpp << endl;
+    assert(bpp == 4 || bpp == 3 || bpp == 1);
 
     Image* result;
     if (bpp == 4) {
 	result = new ImageImpl<uint8_t,4>(width,height,model);
-    } else {
+    } else if (bpp == 3) {
 	result = new ImageImpl<uint8_t,3>(width,height,model);
+    } else if (bpp == 1) {
+	result = new ImageImpl<uint8_t,1>(width,height,model);
+    } else {
+	throw_exception("Error reading " + filename + ": Unsupported bytes per pixel");
     }
 
     for (uint32_t y = 0; y < height; y++)
@@ -214,6 +218,11 @@ Image* PngIO::load(const std::string& filename, Allocator::model_t model) {
 		col = RGBA(rowp[3*x + 0] / 255.0,
 			   rowp[3*x + 1] / 255.0,
 			   rowp[3*x + 2] / 255.0,
+			   1);
+	    } else if (bpp == 1) {
+		col = RGBA(rowp[x] / 255.0,
+			   rowp[x] / 255.0,
+			   rowp[x] / 255.0,
 			   1);
 	    }
 	    result->setRGBA(x,y,col);

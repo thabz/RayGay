@@ -90,13 +90,21 @@ Image* JpegIO::load(const std::string& filename, Allocator::model_t model) {
     buffer = (*cinfo.mem->alloc_sarray)
         ((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
                                                                                
+    uint32_t bpp = cinfo.output_components;
+    Image* image;
+    if (bpp == 3) {
+        image = new ImageImpl<uint8_t,3>(width,height,model);
+    } else if (bpp == 1) {
+        image = new ImageImpl<uint8_t,1>(width,height,model);
+    } else {
+	throw_exception("Error reading " + filename + ": Unsupported bytes per pixel");
+    }
 
-    Image* image = new ImageImpl<uint8_t,3>(width,height,model);
     RGBA* line = new RGBA[width];
     uint32_t y = 0;
     while (cinfo.output_scanline < height) {
         jpeg_read_scanlines(&cinfo, buffer, 1);
-        readLine(buffer[0], line, width, cinfo.output_components);
+        readLine(buffer[0], line, width, bpp);
         for(uint32_t x = 0; x < width; x++) {
 	    image->setRGBA(x,y,line[x]);
 	}

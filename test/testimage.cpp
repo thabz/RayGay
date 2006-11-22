@@ -166,6 +166,17 @@ class test_png : public Test {
 	    assertEqualColor(img->getRGBA(0,0), RGBA(1.0,1,0,1.0));
 	    delete img;
 	    
+	    img = Image::load(getLoadPrefix() + "/gfx/16x12x3.png");
+	    assertTrue(img->getWidth() == 16);
+	    assertTrue(img->getHeight() == 12);
+	    assertTrue(img->cpp() == 3);
+	    delete img;
+
+	    img = Image::load(getLoadPrefix() + "/gfx/16x12x1.png");
+	    assertTrue(img->getWidth() == 16);
+	    assertTrue(img->getHeight() == 12);
+	    assertTrue(img->cpp() == 1);
+	    delete img;
 	}
 };
 
@@ -186,6 +197,18 @@ class test_tga : public Test {
 	    remove((getLoadPrefix() + "/test.tga").c_str());
 	    delete img;
 	    delete img2;
+
+	    img = Image::load(getLoadPrefix() + "/gfx/16x12x3.tga");
+	    assertTrue(img->getWidth() == 16);
+	    assertTrue(img->getHeight() == 12);
+	    assertTrue(img->cpp() == 3);
+	    delete img;
+
+	    img = Image::load(getLoadPrefix() + "/gfx/16x12x1.tga");
+	    assertTrue(img->getWidth() == 16);
+	    assertTrue(img->getHeight() == 12);
+	    assertTrue(img->cpp() == 1);
+	    delete img;
 	}
 };
 
@@ -195,6 +218,18 @@ class test_jpg : public Test {
 	    Image* img = Image::load(getLoadPrefix() + "/gfx/simple.jpg");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
+	    delete img;
+
+	    img = Image::load(getLoadPrefix() + "/gfx/16x12x3.jpg");
+	    assertTrue(img->getWidth() == 16);
+	    assertTrue(img->getHeight() == 12);
+	    assertTrue(img->cpp() == 3);
+	    delete img;
+
+	    img = Image::load(getLoadPrefix() + "/gfx/16x12x1.jpg");
+	    assertTrue(img->getWidth() == 16);
+	    assertTrue(img->getHeight() == 12);
+	    assertTrue(img->cpp() == 1);
 	    delete img;
 	}
 };
