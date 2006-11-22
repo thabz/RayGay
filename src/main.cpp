@@ -198,7 +198,13 @@ void preparePhotonMaps(Scene* scene,
 
 void* renderThreadDo(void* obj) {
     Renderer* tracer = (Renderer*) obj;
-    tracer->run();
+    try {
+        tracer->run();
+    } catch (Exception e) {
+	cout << "Exception: " << e.getMessage() 
+	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
+	exit(EXIT_FAILURE);
+    }
     return NULL;
 }
 
