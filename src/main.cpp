@@ -201,8 +201,9 @@ void* renderThreadDo(void* obj) {
     try {
         tracer->run();
     } catch (Exception e) {
-	cout << "Exception: " << e.getMessage() 
-	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
+	cout << endl << "Exception: " << e.getMessage() 
+	     << " at " << e.getSourceFile() << ":" 
+	     << e.getSourceLine() << endl;
 	exit(EXIT_FAILURE);
     }
     return NULL;
