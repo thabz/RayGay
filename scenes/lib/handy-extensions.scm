@@ -38,21 +38,22 @@
     (display t)
     (newline ))
 
-; Returns a random element from a list
+
 (define (pick-random-from-list l)
-    (list-ref l (random (length l))))
+  "Returns a random element from a list"        
+  (list-ref l (random (length l))))
 
 (define-macro (unless test consequent)
-   `(if (not ,test) ,consequent))        
+   `(if (not ,test) ,consequent))    
 
-; A Common LISP style dotimes macro
 (define-macro (dotimes var times ...)
+  "A Common LISP style dotimes macro"        
   `(do ((,var 0 (+ 1 ,var)))
     ((= ,var ,times))
     ,...))
 
-; A Common LISP style dolist macro
 (define-macro (dolist var items ...)
+  "A Common LISP style dolist macro"        
   `(let loop ((,var (car ,items))
 	      (rest (cdr ,items)))
     ,...
