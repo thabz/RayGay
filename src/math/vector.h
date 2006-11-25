@@ -194,12 +194,12 @@ Vector Vector::operator/(const double x) const {
 inline
 void Vector::normalize() {
     double s = _vector[0]*_vector[0] + _vector[1]*_vector[1] + _vector[2]*_vector[2];
-    if (IS_NZERO(s)) {
+//    if (IS_NZERO(s)) {
 	s = 1.0 / sqrt(s);
 	_vector[0] *= s;
 	_vector[1] *= s;
 	_vector[2] *= s;
-    }
+//    }
 }
 
 inline
