@@ -42,25 +42,19 @@
 (define (pick-random-from-list l)
     (list-ref l (random (length l))))
 
+(define-macro (unless test consequent)
+   `(if (not ,test) ,consequent))        
 
-(use-syntax (ice-9 syncase))
-    
-; Emulate dotimes from Common LISP
-(define-syntax dotimes
-  (syntax-rules ()
-    ((dotimes var count body ...)
-     (let loop ((var 0))
-       (if (< var count)
-	   (begin
-	     body ...
-             (loop (+ var 1))))))))
-	     
-; Emulate dolist from Common LISP
-(define-syntax dolist
-  (syntax-rules ()
-    ((dolist var items body ...)
-     (let loop ((var (car items)) 
-                (rest (cdr items)))
-         body ...
-         (if (not (null? rest))
-         (loop (car rest) (cdr rest)))))))
+; A Common LISP style dotimes macro
+(define-macro (dotimes var times ...)
+  `(do ((,var 0 (+ 1 ,var)))
+    ((= ,var ,times))
+    ,...))
+
+; A Common LISP style dolist macro
+(define-macro (dolist var items ...)
+  `(let loop ((,var (car ,items))
+	      (rest (cdr ,items)))
+    ,...
+    (unless (null? rest)
+      (loop (car rest) (cdr rest)))))
