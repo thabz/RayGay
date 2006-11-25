@@ -197,12 +197,7 @@ AABox Triangle::getBoundingBox() const {
     tri[0] = mesh->cornerAt(_tri_idx,0);
     tri[1] = mesh->cornerAt(_tri_idx,1);
     tri[2] = mesh->cornerAt(_tri_idx,2);
-    AABox b = AABox::enclosure(tri,3);
-    b.grow(100000.0 * EPSILON);
-    // TODO: Woa! Too much.
-    b.growPercentage(0.1);
-    //b.grow(100000.0 * EPSILON);
-    return b;
+    return AABox::enclosure(tri,3);
 }
 
 double Triangle::area() const {
