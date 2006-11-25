@@ -34,8 +34,6 @@ libobjects_la_SOURCES = \
 		       marchingcubes.h	\
 		       mesh.h		\
 		       mesh.cpp		\
-		       necklace.h	\
-		       necklace.cpp	\
 		       object.h		\
 		       object.cpp	\
 		       objectgroup.h	\
