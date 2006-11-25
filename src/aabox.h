@@ -103,6 +103,9 @@ class AABox {
 
 	// Lengths of the three sides
 	Vector lengths() const;
+	
+	// Set minimum lengths
+	void setMinimumLengths(double l);
 
     private:
 	double _c1[3]; ///< The point with smallest x,y,z values

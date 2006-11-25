@@ -340,6 +340,17 @@ Vector AABox::lengths() const {
     return Vector(_c2[0]-_c1[0],_c2[1]-_c1[1],_c2[2]-_c1[2]);
 }
 
+void AABox::setMinimumLengths(double l) {
+    Vector ls = lengths();
+    for(uint32_t i = 0; i < 3; i++) {
+        if (ls[i] < l) {
+            _c1[i] -= 0.5 * l;        
+            _c2[i] += 0.5 * l;        
+        }
+    }        
+}
+
+
 /**
  * @param percent where 1.0 is 1%
  */
