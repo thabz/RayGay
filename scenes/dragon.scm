@@ -11,12 +11,12 @@
        lookat (0 0 0)
        up (0 1 0)
        fov 45
-       aa 1)))
+       aa 0)))
 
 (define green
   (make-material
     '( diffuse (0.2 0.9 0.3)
-       kd 0.9
+       kd 0.8
        specular (1.0 1.0 1.0)
        ks 0.0
        specpow 45)))
@@ -26,17 +26,17 @@
 (define materials
   (list 
      (make-material
-       '( diffuse (0.6 0.8 0.9)
+       '( diffuse (0.9 0.8 0.6)
           kd 1.0
           ks 0.0
           specpow 45))
       (make-material
-        '( diffuse (0.6 0.9 0.8)
+        '( diffuse (0.9 0.8 0.6)
            kd 1.0
            ks 0.0
            specpow 45))
        (make-material
-         '( diffuse (0.6 0.9 0.99)
+         '( diffuse (0.99 0.9 0.6)
             kd 1.0
             ks 0.0
             specpow 45))
@@ -52,20 +52,19 @@
       (random2 -5 5))
     (random2 -5 5))
   (list x 0 z)))
-                                                 
+ 
 (do ((x -5 (+ 1 x)))
   ((= x 5))
     (do ((z -5 (+ 1 z)))
       ((= z 5))
         (add-to-scene (make-jittered-box x z))))
 
-
 ; True case: just a single dragon
 ; False case: a load of them
 (define many #t)
 
 (if many
-   (define dragon (make-bound (scale (make-ply-mesh "ply/dragon_vrip_res3.ply" green) '(12 12 12)))))
+   (define dragon (make-bound (scale (make-ply-mesh "ply/dragon_vrip_res2.ply" green) '(12 12 12)))))
 
 (if many
     (do ((i 0 (+ i 1)))
@@ -79,8 +78,7 @@
 
      (add-to-scene
          (translate
-            (rotate-y
-               (scale (make-ply-mesh "ply/dragon_vrip_res2.ply" green)          
-               '(40 40 40))
-            -30)
+               (scale 
+                       (make-ply-mesh "ply/dragon_vrip_res2.ply" green)          
+              '(40 40 40))
           '(0 -2 1))))
