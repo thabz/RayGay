@@ -12,8 +12,8 @@
       lookat (0 -200 0)
       up ,y-axis
       fov 45
-      dof (150.0 500 (-750 0 0))
-      aa 3)))
+      dof (150.0 100 (-750 0 0))
+      aa 0)))
 
 (define chrome
   (make-material
