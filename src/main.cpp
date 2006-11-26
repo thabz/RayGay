@@ -386,7 +386,9 @@ void print_usage() {
     uint32_t cpus = getNumberOfCPUs();
     cout << "Usage: tracer [OPTION...] SCENEFILENAME OUTPUTFILENAME" << endl;
     cout << "       -j NUM               Number of threads to run (default " << cpus << ")" << endl;
+    if (availableWindowToolkit() != NONE) {
     cout << "       -b                   Run in background with no GUI" << endl;
+    }
     cout << "       -f NUM               Frame to render" << endl;
     cout << "       -F NUM               Total number of frames" << endl;
     cout << "       -e EXPR              Eval a Scheme-expr prior to" << endl;
