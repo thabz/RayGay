@@ -33,7 +33,7 @@ Camera::Camera(Vector position, Vector lookAt, Vector up, double fieldOfView, in
 
 Camera::~Camera() {
     if (dof_enabled) 
-	delete dof_qmc;
+	delete get_dof_qmc();
 }
 
 void Camera::init() {
@@ -68,7 +68,7 @@ void Camera::enableDoF(double aperture, int samples, const Vector& focalpoint ) 
     this->dof_samples = samples;
     this->dof_enabled = true;
     this->dof_sample_count = 0;
-    this->dof_qmc = new Halton(2,2);
+    pthread_key_create(&dof_qmc_key,NULL);	
 }
 
 void Camera::transform(const Matrix& m) {
@@ -110,11 +110,11 @@ Ray Camera::getRay(const double x, const double y) {
        Vector P = pos + dir * dof_length; // The point to aim at
 
        if (++dof_sample_count > dof_samples) {
-	   dof_qmc->reset();
+//	   dof_qmc->reset();
 	   dof_sample_count = 0;
        }
 
-       double* qmc = dof_qmc->getNext();
+       double* qmc = get_dof_qmc()->getNext();
        Vector2 disc = Math::shirleyDisc(qmc[0],qmc[1]) * dof_aperture;
        Vector jitter_pos = up * disc[0] + right * disc[1];
 
@@ -127,3 +127,18 @@ Ray Camera::getRay(const double x, const double y) {
 
     return result;
 }
+
+void Camera::resetQMC() {
+   if (dof_enabled) 
+      get_dof_qmc()->reset();        
+}
+
+QMCSequence* Camera::get_dof_qmc() {
+    QMCSequence* qmc = (QMCSequence*)  pthread_getspecific(dof_qmc_key);
+    if (qmc == NULL) {
+        qmc = new Halton(2,2);
+    	pthread_setspecific(dof_qmc_key, qmc);
+    }
+    return qmc;
+}
+

@@ -77,9 +77,13 @@ class Camera {
 	    this->sampler_factory = sampler_factory;
 	}
 	
+	void resetQMC();
+	
     private:
 	void init();
 	SamplerFactory* sampler_factory;
+	QMCSequence* get_dof_qmc();
+	pthread_key_t dof_qmc_key;
 
     protected:
 	/// Get a ray going through the screen
@@ -105,7 +109,6 @@ class Camera {
 	double dof_aperture;
 	int dof_sample_count;
 	int dof_samples;
-	QMCSequence* dof_qmc;
 
 	// Adaptive antialiasing
 	bool aa_enabled;

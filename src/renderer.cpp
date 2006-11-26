@@ -58,6 +58,7 @@ void Renderer::run() {
  * @param job The job to render
  */
 void Renderer::render(const RenderJob& job) {
+    scene->getCamera()->resetQMC();        
     if (job.type == RenderJob::NEED_PREVIEW) {
 	renderPreview(job);
     } else if (job.type == RenderJob::NEED_FULL_RENDER) {
