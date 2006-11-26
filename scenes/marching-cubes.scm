@@ -63,9 +63,5 @@
    500 		; steps
    0.000001 	; accuracy
    grey85)
- 40
+ 50
  #t))
-
-(display "End of mobius.scm")
-(newline)
-
