@@ -8,6 +8,9 @@
 (define (.x vec) (car vec))
 (define (.y vec) (list-ref vec 1))  
 (define (.z vec) (list-ref vec 2))
+(define first .x)
+(define second .y)
+(define third .z)
 
 ; Shortcut for rotating around the x-axis
 (define (rotate-x obj angle)
@@ -43,19 +46,24 @@
   "Returns a random element from a list"        
   (list-ref l (random (length l))))
 
-(define-macro (unless test consequent)
-   `(if (not ,test) ,consequent))    
+(define-macro (unless test . consequent)
+   "A Common LISP style unless macro"        
+   `(if (not ,test) (begin ,@consequent)))    
 
-(define-macro (dotimes var times ...)
+(define-macro (when test . consequent)
+   "A Common LISP style when macro"        
+   `(if ,test (begin ,@consequent)))    
+
+(define-macro (dotimes var times . body)
   "A Common LISP style dotimes macro"        
   `(do ((,var 0 (+ 1 ,var)))
     ((= ,var ,times))
-    ,...))
+    ,@body))
 
-(define-macro (dolist var items ...)
+(define-macro (dolist var items . body)
   "A Common LISP style dolist macro"        
   `(let loop ((,var (car ,items))
 	      (rest (cdr ,items)))
-    ,...
+    ,@body
     (unless (null? rest)
       (loop (car rest) (cdr rest)))))
