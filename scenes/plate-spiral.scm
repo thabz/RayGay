@@ -3,30 +3,17 @@
 (load "lib/objects/make-rounded-plate.scm")
 
 (set-image-size '(1024 768))
-;(set! background '(0.3 0.6 0.7))
 (set-background (make-texture "gfx/goodmorning.jpg" 1 1 "bilinear"))
 
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
-    '( pos (-2700 2700 20)
-       lookat (0 -200 0)
-       up (0 1 0)
-       fov 45
-       dof (150.0 500 (-750 0 0))
-       aa 4)))
-
-(define brown
-  (make-material
-    '( diffuse (0.7 0.4 0.2)
-       kd 1.0
-       ks 0.0)))
-
-(define grey85
-  (make-material
-    '( diffuse (0.85 0.85 0.85)
-       kd 1.0
-       ks 0.0)))
+    `(pos (-2700 2700 20)
+      lookat (0 -200 0)
+      up ,y-axis
+      fov 45
+      dof (150.0 500 (-750 0 0))
+      aa 3)))
 
 (define chrome
   (make-material
@@ -42,17 +29,12 @@
 (define num 70)
 (define twists 2)    
 
-(let loop ((i num))
-  (if (positive? i)
-    (begin
-     (add-to-scene
-	       (rotate 
-		 (translate 
-		   (rotate 
-		     (make-rounded-plate 150 20 chrome)
-		     '(0 0 1) (* twists 360 (/ i num)))
-		   '(600 0 0))
-		 '(0 1 0) (* (/ i num) 360)))
-      (loop (- i 1)))))
-
-
+(dotimes i num
+  (add-to-scene
+     (rotate 
+       (translate 
+         (rotate 
+           (make-rounded-plate 150 20 chrome)
+           z-axis (* twists 360 (/ i num)))
+         '(600 0 0))
+     y-axis (* (/ i num) 360))))
