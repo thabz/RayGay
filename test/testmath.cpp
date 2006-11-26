@@ -17,6 +17,7 @@
 #include "math/quaternion.h"
 #include "math/interval.h"
 #include "math/poisson_disc.h"
+#include "collections/vectorlist.h"
 #include "testing.h"
 
 using namespace std;
@@ -287,6 +288,24 @@ class matrix3_test : public Test {
 	    assertTrue(op2*op1*v == v);
 	    assertTrue((op1*op2).isIdentity());
 	    assertTrue(op1.inverse() == op2);
+	    
+	    // Test transforming a VectorList
+	    op1 = Matrix3::matrixScale(Vector(40,40,40));
+	    Vector y = Vector(0,1,0);
+	    VectorList list;
+	    for(uint i = 0; i < 10; i++) {
+	        list.push_back(y);    
+	    }
+	    list.transform(op1);
+	    for(uint i = 0; i < 10; i++) {
+	        assertTrue(list[i] == Vector(0,40,0));
+	    }
+	    list.normalize();
+	    for(uint i = 0; i < 10; i++) {
+	        assertTrue(list[i] == Vector(0,1,0));
+	    }
+	    
+	    
 	}
 };
 
