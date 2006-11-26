@@ -415,6 +415,7 @@ void MarchingCubes::prepare()
     // the bbox and make smaller steps - this allows for finer
     // details. This ofcourse takes a recalculation of the bitmap.
     AABox bbox = isosurface->getBoundingBox();
+    bbox.growPercentage(10);
     Vector steps = bbox.lengths() / subdivisions;
     Vector pos;
     for(uint32_t xi = 0; xi < s; xi++) {
