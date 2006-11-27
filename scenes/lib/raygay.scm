@@ -2,12 +2,10 @@
 (load "handy-extensions.scm")
 
 (define (add-to-scene thing)
-  ;; Add a sceneobject or a list of sceneobjects to scene
+  "Add a sceneobject or a list of sceneobjects to scene"
   (if (list? thing)
     (for-each add-to-scene thing)
-    (if (null? __scene__)
-      (set! __scene__ (list thing))
-      (append! __scene__ (list thing)))))
+    (set! __scene__ (cons thing __scene__))))
 
 (define (set-image-size size)
   (set! __image-size__ size))
