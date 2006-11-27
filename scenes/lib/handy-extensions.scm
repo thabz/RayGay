@@ -6,11 +6,11 @@
 (define z-axis '(0 0 1))
 
 (define (.x vec) (car vec))
-(define (.y vec) (list-ref vec 1))  
-(define (.z vec) (list-ref vec 2))
-(define first .x)
-(define second .y)
-(define third .z)
+(define (.y vec) (cadr vec))  
+(define (.z vec) (caddr vec))
+(define (first vec) (car vec))
+(define (second vec) (cadr vec))
+(define (third vec) (caddr vec))
 
 ; Shortcut for rotating around the x-axis
 (define (rotate-x obj angle)
