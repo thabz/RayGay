@@ -64,7 +64,7 @@
   12
   300
   blue))
-
+
 (define (foot)
     (make-ellipsoid '(0 0 0) '(150 100 200) blue))
 
@@ -80,4 +80,3 @@
  
 (add-to-scene (make-sphere '(0 530 300) 100 blue))
 
- 
