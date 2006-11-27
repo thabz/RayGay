@@ -11,6 +11,7 @@ class NormalPerturber : public Transformer {
     public:
 	Vector perturb(const Vector& point, const Vector& normal) const;
 	void transform(const Matrix& m);
+	~NormalPerturber() {};
 
     protected:
 	virtual Vector _perturb(const Vector& point, const Vector& normal) const = 0;
