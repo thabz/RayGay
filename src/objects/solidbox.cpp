@@ -7,7 +7,7 @@ SolidBox::SolidBox(const Vector corner1, const Vector corner2, const Material* m
 
 AABox SolidBox::getBoundingBox() const {
     AABox result = bboxToWorld(bbox);
-    result.grow(20*EPSILON);
+    result.growPercentage(0.1);
     return result;
 }
 
