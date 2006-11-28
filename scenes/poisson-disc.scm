@@ -2,39 +2,39 @@
 (load "lib/raygay.scm")
 
 (set-image-size '(1024 1024))
-(set-background '(0.3 0.6 0.7))
+(set-background #(0.3 0.6 0.7))
 
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
-    '( pos (10 1000 3000)
-       lookat (0 0 0)
-       up (0 1 0)
+    '( pos #(10 1000 3000)
+       lookat #(0 0 0)
+       up #(0 1 0)
        fov 45
        aa 3)))
 
 (define brown
   (make-material
-    '( diffuse (0.7 0.4 0.2)
+    '( diffuse #(0.7 0.4 0.2)
        kd 1.0
        ks 0.0)))
 
 (define grey85
   (make-material
-    '( diffuse (0.85 0.85 0.85)
+    '( diffuse #(0.85 0.85 0.85)
        kd 1.0
        ks 0.0)))
 
 (define chrome
   (make-material
-    '( diffuse (0.8 0.8 0.8)
+    '( diffuse #(0.8 0.8 0.8)
        kd 0.2
-       specular (1.0 1.0 1.0)
+       specular #(1.0 1.0 1.0)
        ks 0.8
        specpow 30)))
 
 
-(add-to-scene (make-pointlight '(500 1300 1300)))
+(add-to-scene (make-pointlight #(500 1300 1300)))
 
 (define img (make-texture "gfx/larry.jpg" 1.0 1.0 "none"))
 
@@ -55,8 +55,8 @@
  ; (newline)
   (add-to-scene
     (make-sphere 
-      (v- (append (list-ref pset i) '(0))
-	  (list (* 0.5 w) (* 0.5 w) (* 0.5 w)))
+      (v- (vector (list-ref (list-ref pset i) 0) (list-ref (list-ref pset i) 1) 0)
+	  (vector (* 0.5 w) (* 0.5 w) (* 0.5 w)))
    radius
    brown)))
 
