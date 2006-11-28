@@ -22,6 +22,7 @@
 ;; 
 (debug-set! stack 200000)
 (define (l-system-expand axiom rules generation)
+  "Expands an L-system to a given generation"        
   (if (zero? generation) 
     axiom
     (l-system-expand 
@@ -38,6 +39,7 @@
       rules (- generation 1))))
 
 (define (make-l-system-object angle length thickness axiom rules depth material)
+  "Turns an L-system into a sceneobject"        
   (let ((job (l-system-expand axiom rules depth))
 	(stack '()))
     (display job)
