@@ -198,7 +198,7 @@ AABox Triangle::getBoundingBox() const {
     tri[1] = mesh->cornerAt(_tri_idx,1);
     tri[2] = mesh->cornerAt(_tri_idx,2);
     AABox box = AABox::enclosure(tri,3);
-    box.setMinimumLengths(10*EPSILON);
+    box.setMinimumLengths(1000*EPSILON);
     return box;
 }
 
