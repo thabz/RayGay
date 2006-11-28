@@ -4,7 +4,6 @@
 ; 2005-04-01:	5:07
 ; 2005-04-03:	1:15
 
-
 (load "lib/raygay.scm")
 
 (set-image-size '(1024 768))
@@ -36,11 +35,11 @@
 (define num 200)
 
 (define atoms '())
-(set! atoms (list (list (vector (random2 -5 5) (random2 -5 5) (random2 -5 5))
- 		       radius weight)))
+
 (dotimes i num
-   (append! atoms (list (list (vector (random2 -5 5) (random2 -5 5) (random2 -5 5))
- 		       radius weight))))
+   (set! atoms (cons (list (vector (random2 -5 5) (random2 -5 5) (random2 -5 5)) 
+                           radius weight) 
+                     atoms)))
 
 ;(for-each display atoms)
         
