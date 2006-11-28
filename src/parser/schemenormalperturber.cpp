@@ -5,11 +5,15 @@
 
 pthread_mutex_t SchemeNormalPerturber::mutex;
 bool SchemeNormalPerturber::mutex_initialized = false;
+Profiler* SchemeNormalPerturber::profiler = NULL;
 
 SchemeNormalPerturber::SchemeNormalPerturber(SCM procedure) 
 {
     this->s_procedure = procedure;
-    this->profiler = Profiler::create("Scheme callbacks", "Rendering");
+    
+    if (this->profiler == NULL) {
+        this->profiler = Profiler::create("Scheme perturb-callbacks", "Rendering");
+    }
     
     if (!mutex_initialized) {
         pthread_mutex_init(&mutex,NULL);    

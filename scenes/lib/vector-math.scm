@@ -1,27 +1,39 @@
 
+;
+; A collection of utility functions for handling 3D-vectors
+;
+
+(define x-axis #(1 0 0))
+(define y-axis #(0 1 0))
+(define z-axis #(0 0 1))
+
+(define (.x v) (vector-ref v 0))
+(define (.y v) (vector-ref v 1))
+(define (.z v) (vector-ref v 2))
+
 (define (v+ a b)
   "Add two vectors"        
-  (vector (+ (vector-ref a 0) (vector-ref b 0))
-          (+ (vector-ref a 1) (vector-ref b 1))
-          (+ (vector-ref a 2) (vector-ref b 2))))
+  (vector (+ (.x a) (.x b))
+          (+ (.y a) (.y b))
+          (+ (.z a) (.z b))))
           
 (define (v- a b)
   "Subtract b from a"        
-  (vector (- (vector-ref a 0) (vector-ref b 0))
-          (- (vector-ref a 1) (vector-ref b 1))
-          (- (vector-ref a 2) (vector-ref b 2))))          
+  (vector (- (.x a) (.x b))
+          (- (.y a) (.y b))
+          (- (.z a) (.z b))))          
           
 (define (vscale v s)
   "Scale a vector"        
-  (vector (* (vector-ref v 0) s)
-          (* (vector-ref v 1) s)
-          (* (vector-ref v 2) s)))                    
+  (vector (* (.x v) s)
+          (* (.y v) s)
+          (* (.z v) s)))                    
           
 (define (vdot a b)
   "Dotproduct between two vectors"        
-  (+ (* (vector-ref a 0) (vector-ref b 0))
-     (* (vector-ref a 1) (vector-ref b 1))
-     (* (vector-ref a 2) (vector-ref b 2))))
+  (+ (* (.x a) (.x b))
+     (* (.y a) (.y b))
+     (* (.z a) (.z b))))
 
 (define (vlength v)
   "Length of a vector"        
@@ -30,6 +42,6 @@
 (define (vnormalize v)
   "Normalize a vector"        
   (let ((l (vlength v)))        
-    (vector (/ (vector-ref v 0) l)
-            (/ (vector-ref v 1) l)
-            (/ (vector-ref v 2) l))))
+    (vector (/ (.x v) l)
+            (/ (.y v) l)
+            (/ (.z v) l))))

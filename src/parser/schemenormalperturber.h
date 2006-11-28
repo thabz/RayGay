@@ -19,7 +19,7 @@ class SchemeNormalPerturber : public NormalPerturber
 
     private:
 	SCM s_procedure;
-	Profiler* profiler;
+	static Profiler* profiler;
     	static pthread_mutex_t mutex;
     	static bool mutex_initialized;
 };

@@ -1,4 +1,6 @@
 
+; TODO: Use vectors #(x y z) instead of lists (x y z) for Vector
+
 (load "lib/raygay.scm")
 (load "lib/objects/make-rounded-box.scm")
 (load "lib/objects/make-rounded-cylinder.scm")

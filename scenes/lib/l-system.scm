@@ -47,9 +47,9 @@
     (let iter
       ((item (car job))
        (rest (cdr job))
-       (up '(0 1 0))
-       (right '(1 0 0))
-       (position '(0 0 0)))
+       (up #(0 1 0))
+       (right #(1 0 0))
+       (position #(0 0 0)))
       (append
 	(let ((thing '()))
 	  ;(display item)
@@ -60,9 +60,9 @@
 						    thickness material)))
 		   (set! position end-position)))
 		((eqv? item '+) 
-		 (set! up (rotate up '(0 0 1) angle)))
+		 (set! up (rotate up #(0 0 1) angle)))
 		((eqv? item '-) 
-		 (set! up (rotate up '(0 0 1) (- angle))))
+		 (set! up (rotate up #(0 0 1) (- angle))))
 		((eqv? item '[)
 		 (begin
 		   (set! stack (cons (list position up right) stack))))

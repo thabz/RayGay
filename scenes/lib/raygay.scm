@@ -1,4 +1,5 @@
 
+(load "vector-math.scm")
 (load "handy-extensions.scm")
 
 (define (add-to-scene thing)

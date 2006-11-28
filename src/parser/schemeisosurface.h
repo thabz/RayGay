@@ -5,6 +5,8 @@
 #include "objects/isosurface.h"
 #include <libguile.h>
 
+class Profiler;
+
 class SchemeIsosurface : public IsoSurface {
     public:
 	SchemeIsosurface(SCM procedure_name, AABox bbox, uint32_t steps, double accuracy, double iso, Material* mat);
@@ -17,6 +19,9 @@ class SchemeIsosurface : public IsoSurface {
     private:
 	SCM procedure_name;
 	AABox bbox;
+	static Profiler* profiler;
+    	static pthread_mutex_t mutex;
+    	static bool mutex_initialized;
 };
 
 #endif

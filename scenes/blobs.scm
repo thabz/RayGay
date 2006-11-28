@@ -9,40 +9,38 @@
 
 (set-image-size '(1024 768))
 ;(set! background (make-texture "gfx/goodmorning.jpg" 1 1 "bilinear"))
-(set-background '(0.3 0.6 0.7))
+(set-background #(0.3 0.6 0.7))
 
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
-    '( pos (2 17 20)
-       lookat (0 0 0)
-       up (0 1 0)
+    '( pos #(2 17 20)
+       lookat #(0 0 0)
+       up #(0 1 0)
        fov 45
        aa 0)))
 
 (define chrome
   (make-material
-    '( diffuse (0.9 0.7 0.8)
+    '( diffuse #(0.9 0.7 0.8)
        kd 0.4
-       specular (1.0 1.0 1.0)
+       specular #(1.0 1.0 1.0)
        ks 0.6
        specpow 45)))
 
 
-(add-to-scene (make-pointlight '(-500 1300 1300)))
+(add-to-scene (make-pointlight #(-500 1300 1300)))
 
 (define radius 1.5)
 (define weight 1)
 (define num 200)
 
 (define atoms '())
-(set! atoms (list (list (list (random2 -5 5) (random2 -5 5) (random2 -5 5))
+(set! atoms (list (list (vector (random2 -5 5) (random2 -5 5) (random2 -5 5))
  		       radius weight)))
-(do ((i 0 (+ 1 i)))
-   ((= i num))
-   (append! atoms (list (list (list (random2 -5 5) (random2 -5 5) (random2 -5 5))
- 		       radius weight)))
-)
+(dotimes i num
+   (append! atoms (list (list (vector (random2 -5 5) (random2 -5 5) (random2 -5 5))
+ 		       radius weight))))
 
 ;(for-each display atoms)
         

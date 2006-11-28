@@ -1,19 +1,19 @@
 
 
 (define (square x)
- (* x x))
+  (* x x))
 
 ;; See http://mathworld.wolfram.com/Chair.html
 (define (iso-chair k a b x y z) 
   (- (square (+ (square x)
-		(square y)
-		(square z)
-		(- (* a k k))))
+                (square y)
+                (square z)
+             (- (* a k k))))
      (* b
-	(- (square (- z k))
-	   (* 2 x x))
-	(- (square (+ z k))
-	   (* 2 y y )))))
+        (- (square (- z k))
+           (* 2 x x))
+        (- (square (+ z k))
+           (* 2 y y )))))
 
 ;; See http://mathworld.wolfram.com/Tanglecube.html
 (define (iso-tanglecube x y z)
@@ -46,7 +46,7 @@
 ;; See http://mathworld.wolfram.com/Torus.html
 (define (s-iso-torus r_major r_minor x y z)
   (+ (square (- r_major
-		(sqrt (+ (* x x) (* y y)))))
+                (sqrt (+ (* x x) (* y y)))))
      (* z z)
      (- (* r_minor r_minor))))
 
