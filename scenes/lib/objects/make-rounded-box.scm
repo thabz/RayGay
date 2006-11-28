@@ -103,7 +103,7 @@
     make-union 
     (append 
       (make-rounded-box lowercorner uppercorner radius material) 
-      (vector material))))
+      (list material))))
 
 
 

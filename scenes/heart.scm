@@ -6,29 +6,29 @@
 (define radius (* 100 100 100))    
 
 (set-image-size '(640 480))
-(set-background '(0.94 0.7 0.06))
+(set-background #(0.94 0.7 0.06))
 
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
-    '( pos (0 600 1800)
-       lookat (0 0 0)
-       up (0 1 0)
+    '( pos #(0 600 1800)
+       lookat #(0 0 0)
+       up #(0 1 0)
        fov 45
-       aa 3)))
+       aa 1)))
 
 (define ground
   (make-material
-    '( diffuse (1.0 1.0 0.7)
+    '( diffuse #(1.0 1.0 0.7)
        kd 0.9
-       specular (1.0 1.0 1.0)
+       specular #(1.0 1.0 1.0)
        ks 0.1
        specpow 15)))
 
-(add-to-scene (make-arealight '(500 500 1300) '(-0.5 -0.5 -1) 500 80 0.1))
+(add-to-scene (make-arealight #(500 500 1300) #(-0.5 -0.5 -1) 500 80 0.1))
 
 (add-to-scene
-  (make-box '(-1000000 -500 -1000000) '(1000000 -400 1000000) ground))
+  (make-box #(-1000000.0 -500.0 -1000000.0) #(1000000.0 -400.0 1000000.0) ground))
 
 
 (let loop ((i 0))
@@ -43,14 +43,14 @@
 	(begin
 	 (add-to-scene
 	      (make-ellipsoid 
-		(list (* y 400) (* z 400) (* x 400))
-		(list (random2 10 30) (random2 10 30) (random2 10 30))
+		(vector (* y 400) (* z 400) (* x 400))
+		(vector (random2 10 30) (random2 10 30) (random2 10 30))
 		(make-material
 		  (list 
 		    'diffuse
-		    (list (random2 0.9 1) (random2 0.3 0.5) (random2 0.3 0.35))
+		    (vector (random2 0.9 1) (random2 0.3 0.5) (random2 0.3 0.35))
 		    'kd 0.8
-		    'specular (list 0.5 0.5 0.5)
+		    'specular (vector 0.5 0.5 0.5)
 		    'ks 0.2
 		    'specpow 25))))
 	  (loop (+ i 1)))
