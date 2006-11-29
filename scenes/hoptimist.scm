@@ -43,9 +43,9 @@
 (add-to-scene (make-sphere #(0 -100200 0) 100000 ground))
 
 (define (halvkugle)
- (make-difference
+ (make-intersection
    (make-sphere #(0 0 0) 300)
-   (make-solid-box #(-320 -320 -320) #(320 0 320))
+   (make-solid-box #(-301 0 -301) #(301 301 301))
    blue))
 
 (add-to-scene (translate (halvkugle) #(0 400 0)))
