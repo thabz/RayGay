@@ -42,6 +42,14 @@ SCM MaterialFactory::make_material(SCM s_options) {
 	} else if (key == "eta") {
 	    double d = scm_num2double(s_value,0,"");
 	    material->setEta(d);
+    	} else if (key == "gloss") {
+    	    assert(SCM_NFALSEP (scm_list_p (s_value)));
+            assert(scm_num2int(scm_length(s_value),0,"") == 2);
+            SCM s_rays = scm_list_ref(s_value, scm_int2num(0));
+            uint32_t rays = scm_num2int(s_rays,0,"");
+  	    SCM s_angle = scm_list_ref(s_value, scm_int2num(1));
+            double angle = scm_num2double(s_angle,0,"");
+    	    material->enableGloss(rays,angle);
 	} else if (key == "normal") {
 	    SchemeNormalPerturber* perturber = new SchemeNormalPerturber(s_value);
 	    material->setNormalPerturber(perturber);
