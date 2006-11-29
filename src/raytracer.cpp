@@ -159,11 +159,9 @@ RGB Raytracer::calculate_reflection(const Ray& ray, const Intersection& intersec
     if (material->glossEnabled()) {
 	/* Distributed reflection */
 	double max_angle = material->glossMaxAngle();
-	int gloss_rays = material->glossRaysNum();
-	assert(gloss_rays > 0);
+	int gloss_rays = material->glossRaysNum() / (depth * depth * depth);
+	if (gloss_rays == 0) gloss_rays = 1;
 	gloss_sequence->reset();
-
-	//gloss_rays /= depth;
 
 #if 0
 	/* Adaptive sampling. Only if the first half of the reflection rays
