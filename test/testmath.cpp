@@ -1333,13 +1333,17 @@ class poisson_disc_test : public Test {
 };
 
 class interval_test : public Test {
-
+    private:
+        Interval i1;
+        Interval i2;
+        Interval i3;
+            
     public:
 	void run() {
 	    // Test == and !=
-	    Interval i1 = Interval(2,4);
-	    Interval i2 = Interval(6,8);
-	    Interval i3 = Interval(3,7);
+	    i1 = Interval(2,4);
+	    i2 = Interval(6,8);
+	    i3 = Interval(3,7);
 	    assertTrue(i1 == Interval(2,4));
 	    assertFalse(i1 == i2);
 	    assertTrue(i1 != i3);
@@ -1400,7 +1404,16 @@ class interval_test : public Test {
 		double d = i1.random();
 		assertTrue(i1.contains(d));
 	    }
-	}
+	    
+	    // Test close-shave subtracts
+	    cout << endl;
+	    i1 = Interval(0,10);
+	    i1.subtract(0,2);
+	    i1.subtract(4,6);
+    	    i1.subtract(6,10);
+    	    i1.subtract(2,4);
+    	    assertTrue(i1.isEmpty());
+    }
 };
 
 int main(int argc, char *argv[]) {
@@ -1427,7 +1440,7 @@ int main(int argc, char *argv[]) {
     suite.add("Sturm sequence",new sturm_sequence_test());
     suite.add("Quaternion",new quaternion_test());
     suite.add("RootFinding",new rootfinding_test());
-    suite.add("Poisson Disc",new poisson_disc_test());
+//    suite.add("Poisson Disc",new poisson_disc_test());
     suite.add("Interval",new interval_test());
     suite.run();
     suite.printStatus();

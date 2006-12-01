@@ -89,19 +89,19 @@ void Interval::subtract(double f, double t)
 	s = segments.begin() + i * 2;
 //	cout << "Segment: [" << s[0] << "-" << s[1] << "]" << endl;
 	if (f > s[1] || t < s[0]) {
-	    // Case 2 and 3: ignore segment
+	    // Case 2 and 3: Ignore segment
 	    continue;
 	} 
-	else if (s[0] > f && s[1] < t) {
-	    // Case 1: remove segment
+	else if (s[0] >= f && s[1] <= t) {
+	    // Case 1: Remove segment
 	    segments.erase(s);
 	    segments.erase(s);
 	}
-	else if (f > s[0] && f < s[1] && t > s[1]) {
+	else if (f > s[0] && f <= s[1] && t > s[1]) {
 	    // Case 4: Clip segment
 	    s[1] = f;
 	}
-	else if (t > s[0] && t < s[1] && f < s[0]) {
+	else if (t > s[0] && t <= s[1] && f <= s[0]) {
 	    // Case 5: Clip segment
 	    s[0] = t;
 	    goto done;
