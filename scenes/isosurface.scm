@@ -2,6 +2,9 @@
 (load "lib/raygay.scm")
 (load "iso-functions.scm")
 
+(display "Warning. Run with -j 1.")
+(newline)
+
 (set-image-size '(1024 768))
 (set-image-size '(320 240))
 ;(set-background (make-texture "gfx/goodmorning.jpg" 1 1 "bilinear"))

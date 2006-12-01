@@ -10,7 +10,7 @@
        lookat #(0 100 0)
        up #(0 1 0)
        fov 45
-       aa 2)))
+       aa 0)))
 
 
 (add-to-scene (make-pointlight #(100 1300 1300)))
@@ -22,6 +22,7 @@
        kd 0.5
        specular #(1.0 1.0 1.0)
        ks 0.5
+       gloss (100 10.0)
        specpow 15)))
 
 (define chrome

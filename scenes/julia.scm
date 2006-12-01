@@ -2,7 +2,7 @@
 (load "lib/raygay.scm")
 
 (set-image-size '(1600 1200))
-(set-image-size '(640 480))
+(set-image-size '(320 240))
 (set-background #(0.8 0.7 0.3))
 
 (set-renderer "raytracer")
@@ -14,18 +14,6 @@
        fov 45
        aa 3)))
 
-(define brown
-  (make-material
-    '( diffuse #(0.7 0.4 0.2)
-       kd 1.0
-       ks 0.0)))
-
-(define grey85
-  (make-material
-    '( diffuse #(0.85 0.85 0.85)
-       kd 1.0
-       ks 0.0)))
-
 (define shinyred
   (make-material
     '( diffuse #(0.85 0.2 0.1)
@@ -33,15 +21,6 @@
        specular #(1.0 1.0 1.0)
        specpow 30
        ks 0.2)))
-
-(define chrome
-  (make-material
-    '( diffuse #(0.8 0.8 0.8)
-       kd 0.2
-       specular #(1.0 1.0 1.0)
-       ks 0.8
-       specpow 30)))
-
 
 (add-to-scene (list
   (make-pointlight #(500 1300 -1300))
