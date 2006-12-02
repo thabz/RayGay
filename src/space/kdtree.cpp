@@ -233,7 +233,7 @@ bool KdTree::intersect(const Ray& ray, Intersection& result, const double a, con
 	    }
 	    if (object_hit != NULL) {
 		object_hit->fullIntersect(ray, smallest_t, result);
-		return true;
+		return result.isIntersected();
 	    }
 	}
 

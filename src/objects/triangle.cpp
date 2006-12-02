@@ -92,8 +92,10 @@ void Triangle::_fullIntersect(const Ray& ray, const double t2, Intersection& res
       /* calculate U parameter and test bounds */
       u = DOT(tvec,pvec);
 
-      if (u < 0.0 || u > det)
-	 throw_exception("This shouldn't happen!");
+      if (u < 0.0 || u > det) {
+	 //throw_exception("This shouldn't happen!");
+         result = Intersection();
+      }         
       
       /* prepare to test V parameter */
       CROSS(qvec,tvec,cv->edge1);
@@ -101,9 +103,11 @@ void Triangle::_fullIntersect(const Ray& ray, const double t2, Intersection& res
       /* calculate V parameter and test bounds */
       v = DOT(ray.getDirection(),qvec);
       if (v < 0.0 || u + v > det)
-	 throw_exception("This shouldn't happen!");
+	 //throw_exception("This shouldn't happen!");
+	 result = Intersection();
    } else {
-       throw_exception("This shouldn't happen!");
+       //throw_exception("This shouldn't happen!");
+       result = Intersection();
    }
 
    /* calculate t, ray intersects triangle */
