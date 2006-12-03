@@ -384,8 +384,23 @@ void print_usage() {
     cout << "       -d                   Print debugging information" << endl;
     cout << "       -p                   Dump profile after run" << endl;
     cout << "       -h                   Show this help message" << endl;
-    cout << "       -v                   Show current versionnumber" << endl;
-    cout << "Pagesize : " << getpagesize() << " bytes" << endl;
+    cout << "       -v                   Show version" << endl;
+}
+
+void print_version() {
+    cout << "Raygay " << VERSION << endl;
+    cout << "Copyright (C) 2004, 2005, 2006 Jesper Christensen" << endl;
+    cout << "   Kernel pagesize: " << getpagesize() << " bytes" << endl;
+    cout << "   CPUs: " << getNumberOfCPUs() << endl;
+    cout << "   Image formats: ";
+    vector<string> formats = Image::supportedFormats();
+    for(uint32_t i = 0; i < formats.size(); i++) {
+        cout << formats[i];
+        if (i != formats.size() -1 ) {
+            cout << ", ";
+        } 
+    }
+    cout << endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -406,7 +421,7 @@ int main(int argc, char *argv[]) {
 		print_usage();
 		return EXIT_SUCCESS;
 	    case 'v':
-		cout << "Raygay " << VERSION << endl;
+		print_version();
 		return EXIT_SUCCESS;
 	    case 'b':
 		env->hasPreviewWindow(false);
@@ -446,6 +461,7 @@ int main(int argc, char *argv[]) {
 	outfile = string(argv[optind+1]);
     }
 
+    // TODO: Use our own RNG instead. Ex. the Mersenne Twister
     srand(1); // Make sure rand is seeded consistently.
     
     if (env->isProfilingEnabled() && jobs != 1) {

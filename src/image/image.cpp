@@ -88,6 +88,24 @@ bool Image::supportsFormat(const std::string& filename) {
     }        
 }
 
+std::vector<std::string> Image::supportedFormats() {
+    vector<string> result;
+    if (supportsFormat(".jpg"))
+       result.push_back("JPEG");
+    if (supportsFormat(".tga"))
+       result.push_back("TGA");
+    if (supportsFormat(".png"))
+       result.push_back("PNG");
+    if (supportsFormat(".tiff"))
+       result.push_back("TIFF");
+    if (supportsFormat(".jp2"))
+       result.push_back("JPEG2000");
+    if (supportsFormat(".hdr"))
+       result.push_back("HDRI");
+    return result;        
+}
+
+
 /**
  * Writes the image into a  24 bit uncompressed tga-file
  */
