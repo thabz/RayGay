@@ -1312,6 +1312,7 @@ class poisson_disc_test : public Test {
 
     public:
 	void run() {
+/*	        
 	    Vector2* r = new Vector2[100];
 	    int req_num = 300;
 	    int num = PoissonDiscDistribution::createSet(10,10,0.5,req_num,r);
@@ -1325,10 +1326,41 @@ class poisson_disc_test : public Test {
 		assertTrue(r[i][1] <= 10);
 		for(int j = 0; j < num; j++) {
 		    if (j != i) {
-			assertTrue((r[i]-r[j]).norm() >= 2*0.5*2*0.5);
+			//assertTrue((r[i]-r[j]).norm() >= 2*0.5*2*0.5);
 		    }
 		}
 	    }
+*/	    
+	    // Test Boundary
+	    Boundary b = Boundary(Vector2(0,0),1);
+	    b.subtract(Vector2(-2,0),Vector2(2,2));
+	    assertTrue(b.contains(M_PI*0.5));
+	    assertFalse(b.contains(M_PI*1.5));
+	    
+	    b = Boundary(Vector2(0,0),1);
+	    b.subtract(Vector2(0,1),1);
+	    assertTrue(b.contains(M_PI*1.5));
+	    assertFalse(b.contains(0.5*M_PI));
+
+	    b = Boundary(Vector2(0,0),1);
+	    b.subtract(Vector2(0,-1),1);
+	    assertFalse(b.contains(M_PI*1.5));
+	    assertTrue(b.contains(0.5*M_PI));
+
+	    b = Boundary(Vector2(0,0),1);
+	    b.subtract(Vector2(1,0),1);
+	    assertFalse(b.contains(0));
+	    assertTrue(b.contains(M_PI));
+
+	    b = Boundary(Vector2(0,0),1);
+	    b.subtract(Vector2(-1,0),1);
+	    assertFalse(b.contains(M_PI));
+	    assertTrue(b.contains(0));
+
+
+            assertTrue(Vector2(cos(0),sin(0)) == Vector2(1,0));
+            assertTrue(Vector2(cos(M_PI),sin(M_PI)) == Vector2(-1,0));
+            assertTrue(Vector2(cos(M_PI*0.5),sin(M_PI*0.5)) == Vector2(0,1));
 	}
 };
 
@@ -1406,13 +1438,17 @@ class interval_test : public Test {
 	    }
 	    
 	    // Test close-shave subtracts
-	    cout << endl;
 	    i1 = Interval(0,10);
 	    i1.subtract(0,2);
 	    i1.subtract(4,6);
     	    i1.subtract(6,10);
     	    i1.subtract(2,4);
     	    assertTrue(i1.isEmpty());
+    	    
+    	    i1 = Interval(0, M_2PI);
+    	    i1.subtract(M_PI, M_2PI);
+    	    assertTrue(i1.contains(0.5*M_PI));
+    	    assertFalse(i1.contains(1.5*M_PI));
     }
 };
 
@@ -1440,7 +1476,7 @@ int main(int argc, char *argv[]) {
     suite.add("Sturm sequence",new sturm_sequence_test());
     suite.add("Quaternion",new quaternion_test());
     suite.add("RootFinding",new rootfinding_test());
-//    suite.add("Poisson Disc",new poisson_disc_test());
+    suite.add("Poisson Disc",new poisson_disc_test());
     suite.add("Interval",new interval_test());
     suite.run();
     suite.printStatus();

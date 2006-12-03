@@ -36,11 +36,11 @@ class test_bool : public Test {
                 bool f1 = false;
                 bool f2 = false;
 
-                assert(t1 && t2 == true);
-                assert(t1 && t2);
-                assert(t1 || f1);
-                assert(f1 || t1);
-                assert(f1 || f2 == false);
+                assertTrue(t1 && t2 == true);
+                assertTrue(t1 && t2);
+                assertTrue(t1 || f1);
+                assertTrue(f1 || t1);
+                assertTrue(f1 || f2 == false);
         }
 };
 
@@ -48,13 +48,13 @@ class test_bool : public Test {
 class test_modulo : public Test {
         public:
         void run() {
-    assert((0 + 1) % 3 == 1);
-    assert((1 + 1) % 3 == 2);
-    assert((2 + 1) % 3 == 0);
+    assertTrue((0 + 1) % 3 == 1);
+    assertTrue((1 + 1) % 3 == 2);
+    assertTrue((2 + 1) % 3 == 0);
 
-    assert((0 + 3 - 1) % 3 == 2);
-    assert((1 + 3 - 1) % 3 == 0);
-    assert((2 + 3 - 1) % 3 == 1);
+    assertTrue((0 + 3 - 1) % 3 == 2);
+    assertTrue((1 + 3 - 1) % 3 == 0);
+    assertTrue((2 + 3 - 1) % 3 == 1);
 }
 };
 
@@ -64,7 +64,7 @@ class test_lowercase : public Test {
         void run() {
     string s = "Ray Gay";
     transform(s.begin(),s.end(),s.begin(),(int(*)(int)) tolower);
-    assert(s == "ray gay");
+    assertTrue(s == "ray gay");
 }
 };
 
@@ -91,9 +91,9 @@ class test_sort_array: public Test {
         void run() {
     int tal[] = { 10, 5, 15, 0 ,20 };
     sort(tal,tal + 5);
-    assert(tal[0] == 0);
-    assert(tal[1] == 5);
-    assert(tal[2] == 10);
+    assertTrue(tal[0] == 0);
+    assertTrue(tal[1] == 5);
+    assertTrue(tal[2] == 10);
 }
 };
 
@@ -110,11 +110,11 @@ class test_sort : public Test {
     tal.push_back(0);
     tal.push_back(20);
     sort(tal.begin(),tal.end(),compareAreaDesc());
-    assert(tal[0] == 20);
-    assert(tal[1] == 15);
-    assert(tal[2] == 10);
-    assert(tal[3] == 5);
-    assert(tal[4] == 0);
+    assertTrue(tal[0] == 20);
+    assertTrue(tal[1] == 15);
+    assertTrue(tal[2] == 10);
+    assertTrue(tal[3] == 5);
+    assertTrue(tal[4] == 0);
     tal.clear();
     
     // Test ascending sortering
@@ -124,11 +124,11 @@ class test_sort : public Test {
     tal.push_back(0);
     tal.push_back(20);
     sort(tal.begin(),tal.end(),compareAreaAsc());
-    assert(tal[0] == 0);
-    assert(tal[1] == 5);
-    assert(tal[2] == 10);
-    assert(tal[3] == 15);
-    assert(tal[4] == 20);
+    assertTrue(tal[0] == 0);
+    assertTrue(tal[1] == 5);
+    assertTrue(tal[2] == 10);
+    assertTrue(tal[3] == 15);
+    assertTrue(tal[4] == 20);
 
     // Test pointer sagert
     sort((&tal)->begin(),(&tal)->end(),compareAreaAsc());
@@ -136,12 +136,12 @@ class test_sort : public Test {
     // Test sortering af tom vector
     vector<int> tom;
     sort(tom.begin(),tom.end(),compareAreaAsc());
-    assert(tom.empty());
+    assertTrue(tom.empty());
     sort((&tom)->begin(),(&tom)->end(),compareAreaAsc());
 
     tom.push_back(1);
     sort(tom.begin(),tom.end(),compareAreaAsc());
-    assert(tom.size() == 1);
+    assertTrue(tom.size() == 1);
 }
 };
 
@@ -156,10 +156,10 @@ class test_vector_copy : public Test {
     a->push_back(3);
     (*b) = (*a);
     (*a)[0] = 10;
-    assert((*b)[0] == 1);
+    assertTrue((*b)[0] == 1);
     a->push_back(4);
-    assert(a->size() == 4);
-    assert(b->size() == 3);
+    assertTrue(a->size() == 4);
+    assertTrue(b->size() == 3);
     delete a;
     delete b;
 }
@@ -173,13 +173,13 @@ class test_vector_ref : public Test {
     a->push_back(2);
     a->push_back(3);
     vector<int>& b = *a;
-    assert(b[0] == 1);
+    assertTrue(b[0] == 1);
     b.push_back(4);
-    assert(a->size() == 4);
+    assertTrue(a->size() == 4);
     (*a)[0] = 10;
-    assert(b[0] == 10);
+    assertTrue(b[0] == 10);
     b.clear();
-    assert(a->size() == 0);
+    assertTrue(a->size() == 0);
 }
 };
 
@@ -190,14 +190,35 @@ class test_vector_clear : public Test {
     for(int i = 0; i < 10000; i++) {
 	a->push_back(i);
     }
-    assert(a->size() == 10000);
+    assertTrue(a->size() == 10000);
     a->clear();
-    assert(a->size() == 0);
+    assertTrue(a->size() == 0);
     //cout << "capacity: " << a->capacity() << endl;
     a->reserve(0);
     //cout << "capacity: " << a->capacity() << endl;
 }
 };
+
+class test_vector_erase : public Test {
+        public:
+        void run() {
+            vector<int> a;
+            for(int i = 0; i < 100; i++) {
+       	        a.push_back(i);
+             }
+             assertTrue(a.size() == 100);
+             assertTrue(a[0] == 0);
+             a.erase(a.begin());
+             assertTrue(a.size() == 99);
+             assertTrue(a[0] == 1);
+             assertTrue(a[10] == 11);
+             a.erase(a.begin()+10);
+             assertTrue(a[10] == 12);
+             assertTrue(a[0] == 1);
+             assertTrue(a.size() == 98);
+        }
+};
+
 
 class test_lru_hash : public Test {
         public:
@@ -206,20 +227,20 @@ class test_lru_hash : public Test {
     lru.insert(1,101);
     lru.insert(2,102);
     lru.insert(3,103);
-    assert(*(lru.find(1)) == 101);
-    assert(*(lru.find(2)) == 102);
-    assert(*(lru.find(3)) == 103);
+    assertTrue(*(lru.find(1)) == 101);
+    assertTrue(*(lru.find(2)) == 102);
+    assertTrue(*(lru.find(3)) == 103);
     lru.insert(1,105);
-    assert(*(lru.find(1)) == 105);
-    assert(*(lru.find(2)) == 102);
-    assert(*(lru.find(3)) == 103);
+    assertTrue(*(lru.find(1)) == 105);
+    assertTrue(*(lru.find(2)) == 102);
+    assertTrue(*(lru.find(3)) == 103);
     lru.insert(4,106);
     lru.insert(5,107);
-    assert(lru.find(1) == NULL);
-    assert(lru.find(2) == NULL);
-    assert(*(lru.find(3)) == 103);
-    assert(*(lru.find(4)) == 106);
-    assert(*(lru.find(5)) == 107);
+    assertTrue(lru.find(1) == NULL);
+    assertTrue(lru.find(2) == NULL);
+    assertTrue(*(lru.find(3)) == 103);
+    assertTrue(*(lru.find(4)) == 106);
+    assertTrue(*(lru.find(5)) == 107);
 }
 };
 
@@ -232,14 +253,14 @@ class test_shift : public Test {
 
     b = a << 2 | 3;
 
-    assert(b >> 2 == 50);
-    assert((b & 3) == 3);
+    assertTrue(b >> 2 == 50);
+    assertTrue((b & 3) == 3);
     
     a = 20;
     b = (a << 2) | 1;
 
-    assert(b >> 2 == 20);
-    assert((b & 3) == 0x1);
+    assertTrue(b >> 2 == 20);
+    assertTrue((b & 3) == 0x1);
 }
 };
 
@@ -278,7 +299,7 @@ class test_mmap : public Test {
         exit(EXIT_FAILURE);    
     }
     for(uint32_t i = 0; i < len; i++) {
-        assert(data2[i] == uint8_t(i & 0xff));    
+        assertTrue(data2[i] == uint8_t(i & 0xff));    
     }
     munmap(data2,len);
     close(file2);
@@ -297,9 +318,19 @@ class test_stl_mmap_allocator : public Test {
         v2.push_back(v);
     }        
     for(uint32_t i = 0; i < 500; i++) {
-        assert(v1[i] == v2[i]);    
+        assertTrue(v1[i] == v2[i]);    
     }
 }
+};
+
+
+class test_swap : public Test {
+   public:
+       void run() {
+           double a = 10.9, b = 2.1;
+           swap(a,b);
+           assertTrue(a == 2.1);
+           assertTrue(b == 10.9);       }
 };
 
 
@@ -313,11 +344,13 @@ int main(int argc, char *argv[]) {
         suite.add("Vector copy",new test_vector_copy());
         suite.add("Vector ref",new test_vector_ref());
         suite.add("Vector clear",new test_vector_clear());
+        suite.add("Vector erase",new test_vector_erase());
         suite.add("Shift",new test_shift());
         suite.add("LRU Hash",new test_lru_hash());
         suite.add("mmap",new test_mmap());
         suite.add("STL mmap alloc",new test_stl_mmap_allocator());
-
+        suite.add("Swap",new test_swap());
+        
     suite.run();
     suite.printStatus();
 
