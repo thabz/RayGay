@@ -222,7 +222,7 @@ void do_filtering(Image* image, FilterStack* filterstack) {
     cout << "Done." << endl;
 }
 
-void render_frame(int frame, int frames, string outputfile, int jobs) {
+void render_frame(string outputfile, int jobs) {
     Profiler* profiler = Profiler::create("Prepare scene", "RayGay");
     profiler->start();
     Stats::getUniqueInstance()->clear();
@@ -235,9 +235,6 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
     Scene* scene = new Scene();
 
     Environment::getUniqueInstance()->setScene(scene);
-
-    parser->assignVariable("frame",double(frame));
-    parser->assignVariable("clock",double(frame)/double(frames));
 
     Profiler* parser_profiler = Profiler::create("Parsing","Prepare scene");
     parser_profiler->start();
@@ -289,13 +286,6 @@ void render_frame(int frame, int frames, string outputfile, int jobs) {
 
     // Create and prepare job pool
     RenderJobPool* job_pool = new RenderJobPool(img_w,img_h,64);
-
-    if (frames == 1) {
-	cout << "Still render (" << img_w << "x" << img_h << ")" << endl;
-    } else {
-	cout << "Animation render (" << img_w << "x" << img_h 
-	     << ", " << frame << " of " << frames << " frames)" << endl;
-    }
 
     TimerStats* rendering_time = new TimerStats("Renderer","Time");
     rendering_time->startTimer();
@@ -389,8 +379,6 @@ void print_usage() {
     if (availableWindowToolkit() != NONE) {
     cout << "       -b                   Run in background with no GUI" << endl;
     }
-    cout << "       -f NUM               Frame to render" << endl;
-    cout << "       -F NUM               Total number of frames" << endl;
     cout << "       -e EXPR              Eval a Scheme-expr prior to" << endl;
     cout << "                            parsing the scenefile" << endl;
     cout << "       -d                   Print debugging information" << endl;
@@ -412,9 +400,7 @@ int main(int argc, char *argv[]) {
     int c;
     opterr = 0;
     int jobs = getNumberOfCPUs();
-    int frame_to_render = 0;
-    int frames_total = 1;
-    while ((c = getopt (argc, argv, "Vvpdhbj:f:F:e:")) != -1) {
+    while ((c = getopt (argc, argv, "Vvpdhbj:e:")) != -1) {
 	switch(c) {
 	    case 'h':
 		print_usage();
@@ -434,20 +420,6 @@ int main(int argc, char *argv[]) {
 	    case 'j':
 		if (sscanf(optarg,"%u",&jobs) != 1 || jobs < 1) {
 		    cerr << "Illegal -j option" << endl;
-		    print_usage();
-		    return EXIT_FAILURE;
-		};
-		break;
-	    case 'f':
-		if (sscanf(optarg,"%u",&frame_to_render) != 1 || frame_to_render < 0) {
-		    cerr << "Illegal -f option" << endl;
-		    print_usage();
-		    return EXIT_FAILURE;
-		};
-		break;
-	    case 'F':
-		if (sscanf(optarg,"%u",&frames_total) != 1 || frames_total < 0) {
-		    cerr << "Illegal -F option" << endl;
 		    print_usage();
 		    return EXIT_FAILURE;
 		};
@@ -483,7 +455,7 @@ int main(int argc, char *argv[]) {
     try {
         Profiler* profiler = Profiler::create("RayGay","");
         profiler->start(); 
-	render_frame(frame_to_render, frames_total, outfile, jobs);
+	render_frame(outfile, jobs);
 	profiler->stop();
         if (env->isProfilingEnabled()) {
             Profiler::dump();
