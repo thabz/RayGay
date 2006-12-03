@@ -99,7 +99,7 @@ double Vector2::norm() const {
 
 inline 
 double Vector2::length() const {
-    return sqrt(norm());
+    return hypot(_vector[0],_vector[1]);
 }
 
 inline

@@ -19,7 +19,7 @@ class Interval
 	void add(double from, double to);
 	void subtract(const Interval& i);
 	void subtract(double from, double to);
-	bool contains(double d);
+	bool contains(double d) const;
 	double length() const;
 	double random() const;
 

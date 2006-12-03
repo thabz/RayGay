@@ -76,6 +76,7 @@ done:
 void Interval::subtract(double f, double t)
 {
     std::vector<double>::iterator s;
+
     /*
      * Cases:
      * 1: ---F--SSSSS---T---  Remove segment
@@ -97,7 +98,7 @@ void Interval::subtract(double f, double t)
 	    segments.erase(s);
 	    segments.erase(s);
 	}
-	else if (f > s[0] && f <= s[1] && t > s[1]) {
+	else if (f > s[0] && f < s[1] && t >= s[1]) {
 	    // Case 4: Clip segment
 	    s[1] = f;
 	}
@@ -151,7 +152,7 @@ double Interval::random() const
     assert(false);
 }
 
-bool Interval::contains(double d) 
+bool Interval::contains(double d) const
 {
     for(std::vector<double>::const_iterator p = segments.begin(); p != segments.end(); p += 2) {
 	if (IS_LESS_THAN(*p,d) && IS_GREATER_THAN(*(p+1),d))
