@@ -26,33 +26,6 @@ class PoissonDiscDistribution
 	static std::vector<Vector2> all;
 };
 
-class Boundary {
-    public:
-	Boundary(Vector2 c, double r);
-
-	bool isEmpty() const { return interval.isEmpty(); };
-
-	const Vector2& getC() { return c; };
-	double getR() { return r; };
-	
-	Vector2 random() const ;
-
-	// Subtract a circle
-	void subtract(const Vector2& o_c, double o_r);
-	
-	// Subtract an 2D axis aligned box
-	void subtract(const Vector2& lower, const Vector2& upper);
-	
-	// Subtract an angle segment
-	void subtract(double from, double to);
-	
-	bool contains(double angle) const;
-
-    private:
-	Vector2 c;
-	Interval interval;
-	double r;
-};
 
 
 #endif

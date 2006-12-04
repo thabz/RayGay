@@ -1331,36 +1331,6 @@ class poisson_disc_test : public Test {
 		}
 	    }
 */	    
-	    // Test Boundary
-	    Boundary b = Boundary(Vector2(0,0),1);
-	    b.subtract(Vector2(-2,0),Vector2(2,2));
-	    assertTrue(b.contains(M_PI*0.5));
-	    assertFalse(b.contains(M_PI*1.5));
-	    
-	    b = Boundary(Vector2(0,0),1);
-	    b.subtract(Vector2(0,1),1);
-	    assertTrue(b.contains(M_PI*1.5));
-	    assertFalse(b.contains(0.5*M_PI));
-
-	    b = Boundary(Vector2(0,0),1);
-	    b.subtract(Vector2(0,-1),1);
-	    assertFalse(b.contains(M_PI*1.5));
-	    assertTrue(b.contains(0.5*M_PI));
-
-	    b = Boundary(Vector2(0,0),1);
-	    b.subtract(Vector2(1,0),1);
-	    assertFalse(b.contains(0));
-	    assertTrue(b.contains(M_PI));
-
-	    b = Boundary(Vector2(0,0),1);
-	    b.subtract(Vector2(-1,0),1);
-	    assertFalse(b.contains(M_PI));
-	    assertTrue(b.contains(0));
-
-
-            assertTrue(Vector2(cos(0),sin(0)) == Vector2(1,0));
-            assertTrue(Vector2(cos(M_PI),sin(M_PI)) == Vector2(-1,0));
-            assertTrue(Vector2(cos(M_PI*0.5),sin(M_PI*0.5)) == Vector2(0,1));
 	}
 };
 
@@ -1452,6 +1422,83 @@ class interval_test : public Test {
     }
 };
 
+class arc_interval_test : public Test {
+    public:
+	void run() {
+
+	    ArcInterval b = ArcInterval(Vector2(0,0),1);
+	    b.subtract(Vector2(-2,0),Vector2(2,2));
+	    assertTrue(b.contains(M_PI*0.5));
+	    assertFalse(b.contains(M_PI*1.5));
+	    
+	    b = ArcInterval(Vector2(0,0),1);
+	    b.subtract(Vector2(0,1),1);
+	    assertTrue(b.contains(M_PI*1.5));
+	    assertTrue(b.contains(M_PI*1.75));
+	    assertTrue(b.contains(M_PI));
+	    assertTrue(b.contains(0));
+	    assertFalse(b.contains(0.5*M_PI));
+	    assertFalse(b.contains(0.4*M_PI));
+	    assertFalse(b.contains(0.6*M_PI));
+
+	    b = ArcInterval(Vector2(0,0),1);
+	    b.subtract(Vector2(0,-1),1);
+	    assertFalse(b.contains(M_PI*1.5));
+	    assertTrue(b.contains(0.5*M_PI));
+
+	    b = ArcInterval(Vector2(0,0),1);
+	    b.subtract(Vector2(1,0),1);
+	    assertFalse(b.contains(0));
+	    assertTrue(b.contains(M_PI));
+
+	    b = ArcInterval(Vector2(0,0),1);
+	    b.subtract(Vector2(-1,0),1);
+	    assertFalse(b.contains(M_PI));
+	    assertTrue(b.contains(0));
+
+            b = ArcInterval(Vector2(0,0),1);
+            b.subtract(Vector2(cos(1.75*M_PI), sin(1.75*M_PI)), 1);
+            assertFalse(b.contains(1.75*M_PI));
+            assertFalse(b.contains(0));
+            assertTrue(b.contains(M_PI));
+
+            b = ArcInterval(Vector2(0,0),1);
+	    b.subtract(Vector2(0,1),1);
+	    b.subtract(Vector2(0,-1),1);
+	    assertTrue(b.contains(M_PI));
+	    assertTrue(b.contains(0));
+	    assertFalse(b.contains(M_PI*1.5));
+	    assertFalse(b.contains(M_PI*0.5));
+	    b.subtract(Vector2(-1,0),1);
+	    assertFalse(b.contains(M_PI));
+	    assertTrue(b.contains(0));
+
+            b = ArcInterval(Vector2(0,0),1);
+            b.subtract(1.5*Vector2(cos(0.25*M_PI), sin(0.25*M_PI)), 0.6);
+            assertFalse(b.contains(0.25*M_PI));
+            assertTrue(b.contains(0.5*M_PI));
+            assertTrue(b.contains(1.0*M_PI));
+            assertTrue(b.contains(1.5*M_PI));
+            assertTrue(b.contains(1.8*M_PI));
+
+            assertTrue(Vector2(cos(0),sin(0)) == Vector2(1,0));
+            assertTrue(Vector2(cos(M_PI),sin(M_PI)) == Vector2(-1,0));
+            assertTrue(Vector2(cos(M_PI*0.5),sin(M_PI*0.5)) == Vector2(0,1));
+            
+            // Test box subtraction
+            b = ArcInterval(Vector2(0,0),1);
+            b.subtract(Vector2(-0.9,-0.9), Vector2(0.9,0.9));
+            assertFalse(b.contains(0.0*M_PI));
+            assertFalse(b.contains(0.5*M_PI));
+            assertFalse(b.contains(1.0*M_PI));
+            assertFalse(b.contains(1.5*M_PI));
+            assertTrue(b.contains(0.25*M_PI));
+            assertTrue(b.contains(0.75*M_PI));
+            assertTrue(b.contains(1.25*M_PI));
+            assertTrue(b.contains(1.75*M_PI));
+	}
+};
+
 int main(int argc, char *argv[]) {
 
     TestSuite suite;
@@ -1476,8 +1523,9 @@ int main(int argc, char *argv[]) {
     suite.add("Sturm sequence",new sturm_sequence_test());
     suite.add("Quaternion",new quaternion_test());
     suite.add("RootFinding",new rootfinding_test());
-    suite.add("Poisson Disc",new poisson_disc_test());
     suite.add("Interval",new interval_test());
+    suite.add("Arc interval",new arc_interval_test());
+    suite.add("Poisson Disc",new poisson_disc_test());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {

@@ -14,11 +14,12 @@ class Interval
 	Interval();
 	Interval(uint32_t initial_capacity);
 	Interval(double from, double to);
+	virtual ~Interval();
 	bool isEmpty() const;
 	void add(const Interval& i);
 	void add(double from, double to);
 	void subtract(const Interval& i);
-	void subtract(double from, double to);
+	virtual void subtract(double from, double to);
 	bool contains(double d) const;
 	double length() const;
 	double random() const;
@@ -50,5 +51,28 @@ uint32_t Interval::getSegmentsNum() const
 {
     return segments.size() / 2;
 }
+
+class ArcInterval : public Interval {
+    public:
+	ArcInterval(Vector2 c, double r);
+
+	const Vector2& getC() { return c; };
+	double getR() { return r; };
+	
+	Vector2 randomPoint() const ;
+
+	// Subtract a circle
+	void subtract(const Vector2& o_c, double o_r);
+	
+	// Subtract the outside of an axis aligned box.
+	void subtract(const Vector2& lower, const Vector2& upper);
+	
+	// Subtract an angle segment
+	void subtract(double from, double to);
+	
+    private:
+	Vector2 c;
+	double r;
+};
 
 #endif

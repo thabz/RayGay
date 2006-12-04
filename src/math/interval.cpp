@@ -5,6 +5,10 @@
 
 using namespace std;
 
+////////////////////////////////////////////////////////////////
+// Interval
+////////////////////////////////////////////////////////////////
+
 Interval::Interval(uint32_t initial_capacity) {
     segments.reserve(2*initial_capacity);
 }
@@ -17,6 +21,9 @@ Interval::Interval(double from, double to)
     segments.reserve(2);
     segments.push_back(from);
     segments.push_back(to);
+}
+
+Interval::~Interval() {
 }
 
 bool Interval::isEmpty() const 
@@ -149,6 +156,7 @@ double Interval::random() const
 	    d += *(p+2) - *(p+1);
 	}
     }
+    assert(contains(d));
     assert(false);
 }
 
@@ -188,5 +196,75 @@ ostream & operator<<(ostream &os, const Interval &v) {
 	}
     }
     return os;
+}
+
+////////////////////////////////////////////////////////////////
+// ArcInterval
+////////////////////////////////////////////////////////////////
+
+
+ArcInterval::ArcInterval(Vector2 c, double r) : Interval(0.0, M_2PI){
+    this->c = c;
+    this->r = r;
+}
+
+Vector2 ArcInterval::randomPoint() const {
+    assert(!isEmpty());
+    double angle = random();
+    return c + r * Vector2(cos(angle),sin(angle));
+}
+
+void ArcInterval::subtract(const Vector2& o_c, double o_r) {
+    Vector2 v = o_c - c;
+    if (v.norm() < (r+o_r)*(r+o_r)) {
+        double l = v.length();
+        double angle = atan2(v[1],v[0]);
+        double theta = acos((r-(r+o_r-l)/2.0)/r);
+        subtract(angle - theta, angle + theta);
+    }
+}
+
+#define get_angle(d,r) acos(fabs(d)/(r))
+void ArcInterval::subtract(const Vector2& lower, const Vector2& upper) {
+    double angle, theta;
+    if (c[0] + r > upper[0]) {
+        angle = 0.0 * M_PI;    
+//        cout << "Box subtract 0" << endl;
+        theta = get_angle(upper[0]-c[0],r);
+        subtract(angle-theta,angle+theta);
+    }
+    if (c[0] - r < lower[0]) {
+        angle = 1.0 * M_PI;    
+//            cout << "Box subtract 1" << endl;
+        theta = get_angle(c[0]-lower[0],r);
+        subtract(angle-theta,angle+theta);
+    }
+    if (c[1] + r > upper[1]) {
+        angle = 0.5 * M_PI;    
+//        cout << "Box subtract 2" << endl;
+        theta = get_angle(upper[1]-c[1],r);
+        subtract(angle-theta,angle+theta);
+    }
+    if (c[1] - r < lower[1]) {
+        angle = 1.5 * M_PI;    
+//        cout << "Box subtract 3" << endl;
+        theta = get_angle(c[1]-lower[1],r);
+        subtract(angle-theta,angle+theta);
+    }
+}
+
+void ArcInterval::subtract(double from, double to) {
+    if (from > to) swap(from,to);
+    if (from >= 0 && to <= M_2PI) {
+        Interval::subtract(from, to);
+    } else if (from < 0 && to < M_2PI) {
+        Interval::subtract(0,to);
+        Interval::subtract(M_2PI + from, M_2PI); 
+    } else if (to > M_2PI && from > 0) {
+        Interval::subtract(from,M_2PI);
+        Interval::subtract(0,to - M_2PI);    
+    } else {
+        assert(false);    
+    }
 }
 
