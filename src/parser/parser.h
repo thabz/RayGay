@@ -16,7 +16,7 @@ class Parser {
 	void parse_file(std::string filename);
 	void parse_expr(std::string expr);
 	static SCM set_settings(SCM s_settings);
-
+        std::string version();
     private:
 	SCM lookup(std::string var_name);
 

@@ -1,5 +1,6 @@
 
 #include <libguile.h>
+#include <sstream>
 
 #include "parser/parser.h"
 #include "parser/wrapper.h"
@@ -227,3 +228,6 @@ SCM Parser::set_settings(SCM s_settings)
 
 }
 
+string Parser::version() {
+    return scm2string(scm_version());     
+}

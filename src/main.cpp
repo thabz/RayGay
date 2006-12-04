@@ -374,7 +374,7 @@ void render_frame(string outputfile, int jobs) {
 
 void print_usage() {
     uint32_t cpus = getNumberOfCPUs();
-    cout << "Usage: tracer [OPTION...] SCENEFILENAME OUTPUTFILENAME" << endl;
+    cout << "Usage: tracer [OPTION...] SCENE-FILENAME OUTPUT-FILENAME" << endl;
     cout << "       -j NUM               Number of threads to run (default " << cpus << ")" << endl;
     if (availableWindowToolkit() != NONE) {
     cout << "       -b                   Run in background with no GUI" << endl;
@@ -390,6 +390,7 @@ void print_usage() {
 void print_version() {
     cout << "Raygay " << VERSION << endl;
     cout << "Copyright (C) 2004, 2005, 2006 Jesper Christensen" << endl;
+    cout << "   Guile: " << parser->version() << endl;
     cout << "   Kernel pagesize: " << getpagesize() << " bytes" << endl;
     cout << "   CPUs: " << getNumberOfCPUs() << endl;
     cout << "   Image formats: ";
