@@ -51,19 +51,19 @@ while (tell INPUT < $input_length) {
 	print "POINT_ARRAY\n";
 	my $num = readUShort();
 	print "   Vertices: $num\n";
-	print OUTPUT "   vertices {\n";
+	print OUTPUT "   'vertices (\n";
 	for(my $i = 0; $i < $num; $i++) {
 	    my @f = (readFloat(),readFloat(),readFloat());
-	    printf OUTPUT "      <%.6f, %.6f, %.6f>\n",@f;
+	    printf OUTPUT "      (%.6f %.6f %.6f)\n",@f;
 	}
-	print OUTPUT "   }\n";
+	print OUTPUT "   )\n";
     } elsif ($chunk_id == 0x4120) {
 	print "FACE ARRAY\n";
 	my $num = readUShort();
 	print "   Faces: $num\n";
-	print OUTPUT "   triangles {\n";
+	print OUTPUT "   'faces (\n";
 	for(my $i = 0; $i < $num; $i++) {
-	    print OUTPUT "      <".readUShort().' '.readUShort().' '.readUShort().">\n";
+	    print OUTPUT "      (".readUShort().' '.readUShort().' '.readUShort().")\n";
 	    my $face_flags = readUShort();
 	}
 	$cur_faces_num = $num;
@@ -75,15 +75,15 @@ while (tell INPUT < $input_length) {
 	    readUShort(); # Refers to faces
 	}
 	my $var_mat = makeVarName($mat_name);
-	print OUTPUT "   /* $num/$cur_faces_num triangles in mesh uses material '$var_mat' */ \n";
+	print OUTPUT "  ; $num/$cur_faces_num triangles in mesh uses material '$var_mat'\n";
     } elsif ($chunk_id == 0x4140) {
 	print "TEX_VERTS\n";
 	my $num = readUShort();
-	print OUTPUT "   uv_coords {\n";
+	print OUTPUT "   'uv_coords (\n";
 	for(my $i = 0; $i < $num; $i++) {
-	    printf OUTPUT "      <%.6f, %.6f>\n",readFloat(),readFloat();
+	    printf OUTPUT "      #(%.6f %.6f)\n",readFloat(),readFloat();
 	}
-	print OUTPUT "   }\n";
+	print OUTPUT "   )\n";
     } elsif ($chunk_id == 0xafff) {
 	if ($inside_material) {
 	    if ($inside_map) {
@@ -219,7 +219,7 @@ sub readColor24 {
     print "************* WARNING! ***********\n" if ($id != 0x11);
     my @col = (readByte()/255.0,readByte()/255.0,readByte()/255.0);
     
-    return sprintf "<%.5f, %.5f, %.5f>",@col;
+    return sprintf "#(%.5f %.5f %.5f)",@col;
 }
 
 sub readAmountOf {
