@@ -64,18 +64,25 @@ void PoissonDiscDistribution::dartThrowing(double w, double h, double r, uint32_
     } while(i < num && found_one);
 }
 
-
+/**
+ * Implementing "A Spatial Data Structure for Fast Poisson-Disk Sample Generation" by
+ * Daniel Dunbar and Greg Humphreys, University of Virginia. Proceedings of SIGGRAPH 2006.
+ * 
+ * @see http://www.cs.virginia.edu/~gfx/pubs/antimony/
+ */
 void PoissonDiscDistribution::boundarySampling(double w, double h, double r, uint32_t num) {
     vector<ArcInterval> boundaries;
+    boundaries.reserve(num);
     uint32_t i = 0;
-    double k  = RANDOM(0,10);
+    Vector2 p; 
 
-    Vector2 initial_point = Vector2(RANDOM(0,w),RANDOM(0,h));
-    boundaries.push_back(ArcInterval(initial_point,2*r));
-    add(initial_point, 2*r);
-	
-    while((!boundaries.empty()) && i++ < num) {
-	Vector2 p = boundaries[0].randomPoint();
+    do {
+        if (i == 0) {
+            // Initial seed point        
+            p = Vector2(RANDOM(0,w),RANDOM(0,h));                
+        } else {
+            p = boundaries[rand() % boundaries.size()].randomPoint();        
+        }     
 	ArcInterval new_boundary = ArcInterval(p,2*r);
 
 	// Subtract the circle at p's from all other active boundaries. Also prune the empty.
@@ -101,8 +108,12 @@ void PoissonDiscDistribution::boundarySampling(double w, double h, double r, uin
         }
         
 	add(p, 2*r);
+
+	for(uint32_t j = 0; j < boundaries.size(); j++) {
+	    assert(!boundaries[j].isEmpty());
+        }
 	
 //	cout << "Boundaries: " << boundaries.size() << endl;
-    }
+    } while ((!boundaries.empty()) && i++ < num);
 }
 

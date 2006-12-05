@@ -1396,6 +1396,25 @@ class interval_test : public Test {
 	    i1.subtract(Interval(-10,10));  // Case 1
 	    assertTrue(i1.isEmpty());
 
+	    i1 = Interval(0,100);
+	    i1.subtract(1,2);
+	    i1.subtract(3,4);
+	    i1.subtract(20,40);
+	    i1.subtract(50,70);
+	    i1.subtract(78,79);
+	    i1.subtract(80,90);
+	    i1.subtract(98,99);
+            i1.subtract(10,95);
+            assertFalse(i1.contains(15));
+            assertFalse(i1.contains(25));
+            assertFalse(i1.contains(40));
+            assertFalse(i1.contains(60));
+            assertFalse(i1.contains(75));
+            assertFalse(i1.contains(85));
+            assertFalse(i1.contains(92));
+            assertTrue(i1.contains(97));
+            assertTrue(i1.contains(5));
+            
 	    // Test random()
 	    i1 = Interval(0,100);
 	    i1.subtract(20,40);
@@ -1481,9 +1500,24 @@ class arc_interval_test : public Test {
             assertTrue(b.contains(1.5*M_PI));
             assertTrue(b.contains(1.8*M_PI));
 
+
+            b = ArcInterval(Vector2(0,0),1);
+	    b.subtract(Vector2(0,2),0.5);
+            assertTrue(b.contains(0.5*M_PI));
+
+            b = ArcInterval(Vector2(10,10),2);
+	    b.subtract(Vector2(12.1,10.1),2);
+	    b.subtract(Vector2(7.9,10.2),2);
+            assertFalse(b.isEmpty());
+            assertTrue(b.contains(0.5*M_PI));
+            assertTrue(b.contains(1.5*M_PI));
+            assertTrue(b.contains(1.4*M_PI));
+            assertTrue(b.contains(1.6*M_PI));
+
             assertTrue(Vector2(cos(0),sin(0)) == Vector2(1,0));
             assertTrue(Vector2(cos(M_PI),sin(M_PI)) == Vector2(-1,0));
             assertTrue(Vector2(cos(M_PI*0.5),sin(M_PI*0.5)) == Vector2(0,1));
+            assertTrue(Vector2(cos(M_PI*1.5),sin(M_PI*1.5)) == Vector2(0,-1));
             
             // Test box subtraction
             b = ArcInterval(Vector2(0,0),1);

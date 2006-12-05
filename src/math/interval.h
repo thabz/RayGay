@@ -56,12 +56,10 @@ class ArcInterval : public Interval {
     public:
 	ArcInterval(Vector2 c, double r);
 
-	const Vector2& getC() { return c; };
-	double getR() { return r; };
-	
+        // Returns a uniform random point from the arc interval	
 	Vector2 randomPoint() const ;
 
-	// Subtract a circle
+	// Subtract the inside of a disc
 	void subtract(const Vector2& o_c, double o_r);
 	
 	// Subtract the outside of an axis aligned box.

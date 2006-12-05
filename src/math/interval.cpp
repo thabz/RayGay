@@ -104,6 +104,7 @@ void Interval::subtract(double f, double t)
 	    // Case 1: Remove segment
 	    segments.erase(s);
 	    segments.erase(s);
+	    i--;
 	}
 	else if (f > s[0] && f < s[1] && t >= s[1]) {
 	    // Case 4: Clip segment
@@ -151,12 +152,12 @@ double Interval::random() const
     d += segments[0];
     for(std::vector<double>::const_iterator p = segments.begin(); p != segments.end(); p += 2) {
 	if (IS_LESS_THAN(d,*(p+1))) {
+            assert(contains(d));
 	    return d;
 	} else {
 	    d += *(p+2) - *(p+1);
 	}
     }
-    assert(contains(d));
     assert(false);
 }
 
@@ -216,8 +217,9 @@ Vector2 ArcInterval::randomPoint() const {
 
 void ArcInterval::subtract(const Vector2& o_c, double o_r) {
     Vector2 v = o_c - c;
-    if (v.norm() < (r+o_r)*(r+o_r)) {
+    if (v.norm() < (r+o_r)*(r+o_r)-EPSILON) {
         double l = v.length();
+        assert (l >= r - EPSILON);
         double angle = atan2(v[1],v[0]);
         double theta = acos((r-(r+o_r-l)/2.0)/r);
         subtract(angle - theta, angle + theta);
@@ -229,25 +231,21 @@ void ArcInterval::subtract(const Vector2& lower, const Vector2& upper) {
     double angle, theta;
     if (c[0] + r > upper[0]) {
         angle = 0.0 * M_PI;    
-//        cout << "Box subtract 0" << endl;
         theta = get_angle(upper[0]-c[0],r);
         subtract(angle-theta,angle+theta);
     }
     if (c[0] - r < lower[0]) {
         angle = 1.0 * M_PI;    
-//            cout << "Box subtract 1" << endl;
         theta = get_angle(c[0]-lower[0],r);
         subtract(angle-theta,angle+theta);
     }
     if (c[1] + r > upper[1]) {
         angle = 0.5 * M_PI;    
-//        cout << "Box subtract 2" << endl;
         theta = get_angle(upper[1]-c[1],r);
         subtract(angle-theta,angle+theta);
     }
     if (c[1] - r < lower[1]) {
         angle = 1.5 * M_PI;    
-//        cout << "Box subtract 3" << endl;
         theta = get_angle(c[1]-lower[1],r);
         subtract(angle-theta,angle+theta);
     }
@@ -255,16 +253,19 @@ void ArcInterval::subtract(const Vector2& lower, const Vector2& upper) {
 
 void ArcInterval::subtract(double from, double to) {
     if (from > to) swap(from,to);
-    if (from >= 0 && to <= M_2PI) {
-        Interval::subtract(from, to);
-    } else if (from < 0 && to < M_2PI) {
-        Interval::subtract(0,to);
-        Interval::subtract(M_2PI + from, M_2PI); 
-    } else if (to > M_2PI && from > 0) {
-        Interval::subtract(from,M_2PI);
-        Interval::subtract(0,to - M_2PI);    
+    if (from > M_2PI) {
+        subtract(from - M_2PI, to - M_2PI);    
+    } else if (to < 0) {
+        subtract(from + M_2PI, to + M_2PI);      
+    } else if (from < 0) {
+        subtract(0,to);
+        subtract(M_2PI + from, M_2PI); 
+    } else if (to > M_2PI) {
+        subtract(from,M_2PI);
+        subtract(0,to - M_2PI);    
     } else {
-        assert(false);    
+        assert(from >= 0 && to <= M_2PI);
+        Interval::subtract(from, to);
     }
 }
 

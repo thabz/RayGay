@@ -3,11 +3,13 @@
 #define VECTOR2_H
 
 #include "math/constants.h"
+#include <iostream>
 
 /// Implements a 2D vector
 class Vector2 
 {
     friend Vector2 operator*(const double x, const Vector2 &v);
+    friend std::ostream & operator<< (std::ostream &os, const Vector2 &v);
     
     public:
 	/// Constructs the origin
