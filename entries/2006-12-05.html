@@ -8,14 +8,14 @@
 <p>Følgende billede viser 2127 punkter fundet på 0.04 sekund, via systems random-funktion. Disse punkter er uniformt fordelte, men klumper sammen. Sådanne klumper er spild af tid, da de resulterer i mange rays i samme retning.</p>
 <p><a href="files/dist-random.png"><img border="0" src="files/_dist-random.png"></a></p>
 
-<h>Dartthrowing</h>
+<h>Dart-throwing</h>
 <p>Den tæt-på-perfekte fordeling er Poissons diskfordeling. I denne gælder det at alle punkter er uniformt fordelte og har en disk omkring sig hvor i ingen andre punkter ligger. Det er dog meget svært at genere sådan en samling punkter. Hidtil har man brugt en metode kaldet dart-throwing, hvor man finder uniformt fordelte tilfældige punkter og smider de punkter væk som ender i andre punkters disk. I nedenstående billede repræsenteres disse punkter og deres diske som kugler.</p>
 
-<p>Dartthrowing fandt 1782 punkter på tiden 1:39.92, dvs. 1 minut og 40 sekunder. Punkterne er dog uniformt fordelte. For at kunne terminere opgiver Dartthrowing-metoden når den har smidt for mange punkter væk i streg. I dette tilfælde opgiver den når et nyt punkt ikke kan findes efter 10 millioner forsøg. Derfor er der huller i nedenstående billede.</p>
+<p>Dart-throwing fandt 1782 punkter på tiden 1:39.92, dvs. 1 minut og 40 sekunder. Punkterne er dog uniformt fordelte. For at kunne terminere opgiver Dart-throwing-metoden når den har smidt for mange punkter væk i streg. I dette tilfælde opgiver den når et nyt punkt ikke kan findes efter 10 millioner forsøg. Derfor er der huller i nedenstående billede.</p>
 <p><a href="files/dist-poisson-dartthrowing.png"><img border="0" src="files/_dist-poisson-dartthrowing.png"></a></p>
 
 <h>Halton</h>
-<p>Dartthrowing-metode er for langsom til at den effektivt kan bruges i raytracing. Jeg har derfor hidtil brugt en Halton-sekvens, som er en hurtig quasi-Monte-Carlo sekvens. Denne fordeler punkterne ret pænt --- med bedre fordeling end den helt tilfældige metode øverst, men ikke helt så god som Poissons diskfordeling via dart-throwing.</p>
+<p>Dart-throwing-metode er for langsom til at den effektivt kan bruges i raytracing. Jeg har derfor hidtil brugt en Halton-sekvens, som er en hurtig quasi-Monte-Carlo sekvens. Denne fordeler punkterne ret pænt --- med bedre fordeling end den helt tilfældige metode øverst, men ikke helt så god som Poissons diskfordeling via dart-throwing.</p>
 
 <p>Halton-sekvensen udregnede 2127 punkter på 0.21 sekund.</p>
 <p><a href="files/dist-halton.png"><img border="0" src="files/_dist-halton.png"></a></p>
