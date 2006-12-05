@@ -23,6 +23,6 @@
 <p>Der findes andre quasi-Monte-Carlo sekvenser såsom Hammersley- og Sobol-sekvenser. Disse giver punkter som ikke er radikalt bedre end Halton-sekvensen. Samme gælder et jittered grid.</p>
 
 <h>Boundary-sampling</h>
-<p>Jeg har netop implementeret en helt ny algoritme kaldet Boundary-sampling. Den er nyligt opfundet af Daniel Dunbar and Greg Humphreys i deres <a href="http://www.cs.virginia.edu/~gfx/pubs/antimony/">artikel</a> "A Spatial Data Structure for Fast Poisson-Disk Sample Generation" fra <i>Proceedings of SIGGRAPH 2006</i>. Det er en snedig metode til at finde punkter fordelt efter Poissons diskfordeling. Den efterlader desuden ikke huller, hvilket dartthrowing var nødt til for at holde tidsforbruget nede.</p>
+<p>Jeg har netop implementeret en helt ny algoritme kaldet Boundary-sampling. Den er nyligt opfundet af Daniel Dunbar and Greg Humphreys i deres <a href="http://www.cs.virginia.edu/~gfx/pubs/antimony/antimony.pdf">artikel</a> "A Spatial Data Structure for Fast Poisson-Disk Sample Generation" fra <i>Proceedings of SIGGRAPH 2006</i>. Det er en snedig metode til at finde punkter fordelt efter Poissons diskfordeling. Den efterlader desuden ikke huller, hvilket dartthrowing var nødt til for at holde tidsforbruget nede.</p>
 <p>Nedenstående 2127 punkter er beregnet med denne metode. Det tog 0.27 sekund.</p>
 <p><a href="files/dist-poisson-boundary.png"><img border="0" src="files/_dist-poisson-boundary.png"></a></p>
