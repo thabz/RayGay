@@ -41,7 +41,7 @@ void Camera::init() {
     basis = Matrix::matrixOrient(position - look_at,up);
     inv_basis = basis.inverse();
     au = tan(field_of_view_radians / 2.0);
-    av = (height * au) / width;
+    av = aspect_ratio * au;
     initialized = true;
 
     this->up.normalize();
@@ -84,6 +84,7 @@ void Camera::transform(const Matrix& m) {
  */
 Vector2 Camera::project(const Vector& p) const {
     throw_exception("Not implemented!");
+    /*
     Vector v = inv_basis * (p - position);
    // if (v.z() > 0.0) return Vector2(-1,-1);
 
@@ -91,9 +92,13 @@ Vector2 Camera::project(const Vector& p) const {
     sp[0] = (((v.x() / (-v.z())) + au) * (width - 1.0)) / (2.0 * au);
     sp[1] = (((v.y() / (-v.z())) + av) * (height - 1.0)) / (2.0 * av);
     return sp;
+    */
 }
 
 /**
+ * @param x coordinate in [0,1]
+ * @param y coordinate in [0,1]
+ * 
  * This will fetch the ray from the subclass' _getRay() method and
  * then apply depth of field if needed.
  */
@@ -101,7 +106,7 @@ Ray Camera::getRay(const double x, const double y) {
     if (!initialized) 
 	init();
 
-    Ray result = _getRay(x / width, y / height);
+    Ray result = _getRay(x, y);
 
     if (dof_enabled) {
 	// Jitter position and adjust direction

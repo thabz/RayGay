@@ -63,8 +63,8 @@ class Camera {
 	/// Get a ray going through the screen
 	Ray getRay(const double x, const double y);
 
-
-	void setImageSize(int width, int height) { this->width = width; this->height = height; };
+        /// Set aspect ratio ie. image height / width
+	void setAspectRatio(double aspect_ratio) { this->aspect_ratio = aspect_ratio; };
 
 	/// Project a 3D point to the 2D screen
 	Vector2 project(const Vector& p) const;
@@ -84,7 +84,7 @@ class Camera {
 	SamplerFactory* sampler_factory;
 	QMCSequence* get_dof_qmc();
 	pthread_key_t dof_qmc_key;
-	int width, height; ///< Image size in pixels
+	double aspect_ratio;  ///< height / width in output image
 
     protected:
 	/// Get a ray going through the screen

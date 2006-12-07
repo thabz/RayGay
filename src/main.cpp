@@ -261,7 +261,7 @@ void render_frame(string outputfile, int jobs) {
     int img_w = renderersettings->image_width;
     int img_h = renderersettings->image_height;
 
-    scene->getCamera()->setImageSize(img_w,img_h);
+    scene->getCamera()->setAspectRatio(double(img_h) / double(img_w));
     Image* img = new ImageImpl<float,4>(img_w, img_h, renderersettings->image_alloc_model);
 
     Environment* env = Environment::getUniqueInstance();

@@ -44,13 +44,13 @@ void Sampler::setPixel(int x, int y, const RGBA& color)
 inline
 RGBA Sampler::sample(double x, double y)
 {
-    return renderer->getPixel(Vector2(x,y));
+    return renderer->getPixel(Vector2(x / image->getWidth(), y / image->getHeight()));
 }
 
 inline
 RGBA Sampler::sample(const Vector2& pos)
 {
-    return renderer->getPixel(pos);
+    return sample(pos[0],pos[1]);
 }
 
 

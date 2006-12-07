@@ -76,16 +76,18 @@ void Renderer::render(const RenderJob& job) {
  */
 void Renderer::renderPreview(const RenderJob& job) {
 
+    int img_w = img->getWidth();
+    int img_h = img->getHeight();
+    
     // Find the corner colors 
-    job.ul = getPixel(Vector2(job.begin_x,job.begin_y));
-    job.ur = getPixel(Vector2(job.end_x,job.begin_y));
-    job.ll = getPixel(Vector2(job.begin_x,job.end_y));
-    job.lr = getPixel(Vector2(job.end_x,job.end_y));
+    job.ul = getPixel(Vector2(double(job.begin_x)/img_w, double(job.begin_y)/img_h));
+    job.ur = getPixel(Vector2(double(job.end_x)/img_w, double(job.begin_y)/img_h));
+    job.ll = getPixel(Vector2(double(job.begin_x)/img_w, double(job.end_y)/img_h));
+    job.lr = getPixel(Vector2(double(job.end_x)/img_w, double(job.end_y)/img_h));
     
     // Plot the gradient
     int w = job.end_x - job.begin_x;
     int h = job.end_y - job.begin_y;
-    int img_h = img->getHeight();
     for(int y = 0; y < h; y++) {
 	for(int x = 0; x < w; x++) {
 	    double dx = double(x) / double (w);
