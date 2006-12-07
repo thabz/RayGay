@@ -110,7 +110,7 @@ Ray Camera::getRay(double x, double y) {
     
     if (zoom_enabled) {
         x = zoom_pos[0] + x * zoom_width;
-        y = zoom_pos[1] + y * zoom_width * aspect_ratio;             
+        y = zoom_pos[1] + y * zoom_width;             
     } 
 
     Ray result = _getRay(x, y);
