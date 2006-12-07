@@ -58,6 +58,13 @@ void extractCamera(SCM s_options, Camera* camera, char* function_name) {
 	    int samples = scm_num2int(scms[1], 0, "");
 	    Vector focalpoint = scm2vector(scms[2], "", 0);
 	    camera->enableDoF(aperture, samples, focalpoint);
+    	} else if (key == "zoom") {
+    	    SCM scms[2];
+ 	    scms[0] = scm_list_ref(s_value, scm_int2num(0));
+ 	    scms[1] = scm_list_ref(s_value, scm_int2num(1));
+            Vector2 offset = scm2vector2(scms[0], "scm2vector2", 0);
+    	    double width = scm_num2double(scms[1], 0, "num2double");
+    	    camera->setZoom(offset, width);
 	} else {
 	    cout << "Unknown camera option: " << key << endl;
 	}

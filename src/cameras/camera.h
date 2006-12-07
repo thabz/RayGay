@@ -61,10 +61,12 @@ class Camera {
 	uint32_t getAADepth() const { return aa_depth; };
 
 	/// Get a ray going through the screen
-	Ray getRay(const double x, const double y);
+	Ray getRay(double x, double y);
 
         /// Set aspect ratio ie. image height / width
 	void setAspectRatio(double aspect_ratio) { this->aspect_ratio = aspect_ratio; };
+
+        void setZoom(const Vector2& pos, double width);
 
 	/// Project a 3D point to the 2D screen
 	Vector2 project(const Vector& p) const;
@@ -85,6 +87,9 @@ class Camera {
 	QMCSequence* get_dof_qmc();
 	pthread_key_t dof_qmc_key;
 	double aspect_ratio;  ///< height / width in output image
+	Vector2 zoom_pos;
+	double zoom_width;
+	bool zoom_enabled;
 
     protected:
 	/// Get a ray going through the screen

@@ -7,6 +7,7 @@
 Camera::Camera() {
     aa_enabled = false;
     dof_enabled = false;
+    zoom_enabled = false;
     initialized = false;
     sampler_factory = NULL;
 }
@@ -23,6 +24,7 @@ Camera::Camera() {
 Camera::Camera(Vector position, Vector lookAt, Vector up, double fieldOfView, int width, int height) {
     aa_enabled = false;
     dof_enabled = false;
+    zoom_enabled = false;
     this->look_at = lookAt;
     this->up = up;
     this->up.normalize();
@@ -102,9 +104,14 @@ Vector2 Camera::project(const Vector& p) const {
  * This will fetch the ray from the subclass' _getRay() method and
  * then apply depth of field if needed.
  */
-Ray Camera::getRay(const double x, const double y) {
+Ray Camera::getRay(double x, double y) {
     if (!initialized) 
 	init();
+    
+    if (zoom_enabled) {
+        x = zoom_pos[0] + x * zoom_width;
+        y = zoom_pos[1] + y * zoom_width * aspect_ratio;             
+    } 
 
     Ray result = _getRay(x, y);
 
@@ -149,3 +156,8 @@ QMCSequence* Camera::get_dof_qmc() {
     return qmc;
 }
 
+void Camera::setZoom(const Vector2& pos, double width) {
+    zoom_pos = pos;
+    zoom_width = width;        
+    zoom_enabled = true;
+}
