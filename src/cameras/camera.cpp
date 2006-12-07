@@ -2,6 +2,7 @@
 #include "camera.h"
 #include "ray.h"
 #include "math/functions.h"
+#include "exception.h"
 
 Camera::Camera() {
     aa_enabled = false;
@@ -82,6 +83,7 @@ void Camera::transform(const Matrix& m) {
  * Map a 3D point onto the screen
  */
 Vector2 Camera::project(const Vector& p) const {
+    throw_exception("Not implemented!");
     Vector v = inv_basis * (p - position);
    // if (v.z() > 0.0) return Vector2(-1,-1);
 
