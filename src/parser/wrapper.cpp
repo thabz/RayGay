@@ -73,6 +73,15 @@ SCM path2scm(Path* path) {
     SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
 }
 
+Path* scm2path(SCM object_smob, char* subr, int pos) {
+    struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
+    if (o->type != PATH) {
+	scm_wrong_type_arg(subr, pos, object_smob);
+    }
+    return o->path;
+}
+
+
 SCM sceneobject2scm(SceneObject* sceneobject) {
     struct wrapped_object* object;
     object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
@@ -80,6 +89,15 @@ SCM sceneobject2scm(SceneObject* sceneobject) {
     object->type = SCENEOBJECT;
     SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
 }
+
+SceneObject* scm2sceneobject(SCM object_smob, char* subr, int pos) {
+    struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
+    if (o->type != SCENEOBJECT) {
+	scm_wrong_type_arg(subr, pos, object_smob);
+    }
+    return o->sceneobject;
+}
+
 
 SCM sampler2scm(SamplerFactory* sampler) {
     struct wrapped_object* object;
@@ -89,6 +107,15 @@ SCM sampler2scm(SamplerFactory* sampler) {
     SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
 }
 
+SamplerFactory* scm2sampler(SCM object_smob, char* subr, int pos) {
+    struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
+    if (o->type != SAMPLER) {
+	scm_wrong_type_arg(subr, pos, object_smob);
+    }
+    return o->sampler;
+}
+
+
 SCM camera2scm(Camera* camera) {
     struct wrapped_object* object;
     object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
@@ -97,12 +124,31 @@ SCM camera2scm(Camera* camera) {
     SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
 }
 
+Camera* scm2camera(SCM object_smob, char* subr, int pos) {
+    struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
+    if (o->type != CAMERA) {
+	scm_wrong_type_arg(subr, pos, object_smob);
+    }
+    return o->camera;
+}
+
+
+
+
 SCM texture2scm(Texture* texture) {
     struct wrapped_object* object;
     object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
     object->type = TEXTURE; 
     object->texture = texture;
     SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
+}
+
+Texture* scm2texture(SCM object_smob, char* subr, int pos) {
+    struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
+    if (o->type != TEXTURE) {
+	scm_wrong_type_arg(subr, pos, object_smob);
+    }
+    return o->texture;
 }
 
 SCM material2scm(Material* material) {
@@ -113,6 +159,14 @@ SCM material2scm(Material* material) {
     SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
 }
 
+Material* scm2material(SCM object_smob, char* subr, int pos) {
+    struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
+    if (o->type != MATERIAL) {
+	scm_wrong_type_arg(subr, pos, object_smob);
+    }
+    return o->material;
+}
+
 SCM lightsource2scm(Lightsource* lightsource) {
     struct wrapped_object* object;
     object = (struct wrapped_object*) scm_must_malloc (sizeof (struct wrapped_object), "wrappedobject");
@@ -120,6 +174,16 @@ SCM lightsource2scm(Lightsource* lightsource) {
     object->type = LIGHTSOURCE;
     SCM_RETURN_NEWSMOB(wrapped_object_tag, object);
 }
+
+Lightsource* scm2lightsource(SCM object_smob, char* subr, int pos)
+{
+    struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
+    if (o->type != LIGHTSOURCE) {
+	scm_wrong_type_arg(subr, pos, object_smob);
+    }
+    return o->lightsource;
+}
+
 
 SCM mark_wrapper (SCM image_smob) {
     //cout << "mark_wrapper() called." << endl;

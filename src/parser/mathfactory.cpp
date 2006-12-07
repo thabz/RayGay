@@ -68,10 +68,9 @@ SCM make_halton_set(SCM s_w, SCM s_h, SCM s_num) {
     double w = scm_num2double(s_w, 1, proc);
     double h = scm_num2double(s_h, 2, proc);
     int num = scm_num2int(s_num, 3, proc);
-    Vector2* set = new Vector2[num];
     Halton halton = Halton(2,2);
     SCM s_set = SCM_EOL;
-    for(uint32_t i = 0; i < num; i++) {
+    for(int i = 0; i < num; i++) {
         double *values = halton.getNext();
 	SCM s_point = scm_list_2(scm_double2num(w*values[0]), scm_double2num(h*values[1]));
 	SCM s_point_wrap = scm_list_1(s_point);

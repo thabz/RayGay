@@ -15,6 +15,61 @@
 
 using namespace std;
 
+void extractCamera(SCM s_options, Camera* camera, char* function_name) {
+    if (SCM_FALSEP (scm_list_p (s_options))) {
+	scm_wrong_type_arg (function_name, 1, s_options);
+    }
+    uint32_t length = scm_num2int(scm_length(s_options),0,"");
+    
+    assert(length % 2 == 0);
+    uint32_t argc = length / 2;
+
+    for(uint32_t i = 0; i < argc; i++) {
+	size_t l;
+	char* key_c = gh_symbol2newstr(scm_list_ref(s_options, scm_int2num(i*2)),&l);
+	string key = string(key_c);
+	SCM s_value = scm_list_ref(s_options, scm_int2num(i*2+1));
+	if (key == "pos") {
+	    Vector v = scm2vector(s_value, function_name, 2+2*i);
+	    camera->setPosition(v);
+	} else if (key == "lookat") {
+	    Vector v = scm2vector(s_value, function_name, 2+2*i);
+	    camera->setLookAt(v);
+	} else if (key == "up") {
+	    Vector v = scm2vector(s_value, function_name, 2+2*i);
+	    camera->setUp(v);
+	} else if (key == "fov") {
+	    double fov = scm_num2double(s_value,0,"");
+	    camera->setFieldOfView(fov);
+	} else if (key == "aa") {
+	    int aa = scm_num2int(s_value,0,"");
+	    SamplerFactory* s = new WhittedAdaptiveFactory(aa);
+	    camera->setSamplerFactory(s);
+	    camera->enableAdaptiveSupersampling(aa);
+	} else if (key == "sampler") {
+	    SamplerFactory* s = scm2sampler(s_value, function_name, 2+2*i);
+	    camera->setSamplerFactory(s);
+	} else if (key == "dof") {
+	    SCM scms[3];
+	    for(uint32_t i = 0; i < 3; i++) {
+		scms[i] = scm_list_ref(s_value, scm_int2num(i));
+	    }
+	    double aperture = scm_num2double(scms[0], 0, "");
+	    int samples = scm_num2int(scms[1], 0, "");
+	    Vector focalpoint = scm2vector(scms[2], "", 0);
+	    camera->enableDoF(aperture, samples, focalpoint);
+	} else {
+	    cout << "Unknown camera option: " << key << endl;
+	}
+    }
+    if (camera->getSamplerFactory() == NULL) {
+	SamplerFactory* p = new NonAASamplerFactory();
+	camera->setSamplerFactory(p);
+    }
+        
+} 
+
+
 /**
  * Create a pinhole camera.
  *
@@ -30,180 +85,19 @@ using namespace std;
  */
 SCM CameraFactory::make_pinhole_camera(SCM s_options) {
     Camera* camera = new Pinhole();
-
-    if (SCM_FALSEP (scm_list_p (s_options))) {
-	scm_wrong_type_arg ("make-pinhole-camera", 1, s_options);
-    }
-    uint32_t length = scm_num2int(scm_length(s_options),0,"");
-    
-    assert(length % 2 == 0);
-    uint32_t argc = length / 2;
-
-    for(uint32_t i = 0; i < argc; i++) {
-	size_t l;
-	char* key_c = gh_symbol2newstr(scm_list_ref(s_options, scm_int2num(i*2)),&l);
-	string key = string(key_c);
-	SCM s_value = scm_list_ref(s_options, scm_int2num(i*2+1));
-	if (key == "pos") {
-	    Vector v = scm2vector(s_value," make-pinhole-camera", 2+2*i);
-	    camera->setPosition(v);
-	} else if (key == "lookat") {
-	    Vector v = scm2vector(s_value, "make-pinhole-camera", 2+2*i);
-	    camera->setLookAt(v);
-	} else if (key == "up") {
-	    Vector v = scm2vector(s_value, "make-pinhole-camera", 2+2*i);
-	    camera->setUp(v);
-	} else if (key == "up") {
-	    Vector v = scm2vector(s_value, "make-pinhole-camera", 2+2*i);
-	    camera->setUp(v);
-	} else if (key == "fov") {
-	    double fov = scm_num2double(s_value,0,"");
-	    camera->setFieldOfView(fov);
-	} else if (key == "aa") {
-	    int aa = scm_num2int(s_value,0,"");
-	    SamplerFactory* s = new WhittedAdaptiveFactory(aa);
-	    camera->setSamplerFactory(s);
-	    camera->enableAdaptiveSupersampling(aa);
-	} else if (key == "sampler") {
-	    SamplerFactory* s = scm2sampler(s_value, "make-pinhole-camera", 2+2*i);
-	    camera->setSamplerFactory(s);
-	} else if (key == "dof") {
-	    SCM scms[3];
-	    for(uint32_t i = 0; i < 3; i++) {
-		scms[i] = scm_list_ref(s_value, scm_int2num(i));
-	    }
-	    double aperture = scm_num2double(scms[0], 0, "");
-	    int samples = scm_num2int(scms[1], 0, "");
-	    Vector focalpoint = scm2vector(scms[2], "", 0);
-	    camera->enableDoF(aperture, samples, focalpoint);
-	} else {
-	    cout << "Unknown camera option: " << key << endl;
-	}
-    }
-    if (camera->getSamplerFactory() == NULL) {
-	SamplerFactory* p = new NonAASamplerFactory();
-	camera->setSamplerFactory(p);
-    }
+    extractCamera(s_options, camera, "make-pinhole-camera");
     return camera2scm(camera);
 }
 
 SCM CameraFactory::make_lat_long_camera(SCM s_options) {
-    char* proc = "make-lat-long-camera";
     Camera* camera = new LatLong();
-
-    if (SCM_FALSEP (scm_list_p (s_options))) {
-	scm_wrong_type_arg (proc, 1, s_options);
-    }
-    uint32_t length = scm_num2int(scm_length(s_options),0,"");
-    
-    assert(length % 2 == 0);
-    uint32_t argc = length / 2;
-
-    for(uint32_t i = 0; i < argc; i++) {
-	size_t l;
-	char* key_c = gh_symbol2newstr(scm_list_ref(s_options, scm_int2num(i*2)),&l);
-	string key = string(key_c);
-	SCM s_value = scm_list_ref(s_options, scm_int2num(i*2+1));
-	if (key == "pos") {
-	    Vector v = scm2vector(s_value, proc, 2+2*i);
-	    camera->setPosition(v);
-	} else if (key == "lookat") {
-	    Vector v = scm2vector(s_value, proc, 2+2*i);
-	    camera->setLookAt(v);
-	} else if (key == "up") {
-	    Vector v = scm2vector(s_value, proc, 2+2*i);
-	    camera->setUp(v);
-	} else if (key == "up") {
-	    Vector v = scm2vector(s_value, proc, 2+2*i);
-	    camera->setUp(v);
-	} else if (key == "fov") {
-	    double fov = scm_num2double(s_value,0,"");
-	    camera->setFieldOfView(fov);
-	} else if (key == "aa") {
-	    int aa = scm_num2int(s_value,0,"");
-	    SamplerFactory* s = new WhittedAdaptiveFactory(aa);
-	    camera->setSamplerFactory(s);
-	    camera->enableAdaptiveSupersampling(aa);
-	} else if (key == "sampler") {
-	    SamplerFactory* s = scm2sampler(s_value, proc, 2+2*i);
-	    camera->setSamplerFactory(s);
-	} else if (key == "dof") {
-	    SCM scms[3];
-	    for(uint32_t i = 0; i < 3; i++) {
-		scms[i] = scm_list_ref(s_value, scm_int2num(i));
-	    }
-	    double aperture = scm_num2double(scms[0], 0, "");
-	    int samples = scm_num2int(scms[1], 0, "");
-	    Vector focalpoint = scm2vector(scms[2], "", 0);
-	    camera->enableDoF(aperture, samples, focalpoint);
-	} else {
-	    cout << "Unknown camera option: " << key << endl;
-	}
-    }
-    if (camera->getSamplerFactory() == NULL) {
-	SamplerFactory* p = new NonAASamplerFactory();
-	camera->setSamplerFactory(p);
-    }
+    extractCamera(s_options, camera, "make-lat-long-camera");
     return camera2scm(camera);
 }
 
 SCM CameraFactory::make_fisheye_camera(SCM s_options) {
-    char* proc = "make-fisheye-camera";
     Camera* camera = new Fisheye();
-
-    if (SCM_FALSEP (scm_list_p (s_options))) {
-	scm_wrong_type_arg (proc, 1, s_options);
-    }
-    uint32_t length = scm_num2int(scm_length(s_options),0,"");
-    
-    assert(length % 2 == 0);
-    uint32_t argc = length / 2;
-
-    for(uint32_t i = 0; i < argc; i++) {
-	size_t l;
-	char* key_c = gh_symbol2newstr(scm_list_ref(s_options, scm_int2num(i*2)),&l);
-	string key = string(key_c);
-	SCM s_value = scm_list_ref(s_options, scm_int2num(i*2+1));
-	if (key == "pos") {
-	    Vector v = scm2vector(s_value, proc, 2+2*i);
-	    camera->setPosition(v);
-	} else if (key == "lookat") {
-	    Vector v = scm2vector(s_value, proc, 2+2*i);
-	    camera->setLookAt(v);
-	} else if (key == "up") {
-	    Vector v = scm2vector(s_value, proc, 2+2*i);
-	    camera->setUp(v);
-	} else if (key == "up") {
-	    Vector v = scm2vector(s_value, proc, 2+2*i);
-	    camera->setUp(v);
-	} else if (key == "fov") {
-	    double fov = scm_num2double(s_value,0,"");
-	    camera->setFieldOfView(fov);
-	} else if (key == "aa") {
-	    int aa = scm_num2int(s_value,0,"");
-	    SamplerFactory* s = new WhittedAdaptiveFactory(aa);
-	    camera->setSamplerFactory(s);
-	    camera->enableAdaptiveSupersampling(aa);
-	} else if (key == "sampler") {
-	    SamplerFactory* s = scm2sampler(s_value, proc, 2+2*i);
-	    camera->setSamplerFactory(s);
-	} else if (key == "dof") {
-	    SCM scms[3];
-	    for(uint32_t i = 0; i < 3; i++) {
-		scms[i] = scm_list_ref(s_value, scm_int2num(i));
-	    }
-	    double aperture = scm_num2double(scms[0], 0, "");
-	    int samples = scm_num2int(scms[1], 0, "");
-	    Vector focalpoint = scm2vector(scms[2], "", 0);
-	    camera->enableDoF(aperture, samples, focalpoint);
-	} else {
-	    cout << "Unknown camera option: " << key << endl;
-	}
-    }
-    if (camera->getSamplerFactory() == NULL) {
-	SamplerFactory* p = new NonAASamplerFactory();
-	camera->setSamplerFactory(p);
-    }
+    extractCamera(s_options, camera, "make-fisheye-camera");
     return camera2scm(camera);
 }
 
