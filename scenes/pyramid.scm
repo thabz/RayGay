@@ -19,7 +19,7 @@
        ks 0.0
        specpow 15)))
 
-(define gred
+(define red
   (make-material
     '( diffuse (0.9 0.2 0.01)
        kd 0.8
@@ -50,18 +50,17 @@
 (dotimes h layers
   (let ((p (* o (- layers h) 0.5)))
     (do times x h           
-      (do times z h 
-        (make-sphere 
-	  (vector (+ p (* x o))
- 	          (* o 0.7 (- layers h))
-	          (+ p (* z o)))
-          jointsize chrome)
+      (do times z h
+        (let ((top-center (vector (+ p (* x o))
+     	                          (* o 0.7 (- layers h))
+    	                          (+ p (* z o)))))
+          (make-sphere top-center jointsize chrome)
            
 	  (unless (= x (- h 1))
-            (cylinder))
+            (cylinder top-center ...))
           (unless (or (= x (- h 1)) (= z 0))
-	    (cylinder)
-	    (sphere))
+	    (cylinder top-center ...)
+	    (sphere (v- top-center `#(,(* 0.5 o) 0 (* -0.5 o))) red))
           (unless (or (= x 0) (= z 0))
             (cylinder))
           (unless (= z (- h 1))
@@ -70,6 +69,4 @@
             (cylinder))
           (unless (or (= z (- h 1)) (= x (- h 1)))
             (cylinder))))))
-
-
 

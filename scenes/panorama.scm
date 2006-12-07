@@ -16,19 +16,19 @@
        fov 45
        aa 3)))
 (set-camera 
+  (make-fisheye-camera
+    '( pos #(0 40 0)
+       lookat #(0 0 -1000)
+       up #(0 1 0)
+       fov 180
+       aa 3)))
+(set-camera 
   (make-lat-long-camera
     '( pos #(0 40 0)
        lookat #(0 0 -1000)
        up #(0 1 0)
        fov 45
        aa 3)))
-(set-camera 
-  (make-fisheye-camera
-    '( pos #(0 40 0)
-       lookat #(0 0 -1000)
-       up #(0 1 0)
-       fov 180
-       aa 4)))
 
 (define brown
   (make-material

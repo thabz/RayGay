@@ -101,7 +101,7 @@ Ray Camera::getRay(const double x, const double y) {
     if (!initialized) 
 	init();
 
-    Ray result = _getRay(x,y);
+    Ray result = _getRay(x / width, y / height);
 
     if (dof_enabled) {
 	// Jitter position and adjust direction

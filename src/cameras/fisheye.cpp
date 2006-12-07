@@ -12,9 +12,9 @@ Ray Fisheye::_getRay(const double x, const double y)
 
     // TODO: Force into a circle of radius = min(width,height)
 
-    // Make x and y in [-1,1]
-    double _x = 2.0 * x / width - 1.0;
-    double _y = 2.0 * y / height - 1.0;
+    // Map x and y to [-1,1]
+    double _x = 2.0 * x - 1.0;
+    double _y = 2.0 * y - 1.0;
     
     double r = _x*_x + _y*_y;
     

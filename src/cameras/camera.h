@@ -84,6 +84,7 @@ class Camera {
 	SamplerFactory* sampler_factory;
 	QMCSequence* get_dof_qmc();
 	pthread_key_t dof_qmc_key;
+	int width, height; ///< Image size in pixels
 
     protected:
 	/// Get a ray going through the screen
@@ -100,7 +101,6 @@ class Camera {
 	double av;
 	Matrix basis;
 	Matrix inv_basis;
-	int width, height; ///< Image size in pixels
 	bool initialized;
 
 	// Depth of field
