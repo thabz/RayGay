@@ -76,12 +76,12 @@
 
 (add-to-scene
  (list
-  (make-box #(-300 -350 -300) #(300 -300 1200) dullblue) ; Floor
-  (make-box #(-300  300 -300) #(300  350 1200) dullwhite) ; Ceiling
-  (make-box #(-300 -300 -330) #(300  300 -300) dullwhite) ; Backwall
-  (make-box #(-350 -300 -300) #(-300  300 1200) dullred) ; Left wall
-  (make-box #( 300 -300 -300) #(330  300 1200) dullgreen) ; Right wall
-  (make-box #(-300 -300 1200) #(300 -300 1230) dullwhite) ; Wall behind camera
+  (make-solid-box #(-300 -350 -300) #(300 -300 1200) dullblue) ; Floor
+  (make-solid-box #(-300  300 -300) #(300  350 1200) dullwhite) ; Ceiling
+  (make-solid-box #(-300 -300 -330) #(300  300 -300) dullwhite) ; Backwall
+  (make-solid-box #(-350 -300 -300) #(-300  300 1200) dullred) ; Left wall
+  (make-solid-box #( 300 -300 -300) #(330  300 1200) dullgreen) ; Right wall
+  (make-solid-box #(-300 -300 1200) #(300 -300 1230) dullwhite) ; Wall behind camera
  ))
 
 (define watermap
@@ -92,20 +92,16 @@
 	  (make-heightfield watermap #(600 30 600) 100 100 water)
 	  #(0 -100 0)))
 
-(let loopx ((x -300))
- (begin
-(let loopz ((z -300))
- (begin
-  (add-to-scene
-   (make-rounded-box 
-    (vector x -310 z)
-    (vector (+ x 50) -295 (+ z 50))
-    5
-    (if (= (modulo (+ x z) 100) 0)
-    dull-brown1
-    dull-brown2)))
-  (if (< z 300)
-  (loopz (+ z 50)))))
-  (if (< x 300)
-  (loopx (+ x 50)))))
+(do ((x -300 (+ x 50)))
+  ((>= x 300))
+  (do ((z -300 (+ z 50)))
+    ((>= z 300))
+    (add-to-scene
+      (make-rounded-box 
+        (vector x -310 z)
+        (vector (+ x 50) -295 (+ z 50))
+        5
+        (if (= (modulo (+ x z) 100) 0)
+          dull-brown1
+          dull-brown2)))))
 
