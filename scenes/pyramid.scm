@@ -51,9 +51,14 @@
   (let ((p (* o (- layers h) 0.5)))
     (do times x h           
       (do times z h
-        (let ((top-center (vector (+ p (* x o))
-     	                          (* o 0.7 (- layers h))
-    	                          (+ p (* z o)))))
+        (let* ((top-center (vector (+ p (* x o))
+      	                           (* o 0.7 (- layers h))
+    	                           (+ p (* z o))))
+	       (right-front (v+ top-center (vector (* 0.5 o) (* o 0.7) (* 0.5 o))))
+	       (left-front  (v+ top-center (vector (* -0.5 o) (* o 0.7) (* 0.5 o))))
+	       (right-back  (v+ top-center (vector (* 0.5 o) (* o 0.7) (* -0.5 o))))
+	       (left-back   (v+ top-center (vector (* -0.5 o) (* o 0.7) (* -0.5 o)))))
+
           (make-sphere top-center jointsize chrome)
            
 	  (unless (= x (- h 1))
@@ -62,11 +67,11 @@
 	    (cylinder top-center ...)
 	    (sphere (v- top-center `#(,(* 0.5 o) 0 (* -0.5 o))) red))
           (unless (or (= x 0) (= z 0))
-            (cylinder))
+            (cylinder top-center left-back barsize chrome))
           (unless (= z (- h 1))
-            (cylinder))
+            (cylinder top-center ...))
           (unless (or (= z (- h 1)) (= x 0))
-            (cylinder))
+            (cylinder top-center left-front barsize chrome))
           (unless (or (= z (- h 1)) (= x (- h 1)))
-            (cylinder))))))
+            (cylinder top-center right-front barsize chrome))))))
 
