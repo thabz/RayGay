@@ -7,6 +7,9 @@
 
 using namespace std;
 
+ObjectGroup::ObjectGroup() {
+}
+
 /**
  * Transform the objects in this collection
  *

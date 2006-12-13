@@ -20,7 +20,7 @@ void HaltonSampler::render(const RenderJob& job)
     for (int y = job.begin_y; y < job.end_y && !aborting; y++) {
 	for (int x = job.begin_x; x < job.end_x && !aborting; x++) {
 	    color = RGBA(0.0,0.0,0.0,0.0);
-	    for(int n = 0; n < samples_num; n++) {
+	    for(uint32_t n = 0; n < samples_num; n++) {
 		double* p = halton_seq->getNext();
 		color += sample(p[0]+x,p[1]+y);
 	    }

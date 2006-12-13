@@ -26,6 +26,7 @@ class ObjectGroup : public SceneObject {
 	std::vector<SceneObject*> getObjects() const;
 
     protected:
+        ObjectGroup();    
 
     private:
 	std::vector<SceneObject*> objects;

@@ -92,7 +92,8 @@ Image* DarwinIO::load(const std::string& filename, Allocator::model_t model)
     CGBitmapInfo bitmapInfo = kCGImageAlphaPremultipliedLast;
     if (sizeof(TYPE) >= 4)
         bitmapInfo = bitmapInfo | kCGBitmapFloatComponents;
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+//    CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     CGContextRef contextRef = CGBitmapContextCreate(data, w, h, sizeof(TYPE)*8, sizeof(TYPE)*4*w, 
                                    colorSpace, bitmapInfo);
     CGContextSetShouldAntialias (contextRef, false);
