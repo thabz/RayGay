@@ -31,7 +31,10 @@ class Renderer {
 	/// Destructor
 	virtual ~Renderer();
 
-	/// The public render-method uses this to render the image. Subclasses must implement this.
+	/** 
+	 * The public render-method uses this to render the image. Subclasses must implement this.
+	 * @param c coordinates in [0,1]x[0,1]
+	 */
 	virtual RGBA getPixel(const Vector2& c) = 0; 
 
     private:
