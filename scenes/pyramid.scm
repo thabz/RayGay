@@ -1,78 +1,78 @@
 
+(load "lib/raygay.scm")
+
 (set-image-size '(800 600))
-(set-background #(0.95 0.8 0.06))
+(set-background #(0.06 0.2 0.90))
 
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
-    '( pos (1000 500 1800)
-       lookat (250 180 0)
-       up (0 1 0)
+    '( pos #(1000 500 1800)
+       lookat #(0 180 0)
+       up #(0 1 0)
        fov 45
        aa 1)))
 
 (define ground
   (make-material
-    '( diffuse (0.8 0.3 0.264)
-       kd 0.5
-       specular (1 1 1)
-       ks 0.0
-       specpow 15)))
+    '( diffuse #(0.9 0.6 0.164)
+       kd 1.0
+       ks 0.0)))
+
 
 (define red
   (make-material
-    '( diffuse (0.9 0.2 0.01)
+    '( diffuse #(0.9 0.2 0.01)
        kd 0.8
-       specular (0.5 0.5 0.5)
+       specular #(0.5 0.5 0.5)
        ks 0.2
        specpow 45)))
 
 (define chrome
   (make-material
-    '( diffuse (0.85 0.85 0.85)
-       kd 0.5
-       specular (1.0 1.0 1.0)
-       ks 0.5
+    '( diffuse #(0.85 0.85 0.85)
+       kd 0.2
+       specular #(1.0 1.0 1.0)
+       ks 0.8
        specpow 45)))
 
-(add-to-scene (make-pointlight '(100 1300 1300)))
+(add-to-scene (make-pointlight #(100 1300 1300)))
 
-(add-to-scene (make-sphere '(0 -100000 0) 100000 ground))
+(add-to-scene (make-sphere #(0 -100000 0) 100000 ground))
 
-(define layers 8)
-(define width 1000)
-(define o (/ width layers))
+(define layers 6)
+(define o 200)
 
 (define barsize 7)
 (define jointsize 30)
-(define ballsize 40)
+(define ballsize 60)
 
-(dotimes h layers
-  (let ((p (* o (- layers h) 0.5)))
-    (do times x h           
-      (do times z h
-        (let* ((top-center (vector (+ p (* x o))
-      	                           (* o 0.7 (- layers h))
-    	                           (+ p (* z o))))
-	       (right-front (v+ top-center (vector (* 0.5 o) (* o 0.7) (* 0.5 o))))
-	       (left-front  (v+ top-center (vector (* -0.5 o) (* o 0.7) (* 0.5 o))))
-	       (right-back  (v+ top-center (vector (* 0.5 o) (* o 0.7) (* -0.5 o))))
-	       (left-back   (v+ top-center (vector (* -0.5 o) (* o 0.7) (* -0.5 o))))
-	       (h-1 (- h 1)))
+(define h (make-hash-table 63))
 
-          (make-sphere top-center jointsize chrome)
-           
-	  (unless (= x h-1)
-            (cylinder top-center ...))
-          (unless (or (= x h-1) (= z 0))
-	    (cylinder top-center ...)
-	    (sphere (v- top-center `#(,(* 0.5 o) 0 (* -0.5 o))) red))
-          (unless (or (= x 0) (= z 0))
-            (cylinder top-center left-back barsize chrome))
-          (unless (= z h-1)
-            (cylinder top-center ...))
-          (unless (or (= z h-1) (= x 0))
-            (cylinder top-center left-front barsize chrome))
-          (unless (or (= z h-1) (= x h-1))
-            (cylinder top-center right-front barsize chrome))))))
+(define (make-pyramid top level)
+  (let* ((right-front (v+ top (vector (* 0.5 o) (* o -0.7) (* 0.5 o))))
+	       (left-front  (v+ top (vector (* -0.5 o) (* o -0.7) (* 0.5 o))))
+	       (right-back  (v+ top (vector (* 0.5 o) (* o -0.7) (* -0.5 o))))
+         (left-back   (v+ top (vector (* -0.5 o) (* o -0.7) (* -0.5 o))))
+         (next-level  (+ 1 level)))
+    (unless (hash-ref h top)
+      (hash-set! h top #t)            
+      (add-to-scene 
+        (make-sphere top jointsize chrome))
+      (when (< level layers)
+        (add-to-scene
+          (make-sphere (v+ top `#(0 ,(* o -0.7) 0)) ballsize red)
+          (make-cylinder top right-front barsize chrome)
+          (make-cylinder top left-front barsize chrome)
+          (make-cylinder top right-back barsize chrome)
+          (make-cylinder top left-back barsize chrome)
+          (make-cylinder right-front left-front barsize chrome)
+          (make-cylinder left-front left-back barsize chrome)
+          (make-cylinder left-back right-back barsize chrome)
+          (make-cylinder right-back right-front barsize chrome))
+        (make-pyramid right-front next-level)
+        (make-pyramid left-front next-level)
+        (make-pyramid right-back next-level)
+        (make-pyramid left-back next-level)))))
 
+(make-pyramid (vector 0 (+ jointsize (* 0.7 layers o)) 0) 0)
