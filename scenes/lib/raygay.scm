@@ -2,11 +2,12 @@
 (load "vector-math.scm")
 (load "handy-extensions.scm")
 
-(define (add-to-scene thing)
+(define (add-to-scene thing . rest)
   "Add a sceneobject or a list of sceneobjects to scene"
   (if (list? thing)
     (for-each add-to-scene thing)
-    (set! __scene__ (cons thing __scene__))))
+    (set! __scene__ (cons thing __scene__)))
+  (if (not (null? rest)) (add-to-scene rest)))  
 
 (define (set-image-size size)
   (set! __image-size__ size))
