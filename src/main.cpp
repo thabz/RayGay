@@ -470,7 +470,7 @@ int main(int argc, char *argv[]) {
         jobs = 1;    
     }
     try {
-        Profiler* profiler = Profiler::create("RayGay","");
+        Profiler* profiler = Profiler::create("RayGay");
         profiler->start(); 
 	render_frame(outfile, jobs);
 	profiler->stop();

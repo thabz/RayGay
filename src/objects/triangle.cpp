@@ -75,7 +75,7 @@ void Triangle::_fullIntersect(const Ray& ray, const double t2, Intersection& res
    double tvec[3], pvec[3], qvec[3];
 
    double det;
-   double u,v;
+   double u = 0.0, v = 0.0;
 
    const CachedVertex* cv = vertex_cache.getCachedVertex(this);
 

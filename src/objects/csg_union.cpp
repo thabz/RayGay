@@ -152,3 +152,4 @@ void CSGUnion::_fullIntersect(const Ray& ray, const double t, Intersection& resu
 bool CSGUnion::inside(const Vector& p) const {
     return left->inside(p) || right->inside(p);        
 }
+
