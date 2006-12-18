@@ -110,7 +110,6 @@ windowToolkitId availableWindowToolkit() {
 
 PreviewWindow* windowFactory(int w, int h) {
     PreviewWindow* result;
-    cout << "Toolkit: " << availableWindowToolkit() << endl;
     switch (availableWindowToolkit()) {
 	case GTK:
 #ifdef HAVE_GTK
