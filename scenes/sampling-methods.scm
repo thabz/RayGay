@@ -1,18 +1,17 @@
+;; Testing difference sampling distributions
 
-; Poisson dartthrowing tog 1:39.92 og fandt 1782 punkter
-; Poisson boundarysampling tog 0.27 og fandt 2127 punkter
-; Halton tog 0.21 sekunder for 2127 punkter
-; rand() tog 0.04 sekunder for 2127 punkter
+;; Poisson dartthrowing tog 1:39.92 og fandt 1782 punkter
+;; Poisson boundarysampling tog 0.27 og fandt 2127 punkter
+;; Halton tog 0.21 sekunder for 2127 punkter
+;; rand() tog 0.04 sekunder for 2127 punkter
 
 (debug-set! stack 0)
 
-;(set! frame (+ 1 frame))
-;(display frame)
-;(newline)
+;;(set! frame (+ 1 frame))
+;;(display frame)
+;;(newline)
 
 (load "lib/raygay.scm")
-
-;; Testing difference sampling distributions
 
 (set-image-size '(512 512))
 (set-image-size '(1024 1024))
@@ -55,7 +54,7 @@
 (define radius 20)
 (define w 2000)    
 (define num 2127)
-(define type 'jitter)
+(define type 'poisson)
 
 (define pset 
   (case type
@@ -85,13 +84,10 @@
 (display (length pset))
 (newline)    
 
-(do ((i 0 (+ i 1)))
-  ((= (length pset) i) i)
- ; (display (list-ref pset i))
- ; (newline)
+(dolist p pset
   (add-to-scene
     (make-sphere 
-      (v- (vector (list-ref (list-ref pset i) 0) (list-ref (list-ref pset i) 1) 0)
+      (v- (vector (car p) (cadr p) 0)
 	  (vector (* 0.5 w) (* 0.5 w) (* 0.5 w)))
    radius
    brown)))
