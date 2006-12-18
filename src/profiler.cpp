@@ -6,6 +6,7 @@
 #include "math/constants.h"
 
 vector<Profiler*> Profiler::profilers;
+uint32_t Profiler::longestname;
 
 #define GRAPH_LENGTH 20
 
@@ -59,6 +60,7 @@ Profiler* Profiler::create(string name, string parent)
 
 void Profiler::dump() {
     cout << "== Profile ==" << endl;
+    longestname = calc_longestname() + 3;
     dump(findByParent("")[0], 1.0, 0);
 }
 
@@ -79,7 +81,7 @@ void Profiler::dump(Profiler* p, double percentage, uint32_t indent) {
     }
 
     // Print the profiler accumulated time
-    cout << left << setfill('.') << setw(30) << (indent_s + p->name) << " ";
+    cout << left << setfill('.') << setw(longestname) << (indent_s + p->name) << " ";
     cout << formatSecs(p->secs());
     cout << formatPercentage(percentage,GRAPH_LENGTH) << endl;
 
@@ -102,27 +104,49 @@ void Profiler::dump(Profiler* p, double percentage, uint32_t indent) {
         double other_time = p->secs() - children_total_time;
         if (other_time > 0.01) {
            double percent = p->secs() > 0 ? (other_time / p->secs()) * percentage : 0.0;
-           cout << left << setfill('.') << setw(30) << (indent_s + "  Other") << " ";
+           cout << left << setfill('.') << setw(longestname) << (indent_s + "  Other") << " ";
            cout << formatSecs(other_time);
            cout << formatPercentage(percent,GRAPH_LENGTH) << endl;
         }     
     }
 }
 
-uint32_t Profiler::longestname() {
-             
+uint32_t Profiler::calc_longestname() {
+    uint32_t result = 0;
+    for(uint32_t i = 0; i < profilers.size(); i++) {
+	Profiler* p = profilers[i];
+	if (p->secs() > 0) {
+	    uint32_t r = p->name.length();
+	    while(p->parent != "") {
+		r += 2;
+		// Find parent
+		for(uint32_t j = 0; j < profilers.size(); j++) {
+		    if (profilers[j]->name == p->parent) {
+			p = profilers[j];
+			continue;
+		    }
+		}
+	    }
+	    if (r > result) {
+		result = r;
+	    }
+	}
+    }
+    return result;
 }
 
 vector<Profiler*> Profiler::findByParent(string s) {
     vector<Profiler*> result;        
     for(uint32_t i = 0; i < profilers.size(); i++) {
-        Profiler * p = profilers[i];    
-        if (p->parent == s && p->secs() > 0) {
-            result.push_back(p);        
-        }            
+	Profiler * p = profilers[i];    
+	if (p->parent == s && p->secs() > 0) {
+	    result.push_back(p);        
+	}            
     }        
     return result;
 }
+
+
 
 double Profiler::secs() {
     return double(accumulated_time) / double(CLOCKS_PER_SEC);

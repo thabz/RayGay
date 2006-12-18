@@ -24,7 +24,8 @@ class Profiler
     private:
 	Profiler(string n, string p);
 	static vector<Profiler*> findByParent(string n);
-	static uint32_t longestname();
+	static uint32_t calc_longestname();
+	static uint32_t longestname;
         static void dump(Profiler* p, double percentage, uint32_t indent);
 	double secs();
 
