@@ -161,10 +161,6 @@ RGBA WhittedAdaptive::getSubPixel(uint32_t curLevel, const Vector2& center, Pixe
 	c4 = block->getColor(x2,y2);
     }
 
-    // TODO: Use brightness instead of sqrDistance below
-    // fabs(c2.brightness() - c1.brightness()) >= aa_threshhold
-    // with aa_threshhold = 0.025
-    
     // Check if we need further supersampling
     if (curLevel <= aa_depth) {
 
