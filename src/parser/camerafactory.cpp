@@ -10,6 +10,7 @@
 #include "cameras/latlong.h"
 #include "samplers/non_aa_sampler.h"
 #include "samplers/whitted_adaptive.h"
+#include "samplers/boundary_adaptive.h"
 #include "samplers/uniform_jitter.h"
 #include "samplers/halton_sampler.h"
 
@@ -116,6 +117,14 @@ SCM CameraFactory::make_whitted_adaptive_sampler(SCM s_aa_depth)
     return sampler2scm(sampler);
 }
 
+SCM CameraFactory::make_boundary_adaptive_sampler(SCM s_aa_depth)
+{
+    char* proc = "make-boundary-adaptive-sampler";
+    int aa_depth = scm_num2int(s_aa_depth, 1, proc);
+    SamplerFactory* sampler = new BoundaryAdaptiveFactory(aa_depth);
+    return sampler2scm(sampler);
+}
+
 SCM CameraFactory::make_uniform_jitter_sampler(SCM s_samples_sqrt) 
 {
     char* proc = "make-uniform-jitter-sampler";
@@ -137,6 +146,7 @@ void CameraFactory::register_procs() {
     scm_c_define_gsubr("make-lat-long-camera",1,0,0,(SCM (*)()) CameraFactory::make_lat_long_camera);
     scm_c_define_gsubr("make-fisheye-camera",1,0,0,(SCM (*)()) CameraFactory::make_fisheye_camera);
     scm_c_define_gsubr("make-whitted-adaptive-sampler",1,0,0,(SCM (*)()) CameraFactory::make_whitted_adaptive_sampler);
+    scm_c_define_gsubr("make-boundary-adaptive-sampler",1,0,0,(SCM (*)()) CameraFactory::make_boundary_adaptive_sampler);
     scm_c_define_gsubr("make-uniform-jitter-sampler",1,0,0,(SCM (*)()) CameraFactory::make_uniform_jitter_sampler);
     scm_c_define_gsubr("make-halton-sampler",1,0,0,(SCM (*)()) CameraFactory::make_uniform_jitter_sampler);
 }

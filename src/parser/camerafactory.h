@@ -18,6 +18,8 @@ class CameraFactory {
 
 	static SCM make_whitted_adaptive_sampler(SCM s_options);
 
+	static SCM make_boundary_adaptive_sampler(SCM s_options);
+
 	static SCM make_uniform_jitter_sampler(SCM s_options);
 
 	static SCM make_halton_sampler(SCM s_options);
