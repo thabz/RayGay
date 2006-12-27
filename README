@@ -59,7 +59,8 @@
 * Undersøg om vi kan bruge valarray nogle steder...
 * Implementer BoundaryAdaptive sampleren.
 * Fix at stats for Raytracer ikke virker. Lav en singleton- eller static-ting.
-
+* Optionally render additional output-images such as depth-map, sampling-density, photon-distribution.
+* Physics-engine
 
 
 ///////////////////////////////////////////
