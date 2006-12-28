@@ -197,7 +197,7 @@ size_t free_wrapper(SCM image_smob) {
 
 int print_wrapper(SCM object_smob, SCM port, scm_print_state *pstate) {
     struct wrapped_object* o = (struct wrapped_object*) SCM_SMOB_DATA(object_smob);
-    char* type_s[] = { "","", "pathobject", "path", "material", "texture", "lightsource", "camera" };
+    char* type_s[] = { "","", "sceneobject", "path", "material", "texture", "lightsource", "camera" };
     cout << "#<" << type_s[o->type] << ">" << endl;
     return 1;
 }
