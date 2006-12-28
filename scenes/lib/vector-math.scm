@@ -28,6 +28,8 @@
   (vector (* (.x v) s)
           (* (.y v) s)
           (* (.z v) s)))                    
+
+(define v* vscale)
           
 (define (vdot a b)
   "Dotproduct between two vectors"        
