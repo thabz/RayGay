@@ -53,7 +53,12 @@ SCM TransformationFactory::transform(SCM s_obj, const Matrix& m, char* subr)
 	uint32_t num = scm_num2int(scm_length(s_obj),0,"");
 	for(uint32_t i = 0; i < num; i++) {
 	    SCM s_value = scm_list_ref(s_obj, scm_int2num(i));
-	    objs.push_back(s_value);
+	    if (SCM_NFALSEP(scm_list_p(s_value))) {
+	        // Recurse into embedded lists of objects    
+	        transform(s_value, m, subr);    
+	    } else {
+	        objs.push_back(s_value);
+            }
 	}
     } else {
 	objs.push_back(s_obj);
