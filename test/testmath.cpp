@@ -1312,11 +1312,11 @@ class poisson_disc_test : public Test {
 
     public:
 	void run() {
-/*	        
 	    Vector2* r = new Vector2[100];
+	    double radius = 0.3;
 	    int req_num = 300;
-	    int num = PoissonDiscDistribution::createSet(10,10,0.5,req_num,r);
-//	    cout << "Darts: " << num << endl;
+	    int num = PoissonDiscDistribution::createSet(10,10,radius,req_num,r);
+	 //   cout << "Darts: " << num << endl;
 	    assertTrue(num <= req_num);
 	    assertTrue(num > 10); 
 	    for(int i = 0; i < num; i++) {
@@ -1326,11 +1326,10 @@ class poisson_disc_test : public Test {
 		assertTrue(r[i][1] <= 10);
 		for(int j = 0; j < num; j++) {
 		    if (j != i) {
-			//assertTrue((r[i]-r[j]).norm() >= 2*0.5*2*0.5);
+			assertTrue((r[i]-r[j]).norm() >= 2*radius*2*radius - EPSILON);
 		    }
 		}
 	    }
-*/	    
 	}
 };
 
