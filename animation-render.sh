@@ -3,9 +3,27 @@
 # Testing arguments num
 if [ $# -lt 2 ]
 then
-    echo "USAGE: animation-render.sh SCENEFILE FRAMES"
+    echo "Usage: animation-render.sh [OPTION...] SCENEFILE FRAMES"
+    echo "       -r                   Resume rendering"
+    echo 
+    echo "The variables frame and clock are set before the"
+    echo "scene is rendered."
     exit 1
 fi
+
+# Parse options
+FINITO="no"
+RESUME="no"
+
+while [ $FINITO = "no" ]
+do        
+   case $1 in
+      "-r") RESUME="yes"
+            echo "Resume rendering..."
+            shift;;
+      *)    FINITO="yes";;
+   esac   
+done        
 
 FRAMES_NUM=$2
 SCENE_FILE=$1
@@ -27,12 +45,17 @@ i=0
 while [ $i -lt $FRAMES_NUM ]
 do
    OUTPUT_FILE=output`printf %05d $i`.png
-   echo "Rendering $SCENE_FILE frame $i of $FRAMES_NUM to $OUTPUT_FILE"
-   EXPR="(define frame $i) (define clock (/ $i $FRAMES_NUM))"
-   echo $EXPR
-   ./src/tracer -b -e "$EXPR" $SCENE_FILE $OUTPUT_FILE
-   if [ $? -ne 0 ]; then
-      exit $?
+   if [ $RESUME = "yes" -a -f $OUTPUT_FILE ]
+   then
+        echo "Skipping frame $i. $OUTPUT_FILE already exists."
+   else            
+        echo "Rendering $SCENE_FILE frame $i of $FRAMES_NUM to $OUTPUT_FILE"
+        EXPR="(define frame $i) (define clock (/ $i $FRAMES_NUM))"
+        echo $EXPR
+        ./src/tracer -b -e "$EXPR" $SCENE_FILE $OUTPUT_FILE
+        if [ $? -ne 0 ]; then
+          exit $?
+        fi
    fi
    i=`expr $i + 1`
 done
