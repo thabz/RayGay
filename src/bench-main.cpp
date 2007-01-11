@@ -16,6 +16,7 @@ extern "C" {
 
 #include "math/vector.h"
 #include "objects/ellipsoid.h"
+#include "math/poisson_disc.h"
 #include "ray.h"
 
 using namespace std;
@@ -65,6 +66,17 @@ void bench_vector() {
     }
 }
 
+void bench_poisson_disc() {
+    int samples = 1000;
+    uint32_t repeats = 480*100;
+    Vector2* result = new Vector2[samples];
+    PoissonDiscDistribution distr = PoissonDiscDistribution(10,10);
+    for(uint32_t i = 0; i < repeats; i++) {
+        int num = distr.createSet(0.147,samples,result);
+        assert(num > 900);
+    }
+}
+
 void bench(std::string name, void (*func)(void), uint32_t repeat_num) {
     cout << "Running benchmark \"" << name << "\"" << endl;
     double min = 100000;
@@ -77,7 +89,7 @@ void bench(std::string name, void (*func)(void), uint32_t repeat_num) {
 	func();
 	ticks_after = clock();
 	double secs =  double(ticks_after - ticks_before) / double(CLOCKS_PER_SEC);
-	cout << "   " << (i+1) << ": " << secs << "s" << endl;
+	cout << "   " << (i+1) << ": " << secs << "s" << endl << flush;
 	min = MIN(secs,min);
 	max = MAX(secs,max);
 	avg += secs;
@@ -102,6 +114,7 @@ int main(int argc, char *argv[]) {
     cout << "Clocks/s : " << CLOCKS_PER_SEC << endl;
     init();
     //bench("Vector", bench_vector, 5);
-    bench("Ellipsoid fast intersect", bench_ellipsoid_fast_intersect, 5);
+    //bench("Ellipsoid fast intersect", bench_ellipsoid_fast_intersect, 5);
+    bench("Poisson disc", bench_poisson_disc, 5);
     return EXIT_SUCCESS;
 }

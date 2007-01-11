@@ -13,10 +13,13 @@
 
 using namespace std;
 
-vector<Vector2> PoissonDiscDistribution::all;
+PoissonDiscDistribution::PoissonDiscDistribution(double w, double h) {
+    this->w = w;
+    this->h = h;
+}
 
-int PoissonDiscDistribution::createSet(double w, double h, double r, uint32_t num, Vector2* result) {
-    boundarySampling(w,h,r,num);
+int PoissonDiscDistribution::createSet(double r, uint32_t num, Vector2* result) {
+    boundarySampling(r,num);
     for(uint32_t i = 0; i < num && i < all.size(); i++) {
          result[i] = all[i];            
     }
@@ -32,7 +35,7 @@ void PoissonDiscDistribution::add(const Vector2& p, double r) {
 }
 
 #define MAX_TRIES_PER_DART 10000000
-void PoissonDiscDistribution::dartThrowing(double w, double h, double r, uint32_t num)
+void PoissonDiscDistribution::dartThrowing(double r, uint32_t num)
 {
     assert(num > 0);
     assert(r > 0.0);
@@ -70,7 +73,8 @@ void PoissonDiscDistribution::dartThrowing(double w, double h, double r, uint32_
  * 
  * @see http://www.cs.virginia.edu/~gfx/pubs/antimony/
  */
-void PoissonDiscDistribution::boundarySampling(double w, double h, double r, uint32_t num) {
+void PoissonDiscDistribution::boundarySampling(double r, uint32_t num) {
+
     vector<ArcInterval> boundaries;
     boundaries.reserve(num);
     uint32_t i = 0;
@@ -81,6 +85,11 @@ void PoissonDiscDistribution::boundarySampling(double w, double h, double r, uin
             // Initial seed point        
             p = Vector2(RANDOM(0,w),RANDOM(0,h));                
         } else {
+            // TODO: Er det ikke hurtigere at vi vaelger den foerste i listen
+            // og pruner dem den vej ud. Saa er boundaries-listen vel altid saa
+            // kort som muligt. Paa den anden siden er det vel dyrere at fjerne i
+            // begyndelsen af listen. Maaske vector<ArcInterval> skulle vaere
+            // list<ArcInterval>
             p = boundaries[rand() % boundaries.size()].randomPoint();        
         }     
 	ArcInterval new_boundary = ArcInterval(p,2*r);
@@ -94,7 +103,7 @@ void PoissonDiscDistribution::boundarySampling(double w, double h, double r, uin
 	}
 
 	// Subtract all neighbouring boundaries from the boundary around p
-	vector<Vector2>& neighbours = getNeighbours(p);
+        vector<Vector2>& neighbours = getNeighbours(p);
 	for(uint32_t j = 0; j < neighbours.size(); j++) {
 	    new_boundary.subtract(neighbours[j], 2*r);
 	}

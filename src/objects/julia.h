@@ -13,7 +13,7 @@
 class Julia : public IsoSurface 
 {
     public:
-	Julia(Quaternion c, uint32_t max_iter, uint32_t steps, double accuracy, Material* mat);
+	Julia(Quaternion c, uint32_t max_iter, uint32_t steps, double accuracy, double w_axis_offset, Material* mat);
 	SceneObject* clone() const;
 
     protected:
@@ -24,6 +24,7 @@ class Julia : public IsoSurface
     private:
 	Quaternion c;
 	uint32_t max_iter; 
+	double w_axis_offset;
 
 };
 

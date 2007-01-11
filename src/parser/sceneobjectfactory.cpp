@@ -415,7 +415,7 @@ SCM make_intersection(SCM s_left, SCM s_right, SCM s_material)
 }
 
 
-SCM make_julia(SCM s_c, SCM s_max_iter, SCM s_steps, SCM s_accuracy, SCM s_material)
+SCM make_julia(SCM s_c, SCM s_max_iter, SCM s_steps, SCM s_accuracy, SCM s_w_offset, SCM s_material)
 {
     char* proc = "make-julia";
 
@@ -423,9 +423,10 @@ SCM make_julia(SCM s_c, SCM s_max_iter, SCM s_steps, SCM s_accuracy, SCM s_mater
     int max_iter = scm_num2int(s_max_iter, 2, proc);
     int steps = scm_num2int(s_steps, 3, proc);
     double accuracy = scm_num2double(s_accuracy, 4, proc);
-    Material* material = scm2material(s_material, proc, 5);
+    double w_offset = scm_num2double(s_w_offset, 5, proc);
+    Material* material = scm2material(s_material, proc, 6);
 
-    Julia* julia = new Julia(c, max_iter, steps, accuracy, material);
+    Julia* julia = new Julia(c, max_iter, steps, accuracy, w_offset, material);
     return sceneobject2scm(julia);
 }
 
@@ -528,7 +529,7 @@ void SceneObjectFactory::register_procs()
 	    (SCM (*)()) make_union);
     scm_c_define_gsubr("make-parametrized-surface",6,0,0,
 	    (SCM (*)()) make_parametrized_surface);
-    scm_c_define_gsubr("make-julia",5,0,0,
+    scm_c_define_gsubr("make-julia",6,0,0,
 	    (SCM (*)()) make_julia);
     scm_c_define_gsubr("make-marching-cubes",3,0,0,
 	    (SCM (*)()) make_marching_cubes);

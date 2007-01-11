@@ -51,7 +51,8 @@ SCM make_poisson_set(SCM s_w, SCM s_h, SCM s_r,  SCM s_num) {
     double r = scm_num2double(s_r, 3, proc);
     int num = scm_num2int(s_num, 4, proc);
     Vector2* set = new Vector2[num];
-    int real_num = PoissonDiscDistribution::createSet(w,h,r,num,set);
+    PoissonDiscDistribution distr = PoissonDiscDistribution(w,h);
+    int real_num = distr.createSet(r,num,set);
     SCM s_set = SCM_EOL;
     for(int i = 0; i < real_num; i++) {
 	double x = set[i][0];

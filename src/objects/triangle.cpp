@@ -73,17 +73,21 @@ TriangleVertexCache vertex_cache;
 void Triangle::_fullIntersect(const Ray& ray, const double t2, Intersection& result) const {
     
    double tvec[3], pvec[3], qvec[3];
+   double edge1[3], edge2[3];
 
    double det;
    double u = 0.0, v = 0.0;
 
    const CachedVertex* cv = vertex_cache.getCachedVertex(this);
 
+   SUB(edge1,cv->vert1,cv->vert0);
+   SUB(edge2,cv->vert2,cv->vert0);
+   
    /* begin calculating determinant - also used to calculate U parameter */
-   CROSS(pvec,ray.getDirection(),cv->edge2);
+   CROSS(pvec,ray.getDirection(),edge2);
 
    /* if determinant is near zero, ray lies in plane of triangle */
-   det = DOT(cv->edge1,pvec);
+   det = DOT(edge1,pvec);
 
    if (det > EPSILON) {
       /* calculate distance from vert0 to ray origin */
@@ -98,7 +102,7 @@ void Triangle::_fullIntersect(const Ray& ray, const double t2, Intersection& res
       }         
       
       /* prepare to test V parameter */
-      CROSS(qvec,tvec,cv->edge1);
+      CROSS(qvec,tvec,edge1);
       
       /* calculate V parameter and test bounds */
       v = DOT(ray.getDirection(),qvec);
@@ -202,8 +206,8 @@ AABox Triangle::getBoundingBox() const {
     tri[1] = mesh->cornerAt(_tri_idx,1);
     tri[2] = mesh->cornerAt(_tri_idx,2);
     AABox box = AABox::enclosure(tri,3);
+    box.setMinimumLengths(10000*EPSILON);
     box.growPercentage(1);
-    box.setMinimumLengths(1000*EPSILON);
     return box;
 }
 

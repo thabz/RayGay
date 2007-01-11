@@ -219,7 +219,7 @@ void ArcInterval::subtract(const Vector2& o_c, double o_r) {
     Vector2 v = o_c - c;
     if (v.norm() < (r+o_r)*(r+o_r)-EPSILON) {
         double l = v.length();
-        assert (l >= r - EPSILON);
+        //assert (l >= r - 2*EPSILON);
         double angle = atan2(v[1],v[0]);
         double theta = acos((r-(r+o_r-l)/2.0)/r);
         subtract(angle - theta, angle + theta);
