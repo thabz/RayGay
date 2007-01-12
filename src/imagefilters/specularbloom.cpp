@@ -10,6 +10,7 @@ SpecularBloom::SpecularBloom(double cutoff, double radius, double alpha) {
 }
 
 void SpecularBloom::apply(Image* image) {
+    // TODO: Wouldn't a more lightweight <double,1> do the job too?
     Image* glow = new ImageImpl<double,4>(*image);
 
     RGBA black = RGBA(0,0,0,0);
