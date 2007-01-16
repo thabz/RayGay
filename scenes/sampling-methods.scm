@@ -49,8 +49,6 @@
 
 (add-to-scene (make-pointlight #(5000 10300 10300)))
 
-(define img (make-texture "gfx/larry.jpg" 1.0 1.0 "none"))
-
 (define radius 20)
 (define w 2000)    
 (define num 2127)
@@ -83,6 +81,26 @@
 
 (display (length pset))
 (newline)    
+
+(define (to-0-1 p)
+   (list (/ (car p) w) (/ (cadr p) w)))
+
+(define (map-to-disc p)
+  (let ((r (sqrt (car p)))
+        (phi (* 2PI (cadr p))))
+    (list (* r (cos phi))
+          (* r (sin phi)))))
+
+(define (-1-1-to-0-w-w p)
+  (let ((half-w (/ w 2)))
+    (list (+ half-w (* half-w (car p)))
+          (+ half-w (* half-w (cadr p))))))
+
+(when #f 
+(set! pset (map to-0-1 pset))
+(set! pset (map map-to-disc pset))
+(set! pset (map -1-1-to-0-w-w pset))
+)
 
 (dolist p pset
   (add-to-scene
