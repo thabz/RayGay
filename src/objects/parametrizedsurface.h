@@ -3,6 +3,7 @@
 #define PARAMETRIZED_SURFACE_H
 
 #include "mesh.h"
+#include "math/matrix.h"
 #include <vector>
 
 /**
@@ -15,6 +16,7 @@ class ParametrizedSurface : public Mesh
 	/// Constructor
 	ParametrizedSurface(uint uRes, uint vRes, bool uClose, bool vClose, const Material* m);
 	void prepare();
+	void transform(const Matrix& m);
 
     protected:
 	virtual Vector eval(double u, double v) const = 0;
@@ -22,6 +24,7 @@ class ParametrizedSurface : public Mesh
     private:
 	uint uRes, vRes;
 	bool uClose, vClose;
+	Matrix trans;
 };
 
 #endif

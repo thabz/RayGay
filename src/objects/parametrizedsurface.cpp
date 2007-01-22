@@ -64,7 +64,12 @@ void ParametrizedSurface::prepare() {
 	    addQuad(c,uvs);
 	}
     }
-
+    Mesh::transform(trans);
     Mesh::prepare();
 }
 
+void ParametrizedSurface::transform(const Matrix& m) {
+    // Hack to pick up any transformations. They're are applied
+    // to the generated mesh in our prepare() method.
+    trans = trans * m;
+}
