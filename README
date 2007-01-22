@@ -1,69 +1,5 @@
 
 ///////////////////////////////////////////
-// TODO
-///////////////////////////////////////////
-   
-+ Get a Meshs triangles into hierarchy as separate nodes.
-+ Refactor Material to provide hookups for procedural textures
-+ More accurate Triangle-BoundingBox intersection code
-+ Hierarchy will never exit when more than 8 objects intersect a the same point.
-- Implement onEdge() and inside() for Mesh class.
-+ Adaptive supersampling til antialias
-+ BSP
-+ Cylinder 
-+ Separate objectspace and worldspace transformations.
-+ Area lights
-+ Bumpmapping
-+ 3DS import (meshes, UV, materials)
-+ gprof profiling
-+ Create a XML scene format and an importer.
-+ Cone
-+ Torus
-+ General polynomial surfaces.
-* Support for separate night and day textures.
-+ Mathematical cylinder
-+ Bicubic interpolation of textures
-+ Support for u,v coordinates in meshes
-+ Distributed reflections aka gloss.
-+ Mathematical cone
-+ Heightmap objects
-+ Correct handling of camera placement, direction and field of view.
-* Adaptive arealights
-* Adaptive gloss
-+ Mathematical torus.
-* Fix the numerical error in the final gather near wall edges
-  See http://www.asimov.de/Studienarbeit/tracer.html
-* Displacement mapping
-  See Peter Shirleys "Direct Ray Tracing of Displacement Mapped Triangles"
-  http://www.cs.utah.edu/~shirley/papers/
-+ Scaling of all objects: 
-  See http://www.cl.cam.ac.uk/Teaching/2000/AGraphHCI/SMEG/node2.html
-+ HDRI support
-* OpenEXR support. See http://www.openexr.com/
-* LightProbe support
-* Structured Importance Sampling of Environment Maps
-  http://graphics.ucsd.edu/papers/structured/
-* ELK
-* Swept sphere: http://www.acm.org/pubs/tog/GraphicsGems/gemsv/ch5-4/sweep.cpp
-+ 'man 2 times' giver bedre syscall til tidsmåling
-+ Thread local storage using pthread: Google for pthread_getspecific
-* Check 'oprofile' profileren ud. Er en Debian pakke.
-+ Make a Perl-like -e <Scheme-expr> option that evals the Scheme-expr before 
-  the scenefile is read. Use gh_eval_str(char *) to eval a string. Support 
-  multiple -e -e-options.
-* Maybe also support a Java-like -Dvariable=value property-option.
-+ Optionally mmap all image files.
-* Optionally mmap photonmaps.
-* Optionally mmap meshdata.
-* Optionally render bezierpatches directly without tessalating into triangles.
-* Undersøg om vi kan bruge valarray nogle steder...
-* Implementer BoundaryAdaptive sampleren.
-* Fix at stats for Raytracer ikke virker. Lav en singleton- eller static-ting.
-* Optionally render additional output-images such as depth-map, sampling-density, photon-distribution.
-* Physics-engine
-
-
-///////////////////////////////////////////
 // Compiling into assembler source
 ///////////////////////////////////////////
   
@@ -74,17 +10,22 @@ g++ <the load> -S -dA triangle.cpp
 // Movie encoding
 ///////////////////////////////////////////
 
-Mencoder:
-http://www.mplayerhq.hu/DOCS/HTML/en/menc-feat-enc-images.html
+* LINUX *
+   Mencoder:
+   http://www.mplayerhq.hu/DOCS/HTML/en/menc-feat-enc-images.html
 
-Transcode:
-http://www.theorie.physik.uni-goettingen.de/%7Eostreich/transcode/html/anim.html
+   Transcode:
+   http://www.theorie.physik.uni-goettingen.de/%7Eostreich/transcode/html/anim.html
 
-$ find frames -type f > files
-$ transcode -z -i files -x imlist,null -g 640x480 -y xvid,null -f 25 -o movie.avi -H 0
+   $ find frames -type f > files
+   $ transcode -z -i files -x imlist,null -g 640x480 -y xvid,null \ 
+     -f 25 -o movie.avi -H 0
 
-erstat evt. xvid med dixv5
+   erstat evt. xvid med dixv5
 
+* MAC OS X *   
+   På Mac OS X kan Quicktime åbne en billedesekvens og eksportere 
+   i hvilket som helst filmformat.
 
 ///////////////////////////////////////////
 // Cachegrind
