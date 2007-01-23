@@ -60,7 +60,7 @@
       ((= (length nextpop) (length curpop)))
       (append! nextpop (list 
          (crossover
-         (pick-chromosome curpop) (pick-chromosome-curpop)))))
+         (pick-chromosome curpop) (pick-chromosome curpop)))))
     ; Rinse, repeat
     (loop nextpop '() (+ i 1))))
 
