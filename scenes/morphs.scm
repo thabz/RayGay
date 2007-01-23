@@ -23,9 +23,6 @@
            (loop (cdr filler) result)
            (loop (cdr filler) (cons (car filler) result))))))
 
-(define (evaluate-population pop fitness-function)
-  (map fitness-function pop))
-
 ; Randomize list
 (define (list-shuffle l)
   (dotimes i (length l)
@@ -42,18 +39,30 @@
   (do ((l '() (append! l (list (random-list chromosome-size)))))
     ((= population-size (length l)) l)))
 
+(define (sort-by-fittness pop fittness-function)
+   (sort pop
+    (lambda (a b)
+      (< (fittness-function a) (fittness-function b)))))
+
+(define (pick-chromosome population))
 
 (define (genetics chromosome-size population-size fittness-function max-iters)
   (let loop ((curpop (random-population population-size chromosome-size))  
              (nextpop '())
              (i 0))
     (if (= i max-iters) (car curpop))
-    ; Evaluate population and sort curpop
+    ; Sort population by fittness
+    (sort-by-fittness curpop fittness-function)
     ; Elitism, picks best two
-    (set! nextpop (list (car )))
+    (set! nextpop (list (car curpop) (cadr curpop)))
     ; Generate crossovers
+    (do (())
+      ((= (length nextpop) (length curpop)))
+      (append! nextpop (list 
+         (crossover
+         (pick-chromosome curpop) (pick-chromosome-curpop)))))
     ; Rinse, repeat
-    (loop nextpop '())))
+    (loop nextpop '() (+ i 1))))
 
 
 (define l1 (list 1 2 3 4 5 6 7 8 9 10))
@@ -65,14 +74,6 @@
 (define pop (random-population 5 10))
 (display pop)
 (newline)
-
-
-(define ll (list 1 2 3 4 5 6 7 8 9 10))
-(mutate ll)
-(display ll)
-(mutate ll)
-(display ll)
-
 
 (list-shuffle ll)
 (display ll)
