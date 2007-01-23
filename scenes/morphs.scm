@@ -8,8 +8,9 @@
     l))
 
 ; Swap two random elements
-(define (mutate l)
-  (list-swap l (random (length l)) (random (length l)))
+(define (mutate l percent)
+  (if (< (random 100) percent)
+    (list-swap l (random (length l)) (random (length l))))
   l)
 
 ; Do a genetic crossover from two parent chromosomes.
@@ -59,8 +60,9 @@
     (do (())
       ((= (length nextpop) (length curpop)))
       (append! nextpop (list 
-         (crossover
-         (pick-chromosome curpop) (pick-chromosome curpop)))))
+         (mutate			
+            (crossover (pick-chromosome curpop) (pick-chromosome curpop))
+	    50))))
     ; Rinse, repeat
     (loop nextpop '() (+ i 1))))
 
