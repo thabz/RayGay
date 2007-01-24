@@ -65,16 +65,20 @@
              (i 0))
     (if (= i max-iters) (car curpop))
     ; Sort population by fittness
-    (sort-by-fittness curpop fittness-function)
+    (set! curpop (sort-by-fittness curpop fittness-function))
     ; Elitism, picks best two
     (set! nextpop (list (car curpop) (cadr curpop)))
+;    (display (map fittness-function curpop))
+    (display (fittness-function (car curpop)))
+    (newline)
     ; Generate crossovers
-    (do (())
+    (do ()
       ((= (length nextpop) (length curpop)))
       (append! nextpop (list 
          (mutate			
-            (crossover (pick-chromosome curpop) (pick-chromosome curpop))
-	    50))))
+            (crossover (pick-chromosome curpop dist-table) 
+	               (pick-chromosome curpop dist-table))
+	    100))))
     ; Rinse, repeat
     (loop nextpop '() (+ i 1)))))
 
