@@ -45,10 +45,22 @@
     (lambda (a b)
       (< (fittness-function a) (fittness-function b)))))
 
-(define (pick-chromosome population))
+(define (pick-chromosome population dist-table)
+  (list-ref population 
+   (list-ref dist-table (random (length dist-table)))))
+
+; For pop-size 4 this results in (0 0 0 0 1 1 1 2 2 3)
+(define (precalc-dist-table pop-size)
+ (let loop ((i pop-size) 
+	    (result '()))
+  (if (< i 0) 
+    result
+    (loop (- i 1) 
+          (append result (make-list i (- pop-size i)))))))
 
 (define (genetics chromosome-size population-size fittness-function max-iters)
-  (let loop ((curpop (random-population population-size chromosome-size))  
+  (let ((dist-table (precalc-dist-table population-size)))
+    (let loop ((curpop (random-population population-size chromosome-size))  
              (nextpop '())
              (i 0))
     (if (= i max-iters) (car curpop))
@@ -64,22 +76,5 @@
             (crossover (pick-chromosome curpop) (pick-chromosome curpop))
 	    50))))
     ; Rinse, repeat
-    (loop nextpop '() (+ i 1))))
+    (loop nextpop '() (+ i 1)))))
 
-
-(define l1 (list 1 2 3 4 5 6 7 8 9 10))
-(define l2 (list 10 9 8 7 6 5 4 3 2 1))
-(display (crossover l1 l2))
-(newline)
-
-
-(define pop (random-population 5 10))
-(display pop)
-(newline)
-
-(list-shuffle ll)
-(display ll)
-(list-shuffle ll)
-(display ll)
-
-(newline)
