@@ -1,4 +1,4 @@
-(load "lib/raygay.scm")
+(load "raygay.scm")
 
 ; Swap two elements by index
 (define (list-swap l i1 i2)
