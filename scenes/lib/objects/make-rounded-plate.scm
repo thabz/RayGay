@@ -12,9 +12,8 @@
 	  (make-cylinder x+y- x-y- radius material)
 	  (make-cylinder x-y- x-y+ radius material)
 	  (make-cylinder x-y+ x+y+ radius material)
-	  ;	     (make-solid-box 
-	  ;	      (list (- w) (- w) (- radius))
-	  ;	      (list w w radius) material)
-	  )))
+	  (make-solid-box 
+	     (vector (- w) (- w) (- radius))
+	     (vector w w radius) material))))
 
 

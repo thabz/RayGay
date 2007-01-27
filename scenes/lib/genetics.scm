@@ -41,9 +41,10 @@
     ((= population-size (length l)) l)))
 
 (define (sort-by-fittness pop fittness-function)
-   (sort pop
-    (lambda (a b)
-      (< (fittness-function a) (fittness-function b)))))
+  (map cdr
+   (sort 
+     (map (lambda (p) (cons (fittness-function p) p)) pop)
+     (lambda (a b) (< (car a) (car b))))))
 
 (define (pick-chromosome population dist-table)
   (list-ref population 
@@ -52,7 +53,7 @@
 ; For pop-size 4 this results in (0 0 0 0 1 1 1 2 2 3)
 (define (precalc-dist-table pop-size)
  (let loop ((i pop-size) 
-	    (result '()))
+	          (result '()))
   (if (< i 0) 
     result
     (loop (- i 1) 
@@ -61,14 +62,19 @@
 (define (genetics chromosome-size population-size fittness-function max-iters)
   (let ((dist-table (precalc-dist-table population-size)))
     (let loop ((curpop (random-population population-size chromosome-size))  
-             (nextpop '())
-             (i 0))
-    (if (= i max-iters) (car curpop))
+               (nextpop '())
+               (lastbest '())
+               (i 0))
+    (if (= i max-iters)
+      (car curpop)
+      (begin
     ; Sort population by fittness
     (set! curpop (sort-by-fittness curpop fittness-function))
+    (if (not (equal? lastbest (car curpop))) (set! i 0))
     ; Elitism, picks best two
     (set! nextpop (list (car curpop) (cadr curpop)))
-;    (display (map fittness-function curpop))
+    (display i)
+    (display " ")
     (display (fittness-function (car curpop)))
     (newline)
     ; Generate crossovers
@@ -78,7 +84,6 @@
          (mutate			
             (crossover (pick-chromosome curpop dist-table) 
 	               (pick-chromosome curpop dist-table))
-	    100))))
+   	        100))))
     ; Rinse, repeat
-    (loop nextpop '() (+ i 1)))))
-
+    (loop nextpop '() (car nextpop) (+ i 1)))))))

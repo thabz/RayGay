@@ -4,15 +4,34 @@
 (set-image-size '(640 480))
 (set-background #(0.1 0.1 0.3))
 
+(define cam-pos-path 
+  (make-bezierspline (list
+    #(200 2000 3000)
+    #(200 1000 3000)
+    #(200 700 2000)
+    #(200 530 1000)
+    #(200 530 1000)
+    #(200 530 1000))))
+
+(define focal-point-path 
+  (make-bezierspline (list
+    #(0 200 2000)
+    #(0 200 2000)
+    #(0 200 1000)
+    #(0 200 500)
+    #(0 200 500)
+    #(0 200 500))))
+
+
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
-    '( pos #(500 530 1000)
-       lookat #(200 200 400)
-       up #(0 1 0)
-       fov 45
-       dof (60 100 #(0 200 500))
-       aa 0)))
+    (list 'pos (point-on-path cam-pos-path clock)
+          'lookat #(200 200 400)
+          'up #(0 1 0)
+          'fov 45
+          'dof (list 60 100 (point-on-path focal-point-path clock))
+          'aa 0)))
 
 (define brown
   (make-material
@@ -60,7 +79,7 @@
     (make-necklace circle 9 
        (lambda() (make-sphere #(0 0 0) 100 blue)))
     y-axis
-    (* clock 720))
+    (* clock 360))
  (translate
     (make-torus 400 20 chrome)
     #(0 200 0)))

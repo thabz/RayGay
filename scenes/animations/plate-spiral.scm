@@ -31,6 +31,7 @@
 
 (dotimes i num
   (add-to-scene
+    (rotate
     (rotate 
      (rotate 
        (translate 
@@ -40,4 +41,5 @@
            (* twists 360 (/ i num)))
          #(600 0 0))
      y-axis (* (/ i num) 360))
-     y-axis (* clock (/ 360 8)))))
+     y-axis (* clock 720))
+     x-axis (* (+ clock 0.7) 360))))
