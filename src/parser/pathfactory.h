@@ -18,6 +18,7 @@ class PathFactory {
 	static SCM make_spiral(SCM s_path, SCM s_radius, SCM s_windings, SCM s_offset);
 
 	static SCM make_bezierspline(SCM s_vector_vector);
+	static SCM make_catmullrom_spline(SCM s_vector_vector);
 
 	static SCM point_on_path(SCM s_path, SCM s_t);
 

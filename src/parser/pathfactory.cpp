@@ -76,6 +76,12 @@ SCM PathFactory::make_bezierspline(SCM s_vector_vector) {
     return path2scm(new BezierSpline(vectors));
 }
 
+SCM PathFactory::make_catmullrom_spline(SCM s_vector_vector) {
+    vector<Vector> vectors = scm2vectorlist(s_vector_vector, "make-catmullrom-spline",1);
+    return path2scm(new CatmullRomSpline(vectors));
+}
+
+
 /**
  * Get point on path.
  *
@@ -108,6 +114,7 @@ void PathFactory::register_procs() {
     scm_c_define_gsubr("make-linesegment",2,0,0,(SCM (*)()) PathFactory::make_linesegment);
     scm_c_define_gsubr("make-spiral",4,0,0,(SCM (*)()) PathFactory::make_spiral);
     scm_c_define_gsubr("make-bezierspline",1,0,0,(SCM (*)()) PathFactory::make_bezierspline);
+    scm_c_define_gsubr("make-catmullrom-spline",1,0,0,(SCM (*)()) PathFactory::make_catmullrom_spline);
     scm_c_define_gsubr("point-on-path",2,0,0,(SCM (*)()) PathFactory::point_on_path);
     scm_c_define_gsubr("tangent-to-path",2,0,0,(SCM (*)()) PathFactory::point_on_path);
 }
