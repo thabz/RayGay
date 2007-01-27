@@ -39,6 +39,14 @@ SCM vcross(SCM s_v1, SCM s_v2)
     return vector2scm(cross);
 }
 
+SCM vdistance(SCM s_v1, SCM s_v2) 
+{
+    Vector v1 = scm2vector(s_v1,"vdistance",1);
+    Vector v2 = scm2vector(s_v2,"vdistance",2);
+    double d = (v1-v2).length();
+    return scm_double2num(d);
+}
+
 SCM vrandomunit() {
     Vector v = Vector::randomUnitVector();
     return vector2scm(v);
@@ -87,6 +95,7 @@ void MathFactory::register_procs()
     scm_c_define_gsubr("noise",1,0,0, (SCM (*)()) noise);
     scm_c_define_gsubr("noise3d",2,0,0, (SCM (*)()) noise3d);
     scm_c_define_gsubr("vcross",2,0,0, (SCM (*)()) vcross);
+    scm_c_define_gsubr("vdistance",2,0,0, (SCM (*)()) vdistance);
     scm_c_define_gsubr("vrandomunit",0,0,0, (SCM (*)()) vrandomunit);
     scm_c_define_gsubr("make-poisson-disc-set",4,0,0, (SCM (*)()) make_poisson_set);
     scm_c_define_gsubr("make-halton-set",3,0,0, (SCM (*)()) make_halton_set);
