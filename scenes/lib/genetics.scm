@@ -7,11 +7,12 @@
     (list-set! l i1 tmp)
     l))
 
-; Swap two random elements
+; Swap percentage of elements randomly
 (define (mutate l percent)
-  (if (< (random 100) percent)
-    (list-swap l (random (length l)) (random (length l))))
-  l)
+  (do ((i 0 (+ i 1)))
+    ((= i (length l)) l)
+    (if (< (random2 0 100) percent)
+       (list-swap l i (random (length l))))))
 
 ; Do a genetic crossover from two parent chromosomes.
 ; One-point crossover technique.
@@ -84,6 +85,6 @@
          (mutate			
             (crossover (pick-chromosome curpop dist-table) 
 	               (pick-chromosome curpop dist-table))
-   	        100))))
+   	        0.2))))
     ; Rinse, repeat
     (loop nextpop '() (car nextpop) (+ i 1)))))))

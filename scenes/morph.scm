@@ -53,10 +53,10 @@
    (genetics num 30 
       (lambda (chromosome)
          (fittness cloud-from cloud-to chromosome))
-      50)
+      500)
 (random-list num)))
- 
- (display transform)
+
+(display transform)
 
 (set-image-size '(800 600))
 (set-background #(1.0 1.0 1.0))
