@@ -46,7 +46,8 @@ class RendererSettings
 	int image_height;
 	/// Storage model for images (in-memory or mmap'ed)
 	Allocator::model_t image_alloc_model;
-	
+	/// Choose faster alternatives everywhere
+	bool fast_preview;
     private:	
     	RendererSettings();
         static RendererSettings* unique_instance;

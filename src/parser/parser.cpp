@@ -129,6 +129,10 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 	type = RendererSettings::NONE;
     }
     renderersettings->renderertype = type;
+    
+    if (renderersettings->fast_preview) {
+        type = RendererSettings::RAYTRACER;
+    }
 
     // Populate camera
     SCM s_camera = lookup(VAR_CAMERA);
@@ -173,10 +177,10 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 SCM Parser::set_settings(SCM s_settings) 
 {
     RendererSettings* renderersettings = RendererSettings::uniqueInstance();
-
+    char* proc = "set-settings";
     if (!SCM_NULLP(s_settings)) {
 	if (SCM_FALSEP (scm_list_p (s_settings))) {
-	    scm_error(NULL, "set-settings", "The settings is not a list", SCM_UNSPECIFIED, NULL);
+	    scm_error(NULL, proc, "The settings is not a list", SCM_UNSPECIFIED, NULL);
 	}
 	uint32_t length = scm_num2int(scm_length(s_settings),0,"");
 
@@ -188,26 +192,28 @@ SCM Parser::set_settings(SCM s_settings)
 	    string key = string(key_c);
 	    SCM s_value = scm_list_ref(s_settings, scm_int2num(i*2+1));
 	    if (key == "globalphotons") {
-		uint32_t value = scm_num2int(s_value,0,"");
+		uint32_t value = scm_num2int(s_value,0,proc);
 		renderersettings->global_photons_num = value;
 	    } else if (key == "causticphotons") {
-		double value = scm_num2double(s_value,0,"");
+		double value = scm_num2double(s_value,0,proc);
 		renderersettings->caustic_photons_num = int(value);
 	    } else if (key == "estimateradius") {
-		double value = scm_num2double(s_value,0,"");
+		double value = scm_num2double(s_value,0,proc);
 		renderersettings->estimate_radius = int(value);
 	    } else if (key == "estimateradius") {
-		double value = scm_num2double(s_value,0,"");
+		double value = scm_num2double(s_value,0,proc);
 		renderersettings->estimate_radius = value;
 	    } else if (key == "estimatesamples") {
-		double value = scm_num2double(s_value,0,"");
+		double value = scm_num2double(s_value,0,proc);
 		renderersettings->estimate_samples = int(value);
 	    } else if (key == "finalgatherrays") {
-		double value = scm_num2double(s_value,0,"");
+		double value = scm_num2double(s_value,0,proc);
 		renderersettings->final_gather_rays = int(value);
 	    } else if (key == "cachetolerance") {
-		double value = scm_num2double(s_value,0,"");
+		double value = scm_num2double(s_value,0,proc);
 		renderersettings->cache_tolerance = value;
+    	    } else if (key == "fast-preview") {
+    		renderersettings->fast_preview = SCM_NFALSEP(s_value) ? true : false;
 	    } else if (key == "image-storage") {
 		string s = scm2string(s_value);
 		if (s == "memory") {
@@ -217,10 +223,10 @@ SCM Parser::set_settings(SCM s_settings)
 		} else if (s == "auto") {
 		    renderersettings->image_alloc_model = Allocator::AUTO;    
 		} else {
-		    scm_error(NULL, "set-settings", ("Unknown image-storage model: " + s).c_str(), SCM_UNSPECIFIED, NULL);
+		    scm_error(NULL, proc, ("Unknown image-storage model: " + s).c_str(), SCM_UNSPECIFIED, NULL);
 		}
 	    } else {
-		cout << "Unknown setting: " << key << endl;
+		cout << "WARNING: Unknown setting: " << key << endl;
 	    }
 	}
     }

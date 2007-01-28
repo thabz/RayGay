@@ -23,7 +23,7 @@ SCM TextureFactory::make_texture(SCM s_filename, SCM s_repeat_x, SCM s_repeat_y,
 
     string type_string = scm2string(s_interpolation_type);
     Texture::InterpolationType type = Texture::INTERPOLATION_NONE;
-    if (type_string == "none") {
+    if (type_string == "none" || RendererSettings::uniqueInstance()->fast_preview) {
 	type = Texture::INTERPOLATION_NONE;
     } else if (type_string == "bilinear") {
 	type = Texture::INTERPOLATION_BILINEAR;

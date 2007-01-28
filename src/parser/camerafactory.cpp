@@ -25,6 +25,8 @@ void extractCamera(SCM s_options, Camera* camera, char* function_name) {
     assert(length % 2 == 0);
     uint32_t argc = length / 2;
 
+    bool fast_preview = RendererSettings::uniqueInstance()->fast_preview;
+    
     for(uint32_t i = 0; i < argc; i++) {
 	size_t l;
 	char* key_c = gh_symbol2newstr(scm_list_ref(s_options, scm_int2num(i*2)),&l);
@@ -42,15 +44,15 @@ void extractCamera(SCM s_options, Camera* camera, char* function_name) {
 	} else if (key == "fov") {
 	    double fov = scm_num2double(s_value,0,"");
 	    camera->setFieldOfView(fov);
-	} else if (key == "aa") {
+	} else if (key == "aa" && !fast_preview) {
 	    int aa = scm_num2int(s_value,0,"");
 	    SamplerFactory* s = new WhittedAdaptiveFactory(aa);
 	    camera->setSamplerFactory(s);
 	    camera->enableAdaptiveSupersampling(aa);
-	} else if (key == "sampler") {
+	} else if (key == "sampler" && !fast_preview) {
 	    SamplerFactory* s = scm2sampler(s_value, function_name, 2+2*i);
 	    camera->setSamplerFactory(s);
-	} else if (key == "dof") {
+	} else if (key == "dof" && !fast_preview) {
 	    SCM scms[3];
 	    for(uint32_t i = 0; i < 3; i++) {
 		scms[i] = scm_list_ref(s_value, scm_int2num(i));
@@ -58,7 +60,7 @@ void extractCamera(SCM s_options, Camera* camera, char* function_name) {
 	    double aperture = scm_num2double(scms[0], 0, "");
 	    int samples = scm_num2int(scms[1], 0, "");
 	    Vector focalpoint = scm2vector(scms[2], "", 0);
-	    camera->enableDoF(aperture, samples, focalpoint);
+            camera->enableDoF(aperture, samples, focalpoint);
     	} else if (key == "zoom") {
     	    SCM scms[2];
  	    scms[0] = scm_list_ref(s_value, scm_int2num(0));
@@ -66,10 +68,17 @@ void extractCamera(SCM s_options, Camera* camera, char* function_name) {
             Vector2 offset = scm2vector2(scms[0], "scm2vector2", 0);
     	    double width = scm_num2double(scms[1], 0, "num2double");
     	    camera->setZoom(offset, width);
-	} else {
+	} else if (key == "sampler" && fast_preview) {
+	    cout << "Ignoring Sampler setting because of fast preview." << endl;    
+    	} else if (key == "aa" && fast_preview) {
+    	    cout << "Ignoring AA setting because of fast preview." << endl;
+    	} else if (key == "dof" && fast_preview) {
+    	    cout << "Ignoring depth-of-field setting because of fast preview." << endl;
+	} else {        
 	    cout << "Unknown camera option: " << key << endl;
 	}
     }
+    
     if (camera->getSamplerFactory() == NULL) {
 	SamplerFactory* p = new NonAASamplerFactory();
 	camera->setSamplerFactory(p);

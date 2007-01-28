@@ -29,4 +29,5 @@ inline RendererSettings::RendererSettings() {
     image_width = 640;
     image_height = 480;
     image_alloc_model = Allocator::AUTO;
+    fast_preview = false;
 }

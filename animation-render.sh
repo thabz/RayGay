@@ -5,8 +5,9 @@ if [ $# -lt 2 ]
 then
     echo "Usage: animation-render.sh [OPTION...] SCENEFILE FRAMES"
     echo "       -r                   Resume rendering"
+    echo "       -f                   Fast preview rendering"
     echo 
-    echo "The variables frame and clock are set before the"
+    echo "The global variables frame and clock are set before the"
     echo "scene is rendered."
     exit 1
 fi
@@ -14,6 +15,7 @@ fi
 # Parse options
 FINITO="no"
 RESUME="no"
+FAST_PREVIEW_SCHEME=""
 
 while [ $FINITO = "no" ]
 do        
@@ -21,6 +23,9 @@ do
       "-r") RESUME="yes"
             echo "Resume rendering..."
             shift;;
+      "-f") FAST_PREVIEW_SCHEME="(set-settings '(fast-preview #t))"
+            echo "Fast preview rendering rendering enabled."
+            shift;;            
       *)    FINITO="yes";;
    esac   
 done        
@@ -50,7 +55,7 @@ do
         echo "Skipping frame $i. $OUTPUT_FILE already exists."
    else            
         echo "Rendering $SCENE_FILE frame $i of $FRAMES_NUM to $OUTPUT_FILE"
-        EXPR="(define frame $i) (define clock (/ $i $FRAMES_NUM))"
+        EXPR="(define frame $i) (define clock (/ $i $FRAMES_NUM)) $FAST_PREVIEW_SCHEME"
         echo $EXPR
         ./src/tracer -b -e "$EXPR" $SCENE_FILE $OUTPUT_FILE
         if [ $? -ne 0 ]; then
