@@ -380,6 +380,7 @@ void print_usage() {
     }
     cout << "       -e EXPR              Eval a Scheme-expr prior to" << endl;
     cout << "                            parsing the scenefile" << endl;
+    cout << "       -f                   Fast preview rendering" << endl;
     cout << "       -d                   Print debugging information" << endl;
     cout << "       -p                   Dump profile after run" << endl;
     cout << "       -h                   Show this help message" << endl;
@@ -415,7 +416,7 @@ int main(int argc, char *argv[]) {
     int c;
     opterr = 0;
     int jobs = getNumberOfCPUs();
-    while ((c = getopt (argc, argv, "Vvpdhbj:e:")) != -1) {
+    while ((c = getopt (argc, argv, "Vvfpdhbj:e:")) != -1) {
 	switch(c) {
 	    case 'h':
 		print_usage();
@@ -423,6 +424,9 @@ int main(int argc, char *argv[]) {
 	    case 'v':
 		print_version();
 		return EXIT_SUCCESS;
+            case 'f':
+                RendererSettings::uniqueInstance()->fast_preview = true;
+                break;
 	    case 'b':
 		env->hasPreviewWindow(false);
 		break;
