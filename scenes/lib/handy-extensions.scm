@@ -61,3 +61,11 @@
     ,@body
     (unless (null? rest)
       (loop (car rest) (cdr rest)))))
+      
+(define-macro (dostep var from to step . body)
+  `(do ((,var ,from (+ ,step ,var)))
+    ((>= ,var ,to))
+    ,@body))
+      
+      
+      
