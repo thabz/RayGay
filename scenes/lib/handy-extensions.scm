@@ -63,6 +63,7 @@
       (loop (car rest) (cdr rest)))))
       
 (define-macro (dostep var from to step . body)
+  "FOR loop construct as found in BASIC"
   `(do ((,var ,from (+ ,step ,var)))
     ((>= ,var ,to))
     ,@body))
