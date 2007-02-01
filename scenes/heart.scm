@@ -34,11 +34,11 @@
 (let loop ((i 0))
   (if (not(= i balls) )
     (let* ((x (random2 (- size) size))
-	   (y (random2 (- size) size))
-	   (z (random2 (- size) size))
-	   (v (- (expt (+ (* 2 x x) (* y y) (* z z) -1) 3)
-		 (* x x z z z 0.1)
-		 (* y y z z z))))
+ 	         (y (random2 (- size) size))
+	         (z (random2 (- size) size))
+ 	         (v (- (expt (+ (* 2 x x) (* y y) (* z z) -1) 3)
+		             (* x x z z z 0.1)
+		             (* y y z z z))))
       (if (negative? v)
 	(begin
 	 (add-to-scene

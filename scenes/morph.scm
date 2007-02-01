@@ -17,13 +17,21 @@
          (loop result))))))
      
 (define (sphere-inside? v)
-  (> 2 (vlength v)))
+  (> 1.5 (vlength v)))
 
 (define (box-inside? v)
   (and
-    (> 2 (abs (.x v)))
-    (> 2 (abs (.y v)))
-    (> 2 (abs (.z v)))))
+    (> 1.2 (abs (.x v)))
+    (> 1.2 (abs (.y v)))
+    (> 1.2 (abs (.z v)))))
+
+(define (heart-inside? v)
+  (let ((x (* 0.8 (.z v)))
+        (y (* 0.8 (.x v)))
+        (z (* 0.8 (.y v))))
+     (negative? (- (expt (+ (* 2 x x) (* y y) (* z z) -1) 3)
+ 	                 (* x x z z z 0.1)
+                   (* y y z z z)))))
 
 (define (fittness cloud-from cloud-to transform)
  (let loop ((sum 0)
@@ -37,26 +45,18 @@
          (+ i 1)
          l))))
 
-; Test with num = 30, popsize = 30, exit-condition = 50
-; 45.49s user 0.33s system 97% cpu 47.072 total
-; 8.10s user 0.15s system 99% cpu 8.250 total
-; 3.27s user 0.11s system 101% cpu 3.340 total
-;(25 8 26 21 12 7 16 5 23 9 18 6 27 19 14 20 17 0 29 15 13 24 1 28 2 10 4 3 22 11)
-;(25 8 26 21 12 7 16 5 23 9 18 6 27 19 14 20 17 0 29 15 13 24 1 28 2 10 4 3 22 11)
+(define num 1000)
+(define sphere-cloud (make-point-cloud num sphere-inside?))
+(define box-cloud (make-point-cloud num box-inside?))
+(define heart-cloud (make-point-cloud num heart-inside?))
 
-(define num 500)
-(define cloud-to (make-point-cloud num sphere-inside?))
-(define cloud-from (make-point-cloud num box-inside?))
-
-(define transform
-(if #t
+(define (transform cloud-from cloud-to max-iter)
    (genetics num 30 
       (lambda (chromosome)
          (fittness cloud-from cloud-to chromosome))
-      500)
-(random-list num)))
+   max-iter))
 
-(display transform)
+;(display transform)
 
 (set-image-size '(800 600))
 (set-background #(1.0 1.0 1.0))
@@ -83,8 +83,21 @@
        ks 0.0)))
 
 
+(define (keyframing t keyframes)
+  (let* ((sum (apply + (map car keyframes)))
+         (scaled-t (* sum t)))
+     (let loop ((k keyframes)
+                (t 0))  
+       (if (<= scaled-t (+ t (caar k))) 
+         (cadar k)
+         (loop (cdr k) (+ t (caar k)))))))     
+
+(keyframing 0.1 '((10 1) (10 2) (10 3)))
+
+
 (add-to-scene (make-pointlight #(100 1300 1300)))
 
+(define (render-transition cloud-from cloud-to transform)
 (dotimes i num
   (add-to-scene
     (make-cone
@@ -95,5 +108,16 @@
      blue)
     (make-sphere
       (list-ref cloud-to i)
-      0.03 red)))
+      0.03 red))))
+
+(define (render-cloud cloud)
+  (dotimes i num
+    (add-to-scene
+      (make-sphere
+        (list-ref cloud i)
+        0.08 red))))
+  
+(render-cloud heart-cloud)  
+;(render-cloud box-cloud)
+;(render-cloud sphere-cloud)
 

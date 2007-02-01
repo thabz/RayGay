@@ -35,10 +35,18 @@
     (display t)
     (newline ))
 
-
 (define (pick-random-from-list l)
   "Returns a random element from a list"        
   (list-ref l (random (length l))))
+
+(define (keyframing t keyframes)
+  (let* ((sum (apply + (map car keyframes)))
+         (scaled-t (* sum t)))
+         (curframe (do ((i 0 (+ i 1)))
+                        (k keyframes (cdr keyframes))
+                        (t scaled-t (- t (caar keyframes)))  
+                     ((<= t 0) k)))
+      (display (cdr curframe))))               
 
 (define-macro (unless test . consequent)
    "A Common LISP style unless macro"        
