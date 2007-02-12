@@ -1,5 +1,15 @@
 
 ///////////////////////////////////////////
+// Distributed rendering design
+///////////////////////////////////////////
+The client send a HEAD request for all files that are part of a project.
+The server respond includes the headers Last-Modified and Content-MD5 or a 404.
+Based on those the client makes PUT requests for each changed file.
+Then the client starts the job with a specific POST request.
+During rendering the client can poll the status with other POST requests.
+Finally the client retrieves the rendered image with a GET request.
+
+///////////////////////////////////////////
 // Compiling into assembler source
 ///////////////////////////////////////////
   
