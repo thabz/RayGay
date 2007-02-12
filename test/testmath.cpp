@@ -1312,10 +1312,11 @@ class poisson_disc_test : public Test {
 
     public:
 	void run() {
+	    PoissonDiscDistribution dist = PoissonDiscDistribution(10,10);        
 	    Vector2* r = new Vector2[100];
 	    double radius = 0.3;
 	    int req_num = 300;
-	    int num = PoissonDiscDistribution::createSet(10,10,radius,req_num,r);
+	    int num = dist.createSet(radius,req_num,r);
 	 //   cout << "Darts: " << num << endl;
 	    assertTrue(num <= req_num);
 	    assertTrue(num > 10); 
