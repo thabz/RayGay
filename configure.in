@@ -153,6 +153,7 @@ AC_OUTPUT(Makefile \
 	  src/collections/Makefile \
 	  src/samplers/Makefile \
 	  src/filters/Makefile \
+	  src/webserver/Makefile \
 	  scheme/Makefile	\
 	  scenes/Makefile	\
 	  test/Makefile		\

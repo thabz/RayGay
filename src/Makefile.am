@@ -1,5 +1,5 @@
 
-SUBDIRS = materials paths lights math image photon imagefilters objects space shaders parser cameras collections samplers filters
+SUBDIRS = materials paths lights math image photon imagefilters objects space shaders parser cameras collections samplers filters webserver
 
 
 #--------------------------------------
@@ -36,7 +36,7 @@ libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libpho
 #--------------------------------------
 LIBS = @DARWIN_LIBS@		     
 
-bin_PROGRAMS = tracer
+bin_PROGRAMS = tracer server
 noinst_PROGRAMS = bench
 if OS_DARWIN
    noinst_PROGRAMS += win
@@ -45,6 +45,11 @@ endif
 tracer_SOURCES = main.cpp window-gtk.cpp window-gtk.h window-icon.h
 #tracer_CXXFLAGS = $(GTK_CFLAGS) $(CXXFLAGS)
 tracer_LDADD = libtracer.la @GTK_LIBS@
+
+#--------------------------------------
+
+server_SOURCES = server-main.cpp
+server_LDADD = libtracer.la webserver/libwebserver.la
 
 #--------------------------------------
 
