@@ -20,19 +20,13 @@ extern "C" {
 
 using namespace std;
 
-void PngIO::save(const Image* const image, const std::string& filename) const {
+void PngIO::save(const Image* const image, FILE* fp) const {
 
-    FILE *fp;
     png_structp png_ptr;
     png_infop info_ptr;
 
     int width = image->getWidth();
     int height = image->getHeight();
-
-    /* open the file */
-    fp = ::fopen(filename.c_str(), "wb");
-    if (fp == NULL)
-	throw_exception("Error saving " + filename);
 
     /* Create and initialize the png_struct with the desired error handler
      * functions.  If you want to use the default stderr and longjump method,
@@ -115,9 +109,6 @@ png_set_text(png_ptr, info_ptr, text_ptr, 3);
 
     /* clean up after the write, and free any memory allocated */
     png_destroy_write_struct(&png_ptr, &info_ptr);
-
-    /* close the file */
-    ::fclose(fp);
 }
 
 Image* PngIO::load(const std::string& filename, Allocator::model_t model) {

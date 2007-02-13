@@ -12,32 +12,32 @@ using namespace std;
 /**
  * Writes the image into a  24 bit uncompressed tga-file
  */
-void TgaIO::save(const Image* const image, const std::string& filename) const {
+void TgaIO::save(const Image* const image, FILE* outfile) const {
     int height = image->getHeight();
     int width = image->getWidth();
 
     uint8_t* bytes = new uint8_t[height*width*4];
-    uint8_t Header[18];
-    ::memset(&Header,0,18);
+    uint8_t header[18];
+    ::memset(&header,0,18);
 
-    Header[0] = 0;
-    Header[1] = 0;
-    Header[2] = 2;
-    Header[3] = 0;
-    Header[4] = 0;
-    Header[5] = 0;
-    Header[6] = 0;
-    Header[7] = 0;
-    Header[8] = 0;
-    Header[9] = 0;
-    Header[10] = 0;
-    Header[11] = 0;
-    Header[12] = width;
-    Header[13] = ((long) width >> 8);
-    Header[14] = height;
-    Header[15] = ((long) height >> 8);
-    Header[16] = 32;
-    Header[17] = 0;
+    header[0] = 0;
+    header[1] = 0;
+    header[2] = 2;
+    header[3] = 0;
+    header[4] = 0;
+    header[5] = 0;
+    header[6] = 0;
+    header[7] = 0;
+    header[8] = 0;
+    header[9] = 0;
+    header[10] = 0;
+    header[11] = 0;
+    header[12] = width;
+    header[13] = ((long) width >> 8);
+    header[14] = height;
+    header[15] = ((long) height >> 8);
+    header[16] = 32;
+    header[17] = 0;
     
     RGBA color;
 
@@ -50,21 +50,16 @@ void TgaIO::save(const Image* const image, const std::string& filename) const {
 	    bytes[4*(x+y*width)+3] = (uint8_t)(floor(color.a()*255 + 0.5));
 	}
     }
-    FILE* outfile = ::fopen(filename.c_str(),"wb");
-    if (outfile == NULL) {
-	delete [] bytes;
-	throw_exception("Error opening " + filename);
-    }
-    ::fseek(outfile,0,0);
-    ::fwrite(Header,1,18,outfile);
-    ::fseek(outfile,18,0);
-    int bytes_saved = ::fwrite(bytes,sizeof(uint8_t),width*height*4,outfile);
+
+    //::fseek(outfile,0,0);
+    ::fwrite(header, sizeof(uint8_t), 18, outfile);
+    //::fseek(outfile,18,0);
+    int bytes_saved = ::fwrite(bytes, sizeof(uint8_t),width*height*4,outfile);
 
     //std::cout << bytes_saved << " bytes written" << std::endl;
     if (bytes_saved < width*height*4) {
-	throw_exception("Error saving file " + filename);
+	throw_exception("Error saving file");
     }
-    ::fclose(outfile);
     delete [] bytes;
 }
 

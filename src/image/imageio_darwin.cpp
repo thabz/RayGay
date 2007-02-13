@@ -13,6 +13,10 @@
 
 using namespace std;
 
+void DarwinIO::save(const Image* const image, FILE* file) const {
+    throw_exception("Shouldn't be called");        
+}
+
 void DarwinIO::save(const Image* const image, const std::string& filename) const
 {
     uint32_t w = image->getWidth();

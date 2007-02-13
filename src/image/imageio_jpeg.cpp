@@ -21,7 +21,7 @@ extern "C" {
 
 using namespace std;
 
-void JpegIO::save(const Image* const image, const std::string& filename) const {
+void JpegIO::save(const Image* const image, FILE* fp) const {
     throw_exception("JPEG saving not implemented.");
 }
 

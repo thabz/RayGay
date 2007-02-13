@@ -24,7 +24,7 @@ void workOnRGBE(RGBE *scan, int len, float *cols);
 bool decrunch(RGBE *scanline, int len, FILE *file);
 bool oldDecrunch(RGBE *scanline, int len, FILE *file);
 
-void HdriIO::save(const Image* const image, const std::string& filename) const {
+void HdriIO::save(const Image* const image, FILE* file) const {
     throw_exception("HDRI saving not implemented.");
 }
 

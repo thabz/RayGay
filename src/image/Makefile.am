@@ -9,6 +9,7 @@ libimage_la_SOURCES = image.cpp \
                      rgb.cpp \
                      rgba.cpp \
                      texture.cpp \
+                     imageio.cpp \
 		     imageio_tga.cpp \
 		     imageio_hdri.cpp \
 		     imageio_jpeg.cpp \
