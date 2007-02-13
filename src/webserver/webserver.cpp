@@ -9,15 +9,21 @@
 #include <cstdlib>
 #include <ctime>
 #include <cstdio>
+#include <sstream>
 #include <iostream>
 
 extern "C" {
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>        /*  inet (3) funtions         */
 }
 
-Webserver::Webserver(int port) 
+////////////////////////////////////////////////////////////////////////
+// WebServer
+////////////////////////////////////////////////////////////////////////
+
+Webserver::Webserver(int port, string document_root) 
 {
     this->port = port;
     sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -29,11 +35,11 @@ Webserver::Webserver(int port)
     if (bind(sock, (struct sockaddr *) &sin, sizeof(sin)) == -1) {
         throw_exception("Can't bind to port");            
     };
-    default_action = new Action();
+    file_action = new FileAction(document_root);
 }
 
 Webserver::~Webserver() {
-    cout << "~Webserver called." << endl;        
+    cout << "\rWebserver shutting down." << endl;        
     close(sock);            
 }
 
@@ -48,9 +54,15 @@ void Webserver::run() {
         if (s < 0) {
             break;        
         }
-        f = fdopen(s, "r+");
-        process(f);
-        fclose(f);   
+        if (fork() == 0) {
+            f = fdopen(s, "r+");
+            process(f);
+            fclose(f);   
+            close(s);
+            exit(EXIT_SUCCESS);
+        }
+        close(s);
+        
     }
     close(sock);
 }
@@ -70,26 +82,54 @@ int Webserver::process(FILE* f) {
     protocol = strtok(NULL, "\r");
     if (!method || !path || !protocol) 
         return -1;
-
+    
     Action* action = actions[path];
-    HTTPResponse response;
     HTTPRequest request;
+    request.method = string(method);
+    request.path = string(path);
+    readHeaders(f, request);
+    HTTPResponse response;
     response.output = f;
     if (action == NULL) {
-        action = default_action;
+        action = file_action;
     }
     action->execute(request, response);   
     return 0;
 }
 
-void HTTPResponse::sendHeaders(int status, char* contenttype)
+void Webserver::addAction(string url, Action* action) {
+    actions[url] = action;        
+}
+
+void Webserver::readHeaders(FILE* f, HTTPRequest& request) {
+    char buf[4096];
+    while(1) {
+        if (!fgets(buf, sizeof(buf), f)) {
+            return;        
+        }
+        if (buf[0] == '\0' || buf[1] == '\0' || buf[2] == '\0' ) {
+            return;
+        }
+        cout << "Header: " << string(buf) << endl;
+    }        
+}
+
+////////////////////////////////////////////////////////////////////////
+// HTTPResponse
+////////////////////////////////////////////////////////////////////////
+
+void HTTPResponse::sendHeaders(int status, const char* contenttype)
 {
     FILE* f = output;
     fseek(f, 0, SEEK_CUR); // Force change of stream direction    
     fprintf(f, "HTTP/1.0 %d %s\r\n", status, statusString(status).c_str());
-    fprintf(f, "Server: RayGay %s Renderserver\r\n",VERSION);
+    fprintf(f, "Server: RayGay Renderslave %s\r\n",VERSION);
     if (contenttype != NULL) {
         fprintf(f, "Content-type: %s\r\n", contenttype);
+    }
+    for(uint32_t i = 0; i < extra_headers.size(); i++) {
+        pair<string,string> p = extra_headers[i];
+        fprintf(f, "%s: %s\r\n", p.first.c_str(), p.second.c_str());    
     }
     fprintf(f,"\r\n");
 }
@@ -99,9 +139,13 @@ void HTTPResponse::sendText(const string& s)
     fprintf(output, "%s", s.c_str());
 }
 
-
-void Webserver::addAction(string url, Action* action) {
-    actions[url] = action;        
+void HTTPResponse::sendFile(FILE* file)
+{
+    uint8_t data[4096];
+    size_t n;
+    while ((n = fread(data, 1, sizeof(data), file)) > 0) {
+       fwrite(data, 1, n, output);
+    }
 }
 
 
@@ -113,14 +157,69 @@ string HTTPResponse::statusString(int status) {
     switch(status) {
         case 200: return "OK";
         case 404: return "Not found";
+        case 405: return "Method not allowed";
         case 403: return "Forbidden";
         case 501: return "Not supported";
         default:  return "Unknown";
     }
 }
 
-void Action::execute(const HTTPRequest& request, HTTPResponse& response)
+void HTTPResponse::addHeader(string name, string value)
 {
-    response.sendHeaders(404, "text/plain");
+    extra_headers.push_back(pair<string,string>(name,value));        
+}
+
+////////////////////////////////////////////////////////////////////////
+// WebUtil
+////////////////////////////////////////////////////////////////////////
+string WebUtil::pathToMimetype(string path) {
+    if (path.rfind(".png") != path.npos) {
+        return "image/png";
+    } else if (path.rfind(".jpeg") != path.npos) {
+        return "image/jpeg";
+    } else if (path.rfind(".jpg") != path.npos) {
+        return "image/jpeg";
+    } else if (path.rfind(".txt") != path.npos) {
+        return "text/plain";
+    } else {
+        return "application/unknown";
+    }        
+}
+
+////////////////////////////////////////////////////////////////////////
+// FileAction
+////////////////////////////////////////////////////////////////////////
+
+FileAction::FileAction(string document_root)
+{
+    this->document_root = document_root;        
+}
+
+void FileAction::execute(const HTTPRequest& request, HTTPResponse& response)
+{
+    struct stat statbuf;
+    string path = document_root + request.path;
+    // TODO: Sanitize path, ie. remove ".." and leading "/"
+    if (request.method == "GET" || request.method == "HEAD") {
+        if (stat(path.c_str(), &statbuf) >= 0) {
+            ostringstream os;
+            os << statbuf.st_size;         
+            response.addHeader("Content-Length",os.str());
+            // TODO: Send a "Content-MD5" header also
+            response.sendHeaders(200,WebUtil::pathToMimetype(path).c_str());        
+            if (request.method == "GET") {
+               FILE* f = fopen(path.c_str(), "r");
+               response.sendFile(f);
+               fclose(f);
+            }
+        } else {
+            response.sendHeaders(404, "text/plain");
+        }
+    } else if (request.method == "PUT") {
+            
+    } else {
+        response.addHeader("Allow", "PUT, GET, HEAD");    
+        response.sendHeaders(405, "text/plain");
+    }
 }
 

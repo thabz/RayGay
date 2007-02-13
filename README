@@ -1,4 +1,3 @@
-
 ///////////////////////////////////////////
 // Distributed rendering design
 ///////////////////////////////////////////
@@ -10,6 +9,7 @@ During rendering the client can poll the status with other POST requests.
 Finally the client retrieves the rendered image with a GET request.
 
 ///////////////////////////////////////////
+>>>>>>> .r7557
 // Compiling into assembler source
 ///////////////////////////////////////////
   
