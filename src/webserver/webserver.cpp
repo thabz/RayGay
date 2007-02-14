@@ -62,7 +62,6 @@ void Webserver::run() {
             exit(EXIT_SUCCESS);
         }
         close(s);
-        
     }
     close(sock);
 }
@@ -83,17 +82,35 @@ int Webserver::process(FILE* f) {
     if (!method || !path || !protocol) 
         return -1;
     
-    Action* action = actions[path];
+    // Extract request
     HTTPRequest request;
     request.method = string(method);
     request.path = string(path);
     readHeaders(f, request);
-    HTTPResponse response;
-    response.output = f;
+
+    // Find and execute action
+    Action* action = actions[path];
     if (action == NULL) {
         action = file_action;
     }
-    action->execute(request, response);   
+    HTTPResponse response = action->execute(request);   
+    response.addHeader("Server", string("RayGay Renderslave ") + string(VERSION));
+    
+    // Send response
+    fseek(f, 0, SEEK_CUR); // Force change of stream direction    
+    fprintf(f, "HTTP/1.0 %d %s\r\n", response.status, response.statusString().c_str());
+    for(uint32_t i = 0; i < response.headers.size(); i++) {
+        pair<string,string> p = response.headers[i];
+        fprintf(f, "%s: %s\r\n", p.first.c_str(), p.second.c_str());    
+    }
+    fprintf(f,"\r\n");
+    
+    if (response.bodyFILE != NULL) {
+        WebUtil::copy(response.bodyFILE, f);
+        fclose(response.bodyFILE);        
+    } else {
+        fprintf(f, "%s", response.bodyString.c_str());
+    }
     return 0;
 }
 
@@ -108,83 +125,13 @@ void Webserver::readHeaders(FILE* f, HTTPRequest& request) {
             return;        
         }
         if (buf[0] == '\0' || buf[1] == '\0' || buf[2] == '\0' ) {
+            // TODO: Better check for blank line        
             return;
         }
         cout << "Header: " << string(buf) << endl;
     }        
 }
 
-////////////////////////////////////////////////////////////////////////
-// HTTPResponse
-////////////////////////////////////////////////////////////////////////
-
-void HTTPResponse::sendHeaders(int status, const char* contenttype)
-{
-    FILE* f = output;
-    fseek(f, 0, SEEK_CUR); // Force change of stream direction    
-    fprintf(f, "HTTP/1.0 %d %s\r\n", status, statusString(status).c_str());
-    fprintf(f, "Server: RayGay Renderslave %s\r\n",VERSION);
-    if (contenttype != NULL) {
-        fprintf(f, "Content-type: %s\r\n", contenttype);
-    }
-    for(uint32_t i = 0; i < extra_headers.size(); i++) {
-        pair<string,string> p = extra_headers[i];
-        fprintf(f, "%s: %s\r\n", p.first.c_str(), p.second.c_str());    
-    }
-    fprintf(f,"\r\n");
-}
-
-void HTTPResponse::sendText(const string& s)
-{
-    fprintf(output, "%s", s.c_str());
-}
-
-void HTTPResponse::sendFile(FILE* file)
-{
-    uint8_t data[4096];
-    size_t n;
-    while ((n = fread(data, 1, sizeof(data), file)) > 0) {
-       fwrite(data, 1, n, output);
-    }
-}
-
-
-HTTPResponse::HTTPResponse() {
-    length = -1;
-}
-
-string HTTPResponse::statusString(int status) {
-    switch(status) {
-        case 200: return "OK";
-        case 404: return "Not found";
-        case 405: return "Method not allowed";
-        case 403: return "Forbidden";
-        case 501: return "Not supported";
-        default:  return "Unknown";
-    }
-}
-
-void HTTPResponse::addHeader(string name, string value)
-{
-    extra_headers.push_back(pair<string,string>(name,value));        
-}
-
-////////////////////////////////////////////////////////////////////////
-// WebUtil
-////////////////////////////////////////////////////////////////////////
-string WebUtil::pathToMimetype(string path) {
-    if (path.rfind(".png") != path.npos) {
-        return "image/png";
-    } else if (path.rfind(".jpeg") != path.npos) {
-        return "image/jpeg";
-    } else if (path.rfind(".jpg") != path.npos) {
-        return "image/jpeg";
-    } else if (path.rfind(".txt") != path.npos) {
-        return "text/plain";
-    } else {
-        return "application/unknown";
-    }        
-}
 
 ////////////////////////////////////////////////////////////////////////
 // FileAction
@@ -195,8 +142,9 @@ FileAction::FileAction(string document_root)
     this->document_root = document_root;        
 }
 
-void FileAction::execute(const HTTPRequest& request, HTTPResponse& response)
-{
+HTTPResponse FileAction::execute(const HTTPRequest& request)
+{ 
+    HTTPResponse response;        
     struct stat statbuf;
     string path = document_root + request.path;
     // TODO: Sanitize path, ie. remove ".." and leading "/"
@@ -204,22 +152,27 @@ void FileAction::execute(const HTTPRequest& request, HTTPResponse& response)
         if (stat(path.c_str(), &statbuf) >= 0) {
             ostringstream os;
             os << statbuf.st_size;         
-            response.addHeader("Content-Length",os.str());
             // TODO: Send a "Content-MD5" header also
-            response.sendHeaders(200,WebUtil::pathToMimetype(path).c_str());        
+            response = HTTPResponse(200, WebUtil::pathToMimetype(path));
+            response.addHeader("Content-Length",os.str());
             if (request.method == "GET") {
                FILE* f = fopen(path.c_str(), "r");
-               response.sendFile(f);
-               fclose(f);
+               response.setBody(f);
             }
         } else {
-            response.sendHeaders(404, "text/plain");
+            response = HTTPResponse(404, "text/plain");
         }
+    } else if (request.method == "DELETE") {
+        // This method isn't strictly HTTP1.1, but we need it
+        // and I don't want to implement a complete WebDAV stack.    
+        unlink(path.c_str());
+        response = HTTPResponse(200, "text/plain");
     } else if (request.method == "PUT") {
             
     } else {
-        response.addHeader("Allow", "PUT, GET, HEAD");    
-        response.sendHeaders(405, "text/plain");
+        response = HTTPResponse(405, "text/plain");
+        response.addHeader("Allow", "PUT, GET, HEAD, DELETE");    
     }
+    return response;
 }
 
