@@ -54,6 +54,8 @@ string WebUtil::pathToMimetype(string path) {
     if (strcmp(ext,".jpeg") == 0) return "image/jpeg";
     if (strcmp(ext,".jpg") == 0) return "image/jpeg";
     if (strcmp(ext,".txt") == 0) return "text/plain";
+    if (strcmp(ext,".html") == 0) return "text/html";
+    if (strcmp(ext,".css") == 0) return "text/css";
     return "application/unknown";
 }
 
