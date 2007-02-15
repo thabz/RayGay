@@ -3,7 +3,7 @@
 #define RAYGAY_HTTP_COMMON_H
 
 #include <string>
-#include <vector>
+#include <map>
 
 using namespace std;
 
@@ -13,16 +13,23 @@ class HTTPMessage {
    public: 
        HTTPMessage();                   
        void addHeader(string name, string value);
-      
+       string getHeader(string name);
+       
        void setBody(const string& text);
        void addBody(const string& text);
        void setBody(FILE* data);
+       
+       void readHeaders(FILE* input);
+       void writeHeaders(FILE* output);
+       
+       void readParams(FILE* input);
 
        string contenttype;
        long length;
        FILE* bodyFILE;
        string bodyString;
-       vector<pair<string,string> > headers;
+       map<string,string> headers;
+       map<string,string> params;
 };
 
 class HTTPResponse : public HTTPMessage {

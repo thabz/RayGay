@@ -12,7 +12,11 @@ HTTPMessage::HTTPMessage() {
 
 void HTTPMessage::addHeader(string name, string value)
 {
-    headers.push_back(pair<string,string>(name,value));        
+    headers[name] = value;
+}
+
+string HTTPMessage::getHeader(string name) {
+    return headers[name];        
 }
 
 void HTTPMessage::setBody(FILE* data) {
@@ -27,6 +31,33 @@ void HTTPMessage::addBody(const string& data) {
     this->bodyString += data;
 }
 
+void HTTPMessage::writeHeaders(FILE* output) {
+    for(map<string,string>::iterator ite = headers.begin(); ite != headers.end(); ite++) {
+        fprintf(output, "%s: %s\r\n", ite->first.c_str(), ite->second.c_str());    
+    }
+    fprintf(output,"\r\n");
+}
+
+void HTTPMessage::readHeaders(FILE* input) {
+    char buf[4096];
+    while(1) {
+        if (!fgets(buf, sizeof(buf), input)) {
+            return;        
+        }
+        if (buf[0] == '\0' || buf[1] == '\0' || buf[2] == '\0' ) {
+            // TODO: Make a better check for empty line        
+            return;
+        }
+        printf("%s",buf);
+    }        
+}
+
+void HTTPMessage::readParams(FILE* input) {
+    if (getHeader("Content-type") == "application/x-www-form-urlencoded") {
+        // TODO: Read params from body 
+    }
+    // TODO: Read additional params from request path
+}
 
 ////////////////////////////////////////////////////////////////////////
 // HTTPResponse

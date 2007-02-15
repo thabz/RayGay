@@ -86,7 +86,9 @@ int Webserver::process(FILE* f) {
     HTTPRequest request;
     request.method = string(method);
     request.path = string(path);
-    readHeaders(f, request);
+    request.readHeaders(f);
+    request.readParams(f);
+    request.setBody(f);
 
     // Find and execute action
     Action* action = actions[path];
@@ -99,11 +101,7 @@ int Webserver::process(FILE* f) {
     // Send response
     fseek(f, 0, SEEK_CUR); // Force change of stream direction    
     fprintf(f, "HTTP/1.0 %d %s\r\n", response.status, response.statusString().c_str());
-    for(uint32_t i = 0; i < response.headers.size(); i++) {
-        pair<string,string> p = response.headers[i];
-        fprintf(f, "%s: %s\r\n", p.first.c_str(), p.second.c_str());    
-    }
-    fprintf(f,"\r\n");
+    response.writeHeaders(f);
     
     if (response.bodyFILE != NULL) {
         WebUtil::copy(response.bodyFILE, f);
@@ -117,21 +115,6 @@ int Webserver::process(FILE* f) {
 void Webserver::addAction(string url, Action* action) {
     actions[url] = action;        
 }
-
-void Webserver::readHeaders(FILE* f, HTTPRequest& request) {
-    char buf[4096];
-    while(1) {
-        if (!fgets(buf, sizeof(buf), f)) {
-            return;        
-        }
-        if (buf[0] == '\0' || buf[1] == '\0' || buf[2] == '\0' ) {
-            // TODO: Better check for blank line        
-            return;
-        }
-        cout << "Header: " << string(buf) << endl;
-    }        
-}
-
 
 ////////////////////////////////////////////////////////////////////////
 // FileAction
