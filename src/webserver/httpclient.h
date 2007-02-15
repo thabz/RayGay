@@ -4,10 +4,18 @@
 
 #include "webserver/httpcommon.h"
 
+class HTTPFormPost : public HTTPRequest {
+    public:
+        HTTPFormPost();    
+        void addParameter(string name, string value);                    
+};
+
+
+
 class HTTPClient {
-    HTTPClient();
-    HTTPResponse send(const HTTPRequest& request);
-        
+    public:        
+        HTTPClient();
+        HTTPResponse send(HTTPRequest& request);    
 };
 
 #endif

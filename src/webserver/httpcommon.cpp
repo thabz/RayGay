@@ -2,6 +2,33 @@
 #include "webserver/httpcommon.h"
 
 ////////////////////////////////////////////////////////////////////////
+// HTTPMessage
+////////////////////////////////////////////////////////////////////////
+HTTPMessage::HTTPMessage() {
+    length = -1;
+    bodyFILE = NULL;
+    bodyString = "";
+}
+
+void HTTPMessage::addHeader(string name, string value)
+{
+    headers.push_back(pair<string,string>(name,value));        
+}
+
+void HTTPMessage::setBody(FILE* data) {
+    this->bodyFILE = data;        
+}
+
+void HTTPMessage::setBody(const string& data) {
+    this->bodyString = data;        
+}
+
+void HTTPMessage::addBody(const string& data) {
+    this->bodyString += data;
+}
+
+
+////////////////////////////////////////////////////////////////////////
 // HTTPResponse
 ////////////////////////////////////////////////////////////////////////
 
@@ -9,15 +36,9 @@ HTTPResponse::HTTPResponse(int status, string contenttype) {
     this->status = status;
     this->contenttype = contenttype;
     addHeader("Content-type",contenttype);
-    bodyFILE = NULL;
-    bodyString = "";
-    length = -1;
 }
 
 HTTPResponse::HTTPResponse() {
-    bodyFILE = NULL;
-    bodyString = "";
-    length = -1;
 }
 
 string HTTPResponse::statusString() {
@@ -30,20 +51,6 @@ string HTTPResponse::statusString() {
         default:  return "Unknown";
     }
 }
-
-void HTTPResponse::addHeader(string name, string value)
-{
-    headers.push_back(pair<string,string>(name,value));        
-}
-
-void HTTPResponse::setBody(FILE* data) {
-    this->bodyFILE = data;        
-}
-
-void HTTPResponse::setBody(const string& data) {
-    this->bodyString = data;        
-}
-
 
 ////////////////////////////////////////////////////////////////////////
 // WebUtil

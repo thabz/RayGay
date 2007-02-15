@@ -36,7 +36,7 @@ libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libpho
 #--------------------------------------
 LIBS = @DARWIN_LIBS@		     
 
-bin_PROGRAMS = tracer server
+bin_PROGRAMS = tracer server queuemanager
 noinst_PROGRAMS = bench
 if OS_DARWIN
    noinst_PROGRAMS += win
@@ -52,6 +52,12 @@ server_SOURCES = server-main.cpp
 server_LDADD = libtracer.la webserver/libwebserver.la
 
 #--------------------------------------
+
+queuemanager_SOURCES = queuemanager-main.cpp
+queuemanager_LDADD = libtracer.la webserver/libwebserver.la
+
+#--------------------------------------
+
 
 bench_SOURCES = bench-main.cpp
 bench_LDADD = libtracer.la

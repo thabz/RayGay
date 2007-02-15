@@ -33,7 +33,6 @@ class Webserver
         void run();
         
     private:
-        void send(FILE* f, HTTPResponse& response);
         int process(FILE* f);
         void readHeaders(FILE* f, HTTPRequest& request);
         

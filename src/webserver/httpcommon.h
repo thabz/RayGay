@@ -7,36 +7,39 @@
 
 using namespace std;
 
+/// Base class for HTTPRequest and HTTPResponse. A HTTPMessage is a collection
+/// of headers and a body.
 class HTTPMessage {
-            
+   public: 
+       HTTPMessage();                   
+       void addHeader(string name, string value);
+      
+       void setBody(const string& text);
+       void addBody(const string& text);
+       void setBody(FILE* data);
+
+       string contenttype;
+       long length;
+       FILE* bodyFILE;
+       string bodyString;
+       vector<pair<string,string> > headers;
 };
 
-
-class HTTPResponse {
+class HTTPResponse : public HTTPMessage {
     public:        
         HTTPResponse();
         HTTPResponse(int status, string contenttype);
         string statusString();
-        void addHeader(string name, string value);
-       
-        void setBody(const string& text);
-        void setBody(FILE* data);
         
         int status;
-        long length;
-        string contenttype;
-        FILE* bodyFILE;
-        string bodyString;
-        vector<pair<string,string> > headers;
 };
 
-class HTTPRequest {
-    public:        
+class HTTPRequest : public HTTPMessage {
+    public:
+       string host;
+       int port;
        string method; // "GET", "POST", etc.
-       string path;
-       
-       void setBody(const string& text);
-       void setBody(FILE* data);
+       string path;   // "/index.html", "/", etc.
 };
 
 class WebUtil
