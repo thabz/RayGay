@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <sstream>
 #include <iostream>
+#include <csignal>
 
 extern "C" {
 #include <sys/types.h>
@@ -18,6 +19,11 @@ extern "C" {
 #include <sys/socket.h>
 #include <arpa/inet.h>        /*  inet (3) funtions         */
 }
+
+void sigchild(int n) {
+    wait3(NULL,WNOHANG,NULL);        
+}
+
 
 ////////////////////////////////////////////////////////////////////////
 // WebServer
@@ -36,6 +42,7 @@ Webserver::Webserver(int port, string document_root)
         throw_exception("Can't bind to port");            
     };
     file_action = new FileAction(document_root);
+    signal(SIGCHLD,sigchild);
 }
 
 Webserver::~Webserver() {
@@ -76,9 +83,10 @@ int Webserver::process(FILE* f) {
        return -1;
     printf("%s", buf);
 
-    method = strtok(buf, " ");
-    path = strtok(NULL, " ");
-    protocol = strtok(NULL, "\r");
+    char* bufp = buf;
+    method = strsep(&bufp, " ");
+    path = strsep(&bufp, " ");
+    protocol = strsep(&bufp, "\r");
     if (!method || !path || !protocol) 
         return -1;
     

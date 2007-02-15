@@ -40,6 +40,7 @@ void HTTPMessage::writeHeaders(FILE* output) {
 
 void HTTPMessage::readHeaders(FILE* input) {
     char buf[4096];
+    char* bufp;
     while(1) {
         if (!fgets(buf, sizeof(buf), input)) {
             return;        
@@ -48,7 +49,12 @@ void HTTPMessage::readHeaders(FILE* input) {
             // TODO: Make a better check for empty line        
             return;
         }
-        printf("%s",buf);
+        bufp = buf;
+        char* key = strsep(&bufp, ":");
+        while(*key == ' ') key++;
+        char* value = strsep(&bufp, "\r");
+        while(*value == ' ') value++;
+        addHeader(string(key),string(value));
     }        
 }
 
@@ -105,3 +111,5 @@ void WebUtil::copy(FILE* from, FILE* to)
        fwrite(buf, 1, n, to);
     }
 }
+
+
