@@ -89,7 +89,7 @@
      (let loop ((k keyframes)
                 (t 0))  
        (if (<= scaled-t (+ t (caar k))) 
-         (cadar k)
+         (list (/ (- scaled-t t) (caar k)) (cadar k))
          (loop (cdr k) (+ t (caar k)))))))     
 
 (keyframing 0.1 '((10 1) (10 2) (10 3)))
