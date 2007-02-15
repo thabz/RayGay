@@ -1,12 +1,12 @@
 
-#ifndef RENDERER_WEBSERVER_H
-#define RENDERER_WEBSERVER_H
+#ifndef RENDERER_HTTPSERVER_H
+#define RENDERER_HTTPSERVER_H
 
 #include <string>
 #include <map>
 #include <vector>
 
-#include "webserver/httpcommon.h"
+#include "http/httpcommon.h"
 
 using namespace std;
 

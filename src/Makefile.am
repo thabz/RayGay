@@ -1,5 +1,5 @@
 
-SUBDIRS = materials paths lights math image photon imagefilters objects space shaders parser cameras collections samplers filters webserver
+SUBDIRS = materials paths lights math image photon imagefilters objects space shaders parser cameras collections samplers filters http
 
 
 #--------------------------------------
@@ -49,12 +49,12 @@ tracer_LDADD = libtracer.la @GTK_LIBS@
 #--------------------------------------
 
 server_SOURCES = server-main.cpp
-server_LDADD = libtracer.la webserver/libwebserver.la
+server_LDADD = libtracer.la http/libhttp.la
 
 #--------------------------------------
 
 queuemanager_SOURCES = queuemanager-main.cpp
-queuemanager_LDADD = libtracer.la webserver/libwebserver.la
+queuemanager_LDADD = libtracer.la http/libhttp.la
 
 #--------------------------------------
 

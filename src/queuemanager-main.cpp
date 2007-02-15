@@ -3,7 +3,7 @@
 #include <config.h>
 #endif
 
-#include "webserver/httpclient.h"
+#include "http/httpclient.h"
 #include "exception.h"
 #include <iostream>
 #include <csignal>
