@@ -46,8 +46,7 @@ class HTTPResponse : public HTTPMessage {
 
 class HTTPRequest : public HTTPMessage {
     public:
-       string host;
-       int port;
+       string host;   // Eg. localhost:20000
        string method; // "GET", "POST", etc.
        string path;   // "/index.html", "/", etc.
 };

@@ -14,8 +14,8 @@ int main(int argc, char *argv[]) {
         HTTPRequest request;
         HTTPResponse response;
         
-        request.host = "localhost";
-        request.port = 20000;
+        request.host = "localhost:20000";
+        request.host = "127.0.0.1:20000";
         request.method = "GET";
         request.path = "/";
         request.setBody("a=b&c=10&e=ddddd\r\n");

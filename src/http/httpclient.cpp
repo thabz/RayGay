@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 
 HTTPFormPost::HTTPFormPost() {
@@ -34,24 +35,40 @@ HTTPResponse HTTPClient::send(HTTPRequest& request)
 {
     HTTPResponse response;
     struct sockaddr_in serv_addr;
-    struct hostent* server;
     int sock;
     char buf[4096];
 
-    request.addHeader("User-Agent",string("RayGay Queuemanager ")+string(VERSION));
+    request.addHeader("User-Agent", string("RayGay Queuemanager ")+string(VERSION));
+    request.addHeader("Host", request.host);
 
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    server = gethostbyname(request.host.c_str());
-    if (server == NULL) {
-        throw_exception("No such host");
-    }
-    printf("%s resolved to %d.%d.%d.%d\n", request.host.c_str(), (uint8_t)server->h_addr[0], (uint8_t)server->h_addr[1], (uint8_t)server->h_addr[2], (uint8_t)server->h_addr[3]);
+    // Split request.host (format "host:port") into char* host and int port
+    strncpy(buf, request.host.c_str(), sizeof(buf));
+    char* bufp = buf;
+    char* hostname = strsep(&bufp, ":");
+    int port = (int) strtol(bufp, NULL, 10);
+
 
     bzero((uint8_t*) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
-    bcopy((uint8_t*)server->h_addr, (uint8_t*)&serv_addr.sin_addr.s_addr, server->h_length);
-    serv_addr.sin_port = htons(request.port);
+    serv_addr.sin_port = htons(port);
 
+    struct hostent* server;
+    if (inet_addr(hostname) == INADDR_NONE) {
+        // hostname needs DNS lookup    
+        server = gethostbyname(hostname);
+        if (server == NULL) {
+            throw_exception("No such host");
+        }
+        printf("%s resolved to %d.%d.%d.%d\n", hostname, (uint8_t)server->h_addr[0], (uint8_t)server->h_addr[1], (uint8_t)server->h_addr[2], (uint8_t)server->h_addr[3]);
+                     
+    } else {
+        // hostname is an IP-address
+        in_addr_t addr = inet_addr(hostname);
+        server = gethostbyaddr((char*)&addr, sizeof(addr), AF_INET);            
+    }
+    bcopy((uint8_t*)server->h_addr, (uint8_t*)&serv_addr.sin_addr.s_addr, server->h_length);
+
+    sock = socket(AF_INET, SOCK_STREAM, 0);
     if (connect(sock, (struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0) {
         close(sock);
         throw_exception("Error connecting");
