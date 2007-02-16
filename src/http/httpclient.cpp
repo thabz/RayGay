@@ -59,8 +59,6 @@ HTTPResponse HTTPClient::send(HTTPRequest& request)
         if (server == NULL) {
             throw_exception("No such host");
         }
-        printf("%s resolved to %d.%d.%d.%d\n", hostname, (uint8_t)server->h_addr[0], (uint8_t)server->h_addr[1], (uint8_t)server->h_addr[2], (uint8_t)server->h_addr[3]);
-                     
     } else {
         // hostname is an IP-address
         in_addr_t addr = inet_addr(hostname);
