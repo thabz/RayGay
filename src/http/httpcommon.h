@@ -18,11 +18,14 @@ class HTTPMessage {
        void setBody(const string& text);
        void addBody(const string& text);
        void setBody(FILE* data);
+       void writeBody(FILE* output);
        
        void readHeaders(FILE* input);
        void writeHeaders(FILE* output);
        
        void readParams(FILE* input);
+       string getParamAsString(string key);
+       long getParamAsLong(string key);
 
        string contenttype;
        long length;

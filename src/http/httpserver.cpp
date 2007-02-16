@@ -20,6 +20,7 @@ extern "C" {
 #include <arpa/inet.h>        /*  inet (3) funtions         */
 }
 
+// Allow forked-off processes to die when they're done.
 void sigchild(int n) {
     wait3(NULL,WNOHANG,NULL);        
 }
@@ -95,6 +96,7 @@ int Webserver::process(FILE* f) {
     request.method = string(method);
     request.path = string(path);
     request.readHeaders(f);
+    request.writeHeaders(stdout);
     request.readParams(f);
     request.setBody(f);
 
@@ -110,13 +112,7 @@ int Webserver::process(FILE* f) {
     fseek(f, 0, SEEK_CUR); // Force change of stream direction    
     fprintf(f, "HTTP/1.0 %d %s\r\n", response.status, response.statusString().c_str());
     response.writeHeaders(f);
-    
-    if (response.bodyFILE != NULL) {
-        WebUtil::copy(response.bodyFILE, f);
-        fclose(response.bodyFILE);        
-    } else {
-        fprintf(f, "%s", response.bodyString.c_str());
-    }
+    response.writeBody(f);    
     return 0;
 }
 

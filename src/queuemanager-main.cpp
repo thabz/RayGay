@@ -18,6 +18,8 @@ int main(int argc, char *argv[]) {
         request.port = 20000;
         request.method = "GET";
         request.path = "/";
+        request.setBody("a=b&c=10&e=ddddd\r\n");
+        request.addHeader("Content-type","application/x-www-form-urlencoded");
         response = client.send(request);
         
     } catch (Exception e) {

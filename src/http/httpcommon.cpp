@@ -38,6 +38,16 @@ void HTTPMessage::writeHeaders(FILE* output) {
     fprintf(output,"\r\n");
 }
 
+void HTTPMessage::writeBody(FILE* output) {
+    if (bodyFILE != NULL) {
+        WebUtil::copy(bodyFILE, output);
+        fclose(bodyFILE);        
+    } else {
+        fprintf(output, "%s", bodyString.c_str());
+    }
+        
+}
+
 void HTTPMessage::readHeaders(FILE* input) {
     char buf[4096];
     char* bufp;
@@ -59,10 +69,32 @@ void HTTPMessage::readHeaders(FILE* input) {
 }
 
 void HTTPMessage::readParams(FILE* input) {
+    char buf[16*1024];
+    char *bufp, *key, *value;
     if (getHeader("Content-type") == "application/x-www-form-urlencoded") {
-        // TODO: Read params from body 
+        if (!fgets(buf, sizeof(buf), input)) {
+            printf("No body in form");         
+            return;        
+        }
+        bufp = buf;
+        while (1) {
+            key = strsep(&bufp, "=");
+            if (bufp == NULL) {
+                break;    
+            }        
+            value = strsep(&bufp, "&");
+            params[key] = value;
+        }
     }
     // TODO: Read additional params from request path
+}
+
+string HTTPMessage::getParamAsString(string key) {
+    return params[key];        
+}
+
+long HTTPMessage::getParamAsLong(string key) {
+    return strtol(params[key].c_str(), NULL, 10);
 }
 
 ////////////////////////////////////////////////////////////////////////

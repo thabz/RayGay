@@ -6,16 +6,16 @@
 
 class HTTPFormPost : public HTTPRequest {
     public:
-        HTTPFormPost();    
-        void addParameter(string name, string value);                    
+        HTTPFormPost();
+        void addParameter(string name, string value);
 };
 
 
 
 class HTTPClient {
-    public:        
+    public:
         HTTPClient();
-        HTTPResponse send(HTTPRequest& request);    
+        HTTPResponse send(HTTPRequest& request);
 };
 
 #endif
