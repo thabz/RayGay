@@ -12,12 +12,14 @@
 #include <sstream>
 #include <iostream>
 #include <csignal>
+#include <cerrno>
 
 extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>        /*  inet (3) funtions         */
+#include "http/md5.h"
 }
 
 // Allow forked-off processes to die when they're done.
@@ -40,7 +42,13 @@ Webserver::Webserver(int port, string document_root)
     sin.sin_addr.s_addr = INADDR_ANY;
     sin.sin_port = htons(port);
     if (bind(sock, (struct sockaddr *) &sin, sizeof(sin)) == -1) {
-        throw_exception("Can't bind to port");            
+        if (errno == EADDRINUSE) {
+            throw_exception("Can't bind to port");
+        } else if (errno == EINVAL) {
+            throw_exception("Something is already bound to port.");
+         } else if (errno == EACCES) {
+            throw_exception("Not allowed to bind to port.");
+        }
     };
     file_action = new FileAction(document_root);
     signal(SIGCHLD,sigchild);
@@ -48,7 +56,9 @@ Webserver::Webserver(int port, string document_root)
 
 Webserver::~Webserver() {
     cout << "\rWebserver shutting down." << endl;        
-    close(sock);            
+    if (close(sock) == -1) {
+        cout << "\rCouldn't close socket." << endl;        
+    };            
 }
 
 void Webserver::run() {
@@ -69,7 +79,7 @@ void Webserver::run() {
             close(s);
             exit(EXIT_SUCCESS);
         }
-        close(s);
+        //close(s);
     }
     close(sock);
 }
@@ -131,20 +141,27 @@ FileAction::FileAction(string document_root)
 
 HTTPResponse FileAction::execute(const HTTPRequest& request)
 { 
-    HTTPResponse response;        
+    HTTPResponse response;
     struct stat statbuf;
+    char md5_hex[33];
     string path = document_root + request.path;
     // TODO: Sanitize path, ie. remove ".." and leading "/"
     if (request.method == "GET" || request.method == "HEAD") {
         if (stat(path.c_str(), &statbuf) >= 0) {
             ostringstream os;
             os << statbuf.st_size;         
-            // TODO: Send a "Content-MD5" header also
             response = HTTPResponse(200, WebUtil::pathToMimetype(path));
             response.addHeader("Content-Length",os.str());
+            FILE* f = fopen(path.c_str(), "r");
+            md5_stream_hex(f,md5_hex);
+            md5_hex[32] = '\0';
+            printf("Hex sum %s\n",md5_hex);
+            response.addHeader("Content-MD5",string(md5_hex));
             if (request.method == "GET") {
-               FILE* f = fopen(path.c_str(), "r");
+               rewind(f);
                response.setBody(f);
+            } else {
+               fclose(f);            
             }
         } else {
             response = HTTPResponse(404, "text/plain");
