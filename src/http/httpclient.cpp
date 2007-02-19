@@ -6,7 +6,8 @@
 #include "http/httpclient.h"
 #include "exception.h"
 
-#include <stdio.h>
+#include <iostream>
+#include <cstdio>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -38,7 +39,7 @@ HTTPResponse HTTPClient::send(HTTPRequest& request)
     int sock;
     char buf[4096];
 
-    request.addHeader("User-Agent", string("RayGay Queuemanager ")+string(VERSION));
+    request.addHeader("User-agent", string("RayGay Queuemanager ")+string(VERSION));
     request.addHeader("Host", request.host);
 
     // Split request.host (format "host:port") into char* host and int port
@@ -77,14 +78,17 @@ HTTPResponse HTTPClient::send(HTTPRequest& request)
     fprintf(f, "%s %s HTTP/1.1\r\n", request.method.c_str(), request.path.c_str());
     request.writeHeaders(f);
     request.writeBody(f);
-
+    cout << "Request sent" << endl;
+    
     // Read response
     fseek(f, 0, SEEK_CUR); // Force change of stream direction
+    cout << "Request sent 2" << endl;
     if (!fgets(buf, sizeof(buf), f)) {
         fclose(f);
         close(sock);
         throw_exception("Error reading response");
     }
+    cout << "Request sent 3" << endl;
     printf("%s", buf);
 
     char* protocol = strtok(buf, " ");

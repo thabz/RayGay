@@ -13,12 +13,13 @@ class HTTPMessage {
    public: 
        HTTPMessage();                   
        void addHeader(string name, string value);
-       string getHeader(string name);
+       void addHeader(string name, long value);
+       string getHeader(const string& name) const;
        
        void setBody(const string& text);
        void addBody(const string& text);
        void setBody(FILE* data);
-       void writeBody(FILE* output);
+       void writeBody(FILE* output) const;
        
        void readHeaders(FILE* input);
        void writeHeaders(FILE* output);
@@ -54,8 +55,10 @@ class HTTPRequest : public HTTPMessage {
 class WebUtil
 {
     public:
-        static string pathToMimetype(string path); 
-        static void copy(FILE* from, FILE* to);           
+        static string pathToMimetype(string path);
+        static void copy(FILE* from, FILE* to);
+        static void copy(FILE* from, FILE* to, unsigned long size);
+        static long filesize(string filename);
 };
 
 #endif

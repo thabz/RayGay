@@ -70,16 +70,19 @@ void Webserver::run() {
         FILE* f;
         s = accept(sock,NULL,NULL);
         if (s < 0) {
-            break;        
+            close(sock);
+            return;        
         }
         if (fork() == 0) {
             f = fdopen(s, "r+");
             process(f);
             fclose(f);   
-            close(s);
+            //close(s);
             exit(EXIT_SUCCESS);
         }
-        //close(s);
+        if (close(s) == -1) {
+            printf("close(s) failed\n");        
+        };
     }
     close(sock);
 }
@@ -122,7 +125,7 @@ int Webserver::process(FILE* f) {
     fseek(f, 0, SEEK_CUR); // Force change of stream direction    
     fprintf(f, "HTTP/1.0 %d %s\r\n", response.status, response.statusString().c_str());
     response.writeHeaders(f);
-    response.writeBody(f);    
+    response.writeBody(f);
     return 0;
 }
 
@@ -155,7 +158,6 @@ HTTPResponse FileAction::execute(const HTTPRequest& request)
             FILE* f = fopen(path.c_str(), "r");
             md5_stream_hex(f,md5_hex);
             md5_hex[32] = '\0';
-            printf("Hex sum %s\n",md5_hex);
             response.addHeader("Content-MD5",string(md5_hex));
             if (request.method == "GET") {
                rewind(f);
@@ -172,10 +174,23 @@ HTTPResponse FileAction::execute(const HTTPRequest& request)
         unlink(path.c_str());
         response = HTTPResponse(200, "text/plain");
     } else if (request.method == "PUT") {
-            
+        long size = atoi(request.getHeader("Content-length").c_str());
+        // TODO: If no content-header is sent, return "411 Length required" as per the RFC. 
+        bool exists = stat(path.c_str(), &statbuf) != -1;
+        FILE* f = fopen(path.c_str(), "w");
+        WebUtil::copy(request.bodyFILE, f, size);
+        fclose(f);
+        if (exists) {
+            response = HTTPResponse(200, "text/plain");
+            response.setBody("File modified");
+        } else {
+            response = HTTPResponse(201, "text/plain");
+            response.setBody("File created");
+        }
+    } else if (request.method == "MKCOL") {    
     } else {
         response = HTTPResponse(405, "text/plain");
-        response.addHeader("Allow", "PUT, GET, HEAD, DELETE");    
+        response.addHeader("Allow", "PUT, GET, HEAD, DELETE, MKCOL");    
     }
     return response;
 }
