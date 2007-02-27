@@ -59,6 +59,7 @@ class WebUtil
         static void copy(FILE* from, FILE* to);
         static void copy(FILE* from, FILE* to, unsigned long size);
         static long filesize(string filename);
+        static string MD5(string filename);
+        static string formatDate(time_t date);
 };
-
 #endif

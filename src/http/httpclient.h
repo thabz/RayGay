@@ -10,12 +10,15 @@ class HTTPFormPost : public HTTPRequest {
         void addParameter(string name, string value);
 };
 
-
-
 class HTTPClient {
     public:
-        HTTPClient();
+        HTTPClient(string host_and_port);
         HTTPResponse send(HTTPRequest& request);
+    private:
+        string host_and_port;
+        int port;            
+        struct hostent* server;
+
 };
 
 #endif

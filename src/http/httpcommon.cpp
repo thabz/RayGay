@@ -1,11 +1,16 @@
 
 #include "http/httpcommon.h"
+
+extern "C" {
+#include "http/md5.h"
+}
 #include "exception.h"
 #include "math/constants.h" // For MIN()
 #include <iostream>
 #include <sstream>
 #include <sys/stat.h>
 
+#define RFC1123FMT "%a, %d %b %Y %H:%M:%S GMT"
 
 ////////////////////////////////////////////////////////////////////////
 // HTTPMessage
@@ -30,7 +35,11 @@ void HTTPMessage::addHeader(string name, long value)
 
 
 string HTTPMessage::getHeader(const string& name) const {
-    return headers.find(name)->second;
+    if (headers.find(name) == headers.end()) {
+        return "";    
+    } else {
+        return headers.find(name)->second;
+    }
 }
 
 void HTTPMessage::setBody(FILE* data) {
@@ -47,17 +56,17 @@ void HTTPMessage::addBody(const string& data) {
 
 void HTTPMessage::writeHeaders(FILE* output) {
     for(map<string,string>::iterator ite = headers.begin(); ite != headers.end(); ite++) {
-        fprintf(output, "%s: %s\r\n", ite->first.c_str(), ite->second.c_str());    
+        ::fprintf(output, "%s: %s\r\n", ite->first.c_str(), ite->second.c_str());    
     }
-    fprintf(output,"\r\n");
+    ::fprintf(output,"\r\n");
 }
 
 void HTTPMessage::writeBody(FILE* output) const {
     if (bodyFILE != NULL) {
         WebUtil::copy(bodyFILE, output);
-        fclose(bodyFILE);        
+        ::fclose(bodyFILE);        
     } else {
-        fprintf(output, "%s\r\n", bodyString.c_str());
+        ::fprintf(output, "%s\r\n", bodyString.c_str());
     }
 }
 
@@ -65,7 +74,7 @@ void HTTPMessage::readHeaders(FILE* input) {
     char buf[4096];
     char* bufp;
     while(1) {
-        if (!fgets(buf, sizeof(buf), input)) {
+        if (!::fgets(buf, sizeof(buf), input)) {
             return;        
         }
         if (buf[0] == '\0' || buf[1] == '\0' || buf[2] == '\0' ) {
@@ -73,9 +82,9 @@ void HTTPMessage::readHeaders(FILE* input) {
             return;
         }
         bufp = buf;
-        char* key = strsep(&bufp, ":");
+        char* key = ::strsep(&bufp, ":");
         while(*key == ' ') key++;
-        char* value = strsep(&bufp, "\r");
+        char* value = ::strsep(&bufp, "\r");
         while(*value == ' ') value++;
         addHeader(string(key),string(value));
     }        
@@ -85,17 +94,17 @@ void HTTPMessage::readParams(FILE* input) {
     char buf[16*1024];
     char *bufp, *key, *value;
     if (getHeader("Content-type") == "application/x-www-form-urlencoded") {
-        if (!fgets(buf, sizeof(buf), input)) {
-            printf("No body in form");         
+        if (!::fgets(buf, sizeof(buf), input)) {
+            ::printf("No body in form");         
             return;        
         }
         bufp = buf;
         while (1) {
-            key = strsep(&bufp, "=");
+            key = ::strsep(&bufp, "=");
             if (bufp == NULL) {
                 break;    
             }        
-            value = strsep(&bufp, "&");
+            value = ::strsep(&bufp, "&");
             params[key] = value;
         }
     }
@@ -141,13 +150,21 @@ string HTTPResponse::statusString() {
 // WebUtil
 ////////////////////////////////////////////////////////////////////////
 string WebUtil::pathToMimetype(string path) {
-    const char* ext = strrchr(path.c_str(),'.');
-    if (strcmp(ext,".png") == 0) return "image/png";
+    const char* ext = ::strrchr(path.c_str(),'.');
+    if (ext == NULL) {
+        // No filename-extension, like with "Makefile" or "README"
+        return "application/unknown";
+    }
+    if (strcmp(ext,".png") == 0)  return "image/png";
     if (strcmp(ext,".jpeg") == 0) return "image/jpeg";
-    if (strcmp(ext,".jpg") == 0) return "image/jpeg";
-    if (strcmp(ext,".txt") == 0) return "text/plain";
+    if (strcmp(ext,".jpg") == 0)  return "image/jpeg";
+    if (strcmp(ext,".jp2") == 0)  return "image/jp2";
+    if (strcmp(ext,".tif") == 0)  return "image/tiff";
+    if (strcmp(ext,".tiff") == 0) return "image/tiff";
+    if (strcmp(ext,".txt") == 0)  return "text/plain";
     if (strcmp(ext,".html") == 0) return "text/html";
-    if (strcmp(ext,".css") == 0) return "text/css";
+    if (strcmp(ext,".css") == 0)  return "text/css";
+    if (strcmp(ext,".scm") == 0)  return "application/x-scheme";
     return "application/unknown";
 }
 
@@ -155,8 +172,8 @@ void WebUtil::copy(FILE* from, FILE* to)
 {
     uint8_t buf[4096];
     size_t n;
-    while ((n = fread(buf, sizeof(uint8_t), sizeof(buf), from)) > 0) {
-       fwrite(buf, sizeof(uint8_t), n, to);
+    while ((n = ::fread(buf, sizeof(uint8_t), sizeof(buf), from)) > 0) {
+       ::fwrite(buf, sizeof(uint8_t), n, to);
     }
 }
 
@@ -164,8 +181,8 @@ void WebUtil::copy(FILE* from, FILE* to, unsigned long size)
 {
     uint8_t buf[4096];
     size_t n;
-    while (size > 0 && (n = fread(buf, sizeof(uint8_t), MIN(size,sizeof(buf)), from)) > 0) {
-       fwrite(buf, sizeof(uint8_t), n, to);
+    while (size > 0 && (n = ::fread(buf, sizeof(uint8_t), MIN(size,sizeof(buf)), from)) > 0) {
+       ::fwrite(buf, sizeof(uint8_t), n, to);
        size -= n;
     }
 }
@@ -181,4 +198,16 @@ long WebUtil::filesize(string filename)
     return (long) size;
 }
 
+string WebUtil::MD5(string filename) {
+    char md5_hex[33];
+    FILE* f = ::fopen(filename.c_str(), "r");
+    md5_stream_hex(f, md5_hex);
+    ::fclose(f);
+    return string(md5_hex);
+}
 
+string WebUtil::formatDate(time_t date) {
+    char buf[128];
+    ::strftime(buf, sizeof(buf), RFC1123FMT, ::gmtime(&date));    
+    return string(buf);
+}

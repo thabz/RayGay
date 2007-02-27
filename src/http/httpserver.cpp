@@ -112,7 +112,6 @@ int Webserver::process(FILE* f) {
     request.writeHeaders(stdout);
     request.readParams(f);
     request.setBody(f);
-
     // Find and execute action
     Action* action = actions[path];
     if (action == NULL) {
@@ -120,6 +119,7 @@ int Webserver::process(FILE* f) {
     }
     HTTPResponse response = action->execute(request);   
     response.addHeader("Server", string("RayGay Renderslave ") + string(VERSION));
+    request.addHeader("Date", WebUtil::formatDate(time(NULL)));
     
     // Send response
     fseek(f, 0, SEEK_CUR); // Force change of stream direction    
@@ -155,6 +155,7 @@ HTTPResponse FileAction::execute(const HTTPRequest& request)
             os << statbuf.st_size;         
             response = HTTPResponse(200, WebUtil::pathToMimetype(path));
             response.addHeader("Content-Length",os.str());
+            response.addHeader("Last-Modified",WebUtil::formatDate(statbuf.st_mtime));
             FILE* f = fopen(path.c_str(), "r");
             md5_stream_hex(f,md5_hex);
             md5_hex[32] = '\0';
@@ -188,9 +189,20 @@ HTTPResponse FileAction::execute(const HTTPRequest& request)
             response.setBody("File created");
         }
     } else if (request.method == "MKCOL") {    
+        // This method isn't strictly HTTP1.1, but we need it
+        // and I don't want to implement a complete WebDAV stack.
+        if (mkdir(path.c_str(), 0777) == -1) {
+            response = HTTPResponse(201, "text/plain");
+            response.setBody("Dir not created");
+        } else {
+            response = HTTPResponse(201, "text/plain");
+            response.setBody("Dir created");
+            printf("Dir %s created\n", path.c_str());
+        }
     } else {
+        cout << "Unknown method " << request.method << endl;    
         response = HTTPResponse(405, "text/plain");
-        response.addHeader("Allow", "PUT, GET, HEAD, DELETE, MKCOL");    
+        response.addHeader("Allow", "PUT, GET, HEAD, DELETE, MKCOL");
     }
     return response;
 }
