@@ -145,6 +145,7 @@ AC_OUTPUT(Makefile \
 	  src/image/Makefile \
 	  src/imagefilters/Makefile \
 	  src/parser/Makefile \
+	  src/parser/scheme/Makefile \
 	  src/photon/Makefile \
 	  src/objects/Makefile \
 	  src/space/Makefile \
