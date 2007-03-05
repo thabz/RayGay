@@ -4,15 +4,14 @@
 
 #include <string>
 #include <istream>
+#include <iostream>
 
 using namespace std;
-
-
 
 class Lexer 
 {
     public:
-        enum {
+        enum Token {
             OPEN_PAREN,
             CLOSE_PAREN,
             SYMBOL,
@@ -20,18 +19,22 @@ class Lexer
             STRING,
             BOOLEAN,
             COMMA_OPEN_PAREN,
-            QUOTE_OPEN_PAREN,
-            BACKQUOTE_OPEN_PAREN
-        } Token;
+            HASH_OPEN_PAREN,
+            QUOTE,
+            BACKQUOTE_OPEN_PAREN,
+            ERROR,
+            END
+        };
 
         Lexer(string data);
+        Lexer(istream* is);
         Token nextToken();
-        string getString();
-        double getNumber();
-        bool getBool();
+        string getString() { return str; };
+        double getNumber() { return number; };
+        bool getBool() { return boolean; };
         
     private:
-        istream is;
+        istream* is;
         string str;
         double number;
         bool boolean;
