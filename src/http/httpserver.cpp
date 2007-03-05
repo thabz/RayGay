@@ -22,10 +22,12 @@ extern "C" {
 #include "http/md5.h"
 }
 
+#ifdef OS_DARWIN
 // Allow forked-off processes to die when they're done.
 void sigchild(int n) {
     wait3(NULL,WNOHANG,NULL);        
 }
+#endif
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -51,7 +53,9 @@ Webserver::Webserver(int port, string document_root)
         }
     };
     file_action = new FileAction(document_root);
+#ifdef OS_DARWIN
     signal(SIGCHLD,sigchild);
+#endif
 }
 
 Webserver::~Webserver() {

@@ -126,6 +126,7 @@ SCM CameraFactory::make_whitted_adaptive_sampler(SCM s_aa_depth)
     return sampler2scm(sampler);
 }
 
+/*
 SCM CameraFactory::make_boundary_adaptive_sampler(SCM s_aa_depth)
 {
     char* proc = "make-boundary-adaptive-sampler";
@@ -133,6 +134,7 @@ SCM CameraFactory::make_boundary_adaptive_sampler(SCM s_aa_depth)
     SamplerFactory* sampler = new BoundaryAdaptiveFactory(aa_depth);
     return sampler2scm(sampler);
 }
+*/
 
 SCM CameraFactory::make_uniform_jitter_sampler(SCM s_samples_sqrt) 
 {
@@ -155,7 +157,7 @@ void CameraFactory::register_procs() {
     scm_c_define_gsubr("make-lat-long-camera",1,0,0,(SCM (*)()) CameraFactory::make_lat_long_camera);
     scm_c_define_gsubr("make-fisheye-camera",1,0,0,(SCM (*)()) CameraFactory::make_fisheye_camera);
     scm_c_define_gsubr("make-whitted-adaptive-sampler",1,0,0,(SCM (*)()) CameraFactory::make_whitted_adaptive_sampler);
-    scm_c_define_gsubr("make-boundary-adaptive-sampler",1,0,0,(SCM (*)()) CameraFactory::make_boundary_adaptive_sampler);
+ //   scm_c_define_gsubr("make-boundary-adaptive-sampler",1,0,0,(SCM (*)()) CameraFactory::make_boundary_adaptive_sampler);
     scm_c_define_gsubr("make-uniform-jitter-sampler",1,0,0,(SCM (*)()) CameraFactory::make_uniform_jitter_sampler);
     scm_c_define_gsubr("make-halton-sampler",1,0,0,(SCM (*)()) CameraFactory::make_uniform_jitter_sampler);
 }

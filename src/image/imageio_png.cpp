@@ -40,7 +40,7 @@ void PngIO::save(const Image* const image, FILE* fp) const {
     if (png_ptr == NULL)
     {
 	::fclose(fp);
-	throw_exception("Error saving " + filename);
+	throw_exception("Error saving PNG");
     }
 
     /* Allocate/initialize the image information data.  REQUIRED */
@@ -49,7 +49,7 @@ void PngIO::save(const Image* const image, FILE* fp) const {
     {
 	::fclose(fp);
 	png_destroy_write_struct(&png_ptr,  png_infopp_NULL);
-	throw_exception("Error saving " + filename);
+	throw_exception("Error saving PNG");
     }
 
     /* Set error handling.  REQUIRED if you aren't supplying your own
@@ -60,7 +60,7 @@ void PngIO::save(const Image* const image, FILE* fp) const {
 	/* If we get here, we had a problem reading the file */
 	::fclose(fp);
 	png_destroy_write_struct(&png_ptr, &info_ptr);
-	throw_exception("Error saving " + filename);
+	throw_exception("Error saving ");
     }
 
     png_init_io(png_ptr, fp);

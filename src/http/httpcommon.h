@@ -62,4 +62,6 @@ class WebUtil
         static string MD5(string filename);
         static string formatDate(time_t date);
 };
+
 #endif
+
