@@ -3,6 +3,7 @@
 #define SCHEME_LEXER_H
 
 #include <string>
+#include <list>
 #include <istream>
 #include <iostream>
 
@@ -18,9 +19,9 @@ class Lexer
             NUMBER,
             STRING,
             BOOLEAN,
-            COMMA_OPEN_PAREN,
             HASH_OPEN_PAREN,
-            QUOTE,
+            COMMA_OPEN_PAREN,
+            QUOTE_OPEN_PAREN,
             BACKQUOTE_OPEN_PAREN,
             ERROR,
             END
@@ -29,15 +30,26 @@ class Lexer
         Lexer(string data);
         Lexer(istream* is);
         Token nextToken();
+        void putBack(Token token);
         string getString() { return str; };
         double getNumber() { return number; };
         bool getBool() { return boolean; };
+        int getCurline() { return curline; };
+        
+        void pushInputStream(istream* is);
         
     private:
+        bool popInputStream();
+        
         istream* is;
         string str;
         double number;
         bool boolean;
+        int curline;
+        list<istream*> is_stack;
+        list<int> curline_stack;
+        list<Token> cache;
+        
 };
 
 #endif
