@@ -40,7 +40,7 @@ Lexer::Token Lexer::nextToken() {
             continue;
         }
         if (c == ';') {
-            // Skip comment untill end of line or end of stream
+            // Skip comment until end of line or end of stream
             do {
                 c = is->get();
             } while (c != '\n' && !is->eof());
@@ -58,6 +58,17 @@ Lexer::Token Lexer::nextToken() {
                 else {
                     is->unget();
                     break;
+                }
+            case '#': 
+				char n = is->get();
+                if ((n == 'f' || n == 't')) {
+					boolean = (n == 't');
+					return Lexer::BOOLEAN;
+                } else if (n == '(') {
+					return Lexer::HASH_OPEN_PAREN;           
+                } else {
+					is->unget();
+					break;
                 }
             case '"':
                 str = "";
@@ -92,7 +103,6 @@ Lexer::Token Lexer::nextToken() {
         }
         return Lexer::SYMBOL; 
     }
-    cout << "Error" << endl;
     return Lexer::ERROR;
 }
 

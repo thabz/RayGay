@@ -4,17 +4,20 @@
 
 #include "lexer.h"
 #include "objects.h"
+#include "scheme.h"
 
 class Parser 
 {
     public:
-	    Parser(Lexer* lexer);
-	    SchemePair parse();
+	    Parser(Lexer* lexer, Scheme* scheme);
+	    SchemeObject* parse();
 
     private:
-        Lexer* lexer;    
-	    // Store a parsetree here
+        SchemeObject* read_simple();
+        SchemeObject* read_list();    
 
+        Lexer* lexer;
+        Scheme* scheme;
 };
 
 #endif

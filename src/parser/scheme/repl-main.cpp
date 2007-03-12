@@ -7,5 +7,12 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
     Scheme* scheme = new Scheme();
-    SchemeObject result = scheme->eval("(+ 1 (* 2 3))");
+	char input[64*1024];
+	
+	while (true) {
+ 	    cout << "raygay> " << flush;
+		cin.getline(input, 64*1024);
+        SchemeObject* result = scheme->eval(string(input));
+	    cout << result->toString() << endl;
+	}
 }
