@@ -8,17 +8,19 @@
 class Interpreter
 {
     public:
-	    Interpreter(SchemeObject* tree, Scheme* scheme);
+	    Interpreter(SchemePair* parsetree, BindingEnvironment* top_level);
    	    SchemeObject* interpret();
    	    
    	private:
-		Scheme* scheme;
-        SchemeObject* parsetree;
-		SchemeObject* eval(SchemeObject* s);
-		SchemeObject* eval_list(SchemePair* s);
-		SchemeNumber* eval_plus(SchemePair* s);
-		SchemeNumber* eval_mult(SchemePair* s);
-		SchemeObject* eval_if(SchemePair* s);
+		BindingEnvironment* top_level_bindings;
+        SchemePair* parsetree;
+
+		SchemeObject* eval(BindingEnvironment*, SchemeObject* s);
+		SchemeObject* eval_list(BindingEnvironment*, SchemePair* s);
+		SchemeObject* eval_symbol(BindingEnvironment*, SchemeSymbol* s);
+		
+        // Evaluators for special forms
+		SchemeObject* eval_if(BindingEnvironment*,SchemePair*);
 		
 };
 

@@ -86,6 +86,7 @@ class SchemeBool : public SchemeObject {
 class SchemeProcedure : public SchemeObject 
 {
     public:
+        SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)());
         string toString();      
         ObjectType type() { return PROCEDURE; };
 };

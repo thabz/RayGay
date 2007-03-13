@@ -2,6 +2,8 @@
 #ifndef SCHEME_SCHEME_H
 #define SCHEME_SCHEME_H
 
+#include "binding-env.h"
+
 #include <iostream>
 #include <string>
 #include "objects.h"
@@ -14,32 +16,49 @@ class Scheme {
         SchemeObject* eval(string code);
         SchemeObject* eval(istream* code);
 
+        // For assigning variables at top-level-frame
         void assign(string variable, double value);
         void assign(string variable, string value);
         void assign(string variable, bool value);
-
+        void assign(string variable, SchemeObject* value);
+        
+        // For assigning built-in functions at top-level-frame
+		void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)());
+        
+        // Look up in top-level-frame
         SchemeObject* lookup(string variable);
 
-        // Scheme constants
-        static SchemeBool* S_TRUE;
-        static SchemeBool* S_FALSE;
-        static SchemeUnspecified* S_UNSPECIFIED;
-        static SchemeEmptyList* S_EMPTY_LIST;
-		static SchemeNumber* S_ZERO;
-		static SchemeNumber* S_ONE;
-
-        void die_with_error(string error); 
-
-        // Scheme procedures
-        SchemeObject* display(SchemeObject* o); 
-        SchemeObject* newline();
-        SchemePair* cons(SchemeObject* car, SchemeObject* cdr);
-        SchemeBool* boolean_p(SchemeObject* o);
-        SchemeBool* list_p(SchemeObject* p);
-        SchemeObject* reverse(SchemeObject* l);
-
     private:
-        
+        BindingEnvironment* top_level_bindings;
 };
+
+class scheme_exception {
+    public: 
+		scheme_exception(string s) : str(s) {};
+		string str;
+};
+
+
+// Scheme constants
+extern SchemeBool* S_TRUE;
+extern SchemeBool* S_FALSE;
+extern SchemeUnspecified* S_UNSPECIFIED;
+extern SchemeEmptyList* S_EMPTY_LIST;
+extern SchemeNumber* S_ZERO;
+extern SchemeNumber* S_ONE;
+extern SchemeNumber* S_TWO;
+
+
+// Scheme procedures
+SchemeObject* s_display(BindingEnvironment* s, SchemeObject* o); 
+SchemeObject* s_newline(BindingEnvironment* s);
+SchemePair* s_cons(BindingEnvironment* s, SchemeObject* car, SchemeObject* cdr);
+SchemeBool* s_boolean_p(BindingEnvironment* s, SchemeObject* o);
+SchemeBool* s_list_p(BindingEnvironment* s, SchemeObject* p);
+SchemePair* s_reverse(BindingEnvironment* s, SchemeObject* l);
+SchemeNumber* s_plus(SchemeObject* s);
+SchemeNumber* s_mult(SchemeObject* s);
+SchemeObject* s_apply(BindingEnvironment* s, SchemeProcedure* fn_name, SchemePair* args);
+SchemeObject* s_map(BindingEnvironment* s, SchemeProcedure* fn_name, SchemePair* args);
 
 #endif

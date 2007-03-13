@@ -80,7 +80,7 @@ string SchemePair::toString() {
     while (true) {
 		result += p->car->toString();
 		SchemeObject* n = p->cdr;
-		if (n == Scheme::S_EMPTY_LIST) {
+		if (n == S_EMPTY_LIST) {
 			break;
 		}
 		SchemePair* l = static_cast<SchemePair*> (n);
@@ -93,4 +93,15 @@ string SchemePair::toString() {
 	}
 	result += ")";
 	return result;
+}
+
+//-----------------------------------------------------------
+// Procedure
+//-----------------------------------------------------------
+SchemeProcedure::SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)()) {
+    
+}
+
+string SchemeProcedure::toString() {
+    return "#<primitive-procedure>";
 }

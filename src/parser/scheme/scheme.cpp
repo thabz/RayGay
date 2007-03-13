@@ -6,21 +6,31 @@
 #include "parser.h"
 #include "interpreter.h"
 
-SchemeBool* Scheme::S_TRUE = new SchemeBool(true);
-SchemeBool* Scheme::S_FALSE = new SchemeBool(false);
-SchemeNumber* Scheme::S_ZERO = new SchemeNumber(0);
-SchemeNumber* Scheme::S_ONE = new SchemeNumber(1);
-SchemeUnspecified* Scheme::S_UNSPECIFIED = new SchemeUnspecified();
-SchemeEmptyList* Scheme::S_EMPTY_LIST = new SchemeEmptyList();
+SchemeBool* S_TRUE = new SchemeBool(true);
+SchemeBool* S_FALSE = new SchemeBool(false);
+SchemeNumber* S_ZERO = new SchemeNumber(0);
+SchemeNumber* S_ONE = new SchemeNumber(1);
+SchemeNumber* S_TWO = new SchemeNumber(2);
+SchemeUnspecified* S_UNSPECIFIED = new SchemeUnspecified();
+SchemeEmptyList* S_EMPTY_LIST = new SchemeEmptyList();
 
 Scheme::Scheme() {
+    top_level_bindings = new BindingEnvironment(NULL);
+	assign("bool?"  ,1,0,0, (SchemeObject* (*)()) s_boolean_p);
+	assign("list?"  ,1,0,0, (SchemeObject* (*)()) s_list_p);
+	assign("reverse",1,0,0, (SchemeObject* (*)()) s_reverse);
+	assign("cons"   ,2,0,0, (SchemeObject* (*)()) s_cons);
+	assign("apply"  ,1,0,1, (SchemeObject* (*)()) s_apply);
+	assign("map"    ,1,0,1, (SchemeObject* (*)()) s_map);
+	assign("display",1,0,0, (SchemeObject* (*)()) s_display);
+	assign("newline",1,0,0, (SchemeObject* (*)()) s_newline);
 }
 
 SchemeObject* Scheme::eval(istream* is) {
     Lexer* lexer = new Lexer(is);
-    Parser* parser = new Parser(lexer, this);
-    SchemeObject* parse_tree = parser->parse();
-    Interpreter* interpreter = new Interpreter(parse_tree, this);
+    Parser* parser = new Parser(lexer);
+    SchemePair* parse_tree = parser->parse();
+    Interpreter* interpreter = new Interpreter(parse_tree, top_level_bindings);
     return interpreter->interpret();
 }
 
@@ -31,9 +41,9 @@ SchemeObject* Scheme::eval(string data) {
     return result;
 };
 
-void Scheme::die_with_error(string error) {
-    cerr << error << endl;
-    exit(EXIT_FAILURE);
+void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)()) {
+    SchemeProcedure* proc = new SchemeProcedure(req, opt, rst, fn);
+    top_level_bindings->put(variable, proc);
 }
 
 // -----------------------------------------------------
@@ -41,12 +51,12 @@ void Scheme::die_with_error(string error) {
 // -----------------------------------------------------
 
 // (boolean? b)
-SchemeBool* Scheme::boolean_p(SchemeObject* o) {
+SchemeBool* s_boolean_p(BindingEnvironment* s, SchemeObject* o) {
     return (o == S_TRUE || o == S_FALSE) ? S_TRUE : S_FALSE;
 }
 
 // (list? a)
-SchemeBool* Scheme::list_p(SchemeObject* o) {
+SchemeBool* s_list_p(BindingEnvironment* s, SchemeObject* o) {
     if (o == S_EMPTY_LIST) {
         return S_TRUE;
     }
@@ -64,29 +74,71 @@ SchemeBool* Scheme::list_p(SchemeObject* o) {
 }
 
 // (cons a b)
-SchemePair* Scheme::cons(SchemeObject* car, SchemeObject* cdr) {
+SchemePair* s_cons(BindingEnvironment* s, SchemeObject* car, SchemeObject* cdr) {
     return new SchemePair(car, cdr);
 }
 
-SchemeObject* Scheme::display(SchemeObject* o) {
+SchemeObject* s_display(BindingEnvironment* s, SchemeObject* o) {
     cout << o->toString();
     return S_UNSPECIFIED;
 }
 
-SchemeObject* Scheme::newline() {
+SchemeObject* s_newline(BindingEnvironment* s) {
     cout << endl;        
     return S_UNSPECIFIED;
 }
 
-SchemeObject* Scheme::reverse(SchemeObject* o) {
-    SchemeObject* result = S_EMPTY_LIST;
-    if (list_p(o) != S_TRUE) {
-		die_with_error("reverse with wrong argument");
+SchemePair* s_reverse(BindingEnvironment* s, SchemeObject* o) {
+    SchemePair* result = S_EMPTY_LIST;
+    if (s_list_p(s, o) != S_TRUE) {
+		throw scheme_exception("reverse with wrong argument");
     }
     while (o != S_EMPTY_LIST) {
 		SchemePair* l = static_cast<SchemePair*> (o);
-		result = cons(l->car, result);
+		result = s_cons(s, l->car, result);
 		o = l->cdr;
 	}
 	return result;  
 }
+
+SchemeObject* s_apply(BindingEnvironment* s, SchemeProcedure* fn, SchemePair* args) {
+}
+
+SchemeObject* s_map(BindingEnvironment* s, SchemeProcedure* fn, SchemePair* args) {
+}
+
+
+SchemeNumber* s_plus(BindingEnvironment* s, SchemePair* p) {
+	double result = 0;
+	if (p == S_EMPTY_LIST) {
+		return S_ZERO;
+	}
+	while (p != S_EMPTY_LIST) {
+		SchemeNumber* n = static_cast<SchemeNumber*>(p->car);
+		if (n == NULL) {
+			throw scheme_exception("Wrong argument to +: " + p->car->toString());
+		}
+		result += n->number;
+		p = p->cdrAsPair();
+	}
+	return new SchemeNumber(result);
+}
+
+SchemeNumber* s_mult(BindingEnvironment* s, SchemePair* p) {
+	double result = 1;
+	if (p == S_EMPTY_LIST) {
+		return S_ONE;
+	}
+	
+	while (p != S_EMPTY_LIST) {
+		SchemeNumber* n = static_cast<SchemeNumber*>(p->car);
+		if (n == NULL) {
+			throw scheme_exception("Wrong argument to *: " + p->car->toString());
+		}
+		result *= n->number;
+		p = p->cdrAsPair();
+	}
+	return new SchemeNumber(result);
+}
+
+

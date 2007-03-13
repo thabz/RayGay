@@ -9,15 +9,14 @@
 class Parser 
 {
     public:
-	    Parser(Lexer* lexer, Scheme* scheme);
-	    SchemeObject* parse();
+	    Parser(Lexer* lexer);
+	    SchemePair* parse();
 
     private:
         SchemeObject* read_simple();
         SchemeObject* read_list();    
 
         Lexer* lexer;
-        Scheme* scheme;
 };
 
 #endif

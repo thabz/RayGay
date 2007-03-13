@@ -12,7 +12,11 @@ int main(int argc, char *argv[]) {
 	while (true) {
  	    cout << "raygay> " << flush;
 		cin.getline(input, 64*1024);
-        SchemeObject* result = scheme->eval(string(input));
-	    cout << result->toString() << endl;
+		try {
+           SchemeObject* result = scheme->eval(string(input));
+	       cout << result->toString() << endl;
+	    } catch (scheme_exception e) {
+			cerr << e.str << endl;
+ 	    }
 	}
 }
