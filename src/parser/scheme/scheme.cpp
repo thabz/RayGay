@@ -11,14 +11,23 @@ SchemeBool* S_FALSE = new SchemeBool(false);
 SchemeNumber* S_ZERO = new SchemeNumber(0);
 SchemeNumber* S_ONE = new SchemeNumber(1);
 SchemeNumber* S_TWO = new SchemeNumber(2);
+SchemeNumber* S_THREE = new SchemeNumber(3);
+SchemeNumber* S_FOUR = new SchemeNumber(4);
+SchemeNumber* S_FIVE = new SchemeNumber(5);
+SchemeNumber* S_SIX = new SchemeNumber(6);
+SchemeNumber* S_SEVEN = new SchemeNumber(7);
+SchemeNumber* S_EIGHT = new SchemeNumber(8);
+SchemeNumber* S_NINE = new SchemeNumber(9);
 SchemeUnspecified* S_UNSPECIFIED = new SchemeUnspecified();
 SchemeEmptyList* S_EMPTY_LIST = new SchemeEmptyList();
+SchemeNumber* S_NUMBERS[] = {S_ZERO, S_ONE, S_TWO, S_THREE, S_FOUR, S_FIVE, S_SIX, S_SEVEN, S_EIGHT, S_NINE};
 
 Scheme::Scheme() {
     top_level_bindings = new BindingEnvironment(NULL);
 	assign("bool?"  ,1,0,0, (SchemeObject* (*)()) s_boolean_p);
 	assign("list?"  ,1,0,0, (SchemeObject* (*)()) s_list_p);
 	assign("reverse",1,0,0, (SchemeObject* (*)()) s_reverse);
+	assign("length" ,1,0,0, (SchemeObject* (*)()) s_length);
 	assign("cons"   ,2,0,0, (SchemeObject* (*)()) s_cons);
 	assign("apply"  ,1,0,1, (SchemeObject* (*)()) s_apply);
 	assign("map"    ,1,0,1, (SchemeObject* (*)()) s_map);
@@ -99,6 +108,21 @@ SchemePair* s_reverse(BindingEnvironment* s, SchemeObject* o) {
 		o = l->cdr;
 	}
 	return result;  
+}
+
+SchemeNumber* s_length(BindingEnvironment* s, SchemePair* p) {
+    int length = 0;
+    while (p != S_EMPTY_LIST) {
+        length++;
+        p = p->cdrAsPair();
+        if (p == NULL) {
+            throw scheme_exception("Not a list");
+        }
+    }
+    if (length < 10) {
+        return S_NUMBERS[length];
+    }
+    return new SchemeNumber(length);
 }
 
 SchemeObject* s_apply(BindingEnvironment* s, SchemeProcedure* fn, SchemePair* args) {

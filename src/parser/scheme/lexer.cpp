@@ -21,6 +21,11 @@ Lexer::Token Lexer::nextToken() {
         cache.pop_front();
         return t;
     }
+    if (is->eof()) {
+        if (!popInputStream()) {
+            return Lexer::END;
+        }
+    }
     while(!is->fail()) 
     {
         char c = is->get();
@@ -31,7 +36,6 @@ Lexer::Token Lexer::nextToken() {
                 return Lexer::END;
             }
         }
-        
         if (c == '\n') {
             curline++;
         }
@@ -92,7 +96,7 @@ Lexer::Token Lexer::nextToken() {
         str = c;
         while(!is->eof()) {
             char c = is->get();
-            if (isspace(c)) {
+            if (isspace(c) || c == -1 || is->eof()) {
                 break;
             }
             if (c == ')') {
@@ -103,6 +107,7 @@ Lexer::Token Lexer::nextToken() {
         }
         return Lexer::SYMBOL; 
     }
+    // TODO: Check out why the stream has failed and throw exception
     return Lexer::ERROR;
 }
 
