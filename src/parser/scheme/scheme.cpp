@@ -26,6 +26,8 @@ Scheme::Scheme() {
     top_level_bindings = new BindingEnvironment(NULL);
 	assign("bool?"  ,1,0,0, (SchemeObject* (*)()) s_boolean_p);
 	assign("list?"  ,1,0,0, (SchemeObject* (*)()) s_list_p);
+	assign("pair?"  ,1,0,0, (SchemeObject* (*)()) s_pair_p);
+	assign("symbol?",1,0,0, (SchemeObject* (*)()) s_symbol_p);
 	assign("reverse",1,0,0, (SchemeObject* (*)()) s_reverse);
 	assign("length" ,1,0,0, (SchemeObject* (*)()) s_length);
 	assign("cons"   ,2,0,0, (SchemeObject* (*)()) s_cons);
@@ -80,6 +82,16 @@ SchemeBool* s_list_p(BindingEnvironment* s, SchemeObject* o) {
         
     }
     return S_FALSE;
+}
+
+// (pair? p)
+SchemeBool* s_pair_p(BindingEnvironment* s, SchemeObject* p) {
+    return (p->type() == SchemeObject::PAIR) ? S_TRUE : S_FALSE;
+}
+
+// (symbol? p)
+SchemeBool* s_symbol_p(BindingEnvironment* s, SchemeObject* p) {
+    return (p->type() == SchemeObject::SYMBOL) ? S_TRUE : S_FALSE;
 }
 
 // (cons a b)

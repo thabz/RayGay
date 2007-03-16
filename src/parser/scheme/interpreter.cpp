@@ -85,14 +85,21 @@ SchemeObject* Interpreter::eval_sequence(BindingEnvironment* envt, SchemePair* p
 // Evaluators for special forms
 //------------------------------------------------------------------------
 SchemeObject* Interpreter::eval_define(BindingEnvironment* envt, SchemePair* p) {
-    if (s_length(envt, p) != S_TWO) {
-        throw scheme_exception("Missing or extra expression");
+    // Handle the two cases (define var value) and (define (func-name args...) forms...)
+    if (s_pair_p(envt, p->car ) == S_TRUE) {
+        // (define (func-name args...) forms...)
+        throw scheme_exception("Not implemented.");
+    } else {
+        // (define var value-expr)
+        if (s_length(envt, p) != S_TWO) {
+            throw scheme_exception("Missing or extra expression");
+        }
+        SchemeSymbol* s = static_cast<SchemeSymbol*>(p->car);
+        if (s == NULL) {
+            throw scheme_exception("Bad variable");
+        }
+        envt->put(s->str, eval(envt, p->cdrAsPair()->car));
     }
-    SchemeSymbol* s = static_cast<SchemeSymbol*>(p->car);
-    if (s == NULL) {
-        throw scheme_exception("Bad variable");
-    }
-    envt->put(s->str, p->cdrAsPair()->car);
     return S_UNSPECIFIED;
 }
 

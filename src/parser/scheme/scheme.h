@@ -55,6 +55,8 @@ SchemeObject* s_newline(BindingEnvironment* s);
 SchemePair* s_cons(BindingEnvironment* s, SchemeObject* car, SchemeObject* cdr);
 SchemeBool* s_boolean_p(BindingEnvironment* s, SchemeObject* o);
 SchemeBool* s_list_p(BindingEnvironment* s, SchemeObject* p);
+SchemeBool* s_pair_p(BindingEnvironment* s, SchemeObject* p);
+SchemeBool* s_symbol_p(BindingEnvironment* s, SchemeObject* p);
 SchemePair* s_reverse(BindingEnvironment* s, SchemeObject* l);
 SchemeNumber* s_length(BindingEnvironment* s, SchemePair* l);
 SchemeNumber* s_plus(BindingEnvironment* s, SchemePair* l);
