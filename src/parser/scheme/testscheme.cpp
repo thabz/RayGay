@@ -1,6 +1,7 @@
 
 #include "scheme.h"
 #include "lexer.h"
+#include "parser.h"
 
 void test_tokenizer() {
     Lexer* l = new Lexer("(+ 1.5 (2 \"Hej\"))");
@@ -34,16 +35,23 @@ void test_tokenizer() {
 }
 
 void test_parser() {
-    
+    Lexer* l = new Lexer("(+ 1.5 (list? \"Hej\"))");
+    Parser* p = new Parser(l);
+    SchemePair* t = p->parse();
+    SchemePair* e = static_cast<SchemePair*> (t->car);
+    assert(e->car->type() == SchemeObject::SYMBOL);
+    assert(e->cdrAsPair()->car->type() == SchemeObject::NUMBER);
+    SchemePair* inner = static_cast<SchemePair*> (e->cdrAsPair()->cdrAsPair()->car);
+    assert(inner->car->type() == SchemeObject::SYMBOL);
+    assert(inner->car->toString() == "list?");
+    assert(inner->cdrAsPair()->car->type() == SchemeObject::STRING);
+    assert(inner->cdrAsPair()->cdrAsPair()->type() == SchemeObject::EMPTY_LIST);
+    assert(e->cdrAsPair()->cdrAsPair()->cdrAsPair()->type() == SchemeObject::EMPTY_LIST);
 }
 
 
 int main(int argc, char *argv[]) {
     test_tokenizer();
     test_parser();
-    if (false) {
-	    return EXIT_FAILURE;
-    } else {
-	    return EXIT_SUCCESS;
-    }
+    return EXIT_SUCCESS;
 }
