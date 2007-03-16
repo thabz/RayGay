@@ -16,6 +16,7 @@ Lexer::Lexer(istream* is) {
 }
 
 Lexer::Token Lexer::nextToken() {
+    char n,c;
     if (!cache.empty()) {
         Token t = cache.front();
         cache.pop_front();
@@ -28,7 +29,7 @@ Lexer::Token Lexer::nextToken() {
     }
     while(!is->fail()) 
     {
-        char c = is->get();
+        c = is->get();
         if (is->eof() || c == -1) {
             if (popInputStream()) {
                 continue;
@@ -64,7 +65,7 @@ Lexer::Token Lexer::nextToken() {
                     break;
                 }
             case '#': 
-				char n = is->get();
+                n = is->get();
                 if ((n == 'f' || n == 't')) {
 					boolean = (n == 't');
 					return Lexer::BOOLEAN;
@@ -77,7 +78,7 @@ Lexer::Token Lexer::nextToken() {
             case '"':
                 str = "";
                 while (!is->eof()) {
-                    char c = is->get();
+                    c = is->get();
                     if (c == '"') {
                         break;
                     } else {
