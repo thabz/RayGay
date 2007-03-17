@@ -99,7 +99,11 @@ string SchemePair::toString() {
 // Procedure
 //-----------------------------------------------------------
 SchemeProcedure::SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)()) {
-    
+    assert(rst == 0 || rst == 1);
+    this->req = req;
+    this->opt = opt;
+    this->rst = rst;
+    this->fn = fn;
 }
 
 string SchemeProcedure::toString() {

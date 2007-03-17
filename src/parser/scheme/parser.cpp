@@ -28,6 +28,8 @@ SchemeObject* Parser::read_simple() {
            return new SchemeSymbol(lexer->getString());
         case Lexer::OPEN_PAREN :
            return read_list();
+        case Lexer::QUOTE_OPEN_PAREN :
+           return read_quoted_list();
         case Lexer::END :
   		   return NULL;
         case Lexer::ERROR :
@@ -53,4 +55,9 @@ SchemeObject* Parser::read_list() {
             result = s_cons(NULL, read_simple(), result);
         }
     }
+}
+
+SchemeObject* Parser::read_quoted_list() {
+    SchemeObject* list = s_cons(NULL, read_list(), S_EMPTY_LIST);
+    return s_cons(NULL, new SchemeSymbol("quote"), list);
 }

@@ -42,6 +42,9 @@ SchemeObject* Interpreter::eval(BindingEnvironment* envt, SchemeObject* s) {
 SchemeObject* Interpreter::eval_list(BindingEnvironment* envt, SchemePair* p) {
     try {
         SchemeSymbol* s = static_cast<SchemeSymbol*>(p->car);
+        if (s == NULL) {
+            return eval_combo(envt, p);
+        }
     	SchemePair* cdr = static_cast<SchemePair*>(p->cdr);
     	if (s == NULL) {
     		throw scheme_exception("Wrong type to apply: " + p->toString());
@@ -52,8 +55,10 @@ SchemeObject* Interpreter::eval_list(BindingEnvironment* envt, SchemePair* p) {
             return eval_let(envt, cdr);	
     	} else if (s->str == "define") {
             return eval_define(envt, cdr);	
+    	} else if (s->str == "quote") {
+            return eval_quote(envt, cdr);	
         } else {
-    		throw scheme_exception("Unbound variable: " + s->toString());	
+            return eval_procedure_call(envt, s, cdr);
         }
     } catch (scheme_exception e) {
         cout << "In expression " << p->toString() << ":" << endl;
@@ -63,12 +68,11 @@ SchemeObject* Interpreter::eval_list(BindingEnvironment* envt, SchemePair* p) {
 }
 
 SchemeObject* Interpreter::eval_symbol(BindingEnvironment* envt, SchemeSymbol* p) {
-    Binding* binding = envt->get(p->str);
-    if (binding != NULL) {
-        return binding->obj;
-    } else {
+    SchemeObject* o = envt->get(p->str);
+    if (o == NULL) {
         throw scheme_exception("Unbound variable " + p->str);
     }
+    return o;
 }
 
 // Evals a list of expressions and returns the last.
@@ -80,6 +84,55 @@ SchemeObject* Interpreter::eval_sequence(BindingEnvironment* envt, SchemePair* p
 	}
 	return result;
 }
+
+// Evals a list of expressions and returns a list of results
+SchemePair* Interpreter::eval_multi(BindingEnvironment* envt, SchemePair* p) {
+	SchemePair* result = S_EMPTY_LIST;
+	while (p->type() != SchemeObject::EMPTY_LIST) {
+		result = s_cons(NULL, eval(envt, p->car), result);
+		p = p->cdrAsPair();
+	}
+	return s_reverse(NULL, result);
+}
+
+SchemeObject* Interpreter::eval_combo(BindingEnvironment*, SchemePair* s) {
+    // (car s) is an expression that should evaluate to a function that we execute
+    throw scheme_exception("Not implemented");
+}
+
+// Find the function in the envt and execute it
+SchemeObject* Interpreter::eval_procedure_call(BindingEnvironment* envt, SchemeSymbol* f, SchemePair* arg_exprs) {
+    SchemeObject* obj = envt->get(f->str);
+    SchemeObject* result = S_UNSPECIFIED;
+    
+    if (obj == NULL) {
+		throw scheme_exception("Unbound variable: " + f->toString());	
+    }
+    if (obj->type() != SchemeObject::PROCEDURE) {
+		throw scheme_exception("Wrong type to apply : " + obj->toString());	
+    }
+    // TODO: Check that number of args given and required match
+    SchemePair* args = eval_multi(envt, arg_exprs);
+
+    SchemeProcedure* proc = static_cast<SchemeProcedure*>(obj);
+    if (proc->fn != NULL) {
+        // Built-in function
+        switch(proc->req + proc->opt + proc->rst) {
+            case 1:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*))(proc->fn)))(envt, args->car);
+                      break;
+            case 2:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdrAsPair()->car);
+                      break;
+            case 3:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->car);
+                      break;
+            default:  throw scheme_exception("Arguments mismatch"); 
+        }
+    } else {
+        // User function
+    }
+    return result;
+
+}
+
 
 //------------------------------------------------------------------------
 // Evaluators for special forms
@@ -123,6 +176,10 @@ SchemeObject* Interpreter::eval_if(BindingEnvironment* envt, SchemePair* p) {
 	
 	bool condition = eval(envt, s_condition)->boolValue();
 	return condition ? eval(envt, true_case) : eval(envt, false_case);
+}
+
+SchemeObject* Interpreter::eval_quote(BindingEnvironment* envt, SchemePair* p) {
+	return p->car;
 }
 
 SchemeObject* Interpreter::eval_let(BindingEnvironment* envt, SchemePair* p) {

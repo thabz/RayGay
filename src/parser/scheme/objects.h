@@ -89,6 +89,15 @@ class SchemeProcedure : public SchemeObject
         SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)());
         string toString();      
         ObjectType type() { return PROCEDURE; };
+
+        // Fields for builtin
+        int req;
+        int opt;
+        int rst;
+        SchemeObject* (*fn)();
+        
+        // Fields for user-function
+        
 };
 
 #endif

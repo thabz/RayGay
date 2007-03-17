@@ -35,6 +35,8 @@ Scheme::Scheme() {
 	assign("map"    ,1,0,1, (SchemeObject* (*)()) s_map);
 	assign("display",1,0,0, (SchemeObject* (*)()) s_display);
 	assign("newline",1,0,0, (SchemeObject* (*)()) s_newline);
+	assign("+"      ,0,0,1, (SchemeObject* (*)()) s_plus);
+	assign("*"      ,0,0,1, (SchemeObject* (*)()) s_mult);
 }
 
 SchemeObject* Scheme::eval(istream* is) {
@@ -177,4 +179,21 @@ SchemeNumber* s_mult(BindingEnvironment* s, SchemePair* p) {
 	return new SchemeNumber(result);
 }
 
+SchemeObject* s_list_ref(BindingEnvironment* s, SchemePair* l, SchemeNumber* index) {
+    int i = index->number;
+    if (i < 0) {
+        throw scheme_exception("Index out of range: " + index->toString());
+    }
+    while (i > 0) {
+        l = l->cdrAsPair();
+        if (l == S_EMPTY_LIST) {
+            throw scheme_exception("Index out of range: " + index->toString());
+        }
+    }
+    if (i != 0) {
+        // Catches SchemeNumber being a non-integer
+        throw scheme_exception("Index out of range: " + index->toString());
+    }
+    return l->car;
+}
 

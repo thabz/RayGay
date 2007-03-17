@@ -61,6 +61,7 @@ SchemePair* s_reverse(BindingEnvironment* s, SchemeObject* l);
 SchemeNumber* s_length(BindingEnvironment* s, SchemePair* l);
 SchemeNumber* s_plus(BindingEnvironment* s, SchemePair* l);
 SchemeNumber* s_mult(BindingEnvironment* s, SchemePair* l);
+SchemeObject* s_list_ref(BindingEnvironment* s, SchemePair* l, SchemeNumber* i);
 SchemeObject* s_apply(BindingEnvironment* s, SchemeProcedure* fn_name, SchemePair* args);
 SchemeObject* s_map(BindingEnvironment* s, SchemeProcedure* fn_name, SchemePair* args);
 

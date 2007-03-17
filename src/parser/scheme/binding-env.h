@@ -7,30 +7,15 @@
 
 using namespace std;
 
-class Binding {
-    public:
-        enum Type {
-            SIMPLE,
-            MACRO,
-            PROCEDURE
-        };
-     
-        Binding::Type type;
-        
-        // Used for type SIMPLE
-        SchemeObject* obj;
-};
-
-
 class BindingEnvironment {
     public:
 		BindingEnvironment(BindingEnvironment* parent);
-		Binding* get(string name);
+		SchemeObject* get(string name);
         void put(string name, SchemeObject* o);
         
 	private:
         BindingEnvironment* parent;
-        map<string,Binding*> binding_map;	
+        map<string,SchemeObject*> binding_map;	
 };
 	
 #endif
