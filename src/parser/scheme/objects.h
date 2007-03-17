@@ -97,7 +97,6 @@ class SchemeProcedure : public SchemeObject
         SchemeObject* (*fn)();
         
         // Fields for user-function
-        
 };
 
 #endif

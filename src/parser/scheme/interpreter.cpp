@@ -41,14 +41,15 @@ SchemeObject* Interpreter::eval(BindingEnvironment* envt, SchemeObject* s) {
 
 SchemeObject* Interpreter::eval_list(BindingEnvironment* envt, SchemePair* p) {
     try {
-        SchemeSymbol* s = static_cast<SchemeSymbol*>(p->car);
-        if (s == NULL) {
+    	SchemeObject* car = p->car;
+        
+        if (car->type() != SchemeObject::SYMBOL) {
             return eval_combo(envt, p);
         }
+
+        SchemeSymbol* s = static_cast<SchemeSymbol*>(car);
     	SchemePair* cdr = static_cast<SchemePair*>(p->cdr);
-    	if (s == NULL) {
-    		throw scheme_exception("Wrong type to apply: " + p->toString());
-    	}
+    	
         if (s->str == "if") {
     		return eval_if(envt, cdr);
     	} else if (s->str == "let") {
@@ -58,7 +59,14 @@ SchemeObject* Interpreter::eval_list(BindingEnvironment* envt, SchemePair* p) {
     	} else if (s->str == "quote") {
             return eval_quote(envt, cdr);	
         } else {
-            return eval_procedure_call(envt, s, cdr);
+            SchemeObject* obj = envt->get(s->str);
+            if (obj == NULL) {
+        		throw scheme_exception("Unbound variable: " + s->toString());	
+            }
+            if (obj->type() != SchemeObject::PROCEDURE) {
+        		throw scheme_exception("Wrong type to apply : " + obj->toString());	
+            }
+            return eval_procedure_call(envt, static_cast<SchemeProcedure*>(obj), cdr);
         }
     } catch (scheme_exception e) {
         cout << "In expression " << p->toString() << ":" << endl;
@@ -95,26 +103,23 @@ SchemePair* Interpreter::eval_multi(BindingEnvironment* envt, SchemePair* p) {
 	return s_reverse(NULL, result);
 }
 
-SchemeObject* Interpreter::eval_combo(BindingEnvironment*, SchemePair* s) {
+SchemeObject* Interpreter::eval_combo(BindingEnvironment* envt, SchemePair* s) {
     // (car s) is an expression that should evaluate to a function that we execute
-    throw scheme_exception("Not implemented");
+    SchemePair* cdr = static_cast<SchemePair*>(s->cdr);
+    SchemeObject* car = eval(envt, s->car);
+    if (car->type() != SchemeObject::PROCEDURE) {
+		throw scheme_exception("Wrong type to apply: " + s->toString() + " does not resolve to a procedure.");
+    }
+    return eval_procedure_call(envt, static_cast<SchemeProcedure*>(car), cdr);
 }
 
 // Find the function in the envt and execute it
-SchemeObject* Interpreter::eval_procedure_call(BindingEnvironment* envt, SchemeSymbol* f, SchemePair* arg_exprs) {
-    SchemeObject* obj = envt->get(f->str);
+SchemeObject* Interpreter::eval_procedure_call(BindingEnvironment* envt, SchemeProcedure* proc, SchemePair* arg_exprs) {
     SchemeObject* result = S_UNSPECIFIED;
     
-    if (obj == NULL) {
-		throw scheme_exception("Unbound variable: " + f->toString());	
-    }
-    if (obj->type() != SchemeObject::PROCEDURE) {
-		throw scheme_exception("Wrong type to apply : " + obj->toString());	
-    }
     // TODO: Check that number of args given and required match
     SchemePair* args = eval_multi(envt, arg_exprs);
 
-    SchemeProcedure* proc = static_cast<SchemeProcedure*>(obj);
     if (proc->fn != NULL) {
         // Built-in function
         switch(proc->req + proc->opt + proc->rst) {
@@ -130,7 +135,6 @@ SchemeObject* Interpreter::eval_procedure_call(BindingEnvironment* envt, SchemeS
         // User function
     }
     return result;
-
 }
 
 

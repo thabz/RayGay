@@ -3,6 +3,8 @@
 #include "lexer.h"
 #include "parser.h"
 
+#define assert_eval(s,e,b) assert(s->eval(e)->toString() == b)
+
 void test_tokenizer() {
     Lexer* l = new Lexer("(+ 1.5 (2 . \"Hej\") .x)");
     assert(l->nextToken() == Lexer::OPEN_PAREN);
@@ -69,6 +71,17 @@ void test_bools() {
     assert(s->eval("(bool? '(1 2 3))") == S_FALSE);
 }
 
+void test_interpreter() {
+    // test eval_combo()
+    Scheme* s = new Scheme();
+    assert_eval(s, "((if #t reverse length) '(1 2 3))", "(3 2 1)");
+    assert_eval(s, "((if #f reverse length) '(1 2 3))", "3");
+    assert_eval(s, "((if #f reverse length) '(1 2 3))", "3");
+    
+    // test define
+    assert_eval(s, "(define a 10) a", "10");
+}
+
 void test_lists() {
     SchemePair* p = s_cons(NULL,new SchemeSymbol("x"),new SchemeSymbol("y"));
     assert(p->toString() == "(x . y)");
@@ -82,12 +95,15 @@ void test_lists() {
     assert(s->eval("(pair? '())") == S_FALSE);
     assert(s->eval("(pair? '(1 2))") == S_TRUE);
     assert(s->eval("(pair? '(1 2 . 3))") == S_TRUE);
+    
+    assert_eval(s, "(cons 1 2)", "(1 . 2)");
 }
 
 int main(int argc, char *argv[]) {
     try {
         test_tokenizer();
         test_parser();
+        test_interpreter();
         test_bools();
         test_lists();
     } catch (scheme_exception e) {

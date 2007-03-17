@@ -21,7 +21,7 @@ class Interpreter
 		SchemeObject* eval_symbol(BindingEnvironment*, SchemeSymbol* s);
         SchemeObject* eval_sequence(BindingEnvironment*, SchemePair*);
         SchemePair* eval_multi(BindingEnvironment*, SchemePair*);
-		SchemeObject* eval_procedure_call(BindingEnvironment*, SchemeSymbol* f, SchemePair* args);
+		SchemeObject* eval_procedure_call(BindingEnvironment*, SchemeProcedure* f, SchemePair* args);
 		
         // Evaluators for special forms
 		SchemeObject* eval_define(BindingEnvironment*, SchemePair*);
