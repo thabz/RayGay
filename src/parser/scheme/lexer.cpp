@@ -75,6 +75,14 @@ Lexer::Token Lexer::nextToken() {
 					is->unget();
 					break;
                 }
+            case '.' :
+                c = is->get();
+                if ((isspace(c))) {
+                    return Lexer::PERIOD;
+                } else {
+                    is->unget();
+                    break;
+                }
             case '"':
                 str = "";
                 while (!is->eof()) {

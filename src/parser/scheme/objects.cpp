@@ -71,24 +71,27 @@ SchemePair::SchemePair(SchemeObject* car, SchemeObject* cdr) {
 }
 
 SchemePair* SchemePair::cdrAsPair() {
-	return static_cast<SchemePair*>(cdr);
+    if (cdr == S_EMPTY_LIST || cdr->type() == SchemeObject::PAIR) {
+	    return static_cast<SchemePair*>(cdr);
+    } else {
+        return NULL;
+    }  
 }
 
 string SchemePair::toString() {
 	string result = "(";
-	SchemePair* p = this;
+	SchemePair *p = this, *n;
     while (true) {
 		result += p->car->toString();
-		SchemeObject* n = p->cdr;
+		n = p->cdrAsPair();
 		if (n == S_EMPTY_LIST) {
 			break;
 		}
-		SchemePair* l = static_cast<SchemePair*> (n);
-		if (l == NULL) {
+		if (n == NULL) {
 			result += " . " + p->cdr->toString();
 			break;
 		}
-		p = l;
+        p = n;
 		result += " ";
 	}
 	result += ")";

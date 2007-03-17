@@ -75,15 +75,16 @@ SchemeBool* s_list_p(BindingEnvironment* s, SchemeObject* o) {
     }
     SchemePair* p = static_cast<SchemePair*> (o);
     if (p != NULL) {
-        SchemeObject* cdr = p->cdr;
-        if (cdr == S_EMPTY_LIST) {
-            return S_TRUE;
+        while (s_pair_p(s, p) == S_TRUE && p != S_EMPTY_LIST) {
+            p = p->cdrAsPair();
+            if (p == NULL) {
+                return S_FALSE;
+            }
         }
-        SchemePair* p2 = static_cast<SchemePair*> (cdr);
-        return p2 != NULL ? S_TRUE : S_FALSE;
-        
+        return p == S_EMPTY_LIST ? S_TRUE : S_FALSE;    
+    } else {
+        return S_FALSE;
     }
-    return S_FALSE;
 }
 
 // (pair? p)

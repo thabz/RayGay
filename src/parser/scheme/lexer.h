@@ -22,6 +22,7 @@ class Lexer
             COMMA_OPEN_PAREN,
             QUOTE_OPEN_PAREN,
             BACKQUOTE_OPEN_PAREN,
+            PERIOD,
             ERROR,
             END
         };

@@ -48,6 +48,18 @@ SchemeObject* Parser::read_list() {
         if (token == Lexer::CLOSE_PAREN) {
             // FIXME: We're leaking the old list. Garbage collect?
             return s_reverse(NULL, result);
+        } else if (token == Lexer::PERIOD) {
+            SchemeObject* cdr = read_simple();
+            SchemePair* rr = s_reverse(NULL, result);
+            SchemePair* r = rr;
+            while(r->cdr != S_EMPTY_LIST) {
+                r = r->cdrAsPair();
+            }
+            r->cdr = cdr;
+            if (lexer->nextToken() != Lexer::CLOSE_PAREN) {
+                throw scheme_exception("Invalid pair");
+            }
+            return rr;
         } else if (token == Lexer::END) {
             throw scheme_exception("Unexpected end of input");
         } else {
