@@ -12,6 +12,7 @@ class BindingEnvironment {
 		BindingEnvironment(BindingEnvironment* parent);
 		SchemeObject* get(string name);
         void put(string name, SchemeObject* o);
+        void put(SchemeSymbol* name, SchemeObject* o);
         
 	private:
         BindingEnvironment* parent;

@@ -71,6 +71,14 @@ void test_bools() {
     assert(s->eval("(bool? '(1 2 3))") == S_FALSE);
 }
 
+void test_symbols() {
+    Scheme* s = new Scheme();
+    assert(s->eval("(symbol? (quote a))") == S_TRUE);
+    assert(s->eval("(symbol? '())") == S_FALSE);
+    assert(s->eval("(symbol? 1)") == S_FALSE);
+    
+}
+
 void test_interpreter() {
     // test eval_combo()
     Scheme* s = new Scheme();
@@ -128,10 +136,12 @@ void test_pairs_and_lists() {
     assert_eval(s, "(list-ref '(1 2 3) 0)", "1");
     assert_eval(s, "(list-ref '(1 2 3) 1)", "2");
     assert_eval(s, "(list-ref '(1 2 3) 2)", "3");
-
 }
 
 void test_lambda() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "((lambda (x) (* 2 x)) 10)", "20");
+    assert_eval(s, "((lambda (x y) (+  y x)) 7 10)", "17");
     // Two examples from R^5RS
     assert_eval(s, "((lambda x x) 3 4 5 6)", "(3 4 5 6)");
     assert_eval(s, "((lambda (x y . z) z) 3 4 5 6)", "(5 6)");
@@ -143,9 +153,10 @@ int main(int argc, char *argv[]) {
         test_parser();
         test_interpreter();
         test_bools();
+        test_symbols();
         test_equals();
         test_pairs_and_lists();
-        //test_lambda();
+        test_lambda();
     } catch (scheme_exception e) {
 		cerr << "Exception: " << e.str << endl;
         return EXIT_FAILURE;

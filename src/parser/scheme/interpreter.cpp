@@ -119,11 +119,11 @@ SchemeObject* Interpreter::eval_combo(BindingEnvironment* envt, SchemePair* s) {
 SchemeObject* Interpreter::eval_procedure_call(BindingEnvironment* envt, SchemeProcedure* proc, SchemePair* arg_exprs) {
     SchemeObject* result = S_UNSPECIFIED;
     
-    // TODO: Check that number of args given and required match
     SchemePair* args = eval_multi(envt, arg_exprs);
 
     if (proc->fn != NULL) {
         // Built-in function
+        // TODO: Check that number of args given and required do match
         if (proc->rst == 0) {
             switch(proc->req + proc->opt) {
                 case 0:   result = (*((SchemeObject* (*)(BindingEnvironment*))(proc->fn)))(envt);
@@ -151,6 +151,22 @@ SchemeObject* Interpreter::eval_procedure_call(BindingEnvironment* envt, SchemeP
         }
     } else {
         // User function
+        BindingEnvironment* new_envt = new BindingEnvironment(proc->envt);
+        SchemePair* req_symbols = proc->s_req;
+        while (req_symbols != S_EMPTY_LIST) {
+            new_envt->put(static_cast<SchemeSymbol*>(req_symbols->car), args->car);
+            req_symbols = req_symbols->cdrAsPair();
+            args = args->cdrAsPair();
+        }
+        if (args != S_EMPTY_LIST) {
+            if (proc->rst == 0) {
+                throw scheme_exception("Too many argument given.");
+            } else {
+                new_envt->put(proc->s_rst, args);
+            }
+        }
+        result = eval_sequence(new_envt, proc->s_body);
+        delete new_envt;
     }
     return result;
 }
@@ -201,7 +217,32 @@ SchemeObject* Interpreter::eval_if(BindingEnvironment* envt, SchemePair* p) {
 }
 
 SchemeObject* Interpreter::eval_lambda(BindingEnvironment* envt, SchemePair* p) {
-	return p->car;
+    SchemeObject* formals = p->car;
+    SchemePair* body = p->cdrAsPair();
+    SchemeSymbol* rst = NULL;
+    SchemePair* req = S_EMPTY_LIST;
+    if (s_symbol_p(envt,formals) == S_TRUE) {
+        rst = static_cast<SchemeSymbol*>(formals);
+    } else if (s_pair_p(envt, formals) == S_TRUE) {
+        while (s_pair_p(envt, formals) == S_TRUE) {
+            SchemePair* pp = static_cast<SchemePair*>(formals);
+            if (s_symbol_p(envt, pp->car) == S_FALSE) {
+                throw scheme_exception("Bad formals");                
+            }
+            req = s_cons(envt, pp->car, req);
+            formals = pp->cdr;
+        }
+        req = s_reverse(envt, req);
+        if (formals != S_EMPTY_LIST) {
+            if (s_symbol_p(envt, formals) == S_FALSE) {
+                throw scheme_exception("Bad formals");                
+            }
+            rst = static_cast<SchemeSymbol*>(formals);
+        }
+    } else {
+        throw scheme_exception("Bad formals");
+    }
+    return new SchemeProcedure(envt, req, rst, body);
 }
 
 

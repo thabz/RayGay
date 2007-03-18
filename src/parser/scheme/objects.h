@@ -4,6 +4,8 @@
 
 #include <string>
 
+class BindingEnvironment;
+
 using namespace std;
 
 class SchemeObject {
@@ -87,6 +89,7 @@ class SchemeProcedure : public SchemeObject
 {
     public:
         SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)());
+        SchemeProcedure(BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body);
         string toString();      
         ObjectType type() { return PROCEDURE; };
 
@@ -97,6 +100,10 @@ class SchemeProcedure : public SchemeObject
         SchemeObject* (*fn)();
         
         // Fields for user-function
+        SchemePair* s_body;
+        SchemePair* s_req;
+        SchemeSymbol* s_rst;
+        BindingEnvironment* envt;
 };
 
 #endif

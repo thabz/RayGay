@@ -109,6 +109,15 @@ SchemeProcedure::SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)(
     this->fn = fn;
 }
 
+SchemeProcedure::SchemeProcedure(BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body) {
+    this->envt = envt;
+    this->s_rst = s_rst;
+    this->s_req = s_req;
+    this->s_body = s_body;
+    rst = (s_rst == NULL) ? 0 : 1;
+    req = int(s_length(envt, s_req)->number);
+}
+
 string SchemeProcedure::toString() {
     return "#<primitive-procedure>";
 }
