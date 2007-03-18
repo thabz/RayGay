@@ -52,6 +52,8 @@ extern SchemeNumber* S_TWO;
 // Scheme procedures
 SchemeObject* s_display(BindingEnvironment* s, SchemeObject* o); 
 SchemeObject* s_newline(BindingEnvironment* s);
+SchemeObject* s_car(BindingEnvironment* s, SchemeObject* o);
+SchemeObject* s_cdr(BindingEnvironment* s, SchemeObject* o);
 SchemePair* s_cons(BindingEnvironment* s, SchemeObject* car, SchemeObject* cdr);
 SchemeBool* s_boolean_p(BindingEnvironment* s, SchemeObject* o);
 SchemeBool* s_list_p(BindingEnvironment* s, SchemeObject* p);

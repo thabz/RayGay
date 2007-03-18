@@ -125,6 +125,10 @@ void test_pairs_and_lists() {
     assert_eval(s, "(list '())", "(())");
     assert_eval(s, "(list 1 2 (+ 1 2) 4)", "(1 2 3 4)");
 
+    assert_eval(s, "(car (cons 1 2))", "1");
+    assert_eval(s, "(cdr (cons 1 2))", "2");
+    assert_eval(s, "(cdr (list 1 2))", "(2)");
+
     assert_eval(s, "(member 3 '(1 2 3 4 5))", "(3 4 5)");
     assert_eval(s, "(member 10 '(1 2 3 4 5))", "#f");
     assert_eval(s, "(member 10 '())", "#f");

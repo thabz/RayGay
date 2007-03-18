@@ -27,6 +27,8 @@ Scheme::Scheme() {
 	assign("equal?"     ,2,0,0, (SchemeObject* (*)()) s_equal_p);
 	assign("bool?"      ,1,0,0, (SchemeObject* (*)()) s_boolean_p);
 	assign("list?"      ,1,0,0, (SchemeObject* (*)()) s_list_p);
+	assign("car"        ,1,0,0, (SchemeObject* (*)()) s_car);
+	assign("cdr"        ,1,0,0, (SchemeObject* (*)()) s_cdr);
 	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list);
 	assign("list-tail"  ,2,0,0, (SchemeObject* (*)()) s_list_tail);
 	assign("list-ref"   ,2,0,0, (SchemeObject* (*)()) s_list_ref);
@@ -146,6 +148,20 @@ SchemeBool* s_pair_p(BindingEnvironment* s, SchemeObject* p) {
 // (symbol? p)
 SchemeBool* s_symbol_p(BindingEnvironment* s, SchemeObject* p) {
     return (p->type() == SchemeObject::SYMBOL) ? S_TRUE : S_FALSE;
+}
+
+SchemeObject* s_car(BindingEnvironment* s, SchemeObject* o) {
+    if (o->type() != SchemeObject::PAIR) {
+        throw scheme_exception("Wrong type");
+    }
+    return static_cast<SchemePair*>(o)->car;
+}
+
+SchemeObject* s_cdr(BindingEnvironment* s, SchemeObject* o) {
+    if (o->type() != SchemeObject::PAIR) {
+        throw scheme_exception("Wrong type");
+    }
+    return static_cast<SchemePair*>(o)->cdr;
 }
 
 // (cons a b)
