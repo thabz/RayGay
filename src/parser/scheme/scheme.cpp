@@ -27,22 +27,23 @@ Scheme::Scheme() {
     top_level_bindings = new BindingEnvironment(NULL);
 	assign("equal?"     ,2,0,0, (SchemeObject* (*)()) s_equal_p);
 	assign("bool?"      ,1,0,0, (SchemeObject* (*)()) s_boolean_p);
+	assign("pair?"      ,1,0,0, (SchemeObject* (*)()) s_pair_p);
+	assign("symbol?"    ,1,0,0, (SchemeObject* (*)()) s_symbol_p);
 	assign("list?"      ,1,0,0, (SchemeObject* (*)()) s_list_p);
+	assign("procedure?" ,1,0,0, (SchemeObject* (*)()) s_procedure_p);
 	assign("car"        ,1,0,0, (SchemeObject* (*)()) s_car);
 	assign("cdr"        ,1,0,0, (SchemeObject* (*)()) s_cdr);
 	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list);
 	assign("list-tail"  ,2,0,0, (SchemeObject* (*)()) s_list_tail);
 	assign("list-ref"   ,2,0,0, (SchemeObject* (*)()) s_list_ref);
 	assign("member"     ,2,0,0, (SchemeObject* (*)()) s_member);
-	assign("pair?"      ,1,0,0, (SchemeObject* (*)()) s_pair_p);
-	assign("symbol?"    ,1,0,0, (SchemeObject* (*)()) s_symbol_p);
 	assign("reverse"    ,1,0,0, (SchemeObject* (*)()) s_reverse);
 	assign("length"     ,1,0,0, (SchemeObject* (*)()) s_length);
 	assign("cons"       ,2,0,0, (SchemeObject* (*)()) s_cons);
 	assign("apply"      ,1,0,1, (SchemeObject* (*)()) s_apply);
 	assign("map"        ,1,0,1, (SchemeObject* (*)()) s_map);
 	assign("display"    ,1,0,0, (SchemeObject* (*)()) s_display);
-	assign("newline"    ,1,0,0, (SchemeObject* (*)()) s_newline);
+	assign("newline"    ,0,0,0, (SchemeObject* (*)()) s_newline);
 	assign("+"          ,0,0,1, (SchemeObject* (*)()) s_plus);
 	assign("*"          ,0,0,1, (SchemeObject* (*)()) s_mult);
 	
@@ -155,6 +156,12 @@ SchemeBool* s_pair_p(BindingEnvironment* s, SchemeObject* p) {
 SchemeBool* s_symbol_p(BindingEnvironment* s, SchemeObject* p) {
     return (p->type() == SchemeObject::SYMBOL) ? S_TRUE : S_FALSE;
 }
+
+// (symbol? p)
+SchemeBool* s_procedure_p(BindingEnvironment* s, SchemeObject* p) {
+    return (p->type() == SchemeObject::PROCEDURE) ? S_TRUE : S_FALSE;
+}
+
 
 SchemeObject* s_car(BindingEnvironment* s, SchemeObject* o) {
     if (o->type() != SchemeObject::PAIR) {

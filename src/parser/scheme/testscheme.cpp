@@ -144,6 +144,9 @@ void test_pairs_and_lists() {
 
 void test_lambda() {
     Scheme* s = new Scheme();
+    assert_eval(s, "(procedure? (lambda (x) x))", "#t");
+    assert_eval(s, "(procedure? cons)", "#t");
+    assert_eval(s, "(procedure? 1)", "#f");
     assert_eval(s, "((lambda (x) (* 2 x)) 10)", "20");
     assert_eval(s, "((lambda (x y) (+  y x)) 7 10)", "17");
     // Two examples from R^5RS
