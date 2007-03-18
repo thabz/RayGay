@@ -1,6 +1,7 @@
 
 #include "scheme.h"
 #include <sstream>
+#include <fstream>
 
 #include "lexer.h"
 #include "parser.h"
@@ -44,6 +45,11 @@ Scheme::Scheme() {
 	assign("newline"    ,1,0,0, (SchemeObject* (*)()) s_newline);
 	assign("+"          ,0,0,1, (SchemeObject* (*)()) s_plus);
 	assign("*"          ,0,0,1, (SchemeObject* (*)()) s_mult);
+	
+    ifstream infile;
+    infile.open("init.scm", ifstream::in);
+    eval(&infile);
+    infile.close();
 }
 
 SchemeObject* Scheme::eval(istream* is) {

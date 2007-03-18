@@ -59,7 +59,9 @@ SchemeObject* Interpreter::eval_list(BindingEnvironment* envt, SchemePair* p) {
     	} else if (s->str == "quote") {
             return eval_quote(envt, cdr);	
     	} else if (s->str == "lambda") {
-            return eval_lambda(envt, cdr);	
+    	    SchemeObject* formals = cdr->car;
+            SchemePair* body = cdr->cdrAsPair();
+            return eval_lambda(envt, formals, body);	
         } else {
             SchemeObject* obj = envt->get(s->str);
             if (obj == NULL) {
@@ -179,10 +181,15 @@ SchemeObject* Interpreter::eval_procedure_call(BindingEnvironment* envt, SchemeP
 // Evaluators for special forms
 //------------------------------------------------------------------------
 SchemeObject* Interpreter::eval_define(BindingEnvironment* envt, SchemePair* p) {
-    // Handle the two cases (define var value) and (define (func-name args...) forms...)
     if (s_pair_p(envt, p->car ) == S_TRUE) {
-        // (define (func-name args...) forms...)
-        throw scheme_exception("Not implemented.");
+        // (define (func-name args...) body-forms...)
+        SchemePair* pa = static_cast<SchemePair*>(p->car);
+        if (pa->car->type() != SchemeObject::SYMBOL) {
+            throw scheme_exception("Bad variable");
+        }
+        SchemePair* body = p->cdrAsPair();
+        SchemeProcedure* proc = eval_lambda(envt, pa->cdr, body);
+        envt->put(static_cast<SchemeSymbol*>(pa->car), proc);
     } else {
         // (define var value-expr)
         if (s_length(envt, p) != S_TWO) {
@@ -219,9 +226,7 @@ SchemeObject* Interpreter::eval_if(BindingEnvironment* envt, SchemePair* p) {
 	return condition ? eval(envt, true_case) : eval(envt, false_case);
 }
 
-SchemeObject* Interpreter::eval_lambda(BindingEnvironment* envt, SchemePair* p) {
-    SchemeObject* formals = p->car;
-    SchemePair* body = p->cdrAsPair();
+SchemeProcedure* Interpreter::eval_lambda(BindingEnvironment* envt, SchemeObject* formals, SchemePair* body) {
     SchemeSymbol* rst = NULL;
     SchemePair* req = S_EMPTY_LIST;
     if (s_symbol_p(envt,formals) == S_TRUE) {

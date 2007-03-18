@@ -151,6 +151,17 @@ void test_lambda() {
     assert_eval(s, "((lambda (x y . z) z) 3 4 5 6)", "(5 6)");
 }
 
+void test_define() {
+    Scheme* s = new Scheme();
+    s->eval("(define x 17)");
+    assert_eval(s, "x", "17");
+    s->eval("(define (square x) (* x x))");
+    assert_eval(s, "(square 9)", "81");
+    s->eval("(define (selftest . x) x)");
+    // A R^5RS spec that guile 1.6.8 fails but we don't... :-)
+    assert_eval(s, "(selftest 1 2 3 4)", "(1 2 3 4)");   
+}
+
 int main(int argc, char *argv[]) {
     try {
         test_tokenizer();
@@ -161,6 +172,7 @@ int main(int argc, char *argv[]) {
         test_equals();
         test_pairs_and_lists();
         test_lambda();
+        test_define();
     } catch (scheme_exception e) {
 		cerr << "Exception: " << e.str << endl;
         return EXIT_FAILURE;
