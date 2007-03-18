@@ -96,7 +96,7 @@ void test_equals() {
     assert_eval(s, "(equal? '(1 2 (a c) 3) '(1 2 (a b) 3))" , "#f");
 }
 
-void test_lists() {
+void test_pairs_and_lists() {
     SchemePair* p = s_cons(NULL,new SchemeSymbol("x"),new SchemeSymbol("y"));
     assert(p->toString() == "(x . y)");
     
@@ -121,6 +121,20 @@ void test_lists() {
     assert_eval(s, "(member 10 '(1 2 3 4 5))", "#f");
     assert_eval(s, "(member 10 '())", "#f");
 
+    assert_eval(s, "(list-tail '(1 2 3 4 5) 0)", "(1 2 3 4 5)");
+    assert_eval(s, "(list-tail '(1 2 3 4 5) 1)", "(2 3 4 5)");
+    assert_eval(s, "(list-tail '() 0)", "()");
+
+    assert_eval(s, "(list-ref '(1 2 3) 0)", "1");
+    assert_eval(s, "(list-ref '(1 2 3) 1)", "2");
+    assert_eval(s, "(list-ref '(1 2 3) 2)", "3");
+
+}
+
+void test_lambda() {
+    // Two examples from R^5RS
+    assert_eval(s, "((lambda x x) 3 4 5 6)", "(3 4 5 6)");
+    assert_eval(s, "((lambda (x y . z) z) 3 4 5 6)", "(5 6)");
 }
 
 int main(int argc, char *argv[]) {
@@ -130,7 +144,8 @@ int main(int argc, char *argv[]) {
         test_interpreter();
         test_bools();
         test_equals();
-        test_lists();
+        test_pairs_and_lists();
+        //test_lambda();
     } catch (scheme_exception e) {
 		cerr << "Exception: " << e.str << endl;
         return EXIT_FAILURE;

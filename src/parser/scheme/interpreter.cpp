@@ -58,6 +58,8 @@ SchemeObject* Interpreter::eval_list(BindingEnvironment* envt, SchemePair* p) {
             return eval_define(envt, cdr);	
     	} else if (s->str == "quote") {
             return eval_quote(envt, cdr);	
+    	} else if (s->str == "lambda") {
+            return eval_lambda(envt, cdr);	
         } else {
             SchemeObject* obj = envt->get(s->str);
             if (obj == NULL) {
@@ -197,6 +199,11 @@ SchemeObject* Interpreter::eval_if(BindingEnvironment* envt, SchemePair* p) {
 	bool condition = eval(envt, s_condition)->boolValue();
 	return condition ? eval(envt, true_case) : eval(envt, false_case);
 }
+
+SchemeObject* Interpreter::eval_lambda(BindingEnvironment* envt, SchemePair* p) {
+	return p->car;
+}
+
 
 SchemeObject* Interpreter::eval_quote(BindingEnvironment* envt, SchemePair* p) {
 	return p->car;

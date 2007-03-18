@@ -29,6 +29,7 @@ class Interpreter
 		SchemeObject* eval_if(BindingEnvironment*, SchemePair*);
 		SchemeObject* eval_quote(BindingEnvironment*, SchemePair*);
 		SchemeObject* eval_let(BindingEnvironment*, SchemePair*);
+		SchemeObject* eval_lambda(BindingEnvironment*, SchemePair*);
 };
 
 #endif

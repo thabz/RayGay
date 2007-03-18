@@ -24,22 +24,24 @@ SchemeNumber* S_NUMBERS[] = {S_ZERO, S_ONE, S_TWO, S_THREE, S_FOUR, S_FIVE, S_SI
 
 Scheme::Scheme() {
     top_level_bindings = new BindingEnvironment(NULL);
-	assign("equal?" ,2,0,0, (SchemeObject* (*)()) s_equal_p);
-	assign("bool?"  ,1,0,0, (SchemeObject* (*)()) s_boolean_p);
-	assign("list?"  ,1,0,0, (SchemeObject* (*)()) s_list_p);
-	assign("list"   ,0,0,1, (SchemeObject* (*)()) s_list);
-	assign("member" ,2,0,0, (SchemeObject* (*)()) s_member);
-	assign("pair?"  ,1,0,0, (SchemeObject* (*)()) s_pair_p);
-	assign("symbol?",1,0,0, (SchemeObject* (*)()) s_symbol_p);
-	assign("reverse",1,0,0, (SchemeObject* (*)()) s_reverse);
-	assign("length" ,1,0,0, (SchemeObject* (*)()) s_length);
-	assign("cons"   ,2,0,0, (SchemeObject* (*)()) s_cons);
-	assign("apply"  ,1,0,1, (SchemeObject* (*)()) s_apply);
-	assign("map"    ,1,0,1, (SchemeObject* (*)()) s_map);
-	assign("display",1,0,0, (SchemeObject* (*)()) s_display);
-	assign("newline",1,0,0, (SchemeObject* (*)()) s_newline);
-	assign("+"      ,0,0,1, (SchemeObject* (*)()) s_plus);
-	assign("*"      ,0,0,1, (SchemeObject* (*)()) s_mult);
+	assign("equal?"     ,2,0,0, (SchemeObject* (*)()) s_equal_p);
+	assign("bool?"      ,1,0,0, (SchemeObject* (*)()) s_boolean_p);
+	assign("list?"      ,1,0,0, (SchemeObject* (*)()) s_list_p);
+	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list);
+	assign("list-tail"  ,2,0,0, (SchemeObject* (*)()) s_list_tail);
+	assign("list-ref"   ,2,0,0, (SchemeObject* (*)()) s_list_ref);
+	assign("member"     ,2,0,0, (SchemeObject* (*)()) s_member);
+	assign("pair?"      ,1,0,0, (SchemeObject* (*)()) s_pair_p);
+	assign("symbol?"    ,1,0,0, (SchemeObject* (*)()) s_symbol_p);
+	assign("reverse"    ,1,0,0, (SchemeObject* (*)()) s_reverse);
+	assign("length"     ,1,0,0, (SchemeObject* (*)()) s_length);
+	assign("cons"       ,2,0,0, (SchemeObject* (*)()) s_cons);
+	assign("apply"      ,1,0,1, (SchemeObject* (*)()) s_apply);
+	assign("map"        ,1,0,1, (SchemeObject* (*)()) s_map);
+	assign("display"    ,1,0,0, (SchemeObject* (*)()) s_display);
+	assign("newline"    ,1,0,0, (SchemeObject* (*)()) s_newline);
+	assign("+"          ,0,0,1, (SchemeObject* (*)()) s_plus);
+	assign("*"          ,0,0,1, (SchemeObject* (*)()) s_mult);
 }
 
 SchemeObject* Scheme::eval(istream* is) {
@@ -108,6 +110,32 @@ SchemeObject* s_member(BindingEnvironment* s, SchemeObject* obj, SchemePair* p) 
         }
     }
     return S_FALSE;
+}
+
+SchemePair* s_list_tail(BindingEnvironment* s, SchemePair* l, SchemeNumber* k) {
+    int i = k->number;
+    if (i < 0) {
+        throw scheme_exception("Index out of range: " + k->toString());
+    }
+    while (i-- > 0) {
+        if (l == S_EMPTY_LIST) {
+            throw scheme_exception("Index out of range: " + k->toString());
+        }
+        l = l->cdrAsPair();
+    }
+    //if (i != 0) {
+    //    // Catches SchemeNumber being a non-integer
+    //    throw scheme_exception("Index out of range: " + k->toString());
+    //}
+    return l;
+}
+
+SchemeObject* s_list_ref(BindingEnvironment* s, SchemePair* l, SchemeNumber* index) {
+    SchemePair* p = s_list_tail(s,l,index);
+    if (p == S_EMPTY_LIST) {
+        throw scheme_exception("Index out of range: " + index->toString());
+    }
+    return p->car;
 }
 
 // (pair? p)
@@ -205,23 +233,5 @@ SchemeNumber* s_mult(BindingEnvironment* s, SchemePair* p) {
 		p = p->cdrAsPair();
 	}
 	return new SchemeNumber(result);
-}
-
-SchemeObject* s_list_ref(BindingEnvironment* s, SchemePair* l, SchemeNumber* index) {
-    int i = index->number;
-    if (i < 0) {
-        throw scheme_exception("Index out of range: " + index->toString());
-    }
-    while (i > 0) {
-        l = l->cdrAsPair();
-        if (l == S_EMPTY_LIST) {
-            throw scheme_exception("Index out of range: " + index->toString());
-        }
-    }
-    if (i != 0) {
-        // Catches SchemeNumber being a non-integer
-        throw scheme_exception("Index out of range: " + index->toString());
-    }
-    return l->car;
 }
 
