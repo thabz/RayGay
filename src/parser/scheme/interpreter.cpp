@@ -154,6 +154,9 @@ SchemeObject* Interpreter::eval_procedure_call(BindingEnvironment* envt, SchemeP
         BindingEnvironment* new_envt = new BindingEnvironment(proc->envt);
         SchemePair* req_symbols = proc->s_req;
         while (req_symbols != S_EMPTY_LIST) {
+            if (args == S_EMPTY_LIST) {
+                throw scheme_exception("Too few argument given.");
+            }
             new_envt->put(static_cast<SchemeSymbol*>(req_symbols->car), args->car);
             req_symbols = req_symbols->cdrAsPair();
             args = args->cdrAsPair();
