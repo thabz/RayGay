@@ -24,8 +24,11 @@ SchemeNumber* S_NUMBERS[] = {S_ZERO, S_ONE, S_TWO, S_THREE, S_FOUR, S_FIVE, S_SI
 
 Scheme::Scheme() {
     top_level_bindings = new BindingEnvironment(NULL);
+	assign("equal?" ,2,0,0, (SchemeObject* (*)()) s_equal_p);
 	assign("bool?"  ,1,0,0, (SchemeObject* (*)()) s_boolean_p);
 	assign("list?"  ,1,0,0, (SchemeObject* (*)()) s_list_p);
+	assign("list"   ,0,0,1, (SchemeObject* (*)()) s_list);
+	assign("member" ,2,0,0, (SchemeObject* (*)()) s_member);
 	assign("pair?"  ,1,0,0, (SchemeObject* (*)()) s_pair_p);
 	assign("symbol?",1,0,0, (SchemeObject* (*)()) s_symbol_p);
 	assign("reverse",1,0,0, (SchemeObject* (*)()) s_reverse);
@@ -63,6 +66,15 @@ void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*
 // Procedures
 // -----------------------------------------------------
 
+
+// (equal? a b)
+// Equal? recursively compares the contents of pairs, vectors, and strings, applying eqv? on other objects 
+// such as numbers and symbols. A rule of thumb is that objects are generally equal? if they print the same. 
+// Equal? may fail to terminate if its arguments are circular data structures.
+SchemeBool* s_equal_p(BindingEnvironment* s, SchemeObject* a, SchemeObject* b) {
+    return a->toString() == b->toString() ? S_TRUE : S_FALSE; 
+}
+
 // (boolean? b)
 SchemeBool* s_boolean_p(BindingEnvironment* s, SchemeObject* o) {
     return (o == S_TRUE || o == S_FALSE) ? S_TRUE : S_FALSE;
@@ -87,6 +99,17 @@ SchemeBool* s_list_p(BindingEnvironment* s, SchemeObject* o) {
     }
 }
 
+SchemeObject* s_member(BindingEnvironment* s, SchemeObject* obj, SchemePair* p) {
+    while (p != S_EMPTY_LIST) {
+        if (s_equal_p(s, obj, p->car) == S_TRUE) {
+            return p;
+        } else {
+            p = p->cdrAsPair();
+        }
+    }
+    return S_FALSE;
+}
+
 // (pair? p)
 SchemeBool* s_pair_p(BindingEnvironment* s, SchemeObject* p) {
     return (p->type() == SchemeObject::PAIR) ? S_TRUE : S_FALSE;
@@ -100,6 +123,10 @@ SchemeBool* s_symbol_p(BindingEnvironment* s, SchemeObject* p) {
 // (cons a b)
 SchemePair* s_cons(BindingEnvironment* s, SchemeObject* car, SchemeObject* cdr) {
     return new SchemePair(car, cdr);
+}
+
+SchemePair* s_list(BindingEnvironment* s, SchemePair* args) {
+    return args;
 }
 
 SchemeObject* s_display(BindingEnvironment* s, SchemeObject* o) {

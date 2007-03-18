@@ -122,14 +122,30 @@ SchemeObject* Interpreter::eval_procedure_call(BindingEnvironment* envt, SchemeP
 
     if (proc->fn != NULL) {
         // Built-in function
-        switch(proc->req + proc->opt + proc->rst) {
-            case 1:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*))(proc->fn)))(envt, args->car);
-                      break;
-            case 2:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdrAsPair()->car);
-                      break;
-            case 3:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->car);
-                      break;
-            default:  throw scheme_exception("Arguments mismatch"); 
+        if (proc->rst == 0) {
+            switch(proc->req + proc->opt) {
+                case 0:   result = (*((SchemeObject* (*)(BindingEnvironment*))(proc->fn)))(envt);
+                          break;
+                case 1:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*))(proc->fn)))(envt, args->car);
+                          break;
+                case 2:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdrAsPair()->car);
+                          break;
+                case 3:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->car);
+                          break;
+                default:  throw scheme_exception("Arguments mismatch"); 
+            }
+        } else {
+            switch(proc->req + proc->opt) {
+                case 0:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*))(proc->fn)))(envt, args);
+                          break;
+                case 1:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdr);
+                          break;
+                case 2:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdr);
+                          break;
+                case 3:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->cdr);
+                          break;
+                default:  throw scheme_exception("Arguments mismatch"); 
+            }
         }
     } else {
         // User function

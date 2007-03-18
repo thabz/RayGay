@@ -80,6 +80,20 @@ void test_interpreter() {
     
     // test define
     assert_eval(s, "(define a 10) a", "10");
+    
+    // test built-in with only rst args
+    assert_eval(s, "(+ 10 9 2 19 8 2 1 29 8 8 2 1 23 3 1) ", "126");
+    delete s;
+}
+
+void test_equals() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(equal? 1 1)" , "#t");
+    assert_eval(s, "(equal? 1 2)" , "#f");
+    assert_eval(s, "(equal? \"abc\" \"abc\")" , "#t");
+    assert_eval(s, "(equal? '(1 2 3) '(1 2 3))" , "#t");
+    assert_eval(s, "(equal? '(1 2 (a  b) 3) '(1 2 (a b) 3))" , "#t");
+    assert_eval(s, "(equal? '(1 2 (a c) 3) '(1 2 (a b) 3))" , "#f");
 }
 
 void test_lists() {
@@ -97,6 +111,16 @@ void test_lists() {
     assert(s->eval("(pair? '(1 2 . 3))") == S_TRUE);
     
     assert_eval(s, "(cons 1 2)", "(1 . 2)");
+    
+    assert_eval(s, "(list)", "()");
+    assert_eval(s, "(list 1)", "(1)");
+    assert_eval(s, "(list '())", "(())");
+    assert_eval(s, "(list 1 2 (+ 1 2) 4)", "(1 2 3 4)");
+
+    assert_eval(s, "(member 3 '(1 2 3 4 5))", "(3 4 5)");
+    assert_eval(s, "(member 10 '(1 2 3 4 5))", "#f");
+    assert_eval(s, "(member 10 '())", "#f");
+
 }
 
 int main(int argc, char *argv[]) {
@@ -105,6 +129,7 @@ int main(int argc, char *argv[]) {
         test_parser();
         test_interpreter();
         test_bools();
+        test_equals();
         test_lists();
     } catch (scheme_exception e) {
 		cerr << "Exception: " << e.str << endl;
