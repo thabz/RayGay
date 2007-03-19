@@ -11,14 +11,19 @@ int main(int argc, char *argv[]) {
 	
 	while (true) {
  	    cout << "raygay> " << flush;
-		cin.getline(input, 64*1024);
-		try {
-           SchemeObject* result = scheme->eval(string(input));
+	    cin.getline(input, 64*1024);
+	    if (cin.eof()) {
+		// User pressed ctrl-D.
+		return EXIT_SUCCESS;
+	    }    
+	    try {
+               SchemeObject* result = scheme->eval(string(input));
            if (result != S_UNSPECIFIED) {
 	           cout << result->toString() << endl;
            }
 	    } catch (scheme_exception e) {
 			cerr << e.str << endl;
+			return EXIT_FAILURE;
  	    }
 	}
 }
