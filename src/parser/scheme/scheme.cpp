@@ -45,6 +45,7 @@ Scheme::Scheme() {
 	assign("display"    ,1,0,0, (SchemeObject* (*)()) s_display);
 	assign("newline"    ,0,0,0, (SchemeObject* (*)()) s_newline);
 	assign("+"          ,0,0,1, (SchemeObject* (*)()) s_plus);
+	assign("-"          ,0,0,1, (SchemeObject* (*)()) s_minus);
 	assign("*"          ,0,0,1, (SchemeObject* (*)()) s_mult);
 	
     ifstream infile;
@@ -246,6 +247,29 @@ SchemeNumber* s_plus(BindingEnvironment* s, SchemePair* p) {
 	}
 	return new SchemeNumber(result);
 }
+
+SchemeNumber* s_minus(BindingEnvironment* s, SchemePair* p) {
+	double result = 0;
+    double first = true;
+	if (p == S_EMPTY_LIST) {
+		return S_ZERO;
+	}
+	while (p != S_EMPTY_LIST) {
+		SchemeNumber* n = static_cast<SchemeNumber*>(p->car);
+		if (n == NULL) {
+			throw scheme_exception("Wrong argument to +: " + p->car->toString());
+		}
+		if (first) {
+            result = n->number;
+            first = false;
+		} else {
+		    result -= n->number;
+	    }
+		p = p->cdrAsPair();
+	}
+	return new SchemeNumber(result);
+}
+
 
 SchemeNumber* s_mult(BindingEnvironment* s, SchemePair* p) {
 	double result = 1;

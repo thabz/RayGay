@@ -162,7 +162,9 @@ void test_define() {
     assert_eval(s, "(square 9)", "81");
     s->eval("(define (selftest . x) x)");
     // A R^5RS spec that guile 1.6.8 fails but we don't... :-)
-    assert_eval(s, "(selftest 1 2 3 4)", "(1 2 3 4)");   
+    assert_eval(s, "(selftest 1 2 3 4)", "(1 2 3 4)");
+    s->eval("(define (fact n) (if (equal? n 1) 1 (* n (fact (- n 1)))))");
+    assert_eval(s, "(fact 6)", "720");
 }
 
 int main(int argc, char *argv[]) {
