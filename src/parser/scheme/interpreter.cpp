@@ -60,6 +60,8 @@ SchemeObject* Interpreter::eval_list(BindingEnvironment* envt, SchemePair* p) {
             return eval_set_e(envt, cdr);	
     	} else if (s->str == "quote") {
             return eval_quote(envt, cdr);	
+    	} else if (s->str == "begin") {
+            return eval_sequence(envt, cdr);	
     	} else if (s->str == "lambda") {
     	    SchemeObject* formals = cdr->car;
             SchemePair* body = cdr->cdrAsPair();
@@ -103,10 +105,10 @@ SchemeObject* Interpreter::eval_sequence(BindingEnvironment* envt, SchemePair* p
 SchemePair* Interpreter::eval_multi(BindingEnvironment* envt, SchemePair* p) {
 	SchemePair* result = S_EMPTY_LIST;
 	while (p->type() != SchemeObject::EMPTY_LIST) {
-		result = s_cons(NULL, eval(envt, p->car), result);
+		result = s_cons(eval(envt, p->car), result);
 		p = p->cdrAsPair();
 	}
-	return s_reverse(NULL, result);
+	return s_reverse(result);
 }
 
 SchemeObject* Interpreter::eval_combo(BindingEnvironment* envt, SchemePair* s) {
@@ -130,25 +132,25 @@ SchemeObject* Interpreter::eval_procedure_call(BindingEnvironment* envt, SchemeP
         // TODO: Check that number of args given and required do match
         if (proc->rst == 0) {
             switch(proc->req + proc->opt) {
-                case 0:   result = (*((SchemeObject* (*)(BindingEnvironment*))(proc->fn)))(envt);
+                case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();
                           break;
-                case 1:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*))(proc->fn)))(envt, args->car);
+                case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(args->car);
                           break;
-                case 2:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdrAsPair()->car);
+                case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(args->car, args->cdrAsPair()->car);
                           break;
-                case 3:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->car);
+                case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->car);
                           break;
                 default:  throw scheme_exception("Arguments mismatch"); 
             }
         } else {
             switch(proc->req + proc->opt) {
-                case 0:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*))(proc->fn)))(envt, args);
+                case 0:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(args);
                           break;
-                case 1:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdr);
+                case 1:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(args->car, args->cdr);
                           break;
-                case 2:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdr);
+                case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdr);
                           break;
-                case 3:   result = (*((SchemeObject* (*)(BindingEnvironment*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(envt, args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->cdr);
+                case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->cdr);
                           break;
                 default:  throw scheme_exception("Arguments mismatch"); 
             }
@@ -183,7 +185,7 @@ SchemeObject* Interpreter::eval_procedure_call(BindingEnvironment* envt, SchemeP
 // Evaluators for special forms
 //------------------------------------------------------------------------
 SchemeObject* Interpreter::eval_define(BindingEnvironment* envt, SchemePair* p) {
-    if (s_pair_p(envt, p->car ) == S_TRUE) {
+    if (s_pair_p(p->car ) == S_TRUE) {
         // (define (func-name args...) body-forms...)
         SchemePair* pa = static_cast<SchemePair*>(p->car);
         if (pa->car->type() != SchemeObject::SYMBOL) {
@@ -194,7 +196,7 @@ SchemeObject* Interpreter::eval_define(BindingEnvironment* envt, SchemePair* p) 
         envt->put(static_cast<SchemeSymbol*>(pa->car), proc);
     } else {
         // (define var value-expr)
-        if (s_length(envt, p) != S_TWO) {
+        if (s_length(p) != S_TWO) {
             throw scheme_exception("Missing or extra expression");
         }
         SchemeSymbol* s = static_cast<SchemeSymbol*>(p->car);
@@ -207,7 +209,7 @@ SchemeObject* Interpreter::eval_define(BindingEnvironment* envt, SchemePair* p) 
 }
 
 SchemeObject* Interpreter::eval_set_e(BindingEnvironment* envt, SchemePair* p) {
-    if (s_length(envt, p) != S_TWO) {
+    if (s_length(p) != S_TWO) {
         throw scheme_exception("Missing or extra expression");
     }
     SchemeObject* car = p->car;
@@ -237,22 +239,22 @@ SchemeObject* Interpreter::eval_if(BindingEnvironment* envt, SchemePair* p) {
 SchemeProcedure* Interpreter::eval_lambda(BindingEnvironment* envt, SchemeObject* formals, SchemePair* body) {
     SchemeSymbol* rst;
     SchemePair* req;
-    if (s_symbol_p(envt,formals) == S_TRUE) {
+    if (s_symbol_p(formals) == S_TRUE) {
         rst = static_cast<SchemeSymbol*>(formals);
         req = S_EMPTY_LIST;
-    } else if (s_pair_p(envt, formals) == S_TRUE) {
+    } else if (s_pair_p(formals) == S_TRUE) {
         req = S_EMPTY_LIST;
-        while (s_pair_p(envt, formals) == S_TRUE) {
+        while (s_pair_p(formals) == S_TRUE) {
             SchemePair* pp = static_cast<SchemePair*>(formals);
-            if (s_symbol_p(envt, pp->car) == S_FALSE) {
+            if (s_symbol_p(pp->car) == S_FALSE) {
                 throw scheme_exception("Bad formals");                
             }
-            req = s_cons(envt, pp->car, req);
+            req = s_cons(pp->car, req);
             formals = pp->cdr;
         }
-        req = s_reverse(envt, req);
+        req = s_reverse(req);
         if (formals != S_EMPTY_LIST) {
-            if (s_symbol_p(envt, formals) == S_FALSE) {
+            if (s_symbol_p(formals) == S_FALSE) {
                 throw scheme_exception("Bad formals");                
             }
             rst = static_cast<SchemeSymbol*>(formals);

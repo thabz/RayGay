@@ -115,7 +115,7 @@ SchemeProcedure::SchemeProcedure(BindingEnvironment* envt, SchemePair* s_req, Sc
     this->s_req = s_req;
     this->s_body = s_body;
     rst = (s_rst == NULL) ? 0 : 1;
-    req = int(s_length(envt, s_req)->number);
+    req = int(s_length(s_req)->number);
 }
 
 string SchemeProcedure::toString() {

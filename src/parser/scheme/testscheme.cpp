@@ -105,7 +105,7 @@ void test_equals() {
 }
 
 void test_pairs_and_lists() {
-    SchemePair* p = s_cons(NULL,new SchemeSymbol("x"),new SchemeSymbol("y"));
+    SchemePair* p = s_cons(new SchemeSymbol("x"),new SchemeSymbol("y"));
     assert(p->toString() == "(x . y)");
     
     Scheme* s = new Scheme();
@@ -178,6 +178,13 @@ void test_string() {
     assert_eval(s, "(string? ((lambda () \"a\")))", "#t");
 }
 
+void test_begin() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(begin 1)", "1");
+    assert_eval(s, "(begin 1 2)", "2");
+    assert_eval(s, "(begin 1 2 3)", "3");
+}
+
 int main(int argc, char *argv[]) {
     try {
         test_tokenizer();
@@ -190,6 +197,7 @@ int main(int argc, char *argv[]) {
         test_lambda();
         test_define_and_set();
         test_string();
+        test_begin();
     } catch (scheme_exception e) {
 		cerr << "Exception: " << e.str << endl;
         return EXIT_FAILURE;
