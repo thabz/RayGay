@@ -30,6 +30,7 @@ Scheme::Scheme() {
 	assign("pair?"      ,1,0,0, (SchemeObject* (*)()) s_pair_p);
 	assign("symbol?"    ,1,0,0, (SchemeObject* (*)()) s_symbol_p);
 	assign("list?"      ,1,0,0, (SchemeObject* (*)()) s_list_p);
+	assign("string?"    ,1,0,0, (SchemeObject* (*)()) s_string_p);
 	assign("procedure?" ,1,0,0, (SchemeObject* (*)()) s_procedure_p);
 	assign("car"        ,1,0,0, (SchemeObject* (*)()) s_car);
 	assign("cdr"        ,1,0,0, (SchemeObject* (*)()) s_cdr);
@@ -156,6 +157,11 @@ SchemeBool* s_pair_p(BindingEnvironment* s, SchemeObject* p) {
 // (symbol? p)
 SchemeBool* s_symbol_p(BindingEnvironment* s, SchemeObject* p) {
     return (p->type() == SchemeObject::SYMBOL) ? S_TRUE : S_FALSE;
+}
+
+// (string? p)
+SchemeBool* s_string_p(BindingEnvironment* s, SchemeObject* p) {
+    return (p->type() == SchemeObject::STRING) ? S_TRUE : S_FALSE;
 }
 
 // (symbol? p)

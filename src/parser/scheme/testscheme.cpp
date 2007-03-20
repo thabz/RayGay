@@ -147,6 +147,7 @@ void test_lambda() {
     assert_eval(s, "(procedure? (lambda (x) x))", "#t");
     assert_eval(s, "(procedure? cons)", "#t");
     assert_eval(s, "(procedure? 1)", "#f");
+    assert_eval(s, "((lambda () 3))", "3");
     assert_eval(s, "((lambda (x) (* 2 x)) 10)", "20");
     assert_eval(s, "((lambda (x y) (+  y x)) 7 10)", "17");
     // Two examples from R^5RS
@@ -167,6 +168,14 @@ void test_define() {
     assert_eval(s, "(fact 6)", "720");
 }
 
+void test_string() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(string? 1)", "#f");
+    assert_eval(s, "(string? \"\")", "#t");
+    assert_eval(s, "(string? \"a\")", "#t");
+    assert_eval(s, "(string? ((lambda () \"a\")))", "#t");
+}
+
 int main(int argc, char *argv[]) {
     try {
         test_tokenizer();
@@ -178,6 +187,7 @@ int main(int argc, char *argv[]) {
         test_pairs_and_lists();
         test_lambda();
         test_define();
+        test_string();
     } catch (scheme_exception e) {
 		cerr << "Exception: " << e.str << endl;
         return EXIT_FAILURE;

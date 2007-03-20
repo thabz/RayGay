@@ -56,6 +56,7 @@ SchemeObject* s_car(BindingEnvironment* s, SchemeObject* o);
 SchemeObject* s_cdr(BindingEnvironment* s, SchemeObject* o);
 SchemePair* s_cons(BindingEnvironment* s, SchemeObject* car, SchemeObject* cdr);
 SchemeBool* s_boolean_p(BindingEnvironment* s, SchemeObject* o);
+SchemeBool* s_string_p(BindingEnvironment* s, SchemeObject* o);
 SchemeBool* s_procedure_p(BindingEnvironment* s, SchemeObject* o);
 SchemeBool* s_list_p(BindingEnvironment* s, SchemeObject* p);
 SchemePair* s_list(BindingEnvironment* s, SchemePair* args);

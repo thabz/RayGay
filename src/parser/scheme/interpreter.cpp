@@ -227,11 +227,13 @@ SchemeObject* Interpreter::eval_if(BindingEnvironment* envt, SchemePair* p) {
 }
 
 SchemeProcedure* Interpreter::eval_lambda(BindingEnvironment* envt, SchemeObject* formals, SchemePair* body) {
-    SchemeSymbol* rst = NULL;
-    SchemePair* req = S_EMPTY_LIST;
+    SchemeSymbol* rst;
+    SchemePair* req;
     if (s_symbol_p(envt,formals) == S_TRUE) {
         rst = static_cast<SchemeSymbol*>(formals);
+        req = S_EMPTY_LIST;
     } else if (s_pair_p(envt, formals) == S_TRUE) {
+        req = S_EMPTY_LIST;
         while (s_pair_p(envt, formals) == S_TRUE) {
             SchemePair* pp = static_cast<SchemePair*>(formals);
             if (s_symbol_p(envt, pp->car) == S_FALSE) {
@@ -246,7 +248,12 @@ SchemeProcedure* Interpreter::eval_lambda(BindingEnvironment* envt, SchemeObject
                 throw scheme_exception("Bad formals");                
             }
             rst = static_cast<SchemeSymbol*>(formals);
+        } else {
+            rst = NULL;
         }
+    } else if (formals == S_EMPTY_LIST) {
+        req = S_EMPTY_LIST;
+        rst = NULL;
     } else {
         throw scheme_exception("Bad formals");
     }
