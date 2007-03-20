@@ -56,6 +56,8 @@ SchemeObject* Interpreter::eval_list(BindingEnvironment* envt, SchemePair* p) {
             return eval_let(envt, cdr);	
     	} else if (s->str == "define") {
             return eval_define(envt, cdr);	
+    	} else if (s->str == "set!") {
+            return eval_set_e(envt, cdr);	
     	} else if (s->str == "quote") {
             return eval_quote(envt, cdr);	
     	} else if (s->str == "lambda") {
@@ -205,15 +207,21 @@ SchemeObject* Interpreter::eval_define(BindingEnvironment* envt, SchemePair* p) 
 }
 
 SchemeObject* Interpreter::eval_set_e(BindingEnvironment* envt, SchemePair* p) {
-    // TODO: Reuse bound object if same type
     if (s_length(envt, p) != S_TWO) {
         throw scheme_exception("Missing or extra expression");
     }
-    SchemeSymbol* s = static_cast<SchemeSymbol*>(p->car);
-    if (s == NULL) {
-        throw scheme_exception("Bad variable");
+    SchemeObject* car = p->car;
+    if (car->type() != SchemeObject::SYMBOL) {
+        throw scheme_exception("Wrong type argument in position 1.");
     }
-    envt->put(s->str, p->cdrAsPair()->car);
+    SchemeSymbol* s = static_cast<SchemeSymbol*>(car);
+    
+    SchemeObject* already_bound = envt->get(s);
+    if (already_bound == NULL) {
+        throw scheme_exception("Unbound variable: " + s->toString());
+    }
+    // TODO: Reuse bound object if same type
+    envt->put(s, eval(envt, p->cdrAsPair()->car));
     return S_UNSPECIFIED;
 }
 

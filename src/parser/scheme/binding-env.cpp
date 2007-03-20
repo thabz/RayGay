@@ -18,6 +18,11 @@ SchemeObject* BindingEnvironment::get(string name) {
     }
 }
 
+SchemeObject* BindingEnvironment::get(SchemeSymbol* name) {
+    return get(name->str);
+}
+
+
 void BindingEnvironment::put(string name, SchemeObject* o) {
     binding_map[name] = o;
 }
