@@ -74,6 +74,8 @@ void test_bools() {
 void test_symbols() {
     Scheme* s = new Scheme();
     assert(s->eval("(symbol? (quote a))") == S_TRUE);
+    assert(s->eval("(symbol? 'a)") == S_TRUE);
+    assert(s->eval("(symbol? '1)") == S_FALSE);
     assert(s->eval("(symbol? '())") == S_FALSE);
     assert(s->eval("(symbol? 1)") == S_FALSE);
     

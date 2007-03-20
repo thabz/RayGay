@@ -58,12 +58,7 @@ Lexer::Token Lexer::nextToken() {
             case ')':
                 return Lexer::CLOSE_PAREN;
             case '\'':
-                if (is->get() == '(')
-                   return Lexer::QUOTE_OPEN_PAREN;
-                else {
-                    is->unget();
-                    break;
-                }
+                return Lexer::QUOTE;
             case '#': 
                 n = is->get();
                 if ((n == 'f' || n == 't')) {

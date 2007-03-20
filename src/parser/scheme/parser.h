@@ -15,7 +15,7 @@ class Parser
     private:
         SchemeObject* read_simple();
         SchemeObject* read_list();    
-        SchemeObject* read_quoted_list();    
+        SchemeObject* read_quoted();    
 
         Lexer* lexer;
 };

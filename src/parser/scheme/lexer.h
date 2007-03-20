@@ -20,7 +20,7 @@ class Lexer
             BOOLEAN,
             HASH_OPEN_PAREN,
             COMMA_OPEN_PAREN,
-            QUOTE_OPEN_PAREN,
+            QUOTE,
             BACKQUOTE_OPEN_PAREN,
             PERIOD,
             ERROR,
