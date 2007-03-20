@@ -67,7 +67,7 @@ SchemeObject* Interpreter::eval_list(BindingEnvironment* envt, SchemePair* p) {
             SchemePair* body = cdr->cdrAsPair();
             return eval_lambda(envt, formals, body);	
         } else {
-            SchemeObject* obj = envt->get(s->str);
+            SchemeObject* obj = envt->get(s);
             if (obj == NULL) {
         		throw scheme_exception("Unbound variable: " + s->toString());	
             }
@@ -84,7 +84,7 @@ SchemeObject* Interpreter::eval_list(BindingEnvironment* envt, SchemePair* p) {
 }
 
 SchemeObject* Interpreter::eval_symbol(BindingEnvironment* envt, SchemeSymbol* p) {
-    SchemeObject* o = envt->get(p->str);
+    SchemeObject* o = envt->get(p);
     if (o == NULL) {
         throw scheme_exception("Unbound variable " + p->str);
     }
@@ -203,7 +203,7 @@ SchemeObject* Interpreter::eval_define(BindingEnvironment* envt, SchemePair* p) 
         if (s == NULL) {
             throw scheme_exception("Bad variable");
         }
-        envt->put(s->str, eval(envt, p->cdrAsPair()->car));
+        envt->put(s, eval(envt, p->cdrAsPair()->car));
     }
     return S_UNSPECIFIED;
 }

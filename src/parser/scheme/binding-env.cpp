@@ -5,8 +5,8 @@ BindingEnvironment::BindingEnvironment(BindingEnvironment* parent) {
     this->parent = parent;
 }
 
-SchemeObject* BindingEnvironment::get(string name) {
-    map<string,SchemeObject*>::iterator v = binding_map.find(name);
+SchemeObject* BindingEnvironment::get(SchemeSymbol* name) {
+    map<SchemeSymbol*,SchemeObject*>::iterator v = binding_map.find(name);
     if (v == binding_map.end()) {
         if (parent != NULL) {
             return parent->get(name);
@@ -18,15 +18,6 @@ SchemeObject* BindingEnvironment::get(string name) {
     }
 }
 
-SchemeObject* BindingEnvironment::get(SchemeSymbol* name) {
-    return get(name->str);
-}
-
-
-void BindingEnvironment::put(string name, SchemeObject* o) {
-    binding_map[name] = o;
-}
-
 void BindingEnvironment::put(SchemeSymbol* name, SchemeObject* o) {
-    put(name->str, o);
+    binding_map[name] = o;
 }
