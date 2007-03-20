@@ -155,10 +155,12 @@ void test_lambda() {
     assert_eval(s, "((lambda (x y . z) z) 3 4 5 6)", "(5 6)");
 }
 
-void test_define() {
+void test_define_and_set() {
     Scheme* s = new Scheme();
     s->eval("(define x 17)");
     assert_eval(s, "x", "17");
+    s->eval("(set! x 20)");
+    assert_eval(s, "x", "20");
     s->eval("(define (square x) (* x x))");
     assert_eval(s, "(square 9)", "81");
     s->eval("(define (selftest . x) x)");
@@ -186,7 +188,7 @@ int main(int argc, char *argv[]) {
         test_equals();
         test_pairs_and_lists();
         test_lambda();
-        test_define();
+        test_define_and_set();
         test_string();
     } catch (scheme_exception e) {
 		cerr << "Exception: " << e.str << endl;
