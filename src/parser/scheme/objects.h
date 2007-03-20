@@ -3,6 +3,7 @@
 #define SCHEME_OBJECTS_H
 
 #include <string>
+#include <map>
 
 class BindingEnvironment;
 
@@ -60,10 +61,13 @@ class SchemeEmptyList : public SchemePair {
 
 class SchemeSymbol : public SchemeObject {
     public:
-        SchemeSymbol(string s);
+        static SchemeSymbol* create(string s);
         string toString();
         ObjectType type() { return SYMBOL; };
 	    std::string str;
+	private:
+        SchemeSymbol(string s);
+        static map<string,SchemeSymbol*> symbols;    
 };
 
 

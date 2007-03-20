@@ -32,6 +32,7 @@ Scheme::Scheme() {
 	assign("list?"      ,1,0,0, (SchemeObject* (*)()) s_list_p);
 	assign("string?"    ,1,0,0, (SchemeObject* (*)()) s_string_p);
 	assign("procedure?" ,1,0,0, (SchemeObject* (*)()) s_procedure_p);
+	assign("number?"    ,1,0,0, (SchemeObject* (*)()) s_number_p);
 	assign("car"        ,1,0,0, (SchemeObject* (*)()) s_car);
 	assign("cdr"        ,1,0,0, (SchemeObject* (*)()) s_cdr);
 	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list);
@@ -162,9 +163,14 @@ SchemeBool* s_string_p(SchemeObject* p) {
     return (p->type() == SchemeObject::STRING) ? S_TRUE : S_FALSE;
 }
 
-// (symbol? p)
+// (procedure? p)
 SchemeBool* s_procedure_p(SchemeObject* p) {
     return (p->type() == SchemeObject::PROCEDURE) ? S_TRUE : S_FALSE;
+}
+
+// (number? p)
+SchemeBool* s_number_p(SchemeObject* p) {
+    return (p->type() == SchemeObject::NUMBER) ? S_TRUE : S_FALSE;
 }
 
 

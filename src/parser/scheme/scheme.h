@@ -59,6 +59,7 @@ SchemeBool* s_boolean_p(SchemeObject* o);
 SchemeBool* s_string_p(SchemeObject* o);
 SchemeBool* s_procedure_p(SchemeObject* o);
 SchemeBool* s_list_p(SchemeObject* p);
+SchemeBool* s_number_p(SchemeObject* p);
 SchemePair* s_list(SchemePair* args);
 SchemeObject* s_list_ref(SchemePair* l, SchemeNumber* index);
 SchemePair* s_list_tail(SchemePair* list, SchemeNumber* k);

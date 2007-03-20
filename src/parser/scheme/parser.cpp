@@ -25,7 +25,7 @@ SchemeObject* Parser::read_simple() {
         case Lexer::BOOLEAN :
 			return lexer->getBool() ? S_TRUE : S_FALSE;
         case Lexer::SYMBOL :
-           return new SchemeSymbol(lexer->getString());
+           return SchemeSymbol::create(lexer->getString());
         case Lexer::OPEN_PAREN :
            return read_list();
         case Lexer::QUOTE :
@@ -71,5 +71,5 @@ SchemeObject* Parser::read_list() {
 
 SchemeObject* Parser::read_quoted() {
     SchemeObject* list = s_cons(read_simple(), S_EMPTY_LIST);
-    return s_cons(new SchemeSymbol("quote"), list);
+    return s_cons(SchemeSymbol::create("quote"), list);
 }

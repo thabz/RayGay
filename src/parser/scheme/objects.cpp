@@ -25,7 +25,21 @@ string SchemeString::toString() {
 //-----------------------------------------------------------
 // Symbol
 //-----------------------------------------------------------
+map<string,SchemeSymbol*> SchemeSymbol::symbols;
+
 SchemeSymbol::SchemeSymbol(string s) : str(s) { 
+}
+
+SchemeSymbol* SchemeSymbol::create(string s) {
+    SchemeSymbol* result;
+    map<string,SchemeSymbol*>::iterator v = symbols.find(s);
+    if (v == symbols.end()) {
+        result = new SchemeSymbol(s);
+        symbols[s] = result;
+    } else {
+        result = v->second;
+    }
+    return result;
 }
 
 string SchemeSymbol::toString() {

@@ -78,7 +78,8 @@ void test_symbols() {
     assert(s->eval("(symbol? '1)") == S_FALSE);
     assert(s->eval("(symbol? '())") == S_FALSE);
     assert(s->eval("(symbol? 1)") == S_FALSE);
-    
+    assert(SchemeSymbol::create("a") == SchemeSymbol::create("a"));
+    assert(SchemeSymbol::create("a") != SchemeSymbol::create("b"));
 }
 
 void test_interpreter() {
@@ -107,7 +108,7 @@ void test_equals() {
 }
 
 void test_pairs_and_lists() {
-    SchemePair* p = s_cons(new SchemeSymbol("x"),new SchemeSymbol("y"));
+    SchemePair* p = s_cons(SchemeSymbol::create("x"),SchemeSymbol::create("y"));
     assert(p->toString() == "(x . y)");
     
     Scheme* s = new Scheme();
@@ -187,6 +188,17 @@ void test_begin() {
     assert_eval(s, "(begin 1 2 3)", "3");
 }
 
+void test_quote() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "'()", "()");
+    assert_eval(s, "'(a b c)", "(a b c)");
+    assert_eval(s, "'a", "a");
+    assert_eval(s, "'1", "1");
+    assert_eval(s, "(number? 1)", "#t");
+    assert_eval(s, "(bool? '#t)", "#t");
+}
+
+
 int main(int argc, char *argv[]) {
     try {
         test_tokenizer();
@@ -200,6 +212,7 @@ int main(int argc, char *argv[]) {
         test_define_and_set();
         test_string();
         test_begin();
+        test_quote();
     } catch (scheme_exception e) {
 		cerr << "Exception: " << e.str << endl;
         return EXIT_FAILURE;
