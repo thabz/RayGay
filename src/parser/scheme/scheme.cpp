@@ -50,7 +50,7 @@ Scheme::Scheme() {
 	
     ifstream infile;
     infile.open("init.scm", ifstream::in);
-    eval(&infile);
+    //eval(&infile);
     infile.close();
 }
 
