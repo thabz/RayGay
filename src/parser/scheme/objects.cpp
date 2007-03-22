@@ -113,6 +113,44 @@ string SchemePair::toString() {
 }
 
 //-----------------------------------------------------------
+// Vector
+//-----------------------------------------------------------
+SchemeVector::SchemeVector(SchemeObject** elems, int length) {
+    this->elems = elems;
+    this->length = length;
+}
+
+SchemeVector::SchemeVector(SchemeObject* elem, int length) {
+    this->elems = new SchemeObject*[length];
+    this->length = length;
+    for(int i = 0; i < length; i++) {
+        elems[i] = elem;
+    }
+}
+
+
+SchemeObject* SchemeVector::get(int i) {
+    return elems[i];
+}
+
+void SchemeVector::set(SchemeObject* o, int i) {
+    elems[i] = o;
+}
+
+string SchemeVector::toString() {
+    string result = "#(";
+    for(int i = 0; i < length; i++) {
+        result += elems[i]->toString();
+        if (i < length-1) {
+            result += " ";
+        }
+    }
+    result += ")";
+    return result;
+}
+
+
+//-----------------------------------------------------------
 // Procedure
 //-----------------------------------------------------------
 SchemeProcedure::SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)()) {

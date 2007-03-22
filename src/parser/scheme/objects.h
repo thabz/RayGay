@@ -17,6 +17,7 @@ class SchemeObject {
 		    SYMBOL,
 		    BOOL,
 		    STRING,
+		    VECTOR,
 		    PAIR,
 		    UNSPECIFIED,
  		    PROCEDURE
@@ -52,6 +53,20 @@ class SchemePair : public SchemeObject {
 	    SchemeObject* car;
      	SchemeObject* cdr;
 };
+
+class SchemeVector : public SchemeObject {
+    public:
+        SchemeVector(SchemeObject** elems, int length);
+        SchemeVector(SchemeObject* elems, int length);
+        SchemeObject* get(int index);
+        void set(SchemeObject* o, int index);
+        ObjectType type() { return VECTOR; };
+        
+        string toString();
+        SchemeObject** elems;
+        int length;
+};
+
 
 class SchemeEmptyList : public SchemePair {
     public:

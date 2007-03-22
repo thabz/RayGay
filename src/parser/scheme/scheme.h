@@ -60,6 +60,7 @@ SchemeBool* s_string_p(SchemeObject* o);
 SchemeBool* s_procedure_p(SchemeObject* o);
 SchemeBool* s_list_p(SchemeObject* p);
 SchemeBool* s_number_p(SchemeObject* p);
+SchemeBool* s_vector_p(SchemeObject* p);
 SchemePair* s_list(SchemePair* args);
 SchemeObject* s_list_ref(SchemePair* l, SchemeNumber* index);
 SchemePair* s_list_tail(SchemePair* list, SchemeNumber* k);
@@ -73,5 +74,8 @@ SchemeNumber* s_mult(SchemePair* l);
 SchemeObject* s_list_ref(SchemePair* l, SchemeNumber* i);
 SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
 SchemeObject* s_member(SchemeObject* obj, SchemePair* p);
+SchemeVector* s_make_vector(SchemeNumber* count, SchemeObject* obj);
+SchemeVector* s_vector(SchemePair* args);
+SchemeNumber* s_vector_length(SchemeObject* v);
 
 #endif

@@ -33,6 +33,7 @@ Scheme::Scheme() {
 	assign("string?"    ,1,0,0, (SchemeObject* (*)()) s_string_p);
 	assign("procedure?" ,1,0,0, (SchemeObject* (*)()) s_procedure_p);
 	assign("number?"    ,1,0,0, (SchemeObject* (*)()) s_number_p);
+	assign("vector?"    ,1,0,0, (SchemeObject* (*)()) s_vector_p);
 	assign("car"        ,1,0,0, (SchemeObject* (*)()) s_car);
 	assign("cdr"        ,1,0,0, (SchemeObject* (*)()) s_cdr);
 	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list);
@@ -47,6 +48,9 @@ Scheme::Scheme() {
 	assign("+"          ,0,0,1, (SchemeObject* (*)()) s_plus);
 	assign("-"          ,0,0,1, (SchemeObject* (*)()) s_minus);
 	assign("*"          ,0,0,1, (SchemeObject* (*)()) s_mult);
+	assign("make-vector",2,0,0, (SchemeObject* (*)()) s_make_vector);
+	assign("vector"     ,0,0,1, (SchemeObject* (*)()) s_vector);
+	assign("vector-length",1,0,0, (SchemeObject* (*)()) s_vector_length);
 	
     ifstream infile;
     infile.open("init.scm", ifstream::in);
@@ -173,6 +177,10 @@ SchemeBool* s_number_p(SchemeObject* p) {
     return (p->type() == SchemeObject::NUMBER) ? S_TRUE : S_FALSE;
 }
 
+// (number? p)
+SchemeBool* s_vector_p(SchemeObject* p) {
+    return (p->type() == SchemeObject::VECTOR) ? S_TRUE : S_FALSE;
+}
 
 SchemeObject* s_car(SchemeObject* o) {
     if (o->type() != SchemeObject::PAIR) {
@@ -291,3 +299,26 @@ SchemeNumber* s_mult(SchemePair* p) {
 	return new SchemeNumber(result);
 }
 
+SchemeVector* s_make_vector(SchemeNumber* count, SchemeObject* obj) {
+    int c = int(count->number);
+    return new SchemeVector(obj, c);
+}
+
+SchemeVector* s_vector(SchemePair* args) {
+    int c = int(s_length(args)->number);
+    SchemeObject** elems = new SchemeObject*[c];
+    int i = 0;
+    while (args != S_EMPTY_LIST) {
+        elems[i++] = args->car;
+        args = args->cdrAsPair();
+    }
+    return new SchemeVector(elems,c);
+}
+
+SchemeNumber* s_vector_length(SchemeObject* v) {
+    if (s_vector_p(v) == S_FALSE) {
+        throw scheme_exception("Not a vector");
+    }
+    SchemeVector* vv = static_cast<SchemeVector*>(v);
+    return new SchemeNumber(vv->length);
+}

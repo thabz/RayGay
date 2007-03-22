@@ -198,6 +198,20 @@ void test_quote() {
     assert_eval(s, "(bool? '#t)", "#t");
 }
 
+void test_vector() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(make-vector 5 'a)", "#(a a a a a)");
+    assert_eval(s, "(make-vector 2 (+ 5 1))", "#(6 6)");
+    assert_eval(s, "(vector? (make-vector 5 'a))", "#t");
+    assert_eval(s, "(vector? 5)", "#f");
+    assert_eval(s, "(vector 5 'a (+ 1 2) \"z\")", "#(5 a 3 \"z\")");
+    assert_eval(s, "(vector)", "#()");
+    assert_eval(s, "(vector? (vector))", "#t");
+    assert_eval(s, "(vector-length (vector))", "0");
+    assert_eval(s, "(vector-length (vector 'a 'b))", "2");
+    
+}
+
 int main(int argc, char *argv[]) {
     try {
         cout << "Test tokenizer...       ";
@@ -219,6 +233,11 @@ int main(int argc, char *argv[]) {
         cout << "Test lambda...          ";
         test_lambda();
         cout << " OK" << endl;
+
+        cout << "Test vector...          ";
+        test_vector();
+        cout << " OK" << endl;
+
 
         test_define_and_set();
         test_string();
