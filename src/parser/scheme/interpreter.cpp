@@ -25,7 +25,7 @@ SchemePair* Stack::popSchemePair() {
     assert(!stk.empty());
     assert(stk.back().type == StackEntry::OBJECT);
     SchemeObject* result = stk.back().s_object;
-    assert(result.type() == SchemeObject::PAIR);
+    assert(result->type() == SchemeObject::PAIR);
     stk.pop_back();
     return static_cast<SchemePair*>(result);
 }
@@ -373,13 +373,14 @@ SchemeObject* eval2(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         
     	SchemeObject::ObjectType type = s->type();
     	switch(type) {
-    		case SchemeObject::SYMBOL:
+    		case SchemeObject::SYMBOL: {
                 SchemeSymbol* symbol = static_cast<SchemeSymbol*>(s);
     		    s = envt->get(symbol);
                 if (s == NULL) {
                     throw scheme_exception("Unbound variable " + symbol->str);
                 }
-                // Fall through to return_jump
+                tstack->return_jump(s);
+		}
     		case SchemeObject::NUMBER:
     		case SchemeObject::STRING:
     		case SchemeObject::BOOL:
@@ -638,3 +639,4 @@ SchemeObject* eval2(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     	}
     }    
 }
+
