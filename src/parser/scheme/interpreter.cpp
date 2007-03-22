@@ -395,13 +395,13 @@ SchemeObject* eval2(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     	}
     }
     EVAL_LIST: {
-        SchemePair* p = static_cast<SchemePair*>(tstack->popSchemeObject());
+        SchemePair* p = tstack->popSchemePair();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
         
     	SchemeObject* car = p->car;
         if (car->type() != SchemeObject::SYMBOL) {
             tstack->push(envt);
-            tstack->push(car);
+            tstack->push(p);
             goto EVAL_COMBO;
         }
 
@@ -446,7 +446,8 @@ SchemeObject* eval2(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         }        
     }
     EVAL_COMBO: {
-        // (car s) is an expression that should evaluate to a function that we execute
+	// ((form) args)		    
+	// where form is an expression that should evaluate to a function that we execute
         SchemePair* s = tstack->popSchemePair();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
         
@@ -469,11 +470,13 @@ SchemeObject* eval2(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         }
         
         tstack->push(envt);
-        tstack->push(proc);
         tstack->push(arg_expressions);
+        tstack->push(proc);
         goto EVAL_PROCEDURE_CALL;
     }
     EVAL_IF: {
+	// (if condition true-form false-form) 
+	// where false-form is optional.
         SchemePair* p = static_cast<SchemePair*>(tstack->popSchemeObject());
         BindingEnvironment* envt = tstack->popBindingEnvironment();
  
