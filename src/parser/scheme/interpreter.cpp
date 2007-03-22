@@ -25,7 +25,7 @@ SchemePair* Stack::popSchemePair() {
     assert(!stk.empty());
     assert(stk.back().type == StackEntry::OBJECT);
     SchemeObject* result = stk.back().s_object;
-    assert(result->type() == SchemeObject::PAIR);
+    assert(result->type() == SchemeObject::PAIR || result->type() == SchemeObject::EMPTY_LIST);
     stk.pop_back();
     return static_cast<SchemePair*>(result);
 }
@@ -412,22 +412,31 @@ SchemeObject* eval2(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_IF;
+    	} else if (s->str == "quote") {
+            tstack->return_jump(cdr->car);
+    	} else if (s->str == "define") {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_DEFINE;
+    	} else if (s->str == "lambda") {
+    	    SchemeObject* formals = cdr->car;
+            SchemeObject* body = cdr->cdr;
+            tstack->push(envt);
+            tstack->push(formals);
+            tstack->push(body);
+            goto EVAL_LAMBDA;	
     	/*	
     	} else if (s->str == "let") {
             return eval_let(envt, cdr);	
-    	} else if (s->str == "define") {
-            return eval_define(envt, cdr);	
-    	} else if (s->str == "set!") {
-            return eval_set_e(envt, cdr);	
-    	} else if (s->str == "quote") {
-            return eval_quote(envt, cdr);	
-    	} else if (s->str == "begin") {
-            return eval_sequence(envt, cdr);	
-    	} else if (s->str == "lambda") {
-    	    SchemeObject* formals = cdr->car;
-            SchemePair* body = cdr->cdrAsPair();
-            return eval_lambda(envt, formals, body);	
         */
+    	} else if (s->str == "set!") {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_SET_E;
+    	} else if (s->str == "begin") {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_SEQUENCE;
         } else {
             // TODO: eval s instead. A symbol evals to  the stored procedure and if this is a combo it also evals to a procedure.
             // Then we can avoid the EVAL_COMBO-handler. But maybe this setup is faster, as EVAL_COMBO isn't used as much, and we
@@ -526,7 +535,7 @@ SchemeObject* eval2(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(arg_exprs);
             goto EVAL_MULTI;
         }
-        SchemePair* args = static_cast<SchemePair*>(tstack->popSchemeObject());
+        SchemePair* args = tstack->popSchemePair();
         envt = tstack->popBindingEnvironment();
         proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
 
@@ -586,11 +595,8 @@ SchemeObject* eval2(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     }
     EVAL_MULTI: {
         // Evals a list of expressions and returns a list of results
-        SchemeObject* o = tstack->popSchemeObject();
+        SchemePair* p = tstack->popSchemePair();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
-
-        assert(o->type() == SchemeObject::PAIR);
-        SchemePair* p = static_cast<SchemePair*>(o);
 
 	    SchemePair* result = S_EMPTY_LIST;
 	    while (p != S_EMPTY_LIST) {
@@ -640,6 +646,133 @@ SchemeObject* eval2(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
 	            p = p->cdrAsPair();
             }
     	}
-    }    
-}
+    }
+    EVAL_DEFINE: {
+        SchemePair* p = tstack->popSchemePair();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        if (s_pair_p(p->car ) == S_TRUE) {
+            // (define (func-name args...) body-forms...)
+            SchemePair* pa = static_cast<SchemePair*>(p->car);
+            if (pa->car->type() != SchemeObject::SYMBOL) {
+                throw scheme_exception("Bad variable");
+            }
+            SchemePair* body = p->cdrAsPair();
 
+            tstack->push(envt);
+            tstack->push(pa); // Push local var
+            int kk = setjmp(*(tstack->push_jump_pos()));
+            if (kk == 0) {
+                tstack->push(envt);
+                tstack->push(pa->cdr);
+                tstack->push(body);
+                goto EVAL_LAMBDA;
+            }
+            SchemeObject* proc = tstack->popSchemeObject();
+            pa = tstack->popSchemePair();             // Pop local var
+            envt = tstack->popBindingEnvironment();                
+
+            //SchemeProcedure* proc = eval_lambda(envt, pa->cdr, body);
+
+            envt->put(static_cast<SchemeSymbol*>(pa->car), proc);
+        } else {
+            // (define var value-expr)
+            if (s_length(p) != S_TWO) {
+                throw scheme_exception("Missing or extra expression");
+            }
+            
+            if (p->car->type() != SchemeObject::SYMBOL) {
+                throw scheme_exception("Bad variable");
+            }
+            SchemeSymbol* s = static_cast<SchemeSymbol*>(p->car);
+            
+            tstack->push(envt);
+            tstack->push(s); // Push local var
+            int kk = setjmp(*(tstack->push_jump_pos()));
+            if (kk == 0) {
+                tstack->push(envt);
+                tstack->push(p->cdrAsPair()->car);
+                goto EVAL;
+            }
+            SchemeObject* v = tstack->popSchemeObject();
+            s = static_cast<SchemeSymbol*>(tstack->popSchemeObject()); // Pop local var
+            envt = tstack->popBindingEnvironment();                
+
+            envt->put(s, v);
+        }
+        tstack->return_jump(S_UNSPECIFIED);
+    }
+    EVAL_LAMBDA: {
+        SchemePair* body = tstack->popSchemePair();
+        SchemeObject* formals = tstack->popSchemeObject();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        
+        SchemeSymbol* rst;
+        SchemePair* req;
+        if (s_symbol_p(formals) == S_TRUE) {
+            rst = static_cast<SchemeSymbol*>(formals);
+            req = S_EMPTY_LIST;
+        } else if (s_pair_p(formals) == S_TRUE) {
+            req = S_EMPTY_LIST;
+            while (s_pair_p(formals) == S_TRUE) {
+                SchemePair* pp = static_cast<SchemePair*>(formals);
+                if (s_symbol_p(pp->car) == S_FALSE) {
+                    throw scheme_exception("Bad formals");                
+                }
+                req = s_cons(pp->car, req);
+                formals = pp->cdr;
+            }
+            req = s_reverse(req);
+            if (formals != S_EMPTY_LIST) {
+                if (s_symbol_p(formals) == S_FALSE) {
+                    throw scheme_exception("Bad formals");                
+                }
+                rst = static_cast<SchemeSymbol*>(formals);
+            } else {
+                rst = NULL;
+            }
+        } else if (formals == S_EMPTY_LIST) {
+            req = S_EMPTY_LIST;
+            rst = NULL;
+        } else {
+            throw scheme_exception("Bad formals");
+        }
+        tstack->return_jump(new SchemeProcedure(envt, req, rst, body));
+    }
+    EVAL_SET_E: {
+        SchemePair* p = tstack->popSchemePair();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+
+        if (s_length(p) != S_TWO) {
+            throw scheme_exception("Missing or extra expression");
+        }
+        SchemeObject* car = p->car;
+        if (car->type() != SchemeObject::SYMBOL) {
+            throw scheme_exception("Wrong type argument in position 1.");
+        }
+        SchemeSymbol* s = static_cast<SchemeSymbol*>(car);
+
+        SchemeObject* already_bound = envt->get(s);
+        if (already_bound == NULL) {
+            throw scheme_exception("Unbound variable: " + s->toString());
+        }
+        // TODO: Reuse bound object if same type
+
+        tstack->push(envt);
+        tstack->push(s); // Push local var
+        int kk = setjmp(*(tstack->push_jump_pos()));
+        if (kk == 0) {
+            tstack->push(envt);
+            tstack->push(p->cdrAsPair()->car);
+            goto EVAL;
+        }
+        SchemeObject* v = tstack->popSchemeObject();
+        s = static_cast<SchemeSymbol*>(tstack->popSchemeObject()); // Pop local var
+        envt = tstack->popBindingEnvironment();                
+
+        envt->put(s, v);
+
+        //envt->put(s, eval(envt, p->cdrAsPair()->car));
+        tstack->return_jump(S_UNSPECIFIED);
+    }
+    return NULL;
+}

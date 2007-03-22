@@ -198,17 +198,28 @@ void test_quote() {
     assert_eval(s, "(bool? '#t)", "#t");
 }
 
-
 int main(int argc, char *argv[]) {
     try {
+        cout << "Test tokenizer...       ";
         test_tokenizer();
+        cout << " OK" << endl;
         test_parser();
         test_interpreter();
         test_bools();
         test_symbols();
+
+        cout << "Test equals...          ";
         test_equals();
+        cout << " OK" << endl;
+
+        cout << "Test pairs and lists... ";
         test_pairs_and_lists();
+        cout << " OK" << endl;
+
+        cout << "Test lambda...          ";
         test_lambda();
+        cout << " OK" << endl;
+
         test_define_and_set();
         test_string();
         test_begin();
