@@ -163,6 +163,7 @@ SchemeProcedure::SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)(
 
 SchemeProcedure::SchemeProcedure(BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body) {
     this->envt = envt;
+    this->fn = NULL;
     this->s_rst = s_rst;
     this->s_req = s_req;
     this->s_body = s_body;
