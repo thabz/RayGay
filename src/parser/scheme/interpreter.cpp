@@ -273,6 +273,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
 
         if (proc->fn != NULL) {
             // Built-in function
+	    // append nogle S_UNSPECIFIED på args, så længden af args bliver req+opt.
             // TODO: Check that number of args given and required do match
             if (proc->rst == 0) {
                 switch(proc->req + proc->opt) {
