@@ -51,6 +51,7 @@ Scheme::Scheme() {
 	assign("make-vector",2,0,0, (SchemeObject* (*)()) s_make_vector);
 	assign("vector"     ,0,0,1, (SchemeObject* (*)()) s_vector);
 	assign("vector-length",1,0,0, (SchemeObject* (*)()) s_vector_length);
+	assign("list->vector",1,0,0, (SchemeObject* (*)()) s_list_2_vector);
 	
     ifstream infile;
     infile.open("init.scm", ifstream::in);
@@ -321,4 +322,8 @@ SchemeNumber* s_vector_length(SchemeObject* v) {
     }
     SchemeVector* vv = static_cast<SchemeVector*>(v);
     return new SchemeNumber(vv->length);
+}
+
+SchemeVector* s_list_2_vector(SchemePair* list) {
+    return s_vector(list);
 }

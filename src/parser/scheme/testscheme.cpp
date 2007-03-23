@@ -212,6 +212,8 @@ void test_vector() {
     assert_eval(s, "(vector-length (vector 'a 'b))", "2");
     assert_eval(s, "(vector-length #())", "0");
     assert_eval(s, "(vector-length #(1 (1 2) 3))", "3");
+    assert_eval(s, "(list->vector '(a b c))", "#(a b c)");
+    assert_eval(s, "(list->vector '())", "#()");
     
 }
 
@@ -229,16 +231,18 @@ int main(int argc, char *argv[]) {
         test_equals();
         cout << " OK" << endl;
 
+
+        cout << "Test vector...          ";
+        test_vector();
+        cout << " OK" << endl;
+
         cout << "Test pairs and lists... ";
         test_pairs_and_lists();
         cout << " OK" << endl;
 
+
         cout << "Test lambda...          ";
         test_lambda();
-        cout << " OK" << endl;
-
-        cout << "Test vector...          ";
-        test_vector();
         cout << " OK" << endl;
 
 
