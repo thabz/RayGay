@@ -206,9 +206,12 @@ void test_vector() {
     assert_eval(s, "(vector? 5)", "#f");
     assert_eval(s, "(vector 5 'a (+ 1 2) \"z\")", "#(5 a 3 \"z\")");
     assert_eval(s, "(vector)", "#()");
+    assert_eval(s, "'#(a b c)", "#(a b c)");
     assert_eval(s, "(vector? (vector))", "#t");
     assert_eval(s, "(vector-length (vector))", "0");
     assert_eval(s, "(vector-length (vector 'a 'b))", "2");
+    assert_eval(s, "(vector-length #())", "0");
+    assert_eval(s, "(vector-length #(1 (1 2) 3))", "3");
     
 }
 

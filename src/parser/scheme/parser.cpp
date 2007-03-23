@@ -28,6 +28,8 @@ SchemeObject* Parser::read_simple() {
            return SchemeSymbol::create(lexer->getString());
         case Lexer::OPEN_PAREN :
            return read_list();
+        case Lexer::HASH_OPEN_PAREN :
+           return s_vector(static_cast<SchemePair*>(read_list()));
         case Lexer::QUOTE :
            return read_quoted();
         case Lexer::END :
