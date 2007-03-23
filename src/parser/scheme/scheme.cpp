@@ -127,7 +127,7 @@ SchemeObject* s_member(SchemeObject* obj, SchemePair* p) {
 }
 
 SchemePair* s_list_tail(SchemePair* l, SchemeNumber* k) {
-    int i = k->number;
+    int i = int(k->number);
     if (i < 0) {
         throw scheme_exception("Index out of range: " + k->toString());
     }
