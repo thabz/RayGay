@@ -143,6 +143,9 @@ void test_pairs_and_lists() {
     assert_eval(s, "(list-ref '(1 2 3) 0)", "1");
     assert_eval(s, "(list-ref '(1 2 3) 1)", "2");
     assert_eval(s, "(list-ref '(1 2 3) 2)", "3");
+    
+    assert_eval(s, "(append '() '(a b c) '(a b) '())", "(a b c a b)");
+    assert_eval(s, "(append)", "()");
 }
 
 void test_lambda() {
@@ -203,6 +206,7 @@ void test_vector() {
     assert_eval(s, "(make-vector 5 'a)", "#(a a a a a)");
     assert_eval(s, "(make-vector 2 (+ 5 1))", "#(6 6)");
     assert_eval(s, "(vector? (make-vector 5 'a))", "#t");
+    assert_eval(s, "(vector-length (make-vector 7))","7");
     assert_eval(s, "(vector? 5)", "#f");
     assert_eval(s, "(vector 5 'a (+ 1 2) \"z\")", "#(5 a 3 \"z\")");
     assert_eval(s, "(vector)", "#()");

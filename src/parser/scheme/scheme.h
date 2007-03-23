@@ -64,6 +64,7 @@ SchemeBool* s_vector_p(SchemeObject* p);
 SchemePair* s_list(SchemePair* args);
 SchemeObject* s_list_ref(SchemePair* l, SchemeNumber* index);
 SchemePair* s_list_tail(SchemePair* list, SchemeNumber* k);
+SchemePair* s_append(SchemePair* args);
 SchemeBool* s_pair_p(SchemeObject* p);
 SchemeBool* s_symbol_p(SchemeObject* p);
 SchemePair* s_reverse(SchemeObject* l);

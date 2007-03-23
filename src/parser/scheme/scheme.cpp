@@ -39,6 +39,7 @@ Scheme::Scheme() {
 	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list);
 	assign("list-tail"  ,2,0,0, (SchemeObject* (*)()) s_list_tail);
 	assign("list-ref"   ,2,0,0, (SchemeObject* (*)()) s_list_ref);
+	assign("append"     ,0,0,1, (SchemeObject* (*)()) s_append);
 	assign("member"     ,2,0,0, (SchemeObject* (*)()) s_member);
 	assign("reverse"    ,1,0,0, (SchemeObject* (*)()) s_reverse);
 	assign("length"     ,1,0,0, (SchemeObject* (*)()) s_length);
@@ -48,7 +49,7 @@ Scheme::Scheme() {
 	assign("+"          ,0,0,1, (SchemeObject* (*)()) s_plus);
 	assign("-"          ,0,0,1, (SchemeObject* (*)()) s_minus);
 	assign("*"          ,0,0,1, (SchemeObject* (*)()) s_mult);
-	assign("make-vector",2,0,0, (SchemeObject* (*)()) s_make_vector);
+	assign("make-vector",1,1,0, (SchemeObject* (*)()) s_make_vector);
 	assign("vector"     ,0,0,1, (SchemeObject* (*)()) s_vector);
 	assign("vector-length",1,0,0, (SchemeObject* (*)()) s_vector_length);
 	assign("vector-ref" ,2,0,0, (SchemeObject* (*)()) s_vector_ref);
@@ -248,6 +249,23 @@ SchemeNumber* s_length(SchemePair* p) {
         }
     }
     return make_number(length);
+}
+
+SchemePair* s_append(SchemePair* p) {
+    SchemePair* result = S_EMPTY_LIST;
+    while (p != S_EMPTY_LIST) {
+	if (p->car->type() != SchemeObject::PAIR && p->car->type() != SchemeObject::EMPTY_LIST) {
+	    throw scheme_exception("Wrong argument");
+	}
+	SchemePair* pp = static_cast<SchemePair*>(p->car);
+	while (pp->type() == SchemeObject::PAIR) {
+	    result = s_cons(pp->car, result);
+	    pp = pp->cdrAsPair();
+	}
+	p = p->cdrAsPair();
+    }
+    // TODO: Sidste list må godt være et (a . b) pair
+    return s_reverse(result);
 }
 
 SchemeNumber* s_plus(SchemePair* p) {
