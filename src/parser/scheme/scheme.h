@@ -79,5 +79,6 @@ SchemeVector* s_vector(SchemePair* args);
 SchemeNumber* s_vector_length(SchemeObject* v);
 SchemeVector* s_list_2_vector(SchemePair* list);
 SchemePair* s_vector_2_list(SchemeVector* v);
-
+SchemeObject* s_vector_ref(SchemeVector* v, SchemeNumber* i);
+SchemeObject* s_vector_set_e(SchemeVector* vec, SchemeNumber* index, SchemeObject* val);
 #endif

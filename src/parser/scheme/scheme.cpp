@@ -51,6 +51,8 @@ Scheme::Scheme() {
 	assign("make-vector",2,0,0, (SchemeObject* (*)()) s_make_vector);
 	assign("vector"     ,0,0,1, (SchemeObject* (*)()) s_vector);
 	assign("vector-length",1,0,0, (SchemeObject* (*)()) s_vector_length);
+	assign("vector-ref" ,2,0,0, (SchemeObject* (*)()) s_vector_ref);
+	assign("vector-set!",3,0,0, (SchemeObject* (*)()) s_vector_set_e);
 	assign("list->vector",1,0,0, (SchemeObject* (*)()) s_list_2_vector);
 	assign("vector->list",1,0,0, (SchemeObject* (*)()) s_vector_2_list);
 	
@@ -340,3 +342,13 @@ SchemePair* s_vector_2_list(SchemeVector* v) {
     return result;
 }
 
+SchemeObject* s_vector_ref(SchemeVector* v, SchemeNumber* index) {
+    int i = int(index->number);
+    return v->get(i);
+}
+
+SchemeObject* s_vector_set_e(SchemeVector* vec, SchemeNumber* index, SchemeObject* val) {
+    int i = int(index->number);
+    vec->set(val,i);
+    return S_UNSPECIFIED;
+}

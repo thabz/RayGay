@@ -215,7 +215,8 @@ void test_vector() {
     assert_eval(s, "(list->vector '(a b c))", "#(a b c)");
     assert_eval(s, "(list->vector '())", "#()");
     assert_eval(s, "(vector->list #(a b c))","(a b c)");
-    
+    assert_eval(s, "(vector-ref #(a b c) 1)","b");
+    assert_eval(s, "(define v #(a b c))(vector-set! v 1 '(1 2 3))v","#(a (1 2 3) c)");
 }
 
 int main(int argc, char *argv[]) {
