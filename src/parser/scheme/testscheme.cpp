@@ -214,6 +214,7 @@ void test_vector() {
     assert_eval(s, "(vector-length #(1 (1 2) 3))", "3");
     assert_eval(s, "(list->vector '(a b c))", "#(a b c)");
     assert_eval(s, "(list->vector '())", "#()");
+    assert_eval(s, "(vector->list #(a b c))","(a b c)");
     
 }
 

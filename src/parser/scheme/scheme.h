@@ -78,5 +78,6 @@ SchemeVector* s_make_vector(SchemeNumber* count, SchemeObject* obj);
 SchemeVector* s_vector(SchemePair* args);
 SchemeNumber* s_vector_length(SchemeObject* v);
 SchemeVector* s_list_2_vector(SchemePair* list);
+SchemePair* s_vector_2_list(SchemeVector* v);
 
 #endif

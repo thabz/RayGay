@@ -52,6 +52,7 @@ Scheme::Scheme() {
 	assign("vector"     ,0,0,1, (SchemeObject* (*)()) s_vector);
 	assign("vector-length",1,0,0, (SchemeObject* (*)()) s_vector_length);
 	assign("list->vector",1,0,0, (SchemeObject* (*)()) s_list_2_vector);
+	assign("vector->list",1,0,0, (SchemeObject* (*)()) s_vector_2_list);
 	
     ifstream infile;
     infile.open("init.scm", ifstream::in);
@@ -83,7 +84,13 @@ void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*
 // Procedures
 // -----------------------------------------------------
 
-
+inline
+SchemeNumber* make_number(int n) {
+    if (n < 10 && n >= 0) {
+        return S_NUMBERS[n];
+    }
+    return new SchemeNumber(n);
+}
 // (equal? a b)
 // Equal? recursively compares the contents of pairs, vectors, and strings, applying eqv? on other objects 
 // such as numbers and symbols. A rule of thumb is that objects are generally equal? if they print the same. 
@@ -238,10 +245,7 @@ SchemeNumber* s_length(SchemePair* p) {
             throw scheme_exception("Not a list");
         }
     }
-    if (length < 10) {
-        return S_NUMBERS[length];
-    }
-    return new SchemeNumber(length);
+    return make_number(length);
 }
 
 SchemeNumber* s_plus(SchemePair* p) {
@@ -321,9 +325,18 @@ SchemeNumber* s_vector_length(SchemeObject* v) {
         throw scheme_exception("Not a vector");
     }
     SchemeVector* vv = static_cast<SchemeVector*>(v);
-    return new SchemeNumber(vv->length);
+    return make_number(vv->length);
 }
 
 SchemeVector* s_list_2_vector(SchemePair* list) {
     return s_vector(list);
 }
+
+SchemePair* s_vector_2_list(SchemeVector* v) {
+    SchemePair* result = S_EMPTY_LIST;
+    for(int i = v->length-1; i >= 0; i--) {
+	result = s_cons(v->get(i), result);
+    }
+    return result;
+}
+
