@@ -211,6 +211,10 @@ void test_quote() {
 
 void test_vector() {
     Scheme* s = new Scheme();
+    SchemeVector* v = static_cast<SchemeVector*>(s->eval("(make-vector 3)"));
+    assert(v->get(0) == S_UNSPECIFIED);
+    assert(v->get(1) == S_UNSPECIFIED);
+    assert(v->get(2) == S_UNSPECIFIED);
     assert_eval(s, "(make-vector 5 'a)", "#(a a a a a)");
     assert_eval(s, "(make-vector 2 (+ 5 1))", "#(6 6)");
     assert_eval(s, "(vector? (make-vector 5 'a))", "#t");

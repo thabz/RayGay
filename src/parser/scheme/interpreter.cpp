@@ -272,6 +272,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
 
         if (proc->fn != NULL) {
+            SchemeObject* argsv[10];
             // Built-in function
             int args_num = int(s_length(args)->number);
             if (args_num < proc->req) {
@@ -283,27 +284,45 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             if (args_num < proc->req + proc->opt) {
  	            // TODO: append_e nogle S_UNSPECIFIED på args, så længden af args bliver req+opt.
             }
+            SchemePair* a_p = args;
             if (proc->rst == 0) {
+                for(int i = 0; i < 10; i++) {
+                    if (i < args_num) {
+                        argsv[i] = a_p->car;
+                        a_p = a_p->cdrAsPair();
+                    } else {
+                        argsv[i] = S_UNSPECIFIED;
+                    }
+                }
                 switch(proc->req + proc->opt) {
                     case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();
                               break;
-                    case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(args->car);
+                    case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
                               break;
-                    case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(args->car, args->cdrAsPair()->car);
+                    case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
                               break;
-                    case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->car);
+                    case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
                               break;
                     default:  throw scheme_exception("Arguments mismatch"); 
                 }
             } else {
+                for(int i = 0; i < 10; i++) {
+                    if (i < proc->req) {
+                        argsv[i] = a_p->car;
+                        a_p = a_p->cdrAsPair();
+                    } else {
+                        argsv[i] = a_p;
+                        break;
+                    }
+                }
                 switch(proc->req + proc->opt) {
-                    case 0:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(args);
+                    case 0:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
                               break;
-                    case 1:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(args->car, args->cdr);
+                    case 1:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
                               break;
-                    case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdr);
+                    case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
                               break;
-                    case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(args->car, args->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->car, args->cdrAsPair()->cdrAsPair()->cdr);
+                    case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3]);
                               break;
                     default:  throw scheme_exception("Arguments mismatch"); 
                 }
