@@ -273,8 +273,16 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
 
         if (proc->fn != NULL) {
             // Built-in function
-	    // append nogle S_UNSPECIFIED pÃ¥ args, sÃ¥ lÃ¦ngden af args bliver req+opt.
-            // TODO: Check that number of args given and required do match
+            int args_num = int(s_length(args)->number);
+            if (args_num < proc->req) {
+                throw scheme_exception("Too few argument given.");
+            }
+            if (args_num > proc->req + proc->opt && proc->rst == 0) {
+                throw scheme_exception("Too many argument given.");
+            }
+            if (args_num < proc->req + proc->opt) {
+ 	            // TODO: append_e nogle S_UNSPECIFIED på args, så længden af args bliver req+opt.
+            }
             if (proc->rst == 0) {
                 switch(proc->req + proc->opt) {
                     case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();

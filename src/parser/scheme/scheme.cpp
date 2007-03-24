@@ -34,6 +34,7 @@ Scheme::Scheme() {
 	assign("procedure?" ,1,0,0, (SchemeObject* (*)()) s_procedure_p);
 	assign("number?"    ,1,0,0, (SchemeObject* (*)()) s_number_p);
 	assign("vector?"    ,1,0,0, (SchemeObject* (*)()) s_vector_p);
+	assign("null?"      ,1,0,0, (SchemeObject* (*)()) s_null_p);
 	assign("car"        ,1,0,0, (SchemeObject* (*)()) s_car);
 	assign("cdr"        ,1,0,0, (SchemeObject* (*)()) s_cdr);
 	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list);
@@ -193,6 +194,12 @@ SchemeBool* s_vector_p(SchemeObject* p) {
     return (p->type() == SchemeObject::VECTOR) ? S_TRUE : S_FALSE;
 }
 
+// (null? p)
+SchemeBool* s_null_p(SchemeObject* p) {
+    return (p->type() == SchemeObject::EMPTY_LIST) ? S_TRUE : S_FALSE;
+}
+
+
 SchemeObject* s_car(SchemeObject* o) {
     if (o->type() != SchemeObject::PAIR) {
         throw scheme_exception("Wrong type");
@@ -254,17 +261,17 @@ SchemeNumber* s_length(SchemePair* p) {
 SchemePair* s_append(SchemePair* p) {
     SchemePair* result = S_EMPTY_LIST;
     while (p != S_EMPTY_LIST) {
-	if (p->car->type() != SchemeObject::PAIR && p->car->type() != SchemeObject::EMPTY_LIST) {
-	    throw scheme_exception("Wrong argument");
-	}
-	SchemePair* pp = static_cast<SchemePair*>(p->car);
-	while (pp->type() == SchemeObject::PAIR) {
-	    result = s_cons(pp->car, result);
-	    pp = pp->cdrAsPair();
-	}
-	p = p->cdrAsPair();
+	    if (p->car->type() != SchemeObject::PAIR && p->car->type() != SchemeObject::EMPTY_LIST) {
+	        throw scheme_exception("Wrong argument");
+	    }
+	    SchemePair* pp = static_cast<SchemePair*>(p->car);
+	    while (pp->type() == SchemeObject::PAIR) {
+	        result = s_cons(pp->car, result);
+	        pp = pp->cdrAsPair();
+	    }
+	    p = p->cdrAsPair();
     }
-    // TODO: Sidste list må godt være et (a . b) pair
+    // TODO: Resultatets sidste cdr skal sidste argument direkte sat p�.
     return s_reverse(result);
 }
 

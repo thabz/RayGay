@@ -88,12 +88,13 @@ void test_interpreter() {
     assert_eval(s, "((if #t reverse length) '(1 2 3))", "(3 2 1)");
     assert_eval(s, "((if #f reverse length) '(1 2 3))", "3");
     assert_eval(s, "((if #f reverse length) '(1 2 3))", "3");
-    
+
     // test define
     assert_eval(s, "(define a 10) a", "10");
-    
+
     // test built-in with only rst args
     assert_eval(s, "(+ 10 9 2 19 8 2 1 29 8 8 2 1 23 3 1) ", "126");
+
     delete s;
 }
 
@@ -116,10 +117,15 @@ void test_pairs_and_lists() {
     assert(s->eval("(list? '(1 2 3))") == S_TRUE);
     assert(s->eval("(list? 1)") == S_FALSE);
     assert(s->eval("(list? '(1 2 . 3))") == S_FALSE);
+
     assert(s->eval("(pair? 1)") == S_FALSE);
     assert(s->eval("(pair? '())") == S_FALSE);
     assert(s->eval("(pair? '(1 2))") == S_TRUE);
     assert(s->eval("(pair? '(1 2 . 3))") == S_TRUE);
+    assert(s->eval("(pair? '#(a b))") == S_FALSE);    
+    assert(s->eval("(null? '(1 2 3))") == S_FALSE);
+    assert(s->eval("(null? '())") == S_TRUE);
+    assert(s->eval("(null? 1)") == S_FALSE);
     
     assert_eval(s, "(cons 1 2)", "(1 . 2)");
     
@@ -132,6 +138,7 @@ void test_pairs_and_lists() {
     assert_eval(s, "(cdr (cons 1 2))", "2");
     assert_eval(s, "(cdr (list 1 2))", "(2)");
 
+    assert_eval(s, "(reverse '(a (b c) d (e (f))))","((e (f)) d (b c) a)");
     assert_eval(s, "(member 3 '(1 2 3 4 5))", "(3 4 5)");
     assert_eval(s, "(member 10 '(1 2 3 4 5))", "#f");
     assert_eval(s, "(member 10 '())", "#f");
@@ -146,6 +153,7 @@ void test_pairs_and_lists() {
     
     assert_eval(s, "(append '() '(a b c) '(a b) '())", "(a b c a b)");
     assert_eval(s, "(append)", "()");
+    delete s;
 }
 
 void test_lambda() {
@@ -228,10 +236,21 @@ int main(int argc, char *argv[]) {
         cout << "Test tokenizer...       ";
         test_tokenizer();
         cout << " OK" << endl;
+        cout << "Test parser...       ";
         test_parser();
+        cout << " OK" << endl;
+        
+        cout << "Test interpreter...       ";
         test_interpreter();
+        cout << " OK" << endl;
+        
+        cout << "Test bools...       ";
         test_bools();
+        cout << " OK" << endl;
+        
+        cout << "Test symbols...       ";
         test_symbols();
+        cout << " OK" << endl;
 
         cout << "Test equals...          ";
         test_equals();
