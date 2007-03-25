@@ -27,6 +27,8 @@ SchemeNumber* S_NUMBERS[] = {S_ZERO, S_ONE, S_TWO, S_THREE, S_FOUR, S_FIVE, S_SI
 Scheme::Scheme() {
     top_level_bindings = new BindingEnvironment(NULL);
 	assign("equal?"     ,2,0,0, (SchemeObject* (*)()) s_equal_p);
+	assign("eq?"        ,2,0,0, (SchemeObject* (*)()) s_eq_p);
+	assign("eqv?"       ,2,0,0, (SchemeObject* (*)()) s_eqv_p);
 	assign("bool?"      ,1,0,0, (SchemeObject* (*)()) s_boolean_p);
 	assign("pair?"      ,1,0,0, (SchemeObject* (*)()) s_pair_p);
 	assign("symbol?"    ,1,0,0, (SchemeObject* (*)()) s_symbol_p);
@@ -41,8 +43,13 @@ Scheme::Scheme() {
 	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list);
 	assign("list-tail"  ,2,0,0, (SchemeObject* (*)()) s_list_tail);
 	assign("list-ref"   ,2,0,0, (SchemeObject* (*)()) s_list_ref);
+	assign("assoc"      ,2,0,0, (SchemeObject* (*)()) s_assoc);
+	assign("assq"       ,2,0,0, (SchemeObject* (*)()) s_assq);
+	assign("assv"       ,2,0,0, (SchemeObject* (*)()) s_assv);
 	assign("append"     ,0,0,1, (SchemeObject* (*)()) s_append);
 	assign("member"     ,2,0,0, (SchemeObject* (*)()) s_member);
+	assign("memq"       ,2,0,0, (SchemeObject* (*)()) s_memq);
+	assign("memv"       ,2,0,0, (SchemeObject* (*)()) s_memv);
 	assign("reverse"    ,1,0,0, (SchemeObject* (*)()) s_reverse);
 	assign("length"     ,1,0,0, (SchemeObject* (*)()) s_length);
 	assign("cons"       ,2,0,0, (SchemeObject* (*)()) s_cons);
@@ -50,6 +57,8 @@ Scheme::Scheme() {
 	assign("newline"    ,0,0,0, (SchemeObject* (*)()) s_newline);
 	assign("<"          ,0,0,1, (SchemeObject* (*)()) s_less);
 	assign(">"          ,0,0,1, (SchemeObject* (*)()) s_greater);
+	assign("<="         ,0,0,1, (SchemeObject* (*)()) s_less_equal);
+	assign(">="         ,0,0,1, (SchemeObject* (*)()) s_greater_equal);
 	assign("="          ,0,0,1, (SchemeObject* (*)()) s_equal);
 	assign("+"          ,0,0,1, (SchemeObject* (*)()) s_plus);
 	assign("-"          ,0,0,1, (SchemeObject* (*)()) s_minus);
@@ -119,6 +128,22 @@ SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b) {
     return a->toString() == b->toString() ? S_TRUE : S_FALSE; 
 }
 
+SchemeBool* s_eqv_p(SchemeObject* a, SchemeObject* b) {
+    if (a->type() == SchemeObject::NUMBER && a->type() == SchemeObject::NUMBER) {
+        double a_n = static_cast<SchemeNumber*>(a)->number;
+        double b_n = static_cast<SchemeNumber*>(b)->number;
+        return a_n == b_n ? S_TRUE : S_FALSE;
+    } else {
+        return a == b ? S_TRUE : S_FALSE;
+    }
+}
+
+SchemeBool* s_eq_p(SchemeObject* a, SchemeObject* b) {
+    return s_eqv_p(a,b); 
+}
+
+
+
 // (boolean? b)
 SchemeBool* s_boolean_p(SchemeObject* o) {
     return (o == S_TRUE || o == S_FALSE) ? S_TRUE : S_FALSE;
@@ -143,15 +168,28 @@ SchemeBool* s_list_p(SchemeObject* o) {
     }
 }
 
-SchemeObject* s_member(SchemeObject* obj, SchemePair* p) {
+
+SchemeObject* member_helper(SchemeBool* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemePair* p) {
     while (p != S_EMPTY_LIST) {
-        if (s_equal_p(obj, p->car) == S_TRUE) {
+        if ((*comparator)(obj, p->car) == S_TRUE) {
             return p;
         } else {
             p = p->cdrAsPair();
         }
     }
     return S_FALSE;
+}
+
+SchemeObject* s_member(SchemeObject* obj, SchemePair* p) {
+    return member_helper(s_equal_p, obj, p);
+}
+
+SchemeObject* s_memq(SchemeObject* obj, SchemePair* p) {
+    return member_helper(s_eq_p, obj, p);
+}
+
+SchemeObject* s_memv(SchemeObject* obj, SchemePair* p) {
+    return member_helper(s_eqv_p, obj, p);
 }
 
 SchemePair* s_list_tail(SchemePair* l, SchemeNumber* k) {
@@ -179,6 +217,33 @@ SchemeObject* s_list_ref(SchemePair* l, SchemeNumber* index) {
     }
     return p->car;
 }
+
+SchemeObject* assoc_helper(SchemeBool* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemePair* alist) {
+    while (alist != S_EMPTY_LIST) {
+        if (s_pair_p(alist->car) == S_FALSE) {
+            throw scheme_exception("Illegal argument");
+        }
+        SchemePair* p = static_cast<SchemePair*>(alist->car);
+        if ((*comparator)(obj, p->car) == S_TRUE) {
+            return p;
+        }
+        alist = alist->cdrAsPair();
+    }
+    return S_FALSE;
+}
+
+SchemeObject* s_assoc(SchemeObject* obj, SchemePair* alist) {
+    return assoc_helper(s_equal_p, obj, alist); 
+}
+
+SchemeObject* s_assq(SchemeObject* obj, SchemePair* alist) {
+    return assoc_helper(s_eq_p, obj, alist); 
+}
+
+SchemeObject* s_assv(SchemeObject* obj, SchemePair* alist) {
+    return assoc_helper(s_eqv_p, obj, alist); 
+}
+
 
 // (pair? p)
 SchemeBool* s_pair_p(SchemeObject* p) {
@@ -542,7 +607,6 @@ SchemeBool* s_less(SchemePair* p) {
         p = p->cdrAsPair();
     }
     return S_TRUE;
-    
 }
 
 SchemeBool* s_greater(SchemePair* p) {
@@ -557,6 +621,46 @@ SchemeBool* s_greater(SchemePair* p) {
     while (p != S_EMPTY_LIST) {
         double nn = static_cast<SchemeNumber*>(p->car)->number;
         if (nn >= n) {
+            return S_FALSE;
+        }
+        n = nn;
+        p = p->cdrAsPair();
+    }
+    return S_TRUE;
+}
+
+SchemeBool* s_less_equal(SchemePair* p) {
+    if (p == S_EMPTY_LIST) {
+        return S_TRUE;
+    }
+    if (p->car->type() != SchemeObject::NUMBER) {
+        throw scheme_exception("Wrong argument to <");
+    }
+    double n = static_cast<SchemeNumber*>(p->car)->number;
+    p = p->cdrAsPair();
+    while (p != S_EMPTY_LIST) {
+        double nn = static_cast<SchemeNumber*>(p->car)->number;
+        if (nn < n) {
+            return S_FALSE;
+        }
+        n = nn;
+        p = p->cdrAsPair();
+    }
+    return S_TRUE;
+}
+
+SchemeBool* s_greater_equal(SchemePair* p) {
+    if (p == S_EMPTY_LIST) {
+        return S_TRUE;
+    }
+    if (p->car->type() != SchemeObject::NUMBER) {
+        throw scheme_exception("Wrong argument to <");
+    }
+    double n = static_cast<SchemeNumber*>(p->car)->number;
+    p = p->cdrAsPair();
+    while (p != S_EMPTY_LIST) {
+        double nn = static_cast<SchemeNumber*>(p->car)->number;
+        if (nn > n) {
             return S_FALSE;
         }
         n = nn;

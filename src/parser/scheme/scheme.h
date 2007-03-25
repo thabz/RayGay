@@ -50,6 +50,9 @@ extern SchemeNumber* S_TWO;
 
 
 // Scheme procedures
+SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
+SchemeBool* s_eq_p(SchemeObject* a, SchemeObject* b);
+SchemeBool* s_eqv_p(SchemeObject* a, SchemeObject* b);
 SchemeObject* s_display(SchemeObject* o); 
 SchemeObject* s_newline(BindingEnvironment* s);
 SchemeObject* s_car(SchemeObject* o);
@@ -64,6 +67,10 @@ SchemeBool* s_vector_p(SchemeObject* p);
 SchemePair* s_list(SchemePair* args);
 SchemeObject* s_list_ref(SchemePair* l, SchemeNumber* index);
 SchemePair* s_list_tail(SchemePair* list, SchemeNumber* k);
+SchemeObject* s_assoc(SchemeObject* obj, SchemePair* alist);
+SchemeObject* s_assq(SchemeObject* obj, SchemePair* alist);
+SchemeObject* s_assv(SchemeObject* obj, SchemePair* alist);
+
 SchemeObject* s_append(SchemePair* args);
 SchemeBool* s_pair_p(SchemeObject* p);
 SchemeBool* s_null_p(SchemeObject* p);
@@ -71,8 +78,9 @@ SchemeBool* s_symbol_p(SchemeObject* p);
 SchemePair* s_reverse(SchemeObject* l);
 SchemeNumber* s_length(SchemePair* l);
 SchemeObject* s_list_ref(SchemePair* l, SchemeNumber* i);
-SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
 SchemeObject* s_member(SchemeObject* obj, SchemePair* p);
+SchemeObject* s_memq(SchemeObject* obj, SchemePair* p);
+SchemeObject* s_memv(SchemeObject* obj, SchemePair* p);
 SchemeVector* s_make_vector(SchemeNumber* count, SchemeObject* obj);
 SchemeVector* s_vector(SchemePair* args);
 SchemeNumber* s_vector_length(SchemeObject* v);
@@ -85,6 +93,8 @@ SchemeObject* s_vector_set_e(SchemeVector* vec, SchemeNumber* index, SchemeObjec
 SchemeBool* s_equal(SchemePair* p);
 SchemeBool* s_less(SchemePair* p);
 SchemeBool* s_greater(SchemePair* p);
+SchemeBool* s_less_equal(SchemePair* p);
+SchemeBool* s_greater_equal(SchemePair* p);
 SchemeNumber* s_plus(SchemePair* l);
 SchemeNumber* s_minus(SchemePair* l);
 SchemeNumber* s_mult(SchemePair* l);

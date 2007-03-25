@@ -119,8 +119,10 @@ void test_math() {
     assert_eval(s, "(max 3.0 1 2)" , "3");
     assert_eval(s, "(< 1 2 3)" , "#t");
     assert_eval(s, "(< 1 2 2 3)" , "#f");
+    assert_eval(s, "(<= 1 2 2 3)" , "#t");
     assert_eval(s, "(> 3 2 1)" , "#t");
     assert_eval(s, "(> 1 2 2 3)" , "#f");
+    assert_eval(s, "(>= 3 2 2 1)" , "#t");
     assert_eval(s, "(= 2 2 2 3)" , "#f");
     assert_eval(s, "(= 2 2 2 2)" , "#t");
 }
@@ -133,6 +135,17 @@ void test_equals() {
     assert_eval(s, "(equal? '(1 2 3) '(1 2 3))" , "#t");
     assert_eval(s, "(equal? '(1 2 (a  b) 3) '(1 2 (a b) 3))" , "#t");
     assert_eval(s, "(equal? '(1 2 (a c) 3) '(1 2 (a b) 3))" , "#f");
+
+    assert_eval(s, "(eq? 'a 'a)" , "#t");
+    assert_eval(s, "(eq? (list 'a) (list 'a))" , "#f");
+    assert_eval(s, "(eq? '() '())" , "#t");
+    assert_eval(s, "(eq? car car)" , "#t");
+    assert_eval(s, "(eq? (cons 1 2) (cons 1 2))" , "#f");
+
+    assert_eval(s, "(eq? 'a 'a)" , "#t");
+    assert_eval(s, "(eq? (list 'a) (list 'a))" , "#f");
+    assert_eval(s, "(eq? '() '())" , "#t");
+    assert_eval(s, "(eq? car car)" , "#t");
 }
 
 void test_pairs_and_lists() {
@@ -166,10 +179,13 @@ void test_pairs_and_lists() {
     assert_eval(s, "(cdr (list 1 2))", "(2)");
 
     assert_eval(s, "(reverse '(a (b c) d (e (f))))","((e (f)) d (b c) a)");
+    
     assert_eval(s, "(member 3 '(1 2 3 4 5))", "(3 4 5)");
     assert_eval(s, "(member 10 '(1 2 3 4 5))", "#f");
     assert_eval(s, "(member 10 '())", "#f");
-
+    assert_eval(s, "(member (list 'a) '(b (a) c))", "((a) c)");
+    assert_eval(s, "(memq (list 'a) '(b (a) c))", "#f");
+    
     assert_eval(s, "(list-tail '(1 2 3 4 5) 0)", "(1 2 3 4 5)");
     assert_eval(s, "(list-tail '(1 2 3 4 5) 1)", "(2 3 4 5)");
     assert_eval(s, "(list-tail '() 0)", "()");
@@ -184,6 +200,15 @@ void test_pairs_and_lists() {
     assert_eval(s, "(append 'a)", "a");
     assert_eval(s, "(append '(a b c) '(1 . 2))", "(a b c 1 . 2)"); // <-- error
     assert_eval(s, "(append '(a (b)) '((c)))", "(a (b) (c))");
+
+    s->eval("(define e '((a 1) (b 2) (c 3)))");
+    assert_eval(s, "(assq 'a e)", "(a 1)");
+    assert_eval(s, "(assq 'b e)", "(b 2)");
+    assert_eval(s, "(assq 'd e)", "#f");
+    assert_eval(s, "(assoc (list 'a) '(((a)) ((b)) ((c))))", "((a))");
+    assert_eval(s, "(assq (list 'a) '(((a)) ((b)) ((c))))", "#f");
+    assert_eval(s, "(assv 5 '((2 3) (5 7) (11 13)))", "(5 7)");
+    
     delete s;
 }
 
