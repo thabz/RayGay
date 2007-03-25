@@ -82,6 +82,9 @@ SchemeObject* s_vector_ref(SchemeVector* v, SchemeNumber* i);
 SchemeObject* s_vector_set_e(SchemeVector* vec, SchemeNumber* index, SchemeObject* val);
 
 // Math stuff
+SchemeBool* s_equal(SchemePair* p);
+SchemeBool* s_less(SchemePair* p);
+SchemeBool* s_greater(SchemePair* p);
 SchemeNumber* s_plus(SchemePair* l);
 SchemeNumber* s_minus(SchemePair* l);
 SchemeNumber* s_mult(SchemePair* l);

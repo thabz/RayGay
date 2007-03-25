@@ -169,6 +169,14 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_SEQUENCE;
+    	} else if (s->str == "and") {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_AND;
+    	} else if (s->str == "or") {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_OR;
         } else {
             // TODO: eval s instead. A symbol evals to  the stored procedure and if this is a combo it also evals to a procedure.
             // Then we can avoid the EVAL_COMBO-handler. But maybe this setup is faster, as EVAL_COMBO isn't used as much, and we
@@ -251,6 +259,68 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     	    // No false case, return S_UNDEFINED
             tstack->return_jump(S_UNSPECIFIED);
     	}
+    }
+    EVAL_AND: {
+        // TODO: Optimize tail-recursion
+        SchemePair* p = static_cast<SchemePair*>(tstack->popSchemeObject());
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        
+        SchemeObject* result = S_TRUE;
+        while (p != S_EMPTY_LIST) {
+            if (p->cdr == S_EMPTY_LIST) {
+                // Optimize tail-recursion
+                tstack->push(envt);
+                tstack->push(p->car);
+                goto EVAL;
+            }
+            tstack->push(envt);
+            tstack->push(p);
+            int kk = setjmp(*(tstack->push_jump_pos()));
+            if (kk == 0) {
+                tstack->push(envt);
+                tstack->push(p->car);
+                goto EVAL;
+            }
+            result = tstack->popSchemeObject();
+            p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
+            envt = tstack->popBindingEnvironment(); // Pop local var
+            if (!result->boolValue()) {
+                tstack->return_jump(result);
+            }
+            p = p->cdrAsPair();
+        } 
+        tstack->return_jump(result);
+    }
+    EVAL_OR: {
+        SchemePair* p = static_cast<SchemePair*>(tstack->popSchemeObject());
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        
+        SchemeObject* result = S_FALSE;
+        while (p != S_EMPTY_LIST) {
+            if (p->cdr == S_EMPTY_LIST) {
+                // Optimize tail-recursion
+                tstack->push(envt);
+                tstack->push(p->car);
+                goto EVAL;
+            }
+            
+            tstack->push(envt);
+            tstack->push(p);
+            int kk = setjmp(*(tstack->push_jump_pos()));
+            if (kk == 0) {
+                tstack->push(envt);
+                tstack->push(p->car);
+                goto EVAL;
+            }
+            result = tstack->popSchemeObject();
+            p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
+            envt = tstack->popBindingEnvironment(); // Pop local var
+            if (result->boolValue()) {
+                tstack->return_jump(result);
+            }
+            p = p->cdrAsPair();
+        } 
+        tstack->return_jump(result);
     }
     EVAL_PROCEDURE_CALL: {
         SchemeProcedure* proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());

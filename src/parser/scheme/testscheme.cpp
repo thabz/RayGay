@@ -95,6 +95,15 @@ void test_interpreter() {
     // test built-in with only rst args
     assert_eval(s, "(+ 10 9 2 19 8 2 1 29 8 8 2 1 23 3 1) ", "126");
 
+    // Test or and and
+    assert_eval(s, "(and (= 2 2) (> 2 1))", "#t");
+    assert_eval(s, "(and (= 2 2) (< 2 1))", "#f");
+    assert_eval(s, "(and 1 2 'c '(f g))","(f g)");
+    assert_eval(s, "(and)","#t");
+    assert_eval(s, "(or (= 2 2) (> 2 1))", "#t");
+    assert_eval(s, "(or (= 2 2) (< 2 1))", "#t");
+    assert_eval(s, "(or #f #f #f)", "#f");
+    assert_eval(s, "(or (member 'b '(a b c)) #f)", "(b c)");
     delete s;
 }
 
@@ -107,7 +116,12 @@ void test_math() {
     assert_eval(s, "(min 3.0 1 2)" , "1");
     assert_eval(s, "(max 5)" , "5");
     assert_eval(s, "(max 3.0 1 2)" , "3");
-    
+    assert_eval(s, "(< 1 2 3)" , "#t");
+    assert_eval(s, "(< 1 2 2 3)" , "#f");
+    assert_eval(s, "(> 3 2 1)" , "#t");
+    assert_eval(s, "(> 1 2 2 3)" , "#f");
+    assert_eval(s, "(= 2 2 2 3)" , "#f");
+    assert_eval(s, "(= 2 2 2 2)" , "#t");
 }
 
 void test_equals() {

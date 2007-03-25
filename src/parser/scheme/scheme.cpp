@@ -48,6 +48,9 @@ Scheme::Scheme() {
 	assign("cons"       ,2,0,0, (SchemeObject* (*)()) s_cons);
 	assign("display"    ,1,0,0, (SchemeObject* (*)()) s_display);
 	assign("newline"    ,0,0,0, (SchemeObject* (*)()) s_newline);
+	assign("<"          ,0,0,1, (SchemeObject* (*)()) s_less);
+	assign(">"          ,0,0,1, (SchemeObject* (*)()) s_greater);
+	assign("="          ,0,0,1, (SchemeObject* (*)()) s_equal);
 	assign("+"          ,0,0,1, (SchemeObject* (*)()) s_plus);
 	assign("-"          ,0,0,1, (SchemeObject* (*)()) s_minus);
 	assign("*"          ,0,0,1, (SchemeObject* (*)()) s_mult);
@@ -500,4 +503,67 @@ SchemeNumber* s_max(SchemeNumber* first, SchemePair* rest) {
 	}
 	return new SchemeNumber(result);
 }
+
+SchemeBool* s_equal(SchemePair* p) {
+    if (p == S_EMPTY_LIST) {
+        return S_TRUE;
+    }
+    if (p->car->type() != SchemeObject::NUMBER) {
+        throw scheme_exception("Wrong argument to <");
+    }
+    
+    double n = static_cast<SchemeNumber*>(p->car)->number;
+    p = p->cdrAsPair();
+    while (p != S_EMPTY_LIST) {
+        double nn = static_cast<SchemeNumber*>(p->car)->number;
+        if (nn != n) {
+            return S_FALSE;
+        }
+        p = p->cdrAsPair();
+    }
+    return S_TRUE;
+}
+
+SchemeBool* s_less(SchemePair* p) {
+    if (p == S_EMPTY_LIST) {
+        return S_TRUE;
+    }
+    if (p->car->type() != SchemeObject::NUMBER) {
+        throw scheme_exception("Wrong argument to <");
+    }
+    double n = static_cast<SchemeNumber*>(p->car)->number;
+    p = p->cdrAsPair();
+    while (p != S_EMPTY_LIST) {
+        double nn = static_cast<SchemeNumber*>(p->car)->number;
+        if (nn <= n) {
+            return S_FALSE;
+        }
+        n = nn;
+        p = p->cdrAsPair();
+    }
+    return S_TRUE;
+    
+}
+
+SchemeBool* s_greater(SchemePair* p) {
+    if (p == S_EMPTY_LIST) {
+        return S_TRUE;
+    }
+    if (p->car->type() != SchemeObject::NUMBER) {
+        throw scheme_exception("Wrong argument to <");
+    }
+    double n = static_cast<SchemeNumber*>(p->car)->number;
+    p = p->cdrAsPair();
+    while (p != S_EMPTY_LIST) {
+        double nn = static_cast<SchemeNumber*>(p->car)->number;
+        if (nn >= n) {
+            return S_FALSE;
+        }
+        n = nn;
+        p = p->cdrAsPair();
+    }
+    return S_TRUE;
+    
+}
+
 
