@@ -100,6 +100,7 @@ void test_interpreter() {
     assert_eval(s, "(and (= 2 2) (< 2 1))", "#f");
     assert_eval(s, "(and 1 2 'c '(f g))","(f g)");
     assert_eval(s, "(and)","#t");
+    assert_eval(s, "(or)","#f");
     assert_eval(s, "(or (= 2 2) (> 2 1))", "#t");
     assert_eval(s, "(or (= 2 2) (< 2 1))", "#t");
     assert_eval(s, "(or #f #f #f)", "#f");
