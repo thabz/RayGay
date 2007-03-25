@@ -295,7 +295,10 @@ SchemeNumber* s_minus(SchemePair* p) {
 	double result = 0;
     double first = true;
 	if (p == S_EMPTY_LIST) {
-		return S_ZERO;
+		throw scheme_exception("Wrong number of arguments");
+	}
+	if (p->cdr == S_EMPTY_LIST) {
+        first = false;
 	}
 	while (p != S_EMPTY_LIST) {
 		SchemeNumber* n = static_cast<SchemeNumber*>(p->car);

@@ -98,6 +98,14 @@ void test_interpreter() {
     delete s;
 }
 
+void test_math() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(- 3)" , "-3");
+    assert_eval(s, "(- 3 2)" , "1");
+    assert_eval(s, "(- 3 4 5)" , "-6");
+    
+}
+
 void test_equals() {
     Scheme* s = new Scheme();
     assert_eval(s, "(equal? 1 1)" , "#t");
@@ -258,6 +266,10 @@ int main(int argc, char *argv[]) {
 
         cout << "Test equals...          ";
         test_equals();
+        cout << " OK" << endl;
+
+        cout << "Test math  ...          ";
+        test_math();
         cout << " OK" << endl;
 
 
