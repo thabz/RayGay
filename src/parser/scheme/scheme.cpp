@@ -258,21 +258,51 @@ SchemeNumber* s_length(SchemePair* p) {
     return make_number(length);
 }
 
-SchemePair* s_append(SchemePair* p) {
+SchemeObject* s_append(SchemePair* p) {
     SchemePair* result = S_EMPTY_LIST;
+    SchemePair* prev = NULL;
+    SchemePair* tmp;
     while (p != S_EMPTY_LIST) {
-	    if (p->car->type() != SchemeObject::PAIR && p->car->type() != SchemeObject::EMPTY_LIST) {
-	        throw scheme_exception("Wrong argument");
+        if (p->car == S_EMPTY_LIST) {
+            // Skip empty lists
+    	    p = p->cdrAsPair();
+            continue;
+        }
+	    if (p->car->type() == SchemeObject::PAIR && p->cdr != S_EMPTY_LIST) {
+    	    SchemePair* pp = static_cast<SchemePair*>(p->car);
+    	    while (pp->type() == SchemeObject::PAIR) {
+    	        if (result == S_EMPTY_LIST) {
+                    result = s_cons(pp->car, S_EMPTY_LIST);
+                    prev = result;
+    	        } else {
+    	            tmp = s_cons(pp->car, S_EMPTY_LIST);
+                    prev->cdr = tmp;
+                    prev = tmp;
+	            }
+	            pp = pp->cdrAsPair();
+    	    }
+    	    p = p->cdrAsPair();
+	    } else if (p->car->type() == SchemeObject::PAIR && p->cdr == S_EMPTY_LIST) {
+	        // Appends final list whether proper or inproper
+            prev->cdr = p->car;
+            return result;
+	    } else {
+	        if (p->cdr != S_EMPTY_LIST) {
+	            throw scheme_exception("Only last argument can be a nonproper list");
+            } else {
+                if (result == S_EMPTY_LIST) {
+                    return p->car;
+                } else {
+                    prev->cdr = p->cdr;
+                    return result;
+                }
+            }
 	    }
-	    SchemePair* pp = static_cast<SchemePair*>(p->car);
-	    while (pp->type() == SchemeObject::PAIR) {
-	        result = s_cons(pp->car, result);
-	        pp = pp->cdrAsPair();
-	    }
-	    p = p->cdrAsPair();
     }
-    // TODO: Resultatets sidste cdr skal sidste argument direkte sat på.
-    return s_reverse(result);
+    if (result != S_EMPTY_LIST) {
+        prev->cdr = S_EMPTY_LIST;
+    }
+    return result;
 }
 
 SchemeNumber* s_plus(SchemePair* p) {
@@ -298,6 +328,7 @@ SchemeNumber* s_minus(SchemePair* p) {
 		throw scheme_exception("Wrong number of arguments");
 	}
 	if (p->cdr == S_EMPTY_LIST) {
+	    // One-argument case is a simple negate (n => -n)
         first = false;
 	}
 	while (p != S_EMPTY_LIST) {

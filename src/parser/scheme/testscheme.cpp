@@ -161,6 +161,10 @@ void test_pairs_and_lists() {
     
     assert_eval(s, "(append '() '(a b c) '(a b) '())", "(a b c a b)");
     assert_eval(s, "(append)", "()");
+    assert_eval(s, "(append '() 'a)", "a");
+    assert_eval(s, "(append 'a)", "a");
+    assert_eval(s, "(append '(a b c) '(1 . 2))", "(a b c 1 . 2)"); // <-- error
+    assert_eval(s, "(append '(a (b)) '((c)))", "(a (b) (c))");
     delete s;
 }
 
