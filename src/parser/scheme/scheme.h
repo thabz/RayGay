@@ -70,9 +70,6 @@ SchemeBool* s_null_p(SchemeObject* p);
 SchemeBool* s_symbol_p(SchemeObject* p);
 SchemePair* s_reverse(SchemeObject* l);
 SchemeNumber* s_length(SchemePair* l);
-SchemeNumber* s_plus(SchemePair* l);
-SchemeNumber* s_minus(SchemePair* l);
-SchemeNumber* s_mult(SchemePair* l);
 SchemeObject* s_list_ref(SchemePair* l, SchemeNumber* i);
 SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
 SchemeObject* s_member(SchemeObject* obj, SchemePair* p);
@@ -83,4 +80,22 @@ SchemeVector* s_list_2_vector(SchemePair* list);
 SchemePair* s_vector_2_list(SchemeVector* v);
 SchemeObject* s_vector_ref(SchemeVector* v, SchemeNumber* i);
 SchemeObject* s_vector_set_e(SchemeVector* vec, SchemeNumber* index, SchemeObject* val);
+
+// Math stuff
+SchemeNumber* s_plus(SchemePair* l);
+SchemeNumber* s_minus(SchemePair* l);
+SchemeNumber* s_mult(SchemePair* l);
+SchemeNumber* s_sqrt(SchemeNumber* n);
+SchemeNumber* s_sin(SchemeNumber* n);
+SchemeNumber* s_cos(SchemeNumber* n);
+SchemeNumber* s_asin(SchemeNumber* n);
+SchemeNumber* s_acos(SchemeNumber* n);
+SchemeNumber* s_tan(SchemeNumber* n);
+SchemeNumber* s_atan(SchemeNumber* y, SchemeObject* x);
+SchemeNumber* s_expt(SchemeNumber* y, SchemeNumber* x);
+SchemeNumber* s_exp(SchemeNumber* n);
+SchemeNumber* s_log(SchemeNumber* n);
+SchemeNumber* s_min(SchemeNumber* n, SchemePair* l);
+SchemeNumber* s_max(SchemeNumber* n, SchemePair* l);
+
 #endif

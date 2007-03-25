@@ -2,6 +2,7 @@
 #include "scheme.h"
 #include <sstream>
 #include <fstream>
+#include <cmath>
 
 #include "lexer.h"
 #include "parser.h"
@@ -50,6 +51,18 @@ Scheme::Scheme() {
 	assign("+"          ,0,0,1, (SchemeObject* (*)()) s_plus);
 	assign("-"          ,0,0,1, (SchemeObject* (*)()) s_minus);
 	assign("*"          ,0,0,1, (SchemeObject* (*)()) s_mult);
+	assign("tan"        ,1,0,0, (SchemeObject* (*)()) s_tan);
+	assign("atan"       ,1,1,0, (SchemeObject* (*)()) s_atan);
+	assign("sin"        ,1,0,0, (SchemeObject* (*)()) s_sin);
+	assign("asin"       ,1,0,0, (SchemeObject* (*)()) s_asin);
+	assign("cos"        ,1,0,0, (SchemeObject* (*)()) s_cos);
+	assign("acos"       ,1,0,0, (SchemeObject* (*)()) s_acos);
+	assign("sqrt"       ,1,0,0, (SchemeObject* (*)()) s_sqrt);
+	assign("log"        ,1,0,0, (SchemeObject* (*)()) s_log);
+	assign("exp"        ,1,0,0, (SchemeObject* (*)()) s_exp);
+	assign("expt"       ,2,0,0, (SchemeObject* (*)()) s_expt);
+	assign("min"        ,1,0,1, (SchemeObject* (*)()) s_min);
+	assign("max"        ,1,0,1, (SchemeObject* (*)()) s_max);
 	assign("make-vector",1,1,0, (SchemeObject* (*)()) s_make_vector);
 	assign("vector"     ,0,0,1, (SchemeObject* (*)()) s_vector);
 	assign("vector-length",1,0,0, (SchemeObject* (*)()) s_vector_length);
@@ -411,3 +424,80 @@ SchemeObject* s_vector_set_e(SchemeVector* vec, SchemeNumber* index, SchemeObjec
     vec->set(val,i);
     return S_UNSPECIFIED;
 }
+
+SchemeNumber* s_sqrt(SchemeNumber* n) {
+    return new SchemeNumber(sqrt(n->number));
+}
+
+SchemeNumber* s_sin(SchemeNumber* n) {
+    return new SchemeNumber(sin(n->number));
+}
+
+SchemeNumber* s_asin(SchemeNumber* n) {
+    return new SchemeNumber(asin(n->number));
+}
+
+SchemeNumber* s_cos(SchemeNumber* n) {
+    return new SchemeNumber(cos(n->number));
+}
+
+SchemeNumber* s_acos(SchemeNumber* n) {
+    return new SchemeNumber(acos(n->number));
+}
+
+SchemeNumber* s_tan(SchemeNumber* n) {
+    return new SchemeNumber(tan(n->number));
+}
+
+SchemeNumber* s_atan(SchemeNumber* y, SchemeObject* x) {
+    if (x == S_UNSPECIFIED) {
+        return new SchemeNumber(atan(y->number));
+    } else {
+        SchemeNumber* xx = static_cast<SchemeNumber*>(x);
+        return new SchemeNumber(atan2(y->number, xx->number));
+    }
+}
+
+SchemeNumber* s_log(SchemeNumber* n) {
+    return new SchemeNumber(log(n->number));
+}
+
+// Returns a^b
+SchemeNumber* s_expt(SchemeNumber* a, SchemeNumber* b) {
+    throw scheme_exception("expt not implemented");
+}
+
+// Returns e^n
+SchemeNumber* s_exp(SchemeNumber* n) {
+    return new SchemeNumber(exp(n->number));
+}
+
+SchemeNumber* s_min(SchemeNumber* first, SchemePair* rest) {
+    double result = first->number;
+        
+	while (rest != S_EMPTY_LIST) {
+    	SchemeNumber* n = static_cast<SchemeNumber*>(rest->car);
+    	if (n == NULL) {
+    		throw scheme_exception("Wrong argument to +: " + rest->car->toString());
+    	}
+        result = n->number < result ? n->number : result;
+        rest = rest->cdrAsPair();
+	}
+	return new SchemeNumber(result);
+}
+
+
+SchemeNumber* s_max(SchemeNumber* first, SchemePair* rest) {
+    double result = first->number;
+        
+	while (rest != S_EMPTY_LIST) {
+    	SchemeNumber* n = static_cast<SchemeNumber*>(rest->car);
+    	if (n == NULL) {
+    		throw scheme_exception("Wrong argument to +: " + rest->car->toString());
+    	}
+        result = n->number > result ? n->number : result;
+        rest = rest->cdrAsPair();
+	}
+	return new SchemeNumber(result);
+}
+

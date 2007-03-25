@@ -103,6 +103,10 @@ void test_math() {
     assert_eval(s, "(- 3)" , "-3");
     assert_eval(s, "(- 3 2)" , "1");
     assert_eval(s, "(- 3 4 5)" , "-6");
+    assert_eval(s, "(min 5)" , "5");
+    assert_eval(s, "(min 3.0 1 2)" , "1");
+    assert_eval(s, "(max 5)" , "5");
+    assert_eval(s, "(max 3.0 1 2)" , "3");
     
 }
 
