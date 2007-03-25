@@ -32,9 +32,12 @@ void test_tokenizer() {
     assert(l->nextToken() == Lexer::SYMBOL);
     assert(l->nextToken() == Lexer::END);
     
-    l = new Lexer("a");
+    l = new Lexer("a `b");
     assert(l->nextToken() == Lexer::SYMBOL);
     assert(l->getString() == "a");
+    assert(l->nextToken() == Lexer::BACKQUOTE);
+    assert(l->nextToken() == Lexer::SYMBOL);
+    assert(l->getString() == "b");
     assert(l->nextToken() == Lexer::END);
 }
 
@@ -57,10 +60,22 @@ void test_parser() {
     t = p->parse();
     e = static_cast<SchemePair*> (t->car);
     assert(e->car->type() == SchemeObject::SYMBOL);
+    assert(e->car->toString() == "quote");
     assert(e->cdrAsPair()->car->type() == SchemeObject::PAIR);
     assert(static_cast<SchemePair*>(e->cdrAsPair()->car)->car->type() == SchemeObject::SYMBOL);
     assert(static_cast<SchemePair*>(e->cdrAsPair()->car)->car->toString() == "x");
-    assert( static_cast<SchemePair*>(e->cdrAsPair()->car)->cdr->toString() == "y");
+    assert(static_cast<SchemePair*>(e->cdrAsPair()->car)->cdr->toString() == "y");
+
+    l = new Lexer("`(a b)");
+    p = new Parser(l);
+    t = p->parse();
+    e = static_cast<SchemePair*> (t->car);
+    assert(e->car->type() == SchemeObject::SYMBOL);
+    assert(e->car->toString() == "quasiquote");
+    assert(e->cdrAsPair()->car->type() == SchemeObject::PAIR);
+    assert(static_cast<SchemePair*>(e->cdrAsPair()->car)->car->type() == SchemeObject::SYMBOL);
+    assert(static_cast<SchemePair*>(e->cdrAsPair()->car)->car->toString() == "a");
+
 }
 
 void test_bools() {
@@ -263,6 +278,14 @@ void test_quote() {
     assert_eval(s, "'1", "1");
     assert_eval(s, "(number? 1)", "#t");
     assert_eval(s, "(bool? '#t)", "#t");
+
+    assert_eval(s, "`a", "a");
+    assert_eval(s, "`()", "()");
+    assert_eval(s, "`1", "1");
+    assert_eval(s, "`(a b c)", "(a b c)");
+    assert_eval(s, "`(a (+ 1 2) c)", "(a (+ 1 2) c)");
+    assert_eval(s, "`(a ,(+ 1 2) c)", "(a 3 c)");
+    assert_eval(s, "`(a ,1)", "(a 1)");
 }
 
 void test_vector() {

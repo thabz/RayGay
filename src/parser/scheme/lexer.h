@@ -19,9 +19,10 @@ class Lexer
             STRING,
             BOOLEAN,
             HASH_OPEN_PAREN,
-            COMMA_OPEN_PAREN,
             QUOTE,
-            BACKQUOTE_OPEN_PAREN,
+            BACKQUOTE,
+            COMMA,
+            COMMA_AT,
             PERIOD,
             ERROR,
             END

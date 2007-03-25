@@ -59,6 +59,16 @@ Lexer::Token Lexer::nextToken() {
                 return Lexer::CLOSE_PAREN;
             case '\'':
                 return Lexer::QUOTE;
+            case '`':
+                return Lexer::BACKQUOTE;
+            case ',':
+                n = is->get();
+                if (n == '@') {
+                    return Lexer::COMMA_AT;
+                } else {
+                    is->unget();
+                    return Lexer::COMMA;
+                }
             case '#': 
                 n = is->get();
                 if ((n == 'f' || n == 't')) {

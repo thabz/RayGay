@@ -150,6 +150,10 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_DEFINE;
+    	} else if (s->str == "quasiquote") {
+            tstack->push(envt);
+            tstack->push(cdr->car);
+    		goto EVAL_QUASIQUOTE;
     	} else if (s->str == "lambda") {
     	    SchemeObject* formals = cdr->car;
             SchemeObject* body = cdr->cdr;
@@ -321,6 +325,48 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             p = p->cdrAsPair();
         } 
         tstack->return_jump(result);
+    }
+    EVAL_QUASIQUOTE: {
+        SchemeObject* o = tstack->popSchemeObject();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        if (o->type() == SchemeObject::PAIR) {
+            SchemePair* p = static_cast<SchemePair*>(o);
+            SchemePair* result = S_EMPTY_LIST;
+            while(p != S_EMPTY_LIST) {
+                SchemeObject* to_add;
+                SchemePair* v = static_cast<SchemePair*>(p->car);
+                if (p->car->type() == SchemeObject::PAIR && v->car->type() == SchemePair::SYMBOL) {
+                    SchemeSymbol* sy = static_cast<SchemeSymbol*>(v->car);
+                    if (sy->str == "unquote") {
+                        tstack->push(envt);
+                        tstack->push(result);
+                        tstack->push(p);
+                        int kk = setjmp(*(tstack->push_jump_pos()));
+                        if (kk == 0) {
+                            tstack->push(envt);
+                            tstack->push(v->cdrAsPair()->car);
+                            goto EVAL;
+                        }
+                        to_add = tstack->popSchemeObject();
+                        p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
+                        result = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
+                        envt = tstack->popBindingEnvironment(); // Pop local var
+                    } else if (sy->str == "unquote-splicing") {
+                        throw scheme_exception(",@ not implemented");
+                    } else {
+                        to_add = p->car;
+                    }
+                } else {
+                    to_add = p->car;
+                }
+                result = s_cons(to_add, result);
+                p = p->cdrAsPair();
+            }
+            result = s_reverse(result);
+            tstack->return_jump(result);
+        } else {
+            tstack->return_jump(o);
+        }
     }
     EVAL_PROCEDURE_CALL: {
         SchemeProcedure* proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());

@@ -32,6 +32,12 @@ SchemeObject* Parser::read_simple() {
            return s_vector(static_cast<SchemePair*>(read_list()));
         case Lexer::QUOTE :
            return read_quoted();
+        case Lexer::BACKQUOTE :
+           return read_quasiquoted();
+        case Lexer::COMMA :
+           return read_unquoted();
+        case Lexer::COMMA_AT :
+           return read_unquote_spliced();
         case Lexer::END :
   		   return NULL;
         case Lexer::ERROR :
@@ -74,4 +80,19 @@ SchemeObject* Parser::read_list() {
 SchemeObject* Parser::read_quoted() {
     SchemeObject* list = s_cons(read_simple(), S_EMPTY_LIST);
     return s_cons(SchemeSymbol::create("quote"), list);
+}
+
+SchemeObject* Parser::read_quasiquoted() {
+    SchemeObject* list = s_cons(read_simple(), S_EMPTY_LIST);
+    return s_cons(SchemeSymbol::create("quasiquote"), list);
+}
+
+SchemeObject* Parser::read_unquoted() {
+    SchemeObject* list = s_cons(read_simple(), S_EMPTY_LIST);
+    return s_cons(SchemeSymbol::create("unquote"), list);
+}
+
+SchemeObject* Parser::read_unquote_spliced() {
+    SchemeObject* list = s_cons(read_simple(), S_EMPTY_LIST);
+    return s_cons(SchemeSymbol::create("unquote-splicing"), list);
 }

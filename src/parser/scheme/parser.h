@@ -16,6 +16,9 @@ class Parser
         SchemeObject* read_simple();
         SchemeObject* read_list();    
         SchemeObject* read_quoted();    
+        SchemeObject* read_unquoted();    
+        SchemeObject* read_unquote_spliced();    
+        SchemeObject* read_quasiquoted();    
 
         Lexer* lexer;
 };
