@@ -53,6 +53,8 @@ extern SchemeNumber* S_TWO;
 SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
 SchemeBool* s_eq_p(SchemeObject* a, SchemeObject* b);
 SchemeBool* s_eqv_p(SchemeObject* a, SchemeObject* b);
+
+SchemeObject* s_write(SchemeObject* o);
 SchemeObject* s_display(SchemeObject* o); 
 SchemeObject* s_newline(BindingEnvironment* s);
 SchemeObject* s_car(SchemeObject* o);

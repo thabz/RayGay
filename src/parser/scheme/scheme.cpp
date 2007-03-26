@@ -54,6 +54,7 @@ Scheme::Scheme() {
 	assign("length"     ,1,0,0, (SchemeObject* (*)()) s_length);
 	assign("cons"       ,2,0,0, (SchemeObject* (*)()) s_cons);
 	assign("display"    ,1,0,0, (SchemeObject* (*)()) s_display);
+	assign("write"      ,1,0,0, (SchemeObject* (*)()) s_write);
 	assign("newline"    ,0,0,0, (SchemeObject* (*)()) s_newline);
 	assign("<"          ,0,0,1, (SchemeObject* (*)()) s_less);
 	assign(">"          ,0,0,1, (SchemeObject* (*)()) s_greater);
@@ -304,8 +305,18 @@ SchemePair* s_list(SchemePair* args) {
     return args;
 }
 
-SchemeObject* s_display(SchemeObject* o) {
+SchemeObject* s_write(SchemeObject* o) {
     cout << o->toString();
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* s_display(SchemeObject* o) {
+    // TODO: Also handle char special
+    if (s_string_p(o) == S_TRUE) {
+        cout << static_cast<SchemeString*>(o)->str;
+    } else {
+        cout << o->toString();
+    }
     return S_UNSPECIFIED;
 }
 
