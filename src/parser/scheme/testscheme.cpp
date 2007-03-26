@@ -120,6 +120,15 @@ void test_interpreter() {
     assert_eval(s, "(or (= 2 2) (< 2 1))", "#t");
     assert_eval(s, "(or #f #f #f)", "#f");
     assert_eval(s, "(or (member 'b '(a b c)) #f)", "(b c)");
+    
+    assert_eval(s, "(apply + (list 3 4))","7");
+    assert_eval(s, "(apply + '(1 2 3))","6");
+    assert_eval(s, "(apply + 1 2 '(3 4))", "10");
+    assert_eval(s, "(apply list '())","()");
+    assert_eval(s, "(apply * 1 2 (list 3 4))","24");
+    s->eval("(define compose (lambda (f g) (lambda args (f (apply g args)))))");
+    assert_eval(s, "((compose sqrt *) 12 75)","30");  // R^5RS, Section 6.4.
+    
     delete s;
 }
 
@@ -232,6 +241,9 @@ void test_lambda() {
     assert_eval(s, "(procedure? (lambda (x) x))", "#t");
     assert_eval(s, "(procedure? cons)", "#t");
     assert_eval(s, "(procedure? 1)", "#f");
+    assert_eval(s, "(procedure? 'car)","#f");
+    assert_eval(s, "(procedure? (lambda (x) (* x x)))","#t");
+    assert_eval(s, "(procedure? '(lambda (x) (* x x)))","#f");
     assert_eval(s, "((lambda () 3))", "3");
     assert_eval(s, "((lambda (x) (* 2 x)) 10)", "20");
     assert_eval(s, "((lambda (x y) (+  y x)) 7 10)", "17");
@@ -355,11 +367,9 @@ int main(int argc, char *argv[]) {
         test_pairs_and_lists();
         cout << " OK" << endl;
 
-
         cout << "Test lambda...          ";
         test_lambda();
         cout << " OK" << endl;
-
 
         test_define_and_set();
         test_string();

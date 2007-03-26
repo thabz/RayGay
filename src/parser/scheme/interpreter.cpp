@@ -89,6 +89,14 @@ SchemeObject* Interpreter::interpret() {
 
 Stack* tstack = new Stack();
 
+#define call_and_return(envt,thing,PLACE) { int kk = setjmp(*(tstack->push_jump_pos())); \
+    if (kk == 0) { \
+        tstack->push(envt); \
+        tstack->push(thing); \
+        goto PLACE; \
+    } \
+}
+
 SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     int kk = setjmp(*(tstack->push_jump_pos()));
     if (kk == 0) {
@@ -154,6 +162,10 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);
             tstack->push(cdr->car);
     		goto EVAL_QUASIQUOTE;
+    	} else if (s->str == "apply") {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_APPLY;
     	} else if (s->str == "lambda") {
     	    SchemeObject* formals = cdr->car;
             SchemeObject* body = cdr->cdr;
@@ -192,8 +204,21 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             if (proc->type() != SchemeObject::PROCEDURE) {
         		throw scheme_exception("Wrong type to apply : " + proc->toString());	
             }
+            
+            tstack->push(proc);
             tstack->push(envt);
-            tstack->push(cdr);
+            int kk = setjmp(*(tstack->push_jump_pos()));
+            if (kk == 0) {
+                tstack->push(envt);
+                tstack->push(cdr);
+                goto EVAL_MULTI;
+            }
+            SchemePair* args = tstack->popSchemePair();
+            envt = tstack->popBindingEnvironment();
+            proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
+            
+            tstack->push(envt);
+            tstack->push(args);
             tstack->push(proc);
             goto EVAL_PROCEDURE_CALL;
         }        
@@ -206,12 +231,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         
         tstack->push(envt);  // Push local
         tstack->push(s);     // Push local
-        int kk = setjmp(*(tstack->push_jump_pos()));
-        if (kk == 0) {
-            tstack->push(envt);
-            tstack->push(s->car);
-            goto EVAL;
-        }
+        call_and_return(envt,s->car,EVAL);
         SchemeObject* proc = tstack->popSchemeObject();
         s = tstack->popSchemePair(); // Pop local var
         envt = tstack->popBindingEnvironment(); // Pop local var
@@ -222,9 +242,22 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
 		    throw scheme_exception("Wrong type to apply: " + s->toString() + " does not resolve to a procedure.");
         }
         
-        tstack->push(envt);
-        tstack->push(arg_expressions);
         tstack->push(proc);
+        tstack->push(envt);
+        int kk = setjmp(*(tstack->push_jump_pos()));
+        if (kk == 0) {
+            tstack->push(envt);
+            tstack->push(arg_expressions);
+            goto EVAL_MULTI;
+        }
+        SchemePair* args = tstack->popSchemePair();
+        envt = tstack->popBindingEnvironment();
+        proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
+        
+        tstack->push(envt);
+        tstack->push(args);
+        tstack->push(proc);
+
         goto EVAL_PROCEDURE_CALL;
     }
     EVAL_IF: {
@@ -237,12 +270,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
 
         tstack->push(envt);
         tstack->push(p);
-        int kk = setjmp(*(tstack->push_jump_pos()));
-        if (kk == 0) {
-            tstack->push(envt);
-            tstack->push(s_condition_expr);
-            goto EVAL;
-        }
+        call_and_return(envt,s_condition_expr,EVAL);
     	bool condition = tstack->popSchemeObject()->boolValue();
         p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
         envt = tstack->popBindingEnvironment(); // Pop local var
@@ -279,15 +307,11 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             }
             tstack->push(envt);
             tstack->push(p);
-            int kk = setjmp(*(tstack->push_jump_pos()));
-            if (kk == 0) {
-                tstack->push(envt);
-                tstack->push(p->car);
-                goto EVAL;
-            }
+            call_and_return(envt,p->car,EVAL);
             result = tstack->popSchemeObject();
             p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
             envt = tstack->popBindingEnvironment(); // Pop local var
+
             if (!result->boolValue()) {
                 tstack->return_jump(result);
             }
@@ -361,12 +385,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
                         tstack->push(envt);
                         tstack->push(result);
                         tstack->push(p);
-                        int kk = setjmp(*(tstack->push_jump_pos()));
-                        if (kk == 0) {
-                            tstack->push(envt);
-                            tstack->push(v->cdrAsPair()->car);
-                            goto EVAL;
-                        }
+                        call_and_return(envt, v->cdrAsPair()->car, EVAL);
                         SchemeObject* to_add_list = tstack->popSchemeObject();
                         p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
                         result = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
@@ -395,11 +414,12 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     }
     EVAL_PROCEDURE_CALL: {
         SchemeProcedure* proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
-        SchemeObject* arg_exprs = tstack->popSchemeObject();
+        SchemePair* args = tstack->popSchemePair();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
 
         SchemeObject* result = S_UNSPECIFIED;
 
+        /*
         tstack->push(proc);
         tstack->push(envt);
         int kk = setjmp(*(tstack->push_jump_pos()));
@@ -411,7 +431,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         SchemePair* args = tstack->popSchemePair();
         envt = tstack->popBindingEnvironment();
         proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
-
+        */
         if (proc->fn != NULL) {
             SchemeObject* argsv[10];
             // Built-in function
@@ -504,12 +524,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);     // Push local
             tstack->push(result);   // Push local var
             tstack->push(p);        // Push local var
-            int kk = setjmp(*(tstack->push_jump_pos()));
-            if (kk == 0) {
-                tstack->push(envt);
-                tstack->push(p->car);
-                goto EVAL;
-            }
+            call_and_return(envt, p->car, EVAL);
             SchemeObject* r = tstack->popSchemeObject();
             p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
             result = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
@@ -535,14 +550,9 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
                 // Normal EVAL call, that returns here.
                 tstack->push(envt);
                 tstack->push(p); // Push local var
-                int kk = setjmp(*(tstack->push_jump_pos()));
-                if (kk == 0) {
-                    tstack->push(envt);
-                    tstack->push(p->car);
-                    goto EVAL;
-                }
+                call_and_return(envt, p->car, EVAL);
                 tstack->pop(); // Unused result
-                p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
+                p = tstack->popSchemePair(); // Pop local var
                 envt = tstack->popBindingEnvironment();                
 	            p = p->cdrAsPair();
             }
@@ -588,12 +598,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             
             tstack->push(envt);
             tstack->push(s); // Push local var
-            int kk = setjmp(*(tstack->push_jump_pos()));
-            if (kk == 0) {
-                tstack->push(envt);
-                tstack->push(p->cdrAsPair()->car);
-                goto EVAL;
-            }
+            call_and_return(envt, p->cdrAsPair()->car, EVAL);
             SchemeObject* v = tstack->popSchemeObject();
             s = static_cast<SchemeSymbol*>(tstack->popSchemeObject()); // Pop local var
             envt = tstack->popBindingEnvironment();                
@@ -639,6 +644,65 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         }
         tstack->return_jump(new SchemeProcedure(envt, req, rst, body));
     }
+    EVAL_APPLY: {
+        // args is a list (proc arg1 arg2 ... argn). argn must be a list. proc is called with the arguments
+        // (append (list arg1 arg2 ...) argn)
+        SchemePair* args = tstack->popSchemePair();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+
+        // Eval the procedure argument
+        tstack->push(envt);
+        tstack->push(args); // Push local var
+        call_and_return(envt,args->car,EVAL);
+        SchemeObject* proc = tstack->popSchemeObject();
+        args = tstack->popSchemePair();             // Pop local var
+        envt = tstack->popBindingEnvironment();                
+
+        if (s_procedure_p(proc) == S_FALSE) {
+            throw scheme_exception("Can't apply to non-procedure: " + args->car->toString());
+        }
+        if (s_pair_p(args->cdr) == S_FALSE) {
+            throw scheme_exception("Wrong type in position 1.");
+        }
+
+        // Eval and join all arg-lists together
+        tstack->push(envt);
+        call_and_return(envt,args->cdr,EVAL_MULTI);
+        args = tstack->popSchemePair();
+        envt = tstack->popBindingEnvironment();                
+        
+        SchemePair* collected = S_EMPTY_LIST;
+        SchemePair* prev = NULL;
+        while (args != S_EMPTY_LIST) {
+            SchemeObject* arg = args->car;
+            if (s_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
+                if (args->cdr == S_EMPTY_LIST) {
+                    // arg is a list and last argument
+                    if (collected == S_EMPTY_LIST) {
+                        collected = static_cast<SchemePair*>(arg);
+                    } else {
+                        prev->cdr = arg;
+                    }
+                } else {
+                    throw scheme_exception("Illegal argument");
+                }
+            } else {
+                if (collected == S_EMPTY_LIST) {
+                    collected = s_cons(arg, S_EMPTY_LIST);
+                    prev = collected;
+                } else {
+                    SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
+                    prev->cdr = tmp;
+                    prev = tmp;
+                }
+            }
+            args = args->cdrAsPair();
+        }
+        tstack->push(envt);
+        tstack->push(collected);
+        tstack->push(proc);
+        goto EVAL_PROCEDURE_CALL;
+    }    
     EVAL_SET_E: {
         SchemePair* p = tstack->popSchemePair();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
@@ -660,12 +724,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
 
         tstack->push(envt);
         tstack->push(s); // Push local var
-        int kk = setjmp(*(tstack->push_jump_pos()));
-        if (kk == 0) {
-            tstack->push(envt);
-            tstack->push(p->cdrAsPair()->car);
-            goto EVAL;
-        }
+        call_and_return(envt, p->cdrAsPair()->car, EVAL);
         SchemeObject* v = tstack->popSchemeObject();
         s = static_cast<SchemeSymbol*>(tstack->popSchemeObject()); // Pop local var
         envt = tstack->popBindingEnvironment();                
