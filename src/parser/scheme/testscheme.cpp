@@ -286,6 +286,9 @@ void test_quote() {
     assert_eval(s, "`(a (+ 1 2) c)", "(a (+ 1 2) c)");
     assert_eval(s, "`(a ,(+ 1 2) c)", "(a 3 c)");
     assert_eval(s, "`(a ,1)", "(a 1)");
+
+    assert_eval(s, "`(a ,(list 1 2 ) c)", "(a (1 2) c)");
+    assert_eval(s, "`(a ,@(list 1 2 ) c)", "(a 1 2 c)");
 }
 
 void test_vector() {

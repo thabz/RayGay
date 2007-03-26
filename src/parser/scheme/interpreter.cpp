@@ -351,15 +351,40 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
                         p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
                         result = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
                         envt = tstack->popBindingEnvironment(); // Pop local var
+                        result = s_cons(to_add, result);
                     } else if (sy->str == "unquote-splicing") {
-                        throw scheme_exception(",@ not implemented");
+                        /*
+                        if (v->cdrAsPair()->car == S_EMPTY_LIST) {
+                            throw scheme_exception("unquote-splicing must result in a non-empty list");
+                        }
+                        */
+                        tstack->push(envt);
+                        tstack->push(result);
+                        tstack->push(p);
+                        int kk = setjmp(*(tstack->push_jump_pos()));
+                        if (kk == 0) {
+                            tstack->push(envt);
+                            tstack->push(v->cdrAsPair()->car);
+                            goto EVAL;
+                        }
+                        SchemeObject* to_add_list = tstack->popSchemeObject();
+                        p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
+                        result = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
+                        envt = tstack->popBindingEnvironment(); // Pop local var
+                        if (s_pair_p(to_add_list) != S_TRUE) {
+                            throw scheme_exception("unquote-splicing must result in a non-empty list");
+                        }
+                        // TODO: Code below is inefficient, but works.
+                        to_add_list = s_reverse(static_cast<SchemePair*>(to_add_list));
+                        result = static_cast<SchemePair*>(s_append(s_cons(to_add_list, s_cons(result,S_EMPTY_LIST))));
+                        p = p->cdrAsPair();
+                        continue;
                     } else {
-                        to_add = p->car;
+                        result = s_cons(p->car, result);
                     }
                 } else {
-                    to_add = p->car;
+                    result = s_cons(p->car, result);
                 }
-                result = s_cons(to_add, result);
                 p = p->cdrAsPair();
             }
             result = s_reverse(result);
