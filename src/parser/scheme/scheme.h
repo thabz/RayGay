@@ -90,6 +90,7 @@ SchemeVector* s_list_2_vector(SchemePair* list);
 SchemePair* s_vector_2_list(SchemeVector* v);
 SchemeObject* s_vector_ref(SchemeVector* v, SchemeNumber* i);
 SchemeObject* s_vector_set_e(SchemeVector* vec, SchemeNumber* index, SchemeObject* val);
+SchemeObject* s_vector_fill_e(SchemeVector* vec, SchemeObject* fill);
 
 // Math stuff
 SchemeBool* s_equal(SchemePair* p);
