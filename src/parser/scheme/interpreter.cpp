@@ -10,7 +10,10 @@ using namespace std;
 // Stack
 //------------------------------------------------------------------------
 Stack::Stack() {
-    
+}
+
+int Stack::size() {
+    return stk.size();
 }
 
 SchemeObject* Stack::popSchemeObject() {
@@ -413,6 +416,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         }
     }
     EVAL_PROCEDURE_CALL: {
+	cout << "Stack size: " << tstack->size() << endl;     
         SchemeProcedure* proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
         SchemePair* args = tstack->popSchemePair();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
@@ -545,8 +549,10 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
                 // The tail call, let EVAL return to this' caller
                 tstack->push(envt);
                 tstack->push(p->car);
+		cout << "In tail call" << endl;
                 goto EVAL;
             } else {
+		cout << "Not in tail call" << endl;
                 // Normal EVAL call, that returns here.
                 tstack->push(envt);
                 tstack->push(p); // Push local var

@@ -35,6 +35,7 @@ class Stack {
         jmp_buf* push_jump_pos();
         
         void return_jump(SchemeObject* return_value);
+	int size();
         
     private:
         std::vector<StackEntry> stk;
