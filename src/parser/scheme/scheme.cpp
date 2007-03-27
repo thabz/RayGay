@@ -78,6 +78,8 @@ Scheme::Scheme() {
 	assign("expt"       ,2,0,0, (SchemeObject* (*)()) s_expt);
 	assign("min"        ,1,0,1, (SchemeObject* (*)()) s_min);
 	assign("max"        ,1,0,1, (SchemeObject* (*)()) s_max);
+	assign("even?"      ,1,0,1, (SchemeObject* (*)()) s_even_p);
+	assign("odd?"       ,1,0,1, (SchemeObject* (*)()) s_odd_p);
 	assign("make-vector",1,1,0, (SchemeObject* (*)()) s_make_vector);
 	assign("vector"     ,0,0,1, (SchemeObject* (*)()) s_vector);
 	assign("vector-length",1,0,0, (SchemeObject* (*)()) s_vector_length);
@@ -564,7 +566,7 @@ SchemeNumber* s_log(SchemeNumber* n) {
 
 // Returns a^b
 SchemeNumber* s_expt(SchemeNumber* a, SchemeNumber* b) {
-    throw scheme_exception("expt not implemented");
+    return new SchemeNumber(pow(a->number,b->number));
 }
 
 // Returns e^n
@@ -600,6 +602,17 @@ SchemeNumber* s_max(SchemeNumber* first, SchemePair* rest) {
 	}
 	return new SchemeNumber(result);
 }
+
+SchemeBool* s_even_p(SchemeNumber* n) {
+    int nn = int(n->number);
+    return (nn % 2 == 0) ? S_TRUE : S_FALSE;
+}
+
+SchemeBool* s_odd_p(SchemeNumber* n) {
+    int nn = int(n->number);
+    return (abs(nn % 2) == 1) ? S_TRUE : S_FALSE;
+}
+
 
 SchemeBool* s_equal(SchemePair* p) {
     if (p == S_EMPTY_LIST) {

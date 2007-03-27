@@ -115,5 +115,7 @@ SchemeNumber* s_exp(SchemeNumber* n);
 SchemeNumber* s_log(SchemeNumber* n);
 SchemeNumber* s_min(SchemeNumber* n, SchemePair* l);
 SchemeNumber* s_max(SchemeNumber* n, SchemePair* l);
+SchemeBool* s_even_p(SchemeNumber* n);
+SchemeBool* s_odd_p(SchemeNumber* n);
 
 #endif

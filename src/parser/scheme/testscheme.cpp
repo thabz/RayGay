@@ -144,6 +144,9 @@ void test_math() {
     assert_eval(s, "(min 3.0 1 2)" , "1");
     assert_eval(s, "(max 5)" , "5");
     assert_eval(s, "(max 3.0 1 2)" , "3");
+    assert_eval(s, "(expt 3 4)" , "81");
+    assert_eval(s, "(expt 0 0)" , "1");
+    assert_eval(s, "(expt 0 3)" , "0");
     assert_eval(s, "(< 1 2 3)" , "#t");
     assert_eval(s, "(< 1 2 2 3)" , "#f");
     assert_eval(s, "(<= 1 2 2 3)" , "#t");
@@ -152,6 +155,11 @@ void test_math() {
     assert_eval(s, "(>= 3 2 2 1)" , "#t");
     assert_eval(s, "(= 2 2 2 3)" , "#f");
     assert_eval(s, "(= 2 2 2 2)" , "#t");
+    assert_eval(s, "(even? 10)" , "#t");
+    assert_eval(s, "(even? -9)" , "#f");
+    assert_eval(s, "(odd? 0)" , "#f");
+    assert_eval(s, "(odd? -1)" , "#t");
+    
 }
 
 void test_equals() {
