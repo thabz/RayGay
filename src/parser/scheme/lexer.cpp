@@ -92,11 +92,12 @@ Lexer::Token Lexer::nextToken() {
                 str = "";
                 while (!is->eof()) {
                     c = is->get();
-                    if (c == '"') {
+		    if (c == '\\') {
+			c = is->get();
+		    } else if (c == '"') {
                         break;
-                    } else {
-                        str += c;
-                    }
+		    }
+		    str += c;
                 }
                 return Lexer::STRING;
         }

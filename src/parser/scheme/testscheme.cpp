@@ -6,7 +6,7 @@
 #define assert_eval(s,e,b) assert(s->eval(e)->toString() == b)
 
 void test_tokenizer() {
-    Lexer* l = new Lexer("(+ 1.5 (2 . \"Hej\") .x)");
+    Lexer* l = new Lexer("(+ 1.5 (2 . \"\\\\\\aHej\\\"\") .x)");
     assert(l->nextToken() == Lexer::OPEN_PAREN);
     assert(l->nextToken() == Lexer::SYMBOL);
     assert(l->getString() == "+");
@@ -17,7 +17,7 @@ void test_tokenizer() {
     assert(l->getNumber() == 2);
     assert(l->nextToken() == Lexer::PERIOD);
     assert(l->nextToken() == Lexer::STRING);
-    assert(l->getString() == "Hej");
+    assert(l->getString() == "\\aHej\"");
     assert(l->nextToken() == Lexer::CLOSE_PAREN);
     assert(l->nextToken() == Lexer::SYMBOL);
     assert(l->nextToken() == Lexer::CLOSE_PAREN);
