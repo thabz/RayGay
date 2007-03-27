@@ -157,6 +157,8 @@ void test_math() {
     assert_eval(s, "(= 2 2 2 2)" , "#t");
     assert_eval(s, "(even? 10)" , "#t");
     assert_eval(s, "(even? -9)" , "#f");
+    assert_eval(s, "(even? 0)" , "#t");
+    assert_eval(s, "(odd? 31137)" , "#t");
     assert_eval(s, "(odd? 0)" , "#f");
     assert_eval(s, "(odd? -1)" , "#t");
     
