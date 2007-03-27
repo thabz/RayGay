@@ -233,6 +233,10 @@ void test_pairs_and_lists() {
     assert_eval(s, "(assq (list 'a) '(((a)) ((b)) ((c))))", "#f");
     assert_eval(s, "(assv 5 '((2 3) (5 7) (11 13)))", "(5 7)");
     
+    s->eval("(define e '(a b c d))");
+    assert_eval(s, "(set-car! e 'f) e", "(f b c d)");
+    assert_eval(s, "(set-cdr! e 'g) e", "(f . g)");
+
     delete s;
 }
 

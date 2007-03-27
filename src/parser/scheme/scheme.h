@@ -72,6 +72,8 @@ SchemePair* s_list_tail(SchemePair* list, SchemeNumber* k);
 SchemeObject* s_assoc(SchemeObject* obj, SchemePair* alist);
 SchemeObject* s_assq(SchemeObject* obj, SchemePair* alist);
 SchemeObject* s_assv(SchemeObject* obj, SchemePair* alist);
+SchemeObject* s_set_car_e(SchemePair* p, SchemeObject* o);
+SchemeObject* s_set_cdr_e(SchemePair* p, SchemeObject* o);
 
 SchemeObject* s_append(SchemePair* args);
 SchemeBool* s_pair_p(SchemeObject* p);

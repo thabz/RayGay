@@ -43,6 +43,8 @@ Scheme::Scheme() {
 	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list);
 	assign("list-tail"  ,2,0,0, (SchemeObject* (*)()) s_list_tail);
 	assign("list-ref"   ,2,0,0, (SchemeObject* (*)()) s_list_ref);
+	assign("set-car!"   ,2,0,0, (SchemeObject* (*)()) s_set_car_e);
+	assign("set-cdr!"   ,2,0,0, (SchemeObject* (*)()) s_set_cdr_e);
 	assign("assoc"      ,2,0,0, (SchemeObject* (*)()) s_assoc);
 	assign("assq"       ,2,0,0, (SchemeObject* (*)()) s_assq);
 	assign("assv"       ,2,0,0, (SchemeObject* (*)()) s_assv);
@@ -349,6 +351,16 @@ SchemeNumber* s_length(SchemePair* p) {
         }
     }
     return make_number(length);
+}
+
+SchemeObject* s_set_car_e(SchemePair* p, SchemeObject* o) {
+    p->car = o;
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* s_set_cdr_e(SchemePair* p, SchemeObject* o) {
+    p->cdr = o;
+    return S_UNSPECIFIED;
 }
 
 SchemeObject* s_append(SchemePair* p) {
