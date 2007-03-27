@@ -134,6 +134,9 @@ void test_interpreter() {
 
 void test_math() {
     Scheme* s = new Scheme();
+    assert_eval(s, "-3" , "-3");
+    assert_eval(s, "-3.0" , "-3");
+    assert_eval(s, "+3" , "3");
     assert_eval(s, "(- 3)" , "-3");
     assert_eval(s, "(- 3 2)" , "1");
     assert_eval(s, "(- 3 4 5)" , "-6");
@@ -340,19 +343,19 @@ int main(int argc, char *argv[]) {
         cout << "Test tokenizer...       ";
         test_tokenizer();
         cout << " OK" << endl;
-        cout << "Test parser...       ";
+        cout << "Test parser...          ";
         test_parser();
         cout << " OK" << endl;
         
-        cout << "Test interpreter...       ";
+        cout << "Test interpreter...     ";
         test_interpreter();
         cout << " OK" << endl;
         
-        cout << "Test bools...       ";
+        cout << "Test bools...           ";
         test_bools();
         cout << " OK" << endl;
         
-        cout << "Test symbols...       ";
+        cout << "Test symbols...         ";
         test_symbols();
         cout << " OK" << endl;
 

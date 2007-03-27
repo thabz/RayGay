@@ -92,12 +92,12 @@ Lexer::Token Lexer::nextToken() {
                 str = "";
                 while (!is->eof()) {
                     c = is->get();
-		    if (c == '\\') {
-			c = is->get();
-		    } else if (c == '"') {
+		            if (c == '\\') {
+			            c = is->get();
+                    } else if (c == '"') {
                         break;
-		    }
-		    str += c;
+		            }
+		            str += c;
                 }
                 return Lexer::STRING;
         }
@@ -105,6 +105,13 @@ Lexer::Token Lexer::nextToken() {
             is->unget();
             (*is) >> number;
             return Lexer::NUMBER;
+        }
+        if (c == '-' || c == '+') {
+            if (isdigit(is->peek())) {
+                is->unget();
+                (*is) >> number;
+                return Lexer::NUMBER;
+            }
         }
         
         // Read chars as a symbol
