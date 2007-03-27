@@ -236,6 +236,7 @@ void test_pairs_and_lists() {
     s->eval("(define e '(a b c d))");
     assert_eval(s, "(set-car! e 'f) e", "(f b c d)");
     assert_eval(s, "(set-cdr! e 'g) e", "(f . g)");
+    assert_eval(s, "(set-cdr! e '()) e", "(f)");
 
     delete s;
 }
