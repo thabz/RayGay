@@ -139,6 +139,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     		case SchemeObject::NUMBER:
     		case SchemeObject::STRING:
     		case SchemeObject::BOOL:
+    		case SchemeObject::CHAR:
     		case SchemeObject::VECTOR:
     		case SchemeObject::EMPTY_LIST:
                 tstack->return_jump(s);

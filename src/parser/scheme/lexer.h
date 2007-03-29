@@ -17,6 +17,7 @@ class Lexer
             SYMBOL,
             NUMBER,
             STRING,
+            CHAR,
             BOOLEAN,
             HASH_OPEN_PAREN,
             QUOTE,
@@ -35,6 +36,7 @@ class Lexer
         string getString() { return str; };
         double getNumber() { return number; };
         bool getBool() { return boolean; };
+        char getChar() { return chr; };
         int getCurline() { return curline; };
         
         void pushInputStream(istream* is);
@@ -46,6 +48,7 @@ class Lexer
         string str;
         double number;
         bool boolean;
+        char chr;
         int curline;
         list<istream*> is_stack;
         list<int> curline_stack;

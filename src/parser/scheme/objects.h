@@ -17,6 +17,7 @@ class SchemeObject {
 		    EMPTY_LIST,
 		    SYMBOL,
 		    BOOL,
+		    CHAR,
 		    STRING,
 		    VECTOR,
 		    PAIR,
@@ -104,6 +105,16 @@ class SchemeBool : public SchemeObject {
     	bool boolean;
 	    bool boolValue() const { return boolean; };
 };
+
+class SchemeChar : public SchemeObject {
+    public:
+        SchemeChar(char c);
+        string toString();
+        ObjectType type() { return CHAR; };
+
+        char c;
+};
+
 
 class SchemeContinuation : public SchemeObject {
     public:

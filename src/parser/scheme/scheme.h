@@ -62,6 +62,7 @@ SchemeObject* s_cdr(SchemeObject* o);
 SchemePair* s_cons(SchemeObject* car, SchemeObject* cdr);
 SchemeBool* s_boolean_p(SchemeObject* o);
 SchemeBool* s_string_p(SchemeObject* o);
+SchemeBool* s_char_p(SchemeObject* o);
 SchemeBool* s_procedure_p(SchemeObject* o);
 SchemeBool* s_list_p(SchemeObject* p);
 SchemeBool* s_number_p(SchemeObject* p);

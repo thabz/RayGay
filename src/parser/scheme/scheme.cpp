@@ -29,9 +29,10 @@ Scheme::Scheme() {
 	assign("equal?"     ,2,0,0, (SchemeObject* (*)()) s_equal_p);
 	assign("eq?"        ,2,0,0, (SchemeObject* (*)()) s_eq_p);
 	assign("eqv?"       ,2,0,0, (SchemeObject* (*)()) s_eqv_p);
-	assign("bool?"      ,1,0,0, (SchemeObject* (*)()) s_boolean_p);
+	assign("boolean?"   ,1,0,0, (SchemeObject* (*)()) s_boolean_p);
 	assign("pair?"      ,1,0,0, (SchemeObject* (*)()) s_pair_p);
 	assign("symbol?"    ,1,0,0, (SchemeObject* (*)()) s_symbol_p);
+	assign("char?"      ,1,0,0, (SchemeObject* (*)()) s_char_p);
 	assign("list?"      ,1,0,0, (SchemeObject* (*)()) s_list_p);
 	assign("string?"    ,1,0,0, (SchemeObject* (*)()) s_string_p);
 	assign("procedure?" ,1,0,0, (SchemeObject* (*)()) s_procedure_p);
@@ -152,6 +153,10 @@ SchemeBool* s_eq_p(SchemeObject* a, SchemeObject* b) {
     return s_eqv_p(a,b); 
 }
 
+// (boolean? b)
+SchemeBool* s_char_p(SchemeObject* o) {
+    return o->type() == SchemeObject::CHAR ? S_TRUE : S_FALSE;
+}
 
 
 // (boolean? b)
@@ -323,6 +328,8 @@ SchemeObject* s_display(SchemeObject* o) {
     // TODO: Also handle char special
     if (s_string_p(o) == S_TRUE) {
         cout << static_cast<SchemeString*>(o)->str;
+    } else if (s_char_p(o)) {
+        cout << static_cast<SchemeChar*>(o)->c;
     } else {
         cout << o->toString();
     }

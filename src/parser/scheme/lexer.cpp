@@ -76,6 +76,9 @@ Lexer::Token Lexer::nextToken() {
 					return Lexer::BOOLEAN;
                 } else if (n == '(') {
 					return Lexer::HASH_OPEN_PAREN;           
+                } else if (n == '\\') {
+                    chr = is->get();
+                    return Lexer::CHAR;
                 } else {
 					is->unget();
 					break;

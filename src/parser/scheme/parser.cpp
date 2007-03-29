@@ -24,6 +24,8 @@ SchemeObject* Parser::read_simple() {
            return new SchemeString(lexer->getString());
         case Lexer::BOOLEAN :
 			return lexer->getBool() ? S_TRUE : S_FALSE;
+        case Lexer::CHAR :
+			return new SchemeChar(lexer->getChar());
         case Lexer::SYMBOL :
            return SchemeSymbol::create(lexer->getString());
         case Lexer::OPEN_PAREN :

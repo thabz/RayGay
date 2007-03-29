@@ -80,10 +80,17 @@ void test_parser() {
 
 void test_bools() {
     Scheme* s = new Scheme();
-    assert(s->eval("(bool? #t)") == S_TRUE);
-    assert(s->eval("(bool? #f)") == S_TRUE);
-    assert(s->eval("(bool? 1)") == S_FALSE);
-    assert(s->eval("(bool? '(1 2 3))") == S_FALSE);
+    assert(s->eval("(boolean? #t)") == S_TRUE);
+    assert(s->eval("(boolean? #f)") == S_TRUE);
+    assert(s->eval("(boolean? 1)") == S_FALSE);
+    assert(s->eval("(boolean? '(1 2 3))") == S_FALSE);
+}
+
+void test_char() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(char? #\\a)", "#t");
+    assert_eval(s, "(char? 1)", "#f");
+    assert_eval(s, "#\\b", "#\\b");
 }
 
 void test_symbols() {
@@ -342,7 +349,7 @@ void test_quote() {
     assert_eval(s, "'a", "a");
     assert_eval(s, "'1", "1");
     assert_eval(s, "(number? 1)", "#t");
-    assert_eval(s, "(bool? '#t)", "#t");
+    assert_eval(s, "(boolean? '#t)", "#t");
 
     assert_eval(s, "`a", "a");
     assert_eval(s, "`()", "()");
@@ -427,6 +434,10 @@ int main(int argc, char *argv[]) {
 
         cout << "Test let...             ";
         test_let();
+        cout << " OK" << endl;
+
+        cout << "Test char...            ";
+        test_char();
         cout << " OK" << endl;
 
         test_define_and_set();
