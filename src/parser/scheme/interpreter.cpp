@@ -107,6 +107,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     SchemeSymbol* begin_symbol = SchemeSymbol::create("begin");
     SchemeSymbol* and_symbol = SchemeSymbol::create("and");
     SchemeSymbol* or_symbol = SchemeSymbol::create("or");
+    SchemeSymbol* map_symbol = SchemeSymbol::create("map");
     SchemeSymbol* lambda_symbol = SchemeSymbol::create("lambda");
     SchemeSymbol* apply_symbol = SchemeSymbol::create("apply");
     SchemeSymbol* quote_symbol = SchemeSymbol::create("quote");
@@ -194,6 +195,10 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_LET;
+    	} else if (s == map_symbol) {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_MAP;
     	} else if (s == set_e_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
@@ -751,7 +756,119 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         //envt->put(s, eval(envt, p->cdrAsPair()->car));
         tstack->return_jump(S_UNSPECIFIED);
     }
-    EVAL_LET: {
+    EVAL_MAP: {        
+        SchemePair* p = tstack->popSchemePair();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        
+        // TODO: Tjek at alle argument-lists er lige lange
+
+        // Eval the procedure argument
+        tstack->push(envt);
+        tstack->push(p); // Push local var
+        call_and_return(envt,p->car,EVAL);
+        SchemeObject* proc = tstack->popSchemeObject();
+        p = tstack->popSchemePair();             // Pop local var
+        envt = tstack->popBindingEnvironment();                
+        
+        if (s_procedure_p(proc) == S_FALSE) {
+            throw scheme_exception("Can't apply to non-procedure: " + p->car->toString());
+        }
+        
+        p = p->cdrAsPair();
+        
+        if (p == S_EMPTY_LIST) {
+            throw scheme_exception("Wrong number of arguments to map");
+        }
+        
+        SchemePair* lists = S_EMPTY_LIST;
+        SchemePair* prev = S_EMPTY_LIST;
+        // Eval all the lists
+        while (p != S_EMPTY_LIST) {
+            tstack->push(envt);
+            tstack->push(p);
+            tstack->push(lists);
+            tstack->push(prev);
+            call_and_return(envt,p->car,EVAL);
+            SchemeObject* list = tstack->popSchemeObject();
+            prev = tstack->popSchemePair();
+            lists = tstack->popSchemePair();
+            p = tstack->popSchemePair();
+            envt = tstack->popBindingEnvironment();
+
+            if (s_pair_p(list) == S_FALSE) {
+                throw scheme_exception("Wrong argument to map");
+            }
+            
+            if (lists == S_EMPTY_LIST) {
+                lists = s_cons(list,S_EMPTY_LIST);
+                prev = lists;
+            } else {
+                SchemePair* tmp = s_cons(list,S_EMPTY_LIST);
+                prev->cdr = tmp;
+                prev = tmp;
+            }
+            p = p->cdrAsPair();
+        }
+        
+        // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver til ((2 3)(20 30)) og til sidst ((3)(30))
+        SchemePair* result = S_EMPTY_LIST;
+        while (lists->car != S_EMPTY_LIST) {
+            // Collect args
+            SchemePair* collection = S_EMPTY_LIST;
+            SchemePair* prev_col = S_EMPTY_LIST;
+            SchemePair* lists_ptr = lists;
+            while (lists_ptr != S_EMPTY_LIST) {
+                SchemeObject* arg = s_car(s_car(lists_ptr));
+                s_set_car_e(lists_ptr,s_cdr(s_car(lists_ptr)));
+                if (collection == S_EMPTY_LIST) {
+                    collection = s_cons(arg,S_EMPTY_LIST);
+                    prev_col = collection;
+                } else {
+                    SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
+                    prev_col->cdr = tmp;
+                    prev_col = tmp;
+                    
+                }
+                lists_ptr = lists_ptr->cdrAsPair();
+            }
+ 
+            tstack->push(envt);
+            tstack->push(result); // Push local var
+            tstack->push(lists);  // Push local var
+            tstack->push(prev);   // Push local var
+            int kk = setjmp(*(tstack->push_jump_pos()));
+            if (kk == 0) {
+                tstack->push(envt);
+                tstack->push(collection);
+                tstack->push(proc);
+                goto EVAL_PROCEDURE_CALL;
+            }
+            SchemeObject* result_item = tstack->popSchemeObject();
+            prev = tstack->popSchemePair();             // Pop local var
+            lists = tstack->popSchemePair();            // Pop local var
+            result = tstack->popSchemePair();           // Pop local var
+            envt = tstack->popBindingEnvironment();                
+
+            if (result == S_EMPTY_LIST) {
+                result = s_cons(result_item, S_EMPTY_LIST);
+                prev = result;
+            } else {
+                SchemePair* tmp = s_cons(result_item, S_EMPTY_LIST);
+                prev->cdr = tmp;
+                prev = tmp;
+            }
+        }
+        // Tjek at argumentlisterne var lige lange
+        while (lists != S_EMPTY_LIST) {
+            if (lists->car != S_EMPTY_LIST) {
+                throw scheme_exception("Argument lists not equals length.");
+            }
+            lists = lists->cdrAsPair();
+        }
+        
+        tstack->return_jump(result);
+    }
+    EVAL_LET: {        
         SchemePair* p = tstack->popSchemePair();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
         

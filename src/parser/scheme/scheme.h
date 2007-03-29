@@ -73,8 +73,8 @@ SchemePair* s_list_tail(SchemePair* list, SchemeNumber* k);
 SchemeObject* s_assoc(SchemeObject* obj, SchemePair* alist);
 SchemeObject* s_assq(SchemeObject* obj, SchemePair* alist);
 SchemeObject* s_assv(SchemeObject* obj, SchemePair* alist);
-SchemeObject* s_set_car_e(SchemePair* p, SchemeObject* o);
-SchemeObject* s_set_cdr_e(SchemePair* p, SchemeObject* o);
+SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o);
+SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o);
 
 SchemeObject* s_append(SchemePair* args);
 SchemeBool* s_pair_p(SchemeObject* p);
@@ -123,4 +123,7 @@ SchemeBool* s_zero_p(SchemeNumber* n);
 SchemeBool* s_negative_p(SchemeNumber* n);
 SchemeBool* s_positive_p(SchemeNumber* n);
 
+// String stuff
+SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr);
+SchemeNumber* s_string_length(SchemeObject* s);
 #endif

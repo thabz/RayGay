@@ -310,6 +310,11 @@ void test_string() {
     assert_eval(s, "(string? \"\")", "#t");
     assert_eval(s, "(string? \"a\")", "#t");
     assert_eval(s, "(string? ((lambda () \"a\")))", "#t");
+    assert_eval(s, "(make-string 3)","\"   \"");
+    assert_eval(s, "(make-string 5 #\\z)","\"zzzzz\"");
+    assert_eval(s, "(string-length \"abcdef\")","6");
+    assert_eval(s, "(string-length \"\")","0");
+    assert_eval(s, "(string-length (make-string 200))","200");
 }
 
 void test_begin() {
@@ -361,6 +366,13 @@ void test_quote() {
 
     assert_eval(s, "`(a ,(list 1 2 ) c)", "(a (1 2) c)");
     assert_eval(s, "`(a ,@(list 1 2 ) c)", "(a 1 2 c)");
+}
+
+void test_map() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(map + '(1 2 3) '(10 20 30))", "(11 22 33)");
+    assert_eval(s, "(map car '((a b) (d e) (g h)))", "(a d g)");
+    assert_eval(s, "(map (lambda (n) (expt n n)) '(1 2 3 4 5))", "(1 4 27 256 3125)");
 }
 
 void test_vector() {
@@ -440,8 +452,17 @@ int main(int argc, char *argv[]) {
         test_char();
         cout << " OK" << endl;
 
-        test_define_and_set();
+
+        cout << "Test string...          ";
         test_string();
+        cout << " OK" << endl;
+
+        cout << "Test map...             ";
+        test_map();
+        cout << " OK" << endl;
+
+
+        test_define_and_set();
         test_begin();
         test_quote();
     } catch (scheme_exception e) {

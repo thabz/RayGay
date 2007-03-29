@@ -22,6 +22,7 @@ SchemeNumber* S_EIGHT = new SchemeNumber(8);
 SchemeNumber* S_NINE = new SchemeNumber(9);
 SchemeUnspecified* S_UNSPECIFIED = new SchemeUnspecified();
 SchemeEmptyList* S_EMPTY_LIST = new SchemeEmptyList();
+SchemeChar* S_SPACE = new SchemeChar(' ');
 SchemeNumber* S_NUMBERS[] = {S_ZERO, S_ONE, S_TWO, S_THREE, S_FOUR, S_FIVE, S_SIX, S_SEVEN, S_EIGHT, S_NINE};
 
 Scheme::Scheme() {
@@ -93,6 +94,8 @@ Scheme::Scheme() {
 	assign("vector-fill!",2,0,0, (SchemeObject* (*)()) s_vector_fill_e);
 	assign("list->vector",1,0,0, (SchemeObject* (*)()) s_list_2_vector);
 	assign("vector->list",1,0,0, (SchemeObject* (*)()) s_vector_2_list);
+	assign("make-string" ,1,1,0, (SchemeObject* (*)()) s_make_string);
+	assign("string-length",1,0,0, (SchemeObject* (*)()) s_string_length);
 	
     ifstream infile;
     infile.open("init.scm", ifstream::in);
@@ -366,13 +369,19 @@ SchemeNumber* s_length(SchemePair* p) {
     return make_number(length);
 }
 
-SchemeObject* s_set_car_e(SchemePair* p, SchemeObject* o) {
-    p->car = o;
+SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o) {
+    if (s_pair_p(p) == S_FALSE) {
+        throw scheme_exception("Invalid argument in position 1");
+    }
+    static_cast<SchemePair*>(p)->car = o;
     return S_UNSPECIFIED;
 }
 
-SchemeObject* s_set_cdr_e(SchemePair* p, SchemeObject* o) {
-    p->cdr = o;
+SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o) {
+    if (s_pair_p(p) == S_FALSE) {
+        throw scheme_exception("Invalid argument in position 1");
+    }
+    static_cast<SchemePair*>(p)->cdr = o;
     return S_UNSPECIFIED;
 }
 
@@ -762,4 +771,24 @@ SchemeBool* s_greater_equal(SchemePair* p) {
     
 }
 
+SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr) {
+    if (s_number_p(len) == S_FALSE) {
+        throw scheme_exception("Wrong argument in position 1");
+    }
+    if (chr == S_UNSPECIFIED) {
+        chr = S_SPACE;
+    }
+    if (s_char_p(chr) == S_FALSE) {
+        throw scheme_exception("Wrong argument in position 2");
+    }
+    string s = string(int(static_cast<SchemeNumber*>(len)->number), static_cast<SchemeChar*>(chr)->c);
+    return new SchemeString(s);
+}
 
+SchemeNumber* s_string_length(SchemeObject* s) {
+    if (s_string_p(s) == S_FALSE) {
+        throw scheme_exception("Wrong argument in position 1");
+    }
+    int len = static_cast<SchemeString*>(s)->str.size();
+    return make_number(len);
+}
