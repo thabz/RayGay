@@ -108,6 +108,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     SchemeSymbol* and_symbol = SchemeSymbol::create("and");
     SchemeSymbol* or_symbol = SchemeSymbol::create("or");
     SchemeSymbol* map_symbol = SchemeSymbol::create("map");
+    SchemeSymbol* for_each_symbol = SchemeSymbol::create("for-each");
     SchemeSymbol* lambda_symbol = SchemeSymbol::create("lambda");
     SchemeSymbol* apply_symbol = SchemeSymbol::create("apply");
     SchemeSymbol* quote_symbol = SchemeSymbol::create("quote");
@@ -199,6 +200,10 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_MAP;
+    	} else if (s == for_each_symbol) {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_FOR_EACH;
     	} else if (s == set_e_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
@@ -867,6 +872,13 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         }
         
         tstack->return_jump(result);
+    }
+    EVAL_FOR_EACH: {        
+        SchemePair* p = tstack->popSchemePair();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        call_and_return(envt,p,EVAL_MAP);
+        tstack->pop();
+        tstack->return_jump(S_UNSPECIFIED);
     }
     EVAL_LET: {        
         SchemePair* p = tstack->popSchemePair();
