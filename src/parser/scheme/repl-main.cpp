@@ -2,10 +2,11 @@
 #include "scheme.h"
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
-int main(int argc, char *argv[]) {
+int repl() {
     Scheme* scheme = new Scheme();
 	char input[64*1024];
 	
@@ -25,4 +26,26 @@ int main(int argc, char *argv[]) {
 			cerr << e.str << endl;
  	    }
 	}
+}
+
+int runfile(char* filename) {
+    Scheme* scheme = new Scheme();
+    ifstream* ifs = new ifstream(filename, ios::in);
+
+    try {
+        scheme->eval(ifs);
+    } catch (scheme_exception e) {
+		cerr << e.str << endl;
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
+
+int main(int argc, char *argv[]) {
+    if (argc == 2) {
+        return runfile(argv[1]);
+    } else {
+        return repl();
+    }
+    
 }
