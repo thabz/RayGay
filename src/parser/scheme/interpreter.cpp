@@ -756,7 +756,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         s = static_cast<SchemeSymbol*>(tstack->popSchemeObject()); // Pop local var
         envt = tstack->popBindingEnvironment();                
 
-        envt->put(s, v);
+        envt->set(s, v);
 
         //envt->put(s, eval(envt, p->cdrAsPair()->car));
         tstack->return_jump(S_UNSPECIFIED);
