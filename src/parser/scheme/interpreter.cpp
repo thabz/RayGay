@@ -101,6 +101,19 @@ Stack* tstack = new Stack();
 }
 
 SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
+    
+    SchemeSymbol* if_symbol = SchemeSymbol::create("if");
+    SchemeSymbol* let_symbol = SchemeSymbol::create("let");
+    SchemeSymbol* begin_symbol = SchemeSymbol::create("begin");
+    SchemeSymbol* and_symbol = SchemeSymbol::create("and");
+    SchemeSymbol* or_symbol = SchemeSymbol::create("or");
+    SchemeSymbol* lambda_symbol = SchemeSymbol::create("lambda");
+    SchemeSymbol* apply_symbol = SchemeSymbol::create("apply");
+    SchemeSymbol* quote_symbol = SchemeSymbol::create("quote");
+    SchemeSymbol* quasiquote_symbol = SchemeSymbol::create("quasiquote");
+    SchemeSymbol* define_symbol = SchemeSymbol::create("define");
+    SchemeSymbol* set_e_symbol = SchemeSymbol::create("set!");
+    
     int kk = setjmp(*(tstack->push_jump_pos()));
     if (kk == 0) {
         tstack->push(envt_orig);
@@ -151,48 +164,48 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         SchemeSymbol* s = static_cast<SchemeSymbol*>(car);
     	SchemePair* cdr = static_cast<SchemePair*>(p->cdr);
     	
-        if (s->str == "if") {
+        if (s == if_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_IF;
-    	} else if (s->str == "quote") {
+    	} else if (s == quote_symbol) {
             tstack->return_jump(cdr->car);
-    	} else if (s->str == "define") {
+    	} else if (s == define_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_DEFINE;
-    	} else if (s->str == "quasiquote") {
+    	} else if (s == quasiquote_symbol) {
             tstack->push(envt);
             tstack->push(cdr->car);
     		goto EVAL_QUASIQUOTE;
-    	} else if (s->str == "apply") {
+    	} else if (s == apply_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_APPLY;
-    	} else if (s->str == "lambda") {
+    	} else if (s == lambda_symbol) {
     	    SchemeObject* formals = cdr->car;
             SchemeObject* body = cdr->cdr;
             tstack->push(envt);
             tstack->push(formals);
             tstack->push(body);
             goto EVAL_LAMBDA;	
-    	/*	
-    	} else if (s->str == "let") {
-            return eval_let(envt, cdr);	
-        */
-    	} else if (s->str == "set!") {
+    	} else if (s == let_symbol) {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_LET;
+    	} else if (s == set_e_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_SET_E;
-    	} else if (s->str == "begin") {
+    	} else if (s == begin_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_SEQUENCE;
-    	} else if (s->str == "and") {
+    	} else if (s == and_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_AND;
-    	} else if (s->str == "or") {
+    	} else if (s == or_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_OR;
@@ -736,6 +749,43 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
 
         //envt->put(s, eval(envt, p->cdrAsPair()->car));
         tstack->return_jump(S_UNSPECIFIED);
+    }
+    EVAL_LET: {
+        SchemePair* p = tstack->popSchemePair();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        
+        if (s_symbol_p(p->car) == S_TRUE) {
+            // Named let
+            throw scheme_exception("Named let not implemented yet");
+        }
+        if (s_pair_p(p->car) == S_FALSE && s_null_p(p->car) == S_FALSE) {
+            // Named let
+            throw scheme_exception("Bad body in let");
+        }
+        
+        // Build new bindings
+        BindingEnvironment* new_bindings = new BindingEnvironment(envt);
+        SchemePair* binding_pairs = static_cast<SchemePair*>(p->car);
+
+        while (binding_pairs != S_EMPTY_LIST) {
+            // Eval binding value
+            tstack->push(envt);
+            tstack->push(p);
+            tstack->push(new_bindings);
+            tstack->push(binding_pairs);
+            call_and_return(envt,s_car(s_cdr(s_car(binding_pairs))),EVAL);
+            SchemeObject* val = tstack->popSchemeObject();
+            binding_pairs = tstack->popSchemePair();
+            new_bindings = tstack->popBindingEnvironment();
+            p = tstack->popSchemePair();
+            envt = tstack->popBindingEnvironment();                
+            new_bindings->put(static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs))), val);
+            binding_pairs = binding_pairs->cdrAsPair();
+        }
+        
+        tstack->push(new_bindings);
+        tstack->push(p->cdr); // Push local var
+        goto EVAL_SEQUENCE;
     }
     return NULL;
 }

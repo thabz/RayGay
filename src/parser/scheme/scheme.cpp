@@ -293,14 +293,14 @@ SchemeBool* s_null_p(SchemeObject* p) {
 
 SchemeObject* s_car(SchemeObject* o) {
     if (o->type() != SchemeObject::PAIR) {
-        throw scheme_exception("Wrong type");
+        throw scheme_exception("Wrong type in car");
     }
     return static_cast<SchemePair*>(o)->car;
 }
 
 SchemeObject* s_cdr(SchemeObject* o) {
     if (o->type() != SchemeObject::PAIR) {
-        throw scheme_exception("Wrong type");
+        throw scheme_exception("Wrong type in cdr");
     }
     return static_cast<SchemePair*>(o)->cdr;
 }

@@ -312,6 +312,29 @@ void test_begin() {
     assert_eval(s, "(begin 1 2 3)", "3");
 }
 
+void test_let() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(let () 'a 'b)", "b");
+    assert_eval(s, "(let ((i 10)) i)", "10");
+    assert_eval(s, "(let ((i 10)(j 20)) (* j i))", "200");
+    /*
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    */
+}
+
 void test_quote() {
     Scheme* s = new Scheme();
     assert_eval(s, "'()", "()");
@@ -400,6 +423,10 @@ int main(int argc, char *argv[]) {
 
         cout << "Test lambda...          ";
         test_lambda();
+        cout << " OK" << endl;
+
+        cout << "Test let...             ";
+        test_let();
         cout << " OK" << endl;
 
         test_define_and_set();

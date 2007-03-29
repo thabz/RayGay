@@ -38,6 +38,7 @@ int runfile(char* filename) {
     try {
         scheme->eval(ifs);
     } catch (scheme_exception e) {
+        ifs->close();
 		cerr << e.str << endl;
         return EXIT_FAILURE;
     }
@@ -50,6 +51,5 @@ int main(int argc, char *argv[]) {
         return runfile(argv[1]);
     } else {
         return repl();
-    }
-    
+    }    
 }
