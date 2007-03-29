@@ -328,10 +328,9 @@ SchemeObject* s_write(SchemeObject* o) {
 }
 
 SchemeObject* s_display(SchemeObject* o) {
-    // TODO: Also handle char special
     if (s_string_p(o) == S_TRUE) {
         cout << static_cast<SchemeString*>(o)->str;
-    } else if (s_char_p(o)) {
+    } else if (s_char_p(o) == S_TRUE) {
         cout << static_cast<SchemeChar*>(o)->c;
     } else {
         cout << o->toString();
