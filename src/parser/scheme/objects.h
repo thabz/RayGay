@@ -4,6 +4,7 @@
 
 #include <string>
 #include <map>
+#include <setjmp.h>
 
 class BindingEnvironment;
 
@@ -102,6 +103,15 @@ class SchemeBool : public SchemeObject {
         ObjectType type() { return BOOL; };
     	bool boolean;
 	    bool boolValue() const { return boolean; };
+};
+
+class SchemeContinuation : public SchemeObject {
+    public:
+        SchemeContinuation();
+        void call();
+    private:    
+        ::jmp_buf jmpbuf;
+    
 };
 
 class SchemeProcedure : public SchemeObject 

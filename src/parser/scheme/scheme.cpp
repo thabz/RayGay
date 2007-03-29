@@ -66,6 +66,7 @@ Scheme::Scheme() {
 	assign("+"          ,0,0,1, (SchemeObject* (*)()) s_plus);
 	assign("-"          ,0,0,1, (SchemeObject* (*)()) s_minus);
 	assign("*"          ,0,0,1, (SchemeObject* (*)()) s_mult);
+	assign("/"          ,0,0,1, (SchemeObject* (*)()) s_divide);
 	assign("tan"        ,1,0,0, (SchemeObject* (*)()) s_tan);
 	assign("atan"       ,1,1,0, (SchemeObject* (*)()) s_atan);
 	assign("sin"        ,1,0,0, (SchemeObject* (*)()) s_sin);
@@ -80,6 +81,9 @@ Scheme::Scheme() {
 	assign("max"        ,1,0,1, (SchemeObject* (*)()) s_max);
 	assign("even?"      ,1,0,1, (SchemeObject* (*)()) s_even_p);
 	assign("odd?"       ,1,0,1, (SchemeObject* (*)()) s_odd_p);
+	assign("zero?"      ,1,0,0, (SchemeObject* (*)()) s_zero_p);
+	assign("negative?"  ,1,0,0, (SchemeObject* (*)()) s_negative_p);
+	assign("positive?"  ,1,0,0, (SchemeObject* (*)()) s_positive_p);
 	assign("make-vector",1,1,0, (SchemeObject* (*)()) s_make_vector);
 	assign("vector"     ,0,0,1, (SchemeObject* (*)()) s_vector);
 	assign("vector-length",1,0,0, (SchemeObject* (*)()) s_vector_length);
@@ -454,6 +458,32 @@ SchemeNumber* s_minus(SchemePair* p) {
 	return new SchemeNumber(result);
 }
 
+SchemeNumber* s_divide(SchemePair* p) {
+	double result = 1;
+    double first = true;
+	if (p == S_EMPTY_LIST) {
+		throw scheme_exception("Wrong number of arguments");
+	}
+	if (p->cdr == S_EMPTY_LIST) {
+	    // One-argument case is a simple inverse (n => 1/n)
+        first = false;
+	}
+	while (p != S_EMPTY_LIST) {
+		SchemeNumber* n = static_cast<SchemeNumber*>(p->car);
+		if (n == NULL) {
+			throw scheme_exception("Wrong argument to +: " + p->car->toString());
+		}
+		if (first) {
+            result = n->number;
+            first = false;
+		} else {
+		    result /= n->number;
+	    }
+		p = p->cdrAsPair();
+	}
+	return new SchemeNumber(result);
+}
+
 
 SchemeNumber* s_mult(SchemePair* p) {
 	double result = 1;
@@ -613,6 +643,16 @@ SchemeBool* s_odd_p(SchemeNumber* n) {
     return (abs(nn % 2) == 1) ? S_TRUE : S_FALSE;
 }
 
+SchemeBool* s_zero_p(SchemeNumber* n) {
+    return n->number == 0 ? S_TRUE : S_FALSE;
+}
+SchemeBool* s_negative_p(SchemeNumber* n) {
+    return n->number < 0 ? S_TRUE : S_FALSE;
+}
+
+SchemeBool* s_positive_p(SchemeNumber* n) {
+    return n->number > 0 ? S_TRUE : S_FALSE;
+}
 
 SchemeBool* s_equal(SchemePair* p) {
     if (p == S_EMPTY_LIST) {

@@ -140,6 +140,10 @@ void test_math() {
     assert_eval(s, "(- 3)" , "-3");
     assert_eval(s, "(- 3 2)" , "1");
     assert_eval(s, "(- 3 4 5)" , "-6");
+    assert_eval(s, "(/ 2)" , "0.5");
+    assert_eval(s, "(/ 10 2)" , "5");
+    assert_eval(s, "(/ 10 2 2)" , "2.5");
+    assert_eval(s, "(- 3 4 5)" , "-6");
     assert_eval(s, "(min 5)" , "5");
     assert_eval(s, "(min 3.0 1 2)" , "1");
     assert_eval(s, "(max 5)" , "5");
@@ -161,6 +165,14 @@ void test_math() {
     assert_eval(s, "(odd? 31137)" , "#t");
     assert_eval(s, "(odd? 0)" , "#f");
     assert_eval(s, "(odd? -1)" , "#t");
+    assert_eval(s, "(zero? 0)" , "#t");
+    assert_eval(s, "(zero? -1)" , "#f");
+    assert_eval(s, "(negative? 0)" , "#f");
+    assert_eval(s, "(negative? -10)" , "#t");
+    assert_eval(s, "(negative? 2)" , "#f");
+    assert_eval(s, "(positive? 0)" , "#f");
+    assert_eval(s, "(positive? -10)" , "#f");
+    assert_eval(s, "(positive? 2)" , "#t");
     
 }
 

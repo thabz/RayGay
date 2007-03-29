@@ -175,3 +175,14 @@ SchemeProcedure::SchemeProcedure(BindingEnvironment* envt, SchemePair* s_req, Sc
 string SchemeProcedure::toString() {
     return "#<primitive-procedure>";
 }
+
+//-----------------------------------------------------------
+// Continuation
+//-----------------------------------------------------------
+SchemeContinuation::SchemeContinuation() {
+    
+}
+
+void SchemeContinuation::call() {
+    longjmp(jmpbuf,1);
+}

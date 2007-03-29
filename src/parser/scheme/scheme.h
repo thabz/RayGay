@@ -103,6 +103,7 @@ SchemeBool* s_greater_equal(SchemePair* p);
 SchemeNumber* s_plus(SchemePair* l);
 SchemeNumber* s_minus(SchemePair* l);
 SchemeNumber* s_mult(SchemePair* l);
+SchemeNumber* s_divide(SchemePair* l);
 SchemeNumber* s_sqrt(SchemeNumber* n);
 SchemeNumber* s_sin(SchemeNumber* n);
 SchemeNumber* s_cos(SchemeNumber* n);
@@ -117,5 +118,8 @@ SchemeNumber* s_min(SchemeNumber* n, SchemePair* l);
 SchemeNumber* s_max(SchemeNumber* n, SchemePair* l);
 SchemeBool* s_even_p(SchemeNumber* n);
 SchemeBool* s_odd_p(SchemeNumber* n);
+SchemeBool* s_zero_p(SchemeNumber* n);
+SchemeBool* s_negative_p(SchemeNumber* n);
+SchemeBool* s_positive_p(SchemeNumber* n);
 
 #endif
