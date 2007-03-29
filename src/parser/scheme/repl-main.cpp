@@ -31,13 +31,17 @@ int repl() {
 int runfile(char* filename) {
     Scheme* scheme = new Scheme();
     ifstream* ifs = new ifstream(filename, ios::in);
-
+    if (ifs->fail()) {
+        cout << "Error opening file" << endl;
+        return EXIT_FAILURE;
+    }
     try {
         scheme->eval(ifs);
     } catch (scheme_exception e) {
 		cerr << e.str << endl;
         return EXIT_FAILURE;
     }
+    ifs->close();
     return EXIT_SUCCESS;
 }
 
