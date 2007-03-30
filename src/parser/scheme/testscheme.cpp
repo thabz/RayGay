@@ -320,6 +320,7 @@ void test_string() {
     assert_eval(s, "(string-ref \"scheme\" 0)","#\\s");
     assert_eval(s, "(string-ref \"scheme\" 2)","#\\h");
     assert_eval(s, "(symbol->string 'aaa)","\"aaa\"");
+    assert_eval(s, "(string->symbol \"aaa\")","aaa");
 }
 
 void test_begin() {

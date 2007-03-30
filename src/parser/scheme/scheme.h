@@ -128,5 +128,6 @@ SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr);
 SchemeNumber* s_string_length(SchemeObject* s);
 SchemeChar* s_string_ref(SchemeString* s, SchemeNumber* i);
 SchemeString* s_symbol_2_string(SchemeSymbol* symbol);
+SchemeSymbol* s_string_2_symbol(SchemeString* s);
 
 #endif

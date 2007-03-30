@@ -98,6 +98,7 @@ Scheme::Scheme() {
 	assign("string-length",1,0,0, (SchemeObject* (*)()) s_string_length);
 	assign("string-ref"  ,2,0,0, (SchemeObject* (*)()) s_string_ref);
 	assign("symbol->string",1,0,0, (SchemeObject* (*)()) s_symbol_2_string);
+	assign("string->symbol",1,0,0, (SchemeObject* (*)()) s_string_2_symbol);
 	
     ifstream infile;
     infile.open("init.scm", ifstream::in);
@@ -801,5 +802,8 @@ SchemeChar* s_string_ref(SchemeString* s, SchemeNumber* i) {
 
 SchemeString* s_symbol_2_string(SchemeSymbol* symbol) {
     return new SchemeString(symbol->str,true);
+}
 
+SchemeSymbol* s_string_2_symbol(SchemeString* s) {
+    return SchemeSymbol::create(s->str);
 }
