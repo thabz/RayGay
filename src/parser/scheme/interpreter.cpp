@@ -731,6 +731,9 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         goto EVAL_PROCEDURE_CALL;
     }    
     EVAL_SET_E: {
+        // TODO: We're doing double hashtable lookups. Both a envt->get(s) and in envt->set(s,v). Optimize by letting envt->get(s) return a binding, that
+        // we manipulate instead of doing the set(s,v)
+
         SchemePair* p = tstack->popSchemePair();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
 
@@ -747,7 +750,6 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         if (already_bound == NULL) {
             throw scheme_exception("Unbound variable: " + s->toString());
         }
-        // TODO: Reuse bound object if same type
 
         tstack->push(envt);
         tstack->push(s); // Push local var
@@ -758,7 +760,6 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
 
         envt->set(s, v);
 
-        //envt->put(s, eval(envt, p->cdrAsPair()->car));
         tstack->return_jump(S_UNSPECIFIED);
     }
     EVAL_MAP: {        

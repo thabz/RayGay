@@ -295,6 +295,8 @@ void test_define_and_set() {
     assert_eval(s, "x", "17");
     s->eval("(set! x 20)");
     assert_eval(s, "x", "20");
+    s->eval("(let () (set! x 50))");
+    assert_eval(s, "x", "50");
     s->eval("(define (square x) (* x x))");
     assert_eval(s, "(square 9)", "81");
     s->eval("(define (selftest . x) x)");
