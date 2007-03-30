@@ -321,6 +321,9 @@ void test_string() {
     assert_eval(s, "(string-ref \"scheme\" 2)","#\\h");
     assert_eval(s, "(symbol->string 'aaa)","\"aaa\"");
     assert_eval(s, "(string->symbol \"aaa\")","aaa");
+    assert_eval(s, "(string-append)","\"\"");
+    assert_eval(s, "(string-append \"zzz\")","\"zzz\"");
+    assert_eval(s, "(string-append \"zzz\" \"xxx\") ","\"zzzxxx\"");
 }
 
 void test_begin() {
