@@ -98,6 +98,7 @@ Scheme::Scheme() {
 	assign("string-length",1,0,0, (SchemeObject* (*)()) s_string_length);
 	assign("string-ref"  ,2,0,0, (SchemeObject* (*)()) s_string_ref);
 	assign("string-append",0,0,1, (SchemeObject* (*)()) s_string_append);
+	assign("string-copy",1,0,0, (SchemeObject* (*)()) s_string_copy);
 	assign("symbol->string",1,0,0, (SchemeObject* (*)()) s_symbol_2_string);
 	assign("string->symbol",1,0,0, (SchemeObject* (*)()) s_string_2_symbol);
 	
@@ -819,4 +820,11 @@ SchemeString* s_string_append(SchemePair* strings) {
 	strings = strings->cdrAsPair();
     }
     return new SchemeString(result);
+}
+
+SchemeString* s_string_copy(SchemeObject* str) {
+    if (s_string_p(str) == S_FALSE) {
+        throw scheme_exception("Wrong argument to string-copy");
+    }
+    return new SchemeString(static_cast<SchemeString*>(str)->str);
 }

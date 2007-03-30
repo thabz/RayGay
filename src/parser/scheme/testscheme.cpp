@@ -324,6 +324,7 @@ void test_string() {
     assert_eval(s, "(string-append)","\"\"");
     assert_eval(s, "(string-append \"zzz\")","\"zzz\"");
     assert_eval(s, "(string-append \"zzz\" \"xxx\") ","\"zzzxxx\"");
+    assert_eval(s, "(string-copy \"zzz\")","\"zzz\"");
 }
 
 void test_begin() {
