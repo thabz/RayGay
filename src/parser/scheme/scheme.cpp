@@ -96,6 +96,8 @@ Scheme::Scheme() {
 	assign("vector->list",1,0,0, (SchemeObject* (*)()) s_vector_2_list);
 	assign("make-string" ,1,1,0, (SchemeObject* (*)()) s_make_string);
 	assign("string-length",1,0,0, (SchemeObject* (*)()) s_string_length);
+	assign("string-ref"  ,2,0,0, (SchemeObject* (*)()) s_string_ref);
+	assign("symbol->string",1,0,0, (SchemeObject* (*)()) s_symbol_2_string);
 	
     ifstream infile;
     infile.open("init.scm", ifstream::in);
@@ -790,4 +792,14 @@ SchemeNumber* s_string_length(SchemeObject* s) {
     }
     int len = static_cast<SchemeString*>(s)->str.size();
     return make_number(len);
+}
+
+SchemeChar* s_string_ref(SchemeString* s, SchemeNumber* i) {
+    int index = int(i->number);
+    return new SchemeChar(s->str[index]);
+}	
+
+SchemeString* s_symbol_2_string(SchemeSymbol* symbol) {
+    return new SchemeString(symbol->str,true);
+
 }

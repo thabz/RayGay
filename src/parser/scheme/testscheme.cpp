@@ -317,6 +317,9 @@ void test_string() {
     assert_eval(s, "(string-length \"abcdef\")","6");
     assert_eval(s, "(string-length \"\")","0");
     assert_eval(s, "(string-length (make-string 200))","200");
+    assert_eval(s, "(string-ref \"scheme\" 0)","#\\s");
+    assert_eval(s, "(string-ref \"scheme\" 2)","#\\h");
+    assert_eval(s, "(symbol->string 'aaa)","\"aaa\"");
 }
 
 void test_begin() {

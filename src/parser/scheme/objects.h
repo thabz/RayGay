@@ -24,10 +24,12 @@ class SchemeObject {
 		    UNSPECIFIED,
  		    PROCEDURE
 		};
+	SchemeObject(bool immutable = false);
         virtual ~SchemeObject() {};
         virtual string toString() = 0;
         virtual bool boolValue() const { return true; }; // Used in conditional expressions (if, cond, and, or, do)
-		virtual ObjectType type() = 0;
+        virtual ObjectType type() = 0;
+	bool immutable;
 };
 
 class SchemeUnspecified : public SchemeObject {
@@ -90,7 +92,7 @@ class SchemeSymbol : public SchemeObject {
 
 class SchemeString : public SchemeObject {
     public:
-        SchemeString(string s);
+        SchemeString(string s, bool immutable = false);
         string toString();
         ObjectType type() { return STRING; };
 	    std::string str;

@@ -3,6 +3,9 @@
 #include "scheme.h"
 #include <sstream>
 
+SchemeObject::SchemeObject(bool immutable) : immutable(immutable) {
+}
+
 
 //-----------------------------------------------------------
 // Unspecified
@@ -14,7 +17,7 @@ string SchemeUnspecified::toString() {
 //-----------------------------------------------------------
 // String
 //-----------------------------------------------------------
-SchemeString::SchemeString(string s) : str(s) {
+SchemeString::SchemeString(string s, bool immutable) : SchemeObject(immutable), str(s) {
     
 }
 

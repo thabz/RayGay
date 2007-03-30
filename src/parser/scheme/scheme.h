@@ -126,4 +126,7 @@ SchemeBool* s_positive_p(SchemeNumber* n);
 // String stuff
 SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr);
 SchemeNumber* s_string_length(SchemeObject* s);
+SchemeChar* s_string_ref(SchemeString* s, SchemeNumber* i);
+SchemeString* s_symbol_2_string(SchemeSymbol* symbol);
+
 #endif
