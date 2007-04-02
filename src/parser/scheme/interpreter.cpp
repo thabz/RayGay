@@ -332,7 +332,6 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     	}
     }
     EVAL_AND: {
-        // TODO: Optimize tail-recursion
         SchemePair* p = static_cast<SchemePair*>(tstack->popSchemeObject());
         BindingEnvironment* envt = tstack->popBindingEnvironment();
         
@@ -393,12 +392,12 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         SchemeObject* o = tstack->popSchemeObject();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
         if (o->type() == SchemeObject::PAIR) {
-            SchemePair* p = static_cast<SchemePair*>(o);
+            SchemeObject* p = o;
             SchemePair* result = S_EMPTY_LIST;
-            while(p != S_EMPTY_LIST) {
+            while(s_null_p(p) == S_FALSE) {
                 SchemeObject* to_add;
-                SchemePair* v = static_cast<SchemePair*>(p->car);
-                if (p->car->type() == SchemeObject::PAIR && v->car->type() == SchemePair::SYMBOL) {
+                SchemePair* v = static_cast<SchemePair*>(s_car(p));
+                if (s_pair_p(s_car(p)) == S_TRUE && s_symbol_p(s_car(v)) == S_TRUE) {
                     SchemeSymbol* sy = static_cast<SchemeSymbol*>(v->car);
                     if (sy->str == "unquote") {
                         tstack->push(envt);
@@ -411,7 +410,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
                             goto EVAL;
                         }
                         to_add = tstack->popSchemeObject();
-                        p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
+                        p = tstack->popSchemeObject(); // Pop local var
                         result = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
                         envt = tstack->popBindingEnvironment(); // Pop local var
                         result = s_cons(to_add, result);
@@ -426,7 +425,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
                         tstack->push(p);
                         call_and_return(envt, v->cdrAsPair()->car, EVAL);
                         SchemeObject* to_add_list = tstack->popSchemeObject();
-                        p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
+                        p = tstack->popSchemeObject(); // Pop local var
                         result = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
                         envt = tstack->popBindingEnvironment(); // Pop local var
                         if (s_pair_p(to_add_list) != S_TRUE) {
@@ -435,15 +434,15 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
                         // TODO: Code below is inefficient, but works.
                         to_add_list = s_reverse(static_cast<SchemePair*>(to_add_list));
                         result = static_cast<SchemePair*>(s_append(s_cons(to_add_list, s_cons(result,S_EMPTY_LIST))));
-                        p = p->cdrAsPair();
+                        p = s_cdr(p);
                         continue;
                     } else {
-                        result = s_cons(p->car, result);
+                        result = s_cons(s_car(p), result);
                     }
                 } else {
-                    result = s_cons(p->car, result);
+                    result = s_cons(s_car(p), result);
                 }
-                p = p->cdrAsPair();
+                p = s_cdr(p);
             }
             result = s_reverse(result);
             tstack->return_jump(result);
@@ -458,19 +457,6 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
 
         SchemeObject* result = S_UNSPECIFIED;
 
-        /*
-        tstack->push(proc);
-        tstack->push(envt);
-        int kk = setjmp(*(tstack->push_jump_pos()));
-        if (kk == 0) {
-            tstack->push(envt);
-            tstack->push(arg_exprs);
-            goto EVAL_MULTI;
-        }
-        SchemePair* args = tstack->popSchemePair();
-        envt = tstack->popBindingEnvironment();
-        proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
-        */
         if (proc->fn != NULL) {
             SchemeObject* argsv[10];
             // Built-in function
@@ -620,8 +606,6 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             SchemeObject* proc = tstack->popSchemeObject();
             pa = tstack->popSchemePair();             // Pop local var
             envt = tstack->popBindingEnvironment();                
-
-            //SchemeProcedure* proc = eval_lambda(envt, pa->cdr, body);
 
             envt->put(static_cast<SchemeSymbol*>(pa->car), proc);
         } else {
@@ -890,8 +874,10 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         
         tstack->return_jump(result);
     }
-    EVAL_FOR_EACH: {        
-        SchemePair* p = tstack->popSchemePair();
+    EVAL_FOR_EACH: {
+        // TODO: This is a hack, but it works. The correct and fast impl. is to reuse 
+        // the map-evaluator-code above but don't collect the result list.        
+        SchemeObject* p = tstack->popSchemeObject();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
         call_and_return(envt,p,EVAL_MAP);
         tstack->pop();
