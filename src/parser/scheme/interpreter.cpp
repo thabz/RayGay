@@ -792,12 +792,14 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         while (p != S_EMPTY_LIST) {
             tstack->push(envt);
             tstack->push(p);
+            tstack->push(proc);
             tstack->push(lists);
             tstack->push(prev);
             call_and_return(envt,p->car,EVAL);
             SchemeObject* list = tstack->popSchemeObject();
             prev = tstack->popSchemePair();
             lists = tstack->popSchemePair();
+            proc = tstack->popSchemeObject();
             p = tstack->popSchemePair();
             envt = tstack->popBindingEnvironment();
 
@@ -842,6 +844,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(result); // Push local var
             tstack->push(lists);  // Push local var
             tstack->push(prev);   // Push local var
+            tstack->push(proc);   // Push local var
             int kk = setjmp(*(tstack->push_jump_pos()));
             if (kk == 0) {
                 tstack->push(envt);
@@ -850,6 +853,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
                 goto EVAL_PROCEDURE_CALL;
             }
             SchemeObject* result_item = tstack->popSchemeObject();
+            proc = tstack->popSchemeObject();
             prev = tstack->popSchemePair();             // Pop local var
             lists = tstack->popSchemePair();            // Pop local var
             result = tstack->popSchemePair();           // Pop local var
