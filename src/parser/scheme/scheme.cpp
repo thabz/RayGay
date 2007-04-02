@@ -42,6 +42,8 @@ Scheme::Scheme() {
 	assign("null?"      ,1,0,0, (SchemeObject* (*)()) s_null_p);
 	assign("car"        ,1,0,0, (SchemeObject* (*)()) s_car);
 	assign("cdr"        ,1,0,0, (SchemeObject* (*)()) s_cdr);
+	assign("cadr"       ,1,0,0, (SchemeObject* (*)()) s_cadr);
+	assign("cdar"       ,1,0,0, (SchemeObject* (*)()) s_cdar);
 	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list);
 	assign("list-tail"  ,2,0,0, (SchemeObject* (*)()) s_list_tail);
 	assign("list-ref"   ,2,0,0, (SchemeObject* (*)()) s_list_ref);
@@ -86,6 +88,7 @@ Scheme::Scheme() {
 	assign("zero?"      ,1,0,0, (SchemeObject* (*)()) s_zero_p);
 	assign("negative?"  ,1,0,0, (SchemeObject* (*)()) s_negative_p);
 	assign("positive?"  ,1,0,0, (SchemeObject* (*)()) s_positive_p);
+	assign("not"        ,1,0,0, (SchemeObject* (*)()) s_not);
 	assign("make-vector",1,1,0, (SchemeObject* (*)()) s_make_vector);
 	assign("vector"     ,0,0,1, (SchemeObject* (*)()) s_vector);
 	assign("vector-length",1,0,0, (SchemeObject* (*)()) s_vector_length);
@@ -317,6 +320,21 @@ SchemeObject* s_cdr(SchemeObject* o) {
     }
     return static_cast<SchemePair*>(o)->cdr;
 }
+
+SchemeObject* s_cxr(SchemeObject* o, char* x) {
+    while (x[0] != '\0') {
+        if (x[0] == 'a') {
+            o = s_car(o);
+        } else {
+            o = s_cdr(o);
+        }
+        x++;
+    }
+    return o;
+}
+
+SchemeObject* s_cadr(SchemeObject* o) { return s_cxr(o, "da"); };
+SchemeObject* s_cdar(SchemeObject* o) { return s_cxr(o, "ad"); };
 
 // (cons a b)
 SchemePair* s_cons(SchemeObject* car, SchemeObject* cdr) {
@@ -772,8 +790,12 @@ SchemeBool* s_greater_equal(SchemePair* p) {
         p = p->cdrAsPair();
     }
     return S_TRUE;
-    
 }
+
+SchemeBool* s_not(SchemeObject* o) {
+    return o->boolValue() ? S_FALSE : S_TRUE;
+}
+
 
 SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr) {
     if (s_number_p(len) == S_FALSE) {
@@ -828,3 +850,5 @@ SchemeString* s_string_copy(SchemeObject* str) {
     }
     return new SchemeString(static_cast<SchemeString*>(str)->str);
 }
+
+

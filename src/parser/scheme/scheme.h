@@ -53,13 +53,12 @@ extern SchemeNumber* S_TWO;
 SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
 SchemeBool* s_eq_p(SchemeObject* a, SchemeObject* b);
 SchemeBool* s_eqv_p(SchemeObject* a, SchemeObject* b);
+SchemeBool* s_not(SchemeObject*);
 
 SchemeObject* s_write(SchemeObject* o);
 SchemeObject* s_display(SchemeObject* o); 
 SchemeObject* s_newline(BindingEnvironment* s);
-SchemeObject* s_car(SchemeObject* o);
-SchemeObject* s_cdr(SchemeObject* o);
-SchemePair* s_cons(SchemeObject* car, SchemeObject* cdr);
+
 SchemeBool* s_boolean_p(SchemeObject* o);
 SchemeBool* s_string_p(SchemeObject* o);
 SchemeBool* s_char_p(SchemeObject* o);
@@ -76,9 +75,15 @@ SchemePair* s_list_tail(SchemePair* list, SchemeNumber* k);
 SchemeObject* s_assoc(SchemeObject* obj, SchemePair* alist);
 SchemeObject* s_assq(SchemeObject* obj, SchemePair* alist);
 SchemeObject* s_assv(SchemeObject* obj, SchemePair* alist);
+
+SchemeObject* s_car(SchemeObject* o);
+SchemeObject* s_cdr(SchemeObject* o);
+SchemeObject* s_cadr(SchemeObject* o);
+SchemeObject* s_cdar(SchemeObject* o);
+
+SchemePair* s_cons(SchemeObject* car, SchemeObject* cdr);
 SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o);
 SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o);
-
 SchemeObject* s_append(SchemePair* args);
 SchemePair* s_reverse(SchemeObject* l);
 SchemeNumber* s_length(SchemePair* l);

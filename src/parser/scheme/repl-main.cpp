@@ -20,7 +20,7 @@ int repl() {
 	    try {
            SchemeObject* result = scheme->eval(string(input));
            if (result != S_UNSPECIFIED) {
-	           cout << result->toString() << endl;
+	           cout << "ABORT: " << result->toString() << endl;
            }
 	    } catch (scheme_exception e) {
 			cerr << e.str << endl;
@@ -39,7 +39,7 @@ int runfile(char* filename) {
         scheme->eval(ifs);
     } catch (scheme_exception e) {
         ifs->close();
-		cerr << e.str << endl;
+		cerr << "ABORT: " << e.str << endl;
         return EXIT_FAILURE;
     }
     ifs->close();

@@ -103,6 +103,9 @@ Stack* tstack = new Stack();
 SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     
     SchemeSymbol* if_symbol = SchemeSymbol::create("if");
+    SchemeSymbol* cond_symbol = SchemeSymbol::create("cond");
+    SchemeSymbol* else_symbol = SchemeSymbol::create("else");
+    SchemeSymbol* ergo_symbol = SchemeSymbol::create("=>");
     SchemeSymbol* let_symbol = SchemeSymbol::create("let");
     SchemeSymbol* begin_symbol = SchemeSymbol::create("begin");
     SchemeSymbol* and_symbol = SchemeSymbol::create("and");
@@ -212,6 +215,10 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_SEQUENCE;
+    	} else if (s == cond_symbol) {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_COND;
     	} else if (s == and_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
@@ -883,6 +890,63 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         BindingEnvironment* envt = tstack->popBindingEnvironment();
         call_and_return(envt,p,EVAL_MAP);
         tstack->pop();
+        tstack->return_jump(S_UNSPECIFIED);
+    }
+    EVAL_COND: {
+        SchemeObject* p = tstack->popSchemePair();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        
+        while (s_null_p(p) == S_FALSE) {
+            SchemeObject* clause = s_car(p);
+            if (s_pair_p(clause) == S_FALSE) {
+                throw scheme_exception("Invalid clause");
+            }
+            SchemeObject* test_expr = s_car(clause);
+            if (test_expr == else_symbol) {
+                // Handle (else <expression>...)
+                if (s_null_p(s_cdr(p)) == S_FALSE) {
+                    throw scheme_exception("else-clause must be last");
+                }
+                tstack->push(envt);
+                tstack->push(s_cdr(clause));
+                goto EVAL_SEQUENCE;
+            }
+            
+            // Eval test_expr
+            tstack->push(envt);
+            tstack->push(p);
+            tstack->push(clause);
+            call_and_return(envt,test_expr,EVAL);
+            SchemeObject* test = tstack->popSchemeObject();
+            clause = tstack->popSchemeObject();
+            p = tstack->popSchemePair();
+            envt = tstack->popBindingEnvironment();                
+            
+            if (test->boolValue()) {
+                if (s_car(s_cdr(clause)) == ergo_symbol) {
+                    // Handle (<test> => <expression>)
+                    tstack->push(envt);
+                    tstack->push(test);
+                    tstack->push(clause);
+                    call_and_return(envt,s_car(s_cdr(s_cdr(clause))),EVAL);
+                    SchemeObject* proc = tstack->popSchemeObject();
+                    clause = tstack->popSchemeObject();
+                    test = tstack->popSchemeObject();
+                    envt = tstack->popBindingEnvironment();                
+
+                    tstack->push(envt);
+                    tstack->push(s_cons(test,S_EMPTY_LIST));
+                    tstack->push(proc);
+                    goto EVAL_PROCEDURE_CALL;
+                } else {
+                    tstack->push(envt);
+                    tstack->push(s_cdr(clause));
+                    goto EVAL_SEQUENCE;
+                }
+            }
+
+            p = s_cdr(p);
+        }
         tstack->return_jump(S_UNSPECIFIED);
     }
     EVAL_LET: {        

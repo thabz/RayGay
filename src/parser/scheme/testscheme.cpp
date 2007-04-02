@@ -127,7 +127,14 @@ void test_interpreter() {
     assert_eval(s, "(or (= 2 2) (< 2 1))", "#t");
     assert_eval(s, "(or #f #f #f)", "#f");
     assert_eval(s, "(or (member 'b '(a b c)) #f)", "(b c)");
-    
+    assert_eval(s, "(not #t)","#f");
+    assert_eval(s, "(not 3)","#f");
+    assert_eval(s, "(not (list 3))","#f");
+    assert_eval(s, "(not #f)","#t");
+    assert_eval(s, "(not '())","#f");
+    assert_eval(s, "(not (list))","#f");
+    assert_eval(s, "(not 'nil)","#f");
+
     assert_eval(s, "(apply + (list 3 4))","7");
     assert_eval(s, "(apply + '(1 2 3))","6");
     assert_eval(s, "(apply + 1 2 '(3 4))", "10");
@@ -135,6 +142,10 @@ void test_interpreter() {
     assert_eval(s, "(apply * 1 2 (list 3 4))","24");
     s->eval("(define compose (lambda (f g) (lambda args (f (apply g args)))))");
     assert_eval(s, "((compose sqrt *) 12 75)","30");  // R^5RS, Section 6.4.
+    
+    assert_eval(s, "(cond ((> 3 2) 'greater) ((< 3 2) 'less))","greater");
+    assert_eval(s, "(cond ((> 3 3) 'greater) ((< 3 3) 'less) (else 'equal))", "equal");
+    assert_eval(s, "(cond ((assv 'b '((a 1) (b 2))) => cadr) (else #f))", "2");
     
     delete s;
 }
@@ -233,6 +244,9 @@ void test_pairs_and_lists() {
     assert_eval(s, "(car (cons 1 2))", "1");
     assert_eval(s, "(cdr (cons 1 2))", "2");
     assert_eval(s, "(cdr (list 1 2))", "(2)");
+    assert_eval(s, "(cadr '((a b) (c d)))", "(c d)");
+    assert_eval(s, "(cdar '((a b) (c d)))", "(b)");
+    //assert_eval(s, "(caadr '((a b) (c d)))", "c");
 
     assert_eval(s, "(reverse '(a (b c) d (e (f))))","((e (f)) d (b c) a)");
     
@@ -470,7 +484,6 @@ int main(int argc, char *argv[]) {
         cout << "Test map...             ";
         test_map();
         cout << " OK" << endl;
-
 
         test_define_and_set();
         test_begin();
