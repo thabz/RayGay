@@ -195,26 +195,26 @@ SchemeBool* s_list_p(SchemeObject* o) {
 }
 
 
-SchemeObject* member_helper(SchemeBool* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemePair* p) {
-    while (p != S_EMPTY_LIST) {
-        if ((*comparator)(obj, p->car) == S_TRUE) {
+SchemeObject* member_helper(SchemeBool* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
+    while (s_null_p(p) == S_FALSE) {
+        if ((*comparator)(obj, s_car(p)) == S_TRUE) {
             return p;
         } else {
-            p = p->cdrAsPair();
+            p = s_cdr(p);
         }
     }
     return S_FALSE;
 }
 
-SchemeObject* s_member(SchemeObject* obj, SchemePair* p) {
+SchemeObject* s_member(SchemeObject* obj, SchemeObject* p) {
     return member_helper(s_equal_p, obj, p);
 }
 
-SchemeObject* s_memq(SchemeObject* obj, SchemePair* p) {
+SchemeObject* s_memq(SchemeObject* obj, SchemeObject* p) {
     return member_helper(s_eq_p, obj, p);
 }
 
-SchemeObject* s_memv(SchemeObject* obj, SchemePair* p) {
+SchemeObject* s_memv(SchemeObject* obj, SchemeObject* p) {
     return member_helper(s_eqv_p, obj, p);
 }
 

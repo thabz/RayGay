@@ -106,6 +106,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     SchemeSymbol* cond_symbol = SchemeSymbol::create("cond");
     SchemeSymbol* else_symbol = SchemeSymbol::create("else");
     SchemeSymbol* ergo_symbol = SchemeSymbol::create("=>");
+    SchemeSymbol* case_symbol = SchemeSymbol::create("case");
     SchemeSymbol* let_symbol = SchemeSymbol::create("let");
     SchemeSymbol* begin_symbol = SchemeSymbol::create("begin");
     SchemeSymbol* and_symbol = SchemeSymbol::create("and");
@@ -219,6 +220,10 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_COND;
+    	} else if (s == case_symbol) {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_CASE;
     	} else if (s == and_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
@@ -893,7 +898,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         tstack->return_jump(S_UNSPECIFIED);
     }
     EVAL_COND: {
-        SchemeObject* p = tstack->popSchemePair();
+        SchemeObject* p = tstack->popSchemeObject();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
         
         while (s_null_p(p) == S_FALSE) {
@@ -903,7 +908,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             }
             SchemeObject* test_expr = s_car(clause);
             if (test_expr == else_symbol) {
-                // Handle (else <expression>...)
+                // Handle (else <expressions> ...)
                 if (s_null_p(s_cdr(p)) == S_FALSE) {
                     throw scheme_exception("else-clause must be last");
                 }
@@ -943,6 +948,48 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
                     tstack->push(s_cdr(clause));
                     goto EVAL_SEQUENCE;
                 }
+            }
+
+            p = s_cdr(p);
+        }
+        tstack->return_jump(S_UNSPECIFIED);
+    }
+    EVAL_CASE: {
+        SchemeObject* p = tstack->popSchemeObject();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+
+        // Eval key        
+        tstack->push(envt);
+        tstack->push(p);
+        call_and_return(envt,s_car(p),EVAL);
+        SchemeObject* key = tstack->popSchemeObject();
+        p = tstack->popSchemePair();
+        envt = tstack->popBindingEnvironment();                
+        
+        p = s_cdr(p);
+
+        while (s_null_p(p) == S_FALSE) {
+            SchemeObject* clause = s_car(p);
+            if (s_pair_p(clause) == S_FALSE) {
+                throw scheme_exception("Invalid clause");
+            }
+            SchemeObject* clause_car = s_car(clause);
+            if (clause_car == else_symbol) {
+                // Handle (else <expressions> ...)
+                if (s_null_p(s_cdr(p)) == S_FALSE) {
+                    throw scheme_exception("else-clause must be last");
+                }
+                tstack->push(envt);
+                tstack->push(s_cdr(clause));
+                goto EVAL_SEQUENCE;
+            } else if (s_pair_p(clause_car) == S_TRUE) {
+                if (s_memv(key,clause_car) != S_FALSE) {
+                    tstack->push(envt);
+                    tstack->push(s_cdr(clause));
+                    goto EVAL_SEQUENCE;
+                }
+            } else {
+                throw scheme_exception("Invalid clause in case-statement");
             }
 
             p = s_cdr(p);
