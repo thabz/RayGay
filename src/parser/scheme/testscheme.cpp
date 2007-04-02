@@ -357,6 +357,10 @@ void test_let() {
     assert_eval(s, "(let () 'a 'b)", "b");
     assert_eval(s, "(let ((i 10)) i)", "10");
     assert_eval(s, "(let ((i 10)(j 20)) (* j i))", "200");
+
+    assert_eval(s, "(let ((x 2) (y 3)) (let* ((x 7) (z (+ x y))) (* z x)))", "70");
+
+    
     /*
     assert_eval(s, "", "");
     assert_eval(s, "", "");

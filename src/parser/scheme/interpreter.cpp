@@ -108,6 +108,8 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     SchemeSymbol* ergo_symbol = SchemeSymbol::create("=>");
     SchemeSymbol* case_symbol = SchemeSymbol::create("case");
     SchemeSymbol* let_symbol = SchemeSymbol::create("let");
+    SchemeSymbol* letstar_symbol = SchemeSymbol::create("let*");
+    SchemeSymbol* letrec_symbol = SchemeSymbol::create("letrec");
     SchemeSymbol* begin_symbol = SchemeSymbol::create("begin");
     SchemeSymbol* and_symbol = SchemeSymbol::create("and");
     SchemeSymbol* or_symbol = SchemeSymbol::create("or");
@@ -200,6 +202,14 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_LET;
+    	} else if (s == letstar_symbol) {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_LETSTAR;
+    	} else if (s == letrec_symbol) {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_LETREC;
     	} else if (s == map_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
@@ -991,15 +1001,14 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             throw scheme_exception("Named let not implemented yet");
         }
         if (s_pair_p(p->car) == S_FALSE && s_null_p(p->car) == S_FALSE) {
-            // Named let
             throw scheme_exception("Bad body in let");
         }
         
         // Build new bindings
         BindingEnvironment* new_bindings = new BindingEnvironment(envt);
-        SchemePair* binding_pairs = static_cast<SchemePair*>(p->car);
+        SchemeObject* binding_pairs = p->car;
 
-        while (binding_pairs != S_EMPTY_LIST) {
+        while (s_null_p(binding_pairs) == S_FALSE) {
             // Eval binding value
             tstack->push(envt);
             tstack->push(p);
@@ -1007,12 +1016,72 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(binding_pairs);
             call_and_return(envt,s_car(s_cdr(s_car(binding_pairs))),EVAL);
             SchemeObject* val = tstack->popSchemeObject();
-            binding_pairs = tstack->popSchemePair();
+            binding_pairs = tstack->popSchemeObject();
             new_bindings = tstack->popBindingEnvironment();
             p = tstack->popSchemePair();
             envt = tstack->popBindingEnvironment();                
             new_bindings->put(static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs))), val);
-            binding_pairs = binding_pairs->cdrAsPair();
+            binding_pairs = s_cdr(binding_pairs);
+        }
+        
+        tstack->push(new_bindings);
+        tstack->push(p->cdr); // Push local var
+        goto EVAL_SEQUENCE;
+    }
+    EVAL_LETSTAR: {        
+        SchemePair* p = tstack->popSchemePair();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        
+        if (s_pair_p(p->car) == S_FALSE && s_null_p(p->car) == S_FALSE) {
+            throw scheme_exception("Bad body in let");
+        }
+        
+        // Build new bindings
+        BindingEnvironment* new_bindings = new BindingEnvironment(envt);
+        SchemeObject* binding_pairs = p->car;
+
+        while (s_null_p(binding_pairs) == S_FALSE) {
+            // Eval binding value
+            tstack->push(p);
+            tstack->push(new_bindings);
+            tstack->push(binding_pairs);
+            call_and_return(new_bindings,s_car(s_cdr(s_car(binding_pairs))),EVAL);
+            SchemeObject* val = tstack->popSchemeObject();
+            binding_pairs = tstack->popSchemeObject();
+            new_bindings = tstack->popBindingEnvironment();
+            p = tstack->popSchemePair();
+            new_bindings->put(static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs))), val);
+            binding_pairs = s_cdr(binding_pairs);
+        }
+        
+        tstack->push(new_bindings);
+        tstack->push(p->cdr); // Push local var
+        goto EVAL_SEQUENCE;
+    }
+    EVAL_LETREC: {        
+        SchemePair* p = tstack->popSchemePair();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        
+        if (s_pair_p(p->car) == S_FALSE && s_null_p(p->car) == S_FALSE) {
+            throw scheme_exception("Bad body in let");
+        }
+        
+        // Build new bindings
+        BindingEnvironment* new_bindings = new BindingEnvironment(envt);
+        SchemeObject* binding_pairs = p->car;
+
+        while (s_null_p(binding_pairs) == S_FALSE) {
+            // Eval binding value
+            tstack->push(p);
+            tstack->push(new_bindings);
+            tstack->push(binding_pairs);
+            call_and_return(new_bindings,s_car(s_cdr(s_car(binding_pairs))),EVAL);
+            SchemeObject* val = tstack->popSchemeObject();
+            binding_pairs = tstack->popSchemeObject();
+            new_bindings = tstack->popBindingEnvironment();
+            p = tstack->popSchemePair();
+            new_bindings->put(static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs))), val);
+            binding_pairs = s_cdr(binding_pairs);
         }
         
         tstack->push(new_bindings);
