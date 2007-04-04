@@ -20,10 +20,10 @@ int repl() {
 	    try {
            SchemeObject* result = scheme->eval(string(input));
            if (result != S_UNSPECIFIED) {
-	           cout << "ABORT: " << result->toString() << endl;
+	           cout << result->toString() << endl;
            }
 	    } catch (scheme_exception e) {
-			cerr << e.str << endl;
+			cerr << "ABORT: " << e.str << endl;
  	    }
 	}
 }

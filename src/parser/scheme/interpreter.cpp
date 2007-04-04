@@ -107,6 +107,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     SchemeSymbol* else_symbol = SchemeSymbol::create("else");
     SchemeSymbol* ergo_symbol = SchemeSymbol::create("=>");
     SchemeSymbol* case_symbol = SchemeSymbol::create("case");
+    SchemeSymbol* do_symbol = SchemeSymbol::create("do");
     SchemeSymbol* let_symbol = SchemeSymbol::create("let");
     SchemeSymbol* letstar_symbol = SchemeSymbol::create("let*");
     SchemeSymbol* letrec_symbol = SchemeSymbol::create("letrec");
@@ -120,6 +121,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     SchemeSymbol* quote_symbol = SchemeSymbol::create("quote");
     SchemeSymbol* quasiquote_symbol = SchemeSymbol::create("quasiquote");
     SchemeSymbol* define_symbol = SchemeSymbol::create("define");
+    SchemeSymbol* define_macro = SchemeSymbol::create("define-macro");
     SchemeSymbol* set_e_symbol = SchemeSymbol::create("set!");
     
     int kk = setjmp(*(tstack->push_jump_pos()));
@@ -183,6 +185,10 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_DEFINE;
+    	} else if (s == define_macro) {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_DEFINE_MACRO;
     	} else if (s == quasiquote_symbol) {
             tstack->push(envt);
             tstack->push(cdr->car);
@@ -243,33 +249,34 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(cdr);
     		goto EVAL_OR;
         } else {
-            // TODO: eval s instead. A symbol evals to  the stored procedure and if this is a combo it also evals to a procedure.
-            // Then we can avoid the EVAL_COMBO-handler. But maybe this setup is faster, as EVAL_COMBO isn't used as much, and we
-            // then avoid a simple EVAL of a symbol in the majority of cases.
             SchemeObject* proc = envt->get(s);
             if (proc == NULL) {
         		throw scheme_exception("Unbound variable: " + s->toString());	
-            }
-            if (proc->type() != SchemeObject::PROCEDURE) {
-        		throw scheme_exception("Wrong type to apply : " + proc->toString());	
-            }
-            
-            tstack->push(proc);
-            tstack->push(envt);
-            int kk = setjmp(*(tstack->push_jump_pos()));
-            if (kk == 0) {
+            } else if (proc->type() == SchemeObject::MACRO) {
                 tstack->push(envt);
                 tstack->push(cdr);
-                goto EVAL_MULTI;
-            }
-            SchemePair* args = tstack->popSchemePair();
-            envt = tstack->popBindingEnvironment();
-            proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
-            
-            tstack->push(envt);
-            tstack->push(args);
-            tstack->push(proc);
-            goto EVAL_PROCEDURE_CALL;
+                tstack->push(proc);
+                goto EVAL_CALL_MACRO;
+            } else if (proc->type() == SchemeObject::PROCEDURE) {
+                tstack->push(proc);
+                tstack->push(envt);
+                int kk = setjmp(*(tstack->push_jump_pos()));
+                if (kk == 0) {
+                    tstack->push(envt);
+                    tstack->push(cdr);
+                    goto EVAL_MULTI;
+                }
+                SchemePair* args = tstack->popSchemePair();
+                envt = tstack->popBindingEnvironment();
+                proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
+
+                tstack->push(envt);
+                tstack->push(args);
+                tstack->push(proc);
+                goto EVAL_PROCEDURE_CALL;
+            } else {
+    		    throw scheme_exception("Wrong type to apply : " + proc->toString());	
+		    }
         }        
     }
     EVAL_COMBO: {
@@ -401,61 +408,85 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     EVAL_QUASIQUOTE: {
         SchemeObject* o = tstack->popSchemeObject();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
-        if (o->type() == SchemeObject::PAIR) {
-            SchemeObject* p = o;
-            SchemePair* result = S_EMPTY_LIST;
+        SchemeObject* p = o;
+        if (s_vector_p(o) == S_TRUE) {
+            p = s_vector_2_list(o);
+        } else {
+            p = o;
+        }
+        if (p->type() == SchemeObject::PAIR) {
+            SchemeObject* result = S_EMPTY_LIST;
             while(s_null_p(p) == S_FALSE) {
-                SchemeObject* to_add;
+                SchemeObject* to_add = NULL;
                 SchemePair* v = static_cast<SchemePair*>(s_car(p));
-                if (s_pair_p(s_car(p)) == S_TRUE && s_symbol_p(s_car(v)) == S_TRUE) {
-                    SchemeSymbol* sy = static_cast<SchemeSymbol*>(v->car);
-                    if (sy->str == "unquote") {
-                        tstack->push(envt);
-                        tstack->push(result);
-                        tstack->push(p);
-                        int kk = setjmp(*(tstack->push_jump_pos()));
-                        if (kk == 0) {
+                if (s_pair_p(s_car(p)) == S_TRUE || s_vector_p(s_car(p)) == S_TRUE) {
+                    if (s_pair_p(s_car(p)) == S_TRUE && s_symbol_p(s_car(v)) == S_TRUE) {
+                        SchemeSymbol* sy = static_cast<SchemeSymbol*>(v->car);
+                        if (sy->str == "unquote") {
                             tstack->push(envt);
-                            tstack->push(v->cdrAsPair()->car);
-                            goto EVAL;
+                            tstack->push(result);
+                            tstack->push(p);
+                            int kk = setjmp(*(tstack->push_jump_pos()));
+                            if (kk == 0) {
+                                tstack->push(envt);
+                                tstack->push(v->cdrAsPair()->car);
+                                goto EVAL;
+                            }
+                            to_add = tstack->popSchemeObject();
+                            p = tstack->popSchemeObject(); // Pop local var
+                            result = tstack->popSchemeObject(); // Pop local var
+                            envt = tstack->popBindingEnvironment(); // Pop local var
+                            result = s_cons(to_add, result);
+                            p = s_cdr(p);
+                            continue;
+                        } else if (sy->str == "unquote-splicing") {
+                            tstack->push(envt);
+                            tstack->push(result);
+                            tstack->push(p);
+                            call_and_return(envt, v->cdrAsPair()->car, EVAL);
+                            SchemeObject* to_add_list = tstack->popSchemeObject();
+                            p = tstack->popSchemeObject(); // Pop local var
+                            result = tstack->popSchemeObject(); // Pop local var
+                            envt = tstack->popBindingEnvironment(); // Pop local var
+                            if (s_pair_p(to_add_list) == S_TRUE) {
+                                // TODO: Code below is inefficient, but works.
+                                to_add_list = s_reverse(static_cast<SchemePair*>(to_add_list));
+                                result = static_cast<SchemePair*>(s_append(s_cons(to_add_list, s_cons(result,S_EMPTY_LIST))));
+                            } else if (s_null_p(to_add_list) != S_TRUE) {
+                                throw scheme_exception("unquote-splicing must result in a list");
+                            }
+                            p = s_cdr(p);
+                            continue;
                         }
-                        to_add = tstack->popSchemeObject();
-                        p = tstack->popSchemeObject(); // Pop local var
-                        result = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
-                        envt = tstack->popBindingEnvironment(); // Pop local var
-                        result = s_cons(to_add, result);
-                    } else if (sy->str == "unquote-splicing") {
-                        /*
-                        if (v->cdrAsPair()->car == S_EMPTY_LIST) {
-                            throw scheme_exception("unquote-splicing must result in a non-empty list");
-                        }
-                        */
-                        tstack->push(envt);
-                        tstack->push(result);
-                        tstack->push(p);
-                        call_and_return(envt, v->cdrAsPair()->car, EVAL);
-                        SchemeObject* to_add_list = tstack->popSchemeObject();
-                        p = tstack->popSchemeObject(); // Pop local var
-                        result = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
-                        envt = tstack->popBindingEnvironment(); // Pop local var
-                        if (s_pair_p(to_add_list) != S_TRUE) {
-                            throw scheme_exception("unquote-splicing must result in a non-empty list");
-                        }
-                        // TODO: Code below is inefficient, but works.
-                        to_add_list = s_reverse(static_cast<SchemePair*>(to_add_list));
-                        result = static_cast<SchemePair*>(s_append(s_cons(to_add_list, s_cons(result,S_EMPTY_LIST))));
-                        p = s_cdr(p);
-                        continue;
-                    } else {
-                        result = s_cons(s_car(p), result);
                     }
+                    // (car p) is a list or vector that we recurse into
+                    tstack->push(envt);
+                    tstack->push(p);
+                    tstack->push(o);
+                    tstack->push(result);
+                    call_and_return(envt, s_car(p), EVAL_QUASIQUOTE);
+                    to_add = tstack->popSchemeObject();
+                    result = tstack->popSchemeObject(); // Pop local var
+                    o = tstack->popSchemeObject(); // Pop local var
+                    p = tstack->popSchemeObject(); // Pop local var
+                    envt = tstack->popBindingEnvironment(); // Pop local var
+    
+                    result = s_cons(to_add, result);
+                    p = s_cdr(p);
+                    continue;
                 } else {
+                    // (car p) is neither list or vector
                     result = s_cons(s_car(p), result);
+                    p = s_cdr(p);
+                    continue;
                 }
-                p = s_cdr(p);
             }
             result = s_reverse(result);
-            tstack->return_jump(result);
+            if (s_vector_p(o) == S_TRUE) {
+                tstack->return_jump(s_list_2_vector(result));
+            } else {
+                tstack->return_jump(result);
+            }
         } else {
             tstack->return_jump(o);
         }
@@ -1087,6 +1118,87 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         tstack->push(new_bindings);
         tstack->push(p->cdr); // Push local var
         goto EVAL_SEQUENCE;
+    }
+    EVAL_DEFINE_MACRO: {
+        SchemePair* p = tstack->popSchemePair();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+
+        SchemeObject* formals = s_car(p);
+        SchemePair* body = static_cast<SchemePair*>(s_cdr(p));
+        SchemeObject* name = s_car(formals);
+        formals = s_cdr(formals);
+        
+        if (s_symbol_p(name) == S_FALSE) {
+            throw scheme_exception("Invalid macro-name in definition");
+        }
+        
+        SchemeSymbol* rst;
+        SchemePair* req;
+        if (s_pair_p(formals) == S_TRUE) {
+            req = S_EMPTY_LIST;
+            while (s_pair_p(formals) == S_TRUE) {
+                SchemePair* pp = static_cast<SchemePair*>(formals);
+                if (s_symbol_p(pp->car) == S_FALSE) {
+                    throw scheme_exception("Bad formals");                
+                }
+                req = s_cons(pp->car, req);
+                formals = pp->cdr;
+            }
+            req = s_reverse(req);
+            if (formals != S_EMPTY_LIST) {
+                if (s_symbol_p(formals) == S_FALSE) {
+                    throw scheme_exception("Bad formals");                
+                }
+                rst = static_cast<SchemeSymbol*>(formals);
+            } else {
+                rst = NULL;
+            }
+        } else if (formals == S_EMPTY_LIST) {
+            req = S_EMPTY_LIST;
+            rst = NULL;
+        } else {
+            throw scheme_exception("Bad formals");
+        }
+        
+        SchemeMacro* macro = new SchemeMacro(envt, req, rst, body);
+        envt->put(static_cast<SchemeSymbol*>(name), macro);
+        tstack->return_jump(S_UNSPECIFIED);
+    }
+    EVAL_CALL_MACRO: {
+        SchemeMacro* proc = static_cast<SchemeMacro*>(tstack->popSchemeObject());
+        SchemePair* args = tstack->popSchemePair();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+
+        // Build new environment
+        BindingEnvironment* new_envt = new BindingEnvironment(proc->envt);
+        SchemePair* req_symbols = proc->s_req;
+        while (req_symbols != S_EMPTY_LIST) {
+            if (args == S_EMPTY_LIST) {
+                throw scheme_exception("Too few argument given.");
+            }
+            new_envt->put(static_cast<SchemeSymbol*>(req_symbols->car), args->car);
+            req_symbols = req_symbols->cdrAsPair();
+            args = args->cdrAsPair();
+        }
+        if (args != S_EMPTY_LIST) {
+            if (proc->rst == 0) {
+                throw scheme_exception("Too many argument given.");
+            } else {
+                new_envt->put(proc->s_rst, args);
+            }
+        }
+        // cout << "Body: " << proc->s_body->toString() << endl;
+        // Transform body
+        tstack->push(envt);
+        call_and_return(new_envt,proc->s_body,EVAL_SEQUENCE);
+        SchemeObject* transformed_body = tstack->popSchemeObject();
+        envt = tstack->popBindingEnvironment();
+        // cout << "Transformed body: " << transformed_body->toString() << endl;
+        
+        // Eval transformed body
+        tstack->push(envt);
+        tstack->push(transformed_body);
+        goto EVAL;
     }
     return NULL;
 }

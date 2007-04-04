@@ -71,6 +71,7 @@ Scheme::Scheme() {
 	assign("-"          ,0,0,1, (SchemeObject* (*)()) s_minus);
 	assign("*"          ,0,0,1, (SchemeObject* (*)()) s_mult);
 	assign("/"          ,0,0,1, (SchemeObject* (*)()) s_divide);
+	assign("abs"        ,1,0,0, (SchemeObject* (*)()) s_abs);
 	assign("tan"        ,1,0,0, (SchemeObject* (*)()) s_tan);
 	assign("atan"       ,1,1,0, (SchemeObject* (*)()) s_atan);
 	assign("sin"        ,1,0,0, (SchemeObject* (*)()) s_sin);
@@ -564,11 +565,18 @@ SchemeNumber* s_vector_length(SchemeObject* v) {
     return make_number(vv->length);
 }
 
-SchemeVector* s_list_2_vector(SchemePair* list) {
-    return s_vector(list);
+SchemeVector* s_list_2_vector(SchemeObject* list) {
+    if (s_list_p(list) == S_FALSE) {
+        throw scheme_exception("list->vector wrong type in argument 1");
+    }
+    return s_vector(static_cast<SchemePair*>(list));
 }
 
-SchemePair* s_vector_2_list(SchemeVector* v) {
+SchemePair* s_vector_2_list(SchemeObject* o) {
+    if (s_vector_p(o) == S_FALSE) {
+        throw scheme_exception("Not a vector");
+    }
+    SchemeVector* v = static_cast<SchemeVector*>(o);
     SchemePair* result = S_EMPTY_LIST;
     for(int i = v->length-1; i >= 0; i--) {
 	    result = s_cons(v->get(i), result);
@@ -598,6 +606,11 @@ SchemeObject* s_vector_fill_e(SchemeVector* v, SchemeObject* fill) {
 SchemeNumber* s_sqrt(SchemeNumber* n) {
     return new SchemeNumber(sqrt(n->number));
 }
+
+SchemeNumber* s_abs(SchemeNumber* n) {
+    return new SchemeNumber(fabs(n->number));
+}
+
 
 SchemeNumber* s_sin(SchemeNumber* n) {
     return new SchemeNumber(sin(n->number));

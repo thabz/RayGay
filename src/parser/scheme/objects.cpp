@@ -193,6 +193,16 @@ string SchemeProcedure::toString() {
 }
 
 //-----------------------------------------------------------
+// Macro
+//-----------------------------------------------------------
+SchemeMacro::SchemeMacro(BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body) : SchemeProcedure(envt, s_req, s_rst, s_body) {
+}
+
+string SchemeMacro::toString() {
+    return "#<macro>";
+}
+
+//-----------------------------------------------------------
 // Continuation
 //-----------------------------------------------------------
 SchemeContinuation::SchemeContinuation() {

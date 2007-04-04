@@ -306,6 +306,12 @@ void test_lambda() {
     assert_eval(s, "((lambda x x) 3 4 5 6)", "(3 4 5 6)");
     assert_eval(s, "((lambda (x y . z) z) 3 4 5 6)", "(5 6)");
 }
+void test_macros() {
+    Scheme* s = new Scheme();
+    s->eval("(define-macro (greater-than x y) `(> ,x ,y))");
+    assert_eval(s, "(greater-than 10 20)", "#f");
+    assert_eval(s, "(greater-than 20 10)", "#t");
+}
 
 void test_define_and_set() {
     Scheme* s = new Scheme();
@@ -395,9 +401,13 @@ void test_quote() {
     assert_eval(s, "`(a (+ 1 2) c)", "(a (+ 1 2) c)");
     assert_eval(s, "`(a ,(+ 1 2) c)", "(a 3 c)");
     assert_eval(s, "`(a ,1)", "(a 1)");
+    assert_eval(s, "`(a `(b `c))", "(a (quasiquote (b (quasiquote c))))");
 
     assert_eval(s, "`(a ,(list 1 2 ) c)", "(a (1 2) c)");
     assert_eval(s, "`(a ,@(list 1 2 ) c)", "(a 1 2 c)");
+    assert_eval(s, "`(a ,(+ 1 2) ,@(map abs '(4 -5 6)) b)", "(a 3 4 5 6 b)");
+    //assert_eval(s, "`(( foo ,(- 10 3)) ,@(cdr '(c)) . ,(car '(cons)))", "((foo 7) . cons)");
+    assert_eval(s, "`#(10 5 ,(sqrt 4) ,@(map sqrt '(16 9)) 8)", "#(10 5 2 4 3 8)");
 }
 
 void test_map() {
@@ -472,8 +482,16 @@ int main(int argc, char *argv[]) {
         test_pairs_and_lists();
         cout << " OK" << endl;
 
+        cout << "Quote...                ";
+        test_quote();
+        cout << " OK" << endl;
+
         cout << "Test lambda...          ";
         test_lambda();
+        cout << " OK" << endl;
+
+        cout << "Test macros...          ";
+        test_macros();
         cout << " OK" << endl;
 
         cout << "Test let...             ";
@@ -495,7 +513,6 @@ int main(int argc, char *argv[]) {
 
         test_define_and_set();
         test_begin();
-        test_quote();
     } catch (scheme_exception e) {
 		cerr << "Exception: " << e.str << endl;
         return EXIT_FAILURE;

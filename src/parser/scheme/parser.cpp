@@ -45,7 +45,7 @@ SchemeObject* Parser::read_simple() {
         case Lexer::ERROR :
            throw scheme_exception("Unknown lexer error");
         default:
-           throw scheme_exception("Unexpected token");
+           throw scheme_exception("Parser: unexpected token");
    	       return NULL;
     }    
 }

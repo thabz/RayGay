@@ -22,7 +22,8 @@ class SchemeObject {
 		    VECTOR,
 		    PAIR,
 		    UNSPECIFIED,
- 		    PROCEDURE
+ 		    PROCEDURE,
+ 		    MACRO
 		};
 	SchemeObject(bool immutable = false);
         virtual ~SchemeObject() {};
@@ -146,6 +147,13 @@ class SchemeProcedure : public SchemeObject
         SchemePair* s_req;
         SchemeSymbol* s_rst;
         BindingEnvironment* envt;
+};
+
+class SchemeMacro : public SchemeProcedure {
+    public:
+        SchemeMacro(BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body);
+        string toString();      
+        ObjectType type() { return MACRO; };    
 };
 
 #endif
