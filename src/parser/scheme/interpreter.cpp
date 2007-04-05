@@ -158,7 +158,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
                 tstack->push(s);
                 goto EVAL_LIST;
      		default:
-    	  	    throw scheme_exception("Unknown type");
+    	  	    throw scheme_exception("Unknown type: " + s->toString());
     	}
     }
     EVAL_LIST: {

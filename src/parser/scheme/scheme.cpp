@@ -8,6 +8,8 @@
 #include "parser.h"
 #include "interpreter.h"
 
+unsigned long symgen_counter = 10000;
+
 SchemeBool* S_TRUE = new SchemeBool(true);
 SchemeBool* S_FALSE = new SchemeBool(false);
 SchemeNumber* S_ZERO = new SchemeNumber(0);
@@ -105,6 +107,7 @@ Scheme::Scheme() {
 	assign("string-copy",1,0,0, (SchemeObject* (*)()) s_string_copy);
 	assign("symbol->string",1,0,0, (SchemeObject* (*)()) s_symbol_2_string);
 	assign("string->symbol",1,0,0, (SchemeObject* (*)()) s_string_2_symbol);
+	assign("symgen"      ,0,0,0, (SchemeObject* (*)()) s_symgen);
 	
     ifstream infile;
     infile.open("init.scm", ifstream::in);
@@ -864,4 +867,8 @@ SchemeString* s_string_copy(SchemeObject* str) {
     return new SchemeString(static_cast<SchemeString*>(str)->str);
 }
 
-
+SchemeSymbol* s_symgen() {
+    ostringstream ss;
+    ss << symgen_counter++;
+    return SchemeSymbol::create("#G" + ss.str());
+}

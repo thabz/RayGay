@@ -137,6 +137,6 @@ SchemeString* s_symbol_2_string(SchemeSymbol* symbol);
 SchemeSymbol* s_string_2_symbol(SchemeString* s);
 SchemeString* s_string_append(SchemePair* strings);
 SchemeString* s_string_copy(SchemeObject* string);
-
+SchemeSymbol* s_symgen();
 
 #endif
