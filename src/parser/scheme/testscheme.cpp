@@ -102,6 +102,7 @@ void test_symbols() {
     assert(s->eval("(symbol? 1)") == S_FALSE);
     assert(SchemeSymbol::create("a") == SchemeSymbol::create("a"));
     assert(SchemeSymbol::create("a") != SchemeSymbol::create("b"));
+    assert_eval(s, "(eq? (string->symbol \"f\") (string->symbol \"F\"))", "#f");
 }
 
 void test_interpreter() {
@@ -151,6 +152,12 @@ void test_interpreter() {
     assert(s->eval("(case (car '(c d)) ((a) 'a) ((b) 'b))") == S_UNSPECIFIED);
     assert_eval(s, "(case (car '(c d)) ((a e i o u) 'vowel) ((w y) 'semivowel) (else 'consonant))", "consonant");
         
+    // Brian M. Moore in thread: shadowing syntatic keywords, bug in MIT Scheme?
+    // http://groups.google.com/groups?selm=6e6n88%248qf%241%40news.cc.ukans.edu        
+    assert_eval(s, "(let ((quote -)) (eqv? '1 1))", "#f");
+    assert_eval(s, "((lambda lambda lambda) 'x)", "(x)");
+    assert_eval(s, "((lambda (begin) (begin 1 2 3)) (lambda lambda lambda))", "(1 2 3)");    
+
     delete s;
 }
 
@@ -217,6 +224,10 @@ void test_equals() {
     assert_eval(s, "(eq? (list 'a) (list 'a))" , "#f");
     assert_eval(s, "(eq? '() '())" , "#t");
     assert_eval(s, "(eq? car car)" , "#t");
+
+    assert_eval(s, "(equal? #f '())", "#f");
+    assert_eval(s, "(eqv? #f '())", "#f");
+    assert_eval(s, "(eq? #f '())", "#f");
 }
 
 void test_pairs_and_lists() {
@@ -306,6 +317,7 @@ void test_lambda() {
     assert_eval(s, "((lambda x x) 3 4 5 6)", "(3 4 5 6)");
     assert_eval(s, "((lambda (x y . z) z) 3 4 5 6)", "(5 6)");
 }
+
 void test_macros() {
     Scheme* s = new Scheme();
     s->eval("(define-macro (greater-than x y) `(> ,x ,y))");
@@ -363,14 +375,14 @@ void test_let() {
     assert_eval(s, "(let () 'a 'b)", "b");
     assert_eval(s, "(let ((i 10)) i)", "10");
     assert_eval(s, "(let ((i 10)(j 20)) (* j i))", "200");
-
     assert_eval(s, "(let ((x 2) (y 3)) (let* ((x 7) (z (+ x y))) (* z x)))", "70");
 
+    // From http://sisc-scheme.org/r5rs_pitfall.scm
+    assert_eval(s, "(let ((ls (list 1 2 3 4))) (append ls ls '(5)))", "(1 2 3 4 1 2 3 4 5)");
+    //assert_eval(s, "(let ((f -)) (let f ((n (f 1))) n))", "-1");
+    assert_eval(s, "(let ((f -)) ((letrec ((f (lambda (n) n))) f) (f 1)))", "-1");
     
     /*
-    assert_eval(s, "", "");
-    assert_eval(s, "", "");
-    assert_eval(s, "", "");
     assert_eval(s, "", "");
     assert_eval(s, "", "");
     assert_eval(s, "", "");
@@ -482,7 +494,7 @@ int main(int argc, char *argv[]) {
         test_pairs_and_lists();
         cout << " OK" << endl;
 
-        cout << "Quote...                ";
+        cout << "Test quote...           ";
         test_quote();
         cout << " OK" << endl;
 
@@ -501,7 +513,6 @@ int main(int argc, char *argv[]) {
         cout << "Test char...            ";
         test_char();
         cout << " OK" << endl;
-
 
         cout << "Test string...          ";
         test_string();

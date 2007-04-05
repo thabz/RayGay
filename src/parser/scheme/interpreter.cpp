@@ -175,6 +175,35 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         SchemeSymbol* s = static_cast<SchemeSymbol*>(car);
     	SchemePair* cdr = static_cast<SchemePair*>(p->cdr);
     	
+    	SchemeObject* proc = envt->get(s);
+        if (proc != NULL) {
+            if (proc->type() == SchemeObject::MACRO) {
+                tstack->push(envt);
+                tstack->push(cdr);
+                tstack->push(proc);
+                goto EVAL_CALL_MACRO;
+            } else if (proc->type() == SchemeObject::PROCEDURE) {
+                tstack->push(proc);
+                tstack->push(envt);
+                int kk = setjmp(*(tstack->push_jump_pos()));
+                if (kk == 0) {
+                    tstack->push(envt);
+                    tstack->push(cdr);
+                    goto EVAL_MULTI;
+                }
+                SchemePair* args = tstack->popSchemePair();
+                envt = tstack->popBindingEnvironment();
+                proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
+
+                tstack->push(envt);
+                tstack->push(args);
+                tstack->push(proc);
+                goto EVAL_PROCEDURE_CALL;
+            } else {
+                throw scheme_exception("Wrong type to apply : " + proc->toString());	
+            }
+        }
+    	
         if (s == if_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
@@ -249,34 +278,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(cdr);
     		goto EVAL_OR;
         } else {
-            SchemeObject* proc = envt->get(s);
-            if (proc == NULL) {
-        		throw scheme_exception("Unbound variable: " + s->toString());	
-            } else if (proc->type() == SchemeObject::MACRO) {
-                tstack->push(envt);
-                tstack->push(cdr);
-                tstack->push(proc);
-                goto EVAL_CALL_MACRO;
-            } else if (proc->type() == SchemeObject::PROCEDURE) {
-                tstack->push(proc);
-                tstack->push(envt);
-                int kk = setjmp(*(tstack->push_jump_pos()));
-                if (kk == 0) {
-                    tstack->push(envt);
-                    tstack->push(cdr);
-                    goto EVAL_MULTI;
-                }
-                SchemePair* args = tstack->popSchemePair();
-                envt = tstack->popBindingEnvironment();
-                proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
-
-                tstack->push(envt);
-                tstack->push(args);
-                tstack->push(proc);
-                goto EVAL_PROCEDURE_CALL;
-            } else {
-    		    throw scheme_exception("Wrong type to apply : " + proc->toString());	
-		    }
+    		throw scheme_exception("Unbound variable: " + s->toString());	
         }        
     }
     EVAL_COMBO: {
