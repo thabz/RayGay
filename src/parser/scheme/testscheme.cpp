@@ -226,6 +226,7 @@ void test_math() {
     assert_eval(s, "(ceiling 3.5)" , "4");
     assert_eval(s, "(truncate 3.5)" , "3");
     assert_eval(s, "(round 3.5)" , "4");
+    assert_eval(s, "(round 2.5)" , "2"); // Round to nearest even integer
     assert_eval(s, "(round 7)" , "7");
     
 }

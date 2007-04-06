@@ -676,21 +676,42 @@ SchemeNumber* s_exp(SchemeNumber* n) {
     return new SchemeNumber(exp(n->number));
 }
 
+// Round returns the closest integer to x, rounding to even when x is halfway between two integers.
 SchemeNumber* s_round(SchemeObject* n) {
     assert_arg_type("round", 1, s_number_p, n);
-    return new SchemeNumber(round(static_cast<SchemeNumber*>(n)->number));
+    double nn = static_cast<SchemeNumber*>(n)->number;
+    double fl = floor(nn);
+    double ce = ceil(nn);
+    double dfl = nn - fl;
+    double dce = ce - nn;
+    double result;
+    if (dfl > dce) {
+        result = ce;
+    } else if (dce > dfl) {
+        result = fl;
+    } else {
+        if(fmod(fl, 2) == 0) {
+             result = fl;
+        } else {
+             result = ce;
+        }
+    }
+    return new SchemeNumber(result);
 }
 
+// Ceiling returns the smallest integer not smaller than x
 SchemeNumber* s_ceiling(SchemeObject* n) {
     assert_arg_type("ceiling", 1, s_number_p, n);
     return new SchemeNumber(ceil(static_cast<SchemeNumber*>(n)->number));
 }
 
+// Floor returns the largest integer not larger than x
 SchemeNumber* s_floor(SchemeObject* n) {
     assert_arg_type("floor", 1, s_number_p, n);
     return new SchemeNumber(floor(static_cast<SchemeNumber*>(n)->number));
 }
 
+// Truncate returns the integer closest to x whose absolute value is not larger than the absolute value of x
 SchemeNumber* s_truncate(SchemeObject* n) {
     assert_arg_type("truncate", 1, s_number_p, n);
     return new SchemeNumber(trunc(static_cast<SchemeNumber*>(n)->number));
