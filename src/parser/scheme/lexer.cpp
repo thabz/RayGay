@@ -65,9 +65,9 @@ Lexer::Token Lexer::nextToken() {
                         return Lexer::ERROR;
                     }
                     if (p == '|' && d == '#') { 
-                        depth--; c = 0; 
+                        depth--; p = 0; 
                     } else if (p == '#' && d == '|') { 
-                        depth++; d = 0; 
+                        depth++; p = 0; 
                     }
                     p = d;
                     d = is->get();
