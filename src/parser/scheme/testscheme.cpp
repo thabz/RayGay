@@ -32,7 +32,7 @@ void test_tokenizer() {
     assert(l->nextToken() == Lexer::SYMBOL);
     assert(l->nextToken() == Lexer::END);
     
-    l = new Lexer("a `b |# comment |# nested comment #| ... #| ");
+    l = new Lexer("a `b #| comment #| nested comment |# ... |# ");
     assert(l->nextToken() == Lexer::SYMBOL);
     assert(l->getString() == "a");
     assert(l->nextToken() == Lexer::BACKQUOTE);

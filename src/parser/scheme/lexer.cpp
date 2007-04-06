@@ -52,25 +52,25 @@ Lexer::Token Lexer::nextToken() {
             continue;
         }
         
-        if (c == '|') {
-            c = is->get();
-            if (c == '#') {
+        if (c == '#') {
+            int d = is->get();
+            if (d == '|') {
                 // Skip (nested) multi-line comment
                 int depth = 1;
                 int p = 0;
-                c = is->get();
+                d = is->get();
                 while (depth > 0) {
-                    if (is->eof() || c == -1) {
+                    if (is->eof() || d == -1) {
                         cerr << "Unexpected end of input in nested comment" << endl;
                         return Lexer::ERROR;
                     }
-                    if (p == '#' && c == '|') { 
+                    if (p == '|' && d == '#') { 
                         depth--; c = 0; 
-                    } else if (p == '|' && c == '#') { 
-                        depth++; c = 0; 
+                    } else if (p == '#' && d == '|') { 
+                        depth++; d = 0; 
                     }
-                    p = c;
-                    c = is->get();
+                    p = d;
+                    d = is->get();
                 }
                 continue;
             } else {

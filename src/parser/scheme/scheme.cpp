@@ -483,9 +483,6 @@ SchemeObject* s_append(SchemePair* p) {
 
 SchemeNumber* s_plus(SchemePair* p) {
 	double result = 0;
-	if (p == S_EMPTY_LIST) {
-		return S_ZERO;
-	}
     int i = 1;
 	while (p != S_EMPTY_LIST) {
 	    assert_arg_type("+", i++, s_number_p, p->car);
@@ -549,9 +546,6 @@ SchemeNumber* s_divide(SchemePair* p) {
 
 SchemeNumber* s_mult(SchemePair* p) {
 	double result = 1;
-	if (p == S_EMPTY_LIST) {
-		return S_ONE;
-	}
     int i = 1;
 	while (p != S_EMPTY_LIST) {
 	    assert_arg_type("*", i++, s_number_p, p->car);
@@ -680,20 +674,20 @@ SchemeNumber* s_exp(SchemeNumber* n) {
 SchemeNumber* s_round(SchemeObject* n) {
     assert_arg_type("round", 1, s_number_p, n);
     double nn = static_cast<SchemeNumber*>(n)->number;
-    double fl = floor(nn);
-    double ce = ceil(nn);
-    double dfl = nn - fl;
-    double dce = ce - nn;
+    double flo = floor(nn);
+    double cei = ceil(nn);
+    double dflo = nn - flo;
+    double dcei = cei - nn;
     double result;
-    if (dfl > dce) {
-        result = ce;
-    } else if (dce > dfl) {
-        result = fl;
+    if (dflo > dcei) {
+        result = cei;
+    } else if (dcei > dflo) {
+        result = flo;
     } else {
-        if(fmod(fl, 2) == 0) {
-             result = fl;
+        if(fmod(flo, 2) == 0) {
+             result = flo;
         } else {
-             result = ce;
+             result = cei;
         }
     }
     return new SchemeNumber(result);
@@ -914,9 +908,7 @@ SchemeString* s_string_append(SchemePair* strings) {
 }
 
 SchemeString* s_string_copy(SchemeObject* str) {
-    if (s_string_p(str) == S_FALSE) {
-        throw scheme_exception("Wrong argument to string-copy");
-    }
+    assert_arg_type("string-copy", 1, s_string_p, str);
     return new SchemeString(static_cast<SchemeString*>(str)->str);
 }
 
