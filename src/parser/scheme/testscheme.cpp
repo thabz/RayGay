@@ -32,7 +32,7 @@ void test_tokenizer() {
     assert(l->nextToken() == Lexer::SYMBOL);
     assert(l->nextToken() == Lexer::END);
     
-    l = new Lexer("a `b");
+    l = new Lexer("a `b |# comment |# nested comment #| ... #| ");
     assert(l->nextToken() == Lexer::SYMBOL);
     assert(l->getString() == "a");
     assert(l->nextToken() == Lexer::BACKQUOTE);
@@ -91,6 +91,16 @@ void test_char() {
     assert_eval(s, "(char? #\\a)", "#t");
     assert_eval(s, "(char? 1)", "#f");
     assert_eval(s, "#\\b", "#\\b");
+    assert_eval(s, "(integer->char 66)", "#\\B");
+    assert_eval(s, "(integer->char 95)", "#\\_");
+    assert_eval(s, "(char->integer #\\B)", "66");
+    assert_eval(s, "(char->integer #\\_)", "95");
+    assert_eval(s, "(<= (char->integer #\\a) (char->integer #\\b))", "#t");
+    assert_eval(s, "(char-upcase #\\a)", "#\\A");
+    assert_eval(s, "(char-upcase #\\A)", "#\\A");
+    assert_eval(s, "(char-downcase #\\b)", "#\\b");
+    assert_eval(s, "(char-downcase #\\B)", "#\\b");
+    
 }
 
 void test_symbols() {
@@ -202,6 +212,21 @@ void test_math() {
     assert_eval(s, "(positive? 0)" , "#f");
     assert_eval(s, "(positive? -10)" , "#f");
     assert_eval(s, "(positive? 2)" , "#t");
+    assert_eval(s, "(integer? 2)" , "#t");
+    assert_eval(s, "(integer? 2.1)" , "#f");
+    assert_eval(s, "(integer? 2.0)" , "#t");
+
+    assert_eval(s, "(round 2.1)" , "2");
+    assert_eval(s, "(round 2.8)" , "3");
+    assert_eval(s, "(floor -4.3)" , "-5");
+    assert_eval(s, "(ceiling -4.3)" , "-4");
+    assert_eval(s, "(truncate -4.3)" , "-4");
+    assert_eval(s, "(round -4.3)" , "-4");
+    assert_eval(s, "(floor 3.5)" , "3");
+    assert_eval(s, "(ceiling 3.5)" , "4");
+    assert_eval(s, "(truncate 3.5)" , "3");
+    assert_eval(s, "(round 3.5)" , "4");
+    assert_eval(s, "(round 7)" , "7");
     
 }
 
@@ -383,7 +408,6 @@ void test_let() {
     assert_eval(s, "(let ((f -)) ((letrec ((f (lambda (n) n))) f) (f 1)))", "-1");
     
     /*
-    assert_eval(s, "", "");
     assert_eval(s, "", "");
     assert_eval(s, "", "");
     assert_eval(s, "", "");

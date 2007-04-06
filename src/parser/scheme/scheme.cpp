@@ -3,6 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include <cmath>
+#include <cctype>
 
 #include "lexer.h"
 #include "parser.h"
@@ -40,6 +41,7 @@ Scheme::Scheme() {
 	assign("string?"    ,1,0,0, (SchemeObject* (*)()) s_string_p);
 	assign("procedure?" ,1,0,0, (SchemeObject* (*)()) s_procedure_p);
 	assign("number?"    ,1,0,0, (SchemeObject* (*)()) s_number_p);
+	assign("integer?"   ,1,0,0, (SchemeObject* (*)()) s_integer_p);
 	assign("vector?"    ,1,0,0, (SchemeObject* (*)()) s_vector_p);
 	assign("null?"      ,1,0,0, (SchemeObject* (*)()) s_null_p);
 	assign("car"        ,1,0,0, (SchemeObject* (*)()) s_car);
@@ -84,6 +86,10 @@ Scheme::Scheme() {
 	assign("log"        ,1,0,0, (SchemeObject* (*)()) s_log);
 	assign("exp"        ,1,0,0, (SchemeObject* (*)()) s_exp);
 	assign("expt"       ,2,0,0, (SchemeObject* (*)()) s_expt);
+	assign("round"      ,1,0,0, (SchemeObject* (*)()) s_round);
+	assign("ceiling"    ,1,0,0, (SchemeObject* (*)()) s_ceiling);
+	assign("floor"      ,1,0,0, (SchemeObject* (*)()) s_floor);
+	assign("truncate"   ,1,0,0, (SchemeObject* (*)()) s_truncate);
 	assign("min"        ,1,0,1, (SchemeObject* (*)()) s_min);
 	assign("max"        ,1,0,1, (SchemeObject* (*)()) s_max);
 	assign("even?"      ,1,0,1, (SchemeObject* (*)()) s_even_p);
@@ -107,6 +113,10 @@ Scheme::Scheme() {
 	assign("string-copy",1,0,0, (SchemeObject* (*)()) s_string_copy);
 	assign("symbol->string",1,0,0, (SchemeObject* (*)()) s_symbol_2_string);
 	assign("string->symbol",1,0,0, (SchemeObject* (*)()) s_string_2_symbol);
+	assign("char->integer",1,0,0, (SchemeObject* (*)()) s_char_2_integer);
+	assign("integer->char",1,0,0, (SchemeObject* (*)()) s_integer_2_char);
+	assign("char-downcase",1,0,0, (SchemeObject* (*)()) s_char_downcase);
+	assign("char-upcase" ,1,0,0, (SchemeObject* (*)()) s_char_upcase);
 	assign("symgen"      ,0,0,0, (SchemeObject* (*)()) s_symgen);
 	
     ifstream infile;
@@ -138,6 +148,14 @@ void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*
 // -----------------------------------------------------
 // Procedures
 // -----------------------------------------------------
+
+inline
+void assert_arg_type(char* procname, int argnum, SchemeBool* (*test_fn)(SchemeObject*), SchemeObject* arg) {
+    if ((*test_fn)(arg) == S_FALSE) {
+        throw scheme_exception("Wrong argument-type in position in call to " + string(procname));
+    }
+}
+
 
 inline
 SchemeNumber* make_number(int n) {
@@ -274,7 +292,6 @@ SchemeObject* s_assv(SchemeObject* obj, SchemePair* alist) {
     return assoc_helper(s_eqv_p, obj, alist); 
 }
 
-
 // (pair? p)
 SchemeBool* s_pair_p(SchemeObject* p) {
     return (p->type() == SchemeObject::PAIR) ? S_TRUE : S_FALSE;
@@ -300,6 +317,15 @@ SchemeBool* s_number_p(SchemeObject* p) {
     return (p->type() == SchemeObject::NUMBER) ? S_TRUE : S_FALSE;
 }
 
+// (integer? p)
+SchemeBool* s_integer_p(SchemeObject* p) {
+    if (p->type() != SchemeObject::NUMBER) {
+        return S_FALSE;
+    }
+    return (static_cast<SchemeNumber*>(p)->number == s_round(p)->number) ? S_TRUE : S_FALSE;
+}
+
+
 // (number? p)
 SchemeBool* s_vector_p(SchemeObject* p) {
     return (p->type() == SchemeObject::VECTOR) ? S_TRUE : S_FALSE;
@@ -312,16 +338,12 @@ SchemeBool* s_null_p(SchemeObject* p) {
 
 
 SchemeObject* s_car(SchemeObject* o) {
-    if (o->type() != SchemeObject::PAIR) {
-        throw scheme_exception("Wrong type in car");
-    }
+    assert_arg_type("car", 1, s_pair_p, o);
     return static_cast<SchemePair*>(o)->car;
 }
 
 SchemeObject* s_cdr(SchemeObject* o) {
-    if (o->type() != SchemeObject::PAIR) {
-        throw scheme_exception("Wrong type in cdr");
-    }
+    assert_arg_type("cdr", 1, s_pair_p, o);
     return static_cast<SchemePair*>(o)->cdr;
 }
 
@@ -371,42 +393,43 @@ SchemeObject* s_newline(BindingEnvironment* s) {
 }
 
 SchemePair* s_reverse(SchemeObject* o) {
-    SchemePair* result = S_EMPTY_LIST;
-    if (s_list_p(o) != S_TRUE) {
-		throw scheme_exception("reverse with wrong argument");
+    if (o != S_EMPTY_LIST) {
+        assert_arg_type("reverse", 1, s_pair_p, o);
     }
+    SchemePair* result = S_EMPTY_LIST;
     while (o != S_EMPTY_LIST) {
-		SchemePair* l = static_cast<SchemePair*> (o);
-		result = s_cons(l->car, result);
-		o = l->cdr;
+		result = s_cons(s_car(o), result);
+		o = s_cdr(o);
+        if (o != S_EMPTY_LIST) {
+            assert_arg_type("reverse", 1, s_pair_p, o);
+        }
 	}
 	return result;  
 }
 
-SchemeNumber* s_length(SchemePair* p) {
+SchemeNumber* s_length(SchemeObject* p) {
+    if (p != S_EMPTY_LIST) {
+        assert_arg_type("length", 1, s_pair_p, p);
+    }
     int length = 0;
     while (p != S_EMPTY_LIST) {
         length++;
-        p = p->cdrAsPair();
-        if (p == NULL) {
-            throw scheme_exception("Not a list");
+        p = s_cdr(p);
+        if (p != S_EMPTY_LIST) {
+            assert_arg_type("length", 1, s_pair_p, p);
         }
     }
     return make_number(length);
 }
 
 SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o) {
-    if (s_pair_p(p) == S_FALSE) {
-        throw scheme_exception("Invalid argument in position 1");
-    }
+    assert_arg_type("set-car!", 1, s_pair_p, p);
     static_cast<SchemePair*>(p)->car = o;
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o) {
-    if (s_pair_p(p) == S_FALSE) {
-        throw scheme_exception("Invalid argument in position 1");
-    }
+    assert_arg_type("set-cdr!", 1, s_pair_p, p);
     static_cast<SchemePair*>(p)->cdr = o;
     return S_UNSPECIFIED;
 }
@@ -463,11 +486,10 @@ SchemeNumber* s_plus(SchemePair* p) {
 	if (p == S_EMPTY_LIST) {
 		return S_ZERO;
 	}
+    int i = 1;
 	while (p != S_EMPTY_LIST) {
+	    assert_arg_type("+", i++, s_number_p, p->car);
 		SchemeNumber* n = static_cast<SchemeNumber*>(p->car);
-		if (n == NULL) {
-			throw scheme_exception("Wrong argument to +: " + p->car->toString());
-		}
 		result += n->number;
 		p = p->cdrAsPair();
 	}
@@ -484,11 +506,10 @@ SchemeNumber* s_minus(SchemePair* p) {
 	    // One-argument case is a simple negate (n => -n)
         first = false;
 	}
+    int i = 1;
 	while (p != S_EMPTY_LIST) {
+	    assert_arg_type("-", i++, s_number_p, p->car);
 		SchemeNumber* n = static_cast<SchemeNumber*>(p->car);
-		if (n == NULL) {
-			throw scheme_exception("Wrong argument to +: " + p->car->toString());
-		}
 		if (first) {
             result = n->number;
             first = false;
@@ -510,11 +531,10 @@ SchemeNumber* s_divide(SchemePair* p) {
 	    // One-argument case is a simple inverse (n => 1/n)
         first = false;
 	}
+    int i = 1;
 	while (p != S_EMPTY_LIST) {
+	    assert_arg_type("/", i++, s_number_p, p->car);
 		SchemeNumber* n = static_cast<SchemeNumber*>(p->car);
-		if (n == NULL) {
-			throw scheme_exception("Wrong argument to +: " + p->car->toString());
-		}
 		if (first) {
             result = n->number;
             first = false;
@@ -532,12 +552,10 @@ SchemeNumber* s_mult(SchemePair* p) {
 	if (p == S_EMPTY_LIST) {
 		return S_ONE;
 	}
-	
+    int i = 1;
 	while (p != S_EMPTY_LIST) {
+	    assert_arg_type("*", i++, s_number_p, p->car);
 		SchemeNumber* n = static_cast<SchemeNumber*>(p->car);
-		if (n == NULL) {
-			throw scheme_exception("Wrong argument to *: " + p->car->toString());
-		}
 		result *= n->number;
 		p = p->cdrAsPair();
 	}
@@ -658,33 +676,50 @@ SchemeNumber* s_exp(SchemeNumber* n) {
     return new SchemeNumber(exp(n->number));
 }
 
+SchemeNumber* s_round(SchemeObject* n) {
+    assert_arg_type("round", 1, s_number_p, n);
+    return new SchemeNumber(round(static_cast<SchemeNumber*>(n)->number));
+}
+
+SchemeNumber* s_ceiling(SchemeObject* n) {
+    assert_arg_type("ceiling", 1, s_number_p, n);
+    return new SchemeNumber(ceil(static_cast<SchemeNumber*>(n)->number));
+}
+
+SchemeNumber* s_floor(SchemeObject* n) {
+    assert_arg_type("floor", 1, s_number_p, n);
+    return new SchemeNumber(floor(static_cast<SchemeNumber*>(n)->number));
+}
+
+SchemeNumber* s_truncate(SchemeObject* n) {
+    assert_arg_type("truncate", 1, s_number_p, n);
+    return new SchemeNumber(trunc(static_cast<SchemeNumber*>(n)->number));
+}
+
+
 SchemeNumber* s_min(SchemeNumber* first, SchemePair* rest) {
-    double result = first->number;
-        
+    SchemeNumber* result = first;
+    int i = 2;    
 	while (rest != S_EMPTY_LIST) {
+	    assert_arg_type("min", i++, s_number_p, rest->car);
     	SchemeNumber* n = static_cast<SchemeNumber*>(rest->car);
-    	if (n == NULL) {
-    		throw scheme_exception("Wrong argument to +: " + rest->car->toString());
-    	}
-        result = n->number < result ? n->number : result;
+        result = n->number < result->number ? n : result;
         rest = rest->cdrAsPair();
 	}
-	return new SchemeNumber(result);
+	return result;
 }
 
 
 SchemeNumber* s_max(SchemeNumber* first, SchemePair* rest) {
-    double result = first->number;
-        
+    SchemeNumber* result = first;
+    int i = 2;    
 	while (rest != S_EMPTY_LIST) {
+	    assert_arg_type("max", i++, s_number_p, rest->car);
     	SchemeNumber* n = static_cast<SchemeNumber*>(rest->car);
-    	if (n == NULL) {
-    		throw scheme_exception("Wrong argument to +: " + rest->car->toString());
-    	}
-        result = n->number > result ? n->number : result;
+        result = n->number > result->number ? n : result;
         rest = rest->cdrAsPair();
 	}
-	return new SchemeNumber(result);
+	return result;
 }
 
 SchemeBool* s_even_p(SchemeNumber* n) {
@@ -814,28 +849,26 @@ SchemeBool* s_not(SchemeObject* o) {
 
 
 SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr) {
-    if (s_number_p(len) == S_FALSE) {
-        throw scheme_exception("Wrong argument in position 1");
-    }
+    assert_arg_type("make-string", 1, s_number_p, len);
+    
     if (chr == S_UNSPECIFIED) {
         chr = S_SPACE;
     }
-    if (s_char_p(chr) == S_FALSE) {
-        throw scheme_exception("Wrong argument in position 2");
-    }
+    assert_arg_type("make-string", 2, s_char_p, chr);
+
     string s = string(int(static_cast<SchemeNumber*>(len)->number), static_cast<SchemeChar*>(chr)->c);
     return new SchemeString(s);
 }
 
 SchemeNumber* s_string_length(SchemeObject* s) {
-    if (s_string_p(s) == S_FALSE) {
-        throw scheme_exception("Wrong argument in position 1");
-    }
+    assert_arg_type("string-length", 1, s_string_p, s);
     int len = static_cast<SchemeString*>(s)->str.size();
     return make_number(len);
 }
 
 SchemeChar* s_string_ref(SchemeString* s, SchemeNumber* i) {
+    assert_arg_type("string-ref", 1, s_string_p, s);
+    assert_arg_type("string-ref", 2, s_number_p, i);
     int index = int(i->number);
     return new SchemeChar(s->str[index]);
 }	
@@ -850,12 +883,11 @@ SchemeSymbol* s_string_2_symbol(SchemeString* s) {
 
 SchemeString* s_string_append(SchemePair* strings) {
     string result = "";
+    int i = 1;
     while (strings != S_EMPTY_LIST) {
-	if (s_string_p(strings->car) == S_FALSE) {
-	    throw scheme_exception("Wrong argument to string-append");
-	}
-	result += static_cast<SchemeString*>(strings->car)->str;
-	strings = strings->cdrAsPair();
+        assert_arg_type("string-append", i++, s_string_p, strings->car);
+	    result += static_cast<SchemeString*>(strings->car)->str;
+	    strings = strings->cdrAsPair();
     }
     return new SchemeString(result);
 }
@@ -865,6 +897,26 @@ SchemeString* s_string_copy(SchemeObject* str) {
         throw scheme_exception("Wrong argument to string-copy");
     }
     return new SchemeString(static_cast<SchemeString*>(str)->str);
+}
+
+SchemeChar* s_integer_2_char(SchemeObject* i) {
+    assert_arg_type("integer->char", 1, s_number_p, i);
+    return new SchemeChar(int(static_cast<SchemeNumber*>(i)->number));
+}
+
+SchemeNumber* s_char_2_integer(SchemeObject* c) {
+    assert_arg_type("char->integer", 1, s_char_p, c);
+    return make_number(int(static_cast<SchemeChar*>(c)->c));
+}
+
+SchemeChar* s_char_upcase(SchemeObject* c) {
+    assert_arg_type("char-upcase", 1, s_char_p, c);
+    return new SchemeChar(toupper(static_cast<SchemeChar*>(c)->c));    
+}
+
+SchemeChar* s_char_downcase(SchemeObject* c) {
+    assert_arg_type("char-downcase", 1, s_char_p, c);
+    return new SchemeChar(tolower(static_cast<SchemeChar*>(c)->c));    
 }
 
 SchemeSymbol* s_symgen() {

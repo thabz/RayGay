@@ -33,9 +33,53 @@
                         `,vars)))))
       do-macro)))
 
-(display
+
 (do ((vec (make-vector 5))
      (i 0 (+ i 1)))
     ((= i 5) vec)
-	  (vector-set! vec i i)))
+	  (vector-set! vec i i))
 (newline)
+
+(define (char-cmp? cmp a b)
+     (cmp (char->integer a) (char->integer b)))
+(define (char-ci-cmp? cmp a b)
+     (cmp (char->integer (char-downcase a)) (char->integer (char-downcase b))))
+
+(define (char=? a b) (char-cmp? = a b))
+(define (char<? a b) (char-cmp? < a b))
+(define (char>? a b) (char-cmp? > a b))
+(define (char<=? a b) (char-cmp? <= a b))
+(define (char>=? a b) (char-cmp? >= a b))
+
+(define (char-ci=? a b) (char-ci-cmp? = a b))
+(define (char-ci<? a b) (char-ci-cmp? < a b))
+(define (char-ci>? a b) (char-ci-cmp? > a b))
+(define (char-ci<=? a b) (char-ci-cmp? <= a b))
+(define (char-ci>=? a b) (char-ci-cmp? >= a b))
+
+; Note the trick of returning (cmp x y)
+(define (string-cmp? chcmp cmp a b)
+     (let ((na (string-length a)) (nb (string-length b)))
+          (let loop ((i 0))
+               (cond
+                    ((= i na)
+                         (if (= i nb) (cmp 0 0) (cmp 0 1)))
+                    ((= i nb)
+                         (cmp 1 0))
+                    ((chcmp = (string-ref a i) (string-ref b i))
+                         (loop (succ i)))
+                    (else
+                         (chcmp cmp (string-ref a i) (string-ref b i)))))))
+
+
+(define (string=? a b) (string-cmp? char-cmp? = a b))
+(define (string<? a b) (string-cmp? char-cmp? < a b))
+(define (string>? a b) (string-cmp? char-cmp? > a b))
+(define (string<=? a b) (string-cmp? char-cmp? <= a b))
+(define (string>=? a b) (string-cmp? char-cmp? >= a b))
+
+(define (string-ci=? a b) (string-cmp? char-ci-cmp? = a b))
+(define (string-ci<? a b) (string-cmp? char-ci-cmp? < a b))
+(define (string-ci>? a b) (string-cmp? char-ci-cmp? > a b))
+(define (string-ci<=? a b) (string-cmp? char-ci-cmp? <= a b))
+(define (string-ci>=? a b) (string-cmp? char-ci-cmp? >= a b))

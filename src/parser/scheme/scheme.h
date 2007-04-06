@@ -38,6 +38,7 @@ class scheme_exception {
 		string str;
 };
 
+void assert_arg_type(char* procname, int argnum, SchemeBool* (*)(SchemeObject*), SchemeObject* arg);
 
 // Scheme constants
 extern SchemeBool* S_TRUE;
@@ -47,6 +48,8 @@ extern SchemeEmptyList* S_EMPTY_LIST;
 extern SchemeNumber* S_ZERO;
 extern SchemeNumber* S_ONE;
 extern SchemeNumber* S_TWO;
+
+
 
 
 // Scheme procedures
@@ -86,7 +89,7 @@ SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o);
 SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o);
 SchemeObject* s_append(SchemePair* args);
 SchemePair* s_reverse(SchemeObject* l);
-SchemeNumber* s_length(SchemePair* l);
+SchemeNumber* s_length(SchemeObject* l);
 SchemeObject* s_list_ref(SchemePair* l, SchemeNumber* i);
 SchemeObject* s_member(SchemeObject* obj, SchemeObject* p);
 SchemeObject* s_memq(SchemeObject* obj, SchemeObject* p);
@@ -99,6 +102,12 @@ SchemePair* s_vector_2_list(SchemeObject* v);
 SchemeObject* s_vector_ref(SchemeVector* v, SchemeNumber* i);
 SchemeObject* s_vector_set_e(SchemeVector* vec, SchemeNumber* index, SchemeObject* val);
 SchemeObject* s_vector_fill_e(SchemeVector* vec, SchemeObject* fill);
+SchemeChar* s_integer_2_char(SchemeObject* i);
+SchemeNumber* s_char_2_integer(SchemeObject* c);
+SchemeChar* s_char_upcase(SchemeObject* c);
+SchemeChar* s_char_downcase(SchemeObject* c);
+
+
 
 // Math stuff
 SchemeBool* s_equal(SchemePair* p);
@@ -123,11 +132,16 @@ SchemeNumber* s_exp(SchemeNumber* n);
 SchemeNumber* s_log(SchemeNumber* n);
 SchemeNumber* s_min(SchemeNumber* n, SchemePair* l);
 SchemeNumber* s_max(SchemeNumber* n, SchemePair* l);
+SchemeNumber* s_round(SchemeObject* n);
+SchemeNumber* s_floor(SchemeObject* n);
+SchemeNumber* s_ceiling(SchemeObject* n);
+SchemeNumber* s_truncate(SchemeObject* n);
 SchemeBool* s_even_p(SchemeNumber* n);
 SchemeBool* s_odd_p(SchemeNumber* n);
 SchemeBool* s_zero_p(SchemeNumber* n);
 SchemeBool* s_negative_p(SchemeNumber* n);
 SchemeBool* s_positive_p(SchemeNumber* n);
+SchemeBool* s_integer_p(SchemeObject* n);
 
 // String stuff
 SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr);
