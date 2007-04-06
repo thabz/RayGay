@@ -106,8 +106,8 @@ SchemeChar* s_integer_2_char(SchemeObject* i);
 SchemeNumber* s_char_2_integer(SchemeObject* c);
 SchemeChar* s_char_upcase(SchemeObject* c);
 SchemeChar* s_char_downcase(SchemeObject* c);
-
-
+SchemeObject* s_number_2_string(SchemeObject* n);
+SchemeObject* s_string_2_number(SchemeObject* s);
 
 // Math stuff
 SchemeBool* s_equal(SchemePair* p);

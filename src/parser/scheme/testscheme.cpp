@@ -349,6 +349,9 @@ void test_macros() {
     s->eval("(define-macro (greater-than x y) `(> ,x ,y))");
     assert_eval(s, "(greater-than 10 20)", "#f");
     assert_eval(s, "(greater-than 20 10)", "#t");
+
+    s->eval("(define-macro (when test . consequent) `(if ,test (begin ,@consequent)))");
+    assert_eval(s, "(when #t 'kaj)", "kaj");
 }
 
 void test_define_and_set() {
@@ -387,6 +390,8 @@ void test_string() {
     assert_eval(s, "(string-append \"zzz\")","\"zzz\"");
     assert_eval(s, "(string-append \"zzz\" \"xxx\") ","\"zzzxxx\"");
     assert_eval(s, "(string-copy \"zzz\")","\"zzz\"");
+    assert_eval(s, "(string->number \"100\")", "100");
+    assert_eval(s, "(number->string 256)", "\"256\"");
 }
 
 void test_begin() {
@@ -409,7 +414,6 @@ void test_let() {
     assert_eval(s, "(let ((f -)) ((letrec ((f (lambda (n) n))) f) (f 1)))", "-1");
     
     /*
-    assert_eval(s, "", "");
     assert_eval(s, "", "");
     assert_eval(s, "", "");
     assert_eval(s, "", "");
@@ -445,6 +449,7 @@ void test_quote() {
     assert_eval(s, "`(a ,(+ 1 2) ,@(map abs '(4 -5 6)) b)", "(a 3 4 5 6 b)");
     //assert_eval(s, "`(( foo ,(- 10 3)) ,@(cdr '(c)) . ,(car '(cons)))", "((foo 7) . cons)");
     assert_eval(s, "`#(10 5 ,(sqrt 4) ,@(map sqrt '(16 9)) 8)", "#(10 5 2 4 3 8)");
+    assert_eval(s, "(let ((name 'a)) `(list ,name ',name))", "(list a (quote a))");
 }
 
 void test_map() {

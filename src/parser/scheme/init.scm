@@ -1,10 +1,5 @@
 
-
-(define-macro (when test . consequent)
-;   "A Common LISP style when macro"        
-   `(if ,test (begin ,@consequent)))    
-
-(when #t (display "kaj")(newline))
+#|
 
 (define-macro (do vars endtest . body)
   (lambda (do-macro)
@@ -39,6 +34,7 @@
     ((= i 5) vec)
 	  (vector-set! vec i i))
 (newline)
+
 
 (define (char-cmp? cmp a b)
      (cmp (char->integer a) (char->integer b)))
@@ -83,3 +79,17 @@
 (define (string-ci>? a b) (string-cmp? char-ci-cmp? > a b))
 (define (string-ci<=? a b) (string-cmp? char-ci-cmp? <= a b))
 (define (string-ci>=? a b) (string-cmp? char-ci-cmp? >= a b))
+|#
+
+(define (seed) 0)
+
+(define generate-name                            
+  (let ((count (seed)))
+    (lambda (symbol)
+      (set! count (+ 1 count))
+      (string->symbol
+       (string-append (symbol->string symbol)
+                      "|"
+                      (number->string count))))))
+
+'aa

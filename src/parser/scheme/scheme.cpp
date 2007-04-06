@@ -115,13 +115,15 @@ Scheme::Scheme() {
 	assign("string->symbol",1,0,0, (SchemeObject* (*)()) s_string_2_symbol);
 	assign("char->integer",1,0,0, (SchemeObject* (*)()) s_char_2_integer);
 	assign("integer->char",1,0,0, (SchemeObject* (*)()) s_integer_2_char);
+	assign("number->string",1,0,0, (SchemeObject* (*)()) s_number_2_string);
+	assign("string->number",1,0,0, (SchemeObject* (*)()) s_string_2_number);
 	assign("char-downcase",1,0,0, (SchemeObject* (*)()) s_char_downcase);
 	assign("char-upcase" ,1,0,0, (SchemeObject* (*)()) s_char_upcase);
 	assign("symgen"      ,0,0,0, (SchemeObject* (*)()) s_symgen);
 	
     ifstream infile;
     infile.open("init.scm", ifstream::in);
-    //eval(&infile);
+    eval(&infile);
     infile.close();
 }
 
@@ -911,6 +913,24 @@ SchemeString* s_string_copy(SchemeObject* str) {
     assert_arg_type("string-copy", 1, s_string_p, str);
     return new SchemeString(static_cast<SchemeString*>(str)->str);
 }
+
+SchemeObject* s_number_2_string(SchemeObject* n) {
+    assert_arg_type("number->string", 1, s_number_p, n);
+    ostringstream ss;
+    ss << static_cast<SchemeNumber*>(n)->number;
+    return new SchemeString(ss.str());
+    
+}
+
+SchemeObject* s_string_2_number(SchemeObject* s) {
+    assert_arg_type("string->number", 1, s_string_p, s);
+    istream* is = new istringstream(static_cast<SchemeString*>(s)->str);
+    double d;
+    (*is) >> d;
+    delete is;
+    return make_number(d);
+}
+
 
 SchemeChar* s_integer_2_char(SchemeObject* i) {
     assert_arg_type("integer->char", 1, s_number_p, i);
