@@ -28,6 +28,9 @@ SchemeEmptyList* S_EMPTY_LIST = new SchemeEmptyList();
 SchemeChar* S_SPACE = new SchemeChar(' ');
 SchemeNumber* S_NUMBERS[] = {S_ZERO, S_ONE, S_TWO, S_THREE, S_FOUR, S_FIVE, S_SIX, S_SEVEN, S_EIGHT, S_NINE};
 
+SchemeInputPort* current_input_port = NULL;
+SchemeOutputPort* current_output_port = NULL;
+
 Scheme::Scheme() {
     top_level_bindings = new BindingEnvironment(NULL);
 	assign("equal?"     ,2,0,0, (SchemeObject* (*)()) s_equal_p);
@@ -120,6 +123,13 @@ Scheme::Scheme() {
 	assign("char-downcase",1,0,0, (SchemeObject* (*)()) s_char_downcase);
 	assign("char-upcase" ,1,0,0, (SchemeObject* (*)()) s_char_upcase);
 	assign("symgen"      ,0,0,0, (SchemeObject* (*)()) s_symgen);
+	assign("current-input-port",0,0,0, (SchemeObject* (*)()) s_current_input_port);
+	assign("current-output-port",0,0,0, (SchemeObject* (*)()) s_current_output_port);
+	assign("input-port?"   ,1,0,0, (SchemeObject* (*)()) s_input_port_p);
+	assign("output-port?"  ,1,0,0, (SchemeObject* (*)()) s_output_port_p);
+	
+    current_input_port = new SchemeInputPort(&cin);
+    current_output_port = new SchemeOutputPort(&cout);
 	
     ifstream infile;
     infile.open("init.scm", ifstream::in);
@@ -956,4 +966,20 @@ SchemeSymbol* s_symgen() {
     ostringstream ss;
     ss << symgen_counter++;
     return SchemeSymbol::create("#G" + ss.str());
+}
+
+SchemeOutputPort* s_current_output_port() {
+    return current_output_port;
+}
+
+SchemeInputPort* s_current_input_port() {
+    return current_input_port;
+}
+
+SchemeBool* s_input_port_p(SchemeObject* o) {
+    return o->type() == SchemeObject::INPUT_PORT ? S_TRUE : S_FALSE;
+}
+
+SchemeBool* s_output_port_p(SchemeObject* o) {
+    return o->type() == SchemeObject::OUTPUT_PORT ? S_TRUE : S_FALSE;
 }

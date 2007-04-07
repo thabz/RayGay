@@ -23,7 +23,9 @@ class SchemeObject {
 		    PAIR,
 		    UNSPECIFIED,
  		    PROCEDURE,
- 		    MACRO
+ 		    MACRO,
+ 		    INPUT_PORT,
+ 		    OUTPUT_PORT
 		};
 	SchemeObject(bool immutable = false);
         virtual ~SchemeObject() {};
@@ -126,6 +128,22 @@ class SchemeContinuation : public SchemeObject {
     private:    
         ::jmp_buf jmpbuf;
     
+};
+
+class SchemeInputPort : public SchemeObject {
+    public:
+        SchemeInputPort(istream* is);
+        string toString();
+        ObjectType type() { return INPUT_PORT; };
+        istream* is;
+};
+
+class SchemeOutputPort : public SchemeObject {
+    public:
+        SchemeOutputPort(ostream* os);
+        string toString();
+        ObjectType type() { return OUTPUT_PORT; };
+        ostream* os;
 };
 
 class SchemeProcedure : public SchemeObject 

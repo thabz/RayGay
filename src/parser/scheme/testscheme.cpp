@@ -489,6 +489,14 @@ void test_vector() {
     assert_eval(s, "(define z (make-vector 4))(vector-fill! z 'a)z","#(a a a a)");
 }
 
+void test_io() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(input-port? (current-input-port))","#t");
+    assert_eval(s, "(output-port? (current-input-port))","#f");
+    assert_eval(s, "(input-port? (current-output-port))","#f");
+    assert_eval(s, "(output-port? (current-output-port))","#t");
+}
+
 int main(int argc, char *argv[]) {
     try {
         cout << "Test tokenizer...       ";
@@ -553,6 +561,10 @@ int main(int argc, char *argv[]) {
 
         cout << "Test map...             ";
         test_map();
+        cout << " OK" << endl;
+
+        cout << "Test I/O...             ";
+        test_io();
         cout << " OK" << endl;
 
         test_define_and_set();

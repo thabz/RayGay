@@ -152,6 +152,8 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
     		case SchemeObject::CHAR:
     		case SchemeObject::VECTOR:
     		case SchemeObject::EMPTY_LIST:
+    		case SchemeObject::INPUT_PORT:
+    		case SchemeObject::OUTPUT_PORT:
                 tstack->return_jump(s);
             case SchemeObject::PAIR:
                 tstack->push(envt);

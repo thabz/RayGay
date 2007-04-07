@@ -153,4 +153,10 @@ SchemeString* s_string_append(SchemePair* strings);
 SchemeString* s_string_copy(SchemeObject* string);
 SchemeSymbol* s_symgen();
 
+// Input and output stuff
+SchemeOutputPort* s_current_output_port();
+SchemeInputPort* s_current_input_port();
+SchemeBool* s_input_port_p(SchemeObject* o);
+SchemeBool* s_output_port_p(SchemeObject* o);
+
 #endif

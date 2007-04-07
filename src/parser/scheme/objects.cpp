@@ -212,3 +212,22 @@ SchemeContinuation::SchemeContinuation() {
 void SchemeContinuation::call() {
     longjmp(jmpbuf,1);
 }
+
+//-----------------------------------------------------------
+// Input- and output ports
+//-----------------------------------------------------------
+SchemeInputPort::SchemeInputPort(istream* i) {
+    this->is = i;
+}
+
+SchemeOutputPort::SchemeOutputPort(ostream* o) {
+    this->os = o;
+}
+
+string SchemeInputPort::toString() {
+    return "#<input-port>";
+}
+
+string SchemeOutputPort::toString() {
+    return "#<output-port>";
+}
