@@ -342,6 +342,9 @@ void test_lambda() {
     // Two examples from R^5RS
     assert_eval(s, "((lambda x x) 3 4 5 6)", "(3 4 5 6)");
     assert_eval(s, "((lambda (x y . z) z) 3 4 5 6)", "(5 6)");
+    
+    assert_eval(s, "(let () (define (f . x) x) (f))", "()");
+    assert_eval(s, "(let () (define f (lambda x x)) (f))", "()");
 }
 
 void test_macros() {

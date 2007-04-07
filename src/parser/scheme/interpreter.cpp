@@ -569,12 +569,11 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
                 req_symbols = req_symbols->cdrAsPair();
                 args = args->cdrAsPair();
             }
-            if (args != S_EMPTY_LIST) {
-                if (proc->rst == 0) {
-                    throw scheme_exception("Too many argument given.");
-                } else {
-                    new_envt->put(proc->s_rst, args);
-                }
+            if (proc->rst == 0 && args != S_EMPTY_LIST) {
+                throw scheme_exception("Too many argument given.");
+            }
+            if (proc->rst == 1) {
+                new_envt->put(proc->s_rst, args);
             }
             // TODO: We're leaking new_envt below
             tstack->push(new_envt);
