@@ -395,6 +395,10 @@ void test_string() {
     assert_eval(s, "(string-copy \"zzz\")","\"zzz\"");
     assert_eval(s, "(string->number \"100\")", "100");
     assert_eval(s, "(number->string 256)", "\"256\"");
+    assert_eval(s, "(string->list \"\")", "()");
+    assert_eval(s, "(string->list \"String\")", "(#\\S #\\t #\\r #\\i #\\n #\\g)");
+    assert_eval(s, "(list->string '())", "\"\"");
+    assert_eval(s, "(list->string '(#\\S #\\t #\\r #\\i #\\n #\\g))", "\"String\"");
 }
 
 void test_begin() {

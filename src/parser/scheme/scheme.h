@@ -151,7 +151,11 @@ SchemeString* s_symbol_2_string(SchemeSymbol* symbol);
 SchemeSymbol* s_string_2_symbol(SchemeString* s);
 SchemeString* s_string_append(SchemePair* strings);
 SchemeString* s_string_copy(SchemeObject* string);
+SchemePair* s_string_2_list(SchemeObject* s);
+SchemeString* s_list_2_string(SchemeObject* p);
+
 SchemeSymbol* s_symgen();
+
 
 // Input and output stuff
 SchemeOutputPort* s_current_output_port();

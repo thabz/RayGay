@@ -120,6 +120,8 @@ Scheme::Scheme() {
 	assign("integer->char",1,0,0, (SchemeObject* (*)()) s_integer_2_char);
 	assign("number->string",1,0,0, (SchemeObject* (*)()) s_number_2_string);
 	assign("string->number",1,0,0, (SchemeObject* (*)()) s_string_2_number);
+	assign("list->string",1,0,0, (SchemeObject* (*)()) s_list_2_string);
+	assign("string->list",1,0,0, (SchemeObject* (*)()) s_string_2_list);
 	assign("char-downcase",1,0,0, (SchemeObject* (*)()) s_char_downcase);
 	assign("char-upcase" ,1,0,0, (SchemeObject* (*)()) s_char_upcase);
 	assign("symgen"      ,0,0,0, (SchemeObject* (*)()) s_symgen);
@@ -973,6 +975,29 @@ SchemeNumber* s_char_2_integer(SchemeObject* c) {
     assert_arg_type("char->integer", 1, s_char_p, c);
     return make_number(int(static_cast<SchemeChar*>(c)->c));
 }
+
+SchemePair* s_string_2_list(SchemeObject* s) {
+    assert_arg_type("string->list", 1, s_string_p, s);
+    string ss = static_cast<SchemeString*>(s)->str;
+    SchemePair* result = S_EMPTY_LIST;
+    for(uint i = 0; i < ss.size(); i++) {
+        result = s_cons(new SchemeChar(ss[i]), result);
+    }
+    // TODO: Leakage
+    return s_reverse(result);
+}
+
+SchemeString* s_list_2_string(SchemeObject* p) {
+    assert_arg_type("list->string", 1, s_list_p, p);
+    string result = "";
+    while (s_null_p(p) == S_FALSE) {
+        assert_arg_type("list->string", 1, s_char_p, s_car(p));
+        result += static_cast<SchemeChar*>(s_car(p))->c;
+        p = s_cdr(p);
+    }
+    return new SchemeString(result);
+}
+
 
 SchemeChar* s_char_upcase(SchemeObject* c) {
     assert_arg_type("char-upcase", 1, s_char_p, c);
