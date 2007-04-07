@@ -66,9 +66,9 @@ Scheme::Scheme() {
 	assign("reverse"    ,1,0,0, (SchemeObject* (*)()) s_reverse);
 	assign("length"     ,1,0,0, (SchemeObject* (*)()) s_length);
 	assign("cons"       ,2,0,0, (SchemeObject* (*)()) s_cons);
-	assign("display"    ,1,0,0, (SchemeObject* (*)()) s_display);
-	assign("write"      ,1,0,0, (SchemeObject* (*)()) s_write);
-	assign("newline"    ,0,0,0, (SchemeObject* (*)()) s_newline);
+	assign("display"    ,1,1,0, (SchemeObject* (*)()) s_display);
+	assign("write"      ,1,1,0, (SchemeObject* (*)()) s_write);
+	assign("newline"    ,0,1,0, (SchemeObject* (*)()) s_newline);
 	assign("<"          ,0,0,1, (SchemeObject* (*)()) s_less);
 	assign(">"          ,0,0,1, (SchemeObject* (*)()) s_greater);
 	assign("<="         ,0,0,1, (SchemeObject* (*)()) s_less_equal);
@@ -383,24 +383,46 @@ SchemePair* s_list(SchemePair* args) {
     return args;
 }
 
-SchemeObject* s_write(SchemeObject* o) {
-    cout << o->toString();
+SchemeObject* s_write(SchemeObject* o, SchemeObject* port) {
+    ostream* os;
+    if (port == S_UNSPECIFIED) {
+        os = s_current_output_port()->os;
+    } else {
+        assert_arg_type("write", 2, s_output_port_p, port);
+        os = static_cast<SchemeOutputPort*>(port)->os;
+    }
+    (*os) << o->toString();
     return S_UNSPECIFIED;
 }
 
-SchemeObject* s_display(SchemeObject* o) {
-    if (s_string_p(o) == S_TRUE) {
-        cout << static_cast<SchemeString*>(o)->str;
-    } else if (s_char_p(o) == S_TRUE) {
-        cout << static_cast<SchemeChar*>(o)->c;
+SchemeObject* s_display(SchemeObject* o, SchemeObject* port) {
+    ostream* os;
+    if (port == S_UNSPECIFIED) {
+        os = s_current_output_port()->os;
     } else {
-        cout << o->toString();
+        assert_arg_type("display", 2, s_output_port_p, port);
+        os = static_cast<SchemeOutputPort*>(port)->os;
+    }
+    
+    if (s_string_p(o) == S_TRUE) {
+        (*os) << static_cast<SchemeString*>(o)->str;
+    } else if (s_char_p(o) == S_TRUE) {
+        (*os) << static_cast<SchemeChar*>(o)->c;
+    } else {
+        (*os) << o->toString();
     }
     return S_UNSPECIFIED;
 }
 
-SchemeObject* s_newline(BindingEnvironment* s) {
-    cout << endl;        
+SchemeObject* s_newline(SchemeObject* port) {
+    ostream* os;
+    if (port == S_UNSPECIFIED) {
+        os = s_current_output_port()->os;
+    } else {
+        assert_arg_type("write", 2, s_output_port_p, port);
+        os = static_cast<SchemeOutputPort*>(port)->os;
+    }
+    (*os) << endl;        
     return S_UNSPECIFIED;
 }
 

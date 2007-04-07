@@ -58,9 +58,9 @@ SchemeBool* s_eq_p(SchemeObject* a, SchemeObject* b);
 SchemeBool* s_eqv_p(SchemeObject* a, SchemeObject* b);
 SchemeBool* s_not(SchemeObject*);
 
-SchemeObject* s_write(SchemeObject* o);
-SchemeObject* s_display(SchemeObject* o); 
-SchemeObject* s_newline(BindingEnvironment* s);
+SchemeObject* s_write(SchemeObject* o, SchemeObject* port);
+SchemeObject* s_display(SchemeObject* o, SchemeObject* port); 
+SchemeObject* s_newline(SchemeObject* port );
 
 SchemeBool* s_boolean_p(SchemeObject* o);
 SchemeBool* s_string_p(SchemeObject* o);
