@@ -228,7 +228,19 @@ void test_math() {
     assert_eval(s, "(round 3.5)" , "4");
     assert_eval(s, "(round 2.5)" , "2"); // Round to nearest even integer
     assert_eval(s, "(round 7)" , "7");
-    
+
+    assert_eval(s, "(modulo 13 4)" , "1");
+    assert_eval(s, "(remainder 13 4)" , "1");
+    assert_eval(s, "(quotient 13 4)" , "3");
+    assert_eval(s, "(modulo -13 4)" , "3");
+    assert_eval(s, "(remainder -13 4)" , "-1");
+    assert_eval(s, "(quotient -13 4)" , "-3");
+    assert_eval(s, "(modulo 13 -4)" , "-3");
+    assert_eval(s, "(remainder 13 -4)" , "1");
+    assert_eval(s, "(quotient 13 -4)" , "-3");
+    assert_eval(s, "(modulo -13 -4)" , "-1");
+    assert_eval(s, "(remainder -13 -4)" , "-1");    
+    assert_eval(s, "(quotient -13 -4)" , "3");
 }
 
 void test_equals() {

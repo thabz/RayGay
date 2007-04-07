@@ -93,6 +93,9 @@ Scheme::Scheme() {
 	assign("ceiling"    ,1,0,0, (SchemeObject* (*)()) s_ceiling);
 	assign("floor"      ,1,0,0, (SchemeObject* (*)()) s_floor);
 	assign("truncate"   ,1,0,0, (SchemeObject* (*)()) s_truncate);
+	assign("quotient"   ,2,0,0, (SchemeObject* (*)()) s_quotient);
+	assign("remainder"  ,2,0,0, (SchemeObject* (*)()) s_remainder);
+	assign("modulo"     ,2,0,0, (SchemeObject* (*)()) s_modulo);
 	assign("min"        ,1,0,1, (SchemeObject* (*)()) s_min);
 	assign("max"        ,1,0,1, (SchemeObject* (*)()) s_max);
 	assign("even?"      ,1,0,1, (SchemeObject* (*)()) s_even_p);
@@ -747,6 +750,49 @@ SchemeNumber* s_truncate(SchemeObject* n) {
     return new SchemeNumber(trunc(static_cast<SchemeNumber*>(n)->number));
 }
 
+SchemeNumber* s_quotient(SchemeObject* n1, SchemeObject* n2) {
+    assert_arg_type("quotient", 1, s_integer_p, n1);
+    assert_arg_type("quotient", 2, s_integer_p, n2);
+    int nn1 = int(static_cast<SchemeNumber*>(n1)->number);
+    int nn2 = int(static_cast<SchemeNumber*>(n2)->number);
+    return make_number(nn1 / nn2);
+    
+}
+
+SchemeNumber* s_remainder(SchemeObject* n1, SchemeObject* n2) {
+    assert_arg_type("remainder", 1, s_integer_p, n1);
+    assert_arg_type("remainder", 2, s_integer_p, n2);
+    int nn1 = int(static_cast<SchemeNumber*>(n1)->number);
+    int nn2 = int(static_cast<SchemeNumber*>(n2)->number);
+    int result = nn1 % nn2;
+    if (result > 0) {
+        if (nn1 < 0) {
+            result -= abs(nn2);
+        }
+    } else if (result < 0) {
+        if (nn1 > 0) {
+            result += abs(nn2);
+        }
+    }
+    return make_number(result);
+}
+
+SchemeNumber* s_modulo(SchemeObject* n1, SchemeObject* n2) {
+    assert_arg_type("modulo", 1, s_integer_p, n1);
+    assert_arg_type("modulo", 2, s_integer_p, n2);
+    int nn1 = int(static_cast<SchemeNumber*>(n1)->number);
+    int nn2 = int(static_cast<SchemeNumber*>(n2)->number);
+    int result = nn1 % nn2;
+    if (result * nn2 < 0) {
+        if (result > 0) {
+            result -= abs(nn2);
+        } else {
+            result += abs(nn2);
+        }
+    }
+    return make_number(result);
+}
+
 
 SchemeNumber* s_min(SchemeNumber* first, SchemePair* rest) {
     SchemeNumber* result = first;
@@ -1030,3 +1076,5 @@ SchemeBool* s_input_port_p(SchemeObject* o) {
 SchemeBool* s_output_port_p(SchemeObject* o) {
     return o->type() == SchemeObject::OUTPUT_PORT ? S_TRUE : S_FALSE;
 }
+
+

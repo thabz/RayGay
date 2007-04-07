@@ -142,6 +142,9 @@ SchemeBool* s_zero_p(SchemeNumber* n);
 SchemeBool* s_negative_p(SchemeNumber* n);
 SchemeBool* s_positive_p(SchemeNumber* n);
 SchemeBool* s_integer_p(SchemeObject* n);
+SchemeNumber* s_quotient(SchemeObject* n1, SchemeObject* n2);
+SchemeNumber* s_remainder(SchemeObject* n1, SchemeObject* n2);
+SchemeNumber* s_modulo(SchemeObject* n1, SchemeObject* n2);
 
 // String stuff
 SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr);
