@@ -35,23 +35,24 @@
 	  (vector-set! vec i i))
 (newline)
 
+|#
 
-(define (char-cmp? cmp a b)
-     (cmp (char->integer a) (char->integer b)))
-(define (char-ci-cmp? cmp a b)
-     (cmp (char->integer (char-downcase a)) (char->integer (char-downcase b))))
+(define (char-cmp? cmp l)
+     (apply cmp (map char->integer l)))
+(define (char-ci-cmp? cmp l)
+     (apply cmp (map char->integer (map char-downcase l))))
 
-(define (char=? a b) (char-cmp? = a b))
-(define (char<? a b) (char-cmp? < a b))
-(define (char>? a b) (char-cmp? > a b))
-(define (char<=? a b) (char-cmp? <= a b))
-(define (char>=? a b) (char-cmp? >= a b))
+(define (char=? . l) (char-cmp? = l))
+(define (char<? a b) (char-cmp? < l))
+(define (char>? a b) (char-cmp? > l))
+(define (char<=? a b) (char-cmp? <= l))
+(define (char>=? a b) (char-cmp? >= l))
 
-(define (char-ci=? a b) (char-ci-cmp? = a b))
-(define (char-ci<? a b) (char-ci-cmp? < a b))
-(define (char-ci>? a b) (char-ci-cmp? > a b))
-(define (char-ci<=? a b) (char-ci-cmp? <= a b))
-(define (char-ci>=? a b) (char-ci-cmp? >= a b))
+(define (char-ci=? a b) (char-ci-cmp? = l))
+(define (char-ci<? a b) (char-ci-cmp? < l))
+(define (char-ci>? a b) (char-ci-cmp? > l))
+(define (char-ci<=? a b) (char-ci-cmp? <= l))
+(define (char-ci>=? a b) (char-ci-cmp? >= l))
 
 ; Note the trick of returning (cmp x y)
 (define (string-cmp? chcmp cmp a b)
@@ -79,7 +80,7 @@
 (define (string-ci>? a b) (string-cmp? char-ci-cmp? > a b))
 (define (string-ci<=? a b) (string-cmp? char-ci-cmp? <= a b))
 (define (string-ci>=? a b) (string-cmp? char-ci-cmp? >= a b))
-|#
+
 
 (define (seed) 0)
 

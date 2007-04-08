@@ -241,6 +241,17 @@ void test_math() {
     assert_eval(s, "(modulo -13 -4)" , "-1");
     assert_eval(s, "(remainder -13 -4)" , "-1");    
     assert_eval(s, "(quotient -13 -4)" , "3");
+    assert_eval(s, "(gcd)" , "0");
+    assert_eval(s, "(gcd 5)" , "5");
+    assert_eval(s, "(gcd -4)" , "4");
+    assert_eval(s, "(gcd 32 -36)" , "4");
+    assert_eval(s, "(gcd 32 36 4 4 12)" , "4");
+    assert_eval(s, "(lcm)" , "1");
+    assert_eval(s, "(lcm 0 0)" , "0");
+    assert_eval(s, "(lcm 32 -36)" , "288");
+    assert_eval(s, "(lcm 10 15 4)" , "60");
+    assert_eval(s, "(lcm 10 15 -4)" , "60");
+    
 }
 
 void test_equals() {

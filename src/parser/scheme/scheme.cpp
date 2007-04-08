@@ -98,6 +98,8 @@ Scheme::Scheme() {
 	assign("modulo"     ,2,0,0, (SchemeObject* (*)()) s_modulo);
 	assign("min"        ,1,0,1, (SchemeObject* (*)()) s_min);
 	assign("max"        ,1,0,1, (SchemeObject* (*)()) s_max);
+	assign("gcd"        ,0,0,1, (SchemeObject* (*)()) s_gcd);
+	assign("lcm"        ,0,0,1, (SchemeObject* (*)()) s_lcm);
 	assign("even?"      ,1,0,1, (SchemeObject* (*)()) s_even_p);
 	assign("odd?"       ,1,0,1, (SchemeObject* (*)()) s_odd_p);
 	assign("zero?"      ,1,0,0, (SchemeObject* (*)()) s_zero_p);
@@ -583,14 +585,14 @@ SchemeNumber* s_divide(SchemePair* p) {
 }
 
 
-SchemeNumber* s_mult(SchemePair* p) {
+SchemeNumber* s_mult(SchemeObject* p) {
 	double result = 1;
     int i = 1;
 	while (p != S_EMPTY_LIST) {
-	    assert_arg_type("*", i++, s_number_p, p->car);
-		SchemeNumber* n = static_cast<SchemeNumber*>(p->car);
+	    assert_arg_type("*", i++, s_number_p, s_car(p));
+		SchemeNumber* n = static_cast<SchemeNumber*>(s_car(p));
 		result *= n->number;
-		p = p->cdrAsPair();
+		p = s_cdr(p);
 	}
 	return new SchemeNumber(result);
 }
@@ -818,6 +820,55 @@ SchemeNumber* s_max(SchemeNumber* first, SchemePair* rest) {
 	}
 	return result;
 }
+
+int gcd(int a, int b) {
+    int t = 0;
+    while(b != 0) {
+        t = b;
+        b = a % b;
+        a = t;
+    }
+    return t;
+}
+
+// Using Euclids algorithm and that gcd is associative thus gcd(a,b,c) = gcd(a,(gcd(b,c))) = gcd(gcd(a,b),c).
+SchemeNumber* s_gcd(SchemeObject* l) {
+    if (s_null_p(l) == S_TRUE) {
+        return S_ZERO;
+    };
+    assert_arg_type("gcd", 1, s_pair_p, l);
+    assert_arg_type("gcd", 1, s_integer_p, s_car(l));
+    if (s_null_p(s_cdr(l)) == S_TRUE) {
+        return make_number(abs(int(static_cast<SchemeNumber*>(s_car(l))->number)));
+    }
+    int a = abs(int(static_cast<SchemeNumber*>(s_car(l))->number));
+    int b = abs(int(static_cast<SchemeNumber*>(s_gcd(s_cdr(l)))->number));
+    return make_number(gcd(a,b));
+}
+
+// Using the property gcd(a,b) * lcm(a,b) = a * b and that lcm(a,b,c) = lcm(lcm(a,b),c) = lcm(a,lcm(b,c))
+SchemeNumber* s_lcm(SchemeObject* l) {
+    if (s_null_p(l) == S_TRUE) {
+        return S_ONE;
+    }
+    assert_arg_type("lcm", 1, s_pair_p, l);
+    if (s_null_p(s_cdr(l)) == S_TRUE) {
+        assert_arg_type("lcm", 1, s_integer_p, s_car(l));
+        return make_number(abs(int(static_cast<SchemeNumber*>(s_car(l))->number)));
+    }
+
+    int a = abs(int(static_cast<SchemeNumber*>(s_car(l))->number));
+    int b = abs(int(static_cast<SchemeNumber*>(s_lcm(s_cdr(l)))->number));
+    int g = gcd(a,b);
+    int r;
+    if (g == 0) {
+        r = 0;
+    } else {
+        r = a * b / g;
+    }
+    return make_number(r);
+}
+
 
 SchemeBool* s_even_p(SchemeNumber* n) {
     int nn = int(n->number);
