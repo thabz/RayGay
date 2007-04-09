@@ -9,6 +9,10 @@
 #include "parser.h"
 #include "interpreter.h"
 
+scheme_exception::scheme_exception(string s) {
+    this->str = s;
+}
+
 unsigned long symgen_counter = 10000;
 
 SchemeBool* S_TRUE = new SchemeBool(true);

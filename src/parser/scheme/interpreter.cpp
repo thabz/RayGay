@@ -239,6 +239,10 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);
             tstack->push(cdr);
     		goto EVAL_LET;
+    	} else if (s == do_symbol) {
+            tstack->push(envt);
+            tstack->push(cdr);
+    		goto EVAL_DO;
     	} else if (s == letstar_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
@@ -1255,6 +1259,120 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         tstack->push(envt);
         tstack->push(transformed_body);
         goto EVAL;
+    }
+    EVAL_DO: {
+        SchemeObject* p = tstack->popSchemeObject();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        
+        if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
+            throw scheme_exception("Bad body in let");
+        }
+
+        // Extract formals and collect evaluated args for a lambda
+        BindingEnvironment* new_envt = new BindingEnvironment(envt);
+        SchemeObject* steps = S_EMPTY_LIST;
+        SchemeObject* varnames = S_EMPTY_LIST;
+        SchemeObject* binding_pairs = s_car(p);
+
+        while (s_null_p(binding_pairs) == S_FALSE) {
+            // Eval initial binding value
+            tstack->push(new_envt);
+            tstack->push(envt);
+            tstack->push(p);
+            tstack->push(steps);
+            tstack->push(varnames);
+            tstack->push(binding_pairs);
+            call_and_return(envt,s_car(s_cdr(s_car(binding_pairs))),EVAL);
+            SchemeObject* val = tstack->popSchemeObject();
+            binding_pairs = tstack->popSchemeObject();
+            varnames = tstack->popSchemeObject();
+            steps = tstack->popSchemeObject();
+            p = tstack->popSchemeObject();
+            envt = tstack->popBindingEnvironment();
+            new_envt = tstack->popBindingEnvironment();
+            
+            SchemeObject* varname = s_car(s_car(binding_pairs));
+            if (s_symbol_p(varname) == S_FALSE) {
+                throw scheme_exception("Invalid variable in do: " + varname->toString());
+            }
+            new_envt->put(static_cast<SchemeSymbol*>(varname), val);
+            varnames = s_cons(varname, varnames);
+
+
+            SchemeObject* step = s_cdr(s_cdr(s_car(binding_pairs)));
+            if (step == S_EMPTY_LIST) {
+                step = varname;
+            } else {
+                step = s_car(step);
+            }
+            steps = s_cons(step, steps);
+
+            binding_pairs = s_cdr(binding_pairs);
+        }
+        
+        SchemeObject* body = s_cdr(p);
+        
+        
+        while (true) {
+            // Evaluate test
+            tstack->push(new_envt);
+            tstack->push(body);
+            tstack->push(steps);
+            tstack->push(varnames);
+            call_and_return(new_envt,s_car(s_car(body)),EVAL);
+            SchemeObject* val = tstack->popSchemeObject();
+            varnames = tstack->popSchemeObject();
+            steps = tstack->popSchemeObject();
+            body = tstack->popSchemeObject();
+            new_envt = tstack->popBindingEnvironment();
+
+            // Return if test is true
+            if (val->boolValue()) {
+                if (s_cdr(s_car(body)) == S_EMPTY_LIST) {
+                    tstack->return_jump(S_UNSPECIFIED);
+                } else {
+                    tstack->push(new_envt);
+                    tstack->push(s_cdr(s_car(body)));
+                    goto EVAL_SEQUENCE;
+                }
+            }
+            
+            
+            if (s_cdr(body) != S_EMPTY_LIST) {
+                // Evaluate body-commands
+                tstack->push(new_envt);
+                tstack->push(body);
+                tstack->push(steps);
+                tstack->push(varnames);
+                call_and_return(new_envt,s_cdr(body),EVAL_SEQUENCE);
+                tstack->pop();
+                varnames = tstack->popSchemeObject();
+                steps = tstack->popSchemeObject();
+                body = tstack->popSchemeObject();
+                new_envt = tstack->popBindingEnvironment();
+            }
+            
+            // Evaluate steps
+            tstack->push(new_envt);
+            tstack->push(body);
+            tstack->push(steps);
+            tstack->push(varnames);
+            call_and_return(new_envt,steps,EVAL_MULTI);
+            SchemeObject* vals = tstack->popSchemeObject();
+            varnames = tstack->popSchemeObject();
+            steps = tstack->popSchemeObject();
+            body = tstack->popSchemeObject();
+            new_envt = tstack->popBindingEnvironment();
+            
+            // Assign new step values
+            tstack->push(varnames);
+            while(s_null_p(varnames) == S_FALSE) {
+                new_envt->put(static_cast<SchemeSymbol*>(s_car(varnames)), s_car(vals));
+                varnames = s_cdr(varnames);
+                vals = s_cdr(vals);
+            }
+            varnames = tstack->popSchemeObject();
+        }
     }
     return NULL;
 }

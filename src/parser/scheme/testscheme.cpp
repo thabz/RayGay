@@ -427,6 +427,7 @@ void test_string() {
     assert_eval(s, "(string-ref \"scheme\" 2)","#\\h");
     assert_eval(s, "(symbol->string 'aaa)","\"aaa\"");
     assert_eval(s, "(string->symbol \"aaa\")","aaa");
+    assert_eval(s, "(eq? (string->symbol \"f\") (string->symbol \"F\"))", "#f");
     assert_eval(s, "(string-append)","\"\"");
     assert_eval(s, "(string-append \"zzz\")","\"zzz\"");
     assert_eval(s, "(string-append \"zzz\" \"xxx\") ","\"zzzxxx\"");
@@ -463,6 +464,13 @@ void test_let() {
 
     assert_eval(s, "(let loop ((i 10)) i)", "10");
     assert_eval(s, "(let loop ((i 10)(j '())) (if (= 0 i) j (loop (- i 1) (cons i j))))", "(1 2 3 4 5 6 7 8 9 10)");
+}
+
+void test_do() {
+    Scheme* s = new Scheme();
+    // From R^5RS 4.2.4 
+    assert_eval(s, "(do ((vec (make-vector 5)) (i 0 (+ i 1))) ((= i 5) vec) (vector-set! vec i i))", "#(0 1 2 3 4)");
+    assert_eval(s, "(let ((x '(1 3 5 7 9))) (do ((x x (cdr x)) (sum 0 (+ sum (car x)))) ((null? x) sum)))", "25");
 }
 
 void test_quote() {
@@ -587,6 +595,11 @@ int main(int argc, char *argv[]) {
         test_let();
         cout << " OK" << endl;
 
+        cout << "Test do...              ";
+        test_do();
+        cout << " OK" << endl;
+
+
         cout << "Test char...            ";
         test_char();
         cout << " OK" << endl;
@@ -602,6 +615,7 @@ int main(int argc, char *argv[]) {
         cout << "Test I/O...             ";
         test_io();
         cout << " OK" << endl;
+
 
         test_define_and_set();
         test_begin();

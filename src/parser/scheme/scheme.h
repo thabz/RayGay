@@ -34,7 +34,7 @@ class Scheme {
 
 class scheme_exception {
     public: 
-		scheme_exception(string s) : str(s) {};
+		scheme_exception(string s);
 		string str;
 };
 
