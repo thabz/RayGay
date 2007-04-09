@@ -303,7 +303,8 @@ void test_pairs_and_lists() {
     assert(s->eval("(list? '(1 2 3))") == S_TRUE);
     assert(s->eval("(list? 1)") == S_FALSE);
     assert(s->eval("(list? '(1 2 . 3))") == S_FALSE);
-
+    // From R^5RS 6.3.2. Tests that list? returns #f on circular lists
+    assert_eval(s, "(let ((x (list 'a))) (set-cdr! x x) (list? x))", "#f");
     assert(s->eval("(pair? 1)") == S_FALSE);
     assert(s->eval("(pair? '())") == S_FALSE);
     assert(s->eval("(pair? '(1 2))") == S_TRUE);

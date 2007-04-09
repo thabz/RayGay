@@ -222,20 +222,19 @@ SchemeBool* s_boolean_p(SchemeObject* o) {
 
 // (list? a)
 SchemeBool* s_list_p(SchemeObject* o) {
-    if (o == S_EMPTY_LIST) {
-        return S_TRUE;
-    }
-    SchemePair* p = static_cast<SchemePair*> (o);
-    if (p != NULL) {
-        while (s_pair_p(p) == S_TRUE && p != S_EMPTY_LIST) {
-            p = p->cdrAsPair();
-            if (p == NULL) {
-                return S_FALSE;
-            }
+    SchemeObject *fast, *slow;
+    fast = slow = o;
+    while (true) {
+        if (s_pair_p(fast) == S_FALSE) return fast == S_EMPTY_LIST ? S_TRUE : S_FALSE;
+        fast = s_cdr(fast);
+        if (s_pair_p(fast) == S_FALSE) return fast == S_EMPTY_LIST ? S_TRUE : S_FALSE;
+        fast = s_cdr(fast);
+        slow = s_cdr(slow);
+        if (slow == fast) {
+            // The fast stepping pointer has looped around and caught up with the slow
+            // moving pointer, thus the structure is circular and thus not a list.
+            return S_FALSE;
         }
-        return p == S_EMPTY_LIST ? S_TRUE : S_FALSE;    
-    } else {
-        return S_FALSE;
     }
 }
 
