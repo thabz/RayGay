@@ -7,9 +7,15 @@
 using namespace std;
 
 int repl() {
-    Scheme* scheme = new Scheme();
 	char input[64*1024];
-	
+    Scheme* scheme;
+    
+	try {
+        scheme = new Scheme();
+    } catch (scheme_exception e) {
+		cerr << "ABORT: " << e.str << endl;
+    }
+
 	while (true) {
  	    cout << "raygay> " << flush;
 	    cin.getline(input, 64*1024);
@@ -29,13 +35,13 @@ int repl() {
 }
 
 int runfile(char* filename) {
-    Scheme* scheme = new Scheme();
     ifstream* ifs = new ifstream(filename, ios::in);
     if (ifs->fail()) {
         cout << "Error opening file" << endl;
         return EXIT_FAILURE;
     }
     try {
+        Scheme* scheme = new Scheme();
         scheme->eval(ifs);
     } catch (scheme_exception e) {
         ifs->close();

@@ -3,6 +3,21 @@
 #include "lexer.h"
 #include "parser.h"
 
+/*
+assert_eval(s, "", "");
+assert_eval(s, "", "");
+assert_eval(s, "", "");
+assert_eval(s, "", "");
+assert_eval(s, "", "");
+assert_eval(s, "", "");
+assert_eval(s, "", "");
+assert_eval(s, "", "");
+assert_eval(s, "", "");
+assert_eval(s, "", "");
+assert_eval(s, "", "");
+assert_eval(s, "", "");
+*/
+
 #define assert_eval(s,e,b) assert(s->eval(e)->toString() == b)
 
 void test_tokenizer() {
@@ -391,7 +406,7 @@ void test_define_and_set() {
     s->eval("(define (square x) (* x x))");
     assert_eval(s, "(square 9)", "81");
     s->eval("(define (selftest . x) x)");
-    // A R^5RS spec that guile 1.6.8 fails but we don't... :-)
+    // A R^5RS spec that guile 1.6.8 fails but we don't... Fixed in guile 1.8.1
     assert_eval(s, "(selftest 1 2 3 4)", "(1 2 3 4)");
     s->eval("(define (fact n) (if (equal? n 1) 1 (* n (fact (- n 1)))))");
     assert_eval(s, "(fact 6)", "720");
@@ -437,23 +452,17 @@ void test_let() {
     assert_eval(s, "(let ((i 10)) i)", "10");
     assert_eval(s, "(let ((i 10)(j 20)) (* j i))", "200");
     assert_eval(s, "(let ((x 2) (y 3)) (let* ((x 7) (z (+ x y))) (* z x)))", "70");
+    assert_eval(s, "(let ((x 0)) (let ((x 1) (y (* x 1))) y))", "0");
 
     // From http://sisc-scheme.org/r5rs_pitfall.scm
     assert_eval(s, "(let ((ls (list 1 2 3 4))) (append ls ls '(5)))", "(1 2 3 4 1 2 3 4 5)");
-    //assert_eval(s, "(let ((f -)) (let f ((n (f 1))) n))", "-1");
+    assert_eval(s, "(let ((f -)) (let f ((n (f 1))) n))", "-1");
     assert_eval(s, "(let ((f -)) ((letrec ((f (lambda (n) n))) f) (f 1)))", "-1");
-    
-    /*
-    assert_eval(s, "", "");
-    assert_eval(s, "", "");
-    assert_eval(s, "", "");
-    assert_eval(s, "", "");
-    assert_eval(s, "", "");
-    assert_eval(s, "", "");
-    assert_eval(s, "", "");
-    assert_eval(s, "", "");
-    assert_eval(s, "", "");
-    */
+
+    assert_eval(s, "(let - ((n (- 1))) n)", "-1");
+
+    assert_eval(s, "(let loop ((i 10)) i)", "10");
+    assert_eval(s, "(let loop ((i 10)(j '())) (if (= 0 i) j (loop (- i 1) (cons i j))))", "(1 2 3 4 5 6 7 8 9 10)");
 }
 
 void test_quote() {

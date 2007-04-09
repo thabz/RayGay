@@ -35,6 +35,28 @@
 	  (vector-set! vec i i))
 (newline)
 
+
+(define-macro (let name vars . body)
+	(cond
+	   ((symbol? name)
+			  (let* ((varnames (map car vars))
+				       (varvals (map cadr vars)))
+		      `(let* ((,name (lambda ,varnames ,@body)))
+                  (,name ,@varvals))))
+		 ((or (pair? name) (null? name))
+			   (let* ((body (cons vars body))
+  			        (vars name))
+            `(let* ,vars ,@body)))))
+
+
+(display "Hej")(newline)
+
+(let loop ((i 10)(j '()))
+   (if (= 0 i)
+     j
+     (loop (- i 1) (cons i j))))
+
+(let ((i 20)) (display i)(newline)) 
 |#
 
 (define (char-cmp? cmp l)

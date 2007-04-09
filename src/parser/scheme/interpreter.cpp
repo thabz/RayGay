@@ -234,7 +234,7 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             tstack->push(envt);
             tstack->push(formals);
             tstack->push(body);
-            goto EVAL_LAMBDA;	
+            goto EVAL_LAMBDA;
     	} else if (s == let_symbol) {
             tstack->push(envt);
             tstack->push(cdr);
@@ -1031,8 +1031,9 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         BindingEnvironment* envt = tstack->popBindingEnvironment();
         
         if (s_symbol_p(p->car) == S_TRUE) {
-            // Named let
-            throw scheme_exception("Named let not implemented yet");
+            tstack->push(envt);
+            tstack->push(p);
+            goto EVAL_NAMED_LET;
         }
         if (s_pair_p(p->car) == S_FALSE && s_null_p(p->car) == S_FALSE) {
             throw scheme_exception("Bad body in let");
@@ -1062,6 +1063,55 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         tstack->push(p->cdr); // Push local var
         goto EVAL_SEQUENCE;
     }
+    EVAL_NAMED_LET: {
+        SchemeObject* p = tstack->popSchemeObject();
+        BindingEnvironment* envt = tstack->popBindingEnvironment();
+
+        SchemeObject* name = s_car(p);
+        p = s_cdr(p);
+        
+        if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
+            throw scheme_exception("Bad body in let");
+        }
+        
+        // Extract formals and collect evaluated args for a lambda
+        SchemeObject* formals = S_EMPTY_LIST;
+        SchemeObject* args = S_EMPTY_LIST;
+        SchemeObject* binding_pairs = s_car(p);
+
+        while (s_null_p(binding_pairs) == S_FALSE) {
+            // Eval binding value
+            tstack->push(envt);
+            tstack->push(p);
+            tstack->push(args);
+            tstack->push(formals);
+            tstack->push(name);
+            tstack->push(binding_pairs);
+            call_and_return(envt,s_car(s_cdr(s_car(binding_pairs))),EVAL);
+            SchemeObject* val = tstack->popSchemeObject();
+            binding_pairs = tstack->popSchemeObject();
+            name = tstack->popSchemeObject();
+            formals = tstack->popSchemeObject();
+            args = tstack->popSchemeObject();
+            p = tstack->popSchemeObject();
+            envt = tstack->popBindingEnvironment();
+            
+            formals = s_cons(s_car(s_car(binding_pairs)), formals);
+            args = s_cons(val, args);
+            
+            binding_pairs = s_cdr(binding_pairs);
+        }
+
+        BindingEnvironment* new_envt = new BindingEnvironment(envt);
+        SchemeProcedure* lambda = new SchemeProcedure(new_envt, s_reverse(formals), NULL, static_cast<SchemePair*>(s_cdr(p)));
+        new_envt->put(static_cast<SchemeSymbol*>(name), lambda);
+        
+        tstack->push(new_envt);
+        tstack->push(s_reverse(args));
+        tstack->push(lambda);
+        
+        goto EVAL_PROCEDURE_CALL;
+    }
     EVAL_LETSTAR: {        
         SchemePair* p = tstack->popSchemePair();
         BindingEnvironment* envt = tstack->popBindingEnvironment();
@@ -1070,6 +1120,10 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             throw scheme_exception("Bad body in let");
         }
         
+        if (s_null_p(s_cdr(p)) == S_TRUE) {
+            throw scheme_exception("Bad body in let");
+        }
+
         // Build new bindings
         BindingEnvironment* new_bindings = new BindingEnvironment(envt);
         SchemeObject* binding_pairs = p->car;
@@ -1183,12 +1237,11 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
             req_symbols = req_symbols->cdrAsPair();
             args = args->cdrAsPair();
         }
-        if (args != S_EMPTY_LIST) {
-            if (proc->rst == 0) {
-                throw scheme_exception("Too many argument given.");
-            } else {
-                new_envt->put(proc->s_rst, args);
-            }
+        if (proc->rst == 0 && args != S_EMPTY_LIST) {
+            throw scheme_exception("Too many argument given.");
+        }
+        if (proc->rst == 1) {
+            new_envt->put(proc->s_rst, args);
         }
         // cout << "Body: " << proc->s_body->toString() << endl;
         // Transform body
