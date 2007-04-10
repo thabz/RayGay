@@ -227,6 +227,11 @@ SchemeBool* s_list_p(SchemeObject* o) {
     while (true) {
         if (s_pair_p(fast) == S_FALSE) return fast == S_EMPTY_LIST ? S_TRUE : S_FALSE;
         fast = s_cdr(fast);
+        if (slow == fast) {
+            // The fast stepping pointer has looped around and caught up with the slow
+            // moving pointer, thus the structure is circular and thus not a list.
+            return S_FALSE;
+        }
         if (s_pair_p(fast) == S_FALSE) return fast == S_EMPTY_LIST ? S_TRUE : S_FALSE;
         fast = s_cdr(fast);
         slow = s_cdr(slow);
@@ -873,25 +878,30 @@ SchemeNumber* s_lcm(SchemeObject* l) {
 }
 
 
-SchemeBool* s_even_p(SchemeNumber* n) {
-    int nn = int(n->number);
+SchemeBool* s_even_p(SchemeObject* n) {
+    assert_arg_type("even?", 1, s_number_p, n);
+    int nn = int(static_cast<SchemeNumber*>(n)->number);
     return (nn % 2 == 0) ? S_TRUE : S_FALSE;
 }
 
-SchemeBool* s_odd_p(SchemeNumber* n) {
-    int nn = int(n->number);
+SchemeBool* s_odd_p(SchemeObject* n) {
+    assert_arg_type("odd?", 1, s_number_p, n);
+    int nn = int(static_cast<SchemeNumber*>(n)->number);
     return (abs(nn % 2) == 1) ? S_TRUE : S_FALSE;
 }
 
-SchemeBool* s_zero_p(SchemeNumber* n) {
-    return n->number == 0 ? S_TRUE : S_FALSE;
+SchemeBool* s_zero_p(SchemeObject* n) {
+    assert_arg_type("zero?", 1, s_number_p, n);
+    return static_cast<SchemeNumber*>(n)->number == 0 ? S_TRUE : S_FALSE;
 }
-SchemeBool* s_negative_p(SchemeNumber* n) {
-    return n->number < 0 ? S_TRUE : S_FALSE;
+SchemeBool* s_negative_p(SchemeObject* n) {
+    assert_arg_type("negative?", 1, s_number_p, n);
+    return static_cast<SchemeNumber*>(n)->number < 0 ? S_TRUE : S_FALSE;
 }
 
-SchemeBool* s_positive_p(SchemeNumber* n) {
-    return n->number > 0 ? S_TRUE : S_FALSE;
+SchemeBool* s_positive_p(SchemeObject* n) {
+    assert_arg_type("position?", 1, s_number_p, n);
+    return static_cast<SchemeNumber*>(n)->number > 0 ? S_TRUE : S_FALSE;
 }
 
 SchemeBool* s_equal(SchemePair* p) {
