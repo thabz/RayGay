@@ -114,9 +114,11 @@ SchemeObject* Interpreter::interpret() {
 // that arguments be passed in global variables [Tarditi92].
 
 SchemeObject* trampoline(fn_ptr f) {
+    BindingEnvironment* saved = global_envt;
     while (f != NULL) {
         f = (fn_ptr)(*f)();
     }
+    global_envt = saved;
     return global_ret;
 }
 
@@ -585,7 +587,6 @@ fn_ptr eval_procedure_call() {
         if (proc->rst == 1) {
             new_envt->put(proc->s_rst, args);
         }
-        // TODO: Who's gonna recover the original environment?
         global_envt = new_envt;
         global_arg1 = proc->s_body;
         return (fn_ptr)&eval_sequence;
@@ -934,7 +935,6 @@ fn_ptr eval_let() {
         binding_pairs = s_cdr(binding_pairs);
     }
     
-    // TODO: Restore old bindings
     global_envt = new_bindings;
     global_arg1 = s_cdr(p);
     return (fn_ptr)&eval_sequence;
@@ -971,7 +971,6 @@ fn_ptr eval_named_let() {
     SchemeProcedure* lambda = new SchemeProcedure(new_envt, s_reverse(formals), NULL, static_cast<SchemePair*>(s_cdr(p)));
     new_envt->put(static_cast<SchemeSymbol*>(name), lambda);
     
-    // TODO: Restore old bindings
     global_arg1 = lambda;
     global_arg2 = s_reverse(args);
     global_envt = new_envt;
@@ -1149,7 +1148,6 @@ fn_ptr eval_do() {
                 global_ret = S_UNSPECIFIED;
                 return NULL;
             } else {
-                // TODO: Restore old envt
                 global_envt = new_envt;
                 global_arg1 = s_cdr(s_car(body));
                 return (fn_ptr)&eval_sequence;
