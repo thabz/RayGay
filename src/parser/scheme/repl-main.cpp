@@ -14,6 +14,7 @@ int repl() {
         scheme = new Scheme();
     } catch (scheme_exception e) {
 		cerr << "ABORT: " << e.str << endl;
+        return EXIT_FAILURE;
     }
 
 	while (true) {

@@ -7,40 +7,7 @@
 #include <setjmp.h>
 #include <vector>
 
-class StackEntry {
-    public:
-        enum Type {
-            OBJECT,
-            JMP_BUF,
-            ENVT
-        };
-        SchemeObject* s_object;
-        bool tail_call;
-        ::jmp_buf jmpbuf;
-        BindingEnvironment* envt;
-        StackEntry::Type type;
-};
-
-class Stack {
-    public:
-        Stack();
-        
-        SchemeObject* popSchemeObject();
-        SchemePair* popSchemePair();
-        BindingEnvironment* popBindingEnvironment();
-        void pop();
-    
-        void push(SchemeObject*);
-        void push(BindingEnvironment* envt);
-        jmp_buf* push_jump_pos();
-        
-        void return_jump(SchemeObject* return_value);
-	int size();
-        
-    private:
-        std::vector<StackEntry> stk;
-};
-
+typedef void*(*fn_ptr)();
 
 class Interpreter
 {
@@ -53,7 +20,33 @@ class Interpreter
         SchemePair* parsetree;
 };
 
-SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig);
+SchemeObject* trampoline(fn_ptr);
+fn_ptr eval();
+fn_ptr eval_sequence();
+fn_ptr eval_define();
+fn_ptr eval_multi();
+fn_ptr eval_procedure_call();
+fn_ptr eval_let();
+fn_ptr eval_letstar();
+fn_ptr eval_letrec();
+fn_ptr eval_named_let();
+fn_ptr eval_cond();
+fn_ptr eval_case();
+fn_ptr eval_and();
+fn_ptr eval_or();
+fn_ptr eval_set_e();
+fn_ptr eval_for_each();
+fn_ptr eval_map();
+fn_ptr eval_combo();
+fn_ptr eval_if();
+fn_ptr eval_define_macro();
+fn_ptr eval_call_macro();
+fn_ptr eval_apply();
+fn_ptr eval_quasiquote();
+fn_ptr eval_lambda();
+fn_ptr eval_do();
+fn_ptr eval_begin();
+fn_ptr eval_list();
 
 
 #endif

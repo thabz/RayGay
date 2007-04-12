@@ -29,17 +29,17 @@ string SchemeString::toString() {
 //-----------------------------------------------------------
 // Symbol
 //-----------------------------------------------------------
-map<string,SchemeSymbol*> SchemeSymbol::symbols;
+map<string,SchemeSymbol*> SchemeSymbol::known_symbols;
 
 SchemeSymbol::SchemeSymbol(string s) : str(s) { 
 }
 
 SchemeSymbol* SchemeSymbol::create(string s) {
     SchemeSymbol* result;
-    map<string,SchemeSymbol*>::iterator v = symbols.find(s);
-    if (v == symbols.end()) {
+    map<string,SchemeSymbol*>::iterator v = known_symbols.find(s);
+    if (v == known_symbols.end()) {
         result = new SchemeSymbol(s);
-        symbols[s] = result;
+        known_symbols[s] = result;
     } else {
         result = v->second;
     }
@@ -178,7 +178,7 @@ SchemeProcedure::SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)(
     this->fn = fn;
 }
 
-SchemeProcedure::SchemeProcedure(BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body) {
+SchemeProcedure::SchemeProcedure(BindingEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body) {
     this->envt = envt;
     this->fn = NULL;
     this->s_rst = s_rst;

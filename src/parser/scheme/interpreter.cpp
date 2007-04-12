@@ -6,56 +6,70 @@
 
 using namespace std;
 
-//------------------------------------------------------------------------
-// Stack
-//------------------------------------------------------------------------
-Stack::Stack() {
+SchemeSymbol* if_symbol;
+SchemeSymbol* cond_symbol;
+SchemeSymbol* else_symbol;
+SchemeSymbol* ergo_symbol;
+SchemeSymbol* case_symbol;
+SchemeSymbol* do_symbol;
+SchemeSymbol* let_symbol;
+SchemeSymbol* letstar_symbol;
+SchemeSymbol* letrec_symbol;
+SchemeSymbol* begin_symbol;
+SchemeSymbol* and_symbol;
+SchemeSymbol* or_symbol;
+SchemeSymbol* map_symbol;
+SchemeSymbol* for_each_symbol;
+SchemeSymbol* lambda_symbol;
+SchemeSymbol* apply_symbol;
+SchemeSymbol* quote_symbol;
+SchemeSymbol* quasiquote_symbol;
+SchemeSymbol* unquote_symbol;
+SchemeSymbol* unquote_splicing_symbol;
+SchemeSymbol* define_symbol;
+SchemeSymbol* define_macro;
+SchemeSymbol* set_e_symbol;
+
+void define_scheme_symbols() {
+   if_symbol = SchemeSymbol::create("if");
+   cond_symbol = SchemeSymbol::create("cond");
+   else_symbol = SchemeSymbol::create("else");
+   ergo_symbol = SchemeSymbol::create("=>");
+   case_symbol = SchemeSymbol::create("case");
+   do_symbol = SchemeSymbol::create("do");
+   let_symbol = SchemeSymbol::create("let");
+   letstar_symbol = SchemeSymbol::create("let*");
+   letrec_symbol = SchemeSymbol::create("letrec");
+   begin_symbol = SchemeSymbol::create("begin");
+   and_symbol = SchemeSymbol::create("and");
+   or_symbol = SchemeSymbol::create("or");
+   map_symbol = SchemeSymbol::create("map");
+   for_each_symbol = SchemeSymbol::create("for-each");
+   lambda_symbol = SchemeSymbol::create("lambda");
+   apply_symbol = SchemeSymbol::create("apply");
+   quote_symbol = SchemeSymbol::create("quote");
+   quasiquote_symbol = SchemeSymbol::create("quasiquote");
+   unquote_symbol = SchemeSymbol::create("unquote");
+   unquote_splicing_symbol = SchemeSymbol::create("unquote-splicing");
+   define_symbol = SchemeSymbol::create("define");
+   define_macro = SchemeSymbol::create("define-macro");
+   set_e_symbol = SchemeSymbol::create("set!");
 }
 
-int Stack::size() {
-    return stk.size();
+SchemeObject* global_ret;
+SchemeObject* global_arg1;
+SchemeObject* global_arg2;
+BindingEnvironment* global_envt;
+
+
+/*
+#define call_and_return(envt,thing,PLACE) { int kk = setjmp(*(tstack->push_jump_pos())); \
+    if (kk == 0) { \
+        tstack->push(envt); \
+        tstack->push(thing); \
+        goto PLACE; \
+    } \
 }
-
-SchemeObject* Stack::popSchemeObject() {
-    assert(!stk.empty());
-    assert(stk.back().type == StackEntry::OBJECT);
-    SchemeObject* result = stk.back().s_object;
-    stk.pop_back();
-    return result;
-}
-
-SchemePair* Stack::popSchemePair() {
-    assert(!stk.empty());
-    assert(stk.back().type == StackEntry::OBJECT);
-    SchemeObject* result = stk.back().s_object;
-    assert(result->type() == SchemeObject::PAIR || result->type() == SchemeObject::EMPTY_LIST);
-    stk.pop_back();
-    return static_cast<SchemePair*>(result);
-}
-
-
-BindingEnvironment* Stack::popBindingEnvironment() {
-    assert(!stk.empty());
-    assert(stk.back().type == StackEntry::ENVT);
-    BindingEnvironment* result = stk.back().envt;
-    stk.pop_back();
-    return result;
-}
-
-void Stack::push(SchemeObject* o) {
-    StackEntry e;
-    e.s_object = o;
-    e.type = StackEntry::OBJECT;
-    stk.push_back(e);
-}
-
-void Stack::push(BindingEnvironment* envt) {
-    StackEntry e;
-    e.envt = envt;
-    e.type = StackEntry::ENVT;
-    stk.push_back(e);
-}
-
 
 void Stack::return_jump(SchemeObject* return_value) {
     assert(!stk.empty());
@@ -66,1180 +80,504 @@ void Stack::return_jump(SchemeObject* return_value) {
     longjmp(e.jmpbuf,1);
 }
 
-void Stack::pop() {
-    assert(!stk.empty());
-    stk.pop_back();
-}
-
 jmp_buf* Stack::push_jump_pos() {
     StackEntry e;
     e.type = StackEntry::JMP_BUF;
     stk.push_back(e);
     return &(stk.back().jmpbuf);
 }
+*/
 
 //------------------------------------------------------------------------
 // Interpreter
 //------------------------------------------------------------------------
 Interpreter::Interpreter(SchemePair* parsetree, BindingEnvironment* top_level_bindings) {
+    define_scheme_symbols();
     this->parsetree = parsetree;   
 	this->top_level_bindings = top_level_bindings;
 }
 
 SchemeObject* Interpreter::interpret() {
-    return eval(top_level_bindings, parsetree);
+    global_arg1 = parsetree;
+    global_envt = top_level_bindings;
+    return trampoline((fn_ptr)&eval_sequence);
 }
 
-Stack* tstack = new Stack();
+// A popular method for achieving proper tail recursion in a non-tail-recursive C implementation 
+// is a trampoline.[2] A trampoline is an outer function which iteratively calls an inner function. 
+// The inner function returns the address of another function to call, and the outer function then 
+// calls this new function. In other words, when an inner function wishes to call another inner 
+// function tail-recursively, it returns the address of the function it wants to call back to the 
+// trampoline, which then calls the returned function. By returning before calling, the stack is 
+// first popped so that it does not grow without bound on a simple iteration. Unfortunately, the 
+// cost of such a trampoline function call is 2-3 times slower than a normal C call, and it requires 
+// that arguments be passed in global variables [Tarditi92].
 
-#define call_and_return(envt,thing,PLACE) { int kk = setjmp(*(tstack->push_jump_pos())); \
-    if (kk == 0) { \
-        tstack->push(envt); \
-        tstack->push(thing); \
-        goto PLACE; \
-    } \
+SchemeObject* trampoline(fn_ptr f) {
+    while (f != NULL) {
+        f = (fn_ptr)(*f)();
+    }
+    return global_ret;
 }
 
-SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
-    
-    SchemeSymbol* if_symbol = SchemeSymbol::create("if");
-    SchemeSymbol* cond_symbol = SchemeSymbol::create("cond");
-    SchemeSymbol* else_symbol = SchemeSymbol::create("else");
-    SchemeSymbol* ergo_symbol = SchemeSymbol::create("=>");
-    SchemeSymbol* case_symbol = SchemeSymbol::create("case");
-    SchemeSymbol* do_symbol = SchemeSymbol::create("do");
-    SchemeSymbol* let_symbol = SchemeSymbol::create("let");
-    SchemeSymbol* letstar_symbol = SchemeSymbol::create("let*");
-    SchemeSymbol* letrec_symbol = SchemeSymbol::create("letrec");
-    SchemeSymbol* begin_symbol = SchemeSymbol::create("begin");
-    SchemeSymbol* and_symbol = SchemeSymbol::create("and");
-    SchemeSymbol* or_symbol = SchemeSymbol::create("or");
-    SchemeSymbol* map_symbol = SchemeSymbol::create("map");
-    SchemeSymbol* for_each_symbol = SchemeSymbol::create("for-each");
-    SchemeSymbol* lambda_symbol = SchemeSymbol::create("lambda");
-    SchemeSymbol* apply_symbol = SchemeSymbol::create("apply");
-    SchemeSymbol* quote_symbol = SchemeSymbol::create("quote");
-    SchemeSymbol* quasiquote_symbol = SchemeSymbol::create("quasiquote");
-    SchemeSymbol* define_symbol = SchemeSymbol::create("define");
-    SchemeSymbol* define_macro = SchemeSymbol::create("define-macro");
-    SchemeSymbol* set_e_symbol = SchemeSymbol::create("set!");
-    
-    int kk = setjmp(*(tstack->push_jump_pos()));
-    if (kk == 0) {
-        tstack->push(envt_orig);
-        tstack->push(seq_orig);
-        goto EVAL_SEQUENCE;
-    }
-    return tstack->popSchemeObject();
-    
-    EVAL: {
-        SchemeObject* s = tstack->popSchemeObject();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        
-    	SchemeObject::ObjectType type = s->type();
-    	switch(type) {
-    		case SchemeObject::SYMBOL: {
-                SchemeSymbol* symbol = static_cast<SchemeSymbol*>(s);
-    		    s = envt->get(symbol);
-                if (s == NULL) {
-                    throw scheme_exception("Unbound variable " + symbol->str);
-                }
-                tstack->return_jump(s);
-		    }
-    		case SchemeObject::NUMBER:
-    		case SchemeObject::STRING:
-    		case SchemeObject::BOOL:
-    		case SchemeObject::CHAR:
-    		case SchemeObject::VECTOR:
-    		case SchemeObject::EMPTY_LIST:
-    		case SchemeObject::INPUT_PORT:
-    		case SchemeObject::OUTPUT_PORT:
-                tstack->return_jump(s);
-            case SchemeObject::PAIR:
-                tstack->push(envt);
-                tstack->push(s);
-                goto EVAL_LIST;
-     		default:
-    	  	    throw scheme_exception("Unknown type: " + s->toString());
-    	}
-    }
-    EVAL_LIST: {
-        SchemePair* p = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        
-    	SchemeObject* car = p->car;
-        if (car->type() != SchemeObject::SYMBOL) {
-            tstack->push(envt);
-            tstack->push(p);
-            goto EVAL_COMBO;
-        }
-
-        SchemeSymbol* s = static_cast<SchemeSymbol*>(car);
-    	SchemePair* cdr = static_cast<SchemePair*>(p->cdr);
-    	
-    	SchemeObject* proc = envt->get(s);
-        if (proc != NULL) {
-            if (proc->type() == SchemeObject::MACRO) {
-                tstack->push(envt);
-                tstack->push(cdr);
-                tstack->push(proc);
-                goto EVAL_CALL_MACRO;
-            } else if (proc->type() == SchemeObject::PROCEDURE) {
-                tstack->push(proc);
-                tstack->push(envt);
-                int kk = setjmp(*(tstack->push_jump_pos()));
-                if (kk == 0) {
-                    tstack->push(envt);
-                    tstack->push(cdr);
-                    goto EVAL_MULTI;
-                }
-                SchemePair* args = tstack->popSchemePair();
-                envt = tstack->popBindingEnvironment();
-                proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
-
-                tstack->push(envt);
-                tstack->push(args);
-                tstack->push(proc);
-                goto EVAL_PROCEDURE_CALL;
-            } else {
-                throw scheme_exception("Wrong type to apply : " + proc->toString());	
-            }
-        }
-    	
-        if (s == if_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_IF;
-    	} else if (s == quote_symbol) {
-            tstack->return_jump(cdr->car);
-    	} else if (s == define_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_DEFINE;
-    	} else if (s == define_macro) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_DEFINE_MACRO;
-    	} else if (s == quasiquote_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr->car);
-    		goto EVAL_QUASIQUOTE;
-    	} else if (s == apply_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_APPLY;
-    	} else if (s == lambda_symbol) {
-    	    SchemeObject* formals = cdr->car;
-            SchemeObject* body = cdr->cdr;
-            tstack->push(envt);
-            tstack->push(formals);
-            tstack->push(body);
-            goto EVAL_LAMBDA;
-    	} else if (s == let_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_LET;
-    	} else if (s == do_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_DO;
-    	} else if (s == letstar_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_LETSTAR;
-    	} else if (s == letrec_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_LETREC;
-    	} else if (s == map_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_MAP;
-    	} else if (s == for_each_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_FOR_EACH;
-    	} else if (s == set_e_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_SET_E;
-    	} else if (s == begin_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_SEQUENCE;
-    	} else if (s == cond_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_COND;
-    	} else if (s == case_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_CASE;
-    	} else if (s == and_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_AND;
-    	} else if (s == or_symbol) {
-            tstack->push(envt);
-            tstack->push(cdr);
-    		goto EVAL_OR;
+//
+// Evals a list of expressions and returns the last.
+//
+fn_ptr eval_sequence() {
+    SchemeObject* p = global_arg1;
+    while (true) {
+        if (s_null_p(s_cdr(p)) == S_TRUE) {
+            // The tail call, let EVAL return to this' caller
+            global_arg1 = s_car(p);
+            return (fn_ptr)&eval;
         } else {
-    		throw scheme_exception("Unbound variable: " + s->toString());	
-        }        
-    }
-    EVAL_COMBO: {
-	    // ((form) args)		    
-	     // where form is an expression that should evaluate to a function that we execute
-        SchemePair* s = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        
-        tstack->push(envt);  // Push local
-        tstack->push(s);     // Push local
-        call_and_return(envt,s->car,EVAL);
-        SchemeObject* proc = tstack->popSchemeObject();
-        s = tstack->popSchemePair(); // Pop local var
-        envt = tstack->popBindingEnvironment(); // Pop local var
-
-        SchemePair* arg_expressions = static_cast<SchemePair*>(s->cdr);
-        
-        if (proc->type() != SchemeObject::PROCEDURE) {
-		    throw scheme_exception("Wrong type to apply: " + s->toString() + " does not resolve to a procedure.");
+            global_arg1 = s_car(p);
+            trampoline((fn_ptr)&eval);
+            p = s_cdr(p);
         }
-        
-        tstack->push(proc);
-        tstack->push(envt);
-        int kk = setjmp(*(tstack->push_jump_pos()));
-        if (kk == 0) {
-            tstack->push(envt);
-            tstack->push(arg_expressions);
-            goto EVAL_MULTI;
-        }
-        SchemePair* args = tstack->popSchemePair();
-        envt = tstack->popBindingEnvironment();
-        proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
-        
-        tstack->push(envt);
-        tstack->push(args);
-        tstack->push(proc);
-
-        goto EVAL_PROCEDURE_CALL;
-    }
-    EVAL_IF: {
-	    // (if condition true-form false-form) 
-	    // where false-form is optional.
-        SchemePair* p = static_cast<SchemePair*>(tstack->popSchemeObject());
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
- 
-    	SchemeObject* s_condition_expr = p->car;
-
-        tstack->push(envt);
-        tstack->push(p);
-        call_and_return(envt,s_condition_expr,EVAL);
-    	bool condition = tstack->popSchemeObject()->boolValue();
-        p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
-        envt = tstack->popBindingEnvironment(); // Pop local var
-    	
-    	if (condition) {
-    	    // Evaluate and return true case
-        	SchemeObject* true_case = p->cdrAsPair()->car;
-            tstack->push(envt);
-            tstack->push(true_case);
-            goto EVAL;
-    	} else if (p->cdrAsPair()->cdr != S_EMPTY_LIST) {
-    	    // Evaluate and return false case
-        	SchemeObject* false_case = p->cdrAsPair()->cdrAsPair()->car;
-            tstack->push(envt);
-            tstack->push(false_case);
-            goto EVAL;
-    	} else {
-    	    // No false case, return S_UNDEFINED
-            tstack->return_jump(S_UNSPECIFIED);
-    	}
-    }
-    EVAL_AND: {
-        SchemePair* p = static_cast<SchemePair*>(tstack->popSchemeObject());
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        
-        SchemeObject* result = S_TRUE;
-        while (p != S_EMPTY_LIST) {
-            if (p->cdr == S_EMPTY_LIST) {
-                // Optimize tail-recursion
-                tstack->push(envt);
-                tstack->push(p->car);
-                goto EVAL;
-            }
-            tstack->push(envt);
-            tstack->push(p);
-            call_and_return(envt,p->car,EVAL);
-            result = tstack->popSchemeObject();
-            p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
-            envt = tstack->popBindingEnvironment(); // Pop local var
-
-            if (!result->boolValue()) {
-                tstack->return_jump(result);
-            }
-            p = p->cdrAsPair();
-        } 
-        tstack->return_jump(result);
-    }
-    EVAL_OR: {
-        SchemePair* p = static_cast<SchemePair*>(tstack->popSchemeObject());
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        
-        SchemeObject* result = S_FALSE;
-        while (p != S_EMPTY_LIST) {
-            if (p->cdr == S_EMPTY_LIST) {
-                // Optimize tail-recursion
-                tstack->push(envt);
-                tstack->push(p->car);
-                goto EVAL;
-            }
-            
-            tstack->push(envt);
-            tstack->push(p);
-            int kk = setjmp(*(tstack->push_jump_pos()));
-            if (kk == 0) {
-                tstack->push(envt);
-                tstack->push(p->car);
-                goto EVAL;
-            }
-            result = tstack->popSchemeObject();
-            p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
-            envt = tstack->popBindingEnvironment(); // Pop local var
-            if (result->boolValue()) {
-                tstack->return_jump(result);
-            }
-            p = p->cdrAsPair();
-        } 
-        tstack->return_jump(result);
-    }
-    EVAL_QUASIQUOTE: {
-        SchemeObject* o = tstack->popSchemeObject();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        SchemeObject* p = o;
-        if (s_vector_p(o) == S_TRUE) {
-            p = s_vector_2_list(o);
-        } else {
-            p = o;
-        }
-        if (p->type() == SchemeObject::PAIR) {
-            SchemeObject* result = S_EMPTY_LIST;
-            while(s_null_p(p) == S_FALSE) {
-                SchemeObject* to_add = NULL;
-                SchemePair* v = static_cast<SchemePair*>(s_car(p));
-                if (s_pair_p(s_car(p)) == S_TRUE || s_vector_p(s_car(p)) == S_TRUE) {
-                    if (s_pair_p(s_car(p)) == S_TRUE && s_symbol_p(s_car(v)) == S_TRUE) {
-                        SchemeSymbol* sy = static_cast<SchemeSymbol*>(v->car);
-                        if (sy->str == "unquote") {
-                            tstack->push(envt);
-                            tstack->push(result);
-                            tstack->push(p);
-                            int kk = setjmp(*(tstack->push_jump_pos()));
-                            if (kk == 0) {
-                                tstack->push(envt);
-                                tstack->push(v->cdrAsPair()->car);
-                                goto EVAL;
-                            }
-                            to_add = tstack->popSchemeObject();
-                            p = tstack->popSchemeObject(); // Pop local var
-                            result = tstack->popSchemeObject(); // Pop local var
-                            envt = tstack->popBindingEnvironment(); // Pop local var
-                            result = s_cons(to_add, result);
-                            p = s_cdr(p);
-                            continue;
-                        } else if (sy->str == "unquote-splicing") {
-                            tstack->push(envt);
-                            tstack->push(result);
-                            tstack->push(p);
-                            call_and_return(envt, v->cdrAsPair()->car, EVAL);
-                            SchemeObject* to_add_list = tstack->popSchemeObject();
-                            p = tstack->popSchemeObject(); // Pop local var
-                            result = tstack->popSchemeObject(); // Pop local var
-                            envt = tstack->popBindingEnvironment(); // Pop local var
-                            if (s_pair_p(to_add_list) == S_TRUE) {
-                                // TODO: Code below is inefficient, but works.
-                                to_add_list = s_reverse(static_cast<SchemePair*>(to_add_list));
-                                result = static_cast<SchemePair*>(s_append(s_cons(to_add_list, s_cons(result,S_EMPTY_LIST))));
-                            } else if (s_null_p(to_add_list) != S_TRUE) {
-                                throw scheme_exception("unquote-splicing must result in a list");
-                            }
-                            p = s_cdr(p);
-                            continue;
-                        }
-                    }
-                    // (car p) is a list or vector that we recurse into
-                    tstack->push(envt);
-                    tstack->push(p);
-                    tstack->push(o);
-                    tstack->push(result);
-                    call_and_return(envt, s_car(p), EVAL_QUASIQUOTE);
-                    to_add = tstack->popSchemeObject();
-                    result = tstack->popSchemeObject(); // Pop local var
-                    o = tstack->popSchemeObject(); // Pop local var
-                    p = tstack->popSchemeObject(); // Pop local var
-                    envt = tstack->popBindingEnvironment(); // Pop local var
-    
-                    result = s_cons(to_add, result);
-                    p = s_cdr(p);
-                    continue;
-                } else {
-                    // (car p) is neither list or vector
-                    result = s_cons(s_car(p), result);
-                    p = s_cdr(p);
-                    continue;
-                }
-            }
-            result = s_reverse(result);
-            if (s_vector_p(o) == S_TRUE) {
-                tstack->return_jump(s_list_2_vector(result));
-            } else {
-                tstack->return_jump(result);
-            }
-        } else {
-            tstack->return_jump(o);
-        }
-    }
-    EVAL_PROCEDURE_CALL: {
-        SchemeProcedure* proc = static_cast<SchemeProcedure*>(tstack->popSchemeObject());
-        SchemePair* args = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-
-        SchemeObject* result = S_UNSPECIFIED;
-
-        if (proc->fn != NULL) {
-            SchemeObject* argsv[10];
-            // Built-in function
-            int args_num = int(s_length(args)->number);
-            if (args_num < proc->req) {
-                throw scheme_exception("Too few argument given.");
-            }
-            if (args_num > proc->req + proc->opt && proc->rst == 0) {
-                throw scheme_exception("Too many argument given.");
-            }
-            if (args_num < proc->req + proc->opt) {
- 	            // TODO: append_e nogle S_UNSPECIFIED på args, så længden af args bliver req+opt.
-            }
-            SchemePair* a_p = args;
-            if (proc->rst == 0) {
-                for(int i = 0; i < 10; i++) {
-                    if (i < args_num) {
-                        argsv[i] = a_p->car;
-                        a_p = a_p->cdrAsPair();
-                    } else {
-                        argsv[i] = S_UNSPECIFIED;
-                    }
-                }
-                switch(proc->req + proc->opt) {
-                    case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();
-                              break;
-                    case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
-                              break;
-                    case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
-                              break;
-                    case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
-                              break;
-                    default:  throw scheme_exception("Arguments mismatch"); 
-                }
-            } else {
-                for(int i = 0; i < 10; i++) {
-                    if (i < proc->req) {
-                        argsv[i] = a_p->car;
-                        a_p = a_p->cdrAsPair();
-                    } else {
-                        argsv[i] = a_p;
-                        break;
-                    }
-                }
-                switch(proc->req + proc->opt) {
-                    case 0:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
-                              break;
-                    case 1:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
-                              break;
-                    case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
-                              break;
-                    case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3]);
-                              break;
-                    default:  throw scheme_exception("Arguments mismatch"); 
-                }
-            }
-            tstack->return_jump(result);
-        } else {
-            // User function
-            BindingEnvironment* new_envt = new BindingEnvironment(proc->envt);
-            SchemePair* req_symbols = proc->s_req;
-            while (req_symbols != S_EMPTY_LIST) {
-                if (args == S_EMPTY_LIST) {
-                    throw scheme_exception("Too few argument given.");
-                }
-                new_envt->put(static_cast<SchemeSymbol*>(req_symbols->car), args->car);
-                req_symbols = req_symbols->cdrAsPair();
-                args = args->cdrAsPair();
-            }
-            if (proc->rst == 0 && args != S_EMPTY_LIST) {
-                throw scheme_exception("Too many argument given.");
-            }
-            if (proc->rst == 1) {
-                new_envt->put(proc->s_rst, args);
-            }
-            // TODO: We're leaking new_envt below
-            tstack->push(new_envt);
-            tstack->push(proc->s_body);
-            goto EVAL_SEQUENCE;
-        }
-    }
-    EVAL_MULTI: {
-        // Evals a list of expressions and returns a list of results
-        SchemePair* p = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-
-	    SchemePair* result = S_EMPTY_LIST;
-	    while (p != S_EMPTY_LIST) {
-            tstack->push(envt);     // Push local
-            tstack->push(result);   // Push local var
-            tstack->push(p);        // Push local var
-            call_and_return(envt, p->car, EVAL);
-            SchemeObject* r = tstack->popSchemeObject();
-            p = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
-            result = static_cast<SchemePair*>(tstack->popSchemeObject()); // Pop local var
-            envt = tstack->popBindingEnvironment();  // Pop local
-
-		    result = s_cons(r, result);
-		    p = p->cdrAsPair();
-	    }
-        result = s_reverse(result);
-        tstack->return_jump(result);
-    }
-    EVAL_SEQUENCE: {
-        // Evals a list of expressions and returns the last.
-        SchemePair* p = static_cast<SchemePair*>(tstack->popSchemeObject());
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-    	while (true) {
-            if (p->cdr == S_EMPTY_LIST) {
-                // The tail call, let EVAL return to this' caller
-                tstack->push(envt);
-                tstack->push(p->car);
-                goto EVAL;
-            } else {
-                // Normal EVAL call, that returns here.
-                tstack->push(envt);
-                tstack->push(p); // Push local var
-                call_and_return(envt, p->car, EVAL);
-                tstack->pop(); // Unused result
-                p = tstack->popSchemePair(); // Pop local var
-                envt = tstack->popBindingEnvironment();                
-	            p = p->cdrAsPair();
-            }
-    	}
-    }
-    EVAL_DEFINE: {
-        SchemePair* p = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        if (s_pair_p(p->car ) == S_TRUE) {
-            // (define (func-name args...) body-forms...)
-            SchemePair* pa = static_cast<SchemePair*>(p->car);
-            if (pa->car->type() != SchemeObject::SYMBOL) {
-                throw scheme_exception("Bad variable");
-            }
-            SchemePair* body = p->cdrAsPair();
-
-            tstack->push(envt);
-            tstack->push(pa); // Push local var
-            int kk = setjmp(*(tstack->push_jump_pos()));
-            if (kk == 0) {
-                tstack->push(envt);
-                tstack->push(pa->cdr);
-                tstack->push(body);
-                goto EVAL_LAMBDA;
-            }
-            SchemeObject* proc = tstack->popSchemeObject();
-            pa = tstack->popSchemePair();             // Pop local var
-            envt = tstack->popBindingEnvironment();                
-
-            envt->put(static_cast<SchemeSymbol*>(pa->car), proc);
-        } else {
-            // (define var value-expr)
-            if (s_length(p) != S_TWO) {
-                throw scheme_exception("Missing or extra expression");
-            }
-            
-            if (p->car->type() != SchemeObject::SYMBOL) {
-                throw scheme_exception("Bad variable");
-            }
-            SchemeSymbol* s = static_cast<SchemeSymbol*>(p->car);
-            
-            tstack->push(envt);
-            tstack->push(s); // Push local var
-            call_and_return(envt, p->cdrAsPair()->car, EVAL);
-            SchemeObject* v = tstack->popSchemeObject();
-            s = static_cast<SchemeSymbol*>(tstack->popSchemeObject()); // Pop local var
-            envt = tstack->popBindingEnvironment();                
-
-            envt->put(s, v);
-        }
-        tstack->return_jump(S_UNSPECIFIED);
-    }
-    EVAL_LAMBDA: {
-        SchemePair* body = tstack->popSchemePair();
-        SchemeObject* formals = tstack->popSchemeObject();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        
-        SchemeSymbol* rst;
-        SchemePair* req;
-        if (s_symbol_p(formals) == S_TRUE) {
-            rst = static_cast<SchemeSymbol*>(formals);
-            req = S_EMPTY_LIST;
-        } else if (s_pair_p(formals) == S_TRUE) {
-            req = S_EMPTY_LIST;
-            while (s_pair_p(formals) == S_TRUE) {
-                SchemePair* pp = static_cast<SchemePair*>(formals);
-                if (s_symbol_p(pp->car) == S_FALSE) {
-                    throw scheme_exception("Bad formals");                
-                }
-                req = s_cons(pp->car, req);
-                formals = pp->cdr;
-            }
-            req = s_reverse(req);
-            if (formals != S_EMPTY_LIST) {
-                if (s_symbol_p(formals) == S_FALSE) {
-                    throw scheme_exception("Bad formals");                
-                }
-                rst = static_cast<SchemeSymbol*>(formals);
-            } else {
-                rst = NULL;
-            }
-        } else if (formals == S_EMPTY_LIST) {
-            req = S_EMPTY_LIST;
-            rst = NULL;
-        } else {
-            throw scheme_exception("Bad formals");
-        }
-        tstack->return_jump(new SchemeProcedure(envt, req, rst, body));
-    }
-    EVAL_APPLY: {
-        // args is a list (proc arg1 arg2 ... argn). argn must be a list. proc is called with the arguments
-        // (append (list arg1 arg2 ...) argn)
-        SchemePair* args = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-
-        // Eval the procedure argument
-        tstack->push(envt);
-        tstack->push(args); // Push local var
-        call_and_return(envt,args->car,EVAL);
-        SchemeObject* proc = tstack->popSchemeObject();
-        args = tstack->popSchemePair();             // Pop local var
-        envt = tstack->popBindingEnvironment();                
-
-        if (s_procedure_p(proc) == S_FALSE) {
-            throw scheme_exception("Can't apply to non-procedure: " + args->car->toString());
-        }
-        if (s_pair_p(args->cdr) == S_FALSE) {
-            throw scheme_exception("Wrong type in position 1.");
-        }
-
-        // Eval and join all arg-lists together
-        tstack->push(envt);
-        call_and_return(envt,args->cdr,EVAL_MULTI);
-        args = tstack->popSchemePair();
-        envt = tstack->popBindingEnvironment();                
-        
-        SchemePair* collected = S_EMPTY_LIST;
-        SchemePair* prev = NULL;
-        while (args != S_EMPTY_LIST) {
-            SchemeObject* arg = args->car;
-            if (s_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
-                if (args->cdr == S_EMPTY_LIST) {
-                    // arg is a list and last argument
-                    if (collected == S_EMPTY_LIST) {
-                        collected = static_cast<SchemePair*>(arg);
-                    } else {
-                        prev->cdr = arg;
-                    }
-                } else {
-                    throw scheme_exception("Illegal argument");
-                }
-            } else {
-                if (collected == S_EMPTY_LIST) {
-                    collected = s_cons(arg, S_EMPTY_LIST);
-                    prev = collected;
-                } else {
-                    SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
-                    prev->cdr = tmp;
-                    prev = tmp;
-                }
-            }
-            args = args->cdrAsPair();
-        }
-        tstack->push(envt);
-        tstack->push(collected);
-        tstack->push(proc);
-        goto EVAL_PROCEDURE_CALL;
     }    
-    EVAL_SET_E: {
-        // TODO: We're doing double hashtable lookups. Both a envt->get(s) and in envt->set(s,v). Optimize by letting envt->get(s) return a binding, that
-        // we manipulate instead of doing the set(s,v)
+}
 
-        SchemePair* p = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
+fn_ptr eval_define() {
+    SchemeObject* p = global_arg1;
+    BindingEnvironment* envt = global_envt;
+    
+    if (s_pair_p(s_car(p)) == S_TRUE) {
+        // (define (func-name args...) body-forms...)
+        SchemeObject* pa = s_car(p);
+        if (s_symbol_p(s_car(pa)) == S_FALSE) {
+            throw scheme_exception("Bad variable");
+        }
+        SchemeObject* body = s_cdr(p);
 
+        global_arg1 = s_cdr(pa);
+        global_arg2 = body;
+        trampoline((fn_ptr)&eval_lambda);
+        SchemeObject* proc = global_ret;
+
+        envt->put(static_cast<SchemeSymbol*>(s_car(pa)), proc);
+    } else {
+        // (define var value-expr)
         if (s_length(p) != S_TWO) {
             throw scheme_exception("Missing or extra expression");
         }
-        SchemeObject* car = p->car;
-        if (car->type() != SchemeObject::SYMBOL) {
-            throw scheme_exception("Wrong type argument in position 1.");
+        
+        if (s_symbol_p(s_car(p)) == S_FALSE) {
+            throw scheme_exception("Bad variable");
         }
-        SchemeSymbol* s = static_cast<SchemeSymbol*>(car);
+        SchemeSymbol* s = static_cast<SchemeSymbol*>(s_car(p));
+        
+        global_arg1 = s_car(s_cdr(p));
+        SchemeObject* v = trampoline((fn_ptr)&eval);
 
-        SchemeObject* already_bound = envt->get(s);
-        if (already_bound == NULL) {
-            throw scheme_exception("Unbound variable: " + s->toString());
-        }
-
-        tstack->push(envt);
-        tstack->push(s); // Push local var
-        call_and_return(envt, p->cdrAsPair()->car, EVAL);
-        SchemeObject* v = tstack->popSchemeObject();
-        s = static_cast<SchemeSymbol*>(tstack->popSchemeObject()); // Pop local var
-        envt = tstack->popBindingEnvironment();                
-
-        envt->set(s, v);
-
-        tstack->return_jump(S_UNSPECIFIED);
+        envt->put(s, v);
     }
-    EVAL_MAP: {        
-        SchemePair* p = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        
-        // TODO: Tjek at alle argument-lists er lige lange
+    global_ret = S_UNSPECIFIED;
+    return NULL;
+}
 
-        // Eval the procedure argument
-        tstack->push(envt);
-        tstack->push(p); // Push local var
-        call_and_return(envt,p->car,EVAL);
-        SchemeObject* proc = tstack->popSchemeObject();
-        p = tstack->popSchemePair();             // Pop local var
-        envt = tstack->popBindingEnvironment();                
-        
-        if (s_procedure_p(proc) == S_FALSE) {
-            throw scheme_exception("Can't apply to non-procedure: " + p->car->toString());
-        }
-        
-        p = p->cdrAsPair();
-        
-        if (p == S_EMPTY_LIST) {
-            throw scheme_exception("Wrong number of arguments to map");
-        }
-        
-        SchemePair* lists = S_EMPTY_LIST;
-        SchemePair* prev = S_EMPTY_LIST;
-        // Eval all the lists
-        while (p != S_EMPTY_LIST) {
-            tstack->push(envt);
-            tstack->push(p);
-            tstack->push(proc);
-            tstack->push(lists);
-            tstack->push(prev);
-            call_and_return(envt,p->car,EVAL);
-            SchemeObject* list = tstack->popSchemeObject();
-            prev = tstack->popSchemePair();
-            lists = tstack->popSchemePair();
-            proc = tstack->popSchemeObject();
-            p = tstack->popSchemePair();
-            envt = tstack->popBindingEnvironment();
+fn_ptr eval() {
+    SchemeObject* s = global_arg1;
+    BindingEnvironment* envt = global_envt;
+    
+	SchemeObject::ObjectType type = s->type();
+	switch(type) {
+		case SchemeObject::SYMBOL: {
+            SchemeSymbol* symbol = static_cast<SchemeSymbol*>(s);
+		    s = envt->get(symbol);
+            if (s == NULL) {
+                throw scheme_exception("Unbound variable " + symbol->str);
+            }
+            global_ret = s;
+            return NULL;
+	    }
+		case SchemeObject::NUMBER:
+		case SchemeObject::STRING:
+		case SchemeObject::BOOL:
+		case SchemeObject::CHAR:
+		case SchemeObject::VECTOR:
+		case SchemeObject::EMPTY_LIST:
+		case SchemeObject::INPUT_PORT:
+		case SchemeObject::OUTPUT_PORT:
+            global_ret = s;
+            return NULL;
+        case SchemeObject::PAIR:
+            global_arg1 = s;
+            return (fn_ptr)&eval_list;
+ 		default:
+	  	    throw scheme_exception("Unknown type: " + s->toString());
+	}
+}
 
-            if (s_pair_p(list) == S_FALSE) {
-                throw scheme_exception("Wrong argument to map");
-            }
-            
-            if (lists == S_EMPTY_LIST) {
-                lists = s_cons(list,S_EMPTY_LIST);
-                prev = lists;
-            } else {
-                SchemePair* tmp = s_cons(list,S_EMPTY_LIST);
-                prev->cdr = tmp;
-                prev = tmp;
-            }
-            p = p->cdrAsPair();
-        }
-        
-        // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver til ((2 3)(20 30)) og til sidst ((3)(30))
-        SchemePair* result = S_EMPTY_LIST;
-        while (lists->car != S_EMPTY_LIST) {
-            // Collect args
-            SchemePair* collection = S_EMPTY_LIST;
-            SchemePair* prev_col = S_EMPTY_LIST;
-            SchemePair* lists_ptr = lists;
-            while (lists_ptr != S_EMPTY_LIST) {
-                SchemeObject* arg = s_car(s_car(lists_ptr));
-                s_set_car_e(lists_ptr,s_cdr(s_car(lists_ptr)));
-                if (collection == S_EMPTY_LIST) {
-                    collection = s_cons(arg,S_EMPTY_LIST);
-                    prev_col = collection;
-                } else {
-                    SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
-                    prev_col->cdr = tmp;
-                    prev_col = tmp;
-                    
-                }
-                lists_ptr = lists_ptr->cdrAsPair();
-            }
- 
-            tstack->push(envt);
-            tstack->push(result); // Push local var
-            tstack->push(lists);  // Push local var
-            tstack->push(prev);   // Push local var
-            tstack->push(proc);   // Push local var
-            int kk = setjmp(*(tstack->push_jump_pos()));
-            if (kk == 0) {
-                tstack->push(envt);
-                tstack->push(collection);
-                tstack->push(proc);
-                goto EVAL_PROCEDURE_CALL;
-            }
-            SchemeObject* result_item = tstack->popSchemeObject();
-            proc = tstack->popSchemeObject();
-            prev = tstack->popSchemePair();             // Pop local var
-            lists = tstack->popSchemePair();            // Pop local var
-            result = tstack->popSchemePair();           // Pop local var
-            envt = tstack->popBindingEnvironment();                
-
-            if (result == S_EMPTY_LIST) {
-                result = s_cons(result_item, S_EMPTY_LIST);
-                prev = result;
-            } else {
-                SchemePair* tmp = s_cons(result_item, S_EMPTY_LIST);
-                prev->cdr = tmp;
-                prev = tmp;
-            }
-        }
-        // Tjek at argumentlisterne var lige lange
-        while (lists != S_EMPTY_LIST) {
-            if (lists->car != S_EMPTY_LIST) {
-                throw scheme_exception("Argument lists not equals length.");
-            }
-            lists = lists->cdrAsPair();
-        }
-        
-        tstack->return_jump(result);
+fn_ptr eval_list() {
+    SchemeObject* p = global_arg1;
+    BindingEnvironment* envt = global_envt;
+    
+	SchemeObject* car = s_car(p);
+    if (s_symbol_p(car) == S_FALSE) {
+        return (fn_ptr)&eval_combo;
     }
-    EVAL_FOR_EACH: {
-        // TODO: This is a hack, but it works. The correct and fast impl. is to reuse 
-        // the map-evaluator-code above but don't collect the result list.        
-        SchemeObject* p = tstack->popSchemeObject();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        call_and_return(envt,p,EVAL_MAP);
-        tstack->pop();
-        tstack->return_jump(S_UNSPECIFIED);
-    }
-    EVAL_COND: {
-        SchemeObject* p = tstack->popSchemeObject();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        
-        while (s_null_p(p) == S_FALSE) {
-            SchemeObject* clause = s_car(p);
-            if (s_pair_p(clause) == S_FALSE) {
-                throw scheme_exception("Invalid clause");
-            }
-            SchemeObject* test_expr = s_car(clause);
-            if (test_expr == else_symbol) {
-                // Handle (else <expressions> ...)
-                if (s_null_p(s_cdr(p)) == S_FALSE) {
-                    throw scheme_exception("else-clause must be last");
-                }
-                tstack->push(envt);
-                tstack->push(s_cdr(clause));
-                goto EVAL_SEQUENCE;
-            }
-            
-            // Eval test_expr
-            tstack->push(envt);
-            tstack->push(p);
-            tstack->push(clause);
-            call_and_return(envt,test_expr,EVAL);
-            SchemeObject* test = tstack->popSchemeObject();
-            clause = tstack->popSchemeObject();
-            p = tstack->popSchemePair();
-            envt = tstack->popBindingEnvironment();                
-            
-            if (test->boolValue()) {
-                if (s_car(s_cdr(clause)) == ergo_symbol) {
-                    // Handle (<test> => <expression>)
-                    tstack->push(envt);
-                    tstack->push(test);
-                    tstack->push(clause);
-                    call_and_return(envt,s_car(s_cdr(s_cdr(clause))),EVAL);
-                    SchemeObject* proc = tstack->popSchemeObject();
-                    clause = tstack->popSchemeObject();
-                    test = tstack->popSchemeObject();
-                    envt = tstack->popBindingEnvironment();                
 
-                    tstack->push(envt);
-                    tstack->push(s_cons(test,S_EMPTY_LIST));
-                    tstack->push(proc);
-                    goto EVAL_PROCEDURE_CALL;
-                } else {
-                    tstack->push(envt);
-                    tstack->push(s_cdr(clause));
-                    goto EVAL_SEQUENCE;
-                }
-            }
+    SchemeSymbol* s = static_cast<SchemeSymbol*>(car);
+	SchemeObject* cdr = s_cdr(p);
+	
+	SchemeObject* proc = envt->get(s);
+    if (proc != NULL) {
+        if (proc->type() == SchemeObject::MACRO) {
+            global_arg1 = proc;
+            global_arg2 = cdr;
+            return (fn_ptr)&eval_call_macro;
+        } else if (proc->type() == SchemeObject::PROCEDURE) {
+            global_arg1 = cdr;
+            trampoline((fn_ptr)&eval_multi);
+            SchemeObject* args = global_ret;
 
-            p = s_cdr(p);
-        }
-        tstack->return_jump(S_UNSPECIFIED);
-    }
-    EVAL_CASE: {
-        SchemeObject* p = tstack->popSchemeObject();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-
-        // Eval key        
-        tstack->push(envt);
-        tstack->push(p);
-        call_and_return(envt,s_car(p),EVAL);
-        SchemeObject* key = tstack->popSchemeObject();
-        p = tstack->popSchemePair();
-        envt = tstack->popBindingEnvironment();                
-        
-        p = s_cdr(p);
-
-        while (s_null_p(p) == S_FALSE) {
-            SchemeObject* clause = s_car(p);
-            if (s_pair_p(clause) == S_FALSE) {
-                throw scheme_exception("Invalid clause");
-            }
-            SchemeObject* clause_car = s_car(clause);
-            if (clause_car == else_symbol) {
-                // Handle (else <expressions> ...)
-                if (s_null_p(s_cdr(p)) == S_FALSE) {
-                    throw scheme_exception("else-clause must be last");
-                }
-                tstack->push(envt);
-                tstack->push(s_cdr(clause));
-                goto EVAL_SEQUENCE;
-            } else if (s_pair_p(clause_car) == S_TRUE) {
-                if (s_memv(key,clause_car) != S_FALSE) {
-                    tstack->push(envt);
-                    tstack->push(s_cdr(clause));
-                    goto EVAL_SEQUENCE;
-                }
-            } else {
-                throw scheme_exception("Invalid clause in case-statement");
-            }
-
-            p = s_cdr(p);
-        }
-        tstack->return_jump(S_UNSPECIFIED);
-    }
-    EVAL_LET: {        
-        SchemePair* p = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        
-        if (s_symbol_p(p->car) == S_TRUE) {
-            tstack->push(envt);
-            tstack->push(p);
-            goto EVAL_NAMED_LET;
-        }
-        if (s_pair_p(p->car) == S_FALSE && s_null_p(p->car) == S_FALSE) {
-            throw scheme_exception("Bad body in let");
-        }
-        
-        // Build new bindings
-        BindingEnvironment* new_bindings = new BindingEnvironment(envt);
-        SchemeObject* binding_pairs = p->car;
-
-        while (s_null_p(binding_pairs) == S_FALSE) {
-            // Eval binding value
-            tstack->push(envt);
-            tstack->push(p);
-            tstack->push(new_bindings);
-            tstack->push(binding_pairs);
-            call_and_return(envt,s_car(s_cdr(s_car(binding_pairs))),EVAL);
-            SchemeObject* val = tstack->popSchemeObject();
-            binding_pairs = tstack->popSchemeObject();
-            new_bindings = tstack->popBindingEnvironment();
-            p = tstack->popSchemePair();
-            envt = tstack->popBindingEnvironment();                
-            new_bindings->put(static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs))), val);
-            binding_pairs = s_cdr(binding_pairs);
-        }
-        
-        tstack->push(new_bindings);
-        tstack->push(p->cdr); // Push local var
-        goto EVAL_SEQUENCE;
-    }
-    EVAL_NAMED_LET: {
-        SchemeObject* p = tstack->popSchemeObject();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-
-        SchemeObject* name = s_car(p);
-        p = s_cdr(p);
-        
-        if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
-            throw scheme_exception("Bad body in let");
-        }
-        
-        // Extract formals and collect evaluated args for a lambda
-        SchemeObject* formals = S_EMPTY_LIST;
-        SchemeObject* args = S_EMPTY_LIST;
-        SchemeObject* binding_pairs = s_car(p);
-
-        while (s_null_p(binding_pairs) == S_FALSE) {
-            // Eval binding value
-            tstack->push(envt);
-            tstack->push(p);
-            tstack->push(args);
-            tstack->push(formals);
-            tstack->push(name);
-            tstack->push(binding_pairs);
-            call_and_return(envt,s_car(s_cdr(s_car(binding_pairs))),EVAL);
-            SchemeObject* val = tstack->popSchemeObject();
-            binding_pairs = tstack->popSchemeObject();
-            name = tstack->popSchemeObject();
-            formals = tstack->popSchemeObject();
-            args = tstack->popSchemeObject();
-            p = tstack->popSchemeObject();
-            envt = tstack->popBindingEnvironment();
-            
-            formals = s_cons(s_car(s_car(binding_pairs)), formals);
-            args = s_cons(val, args);
-            
-            binding_pairs = s_cdr(binding_pairs);
-        }
-
-        BindingEnvironment* new_envt = new BindingEnvironment(envt);
-        SchemeProcedure* lambda = new SchemeProcedure(new_envt, s_reverse(formals), NULL, static_cast<SchemePair*>(s_cdr(p)));
-        new_envt->put(static_cast<SchemeSymbol*>(name), lambda);
-        
-        tstack->push(new_envt);
-        tstack->push(s_reverse(args));
-        tstack->push(lambda);
-        
-        goto EVAL_PROCEDURE_CALL;
-    }
-    EVAL_LETSTAR: {        
-        SchemePair* p = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        
-        if (s_pair_p(p->car) == S_FALSE && s_null_p(p->car) == S_FALSE) {
-            throw scheme_exception("Bad body in let");
-        }
-        
-        if (s_null_p(s_cdr(p)) == S_TRUE) {
-            throw scheme_exception("Bad body in let");
-        }
-
-        // Build new bindings
-        BindingEnvironment* new_bindings = new BindingEnvironment(envt);
-        SchemeObject* binding_pairs = p->car;
-
-        while (s_null_p(binding_pairs) == S_FALSE) {
-            // Eval binding value
-            tstack->push(p);
-            tstack->push(new_bindings);
-            tstack->push(binding_pairs);
-            call_and_return(new_bindings,s_car(s_cdr(s_car(binding_pairs))),EVAL);
-            SchemeObject* val = tstack->popSchemeObject();
-            binding_pairs = tstack->popSchemeObject();
-            new_bindings = tstack->popBindingEnvironment();
-            p = tstack->popSchemePair();
-            new_bindings->put(static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs))), val);
-            binding_pairs = s_cdr(binding_pairs);
-        }
-        
-        tstack->push(new_bindings);
-        tstack->push(p->cdr); // Push local var
-        goto EVAL_SEQUENCE;
-    }
-    EVAL_LETREC: {        
-        SchemePair* p = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        
-        if (s_pair_p(p->car) == S_FALSE && s_null_p(p->car) == S_FALSE) {
-            throw scheme_exception("Bad body in let");
-        }
-        
-        // Build new bindings
-        BindingEnvironment* new_bindings = new BindingEnvironment(envt);
-        SchemeObject* binding_pairs = p->car;
-
-        while (s_null_p(binding_pairs) == S_FALSE) {
-            // Eval binding value
-            tstack->push(p);
-            tstack->push(new_bindings);
-            tstack->push(binding_pairs);
-            call_and_return(new_bindings,s_car(s_cdr(s_car(binding_pairs))),EVAL);
-            SchemeObject* val = tstack->popSchemeObject();
-            binding_pairs = tstack->popSchemeObject();
-            new_bindings = tstack->popBindingEnvironment();
-            p = tstack->popSchemePair();
-            new_bindings->put(static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs))), val);
-            binding_pairs = s_cdr(binding_pairs);
-        }
-        
-        tstack->push(new_bindings);
-        tstack->push(p->cdr); // Push local var
-        goto EVAL_SEQUENCE;
-    }
-    EVAL_DEFINE_MACRO: {
-        SchemePair* p = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-
-        SchemeObject* formals = s_car(p);
-        SchemePair* body = static_cast<SchemePair*>(s_cdr(p));
-        SchemeObject* name = s_car(formals);
-        formals = s_cdr(formals);
-        
-        if (s_symbol_p(name) == S_FALSE) {
-            throw scheme_exception("Invalid macro-name in definition");
-        }
-        
-        SchemeSymbol* rst;
-        SchemePair* req;
-        if (s_pair_p(formals) == S_TRUE) {
-            req = S_EMPTY_LIST;
-            while (s_pair_p(formals) == S_TRUE) {
-                SchemePair* pp = static_cast<SchemePair*>(formals);
-                if (s_symbol_p(pp->car) == S_FALSE) {
-                    throw scheme_exception("Bad formals");                
-                }
-                req = s_cons(pp->car, req);
-                formals = pp->cdr;
-            }
-            req = s_reverse(req);
-            if (formals != S_EMPTY_LIST) {
-                if (s_symbol_p(formals) == S_FALSE) {
-                    throw scheme_exception("Bad formals");                
-                }
-                rst = static_cast<SchemeSymbol*>(formals);
-            } else {
-                rst = NULL;
-            }
-        } else if (formals == S_EMPTY_LIST) {
-            req = S_EMPTY_LIST;
-            rst = NULL;
+            global_arg1 = proc;
+            global_arg2 = args;
+            return (fn_ptr)&eval_procedure_call;
         } else {
-            throw scheme_exception("Bad formals");
+            throw scheme_exception("Wrong type to apply : " + proc->toString());	
+        }
+    }
+	
+    if (s == if_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_if;
+	} else if (s == quote_symbol) {
+        global_ret = s_car(cdr);
+        return NULL;
+	} else if (s == define_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_define;
+	} else if (s == define_macro) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_define_macro;
+	} else if (s == quasiquote_symbol) {
+        global_arg1 = s_car(cdr);
+        return (fn_ptr)&eval_quasiquote;
+	} else if (s == apply_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_apply;
+	} else if (s == lambda_symbol) {
+	    SchemeObject* formals = s_car(cdr);
+        SchemeObject* body = s_cdr(cdr);
+        global_arg1 = formals;
+        global_arg2 = body;
+        return (fn_ptr)&eval_lambda;
+	} else if (s == let_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_let;
+	} else if (s == do_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_do;
+	} else if (s == letstar_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_letstar;
+	} else if (s == letrec_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_letrec;
+	} else if (s == map_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_map;
+	} else if (s == for_each_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_for_each;
+	} else if (s == set_e_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_set_e;
+	} else if (s == begin_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_begin;
+	} else if (s == cond_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_cond;
+	} else if (s == case_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_case;
+	} else if (s == and_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_and;
+	} else if (s == or_symbol) {
+        global_arg1 = cdr;
+        return (fn_ptr)&eval_or;
+    } else {
+		throw scheme_exception("Unbound variable: " + s->toString());	
+    }    
+}
+
+fn_ptr eval_begin() {
+    return (fn_ptr)&eval_sequence;
+}
+
+fn_ptr eval_combo() {
+    // ((form) args)		    
+    // where form is an expression that should evaluate to a function that we execute
+    SchemeObject* s = global_arg1;
+    
+    global_arg1 = s_car(s);
+    SchemeObject* proc = trampoline((fn_ptr)&eval);
+    
+    if (proc->type() != SchemeObject::PROCEDURE) {
+	    throw scheme_exception("Wrong type to apply: " + s->toString() + " does not resolve to a procedure.");
+    }
+    
+    global_arg1 = s_cdr(s);
+    SchemeObject* args = trampoline((fn_ptr)&eval_multi);
+    
+    global_arg1 = proc;
+    global_arg2 = args;
+    return (fn_ptr)&eval_procedure_call;
+}
+
+fn_ptr eval_if() {
+    // (if condition true-form false-form) 
+    // where false-form is optional.
+    SchemeObject* p = global_arg1;
+
+    SchemeObject* s_condition_expr = s_car(p);;
+
+    global_arg1 = s_condition_expr;
+    bool condition = trampoline((fn_ptr)&eval)->boolValue();
+	
+	if (condition) {
+	    // Evaluate and return true case
+        SchemeObject* true_case = s_car(s_cdr(p));
+        global_arg1 = true_case;
+        return (fn_ptr)&eval;
+	} else if (s_cdr(s_cdr(p)) != S_EMPTY_LIST) {
+	    // Evaluate and return false case
+    	SchemeObject* false_case = s_car(s_cdr(s_cdr(p)));
+        global_arg1 = false_case;
+        return (fn_ptr)&eval;
+	} else {
+        global_ret = S_UNSPECIFIED;
+        return NULL;
+	}    
+}
+
+fn_ptr eval_and() {
+    SchemeObject* p = global_arg1;
+    
+    SchemeObject* result = S_TRUE;
+    while (p != S_EMPTY_LIST) {
+        if (s_cdr(p) == S_EMPTY_LIST) {
+            // Tail call
+            global_arg1 = s_car(p);
+            return (fn_ptr)&eval;
+        } else {
+            global_arg1 = s_car(p);
+            result = trampoline((fn_ptr)&eval);
+
+            if (!result->boolValue()) {
+                global_ret = result;
+                return NULL;
+            }
+        } 
+        p = s_cdr(p);
+    }
+    global_ret = result;
+    return NULL;
+}
+
+fn_ptr eval_or() {
+    SchemeObject* p = global_arg1;
+    
+    SchemeObject* result = S_FALSE;
+    while (p != S_EMPTY_LIST) {
+        if (s_cdr(p) == S_EMPTY_LIST) {
+            // Optimize tail-recursion
+            global_arg1 = s_car(p);
+            return (fn_ptr)&eval;
         }
         
-        SchemeMacro* macro = new SchemeMacro(envt, req, rst, body);
-        envt->put(static_cast<SchemeSymbol*>(name), macro);
-        tstack->return_jump(S_UNSPECIFIED);
-    }
-    EVAL_CALL_MACRO: {
-        SchemeMacro* proc = static_cast<SchemeMacro*>(tstack->popSchemeObject());
-        SchemePair* args = tstack->popSchemePair();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
+        global_arg1 = s_car(p);
+        result = trampoline((fn_ptr)&eval);
 
-        // Build new environment
+        if (result->boolValue()) {
+            global_ret = result;
+            return NULL;
+        }
+        p = s_cdr(p);
+    } 
+    global_ret = result;
+    return NULL;
+}
+
+fn_ptr eval_quasiquote() {
+    return NULL;
+}
+
+/*
+EVAL_QUASIQUOTE: {
+    SchemeObject* o = tstack->popSchemeObject();
+    BindingEnvironment* envt = tstack->popBindingEnvironment();
+    SchemeObject* p = o;
+    if (s_vector_p(o) == S_TRUE) {
+        p = s_vector_2_list(o);
+    } else {
+        p = o;
+    }
+    if (s_pair_p(p) == S_TRUE) {
+        SchemeObject* result = NULL;
+        
+        if (s_car(p) == unquote_symbol && s_vector_p(o) == S_FALSE) {
+            tstack->push(envt);
+            tstack->push(p);
+            tstack->push(o);
+            call_and_return(envt, s_cdr(p), EVAL);
+            result = tstack->popSchemeObject();
+            o = tstack->popSchemeObject(); // Pop local var
+            p = tstack->popSchemeObject(); // Pop local var
+            envt = tstack->popBindingEnvironment(); // Pop local var
+        } else if (s_car(p) == unquote_splicing_symbol && s_vector_p(o) == S_FALSE) {
+            tstack->push(envt);
+            tstack->push(p);
+            tstack->push(o);
+            call_and_return(envt, s_cdr(p), EVAL);
+            result = tstack->popSchemeObject();
+            o = tstack->popSchemeObject(); // Pop local var
+            p = tstack->popSchemeObject(); // Pop local var
+            envt = tstack->popBindingEnvironment(); // Pop local var
+            if (s_list_p(result) == S_FALSE) {
+                throw scheme_exception("unquote-splicing must result in a list");
+            }
+        } else {
+            // (car p) is a list or vector that we recurse into
+            collected = S_EMPTY_LIST;
+            p = s_car(p);
+            while(true) {
+                
+                
+                p = s_cdr(p);
+                if (s_pair_p(p) == S_TRUE) {
+                    s_set_car_e(resultp, r);
+                    s_set_cdr_e(resultp) = cons(r,S_EMPTY_LIST);
+                    resultp = s_cdr(resultp);
+                } else {
+                    s_set_cdr_e(resultp) = r;
+                    break;
+                }
+            }
+        }
+
+        if (s_vector_p(o) == S_TRUE) {
+            tstack->return_jump(s_list_2_vector(result));
+        } else {
+            tstack->return_jump(result);
+        }
+        tstack->return_jump(result);
+        
+        while(s_null_p(p) == S_FALSE) {
+            SchemeObject* to_add = NULL;
+            cout << "s_car(p) is " << s_car(p)->toString() << endl;
+            if (s_pair_p(s_car(p)) == S_TRUE || s_vector_p(s_car(p)) == S_TRUE) {
+                if (s_pair_p(s_car(p)) == S_TRUE && s_symbol_p(s_car(p)) == S_TRUE) {
+                    cout << "Yup: " << s_car(s_car(p))->toString() << endl;
+                }
+                // (car p) is a list or vector that we recurse into
+                tstack->push(envt);
+                tstack->push(p);
+                tstack->push(o);
+                tstack->push(result);
+                call_and_return(envt, s_car(p), EVAL_QUASIQUOTE);
+                to_add = tstack->popSchemeObject();
+                result = tstack->popSchemeObject(); // Pop local var
+                o = tstack->popSchemeObject(); // Pop local var
+                p = tstack->popSchemeObject(); // Pop local var
+                envt = tstack->popBindingEnvironment(); // Pop local var
+
+                result = s_cons(to_add, result);
+                p = s_cdr(p);
+                continue;
+            } else {
+                // (car p) is neither list nor vector
+                result = s_cons(s_car(p), result);
+                p = s_cdr(p);
+                continue;
+            }
+        }
+        result = s_reverse(result);
+    } else {
+        tstack->return_jump(o);
+    }
+}
+*/
+
+fn_ptr eval_procedure_call() {
+    SchemeProcedure* proc = static_cast<SchemeProcedure*>(global_arg1);
+    SchemeObject* args = global_arg2;
+
+    SchemeObject* result = S_UNSPECIFIED;
+
+    if (proc->fn != NULL) {
+        SchemeObject* argsv[10];
+        // Built-in function
+        int args_num = int(s_length(args)->number);
+        if (args_num < proc->req) {
+            throw scheme_exception("Too few argument given.");
+        }
+        if (args_num > proc->req + proc->opt && proc->rst == 0) {
+            throw scheme_exception("Too many argument given.");
+        }
+        if (args_num < proc->req + proc->opt) {
+            // TODO: append_e nogle S_UNSPECIFIED på args, så længden af args bliver req+opt.
+        }
+        SchemeObject* a_p = args;
+        if (proc->rst == 0) {
+            for(int i = 0; i < 10; i++) {
+                if (i < args_num) {
+                    argsv[i] = s_car(a_p);
+                    a_p = s_cdr(a_p);
+                } else {
+                    argsv[i] = S_UNSPECIFIED;
+                }
+            }
+            switch(proc->req + proc->opt) {
+                case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();
+                          break;
+                case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
+                          break;
+                case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
+                          break;
+                case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
+                          break;
+                default:  throw scheme_exception("Arguments mismatch"); 
+            }
+        } else {
+            for(int i = 0; i < 10; i++) {
+                if (i < proc->req) {
+                    argsv[i] = s_car(a_p);
+                    a_p = s_cdr(a_p);
+                } else {
+                    argsv[i] = a_p;
+                    break;
+                }
+            }
+            switch(proc->req + proc->opt) {
+                case 0:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
+                          break;
+                case 1:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
+                          break;
+                case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
+                          break;
+                case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3]);
+                          break;
+                default:  throw scheme_exception("Arguments mismatch"); 
+            }
+        }
+        global_ret = result;
+        return NULL;
+    } else {
+        // User function
         BindingEnvironment* new_envt = new BindingEnvironment(proc->envt);
-        SchemePair* req_symbols = proc->s_req;
+        SchemeObject* req_symbols = proc->s_req;
         while (req_symbols != S_EMPTY_LIST) {
             if (args == S_EMPTY_LIST) {
                 throw scheme_exception("Too few argument given.");
             }
-            new_envt->put(static_cast<SchemeSymbol*>(req_symbols->car), args->car);
-            req_symbols = req_symbols->cdrAsPair();
-            args = args->cdrAsPair();
+            new_envt->put(static_cast<SchemeSymbol*>(s_car(req_symbols)), s_car(args));
+            req_symbols = s_cdr(req_symbols);
+            args = s_cdr(args);
         }
         if (proc->rst == 0 && args != S_EMPTY_LIST) {
             throw scheme_exception("Too many argument given.");
@@ -1247,132 +585,598 @@ SchemeObject* eval(BindingEnvironment* envt_orig, SchemeObject* seq_orig) {
         if (proc->rst == 1) {
             new_envt->put(proc->s_rst, args);
         }
-        // cout << "Body: " << proc->s_body->toString() << endl;
-        // Transform body
-        tstack->push(envt);
-        call_and_return(new_envt,proc->s_body,EVAL_SEQUENCE);
-        SchemeObject* transformed_body = tstack->popSchemeObject();
-        envt = tstack->popBindingEnvironment();
-        // cout << "Transformed body: " << transformed_body->toString() << endl;
-        
-        // Eval transformed body
-        tstack->push(envt);
-        tstack->push(transformed_body);
-        goto EVAL;
+        // TODO: Who's gonna recover the original environment?
+        global_envt = new_envt;
+        global_arg1 = proc->s_body;
+        return (fn_ptr)&eval_sequence;
+    }    
+}
+
+fn_ptr eval_multi() {
+    SchemeObject* p = global_arg1;
+
+    SchemePair* result = S_EMPTY_LIST;
+    while (p != S_EMPTY_LIST) {
+        global_arg1 = s_car(p);
+        SchemeObject* r = trampoline((fn_ptr)&eval);
+
+	    result = s_cons(r, result);
+	    p = s_cdr(p);
     }
-    EVAL_DO: {
-        SchemeObject* p = tstack->popSchemeObject();
-        BindingEnvironment* envt = tstack->popBindingEnvironment();
-        
-        if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
-            throw scheme_exception("Bad body in let");
-        }
-
-        // Extract formals and collect evaluated args for a lambda
-        BindingEnvironment* new_envt = new BindingEnvironment(envt);
-        SchemeObject* steps = S_EMPTY_LIST;
-        SchemeObject* varnames = S_EMPTY_LIST;
-        SchemeObject* binding_pairs = s_car(p);
-
-        while (s_null_p(binding_pairs) == S_FALSE) {
-            // Eval initial binding value
-            tstack->push(new_envt);
-            tstack->push(envt);
-            tstack->push(p);
-            tstack->push(steps);
-            tstack->push(varnames);
-            tstack->push(binding_pairs);
-            call_and_return(envt,s_car(s_cdr(s_car(binding_pairs))),EVAL);
-            SchemeObject* val = tstack->popSchemeObject();
-            binding_pairs = tstack->popSchemeObject();
-            varnames = tstack->popSchemeObject();
-            steps = tstack->popSchemeObject();
-            p = tstack->popSchemeObject();
-            envt = tstack->popBindingEnvironment();
-            new_envt = tstack->popBindingEnvironment();
-            
-            SchemeObject* varname = s_car(s_car(binding_pairs));
-            if (s_symbol_p(varname) == S_FALSE) {
-                throw scheme_exception("Invalid variable in do: " + varname->toString());
-            }
-            new_envt->put(static_cast<SchemeSymbol*>(varname), val);
-            varnames = s_cons(varname, varnames);
-
-
-            SchemeObject* step = s_cdr(s_cdr(s_car(binding_pairs)));
-            if (step == S_EMPTY_LIST) {
-                step = varname;
-            } else {
-                step = s_car(step);
-            }
-            steps = s_cons(step, steps);
-
-            binding_pairs = s_cdr(binding_pairs);
-        }
-        
-        SchemeObject* body = s_cdr(p);
-        
-        
-        while (true) {
-            // Evaluate test
-            tstack->push(new_envt);
-            tstack->push(body);
-            tstack->push(steps);
-            tstack->push(varnames);
-            call_and_return(new_envt,s_car(s_car(body)),EVAL);
-            SchemeObject* val = tstack->popSchemeObject();
-            varnames = tstack->popSchemeObject();
-            steps = tstack->popSchemeObject();
-            body = tstack->popSchemeObject();
-            new_envt = tstack->popBindingEnvironment();
-
-            // Return if test is true
-            if (val->boolValue()) {
-                if (s_cdr(s_car(body)) == S_EMPTY_LIST) {
-                    tstack->return_jump(S_UNSPECIFIED);
-                } else {
-                    tstack->push(new_envt);
-                    tstack->push(s_cdr(s_car(body)));
-                    goto EVAL_SEQUENCE;
-                }
-            }
-            
-            
-            if (s_cdr(body) != S_EMPTY_LIST) {
-                // Evaluate body-commands
-                tstack->push(new_envt);
-                tstack->push(body);
-                tstack->push(steps);
-                tstack->push(varnames);
-                call_and_return(new_envt,s_cdr(body),EVAL_SEQUENCE);
-                tstack->pop();
-                varnames = tstack->popSchemeObject();
-                steps = tstack->popSchemeObject();
-                body = tstack->popSchemeObject();
-                new_envt = tstack->popBindingEnvironment();
-            }
-            
-            // Evaluate steps
-            tstack->push(new_envt);
-            tstack->push(body);
-            tstack->push(steps);
-            tstack->push(varnames);
-            call_and_return(new_envt,steps,EVAL_MULTI);
-            SchemeObject* vals = tstack->popSchemeObject();
-            varnames = tstack->popSchemeObject();
-            steps = tstack->popSchemeObject();
-            body = tstack->popSchemeObject();
-            new_envt = tstack->popBindingEnvironment();
-            
-            // Assign new step values
-            tstack->push(varnames);
-            while(s_null_p(varnames) == S_FALSE) {
-                new_envt->put(static_cast<SchemeSymbol*>(s_car(varnames)), s_car(vals));
-                varnames = s_cdr(varnames);
-                vals = s_cdr(vals);
-            }
-            varnames = tstack->popSchemeObject();
-        }
-    }
+    // TODO: An in-place reverse or constructing the result in the right order to begin with.
+    global_ret = s_reverse(result);
     return NULL;
+}
+
+fn_ptr eval_lambda() {
+    SchemeObject* formals = global_arg1;
+    SchemeObject* body = global_arg2;
+    BindingEnvironment* envt = global_envt;
+
+    SchemeSymbol* rst;
+    SchemePair* req;
+    if (s_symbol_p(formals) == S_TRUE) {
+        rst = static_cast<SchemeSymbol*>(formals);
+        req = S_EMPTY_LIST;
+    } else if (s_pair_p(formals) == S_TRUE) {
+        req = S_EMPTY_LIST;
+        while (s_pair_p(formals) == S_TRUE) {
+            SchemePair* pp = static_cast<SchemePair*>(formals);
+            if (s_symbol_p(s_car(pp)) == S_FALSE) {
+                throw scheme_exception("Bad formals");                
+            }
+            req = s_cons(s_car(pp), req);
+            formals = s_cdr(pp);
+        }
+        req = s_reverse(req);
+        if (formals != S_EMPTY_LIST) {
+            if (s_symbol_p(formals) == S_FALSE) {
+                throw scheme_exception("Bad formals");                
+            }
+            rst = static_cast<SchemeSymbol*>(formals);
+        } else {
+            rst = NULL;
+        }
+    } else if (formals == S_EMPTY_LIST) {
+        req = S_EMPTY_LIST;
+        rst = NULL;
+    } else {
+        throw scheme_exception("Bad formals");
+    }
+
+    global_ret = new SchemeProcedure(envt, req, rst, body);
+    return NULL;
+}
+
+fn_ptr eval_apply() {
+    // args is a list (proc arg1 arg2 ... argn). argn must be a list. proc is called with the arguments
+    // (append (list arg1 arg2 ...) argn)
+    SchemeObject* args = global_arg1;
+    
+    // Eval the procedure argument
+    global_arg1 = s_car(args);
+    SchemeObject* proc = trampoline((fn_ptr)&eval);
+
+    if (s_procedure_p(proc) == S_FALSE) {
+        throw scheme_exception("Can't apply to non-procedure: " + s_car(args)->toString());
+    }
+
+    if (s_pair_p(s_cdr(args)) == S_FALSE) {
+        throw scheme_exception("Wrong type in position 1.");
+    }
+
+    // Eval and join all arg-lists together
+    global_arg1 = s_cdr(args);
+    args = trampoline((fn_ptr)&eval_multi);
+    
+    SchemePair* collected = S_EMPTY_LIST;
+    SchemePair* prev = NULL;
+    while (args != S_EMPTY_LIST) {
+        SchemeObject* arg = s_car(args);
+        if (s_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
+            if (s_cdr(args) == S_EMPTY_LIST) {
+                // arg is a list and last argument
+                if (collected == S_EMPTY_LIST) {
+                    collected = static_cast<SchemePair*>(arg);
+                } else {
+                    prev->cdr = arg;
+                }
+            } else {
+                throw scheme_exception("Illegal argument");
+            }
+        } else {
+            if (collected == S_EMPTY_LIST) {
+                collected = s_cons(arg, S_EMPTY_LIST);
+                prev = collected;
+            } else {
+                SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
+                prev->cdr = tmp;
+                prev = tmp;
+            }
+        }
+        args = s_cdr(args);
+    }
+    
+    global_arg1 = proc;
+    global_arg2 = collected;
+    return (fn_ptr)&eval_procedure_call;
+}
+
+
+fn_ptr eval_set_e() {
+    // TODO: We're doing double hashtable lookups. Both a envt->get(s) and in envt->set(s,v). Optimize by letting envt->get(s) return a binding, that
+    // we manipulate instead of doing the set(s,v)
+
+    SchemeObject* p = global_arg1;
+    BindingEnvironment* envt = global_envt;
+
+    if (s_length(p) != S_TWO) {
+        throw scheme_exception("Missing or extra expression");
+    }
+    SchemeObject* car = s_car(p);
+    if (car->type() != SchemeObject::SYMBOL) {
+        throw scheme_exception("Wrong type argument in position 1.");
+    }
+    SchemeSymbol* s = static_cast<SchemeSymbol*>(car);
+
+    SchemeObject* already_bound = envt->get(s);
+    if (already_bound == NULL) {
+        throw scheme_exception("Unbound variable: " + s->toString());
+    }
+    
+    global_arg1 = s_car(s_cdr(p));
+    SchemeObject* v = trampoline((fn_ptr)&eval);
+
+    envt->set(s, v);
+
+    global_ret = S_UNSPECIFIED;
+    return NULL;
+}
+
+fn_ptr eval_map() {
+    SchemeObject* p = global_arg1;
+
+    // TODO: Tjek at alle argument-lists er lige lange
+
+    // Eval the procedure argument
+    global_arg1 = s_car(p);
+    SchemeObject* proc = trampoline((fn_ptr)&eval);
+    
+    if (s_procedure_p(proc) == S_FALSE) {
+        throw scheme_exception("Can't apply to non-procedure: " + s_car(p)->toString());
+    }
+    
+    p = s_cdr(p);
+    
+    if (p == S_EMPTY_LIST) {
+        throw scheme_exception("Wrong number of arguments to map");
+    }
+    
+    SchemeObject* lists = S_EMPTY_LIST;
+    SchemeObject* prev = S_EMPTY_LIST;
+    // Eval all the lists
+    while (p != S_EMPTY_LIST) {
+        
+        global_arg1 = s_car(p);
+        SchemeObject* list = trampoline((fn_ptr)&eval);
+
+        if (s_pair_p(list) == S_FALSE) {
+            throw scheme_exception("Wrong argument to map");
+        }
+        
+        if (lists == S_EMPTY_LIST) {
+            lists = s_cons(list,S_EMPTY_LIST);
+            prev = lists;
+        } else {
+            SchemePair* tmp = s_cons(list,S_EMPTY_LIST);
+            s_set_cdr_e(prev, tmp);
+            prev = tmp;
+        }
+        p = s_cdr(p);
+    }
+        
+    // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver til ((2 3)(20 30)) og til sidst ((3)(30))
+    SchemePair* result = S_EMPTY_LIST;
+    while (s_car(lists) != S_EMPTY_LIST) {
+        // Collect args
+        SchemePair* collection = S_EMPTY_LIST;
+        SchemePair* prev_col = S_EMPTY_LIST;
+        SchemeObject* lists_ptr = lists;
+        while (lists_ptr != S_EMPTY_LIST) {
+            SchemeObject* arg = s_car(s_car(lists_ptr));
+            s_set_car_e(lists_ptr,s_cdr(s_car(lists_ptr)));
+            if (collection == S_EMPTY_LIST) {
+                collection = s_cons(arg,S_EMPTY_LIST);
+                prev_col = collection;
+            } else {
+                SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
+                prev_col->cdr = tmp;
+                prev_col = tmp;
+                
+            }
+            lists_ptr = s_cdr(lists_ptr);
+        }
+        
+        global_arg1 = proc;
+        global_arg2 = collection;
+        SchemeObject* result_item = trampoline((fn_ptr)&eval_procedure_call);
+        
+        if (result == S_EMPTY_LIST) {
+            result = s_cons(result_item, S_EMPTY_LIST);
+            prev = result;
+        } else {
+            SchemePair* tmp = s_cons(result_item, S_EMPTY_LIST);
+            s_set_cdr_e(prev, tmp);
+            prev = tmp;
+        }
+    }
+    // Tjek at argumentlisterne var lige lange
+    while (lists != S_EMPTY_LIST) {
+        if (s_car(lists) != S_EMPTY_LIST) {
+            throw scheme_exception("Argument lists not equals length.");
+        }
+        lists = s_cdr(lists);
+    }
+    
+    global_ret = result;
+    return NULL;
+}
+
+fn_ptr eval_for_each() {
+    // TODO: This is a hack, but it works. The correct and fast impl. is to reuse 
+    // the map-evaluator-code above but don't collect the result list.        
+    trampoline((fn_ptr)&eval_map);
+    global_ret = S_UNSPECIFIED;
+    return NULL;
+}
+
+fn_ptr eval_cond() {
+    SchemeObject* p = global_arg1;
+
+    while (s_null_p(p) == S_FALSE) {
+        SchemeObject* clause = s_car(p);
+        if (s_pair_p(clause) == S_FALSE) {
+            throw scheme_exception("Invalid clause");
+        }
+        SchemeObject* test_expr = s_car(clause);
+        if (test_expr == else_symbol) {
+            // Handle (else <expressions> ...)
+            if (s_null_p(s_cdr(p)) == S_FALSE) {
+                throw scheme_exception("else-clause must be last");
+            }
+            global_arg1 = s_cdr(clause);
+            return (fn_ptr)&eval_sequence;
+        }
+        
+        // Eval test_expr
+        global_arg1 = test_expr;
+        SchemeObject* test = trampoline((fn_ptr)&eval);
+        
+        if (test->boolValue()) {
+            if (s_car(s_cdr(clause)) == ergo_symbol) {
+                // Handle (<test> => <expression>)
+                global_arg1 = s_car(s_cdr(s_cdr(clause)));
+                SchemeObject* proc = trampoline((fn_ptr)&eval);
+
+                global_arg1 = proc;
+                global_arg2 = s_cons(test,S_EMPTY_LIST);
+                return (fn_ptr)&eval_procedure_call;
+            } else {
+                global_arg1 = s_cdr(clause);
+                return (fn_ptr)&eval_sequence;
+            }
+        }
+        p = s_cdr(p);
+    }
+    global_ret = S_UNSPECIFIED;
+    return NULL;
+}
+
+fn_ptr eval_case() {
+    SchemeObject* p = global_arg1;
+
+    // Eval key       
+    global_arg1 = s_car(p);
+    SchemeObject* key = trampoline((fn_ptr)&eval);
+    
+    p = s_cdr(p);
+
+    while (s_null_p(p) == S_FALSE) {
+        SchemeObject* clause = s_car(p);
+        if (s_pair_p(clause) == S_FALSE) {
+            throw scheme_exception("Invalid clause");
+        }
+        SchemeObject* clause_car = s_car(clause);
+        if (clause_car == else_symbol) {
+            // Handle (else <expressions> ...)
+            if (s_null_p(s_cdr(p)) == S_FALSE) {
+                throw scheme_exception("else-clause must be last");
+            }
+            global_arg1 = s_cdr(clause);
+            return (fn_ptr)&eval_sequence;
+        } else if (s_pair_p(clause_car) == S_TRUE) {
+            if (s_memv(key,clause_car) != S_FALSE) {
+                global_arg1 = s_cdr(clause);
+                return (fn_ptr)&eval_sequence;
+            }
+        } else {
+            throw scheme_exception("Invalid clause in case-statement");
+        }
+
+        p = s_cdr(p);
+    }
+    global_ret = S_UNSPECIFIED;
+    return NULL;    
+}
+
+fn_ptr eval_let() {
+    SchemeObject* p = global_arg1;
+    BindingEnvironment* envt = global_envt;
+
+    if (s_symbol_p(s_car(p)) == S_TRUE) {
+        return (fn_ptr)&eval_named_let;
+    }
+    if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
+        throw scheme_exception("Bad body in let");
+    }
+    
+    // Build new bindings
+    BindingEnvironment* new_bindings = new BindingEnvironment(envt);
+    SchemeObject* binding_pairs = s_car(p);
+
+    while (s_null_p(binding_pairs) == S_FALSE) {
+        // Eval binding value
+        
+        global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
+        SchemeObject* val = trampoline((fn_ptr)&eval);
+
+        new_bindings->put(static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs))), val);
+        binding_pairs = s_cdr(binding_pairs);
+    }
+    
+    // TODO: Restore old bindings
+    global_envt = new_bindings;
+    global_arg1 = s_cdr(p);
+    return (fn_ptr)&eval_sequence;
+}
+
+fn_ptr eval_named_let() {
+    SchemeObject* p = global_arg1;
+    BindingEnvironment* envt = global_envt;
+
+    SchemeObject* name = s_car(p);
+    p = s_cdr(p);
+    
+    if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
+        throw scheme_exception("Bad body in let");
+    }
+    
+    // Extract formals and collect evaluated args for a lambda
+    SchemeObject* formals = S_EMPTY_LIST;
+    SchemeObject* args = S_EMPTY_LIST;
+    SchemeObject* binding_pairs = s_car(p);
+
+    while (s_null_p(binding_pairs) == S_FALSE) {
+        // Eval binding value
+        global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
+        SchemeObject* val = trampoline((fn_ptr)&eval);
+        
+        formals = s_cons(s_car(s_car(binding_pairs)), formals);
+        args = s_cons(val, args);
+        
+        binding_pairs = s_cdr(binding_pairs);
+    }
+
+    BindingEnvironment* new_envt = new BindingEnvironment(envt);
+    SchemeProcedure* lambda = new SchemeProcedure(new_envt, s_reverse(formals), NULL, static_cast<SchemePair*>(s_cdr(p)));
+    new_envt->put(static_cast<SchemeSymbol*>(name), lambda);
+    
+    // TODO: Restore old bindings
+    global_arg1 = lambda;
+    global_arg2 = s_reverse(args);
+    global_envt = new_envt;
+    return (fn_ptr)&eval_procedure_call;
+}
+
+fn_ptr eval_letstar() {
+    SchemeObject* p = global_arg1;
+    BindingEnvironment* envt = global_envt;
+    
+    if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
+        throw scheme_exception("Bad body in let");
+    }
+    
+    if (s_null_p(s_cdr(p)) == S_TRUE) {
+        throw scheme_exception("Bad body in let");
+    }
+
+    // Build new bindings
+    BindingEnvironment* new_bindings = new BindingEnvironment(envt);
+    SchemeObject* binding_pairs = s_car(p);
+
+    while (s_null_p(binding_pairs) == S_FALSE) {
+        // Eval binding value
+        global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
+        global_envt = new_bindings;
+        SchemeObject* val = trampoline((fn_ptr)&eval);
+        
+        new_bindings->put(static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs))), val);
+        binding_pairs = s_cdr(binding_pairs);
+    }
+    
+    global_envt = new_bindings;
+    global_arg1 = s_cdr(p);
+    return (fn_ptr)&eval_sequence;
+}
+
+fn_ptr eval_letrec() {
+    return (fn_ptr)&eval_letstar;
+}
+
+fn_ptr eval_define_macro() {
+    SchemeObject* p = global_arg1;
+    BindingEnvironment* envt = global_envt;
+
+    SchemeObject* formals = s_car(p);
+    SchemePair* body = static_cast<SchemePair*>(s_cdr(p));
+    SchemeObject* name = s_car(formals);
+    formals = s_cdr(formals);
+    
+    if (s_symbol_p(name) == S_FALSE) {
+        throw scheme_exception("Invalid macro-name in definition");
+    }
+    
+    SchemeSymbol* rst;
+    SchemePair* req;
+    if (s_pair_p(formals) == S_TRUE) {
+        req = S_EMPTY_LIST;
+        while (s_pair_p(formals) == S_TRUE) {
+            SchemePair* pp = static_cast<SchemePair*>(formals);
+            if (s_symbol_p(s_car(pp)) == S_FALSE) {
+                throw scheme_exception("Bad formals");                
+            }
+            req = s_cons(s_car(pp), req);
+            formals = s_cdr(pp);
+        }
+        req = s_reverse(req);
+        if (formals != S_EMPTY_LIST) {
+            if (s_symbol_p(formals) == S_FALSE) {
+                throw scheme_exception("Bad formals");                
+            }
+            rst = static_cast<SchemeSymbol*>(formals);
+        } else {
+            rst = NULL;
+        }
+    } else if (formals == S_EMPTY_LIST) {
+        req = S_EMPTY_LIST;
+        rst = NULL;
+    } else {
+        throw scheme_exception("Bad formals");
+    }
+    
+    SchemeMacro* macro = new SchemeMacro(envt, req, rst, body);
+    envt->put(static_cast<SchemeSymbol*>(name), macro);
+    
+    global_ret = S_UNSPECIFIED;
+    return (fn_ptr)NULL;
+}
+
+fn_ptr eval_call_macro() {
+    SchemeMacro* proc = static_cast<SchemeMacro*>(global_arg1);
+    SchemeObject* args = global_arg2;
+    BindingEnvironment* envt = global_envt;
+    
+    // Build new environment
+    BindingEnvironment* new_envt = new BindingEnvironment(proc->envt);
+    SchemeObject* req_symbols = proc->s_req;
+    while (req_symbols != S_EMPTY_LIST) {
+        if (args == S_EMPTY_LIST) {
+            throw scheme_exception("Too few argument given.");
+        }
+        new_envt->put(static_cast<SchemeSymbol*>(s_car(req_symbols)), s_car(args));
+        req_symbols = s_cdr(req_symbols);
+        args = s_cdr(args);
+    }
+    if (proc->rst == 0 && args != S_EMPTY_LIST) {
+        throw scheme_exception("Too many argument given.");
+    }
+    if (proc->rst == 1) {
+        new_envt->put(proc->s_rst, args);
+    }
+    // cout << "Body: " << proc->s_body->toString() << endl;
+    // Transform body
+    global_envt = new_envt;
+    global_arg1 = proc->s_body;
+    SchemeObject* transformed_body = trampoline((fn_ptr)&eval_sequence);
+    // cout << "Transformed body: " << transformed_body->toString() << endl;
+    
+    // Eval transformed body
+    global_envt = envt;
+    global_arg1 = transformed_body;
+    return (fn_ptr)&eval;    
+}
+
+fn_ptr eval_do() {
+    SchemeObject* p = global_arg1;
+    BindingEnvironment* envt = global_envt;
+
+    if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
+        throw scheme_exception("Bad body in let");
+    }
+
+    // Extract formals and collect evaluated args for a lambda
+    BindingEnvironment* new_envt = new BindingEnvironment(envt);
+    SchemeObject* steps = S_EMPTY_LIST;
+    SchemeObject* varnames = S_EMPTY_LIST;
+    SchemeObject* binding_pairs = s_car(p);
+
+    while (s_null_p(binding_pairs) == S_FALSE) {
+        // Eval initial binding value
+        global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
+        SchemeObject* val = trampoline((fn_ptr)&eval);
+        
+        SchemeObject* varname = s_car(s_car(binding_pairs));
+        if (s_symbol_p(varname) == S_FALSE) {
+            throw scheme_exception("Invalid variable in do: " + varname->toString());
+        }
+        new_envt->put(static_cast<SchemeSymbol*>(varname), val);
+        varnames = s_cons(varname, varnames);
+
+
+        SchemeObject* step = s_cdr(s_cdr(s_car(binding_pairs)));
+        if (step == S_EMPTY_LIST) {
+            step = varname;
+        } else {
+            step = s_car(step);
+        }
+        steps = s_cons(step, steps);
+
+        binding_pairs = s_cdr(binding_pairs);
+    }
+    
+    SchemeObject* body = s_cdr(p);
+    
+    while (true) {
+        // Evaluate test
+        global_arg1 = s_car(s_car(body));
+        global_envt = new_envt;
+        SchemeObject* val = trampoline((fn_ptr)&eval);
+        global_envt = envt;
+
+        // Return if test is true
+        if (val->boolValue()) {
+            if (s_cdr(s_car(body)) == S_EMPTY_LIST) {
+                global_ret = S_UNSPECIFIED;
+                return NULL;
+            } else {
+                // TODO: Restore old envt
+                global_envt = new_envt;
+                global_arg1 = s_cdr(s_car(body));
+                return (fn_ptr)&eval_sequence;
+            }
+        }
+        
+        if (s_cdr(body) != S_EMPTY_LIST) {
+            global_envt = new_envt;
+            global_arg1 = s_cdr(body);
+            trampoline((fn_ptr)&eval_sequence);
+            global_envt = new_envt;
+        }
+        
+        // Evaluate steps
+        global_envt = new_envt;
+        global_arg1 = steps;
+        SchemeObject* vals = trampoline((fn_ptr)&eval_multi);
+        global_envt = envt;
+        
+        // Assign new step values
+        SchemeObject* tmp = varnames;
+        while(s_null_p(varnames) == S_FALSE) {
+            new_envt->put(static_cast<SchemeSymbol*>(s_car(varnames)), s_car(vals));
+            varnames = s_cdr(varnames);
+            vals = s_cdr(vals);
+        }
+        varnames = tmp;
+    }
+    return NULL; /* Never reached */
 }

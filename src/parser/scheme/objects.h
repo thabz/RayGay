@@ -89,7 +89,7 @@ class SchemeSymbol : public SchemeObject {
 	    std::string str;
 	private:
         SchemeSymbol(string s);
-        static map<string,SchemeSymbol*> symbols;    
+        static map<string,SchemeSymbol*> known_symbols;    
 };
 
 
@@ -150,7 +150,7 @@ class SchemeProcedure : public SchemeObject
 {
     public:
         SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)());
-        SchemeProcedure(BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body);
+        SchemeProcedure(BindingEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body);
         string toString();      
         ObjectType type() { return PROCEDURE; };
 
@@ -161,8 +161,8 @@ class SchemeProcedure : public SchemeObject
         SchemeObject* (*fn)();
         
         // Fields for user-function
-        SchemePair* s_body;
-        SchemePair* s_req;
+        SchemeObject* s_body;
+        SchemeObject* s_req;
         SchemeSymbol* s_rst;
         BindingEnvironment* envt;
 };
