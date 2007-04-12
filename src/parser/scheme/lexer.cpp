@@ -103,6 +103,10 @@ Lexer::Token Lexer::nextToken() {
                 } else if (n == '(') {
 					return Lexer::HASH_OPEN_PAREN;           
                 } else if (n == '\\') {
+                    // TODO: Handle #\space and #\newline
+                    // TODO: Handle that if <character> in #\<character> is alphabetic, 
+                    // then the character following <character> must be a delimiter 
+                    // character such as a space or parenthesis.
                     chr = is->get();
                     return Lexer::CHAR;
                 } else {
