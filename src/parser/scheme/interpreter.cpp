@@ -98,6 +98,9 @@ Interpreter::Interpreter(SchemePair* parsetree, BindingEnvironment* top_level_bi
 }
 
 SchemeObject* Interpreter::interpret() {
+    if (parsetree == S_EMPTY_LIST) {
+	return S_UNSPECIFIED;
+    }
     global_arg1 = parsetree;
     global_envt = top_level_bindings;
     return trampoline((fn_ptr)&eval_sequence);
