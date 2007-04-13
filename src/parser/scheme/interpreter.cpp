@@ -599,16 +599,23 @@ fn_ptr eval_procedure_call() {
 fn_ptr eval_multi() {
     SchemeObject* p = global_arg1;
 
-    SchemePair* result = S_EMPTY_LIST;
+    SchemeObject* result = S_EMPTY_LIST;
+    SchemeObject* tail_pair = S_EMPTY_LIST;
     while (p != S_EMPTY_LIST) {
         global_arg1 = s_car(p);
         SchemeObject* r = trampoline((fn_ptr)&eval);
 
-	    result = s_cons(r, result);
-	    p = s_cdr(p);
+	if (result == S_EMPTY_LIST) {
+	    tail_pair = result = s_cons(r, S_EMPTY_LIST);
+	} else {
+	    SchemeObject* new_tail = s_cons(r, S_EMPTY_LIST);
+	    s_set_cdr_e(tail_pair, new_tail);
+	    tail_pair = new_tail;
+	}
+
+        p = s_cdr(p);
     }
-    // TODO: An in-place reverse or constructing the result in the right order to begin with.
-    global_ret = s_reverse(result);
+    global_ret = result;
     return NULL;
 }
 
