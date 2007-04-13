@@ -597,6 +597,8 @@ fn_ptr eval_procedure_call() {
 }
 
 fn_ptr eval_multi() {
+    // TODO: Facilitate allocation of multiple cells at once instead
+    // of separate calls to s_cons.
     SchemeObject* p = global_arg1;
 
     SchemeObject* result = S_EMPTY_LIST;
@@ -641,6 +643,7 @@ fn_ptr eval_lambda() {
         }
         req = s_reverse(req);
         if (formals != S_EMPTY_LIST) {
+	    // Handle the rest argument
             if (s_symbol_p(formals) == S_FALSE) {
                 throw scheme_exception("Bad formals");                
             }
@@ -958,7 +961,7 @@ fn_ptr eval_named_let() {
     p = s_cdr(p);
     
     if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
-        throw scheme_exception("Bad body in let");
+        throw scheme_exception("Bad formals in let");
     }
     
     // Extract formals and collect evaluated args for a lambda
@@ -992,11 +995,11 @@ fn_ptr eval_letstar() {
     BindingEnvironment* envt = global_envt;
     
     if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
-        throw scheme_exception("Bad body in let");
+        throw scheme_exception("Bad formals in let*: " + s_car(p)->toString());
     }
     
     if (s_null_p(s_cdr(p)) == S_TRUE) {
-        throw scheme_exception("Bad body in let");
+        throw scheme_exception("Missing body in let*");
     }
 
     // Build new bindings
@@ -1009,7 +1012,11 @@ fn_ptr eval_letstar() {
         global_envt = new_bindings;
         SchemeObject* val = trampoline((fn_ptr)&eval);
         
-        new_bindings->put(static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs))), val);
+	SchemeSymbol* sym = static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs)));
+	if (sym == NULL) {
+	    throw scheme_exception("Bad variable in let*: " + s_car(s_car(binding_pairs))->toString());
+	}
+        new_bindings->put(sym, val);
         binding_pairs = s_cdr(binding_pairs);
     }
     
