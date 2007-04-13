@@ -145,8 +145,13 @@ void test_symbols() {
 }
 
 void test_interpreter() {
-    // test eval_combo()
     Scheme* s = new Scheme();
+    assert(s->eval("") == S_UNSPECIFIED);
+   // assert(s->eval("#| xxx |#") == S_UNSPECIFIED);
+    assert(s->eval("#| xxx |# ") == S_UNSPECIFIED);
+ //   assert(s->eval(";xxxxx ") == S_UNSPECIFIED);
+
+    // test eval_combo()
     assert_eval(s, "((if #t reverse length) '(1 2 3))", "(3 2 1)");
     assert_eval(s, "((if #f reverse length) '(1 2 3))", "3");
     assert_eval(s, "((if #f reverse length) '(1 2 3))", "3");
