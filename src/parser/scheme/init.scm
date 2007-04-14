@@ -1,5 +1,5 @@
 
-#|
+
 (define (char-cmp? cmp l)
      (apply cmp (map char->integer l)))
 (define (char-ci-cmp? cmp l)
@@ -55,6 +55,6 @@
        (string-append (symbol->string symbol)
                       "|"
                       (number->string count))))))
-|#
+
 
 

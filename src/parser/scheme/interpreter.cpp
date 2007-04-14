@@ -314,9 +314,11 @@ fn_ptr eval_begin() {
     return (fn_ptr)&eval_sequence;
 }
 
+//
+// ((form) args)		    
+// where form is an expression that should evaluate to a function that we execute
+//
 fn_ptr eval_combo() {
-    // ((form) args)		    
-    // where form is an expression that should evaluate to a function that we execute
     SchemeObject* s = global_arg1;
     
     global_arg1 = s_car(s);
@@ -334,14 +336,14 @@ fn_ptr eval_combo() {
     return (fn_ptr)&eval_procedure_call;
 }
 
+//
+// (if condition true-form false-form) 
+// where false-form is optional.
+//
 fn_ptr eval_if() {
-    // (if condition true-form false-form) 
-    // where false-form is optional.
     SchemeObject* p = global_arg1;
 
-    SchemeObject* s_condition_expr = s_car(p);;
-
-    global_arg1 = s_condition_expr;
+    global_arg1 = s_car(p);
     bool condition = trampoline((fn_ptr)&eval)->boolValue();
 	
 	if (condition) {
@@ -377,8 +379,8 @@ fn_ptr eval_and() {
                 global_ret = result;
                 return NULL;
             }
+            p = s_cdr(p);
         } 
-        p = s_cdr(p);
     }
     global_ret = result;
     return NULL;
@@ -390,25 +392,122 @@ fn_ptr eval_or() {
     SchemeObject* result = S_FALSE;
     while (p != S_EMPTY_LIST) {
         if (s_cdr(p) == S_EMPTY_LIST) {
-            // Optimize tail-recursion
+            // Tail call
             global_arg1 = s_car(p);
             return (fn_ptr)&eval;
-        }
-        
-        global_arg1 = s_car(p);
-        result = trampoline((fn_ptr)&eval);
+        } else {
+            global_arg1 = s_car(p);
+            result = trampoline((fn_ptr)&eval);
 
-        if (result->boolValue()) {
-            global_ret = result;
-            return NULL;
+            if (result->boolValue()) {
+                global_ret = result;
+                return NULL;
+            }
+            p = s_cdr(p);
         }
-        p = s_cdr(p);
-    } 
+    }
     global_ret = result;
     return NULL;
 }
 
+SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level);
+
+
+SchemeObject* eval_unquote_recursive(SchemeObject* o, int level) {
+    if (level == 0) {
+        global_arg1 = s_car(s_cdr(o));
+        return trampoline((fn_ptr)&eval);
+    } else {
+        return eval_quasiquote_recursive(o,level-1);
+    }
+}
+
+SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
+    cout << "Level " << level << ": " << o->toString() << endl;
+    SchemeObject* p = o;
+    if (s_vector_p(o) == S_TRUE) {
+        p = s_vector_2_list(o);
+    } else {
+        p = o;
+    }
+
+    if (s_pair_p(p) == S_TRUE) {
+        SchemeObject* result = NULL;
+        
+        if (s_car(p) == unquote_symbol && s_vector_p(o) == S_FALSE && level == 0) {
+            result = eval_unquote_recursive(p,level);
+        } else if (s_car(p) == unquote_splicing_symbol && s_vector_p(o) == S_FALSE) {
+            result = eval_unquote_recursive(p,level);
+            if (s_list_p(result) == S_FALSE) {
+                throw scheme_exception("unquote-splicing must result in a list");
+            }
+        } else if (s_car(p) == quasiquote_symbol && level == 0) {
+            result = s_cons(quasiquote_symbol, eval_quasiquote_recursive(s_cdr(o), level + 1));
+        } else {
+            // (car p) is a list or vector that we recurse into
+            result = S_EMPTY_LIST;
+            SchemeObject* prev = S_EMPTY_LIST;
+            //p = s_car(p);
+            while(true) {
+                if (s_pair_p(p) == S_TRUE) {
+                    
+                    if (s_car(p) == unquote_symbol) {
+                        // Handle when final cdr of unproper list is a unquote
+                        s_set_cdr_e(prev,eval_unquote_recursive(p, level));
+                        break;
+                    }
+                    SchemeObject* r = eval_quasiquote_recursive(s_car(p),level);
+
+                    if (s_pair_p(s_car(p)) == S_TRUE && s_car(s_car(p)) == unquote_splicing_symbol) {
+                        // Splice into result
+                        if (result == S_EMPTY_LIST) {
+                            result = r;
+                            prev = result;
+                        } else {
+                            s_set_cdr_e(prev,r);
+                        }
+                        // Forward-wind prev to point to end of newly added list
+                        while(s_null_p(s_cdr(prev)) == S_FALSE) {
+                            prev = s_cdr(prev);
+                        } 
+                    } else {
+                        if (result == S_EMPTY_LIST) {
+                            result = s_cons(r, S_EMPTY_LIST);
+                            prev = result;
+                        } else {
+                            SchemeObject* tmp = s_cons(r, S_EMPTY_LIST);
+                            s_set_cdr_e(prev,tmp);
+                            prev = tmp;
+                        }
+                        
+                    }
+                    p = s_cdr(p);
+                } else if (s_null_p(p) == S_TRUE) {
+                    break;
+                } else {
+                    SchemeObject* r = eval_quasiquote_recursive(p,level);
+                    if (result != S_EMPTY_LIST) {
+                        s_set_cdr_e(prev,r);
+                    } else {
+                        result = r;  
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (s_vector_p(o) == S_TRUE) {
+            return s_list_2_vector(result);
+        } else {
+            return result;
+        }
+    } else {
+        return o;
+    }
+}
+
 fn_ptr eval_quasiquote() {
+    global_ret = eval_quasiquote_recursive(global_arg1,0);
     return NULL;
 }
 
@@ -693,7 +792,7 @@ fn_ptr eval_apply() {
                 if (collected == S_EMPTY_LIST) {
                     collected = static_cast<SchemePair*>(arg);
                 } else {
-                    prev->cdr = arg;
+                    s_set_cdr_e(prev, arg);
                 }
             } else {
                 throw scheme_exception("Illegal argument");
@@ -704,7 +803,7 @@ fn_ptr eval_apply() {
                 prev = collected;
             } else {
                 SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
-                prev->cdr = tmp;
+                s_set_cdr_e(prev, tmp);
                 prev = tmp;
             }
         }
@@ -728,7 +827,7 @@ fn_ptr eval_set_e() {
         throw scheme_exception("Missing or extra expression");
     }
     SchemeObject* car = s_car(p);
-    if (car->type() != SchemeObject::SYMBOL) {
+    if (s_symbol_p(car) == S_FALSE) {
         throw scheme_exception("Wrong type argument in position 1.");
     }
     SchemeSymbol* s = static_cast<SchemeSymbol*>(car);
@@ -749,8 +848,6 @@ fn_ptr eval_set_e() {
 
 fn_ptr eval_map() {
     SchemeObject* p = global_arg1;
-
-    // TODO: Tjek at alle argument-lists er lige lange
 
     // Eval the procedure argument
     global_arg1 = s_car(p);
@@ -1138,7 +1235,6 @@ fn_ptr eval_do() {
         new_envt->put(static_cast<SchemeSymbol*>(varname), val);
         varnames = s_cons(varname, varnames);
 
-
         SchemeObject* step = s_cdr(s_cdr(s_car(binding_pairs)));
         if (step == S_EMPTY_LIST) {
             step = varname;
@@ -1152,12 +1248,12 @@ fn_ptr eval_do() {
     
     SchemeObject* body = s_cdr(p);
     
+    global_envt = new_envt;
+    
     while (true) {
         // Evaluate test
         global_arg1 = s_car(s_car(body));
-        global_envt = new_envt;
         SchemeObject* val = trampoline((fn_ptr)&eval);
-        global_envt = envt;
 
         // Return if test is true
         if (val->boolValue()) {
@@ -1165,24 +1261,19 @@ fn_ptr eval_do() {
                 global_ret = S_UNSPECIFIED;
                 return NULL;
             } else {
-                global_envt = new_envt;
                 global_arg1 = s_cdr(s_car(body));
                 return (fn_ptr)&eval_sequence;
             }
         }
         
         if (s_cdr(body) != S_EMPTY_LIST) {
-            global_envt = new_envt;
             global_arg1 = s_cdr(body);
             trampoline((fn_ptr)&eval_sequence);
-            global_envt = new_envt;
         }
         
         // Evaluate steps
-        global_envt = new_envt;
         global_arg1 = steps;
         SchemeObject* vals = trampoline((fn_ptr)&eval_multi);
-        global_envt = envt;
         
         // Assign new step values
         SchemeObject* tmp = varnames;
