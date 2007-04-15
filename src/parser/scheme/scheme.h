@@ -49,8 +49,11 @@ extern SchemeNumber* S_ZERO;
 extern SchemeNumber* S_ONE;
 extern SchemeNumber* S_TWO;
 
-
-
+// Conversion 
+#define scm2int(o)     (int(static_cast<SchemeNumber*>(o)->number))
+#define scm2string(o)  (static_cast<SchemeString*>(o)->str)
+#define scm2char(o)    (char(static_cast<SchemeChar*>(o)->c))
+#define scm2bool(o)    ((o) != S_FALSE)
 
 // Scheme procedures
 SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
@@ -106,8 +109,6 @@ SchemeChar* s_integer_2_char(SchemeObject* i);
 SchemeNumber* s_char_2_integer(SchemeObject* c);
 SchemeChar* s_char_upcase(SchemeObject* c);
 SchemeChar* s_char_downcase(SchemeObject* c);
-SchemeObject* s_number_2_string(SchemeObject* n);
-SchemeObject* s_string_2_number(SchemeObject* s);
 
 // Math stuff
 SchemeBool* s_equal(SchemePair* p);
@@ -144,21 +145,29 @@ SchemeBool* s_zero_p(SchemeObject* n);
 SchemeBool* s_negative_p(SchemeObject* n);
 SchemeBool* s_positive_p(SchemeObject* n);
 SchemeBool* s_integer_p(SchemeObject* n);
+SchemeBool* s_complex_p(SchemeObject* n);
+SchemeBool* s_rational_p(SchemeObject* n);
+SchemeBool* s_real_p(SchemeObject* n);
+SchemeBool* s_exact_p(SchemeObject* n);
+SchemeBool* s_inexact_p(SchemeObject* n);
 SchemeNumber* s_quotient(SchemeObject* n1, SchemeObject* n2);
 SchemeNumber* s_remainder(SchemeObject* n1, SchemeObject* n2);
 SchemeNumber* s_modulo(SchemeObject* n1, SchemeObject* n2);
 
 // String stuff
 SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr);
+SchemeString* s_string(SchemeObject* chars);
 SchemeNumber* s_string_length(SchemeObject* s);
 SchemeChar* s_string_ref(SchemeString* s, SchemeNumber* i);
+SchemeObject* s_string_set_e(SchemeObject* str, SchemeObject* i, SchemeObject* chr);
 SchemeString* s_symbol_2_string(SchemeSymbol* symbol);
 SchemeSymbol* s_string_2_symbol(SchemeString* s);
+SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base);
+SchemeObject* s_string_2_number(SchemeObject* s, SchemeObject* base);
 SchemeString* s_string_append(SchemePair* strings);
 SchemeString* s_string_copy(SchemeObject* string);
 SchemePair* s_string_2_list(SchemeObject* s);
 SchemeString* s_list_2_string(SchemeObject* p);
-
 SchemeSymbol* s_symgen();
 
 

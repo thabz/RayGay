@@ -2,6 +2,7 @@
 #include "scheme.h"
 #include <sstream>
 #include <fstream>
+#include <iomanip>
 #include <cmath>
 #include <cctype>
 
@@ -49,6 +50,11 @@ Scheme::Scheme() {
 	assign("procedure?" ,1,0,0, (SchemeObject* (*)()) s_procedure_p);
 	assign("number?"    ,1,0,0, (SchemeObject* (*)()) s_number_p);
 	assign("integer?"   ,1,0,0, (SchemeObject* (*)()) s_integer_p);
+	assign("complex?"   ,1,0,0, (SchemeObject* (*)()) s_complex_p);
+	assign("real?"      ,1,0,0, (SchemeObject* (*)()) s_real_p);
+	assign("rational?"  ,1,0,0, (SchemeObject* (*)()) s_rational_p);
+	assign("exact?"     ,1,0,0, (SchemeObject* (*)()) s_exact_p);
+	assign("inexact?"   ,1,0,0, (SchemeObject* (*)()) s_inexact_p);
 	assign("vector?"    ,1,0,0, (SchemeObject* (*)()) s_vector_p);
 	assign("null?"      ,1,0,0, (SchemeObject* (*)()) s_null_p);
 	assign("car"        ,1,0,0, (SchemeObject* (*)()) s_car);
@@ -119,16 +125,18 @@ Scheme::Scheme() {
 	assign("list->vector",1,0,0, (SchemeObject* (*)()) s_list_2_vector);
 	assign("vector->list",1,0,0, (SchemeObject* (*)()) s_vector_2_list);
 	assign("make-string" ,1,1,0, (SchemeObject* (*)()) s_make_string);
+	assign("string"      ,0,0,1, (SchemeObject* (*)()) s_string);
 	assign("string-length",1,0,0, (SchemeObject* (*)()) s_string_length);
 	assign("string-ref"  ,2,0,0, (SchemeObject* (*)()) s_string_ref);
+	assign("string-set!"  ,3,0,0, (SchemeObject* (*)()) s_string_set_e);
 	assign("string-append",0,0,1, (SchemeObject* (*)()) s_string_append);
 	assign("string-copy",1,0,0, (SchemeObject* (*)()) s_string_copy);
 	assign("symbol->string",1,0,0, (SchemeObject* (*)()) s_symbol_2_string);
 	assign("string->symbol",1,0,0, (SchemeObject* (*)()) s_string_2_symbol);
 	assign("char->integer",1,0,0, (SchemeObject* (*)()) s_char_2_integer);
 	assign("integer->char",1,0,0, (SchemeObject* (*)()) s_integer_2_char);
-	assign("number->string",1,0,0, (SchemeObject* (*)()) s_number_2_string);
-	assign("string->number",1,0,0, (SchemeObject* (*)()) s_string_2_number);
+	assign("number->string",1,1,0, (SchemeObject* (*)()) s_number_2_string);
+	assign("string->number",1,1,0, (SchemeObject* (*)()) s_string_2_number);
 	assign("list->string",1,0,0, (SchemeObject* (*)()) s_list_2_string);
 	assign("string->list",1,0,0, (SchemeObject* (*)()) s_string_2_list);
 	assign("char-downcase",1,0,0, (SchemeObject* (*)()) s_char_downcase);
@@ -353,6 +361,27 @@ SchemeBool* s_integer_p(SchemeObject* p) {
     return (static_cast<SchemeNumber*>(p)->number == s_round(p)->number) ? S_TRUE : S_FALSE;
 }
 
+SchemeBool* s_complex_p(SchemeObject* n) {
+    return S_TRUE;
+}
+
+SchemeBool* s_rational_p(SchemeObject* n) {
+    return S_TRUE;
+}
+
+SchemeBool* s_real_p(SchemeObject* n) {
+    return S_TRUE;
+}
+
+SchemeBool* s_exact_p(SchemeObject* n) {
+    assert_arg_type("exact?", 1, s_number_p, n);
+    return s_integer_p(n);
+}
+
+SchemeBool* s_inexact_p(SchemeObject* n) {
+    assert_arg_type("inexact?", 1, s_number_p, n);
+    return s_exact_p(n) == S_TRUE ? S_FALSE : S_TRUE;
+}
 
 // (number? p)
 SchemeBool* s_vector_p(SchemeObject* p) {
@@ -1022,6 +1051,18 @@ SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr) {
     return new SchemeString(s);
 }
 
+SchemeString* s_string(SchemeObject* p) {
+    string s = "";
+    int i = 0;
+    while(p != S_EMPTY_LIST) {
+        SchemeObject* c = s_car(p);
+        assert_arg_type("string", i, s_char_p, c);
+        s += scm2char(c);
+        p = s_cdr(p);
+    }
+    return new SchemeString(s);
+}
+
 SchemeNumber* s_string_length(SchemeObject* s) {
     assert_arg_type("string-length", 1, s_string_p, s);
     int len = static_cast<SchemeString*>(s)->str.size();
@@ -1034,6 +1075,14 @@ SchemeChar* s_string_ref(SchemeString* s, SchemeNumber* i) {
     int index = int(i->number);
     return new SchemeChar(s->str[index]);
 }	
+
+SchemeObject* s_string_set_e(SchemeObject* s, SchemeObject* i, SchemeObject* chr) {
+    assert_arg_type("string-set!", 1, s_string_p, s);
+    assert_arg_type("string-set!", 2, s_number_p, i);
+    assert_arg_type("string-set!", 3, s_char_p, chr);
+    scm2string(s)[scm2int(i)] = scm2char(chr);
+    return S_UNSPECIFIED;
+}
 
 SchemeString* s_symbol_2_string(SchemeSymbol* symbol) {
     return new SchemeString(symbol->str,true);
@@ -1059,21 +1108,46 @@ SchemeString* s_string_copy(SchemeObject* str) {
     return new SchemeString(static_cast<SchemeString*>(str)->str);
 }
 
-SchemeObject* s_number_2_string(SchemeObject* n) {
+SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base_s) {
     assert_arg_type("number->string", 1, s_number_p, n);
-    ostringstream ss;
-    ss << static_cast<SchemeNumber*>(n)->number;
+    int base = 10;
+    if (base_s != S_UNSPECIFIED) {
+        assert_arg_type("number->string", 2, s_integer_p, base_s);
+        base = scm2int(base_s);
+        if (base != 10 && base != 16 && base != 8) {
+            throw scheme_exception("number->string invalid base: " + base_s->toString());
+        }
+    }
+    std::ostringstream ss;
+    if (base != 10 ) {
+        ss << std::setbase(base) << scm2int(n);
+    } else {
+        ss << std::setbase(base) << static_cast<SchemeNumber*>(n)->number;
+    }
     return new SchemeString(ss.str());
-    
 }
 
-SchemeObject* s_string_2_number(SchemeObject* s) {
+SchemeObject* s_string_2_number(SchemeObject* s, SchemeObject* base_s) {
     assert_arg_type("string->number", 1, s_string_p, s);
+    int base = 10;
+    if (base_s != S_UNSPECIFIED) {
+        assert_arg_type("string->number", 2, s_integer_p, base_s);
+        base = scm2int(base_s);
+        if (base != 10 && base != 16 && base != 8) {
+            throw scheme_exception("string->number invalid base: " + base_s->toString());
+        }
+    }
     istream* is = new istringstream(static_cast<SchemeString*>(s)->str);
     double d;
-    (*is) >> d;
+    if (base == 10) {
+        (*is) >> std::setbase(base) >> d;
+    } else {
+        int i;
+        (*is) >> std::setbase(base) >> i;
+        d = double(i);
+    }
     delete is;
-    return make_number(d);
+    return new SchemeNumber(d);
 }
 
 
@@ -1117,7 +1191,7 @@ SchemeChar* s_char_upcase(SchemeObject* c) {
 
 SchemeChar* s_char_downcase(SchemeObject* c) {
     assert_arg_type("char-downcase", 1, s_char_p, c);
-    return new SchemeChar(tolower(static_cast<SchemeChar*>(c)->c));    
+    return new SchemeChar(tolower(scm2char(c)));    
 }
 
 SchemeSymbol* s_symgen() {

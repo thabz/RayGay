@@ -249,6 +249,13 @@ void test_math() {
     assert_eval(s, "(integer? 2)" , "#t");
     assert_eval(s, "(integer? 2.1)" , "#f");
     assert_eval(s, "(integer? 2.0)" , "#t");
+    assert_eval(s, "(exact? 2.1)" , "#f");
+    assert_eval(s, "(exact? 2)" , "#t");
+    assert_eval(s, "(inexact? 2.1)" , "#t");
+    assert_eval(s, "(inexact? 2)" , "#f");
+    assert_eval(s, "(complex? 2)" , "#f");
+    assert_eval(s, "(real? 2)" , "#t");
+    assert_eval(s, "(rational? 2)" , "#t");
 
     assert_eval(s, "(round 2.1)" , "2");
     assert_eval(s, "(round 2.8)" , "3");
@@ -453,11 +460,16 @@ void test_string() {
     assert_eval(s, "(string-append \"zzz\" \"xxx\") ","\"zzzxxx\"");
     assert_eval(s, "(string-copy \"zzz\")","\"zzz\"");
     assert_eval(s, "(string->number \"100\")", "100");
+    assert_eval(s, "(string->number \"2.5\")", "2.5");
+    assert_eval(s, "(string->number \"100\" 8)", "64");
     assert_eval(s, "(number->string 256)", "\"256\"");
+    assert_eval(s, "(number->string 256 16)", "\"100\"");
     assert_eval(s, "(string->list \"\")", "()");
     assert_eval(s, "(string->list \"String\")", "(#\\S #\\t #\\r #\\i #\\n #\\g)");
     assert_eval(s, "(list->string '())", "\"\"");
     assert_eval(s, "(list->string '(#\\S #\\t #\\r #\\i #\\n #\\g))", "\"String\"");
+    assert_eval(s, "(define ss (string #\\S #\\t #\\r #\\i #\\n #\\g)) ss", "\"String\"");
+    assert_eval(s, "(string-set! ss 3 #\\u) ss", "\"Strung\"");
 }
 
 void test_begin() {
@@ -600,7 +612,6 @@ int main(int argc, char *argv[]) {
         test_math();
         cout << " OK" << endl;
 
-
         cout << "Test vector...          ";
         test_vector();
         cout << " OK" << endl;
@@ -618,7 +629,7 @@ int main(int argc, char *argv[]) {
         cout << " OK" << endl;
 
         cout << "Test macros...          ";
-        //test_macros();
+        test_macros();
         cout << " OK" << endl;
 
         cout << "Test let...             ";
@@ -628,7 +639,6 @@ int main(int argc, char *argv[]) {
         cout << "Test do...              ";
         test_do();
         cout << " OK" << endl;
-
 
         cout << "Test char...            ";
         test_char();
@@ -645,7 +655,6 @@ int main(int argc, char *argv[]) {
         cout << "Test I/O...             ";
         test_io();
         cout << " OK" << endl;
-
 
         cout << "Test define and set...  ";
         test_define_and_set();
