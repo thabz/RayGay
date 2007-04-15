@@ -170,7 +170,9 @@ string SchemeVector::toString() {
 //-----------------------------------------------------------
 // Procedure
 //-----------------------------------------------------------
-SchemeProcedure::SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)()) {
+SchemeProcedure::SchemeProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)()) {
+    assert(s_symbol_p(name) == S_TRUE);
+    this->name = static_cast<SchemeSymbol*>(name);
     assert(rst == 0 || rst == 1);
     this->req = req;
     this->opt = opt;
@@ -178,7 +180,9 @@ SchemeProcedure::SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)(
     this->fn = fn;
 }
 
-SchemeProcedure::SchemeProcedure(BindingEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body) {
+SchemeProcedure::SchemeProcedure(SchemeObject* name, BindingEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body) {
+    assert(s_symbol_p(name) == S_TRUE);
+    this->name = static_cast<SchemeSymbol*>(name);
     this->envt = envt;
     this->fn = NULL;
     this->s_rst = s_rst;
@@ -189,13 +193,18 @@ SchemeProcedure::SchemeProcedure(BindingEnvironment* envt, SchemeObject* s_req, 
 }
 
 string SchemeProcedure::toString() {
-    return "#<primitive-procedure>";
+    return "#<primitive-procedure "+name->str+">";
+}
+
+void SchemeProcedure::setName(SchemeObject* name) {
+    assert(s_symbol_p(name) == S_TRUE);
+    this->name = static_cast<SchemeSymbol*>(name);
 }
 
 //-----------------------------------------------------------
 // Macro
 //-----------------------------------------------------------
-SchemeMacro::SchemeMacro(BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body) : SchemeProcedure(envt, s_req, s_rst, s_body) {
+SchemeMacro::SchemeMacro(SchemeObject* name, BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body) : SchemeProcedure(name, envt, s_req, s_rst, s_body) {
 }
 
 string SchemeMacro::toString() {

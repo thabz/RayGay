@@ -29,6 +29,7 @@ SchemeSymbol* unquote_splicing_symbol;
 SchemeSymbol* define_symbol;
 SchemeSymbol* define_macro;
 SchemeSymbol* set_e_symbol;
+SchemeSymbol* unnamed_symbol;
 
 void define_scheme_symbols() {
    if_symbol = SchemeSymbol::create("if");
@@ -54,6 +55,7 @@ void define_scheme_symbols() {
    define_symbol = SchemeSymbol::create("define");
    define_macro = SchemeSymbol::create("define-macro");
    set_e_symbol = SchemeSymbol::create("set!");
+   unnamed_symbol = SchemeSymbol::create("#<unnamed>");
 }
 
 SchemeObject* global_ret;
@@ -159,8 +161,11 @@ fn_ptr eval_define() {
         global_arg2 = body;
         trampoline((fn_ptr)&eval_lambda);
         SchemeObject* proc = global_ret;
+        
+        SchemeObject* name = s_car(pa);
+        static_cast<SchemeProcedure*>(proc)->setName(name);
 
-        envt->put(static_cast<SchemeSymbol*>(s_car(pa)), proc);
+        envt->put(static_cast<SchemeSymbol*>(name), proc);
     } else {
         // (define var value-expr)
         if (s_length(p) != S_TWO) {
@@ -423,7 +428,7 @@ SchemeObject* eval_unquote_recursive(SchemeObject* o, int level) {
 }
 
 SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
-    cout << "Level " << level << ": " << o->toString() << endl;
+    //cout << "Level " << level << ": " << o->toString() << endl;
     SchemeObject* p = o;
     if (s_vector_p(o) == S_TRUE) {
         p = s_vector_2_list(o);
@@ -618,10 +623,10 @@ fn_ptr eval_procedure_call() {
         // Built-in function
         int args_num = int(s_length(args)->number);
         if (args_num < proc->req) {
-            throw scheme_exception("Too few argument given.");
+            throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
         }
         if (args_num > proc->req + proc->opt && proc->rst == 0) {
-            throw scheme_exception("Too many argument given.");
+            throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
         }
         if (args_num < proc->req + proc->opt) {
             // TODO: append_e nogle S_UNSPECIFIED på args, så længden af args bliver req+opt.
@@ -677,14 +682,14 @@ fn_ptr eval_procedure_call() {
         SchemeObject* req_symbols = proc->s_req;
         while (req_symbols != S_EMPTY_LIST) {
             if (args == S_EMPTY_LIST) {
-                throw scheme_exception("Too few argument given.");
+                throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
             }
             new_envt->put(static_cast<SchemeSymbol*>(s_car(req_symbols)), s_car(args));
             req_symbols = s_cdr(req_symbols);
             args = s_cdr(args);
         }
         if (proc->rst == 0 && args != S_EMPTY_LIST) {
-            throw scheme_exception("Too many argument given.");
+            throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
         }
         if (proc->rst == 1) {
             new_envt->put(proc->s_rst, args);
@@ -757,7 +762,7 @@ fn_ptr eval_lambda() {
         throw scheme_exception("Bad formals");
     }
 
-    global_ret = new SchemeProcedure(envt, req, rst, body);
+    global_ret = new SchemeProcedure(unnamed_symbol, envt, req, rst, body);
     return NULL;
 }
 
@@ -1078,7 +1083,7 @@ fn_ptr eval_named_let() {
     }
 
     BindingEnvironment* new_envt = new BindingEnvironment(envt);
-    SchemeProcedure* lambda = new SchemeProcedure(new_envt, s_reverse(formals), NULL, static_cast<SchemePair*>(s_cdr(p)));
+    SchemeProcedure* lambda = new SchemeProcedure(name, new_envt, s_reverse(formals), NULL, static_cast<SchemePair*>(s_cdr(p)));
     new_envt->put(static_cast<SchemeSymbol*>(name), lambda);
     
     global_arg1 = lambda;
@@ -1167,7 +1172,7 @@ fn_ptr eval_define_macro() {
         throw scheme_exception("Bad formals");
     }
     
-    SchemeMacro* macro = new SchemeMacro(envt, req, rst, body);
+    SchemeMacro* macro = new SchemeMacro(name, envt, req, rst, body);
     envt->put(static_cast<SchemeSymbol*>(name), macro);
     
     global_ret = S_UNSPECIFIED;

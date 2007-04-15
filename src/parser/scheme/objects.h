@@ -149,10 +149,14 @@ class SchemeOutputPort : public SchemeObject {
 class SchemeProcedure : public SchemeObject 
 {
     public:
-        SchemeProcedure(int req, int opt, int rst, SchemeObject* (*fn)());
-        SchemeProcedure(BindingEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body);
+        SchemeProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
+        SchemeProcedure(SchemeObject* name, BindingEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body);
         string toString();      
         ObjectType type() { return PROCEDURE; };
+        string nameAsString() { return name->str; };
+        void setName(SchemeObject* name);
+        
+        SchemeSymbol* name;
 
         // Fields for builtin
         int req;
@@ -169,7 +173,7 @@ class SchemeProcedure : public SchemeObject
 
 class SchemeMacro : public SchemeProcedure {
     public:
-        SchemeMacro(BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body);
+        SchemeMacro(SchemeObject* name, BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body);
         string toString();      
         ObjectType type() { return MACRO; };    
 };

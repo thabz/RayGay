@@ -164,8 +164,9 @@ SchemeObject* Scheme::eval(string data) {
 };
 
 void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)()) {
-    SchemeProcedure* proc = new SchemeProcedure(req, opt, rst, fn);
-    top_level_bindings->put(SchemeSymbol::create(variable), proc);
+    SchemeSymbol* name = SchemeSymbol::create(variable);
+    SchemeProcedure* proc = new SchemeProcedure(name, req, opt, rst, fn);
+    top_level_bindings->put(name, proc);
 }
 
 // -----------------------------------------------------
