@@ -322,6 +322,8 @@ void test_equals() {
     assert_eval(s, "(equal? #f '())", "#f");
     assert_eval(s, "(eqv? #f '())", "#f");
     assert_eval(s, "(eq? #f '())", "#f");
+    assert_eval(s, "(eqv? #\\a #\\a)", "#t");
+    assert_eval(s, "(eqv? #\\space #\\spAce)", "#t");
 }
 
 void test_pairs_and_lists() {

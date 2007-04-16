@@ -205,12 +205,14 @@ SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b) {
 }
 
 SchemeBool* s_eqv_p(SchemeObject* a, SchemeObject* b) {
-    if (a->type() == SchemeObject::NUMBER && a->type() == SchemeObject::NUMBER) {
+    if (a->type() == SchemeObject::NUMBER && b->type() == SchemeObject::NUMBER) {
         double a_n = static_cast<SchemeNumber*>(a)->number;
         double b_n = static_cast<SchemeNumber*>(b)->number;
         return a_n == b_n ? S_TRUE : S_FALSE;
+    } else if (a->type() == SchemeObject::CHAR && b->type() == SchemeObject::CHAR) {
+        return bool2scm(scm2char(a) == scm2char(b));
     } else {
-        return a == b ? S_TRUE : S_FALSE;
+        return bool2scm(a == b);
     }
 }
 

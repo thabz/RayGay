@@ -54,6 +54,7 @@ extern SchemeNumber* S_TWO;
 #define scm2string(o)  (static_cast<SchemeString*>(o)->str)
 #define scm2char(o)    (char(static_cast<SchemeChar*>(o)->c))
 #define scm2bool(o)    ((o) != S_FALSE)
+#define bool2scm(b)    ((b) ? S_TRUE : S_FALSE)
 
 // Scheme procedures
 SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
