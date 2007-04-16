@@ -14,6 +14,7 @@ class Interpreter
     public:
 	    Interpreter(SchemePair* parsetree, BindingEnvironment* top_level);
    	    SchemeObject* interpret();
+        SchemeObject* call_procedure_n(SchemeObject* procedure, SchemeObject* args);
    	    
    	private:
 		BindingEnvironment* top_level_bindings;

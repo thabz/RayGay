@@ -202,6 +202,7 @@ void test_interpreter() {
     assert_eval(s, "(apply + 1 2 '(3 4))", "10");
     assert_eval(s, "(apply list '())","()");
     assert_eval(s, "(apply * 1 2 (list 3 4))","24");
+    assert_eval(s, "(apply apply `(,+ ,(list 1 2)))", "3");
     s->eval("(define compose (lambda (f g) (lambda args (f (apply g args)))))");
     assert_eval(s, "((compose sqrt *) 12 75)","30");  // R^5RS, Section 6.4.
     

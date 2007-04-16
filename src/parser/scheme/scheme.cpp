@@ -36,8 +36,11 @@ SchemeNumber* S_NUMBERS[] = {S_ZERO, S_ONE, S_TWO, S_THREE, S_FOUR, S_FIVE, S_SI
 SchemeInputPort* current_input_port = NULL;
 SchemeOutputPort* current_output_port = NULL;
 
+Interpreter* interpreter;
+
 Scheme::Scheme() {
     top_level_bindings = new BindingEnvironment(NULL);
+	assign("apply"      ,1,0,1, (SchemeObject* (*)()) s_apply);
 	assign("equal?"     ,2,0,0, (SchemeObject* (*)()) s_equal_p);
 	assign("eq?"        ,2,0,0, (SchemeObject* (*)()) s_eq_p);
 	assign("eqv?"       ,2,0,0, (SchemeObject* (*)()) s_eqv_p);
@@ -166,7 +169,7 @@ SchemeObject* Scheme::eval(istream* is) {
     Lexer* lexer = new Lexer(is);
     Parser* parser = new Parser(lexer);
     SchemePair* parse_tree = parser->parse();
-    Interpreter* interpreter = new Interpreter(parse_tree, top_level_bindings);
+    interpreter = new Interpreter(parse_tree, top_level_bindings);
     return interpreter->interpret();
 }
 
@@ -260,6 +263,43 @@ SchemeBool* s_list_p(SchemeObject* o) {
     }
 }
 
+// args is a list (arg1 arg2 ... argn). argn must be a list. proc is called with the arguments
+// (append (list arg1 arg2 ...) argn)
+SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args) {
+    assert_arg_type("apply", 1, s_procedure_p, proc);
+
+    SchemePair* collected = S_EMPTY_LIST;
+    SchemePair* prev = NULL;
+    int i = 0;
+    while (args != S_EMPTY_LIST) {
+        i++;
+        SchemeObject* arg = s_car(args);
+        if (s_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
+            if (s_cdr(args) == S_EMPTY_LIST) {
+                // arg is a list and last argument
+                if (collected == S_EMPTY_LIST) {
+                    collected = static_cast<SchemePair*>(arg);
+                } else {
+                    s_set_cdr_e(prev, arg);
+                }
+            } else {
+                throw scheme_exception("Illegal argument");
+            }
+        } else {
+            if (collected == S_EMPTY_LIST) {
+                collected = s_cons(arg, S_EMPTY_LIST);
+                prev = collected;
+            } else {
+                SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
+                s_set_cdr_e(prev, tmp);
+                prev = tmp;
+            }
+        }
+        args = s_cdr(args);
+    }
+
+    return interpreter->call_procedure_n(proc,collected);
+}
 
 SchemeObject* member_helper(SchemeBool* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
     while (s_null_p(p) == S_FALSE) {

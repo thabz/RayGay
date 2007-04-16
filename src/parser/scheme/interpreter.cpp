@@ -21,7 +21,6 @@ SchemeSymbol* or_symbol;
 SchemeSymbol* map_symbol;
 SchemeSymbol* for_each_symbol;
 SchemeSymbol* lambda_symbol;
-SchemeSymbol* apply_symbol;
 SchemeSymbol* quote_symbol;
 SchemeSymbol* quasiquote_symbol;
 SchemeSymbol* unquote_symbol;
@@ -47,7 +46,6 @@ void define_scheme_symbols() {
    map_symbol = SchemeSymbol::create("map");
    for_each_symbol = SchemeSymbol::create("for-each");
    lambda_symbol = SchemeSymbol::create("lambda");
-   apply_symbol = SchemeSymbol::create("apply");
    quote_symbol = SchemeSymbol::create("quote");
    quasiquote_symbol = SchemeSymbol::create("quasiquote");
    unquote_symbol = SchemeSymbol::create("unquote");
@@ -62,7 +60,6 @@ SchemeObject* global_ret;
 SchemeObject* global_arg1;
 SchemeObject* global_arg2;
 BindingEnvironment* global_envt;
-
 
 /*
 #define call_and_return(envt,thing,PLACE) { int kk = setjmp(*(tstack->push_jump_pos())); \
@@ -97,11 +94,18 @@ Interpreter::Interpreter(SchemePair* parsetree, BindingEnvironment* top_level_bi
     define_scheme_symbols();
     this->parsetree = parsetree;   
 	this->top_level_bindings = top_level_bindings;
+    global_envt = top_level_bindings;
+}
+
+SchemeObject* Interpreter::call_procedure_n(SchemeObject* procedure, SchemeObject* args) {
+    global_arg1 = procedure;
+    global_arg2 = args;
+    return trampoline((fn_ptr)&eval_procedure_call);
 }
 
 SchemeObject* Interpreter::interpret() {
     if (parsetree == S_EMPTY_LIST) {
-	return S_UNSPECIFIED;
+	    return S_UNSPECIFIED;
     }
     global_arg1 = parsetree;
     global_envt = top_level_bindings;
@@ -265,9 +269,6 @@ fn_ptr eval_list() {
 	} else if (s == quasiquote_symbol) {
         global_arg1 = s_car(cdr);
         return (fn_ptr)&eval_quasiquote;
-	} else if (s == apply_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_apply;
 	} else if (s == lambda_symbol) {
 	    SchemeObject* formals = s_car(cdr);
         SchemeObject* body = s_cdr(cdr);
@@ -765,61 +766,6 @@ fn_ptr eval_lambda() {
     global_ret = new SchemeProcedure(unnamed_symbol, envt, req, rst, body);
     return NULL;
 }
-
-fn_ptr eval_apply() {
-    // args is a list (proc arg1 arg2 ... argn). argn must be a list. proc is called with the arguments
-    // (append (list arg1 arg2 ...) argn)
-    SchemeObject* args = global_arg1;
-    
-    // Eval the procedure argument
-    global_arg1 = s_car(args);
-    SchemeObject* proc = trampoline((fn_ptr)&eval);
-
-    if (s_procedure_p(proc) == S_FALSE) {
-        throw scheme_exception("Can't apply to non-procedure: " + s_car(args)->toString());
-    }
-
-    if (s_pair_p(s_cdr(args)) == S_FALSE) {
-        throw scheme_exception("Wrong type in position 1.");
-    }
-
-    // Eval and join all arg-lists together
-    global_arg1 = s_cdr(args);
-    args = trampoline((fn_ptr)&eval_multi);
-    
-    SchemePair* collected = S_EMPTY_LIST;
-    SchemePair* prev = NULL;
-    while (args != S_EMPTY_LIST) {
-        SchemeObject* arg = s_car(args);
-        if (s_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
-            if (s_cdr(args) == S_EMPTY_LIST) {
-                // arg is a list and last argument
-                if (collected == S_EMPTY_LIST) {
-                    collected = static_cast<SchemePair*>(arg);
-                } else {
-                    s_set_cdr_e(prev, arg);
-                }
-            } else {
-                throw scheme_exception("Illegal argument");
-            }
-        } else {
-            if (collected == S_EMPTY_LIST) {
-                collected = s_cons(arg, S_EMPTY_LIST);
-                prev = collected;
-            } else {
-                SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
-                s_set_cdr_e(prev, tmp);
-                prev = tmp;
-            }
-        }
-        args = s_cdr(args);
-    }
-    
-    global_arg1 = proc;
-    global_arg2 = collected;
-    return (fn_ptr)&eval_procedure_call;
-}
-
 
 fn_ptr eval_set_e() {
     // TODO: We're doing double hashtable lookups. Both a envt->get(s) and in envt->set(s,v). Optimize by letting envt->get(s) return a binding, that

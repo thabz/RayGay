@@ -792,7 +792,7 @@
 (test #f procedure? 'car)
 (test #t procedure? (lambda (x) (* x x)))
 (test #f procedure? '(lambda (x) (* x x)))
-(test #t call-with-current-continuation procedure?)
+;(test #t call-with-current-continuation procedure?)
 (test 7 apply + (list 3 4))
 (test 7 apply (lambda (a b) (+ a b)) (list 3 4))
 (test 17 apply + 10 (list 3 4))

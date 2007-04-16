@@ -67,6 +67,8 @@ SchemeObject* s_write(SchemeObject* o, SchemeObject* port);
 SchemeObject* s_display(SchemeObject* o, SchemeObject* port); 
 SchemeObject* s_newline(SchemeObject* port );
 
+SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args);
+
 SchemeBool* s_boolean_p(SchemeObject* o);
 SchemeBool* s_string_p(SchemeObject* o);
 SchemeBool* s_char_p(SchemeObject* o);
