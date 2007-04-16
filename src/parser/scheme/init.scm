@@ -27,7 +27,7 @@
                     ((= i nb)
                          (cmp 1 0))
                     ((chcmp = (list (string-ref a i) (string-ref b i)))
-                         (loop (succ i)))
+                         (loop (+ 1 i)))
                     (else
                          (chcmp cmp (list (string-ref a i) (string-ref b i))))))))
 
