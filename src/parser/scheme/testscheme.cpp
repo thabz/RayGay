@@ -482,6 +482,16 @@ void test_string() {
     assert_eval(s, "(string->number \"100\")", "100");
     assert_eval(s, "(string->number \"2.5\")", "2.5");
     assert_eval(s, "(string->number \"100\" 8)", "64");
+    assert_eval(s, "(string->number \"\")", "#f");
+    assert_eval(s, "(string->number \"+\")", "#f");
+    assert_eval(s, "(string->number \"-\")", "#f");
+    assert_eval(s, "(string->number \"d\")", "#f");
+    assert_eval(s, "(string->number \"i\")", "#f");
+    assert_eval(s, "(string->number \"I\")", "#f");
+    assert_eval(s, "(string->number \"3i\")", "#f");
+    assert_eval(s, "(string->number \"3.3i\")", "#f");
+    assert_eval(s, "(string->number \".\")", "#f");
+    assert_eval(s, "(string->number \"d\")", "#f");
     assert_eval(s, "(number->string 256)", "\"256\"");
     assert_eval(s, "(number->string 256 16)", "\"100\"");
     assert_eval(s, "(string->list \"\")", "()");

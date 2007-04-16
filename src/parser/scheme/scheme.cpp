@@ -1246,8 +1246,8 @@ SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base_s) {
     return new SchemeString(ss.str());
 }
 
-SchemeObject* s_string_2_number(SchemeObject* s, SchemeObject* base_s) {
-    assert_arg_type("string->number", 1, s_string_p, s);
+SchemeObject* s_string_2_number(SchemeObject* s_string, SchemeObject* base_s) {
+    assert_arg_type("string->number", 1, s_string_p, s_string);
     int base = 10;
     if (base_s != S_UNSPECIFIED) {
         assert_arg_type("string->number", 2, s_integer_p, base_s);
@@ -1256,7 +1256,8 @@ SchemeObject* s_string_2_number(SchemeObject* s, SchemeObject* base_s) {
             throw scheme_exception("string->number invalid base: " + base_s->toString());
         }
     }
-    istream* is = new istringstream(static_cast<SchemeString*>(s)->str);
+    string str = scm2string(s_string);
+    istream* is = new istringstream(str);
     double d;
     if (base == 10) {
         (*is) >> std::setbase(base) >> d;
@@ -1264,6 +1265,9 @@ SchemeObject* s_string_2_number(SchemeObject* s, SchemeObject* base_s) {
         int i;
         (*is) >> std::setbase(base) >> i;
         d = double(i);
+    }
+    if (!is->eof() || is->fail()) {
+        return S_FALSE;
     }
     delete is;
     return new SchemeNumber(d);
