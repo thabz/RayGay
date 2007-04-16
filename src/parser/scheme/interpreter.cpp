@@ -18,8 +18,6 @@ SchemeSymbol* letrec_symbol;
 SchemeSymbol* begin_symbol;
 SchemeSymbol* and_symbol;
 SchemeSymbol* or_symbol;
-SchemeSymbol* map_symbol;
-SchemeSymbol* for_each_symbol;
 SchemeSymbol* lambda_symbol;
 SchemeSymbol* quote_symbol;
 SchemeSymbol* quasiquote_symbol;
@@ -43,8 +41,6 @@ void define_scheme_symbols() {
    begin_symbol = SchemeSymbol::create("begin");
    and_symbol = SchemeSymbol::create("and");
    or_symbol = SchemeSymbol::create("or");
-   map_symbol = SchemeSymbol::create("map");
-   for_each_symbol = SchemeSymbol::create("for-each");
    lambda_symbol = SchemeSymbol::create("lambda");
    quote_symbol = SchemeSymbol::create("quote");
    quasiquote_symbol = SchemeSymbol::create("quasiquote");
@@ -287,12 +283,6 @@ fn_ptr eval_list() {
 	} else if (s == letrec_symbol) {
         global_arg1 = cdr;
         return (fn_ptr)&eval_letrec;
-	} else if (s == map_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_map;
-	} else if (s == for_each_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_for_each;
 	} else if (s == set_e_symbol) {
         global_arg1 = cdr;
         return (fn_ptr)&eval_set_e;
@@ -517,102 +507,6 @@ fn_ptr eval_quasiquote() {
     return NULL;
 }
 
-/*
-EVAL_QUASIQUOTE: {
-    SchemeObject* o = tstack->popSchemeObject();
-    BindingEnvironment* envt = tstack->popBindingEnvironment();
-    SchemeObject* p = o;
-    if (s_vector_p(o) == S_TRUE) {
-        p = s_vector_2_list(o);
-    } else {
-        p = o;
-    }
-    if (s_pair_p(p) == S_TRUE) {
-        SchemeObject* result = NULL;
-        
-        if (s_car(p) == unquote_symbol && s_vector_p(o) == S_FALSE) {
-            tstack->push(envt);
-            tstack->push(p);
-            tstack->push(o);
-            call_and_return(envt, s_cdr(p), EVAL);
-            result = tstack->popSchemeObject();
-            o = tstack->popSchemeObject(); // Pop local var
-            p = tstack->popSchemeObject(); // Pop local var
-            envt = tstack->popBindingEnvironment(); // Pop local var
-        } else if (s_car(p) == unquote_splicing_symbol && s_vector_p(o) == S_FALSE) {
-            tstack->push(envt);
-            tstack->push(p);
-            tstack->push(o);
-            call_and_return(envt, s_cdr(p), EVAL);
-            result = tstack->popSchemeObject();
-            o = tstack->popSchemeObject(); // Pop local var
-            p = tstack->popSchemeObject(); // Pop local var
-            envt = tstack->popBindingEnvironment(); // Pop local var
-            if (s_list_p(result) == S_FALSE) {
-                throw scheme_exception("unquote-splicing must result in a list");
-            }
-        } else {
-            // (car p) is a list or vector that we recurse into
-            collected = S_EMPTY_LIST;
-            p = s_car(p);
-            while(true) {
-                
-                
-                p = s_cdr(p);
-                if (s_pair_p(p) == S_TRUE) {
-                    s_set_car_e(resultp, r);
-                    s_set_cdr_e(resultp) = cons(r,S_EMPTY_LIST);
-                    resultp = s_cdr(resultp);
-                } else {
-                    s_set_cdr_e(resultp) = r;
-                    break;
-                }
-            }
-        }
-
-        if (s_vector_p(o) == S_TRUE) {
-            tstack->return_jump(s_list_2_vector(result));
-        } else {
-            tstack->return_jump(result);
-        }
-        tstack->return_jump(result);
-        
-        while(s_null_p(p) == S_FALSE) {
-            SchemeObject* to_add = NULL;
-            cout << "s_car(p) is " << s_car(p)->toString() << endl;
-            if (s_pair_p(s_car(p)) == S_TRUE || s_vector_p(s_car(p)) == S_TRUE) {
-                if (s_pair_p(s_car(p)) == S_TRUE && s_symbol_p(s_car(p)) == S_TRUE) {
-                    cout << "Yup: " << s_car(s_car(p))->toString() << endl;
-                }
-                // (car p) is a list or vector that we recurse into
-                tstack->push(envt);
-                tstack->push(p);
-                tstack->push(o);
-                tstack->push(result);
-                call_and_return(envt, s_car(p), EVAL_QUASIQUOTE);
-                to_add = tstack->popSchemeObject();
-                result = tstack->popSchemeObject(); // Pop local var
-                o = tstack->popSchemeObject(); // Pop local var
-                p = tstack->popSchemeObject(); // Pop local var
-                envt = tstack->popBindingEnvironment(); // Pop local var
-
-                result = s_cons(to_add, result);
-                p = s_cdr(p);
-                continue;
-            } else {
-                // (car p) is neither list nor vector
-                result = s_cons(s_car(p), result);
-                p = s_cdr(p);
-                continue;
-            }
-        }
-        result = s_reverse(result);
-    } else {
-        tstack->return_jump(o);
-    }
-}
-*/
-
 fn_ptr eval_procedure_call() {
     SchemeProcedure* proc = static_cast<SchemeProcedure*>(global_arg1);
     SchemeObject* args = global_arg2;
@@ -793,101 +687,6 @@ fn_ptr eval_set_e() {
 
     envt->set(s, v);
 
-    global_ret = S_UNSPECIFIED;
-    return NULL;
-}
-
-fn_ptr eval_map() {
-    SchemeObject* p = global_arg1;
-
-    // Eval the procedure argument
-    global_arg1 = s_car(p);
-    SchemeObject* proc = trampoline((fn_ptr)&eval);
-    
-    if (s_procedure_p(proc) == S_FALSE) {
-        throw scheme_exception("Can't apply to non-procedure: " + s_car(p)->toString());
-    }
-    
-    p = s_cdr(p);
-    
-    if (p == S_EMPTY_LIST) {
-        throw scheme_exception("Wrong number of arguments to map");
-    }
-    
-    SchemeObject* lists = S_EMPTY_LIST;
-    SchemeObject* prev = S_EMPTY_LIST;
-    // Eval all the lists
-    while (p != S_EMPTY_LIST) {
-        
-        global_arg1 = s_car(p);
-        SchemeObject* list = trampoline((fn_ptr)&eval);
-
-        if (s_pair_p(list) == S_FALSE) {
-            throw scheme_exception("Wrong argument to map");
-        }
-        
-        if (lists == S_EMPTY_LIST) {
-            lists = s_cons(list,S_EMPTY_LIST);
-            prev = lists;
-        } else {
-            SchemePair* tmp = s_cons(list,S_EMPTY_LIST);
-            s_set_cdr_e(prev, tmp);
-            prev = tmp;
-        }
-        p = s_cdr(p);
-    }
-        
-    // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver til ((2 3)(20 30)) og til sidst ((3)(30))
-    SchemePair* result = S_EMPTY_LIST;
-    while (s_car(lists) != S_EMPTY_LIST) {
-        // Collect args
-        SchemePair* collection = S_EMPTY_LIST;
-        SchemePair* prev_col = S_EMPTY_LIST;
-        SchemeObject* lists_ptr = lists;
-        while (lists_ptr != S_EMPTY_LIST) {
-            SchemeObject* arg = s_car(s_car(lists_ptr));
-            s_set_car_e(lists_ptr,s_cdr(s_car(lists_ptr)));
-            if (collection == S_EMPTY_LIST) {
-                collection = s_cons(arg,S_EMPTY_LIST);
-                prev_col = collection;
-            } else {
-                SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
-                prev_col->cdr = tmp;
-                prev_col = tmp;
-                
-            }
-            lists_ptr = s_cdr(lists_ptr);
-        }
-        
-        global_arg1 = proc;
-        global_arg2 = collection;
-        SchemeObject* result_item = trampoline((fn_ptr)&eval_procedure_call);
-        
-        if (result == S_EMPTY_LIST) {
-            result = s_cons(result_item, S_EMPTY_LIST);
-            prev = result;
-        } else {
-            SchemePair* tmp = s_cons(result_item, S_EMPTY_LIST);
-            s_set_cdr_e(prev, tmp);
-            prev = tmp;
-        }
-    }
-    // Tjek at argumentlisterne var lige lange
-    while (lists != S_EMPTY_LIST) {
-        if (s_car(lists) != S_EMPTY_LIST) {
-            throw scheme_exception("Argument lists not equals length.");
-        }
-        lists = s_cdr(lists);
-    }
-    
-    global_ret = result;
-    return NULL;
-}
-
-fn_ptr eval_for_each() {
-    // TODO: This is a hack, but it works. The correct and fast impl. is to reuse 
-    // the map-evaluator-code above but don't collect the result list.        
-    trampoline((fn_ptr)&eval_map);
     global_ret = S_UNSPECIFIED;
     return NULL;
 }

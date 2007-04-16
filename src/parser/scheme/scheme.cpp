@@ -41,6 +41,8 @@ Interpreter* interpreter;
 Scheme::Scheme() {
     top_level_bindings = new BindingEnvironment(NULL);
 	assign("apply"      ,1,0,1, (SchemeObject* (*)()) s_apply);
+	assign("map"        ,1,0,1, (SchemeObject* (*)()) s_map);
+	assign("for-each"   ,1,0,1, (SchemeObject* (*)()) s_for_each);
 	assign("equal?"     ,2,0,0, (SchemeObject* (*)()) s_equal_p);
 	assign("eq?"        ,2,0,0, (SchemeObject* (*)()) s_eq_p);
 	assign("eqv?"       ,2,0,0, (SchemeObject* (*)()) s_eqv_p);
@@ -300,6 +302,61 @@ SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args) {
 
     return interpreter->call_procedure_n(proc,collected);
 }
+
+SchemeObject* s_map(SchemeObject* proc, SchemeObject* lists) {
+    assert_arg_type("map", 1, s_procedure_p, proc);
+    
+    SchemePair* result = S_EMPTY_LIST;
+    SchemeObject* prev = S_EMPTY_LIST;
+
+    // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver til ((2 3)(20 30)) og til sidst ((3)(30))
+    while (s_car(lists) != S_EMPTY_LIST) {
+        // Collect args
+        SchemePair* collection = S_EMPTY_LIST;
+        SchemePair* prev_col = S_EMPTY_LIST;
+        SchemeObject* lists_ptr = lists;
+        while (lists_ptr != S_EMPTY_LIST) {
+            SchemeObject* arg = s_car(s_car(lists_ptr));
+            s_set_car_e(lists_ptr,s_cdr(s_car(lists_ptr)));
+            if (collection == S_EMPTY_LIST) {
+                collection = s_cons(arg,S_EMPTY_LIST);
+                prev_col = collection;
+            } else {
+                SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
+                prev_col->cdr = tmp;
+                prev_col = tmp;
+                
+            }
+            lists_ptr = s_cdr(lists_ptr);
+        }
+        
+        SchemeObject* result_item = interpreter->call_procedure_n(proc, collection);
+        
+        if (result == S_EMPTY_LIST) {
+            result = s_cons(result_item, S_EMPTY_LIST);
+            prev = result;
+        } else {
+            SchemePair* tmp = s_cons(result_item, S_EMPTY_LIST);
+            s_set_cdr_e(prev, tmp);
+            prev = tmp;
+        }
+    }
+    // Tjek at argumentlisterne var lige lange
+    while (lists != S_EMPTY_LIST) {
+        if (s_car(lists) != S_EMPTY_LIST) {
+            throw scheme_exception("Argument lists not equals length.");
+        }
+        lists = s_cdr(lists);
+    }
+    
+    return result;    
+}
+
+SchemeObject* s_for_each(SchemeObject* proc, SchemeObject* lists) {
+    s_map(proc, lists);
+    return S_UNSPECIFIED;
+}
+
 
 SchemeObject* member_helper(SchemeBool* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
     while (s_null_p(p) == S_FALSE) {
