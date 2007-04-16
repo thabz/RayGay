@@ -120,6 +120,10 @@ void test_char() {
     assert_eval(s, "(char? #\\a)", "#t");
     assert_eval(s, "(char? 1)", "#f");
     assert_eval(s, "#\\b", "#\\b");
+    assert_eval(s, "(char->integer #\\Space)", "32");
+    assert_eval(s, "(char->integer #\\newline)", "10");
+    assert_eval(s, "#\\space", "#\\space");
+    assert_eval(s, "#\\newline", "#\\newline");
     assert_eval(s, "(integer->char 66)", "#\\B");
     assert_eval(s, "(integer->char 95)", "#\\_");
     assert_eval(s, "(char->integer #\\B)", "66");
@@ -253,7 +257,7 @@ void test_math() {
     assert_eval(s, "(exact? 2)" , "#t");
     assert_eval(s, "(inexact? 2.1)" , "#t");
     assert_eval(s, "(inexact? 2)" , "#f");
-    assert_eval(s, "(complex? 2)" , "#f");
+    assert_eval(s, "(complex? 2)" , "#t");
     assert_eval(s, "(real? 2)" , "#t");
     assert_eval(s, "(rational? 2)" , "#t");
 

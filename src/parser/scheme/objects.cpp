@@ -87,7 +87,13 @@ SchemeChar::SchemeChar(char c) : c(c) {
 }
 
 string SchemeChar::toString() {
-    return string("#\\")+string(&c,1);
+    if (c == ' ') {
+        return string("#\\space");
+    } else if (c == '\n') {
+        return string("#\\newline");
+    } else {
+        return string("#\\")+string(&c,1);
+    }
 }
 
 //-----------------------------------------------------------

@@ -15,6 +15,10 @@ Lexer::Lexer(istream* is) {
     curline = 0;
 }
 
+int char_names_num = 2;
+char* char_names[] = {"space","newline"};
+char char_values[] = {' ', '\n'};
+
 Lexer::Token Lexer::nextToken() {
     char n,c;
     if (!cache.empty()) {
@@ -103,12 +107,44 @@ Lexer::Token Lexer::nextToken() {
                 } else if (n == '(') {
 					return Lexer::HASH_OPEN_PAREN;           
                 } else if (n == '\\') {
-                    // TODO: Handle #\space and #\newline
-                    // TODO: Handle that if <character> in #\<character> is alphabetic, 
+                    for(int i = 0; i < char_names_num; i++) {
+                        int j = 0;
+                        char* p = char_names[i];
+                        for(j = 0; *p != '\0'; p++, j++) {
+                            if (*p != tolower(is->get())) {
+                                break;
+                            } else {
+                                if (*(p+1) == '\0') {
+                                    // Found a match
+                                    // TODO: Check that next char in input is a closeparen or space
+                                    chr = char_values[i];
+                                    c = is->get();
+                                    if (c == ' ' || c == ')' || is->eof()) {
+                                        is->unget();
+                                        return Lexer::CHAR;
+                                    } else {
+                                        cerr << "Illegal char" << endl;
+                                        return Lexer::ERROR;
+                                    }
+                                }
+                            }
+                        }
+                        while (j-- >= 0) {
+                            is->unget();
+                        }
+                    }
+                    //  Handle that if <character> in #\<character> is alphabetic, 
                     // then the character following <character> must be a delimiter 
                     // character such as a space or parenthesis.
                     chr = is->get();
-                    return Lexer::CHAR;
+                    c = is->get();
+                    if (c == ' ' || c == ')' || is->eof()) {
+                        is->unget();
+                        return Lexer::CHAR;
+                    } else {
+                        cerr << "Illegal char" << endl;
+                        return Lexer::ERROR;
+                    }
                 } else {
 					is->unget();
 					break;
