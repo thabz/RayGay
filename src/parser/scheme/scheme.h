@@ -106,10 +106,17 @@ SchemePair* s_vector_2_list(SchemeObject* v);
 SchemeObject* s_vector_ref(SchemeVector* v, SchemeNumber* i);
 SchemeObject* s_vector_set_e(SchemeVector* vec, SchemeNumber* index, SchemeObject* val);
 SchemeObject* s_vector_fill_e(SchemeVector* vec, SchemeObject* fill);
-SchemeChar* s_integer_2_char(SchemeObject* i);
-SchemeNumber* s_char_2_integer(SchemeObject* c);
+
+// Char stuff
 SchemeChar* s_char_upcase(SchemeObject* c);
 SchemeChar* s_char_downcase(SchemeObject* c);
+SchemeBool* s_char_alphabetic_p(SchemeObject* c);
+SchemeBool* s_char_numeric_p(SchemeObject* c);
+SchemeBool* s_char_whitespace_p(SchemeObject* c);
+SchemeBool* s_char_upper_case_p(SchemeObject* c);
+SchemeBool* s_char_lower_case_p(SchemeObject* c);
+SchemeChar* s_integer_2_char(SchemeObject* i);
+SchemeNumber* s_char_2_integer(SchemeObject* c);
 
 // Math stuff
 SchemeBool* s_equal(SchemePair* p);

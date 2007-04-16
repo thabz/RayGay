@@ -133,7 +133,20 @@ void test_char() {
     assert_eval(s, "(char-upcase #\\A)", "#\\A");
     assert_eval(s, "(char-downcase #\\b)", "#\\b");
     assert_eval(s, "(char-downcase #\\B)", "#\\b");
-    
+    assert_eval(s, "(char-alphabetic? #\\a)", "#t");
+    assert_eval(s, "(char-alphabetic? #\\space)", "#f");
+    assert_eval(s, "(char-alphabetic? #\\1)", "#f");
+    assert_eval(s, "(char-numeric? #\\1)", "#t");
+    assert_eval(s, "(char-numeric? #\\x)", "#f");
+    assert_eval(s, "(char-whitespace? #\\ )", "#t");
+    assert_eval(s, "(char-whitespace? #\\a)", "#f");
+    assert_eval(s, "(char-whitespace? #\\3)", "#f");
+    assert_eval(s, "(char-upper-case? #\\F)", "#t");
+    assert_eval(s, "(char-upper-case? #\\f)", "#f");
+    assert_eval(s, "(char-upper-case? #\\1)", "#f");
+    assert_eval(s, "(char-lower-case? #\\F)", "#f");
+    assert_eval(s, "(char-lower-case? #\\f)", "#t");
+    assert_eval(s, "(char-lower-case? #\\1)", "#f");
 }
 
 void test_symbols() {

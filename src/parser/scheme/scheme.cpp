@@ -141,6 +141,11 @@ Scheme::Scheme() {
 	assign("string->list",1,0,0, (SchemeObject* (*)()) s_string_2_list);
 	assign("char-downcase",1,0,0, (SchemeObject* (*)()) s_char_downcase);
 	assign("char-upcase" ,1,0,0, (SchemeObject* (*)()) s_char_upcase);
+	assign("char-alphabetic?" ,1,0,0, (SchemeObject* (*)()) s_char_alphabetic_p);
+	assign("char-numeric?" ,1,0,0, (SchemeObject* (*)()) s_char_numeric_p);
+	assign("char-whitespace?" ,1,0,0, (SchemeObject* (*)()) s_char_whitespace_p);
+	assign("char-upper-case?" ,1,0,0, (SchemeObject* (*)()) s_char_upper_case_p);
+	assign("char-lower-case?" ,1,0,0, (SchemeObject* (*)()) s_char_lower_case_p);
 	assign("symgen"      ,0,0,0, (SchemeObject* (*)()) s_symgen);
 	assign("current-input-port",0,0,0, (SchemeObject* (*)()) s_current_input_port);
 	assign("current-output-port",0,0,0, (SchemeObject* (*)()) s_current_output_port);
@@ -1185,6 +1190,30 @@ SchemeString* s_list_2_string(SchemeObject* p) {
     return new SchemeString(result);
 }
 
+SchemeBool* s_char_alphabetic_p(SchemeObject* c) {
+    assert_arg_type("char-alphabetic?", 1, s_char_p, c);
+    return bool2scm(isalpha(scm2char(c)));
+}
+
+SchemeBool* s_char_numeric_p(SchemeObject* c) {
+    assert_arg_type("char-numeric?", 1, s_char_p, c);
+    return bool2scm(isdigit(scm2char(c)));
+}
+
+SchemeBool* s_char_whitespace_p(SchemeObject* c) {
+    assert_arg_type("char-whitespace?", 1, s_char_p, c);
+    return bool2scm(isspace(scm2char(c)));
+}
+
+SchemeBool* s_char_upper_case_p(SchemeObject* c) {
+    assert_arg_type("char-upper-case?", 1, s_char_p, c);
+    return bool2scm(isupper(scm2char(c)));
+}
+
+SchemeBool* s_char_lower_case_p(SchemeObject* c) {
+    assert_arg_type("char-lower_case?", 1, s_char_p, c);
+    return bool2scm(islower(scm2char(c)));
+}
 
 SchemeChar* s_char_upcase(SchemeObject* c) {
     assert_arg_type("char-upcase", 1, s_char_p, c);
