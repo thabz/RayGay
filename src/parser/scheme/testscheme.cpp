@@ -489,6 +489,12 @@ void test_string() {
     assert_eval(s, "(list->string '(#\\S #\\t #\\r #\\i #\\n #\\g))", "\"String\"");
     assert_eval(s, "(define ss (string #\\S #\\t #\\r #\\i #\\n #\\g)) ss", "\"String\"");
     assert_eval(s, "(string-set! ss 3 #\\u) ss", "\"Strung\"");
+    assert_eval(s, "(substring \"ab\" 0 0)", "\"\"");
+    assert_eval(s, "(substring \"ab\" 1 1)", "\"\"");
+    assert_eval(s, "(substring \"ab\" 2 2)", "\"\"");
+    assert_eval(s, "(substring \"ab\" 1 2)", "\"b\"");
+    assert_eval(s, "(substring \"ab\" 0 1)", "\"a\"");
+    assert_eval(s, "(substring \"ab\" 0 2)", "\"ab\"");
 }
 
 void test_begin() {

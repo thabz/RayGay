@@ -131,6 +131,7 @@ Scheme::Scheme() {
 	assign("string-set!"  ,3,0,0, (SchemeObject* (*)()) s_string_set_e);
 	assign("string-append",0,0,1, (SchemeObject* (*)()) s_string_append);
 	assign("string-copy",1,0,0, (SchemeObject* (*)()) s_string_copy);
+	assign("substring"    ,3,0,0, (SchemeObject* (*)()) s_substring);
 	assign("symbol->string",1,0,0, (SchemeObject* (*)()) s_symbol_2_string);
 	assign("string->symbol",1,0,0, (SchemeObject* (*)()) s_string_2_symbol);
 	assign("char->integer",1,0,0, (SchemeObject* (*)()) s_char_2_integer);
@@ -1113,6 +1114,20 @@ SchemeString* s_string_append(SchemePair* strings) {
 SchemeString* s_string_copy(SchemeObject* str) {
     assert_arg_type("string-copy", 1, s_string_p, str);
     return new SchemeString(static_cast<SchemeString*>(str)->str);
+}
+
+SchemeString* s_substring(SchemeObject* s_str, SchemeObject* s_start, SchemeObject* s_end) {
+    assert_arg_type("substring", 1, s_string_p, s_str);
+    assert_arg_type("substring", 2, s_integer_p, s_start);
+    assert_arg_type("substring", 3, s_integer_p, s_end);
+    string str = scm2string(s_str);
+    int start = scm2int(s_start);
+    int end = scm2int(s_end);
+    int len = str.size();
+    if (start < 0 || end > len) {
+        throw scheme_exception("substring: index out of range.");
+    }
+    return string2scm(string(str,start,end-start));
 }
 
 SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base_s) {
