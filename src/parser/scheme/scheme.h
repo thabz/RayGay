@@ -56,6 +56,7 @@ extern SchemeNumber* S_TWO;
 #define scm2bool(o)    ((o) != S_FALSE)
 #define bool2scm(b)    ((b) ? S_TRUE : S_FALSE)
 #define string2scm(s)  (new SchemeString(s))
+#define char2scm(c)    (new SchemeChar(c))
 
 // Scheme procedures
 SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
@@ -199,5 +200,7 @@ SchemeObject* s_call_with_input_file(SchemeObject* s_filename, SchemeObject* pro
 SchemeObject* s_call_with_output_file(SchemeObject* s_filename, SchemeObject* proc);
 SchemeObject* s_with_input_from_file(SchemeObject* s_filename, SchemeObject* thunk);
 SchemeObject* s_with_output_to_file(SchemeObject* s_filename, SchemeObject* thunk);
+SchemeObject* s_read_char(SchemeObject* s_port);
+SchemeObject* s_peek_char(SchemeObject* s_port);
 
 #endif

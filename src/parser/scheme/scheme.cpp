@@ -168,6 +168,8 @@ Scheme::Scheme() {
 	assign("open-output-file"      ,1,0,0, (SchemeObject* (*)()) s_open_output_file);
 	assign("close-input-port"      ,1,0,0, (SchemeObject* (*)()) s_close_input_port);
 	assign("close-output-port"     ,1,0,0, (SchemeObject* (*)()) s_close_output_port);
+	assign("read-char"             ,0,1,0, (SchemeObject* (*)()) s_read_char);
+	assign("peek-char"             ,0,1,0, (SchemeObject* (*)()) s_peek_char);
 	
     current_input_port = new SchemeInputPort(&cin);
     current_output_port = new SchemeOutputPort(&cout);
@@ -544,48 +546,6 @@ SchemePair* s_list(SchemePair* args) {
     return args;
 }
 
-SchemeObject* s_write(SchemeObject* o, SchemeObject* port) {
-    ostream* os;
-    if (port == S_UNSPECIFIED) {
-        os = s_current_output_port()->os;
-    } else {
-        assert_arg_type("write", 2, s_output_port_p, port);
-        os = static_cast<SchemeOutputPort*>(port)->os;
-    }
-    (*os) << o->toString();
-    return S_UNSPECIFIED;
-}
-
-SchemeObject* s_display(SchemeObject* o, SchemeObject* port) {
-    ostream* os;
-    if (port == S_UNSPECIFIED) {
-        os = s_current_output_port()->os;
-    } else {
-        assert_arg_type("display", 2, s_output_port_p, port);
-        os = static_cast<SchemeOutputPort*>(port)->os;
-    }
-    
-    if (s_string_p(o) == S_TRUE) {
-        (*os) << static_cast<SchemeString*>(o)->str;
-    } else if (s_char_p(o) == S_TRUE) {
-        (*os) << static_cast<SchemeChar*>(o)->c;
-    } else {
-        (*os) << o->toString();
-    }
-    return S_UNSPECIFIED;
-}
-
-SchemeObject* s_newline(SchemeObject* port) {
-    ostream* os;
-    if (port == S_UNSPECIFIED) {
-        os = s_current_output_port()->os;
-    } else {
-        assert_arg_type("write", 2, s_output_port_p, port);
-        os = static_cast<SchemeOutputPort*>(port)->os;
-    }
-    (*os) << endl;        
-    return S_UNSPECIFIED;
-}
 
 SchemePair* s_reverse(SchemeObject* o) {
     if (o != S_EMPTY_LIST) {
@@ -1458,3 +1418,77 @@ SchemeObject* s_with_input_from_file(SchemeObject* s_filename, SchemeObject* s_t
     return result;
 }
 
+SchemeObject* s_read_char(SchemeObject* s_port) {
+    istream* is;
+    if (s_port == S_UNSPECIFIED) {
+        is = s_current_input_port()->is;
+    } else {
+        assert_arg_type("read-char", 1, s_input_port_p, s_port);
+        is = static_cast<SchemeInputPort*>(s_port)->is;
+    }
+    int c = is->get();
+    if (c == -1) {
+        return S_EOF;
+    } else {
+        return char2scm(c);
+    }
+}
+
+SchemeObject* s_peek_char(SchemeObject* s_port) {
+    istream* is;
+    if (s_port == S_UNSPECIFIED) {
+        is = s_current_input_port()->is;
+    } else {
+        assert_arg_type("peek-char", 1, s_input_port_p, s_port);
+        is = static_cast<SchemeInputPort*>(s_port)->is;
+    }
+    int c = is->peek();
+    if (c == -1) {
+        return S_EOF;
+    } else {
+        return char2scm(c);
+    }
+}
+
+SchemeObject* s_write(SchemeObject* o, SchemeObject* port) {
+    ostream* os;
+    if (port == S_UNSPECIFIED) {
+        os = s_current_output_port()->os;
+    } else {
+        assert_arg_type("write", 2, s_output_port_p, port);
+        os = static_cast<SchemeOutputPort*>(port)->os;
+    }
+    (*os) << o->toString();
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* s_display(SchemeObject* o, SchemeObject* port) {
+    ostream* os;
+    if (port == S_UNSPECIFIED) {
+        os = s_current_output_port()->os;
+    } else {
+        assert_arg_type("display", 2, s_output_port_p, port);
+        os = static_cast<SchemeOutputPort*>(port)->os;
+    }
+    
+    if (s_string_p(o) == S_TRUE) {
+        (*os) << static_cast<SchemeString*>(o)->str;
+    } else if (s_char_p(o) == S_TRUE) {
+        (*os) << static_cast<SchemeChar*>(o)->c;
+    } else {
+        (*os) << o->toString();
+    }
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* s_newline(SchemeObject* port) {
+    ostream* os;
+    if (port == S_UNSPECIFIED) {
+        os = s_current_output_port()->os;
+    } else {
+        assert_arg_type("write", 2, s_output_port_p, port);
+        os = static_cast<SchemeOutputPort*>(port)->os;
+    }
+    (*os) << endl;        
+    return S_UNSPECIFIED;
+}
