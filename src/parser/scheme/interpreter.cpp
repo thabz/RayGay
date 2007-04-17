@@ -426,13 +426,12 @@ fn_ptr eval_or() {
 
 SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level);
 
-
 SchemeObject* eval_unquote_recursive(SchemeObject* o, int level) {
     if (level == 0) {
         global_arg1 = s_car(s_cdr(o));
         return trampoline((fn_ptr)&eval);
     } else {
-        return eval_quasiquote_recursive(o,level-1);
+        return s_cons(unquote_symbol, eval_quasiquote_recursive(s_cdr(o),level-1));
     }
 }
 
@@ -448,7 +447,7 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
     if (s_pair_p(p) == S_TRUE) {
         SchemeObject* result = NULL;
         
-        if (s_car(p) == unquote_symbol && s_vector_p(o) == S_FALSE && level == 0) {
+        if (s_car(p) == unquote_symbol && s_vector_p(o) == S_FALSE) {
             result = eval_unquote_recursive(p,level);
         } else if (s_car(p) == unquote_splicing_symbol && s_vector_p(o) == S_FALSE) {
             result = eval_unquote_recursive(p,level);

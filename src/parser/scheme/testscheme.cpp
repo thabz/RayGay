@@ -562,16 +562,14 @@ void test_quote() {
     assert_eval(s, "`(a `(b `c))", "(a (quasiquote (b (quasiquote c))))");
     assert_eval(s, "`,(+ 2 3)", "5");
     assert_eval(s, "(quasiquote (unquote (+ 2 3)))", "5");
-
+    assert_eval(s, "`(a `(b ,(+ 1 2)))", "(a (quasiquote (b (unquote (+ 1 2)))))");
     assert_eval(s, "`(a ,(list 1 2 ) c)", "(a (1 2) c)");
     assert_eval(s, "`(a ,@(list 1 2 ) c)", "(a 1 2 c)");
     assert_eval(s, "`(a ,(+ 1 2) ,@(map abs '(4 -5 6)) b)", "(a 3 4 5 6 b)");
     assert_eval(s, "`(( foo ,(- 10 3)) ,@(cdr '(c)) . ,(car '(cons)))", "((foo 7) . cons)");
     assert_eval(s, "`#(10 5 ,(sqrt 4) ,@(map sqrt '(16 9)) 8)", "#(10 5 2 4 3 8)");
     assert_eval(s, "(let ((name 'a)) `(list ,name ',name))", "(list a (quote a))");
-    cout << "Begin!" << endl;
     assert_eval(s, "`(a `(b ,(+ 1 2) ,(foo ,(+ 1 3) d) e) f)", "(a (quasiquote (b (unquote (+ 1 2)) (unquote (foo 4 d)) e)) f)");
-    cout << "Begin!" << endl;
     assert_eval(s, "(let ((name1 'x) (name2 'y)) `(a `(b ,,name1 ,',name2 d) e))","(a (quasiquote (b (unquote x) (unquote (quote y)) d)) e)");
 }
 
