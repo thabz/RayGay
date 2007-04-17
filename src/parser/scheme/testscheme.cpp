@@ -209,6 +209,7 @@ void test_interpreter() {
     assert_eval(s, "(cond ((> 3 2) 'greater) ((< 3 2) 'less))","greater");
     assert_eval(s, "(cond ((> 3 3) 'greater) ((< 3 3) 'less) (else 'equal))", "equal");
     assert_eval(s, "(cond ((assv 'b '((a 1) (b 2))) => cadr) (else #f))", "2");
+    assert_eval(s, "(cond ((equal? 'a 'a)) (else 'b))", "#<unspecified>");
 
     assert_eval(s, "(case (* 2 3) ((2 3 5 7) 'prime) ((1 4 6 8 9) 'composite))", "composite");
     assert(s->eval("(case (car '(c d)) ((a) 'a) ((b) 'b))") == S_UNSPECIFIED);
@@ -513,6 +514,7 @@ void test_begin() {
     assert_eval(s, "(begin 1)", "1");
     assert_eval(s, "(begin 1 2)", "2");
     assert_eval(s, "(begin 1 2 3)", "3");
+    assert_eval(s, "(begin)", "#<unspecified>");
 }
 
 void test_let() {

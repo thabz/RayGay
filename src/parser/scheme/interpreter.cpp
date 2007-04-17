@@ -150,6 +150,10 @@ SchemeObject* trampoline(fn_ptr f) {
 //
 fn_ptr eval_sequence() {
     SchemeObject* p = global_arg1;
+    if (p == S_EMPTY_LIST) {
+        global_ret = S_UNSPECIFIED;
+        return NULL;
+    }
     while (true) {
         if (s_null_p(s_cdr(p)) == S_TRUE) {
             // The tail call, let EVAL return to this' caller
@@ -731,7 +735,10 @@ fn_ptr eval_cond() {
         SchemeObject* test = trampoline((fn_ptr)&eval);
         
         if (test->boolValue()) {
-            if (s_car(s_cdr(clause)) == ergo_symbol) {
+            if (s_cdr(clause) == S_EMPTY_LIST) {
+                global_ret = S_UNSPECIFIED;
+                return NULL;
+            } else if (s_car(s_cdr(clause)) == ergo_symbol) {
                 // Handle (<test> => <expression>)
                 global_arg1 = s_car(s_cdr(s_cdr(clause)));
                 SchemeObject* proc = trampoline((fn_ptr)&eval);
