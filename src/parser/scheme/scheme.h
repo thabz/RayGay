@@ -186,9 +186,18 @@ SchemeSymbol* s_symgen();
 
 
 // Input and output stuff
-SchemeOutputPort* s_current_output_port();
 SchemeInputPort* s_current_input_port();
+SchemeOutputPort* s_current_output_port();
 SchemeBool* s_input_port_p(SchemeObject* o);
 SchemeBool* s_output_port_p(SchemeObject* o);
+SchemeBool* s_eof_object_p(SchemeObject* o);
+SchemeInputPort* s_open_input_file(SchemeObject* s_filename);
+SchemeOutputPort* s_open_output_file(SchemeObject* s_filename);
+SchemeObject* s_close_input_port(SchemeObject* s_port);
+SchemeObject* s_close_output_port(SchemeObject* s_port);
+SchemeObject* s_call_with_input_file(SchemeObject* s_filename, SchemeObject* proc);
+SchemeObject* s_call_with_output_file(SchemeObject* s_filename, SchemeObject* proc);
+SchemeObject* s_with_input_from_file(SchemeObject* s_filename, SchemeObject* thunk);
+SchemeObject* s_with_output_to_file(SchemeObject* s_filename, SchemeObject* thunk);
 
 #endif

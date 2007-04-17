@@ -246,3 +246,10 @@ string SchemeInputPort::toString() {
 string SchemeOutputPort::toString() {
     return "#<output-port>";
 }
+
+SchemeEOF::SchemeEOF() { 
+}
+
+string SchemeEOF::toString() { 
+    return "#<EOF>";
+}

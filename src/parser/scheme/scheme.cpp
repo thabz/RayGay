@@ -18,6 +18,7 @@ unsigned long symgen_counter = 10000;
 
 SchemeBool* S_TRUE = new SchemeBool(true);
 SchemeBool* S_FALSE = new SchemeBool(false);
+SchemeEOF* S_EOF = new SchemeEOF();
 SchemeNumber* S_ZERO = new SchemeNumber(0);
 SchemeNumber* S_ONE = new SchemeNumber(1);
 SchemeNumber* S_TWO = new SchemeNumber(2);
@@ -153,10 +154,20 @@ Scheme::Scheme() {
 	assign("char-upper-case?" ,1,0,0, (SchemeObject* (*)()) s_char_upper_case_p);
 	assign("char-lower-case?" ,1,0,0, (SchemeObject* (*)()) s_char_lower_case_p);
 	assign("symgen"      ,0,0,0, (SchemeObject* (*)()) s_symgen);
-	assign("current-input-port",0,0,0, (SchemeObject* (*)()) s_current_input_port);
-	assign("current-output-port",0,0,0, (SchemeObject* (*)()) s_current_output_port);
-	assign("input-port?"   ,1,0,0, (SchemeObject* (*)()) s_input_port_p);
-	assign("output-port?"  ,1,0,0, (SchemeObject* (*)()) s_output_port_p);
+	
+	assign("current-input-port"    ,0,0,0, (SchemeObject* (*)()) s_current_input_port);
+	assign("current-output-port"   ,0,0,0, (SchemeObject* (*)()) s_current_output_port);
+	assign("input-port?"           ,1,0,0, (SchemeObject* (*)()) s_input_port_p);
+	assign("output-port?"          ,1,0,0, (SchemeObject* (*)()) s_output_port_p);
+	assign("eof-object?"           ,1,0,0, (SchemeObject* (*)()) s_eof_object_p);
+	assign("call-with-input-file"  ,2,0,0, (SchemeObject* (*)()) s_call_with_input_file);
+	assign("call-with-output-file" ,2,0,0, (SchemeObject* (*)()) s_call_with_output_file);
+	assign("with-input-from-file"  ,2,0,0, (SchemeObject* (*)()) s_with_input_from_file);
+	assign("with-output-to-file"   ,2,0,0, (SchemeObject* (*)()) s_with_output_to_file);
+	assign("open-input-file"       ,1,0,0, (SchemeObject* (*)()) s_open_input_file);
+	assign("open-output-file"      ,1,0,0, (SchemeObject* (*)()) s_open_output_file);
+	assign("close-input-port"      ,1,0,0, (SchemeObject* (*)()) s_close_input_port);
+	assign("close-output-port"     ,1,0,0, (SchemeObject* (*)()) s_close_output_port);
 	
     current_input_port = new SchemeInputPort(&cin);
     current_output_port = new SchemeOutputPort(&cout);
@@ -1363,4 +1374,87 @@ SchemeBool* s_output_port_p(SchemeObject* o) {
     return o->type() == SchemeObject::OUTPUT_PORT ? S_TRUE : S_FALSE;
 }
 
+SchemeBool* s_eof_object_p(SchemeObject* o) {
+    return bool2scm(o->type() == SchemeObject::EOFTYPE);
+}
+
+SchemeInputPort* s_open_input_file(SchemeObject* s_filename) {
+    assert_arg_type("open-input-file", 1, s_string_p, s_filename);
+    ifstream* ifs = new ifstream(scm2string(s_filename).c_str(), ios::in);
+    if (ifs->fail()) {
+        throw scheme_exception("Error opening file " + s_filename->toString());
+    }
+    return new SchemeInputPort(ifs);
+}
+
+SchemeOutputPort* s_open_output_file(SchemeObject* s_filename) {
+    assert_arg_type("open-output-file", 1, s_string_p, s_filename);
+    ofstream* ofs = new ofstream(scm2string(s_filename).c_str(), ios::out);
+    if (ofs->fail()) {
+        throw scheme_exception("Error opening file " + s_filename->toString() + " for writing.");
+    }
+    return new SchemeOutputPort(ofs);
+}
+
+SchemeObject* s_close_input_port(SchemeObject* s_port) {
+    assert_arg_type("close-input-port", 1, s_input_port_p, s_port);
+    istream* is = static_cast<SchemeInputPort*>(s_port)->is;
+    // Only file-streams can be closed in C++
+    ifstream* ifs = static_cast<ifstream*>(is);
+    if (ifs != NULL) {
+       ifs->close();
+    }
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* s_close_output_port(SchemeObject* s_port) {
+    assert_arg_type("close-output-port", 1, s_output_port_p, s_port);
+    ostream* os = static_cast<SchemeOutputPort*>(s_port)->os;
+    // Only file-streams can be closed in C++
+    ofstream* ofs = static_cast<ofstream*>(os);
+    if (ofs != NULL) {
+       ofs->close();
+    }
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* s_call_with_input_file(SchemeObject* s_filename, SchemeObject* s_proc) {
+    assert_arg_type("call-with-input-file", 1, s_string_p, s_filename);
+    assert_arg_type("call-with-input-file", 2, s_procedure_p, s_proc);
+    SchemeInputPort* input_port = s_open_input_file(s_filename);
+    SchemeObject* result = interpreter->call_procedure_1(s_proc, input_port);
+    s_close_input_port(input_port);
+    return result;
+}
+
+SchemeObject* s_call_with_output_file(SchemeObject* s_filename, SchemeObject* s_proc) {
+    assert_arg_type("call-with-output-file", 1, s_string_p, s_filename);
+    assert_arg_type("call-with-output-file", 2, s_procedure_p, s_proc);
+    SchemeOutputPort* output_port = s_open_output_file(s_filename);
+    SchemeObject* result = interpreter->call_procedure_1(s_proc, output_port);
+    s_close_output_port(output_port);
+    return result;
+}
+
+SchemeObject* s_with_output_to_file(SchemeObject* s_filename, SchemeObject* s_thunk) {
+    assert_arg_type("with-output-to-file", 1, s_string_p, s_filename);
+    assert_arg_type("with-output-to-file", 2, s_procedure_p, s_thunk);
+    SchemeOutputPort* saved_output_port = current_output_port;
+    current_output_port = s_open_output_file(s_filename);
+    SchemeObject* result = interpreter->call_procedure_0(s_thunk);
+    s_close_output_port(current_output_port);
+    current_output_port = saved_output_port;
+    return result;
+}
+
+SchemeObject* s_with_input_from_file(SchemeObject* s_filename, SchemeObject* s_thunk) {
+    assert_arg_type("with-input-from-file", 1, s_string_p, s_filename);
+    assert_arg_type("with-input-from-file", 2, s_procedure_p, s_thunk);
+    SchemeInputPort* saved_input_port = current_input_port;
+    current_input_port = s_open_input_file(s_filename);
+    SchemeObject* result = interpreter->call_procedure_0(s_thunk);
+    s_close_input_port(current_input_port);
+    current_input_port = saved_input_port;
+    return result;
+}
 

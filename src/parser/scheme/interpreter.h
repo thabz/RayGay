@@ -14,7 +14,10 @@ class Interpreter
     public:
 	    Interpreter(SchemePair* parsetree, BindingEnvironment* top_level);
    	    SchemeObject* interpret();
-        SchemeObject* call_procedure_n(SchemeObject* procedure, SchemeObject* args);
+        SchemeObject* call_procedure_0(SchemeObject* procedure);
+        SchemeObject* call_procedure_1(SchemeObject* procedure, SchemeObject* arg);
+        SchemeObject* call_procedure_2(SchemeObject* procedure, SchemeObject* arg1, SchemeObject* arg2);
+        SchemeObject* call_procedure_n(SchemeObject* procedure, SchemeObject* args_list);
    	    
    	private:
 		BindingEnvironment* top_level_bindings;
@@ -45,6 +48,5 @@ fn_ptr eval_lambda();
 fn_ptr eval_do();
 fn_ptr eval_begin();
 fn_ptr eval_list();
-
 
 #endif

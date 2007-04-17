@@ -25,6 +25,7 @@ class SchemeObject {
  		    PROCEDURE,
  		    MACRO,
  		    INPUT_PORT,
+ 		    EOFTYPE,
  		    OUTPUT_PORT
 		};
 	SchemeObject(bool immutable = false);
@@ -176,6 +177,14 @@ class SchemeMacro : public SchemeProcedure {
         SchemeMacro(SchemeObject* name, BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body);
         string toString();      
         ObjectType type() { return MACRO; };    
+};
+
+class SchemeEOF : public SchemeObject {
+    public:
+        SchemeEOF();
+        string toString();      
+        ObjectType type() { return EOFTYPE; };    
+    
 };
 
 #endif

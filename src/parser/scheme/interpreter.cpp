@@ -99,6 +99,24 @@ SchemeObject* Interpreter::call_procedure_n(SchemeObject* procedure, SchemeObjec
     return trampoline((fn_ptr)&eval_procedure_call);
 }
 
+SchemeObject* Interpreter::call_procedure_0(SchemeObject* procedure) {
+    global_arg1 = procedure;
+    global_arg2 = S_EMPTY_LIST;
+    return trampoline((fn_ptr)&eval_procedure_call);
+}
+
+SchemeObject* Interpreter::call_procedure_1(SchemeObject* procedure, SchemeObject* arg) {
+    global_arg1 = procedure;
+    global_arg2 = s_cons(arg,S_EMPTY_LIST);
+    return trampoline((fn_ptr)&eval_procedure_call);
+}
+
+SchemeObject* Interpreter::call_procedure_2(SchemeObject* procedure, SchemeObject* arg1, SchemeObject* arg2) {
+    global_arg1 = procedure;
+    global_arg2 = s_cons(arg1, s_cons(arg2, S_EMPTY_LIST));
+    return trampoline((fn_ptr)&eval_procedure_call);
+}
+
 SchemeObject* Interpreter::interpret() {
     if (parsetree == S_EMPTY_LIST) {
 	    return S_UNSPECIFIED;

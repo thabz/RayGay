@@ -194,14 +194,14 @@
 
 (test '#(10 5 2 4 3 8) 'quasiquote `#(10 5 ,(sqt 4) ,@(map sqt '(16 9)) 8))
 (test 5 'quasiquote `,(+ 2 3))
-#|
-(test '(a `(b ,(+ 1 2) ,(foo 4 d) e) f)
-      'quasiquote `(a `(b ,(+ 1 2) ,(foo ,(+ 1 3) d) e) f))
-(test '(a `(b ,x ,'y d) e) 'quasiquote
-	(let ((name1 'x) (name2 'y)) `(a `(b ,,name1 ,',name2 d) e)))
-(test '(list 3 4) 'quasiquote (quasiquote (list (unquote (+ 1 2)) 4)))
-(test '`(list ,(+ 1 2) 4) 'quasiquote '(quasiquote (list (unquote (+ 1 2)) 4)))
-|#
+
+;(test '(a `(b ,(+ 1 2) ,(foo 4 d) e) f)
+;      'quasiquote `(a `(b ,(+ 1 2) ,(foo ,(+ 1 3) d) e) f))
+;(test '(a `(b ,x ,'y d) e) 'quasiquote
+;	(let ((name1 'x) (name2 'y)) `(a `(b ,,name1 ,',name2 d) e)))
+;(test '(list 3 4) 'quasiquote (quasiquote (list (unquote (+ 1 2)) 4)))
+;(test '`(list ,(+ 1 2) 4) 'quasiquote '(quasiquote (list (unquote (+ 1 2)) 4)))
+
 (SECTION 5 2 1)
 (define add3 (lambda (x) (+ x 3)))
 (test 6 'define (add3 3))
