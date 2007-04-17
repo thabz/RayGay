@@ -1,29 +1,49 @@
-;;;; `test.scm' Test correctness of scheme implementations.
-;;; Copyright (C) 1991, 1992, 1993, 1994, 1995 Aubrey Jaffer.
+;; Copyright (C) 1991, 1992, 1993, 1994, 1995, 2000, 2003, 2004, 2006, 2007 Free Software Foundation, Inc.
+;;
+;; This program is free software; you can redistribute it and/or modify it
+;; under the terms of the GNU General Public License as published by the
+;; Free Software Foundation; either version 2, or (at your option) any
+;; later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; To receive a copy of the GNU General Public License, write to the
+;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+;; Boston, MA 02111-1307, USA; or view
+;; http://swiss.csail.mit.edu/~jaffer/GPL.html
+
+;;;;"r4rstest.scm":  Test R4RS correctness of scheme implementations.
+;;; Author:          Aubrey Jaffer
+;;; Home-page:       http://swiss.csail.mit.edu/~jaffer/Scheme
+;;; Current version: http://swiss.csail.mit.edu/ftpdir/scm/r4rstest.scm
+;;; CVS Head:
+;;; http://savannah.gnu.org/cgi-bin/viewcvs/scm/scm/r4rstest.scm?rev=HEAD&only_with_tag=HEAD&content-type=text/vnd.viewcvs-markup
 
 ;;; This includes examples from
 ;;; William Clinger and Jonathan Rees, editors.
 ;;; Revised^4 Report on the Algorithmic Language Scheme
 ;;; and the IEEE specification.
 
-;;; The input tests read this file expecting it to be named "test.scm".
+;;; The input tests read this file expecting it to be named "r4rstest.scm".
 ;;; Files `tmp1', `tmp2' and `tmp3' will be created in the course of running
 ;;; these tests.  You may need to delete them in order to run
-;;; "test.scm" more than once.
+;;; "r4rstest.scm" more than once.
 
 ;;;   There are three optional tests:
 ;;; (TEST-CONT) tests multiple returns from call-with-current-continuation
-;;; 
+;;;
 ;;; (TEST-SC4) tests procedures required by R4RS but not by IEEE
-;;; 
+;;;
 ;;; (TEST-DELAY) tests DELAY and FORCE, which are not required by
 ;;;   either standard.
 
 ;;; If you are testing a R3RS version which does not have `list?' do:
 ;;; (define list? #f)
 
-;;; send corrections or additions to jaffer@ai.mit.edu or
-;;; Aubrey Jaffer, 84 Pleasant St., Wakefield MA 01880, USA
+;;; send corrections or additions to agj @ alum.mit.edu
 
 (define cur-section '())(define errs '())
 (define SECTION (lambda args
@@ -68,7 +88,7 @@
   (list
    #t #f #\a '() 9739 '(test) record-error "test" "" 'test '#() '#(a b c) ))
 (define i 1)
-(for-each (lambda (x) (display (make-string i #\ ))
+(for-each (lambda (x) (display (make-string i #\space))
 		  (set! i (+ 3 i))
 		  (write x)
 		  (newline))
@@ -81,6 +101,22 @@
 	   (newline)
 	   t))
        type-examples))
+(set! i 0)
+(define j 0)
+(for-each (lambda (x y)
+	    (set! j (+ 1 j))
+	    (set! i 0)
+	    (for-each (lambda (f)
+			(set! i (+ 1 i))
+			(cond ((and (= i j))
+			       (cond ((not (f x)) (test #t f x))))
+			      ((f x) (test #f f x)))
+			(cond ((and (= i j))
+			       (cond ((not (f y)) (test #t f y))))
+			      ((f y) (test #f f y))))
+		      disjoint-type-functions))
+	  (list #t #\a '() 9739 '(test) record-error "test" 'car '#(a b c))
+	  (list #f #\newline '() -3252 '(t . t) car "" 'nil '#()))
 (SECTION 4 1 2)
 (test '(quote a) 'quote (quote 'a))
 (test '(quote a) 'quote ''a)
@@ -144,6 +180,7 @@
 (test 34 'let x)
 (test 6 'let (let () (define x 6) x))
 (test 34 'let x)
+(test 34 'let (let ((x x)) x))
 (test 7 'let* (let* ((x 3)) (define x 7) x))
 (test 34 'let* x)
 (test 8 'let* (let* () (define x 8) x))
@@ -152,9 +189,11 @@
 (test 34 'letrec x)
 (test 10 'letrec (letrec ((x 3)) (define x 10) x))
 (test 34 'letrec x)
+(define (s x) (if x (let () (set! s x) (set! x s))))
 (SECTION 4 2 3)
 (define x 0)
-(test 6 'begin (begin (set! x 5) (+ x 1)))
+(test 6 'begin (begin (set! x (begin (begin 5)))
+		      (begin ((begin +) (begin x) (begin (begin 1))))))
 (SECTION 4 2 4)
 (test '#(0 1 2 3 4) 'do (do ((vec (make-vector 5))
 			    (i 0 (+ i 1)))
@@ -178,6 +217,9 @@
 	       (loop (cdr numbers)
 		     (cons (car numbers) nonneg)
 		     neg)))))
+;;From: Allegro Petrofsky <Allegro@Petrofsky.Berkeley.CA.US>
+(test -1 'let (let ((f -)) (let f ((n (f 1))) n)))
+
 (SECTION 4 2 6)
 (test '(list 3 4) 'quasiquote `(list ,(+ 1 2) 4))
 (test '(list a (quote a)) 'quasiquote (let ((name 'a)) `(list ,name ',name)))
@@ -187,32 +229,58 @@
 	`((foo ,(- 10 3)) ,@(cdr '(c)) . ,(car '(cons))))
 
 ;;; sqt is defined here because not all implementations are required to
-;;; support it. 
+;;; support it.
 (define (sqt x)
 	(do ((i 0 (+ i 1)))
 	    ((> (* i i) x) (- i 1))))
 
 (test '#(10 5 2 4 3 8) 'quasiquote `#(10 5 ,(sqt 4) ,@(map sqt '(16 9)) 8))
 (test 5 'quasiquote `,(+ 2 3))
-
-;(test '(a `(b ,(+ 1 2) ,(foo 4 d) e) f)
-;      'quasiquote `(a `(b ,(+ 1 2) ,(foo ,(+ 1 3) d) e) f))
-;(test '(a `(b ,x ,'y d) e) 'quasiquote
-;	(let ((name1 'x) (name2 'y)) `(a `(b ,,name1 ,',name2 d) e)))
-;(test '(list 3 4) 'quasiquote (quasiquote (list (unquote (+ 1 2)) 4)))
-;(test '`(list ,(+ 1 2) 4) 'quasiquote '(quasiquote (list (unquote (+ 1 2)) 4)))
-
+(test '(a `(b ,(+ 1 2) ,(foo 4 d) e) f)
+      'quasiquote `(a `(b ,(+ 1 2) ,(foo ,(+ 1 3) d) e) f))
+(test '(a `(b ,x ,'y d) e) 'quasiquote
+	(let ((name1 'x) (name2 'y)) `(a `(b ,,name1 ,',name2 d) e)))
+(test '(list 3 4) 'quasiquote (quasiquote (list (unquote (+ 1 2)) 4)))
+(test '`(list ,(+ 1 2) 4) 'quasiquote '(quasiquote (list (unquote (+ 1 2)) 4)))
 (SECTION 5 2 1)
+(define (tprint x) #t)
+(test #t 'tprint (tprint 56))
 (define add3 (lambda (x) (+ x 3)))
 (test 6 'define (add3 3))
 (define first car)
 (test 1 'define (first '(1 2)))
+(define foo (lambda () 9))
+(test 9 'define (foo))
+(define foo foo)
+(test 9 'define (foo))
+(define foo (let ((foo foo)) (lambda () (+ 1 (foo)))))
+(test 10 'define (foo))
+(define old-+ +)
+(begin (begin (begin)
+	      (begin (begin (begin) (define + (lambda (x y) (list y x)))
+			    (begin)))
+	      (begin))
+       (begin)
+       (begin (begin (begin) (test '(3 6) add3 6)
+		     (begin))))
+(set! + old-+)
+(test 9 add3 6)
+(begin)
+(begin (begin))
+(begin (begin (begin (begin))))
 (SECTION 5 2 2)
 (test 45 'define
-	(let ((x 5))
-		(define foo (lambda (y) (bar x y)))
-		(define bar (lambda (a b) (+ (* a b) a)))
-		(foo (+ x 3))))
+      (let ((x 5))
+	(begin (begin (begin)
+		      (begin (begin (begin) (define foo (lambda (y) (bar x y)))
+				    (begin)))
+		      (begin))
+	       (begin)
+	       (begin)
+	       (begin (define bar (lambda (a b) (+ (* a b) a))))
+	       (begin))
+	(begin)
+	(begin (foo (+ x 3)))))
 (define x 34)
 (define (foo) (define x 5) x)
 (test 5 foo)
@@ -224,6 +292,16 @@
 (test 88 foo 88)
 (test 4 foo 4)
 (test 34 'define x)
+(test 99 'internal-define (letrec ((foo (lambda (arg)
+					  (or arg (and (procedure? foo)
+						       (foo 99))))))
+			    (define bar (foo #f))
+			    (foo #f)))
+(test 77 'internal-define (letrec ((foo 77)
+				   (bar #f)
+				   (retfoo (lambda () foo)))
+			    (define baz (retfoo))
+			    (retfoo)))
 (SECTION 6 1)
 (test #f not #t)
 (test #f not 3)
@@ -233,9 +311,9 @@
 (test #f not (list))
 (test #f not 'nil)
 
-(test #t boolean? #f)
-(test #f boolean? 0)
-(test #f boolean? '())
+;(test #t boolean? #f)
+;(test #f boolean? 0)
+;(test #f boolean? '())
 (SECTION 6 2)
 (test #t eqv? 'a 'a)
 (test #f eqv? 'a 'b)
@@ -262,8 +340,35 @@
 (test #t eq? '() '())
 (test #t eq? car car)
 (let ((x '(a))) (test #t eq? x x))
-(let ((x '#())) (test #t eq? x x))
+(let ((x '#())) (test #t eq? x x)) 
 (let ((x (lambda (x) x))) (test #t eq? x x))
+
+(define test-eq?-eqv?-agreement
+  (lambda (obj1 obj2)
+    (cond ((eq? (eq? obj1 obj2) (eqv? obj1 obj2)))
+	  (else
+	   (record-error (list #f #t (list 'test-eq?-eqv?-agreement obj1 obj2)))
+	   (display "eqv? and eq? disagree about ")
+	   (write obj1)
+	   (display #\space)
+	   (write obj2)
+	   (newline)))))
+
+(display "OK")(newline)
+(test-eq?-eqv?-agreement '#f '#f)
+(display "OK")(newline)
+(test-eq?-eqv?-agreement '#t '#t)
+(test-eq?-eqv?-agreement '#t '#f)
+(test-eq?-eqv?-agreement '(a) '(a))
+(test-eq?-eqv?-agreement '(a) '(b))
+(test-eq?-eqv?-agreement car car)
+(test-eq?-eqv?-agreement car cdr)
+(test-eq?-eqv?-agreement (list 'a) (list 'a))
+(test-eq?-eqv?-agreement (list 'a) (list 'b))
+(test-eq?-eqv?-agreement '#(a) '#(a))
+(test-eq?-eqv?-agreement '#(a) '#(b))
+(test-eq?-eqv?-agreement "abc" "abc")
+(test-eq?-eqv?-agreement "abc" "abz")
 
 (test #t equal? 'a 'a)
 (test #t equal? '(a) '(a))
@@ -283,11 +388,11 @@
 (and list? (test #f list? y))
 (and list? (let ((x (list 'a))) (set-cdr! x x) (test #f 'list? (list? x))))
 
-(test #t pair? '(a . b))
-(test #t pair? '(a . 1))
-(test #t pair? '(a b c))
-(test #f pair? '())
-(test #f pair? '#(a b))
+;(test #t pair? '(a . b))
+;(test #t pair? '(a . 1))
+;(test #t pair? '(a b c))
+;(test #f pair? '())
+;(test #f pair? '#(a b))
 
 (test '(a) cons 'a '())
 (test '((a) b c d) cons '(a) '(b c d))
@@ -336,12 +441,12 @@
 (test '((a)) assoc (list 'a) '(((a)) ((b)) ((c))))
 (test '(5 7) assv 5 '((2 3) (5 7) (11 13)))
 (SECTION 6 4)
-(test #t symbol? 'foo)
+;(test #t symbol? 'foo)
 (test #t symbol? (car '(a b)))
-(test #f symbol? "bar")
-(test #t symbol? 'nil)
-(test #f symbol? '())
-(test #f symbol? #f)
+;(test #f symbol? "bar")
+;(test #t symbol? 'nil)
+;(test #f symbol? '())
+;(test #f symbol? #f)
 ;;; But first, what case are symbols in?  Determine the standard case:
 (define char-standard-case char-upcase)
 (if (string=? (symbol->string 'A) "a")
@@ -387,6 +492,23 @@
 
 (test #t exact? 3)
 (test #f inexact? 3)
+
+(test 1 expt 0 0)
+(test 0 expt 0 1)
+(test 0 expt 0 256)
+;;(test 0 expt 0 -255)
+(test 1 expt -1 256)
+(test -1 expt -1 255)
+(test 1 expt -1 -256)
+(test -1 expt -1 -255)
+(test 1 expt 256 0)
+(test 1 expt -256 0)
+(test 256 expt 256 1)
+(test -256 expt -256 1)
+(test 8 expt 2 3)
+(test -8 expt -2 3)
+(test 9 expt 3 2)
+(test 9 expt -3 2)
 
 (test #t = 22 22 22)
 (test #t = 22 22)
@@ -450,6 +572,8 @@
 (test 1 remainder 13 -4)
 (test -1 modulo -13 -4)
 (test -1 remainder -13 -4)
+(test 0 modulo 0 86400)
+(test 0 modulo 0 -86400)
 (define (divtest n1 n2)
 	(= n1 (+ (* n2 (quotient n1 n2))
 		 (remainder n1 n2))))
@@ -465,6 +589,21 @@
 (test 288 lcm 32 -36)
 (test 1 lcm)
 
+(SECTION 6 5 5)
+;;; Implementations which don't allow division by 0 can have fragile
+;;; string->number.
+(define (test-string->number str)
+  (define ans (string->number str))
+  (cond ((not ans) #t) ((number? ans) #t) (else ans)))
+(for-each (lambda (str) (test #t test-string->number str))
+	  '("+#.#" "-#.#" "#.#" "1/0" "-1/0" "0/0"
+	    "+1/0i" "-1/0i" "0/0i" "0/0-0/0i" "1/0-1/0i" "-1/0+1/0i"
+	    "#i" "#e" "#" "#i0/0"))
+(cond ((number? (string->number "1+1i")) ;More kawa bait
+       (test #t number? (string->number "#i-i"))
+       (test #t number? (string->number "#i+i"))
+       (test #t number? (string->number "#i2+i"))))
+
 ;;;;From: fred@sce.carleton.ca (Fred J Kaudel)
 ;;; Modified by jaffer.
 (define (test-inexact)
@@ -477,17 +616,44 @@
   (define f0.0 (string->number "0.0"))
   (define f0.8 (string->number "0.8"))
   (define f1.0 (string->number "1.0"))
+  (define f1e300 (and (string->number "1+3i") (string->number "1e300")))
+  (define f1e-300 (and (string->number "1+3i") (string->number "1e-300")))
   (define wto write-test-obj)
-  (define dto display-test-obj)
   (define lto load-test-obj)
   (newline)
   (display ";testing inexact numbers; ")
   (newline)
+  (SECTION 6 2)
+  (test #f eqv? 1 f1.0)
+  (test #f eqv? 0 f0.0)
+  (test #t eqv? f0.0 f0.0)
+  (cond ((= f0.0 (- f0.0))
+	 (test #t eqv? f0.0 (- f0.0))
+	 (test #t equal? f0.0 (- f0.0))))
+  (cond ((= f0.0 (* -5 f0.0))
+	 (test #t eqv? f0.0 (* -5 f0.0))
+	 (test #t equal? f0.0 (* -5 f0.0))))
   (SECTION 6 5 5)
+  (and f1e300
+       (let ((f1e300+1e300i (make-rectangular f1e300 f1e300)))
+	 (test f1.0 'magnitude (/ (magnitude f1e300+1e300i)
+				  (* f1e300 (sqrt 2))))
+	 (test f.25 / f1e300+1e300i (* 4 f1e300+1e300i))))
+  (and f1e-300
+       (let ((f1e-300+1e-300i (make-rectangular f1e-300 f1e-300)))
+	 (test f1.0 'magnitude (round (/ (magnitude f1e-300+1e-300i)
+					 (* f1e-300 (sqrt 2)))))
+	 (test f.25 / f1e-300+1e-300i (* 4 f1e-300+1e-300i))))
+  (test #t = f0.0 f0.0)
+  (test #t = f0.0 (- f0.0))
+  (test #t = f0.0 (* -5 f0.0))
   (test #t inexact? f3.9)
-  (test #t 'inexact? (inexact? (max f3.9 4)))
-  (test f4.0 'max (max f3.9 4))
-  (test f4.0 'exact->inexact (exact->inexact 4))
+  (test #t 'max (inexact? (max f3.9 4)))
+  (test f4.0 max f3.9 4)
+  (test f4.0 exact->inexact 4)
+  (test f4.0 exact->inexact 4.0)
+  (test 4 inexact->exact 4)
+  (test 4 inexact->exact 4.0)
   (test (- f4.0) round (- f4.5))
   (test (- f4.0) round (- f3.5))
   (test (- f4.0) round (- f3.9))
@@ -496,47 +662,191 @@
   (test f1.0 round f0.8)
   (test f4.0 round f3.5)
   (test f4.0 round f4.5)
-  (set! write-test-obj (list f.25 f-3.25));.25 inexact errors less likely.
-  (set! display-test-obj (list f.25 f-3.25));.3 often has such errors (~10^-13)
+
+  ;;(test f1.0 expt f0.0 f0.0)
+  ;;(test f1.0 expt f0.0 0)
+  ;;(test f1.0 expt 0    f0.0)
+  (test f0.0 expt f0.0 f1.0)
+  (test f0.0 expt f0.0 1)
+  (test f0.0 expt 0    f1.0)
+  (test f1.0 expt -25  f0.0)
+  (test f1.0 expt f-3.25 f0.0)
+  (test f1.0 expt f-3.25 0)
+  ;;(test f0.0 expt f0.0 f-3.25)
+
+  (test (atan 1) atan 1 1)
+  (set! write-test-obj (list f.25 f-3.25)) ;.25 inexact errors less likely.
   (set! load-test-obj (list 'define 'foo (list 'quote write-test-obj)))
   (test #t call-with-output-file
-      "tmp3"
-      (lambda (test-file)
-	(write-char #\; test-file)
-	(display write-test-obj test-file)
-	(newline test-file)
-	(write load-test-obj test-file)
-	(output-port? test-file)))
+	"tmp3"
+	(lambda (test-file)
+	  (write-char #\; test-file)
+	  (display #\; test-file)
+	  (display ";" test-file)
+	  (write write-test-obj test-file)
+	  (newline test-file)
+	  (write load-test-obj test-file)
+	  (output-port? test-file)))
   (check-test-file "tmp3")
   (set! write-test-obj wto)
-  (set! display-test-obj dto)
   (set! load-test-obj lto)
   (let ((x (string->number "4195835.0"))
 	(y (string->number "3145727.0")))
     (test #t 'pentium-fdiv-bug (> f1.0 (- x (* (/ x y) y)))))
   (report-errs))
 
+(define (test-inexact-printing)
+  (let ((f0.0 (string->number "0.0"))
+	(f0.5 (string->number "0.5"))
+	(f1.0 (string->number "1.0"))
+	(f2.0 (string->number "2.0")))
+    (define log2
+      (let ((l2 (log 2)))
+	(lambda (x) (/ (log x) l2))))
+
+    (define (slow-frexp x)
+      (if (zero? x)
+	  (list f0.0 0)
+	  (let* ((l2 (log2 x))
+		 (e (floor (log2 x)))
+		 (e (if (= l2 e)
+			(inexact->exact e)
+			(+ (inexact->exact e) 1)))
+		 (f (/ x (expt 2 e))))
+	    (list f e))))
+
+    (define float-precision
+      (let ((mantissa-bits
+	     (do ((i 0 (+ i 1))
+		  (eps f1.0 (* f0.5 eps)))
+		 ((= f1.0 (+ f1.0 eps))
+		  i)))
+	    (minval
+	     (do ((x f1.0 (* f0.5 x)))
+		 ((zero? (* f0.5 x)) x))))
+	(lambda (x)
+	  (apply (lambda (f e)
+		   (let ((eps
+			  (cond ((= f1.0 f) (expt f2.0 (+ 1 (- e mantissa-bits))))
+				((zero? f) minval)
+				(else (expt f2.0 (- e mantissa-bits))))))
+		     (if (zero? eps)	;Happens if gradual underflow.
+			 minval
+			 eps)))
+		 (slow-frexp x)))))
+
+    (define (float-print-test x)
+      (define (testit number)
+	(eqv? number (string->number (number->string number))))
+      (let ((eps (float-precision x))
+	    (all-ok? #t))
+	(do ((j -100 (+ j 1)))
+	    ((or (not all-ok?) (> j 100)) all-ok?)
+	  (let* ((xx (+ x (* j eps)))
+		 (ok? (testit xx)))
+	    (cond ((not ok?)
+		   (display "Number readback failure for ")
+		   (display `(+ ,x (* ,j ,eps)))
+		   (newline)
+		   (display xx)
+		   (newline)
+		   (set! all-ok? #f))
+		  ;;   (else (display xx) (newline))
+		  )))))
+
+    (define (mult-float-print-test x)
+      (let ((res #t))
+	(for-each
+	 (lambda (mult)
+	   (or (float-print-test (* mult x)) (set! res #f)))
+	 (map string->number
+	      '("1.0" "10.0" "100.0" "1.0e20" "1.0e50" "1.0e100"
+		"0.1" "0.01" "0.001" "1.0e-20" "1.0e-50" "1.0e-100")))
+	res))
+
+    (SECTION 6 5 6)
+    (test #t 'float-print-test (float-print-test f0.0))
+    (test #t 'mult-float-print-test (mult-float-print-test f1.0))
+    (test #t 'mult-float-print-test (mult-float-print-test
+				     (string->number "3.0")))
+    (test #t 'mult-float-print-test (mult-float-print-test
+				     (string->number "7.0")))
+    (test #t 'mult-float-print-test (mult-float-print-test
+				     (string->number "3.1415926535897931")))
+    (test #t 'mult-float-print-test (mult-float-print-test
+				     (string->number "2.7182818284590451")))))
+
 (define (test-bignum)
   (define tb
     (lambda (n1 n2)
       (= n1 (+ (* n2 (quotient n1 n2))
 	       (remainder n1 n2)))))
+  (define b3-3 (string->number "33333333333333333333"))
+  (define b3-2 (string->number "33333333333333333332"))
+  (define b3-0 (string->number "33333333333333333330"))
+  (define b2-0 (string->number "2177452800"))
   (newline)
   (display ";testing bignums; ")
   (newline)
-  (section 6 5 5)
-  (test 0 modulo -2177452800 86400)
-  (test 0 modulo 2177452800 -86400)
-  (test 0 modulo 2177452800 86400)
-  (test 0 modulo -2177452800 -86400)
-  (test #t 'remainder (tb 281474976710655 65535))
-  (test #t 'remainder (tb 281474976710654 65535))
-  (SECTION 6 5 6)
-  (test 281474976710655 string->number "281474976710655")
-  (test "281474976710655" number->string 281474976710655)
+  (SECTION 6 5 7)
+  (test 0 modulo b3-3 3)
+  (test 0 modulo b3-3 -3)
+  (test 0 remainder b3-3 3)
+  (test 0 remainder b3-3 -3)
+  (test 2 modulo b3-2 3)
+  (test -1 modulo b3-2 -3)
+  (test 2 remainder b3-2 3)
+  (test 2 remainder b3-2 -3)
+  (test 1 modulo (- b3-2) 3)
+  (test -2 modulo (- b3-2) -3)
+  (test -2 remainder (- b3-2) 3)
+  (test -2 remainder (- b3-2) -3)
+
+  (test 3 modulo 3 b3-3)
+  (test b3-0 modulo -3 b3-3)
+  (test 3 remainder 3 b3-3)
+  (test -3 remainder -3 b3-3)
+  (test (- b3-0) modulo 3 (- b3-3))
+  (test -3 modulo -3 (- b3-3))
+  (test 3 remainder 3 (- b3-3))
+  (test -3 remainder -3 (- b3-3))
+
+  (test 0 modulo (- b2-0) 86400)
+  (test 0 modulo b2-0 -86400)
+  (test 0 modulo b2-0 86400)
+  (test 0 modulo (- b2-0) -86400)
+  (test 0 modulo  0 (- b2-0))
+  (test #t 'remainder (tb (string->number "281474976710655325431") 65535))
+  (test #t 'remainder (tb (string->number "281474976710655325430") 65535))
+
+  (let ((n (string->number
+	    "30414093201713378043612608166064768844377641568960512")))
+    (and n (exact? n)
+	 (do ((pow3 1 (* 3 pow3))
+	      (cnt 21 (+ -1 cnt)))
+	     ((negative? cnt)
+	      (zero? (modulo n pow3))))))
+
+  (SECTION 6 5 8)
+  (test "281474976710655325431" number->string
+	(string->number "281474976710655325431"))
   (report-errs))
 
-(SECTION 6 5 6)
+(define (test-numeric-predicates)
+  (let* ((big-ex (expt 2 150))
+	 (big-inex (exact->inexact big-ex)))
+    (newline)
+    (display ";testing bignum-inexact comparisons;")
+    (newline)
+    (SECTION 6 5 5)
+    (test #f = (+ big-ex 1) big-inex (- big-ex 1))
+    (test #f = big-inex (+ big-ex 1) (- big-ex 1))
+    (test #t < (- (inexact->exact big-inex) 1)
+	  big-inex
+	  (+ (inexact->exact big-inex) 1))))
+
+
+(SECTION 6 5 9)
 (test "0" number->string 0)
 (test "100" number->string 100)
 (test "100" number->string 256 16)
@@ -556,13 +866,17 @@
 (test #f string->number "3.3I")
 (test #f string->number "-")
 (test #f string->number "+")
+(test #t 'string->number (or (not (string->number "80000000" 16))
+			     (positive? (string->number "80000000" 16))))
+(test #t 'string->number (or (not (string->number "-80000000" 16))
+			     (negative? (string->number "-80000000" 16))))
 
 (SECTION 6 6)
 (test #t eqv? '#\  #\Space)
 (test #t eqv? #\space '#\Space)
 (test #t char? #\a)
 (test #t char? #\()
-(test #t char? #\ )
+(test #t char? #\space)
 (test #t char? '#\newline)
 
 (test #f char=? #\A #\B)
@@ -676,7 +990,7 @@
 (test #\a char-downcase #\a)
 (SECTION 6 7)
 (test #t string? "The word \"recursion\\\" has many meanings.")
-(test #t string? "")
+;(test #t string? "")
 (define f (make-string 3 #\*))
 (test "?**" 'string-set! (begin (string-set! f 0 #\?) f))
 (test "abc" string #\a #\b #\c)
@@ -774,7 +1088,7 @@
 (test #t string-ci>=? "A" "a")
 (SECTION 6 8)
 (test #t vector? '#(0 (2 2 2 2) "Anna"))
-(test #t vector? '#())
+;(test #t vector? '#())
 (test '#(a b c) vector 'a 'b 'c)
 (test '#() vector)
 (test 3 vector-length '#(0 (2 2 2 2) "Anna"))
@@ -789,10 +1103,10 @@
 (test '#() make-vector 0 'a)
 (SECTION 6 9)
 (test #t procedure? car)
-(test #f procedure? 'car)
+;(test #f procedure? 'car)
 (test #t procedure? (lambda (x) (* x x)))
 (test #f procedure? '(lambda (x) (* x x)))
-;(test #t call-with-current-continuation procedure?)
+(test #t call-with-current-continuation procedure?)
 (test 7 apply + (list 3 4))
 (test 7 apply (lambda (a b) (+ a b)) (list 3 4))
 (test 17 apply + 10 (list 3 4))
@@ -802,16 +1116,19 @@
 
 (test '(b e h) map cadr '((a b) (d e) (g h)))
 (test '(5 7 9) map + '(1 2 3) '(4 5 6))
+(test '(1 2 3) map + '(1 2 3))
+(test '(1 2 3) map * '(1 2 3))
+(test '(-1 -2 -3) map - '(1 2 3))
 (test '#(0 1 4 9 16) 'for-each
-	(let ((v (make-vector 5)))
-		(for-each (lambda (i) (vector-set! v i (* i i)))
-			'(0 1 2 3 4))
-		v))
+      (let ((v (make-vector 5)))
+	(for-each (lambda (i) (vector-set! v i (* i i)))
+		  '(0 1 2 3 4))
+	v))
 (test -3 call-with-current-continuation
-		(lambda (exit)
-		 (for-each (lambda (x) (if (negative? x) (exit x)))
-		 	'(54 0 37 -3 245 19))
-		#t))
+      (lambda (exit)
+	(for-each (lambda (x) (if (negative? x) (exit x)))
+		  '(54 0 37 -3 245 19))
+	#t))
 (define list-length
  (lambda (obj)
   (call-with-current-continuation
@@ -829,7 +1146,7 @@
 ;;; other than escape procedures.  I am indebted to
 ;;; raja@copper.ucs.indiana.edu (Raja Sooriamurthi) for fixing this
 ;;; code.  The function leaf-eq? compares the leaves of 2 arbitrary
-;;; trees constructed of conses.  
+;;; trees constructed of conses.
 (define (next-leaf-generator obj eot)
   (letrec ((return #f)
 	   (cont (lambda (x)
@@ -897,8 +1214,8 @@
 (SECTION 6 10 1)
 (test #t input-port? (current-input-port))
 (test #t output-port? (current-output-port))
-(test #t call-with-input-file "test.scm" input-port?)
-(define this-file (open-input-file "test.scm"))
+(test #t call-with-input-file "r4rstest.scm" input-port?)
+(define this-file (open-input-file "r4rstest.scm"))
 (test #t input-port? this-file)
 (SECTION 6 10 2)
 (test #\; peek-char this-file)
@@ -919,21 +1236,23 @@
 	    (test #t eof-object? (read-char test-file))
 	    (input-port? test-file))))
   (test #\; read-char test-file)
-  (test display-test-obj read test-file)
+  (test #\; read-char test-file)
+  (test #\; read-char test-file)
+  (test write-test-obj read test-file)
   (test load-test-obj read test-file)
   (close-input-port test-file))
 (SECTION 6 10 3)
 (define write-test-obj
-  '(#t #f #\a () 9739 -3 . #((test) "te \" \" st" "" test #() b c)))
-(define display-test-obj
-  '(#t #f a () 9739 -3 . #((test) te " " st test #() b c)))
+  '(#t #f a () 9739 -3 . #((test) "te \" \" st" "" test #() b c)))
 (define load-test-obj
   (list 'define 'foo (list 'quote write-test-obj)))
 (test #t call-with-output-file
       "tmp1"
       (lambda (test-file)
 	(write-char #\; test-file)
-	(display write-test-obj test-file)
+	(display #\; test-file)
+	(display ";" test-file)
+	(write write-test-obj test-file)
 	(newline test-file)
 	(write load-test-obj test-file)
 	(output-port? test-file)))
@@ -941,7 +1260,9 @@
 
 (define test-file (open-output-file "tmp2"))
 (write-char #\; test-file)
-(display write-test-obj test-file)
+(display #\; test-file)
+(display ";" test-file)
+(write write-test-obj test-file)
 (newline test-file)
 (write load-test-obj test-file)
 (test #t output-port? test-file)
@@ -967,12 +1288,19 @@
   (report-errs))
 
 (report-errs)
-(if (and (string->number "0.0") (inexact? (string->number "0.0")))
-    (test-inexact))
+(let ((have-inexacts?
+       (and (string->number "0.0") (inexact? (string->number "0.0"))))
+      (have-bignums?
+       (let ((n (string->number
+		 "1427247692705959881058285969449495136382746625")))
+	 (and n (exact? n)))))
+  (cond (have-inexacts?
+	 (test-inexact)
+	 (test-inexact-printing)))
+  (if have-bignums? (test-bignum))
+  (if (and have-inexacts? have-bignums?)
+      (test-numeric-predicates)))
 
-(let ((n (string->number "281474976710655")))
-  (if (and n (exact? n))
-      (test-bignum)))
 (newline)
 (display "To fully test continuations, Scheme 4, and DELAY/FORCE do:")
 (newline)
