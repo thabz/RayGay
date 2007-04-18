@@ -625,6 +625,7 @@ void test_io() {
 void test_call_cc() {
     Scheme* s = new Scheme();
     assert_eval(s, "(call-with-current-continuation procedure?)", "#t");
+    assert_eval(s, "(call/cc (lambda (exit) (for-each (lambda (x) (if (negative? x) (exit x))) '(54 0 37 -3 245 19)) #t))", "-3");
 }
 
 int main(int argc, char *argv[]) {
