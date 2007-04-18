@@ -24,6 +24,7 @@ class SchemeObject {
 		    UNSPECIFIED,
  		    PROCEDURE,
  		    MACRO,
+ 		    CONTINUATION,
  		    INPUT_PORT,
  		    EOFTYPE,
  		    OUTPUT_PORT
@@ -125,10 +126,12 @@ class SchemeChar : public SchemeObject {
 class SchemeContinuation : public SchemeObject {
     public:
         SchemeContinuation();
-        void call();
-    private:    
+        string toString();
+        ObjectType type() { return CONTINUATION; };
+        void call(SchemeObject* arg);
+
         ::jmp_buf jmpbuf;
-    
+        SchemeObject* result;
 };
 
 class SchemeInputPort : public SchemeObject {

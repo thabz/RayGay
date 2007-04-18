@@ -150,10 +150,10 @@ Scheme::Scheme() {
 	assign("char-upcase" ,1,0,0, (SchemeObject* (*)()) s_char_upcase);
 	assign("char-alphabetic?" ,1,0,0, (SchemeObject* (*)()) s_char_alphabetic_p);
 	assign("char-numeric?" ,1,0,0, (SchemeObject* (*)()) s_char_numeric_p);
-	assign("char-whitespace?" ,1,0,0, (SchemeObject* (*)()) s_char_whitespace_p);
-	assign("char-upper-case?" ,1,0,0, (SchemeObject* (*)()) s_char_upper_case_p);
-	assign("char-lower-case?" ,1,0,0, (SchemeObject* (*)()) s_char_lower_case_p);
-	assign("symgen"      ,0,0,0, (SchemeObject* (*)()) s_symgen);
+	assign("char-whitespace?"      ,1,0,0, (SchemeObject* (*)()) s_char_whitespace_p);
+	assign("char-upper-case?"      ,1,0,0, (SchemeObject* (*)()) s_char_upper_case_p);
+	assign("char-lower-case?"      ,1,0,0, (SchemeObject* (*)()) s_char_lower_case_p);
+	assign("symgen"                ,0,0,0, (SchemeObject* (*)()) s_symgen);
 	
 	assign("current-input-port"    ,0,0,0, (SchemeObject* (*)()) s_current_input_port);
 	assign("current-output-port"   ,0,0,0, (SchemeObject* (*)()) s_current_output_port);
@@ -170,6 +170,9 @@ Scheme::Scheme() {
 	assign("close-output-port"     ,1,0,0, (SchemeObject* (*)()) s_close_output_port);
 	assign("read-char"             ,0,1,0, (SchemeObject* (*)()) s_read_char);
 	assign("peek-char"             ,0,1,0, (SchemeObject* (*)()) s_peek_char);
+
+	assign("call-with-current-continuation" ,1,0,0, (SchemeObject* (*)()) s_call_cc);
+	assign("call/cc"               ,1,0,0, (SchemeObject* (*)()) s_call_cc);
 	
     current_input_port = new SchemeInputPort(&cin);
     current_output_port = new SchemeOutputPort(&cout);
@@ -276,6 +279,18 @@ SchemeBool* s_list_p(SchemeObject* o) {
             return S_FALSE;
         }
     }
+}
+
+SchemeObject* s_call_cc(SchemeObject* s_proc) {
+    assert_arg_type("proc", 1, s_procedure_p, s_proc);
+    SchemeContinuation* s_escape = new SchemeContinuation();
+    int kk = setjmp(s_escape->jmpbuf);
+    if (kk == 0) {
+        SchemeObject* result = interpreter->call_procedure_1(s_proc, s_escape);
+        // s_proc didn't call the escape-continuation
+        return result;
+    }
+    return s_escape->result;
 }
 
 // args is a list (arg1 arg2 ... argn). argn must be a list. proc is called with the arguments
@@ -463,7 +478,7 @@ SchemeBool* s_string_p(SchemeObject* p) {
 
 // (procedure? p)
 SchemeBool* s_procedure_p(SchemeObject* p) {
-    return (p->type() == SchemeObject::PROCEDURE) ? S_TRUE : S_FALSE;
+    return (p->type() == SchemeObject::PROCEDURE || p->type() == SchemeObject::CONTINUATION) ? S_TRUE : S_FALSE;
 }
 
 // (number? p)

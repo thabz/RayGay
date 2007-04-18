@@ -221,11 +221,15 @@ string SchemeMacro::toString() {
 // Continuation
 //-----------------------------------------------------------
 SchemeContinuation::SchemeContinuation() {
-    
 }
 
-void SchemeContinuation::call() {
-    longjmp(jmpbuf,1);
+void SchemeContinuation::call(SchemeObject* arg) {
+    this->result = arg;
+    longjmp(jmpbuf, 1);
+}
+
+string SchemeContinuation::toString() {
+    return "#<continuation>";
 }
 
 //-----------------------------------------------------------

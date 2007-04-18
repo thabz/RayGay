@@ -267,6 +267,10 @@ fn_ptr eval_list() {
             global_arg1 = proc;
             global_arg2 = args;
             return (fn_ptr)&eval_procedure_call;
+        } else if (proc->type() == SchemeObject::CONTINUATION) {
+            global_arg1 = s_car(cdr);
+            eval();
+            static_cast<SchemeContinuation*>(proc)->call(global_ret);
         } else {
             throw scheme_exception("Wrong type to apply : " + proc->toString());	
         }

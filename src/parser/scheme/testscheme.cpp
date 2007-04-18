@@ -622,6 +622,11 @@ void test_io() {
     assert_eval(s, "(output-port? (current-output-port))","#t");
 }
 
+void test_call_cc() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(call-with-current-continuation procedure?)", "#t");
+}
+
 int main(int argc, char *argv[]) {
     try {
         cout << "Test tokenizer...       ";
@@ -689,6 +694,10 @@ int main(int argc, char *argv[]) {
 
         cout << "Test map...             ";
         test_map();
+        cout << " OK" << endl;
+
+        cout << "Test call/cc...         ";
+        test_call_cc();
         cout << " OK" << endl;
 
         cout << "Test I/O...             ";
