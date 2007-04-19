@@ -62,5 +62,9 @@
                       "|"
                       (number->string count))))))
 
+(defmacro values x
+   `(list ,@x))
 
+(defmacro call-with-values (f g)
+   `(apply ,g (,f)))
 
