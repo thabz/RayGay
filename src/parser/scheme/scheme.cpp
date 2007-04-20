@@ -281,6 +281,7 @@ SchemeBool* s_list_p(SchemeObject* o) {
     }
 }
 
+// TODO: Gør denne til en intern function med tail-optimization
 SchemeObject* s_call_cc(SchemeObject* s_proc) {
     assert_arg_type("proc", 1, s_procedure_p, s_proc);
     SchemeContinuation* s_escape = new SchemeContinuation();
@@ -293,6 +294,7 @@ SchemeObject* s_call_cc(SchemeObject* s_proc) {
     return s_escape->result;
 }
 
+// TODO: Gør denne til en intern function (igen) med tail-optimization i kaldet til proc.
 // args is a list (arg1 arg2 ... argn). argn must be a list. proc is called with the arguments
 // (append (list arg1 arg2 ...) argn)
 SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args) {
