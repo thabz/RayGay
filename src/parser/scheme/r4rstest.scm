@@ -1293,7 +1293,7 @@
       (have-bignums?
        (let ((n (string->number
 		 "1427247692705959881058285969449495136382746625")))
-	 (and n (exact? n)))))
+	 (and #f n (exact? n)))))
   (cond (have-inexacts?
 	 (test-inexact)
 	 (test-inexact-printing)))

@@ -39,6 +39,9 @@ SchemeOutputPort* current_output_port = NULL;
 
 Interpreter* interpreter;
 
+// Global parser used by s_read()
+Parser* global_parser = new Parser();
+
 Scheme::Scheme() {
     top_level_bindings = new BindingEnvironment(NULL);
 //	assign("apply"      ,1,0,1, (SchemeObject* (*)()) s_apply);
@@ -170,6 +173,8 @@ Scheme::Scheme() {
 	assign("close-output-port"     ,1,0,0, (SchemeObject* (*)()) s_close_output_port);
 	assign("read-char"             ,0,1,0, (SchemeObject* (*)()) s_read_char);
 	assign("peek-char"             ,0,1,0, (SchemeObject* (*)()) s_peek_char);
+	assign("write-char"            ,1,1,0, (SchemeObject* (*)()) s_write_char);
+	assign("read"                  ,0,1,0, (SchemeObject* (*)()) s_read);
 
 	assign("apply"                 ,1,0,1, (SchemeObject* (*)()) s_apply);
 	assign("call-with-current-continuation" ,1,0,0, (SchemeObject* (*)()) s_call_cc);
@@ -1497,6 +1502,31 @@ SchemeObject* s_peek_char(SchemeObject* s_port) {
         return char2scm(c);
     }
 }
+
+SchemeObject* s_write_char(SchemeObject* s_char, SchemeObject* port) {
+    assert_arg_type("write-char", 1, s_char_p, s_char);
+    ostream* os;
+    if (port == S_UNSPECIFIED) {
+        os = s_current_output_port()->os;
+    } else {
+        assert_arg_type("write-char", 2, s_output_port_p, port);
+        os = static_cast<SchemeOutputPort*>(port)->os;
+    }
+    (*os) << scm2char(s_char);
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* s_read(SchemeObject* s_port) {
+    istream* is;
+    if (s_port == S_UNSPECIFIED) {
+        is = s_current_input_port()->is;
+    } else {
+        assert_arg_type("read", 1, s_input_port_p, s_port);
+        is = static_cast<SchemeInputPort*>(s_port)->is;
+    }
+    return global_parser->read(is);
+}
+
 
 SchemeObject* s_write(SchemeObject* o, SchemeObject* port) {
     ostream* os;

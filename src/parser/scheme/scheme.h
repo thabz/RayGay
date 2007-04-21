@@ -200,6 +200,8 @@ SchemeObject* s_with_input_from_file(SchemeObject* s_filename, SchemeObject* thu
 SchemeObject* s_with_output_to_file(SchemeObject* s_filename, SchemeObject* thunk);
 SchemeObject* s_read_char(SchemeObject* s_port);
 SchemeObject* s_peek_char(SchemeObject* s_port);
+SchemeObject* s_write_char(SchemeObject* s_char, SchemeObject* s_port);
+SchemeObject* s_read(SchemeObject* s_port);
 SchemeObject* s_write(SchemeObject* o, SchemeObject* port);
 SchemeObject* s_display(SchemeObject* o, SchemeObject* port); 
 SchemeObject* s_newline(SchemeObject* port );
