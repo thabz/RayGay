@@ -2,21 +2,21 @@
 #include "scheme.h"
 #include <vector>
 
-Parser::Parser(Lexer* lexer) {
-    this->lexer = lexer;
+Parser::Parser() {
+    this->lexer = new Lexer();
 }
 
-SchemePair* Parser::parse() {
+SchemePair* Parser::parse(istream* is) {
     SchemePair* result = S_EMPTY_LIST;
 	SchemeObject* o;
-    while ((o = read_simple()) != NULL) {
+    while ((o = read(is)) != NULL) {
 		result = s_cons(o, result);
     }
 	return s_reverse(result);
 }
 
-SchemeObject* Parser::read_simple() {
-    Lexer::Token token = lexer->nextToken();
+SchemeObject* Parser::read(istream* is) {
+    Lexer::Token token = lexer->nextToken(is);
     switch(token) {
         case Lexer::NUMBER :
            return new SchemeNumber(lexer->getNumber());
@@ -29,17 +29,17 @@ SchemeObject* Parser::read_simple() {
         case Lexer::SYMBOL :
            return SchemeSymbol::create(lexer->getString());
         case Lexer::OPEN_PAREN :
-           return read_list();
+           return read_list(is);
         case Lexer::HASH_OPEN_PAREN :
-           return s_vector(static_cast<SchemePair*>(read_list()));
+           return s_vector(static_cast<SchemePair*>(read_list(is)));
         case Lexer::QUOTE :
-           return read_quoted();
+           return read_quoted(is);
         case Lexer::BACKQUOTE :
-           return read_quasiquoted();
+           return read_quasiquoted(is);
         case Lexer::COMMA :
-           return read_unquoted();
+           return read_unquoted(is);
         case Lexer::COMMA_AT :
-           return read_unquote_spliced();
+           return read_unquote_spliced(is);
         case Lexer::END :
   		   return NULL;
         case Lexer::ERROR :
@@ -50,23 +50,23 @@ SchemeObject* Parser::read_simple() {
     }    
 }
 
-SchemeObject* Parser::read_list() {
+SchemeObject* Parser::read_list(istream* is) {
     SchemeObject* result = S_EMPTY_LIST;
     Lexer::Token token;
     while(true) {
-		token = lexer->nextToken();
+		token = lexer->nextToken(is);
         if (token == Lexer::CLOSE_PAREN) {
             // FIXME: We're leaking the old list. Garbage collect?
             return s_reverse(result);
         } else if (token == Lexer::PERIOD) {
-            SchemeObject* cdr = read_simple();
+            SchemeObject* cdr = read(is);
             SchemePair* rr = s_reverse(result);
             SchemePair* r = rr;
             while(r->cdr != S_EMPTY_LIST) {
                 r = r->cdrAsPair();
             }
             r->cdr = cdr;
-            if (lexer->nextToken() != Lexer::CLOSE_PAREN) {
+            if (lexer->nextToken(is) != Lexer::CLOSE_PAREN) {
                 throw scheme_exception("Invalid pair");
             }
             return rr;
@@ -74,27 +74,27 @@ SchemeObject* Parser::read_list() {
             throw scheme_exception("Unexpected end of input");
         } else {
 			lexer->putBack(token);
-            result = s_cons(read_simple(), result);
+            result = s_cons(read(is), result);
         }
     }
 }
 
-SchemeObject* Parser::read_quoted() {
-    SchemeObject* list = s_cons(read_simple(), S_EMPTY_LIST);
+SchemeObject* Parser::read_quoted(istream* is) {
+    SchemeObject* list = s_cons(read(is), S_EMPTY_LIST);
     return s_cons(SchemeSymbol::create("quote"), list);
 }
 
-SchemeObject* Parser::read_quasiquoted() {
-    SchemeObject* list = s_cons(read_simple(), S_EMPTY_LIST);
+SchemeObject* Parser::read_quasiquoted(istream* is) {
+    SchemeObject* list = s_cons(read(is), S_EMPTY_LIST);
     return s_cons(SchemeSymbol::create("quasiquote"), list);
 }
 
-SchemeObject* Parser::read_unquoted() {
-    SchemeObject* list = s_cons(read_simple(), S_EMPTY_LIST);
+SchemeObject* Parser::read_unquoted(istream* is) {
+    SchemeObject* list = s_cons(read(is), S_EMPTY_LIST);
     return s_cons(SchemeSymbol::create("unquote"), list);
 }
 
-SchemeObject* Parser::read_unquote_spliced() {
-    SchemeObject* list = s_cons(read_simple(), S_EMPTY_LIST);
+SchemeObject* Parser::read_unquote_spliced(istream* is) {
+    SchemeObject* list = s_cons(read(is), S_EMPTY_LIST);
     return s_cons(SchemeSymbol::create("unquote-splicing"), list);
 }

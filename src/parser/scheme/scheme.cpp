@@ -203,9 +203,8 @@ Scheme::Scheme() {
 }
 
 SchemeObject* Scheme::eval(istream* is) {
-    Lexer* lexer = new Lexer(is);
-    Parser* parser = new Parser(lexer);
-    SchemePair* parse_tree = parser->parse();
+    Parser* parser = new Parser();
+    SchemePair* parse_tree = parser->parse(is);
     interpreter = new Interpreter(parse_tree, top_level_bindings);
     return interpreter->interpret();
 }
@@ -227,7 +226,6 @@ void Scheme::assign(string variable, SchemeObject* value) {
     SchemeSymbol* name = SchemeSymbol::create(variable);
     top_level_bindings->put(name, value);
 }
-
 
 // -----------------------------------------------------
 // Procedures

@@ -9,16 +9,16 @@
 class Parser 
 {
     public:
-	    Parser(Lexer* lexer);
-	    SchemePair* parse();
+	    Parser();
+	    SchemePair* parse(istream* is);
+        SchemeObject* read(istream* is);
 
     private:
-        SchemeObject* read_simple();
-        SchemeObject* read_list();    
-        SchemeObject* read_quoted();    
-        SchemeObject* read_unquoted();    
-        SchemeObject* read_unquote_spliced();    
-        SchemeObject* read_quasiquoted();    
+        SchemeObject* read_list(istream* is);    
+        SchemeObject* read_quoted(istream* is);    
+        SchemeObject* read_unquoted(istream* is);    
+        SchemeObject* read_unquote_spliced(istream* is);    
+        SchemeObject* read_quasiquoted(istream* is);    
 
         Lexer* lexer;
 };

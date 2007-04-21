@@ -2,6 +2,7 @@
 #include "scheme.h"
 #include "lexer.h"
 #include "parser.h"
+#include <sstream>
 
 /*
 assert_eval(s, "", "");
@@ -35,45 +36,50 @@ void assert_eval(Scheme* s, string expr, string res) {
 //#define assert_eval(s,e,b)  
 
 void test_tokenizer() {
-    Lexer* l = new Lexer("(+ 1.5 (2 . \"\\\\\\aHej\\\"\") .x)");
-    assert(l->nextToken() == Lexer::OPEN_PAREN);
-    assert(l->nextToken() == Lexer::SYMBOL);
+    istream* is = new istringstream("(+ 1.5 (2 . \"\\\\\\aHej\\\"\") .x)");
+    Lexer* l = new Lexer();
+    assert(l->nextToken(is) == Lexer::OPEN_PAREN);
+    assert(l->nextToken(is) == Lexer::SYMBOL);
     assert(l->getString() == "+");
-    assert(l->nextToken() == Lexer::NUMBER);
+    assert(l->nextToken(is) == Lexer::NUMBER);
     assert(l->getNumber() == 1.5);
-    assert(l->nextToken() == Lexer::OPEN_PAREN);
-    assert(l->nextToken() == Lexer::NUMBER);
+    assert(l->nextToken(is) == Lexer::OPEN_PAREN);
+    assert(l->nextToken(is) == Lexer::NUMBER);
     assert(l->getNumber() == 2);
-    assert(l->nextToken() == Lexer::PERIOD);
-    assert(l->nextToken() == Lexer::STRING);
+    assert(l->nextToken(is) == Lexer::PERIOD);
+    assert(l->nextToken(is) == Lexer::STRING);
     assert(l->getString() == "\\aHej\"");
-    assert(l->nextToken() == Lexer::CLOSE_PAREN);
-    assert(l->nextToken() == Lexer::SYMBOL);
-    assert(l->nextToken() == Lexer::CLOSE_PAREN);
-    assert(l->nextToken() == Lexer::END);
-    delete l;
-
-    l = new Lexer("#f #tf");
-    assert(l->nextToken() == Lexer::BOOLEAN);
-    assert(l->getBool() == false);
-    assert(l->nextToken() == Lexer::BOOLEAN);
-    assert(l->getBool() == true);
-    assert(l->nextToken() == Lexer::SYMBOL);
-    assert(l->nextToken() == Lexer::END);
+    assert(l->nextToken(is) == Lexer::CLOSE_PAREN);
+    assert(l->nextToken(is) == Lexer::SYMBOL);
+    assert(l->nextToken(is) == Lexer::CLOSE_PAREN);
+    assert(l->nextToken(is) == Lexer::END);
+    delete is;
     
-    l = new Lexer("a `b #| comment #| nested comment |# ... |# ");
-    assert(l->nextToken() == Lexer::SYMBOL);
+    is = new istringstream("#f #tf");
+    assert(l->nextToken(is) == Lexer::BOOLEAN);
+    assert(l->getBool() == false);
+    assert(l->nextToken(is) == Lexer::BOOLEAN);
+    assert(l->getBool() == true);
+    assert(l->nextToken(is) == Lexer::SYMBOL);
+    assert(l->nextToken(is) == Lexer::END);
+    delete is;
+    
+    is = new istringstream("a `b #| comment #| nested comment |# ... |# ");
+    assert(l->nextToken(is) == Lexer::SYMBOL);
     assert(l->getString() == "a");
-    assert(l->nextToken() == Lexer::BACKQUOTE);
-    assert(l->nextToken() == Lexer::SYMBOL);
+    assert(l->nextToken(is) == Lexer::BACKQUOTE);
+    assert(l->nextToken(is) == Lexer::SYMBOL);
     assert(l->getString() == "b");
-    assert(l->nextToken() == Lexer::END);
+    assert(l->nextToken(is) == Lexer::END);
+    delete is;
+
+    delete l;
 }
 
 void test_parser() {
-    Lexer* l = new Lexer("(+ 1.5 (list? \"Hej\"))");
-    Parser* p = new Parser(l);
-    SchemePair* t = p->parse();
+    istream* is = new istringstream("(+ 1.5 (list? \"Hej\"))");
+    Parser* p = new Parser();
+    SchemePair* t = p->parse(is);
     SchemePair* e = static_cast<SchemePair*> (t->car);
     assert(e->car->type() == SchemeObject::SYMBOL);
     assert(e->cdrAsPair()->car->type() == SchemeObject::NUMBER);
@@ -84,9 +90,8 @@ void test_parser() {
     assert(inner->cdrAsPair()->cdrAsPair()->type() == SchemeObject::EMPTY_LIST);
     assert(e->cdrAsPair()->cdrAsPair()->cdrAsPair()->type() == SchemeObject::EMPTY_LIST);
     
-    l = new Lexer("'(x . y)");
-    p = new Parser(l);
-    t = p->parse();
+    is = new istringstream("'(x . y)");
+    t = p->parse(is);
     e = static_cast<SchemePair*> (t->car);
     assert(e->car->type() == SchemeObject::SYMBOL);
     assert(e->car->toString() == "quote");
@@ -95,9 +100,8 @@ void test_parser() {
     assert(static_cast<SchemePair*>(e->cdrAsPair()->car)->car->toString() == "x");
     assert(static_cast<SchemePair*>(e->cdrAsPair()->car)->cdr->toString() == "y");
 
-    l = new Lexer("`(a b)");
-    p = new Parser(l);
-    t = p->parse();
+    is = new istringstream("`(a b)");
+    t = p->parse(is);
     e = static_cast<SchemePair*> (t->car);
     assert(e->car->type() == SchemeObject::SYMBOL);
     assert(e->car->toString() == "quasiquote");

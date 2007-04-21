@@ -3,15 +3,7 @@
 #include <sstream>
 #include <cctype>
 
-// Used for testing
-Lexer::Lexer(string data) {
-    this->is = new istringstream(data);
-    curline = 0;
-};
-
-
-Lexer::Lexer(istream* is) {
-    this->is = is;
+Lexer::Lexer() {
     curline = 0;
 }
 
@@ -19,7 +11,7 @@ int char_names_num = 2;
 char* char_names[] = {"space","newline"};
 char char_values[] = {' ', '\n'};
 
-Lexer::Token Lexer::nextToken() {
+Lexer::Token Lexer::nextToken(istream* is) {
     char n,c;
     if (!cache.empty()) {
         Token t = cache.front();
@@ -27,19 +19,13 @@ Lexer::Token Lexer::nextToken() {
         return t;
     }
     if (is->eof()) {
-        if (!popInputStream()) {
-            return Lexer::END;
-        }
+        return Lexer::END;
     }
     while(!is->fail()) 
     {
         c = is->get();
         if (is->eof() || c == -1) {
-            if (popInputStream()) {
-                continue;
-            } else {
-                return Lexer::END;
-            }
+            return Lexer::END;
         }
         if (c == '\n') {
             curline++;
@@ -204,22 +190,4 @@ Lexer::Token Lexer::nextToken() {
 
 void Lexer::putBack(Token token) {
     cache.push_front(token);
-}
-
-void Lexer::pushInputStream(istream* new_is) {
-    is_stack.push_front(is);
-    curline_stack.push_front(curline);
-    is = new_is;
-    curline = 0;
-}
-
-bool Lexer::popInputStream() {
-    if (!is_stack.empty()) {
-        curline = curline_stack.front();
-        curline_stack.pop_front();
-        is = is_stack.front();
-        is_stack.pop_front();
-        return true;
-    }
-    return false;
 }

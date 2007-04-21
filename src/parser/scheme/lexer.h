@@ -28,10 +28,8 @@ class Lexer
             ERROR,
             END
         };
-
-        Lexer(string data);
-        Lexer(istream* is);
-        Token nextToken();
+        Lexer::Lexer();
+        Token nextToken(istream* is);
         void putBack(Token token);
         string getString() { return str; };
         double getNumber() { return number; };
@@ -39,12 +37,7 @@ class Lexer
         char getChar() { return chr; };
         int getCurline() { return curline; };
         
-        void pushInputStream(istream* is);
-        
     private:
-        bool popInputStream();
-        
-        istream* is;
         string str;
         double number;
         bool boolean;
@@ -53,7 +46,6 @@ class Lexer
         list<istream*> is_stack;
         list<int> curline_stack;
         list<Token> cache;
-        
 };
 
 #endif
