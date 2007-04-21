@@ -308,6 +308,9 @@ void test_math() {
     assert_eval(s, "(gcd)" , "0");
     assert_eval(s, "(gcd 5)" , "5");
     assert_eval(s, "(gcd -4)" , "4");
+    assert_eval(s, "(gcd -4 0)" , "4");
+    assert_eval(s, "(gcd 0 4)" , "4");
+    assert_eval(s, "(gcd 0 -4)" , "4");
     assert_eval(s, "(gcd 32 -36)" , "4");
     assert_eval(s, "(gcd 32 36 4 4 12)" , "4");
     assert_eval(s, "(lcm)" , "1");

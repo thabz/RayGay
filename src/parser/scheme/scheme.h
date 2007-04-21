@@ -145,7 +145,7 @@ SchemeNumber* s_exp(SchemeNumber* n);
 SchemeNumber* s_log(SchemeNumber* n);
 SchemeNumber* s_min(SchemeNumber* n, SchemePair* l);
 SchemeNumber* s_max(SchemeNumber* n, SchemePair* l);
-SchemeNumber* s_gcd(SchemeObject* l);
+SchemeObject* s_gcd(SchemeObject* l);
 SchemeNumber* s_lcm(SchemeObject* l);
 SchemeNumber* s_round(SchemeObject* n);
 SchemeNumber* s_floor(SchemeObject* n);

@@ -989,7 +989,7 @@ SchemeNumber* s_max(SchemeNumber* first, SchemePair* rest) {
 }
 
 int gcd(int a, int b) {
-    int t = 0;
+    int t = a;
     while(b != 0) {
         t = b;
         b = a % b;
@@ -999,18 +999,18 @@ int gcd(int a, int b) {
 }
 
 // Using Euclids algorithm and that gcd is associative thus gcd(a,b,c) = gcd(a,(gcd(b,c))) = gcd(gcd(a,b),c).
-SchemeNumber* s_gcd(SchemeObject* l) {
+SchemeObject* s_gcd(SchemeObject* l) {
     if (s_null_p(l) == S_TRUE) {
         return S_ZERO;
-    };
+    }
     assert_arg_type("gcd", 1, s_pair_p, l);
     assert_arg_type("gcd", 1, s_integer_p, s_car(l));
     if (s_null_p(s_cdr(l)) == S_TRUE) {
         return make_number(abs(int(static_cast<SchemeNumber*>(s_car(l))->number)));
     }
-    int a = abs(int(static_cast<SchemeNumber*>(s_car(l))->number));
-    int b = abs(int(static_cast<SchemeNumber*>(s_gcd(s_cdr(l)))->number));
-    return make_number(gcd(a,b));
+    int a = int(static_cast<SchemeNumber*>(s_car(l))->number);
+    int b = int(static_cast<SchemeNumber*>(s_gcd(s_cdr(l)))->number);
+    return make_number(abs(gcd(a,b)));
 }
 
 // Using the property gcd(a,b) * lcm(a,b) = a * b and that lcm(a,b,c) = lcm(lcm(a,b),c) = lcm(a,lcm(b,c))
