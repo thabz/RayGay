@@ -23,6 +23,7 @@ class SchemeObject {
 		    PAIR,
 		    UNSPECIFIED,
  		    PROCEDURE,
+ 		    INTERNAL_PROCEDURE,
  		    MACRO,
  		    CONTINUATION,
  		    INPUT_PORT,
@@ -173,6 +174,15 @@ class SchemeProcedure : public SchemeObject
         SchemeObject* s_req;
         SchemeSymbol* s_rst;
         BindingEnvironment* envt;
+};
+
+class SchemeInternalProcedure : public SchemeObject {
+    public:
+        SchemeInternalProcedure(string n) : name(n) {};    
+        ObjectType type() { return INTERNAL_PROCEDURE; };
+        string toString();      
+        
+        string name;
 };
 
 class SchemeMacro : public SchemeProcedure {

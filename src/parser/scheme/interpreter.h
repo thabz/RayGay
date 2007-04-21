@@ -27,8 +27,10 @@ class Interpreter
 SchemeObject* trampoline(fn_ptr);
 fn_ptr eval();
 fn_ptr eval_sequence();
-fn_ptr eval_define();
 fn_ptr eval_multi();
+fn_ptr eval_define();
+fn_ptr eval_apply();
+fn_ptr eval_apply_real();
 fn_ptr eval_procedure_call();
 fn_ptr eval_let();
 fn_ptr eval_letstar();

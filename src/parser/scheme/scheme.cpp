@@ -41,7 +41,7 @@ Interpreter* interpreter;
 
 Scheme::Scheme() {
     top_level_bindings = new BindingEnvironment(NULL);
-	assign("apply"      ,1,0,1, (SchemeObject* (*)()) s_apply);
+//	assign("apply"      ,1,0,1, (SchemeObject* (*)()) s_apply);
 	assign("map"        ,1,0,1, (SchemeObject* (*)()) s_map);
 	assign("for-each"   ,1,0,1, (SchemeObject* (*)()) s_for_each);
 	assign("equal?"     ,2,0,0, (SchemeObject* (*)()) s_equal_p);
@@ -171,9 +171,28 @@ Scheme::Scheme() {
 	assign("read-char"             ,0,1,0, (SchemeObject* (*)()) s_read_char);
 	assign("peek-char"             ,0,1,0, (SchemeObject* (*)()) s_peek_char);
 
+	assign("apply"                 ,1,0,1, (SchemeObject* (*)()) s_apply);
 	assign("call-with-current-continuation" ,1,0,0, (SchemeObject* (*)()) s_call_cc);
 	assign("call/cc"               ,1,0,0, (SchemeObject* (*)()) s_call_cc);
 	
+    assign("if", new SchemeInternalProcedure("if"));
+    //assign("apply", new SchemeInternalProcedure("apply"));
+    assign("cond", new SchemeInternalProcedure("cond"));
+    assign("case", new SchemeInternalProcedure("case"));
+    assign("do", new SchemeInternalProcedure("do"));
+    assign("let", new SchemeInternalProcedure("let"));
+    assign("let*", new SchemeInternalProcedure("let*"));
+    assign("letrec", new SchemeInternalProcedure("letrec"));
+    assign("begin", new SchemeInternalProcedure("begin"));
+    assign("and", new SchemeInternalProcedure("and"));
+    assign("or", new SchemeInternalProcedure("or"));
+    assign("lambda", new SchemeInternalProcedure("lambda"));
+    assign("quote", new SchemeInternalProcedure("quote"));
+    assign("quasiquote", new SchemeInternalProcedure("quasiquote"));
+    assign("define", new SchemeInternalProcedure("define"));
+    assign("define-macro", new SchemeInternalProcedure("define-macro"));
+    assign("set!", new SchemeInternalProcedure("set!"));
+    	
     current_input_port = new SchemeInputPort(&cin);
     current_output_port = new SchemeOutputPort(&cout);
 	
@@ -204,6 +223,12 @@ void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*
     top_level_bindings->put(name, proc);
 }
 
+void Scheme::assign(string variable, SchemeObject* value) {
+    SchemeSymbol* name = SchemeSymbol::create(variable);
+    top_level_bindings->put(name, value);
+}
+
+
 // -----------------------------------------------------
 // Procedures
 // -----------------------------------------------------
@@ -211,7 +236,13 @@ void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*
 inline
 void assert_arg_type(char* procname, int argnum, SchemeBool* (*test_fn)(SchemeObject*), SchemeObject* arg) {
     if ((*test_fn)(arg) == S_FALSE) {
-        throw scheme_exception("Wrong argument-type in position in call to " + string(procname));
+        ostringstream ss;
+        ss << "Wrong argument-type in position ";
+        ss << argnum;
+        ss << " in call to ";
+        ss << string(procname);
+        ss << ": " << arg->toString();
+        throw scheme_exception(ss.str());
     }
 }
 
@@ -480,7 +511,9 @@ SchemeBool* s_string_p(SchemeObject* p) {
 
 // (procedure? p)
 SchemeBool* s_procedure_p(SchemeObject* p) {
-    return (p->type() == SchemeObject::PROCEDURE || p->type() == SchemeObject::CONTINUATION) ? S_TRUE : S_FALSE;
+    return (p->type() == SchemeObject::PROCEDURE || 
+            p->type() == SchemeObject::CONTINUATION ||
+            p->type() == SchemeObject::INTERNAL_PROCEDURE) ? S_TRUE : S_FALSE;
 }
 
 // (number? p)

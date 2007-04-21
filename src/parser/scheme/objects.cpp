@@ -208,6 +208,14 @@ void SchemeProcedure::setName(SchemeObject* name) {
 }
 
 //-----------------------------------------------------------
+// Internal procedure
+//-----------------------------------------------------------
+string SchemeInternalProcedure::toString() {
+    return "#<internal-procedure "+name+">";
+}
+
+
+//-----------------------------------------------------------
 // Macro
 //-----------------------------------------------------------
 SchemeMacro::SchemeMacro(SchemeObject* name, BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body) : SchemeProcedure(name, envt, s_req, s_rst, s_body) {

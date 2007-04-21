@@ -8,6 +8,7 @@ using namespace std;
 
 SchemeSymbol* if_symbol;
 SchemeSymbol* cond_symbol;
+SchemeSymbol* apply_symbol;
 SchemeSymbol* else_symbol;
 SchemeSymbol* ergo_symbol;
 SchemeSymbol* case_symbol;
@@ -30,6 +31,7 @@ SchemeSymbol* unnamed_symbol;
 
 void define_scheme_symbols() {
    if_symbol = SchemeSymbol::create("if");
+   apply_symbol = SchemeSymbol::create("apply");
    cond_symbol = SchemeSymbol::create("cond");
    else_symbol = SchemeSymbol::create("else");
    ergo_symbol = SchemeSymbol::create("=>");
@@ -271,69 +273,131 @@ fn_ptr eval_list() {
             global_arg1 = s_car(cdr);
             eval();
             static_cast<SchemeContinuation*>(proc)->call(global_ret);
+        } else if (proc->type() == SchemeObject::INTERNAL_PROCEDURE) {
+            if (s == if_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_if;
+        	} else if (s == quote_symbol) {
+                global_ret = s_car(cdr);
+                return NULL;
+        	} else if (s == define_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_define;
+        	} else if (s == define_macro) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_define_macro;
+        	} else if (s == quasiquote_symbol) {
+                global_arg1 = s_car(cdr);
+                return (fn_ptr)&eval_quasiquote;
+        	} else if (s == lambda_symbol) {
+        	    SchemeObject* formals = s_car(cdr);
+                SchemeObject* body = s_cdr(cdr);
+                global_arg1 = formals;
+                global_arg2 = body;
+                return (fn_ptr)&eval_lambda;
+        	} else if (s == let_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_let;
+        	} else if (s == do_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_do;
+        	} else if (s == letstar_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_letstar;
+        	} else if (s == letrec_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_letrec;
+        	} else if (s == apply_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_apply;
+        	} else if (s == set_e_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_set_e;
+        	} else if (s == begin_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_begin;
+        	} else if (s == cond_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_cond;
+        	} else if (s == case_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_case;
+        	} else if (s == and_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_and;
+        	} else if (s == or_symbol) {
+                global_arg1 = cdr;
+                return (fn_ptr)&eval_or;
+            } else {
+                throw scheme_exception("Unknown internal procedure: " + proc->toString());	
+            }            
         } else {
             throw scheme_exception("Wrong type to apply : " + proc->toString());	
         }
-    }
-	
-    if (s == if_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_if;
-	} else if (s == quote_symbol) {
-        global_ret = s_car(cdr);
-        return NULL;
-	} else if (s == define_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_define;
-	} else if (s == define_macro) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_define_macro;
-	} else if (s == quasiquote_symbol) {
-        global_arg1 = s_car(cdr);
-        return (fn_ptr)&eval_quasiquote;
-	} else if (s == lambda_symbol) {
-	    SchemeObject* formals = s_car(cdr);
-        SchemeObject* body = s_cdr(cdr);
-        global_arg1 = formals;
-        global_arg2 = body;
-        return (fn_ptr)&eval_lambda;
-	} else if (s == let_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_let;
-	} else if (s == do_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_do;
-	} else if (s == letstar_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_letstar;
-	} else if (s == letrec_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_letrec;
-	} else if (s == set_e_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_set_e;
-	} else if (s == begin_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_begin;
-	} else if (s == cond_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_cond;
-	} else if (s == case_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_case;
-	} else if (s == and_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_and;
-	} else if (s == or_symbol) {
-        global_arg1 = cdr;
-        return (fn_ptr)&eval_or;
     } else {
 		throw scheme_exception("Unbound variable: " + s->toString());	
-    }    
+    }
 }
 
 fn_ptr eval_begin() {
     return (fn_ptr)&eval_sequence;
+}
+
+fn_ptr eval_apply() {
+    SchemeObject* p = global_arg1;
+    
+    if (s_procedure_p(s_car(p)) == S_TRUE) {
+        global_arg1 = s_car(p);
+        global_arg2 = s_car(s_cdr(p));
+        return (fn_ptr)&eval_procedure_call;
+    }
+    
+    global_arg1 = s_car(p);
+    SchemeObject* proc = trampoline((fn_ptr)&eval);
+    assert_arg_type("apply", 1, s_procedure_p, proc);
+    
+    global_arg1 = s_cdr(p);
+    SchemeObject* args = trampoline((fn_ptr)&eval_multi);
+
+    SchemePair* collected = S_EMPTY_LIST;
+    SchemePair* prev = NULL;
+    int i = 0;
+    while (args != S_EMPTY_LIST) {
+        i++;
+        SchemeObject* arg = s_car(args);
+        if (s_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
+            if (s_cdr(args) == S_EMPTY_LIST) {
+                // arg is a list and last argument
+                if (collected == S_EMPTY_LIST) {
+                    collected = static_cast<SchemePair*>(arg);
+                } else {
+                    s_set_cdr_e(prev, arg);
+                }
+            } else {
+                throw scheme_exception("Illegal argument");
+            }
+        } else {
+            if (collected == S_EMPTY_LIST) {
+                collected = s_cons(arg, S_EMPTY_LIST);
+                prev = collected;
+            } else {
+                SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
+                s_set_cdr_e(prev, tmp);
+                prev = tmp;
+            }
+        }
+        args = s_cdr(args);
+    }
+
+    if (proc->type() == SchemeObject::INTERNAL_PROCEDURE) {
+        // Hack to handle the test (apply apply `(,+ ,(list 1 2)))
+        global_arg1 = s_cons(s_car(p), collected);
+        return (fn_ptr)&eval_list;
+    }
+
+    global_arg1 = proc;
+    global_arg2 = collected;
+    return (fn_ptr)&eval_procedure_call;
 }
 
 //
