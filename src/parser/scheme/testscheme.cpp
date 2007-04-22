@@ -307,7 +307,7 @@ void test_math() {
     assert_eval(s, "(quotient -13 -4)" , "3");
     assert_eval(s, "(gcd)" , "0");
     assert_eval(s, "(gcd 5)" , "5");
-    assert_eval(s, "(gcd -4)" , "4");
+    assert_eval(s, "(gcd -4)" , "4"); // Guile 1.8.1 gets this one wrong.
     assert_eval(s, "(gcd -4 0)" , "4");
     assert_eval(s, "(gcd 0 4)" , "4");
     assert_eval(s, "(gcd 0 -4)" , "4");
