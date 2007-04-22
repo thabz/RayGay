@@ -2,8 +2,6 @@
 #ifndef SCHEME_SCHEME_H
 #define SCHEME_SCHEME_H
 
-#include "binding-env.h"
-
 #include <iostream>
 #include <string>
 #include "objects.h"
@@ -17,13 +15,13 @@ class Scheme {
         SchemeObject* eval(istream* code);
 
         // For assigning variables at top-level-frame
-        void assign(string variable, double value, BindingEnvironment* b);
-        void assign(string variable, string value, BindingEnvironment* b);
-        void assign(string variable, bool value, BindingEnvironment* b);
-        void assign(string variable, SchemeObject* value, BindingEnvironment* b);
+        void assign(string variable, double value, SchemeEnvironment* b);
+        void assign(string variable, string value, SchemeEnvironment* b);
+        void assign(string variable, bool value, SchemeEnvironment* b);
+        void assign(string variable, SchemeObject* value, SchemeEnvironment* b);
         
         // For assigning built-in functions at top-level-frame
-		void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), BindingEnvironment* b);
+		void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeEnvironment* b);
         
         // Look up in top-level-frame
         SchemeObject* lookup(string variable);
@@ -38,6 +36,7 @@ class scheme_exception {
 };
 
 void assert_arg_type(char* procname, int argnum, SchemeBool* (*)(SchemeObject*), SchemeObject* arg);
+void assert_arg_not_immutable(char* procname, int argnum, SchemeObject* arg);
 
 // Scheme constants
 extern SchemeBool* S_TRUE;
@@ -54,8 +53,8 @@ extern SchemeNumber* S_TWO;
 #define scm2char(o)    (char(static_cast<SchemeChar*>(o)->c))
 #define scm2bool(o)    ((o) != S_FALSE)
 #define bool2scm(b)    ((b) ? S_TRUE : S_FALSE)
-#define string2scm(s)  (new SchemeString(s))
-#define char2scm(c)    (new SchemeChar(c))
+#define string2scm(s)  (SchemeString::create(s))
+#define char2scm(c)    (SchemeChar::create(c))
 
 // Scheme procedures
 SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
@@ -107,7 +106,7 @@ SchemeObject* s_member(SchemeObject* obj, SchemeObject* p);
 SchemeObject* s_memq(SchemeObject* obj, SchemeObject* p);
 SchemeObject* s_memv(SchemeObject* obj, SchemeObject* p);
 SchemeVector* s_make_vector(SchemeNumber* count, SchemeObject* obj);
-SchemeVector* s_vector(SchemePair* args);
+SchemeVector* s_vector(SchemeObject* args);
 SchemeNumber* s_vector_length(SchemeObject* v);
 SchemeVector* s_list_2_vector(SchemeObject* list);
 SchemePair* s_vector_2_list(SchemeObject* v);

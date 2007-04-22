@@ -19,19 +19,19 @@ SchemeObject* Parser::read(istream* is) {
     Lexer::Token token = lexer->nextToken(is);
     switch(token) {
         case Lexer::NUMBER :
-           return new SchemeNumber(lexer->getNumber());
+           return SchemeNumber::create(lexer->getNumber());
         case Lexer::STRING :
-           return new SchemeString(lexer->getString());
+           return SchemeString::create(lexer->getString(),true);
         case Lexer::BOOLEAN :
 			return lexer->getBool() ? S_TRUE : S_FALSE;
         case Lexer::CHAR :
-			return new SchemeChar(lexer->getChar());
+			return SchemeChar::create(lexer->getChar());
         case Lexer::SYMBOL :
            return SchemeSymbol::create(lexer->getString());
         case Lexer::OPEN_PAREN :
            return read_list(is);
         case Lexer::HASH_OPEN_PAREN :
-           return s_vector(static_cast<SchemePair*>(read_list(is)));
+           return s_vector(read_list(is));
         case Lexer::QUOTE :
            return read_quoted(is);
         case Lexer::BACKQUOTE :

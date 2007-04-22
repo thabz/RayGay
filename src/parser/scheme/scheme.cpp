@@ -19,19 +19,19 @@ unsigned long symgen_counter = 10000;
 SchemeBool* S_TRUE = new SchemeBool(true);
 SchemeBool* S_FALSE = new SchemeBool(false);
 SchemeEOF* S_EOF = new SchemeEOF();
-SchemeNumber* S_ZERO = new SchemeNumber(0);
-SchemeNumber* S_ONE = new SchemeNumber(1);
-SchemeNumber* S_TWO = new SchemeNumber(2);
-SchemeNumber* S_THREE = new SchemeNumber(3);
-SchemeNumber* S_FOUR = new SchemeNumber(4);
-SchemeNumber* S_FIVE = new SchemeNumber(5);
-SchemeNumber* S_SIX = new SchemeNumber(6);
-SchemeNumber* S_SEVEN = new SchemeNumber(7);
-SchemeNumber* S_EIGHT = new SchemeNumber(8);
-SchemeNumber* S_NINE = new SchemeNumber(9);
-SchemeUnspecified* S_UNSPECIFIED = new SchemeUnspecified();
+SchemeNumber* S_ZERO = SchemeNumber::create(0);
+SchemeNumber* S_ONE = SchemeNumber::create(1);
+SchemeNumber* S_TWO = SchemeNumber::create(2);
+SchemeNumber* S_THREE = SchemeNumber::create(3);
+SchemeNumber* S_FOUR = SchemeNumber::create(4);
+SchemeNumber* S_FIVE = SchemeNumber::create(5);
+SchemeNumber* S_SIX = SchemeNumber::create(6);
+SchemeNumber* S_SEVEN = SchemeNumber::create(7);
+SchemeNumber* S_EIGHT = SchemeNumber::create(8);
+SchemeNumber* S_NINE = SchemeNumber::create(9);
+SchemeUnspecified* S_UNSPECIFIED = SchemeUnspecified::create();
 SchemeEmptyList* S_EMPTY_LIST = new SchemeEmptyList();
-SchemeChar* S_SPACE = new SchemeChar(' ');
+SchemeChar* S_SPACE = char2scm(' ');
 SchemeNumber* S_NUMBERS[] = {S_ZERO, S_ONE, S_TWO, S_THREE, S_FOUR, S_FIVE, S_SIX, S_SEVEN, S_EIGHT, S_NINE};
 
 SchemeInputPort* current_input_port = NULL;
@@ -39,13 +39,9 @@ SchemeOutputPort* current_output_port = NULL;
 
 Interpreter* interpreter;
 
-BindingEnvironment* null_environment = new BindingEnvironment(NULL);
-BindingEnvironment* scheme_report_environment = new BindingEnvironment(null_environment);
-BindingEnvironment* interaction_environment = new BindingEnvironment(scheme_report_environment);
-
-SchemeEnvironment* v_null_environment = new SchemeEnvironment(null_environment);
-SchemeEnvironment* v_scheme_report_environment = new SchemeEnvironment(scheme_report_environment);
-SchemeEnvironment* v_interaction_environment = new SchemeEnvironment(interaction_environment);
+SchemeEnvironment* null_environment = SchemeEnvironment::create(NULL);
+SchemeEnvironment* scheme_report_environment = SchemeEnvironment::create(null_environment);
+SchemeEnvironment* interaction_environment = SchemeEnvironment::create(scheme_report_environment);
 
 // Global parser used by s_read()
 Parser* global_parser = new Parser();
@@ -232,15 +228,15 @@ SchemeObject* Scheme::eval(string data) {
     return result;
 };
 
-void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), BindingEnvironment* bindings = interaction_environment) {
+void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeEnvironment* envt = interaction_environment) {
     SchemeSymbol* name = SchemeSymbol::create(variable);
-    SchemeProcedure* proc = new SchemeProcedure(name, req, opt, rst, fn);
-    bindings->put(name, proc);
+    SchemeProcedure* proc = SchemeProcedure::create(name, req, opt, rst, fn);
+    envt->put(name, proc);
 }
 
-void Scheme::assign(string variable, SchemeObject* value, BindingEnvironment* bindings = interaction_environment) {
+void Scheme::assign(string variable, SchemeObject* value, SchemeEnvironment* envt = interaction_environment) {
     SchemeSymbol* name = SchemeSymbol::create(variable);
-    bindings->put(name, value);
+    envt->put(name, value);
 }
 
 // -----------------------------------------------------
@@ -260,13 +256,26 @@ void assert_arg_type(char* procname, int argnum, SchemeBool* (*test_fn)(SchemeOb
     }
 }
 
+inline
+void assert_arg_not_immutable(char* procname, int argnum, SchemeObject* arg) {
+    if (arg->immutable) {
+        ostringstream ss;
+        ss << "Can't modify immutable object in position ";
+        ss << argnum;
+        ss << " in call to " << string(procname);    
+        ss << ": " << arg->toString();
+        throw scheme_exception(ss.str());
+    }
+}
+
+
 
 inline
 SchemeNumber* make_number(int n) {
     if (n < 10 && n >= 0) {
         return S_NUMBERS[n];
     }
-    return new SchemeNumber(n);
+    return SchemeNumber::create(n);
 }
 // (equal? a b)
 // Equal? recursively compares the contents of pairs, vectors, and strings, applying eqv? on other objects 
@@ -603,7 +612,7 @@ SchemeObject* s_cdar(SchemeObject* o) { return s_cxr(o, "ad"); };
 
 // (cons a b)
 SchemePair* s_cons(SchemeObject* car, SchemeObject* cdr) {
-    return new SchemePair(car, cdr);
+    return SchemePair::create(car, cdr);
 }
 
 SchemePair* s_list(SchemePair* args) {
@@ -709,7 +718,7 @@ SchemeNumber* s_plus(SchemePair* p) {
 		result += n->number;
 		p = p->cdrAsPair();
 	}
-	return new SchemeNumber(result);
+	return SchemeNumber::create(result);
 }
 
 SchemeNumber* s_minus(SchemePair* p) {
@@ -734,7 +743,7 @@ SchemeNumber* s_minus(SchemePair* p) {
 	    }
 		p = p->cdrAsPair();
 	}
-	return new SchemeNumber(result);
+	return SchemeNumber::create(result);
 }
 
 SchemeNumber* s_divide(SchemePair* p) {
@@ -759,7 +768,7 @@ SchemeNumber* s_divide(SchemePair* p) {
 	    }
 		p = p->cdrAsPair();
 	}
-	return new SchemeNumber(result);
+	return SchemeNumber::create(result);
 }
 
 
@@ -772,23 +781,24 @@ SchemeNumber* s_mult(SchemeObject* p) {
 		result *= n->number;
 		p = s_cdr(p);
 	}
-	return new SchemeNumber(result);
+	return SchemeNumber::create(result);
 }
 
 SchemeVector* s_make_vector(SchemeNumber* count, SchemeObject* obj) {
     int c = int(count->number);
-    return new SchemeVector(obj, c);
+    return SchemeVector::create(obj, c);
 }
 
-SchemeVector* s_vector(SchemePair* args) {
+SchemeVector* s_vector(SchemeObject* args) {
+    assert_arg_type("list", 1, s_list_p, args);
     int c = int(s_length(args)->number);
     SchemeObject** elems = new SchemeObject*[c];
     int i = 0;
     while (args != S_EMPTY_LIST) {
-        elems[i++] = args->car;
-        args = args->cdrAsPair();
+        elems[i++] = s_car(args);
+        args = s_cdr(args);
     }
-    return new SchemeVector(elems,c);
+    return SchemeVector::create(elems,c);
 }
 
 SchemeNumber* s_vector_length(SchemeObject* v) {
@@ -838,55 +848,55 @@ SchemeObject* s_vector_fill_e(SchemeVector* v, SchemeObject* fill) {
 
 
 SchemeNumber* s_sqrt(SchemeNumber* n) {
-    return new SchemeNumber(sqrt(n->number));
+    return SchemeNumber::create(sqrt(n->number));
 }
 
 SchemeNumber* s_abs(SchemeNumber* n) {
-    return new SchemeNumber(fabs(n->number));
+    return SchemeNumber::create(fabs(n->number));
 }
 
 
 SchemeNumber* s_sin(SchemeNumber* n) {
-    return new SchemeNumber(sin(n->number));
+    return SchemeNumber::create(sin(n->number));
 }
 
 SchemeNumber* s_asin(SchemeNumber* n) {
-    return new SchemeNumber(asin(n->number));
+    return SchemeNumber::create(asin(n->number));
 }
 
 SchemeNumber* s_cos(SchemeNumber* n) {
-    return new SchemeNumber(cos(n->number));
+    return SchemeNumber::create(cos(n->number));
 }
 
 SchemeNumber* s_acos(SchemeNumber* n) {
-    return new SchemeNumber(acos(n->number));
+    return SchemeNumber::create(acos(n->number));
 }
 
 SchemeNumber* s_tan(SchemeNumber* n) {
-    return new SchemeNumber(tan(n->number));
+    return SchemeNumber::create(tan(n->number));
 }
 
 SchemeNumber* s_atan(SchemeNumber* y, SchemeObject* x) {
     if (x == S_UNSPECIFIED) {
-        return new SchemeNumber(atan(y->number));
+        return SchemeNumber::create(atan(y->number));
     } else {
         SchemeNumber* xx = static_cast<SchemeNumber*>(x);
-        return new SchemeNumber(atan2(y->number, xx->number));
+        return SchemeNumber::create(atan2(y->number, xx->number));
     }
 }
 
 SchemeNumber* s_log(SchemeNumber* n) {
-    return new SchemeNumber(log(n->number));
+    return SchemeNumber::create(log(n->number));
 }
 
 // Returns a^b
 SchemeNumber* s_expt(SchemeNumber* a, SchemeNumber* b) {
-    return new SchemeNumber(pow(a->number,b->number));
+    return SchemeNumber::create(pow(a->number,b->number));
 }
 
 // Returns e^n
 SchemeNumber* s_exp(SchemeNumber* n) {
-    return new SchemeNumber(exp(n->number));
+    return SchemeNumber::create(exp(n->number));
 }
 
 // Round returns the closest integer to x, rounding to even when x is halfway between two integers.
@@ -909,25 +919,25 @@ SchemeNumber* s_round(SchemeObject* n) {
              result = cei;
         }
     }
-    return new SchemeNumber(result);
+    return SchemeNumber::create(result);
 }
 
 // Ceiling returns the smallest integer not smaller than x
 SchemeNumber* s_ceiling(SchemeObject* n) {
     assert_arg_type("ceiling", 1, s_number_p, n);
-    return new SchemeNumber(ceil(static_cast<SchemeNumber*>(n)->number));
+    return SchemeNumber::create(ceil(static_cast<SchemeNumber*>(n)->number));
 }
 
 // Floor returns the largest integer not larger than x
 SchemeNumber* s_floor(SchemeObject* n) {
     assert_arg_type("floor", 1, s_number_p, n);
-    return new SchemeNumber(floor(static_cast<SchemeNumber*>(n)->number));
+    return SchemeNumber::create(floor(static_cast<SchemeNumber*>(n)->number));
 }
 
 // Truncate returns the integer closest to x whose absolute value is not larger than the absolute value of x
 SchemeNumber* s_truncate(SchemeObject* n) {
     assert_arg_type("truncate", 1, s_number_p, n);
-    return new SchemeNumber(trunc(static_cast<SchemeNumber*>(n)->number));
+    return SchemeNumber::create(trunc(static_cast<SchemeNumber*>(n)->number));
 }
 
 SchemeNumber* s_quotient(SchemeObject* n1, SchemeObject* n2) {
@@ -1188,7 +1198,7 @@ SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr) {
     assert_arg_type("make-string", 2, s_char_p, chr);
 
     string s = string(int(static_cast<SchemeNumber*>(len)->number), static_cast<SchemeChar*>(chr)->c);
-    return new SchemeString(s);
+    return SchemeString::create(s);
 }
 
 SchemeString* s_string(SchemeObject* p) {
@@ -1200,7 +1210,7 @@ SchemeString* s_string(SchemeObject* p) {
         s += scm2char(c);
         p = s_cdr(p);
     }
-    return new SchemeString(s);
+    return SchemeString::create(s);
 }
 
 SchemeNumber* s_string_length(SchemeObject* s) {
@@ -1213,19 +1223,20 @@ SchemeChar* s_string_ref(SchemeString* s, SchemeNumber* i) {
     assert_arg_type("string-ref", 1, s_string_p, s);
     assert_arg_type("string-ref", 2, s_number_p, i);
     int index = int(i->number);
-    return new SchemeChar(s->str[index]);
+    return char2scm(s->str[index]);
 }	
 
 SchemeObject* s_string_set_e(SchemeObject* s, SchemeObject* i, SchemeObject* chr) {
     assert_arg_type("string-set!", 1, s_string_p, s);
     assert_arg_type("string-set!", 2, s_number_p, i);
     assert_arg_type("string-set!", 3, s_char_p, chr);
+    assert_arg_not_immutable("string-set!", 1, s);
     scm2string(s)[scm2int(i)] = scm2char(chr);
     return S_UNSPECIFIED;
 }
 
 SchemeString* s_symbol_2_string(SchemeSymbol* symbol) {
-    return new SchemeString(symbol->str,true);
+    return SchemeString::create(symbol->str,true);
 }
 
 SchemeSymbol* s_string_2_symbol(SchemeString* s) {
@@ -1240,12 +1251,12 @@ SchemeString* s_string_append(SchemePair* strings) {
 	    result += static_cast<SchemeString*>(strings->car)->str;
 	    strings = strings->cdrAsPair();
     }
-    return new SchemeString(result);
+    return SchemeString::create(result);
 }
 
 SchemeString* s_string_copy(SchemeObject* str) {
     assert_arg_type("string-copy", 1, s_string_p, str);
-    return new SchemeString(static_cast<SchemeString*>(str)->str);
+    return SchemeString::create(static_cast<SchemeString*>(str)->str,false);
 }
 
 SchemeString* s_substring(SchemeObject* s_str, SchemeObject* s_start, SchemeObject* s_end) {
@@ -1278,7 +1289,7 @@ SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base_s) {
     } else {
         ss << std::setbase(base) << static_cast<SchemeNumber*>(n)->number;
     }
-    return new SchemeString(ss.str());
+    return SchemeString::create(ss.str());
 }
 
 SchemeObject* s_string_2_number(SchemeObject* s_string, SchemeObject* base_s) {
@@ -1305,13 +1316,13 @@ SchemeObject* s_string_2_number(SchemeObject* s_string, SchemeObject* base_s) {
         return S_FALSE;
     }
     delete is;
-    return new SchemeNumber(d);
+    return SchemeNumber::create(d);
 }
 
 
 SchemeChar* s_integer_2_char(SchemeObject* i) {
     assert_arg_type("integer->char", 1, s_number_p, i);
-    return new SchemeChar(int(static_cast<SchemeNumber*>(i)->number));
+    return char2scm(int(static_cast<SchemeNumber*>(i)->number));
 }
 
 SchemeNumber* s_char_2_integer(SchemeObject* c) {
@@ -1324,7 +1335,7 @@ SchemePair* s_string_2_list(SchemeObject* s) {
     string ss = static_cast<SchemeString*>(s)->str;
     SchemePair* result = S_EMPTY_LIST;
     for(uint i = 0; i < ss.size(); i++) {
-        result = s_cons(new SchemeChar(ss[i]), result);
+        result = s_cons(char2scm(ss[i]), result);
     }
     // TODO: Leakage
     return s_reverse(result);
@@ -1338,7 +1349,7 @@ SchemeString* s_list_2_string(SchemeObject* p) {
         result += static_cast<SchemeChar*>(s_car(p))->c;
         p = s_cdr(p);
     }
-    return new SchemeString(result);
+    return SchemeString::create(result);
 }
 
 SchemeBool* s_char_alphabetic_p(SchemeObject* c) {
@@ -1368,12 +1379,12 @@ SchemeBool* s_char_lower_case_p(SchemeObject* c) {
 
 SchemeChar* s_char_upcase(SchemeObject* c) {
     assert_arg_type("char-upcase", 1, s_char_p, c);
-    return new SchemeChar(toupper(static_cast<SchemeChar*>(c)->c));    
+    return char2scm(toupper(static_cast<SchemeChar*>(c)->c));    
 }
 
 SchemeChar* s_char_downcase(SchemeObject* c) {
     assert_arg_type("char-downcase", 1, s_char_p, c);
-    return new SchemeChar(tolower(scm2char(c)));    
+    return char2scm(tolower(scm2char(c)));    
 }
 
 SchemeSymbol* s_symgen() {
@@ -1582,12 +1593,16 @@ SchemeObject* s_newline(SchemeObject* port) {
     return S_UNSPECIFIED;
 }
 
+SchemeBool* s_environment_p(SchemeObject* o) {
+    return bool2scm(o->type() == SchemeObject::ENVIRONMENT);
+}
+
 SchemeObject* s_null_environment(SchemeObject* s_version) {
     assert_arg_type("null-environment", 1, s_integer_p, s_version);
     if (scm2int(s_version) != 5) {
         throw scheme_exception("Not a valid version. Only 5 is supported.");
     }
-    return v_null_environment;
+    return null_environment;
 }
 
 SchemeObject* s_scheme_report_environment(SchemeObject* s_version) {
@@ -1595,7 +1610,7 @@ SchemeObject* s_scheme_report_environment(SchemeObject* s_version) {
     if (scm2int(s_version) != 5) {
         throw scheme_exception("Not a valid version. Only 5 is supported.");
     }
-    return v_scheme_report_environment;
+    return scheme_report_environment;
 }
 
 SchemeObject* s_interaction_environment(SchemeObject* s_version) {
@@ -1603,16 +1618,14 @@ SchemeObject* s_interaction_environment(SchemeObject* s_version) {
     if (scm2int(s_version) != 5) {
         throw scheme_exception("Not a valid version. Only 5 is supported.");
     }
-    return v_interaction_environment;
+    return interaction_environment;
 }
 
 SchemeObject* s_eval(SchemeObject* expression, SchemeObject* s_environment) {
-    if (s_environment->type() != SchemeObject::ENVIRONMENT) {
-        scheme_exception("Argument 2 in call to eval is not a environment");
-    }
+    assert_arg_type("eval", 2, s_environment_p, s_environment);
     SchemeEnvironment* environment = static_cast<SchemeEnvironment*>(s_environment);
     SchemeObject* expressions = s_cons(expression, S_EMPTY_LIST);
-    Interpreter interpreter = Interpreter(expressions, environment->bindings);
+    Interpreter interpreter = Interpreter(expressions, environment);
     return interpreter.interpret();
 }
 

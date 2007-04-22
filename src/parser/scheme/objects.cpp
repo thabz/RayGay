@@ -10,6 +10,10 @@ SchemeObject::SchemeObject(bool immutable) : immutable(immutable) {
 //-----------------------------------------------------------
 // Unspecified
 //-----------------------------------------------------------
+SchemeUnspecified* SchemeUnspecified::create() {
+    return new SchemeUnspecified();
+}
+
 string SchemeUnspecified::toString() {
     return "#<unspecified>";
 }
@@ -17,6 +21,10 @@ string SchemeUnspecified::toString() {
 //-----------------------------------------------------------
 // String
 //-----------------------------------------------------------
+SchemeString* SchemeString::create(string s, bool immutable) {
+    return new SchemeString(s, immutable);
+}
+
 SchemeString::SchemeString(string s, bool immutable) : SchemeObject(immutable), str(s) {
     
 }
@@ -53,6 +61,10 @@ string SchemeSymbol::toString() {
 //-----------------------------------------------------------
 // Symbol
 //-----------------------------------------------------------
+SchemeNumber* SchemeNumber::create(double s) {
+    return new SchemeNumber(s);
+}
+
 SchemeNumber::SchemeNumber(double s) : number(s) { 
 }
 
@@ -61,7 +73,6 @@ string SchemeNumber::toString() {
     ss << number;
     return ss.str();
 }
-
 
 //-----------------------------------------------------------
 // Boolean
@@ -83,6 +94,10 @@ string SchemeEmptyList::toString() {
 //-----------------------------------------------------------
 // Char
 //-----------------------------------------------------------
+SchemeChar* SchemeChar::create(char c) {
+    return new SchemeChar(c);
+}
+
 SchemeChar::SchemeChar(char c) : c(c) { 
 }
 
@@ -99,7 +114,17 @@ string SchemeChar::toString() {
 //-----------------------------------------------------------
 // Pair
 //-----------------------------------------------------------
+SchemePair* SchemePair::create() {
+    return new SchemePair();
+}
+
+SchemePair* SchemePair::create(SchemeObject* car, SchemeObject* cdr) {
+    return new SchemePair(car,cdr);
+}
+
 SchemePair::SchemePair() {
+    this->car = NULL;
+    this->cdr = NULL;
 }
 
 SchemePair::SchemePair(SchemeObject* car, SchemeObject* cdr) {
@@ -138,6 +163,14 @@ string SchemePair::toString() {
 //-----------------------------------------------------------
 // Vector
 //-----------------------------------------------------------
+SchemeVector* SchemeVector::create(SchemeObject** elems, int length) {
+    return new SchemeVector(elems,length);
+}
+
+SchemeVector* SchemeVector::create(SchemeObject* elem, int length) {
+    return new SchemeVector(elem,length);
+}
+
 SchemeVector::SchemeVector(SchemeObject** elems, int length) {
     this->elems = elems;
     this->length = length;
@@ -176,6 +209,16 @@ string SchemeVector::toString() {
 //-----------------------------------------------------------
 // Procedure
 //-----------------------------------------------------------
+
+SchemeProcedure* SchemeProcedure::create(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)()) {
+    return new SchemeProcedure(name,req,opt,rst,fn);
+}
+
+SchemeProcedure* SchemeProcedure::create(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body) {
+    return new SchemeProcedure(name,envt,s_req, s_rst, s_body);
+}
+
+
 SchemeProcedure::SchemeProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)()) {
     assert(s_symbol_p(name) == S_TRUE);
     this->name = static_cast<SchemeSymbol*>(name);
@@ -186,7 +229,7 @@ SchemeProcedure::SchemeProcedure(SchemeObject* name, int req, int opt, int rst, 
     this->fn = fn;
 }
 
-SchemeProcedure::SchemeProcedure(SchemeObject* name, BindingEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body) {
+SchemeProcedure::SchemeProcedure(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body) {
     assert(s_symbol_p(name) == S_TRUE);
     this->name = static_cast<SchemeSymbol*>(name);
     this->envt = envt;
@@ -218,7 +261,11 @@ string SchemeInternalProcedure::toString() {
 //-----------------------------------------------------------
 // Macro
 //-----------------------------------------------------------
-SchemeMacro::SchemeMacro(SchemeObject* name, BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body) : SchemeProcedure(name, envt, s_req, s_rst, s_body) {
+SchemeMacro* SchemeMacro::create(SchemeObject* name, SchemeEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body) {
+    return new SchemeMacro(name,envt,s_req,s_rst,s_body);
+    
+}
+SchemeMacro::SchemeMacro(SchemeObject* name, SchemeEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body) : SchemeProcedure(name, envt, s_req, s_rst, s_body) {
 }
 
 string SchemeMacro::toString() {
@@ -269,9 +316,48 @@ string SchemeEOF::toString() {
 //-----------------------------------------------------------
 // Environment
 //-----------------------------------------------------------
-SchemeEnvironment::SchemeEnvironment(BindingEnvironment* b) : bindings(b) {};
+
+SchemeEnvironment* SchemeEnvironment::create(SchemeEnvironment* parent) {
+    return new SchemeEnvironment(parent);
+}
 
 string SchemeEnvironment::toString() { 
     return "#<environment>";
 }
+
+SchemeEnvironment::SchemeEnvironment(SchemeEnvironment* parent) {
+    this->parent = parent;
+}
+
+SchemeObject* SchemeEnvironment::get(SchemeSymbol* name) {
+    map<SchemeSymbol*,SchemeObject*>::iterator v = binding_map.find(name);
+    if (v == binding_map.end()) {
+        if (parent != NULL) {
+            return parent->get(name);
+        } else {
+            return NULL;
+        }
+    } else {
+        return v->second;
+    }
+}
+
+void SchemeEnvironment::put(SchemeSymbol* name, SchemeObject* o) {
+    binding_map[name] = o;
+}
+
+void SchemeEnvironment::set(SchemeSymbol* name, SchemeObject* o) {
+    map<SchemeSymbol*,SchemeObject*>::iterator v = binding_map.find(name);
+    if (v == binding_map.end()) {
+        if (parent != NULL) {
+            parent->set(name,o);
+        } else {
+            throw scheme_exception("Unbound variable: " + name->toString());
+        }
+    } else {
+        put(name,o);
+    }
+}
+
+
 

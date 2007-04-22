@@ -57,7 +57,7 @@ void define_scheme_symbols() {
 SchemeObject* global_ret;
 SchemeObject* global_arg1;
 SchemeObject* global_arg2;
-BindingEnvironment* global_envt;
+SchemeEnvironment* global_envt;
 
 /*
 #define call_and_return(envt,thing,PLACE) { int kk = setjmp(*(tstack->push_jump_pos())); \
@@ -88,7 +88,7 @@ jmp_buf* Stack::push_jump_pos() {
 //------------------------------------------------------------------------
 // Interpreter
 //------------------------------------------------------------------------
-Interpreter::Interpreter(SchemeObject* parsetree, BindingEnvironment* top_level_bindings) {
+Interpreter::Interpreter(SchemeObject* parsetree, SchemeEnvironment* top_level_bindings) {
     define_scheme_symbols();
     this->parsetree = parsetree;   
 	this->top_level_bindings = top_level_bindings;
@@ -139,7 +139,7 @@ SchemeObject* Interpreter::interpret() {
 // that arguments be passed in global variables [Tarditi92].
 
 SchemeObject* trampoline(fn_ptr f) {
-    BindingEnvironment* saved = global_envt;
+    SchemeEnvironment* saved = global_envt;
     while (f != NULL) {
         f = (fn_ptr)(*f)();
     }
@@ -171,7 +171,7 @@ fn_ptr eval_sequence() {
 
 fn_ptr eval_define() {
     SchemeObject* p = global_arg1;
-    BindingEnvironment* envt = global_envt;
+    SchemeEnvironment* envt = global_envt;
     
     if (s_pair_p(s_car(p)) == S_TRUE) {
         // (define (func-name args...) body-forms...)
@@ -212,7 +212,7 @@ fn_ptr eval_define() {
 
 fn_ptr eval() {
     SchemeObject* s = global_arg1;
-    BindingEnvironment* envt = global_envt;
+    SchemeEnvironment* envt = global_envt;
     
 	SchemeObject::ObjectType type = s->type();
 	switch(type) {
@@ -245,7 +245,7 @@ fn_ptr eval() {
 
 fn_ptr eval_list() {
     SchemeObject* p = global_arg1;
-    BindingEnvironment* envt = global_envt;
+    SchemeEnvironment* envt = global_envt;
     
 	SchemeObject* car = s_car(p);
     if (s_symbol_p(car) == S_FALSE) {
@@ -662,7 +662,7 @@ fn_ptr eval_procedure_call() {
         return NULL;
     } else {
         // User function
-        BindingEnvironment* new_envt = new BindingEnvironment(proc->envt);
+        SchemeEnvironment* new_envt = SchemeEnvironment::create(proc->envt);
         SchemeObject* req_symbols = proc->s_req;
         while (req_symbols != S_EMPTY_LIST) {
             if (args == S_EMPTY_LIST) {
@@ -712,7 +712,7 @@ fn_ptr eval_multi() {
 fn_ptr eval_lambda() {
     SchemeObject* formals = global_arg1;
     SchemeObject* body = global_arg2;
-    BindingEnvironment* envt = global_envt;
+    SchemeEnvironment* envt = global_envt;
 
     SchemeSymbol* rst;
     SchemePair* req;
@@ -746,7 +746,7 @@ fn_ptr eval_lambda() {
         throw scheme_exception("Bad formals");
     }
 
-    global_ret = new SchemeProcedure(unnamed_symbol, envt, req, rst, body);
+    global_ret = SchemeProcedure::create(unnamed_symbol, envt, req, rst, body);
     return NULL;
 }
 
@@ -755,7 +755,7 @@ fn_ptr eval_set_e() {
     // we manipulate instead of doing the set(s,v)
 
     SchemeObject* p = global_arg1;
-    BindingEnvironment* envt = global_envt;
+    SchemeEnvironment* envt = global_envt;
 
     if (s_length(p) != S_TWO) {
         throw scheme_exception("Missing or extra expression");
@@ -864,7 +864,7 @@ fn_ptr eval_case() {
 
 fn_ptr eval_let() {
     SchemeObject* p = global_arg1;
-    BindingEnvironment* envt = global_envt;
+    SchemeEnvironment* envt = global_envt;
 
     if (s_symbol_p(s_car(p)) == S_TRUE) {
         return (fn_ptr)&eval_named_let;
@@ -874,7 +874,7 @@ fn_ptr eval_let() {
     }
     
     // Build new bindings
-    BindingEnvironment* new_bindings = new BindingEnvironment(envt);
+    SchemeEnvironment* new_bindings = SchemeEnvironment::create(envt);
     SchemeObject* binding_pairs = s_car(p);
 
     while (s_null_p(binding_pairs) == S_FALSE) {
@@ -894,7 +894,7 @@ fn_ptr eval_let() {
 
 fn_ptr eval_named_let() {
     SchemeObject* p = global_arg1;
-    BindingEnvironment* envt = global_envt;
+    SchemeEnvironment* envt = global_envt;
 
     SchemeObject* name = s_car(p);
     p = s_cdr(p);
@@ -919,8 +919,8 @@ fn_ptr eval_named_let() {
         binding_pairs = s_cdr(binding_pairs);
     }
 
-    BindingEnvironment* new_envt = new BindingEnvironment(envt);
-    SchemeProcedure* lambda = new SchemeProcedure(name, new_envt, s_reverse(formals), NULL, static_cast<SchemePair*>(s_cdr(p)));
+    SchemeEnvironment* new_envt = SchemeEnvironment::create(envt);
+    SchemeProcedure* lambda = SchemeProcedure::create(name, new_envt, s_reverse(formals), NULL, static_cast<SchemePair*>(s_cdr(p)));
     new_envt->put(static_cast<SchemeSymbol*>(name), lambda);
     
     global_arg1 = lambda;
@@ -931,7 +931,7 @@ fn_ptr eval_named_let() {
 
 fn_ptr eval_letstar() {
     SchemeObject* p = global_arg1;
-    BindingEnvironment* envt = global_envt;
+    SchemeEnvironment* envt = global_envt;
     
     if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
         throw scheme_exception("Bad formals in let*: " + s_car(p)->toString());
@@ -942,7 +942,7 @@ fn_ptr eval_letstar() {
     }
 
     // Build new bindings
-    BindingEnvironment* new_bindings = new BindingEnvironment(envt);
+    SchemeEnvironment* new_bindings = SchemeEnvironment::create(envt);
     SchemeObject* binding_pairs = s_car(p);
 
     while (s_null_p(binding_pairs) == S_FALSE) {
@@ -970,7 +970,7 @@ fn_ptr eval_letrec() {
 
 fn_ptr eval_define_macro() {
     SchemeObject* p = global_arg1;
-    BindingEnvironment* envt = global_envt;
+    SchemeEnvironment* envt = global_envt;
 
     SchemeObject* formals = s_car(p);
     SchemePair* body = static_cast<SchemePair*>(s_cdr(p));
@@ -1009,7 +1009,7 @@ fn_ptr eval_define_macro() {
         throw scheme_exception("Bad formals");
     }
     
-    SchemeMacro* macro = new SchemeMacro(name, envt, req, rst, body);
+    SchemeMacro* macro = SchemeMacro::create(name, envt, req, rst, body);
     envt->put(static_cast<SchemeSymbol*>(name), macro);
     
     global_ret = S_UNSPECIFIED;
@@ -1019,10 +1019,10 @@ fn_ptr eval_define_macro() {
 fn_ptr eval_call_macro() {
     SchemeMacro* proc = static_cast<SchemeMacro*>(global_arg1);
     SchemeObject* args = global_arg2;
-    BindingEnvironment* envt = global_envt;
+    SchemeEnvironment* envt = global_envt;
     
     // Build new environment
-    BindingEnvironment* new_envt = new BindingEnvironment(proc->envt);
+    SchemeEnvironment* new_envt = SchemeEnvironment::create(proc->envt);
     SchemeObject* req_symbols = proc->s_req;
     while (req_symbols != S_EMPTY_LIST) {
         if (args == S_EMPTY_LIST) {
@@ -1053,14 +1053,14 @@ fn_ptr eval_call_macro() {
 
 fn_ptr eval_do() {
     SchemeObject* p = global_arg1;
-    BindingEnvironment* envt = global_envt;
+    SchemeEnvironment* envt = global_envt;
 
     if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
         throw scheme_exception("Bad body in let");
     }
 
     // Extract formals and collect evaluated args for a lambda
-    BindingEnvironment* new_envt = new BindingEnvironment(envt);
+    SchemeEnvironment* new_envt = SchemeEnvironment::create(envt);
     SchemeObject* steps = S_EMPTY_LIST;
     SchemeObject* varnames = S_EMPTY_LIST;
     SchemeObject* binding_pairs = s_car(p);

@@ -6,7 +6,7 @@
 #include <map>
 #include <setjmp.h>
 
-class BindingEnvironment;
+class SchemeEnvironment;
 
 using namespace std;
 
@@ -31,44 +31,54 @@ class SchemeObject {
  		    OUTPUT_PORT,
  		    ENVIRONMENT
 		};
-	SchemeObject(bool immutable = false);
+	protected:
+	    SchemeObject(bool immutable = false);
+	public:    
         virtual ~SchemeObject() {};
         virtual string toString() = 0;
         virtual bool boolValue() const { return true; }; // Used in conditional expressions (if, cond, and, or, do)
         virtual ObjectType type() = 0;
-	bool immutable;
+	    bool immutable;
 };
 
 class SchemeUnspecified : public SchemeObject {
     public:
+        static SchemeUnspecified* create();
         string toString();
         ObjectType type() { return UNSPECIFIED; };
+    private:
+        SchemeUnspecified() {};
 };
 
 class SchemeNumber : public SchemeObject {
     public:
-       SchemeNumber(double number);
-       string toString();
-       double number;
-  	   ObjectType type() { return NUMBER; };
+        static SchemeNumber* create(double number);
+        string toString();
+        double number;
+  	    ObjectType type() { return NUMBER; };
+  	private:    
+  	    SchemeNumber(double number);
 };
 
 class SchemePair : public SchemeObject {
     public:
-        SchemePair();
-        SchemePair(SchemeObject* car, SchemeObject* cdr);
+        static SchemePair* create();
+        static SchemePair* create(SchemeObject* car, SchemeObject* cdr);
 		SchemePair* cdrAsPair();
         ObjectType type() { return PAIR; };
         
         string toString();
 	    SchemeObject* car;
      	SchemeObject* cdr;
+     protected:	
+        SchemePair();
+        SchemePair(SchemeObject* car, SchemeObject* cdr);
 };
 
 class SchemeVector : public SchemeObject {
     public:
-        SchemeVector(SchemeObject** elems, int length);
-        SchemeVector(SchemeObject* elems, int length);
+        static SchemeVector* create(SchemeObject** elems, int length);
+        static SchemeVector* create(SchemeObject* elem, int length);
         SchemeObject* get(int index);
         void set(SchemeObject* o, int index);
         ObjectType type() { return VECTOR; };
@@ -76,6 +86,10 @@ class SchemeVector : public SchemeObject {
         string toString();
         SchemeObject** elems;
         int length;
+    protected:
+        SchemeVector(SchemeObject** elems, int length);
+        SchemeVector(SchemeObject* elems, int length);
+        
 };
 
 
@@ -99,10 +113,12 @@ class SchemeSymbol : public SchemeObject {
 
 class SchemeString : public SchemeObject {
     public:
-        SchemeString(string s, bool immutable = false);
+        static SchemeString* create(string s, bool immutable = false);
         string toString();
         ObjectType type() { return STRING; };
 	    std::string str;
+	private:    
+        SchemeString(string s, bool immutable);
 
 };
 
@@ -117,11 +133,14 @@ class SchemeBool : public SchemeObject {
 
 class SchemeChar : public SchemeObject {
     public:
-        SchemeChar(char c);
+        static SchemeChar* create(char c);
         string toString();
         ObjectType type() { return CHAR; };
 
         char c;
+    private:
+        SchemeChar(char c);
+            
 };
 
 
@@ -155,8 +174,9 @@ class SchemeOutputPort : public SchemeObject {
 class SchemeProcedure : public SchemeObject 
 {
     public:
-        SchemeProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
-        SchemeProcedure(SchemeObject* name, BindingEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body);
+        static SchemeProcedure* create(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
+        static SchemeProcedure* create(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body);
+        
         string toString();      
         ObjectType type() { return PROCEDURE; };
         string nameAsString() { return name->str; };
@@ -174,7 +194,11 @@ class SchemeProcedure : public SchemeObject
         SchemeObject* s_body;
         SchemeObject* s_req;
         SchemeSymbol* s_rst;
-        BindingEnvironment* envt;
+        SchemeEnvironment* envt;
+        
+    protected:    
+        SchemeProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
+        SchemeProcedure(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body);
 };
 
 class SchemeInternalProcedure : public SchemeObject {
@@ -188,9 +212,11 @@ class SchemeInternalProcedure : public SchemeObject {
 
 class SchemeMacro : public SchemeProcedure {
     public:
-        SchemeMacro(SchemeObject* name, BindingEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body);
+        static SchemeMacro* create(SchemeObject* name, SchemeEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body);
         string toString();      
         ObjectType type() { return MACRO; };    
+    protected:    
+        SchemeMacro(SchemeObject* name, SchemeEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body);
 };
 
 class SchemeEOF : public SchemeObject {
@@ -203,11 +229,18 @@ class SchemeEOF : public SchemeObject {
 
 class SchemeEnvironment : public SchemeObject {
     public:
-        SchemeEnvironment(BindingEnvironment* b);
+        static SchemeEnvironment* create(SchemeEnvironment* parent);
         string toString();
         ObjectType type() { return ENVIRONMENT; };    
-        BindingEnvironment* bindings;
-        
+
+		SchemeObject* get(SchemeSymbol* name);
+        void put(SchemeSymbol* name, SchemeObject* o);
+        void set(SchemeSymbol* name, SchemeObject* o);
+
+	private:
+        SchemeEnvironment(SchemeEnvironment* parent);
+        SchemeEnvironment* parent;
+        map<SchemeSymbol*,SchemeObject*> binding_map;	
 };
 
 #endif

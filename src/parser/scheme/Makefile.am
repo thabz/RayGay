@@ -8,8 +8,7 @@ libscheme_la_SOURCES = lexer.h lexer.cpp \
                        interpreter.h interpreter.cpp \
                        objects.h objects.cpp \
                        parser.h parser.cpp \
-                       scheme.h scheme.cpp \
-                       binding-env.h binding-env.cpp
+                       scheme.h scheme.cpp
 
 # -----------------------------------------------------
 # Tests
