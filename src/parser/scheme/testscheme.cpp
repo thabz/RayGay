@@ -635,6 +635,13 @@ void test_call_cc() {
     assert_eval(s, "(call/cc (lambda (exit) (for-each (lambda (x) (if (negative? x) (exit x))) '(54 0 37 -3 245 19)) #t))", "-3");
 }
 
+void test_eval() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(eval '(* 7 3) (scheme-report-environment 5))", "21");
+    assert_eval(s, "(eval '(if #t 1 2) (null-environment 5))", "1");
+    assert_eval(s, "(let ((f (eval '(lambda (f x) (f x x)) (null-environment 5)))) (f + 10))", "20");
+}
+
 int main(int argc, char *argv[]) {
     try {
         cout << "Test tokenizer...       ";
@@ -706,6 +713,10 @@ int main(int argc, char *argv[]) {
 
         cout << "Test call/cc...         ";
         test_call_cc();
+        cout << " OK" << endl;
+
+        cout << "Test eval...            ";
+        test_eval();
         cout << " OK" << endl;
 
         cout << "Test I/O...             ";

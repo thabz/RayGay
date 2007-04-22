@@ -265,3 +265,13 @@ SchemeEOF::SchemeEOF() {
 string SchemeEOF::toString() { 
     return "#<EOF>";
 }
+
+//-----------------------------------------------------------
+// Environment
+//-----------------------------------------------------------
+SchemeEnvironment::SchemeEnvironment(BindingEnvironment* b) : bindings(b) {};
+
+string SchemeEnvironment::toString() { 
+    return "#<environment>";
+}
+

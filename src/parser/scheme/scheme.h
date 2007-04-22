@@ -17,19 +17,18 @@ class Scheme {
         SchemeObject* eval(istream* code);
 
         // For assigning variables at top-level-frame
-        void assign(string variable, double value);
-        void assign(string variable, string value);
-        void assign(string variable, bool value);
-        void assign(string variable, SchemeObject* value);
+        void assign(string variable, double value, BindingEnvironment* b);
+        void assign(string variable, string value, BindingEnvironment* b);
+        void assign(string variable, bool value, BindingEnvironment* b);
+        void assign(string variable, SchemeObject* value, BindingEnvironment* b);
         
         // For assigning built-in functions at top-level-frame
-		void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)());
+		void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), BindingEnvironment* b);
         
         // Look up in top-level-frame
         SchemeObject* lookup(string variable);
 
     private:
-        BindingEnvironment* top_level_bindings;
 };
 
 class scheme_exception {
@@ -67,6 +66,11 @@ SchemeBool* s_not(SchemeObject*);
 SchemeObject* s_call_cc(SchemeObject* proc);
 
 SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args);
+SchemeObject* s_null_environment(SchemeObject* version);
+SchemeObject* s_scheme_report_environment(SchemeObject* version);
+SchemeObject* s_interaction_environment(SchemeObject* version);
+SchemeObject* s_eval(SchemeObject* expression, SchemeObject* environment);
+
 SchemeObject* s_map(SchemeObject* proc, SchemeObject* lists);
 SchemeObject* s_for_each(SchemeObject* proc, SchemeObject* lists);
 

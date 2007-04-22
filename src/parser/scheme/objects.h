@@ -28,7 +28,8 @@ class SchemeObject {
  		    CONTINUATION,
  		    INPUT_PORT,
  		    EOFTYPE,
- 		    OUTPUT_PORT
+ 		    OUTPUT_PORT,
+ 		    ENVIRONMENT
 		};
 	SchemeObject(bool immutable = false);
         virtual ~SchemeObject() {};
@@ -198,6 +199,15 @@ class SchemeEOF : public SchemeObject {
         string toString();      
         ObjectType type() { return EOFTYPE; };    
     
+};
+
+class SchemeEnvironment : public SchemeObject {
+    public:
+        SchemeEnvironment(BindingEnvironment* b);
+        string toString();
+        ObjectType type() { return ENVIRONMENT; };    
+        BindingEnvironment* bindings;
+        
 };
 
 #endif

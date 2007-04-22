@@ -88,7 +88,7 @@ jmp_buf* Stack::push_jump_pos() {
 //------------------------------------------------------------------------
 // Interpreter
 //------------------------------------------------------------------------
-Interpreter::Interpreter(SchemePair* parsetree, BindingEnvironment* top_level_bindings) {
+Interpreter::Interpreter(SchemeObject* parsetree, BindingEnvironment* top_level_bindings) {
     define_scheme_symbols();
     this->parsetree = parsetree;   
 	this->top_level_bindings = top_level_bindings;
