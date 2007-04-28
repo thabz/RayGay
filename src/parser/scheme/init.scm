@@ -1,5 +1,4 @@
 
-
 (define (*internal*-char-cmp? cmp l)
      (apply cmp (map char->integer l)))
 (define (*internal*-char-ci-cmp? cmp l)
@@ -50,7 +49,7 @@
 (define (string-ci<=? . l) (string-cmp? *internal*-char-ci-cmp? <= l))
 (define (string-ci>=? . l) (string-cmp? *internal*-char-ci-cmp? >= l))
 
-
+#|
 (define (seed) 0)
 
 (define generate-name                            
@@ -62,7 +61,7 @@
                       "|"
                       (number->string count))))))
 
-#|
+
 (defmacro values x
    `(list ,@x))
 
@@ -70,4 +69,5 @@
    `(apply ,g (,f)))
 
 |#
-'a
+
+'b

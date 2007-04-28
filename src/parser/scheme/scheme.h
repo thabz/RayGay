@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include "objects.h"
+#include "heap.h"
 
 using namespace std;
 
@@ -78,6 +79,7 @@ SchemeBool* s_string_p(SchemeObject* o);
 SchemeBool* s_char_p(SchemeObject* o);
 SchemeBool* s_procedure_p(SchemeObject* o);
 SchemeBool* s_list_p(SchemeObject* p);
+SchemeBool* s_circular_list_p(SchemeObject* p);
 SchemeBool* s_number_p(SchemeObject* p);
 SchemeBool* s_vector_p(SchemeObject* p);
 SchemeBool* s_pair_p(SchemeObject* p);

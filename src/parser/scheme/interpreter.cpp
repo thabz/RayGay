@@ -52,38 +52,22 @@ void define_scheme_symbols() {
    define_macro = SchemeSymbol::create("define-macro");
    set_e_symbol = SchemeSymbol::create("set!");
    unnamed_symbol = SchemeSymbol::create("#<unnamed>");
+   
+   Heap* heap = Heap::getUniqueInstance();
+   heap->addRoot(else_symbol);
+   heap->addRoot(ergo_symbol);
+   heap->addRoot(unquote_symbol);
+   heap->addRoot(unquote_splicing_symbol);
+   heap->addRoot(unnamed_symbol);
 }
 
 SchemeObject* global_ret;
 SchemeObject* global_arg1;
 SchemeObject* global_arg2;
+SchemeObject* global_arg3;
 SchemeEnvironment* global_envt;
+list<SchemeObject*> stack;
 
-/*
-#define call_and_return(envt,thing,PLACE) { int kk = setjmp(*(tstack->push_jump_pos())); \
-    if (kk == 0) { \
-        tstack->push(envt); \
-        tstack->push(thing); \
-        goto PLACE; \
-    } \
-}
-
-void Stack::return_jump(SchemeObject* return_value) {
-    assert(!stk.empty());
-    assert(stk.back().type == StackEntry::JMP_BUF);
-    StackEntry e = stk.back();
-    stk.pop_back();
-    push(return_value);
-    longjmp(e.jmpbuf,1);
-}
-
-jmp_buf* Stack::push_jump_pos() {
-    StackEntry e;
-    e.type = StackEntry::JMP_BUF;
-    stk.push_back(e);
-    return &(stk.back().jmpbuf);
-}
-*/
 
 //------------------------------------------------------------------------
 // Interpreter
@@ -92,40 +76,69 @@ Interpreter::Interpreter(SchemeObject* parsetree, SchemeEnvironment* top_level_b
     define_scheme_symbols();
     this->parsetree = parsetree;   
 	this->top_level_bindings = top_level_bindings;
-    global_envt = top_level_bindings;
 }
 
 SchemeObject* Interpreter::call_procedure_n(SchemeObject* procedure, SchemeObject* args) {
     global_arg1 = procedure;
     global_arg2 = args;
-    return trampoline((fn_ptr)&eval_procedure_call);
+    Heap* heap = Heap::getUniqueInstance();
+    heap->addRoot(global_arg1);
+    heap->addRoot(global_arg2);
+    SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call);
+    heap->popRoot();
+    heap->popRoot();
+    return result;
 }
 
 SchemeObject* Interpreter::call_procedure_0(SchemeObject* procedure) {
     global_arg1 = procedure;
     global_arg2 = S_EMPTY_LIST;
-    return trampoline((fn_ptr)&eval_procedure_call);
+    Heap* heap = Heap::getUniqueInstance();
+    heap->addRoot(global_arg1);
+    heap->addRoot(global_arg2);
+    SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call);
+    heap->popRoot();
+    heap->popRoot();
+    return result;
 }
 
 SchemeObject* Interpreter::call_procedure_1(SchemeObject* procedure, SchemeObject* arg) {
     global_arg1 = procedure;
     global_arg2 = s_cons(arg,S_EMPTY_LIST);
-    return trampoline((fn_ptr)&eval_procedure_call);
+    Heap* heap = Heap::getUniqueInstance();
+    heap->addRoot(global_arg1);
+    heap->addRoot(global_arg2);
+    SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call);
+    heap->popRoot();
+    heap->popRoot();
+    return result;
 }
 
 SchemeObject* Interpreter::call_procedure_2(SchemeObject* procedure, SchemeObject* arg1, SchemeObject* arg2) {
     global_arg1 = procedure;
     global_arg2 = s_cons(arg1, s_cons(arg2, S_EMPTY_LIST));
-    return trampoline((fn_ptr)&eval_procedure_call);
+    Heap* heap = Heap::getUniqueInstance();
+    heap->addRoot(global_arg1);
+    heap->addRoot(global_arg2);
+    SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call);
+    heap->popRoot();
+    heap->popRoot();
+    return result;
 }
 
 SchemeObject* Interpreter::interpret() {
     if (parsetree == S_EMPTY_LIST) {
 	    return S_UNSPECIFIED;
     }
+    Heap* heap = Heap::getUniqueInstance();
+    heap->addRoot(parsetree);
+    heap->addRoot(top_level_bindings);
     global_arg1 = parsetree;
     global_envt = top_level_bindings;
-    return trampoline((fn_ptr)&eval_sequence);
+    SchemeObject* result = trampoline((fn_ptr)&eval_sequence);
+    heap->popRoot();
+    heap->popRoot();
+    return result;
 }
 
 // A popular method for achieving proper tail recursion in a non-tail-recursive C implementation 
@@ -140,79 +153,29 @@ SchemeObject* Interpreter::interpret() {
 
 SchemeObject* trampoline(fn_ptr f) {
     SchemeEnvironment* saved = global_envt;
+    size_t stack_size = stack.size();
     while (f != NULL) {
         f = (fn_ptr)(*f)();
     }
     global_envt = saved;
+    stack.resize(stack_size);
     return global_ret;
 }
 
-//
-// Evals a list of expressions and returns the last.
-//
-fn_ptr eval_sequence() {
-    SchemeObject* p = global_arg1;
-    if (p == S_EMPTY_LIST) {
-        global_ret = S_UNSPECIFIED;
-        return NULL;
-    }
-    while (true) {
-        if (s_null_p(s_cdr(p)) == S_TRUE) {
-            // The tail call, let EVAL return to this' caller
-            global_arg1 = s_car(p);
-            return (fn_ptr)&eval;
-        } else {
-            global_arg1 = s_car(p);
-            trampoline((fn_ptr)&eval);
-            p = s_cdr(p);
-        }
-    }    
-}
 
-fn_ptr eval_define() {
-    SchemeObject* p = global_arg1;
-    SchemeEnvironment* envt = global_envt;
-    
-    if (s_pair_p(s_car(p)) == S_TRUE) {
-        // (define (func-name args...) body-forms...)
-        SchemeObject* pa = s_car(p);
-        if (s_symbol_p(s_car(pa)) == S_FALSE) {
-            throw scheme_exception("Bad variable");
-        }
-        SchemeObject* body = s_cdr(p);
-
-        global_arg1 = s_cdr(pa);
-        global_arg2 = body;
-        trampoline((fn_ptr)&eval_lambda);
-        SchemeObject* proc = global_ret;
-        
-        SchemeObject* name = s_car(pa);
-        static_cast<SchemeProcedure*>(proc)->setName(name);
-
-        envt->put(static_cast<SchemeSymbol*>(name), proc);
-    } else {
-        // (define var value-expr)
-        if (s_length(p) != S_TWO) {
-            throw scheme_exception("Missing or extra expression");
-        }
-        
-        if (s_symbol_p(s_car(p)) == S_FALSE) {
-            throw scheme_exception("Bad variable");
-        }
-        SchemeSymbol* s = static_cast<SchemeSymbol*>(s_car(p));
-        
-        global_arg1 = s_car(s_cdr(p));
-        SchemeObject* v = trampoline((fn_ptr)&eval);
-
-        envt->put(s, v);
-    }
-    global_ret = S_UNSPECIFIED;
-    return NULL;
-}
 
 fn_ptr eval() {
     SchemeObject* s = global_arg1;
     SchemeEnvironment* envt = global_envt;
+
+    Heap* heap = Heap::getUniqueInstance();
+    if (heap->timeToGarbageCollect()) {
+        heap->addRoot(s);
+        heap->addRoot(envt);
+        heap->garbageCollect(stack);
+        heap->popRoot();
+        heap->popRoot();
+    }
     
 	SchemeObject::ObjectType type = s->type();
 	switch(type) {
@@ -294,6 +257,7 @@ fn_ptr eval_list() {
                 SchemeObject* body = s_cdr(cdr);
                 global_arg1 = formals;
                 global_arg2 = body;
+                global_arg3 = unnamed_symbol;
                 return (fn_ptr)&eval_lambda;
         	} else if (s == let_symbol) {
                 global_arg1 = cdr;
@@ -338,6 +302,106 @@ fn_ptr eval_list() {
 		throw scheme_exception("Unbound variable: " + s->toString());	
     }
 }
+
+//
+// Evals a list of expressions and returns the last.
+//
+fn_ptr eval_sequence() {
+    SchemeObject* p = global_arg1;
+    if (p == S_EMPTY_LIST) {
+        global_ret = S_UNSPECIFIED;
+        return NULL;
+    }
+    stack.push_back(p);
+    while (true) {
+        if (s_null_p(s_cdr(p)) == S_TRUE) {
+            // The tail call, let EVAL return to this' caller
+            global_arg1 = s_car(p);
+            stack.pop_back();
+            return (fn_ptr)&eval;
+        } else {
+            global_arg1 = s_car(p);
+            trampoline((fn_ptr)&eval);
+            p = s_cdr(p);
+        }
+    }    
+}
+
+//
+// Evals a list of expressions and the returns the list of results
+//
+fn_ptr eval_multi() {
+    // TODO: Facilitate allocation of multiple cells at once instead
+    // of separate calls to s_cons.
+    SchemeObject* p = global_arg1;
+    
+    SchemeObject* result = S_EMPTY_LIST;
+    SchemeObject* tail_pair = S_EMPTY_LIST;
+    stack.push_back(result);
+    SchemeObject*& result_stack_ref = stack.back();
+    
+    while (p != S_EMPTY_LIST) {
+        global_arg1 = s_car(p);
+        SchemeObject* r = trampoline((fn_ptr)&eval);
+
+	    if (result == S_EMPTY_LIST) {
+	        result = s_cons(r, S_EMPTY_LIST);
+            tail_pair = result;
+            result_stack_ref = result;
+	    } else {
+	        SchemeObject* new_tail = s_cons(r, S_EMPTY_LIST);
+	        s_set_cdr_e(tail_pair, new_tail);
+	        tail_pair = new_tail;
+	    }
+
+        p = s_cdr(p);
+    }
+    stack.pop_back();
+    global_ret = result;
+    return NULL;
+}
+
+
+fn_ptr eval_define() {
+    SchemeObject* p = global_arg1;
+    SchemeEnvironment* envt = global_envt;
+    
+    if (s_pair_p(s_car(p)) == S_TRUE) {
+        // (define (func-name args...) body-forms...)
+        SchemeObject* pa = s_car(p);
+        if (s_symbol_p(s_car(pa)) == S_FALSE) {
+            throw scheme_exception("Bad variable");
+        }
+        SchemeObject* body = s_cdr(p);
+        SchemeObject* name = s_car(pa);
+
+        global_arg1 = s_cdr(pa);
+        global_arg2 = body;
+        global_arg3 = name;
+        trampoline((fn_ptr)&eval_lambda);
+        SchemeObject* proc = global_ret;
+        
+        envt->put(static_cast<SchemeSymbol*>(name), proc);
+    } else {
+        // (define var value-expr)
+        if (s_length(p) != S_TWO) {
+            throw scheme_exception("Missing or extra expression");
+        }
+        
+        if (s_symbol_p(s_car(p)) == S_FALSE) {
+            throw scheme_exception("Bad variable");
+        }
+        SchemeSymbol* s = static_cast<SchemeSymbol*>(s_car(p));
+        
+        global_arg1 = s_car(s_cdr(p));
+        SchemeObject* v = trampoline((fn_ptr)&eval);
+
+        envt->put(s, v);
+    }
+    global_ret = S_UNSPECIFIED;
+    return NULL;
+}
+
 
 fn_ptr eval_begin() {
     return (fn_ptr)&eval_sequence;
@@ -684,34 +748,10 @@ fn_ptr eval_procedure_call() {
     }    
 }
 
-fn_ptr eval_multi() {
-    // TODO: Facilitate allocation of multiple cells at once instead
-    // of separate calls to s_cons.
-    SchemeObject* p = global_arg1;
-
-    SchemeObject* result = S_EMPTY_LIST;
-    SchemeObject* tail_pair = S_EMPTY_LIST;
-    while (p != S_EMPTY_LIST) {
-        global_arg1 = s_car(p);
-        SchemeObject* r = trampoline((fn_ptr)&eval);
-
-	if (result == S_EMPTY_LIST) {
-	    tail_pair = result = s_cons(r, S_EMPTY_LIST);
-	} else {
-	    SchemeObject* new_tail = s_cons(r, S_EMPTY_LIST);
-	    s_set_cdr_e(tail_pair, new_tail);
-	    tail_pair = new_tail;
-	}
-
-        p = s_cdr(p);
-    }
-    global_ret = result;
-    return NULL;
-}
-
 fn_ptr eval_lambda() {
     SchemeObject* formals = global_arg1;
     SchemeObject* body = global_arg2;
+    SchemeObject* name = global_arg3;
     SchemeEnvironment* envt = global_envt;
 
     SchemeSymbol* rst;
@@ -746,7 +786,7 @@ fn_ptr eval_lambda() {
         throw scheme_exception("Bad formals");
     }
 
-    global_ret = SchemeProcedure::create(unnamed_symbol, envt, req, rst, body);
+    global_ret = SchemeProcedure::create(name, envt, req, rst, body);
     return NULL;
 }
 
@@ -1064,6 +1104,13 @@ fn_ptr eval_do() {
     SchemeObject* steps = S_EMPTY_LIST;
     SchemeObject* varnames = S_EMPTY_LIST;
     SchemeObject* binding_pairs = s_car(p);
+    
+    stack.push_back(p);
+    stack.push_back(new_envt);
+    stack.push_back(steps);
+    SchemeObject*& steps_stack_pos = stack.back();
+    stack.push_back(varnames);
+    SchemeObject*& varnames_stack_pos = stack.back();
 
     while (s_null_p(binding_pairs) == S_FALSE) {
         // Eval initial binding value
@@ -1076,6 +1123,7 @@ fn_ptr eval_do() {
         }
         new_envt->put(static_cast<SchemeSymbol*>(varname), val);
         varnames = s_cons(varname, varnames);
+        varnames_stack_pos = varnames;
 
         SchemeObject* step = s_cdr(s_cdr(s_car(binding_pairs)));
         if (step == S_EMPTY_LIST) {
@@ -1084,6 +1132,7 @@ fn_ptr eval_do() {
             step = s_car(step);
         }
         steps = s_cons(step, steps);
+        steps_stack_pos = steps;
 
         binding_pairs = s_cdr(binding_pairs);
     }
@@ -1101,9 +1150,17 @@ fn_ptr eval_do() {
         if (val->boolValue()) {
             if (s_cdr(s_car(body)) == S_EMPTY_LIST) {
                 global_ret = S_UNSPECIFIED;
+                stack.pop_back();
+                stack.pop_back();
+                stack.pop_back();
+                stack.pop_back();
                 return NULL;
             } else {
                 global_arg1 = s_cdr(s_car(body));
+                stack.pop_back();
+                stack.pop_back();
+                stack.pop_back();
+                stack.pop_back();
                 return (fn_ptr)&eval_sequence;
             }
         }

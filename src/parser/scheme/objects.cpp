@@ -2,18 +2,20 @@
 #include "objects.h"
 #include "scheme.h"
 #include <sstream>
+#include "heap.h"
 
 SchemeObject::SchemeObject(bool immutable) : immutable(immutable) {
+    in_use = false;
+    Heap::getUniqueInstance()->addAllocation(this);
 }
 
+void SchemeObject::mark() {
+    in_use = true;
+}
 
 //-----------------------------------------------------------
 // Unspecified
 //-----------------------------------------------------------
-SchemeUnspecified* SchemeUnspecified::create() {
-    return new SchemeUnspecified();
-}
-
 string SchemeUnspecified::toString() {
     return "#<unspecified>";
 }
@@ -59,7 +61,7 @@ string SchemeSymbol::toString() {
 }
 
 //-----------------------------------------------------------
-// Symbol
+// Number
 //-----------------------------------------------------------
 SchemeNumber* SchemeNumber::create(double s) {
     return new SchemeNumber(s);
@@ -89,6 +91,10 @@ string SchemeBool::toString() {
 //-----------------------------------------------------------
 string SchemeEmptyList::toString() {
     return "()";
+}
+
+void SchemeEmptyList::mark() {
+    SchemeObject::mark();
 }
 
 //-----------------------------------------------------------
@@ -141,6 +147,9 @@ SchemePair* SchemePair::cdrAsPair() {
 }
 
 string SchemePair::toString() {
+    if (s_circular_list_p(this) == S_TRUE) {
+        return "#<circular list>";
+    }
 	string result = "(";
 	SchemePair *p = this, *n;
     while (true) {
@@ -158,6 +167,18 @@ string SchemePair::toString() {
 	}
 	result += ")";
 	return result;
+}
+
+void SchemePair::mark() {
+    if (in_use == false) {
+        SchemeObject::mark();
+        if (car != NULL) {
+            car->mark();
+        }
+        if (cdr != NULL) {
+            cdr->mark();
+        }
+    }
 }
 
 //-----------------------------------------------------------
@@ -205,6 +226,14 @@ string SchemeVector::toString() {
     return result;
 }
 
+void SchemeVector::mark() {
+    if (in_use == false) {
+        SchemeObject::mark();
+        for(int i = 0; i < length; i++) {
+            elems[i]->mark();
+        }    
+    }
+}
 
 //-----------------------------------------------------------
 // Procedure
@@ -248,6 +277,22 @@ string SchemeProcedure::toString() {
 void SchemeProcedure::setName(SchemeObject* name) {
     assert(s_symbol_p(name) == S_TRUE);
     this->name = static_cast<SchemeSymbol*>(name);
+}
+
+void SchemeProcedure::mark() {
+    if (in_use == false) {
+        SchemeObject::mark();
+    
+        if (name != NULL) {
+            name->mark();
+        }
+        if (fn == NULL) {
+            envt->mark();
+            s_req->mark();
+            if (s_rst != NULL) s_rst->mark();
+            s_body->mark(); 
+        }
+    }
 }
 
 //-----------------------------------------------------------
@@ -356,6 +401,21 @@ void SchemeEnvironment::set(SchemeSymbol* name, SchemeObject* o) {
         }
     } else {
         put(name,o);
+    }
+}
+
+void SchemeEnvironment::mark() {
+    if (in_use == false) {
+        SchemeObject::mark();
+        map<SchemeSymbol*,SchemeObject*>::iterator v = binding_map.begin();
+        while (v != binding_map.end()) {
+            if ((*v).first != NULL) (*v).first->mark();
+            if ((*v).second != NULL) (*v).second->mark();
+            v++;
+        }
+        if (parent != NULL) {
+            parent->mark();
+        }
     }
 }
 

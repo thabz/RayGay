@@ -29,7 +29,7 @@ SchemeNumber* S_SIX = SchemeNumber::create(6);
 SchemeNumber* S_SEVEN = SchemeNumber::create(7);
 SchemeNumber* S_EIGHT = SchemeNumber::create(8);
 SchemeNumber* S_NINE = SchemeNumber::create(9);
-SchemeUnspecified* S_UNSPECIFIED = SchemeUnspecified::create();
+SchemeUnspecified* S_UNSPECIFIED = new SchemeUnspecified;
 SchemeEmptyList* S_EMPTY_LIST = new SchemeEmptyList();
 SchemeChar* S_SPACE = char2scm(' ');
 SchemeNumber* S_NUMBERS[] = {S_ZERO, S_ONE, S_TWO, S_THREE, S_FOUR, S_FIVE, S_SIX, S_SEVEN, S_EIGHT, S_NINE};
@@ -42,6 +42,7 @@ Interpreter* interpreter;
 SchemeEnvironment* null_environment = SchemeEnvironment::create(NULL);
 SchemeEnvironment* scheme_report_environment = SchemeEnvironment::create(null_environment);
 SchemeEnvironment* interaction_environment = SchemeEnvironment::create(scheme_report_environment);
+
 
 // Global parser used by s_read()
 Parser* global_parser = new Parser();
@@ -208,6 +209,27 @@ Scheme::Scheme() {
     current_input_port = new SchemeInputPort(&cin);
     current_output_port = new SchemeOutputPort(&cout);
 	
+    Heap::getUniqueInstance()->addRoot(current_output_port);
+    Heap::getUniqueInstance()->addRoot(current_input_port);
+    Heap::getUniqueInstance()->addRoot(interaction_environment);
+    Heap::getUniqueInstance()->addRoot(S_SPACE);
+    Heap::getUniqueInstance()->addRoot(S_UNSPECIFIED);
+    Heap::getUniqueInstance()->addRoot(S_EMPTY_LIST);
+    Heap::getUniqueInstance()->addRoot(S_EOF);
+    Heap::getUniqueInstance()->addRoot(S_TRUE);
+    Heap::getUniqueInstance()->addRoot(S_FALSE);
+    Heap::getUniqueInstance()->addRoot(S_ZERO);
+    Heap::getUniqueInstance()->addRoot(S_ONE);
+    Heap::getUniqueInstance()->addRoot(S_TWO);
+    Heap::getUniqueInstance()->addRoot(S_THREE);
+    Heap::getUniqueInstance()->addRoot(S_FOUR);
+    Heap::getUniqueInstance()->addRoot(S_FIVE);
+    Heap::getUniqueInstance()->addRoot(S_SIX);
+    Heap::getUniqueInstance()->addRoot(S_SEVEN);
+    Heap::getUniqueInstance()->addRoot(S_EIGHT);
+    Heap::getUniqueInstance()->addRoot(S_NINE);
+    
+	
     ifstream infile;
     infile.open("init.scm", ifstream::in);
     eval(&infile);
@@ -334,6 +356,32 @@ SchemeBool* s_list_p(SchemeObject* o) {
         }
     }
 }
+
+SchemeBool* s_circular_list_p(SchemeObject* o) {
+    SchemeObject *fast, *slow;
+    fast = slow = o;
+    while (true) {
+        if (s_pair_p(fast) == S_FALSE) return S_FALSE;
+        if (s_pair_p(fast) == S_TRUE && s_cdr(fast) == S_EMPTY_LIST) return S_FALSE;
+        fast = s_cdr(fast);
+        if (slow == fast) {
+            // The fast stepping pointer has looped around and caught up with the slow
+            // moving pointer, thus the structure is circular and thus not a list.
+            return S_TRUE;
+        }
+        if (s_pair_p(fast) == S_FALSE) return S_FALSE;
+        if (s_pair_p(fast) == S_TRUE && s_cdr(fast) == S_EMPTY_LIST) return S_FALSE;
+        fast = s_cdr(fast);
+        slow = s_cdr(slow);
+        if (slow == fast) {
+            // The fast stepping pointer has looped around and caught up with the slow
+            // moving pointer, thus the structure is circular and thus not a list.
+            return S_TRUE;
+        }
+    }    
+}
+
+
 
 // TODO: Gør denne til en intern function med tail-optimization
 SchemeObject* s_call_cc(SchemeObject* s_proc) {

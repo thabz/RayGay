@@ -23,10 +23,11 @@ int errors_found = 0;
 
 void assert_eval(Scheme* s, string expr, string res) {
     try {
-       if (s->eval(expr)->toString() != res) {
-           errors_found++;
-           cerr << "FAILED: " << expr << endl; 
-       }  
+        cout << "Testing " << expr << endl;
+        if (s->eval(expr)->toString() != res) {
+            errors_found++;
+            cerr << "FAILED: " << expr << endl; 
+        }  
     } catch (scheme_exception e) {
         errors_found++;
         cerr << "FAILED: " << expr << ": " << e.str << endl; 
@@ -367,7 +368,7 @@ void test_pairs_and_lists() {
     assert(s->eval("(null? '(1 2 3))") == S_FALSE);
     assert(s->eval("(null? '())") == S_TRUE);
     assert(s->eval("(null? 1)") == S_FALSE);
-    
+
     assert_eval(s, "(cons 1 2)", "(1 . 2)");
     
     assert_eval(s, "(list)", "()");
@@ -402,7 +403,7 @@ void test_pairs_and_lists() {
     assert_eval(s, "(append)", "()");
     assert_eval(s, "(append '() 'a)", "a");
     assert_eval(s, "(append 'a)", "a");
-    assert_eval(s, "(append '(a b c) '(1 . 2))", "(a b c 1 . 2)"); // <-- error
+    assert_eval(s, "(append '(a b c) '(1 . 2))", "(a b c 1 . 2)");
     assert_eval(s, "(append '(a (b)) '((c)))", "(a (b) (c))");
 
     s->eval("(define e '((a 1) (b 2) (c 3)))");

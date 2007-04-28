@@ -39,15 +39,17 @@ class SchemeObject {
         virtual bool boolValue() const { return true; }; // Used in conditional expressions (if, cond, and, or, do)
         virtual ObjectType type() = 0;
 	    bool immutable;
+	    
+	    // For garbage collection
+        virtual void mark();
+        bool in_use;
 };
 
 class SchemeUnspecified : public SchemeObject {
     public:
-        static SchemeUnspecified* create();
+        SchemeUnspecified() {};
         string toString();
         ObjectType type() { return UNSPECIFIED; };
-    private:
-        SchemeUnspecified() {};
 };
 
 class SchemeNumber : public SchemeObject {
@@ -70,6 +72,8 @@ class SchemePair : public SchemeObject {
         string toString();
 	    SchemeObject* car;
      	SchemeObject* cdr;
+        void mark();
+        
      protected:	
         SchemePair();
         SchemePair(SchemeObject* car, SchemeObject* cdr);
@@ -82,6 +86,7 @@ class SchemeVector : public SchemeObject {
         SchemeObject* get(int index);
         void set(SchemeObject* o, int index);
         ObjectType type() { return VECTOR; };
+        void mark();
         
         string toString();
         SchemeObject** elems;
@@ -97,6 +102,7 @@ class SchemeEmptyList : public SchemePair {
     public:
         string toString();
         ObjectType type() { return EMPTY_LIST; };
+        void mark();
 };
 
 class SchemeSymbol : public SchemeObject {
@@ -143,7 +149,6 @@ class SchemeChar : public SchemeObject {
             
 };
 
-
 class SchemeContinuation : public SchemeObject {
     public:
         SchemeContinuation();
@@ -181,6 +186,8 @@ class SchemeProcedure : public SchemeObject
         ObjectType type() { return PROCEDURE; };
         string nameAsString() { return name->str; };
         void setName(SchemeObject* name);
+        
+        void mark();
         
         SchemeSymbol* name;
 
@@ -236,6 +243,8 @@ class SchemeEnvironment : public SchemeObject {
 		SchemeObject* get(SchemeSymbol* name);
         void put(SchemeSymbol* name, SchemeObject* o);
         void set(SchemeSymbol* name, SchemeObject* o);
+        
+        void mark();
 
 	private:
         SchemeEnvironment(SchemeEnvironment* parent);

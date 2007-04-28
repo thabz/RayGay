@@ -8,6 +8,7 @@ libscheme_la_SOURCES = lexer.h lexer.cpp \
                        interpreter.h interpreter.cpp \
                        objects.h objects.cpp \
                        parser.h parser.cpp \
+                       heap.h heap.cpp \
                        scheme.h scheme.cpp
 
 # -----------------------------------------------------
