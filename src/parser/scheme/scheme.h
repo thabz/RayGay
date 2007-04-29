@@ -38,6 +38,7 @@ class scheme_exception {
 
 void assert_arg_type(char* procname, int argnum, SchemeBool* (*)(SchemeObject*), SchemeObject* arg);
 void assert_arg_not_immutable(char* procname, int argnum, SchemeObject* arg);
+void assert_arg_int_in_range(char* procname, int argnum, SchemeObject* arg, int from, int to);
 
 // Scheme constants
 extern SchemeBool* S_TRUE;
@@ -85,9 +86,7 @@ SchemeBool* s_vector_p(SchemeObject* p);
 SchemeBool* s_pair_p(SchemeObject* p);
 SchemeBool* s_null_p(SchemeObject* p);
 SchemeBool* s_symbol_p(SchemeObject* p);
-SchemePair* s_list(SchemePair* args);
-SchemeObject* s_list_ref(SchemePair* l, SchemeNumber* index);
-SchemePair* s_list_tail(SchemePair* list, SchemeNumber* k);
+
 SchemeObject* s_assoc(SchemeObject* obj, SchemePair* alist);
 SchemeObject* s_assq(SchemeObject* obj, SchemePair* alist);
 SchemeObject* s_assv(SchemeObject* obj, SchemePair* alist);
@@ -103,10 +102,14 @@ SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o);
 SchemeObject* s_append(SchemePair* args);
 SchemePair* s_reverse(SchemeObject* l);
 SchemeNumber* s_length(SchemeObject* l);
-SchemeObject* s_list_ref(SchemePair* l, SchemeNumber* i);
+SchemePair* s_list(SchemePair* args);
+SchemeObject* s_list_tail(SchemeObject* l, SchemeObject* k);
+SchemeObject* s_list_ref(SchemeObject* l, SchemeObject* k);
 SchemeObject* s_member(SchemeObject* obj, SchemeObject* p);
 SchemeObject* s_memq(SchemeObject* obj, SchemeObject* p);
 SchemeObject* s_memv(SchemeObject* obj, SchemeObject* p);
+
+// Vector stuff
 SchemeVector* s_make_vector(SchemeNumber* count, SchemeObject* obj);
 SchemeVector* s_vector(SchemeObject* args);
 SchemeNumber* s_vector_length(SchemeObject* v);

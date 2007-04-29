@@ -69,218 +69,224 @@ SchemeEnvironment* interaction_environment = SchemeEnvironment::create(scheme_re
 // Global parser used by s_read()
 Parser* global_parser = new Parser();
 
+bool globals_init = false;
+
 Scheme::Scheme() {
-	assign("map"        ,1,0,1, (SchemeObject* (*)()) s_map, scheme_report_environment);
-	assign("for-each"   ,1,0,1, (SchemeObject* (*)()) s_for_each, scheme_report_environment);
-	assign("equal?"     ,2,0,0, (SchemeObject* (*)()) s_equal_p, scheme_report_environment);
-	assign("eq?"        ,2,0,0, (SchemeObject* (*)()) s_eq_p, scheme_report_environment);
-	assign("eqv?"       ,2,0,0, (SchemeObject* (*)()) s_eqv_p, scheme_report_environment);
-	assign("boolean?"   ,1,0,0, (SchemeObject* (*)()) s_boolean_p, scheme_report_environment);
-	assign("pair?"      ,1,0,0, (SchemeObject* (*)()) s_pair_p, scheme_report_environment);
-	assign("symbol?"    ,1,0,0, (SchemeObject* (*)()) s_symbol_p, scheme_report_environment);
-	assign("char?"      ,1,0,0, (SchemeObject* (*)()) s_char_p, scheme_report_environment);
-	assign("list?"      ,1,0,0, (SchemeObject* (*)()) s_list_p, scheme_report_environment);
-	assign("string?"    ,1,0,0, (SchemeObject* (*)()) s_string_p, scheme_report_environment);
-	assign("procedure?" ,1,0,0, (SchemeObject* (*)()) s_procedure_p, scheme_report_environment);
-	assign("number?"    ,1,0,0, (SchemeObject* (*)()) s_number_p, scheme_report_environment);
-	assign("integer?"   ,1,0,0, (SchemeObject* (*)()) s_integer_p, scheme_report_environment);
-	assign("complex?"   ,1,0,0, (SchemeObject* (*)()) s_complex_p, scheme_report_environment);
-	assign("real?"      ,1,0,0, (SchemeObject* (*)()) s_real_p, scheme_report_environment);
-	assign("rational?"  ,1,0,0, (SchemeObject* (*)()) s_rational_p, scheme_report_environment);
-	assign("exact?"     ,1,0,0, (SchemeObject* (*)()) s_exact_p, scheme_report_environment);
-	assign("inexact?"   ,1,0,0, (SchemeObject* (*)()) s_inexact_p, scheme_report_environment);
-	assign("vector?"    ,1,0,0, (SchemeObject* (*)()) s_vector_p, scheme_report_environment);
-	assign("null?"      ,1,0,0, (SchemeObject* (*)()) s_null_p, scheme_report_environment);
-	assign("car"        ,1,0,0, (SchemeObject* (*)()) s_car, scheme_report_environment);
-	assign("cdr"        ,1,0,0, (SchemeObject* (*)()) s_cdr, scheme_report_environment);
-	assign("cadr"       ,1,0,0, (SchemeObject* (*)()) s_cadr, scheme_report_environment);
-	assign("cdar"       ,1,0,0, (SchemeObject* (*)()) s_cdar, scheme_report_environment);
-	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list, scheme_report_environment);
-	assign("list-tail"  ,2,0,0, (SchemeObject* (*)()) s_list_tail, scheme_report_environment);
-	assign("list-ref"   ,2,0,0, (SchemeObject* (*)()) s_list_ref, scheme_report_environment);
-	assign("set-car!"   ,2,0,0, (SchemeObject* (*)()) s_set_car_e, scheme_report_environment);
-	assign("set-cdr!"   ,2,0,0, (SchemeObject* (*)()) s_set_cdr_e, scheme_report_environment);
-	assign("assoc"      ,2,0,0, (SchemeObject* (*)()) s_assoc, scheme_report_environment);
-	assign("assq"       ,2,0,0, (SchemeObject* (*)()) s_assq, scheme_report_environment);
-	assign("assv"       ,2,0,0, (SchemeObject* (*)()) s_assv, scheme_report_environment);
-	assign("append"     ,0,0,1, (SchemeObject* (*)()) s_append, scheme_report_environment);
-	assign("member"     ,2,0,0, (SchemeObject* (*)()) s_member, scheme_report_environment);
-	assign("memq"       ,2,0,0, (SchemeObject* (*)()) s_memq, scheme_report_environment);
-	assign("memv"       ,2,0,0, (SchemeObject* (*)()) s_memv, scheme_report_environment);
-	assign("reverse"    ,1,0,0, (SchemeObject* (*)()) s_reverse, scheme_report_environment);
-	assign("length"     ,1,0,0, (SchemeObject* (*)()) s_length, scheme_report_environment);
-	assign("cons"       ,2,0,0, (SchemeObject* (*)()) s_cons, scheme_report_environment);
-	assign("display"    ,1,1,0, (SchemeObject* (*)()) s_display, scheme_report_environment);
-	assign("write"      ,1,1,0, (SchemeObject* (*)()) s_write, scheme_report_environment);
-	assign("newline"    ,0,1,0, (SchemeObject* (*)()) s_newline, scheme_report_environment);
-	assign("<"          ,0,0,1, (SchemeObject* (*)()) s_less, scheme_report_environment);
-	assign(">"          ,0,0,1, (SchemeObject* (*)()) s_greater, scheme_report_environment);
-	assign("<="         ,0,0,1, (SchemeObject* (*)()) s_less_equal, scheme_report_environment);
-	assign(">="         ,0,0,1, (SchemeObject* (*)()) s_greater_equal, scheme_report_environment);
-	assign("="          ,0,0,1, (SchemeObject* (*)()) s_equal, scheme_report_environment);
-	assign("+"          ,0,0,1, (SchemeObject* (*)()) s_plus, scheme_report_environment);
-	assign("-"          ,0,0,1, (SchemeObject* (*)()) s_minus, scheme_report_environment);
-	assign("*"          ,0,0,1, (SchemeObject* (*)()) s_mult, scheme_report_environment);
-	assign("/"          ,0,0,1, (SchemeObject* (*)()) s_divide, scheme_report_environment);
-	assign("abs"        ,1,0,0, (SchemeObject* (*)()) s_abs, scheme_report_environment);
-	assign("tan"        ,1,0,0, (SchemeObject* (*)()) s_tan, scheme_report_environment);
-	assign("atan"       ,1,1,0, (SchemeObject* (*)()) s_atan, scheme_report_environment);
-	assign("sin"        ,1,0,0, (SchemeObject* (*)()) s_sin, scheme_report_environment);
-	assign("asin"       ,1,0,0, (SchemeObject* (*)()) s_asin, scheme_report_environment);
-	assign("cos"        ,1,0,0, (SchemeObject* (*)()) s_cos, scheme_report_environment);
-	assign("acos"       ,1,0,0, (SchemeObject* (*)()) s_acos, scheme_report_environment);
-	assign("sqrt"       ,1,0,0, (SchemeObject* (*)()) s_sqrt, scheme_report_environment);
-	assign("log"        ,1,0,0, (SchemeObject* (*)()) s_log, scheme_report_environment);
-	assign("exp"        ,1,0,0, (SchemeObject* (*)()) s_exp, scheme_report_environment);
-	assign("expt"       ,2,0,0, (SchemeObject* (*)()) s_expt, scheme_report_environment);
-	assign("round"      ,1,0,0, (SchemeObject* (*)()) s_round, scheme_report_environment);
-	assign("ceiling"    ,1,0,0, (SchemeObject* (*)()) s_ceiling, scheme_report_environment);
-	assign("floor"      ,1,0,0, (SchemeObject* (*)()) s_floor, scheme_report_environment);
-	assign("truncate"   ,1,0,0, (SchemeObject* (*)()) s_truncate, scheme_report_environment);
-	assign("quotient"   ,2,0,0, (SchemeObject* (*)()) s_quotient, scheme_report_environment);
-	assign("remainder"  ,2,0,0, (SchemeObject* (*)()) s_remainder, scheme_report_environment);
-	assign("modulo"     ,2,0,0, (SchemeObject* (*)()) s_modulo, scheme_report_environment);
-	assign("min"        ,1,0,1, (SchemeObject* (*)()) s_min, scheme_report_environment);
-	assign("max"        ,1,0,1, (SchemeObject* (*)()) s_max, scheme_report_environment);
-	assign("gcd"        ,0,0,1, (SchemeObject* (*)()) s_gcd, scheme_report_environment);
-	assign("lcm"        ,0,0,1, (SchemeObject* (*)()) s_lcm, scheme_report_environment);
-	assign("even?"      ,1,0,1, (SchemeObject* (*)()) s_even_p, scheme_report_environment);
-	assign("odd?"       ,1,0,1, (SchemeObject* (*)()) s_odd_p, scheme_report_environment);
-	assign("zero?"      ,1,0,0, (SchemeObject* (*)()) s_zero_p, scheme_report_environment);
-	assign("negative?"  ,1,0,0, (SchemeObject* (*)()) s_negative_p, scheme_report_environment);
-	assign("positive?"  ,1,0,0, (SchemeObject* (*)()) s_positive_p, scheme_report_environment);
-	assign("not"        ,1,0,0, (SchemeObject* (*)()) s_not, scheme_report_environment);
-	assign("make-vector",1,1,0, (SchemeObject* (*)()) s_make_vector, scheme_report_environment);
-	assign("vector"     ,0,0,1, (SchemeObject* (*)()) s_vector, scheme_report_environment);
-	assign("vector-length",1,0,0, (SchemeObject* (*)()) s_vector_length, scheme_report_environment);
-	assign("vector-ref" ,2,0,0, (SchemeObject* (*)()) s_vector_ref, scheme_report_environment);
-	assign("vector-set!",3,0,0, (SchemeObject* (*)()) s_vector_set_e, scheme_report_environment);
-	assign("vector-fill!",2,0,0, (SchemeObject* (*)()) s_vector_fill_e, scheme_report_environment);
-	assign("list->vector",1,0,0, (SchemeObject* (*)()) s_list_2_vector, scheme_report_environment);
-	assign("vector->list",1,0,0, (SchemeObject* (*)()) s_vector_2_list, scheme_report_environment);
-	assign("make-string" ,1,1,0, (SchemeObject* (*)()) s_make_string, scheme_report_environment);
-	assign("string"      ,0,0,1, (SchemeObject* (*)()) s_string, scheme_report_environment);
-	assign("string-length",1,0,0, (SchemeObject* (*)()) s_string_length, scheme_report_environment);
-	assign("string-ref"  ,2,0,0, (SchemeObject* (*)()) s_string_ref, scheme_report_environment);
-	assign("string-set!"  ,3,0,0, (SchemeObject* (*)()) s_string_set_e, scheme_report_environment);
-	assign("string-append",0,0,1, (SchemeObject* (*)()) s_string_append, scheme_report_environment);
-	assign("string-copy",1,0,0, (SchemeObject* (*)()) s_string_copy, scheme_report_environment);
-	assign("substring"    ,3,0,0, (SchemeObject* (*)()) s_substring, scheme_report_environment);
-	assign("symbol->string",1,0,0, (SchemeObject* (*)()) s_symbol_2_string, scheme_report_environment);
-	assign("string->symbol",1,0,0, (SchemeObject* (*)()) s_string_2_symbol, scheme_report_environment);
-	assign("char->integer",1,0,0, (SchemeObject* (*)()) s_char_2_integer, scheme_report_environment);
-	assign("integer->char",1,0,0, (SchemeObject* (*)()) s_integer_2_char, scheme_report_environment);
-	assign("number->string",1,1,0, (SchemeObject* (*)()) s_number_2_string, scheme_report_environment);
-	assign("string->number",1,1,0, (SchemeObject* (*)()) s_string_2_number, scheme_report_environment);
-	assign("list->string",1,0,0, (SchemeObject* (*)()) s_list_2_string, scheme_report_environment);
-	assign("string->list"          ,1,0,0, (SchemeObject* (*)()) s_string_2_list, scheme_report_environment);
-	assign("char-downcase"         ,1,0,0, (SchemeObject* (*)()) s_char_downcase, scheme_report_environment);
-	assign("char-upcase"           ,1,0,0, (SchemeObject* (*)()) s_char_upcase, scheme_report_environment);
-	assign("char-alphabetic?"      ,1,0,0, (SchemeObject* (*)()) s_char_alphabetic_p, scheme_report_environment);
-	assign("char-numeric?"         ,1,0,0, (SchemeObject* (*)()) s_char_numeric_p, scheme_report_environment);
-	assign("char-whitespace?"      ,1,0,0, (SchemeObject* (*)()) s_char_whitespace_p, scheme_report_environment);
-	assign("char-upper-case?"      ,1,0,0, (SchemeObject* (*)()) s_char_upper_case_p, scheme_report_environment);
-	assign("char-lower-case?"      ,1,0,0, (SchemeObject* (*)()) s_char_lower_case_p, scheme_report_environment);
-	assign("symgen"                ,0,0,0, (SchemeObject* (*)()) s_symgen, scheme_report_environment);
-	
-	assign("current-input-port"    ,0,0,0, (SchemeObject* (*)()) s_current_input_port, scheme_report_environment);
-	assign("current-output-port"   ,0,0,0, (SchemeObject* (*)()) s_current_output_port, scheme_report_environment);
-	assign("input-port?"           ,1,0,0, (SchemeObject* (*)()) s_input_port_p, scheme_report_environment);
-	assign("output-port?"          ,1,0,0, (SchemeObject* (*)()) s_output_port_p, scheme_report_environment);
-	assign("eof-object?"           ,1,0,0, (SchemeObject* (*)()) s_eof_object_p, scheme_report_environment);
-	assign("call-with-input-file"  ,2,0,0, (SchemeObject* (*)()) s_call_with_input_file, scheme_report_environment);
-	assign("call-with-output-file" ,2,0,0, (SchemeObject* (*)()) s_call_with_output_file, scheme_report_environment);
-	assign("with-input-from-file"  ,2,0,0, (SchemeObject* (*)()) s_with_input_from_file, scheme_report_environment);
-	assign("with-output-to-file"   ,2,0,0, (SchemeObject* (*)()) s_with_output_to_file, scheme_report_environment);
-	assign("open-input-file"       ,1,0,0, (SchemeObject* (*)()) s_open_input_file, scheme_report_environment);
-	assign("open-output-file"      ,1,0,0, (SchemeObject* (*)()) s_open_output_file, scheme_report_environment);
-	assign("close-input-port"      ,1,0,0, (SchemeObject* (*)()) s_close_input_port, scheme_report_environment);
-	assign("close-output-port"     ,1,0,0, (SchemeObject* (*)()) s_close_output_port, scheme_report_environment);
-	assign("read-char"             ,0,1,0, (SchemeObject* (*)()) s_read_char, scheme_report_environment);
-	assign("peek-char"             ,0,1,0, (SchemeObject* (*)()) s_peek_char, scheme_report_environment);
-	assign("write-char"            ,1,1,0, (SchemeObject* (*)()) s_write_char, scheme_report_environment);
-	assign("read"                  ,0,1,0, (SchemeObject* (*)()) s_read, scheme_report_environment);
+    if (!globals_init) {
+        globals_init = true;
 
-	assign("apply"                 ,1,0,1, (SchemeObject* (*)()) s_apply, scheme_report_environment);
-	assign("call-with-current-continuation" ,1,0,0, (SchemeObject* (*)()) s_call_cc, scheme_report_environment);
-	assign("call/cc"               ,1,0,0, (SchemeObject* (*)()) s_call_cc, scheme_report_environment);
-    assign("eval"                  ,2,0,0, (SchemeObject* (*)()) s_eval, scheme_report_environment);
-    assign("scheme-report-environment",1,0,0, (SchemeObject* (*)()) s_scheme_report_environment, scheme_report_environment);
-    assign("null-environment"      ,1,0,0, (SchemeObject* (*)()) s_null_environment, scheme_report_environment);
-    assign("interaction-environment",1,0,0, (SchemeObject* (*)()) s_interaction_environment, scheme_report_environment);
-	
-	
-    assign("if",           new SchemeInternalProcedure("if"),null_environment);
-    //assign("apply", new SchemeInternalProcedure("apply"));
-    assign("cond",         new SchemeInternalProcedure("cond"),null_environment);
-    assign("case",         new SchemeInternalProcedure("case"),null_environment);
-    assign("do",           new SchemeInternalProcedure("do"),null_environment);
-    assign("let",          new SchemeInternalProcedure("let"),null_environment);
-    assign("let*",         new SchemeInternalProcedure("let*"),null_environment);
-    assign("letrec",       new SchemeInternalProcedure("letrec"),null_environment);
-    assign("begin",        new SchemeInternalProcedure("begin"),null_environment);
-    assign("and",          new SchemeInternalProcedure("and"),null_environment);
-    assign("or",           new SchemeInternalProcedure("or"),null_environment);
-    assign("lambda",       new SchemeInternalProcedure("lambda"),null_environment);
-    assign("quote",        new SchemeInternalProcedure("quote"),null_environment);
-    assign("quasiquote",   new SchemeInternalProcedure("quasiquote"),null_environment);
-    assign("define",       new SchemeInternalProcedure("define"),null_environment);
-    assign("define-macro", new SchemeInternalProcedure("define-macro"),null_environment);
-    assign("set!",         new SchemeInternalProcedure("set!"),null_environment);
+    	assign("map"        ,1,0,1, (SchemeObject* (*)()) s_map, scheme_report_environment);
+    	assign("for-each"   ,1,0,1, (SchemeObject* (*)()) s_for_each, scheme_report_environment);
+    	assign("equal?"     ,2,0,0, (SchemeObject* (*)()) s_equal_p, scheme_report_environment);
+    	assign("eq?"        ,2,0,0, (SchemeObject* (*)()) s_eq_p, scheme_report_environment);
+    	assign("eqv?"       ,2,0,0, (SchemeObject* (*)()) s_eqv_p, scheme_report_environment);
+    	assign("boolean?"   ,1,0,0, (SchemeObject* (*)()) s_boolean_p, scheme_report_environment);
+    	assign("pair?"      ,1,0,0, (SchemeObject* (*)()) s_pair_p, scheme_report_environment);
+    	assign("symbol?"    ,1,0,0, (SchemeObject* (*)()) s_symbol_p, scheme_report_environment);
+    	assign("char?"      ,1,0,0, (SchemeObject* (*)()) s_char_p, scheme_report_environment);
+    	assign("list?"      ,1,0,0, (SchemeObject* (*)()) s_list_p, scheme_report_environment);
+    	assign("string?"    ,1,0,0, (SchemeObject* (*)()) s_string_p, scheme_report_environment);
+    	assign("procedure?" ,1,0,0, (SchemeObject* (*)()) s_procedure_p, scheme_report_environment);
+    	assign("number?"    ,1,0,0, (SchemeObject* (*)()) s_number_p, scheme_report_environment);
+    	assign("integer?"   ,1,0,0, (SchemeObject* (*)()) s_integer_p, scheme_report_environment);
+    	assign("complex?"   ,1,0,0, (SchemeObject* (*)()) s_complex_p, scheme_report_environment);
+    	assign("real?"      ,1,0,0, (SchemeObject* (*)()) s_real_p, scheme_report_environment);
+    	assign("rational?"  ,1,0,0, (SchemeObject* (*)()) s_rational_p, scheme_report_environment);
+    	assign("exact?"     ,1,0,0, (SchemeObject* (*)()) s_exact_p, scheme_report_environment);
+    	assign("inexact?"   ,1,0,0, (SchemeObject* (*)()) s_inexact_p, scheme_report_environment);
+    	assign("vector?"    ,1,0,0, (SchemeObject* (*)()) s_vector_p, scheme_report_environment);
+    	assign("null?"      ,1,0,0, (SchemeObject* (*)()) s_null_p, scheme_report_environment);
+    	assign("car"        ,1,0,0, (SchemeObject* (*)()) s_car, scheme_report_environment);
+    	assign("cdr"        ,1,0,0, (SchemeObject* (*)()) s_cdr, scheme_report_environment);
+    	assign("cadr"       ,1,0,0, (SchemeObject* (*)()) s_cadr, scheme_report_environment);
+    	assign("cdar"       ,1,0,0, (SchemeObject* (*)()) s_cdar, scheme_report_environment);
+    	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list, scheme_report_environment);
+    	assign("list-tail"  ,2,0,0, (SchemeObject* (*)()) s_list_tail, scheme_report_environment);
+    	assign("list-ref"   ,2,0,0, (SchemeObject* (*)()) s_list_ref, scheme_report_environment);
+    	assign("set-car!"   ,2,0,0, (SchemeObject* (*)()) s_set_car_e, scheme_report_environment);
+    	assign("set-cdr!"   ,2,0,0, (SchemeObject* (*)()) s_set_cdr_e, scheme_report_environment);
+    	assign("assoc"      ,2,0,0, (SchemeObject* (*)()) s_assoc, scheme_report_environment);
+    	assign("assq"       ,2,0,0, (SchemeObject* (*)()) s_assq, scheme_report_environment);
+    	assign("assv"       ,2,0,0, (SchemeObject* (*)()) s_assv, scheme_report_environment);
+    	assign("append"     ,0,0,1, (SchemeObject* (*)()) s_append, scheme_report_environment);
+    	assign("member"     ,2,0,0, (SchemeObject* (*)()) s_member, scheme_report_environment);
+    	assign("memq"       ,2,0,0, (SchemeObject* (*)()) s_memq, scheme_report_environment);
+    	assign("memv"       ,2,0,0, (SchemeObject* (*)()) s_memv, scheme_report_environment);
+    	assign("reverse"    ,1,0,0, (SchemeObject* (*)()) s_reverse, scheme_report_environment);
+    	assign("length"     ,1,0,0, (SchemeObject* (*)()) s_length, scheme_report_environment);
+    	assign("cons"       ,2,0,0, (SchemeObject* (*)()) s_cons, scheme_report_environment);
+    	assign("display"    ,1,1,0, (SchemeObject* (*)()) s_display, scheme_report_environment);
+    	assign("write"      ,1,1,0, (SchemeObject* (*)()) s_write, scheme_report_environment);
+    	assign("newline"    ,0,1,0, (SchemeObject* (*)()) s_newline, scheme_report_environment);
+    	assign("<"          ,0,0,1, (SchemeObject* (*)()) s_less, scheme_report_environment);
+    	assign(">"          ,0,0,1, (SchemeObject* (*)()) s_greater, scheme_report_environment);
+    	assign("<="         ,0,0,1, (SchemeObject* (*)()) s_less_equal, scheme_report_environment);
+    	assign(">="         ,0,0,1, (SchemeObject* (*)()) s_greater_equal, scheme_report_environment);
+    	assign("="          ,0,0,1, (SchemeObject* (*)()) s_equal, scheme_report_environment);
+    	assign("+"          ,0,0,1, (SchemeObject* (*)()) s_plus, scheme_report_environment);
+    	assign("-"          ,0,0,1, (SchemeObject* (*)()) s_minus, scheme_report_environment);
+    	assign("*"          ,0,0,1, (SchemeObject* (*)()) s_mult, scheme_report_environment);
+    	assign("/"          ,0,0,1, (SchemeObject* (*)()) s_divide, scheme_report_environment);
+    	assign("abs"        ,1,0,0, (SchemeObject* (*)()) s_abs, scheme_report_environment);
+    	assign("tan"        ,1,0,0, (SchemeObject* (*)()) s_tan, scheme_report_environment);
+    	assign("atan"       ,1,1,0, (SchemeObject* (*)()) s_atan, scheme_report_environment);
+    	assign("sin"        ,1,0,0, (SchemeObject* (*)()) s_sin, scheme_report_environment);
+    	assign("asin"       ,1,0,0, (SchemeObject* (*)()) s_asin, scheme_report_environment);
+    	assign("cos"        ,1,0,0, (SchemeObject* (*)()) s_cos, scheme_report_environment);
+    	assign("acos"       ,1,0,0, (SchemeObject* (*)()) s_acos, scheme_report_environment);
+    	assign("sqrt"       ,1,0,0, (SchemeObject* (*)()) s_sqrt, scheme_report_environment);
+    	assign("log"        ,1,0,0, (SchemeObject* (*)()) s_log, scheme_report_environment);
+    	assign("exp"        ,1,0,0, (SchemeObject* (*)()) s_exp, scheme_report_environment);
+    	assign("expt"       ,2,0,0, (SchemeObject* (*)()) s_expt, scheme_report_environment);
+    	assign("round"      ,1,0,0, (SchemeObject* (*)()) s_round, scheme_report_environment);
+    	assign("ceiling"    ,1,0,0, (SchemeObject* (*)()) s_ceiling, scheme_report_environment);
+    	assign("floor"      ,1,0,0, (SchemeObject* (*)()) s_floor, scheme_report_environment);
+    	assign("truncate"   ,1,0,0, (SchemeObject* (*)()) s_truncate, scheme_report_environment);
+    	assign("quotient"   ,2,0,0, (SchemeObject* (*)()) s_quotient, scheme_report_environment);
+    	assign("remainder"  ,2,0,0, (SchemeObject* (*)()) s_remainder, scheme_report_environment);
+    	assign("modulo"     ,2,0,0, (SchemeObject* (*)()) s_modulo, scheme_report_environment);
+    	assign("min"        ,1,0,1, (SchemeObject* (*)()) s_min, scheme_report_environment);
+    	assign("max"        ,1,0,1, (SchemeObject* (*)()) s_max, scheme_report_environment);
+    	assign("gcd"        ,0,0,1, (SchemeObject* (*)()) s_gcd, scheme_report_environment);
+    	assign("lcm"        ,0,0,1, (SchemeObject* (*)()) s_lcm, scheme_report_environment);
+    	assign("even?"      ,1,0,1, (SchemeObject* (*)()) s_even_p, scheme_report_environment);
+    	assign("odd?"       ,1,0,1, (SchemeObject* (*)()) s_odd_p, scheme_report_environment);
+    	assign("zero?"      ,1,0,0, (SchemeObject* (*)()) s_zero_p, scheme_report_environment);
+    	assign("negative?"  ,1,0,0, (SchemeObject* (*)()) s_negative_p, scheme_report_environment);
+    	assign("positive?"  ,1,0,0, (SchemeObject* (*)()) s_positive_p, scheme_report_environment);
+    	assign("not"        ,1,0,0, (SchemeObject* (*)()) s_not, scheme_report_environment);
+    	assign("make-vector",1,1,0, (SchemeObject* (*)()) s_make_vector, scheme_report_environment);
+    	assign("vector"     ,0,0,1, (SchemeObject* (*)()) s_vector, scheme_report_environment);
+    	assign("vector-length",1,0,0, (SchemeObject* (*)()) s_vector_length, scheme_report_environment);
+    	assign("vector-ref" ,2,0,0, (SchemeObject* (*)()) s_vector_ref, scheme_report_environment);
+    	assign("vector-set!",3,0,0, (SchemeObject* (*)()) s_vector_set_e, scheme_report_environment);
+    	assign("vector-fill!",2,0,0, (SchemeObject* (*)()) s_vector_fill_e, scheme_report_environment);
+    	assign("list->vector",1,0,0, (SchemeObject* (*)()) s_list_2_vector, scheme_report_environment);
+    	assign("vector->list",1,0,0, (SchemeObject* (*)()) s_vector_2_list, scheme_report_environment);
+    	assign("make-string" ,1,1,0, (SchemeObject* (*)()) s_make_string, scheme_report_environment);
+    	assign("string"      ,0,0,1, (SchemeObject* (*)()) s_string, scheme_report_environment);
+    	assign("string-length",1,0,0, (SchemeObject* (*)()) s_string_length, scheme_report_environment);
+    	assign("string-ref"  ,2,0,0, (SchemeObject* (*)()) s_string_ref, scheme_report_environment);
+    	assign("string-set!"  ,3,0,0, (SchemeObject* (*)()) s_string_set_e, scheme_report_environment);
+    	assign("string-append",0,0,1, (SchemeObject* (*)()) s_string_append, scheme_report_environment);
+    	assign("string-copy",1,0,0, (SchemeObject* (*)()) s_string_copy, scheme_report_environment);
+    	assign("substring"    ,3,0,0, (SchemeObject* (*)()) s_substring, scheme_report_environment);
+    	assign("symbol->string",1,0,0, (SchemeObject* (*)()) s_symbol_2_string, scheme_report_environment);
+    	assign("string->symbol",1,0,0, (SchemeObject* (*)()) s_string_2_symbol, scheme_report_environment);
+    	assign("char->integer",1,0,0, (SchemeObject* (*)()) s_char_2_integer, scheme_report_environment);
+    	assign("integer->char",1,0,0, (SchemeObject* (*)()) s_integer_2_char, scheme_report_environment);
+    	assign("number->string",1,1,0, (SchemeObject* (*)()) s_number_2_string, scheme_report_environment);
+    	assign("string->number",1,1,0, (SchemeObject* (*)()) s_string_2_number, scheme_report_environment);
+    	assign("list->string",1,0,0, (SchemeObject* (*)()) s_list_2_string, scheme_report_environment);
+    	assign("string->list"          ,1,0,0, (SchemeObject* (*)()) s_string_2_list, scheme_report_environment);
+    	assign("char-downcase"         ,1,0,0, (SchemeObject* (*)()) s_char_downcase, scheme_report_environment);
+    	assign("char-upcase"           ,1,0,0, (SchemeObject* (*)()) s_char_upcase, scheme_report_environment);
+    	assign("char-alphabetic?"      ,1,0,0, (SchemeObject* (*)()) s_char_alphabetic_p, scheme_report_environment);
+    	assign("char-numeric?"         ,1,0,0, (SchemeObject* (*)()) s_char_numeric_p, scheme_report_environment);
+    	assign("char-whitespace?"      ,1,0,0, (SchemeObject* (*)()) s_char_whitespace_p, scheme_report_environment);
+    	assign("char-upper-case?"      ,1,0,0, (SchemeObject* (*)()) s_char_upper_case_p, scheme_report_environment);
+    	assign("char-lower-case?"      ,1,0,0, (SchemeObject* (*)()) s_char_lower_case_p, scheme_report_environment);
+    	assign("symgen"                ,0,0,0, (SchemeObject* (*)()) s_symgen, scheme_report_environment);
 
-    current_input_port = new SchemeInputPort(&cin);
-    current_output_port = new SchemeOutputPort(&cout);
+    	assign("current-input-port"    ,0,0,0, (SchemeObject* (*)()) s_current_input_port, scheme_report_environment);
+    	assign("current-output-port"   ,0,0,0, (SchemeObject* (*)()) s_current_output_port, scheme_report_environment);
+    	assign("input-port?"           ,1,0,0, (SchemeObject* (*)()) s_input_port_p, scheme_report_environment);
+    	assign("output-port?"          ,1,0,0, (SchemeObject* (*)()) s_output_port_p, scheme_report_environment);
+    	assign("eof-object?"           ,1,0,0, (SchemeObject* (*)()) s_eof_object_p, scheme_report_environment);
+    	assign("call-with-input-file"  ,2,0,0, (SchemeObject* (*)()) s_call_with_input_file, scheme_report_environment);
+    	assign("call-with-output-file" ,2,0,0, (SchemeObject* (*)()) s_call_with_output_file, scheme_report_environment);
+    	assign("with-input-from-file"  ,2,0,0, (SchemeObject* (*)()) s_with_input_from_file, scheme_report_environment);
+    	assign("with-output-to-file"   ,2,0,0, (SchemeObject* (*)()) s_with_output_to_file, scheme_report_environment);
+    	assign("open-input-file"       ,1,0,0, (SchemeObject* (*)()) s_open_input_file, scheme_report_environment);
+    	assign("open-output-file"      ,1,0,0, (SchemeObject* (*)()) s_open_output_file, scheme_report_environment);
+    	assign("close-input-port"      ,1,0,0, (SchemeObject* (*)()) s_close_input_port, scheme_report_environment);
+    	assign("close-output-port"     ,1,0,0, (SchemeObject* (*)()) s_close_output_port, scheme_report_environment);
+    	assign("read-char"             ,0,1,0, (SchemeObject* (*)()) s_read_char, scheme_report_environment);
+    	assign("peek-char"             ,0,1,0, (SchemeObject* (*)()) s_peek_char, scheme_report_environment);
+    	assign("write-char"            ,1,1,0, (SchemeObject* (*)()) s_write_char, scheme_report_environment);
+    	assign("read"                  ,0,1,0, (SchemeObject* (*)()) s_read, scheme_report_environment);
 
-    else_symbol = SchemeSymbol::create("else");
-    ergo_symbol = SchemeSymbol::create("=>");
-    unquote_symbol = SchemeSymbol::create("unquote");
-    unquote_splicing_symbol = SchemeSymbol::create("unquote-splicing");
-    unnamed_symbol = SchemeSymbol::create("#<unnamed>");
+    	assign("apply"                 ,1,0,1, (SchemeObject* (*)()) s_apply, scheme_report_environment);
+    	assign("call-with-current-continuation" ,1,0,0, (SchemeObject* (*)()) s_call_cc, scheme_report_environment);
+    	assign("call/cc"               ,1,0,0, (SchemeObject* (*)()) s_call_cc, scheme_report_environment);
+        assign("eval"                  ,2,0,0, (SchemeObject* (*)()) s_eval, scheme_report_environment);
+        assign("scheme-report-environment",1,0,0, (SchemeObject* (*)()) s_scheme_report_environment, scheme_report_environment);
+        assign("null-environment"      ,1,0,0, (SchemeObject* (*)()) s_null_environment, scheme_report_environment);
+        assign("interaction-environment",1,0,0, (SchemeObject* (*)()) s_interaction_environment, scheme_report_environment);
 
-    if_symbol = SchemeSymbol::create("if");
-    apply_symbol = SchemeSymbol::create("apply");
-    cond_symbol = SchemeSymbol::create("cond");
-    case_symbol = SchemeSymbol::create("case");
-    do_symbol = SchemeSymbol::create("do");
-    let_symbol = SchemeSymbol::create("let");
-    letstar_symbol = SchemeSymbol::create("let*");
-    letrec_symbol = SchemeSymbol::create("letrec");
-    begin_symbol = SchemeSymbol::create("begin");
-    and_symbol = SchemeSymbol::create("and");
-    or_symbol = SchemeSymbol::create("or");
-    lambda_symbol = SchemeSymbol::create("lambda");
-    quote_symbol = SchemeSymbol::create("quote");
-    quasiquote_symbol = SchemeSymbol::create("quasiquote");
-    define_symbol = SchemeSymbol::create("define");
-    define_macro = SchemeSymbol::create("define-macro");
-    set_e_symbol = SchemeSymbol::create("set!");
-    Heap* heap = Heap::getUniqueInstance();
 
-    heap->addRoot(current_output_port);
-    heap->addRoot(current_input_port);
-    heap->addRoot(interaction_environment);
-    heap->addRoot(S_SPACE);
-    heap->addRoot(S_UNSPECIFIED);
-    heap->addRoot(S_EMPTY_LIST);
-    heap->addRoot(S_EOF);
-    heap->addRoot(S_TRUE);
-    heap->addRoot(S_FALSE);
-    heap->addRoot(S_ZERO);
-    heap->addRoot(S_ONE);
-    heap->addRoot(S_TWO);
-    heap->addRoot(S_THREE);
-    heap->addRoot(S_FOUR);
-    heap->addRoot(S_FIVE);
-    heap->addRoot(S_SIX);
-    heap->addRoot(S_SEVEN);
-    heap->addRoot(S_EIGHT);
-    heap->addRoot(S_NINE);
+        assign("if",           new SchemeInternalProcedure("if"),null_environment);
+        //assign("apply", new SchemeInternalProcedure("apply"));
+        assign("cond",         new SchemeInternalProcedure("cond"),null_environment);
+        assign("case",         new SchemeInternalProcedure("case"),null_environment);
+        assign("do",           new SchemeInternalProcedure("do"),null_environment);
+        assign("let",          new SchemeInternalProcedure("let"),null_environment);
+        assign("let*",         new SchemeInternalProcedure("let*"),null_environment);
+        assign("letrec",       new SchemeInternalProcedure("letrec"),null_environment);
+        assign("begin",        new SchemeInternalProcedure("begin"),null_environment);
+        assign("and",          new SchemeInternalProcedure("and"),null_environment);
+        assign("or",           new SchemeInternalProcedure("or"),null_environment);
+        assign("lambda",       new SchemeInternalProcedure("lambda"),null_environment);
+        assign("quote",        new SchemeInternalProcedure("quote"),null_environment);
+        assign("quasiquote",   new SchemeInternalProcedure("quasiquote"),null_environment);
+        assign("define",       new SchemeInternalProcedure("define"),null_environment);
+        assign("define-macro", new SchemeInternalProcedure("define-macro"),null_environment);
+        assign("set!",         new SchemeInternalProcedure("set!"),null_environment);
 
-    heap->addRoot(else_symbol);
-    heap->addRoot(ergo_symbol);
-    heap->addRoot(unquote_symbol);
-    heap->addRoot(unquote_splicing_symbol);
-    heap->addRoot(unnamed_symbol);
+        current_input_port = new SchemeInputPort(&cin);
+        current_output_port = new SchemeOutputPort(&cout);
+
+        else_symbol = SchemeSymbol::create("else");
+        ergo_symbol = SchemeSymbol::create("=>");
+        unquote_symbol = SchemeSymbol::create("unquote");
+        unquote_splicing_symbol = SchemeSymbol::create("unquote-splicing");
+        unnamed_symbol = SchemeSymbol::create("#<unnamed>");
+
+        if_symbol = SchemeSymbol::create("if");
+        apply_symbol = SchemeSymbol::create("apply");
+        cond_symbol = SchemeSymbol::create("cond");
+        case_symbol = SchemeSymbol::create("case");
+        do_symbol = SchemeSymbol::create("do");
+        let_symbol = SchemeSymbol::create("let");
+        letstar_symbol = SchemeSymbol::create("let*");
+        letrec_symbol = SchemeSymbol::create("letrec");
+        begin_symbol = SchemeSymbol::create("begin");
+        and_symbol = SchemeSymbol::create("and");
+        or_symbol = SchemeSymbol::create("or");
+        lambda_symbol = SchemeSymbol::create("lambda");
+        quote_symbol = SchemeSymbol::create("quote");
+        quasiquote_symbol = SchemeSymbol::create("quasiquote");
+        define_symbol = SchemeSymbol::create("define");
+        define_macro = SchemeSymbol::create("define-macro");
+        set_e_symbol = SchemeSymbol::create("set!");
+        Heap* heap = Heap::getUniqueInstance();
+
+        heap->addRoot(current_output_port);
+        heap->addRoot(current_input_port);
+        heap->addRoot(interaction_environment);
+        heap->addRoot(S_SPACE);
+        heap->addRoot(S_UNSPECIFIED);
+        heap->addRoot(S_EMPTY_LIST);
+        heap->addRoot(S_EOF);
+        heap->addRoot(S_TRUE);
+        heap->addRoot(S_FALSE);
+        heap->addRoot(S_ZERO);
+        heap->addRoot(S_ONE);
+        heap->addRoot(S_TWO);
+        heap->addRoot(S_THREE);
+        heap->addRoot(S_FOUR);
+        heap->addRoot(S_FIVE);
+        heap->addRoot(S_SIX);
+        heap->addRoot(S_SEVEN);
+        heap->addRoot(S_EIGHT);
+        heap->addRoot(S_NINE);
+
+        heap->addRoot(else_symbol);
+        heap->addRoot(ergo_symbol);
+        heap->addRoot(unquote_symbol);
+        heap->addRoot(unquote_splicing_symbol);
+        heap->addRoot(unnamed_symbol);
+    }
     
     ifstream infile;
     infile.open("init.scm", ifstream::in);
@@ -342,6 +348,17 @@ void assert_arg_not_immutable(char* procname, int argnum, SchemeObject* arg) {
     }
 }
 
+inline
+void assert_arg_int_in_range(char* procname, int argnum, SchemeObject* arg, int from, int to) {
+    assert_arg_type(procname, argnum, s_integer_p, arg);
+    int n = scm2int(arg);
+    if (n < from || n > to) {
+        ostringstream ss;
+        ss << "Integer out of range " << from << " to " << to;    
+        ss << ": " << arg->toString();
+        throw scheme_exception(ss.str());
+    }
+}
 
 
 inline
@@ -571,8 +588,9 @@ SchemeObject* s_memv(SchemeObject* obj, SchemeObject* p) {
     return member_helper(s_eqv_p, obj, p);
 }
 
-SchemePair* s_list_tail(SchemePair* l, SchemeNumber* k) {
-    int i = int(k->number);
+SchemeObject* s_list_tail(SchemeObject* l, SchemeObject* k) {
+    assert_arg_type("integer?", 2, s_integer_p, k);
+    int i = scm2int(k);
     if (i < 0) {
         throw scheme_exception("Index out of range: " + k->toString());
     }
@@ -580,21 +598,20 @@ SchemePair* s_list_tail(SchemePair* l, SchemeNumber* k) {
         if (l == S_EMPTY_LIST) {
             throw scheme_exception("Index out of range: " + k->toString());
         }
-        l = l->cdrAsPair();
+        if (s_pair_p(l) == S_FALSE) {
+            throw scheme_exception("Not a proper list");
+        }
+        l = s_cdr(l);
     }
-    //if (i != 0) {
-    //    // Catches SchemeNumber being a non-integer
-    //    throw scheme_exception("Index out of range: " + k->toString());
-    //}
     return l;
 }
 
-SchemeObject* s_list_ref(SchemePair* l, SchemeNumber* index) {
-    SchemePair* p = s_list_tail(l, index);
+SchemeObject* s_list_ref(SchemeObject* l, SchemeObject* k) {
+    SchemeObject* p = s_list_tail(l, k);
     if (p == S_EMPTY_LIST) {
-        throw scheme_exception("Index out of range: " + index->toString());
+        throw scheme_exception("Index out of range: " + k->toString());
     }
-    return p->car;
+    return s_car(p);
 }
 
 SchemeObject* assoc_helper(SchemeBool* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemePair* alist) {
@@ -1429,8 +1446,9 @@ SchemeObject* s_string_2_number(SchemeObject* s_string, SchemeObject* base_s) {
 
 
 SchemeChar* s_integer_2_char(SchemeObject* i) {
-    assert_arg_type("integer->char", 1, s_number_p, i);
-    return char2scm(int(static_cast<SchemeNumber*>(i)->number));
+    assert_arg_int_in_range("integer->char", 1, i, 0, 255);
+    int n = scm2int(i);
+    return char2scm(n);
 }
 
 SchemeNumber* s_char_2_integer(SchemeObject* c) {

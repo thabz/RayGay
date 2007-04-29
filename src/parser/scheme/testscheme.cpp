@@ -23,7 +23,7 @@ int errors_found = 0;
 
 void assert_eval(Scheme* s, string expression, string expected) {
     try {
-        cout << "Testing " << expression << endl;
+        //cout << "Testing " << expression << endl;
         string result = s->eval(expression)->toString();
         if (result != expected) {
             errors_found++;
@@ -144,6 +144,8 @@ void test_char() {
     assert_eval(s, "#\\newline", "#\\newline");
     assert_eval(s, "(integer->char 66)", "#\\B");
     assert_eval(s, "(integer->char 95)", "#\\_");
+    assert_failure(s, "(integer->char -1)");
+    assert_failure(s, "(integer->char 'a)");
     assert_eval(s, "(char->integer #\\B)", "66");
     assert_eval(s, "(char->integer #\\_)", "95");
     assert_eval(s, "(<= (char->integer #\\a) (char->integer #\\b))", "#t");
@@ -329,12 +331,13 @@ void test_math() {
     assert_eval(s, "(gcd 0 -4)" , "4");
     assert_eval(s, "(gcd 32 -36)" , "4");
     assert_eval(s, "(gcd 32 36 4 4 12)" , "4");
+    assert_failure(s, "(gcd 'a)");
     assert_eval(s, "(lcm)" , "1");
     assert_eval(s, "(lcm 0 0)" , "0");
     assert_eval(s, "(lcm 32 -36)" , "288");
     assert_eval(s, "(lcm 10 15 4)" , "60");
     assert_eval(s, "(lcm 10 15 -4)" , "60");
-    
+    assert_failure(s, "(lcm 'a)");
 }
 
 void test_equals() {
