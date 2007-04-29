@@ -217,7 +217,6 @@ void test_interpreter() {
     assert_eval(s, "(not (list))","#f");
     assert_eval(s, "(not 'nil)","#f");
 
-    /*
     assert_eval(s, "(apply + (list 3 4))","7");
     assert_eval(s, "(apply + '(1 2 3))","6");
     assert_eval(s, "(apply + 1 2 '(3 4))", "10");
@@ -226,7 +225,6 @@ void test_interpreter() {
     assert_eval(s, "(apply apply `(,+ ,(list 1 2)))", "3");
     s->eval("(define compose (lambda (f g) (lambda args (f (apply g args)))))");
     assert_eval(s, "((compose sqrt *) 12 75)","30");  // R^5RS, Section 6.4.
-    */
     
     assert_eval(s, "(case (* 2 3) ((2 3 5 7) 'prime) ((1 4 6 8 9) 'composite))", "composite");
     assert_eval(s, "(case (car '(c d)) ((a) 'a) ((b) 'b))", "#<unspecified>");
@@ -701,7 +699,7 @@ int main(int argc, char *argv[]) {
         cout << " OK" << endl;
 
         cout << "Test quote...           ";
-        //test_quote();
+        test_quote();
         cout << " OK" << endl;
 
         cout << "Test lambda...          ";
@@ -709,7 +707,7 @@ int main(int argc, char *argv[]) {
         cout << " OK" << endl;
 
         cout << "Test macros...          ";
-        //test_macros();
+        test_macros();
         cout << " OK" << endl;
 
         cout << "Test let...             ";

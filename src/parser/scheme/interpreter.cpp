@@ -558,8 +558,10 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
         p = o;
     }
 
+    stack.push_back(S_EMPTY_LIST);
+    SchemeObject*& result = stack.back();
+
     if (s_pair_p(p) == S_TRUE) {
-        SchemeObject* result = NULL;
         
         if (s_car(p) == unquote_symbol && s_vector_p(o) == S_FALSE) {
             result = eval_unquote_recursive(p,level);
@@ -624,11 +626,14 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
         }
 
         if (s_vector_p(o) == S_TRUE) {
+            stack.pop_back();
             return s_list_2_vector(result);
         } else {
+            stack.pop_back();
             return result;
         }
     } else {
+        stack.pop_back();
         return o;
     }
 }

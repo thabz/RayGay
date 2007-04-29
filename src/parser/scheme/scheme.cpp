@@ -458,8 +458,9 @@ SchemeObject* s_call_cc(SchemeObject* s_proc) {
 SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args) {
     assert_arg_type("apply", 1, s_procedure_p, proc);
 
-    SchemePair* collected = S_EMPTY_LIST;
-    SchemePair* prev = NULL;
+    stack.push_back(S_EMPTY_LIST);
+    SchemeObject*& collected = stack.back();
+    SchemeObject* prev = NULL;
     int i = 0;
     while (args != S_EMPTY_LIST) {
         i++;
@@ -487,7 +488,7 @@ SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args) {
         }
         args = s_cdr(args);
     }
-
+    stack.pop_back();
     return interpreter->call_procedure_n(proc,collected);
 }
 
