@@ -34,6 +34,29 @@ SchemeEmptyList* S_EMPTY_LIST = new SchemeEmptyList();
 SchemeChar* S_SPACE = char2scm(' ');
 SchemeNumber* S_NUMBERS[] = {S_ZERO, S_ONE, S_TWO, S_THREE, S_FOUR, S_FIVE, S_SIX, S_SEVEN, S_EIGHT, S_NINE};
 
+SchemeSymbol* if_symbol;
+SchemeSymbol* cond_symbol;
+SchemeSymbol* apply_symbol;
+SchemeSymbol* else_symbol;
+SchemeSymbol* ergo_symbol;
+SchemeSymbol* case_symbol;
+SchemeSymbol* do_symbol;
+SchemeSymbol* let_symbol;
+SchemeSymbol* letstar_symbol;
+SchemeSymbol* letrec_symbol;
+SchemeSymbol* begin_symbol;
+SchemeSymbol* and_symbol;
+SchemeSymbol* or_symbol;
+SchemeSymbol* lambda_symbol;
+SchemeSymbol* quote_symbol;
+SchemeSymbol* quasiquote_symbol;
+SchemeSymbol* unquote_symbol;
+SchemeSymbol* unquote_splicing_symbol;
+SchemeSymbol* define_symbol;
+SchemeSymbol* define_macro;
+SchemeSymbol* set_e_symbol;
+SchemeSymbol* unnamed_symbol;
+
 SchemeInputPort* current_input_port = NULL;
 SchemeOutputPort* current_output_port = NULL;
 
@@ -42,7 +65,6 @@ Interpreter* interpreter;
 SchemeEnvironment* null_environment = SchemeEnvironment::create(NULL);
 SchemeEnvironment* scheme_report_environment = SchemeEnvironment::create(null_environment);
 SchemeEnvironment* interaction_environment = SchemeEnvironment::create(scheme_report_environment);
-
 
 // Global parser used by s_read()
 Parser* global_parser = new Parser();
@@ -151,11 +173,11 @@ Scheme::Scheme() {
 	assign("number->string",1,1,0, (SchemeObject* (*)()) s_number_2_string, scheme_report_environment);
 	assign("string->number",1,1,0, (SchemeObject* (*)()) s_string_2_number, scheme_report_environment);
 	assign("list->string",1,0,0, (SchemeObject* (*)()) s_list_2_string, scheme_report_environment);
-	assign("string->list",1,0,0, (SchemeObject* (*)()) s_string_2_list, scheme_report_environment);
-	assign("char-downcase",1,0,0, (SchemeObject* (*)()) s_char_downcase, scheme_report_environment);
-	assign("char-upcase" ,1,0,0, (SchemeObject* (*)()) s_char_upcase, scheme_report_environment);
-	assign("char-alphabetic?" ,1,0,0, (SchemeObject* (*)()) s_char_alphabetic_p, scheme_report_environment);
-	assign("char-numeric?" ,1,0,0, (SchemeObject* (*)()) s_char_numeric_p, scheme_report_environment);
+	assign("string->list"          ,1,0,0, (SchemeObject* (*)()) s_string_2_list, scheme_report_environment);
+	assign("char-downcase"         ,1,0,0, (SchemeObject* (*)()) s_char_downcase, scheme_report_environment);
+	assign("char-upcase"           ,1,0,0, (SchemeObject* (*)()) s_char_upcase, scheme_report_environment);
+	assign("char-alphabetic?"      ,1,0,0, (SchemeObject* (*)()) s_char_alphabetic_p, scheme_report_environment);
+	assign("char-numeric?"         ,1,0,0, (SchemeObject* (*)()) s_char_numeric_p, scheme_report_environment);
 	assign("char-whitespace?"      ,1,0,0, (SchemeObject* (*)()) s_char_whitespace_p, scheme_report_environment);
 	assign("char-upper-case?"      ,1,0,0, (SchemeObject* (*)()) s_char_upper_case_p, scheme_report_environment);
 	assign("char-lower-case?"      ,1,0,0, (SchemeObject* (*)()) s_char_lower_case_p, scheme_report_environment);
@@ -188,48 +210,78 @@ Scheme::Scheme() {
     assign("interaction-environment",1,0,0, (SchemeObject* (*)()) s_interaction_environment, scheme_report_environment);
 	
 	
-    assign("if", new SchemeInternalProcedure("if"),null_environment);
+    assign("if",           new SchemeInternalProcedure("if"),null_environment);
     //assign("apply", new SchemeInternalProcedure("apply"));
-    assign("cond", new SchemeInternalProcedure("cond"),null_environment);
-    assign("case", new SchemeInternalProcedure("case"),null_environment);
-    assign("do", new SchemeInternalProcedure("do"),null_environment);
-    assign("let", new SchemeInternalProcedure("let"),null_environment);
-    assign("let*", new SchemeInternalProcedure("let*"),null_environment);
-    assign("letrec", new SchemeInternalProcedure("letrec"),null_environment);
-    assign("begin", new SchemeInternalProcedure("begin"),null_environment);
-    assign("and", new SchemeInternalProcedure("and"),null_environment);
-    assign("or", new SchemeInternalProcedure("or"),null_environment);
-    assign("lambda", new SchemeInternalProcedure("lambda"),null_environment);
-    assign("quote", new SchemeInternalProcedure("quote"),null_environment);
-    assign("quasiquote", new SchemeInternalProcedure("quasiquote"),null_environment);
-    assign("define", new SchemeInternalProcedure("define"),null_environment);
+    assign("cond",         new SchemeInternalProcedure("cond"),null_environment);
+    assign("case",         new SchemeInternalProcedure("case"),null_environment);
+    assign("do",           new SchemeInternalProcedure("do"),null_environment);
+    assign("let",          new SchemeInternalProcedure("let"),null_environment);
+    assign("let*",         new SchemeInternalProcedure("let*"),null_environment);
+    assign("letrec",       new SchemeInternalProcedure("letrec"),null_environment);
+    assign("begin",        new SchemeInternalProcedure("begin"),null_environment);
+    assign("and",          new SchemeInternalProcedure("and"),null_environment);
+    assign("or",           new SchemeInternalProcedure("or"),null_environment);
+    assign("lambda",       new SchemeInternalProcedure("lambda"),null_environment);
+    assign("quote",        new SchemeInternalProcedure("quote"),null_environment);
+    assign("quasiquote",   new SchemeInternalProcedure("quasiquote"),null_environment);
+    assign("define",       new SchemeInternalProcedure("define"),null_environment);
     assign("define-macro", new SchemeInternalProcedure("define-macro"),null_environment);
-    assign("set!", new SchemeInternalProcedure("set!"),null_environment);
-    	
+    assign("set!",         new SchemeInternalProcedure("set!"),null_environment);
+
     current_input_port = new SchemeInputPort(&cin);
     current_output_port = new SchemeOutputPort(&cout);
-	
-    Heap::getUniqueInstance()->addRoot(current_output_port);
-    Heap::getUniqueInstance()->addRoot(current_input_port);
-    Heap::getUniqueInstance()->addRoot(interaction_environment);
-    Heap::getUniqueInstance()->addRoot(S_SPACE);
-    Heap::getUniqueInstance()->addRoot(S_UNSPECIFIED);
-    Heap::getUniqueInstance()->addRoot(S_EMPTY_LIST);
-    Heap::getUniqueInstance()->addRoot(S_EOF);
-    Heap::getUniqueInstance()->addRoot(S_TRUE);
-    Heap::getUniqueInstance()->addRoot(S_FALSE);
-    Heap::getUniqueInstance()->addRoot(S_ZERO);
-    Heap::getUniqueInstance()->addRoot(S_ONE);
-    Heap::getUniqueInstance()->addRoot(S_TWO);
-    Heap::getUniqueInstance()->addRoot(S_THREE);
-    Heap::getUniqueInstance()->addRoot(S_FOUR);
-    Heap::getUniqueInstance()->addRoot(S_FIVE);
-    Heap::getUniqueInstance()->addRoot(S_SIX);
-    Heap::getUniqueInstance()->addRoot(S_SEVEN);
-    Heap::getUniqueInstance()->addRoot(S_EIGHT);
-    Heap::getUniqueInstance()->addRoot(S_NINE);
+
+    else_symbol = SchemeSymbol::create("else");
+    ergo_symbol = SchemeSymbol::create("=>");
+    unquote_symbol = SchemeSymbol::create("unquote");
+    unquote_splicing_symbol = SchemeSymbol::create("unquote-splicing");
+    unnamed_symbol = SchemeSymbol::create("#<unnamed>");
+
+    if_symbol = SchemeSymbol::create("if");
+    apply_symbol = SchemeSymbol::create("apply");
+    cond_symbol = SchemeSymbol::create("cond");
+    case_symbol = SchemeSymbol::create("case");
+    do_symbol = SchemeSymbol::create("do");
+    let_symbol = SchemeSymbol::create("let");
+    letstar_symbol = SchemeSymbol::create("let*");
+    letrec_symbol = SchemeSymbol::create("letrec");
+    begin_symbol = SchemeSymbol::create("begin");
+    and_symbol = SchemeSymbol::create("and");
+    or_symbol = SchemeSymbol::create("or");
+    lambda_symbol = SchemeSymbol::create("lambda");
+    quote_symbol = SchemeSymbol::create("quote");
+    quasiquote_symbol = SchemeSymbol::create("quasiquote");
+    define_symbol = SchemeSymbol::create("define");
+    define_macro = SchemeSymbol::create("define-macro");
+    set_e_symbol = SchemeSymbol::create("set!");
+    Heap* heap = Heap::getUniqueInstance();
+
+    heap->addRoot(current_output_port);
+    heap->addRoot(current_input_port);
+    heap->addRoot(interaction_environment);
+    heap->addRoot(S_SPACE);
+    heap->addRoot(S_UNSPECIFIED);
+    heap->addRoot(S_EMPTY_LIST);
+    heap->addRoot(S_EOF);
+    heap->addRoot(S_TRUE);
+    heap->addRoot(S_FALSE);
+    heap->addRoot(S_ZERO);
+    heap->addRoot(S_ONE);
+    heap->addRoot(S_TWO);
+    heap->addRoot(S_THREE);
+    heap->addRoot(S_FOUR);
+    heap->addRoot(S_FIVE);
+    heap->addRoot(S_SIX);
+    heap->addRoot(S_SEVEN);
+    heap->addRoot(S_EIGHT);
+    heap->addRoot(S_NINE);
+
+    heap->addRoot(else_symbol);
+    heap->addRoot(ergo_symbol);
+    heap->addRoot(unquote_symbol);
+    heap->addRoot(unquote_splicing_symbol);
+    heap->addRoot(unnamed_symbol);
     
-	
     ifstream infile;
     infile.open("init.scm", ifstream::in);
     eval(&infile);
@@ -387,12 +439,16 @@ SchemeBool* s_circular_list_p(SchemeObject* o) {
 SchemeObject* s_call_cc(SchemeObject* s_proc) {
     assert_arg_type("proc", 1, s_procedure_p, s_proc);
     SchemeContinuation* s_escape = new SchemeContinuation();
+    size_t stack_size = stack.size();
+    stack.push_back(s_escape);
     int kk = setjmp(s_escape->jmpbuf);
     if (kk == 0) {
         SchemeObject* result = interpreter->call_procedure_1(s_proc, s_escape);
         // s_proc didn't call the escape-continuation
+        stack.resize(stack_size);
         return result;
     }
+    stack.resize(stack_size);
     return s_escape->result;
 }
 
@@ -467,6 +523,7 @@ SchemeObject* s_map(SchemeObject* proc, SchemeObject* lists) {
         if (result == S_EMPTY_LIST) {
             result = s_cons(result_item, S_EMPTY_LIST);
             prev = result;
+            stack.push_back(result);
         } else {
             SchemePair* tmp = s_cons(result_item, S_EMPTY_LIST);
             s_set_cdr_e(prev, tmp);
@@ -480,7 +537,7 @@ SchemeObject* s_map(SchemeObject* proc, SchemeObject* lists) {
         }
         lists = s_cdr(lists);
     }
-    
+    stack.pop_back();
     return result;    
 }
 
@@ -882,12 +939,14 @@ SchemeObject* s_vector_ref(SchemeVector* v, SchemeNumber* index) {
 }
 
 SchemeObject* s_vector_set_e(SchemeVector* vec, SchemeNumber* index, SchemeObject* val) {
+    assert_arg_not_immutable("vector-set!", 1, vec);
     int i = int(index->number);
     vec->set(val,i);
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_vector_fill_e(SchemeVector* v, SchemeObject* fill) {
+    assert_arg_not_immutable("vector-fill!", 1, v);
     for(int i = 0; i < v->length; i++) {
 	    v->set(fill,i);
     }

@@ -6,61 +6,6 @@
 
 using namespace std;
 
-SchemeSymbol* if_symbol;
-SchemeSymbol* cond_symbol;
-SchemeSymbol* apply_symbol;
-SchemeSymbol* else_symbol;
-SchemeSymbol* ergo_symbol;
-SchemeSymbol* case_symbol;
-SchemeSymbol* do_symbol;
-SchemeSymbol* let_symbol;
-SchemeSymbol* letstar_symbol;
-SchemeSymbol* letrec_symbol;
-SchemeSymbol* begin_symbol;
-SchemeSymbol* and_symbol;
-SchemeSymbol* or_symbol;
-SchemeSymbol* lambda_symbol;
-SchemeSymbol* quote_symbol;
-SchemeSymbol* quasiquote_symbol;
-SchemeSymbol* unquote_symbol;
-SchemeSymbol* unquote_splicing_symbol;
-SchemeSymbol* define_symbol;
-SchemeSymbol* define_macro;
-SchemeSymbol* set_e_symbol;
-SchemeSymbol* unnamed_symbol;
-
-void define_scheme_symbols() {
-   if_symbol = SchemeSymbol::create("if");
-   apply_symbol = SchemeSymbol::create("apply");
-   cond_symbol = SchemeSymbol::create("cond");
-   else_symbol = SchemeSymbol::create("else");
-   ergo_symbol = SchemeSymbol::create("=>");
-   case_symbol = SchemeSymbol::create("case");
-   do_symbol = SchemeSymbol::create("do");
-   let_symbol = SchemeSymbol::create("let");
-   letstar_symbol = SchemeSymbol::create("let*");
-   letrec_symbol = SchemeSymbol::create("letrec");
-   begin_symbol = SchemeSymbol::create("begin");
-   and_symbol = SchemeSymbol::create("and");
-   or_symbol = SchemeSymbol::create("or");
-   lambda_symbol = SchemeSymbol::create("lambda");
-   quote_symbol = SchemeSymbol::create("quote");
-   quasiquote_symbol = SchemeSymbol::create("quasiquote");
-   unquote_symbol = SchemeSymbol::create("unquote");
-   unquote_splicing_symbol = SchemeSymbol::create("unquote-splicing");
-   define_symbol = SchemeSymbol::create("define");
-   define_macro = SchemeSymbol::create("define-macro");
-   set_e_symbol = SchemeSymbol::create("set!");
-   unnamed_symbol = SchemeSymbol::create("#<unnamed>");
-   
-   Heap* heap = Heap::getUniqueInstance();
-   heap->addRoot(else_symbol);
-   heap->addRoot(ergo_symbol);
-   heap->addRoot(unquote_symbol);
-   heap->addRoot(unquote_splicing_symbol);
-   heap->addRoot(unnamed_symbol);
-}
-
 SchemeObject* global_ret;
 SchemeObject* global_arg1;
 SchemeObject* global_arg2;
@@ -73,7 +18,6 @@ list<SchemeObject*> stack;
 // Interpreter
 //------------------------------------------------------------------------
 Interpreter::Interpreter(SchemeObject* parsetree, SchemeEnvironment* top_level_bindings) {
-    define_scheme_symbols();
     this->parsetree = parsetree;   
 	this->top_level_bindings = top_level_bindings;
 }
@@ -81,12 +25,11 @@ Interpreter::Interpreter(SchemeObject* parsetree, SchemeEnvironment* top_level_b
 SchemeObject* Interpreter::call_procedure_n(SchemeObject* procedure, SchemeObject* args) {
     global_arg1 = procedure;
     global_arg2 = args;
-    Heap* heap = Heap::getUniqueInstance();
-    heap->addRoot(global_arg1);
-    heap->addRoot(global_arg2);
+    stack.push_back(global_arg1);
+    stack.push_back(global_arg2);
     SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call);
-    heap->popRoot();
-    heap->popRoot();
+    stack.pop_back();
+    stack.pop_back();
     return result;
 }
 
@@ -130,14 +73,13 @@ SchemeObject* Interpreter::interpret() {
     if (parsetree == S_EMPTY_LIST) {
 	    return S_UNSPECIFIED;
     }
-    Heap* heap = Heap::getUniqueInstance();
-    heap->addRoot(parsetree);
-    heap->addRoot(top_level_bindings);
+    stack.push_back(parsetree);
+    stack.push_back(top_level_bindings);
     global_arg1 = parsetree;
     global_envt = top_level_bindings;
     SchemeObject* result = trampoline((fn_ptr)&eval_sequence);
-    heap->popRoot();
-    heap->popRoot();
+    stack.pop_back();
+    stack.pop_back();
     return result;
 }
 
@@ -154,6 +96,7 @@ SchemeObject* Interpreter::interpret() {
 SchemeObject* trampoline(fn_ptr f) {
     SchemeEnvironment* saved = global_envt;
     size_t stack_size = stack.size();
+    stack.push_back(saved);
     while (f != NULL) {
         f = (fn_ptr)(*f)();
     }
@@ -161,8 +104,6 @@ SchemeObject* trampoline(fn_ptr f) {
     stack.resize(stack_size);
     return global_ret;
 }
-
-
 
 fn_ptr eval() {
     SchemeObject* s = global_arg1;
@@ -225,10 +166,12 @@ fn_ptr eval_list() {
             global_arg2 = cdr;
             return (fn_ptr)&eval_call_macro;
         } else if (proc->type() == SchemeObject::PROCEDURE) {
+            stack.push_back(proc);
+            stack.push_back(cdr);
             global_arg1 = cdr;
-            trampoline((fn_ptr)&eval_multi);
-            SchemeObject* args = global_ret;
-
+            SchemeObject* args = trampoline((fn_ptr)&eval_multi);
+            stack.pop_back();
+            stack.pop_back();
             global_arg1 = proc;
             global_arg2 = args;
             return (fn_ptr)&eval_procedure_call;
@@ -313,11 +256,13 @@ fn_ptr eval_sequence() {
         return NULL;
     }
     stack.push_back(p);
+    stack.push_back(global_envt);
     while (true) {
         if (s_null_p(s_cdr(p)) == S_TRUE) {
             // The tail call, let EVAL return to this' caller
-            global_arg1 = s_car(p);
             stack.pop_back();
+            stack.pop_back();
+            global_arg1 = s_car(p);
             return (fn_ptr)&eval;
         } else {
             global_arg1 = s_car(p);
@@ -334,11 +279,13 @@ fn_ptr eval_multi() {
     // TODO: Facilitate allocation of multiple cells at once instead
     // of separate calls to s_cons.
     SchemeObject* p = global_arg1;
+    stack.push_back(p);
+    stack.push_back(global_envt);
     
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* tail_pair = S_EMPTY_LIST;
     stack.push_back(result);
-    SchemeObject*& result_stack_ref = stack.back();
+    SchemeObject** result_stack_ref = &(stack.back());
     
     while (p != S_EMPTY_LIST) {
         global_arg1 = s_car(p);
@@ -347,7 +294,7 @@ fn_ptr eval_multi() {
 	    if (result == S_EMPTY_LIST) {
 	        result = s_cons(r, S_EMPTY_LIST);
             tail_pair = result;
-            result_stack_ref = result;
+            *result_stack_ref = result;
 	    } else {
 	        SchemeObject* new_tail = s_cons(r, S_EMPTY_LIST);
 	        s_set_cdr_e(tail_pair, new_tail);
@@ -356,6 +303,8 @@ fn_ptr eval_multi() {
 
         p = s_cdr(p);
     }
+    stack.pop_back();
+    stack.pop_back();
     stack.pop_back();
     global_ret = result;
     return NULL;
@@ -409,8 +358,10 @@ fn_ptr eval_begin() {
 
 fn_ptr eval_apply() {
     SchemeObject* p = global_arg1;
+    stack.push_back(p);
     
     if (s_procedure_p(s_car(p)) == S_TRUE) {
+        stack.pop_back();
         global_arg1 = s_car(p);
         global_arg2 = s_car(s_cdr(p));
         return (fn_ptr)&eval_procedure_call;
@@ -444,6 +395,7 @@ fn_ptr eval_apply() {
             if (collected == S_EMPTY_LIST) {
                 collected = s_cons(arg, S_EMPTY_LIST);
                 prev = collected;
+                stack.push_back(collected);
             } else {
                 SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
                 s_set_cdr_e(prev, tmp);
@@ -454,11 +406,19 @@ fn_ptr eval_apply() {
     }
 
     if (proc->type() == SchemeObject::INTERNAL_PROCEDURE) {
+        if (collected != S_EMPTY_LIST) {
+            stack.pop_back();
+        }
+        stack.pop_back();
         // Hack to handle the test (apply apply `(,+ ,(list 1 2)))
         global_arg1 = s_cons(s_car(p), collected);
         return (fn_ptr)&eval_list;
     }
 
+    if (collected != S_EMPTY_LIST) {
+        stack.pop_back();
+    }
+    stack.pop_back();
     global_arg1 = proc;
     global_arg2 = collected;
     return (fn_ptr)&eval_procedure_call;
@@ -470,6 +430,7 @@ fn_ptr eval_apply() {
 //
 fn_ptr eval_combo() {
     SchemeObject* s = global_arg1;
+    stack.push_back(s);
     
     global_arg1 = s_car(s);
     SchemeObject* proc = trampoline((fn_ptr)&eval);
@@ -478,8 +439,13 @@ fn_ptr eval_combo() {
 	    throw scheme_exception("Wrong type to apply: " + s->toString() + " does not resolve to a procedure.");
     }
     
+    stack.push_back(proc);
+    
     global_arg1 = s_cdr(s);
     SchemeObject* args = trampoline((fn_ptr)&eval_multi);
+    
+    stack.pop_back();
+    stack.pop_back();
     
     global_arg1 = proc;
     global_arg2 = args;
@@ -514,11 +480,13 @@ fn_ptr eval_if() {
 
 fn_ptr eval_and() {
     SchemeObject* p = global_arg1;
+    stack.push_back(p);
     
     SchemeObject* result = S_TRUE;
     while (p != S_EMPTY_LIST) {
         if (s_cdr(p) == S_EMPTY_LIST) {
             // Tail call
+            stack.pop_back();
             global_arg1 = s_car(p);
             return (fn_ptr)&eval;
         } else {
@@ -526,23 +494,29 @@ fn_ptr eval_and() {
             result = trampoline((fn_ptr)&eval);
 
             if (!result->boolValue()) {
+                stack.pop_back();
                 global_ret = result;
                 return NULL;
             }
             p = s_cdr(p);
         } 
     }
+    stack.pop_back();
     global_ret = result;
     return NULL;
 }
 
 fn_ptr eval_or() {
     SchemeObject* p = global_arg1;
+    stack.push_back(p);
+    stack.push_back(global_envt);
     
     SchemeObject* result = S_FALSE;
     while (p != S_EMPTY_LIST) {
         if (s_cdr(p) == S_EMPTY_LIST) {
             // Tail call
+            stack.pop_back();
+            stack.pop_back();
             global_arg1 = s_car(p);
             return (fn_ptr)&eval;
         } else {
@@ -550,12 +524,16 @@ fn_ptr eval_or() {
             result = trampoline((fn_ptr)&eval);
 
             if (result->boolValue()) {
+                stack.pop_back();
+                stack.pop_back();
                 global_ret = result;
                 return NULL;
             }
             p = s_cdr(p);
         }
     }
+    stack.pop_back();
+    stack.pop_back();
     global_ret = result;
     return NULL;
 }
@@ -663,6 +641,9 @@ fn_ptr eval_quasiquote() {
 fn_ptr eval_procedure_call() {
     SchemeProcedure* proc = static_cast<SchemeProcedure*>(global_arg1);
     SchemeObject* args = global_arg2;
+    
+    stack.push_back(proc);
+    stack.push_back(args);
 
     SchemeObject* result = S_UNSPECIFIED;
 
@@ -722,6 +703,8 @@ fn_ptr eval_procedure_call() {
                 default:  throw scheme_exception("Arguments mismatch"); 
             }
         }
+        stack.pop_back();
+        stack.pop_back();
         global_ret = result;
         return NULL;
     } else {
@@ -732,7 +715,7 @@ fn_ptr eval_procedure_call() {
             if (args == S_EMPTY_LIST) {
                 throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
             }
-            new_envt->put(static_cast<SchemeSymbol*>(s_car(req_symbols)), s_car(args));
+            new_envt->put(s_car(req_symbols), s_car(args));
             req_symbols = s_cdr(req_symbols);
             args = s_cdr(args);
         }
@@ -744,6 +727,8 @@ fn_ptr eval_procedure_call() {
         }
         global_envt = new_envt;
         global_arg1 = proc->s_body;
+        stack.pop_back();
+        stack.pop_back();
         return (fn_ptr)&eval_sequence;
     }    
 }
@@ -771,7 +756,7 @@ fn_ptr eval_lambda() {
         }
         req = s_reverse(req);
         if (formals != S_EMPTY_LIST) {
-	    // Handle the rest argument
+	        // Handle the rest argument
             if (s_symbol_p(formals) == S_FALSE) {
                 throw scheme_exception("Bad formals");                
             }
@@ -867,6 +852,7 @@ fn_ptr eval_cond() {
 
 fn_ptr eval_case() {
     SchemeObject* p = global_arg1;
+    stack.push_back(p);
 
     // Eval key       
     global_arg1 = s_car(p);
@@ -885,10 +871,12 @@ fn_ptr eval_case() {
             if (s_null_p(s_cdr(p)) == S_FALSE) {
                 throw scheme_exception("else-clause must be last");
             }
+            stack.pop_back();
             global_arg1 = s_cdr(clause);
             return (fn_ptr)&eval_sequence;
         } else if (s_pair_p(clause_car) == S_TRUE) {
             if (s_memv(key,clause_car) != S_FALSE) {
+                stack.pop_back();
                 global_arg1 = s_cdr(clause);
                 return (fn_ptr)&eval_sequence;
             }
@@ -898,6 +886,7 @@ fn_ptr eval_case() {
 
         p = s_cdr(p);
     }
+    stack.pop_back();
     global_ret = S_UNSPECIFIED;
     return NULL;    
 }
@@ -916,6 +905,8 @@ fn_ptr eval_let() {
     // Build new bindings
     SchemeEnvironment* new_bindings = SchemeEnvironment::create(envt);
     SchemeObject* binding_pairs = s_car(p);
+    
+    stack.push_back(new_bindings);
 
     while (s_null_p(binding_pairs) == S_FALSE) {
         // Eval binding value
@@ -926,6 +917,7 @@ fn_ptr eval_let() {
         new_bindings->put(static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs))), val);
         binding_pairs = s_cdr(binding_pairs);
     }
+    stack.pop_back();
     
     global_envt = new_bindings;
     global_arg1 = s_cdr(p);
@@ -935,6 +927,9 @@ fn_ptr eval_let() {
 fn_ptr eval_named_let() {
     SchemeObject* p = global_arg1;
     SchemeEnvironment* envt = global_envt;
+    
+    stack.push_back(p);
+    stack.push_back(envt);
 
     SchemeObject* name = s_car(p);
     p = s_cdr(p);
@@ -945,7 +940,11 @@ fn_ptr eval_named_let() {
     
     // Extract formals and collect evaluated args for a lambda
     SchemeObject* formals = S_EMPTY_LIST;
+    stack.push_back(formals);
+    SchemeObject*& formals_ref = stack.back();
     SchemeObject* args = S_EMPTY_LIST;
+    stack.push_back(args);
+    SchemeObject*& args_ref = stack.back();
     SchemeObject* binding_pairs = s_car(p);
 
     while (s_null_p(binding_pairs) == S_FALSE) {
@@ -954,10 +953,17 @@ fn_ptr eval_named_let() {
         SchemeObject* val = trampoline((fn_ptr)&eval);
         
         formals = s_cons(s_car(s_car(binding_pairs)), formals);
+        formals_ref = formals;
         args = s_cons(val, args);
+        args_ref = args;
         
         binding_pairs = s_cdr(binding_pairs);
     }
+    
+    stack.pop_back();
+    stack.pop_back();
+    stack.pop_back();
+    stack.pop_back();
 
     SchemeEnvironment* new_envt = SchemeEnvironment::create(envt);
     SchemeProcedure* lambda = SchemeProcedure::create(name, new_envt, s_reverse(formals), NULL, static_cast<SchemePair*>(s_cdr(p)));
@@ -1080,10 +1086,16 @@ fn_ptr eval_call_macro() {
     }
     // cout << "Body: " << proc->s_body->toString() << endl;
     // Transform body
+    stack.push_back(envt);
+    stack.push_back(proc);
+    stack.push_back(new_envt);
     global_envt = new_envt;
     global_arg1 = proc->s_body;
     SchemeObject* transformed_body = trampoline((fn_ptr)&eval_sequence);
     // cout << "Transformed body: " << transformed_body->toString() << endl;
+    stack.pop_back();
+    stack.pop_back();
+    stack.pop_back();
     
     // Eval transformed body
     global_envt = envt;

@@ -321,6 +321,7 @@ string SchemeMacro::toString() {
 // Continuation
 //-----------------------------------------------------------
 SchemeContinuation::SchemeContinuation() {
+    this->result = NULL;
 }
 
 void SchemeContinuation::call(SchemeObject* arg) {
@@ -330,6 +331,13 @@ void SchemeContinuation::call(SchemeObject* arg) {
 
 string SchemeContinuation::toString() {
     return "#<continuation>";
+}
+
+void SchemeContinuation::mark() {
+    if (result != NULL) {
+        result->mark();
+    }
+    SchemeObject::mark();
 }
 
 //-----------------------------------------------------------
@@ -374,8 +382,11 @@ SchemeEnvironment::SchemeEnvironment(SchemeEnvironment* parent) {
     this->parent = parent;
 }
 
-SchemeObject* SchemeEnvironment::get(SchemeSymbol* name) {
-    map<SchemeSymbol*,SchemeObject*>::iterator v = binding_map.find(name);
+SchemeObject* SchemeEnvironment::get(SchemeObject* name) {
+    if (s_symbol_p(name) == S_FALSE) {
+        cout << name->toString() << " is not a symbol." << endl;
+    }
+    map<SchemeObject*,SchemeObject*>::iterator v = binding_map.find(name);
     if (v == binding_map.end()) {
         if (parent != NULL) {
             return parent->get(name);
@@ -387,12 +398,18 @@ SchemeObject* SchemeEnvironment::get(SchemeSymbol* name) {
     }
 }
 
-void SchemeEnvironment::put(SchemeSymbol* name, SchemeObject* o) {
+void SchemeEnvironment::put(SchemeObject* name, SchemeObject* o) {
+    if (s_symbol_p(name) == S_FALSE) {
+        cout << name->toString() << " is not a symbol." << endl;
+    }
     binding_map[name] = o;
 }
 
-void SchemeEnvironment::set(SchemeSymbol* name, SchemeObject* o) {
-    map<SchemeSymbol*,SchemeObject*>::iterator v = binding_map.find(name);
+void SchemeEnvironment::set(SchemeObject* name, SchemeObject* o) {
+    if (s_symbol_p(name) == S_FALSE) {
+        cout << name->toString() << " is not a symbol." << endl;
+    }
+    map<SchemeObject*,SchemeObject*>::iterator v = binding_map.find(name);
     if (v == binding_map.end()) {
         if (parent != NULL) {
             parent->set(name,o);
@@ -407,7 +424,7 @@ void SchemeEnvironment::set(SchemeSymbol* name, SchemeObject* o) {
 void SchemeEnvironment::mark() {
     if (in_use == false) {
         SchemeObject::mark();
-        map<SchemeSymbol*,SchemeObject*>::iterator v = binding_map.begin();
+        map<SchemeObject*,SchemeObject*>::iterator v = binding_map.begin();
         while (v != binding_map.end()) {
             if ((*v).first != NULL) (*v).first->mark();
             if ((*v).second != NULL) (*v).second->mark();

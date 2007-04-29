@@ -155,6 +155,7 @@ class SchemeContinuation : public SchemeObject {
         string toString();
         ObjectType type() { return CONTINUATION; };
         void call(SchemeObject* arg);
+        void mark();
 
         ::jmp_buf jmpbuf;
         SchemeObject* result;
@@ -240,16 +241,16 @@ class SchemeEnvironment : public SchemeObject {
         string toString();
         ObjectType type() { return ENVIRONMENT; };    
 
-		SchemeObject* get(SchemeSymbol* name);
-        void put(SchemeSymbol* name, SchemeObject* o);
-        void set(SchemeSymbol* name, SchemeObject* o);
+		SchemeObject* get(SchemeObject* name);
+        void put(SchemeObject* name, SchemeObject* o);
+        void set(SchemeObject* name, SchemeObject* o);
         
         void mark();
 
 	private:
         SchemeEnvironment(SchemeEnvironment* parent);
         SchemeEnvironment* parent;
-        map<SchemeSymbol*,SchemeObject*> binding_map;	
+        map<SchemeObject*,SchemeObject*> binding_map;	
 };
 
 #endif

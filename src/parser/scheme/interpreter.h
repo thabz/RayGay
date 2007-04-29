@@ -51,4 +51,6 @@ fn_ptr eval_do();
 fn_ptr eval_begin();
 fn_ptr eval_list();
 
+extern list<SchemeObject*> stack;
+
 #endif

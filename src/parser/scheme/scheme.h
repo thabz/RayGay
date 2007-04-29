@@ -211,5 +211,27 @@ SchemeObject* s_write(SchemeObject* o, SchemeObject* port);
 SchemeObject* s_display(SchemeObject* o, SchemeObject* port); 
 SchemeObject* s_newline(SchemeObject* port );
 
+extern SchemeSymbol* if_symbol;
+extern SchemeSymbol* cond_symbol;
+extern SchemeSymbol* apply_symbol;
+extern SchemeSymbol* else_symbol;
+extern SchemeSymbol* ergo_symbol;
+extern SchemeSymbol* case_symbol;
+extern SchemeSymbol* do_symbol;
+extern SchemeSymbol* let_symbol;
+extern SchemeSymbol* letstar_symbol;
+extern SchemeSymbol* letrec_symbol;
+extern SchemeSymbol* begin_symbol;
+extern SchemeSymbol* and_symbol;
+extern SchemeSymbol* or_symbol;
+extern SchemeSymbol* lambda_symbol;
+extern SchemeSymbol* quote_symbol;
+extern SchemeSymbol* quasiquote_symbol;
+extern SchemeSymbol* unquote_symbol;
+extern SchemeSymbol* unquote_splicing_symbol;
+extern SchemeSymbol* define_symbol;
+extern SchemeSymbol* define_macro;
+extern SchemeSymbol* set_e_symbol;
+extern SchemeSymbol* unnamed_symbol;
 
 #endif

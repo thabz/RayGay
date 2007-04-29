@@ -31,7 +31,9 @@ SchemeObject* Parser::read(istream* is) {
         case Lexer::OPEN_PAREN :
            return read_list(is);
         case Lexer::HASH_OPEN_PAREN :
-           return s_vector(read_list(is));
+           SchemeObject* v = s_vector(read_list(is));
+           v->immutable = true;
+           return v;
         case Lexer::QUOTE :
            return read_quoted(is);
         case Lexer::BACKQUOTE :
@@ -47,7 +49,7 @@ SchemeObject* Parser::read(istream* is) {
         default:
            throw scheme_exception("Parser: unexpected token");
    	       return NULL;
-    }    
+    } 
 }
 
 SchemeObject* Parser::read_list(istream* is) {
