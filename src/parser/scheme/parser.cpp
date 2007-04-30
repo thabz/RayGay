@@ -16,6 +16,7 @@ SchemePair* Parser::parse(istream* is) {
 }
 
 SchemeObject* Parser::read(istream* is) {
+    SchemeObject* v;
     Lexer::Token token = lexer->nextToken(is);
     switch(token) {
         case Lexer::NUMBER :
@@ -31,7 +32,7 @@ SchemeObject* Parser::read(istream* is) {
         case Lexer::OPEN_PAREN :
            return read_list(is);
         case Lexer::HASH_OPEN_PAREN :
-           SchemeObject* v = s_vector(read_list(is));
+           v = s_vector(read_list(is));
            v->immutable = true;
            return v;
         case Lexer::QUOTE :
