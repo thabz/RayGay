@@ -101,7 +101,7 @@ Scheme::Scheme() {
     	assign("cadr"       ,1,0,0, (SchemeObject* (*)()) s_cadr, scheme_report_environment);
     	assign("cdar"       ,1,0,0, (SchemeObject* (*)()) s_cdar, scheme_report_environment);
     	assign("cddr"       ,1,0,0, (SchemeObject* (*)()) s_cddr, scheme_report_environment);
-    	
+    	assign("caaar"       ,1,0,0, (SchemeObject* (*)()) s_caaar, scheme_report_environment);
     	assign("caadr"       ,1,0,0, (SchemeObject* (*)()) s_caadr, scheme_report_environment);
     	assign("cadar"       ,1,0,0, (SchemeObject* (*)()) s_cadar, scheme_report_environment);
     	assign("caddr"       ,1,0,0, (SchemeObject* (*)()) s_caddr, scheme_report_environment);
@@ -109,7 +109,6 @@ Scheme::Scheme() {
     	assign("cdadr"       ,1,0,0, (SchemeObject* (*)()) s_cdadr, scheme_report_environment);
     	assign("cddar"       ,1,0,0, (SchemeObject* (*)()) s_cddar, scheme_report_environment);
     	assign("cdddr"       ,1,0,0, (SchemeObject* (*)()) s_cdddr, scheme_report_environment);
-
     	assign("list"       ,0,0,1, (SchemeObject* (*)()) s_list, scheme_report_environment);
     	assign("list-tail"  ,2,0,0, (SchemeObject* (*)()) s_list_tail, scheme_report_environment);
     	assign("list-ref"   ,2,0,0, (SchemeObject* (*)()) s_list_ref, scheme_report_environment);
@@ -758,6 +757,7 @@ SchemeObject* s_cxr(SchemeObject* o, char* x) {
 SchemeObject* s_cadr(SchemeObject* o) { return s_cxr(o, "da"); };
 SchemeObject* s_cdar(SchemeObject* o) { return s_cxr(o, "ad"); };
 SchemeObject* s_cddr(SchemeObject* o) { return s_cxr(o, "dd"); };
+SchemeObject* s_caaar(SchemeObject* o) { return s_cxr(o, "aaa"); };
 SchemeObject* s_caadr(SchemeObject* o) { return s_cxr(o, "daa"); };
 SchemeObject* s_cadar(SchemeObject* o) { return s_cxr(o, "ada"); };
 SchemeObject* s_caddr(SchemeObject* o) { return s_cxr(o, "dda"); };

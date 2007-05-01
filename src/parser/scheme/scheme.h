@@ -98,6 +98,7 @@ SchemeObject* s_cdr(SchemeObject* o);
 SchemeObject* s_cadr(SchemeObject* o);
 SchemeObject* s_cdar(SchemeObject* o);
 SchemeObject* s_cddr(SchemeObject* o);
+SchemeObject* s_caaar(SchemeObject* o);
 SchemeObject* s_caadr(SchemeObject* o);
 SchemeObject* s_cadar(SchemeObject* o);
 SchemeObject* s_caddr(SchemeObject* o);
