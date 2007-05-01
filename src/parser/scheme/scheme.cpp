@@ -133,9 +133,9 @@ Scheme::Scheme() {
     	assign(">="                    ,0,0,1, (SchemeObject* (*)()) s_greater_equal, scheme_report_environment);
     	assign("="                     ,0,0,1, (SchemeObject* (*)()) s_equal, scheme_report_environment);
     	assign("+"                     ,0,0,1, (SchemeObject* (*)()) s_plus, scheme_report_environment);
-    	assign("-"                     ,0,0,1, (SchemeObject* (*)()) s_minus, scheme_report_environment);
+    	assign("-"                     ,1,0,1, (SchemeObject* (*)()) s_minus, scheme_report_environment);
     	assign("*"                     ,0,0,1, (SchemeObject* (*)()) s_mult, scheme_report_environment);
-    	assign("/"                     ,0,0,1, (SchemeObject* (*)()) s_divide, scheme_report_environment);
+    	assign("/"                     ,1,0,1, (SchemeObject* (*)()) s_divide, scheme_report_environment);
     	assign("abs"                   ,1,0,0, (SchemeObject* (*)()) s_abs, scheme_report_environment);
     	assign("tan"                   ,1,0,0, (SchemeObject* (*)()) s_tan, scheme_report_environment);
     	assign("atan"                  ,1,1,0, (SchemeObject* (*)()) s_atan, scheme_report_environment);
@@ -877,56 +877,43 @@ SchemeNumber* s_plus(SchemeObject* p) {
 	return SchemeNumber::create(result);
 }
 
-SchemeNumber* s_minus(SchemeObject* p) {
-	double result = 0;
-    double first = true;
-	if (p == S_EMPTY_LIST) {
-		throw scheme_exception("Wrong number of arguments");
-	}
-	if (s_cdr(p) == S_EMPTY_LIST) {
+SchemeNumber* s_minus(SchemeObject* n, SchemeObject* rst) {
+    assert_arg_type("-", 1, s_number_p, n);
+	double result = scm2double(n);
+
+	if (rst == S_EMPTY_LIST) {
 	    // One-argument case is a simple negate (n => -n)
-        first = false;
+    	return SchemeNumber::create(-result);
 	}
-    int i = 1;
-	while (p != S_EMPTY_LIST) {
-	    assert_arg_type("-", i++, s_number_p, s_car(p));
-		double number = scm2double(s_car(p));
-		if (first) {
-            result = number;
-            first = false;
-		} else {
-		    result -= number;
-	    }
-        p = s_cdr(p);
+
+    int i = 2;
+	while (rst != S_EMPTY_LIST) {
+        SchemeObject* cur = s_car(rst);
+	    assert_arg_type("-", i++, s_number_p, cur);
+	    result -= scm2double(cur);
+        rst = s_cdr(rst);
 	}
 	return SchemeNumber::create(result);
 }
 
-SchemeNumber* s_divide(SchemeObject* p) {
-	double result = 1;
-    double first = true;
-	if (p == S_EMPTY_LIST) {
-		throw scheme_exception("Wrong number of arguments");
+SchemeNumber* s_divide(SchemeObject* n, SchemeObject* rst) {
+    assert_arg_type("/", 1, s_number_p, n);
+	double result = scm2double(n);
+
+	if (rst == S_EMPTY_LIST) {
+        // One-argument case is a simple inverse (n => 1/n)
+    	return SchemeNumber::create(1.0 / result);
 	}
-	if (s_cdr(p) == S_EMPTY_LIST) {
-	    // One-argument case is a simple inverse (n => 1/n)
-        first = false;
-	}
-    int i = 1;
-	while (p != S_EMPTY_LIST) {
-	    assert_arg_type("/", i++, s_number_p, s_car(p));
-		double number = scm2double(s_car(p));
-		if (first) {
-            result = number;
-            first = false;
-		} else {
-		    result /= number;
-	    }
-		p = s_cdr(p);
+
+    int i = 2;
+	while (rst != S_EMPTY_LIST) {
+        SchemeObject* cur = s_car(rst);
+	    assert_arg_type("/", i++, s_number_p, cur);
+	    result /= scm2double(cur);
+        rst = s_cdr(rst);
 	}
 	return SchemeNumber::create(result);
 }
-
 
 SchemeNumber* s_mult(SchemeObject* p) {
 	double result = 1;
@@ -1173,7 +1160,6 @@ SchemeObject* s_min(SchemeObject* first, SchemeObject* rest) {
 	return result;
 }
 
-
 SchemeObject* s_max(SchemeObject* first, SchemeObject* rest) {
     assert_arg_type("max", 1, s_number_p, first);
     SchemeObject* result = first;
@@ -1376,17 +1362,17 @@ SchemeBool* s_greater_equal(SchemeObject* p) {
 }
 
 SchemeBool* s_not(SchemeObject* o) {
-    return o->boolValue() ? S_FALSE : S_TRUE;
+    return o == S_FALSE ? S_TRUE : S_FALSE;
 }
-
 
 SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr) {
     assert_arg_type("make-string", 1, s_number_p, len);
     
     if (chr == S_UNSPECIFIED) {
         chr = S_SPACE;
+    } else {
+        assert_arg_type("make-string", 2, s_char_p, chr);
     }
-    assert_arg_type("make-string", 2, s_char_p, chr);
 
     string s = string(int(static_cast<SchemeNumber*>(len)->number), static_cast<SchemeChar*>(chr)->c);
     return SchemeString::create(s);

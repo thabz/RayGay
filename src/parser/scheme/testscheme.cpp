@@ -724,7 +724,7 @@ int main(int argc, char *argv[]) {
         cout << " OK" << endl;
 
         cout << "Test quote...           ";
-        //test_quote();
+        test_quote();
         cout << " OK" << endl;
 
         cout << "Test lambda...          ";
