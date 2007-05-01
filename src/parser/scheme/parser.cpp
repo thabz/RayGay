@@ -64,11 +64,11 @@ SchemeObject* Parser::read_list(istream* is) {
         } else if (token == Lexer::PERIOD) {
             SchemeObject* cdr = read(is);
             SchemePair* rr = s_reverse(result);
-            SchemePair* r = rr;
-            while(r->cdr != S_EMPTY_LIST) {
-                r = r->cdrAsPair();
+            SchemeObject* r = rr;
+            while(s_cdr(r) != S_EMPTY_LIST) {
+                r = s_cdr(r);
             }
-            r->cdr = cdr;
+            s_set_cdr_e(r, cdr);
             if (lexer->nextToken(is) != Lexer::CLOSE_PAREN) {
                 throw scheme_exception("Invalid pair");
             }

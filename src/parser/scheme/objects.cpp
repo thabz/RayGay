@@ -138,28 +138,20 @@ SchemePair::SchemePair(SchemeObject* car, SchemeObject* cdr) {
     this->cdr = cdr;
 }
 
-SchemePair* SchemePair::cdrAsPair() {
-    if (cdr == S_EMPTY_LIST || cdr->type() == SchemeObject::PAIR) {
-	    return static_cast<SchemePair*>(cdr);
-    } else {
-        return NULL;
-    }  
-}
-
 string SchemePair::toString() {
     if (s_circular_list_p(this) == S_TRUE) {
         return "#<circular list>";
     }
 	string result = "(";
-	SchemePair *p = this, *n;
+	SchemeObject *p = this, *n;
     while (true) {
-		result += p->car->toString();
-		n = p->cdrAsPair();
+		result += s_car(p)->toString();
+		n = s_cdr(p);
 		if (n == S_EMPTY_LIST) {
 			break;
 		}
-		if (n == NULL) {
-			result += " . " + p->cdr->toString();
+		if (s_pair_p(n) == S_FALSE) {
+			result += " . " + n->toString();
 			break;
 		}
         p = n;
@@ -205,6 +197,9 @@ SchemeVector::SchemeVector(SchemeObject* elem, int length) {
     }
 }
 
+SchemeVector::~SchemeVector() {
+    delete [] elems;
+}
 
 SchemeObject* SchemeVector::get(int i) {
     return elems[i];

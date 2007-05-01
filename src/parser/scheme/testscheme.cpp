@@ -3,6 +3,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include <sstream>
+#include <exception>
 
 /*
 assert_eval(s, "", "");
@@ -34,10 +35,13 @@ void assert_eval(Scheme* s, string expression, string expected) {
     } catch (scheme_exception e) {
         errors_found++;
         cerr << "FAILED: " << expression << ": " << e.str << endl; 
+    } catch (exception e) {
+        errors_found++;
+        cerr << "FAILED: " << expression << ": general exception" << endl; 
     }
 }
 
-void assert_failure(Scheme* s, string expression) {
+void assert_fail(Scheme* s, string expression) {
     try {
         s->eval(expression);
         errors_found++;
@@ -93,35 +97,35 @@ void test_tokenizer() {
 void test_parser() {
     istream* is = new istringstream("(+ 1.5 (list? \"Hej\"))");
     Parser* p = new Parser();
-    SchemePair* t = p->parse(is);
-    SchemePair* e = static_cast<SchemePair*> (t->car);
-    assert(e->car->type() == SchemeObject::SYMBOL);
-    assert(e->cdrAsPair()->car->type() == SchemeObject::NUMBER);
-    SchemePair* inner = static_cast<SchemePair*> (e->cdrAsPair()->cdrAsPair()->car);
-    assert(inner->car->type() == SchemeObject::SYMBOL);
-    assert(inner->car->toString() == "list?");
-    assert(inner->cdrAsPair()->car->type() == SchemeObject::STRING);
-    assert(inner->cdrAsPair()->cdrAsPair()->type() == SchemeObject::EMPTY_LIST);
-    assert(e->cdrAsPair()->cdrAsPair()->cdrAsPair()->type() == SchemeObject::EMPTY_LIST);
+    SchemeObject* t = p->parse(is);
+    SchemeObject* e = s_car(t);
+    assert(s_car(e)->type() == SchemeObject::SYMBOL);
+    assert(s_cadr(e)->type() == SchemeObject::NUMBER);
+    SchemeObject* inner = s_caddr(e);
+    assert(s_car(inner)->type() == SchemeObject::SYMBOL);
+    assert(s_car(inner)->toString() == "list?");
+    assert(s_cadr(inner)->type() == SchemeObject::STRING);
+    assert(s_cddr(inner)->type() == SchemeObject::EMPTY_LIST);
+    assert(s_cdddr(e)->type() == SchemeObject::EMPTY_LIST);
     
     is = new istringstream("'(x . y)");
     t = p->parse(is);
-    e = static_cast<SchemePair*> (t->car);
-    assert(e->car->type() == SchemeObject::SYMBOL);
-    assert(e->car->toString() == "quote");
-    assert(e->cdrAsPair()->car->type() == SchemeObject::PAIR);
-    assert(static_cast<SchemePair*>(e->cdrAsPair()->car)->car->type() == SchemeObject::SYMBOL);
-    assert(static_cast<SchemePair*>(e->cdrAsPair()->car)->car->toString() == "x");
-    assert(static_cast<SchemePair*>(e->cdrAsPair()->car)->cdr->toString() == "y");
+    e = s_car(t);
+    assert(s_car(e)->type() == SchemeObject::SYMBOL);
+    assert(s_car(e)->toString() == "quote");
+    assert(s_cadr(e)->type() == SchemeObject::PAIR);
+    assert(s_caadr(e)->type() == SchemeObject::SYMBOL);
+    assert(s_caadr(e)->toString() == "x");
+    assert(s_cdadr(e)->toString() == "y");
 
     is = new istringstream("`(a b)");
     t = p->parse(is);
-    e = static_cast<SchemePair*> (t->car);
-    assert(e->car->type() == SchemeObject::SYMBOL);
-    assert(e->car->toString() == "quasiquote");
-    assert(e->cdrAsPair()->car->type() == SchemeObject::PAIR);
-    assert(static_cast<SchemePair*>(e->cdrAsPair()->car)->car->type() == SchemeObject::SYMBOL);
-    assert(static_cast<SchemePair*>(e->cdrAsPair()->car)->car->toString() == "a");
+    e = s_car(t);
+    assert(s_car(e)->type() == SchemeObject::SYMBOL);
+    assert(s_car(e)->toString() == "quasiquote");
+    assert(s_cadr(e)->type() == SchemeObject::PAIR);
+    assert(s_caadr(e)->type() == SchemeObject::SYMBOL);
+    assert(s_caadr(e)->toString() == "a");
 
 }
 
@@ -144,8 +148,8 @@ void test_char() {
     assert_eval(s, "#\\newline", "#\\newline");
     assert_eval(s, "(integer->char 66)", "#\\B");
     assert_eval(s, "(integer->char 95)", "#\\_");
-    assert_failure(s, "(integer->char -1)");
-    assert_failure(s, "(integer->char 'a)");
+    assert_fail(s, "(integer->char -1)");
+    assert_fail(s, "(integer->char 'a)");
     assert_eval(s, "(char->integer #\\B)", "66");
     assert_eval(s, "(char->integer #\\_)", "95");
     assert_eval(s, "(<= (char->integer #\\a) (char->integer #\\b))", "#t");
@@ -268,9 +272,11 @@ void test_math() {
     assert_eval(s, "(< 1 2 3)" , "#t");
     assert_eval(s, "(< 1 2 2 3)" , "#f");
     assert_eval(s, "(<= 1 2 2 3)" , "#t");
+    assert_eval(s, "(<= 3 2 2 1)" , "#f");
     assert_eval(s, "(> 3 2 1)" , "#t");
-    assert_eval(s, "(> 1 2 2 3)" , "#f");
+    assert_eval(s, "(> 3 2 2 1)" , "#f");
     assert_eval(s, "(>= 3 2 2 1)" , "#t");
+    assert_eval(s, "(>= 1 2 2 3)" , "#f");
     assert_eval(s, "(= 2 2 2 3)" , "#f");
     assert_eval(s, "(= 2 2 2 2)" , "#t");
     assert_eval(s, "(even? 10)" , "#t");
@@ -331,13 +337,13 @@ void test_math() {
     assert_eval(s, "(gcd 0 -4)" , "4");
     assert_eval(s, "(gcd 32 -36)" , "4");
     assert_eval(s, "(gcd 32 36 4 4 12)" , "4");
-    assert_failure(s, "(gcd 'a)");
+    assert_fail(s, "(gcd 'a)");
     assert_eval(s, "(lcm)" , "1");
     assert_eval(s, "(lcm 0 0)" , "0");
     assert_eval(s, "(lcm 32 -36)" , "288");
     assert_eval(s, "(lcm 10 15 4)" , "60");
     assert_eval(s, "(lcm 10 15 -4)" , "60");
-    assert_failure(s, "(lcm 'a)");
+    assert_fail(s, "(lcm 'a)");
 }
 
 void test_equals() {
@@ -420,9 +426,12 @@ void test_pairs_and_lists() {
     assert_eval(s, "(append '() '(a b c) '(a b) '())", "(a b c a b)");
     assert_eval(s, "(append)", "()");
     assert_eval(s, "(append '() 'a)", "a");
+    assert_eval(s, "(append '() '() '())", "()");
     assert_eval(s, "(append 'a)", "a");
+    assert_eval(s, "(append '(a b c) 'e)", "(a b c . e)");
     assert_eval(s, "(append '(a b c) '(1 . 2))", "(a b c 1 . 2)");
     assert_eval(s, "(append '(a (b)) '((c)))", "(a (b) (c))");
+    assert_fail(s, "(append '(a . b) '(a b c))");
 
     s->eval("(define e '((a 1) (b 2) (c 3)))");
     assert_eval(s, "(assq 'a e)", "(a 1)");
@@ -527,8 +536,8 @@ void test_string() {
     assert_eval(s, "(list->string '(#\\S #\\t #\\r #\\i #\\n #\\g))", "\"String\"");
     assert_eval(s, "(define ss (string #\\S #\\t #\\r #\\i #\\n #\\g)) ss", "\"String\"");
     assert_eval(s, "(string-set! ss 3 #\\u) ss", "\"Strung\"");
-    assert_failure(s, "(define (g) \"***\") (string-set! (g) 0 #\?)");
-    assert_failure(s, "(string-set! (symbol->string 'immutable) 0 #\?)");
+    assert_fail(s, "(define (g) \"***\") (string-set! (g) 0 #\?)");
+    assert_fail(s, "(string-set! (symbol->string 'immutable) 0 #\?)");
     assert_eval(s, "(substring \"ab\" 0 0)", "\"\"");
     assert_eval(s, "(substring \"ab\" 1 1)", "\"\"");
     assert_eval(s, "(substring \"ab\" 2 2)", "\"\"");
@@ -623,6 +632,8 @@ void test_vector() {
     assert(v->get(2) == S_UNSPECIFIED);
     assert_eval(s, "(make-vector 5 'a)", "#(a a a a a)");
     assert_eval(s, "(make-vector 2 (+ 5 1))", "#(6 6)");
+    assert_eval(s, "(make-vector 0 'a)", "#()");
+    assert_fail(s, "(make-vector -2 'a)");
     assert_eval(s, "(vector? (make-vector 5 'a))", "#t");
     assert_eval(s, "(vector-length (make-vector 7))","7");
     assert_eval(s, "(vector? 5)", "#f");
@@ -634,13 +645,21 @@ void test_vector() {
     assert_eval(s, "(vector-length (vector 'a 'b))", "2");
     assert_eval(s, "(vector-length #())", "0");
     assert_eval(s, "(vector-length #(1 (1 2) 3))", "3");
+    assert_fail(s, "(vector-length 'a)");
     assert_eval(s, "(list->vector '(a b c))", "#(a b c)");
     assert_eval(s, "(list->vector '())", "#()");
+    assert_fail(s, "(list->vector 1)");
     assert_eval(s, "(vector->list #(a b c))","(a b c)");
+    assert_eval(s, "(vector-ref #(a b c) 0)","a");
     assert_eval(s, "(vector-ref #(a b c) 1)","b");
-    assert_failure(s, "(vector-set! '#(0 1 2) 1 \"doe\")");   // Modifying immutable vector
+    assert_eval(s, "(vector-ref #(a b c) 2)","c");
+    assert_fail(s, "(vector-ref #(a b c) 3)");
+    assert_fail(s, "(vector-ref #(a b c) -1)");
+    assert_fail(s, "(vector-set! '#(0 1 2) 1 \"doe\")");   // Modifying immutable vector
     assert_eval(s, "(define v (vector 'a 'b 'c))(vector-set! v 1 '(1 2 3))v","#(a (1 2 3) c)");
     assert_eval(s, "(define z (make-vector 4))(vector-fill! z 'a)z","#(a a a a)");
+    assert_fail(s, "(vector-set! (make-vector 5) -1 'a)");
+    assert_fail(s, "(vector-set! (make-vector 5) 5 'a)");
 }
 
 void test_io() {
@@ -702,7 +721,7 @@ int main(int argc, char *argv[]) {
         cout << " OK" << endl;
 
         cout << "Test quote...           ";
-        test_quote();
+        //test_quote();
         cout << " OK" << endl;
 
         cout << "Test lambda...          ";

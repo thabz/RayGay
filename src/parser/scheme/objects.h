@@ -66,7 +66,6 @@ class SchemePair : public SchemeObject {
     public:
         static SchemePair* create();
         static SchemePair* create(SchemeObject* car, SchemeObject* cdr);
-		SchemePair* cdrAsPair();
         ObjectType type() { return PAIR; };
         
         string toString();
@@ -83,6 +82,7 @@ class SchemeVector : public SchemeObject {
     public:
         static SchemeVector* create(SchemeObject** elems, int length);
         static SchemeVector* create(SchemeObject* elem, int length);
+        ~SchemeVector();
         SchemeObject* get(int index);
         void set(SchemeObject* o, int index);
         ObjectType type() { return VECTOR; };

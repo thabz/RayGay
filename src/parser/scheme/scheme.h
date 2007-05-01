@@ -39,6 +39,7 @@ class scheme_exception {
 void assert_arg_type(char* procname, int argnum, SchemeBool* (*)(SchemeObject*), SchemeObject* arg);
 void assert_arg_not_immutable(char* procname, int argnum, SchemeObject* arg);
 void assert_arg_int_in_range(char* procname, int argnum, SchemeObject* arg, int from, int to);
+void assert_arg_positive_int(char* procname, int argnum, SchemeObject* arg);
 
 // Scheme constants
 extern SchemeBool* S_TRUE;
@@ -51,6 +52,7 @@ extern SchemeNumber* S_TWO;
 
 // Conversion 
 #define scm2int(o)     (int(static_cast<SchemeNumber*>(o)->number))
+#define scm2double(o)  (static_cast<SchemeNumber*>(o)->number)
 #define scm2string(o)  (static_cast<SchemeString*>(o)->str)
 #define scm2char(o)    (char(static_cast<SchemeChar*>(o)->c))
 #define scm2bool(o)    ((o) != S_FALSE)
@@ -95,11 +97,19 @@ SchemeObject* s_car(SchemeObject* o);
 SchemeObject* s_cdr(SchemeObject* o);
 SchemeObject* s_cadr(SchemeObject* o);
 SchemeObject* s_cdar(SchemeObject* o);
+SchemeObject* s_cddr(SchemeObject* o);
+SchemeObject* s_caadr(SchemeObject* o);
+SchemeObject* s_cadar(SchemeObject* o);
+SchemeObject* s_caddr(SchemeObject* o);
+SchemeObject* s_cdaar(SchemeObject* o);
+SchemeObject* s_cdadr(SchemeObject* o);
+SchemeObject* s_cddar(SchemeObject* o);
+SchemeObject* s_cdddr(SchemeObject* o);
 
 SchemePair* s_cons(SchemeObject* car, SchemeObject* cdr);
 SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o);
 SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o);
-SchemeObject* s_append(SchemePair* args);
+SchemeObject* s_append(SchemeObject* args);
 SchemePair* s_reverse(SchemeObject* l);
 SchemeNumber* s_length(SchemeObject* l);
 SchemePair* s_list(SchemePair* args);
@@ -110,14 +120,14 @@ SchemeObject* s_memq(SchemeObject* obj, SchemeObject* p);
 SchemeObject* s_memv(SchemeObject* obj, SchemeObject* p);
 
 // Vector stuff
-SchemeVector* s_make_vector(SchemeNumber* count, SchemeObject* obj);
+SchemeVector* s_make_vector(SchemeObject* count, SchemeObject* obj);
 SchemeVector* s_vector(SchemeObject* args);
 SchemeNumber* s_vector_length(SchemeObject* v);
 SchemeVector* s_list_2_vector(SchemeObject* list);
 SchemePair* s_vector_2_list(SchemeObject* v);
-SchemeObject* s_vector_ref(SchemeVector* v, SchemeNumber* i);
-SchemeObject* s_vector_set_e(SchemeVector* vec, SchemeNumber* index, SchemeObject* val);
-SchemeObject* s_vector_fill_e(SchemeVector* vec, SchemeObject* fill);
+SchemeObject* s_vector_ref(SchemeObject* v, SchemeObject* i);
+SchemeObject* s_vector_set_e(SchemeObject* vec, SchemeObject* index, SchemeObject* val);
+SchemeObject* s_vector_fill_e(SchemeObject* vec, SchemeObject* fill);
 
 // Char stuff
 SchemeChar* s_char_upcase(SchemeObject* c);
@@ -131,15 +141,15 @@ SchemeChar* s_integer_2_char(SchemeObject* i);
 SchemeNumber* s_char_2_integer(SchemeObject* c);
 
 // Math stuff
-SchemeBool* s_equal(SchemePair* p);
-SchemeBool* s_less(SchemePair* p);
-SchemeBool* s_greater(SchemePair* p);
-SchemeBool* s_less_equal(SchemePair* p);
-SchemeBool* s_greater_equal(SchemePair* p);
-SchemeNumber* s_plus(SchemePair* l);
-SchemeNumber* s_minus(SchemePair* l);
+SchemeBool* s_equal(SchemeObject* p);
+SchemeBool* s_less(SchemeObject* p);
+SchemeBool* s_greater(SchemeObject* p);
+SchemeBool* s_less_equal(SchemeObject* p);
+SchemeBool* s_greater_equal(SchemeObject* p);
+SchemeNumber* s_plus(SchemeObject* l);
+SchemeNumber* s_minus(SchemeObject* l);
 SchemeNumber* s_mult(SchemeObject* l);
-SchemeNumber* s_divide(SchemePair* l);
+SchemeNumber* s_divide(SchemeObject* l);
 SchemeNumber* s_sqrt(SchemeNumber* n);
 SchemeNumber* s_abs(SchemeNumber* n);
 SchemeNumber* s_sin(SchemeNumber* n);
@@ -151,8 +161,8 @@ SchemeNumber* s_atan(SchemeNumber* y, SchemeObject* x);
 SchemeNumber* s_expt(SchemeNumber* y, SchemeNumber* x);
 SchemeNumber* s_exp(SchemeNumber* n);
 SchemeNumber* s_log(SchemeNumber* n);
-SchemeNumber* s_min(SchemeNumber* n, SchemePair* l);
-SchemeNumber* s_max(SchemeNumber* n, SchemePair* l);
+SchemeObject* s_min(SchemeObject* n, SchemeObject* l);
+SchemeObject* s_max(SchemeObject* n, SchemeObject* l);
 SchemeObject* s_gcd(SchemeObject* l);
 SchemeNumber* s_lcm(SchemeObject* l);
 SchemeNumber* s_round(SchemeObject* n);
@@ -184,7 +194,7 @@ SchemeString* s_symbol_2_string(SchemeSymbol* symbol);
 SchemeSymbol* s_string_2_symbol(SchemeString* s);
 SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base);
 SchemeObject* s_string_2_number(SchemeObject* s, SchemeObject* base);
-SchemeString* s_string_append(SchemePair* strings);
+SchemeString* s_string_append(SchemeObject* strings);
 SchemeString* s_string_copy(SchemeObject* string);
 SchemePair* s_string_2_list(SchemeObject* s);
 SchemeString* s_list_2_string(SchemeObject* p);
