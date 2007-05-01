@@ -995,7 +995,7 @@ fn_ptr eval_letstar() {
 
     while (s_null_p(binding_pairs) == S_FALSE) {
         // Eval binding value
-        global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
+        global_arg1 = s_cadar(binding_pairs);
         global_envt = new_bindings;
         SchemeObject* val = trampoline((fn_ptr)&eval);
         

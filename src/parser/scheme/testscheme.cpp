@@ -536,6 +536,7 @@ void test_string() {
     assert_eval(s, "(list->string '(#\\S #\\t #\\r #\\i #\\n #\\g))", "\"String\"");
     assert_eval(s, "(define ss (string #\\S #\\t #\\r #\\i #\\n #\\g)) ss", "\"String\"");
     assert_eval(s, "(string-set! ss 3 #\\u) ss", "\"Strung\"");
+    assert_fail(s, "(string-set! ss 10 #\\u) ss");
     assert_fail(s, "(define (g) \"***\") (string-set! (g) 0 #\?)");
     assert_fail(s, "(string-set! (symbol->string 'immutable) 0 #\?)");
     assert_eval(s, "(substring \"ab\" 0 0)", "\"\"");
@@ -561,6 +562,8 @@ void test_let() {
     assert_eval(s, "(let ((i 10)(j 20)) (* j i))", "200");
     assert_eval(s, "(let ((x 2) (y 3)) (let* ((x 7) (z (+ x y))) (* z x)))", "70");
     assert_eval(s, "(let ((x 0)) (let ((x 1) (y (* x 1))) y))", "0");
+
+    assert_eval(s, "(letrec ((even? (lambda (n) (if (zero? n) #t (odd? (- n 1))))) (odd? (lambda (n) (if (zero? n) #f (even? (- n 1)))))) (even? 88))", "#t");
 
     // From http://sisc-scheme.org/r5rs_pitfall.scm
     assert_eval(s, "(let ((ls (list 1 2 3 4))) (append ls ls '(5)))", "(1 2 3 4 1 2 3 4 5)");

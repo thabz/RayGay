@@ -775,7 +775,6 @@ SchemePair* s_list(SchemePair* args) {
     return args;
 }
 
-
 SchemePair* s_reverse(SchemeObject* o) {
     if (o != S_EMPTY_LIST) {
         assert_arg_type("reverse", 1, s_pair_p, o);
@@ -1009,63 +1008,74 @@ SchemeObject* s_vector_fill_e(SchemeObject* s_vec, SchemeObject* fill) {
     return S_UNSPECIFIED;
 }
 
-
-SchemeNumber* s_sqrt(SchemeNumber* n) {
-    return SchemeNumber::create(sqrt(n->number));
+SchemeNumber* s_sqrt(SchemeObject* n) {
+    assert_arg_type("sqrt", 1, s_number_p, n);
+    return SchemeNumber::create(sqrt(scm2double(n)));
 }
 
-SchemeNumber* s_abs(SchemeNumber* n) {
-    return SchemeNumber::create(fabs(n->number));
+SchemeNumber* s_abs(SchemeObject* n) {
+    assert_arg_type("abs", 1, s_number_p, n);
+    return SchemeNumber::create(fabs(scm2double(n)));
 }
 
 
-SchemeNumber* s_sin(SchemeNumber* n) {
-    return SchemeNumber::create(sin(n->number));
+SchemeNumber* s_sin(SchemeObject* n) {
+    assert_arg_type("sin", 1, s_number_p, n);
+    return SchemeNumber::create(sin(scm2double(n)));
 }
 
-SchemeNumber* s_asin(SchemeNumber* n) {
-    return SchemeNumber::create(asin(n->number));
+SchemeNumber* s_asin(SchemeObject* n) {
+    assert_arg_type("asin", 1, s_number_p, n);
+    return SchemeNumber::create(asin(scm2double(n)));
 }
 
-SchemeNumber* s_cos(SchemeNumber* n) {
-    return SchemeNumber::create(cos(n->number));
+SchemeNumber* s_cos(SchemeObject* n) {
+    assert_arg_type("cos", 1, s_number_p, n);
+    return SchemeNumber::create(cos(scm2double(n)));
 }
 
-SchemeNumber* s_acos(SchemeNumber* n) {
-    return SchemeNumber::create(acos(n->number));
+SchemeNumber* s_acos(SchemeObject* n) {
+    assert_arg_type("acos", 1, s_number_p, n);
+    return SchemeNumber::create(acos(scm2double(n)));
 }
 
-SchemeNumber* s_tan(SchemeNumber* n) {
-    return SchemeNumber::create(tan(n->number));
+SchemeNumber* s_tan(SchemeObject* n) {
+    assert_arg_type("tan", 1, s_number_p, n);
+    return SchemeNumber::create(tan(scm2double(n)));
 }
 
-SchemeNumber* s_atan(SchemeNumber* y, SchemeObject* x) {
+SchemeNumber* s_atan(SchemeObject* y, SchemeObject* x) {
+    assert_arg_type("atan", 1, s_number_p, y);
     if (x == S_UNSPECIFIED) {
-        return SchemeNumber::create(atan(y->number));
+        return SchemeNumber::create(atan(scm2double(y)));
     } else {
-        SchemeNumber* xx = static_cast<SchemeNumber*>(x);
-        return SchemeNumber::create(atan2(y->number, xx->number));
+        assert_arg_type("atan", 2, s_number_p, x);
+        return SchemeNumber::create(atan2(scm2double(y), scm2double(x)));
     }
 }
 
-SchemeNumber* s_log(SchemeNumber* n) {
-    return SchemeNumber::create(log(n->number));
+SchemeNumber* s_log(SchemeObject* n) {
+    assert_arg_type("log", 1, s_number_p, n);
+    return SchemeNumber::create(log(scm2double(n)));
 }
 
 // Returns a^b
-SchemeNumber* s_expt(SchemeNumber* a, SchemeNumber* b) {
-    return SchemeNumber::create(pow(a->number,b->number));
+SchemeNumber* s_expt(SchemeObject* a, SchemeObject* b) {
+    assert_arg_type("expt", 1, s_number_p, a);
+    assert_arg_type("expt", 1, s_number_p, b);
+    return SchemeNumber::create(pow(scm2double(a),scm2double(b)));
 }
 
 // Returns e^n
-SchemeNumber* s_exp(SchemeNumber* n) {
-    return SchemeNumber::create(exp(n->number));
+SchemeNumber* s_exp(SchemeObject* n) {
+    assert_arg_type("exp", 1, s_number_p, n);
+    return SchemeNumber::create(exp(scm2double(n)));
 }
 
 // Round returns the closest integer to x, rounding to even when x is halfway between two integers.
 SchemeNumber* s_round(SchemeObject* n) {
     assert_arg_type("round", 1, s_number_p, n);
-    double nn = static_cast<SchemeNumber*>(n)->number;
+    double nn = scm2double(n);
     double flo = floor(nn);
     double cei = ceil(nn);
     double dflo = nn - flo;
@@ -1088,26 +1098,26 @@ SchemeNumber* s_round(SchemeObject* n) {
 // Ceiling returns the smallest integer not smaller than x
 SchemeNumber* s_ceiling(SchemeObject* n) {
     assert_arg_type("ceiling", 1, s_number_p, n);
-    return SchemeNumber::create(ceil(static_cast<SchemeNumber*>(n)->number));
+    return SchemeNumber::create(ceil(scm2double(n)));
 }
 
 // Floor returns the largest integer not larger than x
 SchemeNumber* s_floor(SchemeObject* n) {
     assert_arg_type("floor", 1, s_number_p, n);
-    return SchemeNumber::create(floor(static_cast<SchemeNumber*>(n)->number));
+    return SchemeNumber::create(floor(scm2double(n)));
 }
 
 // Truncate returns the integer closest to x whose absolute value is not larger than the absolute value of x
 SchemeNumber* s_truncate(SchemeObject* n) {
     assert_arg_type("truncate", 1, s_number_p, n);
-    return SchemeNumber::create(trunc(static_cast<SchemeNumber*>(n)->number));
+    return SchemeNumber::create(trunc(scm2double(n)));
 }
 
 SchemeNumber* s_quotient(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type("quotient", 1, s_integer_p, n1);
     assert_arg_type("quotient", 2, s_integer_p, n2);
-    int nn1 = int(static_cast<SchemeNumber*>(n1)->number);
-    int nn2 = int(static_cast<SchemeNumber*>(n2)->number);
+    int nn1 = int(scm2int(n1));
+    int nn2 = int(scm2int(n2));
     return make_number(nn1 / nn2);
     
 }
@@ -1115,8 +1125,8 @@ SchemeNumber* s_quotient(SchemeObject* n1, SchemeObject* n2) {
 SchemeNumber* s_remainder(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type("remainder", 1, s_integer_p, n1);
     assert_arg_type("remainder", 2, s_integer_p, n2);
-    int nn1 = int(static_cast<SchemeNumber*>(n1)->number);
-    int nn2 = int(static_cast<SchemeNumber*>(n2)->number);
+    int nn1 = int(scm2int(n1));
+    int nn2 = int(scm2int(n2));
     int result = nn1 % nn2;
     if (result > 0) {
         if (nn1 < 0) {
@@ -1133,8 +1143,8 @@ SchemeNumber* s_remainder(SchemeObject* n1, SchemeObject* n2) {
 SchemeNumber* s_modulo(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type("modulo", 1, s_integer_p, n1);
     assert_arg_type("modulo", 2, s_integer_p, n2);
-    int nn1 = int(static_cast<SchemeNumber*>(n1)->number);
-    int nn2 = int(static_cast<SchemeNumber*>(n2)->number);
+    int nn1 = int(scm2int(n1));
+    int nn2 = int(scm2int(n2));
     int result = nn1 % nn2;
     if (result * nn2 < 0) {
         if (result > 0) {
@@ -1202,10 +1212,10 @@ SchemeObject* s_gcd(SchemeObject* l) {
     assert_arg_type("gcd", 1, s_pair_p, l);
     assert_arg_type("gcd", 1, s_integer_p, s_car(l));
     if (s_null_p(s_cdr(l)) == S_TRUE) {
-        return make_number(abs(int(static_cast<SchemeNumber*>(s_car(l))->number)));
+        return make_number(abs(scm2int(s_car(l))));
     }
-    int a = int(static_cast<SchemeNumber*>(s_car(l))->number);
-    int b = int(static_cast<SchemeNumber*>(s_gcd(s_cdr(l)))->number);
+    int a = scm2int(s_car(l));
+    int b = scm2int(s_gcd(s_cdr(l)));
     return make_number(abs(gcd(a,b)));
 }
 
@@ -1217,11 +1227,11 @@ SchemeNumber* s_lcm(SchemeObject* l) {
     assert_arg_type("lcm", 1, s_pair_p, l);
     if (s_null_p(s_cdr(l)) == S_TRUE) {
         assert_arg_type("lcm", 1, s_integer_p, s_car(l));
-        return make_number(abs(int(static_cast<SchemeNumber*>(s_car(l))->number)));
+        return make_number(abs(scm2int(s_car(l))));
     }
 
-    int a = abs(int(static_cast<SchemeNumber*>(s_car(l))->number));
-    int b = abs(int(static_cast<SchemeNumber*>(s_lcm(s_cdr(l)))->number));
+    int a = abs(scm2int(s_car(l)));
+    int b = abs(scm2int(s_lcm(s_cdr(l))));
     int g = gcd(a,b);
     int r;
     if (g == 0) {
@@ -1234,29 +1244,27 @@ SchemeNumber* s_lcm(SchemeObject* l) {
 
 
 SchemeBool* s_even_p(SchemeObject* n) {
-    assert_arg_type("even?", 1, s_number_p, n);
-    int nn = int(static_cast<SchemeNumber*>(n)->number);
-    return (nn % 2 == 0) ? S_TRUE : S_FALSE;
+    assert_arg_type("even?", 1, s_integer_p, n);
+    return (scm2int(n) % 2 == 0) ? S_TRUE : S_FALSE;
 }
 
 SchemeBool* s_odd_p(SchemeObject* n) {
-    assert_arg_type("odd?", 1, s_number_p, n);
-    int nn = int(static_cast<SchemeNumber*>(n)->number);
-    return (abs(nn % 2) == 1) ? S_TRUE : S_FALSE;
+    assert_arg_type("odd?", 1, s_integer_p, n);
+    return (abs(scm2int(n) % 2) == 1) ? S_TRUE : S_FALSE;
 }
 
 SchemeBool* s_zero_p(SchemeObject* n) {
     assert_arg_type("zero?", 1, s_number_p, n);
-    return static_cast<SchemeNumber*>(n)->number == 0 ? S_TRUE : S_FALSE;
+    return scm2double(n) == 0 ? S_TRUE : S_FALSE;
 }
 SchemeBool* s_negative_p(SchemeObject* n) {
     assert_arg_type("negative?", 1, s_number_p, n);
-    return static_cast<SchemeNumber*>(n)->number < 0 ? S_TRUE : S_FALSE;
+    return scm2double(n) < 0 ? S_TRUE : S_FALSE;
 }
 
 SchemeBool* s_positive_p(SchemeObject* n) {
     assert_arg_type("position?", 1, s_number_p, n);
-    return static_cast<SchemeNumber*>(n)->number > 0 ? S_TRUE : S_FALSE;
+    return scm2double(n) > 0 ? S_TRUE : S_FALSE;
 }
 
 SchemeBool* s_equal(SchemeObject* p) {
@@ -1416,16 +1424,20 @@ SchemeObject* s_string_set_e(SchemeObject* s, SchemeObject* i, SchemeObject* chr
     assert_arg_type("string-set!", 2, s_number_p, i);
     assert_arg_type("string-set!", 3, s_char_p, chr);
     assert_arg_not_immutable("string-set!", 1, s);
-    scm2string(s)[scm2int(i)] = scm2char(chr);
+    string& ss = scm2string(s);
+    assert_arg_int_in_range("string-set!", 2, i, 0, ss.size()-1);
+    ss[scm2int(i)] = scm2char(chr);
     return S_UNSPECIFIED;
 }
 
-SchemeString* s_symbol_2_string(SchemeSymbol* symbol) {
-    return SchemeString::create(symbol->str,true);
+SchemeString* s_symbol_2_string(SchemeObject* symbol) {
+    assert_arg_type("symbol->string", 1, s_symbol_p, symbol);
+    return SchemeString::create(static_cast<SchemeSymbol*>(symbol)->str,true);
 }
 
-SchemeSymbol* s_string_2_symbol(SchemeString* s) {
-    return SchemeSymbol::create(s->str);
+SchemeSymbol* s_string_2_symbol(SchemeObject* s) {
+    assert_arg_type("string->symbol", 1, s_string_p, s);
+    return SchemeSymbol::create(scm2string(s));
 }
 
 SchemeString* s_string_append(SchemeObject* strings) {
@@ -1473,7 +1485,7 @@ SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base_s) {
     if (base != 10 ) {
         ss << std::setbase(base) << scm2int(n);
     } else {
-        ss << std::setbase(base) << static_cast<SchemeNumber*>(n)->number;
+        ss << std::setbase(base) << scm2double(n);
     }
     return SchemeString::create(ss.str());
 }
