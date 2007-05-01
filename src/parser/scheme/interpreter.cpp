@@ -663,47 +663,52 @@ fn_ptr eval_procedure_call() {
             // TODO: append_e nogle S_UNSPECIFIED på args, så længden af args bliver req+opt.
         }
         SchemeObject* a_p = args;
-        if (proc->rst == 0) {
-            for(int i = 0; i < 10; i++) {
-                if (i < args_num) {
-                    argsv[i] = s_car(a_p);
-                    a_p = s_cdr(a_p);
-                } else {
-                    argsv[i] = S_UNSPECIFIED;
+        try {
+            if (proc->rst == 0) {
+                for(int i = 0; i < 10; i++) {
+                    if (i < args_num) {
+                        argsv[i] = s_car(a_p);
+                        a_p = s_cdr(a_p);
+                    } else {
+                        argsv[i] = S_UNSPECIFIED;
+                    }
+                }
+                switch(proc->req + proc->opt) {
+                    case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();
+                              break;
+                    case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
+                              break;
+                    case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
+                              break;
+                    case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
+                              break;
+                    default:  throw scheme_exception("Arguments mismatch"); 
+                }
+            } else {
+                for(int i = 0; i < 10; i++) {
+                    if (i < proc->req) {
+                        argsv[i] = s_car(a_p);
+                        a_p = s_cdr(a_p);
+                    } else {
+                        argsv[i] = a_p;
+                        break;
+                    }
+                }
+                switch(proc->req + proc->opt) {
+                    case 0:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
+                              break;
+                    case 1:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
+                              break;
+                    case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
+                              break;
+                    case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3]);
+                              break;
+                    default:  throw scheme_exception("Arguments mismatch"); 
                 }
             }
-            switch(proc->req + proc->opt) {
-                case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();
-                          break;
-                case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
-                          break;
-                case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
-                          break;
-                case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
-                          break;
-                default:  throw scheme_exception("Arguments mismatch"); 
-            }
-        } else {
-            for(int i = 0; i < 10; i++) {
-                if (i < proc->req) {
-                    argsv[i] = s_car(a_p);
-                    a_p = s_cdr(a_p);
-                } else {
-                    argsv[i] = a_p;
-                    break;
-                }
-            }
-            switch(proc->req + proc->opt) {
-                case 0:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
-                          break;
-                case 1:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
-                          break;
-                case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
-                          break;
-                case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3]);
-                          break;
-                default:  throw scheme_exception("Arguments mismatch"); 
-            }
+        } catch (scheme_exception e) {
+            string s = "In call to " + proc->nameAsString() + ": " + e.str;
+            throw scheme_exception(s);
         }
         stack.pop_back();
         stack.pop_back();

@@ -494,6 +494,7 @@ SchemeObject* s_call_cc(SchemeObject* s_proc) {
 }
 
 // TODO: Gør denne til en intern function (igen) med tail-optimization i kaldet til proc.
+// TODO: Det er måske nemmere at skrive denne som en macro, ala (define-macro (apply proc args) `(,proc ,@args))
 // args is a list (arg1 arg2 ... argn). argn must be a list. proc is called with the arguments
 // (append (list arg1 arg2 ...) argn)
 SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args) {
@@ -613,11 +614,8 @@ SchemeObject* s_memv(SchemeObject* obj, SchemeObject* p) {
 }
 
 SchemeObject* s_list_tail(SchemeObject* l, SchemeObject* k) {
-    assert_arg_type("integer?", 2, s_integer_p, k);
+    assert_arg_positive_int("list-tail", 2, k);
     int i = scm2int(k);
-    if (i < 0) {
-        throw scheme_exception("Index out of range: " + k->toString());
-    }
     while (i-- > 0) {
         if (l == S_EMPTY_LIST) {
             throw scheme_exception("Index out of range: " + k->toString());
@@ -771,7 +769,7 @@ SchemePair* s_cons(SchemeObject* car, SchemeObject* cdr) {
     return SchemePair::create(car, cdr);
 }
 
-SchemePair* s_list(SchemePair* args) {
+SchemeObject* s_list(SchemeObject* args) {
     return args;
 }
 
@@ -1412,11 +1410,13 @@ SchemeNumber* s_string_length(SchemeObject* s) {
     return make_number(len);
 }
 
-SchemeChar* s_string_ref(SchemeString* s, SchemeNumber* i) {
+SchemeChar* s_string_ref(SchemeObject* s, SchemeNumber* i) {
     assert_arg_type("string-ref", 1, s_string_p, s);
     assert_arg_type("string-ref", 2, s_number_p, i);
     int index = int(i->number);
-    return char2scm(s->str[index]);
+    string& ss = scm2string(s);
+    assert_arg_int_in_range("string-ref", 2, i, 0, ss.size()-1);
+    return char2scm(ss[index]);
 }	
 
 SchemeObject* s_string_set_e(SchemeObject* s, SchemeObject* i, SchemeObject* chr) {
@@ -1531,22 +1531,23 @@ SchemeNumber* s_char_2_integer(SchemeObject* c) {
 
 SchemePair* s_string_2_list(SchemeObject* s) {
     assert_arg_type("string->list", 1, s_string_p, s);
-    string ss = static_cast<SchemeString*>(s)->str;
+    string& ss = scm2string(s);
     SchemePair* result = S_EMPTY_LIST;
     for(uint i = 0; i < ss.size(); i++) {
         result = s_cons(char2scm(ss[i]), result);
     }
-    // TODO: Leakage
     return s_reverse(result);
 }
 
 SchemeString* s_list_2_string(SchemeObject* p) {
     assert_arg_type("list->string", 1, s_list_p, p);
     string result = "";
+    int i = 1;
     while (s_null_p(p) == S_FALSE) {
-        assert_arg_type("list->string", 1, s_char_p, s_car(p));
-        result += static_cast<SchemeChar*>(s_car(p))->c;
+        assert_arg_type("list->string", i, s_char_p, s_car(p));
+        result += scm2char(s_car(p));
         p = s_cdr(p);
+        i++;
     }
     return SchemeString::create(result);
 }
@@ -1578,7 +1579,7 @@ SchemeBool* s_char_lower_case_p(SchemeObject* c) {
 
 SchemeChar* s_char_upcase(SchemeObject* c) {
     assert_arg_type("char-upcase", 1, s_char_p, c);
-    return char2scm(toupper(static_cast<SchemeChar*>(c)->c));    
+    return char2scm(toupper(scm2char(c)));    
 }
 
 SchemeChar* s_char_downcase(SchemeObject* c) {
