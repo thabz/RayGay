@@ -1086,7 +1086,7 @@ fn_ptr eval_call_macro() {
         if (args == S_EMPTY_LIST) {
             throw scheme_exception("Too few argument given.");
         }
-        new_envt->put(static_cast<SchemeSymbol*>(s_car(req_symbols)), s_car(args));
+        new_envt->put(s_car(req_symbols), s_car(args));
         req_symbols = s_cdr(req_symbols);
         args = s_cdr(args);
     }
