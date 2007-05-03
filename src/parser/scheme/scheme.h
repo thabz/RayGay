@@ -50,7 +50,7 @@ extern SchemeNumber* S_ZERO;
 extern SchemeNumber* S_ONE;
 extern SchemeNumber* S_TWO;
 
-// Conversion 
+// Conversion macros
 #define scm2int(o)     (int(static_cast<SchemeNumber*>(o)->number))
 #define scm2double(o)  (static_cast<SchemeNumber*>(o)->number)
 #define scm2string(o)  (static_cast<SchemeString*>(o)->str)
@@ -60,7 +60,13 @@ extern SchemeNumber* S_TWO;
 #define string2scm(s)  (SchemeString::create(s))
 #define char2scm(c)    (SchemeChar::create(c))
 
-// Scheme procedures
+// Macros for faster internal s_car, s_cdr, s_set_cdr_e
+// that does no argument checking.
+#define i_car(o)         (static_cast<SchemePair*>(o)->car)
+#define i_cdr(o)         (static_cast<SchemePair*>(o)->cdr)
+#define i_set_cdr_e(o,v) (static_cast<SchemePair*>(o)->cdr = (v))
+
+// Declaration of scheme procedures
 SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
 SchemeBool* s_eq_p(SchemeObject* a, SchemeObject* b);
 SchemeBool* s_eqv_p(SchemeObject* a, SchemeObject* b);

@@ -1519,10 +1519,18 @@ SchemePair* s_string_2_list(SchemeObject* s) {
     assert_arg_type("string->list", 1, s_string_p, s);
     string& ss = scm2string(s);
     SchemePair* result = S_EMPTY_LIST;
+    SchemePair* result_tail = S_EMPTY_LIST;
     for(uint i = 0; i < ss.size(); i++) {
-        result = s_cons(char2scm(ss[i]), result);
+	SchemePair* newpair = s_cons(char2scm(ss[i]), S_EMPTY_LIST);
+	if (result == S_EMPTY_LIST) {
+	    result = newpair;
+	    result_tail = newpair;
+	} else {
+	    i_set_cdr_e(result_tail, newpair);
+	    result_tail = newpair;
+	}
     }
-    return s_reverse(result);
+    return result;
 }
 
 SchemeString* s_list_2_string(SchemeObject* p) {
