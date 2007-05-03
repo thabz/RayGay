@@ -651,6 +651,8 @@ fn_ptr eval_procedure_call() {
     SchemeProcedure* proc = static_cast<SchemeProcedure*>(global_arg1);
     SchemeObject* args = global_arg2;
     
+    assert(proc != NULL);
+
     stack.push_back(proc);
     stack.push_back(args);
 

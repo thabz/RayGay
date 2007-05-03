@@ -23,7 +23,6 @@ SchemePair* Parser::parse(istream* is) {
     return result;
 }
 
-// TODO: Avoid s_reverse calls below
 SchemeObject* Parser::read(istream* is) {
     SchemeObject* v;
     Lexer::Token token = lexer->nextToken(is);
@@ -33,9 +32,9 @@ SchemeObject* Parser::read(istream* is) {
         case Lexer::STRING :
            return SchemeString::create(lexer->getString(),true);
         case Lexer::BOOLEAN :
-			return lexer->getBool() ? S_TRUE : S_FALSE;
+           return lexer->getBool() ? S_TRUE : S_FALSE;
         case Lexer::CHAR :
-			return SchemeChar::create(lexer->getChar());
+           return SchemeChar::create(lexer->getChar());
         case Lexer::SYMBOL :
            return SchemeSymbol::create(lexer->getString());
         case Lexer::OPEN_PAREN :
@@ -53,39 +52,45 @@ SchemeObject* Parser::read(istream* is) {
         case Lexer::COMMA_AT :
            return read_unquote_spliced(is);
         case Lexer::END :
-  		   return NULL;
+           return NULL;
         case Lexer::ERROR :
            throw scheme_exception("Unknown lexer error");
         default:
            throw scheme_exception("Parser: unexpected token");
-   	       return NULL;
+   	   return NULL;
     } 
 }
 
 SchemeObject* Parser::read_list(istream* is) {
     SchemeObject* result = S_EMPTY_LIST;
+    SchemeObject* result_tail = S_EMPTY_LIST;
     Lexer::Token token;
     while(true) {
-		token = lexer->nextToken(is);
+        token = lexer->nextToken(is);
         if (token == Lexer::CLOSE_PAREN) {
-            return s_reverse(result);
+            return result;
         } else if (token == Lexer::PERIOD) {
             SchemeObject* cdr = read(is);
-            SchemePair* rr = s_reverse(result);
-            SchemeObject* r = rr;
-            while(s_cdr(r) != S_EMPTY_LIST) {
-                r = s_cdr(r);
-            }
-            s_set_cdr_e(r, cdr);
+	    if (result == S_EMPTY_LIST) {
+                throw scheme_exception("Parser: invalid pair");
+	    }
+	    i_set_cdr_e(result_tail, cdr);
             if (lexer->nextToken(is) != Lexer::CLOSE_PAREN) {
-                throw scheme_exception("Invalid pair");
+                throw scheme_exception("Parser: invalid pair");
             }
-            return rr;
+            return result;
         } else if (token == Lexer::END) {
             throw scheme_exception("Unexpected end of input");
         } else {
-			lexer->putBack(token);
-            result = s_cons(read(is), result);
+            lexer->putBack(token);
+	    SchemeObject* newcell = s_cons(read(is), S_EMPTY_LIST);
+	    if (result == S_EMPTY_LIST) {
+		result = newcell;
+		result_tail = newcell;
+	    } else {
+		i_set_cdr_e(result_tail, newcell);
+		result_tail = newcell;
+	    }
         }
     }
 }
