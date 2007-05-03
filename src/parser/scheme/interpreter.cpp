@@ -747,6 +747,12 @@ fn_ptr eval_procedure_call() {
     }    
 }
 
+// TODO: Don't split the formals into req and rst, but simply
+// store it directly into procedure.
+// eval_procedure_call then traverses the original formals form
+// when doing the bindings.
+// This results in a much fast eval_lambda without any cons'ing.
+// and eval_procedure_call won't suffer much speedwise if at all.
 fn_ptr eval_lambda() {
     SchemeObject* formals = global_arg1;
     SchemeObject* body = global_arg2;
@@ -754,21 +760,27 @@ fn_ptr eval_lambda() {
     SchemeEnvironment* envt = global_envt;
 
     SchemeSymbol* rst;
-    SchemePair* req;
+    SchemePair* req = S_EMPTY_LIST;
+    SchemeObject* req_tail = S_EMPTY_LIST;
     if (s_symbol_p(formals) == S_TRUE) {
         rst = static_cast<SchemeSymbol*>(formals);
-        req = S_EMPTY_LIST;
     } else if (s_pair_p(formals) == S_TRUE) {
-        req = S_EMPTY_LIST;
         while (s_pair_p(formals) == S_TRUE) {
             SchemePair* pp = static_cast<SchemePair*>(formals);
             if (s_symbol_p(s_car(pp)) == S_FALSE) {
                 throw scheme_exception("Bad formals");                
             }
-            req = s_cons(s_car(pp), req);
+	    if (req == S_EMPTY_LIST) {
+		req = s_cons(s_car(pp), S_EMPTY_LIST);
+		req_tail = req;
+	    } else {
+		SchemeObject* tmp = s_cons(s_car(pp), S_EMPTY_LIST);
+		s_set_cdr_e(req_tail, tmp);
+		req_tail = tmp;
+	    }
             formals = s_cdr(pp);
         }
-        req = s_reverse(req);
+
         if (formals != S_EMPTY_LIST) {
 	        // Handle the rest argument
             if (s_symbol_p(formals) == S_FALSE) {
@@ -779,7 +791,6 @@ fn_ptr eval_lambda() {
             rst = NULL;
         }
     } else if (formals == S_EMPTY_LIST) {
-        req = S_EMPTY_LIST;
         rst = NULL;
     } else {
         throw scheme_exception("Bad formals");
@@ -954,9 +965,11 @@ fn_ptr eval_named_let() {
     
     // Extract formals and collect evaluated args for a lambda
     SchemeObject* formals = S_EMPTY_LIST;
+    SchemeObject* formals_tail = S_EMPTY_LIST;
     stack.push_back(formals);
     SchemeObject*& formals_ref = stack.back();
     SchemeObject* args = S_EMPTY_LIST;
+    SchemeObject* args_tail = S_EMPTY_LIST;
     stack.push_back(args);
     SchemeObject*& args_ref = stack.back();
     SchemeObject* binding_pairs = s_car(p);
@@ -966,11 +979,27 @@ fn_ptr eval_named_let() {
         global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
         SchemeObject* val = trampoline((fn_ptr)&eval);
         
-        formals = s_cons(s_car(s_car(binding_pairs)), formals);
-        formals_ref = formals;
-        args = s_cons(val, args);
-        args_ref = args;
-        
+	if (formals == S_EMPTY_LIST) {
+	    formals = s_cons(s_car(s_car(binding_pairs)), S_EMPTY_LIST);
+	    formals_tail = formals;
+	    formals_ref = formals;
+	} else {
+	    SchemeObject* tmp = s_cons(s_car(s_car(binding_pairs)), S_EMPTY_LIST);
+	    s_set_cdr_e(formals_tail,tmp);
+	    formals_tail = tmp;
+	}
+
+	if (args == S_EMPTY_LIST) {
+	    args = s_cons(val, S_EMPTY_LIST);
+	    args_tail = args;
+	    args_ref = args;
+	} else {
+	    SchemeObject* tmp = s_cons(val, S_EMPTY_LIST);
+	    s_set_cdr_e(args_tail, tmp);
+	    args_tail = tmp;
+
+	}
+
         binding_pairs = s_cdr(binding_pairs);
     }
     
@@ -980,11 +1009,11 @@ fn_ptr eval_named_let() {
     stack.pop_back();
 
     SchemeEnvironment* new_envt = SchemeEnvironment::create(envt);
-    SchemeProcedure* lambda = SchemeProcedure::create(name, new_envt, s_reverse(formals), NULL, static_cast<SchemePair*>(s_cdr(p)));
+    SchemeProcedure* lambda = SchemeProcedure::create(name, new_envt, formals, NULL, static_cast<SchemePair*>(s_cdr(p)));
     new_envt->put(static_cast<SchemeSymbol*>(name), lambda);
     
     global_arg1 = lambda;
-    global_arg2 = s_reverse(args);
+    global_arg2 = args;
     global_envt = new_envt;
     return (fn_ptr)&eval_procedure_call;
 }
@@ -1042,18 +1071,24 @@ fn_ptr eval_define_macro() {
     }
     
     SchemeSymbol* rst;
-    SchemePair* req;
+    SchemePair* req = S_EMPTY_LIST;
+    SchemeObject* req_tail = S_EMPTY_LIST;
     if (s_pair_p(formals) == S_TRUE) {
-        req = S_EMPTY_LIST;
         while (s_pair_p(formals) == S_TRUE) {
             SchemePair* pp = static_cast<SchemePair*>(formals);
             if (s_symbol_p(s_car(pp)) == S_FALSE) {
                 throw scheme_exception("Bad formals");                
             }
-            req = s_cons(s_car(pp), req);
+	    if (req == S_EMPTY_LIST) {
+		req = s_cons(s_car(pp), S_EMPTY_LIST);
+		req_tail = req;
+	    } else {
+		SchemeObject* tmp = s_cons(s_car(pp), S_EMPTY_LIST);
+		s_set_cdr_e(req_tail, tmp);
+		req_tail = tmp;
+	    }
             formals = s_cdr(pp);
         }
-        req = s_reverse(req);
         if (formals != S_EMPTY_LIST) {
             if (s_symbol_p(formals) == S_FALSE) {
                 throw scheme_exception("Bad formals");                
@@ -1063,7 +1098,6 @@ fn_ptr eval_define_macro() {
             rst = NULL;
         }
     } else if (formals == S_EMPTY_LIST) {
-        req = S_EMPTY_LIST;
         rst = NULL;
     } else {
         throw scheme_exception("Bad formals");

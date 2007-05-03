@@ -460,6 +460,7 @@ void test_lambda() {
     assert_eval(s, "((lambda () 3))", "3");
     assert_eval(s, "((lambda (x) (* 2 x)) 10)", "20");
     assert_eval(s, "((lambda (x y) (+  y x)) 7 10)", "17");
+    assert_eval(s, "((lambda (x y z) (list z y x)) 3 4 5)", "(5 4 3)");
     // Two examples from R^5RS
     assert_eval(s, "((lambda x x) 3 4 5 6)", "(3 4 5 6)");
     assert_eval(s, "((lambda (x y . z) z) 3 4 5 6)", "(5 6)");
