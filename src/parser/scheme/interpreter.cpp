@@ -456,23 +456,25 @@ fn_ptr eval_combo() {
 fn_ptr eval_if() {
     SchemeObject* p = global_arg1;
 
+    stack.push_back(p);
     global_arg1 = s_car(p);
     bool condition = trampoline((fn_ptr)&eval)->boolValue();
+    stack.pop_back();
 	
-	if (condition) {
-	    // Evaluate and return true case
+    if (condition) {
+        // Evaluate and return true case
         SchemeObject* true_case = s_car(s_cdr(p));
         global_arg1 = true_case;
         return (fn_ptr)&eval;
-	} else if (s_cdr(s_cdr(p)) != S_EMPTY_LIST) {
-	    // Evaluate and return false case
+    } else if (s_cdr(s_cdr(p)) != S_EMPTY_LIST) {
+        // Evaluate and return false case
     	SchemeObject* false_case = s_car(s_cdr(s_cdr(p)));
         global_arg1 = false_case;
         return (fn_ptr)&eval;
-	} else {
+    } else {
         global_ret = S_UNSPECIFIED;
         return NULL;
-	}    
+    }    
 }
 
 fn_ptr eval_and() {
@@ -1104,7 +1106,7 @@ fn_ptr eval_call_macro() {
     global_envt = new_envt;
     global_arg1 = proc->s_body;
     SchemeObject* transformed_body = trampoline((fn_ptr)&eval_sequence);
-    // cout << "Transformed body: " << transformed_body->toString() << endl;
+    //cout << "Transformed body: " << transformed_body->toString() << endl;
     stack.pop_back();
     stack.pop_back();
     stack.pop_back();
