@@ -23,6 +23,7 @@ SchemePair* Parser::parse(istream* is) {
     return result;
 }
 
+// TODO: Avoid s_reverse calls below
 SchemeObject* Parser::read(istream* is) {
     SchemeObject* v;
     Lexer::Token token = lexer->nextToken(is);
