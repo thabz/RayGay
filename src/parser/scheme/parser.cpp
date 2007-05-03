@@ -8,11 +8,19 @@ Parser::Parser() {
 
 SchemePair* Parser::parse(istream* is) {
     SchemePair* result = S_EMPTY_LIST;
-	SchemeObject* o;
+    SchemePair* result_tail = S_EMPTY_LIST;
+    SchemeObject* o;
     while ((o = read(is)) != NULL) {
-		result = s_cons(o, result);
+	SchemePair* newcell = s_cons(o, S_EMPTY_LIST);
+	if (result == S_EMPTY_LIST) {
+	    result = newcell;
+	    result_tail = newcell;
+	} else {
+	    i_set_cdr_e(result_tail, newcell);
+	    result_tail = newcell;
+	}
     }
-	return s_reverse(result);
+    return result;
 }
 
 SchemeObject* Parser::read(istream* is) {
@@ -59,7 +67,6 @@ SchemeObject* Parser::read_list(istream* is) {
     while(true) {
 		token = lexer->nextToken(is);
         if (token == Lexer::CLOSE_PAREN) {
-            // FIXME: We're leaking the old list. Garbage collect?
             return s_reverse(result);
         } else if (token == Lexer::PERIOD) {
             SchemeObject* cdr = read(is);
