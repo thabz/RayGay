@@ -432,16 +432,16 @@ SchemeBool* s_list_p(SchemeObject* o) {
     SchemeObject *fast, *slow;
     fast = slow = o;
     while (true) {
-        if (s_pair_p(fast) == S_FALSE) return fast == S_EMPTY_LIST ? S_TRUE : S_FALSE;
-        fast = s_cdr(fast);
+        if (i_pair_p(fast) == S_FALSE) return fast == S_EMPTY_LIST ? S_TRUE : S_FALSE;
+        fast = i_cdr(fast);
         if (slow == fast) {
             // The fast stepping pointer has looped around and caught up with the slow
             // moving pointer, thus the structure is circular and thus not a list.
             return S_FALSE;
         }
-        if (s_pair_p(fast) == S_FALSE) return fast == S_EMPTY_LIST ? S_TRUE : S_FALSE;
-        fast = s_cdr(fast);
-        slow = s_cdr(slow);
+        if (i_pair_p(fast) == S_FALSE) return fast == S_EMPTY_LIST ? S_TRUE : S_FALSE;
+        fast = i_cdr(fast);
+        slow = i_cdr(slow);
         if (slow == fast) {
             // The fast stepping pointer has looped around and caught up with the slow
             // moving pointer, thus the structure is circular and thus not a list.
@@ -591,7 +591,7 @@ SchemeObject* s_for_each(SchemeObject* proc, SchemeObject* lists) {
 
 
 SchemeObject* member_helper(SchemeBool* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
-    while (s_null_p(p) == S_FALSE) {
+    while (i_null_p(p) == S_FALSE) {
         if ((*comparator)(obj, s_car(p)) == S_TRUE) {
             return p;
         } else {
@@ -726,18 +726,17 @@ SchemeBool* s_vector_p(SchemeObject* p) {
 
 // (null? p)
 SchemeBool* s_null_p(SchemeObject* p) {
-    return (p->type() == SchemeObject::EMPTY_LIST) ? S_TRUE : S_FALSE;
+    return i_null_p(p);
 }
-
 
 SchemeObject* s_car(SchemeObject* o) {
     assert_arg_type("car", 1, s_pair_p, o);
-    return static_cast<SchemePair*>(o)->car;
+    return i_car(o);
 }
 
 SchemeObject* s_cdr(SchemeObject* o) {
     assert_arg_type("cdr", 1, s_pair_p, o);
-    return static_cast<SchemePair*>(o)->cdr;
+    return i_cdr(o);
 }
 
 SchemeObject* s_cxr(SchemeObject* o, char* x) {
@@ -1190,12 +1189,12 @@ int gcd(int a, int b) {
 
 // Using Euclids algorithm and that gcd is associative thus gcd(a,b,c) = gcd(a,(gcd(b,c))) = gcd(gcd(a,b),c).
 SchemeObject* s_gcd(SchemeObject* l) {
-    if (s_null_p(l) == S_TRUE) {
+    if (i_null_p(l) == S_TRUE) {
         return S_ZERO;
     }
     assert_arg_type("gcd", 1, s_pair_p, l);
     assert_arg_type("gcd", 1, s_integer_p, s_car(l));
-    if (s_null_p(s_cdr(l)) == S_TRUE) {
+    if (i_null_p(s_cdr(l)) == S_TRUE) {
         return make_number(abs(scm2int(s_car(l))));
     }
     int a = scm2int(s_car(l));
@@ -1205,11 +1204,11 @@ SchemeObject* s_gcd(SchemeObject* l) {
 
 // Using the property gcd(a,b) * lcm(a,b) = a * b and that lcm(a,b,c) = lcm(lcm(a,b),c) = lcm(a,lcm(b,c))
 SchemeNumber* s_lcm(SchemeObject* l) {
-    if (s_null_p(l) == S_TRUE) {
+    if (i_null_p(l) == S_TRUE) {
         return S_ONE;
     }
     assert_arg_type("lcm", 1, s_pair_p, l);
-    if (s_null_p(s_cdr(l)) == S_TRUE) {
+    if (i_null_p(s_cdr(l)) == S_TRUE) {
         assert_arg_type("lcm", 1, s_integer_p, s_car(l));
         return make_number(abs(scm2int(s_car(l))));
     }
@@ -1537,7 +1536,7 @@ SchemeString* s_list_2_string(SchemeObject* p) {
     assert_arg_type("list->string", 1, s_list_p, p);
     string result = "";
     int i = 1;
-    while (s_null_p(p) == S_FALSE) {
+    while (i_null_p(p) == S_FALSE) {
         assert_arg_type("list->string", i, s_char_p, s_car(p));
         result += scm2char(s_car(p));
         p = s_cdr(p);

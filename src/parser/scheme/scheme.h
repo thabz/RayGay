@@ -60,11 +60,13 @@ extern SchemeNumber* S_TWO;
 #define string2scm(s)  (SchemeString::create(s))
 #define char2scm(c)    (SchemeChar::create(c))
 
-// Macros for faster internal s_car, s_cdr, s_set_cdr_e
+// Faster internal macro for some much used procedures
 // that does no argument checking.
 #define i_car(o)         (static_cast<SchemePair*>(o)->car)
 #define i_cdr(o)         (static_cast<SchemePair*>(o)->cdr)
 #define i_set_cdr_e(o,v) (static_cast<SchemePair*>(o)->cdr = (v))
+#define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
+#define i_null_p(o)      ((o) == S_EMPTY_LIST ? S_TRUE : S_FALSE)
 
 // Declaration of scheme procedures
 SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);

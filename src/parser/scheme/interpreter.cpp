@@ -255,7 +255,7 @@ fn_ptr eval_sequence() {
     stack.push_back(p);
     stack.push_back(global_envt);
     while (true) {
-        if (s_null_p(s_cdr(p)) == S_TRUE) {
+        if (i_null_p(s_cdr(p)) == S_TRUE) {
             // The tail call, let EVAL return to this' caller
             stack.pop_back();
             stack.pop_back();
@@ -312,7 +312,7 @@ fn_ptr eval_define() {
     SchemeObject* p = global_arg1;
     SchemeEnvironment* envt = global_envt;
     
-    if (s_pair_p(s_car(p)) == S_TRUE) {
+    if (i_pair_p(s_car(p)) == S_TRUE) {
         // (define (func-name args...) body-forms...)
         SchemeObject* pa = s_car(p);
         if (s_symbol_p(s_car(pa)) == S_FALSE) {
@@ -377,7 +377,7 @@ fn_ptr eval_apply() {
     while (args != S_EMPTY_LIST) {
         i++;
         SchemeObject* arg = s_car(args);
-        if (s_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
+        if (i_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
             if (s_cdr(args) == S_EMPTY_LIST) {
                 // arg is a list and last argument
                 if (collected == S_EMPTY_LIST) {
@@ -564,7 +564,7 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
     stack.push_back(S_EMPTY_LIST);
     SchemeObject*& result = stack.back();
 
-    if (s_pair_p(p) == S_TRUE) {
+    if (i_pair_p(p) == S_TRUE) {
         SchemeObject* car_p = s_car(p);
         if (car_p == unquote_symbol && s_vector_p(o) == S_FALSE) {
             result = eval_unquote_recursive(p,level);
@@ -580,7 +580,7 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
             result = S_EMPTY_LIST;
             SchemeObject* prev = S_EMPTY_LIST;
             while(true) {
-                if (s_pair_p(p) == S_TRUE) {
+                if (i_pair_p(p) == S_TRUE) {
                     
                     if (s_car(p) == unquote_symbol) {
                         // Handle when final cdr of unproper list is a unquote
@@ -592,7 +592,7 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
                     SchemeObject* r = eval_quasiquote_recursive(s_car(p),level);
                     stack.pop_back();
 
-                    if (s_pair_p(s_car(p)) == S_TRUE && s_car(s_car(p)) == unquote_splicing_symbol) {
+                    if (i_pair_p(s_car(p)) == S_TRUE && s_car(s_car(p)) == unquote_splicing_symbol) {
                         // Splice into result
                         if (result == S_EMPTY_LIST) {
                             result = r;
@@ -601,7 +601,7 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
                             s_set_cdr_e(prev,r);
                         }
                         // Forward-wind prev to point to end of newly added list
-                        while(s_null_p(s_cdr(prev)) == S_FALSE) {
+                        while(i_null_p(s_cdr(prev)) == S_FALSE) {
                             prev = s_cdr(prev);
                         } 
                     } else {
@@ -764,8 +764,8 @@ fn_ptr eval_lambda() {
     SchemeObject* req_tail = S_EMPTY_LIST;
     if (s_symbol_p(formals) == S_TRUE) {
         rst = static_cast<SchemeSymbol*>(formals);
-    } else if (s_pair_p(formals) == S_TRUE) {
-        while (s_pair_p(formals) == S_TRUE) {
+    } else if (i_pair_p(formals) == S_TRUE) {
+        while (i_pair_p(formals) == S_TRUE) {
             SchemePair* pp = static_cast<SchemePair*>(formals);
             if (s_symbol_p(s_car(pp)) == S_FALSE) {
                 throw scheme_exception("Bad formals");                
@@ -833,15 +833,15 @@ fn_ptr eval_set_e() {
 fn_ptr eval_cond() {
     SchemeObject* p = global_arg1;
 
-    while (s_null_p(p) == S_FALSE) {
+    while (i_null_p(p) == S_FALSE) {
         SchemeObject* clause = s_car(p);
-        if (s_pair_p(clause) == S_FALSE) {
+        if (i_pair_p(clause) == S_FALSE) {
             throw scheme_exception("Invalid clause");
         }
         SchemeObject* test_expr = s_car(clause);
         if (test_expr == else_symbol) {
             // Handle (else <expressions> ...)
-            if (s_null_p(s_cdr(p)) == S_FALSE) {
+            if (i_null_p(s_cdr(p)) == S_FALSE) {
                 throw scheme_exception("else-clause must be last");
             }
             global_arg1 = s_cdr(clause);
@@ -885,21 +885,21 @@ fn_ptr eval_case() {
     
     p = s_cdr(p);
 
-    while (s_null_p(p) == S_FALSE) {
+    while (i_null_p(p) == S_FALSE) {
         SchemeObject* clause = s_car(p);
-        if (s_pair_p(clause) == S_FALSE) {
+        if (i_pair_p(clause) == S_FALSE) {
             throw scheme_exception("Invalid clause");
         }
         SchemeObject* clause_car = s_car(clause);
         if (clause_car == else_symbol) {
             // Handle (else <expressions> ...)
-            if (s_null_p(s_cdr(p)) == S_FALSE) {
+            if (i_null_p(s_cdr(p)) == S_FALSE) {
                 throw scheme_exception("else-clause must be last");
             }
             stack.pop_back();
             global_arg1 = s_cdr(clause);
             return (fn_ptr)&eval_sequence;
-        } else if (s_pair_p(clause_car) == S_TRUE) {
+        } else if (i_pair_p(clause_car) == S_TRUE) {
             if (s_memv(key,clause_car) != S_FALSE) {
                 stack.pop_back();
                 global_arg1 = s_cdr(clause);
@@ -923,7 +923,7 @@ fn_ptr eval_let() {
     if (s_symbol_p(s_car(p)) == S_TRUE) {
         return (fn_ptr)&eval_named_let;
     }
-    if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
+    if (i_pair_p(s_car(p)) == S_FALSE && i_null_p(s_car(p)) == S_FALSE) {
         throw scheme_exception("Bad body in let");
     }
     
@@ -933,7 +933,7 @@ fn_ptr eval_let() {
     
     stack.push_back(new_bindings);
 
-    while (s_null_p(binding_pairs) == S_FALSE) {
+    while (i_null_p(binding_pairs) == S_FALSE) {
         // Eval binding value
         
         global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
@@ -959,7 +959,7 @@ fn_ptr eval_named_let() {
     SchemeObject* name = s_car(p);
     p = s_cdr(p);
     
-    if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
+    if (i_pair_p(s_car(p)) == S_FALSE && i_null_p(s_car(p)) == S_FALSE) {
         throw scheme_exception("Bad formals in let");
     }
     
@@ -974,7 +974,7 @@ fn_ptr eval_named_let() {
     SchemeObject*& args_ref = stack.back();
     SchemeObject* binding_pairs = s_car(p);
 
-    while (s_null_p(binding_pairs) == S_FALSE) {
+    while (i_null_p(binding_pairs) == S_FALSE) {
         // Eval binding value
         global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
         SchemeObject* val = trampoline((fn_ptr)&eval);
@@ -1022,11 +1022,11 @@ fn_ptr eval_letstar() {
     SchemeObject* p = global_arg1;
     SchemeEnvironment* envt = global_envt;
     
-    if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
+    if (i_pair_p(s_car(p)) == S_FALSE && i_null_p(s_car(p)) == S_FALSE) {
         throw scheme_exception("Bad formals in let*: " + s_car(p)->toString());
     }
     
-    if (s_null_p(s_cdr(p)) == S_TRUE) {
+    if (i_null_p(s_cdr(p)) == S_TRUE) {
         throw scheme_exception("Missing body in let*");
     }
 
@@ -1034,7 +1034,7 @@ fn_ptr eval_letstar() {
     SchemeEnvironment* new_bindings = SchemeEnvironment::create(envt);
     SchemeObject* binding_pairs = s_car(p);
 
-    while (s_null_p(binding_pairs) == S_FALSE) {
+    while (i_null_p(binding_pairs) == S_FALSE) {
         // Eval binding value
         global_arg1 = s_cadar(binding_pairs);
         global_envt = new_bindings;
@@ -1073,8 +1073,8 @@ fn_ptr eval_define_macro() {
     SchemeSymbol* rst;
     SchemePair* req = S_EMPTY_LIST;
     SchemeObject* req_tail = S_EMPTY_LIST;
-    if (s_pair_p(formals) == S_TRUE) {
-        while (s_pair_p(formals) == S_TRUE) {
+    if (i_pair_p(formals) == S_TRUE) {
+        while (i_pair_p(formals) == S_TRUE) {
             SchemePair* pp = static_cast<SchemePair*>(formals);
             if (s_symbol_p(s_car(pp)) == S_FALSE) {
                 throw scheme_exception("Bad formals");                
@@ -1155,7 +1155,7 @@ fn_ptr eval_do() {
     SchemeObject* p = global_arg1;
     SchemeEnvironment* envt = global_envt;
 
-    if (s_pair_p(s_car(p)) == S_FALSE && s_null_p(s_car(p)) == S_FALSE) {
+    if (i_pair_p(s_car(p)) == S_FALSE && i_null_p(s_car(p)) == S_FALSE) {
         throw scheme_exception("Bad body in let");
     }
 
@@ -1172,7 +1172,7 @@ fn_ptr eval_do() {
     stack.push_back(varnames);
     SchemeObject*& varnames_stack_pos = stack.back();
 
-    while (s_null_p(binding_pairs) == S_FALSE) {
+    while (i_null_p(binding_pairs) == S_FALSE) {
         // Eval initial binding value
         global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
         SchemeObject* val = trampoline((fn_ptr)&eval);
@@ -1236,7 +1236,7 @@ fn_ptr eval_do() {
         
         // Assign new step values
         SchemeObject* tmp = varnames;
-        while(s_null_p(varnames) == S_FALSE) {
+        while(i_null_p(varnames) == S_FALSE) {
             new_envt->put(static_cast<SchemeSymbol*>(s_car(varnames)), s_car(vals));
             varnames = s_cdr(varnames);
             vals = s_cdr(vals);
