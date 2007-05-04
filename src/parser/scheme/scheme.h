@@ -66,6 +66,7 @@ extern SchemeNumber* S_TWO;
 #define i_cdr(o)         (static_cast<SchemePair*>(o)->cdr)
 #define i_set_cdr_e(o,v) (static_cast<SchemePair*>(o)->cdr = (v))
 #define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
+#define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
 #define i_null_p(o)      ((o) == S_EMPTY_LIST ? S_TRUE : S_FALSE)
 
 // Declaration of scheme procedures

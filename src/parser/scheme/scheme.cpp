@@ -663,13 +663,13 @@ SchemeObject* s_assv(SchemeObject* obj, SchemePair* alist) {
 }
 
 // (pair? p)
-SchemeBool* s_pair_p(SchemeObject* p) {
-    return (p->type() == SchemeObject::PAIR) ? S_TRUE : S_FALSE;
+SchemeBool* s_pair_p(SchemeObject* o) {
+    return i_pair_p(o);
 }
 
 // (symbol? p)
-SchemeBool* s_symbol_p(SchemeObject* p) {
-    return (p->type() == SchemeObject::SYMBOL) ? S_TRUE : S_FALSE;
+SchemeBool* s_symbol_p(SchemeObject* o) {
+    return i_symbol_p(o);
 }
 
 // (string? p)

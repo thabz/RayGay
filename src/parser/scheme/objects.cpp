@@ -235,16 +235,24 @@ void SchemeVector::mark() {
 //-----------------------------------------------------------
 
 SchemeProcedure* SchemeProcedure::create(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)()) {
-    return new SchemeProcedure(name,req,opt,rst,fn);
+    return new SchemeProcedure(name, req, opt, rst, fn);
 }
 
-SchemeProcedure* SchemeProcedure::create(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body) {
-    return new SchemeProcedure(name,envt,s_req, s_rst, s_body);
+SchemeProcedure* SchemeProcedure::create(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_formals, SchemeObject* s_body) {
+    return new SchemeProcedure(name, envt, s_formals, s_body);
 }
 
+SchemeProcedure::SchemeProcedure(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_formals, SchemeObject* s_body) {
+    assert(i_symbol_p(name) == S_TRUE);
+    this->name = static_cast<SchemeSymbol*>(name);
+    this->envt = envt;
+    this->fn = NULL;
+    this->s_formals = s_formals;
+    this->s_body = s_body;
+}
 
 SchemeProcedure::SchemeProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)()) {
-    assert(s_symbol_p(name) == S_TRUE);
+    assert(i_symbol_p(name) == S_TRUE);
     this->name = static_cast<SchemeSymbol*>(name);
     assert(rst == 0 || rst == 1);
     this->req = req;
@@ -253,24 +261,12 @@ SchemeProcedure::SchemeProcedure(SchemeObject* name, int req, int opt, int rst, 
     this->fn = fn;
 }
 
-SchemeProcedure::SchemeProcedure(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body) {
-    assert(s_symbol_p(name) == S_TRUE);
-    this->name = static_cast<SchemeSymbol*>(name);
-    this->envt = envt;
-    this->fn = NULL;
-    this->s_rst = s_rst;
-    this->s_req = s_req;
-    this->s_body = s_body;
-    rst = (s_rst == NULL) ? 0 : 1;
-    req = int(s_length(s_req)->number);
-}
-
 string SchemeProcedure::toString() {
     return "#<primitive-procedure "+name->str+">";
 }
 
 void SchemeProcedure::setName(SchemeObject* name) {
-    assert(s_symbol_p(name) == S_TRUE);
+    assert(i_symbol_p(name) == S_TRUE);
     this->name = static_cast<SchemeSymbol*>(name);
 }
 
@@ -283,8 +279,7 @@ void SchemeProcedure::mark() {
         }
         if (fn == NULL) {
             envt->mark();
-            s_req->mark();
-            if (s_rst != NULL) s_rst->mark();
+            s_formals->mark();
             s_body->mark(); 
         }
     }
@@ -301,11 +296,12 @@ string SchemeInternalProcedure::toString() {
 //-----------------------------------------------------------
 // Macro
 //-----------------------------------------------------------
-SchemeMacro* SchemeMacro::create(SchemeObject* name, SchemeEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body) {
-    return new SchemeMacro(name,envt,s_req,s_rst,s_body);
+SchemeMacro* SchemeMacro::create(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_formals, SchemeObject* s_body) {
+    return new SchemeMacro(name, envt, s_formals, s_body);
     
 }
-SchemeMacro::SchemeMacro(SchemeObject* name, SchemeEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body) : SchemeProcedure(name, envt, s_req, s_rst, s_body) {
+
+SchemeMacro::SchemeMacro(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_formals, SchemeObject* s_body) : SchemeProcedure(name, envt, s_formals, s_body) {
 }
 
 string SchemeMacro::toString() {

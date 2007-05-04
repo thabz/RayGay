@@ -726,21 +726,22 @@ fn_ptr eval_procedure_call() {
     } else {
         // User function
         SchemeEnvironment* new_envt = SchemeEnvironment::create(proc->envt);
-        SchemeObject* req_symbols = proc->s_req;
-        while (req_symbols != S_EMPTY_LIST) {
+        SchemeObject* formals = proc->s_formals;
+
+        while (i_pair_p(formals) == S_TRUE) {
             if (args == S_EMPTY_LIST) {
                 throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
             }
-            new_envt->put(s_car(req_symbols), s_car(args));
-            req_symbols = s_cdr(req_symbols);
-            args = s_cdr(args);
+            new_envt->put(s_car(formals), s_car(args));
+            args = i_cdr(args);
+            formals = i_cdr(formals);
         }
-        if (proc->rst == 0 && args != S_EMPTY_LIST) {
+        if (formals != S_EMPTY_LIST) {
+            new_envt->put(formals, args);
+        } else if (args != S_EMPTY_LIST) {
             throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
         }
-        if (proc->rst == 1) {
-            new_envt->put(proc->s_rst, args);
-        }
+
         global_envt = new_envt;
         global_arg1 = proc->s_body;
         stack.pop_back();
@@ -749,56 +750,13 @@ fn_ptr eval_procedure_call() {
     }    
 }
 
-// TODO: Don't split the formals into req and rst, but simply
-// store it directly into procedure.
-// eval_procedure_call then traverses the original formals form
-// when doing the bindings.
-// This results in a much fast eval_lambda without any cons'ing.
-// and eval_procedure_call won't suffer much speedwise if at all.
 fn_ptr eval_lambda() {
     SchemeObject* formals = global_arg1;
     SchemeObject* body = global_arg2;
     SchemeObject* name = global_arg3;
     SchemeEnvironment* envt = global_envt;
 
-    SchemeSymbol* rst;
-    SchemePair* req = S_EMPTY_LIST;
-    SchemeObject* req_tail = S_EMPTY_LIST;
-    if (s_symbol_p(formals) == S_TRUE) {
-        rst = static_cast<SchemeSymbol*>(formals);
-    } else if (i_pair_p(formals) == S_TRUE) {
-        while (i_pair_p(formals) == S_TRUE) {
-            SchemePair* pp = static_cast<SchemePair*>(formals);
-            if (s_symbol_p(s_car(pp)) == S_FALSE) {
-                throw scheme_exception("Bad formals");                
-            }
-	    if (req == S_EMPTY_LIST) {
-		req = s_cons(s_car(pp), S_EMPTY_LIST);
-		req_tail = req;
-	    } else {
-		SchemeObject* tmp = s_cons(s_car(pp), S_EMPTY_LIST);
-		s_set_cdr_e(req_tail, tmp);
-		req_tail = tmp;
-	    }
-            formals = s_cdr(pp);
-        }
-
-        if (formals != S_EMPTY_LIST) {
-	        // Handle the rest argument
-            if (s_symbol_p(formals) == S_FALSE) {
-                throw scheme_exception("Bad formals");                
-            }
-            rst = static_cast<SchemeSymbol*>(formals);
-        } else {
-            rst = NULL;
-        }
-    } else if (formals == S_EMPTY_LIST) {
-        rst = NULL;
-    } else {
-        throw scheme_exception("Bad formals");
-    }
-
-    global_ret = SchemeProcedure::create(name, envt, req, rst, body);
+    global_ret = SchemeProcedure::create(name, envt, formals, body);
     return NULL;
 }
 
@@ -981,26 +939,25 @@ fn_ptr eval_named_let() {
         global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
         SchemeObject* val = trampoline((fn_ptr)&eval);
         
-	if (formals == S_EMPTY_LIST) {
-	    formals = s_cons(s_car(s_car(binding_pairs)), S_EMPTY_LIST);
-	    formals_tail = formals;
-	    formals_ref = formals;
-	} else {
-	    SchemeObject* tmp = s_cons(s_car(s_car(binding_pairs)), S_EMPTY_LIST);
-	    s_set_cdr_e(formals_tail,tmp);
-	    formals_tail = tmp;
-	}
+    	if (formals == S_EMPTY_LIST) {
+    	    formals = s_cons(s_car(s_car(binding_pairs)), S_EMPTY_LIST);
+    	    formals_tail = formals;
+    	    formals_ref = formals;
+    	} else {
+    	    SchemeObject* tmp = s_cons(s_car(s_car(binding_pairs)), S_EMPTY_LIST);
+    	    s_set_cdr_e(formals_tail,tmp);
+    	    formals_tail = tmp;
+    	}
 
-	if (args == S_EMPTY_LIST) {
-	    args = s_cons(val, S_EMPTY_LIST);
-	    args_tail = args;
-	    args_ref = args;
-	} else {
-	    SchemeObject* tmp = s_cons(val, S_EMPTY_LIST);
-	    s_set_cdr_e(args_tail, tmp);
-	    args_tail = tmp;
-
-	}
+    	if (args == S_EMPTY_LIST) {
+    	    args = s_cons(val, S_EMPTY_LIST);
+    	    args_tail = args;
+    	    args_ref = args;
+    	} else {
+    	    SchemeObject* tmp = s_cons(val, S_EMPTY_LIST);
+    	    s_set_cdr_e(args_tail, tmp);
+    	    args_tail = tmp;
+    	}
 
         binding_pairs = s_cdr(binding_pairs);
     }
@@ -1011,8 +968,8 @@ fn_ptr eval_named_let() {
     stack.pop_back();
 
     SchemeEnvironment* new_envt = SchemeEnvironment::create(envt);
-    SchemeProcedure* lambda = SchemeProcedure::create(name, new_envt, formals, NULL, static_cast<SchemePair*>(s_cdr(p)));
-    new_envt->put(static_cast<SchemeSymbol*>(name), lambda);
+    SchemeProcedure* lambda = SchemeProcedure::create(name, new_envt, formals, s_cdr(p));
+    new_envt->put(name, lambda);
     
     global_arg1 = lambda;
     global_arg2 = args;
@@ -1068,45 +1025,12 @@ fn_ptr eval_define_macro() {
     SchemeObject* name = s_car(formals);
     formals = s_cdr(formals);
     
-    if (s_symbol_p(name) == S_FALSE) {
-        throw scheme_exception("Invalid macro-name in definition");
+    if (i_symbol_p(name) == S_FALSE) {
+        throw scheme_exception("Invalid macro-name in definition: " + name->toString());
     }
-    
-    SchemeSymbol* rst;
-    SchemePair* req = S_EMPTY_LIST;
-    SchemeObject* req_tail = S_EMPTY_LIST;
-    if (i_pair_p(formals) == S_TRUE) {
-        while (i_pair_p(formals) == S_TRUE) {
-            SchemePair* pp = static_cast<SchemePair*>(formals);
-            if (s_symbol_p(s_car(pp)) == S_FALSE) {
-                throw scheme_exception("Bad formals");                
-            }
-	    if (req == S_EMPTY_LIST) {
-		req = s_cons(s_car(pp), S_EMPTY_LIST);
-		req_tail = req;
-	    } else {
-		SchemeObject* tmp = s_cons(s_car(pp), S_EMPTY_LIST);
-		s_set_cdr_e(req_tail, tmp);
-		req_tail = tmp;
-	    }
-            formals = s_cdr(pp);
-        }
-        if (formals != S_EMPTY_LIST) {
-            if (s_symbol_p(formals) == S_FALSE) {
-                throw scheme_exception("Bad formals");                
-            }
-            rst = static_cast<SchemeSymbol*>(formals);
-        } else {
-            rst = NULL;
-        }
-    } else if (formals == S_EMPTY_LIST) {
-        rst = NULL;
-    } else {
-        throw scheme_exception("Bad formals");
-    }
-    
-    SchemeMacro* macro = SchemeMacro::create(name, envt, req, rst, body);
-    envt->put(static_cast<SchemeSymbol*>(name), macro);
+
+    SchemeMacro* macro = SchemeMacro::create(name, envt, formals, body);
+    envt->put(name, macro);
     
     global_ret = S_UNSPECIFIED;
     return (fn_ptr)NULL;
@@ -1119,21 +1043,22 @@ fn_ptr eval_call_macro() {
     
     // Build new environment
     SchemeEnvironment* new_envt = SchemeEnvironment::create(proc->envt);
-    SchemeObject* req_symbols = proc->s_req;
-    while (req_symbols != S_EMPTY_LIST) {
+    SchemeObject* formals = proc->s_formals;
+    
+    while (i_pair_p(formals) == S_TRUE) {
         if (args == S_EMPTY_LIST) {
-            throw scheme_exception("Too few argument given.");
+            throw scheme_exception("Too few argument given in call to macro " + proc->nameAsString());
         }
-        new_envt->put(s_car(req_symbols), s_car(args));
-        req_symbols = s_cdr(req_symbols);
-        args = s_cdr(args);
+        new_envt->put(s_car(formals), s_car(args));
+        formals = i_cdr(formals);
+        args = i_cdr(args);
     }
-    if (proc->rst == 0 && args != S_EMPTY_LIST) {
-        throw scheme_exception("Too many argument given.");
+    if (formals != S_EMPTY_LIST) {
+        new_envt->put(formals, args);
+    } else if (args != S_EMPTY_LIST) {
+        throw scheme_exception("Too many argument given in call to macro "+proc->nameAsString());
     }
-    if (proc->rst == 1) {
-        new_envt->put(proc->s_rst, args);
-    }
+    
     // cout << "Body: " << proc->s_body->toString() << endl;
     // Transform body
     stack.push_back(envt);

@@ -181,8 +181,7 @@ class SchemeProcedure : public SchemeObject
 {
     public:
         static SchemeProcedure* create(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
-        static SchemeProcedure* create(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body);
-        
+        static SchemeProcedure* create(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_formals, SchemeObject* s_body);
         string toString();      
         ObjectType type() { return PROCEDURE; };
         string nameAsString() { return name->str; };
@@ -200,13 +199,12 @@ class SchemeProcedure : public SchemeObject
         
         // Fields for user-function
         SchemeObject* s_body;
-        SchemeObject* s_req;
-        SchemeSymbol* s_rst;
+        SchemeObject* s_formals;
         SchemeEnvironment* envt;
         
     protected:    
         SchemeProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
-        SchemeProcedure(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_req, SchemeSymbol* s_rst, SchemeObject* s_body);
+        SchemeProcedure::SchemeProcedure(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_formals, SchemeObject* s_body);
 };
 
 class SchemeInternalProcedure : public SchemeObject {
@@ -220,11 +218,11 @@ class SchemeInternalProcedure : public SchemeObject {
 
 class SchemeMacro : public SchemeProcedure {
     public:
-        static SchemeMacro* create(SchemeObject* name, SchemeEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body);
+        static SchemeMacro* create(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_formals, SchemeObject* s_body);
         string toString();      
         ObjectType type() { return MACRO; };    
     protected:    
-        SchemeMacro(SchemeObject* name, SchemeEnvironment* envt, SchemePair* s_req, SchemeSymbol* s_rst, SchemePair* s_body);
+        SchemeMacro(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_req, SchemeObject* s_body);
 };
 
 class SchemeEOF : public SchemeObject {

@@ -126,63 +126,6 @@ void test_parser() {
     assert(s_cadr(e)->type() == SchemeObject::PAIR);
     assert(s_caadr(e)->type() == SchemeObject::SYMBOL);
     assert(s_caadr(e)->toString() == "a");
-
-}
-
-void test_bools() {
-    Scheme* s = new Scheme();
-    assert(s->eval("(boolean? #t)") == S_TRUE);
-    assert(s->eval("(boolean? #f)") == S_TRUE);
-    assert(s->eval("(boolean? 1)") == S_FALSE);
-    assert(s->eval("(boolean? '(1 2 3))") == S_FALSE);
-}
-
-void test_char() {
-    Scheme* s = new Scheme();
-    assert_eval(s, "(char? #\\a)", "#t");
-    assert_eval(s, "(char? 1)", "#f");
-    assert_eval(s, "#\\b", "#\\b");
-    assert_eval(s, "(char->integer #\\Space)", "32");
-    assert_eval(s, "(char->integer #\\newline)", "10");
-    assert_eval(s, "#\\space", "#\\space");
-    assert_eval(s, "#\\newline", "#\\newline");
-    assert_eval(s, "(integer->char 66)", "#\\B");
-    assert_eval(s, "(integer->char 95)", "#\\_");
-    assert_fail(s, "(integer->char -1)");
-    assert_fail(s, "(integer->char 'a)");
-    assert_eval(s, "(char->integer #\\B)", "66");
-    assert_eval(s, "(char->integer #\\_)", "95");
-    assert_eval(s, "(<= (char->integer #\\a) (char->integer #\\b))", "#t");
-    assert_eval(s, "(char-upcase #\\a)", "#\\A");
-    assert_eval(s, "(char-upcase #\\A)", "#\\A");
-    assert_eval(s, "(char-downcase #\\b)", "#\\b");
-    assert_eval(s, "(char-downcase #\\B)", "#\\b");
-    assert_eval(s, "(char-alphabetic? #\\a)", "#t");
-    assert_eval(s, "(char-alphabetic? #\\space)", "#f");
-    assert_eval(s, "(char-alphabetic? #\\1)", "#f");
-    assert_eval(s, "(char-numeric? #\\1)", "#t");
-    assert_eval(s, "(char-numeric? #\\x)", "#f");
-    assert_eval(s, "(char-whitespace? #\\ )", "#t");
-    assert_eval(s, "(char-whitespace? #\\a)", "#f");
-    assert_eval(s, "(char-whitespace? #\\3)", "#f");
-    assert_eval(s, "(char-upper-case? #\\F)", "#t");
-    assert_eval(s, "(char-upper-case? #\\f)", "#f");
-    assert_eval(s, "(char-upper-case? #\\1)", "#f");
-    assert_eval(s, "(char-lower-case? #\\F)", "#f");
-    assert_eval(s, "(char-lower-case? #\\f)", "#t");
-    assert_eval(s, "(char-lower-case? #\\1)", "#f");
-}
-
-void test_symbols() {
-    Scheme* s = new Scheme();
-    assert_eval(s, "(symbol? (quote a))","#t");
-    assert(s->eval("(symbol? 'a)") == S_TRUE);
-    assert(s->eval("(symbol? '1)") == S_FALSE);
-    assert(s->eval("(symbol? '())") == S_FALSE);
-    assert(s->eval("(symbol? 1)") == S_FALSE);
-    assert(SchemeSymbol::create("a") == SchemeSymbol::create("a"));
-    assert(SchemeSymbol::create("a") != SchemeSymbol::create("b"));
-    assert_eval(s, "(eq? (string->symbol \"f\") (string->symbol \"F\"))", "#f");
 }
 
 void test_interpreter() {
@@ -248,6 +191,62 @@ void test_interpreter() {
     assert_eval(s, "((lambda (begin) (begin 1 2 3)) (lambda lambda lambda))", "(1 2 3)");    
 
     delete s;
+}
+
+void test_bools() {
+    Scheme* s = new Scheme();
+    assert(s->eval("(boolean? #t)") == S_TRUE);
+    assert(s->eval("(boolean? #f)") == S_TRUE);
+    assert(s->eval("(boolean? 1)") == S_FALSE);
+    assert(s->eval("(boolean? '(1 2 3))") == S_FALSE);
+}
+
+void test_char() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(char? #\\a)", "#t");
+    assert_eval(s, "(char? 1)", "#f");
+    assert_eval(s, "#\\b", "#\\b");
+    assert_eval(s, "(char->integer #\\Space)", "32");
+    assert_eval(s, "(char->integer #\\newline)", "10");
+    assert_eval(s, "#\\space", "#\\space");
+    assert_eval(s, "#\\newline", "#\\newline");
+    assert_eval(s, "(integer->char 66)", "#\\B");
+    assert_eval(s, "(integer->char 95)", "#\\_");
+    assert_fail(s, "(integer->char -1)");
+    assert_fail(s, "(integer->char 'a)");
+    assert_eval(s, "(char->integer #\\B)", "66");
+    assert_eval(s, "(char->integer #\\_)", "95");
+    assert_eval(s, "(<= (char->integer #\\a) (char->integer #\\b))", "#t");
+    assert_eval(s, "(char-upcase #\\a)", "#\\A");
+    assert_eval(s, "(char-upcase #\\A)", "#\\A");
+    assert_eval(s, "(char-downcase #\\b)", "#\\b");
+    assert_eval(s, "(char-downcase #\\B)", "#\\b");
+    assert_eval(s, "(char-alphabetic? #\\a)", "#t");
+    assert_eval(s, "(char-alphabetic? #\\space)", "#f");
+    assert_eval(s, "(char-alphabetic? #\\1)", "#f");
+    assert_eval(s, "(char-numeric? #\\1)", "#t");
+    assert_eval(s, "(char-numeric? #\\x)", "#f");
+    assert_eval(s, "(char-whitespace? #\\ )", "#t");
+    assert_eval(s, "(char-whitespace? #\\a)", "#f");
+    assert_eval(s, "(char-whitespace? #\\3)", "#f");
+    assert_eval(s, "(char-upper-case? #\\F)", "#t");
+    assert_eval(s, "(char-upper-case? #\\f)", "#f");
+    assert_eval(s, "(char-upper-case? #\\1)", "#f");
+    assert_eval(s, "(char-lower-case? #\\F)", "#f");
+    assert_eval(s, "(char-lower-case? #\\f)", "#t");
+    assert_eval(s, "(char-lower-case? #\\1)", "#f");
+}
+
+void test_symbols() {
+    Scheme* s = new Scheme();
+    assert_eval(s, "(symbol? (quote a))","#t");
+    assert(s->eval("(symbol? 'a)") == S_TRUE);
+    assert(s->eval("(symbol? '1)") == S_FALSE);
+    assert(s->eval("(symbol? '())") == S_FALSE);
+    assert(s->eval("(symbol? 1)") == S_FALSE);
+    assert(SchemeSymbol::create("a") == SchemeSymbol::create("a"));
+    assert(SchemeSymbol::create("a") != SchemeSymbol::create("b"));
+    assert_eval(s, "(eq? (string->symbol \"f\") (string->symbol \"F\"))", "#f");
 }
 
 void test_math() {
@@ -692,6 +691,7 @@ int main(int argc, char *argv[]) {
         cout << "Test tokenizer...       ";
         test_tokenizer();
         cout << " OK" << endl;
+        
         cout << "Test parser...          ";
         test_parser();
         cout << " OK" << endl;
