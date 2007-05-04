@@ -23,6 +23,10 @@ assert_eval(s, "", "");
 int errors_found = 0;
 
 void assert_eval(Scheme* s, string expression, string expected) {
+    if (expression == "") {
+        return;
+    }
+    
     try {
         //cout << "Testing " << expression << endl;
         string result = s->eval(expression)->toString();
@@ -407,7 +411,13 @@ void test_pairs_and_lists() {
     assert_eval(s, "(cdar '((a b) (c d)))", "(b)");
     assert_eval(s, "(caadr '((a b) (c d)))", "c");
 
+    assert_eval(s, "(reverse '(a b c))", "(c b a)");
     assert_eval(s, "(reverse '(a (b c) d (e (f))))","((e (f)) d (b c) a)");
+    assert_eval(s, "(reverse '())", "()");
+    assert_fail(s, "(reverse '(a b c d . e))");
+    assert_fail(s, "(reverse)");
+    assert_fail(s, "(reverse 'a)");
+    assert_fail(s, "(reverse 'a 'b)");
     
     assert_eval(s, "(member 3 '(1 2 3 4 5))", "(3 4 5)");
     assert_eval(s, "(member 10 '(1 2 3 4 5))", "#f");
@@ -426,12 +436,14 @@ void test_pairs_and_lists() {
     assert_eval(s, "(append '() '(a b c) '(a b) '())", "(a b c a b)");
     assert_eval(s, "(append)", "()");
     assert_eval(s, "(append '() 'a)", "a");
+    assert_eval(s, "(append '() '() 'b)", "b");
     assert_eval(s, "(append '() '() '())", "()");
     assert_eval(s, "(append 'a)", "a");
     assert_eval(s, "(append '(a b c) 'e)", "(a b c . e)");
     assert_eval(s, "(append '(a b c) '(1 . 2))", "(a b c 1 . 2)");
     assert_eval(s, "(append '(a (b)) '((c)))", "(a (b) (c))");
     assert_fail(s, "(append '(a . b) '(a b c))");
+    assert_fail(s, "(append 'a '(a b c))");
 
     s->eval("(define e '((a 1) (b 2) (c 3)))");
     assert_eval(s, "(assq 'a e)", "(a 1)");
@@ -464,12 +476,18 @@ void test_lambda() {
     assert_eval(s, "((lambda (x) (* 2 x)) 10)", "20");
     assert_eval(s, "((lambda (x y) (+  y x)) 7 10)", "17");
     assert_eval(s, "((lambda (x y z) (list z y x)) 3 4 5)", "(5 4 3)");
-    // Two examples from R^5RS
+    // Some examples from R^5RS
     assert_eval(s, "((lambda x x) 3 4 5 6)", "(3 4 5 6)");
     assert_eval(s, "((lambda (x y . z) z) 3 4 5 6)", "(5 6)");
+    assert_eval(s, "((lambda (x) (+ x x)) 4)", "8");
+    assert_eval(s, "(define add4 (let ((x 4)) (lambda (y) (+ x y)))) (add4 6)", "10");
     
     assert_eval(s, "(let () (define (f . x) x) (f))", "()");
+    assert_eval(s, "(let () (define (f . x) x) (f 1 2 3 4 5 6 7))", "(1 2 3 4 5 6 7)");
     assert_eval(s, "(let () (define f (lambda x x)) (f))", "()");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
+    assert_eval(s, "", "");
 }
 
 void test_macros() {
@@ -519,6 +537,7 @@ void test_string() {
     assert_eval(s, "(string-append \"zzz\")","\"zzz\"");
     assert_eval(s, "(string-append \"zzz\" \"xxx\") ","\"zzzxxx\"");
     assert_eval(s, "(string-copy \"zzz\")","\"zzz\"");
+    assert_eval(s, "(define z \"zzz\") (define x (string-copy z)) (string-set! x 0 #\\x) z","\"zzz\"");
     assert_eval(s, "(string->number \"100\")", "100");
     assert_eval(s, "(string->number \"2.5\")", "2.5");
     assert_eval(s, "(string->number \"100\" 8)", "64");

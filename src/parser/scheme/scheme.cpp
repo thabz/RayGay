@@ -384,14 +384,6 @@ void assert_arg_positive_int(char* procname, int argnum, SchemeObject* arg) {
     }
 }
 
-
-inline
-SchemeNumber* make_number(int n) {
-    if (n < 10 && n >= 0) {
-        return S_NUMBERS[n];
-    }
-    return SchemeNumber::create(n);
-}
 // (equal? a b)
 // Equal? recursively compares the contents of pairs, vectors, and strings, applying eqv? on other objects 
 // such as numbers and symbols. A rule of thumb is that objects are generally equal? if they print the same. 
@@ -772,34 +764,26 @@ SchemeObject* s_list(SchemeObject* args) {
     return args;
 }
 
-SchemePair* s_reverse(SchemeObject* o) {
-    if (o != S_EMPTY_LIST) {
-        assert_arg_type("reverse", 1, s_pair_p, o);
-    }
-    SchemePair* result = S_EMPTY_LIST;
+SchemeObject* s_reverse(SchemeObject* o) 
+{
+    SchemeObject* result = S_EMPTY_LIST;
+
     while (o != S_EMPTY_LIST) {
-		result = s_cons(s_car(o), result);
+        assert_arg_type("reverse", 1, s_pair_p, o);
+		result = i_cons(i_car(o), result);
 		o = s_cdr(o);
-        if (o != S_EMPTY_LIST) {
-            assert_arg_type("reverse", 1, s_pair_p, o);
-        }
 	}
 	return result;  
 }
 
 SchemeNumber* s_length(SchemeObject* p) {
-    if (p != S_EMPTY_LIST) {
-        assert_arg_type("length", 1, s_pair_p, p);
-    }
     int length = 0;
     while (p != S_EMPTY_LIST) {
+        assert_arg_type("length", 1, s_pair_p, p);
         length++;
         p = s_cdr(p);
-        if (p != S_EMPTY_LIST) {
-            assert_arg_type("length", 1, s_pair_p, p);
-        }
     }
-    return make_number(length);
+    return int2scm(length);
 }
 
 SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o) {
@@ -817,9 +801,8 @@ SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o) {
 }
 
 SchemeObject* s_append(SchemeObject* p) {
-    SchemePair* result = S_EMPTY_LIST;
-    SchemePair* prev = NULL;
-    SchemePair* tmp;
+    SchemeObject* result = S_EMPTY_LIST;
+    SchemeObject* result_tail = NULL;
     
     if (p == S_EMPTY_LIST) {
         return S_EMPTY_LIST;
@@ -831,38 +814,35 @@ SchemeObject* s_append(SchemeObject* p) {
     int i = 1;
     while (s_cdr(p) != S_EMPTY_LIST) {
         SchemeObject* pp = s_car(p);
-        if (pp == S_EMPTY_LIST) {
-            // Skip empty lists
-            p = s_cdr(p);
-            continue;
-        } 
-        
-        assert_arg_type("append", i, s_pair_p, pp);
+        // Skip empty lists
+        if (pp != S_EMPTY_LIST) {
+            assert_arg_type("append", i, s_pair_p, pp);
 
-	    while (pp != S_EMPTY_LIST) {
-	        if (result == S_EMPTY_LIST) {
-                result = s_cons(s_car(pp), S_EMPTY_LIST);
-                prev = result;
-	        } else {
-	            tmp = s_cons(s_car(pp), S_EMPTY_LIST);
-                prev->cdr = tmp;
-                prev = tmp;
-            }
-            pp = s_cdr(pp);
+    	    while (pp != S_EMPTY_LIST) {
 
-            if (pp != S_EMPTY_LIST) {
                 assert_arg_type("append", i, s_pair_p, pp);
-            }
+
+    	        SchemeObject* newtail = s_cons(s_car(pp), S_EMPTY_LIST);
+    	        if (result == S_EMPTY_LIST) {
+                    result = newtail;
+                    result_tail = result;
+    	        } else {
+                    i_set_cdr_e(result_tail, newtail);
+                    result_tail = newtail;
+                }
+
+                pp = s_cdr(pp);
+    	    }
 	    }
         i++;
         p = s_cdr(p);
     }
 
-    // Appends final arg
-    if (prev != NULL) {
-        prev->cdr = s_car(p);
+    // Append  final arg
+    if (result != S_EMPTY_LIST) {
+        i_set_cdr_e(result_tail, s_car(p));
     } else {
-        return s_car(p);
+        result = s_car(p);
     }
     return result;
 }
@@ -875,7 +855,7 @@ SchemeNumber* s_plus(SchemeObject* p) {
 		result += scm2double(s_car(p));
         p = s_cdr(p);
 	}
-	return SchemeNumber::create(result);
+	return double2scm(result);
 }
 
 SchemeNumber* s_minus(SchemeObject* n, SchemeObject* rst) {
@@ -884,7 +864,7 @@ SchemeNumber* s_minus(SchemeObject* n, SchemeObject* rst) {
 
 	if (rst == S_EMPTY_LIST) {
 	    // One-argument case is a simple negate (n => -n)
-    	return SchemeNumber::create(-result);
+    	return double2scm(-result);
 	}
 
     int i = 2;
@@ -894,7 +874,7 @@ SchemeNumber* s_minus(SchemeObject* n, SchemeObject* rst) {
 	    result -= scm2double(cur);
         rst = s_cdr(rst);
 	}
-	return SchemeNumber::create(result);
+	return double2scm(result);
 }
 
 SchemeNumber* s_divide(SchemeObject* n, SchemeObject* rst) {
@@ -903,7 +883,7 @@ SchemeNumber* s_divide(SchemeObject* n, SchemeObject* rst) {
 
 	if (rst == S_EMPTY_LIST) {
         // One-argument case is a simple inverse (n => 1/n)
-    	return SchemeNumber::create(1.0 / result);
+    	return double2scm(1.0 / result);
 	}
 
     int i = 2;
@@ -913,7 +893,7 @@ SchemeNumber* s_divide(SchemeObject* n, SchemeObject* rst) {
 	    result /= scm2double(cur);
         rst = s_cdr(rst);
 	}
-	return SchemeNumber::create(result);
+	return double2scm(result);
 }
 
 SchemeNumber* s_mult(SchemeObject* p) {
@@ -925,7 +905,7 @@ SchemeNumber* s_mult(SchemeObject* p) {
 		result *= number;
 		p = s_cdr(p);
 	}
-	return SchemeNumber::create(result);
+	return double2scm(result);
 }
 
 SchemeVector* s_make_vector(SchemeObject* s_count, SchemeObject* obj) {
@@ -948,7 +928,7 @@ SchemeVector* s_vector(SchemeObject* args) {
 SchemeNumber* s_vector_length(SchemeObject* v) {
     assert_arg_type("vector-length", 1, s_vector_p, v);
     SchemeVector* vv = static_cast<SchemeVector*>(v);
-    return make_number(vv->length);
+    return int2scm(vv->length);
 }
 
 SchemeVector* s_list_2_vector(SchemeObject* l) {
@@ -996,66 +976,66 @@ SchemeObject* s_vector_fill_e(SchemeObject* s_vec, SchemeObject* fill) {
 
 SchemeNumber* s_sqrt(SchemeObject* n) {
     assert_arg_type("sqrt", 1, s_number_p, n);
-    return SchemeNumber::create(sqrt(scm2double(n)));
+    return double2scm(sqrt(scm2double(n)));
 }
 
 SchemeNumber* s_abs(SchemeObject* n) {
     assert_arg_type("abs", 1, s_number_p, n);
-    return SchemeNumber::create(fabs(scm2double(n)));
+    return double2scm(fabs(scm2double(n)));
 }
 
 
 SchemeNumber* s_sin(SchemeObject* n) {
     assert_arg_type("sin", 1, s_number_p, n);
-    return SchemeNumber::create(sin(scm2double(n)));
+    return double2scm(sin(scm2double(n)));
 }
 
 SchemeNumber* s_asin(SchemeObject* n) {
     assert_arg_type("asin", 1, s_number_p, n);
-    return SchemeNumber::create(asin(scm2double(n)));
+    return double2scm(asin(scm2double(n)));
 }
 
 SchemeNumber* s_cos(SchemeObject* n) {
     assert_arg_type("cos", 1, s_number_p, n);
-    return SchemeNumber::create(cos(scm2double(n)));
+    return double2scm(cos(scm2double(n)));
 }
 
 SchemeNumber* s_acos(SchemeObject* n) {
     assert_arg_type("acos", 1, s_number_p, n);
-    return SchemeNumber::create(acos(scm2double(n)));
+    return double2scm(acos(scm2double(n)));
 }
 
 SchemeNumber* s_tan(SchemeObject* n) {
     assert_arg_type("tan", 1, s_number_p, n);
-    return SchemeNumber::create(tan(scm2double(n)));
+    return double2scm(tan(scm2double(n)));
 }
 
 SchemeNumber* s_atan(SchemeObject* y, SchemeObject* x) {
     assert_arg_type("atan", 1, s_number_p, y);
     if (x == S_UNSPECIFIED) {
-        return SchemeNumber::create(atan(scm2double(y)));
+        return double2scm(atan(scm2double(y)));
     } else {
         assert_arg_type("atan", 2, s_number_p, x);
-        return SchemeNumber::create(atan2(scm2double(y), scm2double(x)));
+        return double2scm(atan2(scm2double(y), scm2double(x)));
     }
 }
 
 SchemeNumber* s_log(SchemeObject* n) {
     assert_arg_type("log", 1, s_number_p, n);
-    return SchemeNumber::create(log(scm2double(n)));
+    return double2scm(log(scm2double(n)));
 }
 
 // Returns a^b
 SchemeNumber* s_expt(SchemeObject* a, SchemeObject* b) {
     assert_arg_type("expt", 1, s_number_p, a);
     assert_arg_type("expt", 1, s_number_p, b);
-    return SchemeNumber::create(pow(scm2double(a),scm2double(b)));
+    return double2scm(pow(scm2double(a),scm2double(b)));
 }
 
 // Returns e^n
 SchemeNumber* s_exp(SchemeObject* n) {
     assert_arg_type("exp", 1, s_number_p, n);
-    return SchemeNumber::create(exp(scm2double(n)));
+    return double2scm(exp(scm2double(n)));
 }
 
 // Round returns the closest integer to x, rounding to even when x is halfway between two integers.
@@ -1078,25 +1058,25 @@ SchemeNumber* s_round(SchemeObject* n) {
              result = cei;
         }
     }
-    return SchemeNumber::create(result);
+    return int2scm(int(result));
 }
 
 // Ceiling returns the smallest integer not smaller than x
 SchemeNumber* s_ceiling(SchemeObject* n) {
     assert_arg_type("ceiling", 1, s_number_p, n);
-    return SchemeNumber::create(ceil(scm2double(n)));
+    return int2scm(int(ceil(scm2double(n))));
 }
 
 // Floor returns the largest integer not larger than x
 SchemeNumber* s_floor(SchemeObject* n) {
     assert_arg_type("floor", 1, s_number_p, n);
-    return SchemeNumber::create(floor(scm2double(n)));
+    return int2scm(int(floor(scm2double(n))));
 }
 
 // Truncate returns the integer closest to x whose absolute value is not larger than the absolute value of x
 SchemeNumber* s_truncate(SchemeObject* n) {
     assert_arg_type("truncate", 1, s_number_p, n);
-    return SchemeNumber::create(trunc(scm2double(n)));
+    return int2scm(int(trunc(scm2double(n))));
 }
 
 SchemeNumber* s_quotient(SchemeObject* n1, SchemeObject* n2) {
@@ -1104,7 +1084,7 @@ SchemeNumber* s_quotient(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type("quotient", 2, s_integer_p, n2);
     int nn1 = int(scm2int(n1));
     int nn2 = int(scm2int(n2));
-    return make_number(nn1 / nn2);
+    return int2scm(nn1 / nn2);
     
 }
 
@@ -1123,7 +1103,7 @@ SchemeNumber* s_remainder(SchemeObject* n1, SchemeObject* n2) {
             result += abs(nn2);
         }
     }
-    return make_number(result);
+    return int2scm(result);
 }
 
 SchemeNumber* s_modulo(SchemeObject* n1, SchemeObject* n2) {
@@ -1139,7 +1119,7 @@ SchemeNumber* s_modulo(SchemeObject* n1, SchemeObject* n2) {
             result += abs(nn2);
         }
     }
-    return make_number(result);
+    return int2scm(result);
 }
 
 
@@ -1197,11 +1177,11 @@ SchemeObject* s_gcd(SchemeObject* l) {
     assert_arg_type("gcd", 1, s_pair_p, l);
     assert_arg_type("gcd", 1, s_integer_p, s_car(l));
     if (i_null_p(s_cdr(l)) == S_TRUE) {
-        return make_number(abs(scm2int(s_car(l))));
+        return int2scm(abs(scm2int(s_car(l))));
     }
     int a = scm2int(s_car(l));
     int b = scm2int(s_gcd(s_cdr(l)));
-    return make_number(abs(gcd(a,b)));
+    return int2scm(abs(gcd(a,b)));
 }
 
 // Using the property gcd(a,b) * lcm(a,b) = a * b and that lcm(a,b,c) = lcm(lcm(a,b),c) = lcm(a,lcm(b,c))
@@ -1212,7 +1192,7 @@ SchemeNumber* s_lcm(SchemeObject* l) {
     assert_arg_type("lcm", 1, s_pair_p, l);
     if (i_null_p(s_cdr(l)) == S_TRUE) {
         assert_arg_type("lcm", 1, s_integer_p, s_car(l));
-        return make_number(abs(scm2int(s_car(l))));
+        return int2scm(abs(scm2int(s_car(l))));
     }
 
     int a = abs(scm2int(s_car(l)));
@@ -1224,7 +1204,7 @@ SchemeNumber* s_lcm(SchemeObject* l) {
     } else {
         r = a * b / g;
     }
-    return make_number(r);
+    return int2scm(r);
 }
 
 
@@ -1367,7 +1347,7 @@ SchemeBool* s_not(SchemeObject* o) {
 }
 
 SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr) {
-    assert_arg_type("make-string", 1, s_number_p, len);
+    assert_arg_type("make-string", 1, s_integer_p, len);
     
     if (chr == S_UNSPECIFIED) {
         chr = S_SPACE;
@@ -1375,8 +1355,8 @@ SchemeString* s_make_string(SchemeObject* len, SchemeObject* chr) {
         assert_arg_type("make-string", 2, s_char_p, chr);
     }
 
-    string s = string(int(static_cast<SchemeNumber*>(len)->number), static_cast<SchemeChar*>(chr)->c);
-    return SchemeString::create(s);
+    string s = string(scm2int(len), scm2char(chr));
+    return string2scm(s);
 }
 
 SchemeString* s_string(SchemeObject* p) {
@@ -1388,13 +1368,13 @@ SchemeString* s_string(SchemeObject* p) {
         s += scm2char(c);
         p = s_cdr(p);
     }
-    return SchemeString::create(s);
+    return string2scm(s);
 }
 
 SchemeNumber* s_string_length(SchemeObject* s) {
     assert_arg_type("string-length", 1, s_string_p, s);
     int len = static_cast<SchemeString*>(s)->str.size();
-    return make_number(len);
+    return int2scm(len);
 }
 
 SchemeChar* s_string_ref(SchemeObject* s, SchemeNumber* i) {
@@ -1436,12 +1416,12 @@ SchemeString* s_string_append(SchemeObject* strings) {
         result += scm2string(car_strings);
         strings = s_cdr(strings);
     }
-    return SchemeString::create(result);
+    return string2scm(result);
 }
 
 SchemeString* s_string_copy(SchemeObject* str) {
     assert_arg_type("string-copy", 1, s_string_p, str);
-    return SchemeString::create(static_cast<SchemeString*>(str)->str,false);
+    return string2scm(static_cast<SchemeString*>(str)->str);
 }
 
 SchemeString* s_substring(SchemeObject* s_str, SchemeObject* s_start, SchemeObject* s_end) {
@@ -1474,7 +1454,7 @@ SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base_s) {
     } else {
         ss << std::setbase(base) << scm2double(n);
     }
-    return SchemeString::create(ss.str());
+    return string2scm(ss.str());
 }
 
 SchemeObject* s_string_2_number(SchemeObject* s_string, SchemeObject* base_s) {
@@ -1501,7 +1481,7 @@ SchemeObject* s_string_2_number(SchemeObject* s_string, SchemeObject* base_s) {
         return S_FALSE;
     }
     delete is;
-    return SchemeNumber::create(d);
+    return double2scm(d);
 }
 
 
@@ -1513,7 +1493,7 @@ SchemeChar* s_integer_2_char(SchemeObject* i) {
 
 SchemeNumber* s_char_2_integer(SchemeObject* c) {
     assert_arg_type("char->integer", 1, s_char_p, c);
-    return make_number(int(static_cast<SchemeChar*>(c)->c));
+    return int2scm(int(static_cast<SchemeChar*>(c)->c));
 }
 
 SchemePair* s_string_2_list(SchemeObject* s) {
@@ -1544,7 +1524,7 @@ SchemeString* s_list_2_string(SchemeObject* p) {
         p = s_cdr(p);
         i++;
     }
-    return SchemeString::create(result);
+    return string2scm(result);
 }
 
 SchemeBool* s_char_alphabetic_p(SchemeObject* c) {

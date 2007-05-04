@@ -59,6 +59,8 @@ extern SchemeNumber* S_TWO;
 #define bool2scm(b)    ((b) ? S_TRUE : S_FALSE)
 #define string2scm(s)  (SchemeString::create(s))
 #define char2scm(c)    (SchemeChar::create(c))
+#define int2scm(n)     (((n) < 10 && (n) >= 0) ? S_NUMBERS[n] : SchemeNumber::create(n))
+#define double2scm(n)  (SchemeNumber::create(n))
 
 // Faster internal macro for some much used procedures
 // that does no argument checking.
@@ -121,7 +123,7 @@ SchemePair* s_cons(SchemeObject* car, SchemeObject* cdr);
 SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o);
 SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o);
 SchemeObject* s_append(SchemeObject* args);
-SchemePair* s_reverse(SchemeObject* l);
+SchemeObject* s_reverse(SchemeObject* l);
 SchemeNumber* s_length(SchemeObject* l);
 SchemeObject* s_list(SchemeObject* args);
 SchemeObject* s_list_tail(SchemeObject* l, SchemeObject* k);

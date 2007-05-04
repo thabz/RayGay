@@ -24,7 +24,6 @@ SchemePair* Parser::parse(istream* is) {
 }
 
 SchemeObject* Parser::read(istream* is) {
-    SchemeObject* v;
     SchemeObject* result;
     Lexer::Token token = lexer->nextToken(is);
     switch(token) {
@@ -47,9 +46,7 @@ SchemeObject* Parser::read(istream* is) {
            result = read_list(is);
            break;
         case Lexer::HASH_OPEN_PAREN :
-           v = s_vector(read_list(is));
-           v->immutable = true;
-           result = v;
+           result = s_vector(read_list(is));
            break;
         case Lexer::QUOTE :
            result = read_quoted(is);
@@ -112,21 +109,21 @@ SchemeObject* Parser::read_list(istream* is) {
 }
 
 SchemeObject* Parser::read_quoted(istream* is) {
-    SchemeObject* list = s_cons(read(is), S_EMPTY_LIST);
+    SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
     return i_cons(SchemeSymbol::create("quote"), list);
 }
 
 SchemeObject* Parser::read_quasiquoted(istream* is) {
-    SchemeObject* list = s_cons(read(is), S_EMPTY_LIST);
+    SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
     return i_cons(SchemeSymbol::create("quasiquote"), list);
 }
 
 SchemeObject* Parser::read_unquoted(istream* is) {
-    SchemeObject* list = s_cons(read(is), S_EMPTY_LIST);
+    SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
     return i_cons(SchemeSymbol::create("unquote"), list);
 }
 
 SchemeObject* Parser::read_unquote_spliced(istream* is) {
-    SchemeObject* list = s_cons(read(is), S_EMPTY_LIST);
+    SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
     return i_cons(SchemeSymbol::create("unquote-splicing"), list);
 }
