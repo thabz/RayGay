@@ -381,6 +381,7 @@ void test_pairs_and_lists() {
     assert(s->eval("(list? '(1 2 3))") == S_TRUE);
     assert(s->eval("(list? 1)") == S_FALSE);
     assert(s->eval("(list? '(1 2 . 3))") == S_FALSE);
+    
     // From R^5RS 6.3.2. Tests that list? returns #f on circular lists
     assert_eval(s, "(let ((x (list 'a))) (set-cdr! x x) (list? x))", "#f");
     assert(s->eval("(pair? 1)") == S_FALSE);
@@ -404,7 +405,7 @@ void test_pairs_and_lists() {
     assert_eval(s, "(cdr (list 1 2))", "(2)");
     assert_eval(s, "(cadr '((a b) (c d)))", "(c d)");
     assert_eval(s, "(cdar '((a b) (c d)))", "(b)");
-    //assert_eval(s, "(caadr '((a b) (c d)))", "c");
+    assert_eval(s, "(caadr '((a b) (c d)))", "c");
 
     assert_eval(s, "(reverse '(a (b c) d (e (f))))","((e (f)) d (b c) a)");
     
@@ -440,11 +441,14 @@ void test_pairs_and_lists() {
     assert_eval(s, "(assq (list 'a) '(((a)) ((b)) ((c))))", "#f");
     assert_eval(s, "(assv 5 '((2 3) (5 7) (11 13)))", "(5 7)");
     
-    s->eval("(define e '(a b c d))");
+    s->eval("(define e (list 'a 'b 'c 'd))");
     assert_eval(s, "(set-car! e 'f) e", "(f b c d)");
     assert_eval(s, "(set-cdr! e 'g) e", "(f . g)");
     assert_eval(s, "(set-cdr! e '()) e", "(f)");
-
+    s->eval("(define (f) (list 'not-a-constant-list))");
+    s->eval("(define (g) '(constant-list a b c))");
+    assert_eval(s, "(set-car! (f) 3)", "#<unspecified>");
+    assert_fail(s, "(set-car! (g) 3)");
     delete s;
 }
 

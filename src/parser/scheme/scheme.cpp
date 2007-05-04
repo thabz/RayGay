@@ -804,12 +804,14 @@ SchemeNumber* s_length(SchemeObject* p) {
 
 SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o) {
     assert_arg_type("set-car!", 1, s_pair_p, p);
+    assert_arg_not_immutable("set-car!", 1, p);
     static_cast<SchemePair*>(p)->car = o;
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o) {
     assert_arg_type("set-cdr!", 1, s_pair_p, p);
+    assert_arg_not_immutable("set-cdr!", 1, p);
     static_cast<SchemePair*>(p)->cdr = o;
     return S_UNSPECIFIED;
 }

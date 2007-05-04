@@ -241,6 +241,7 @@ fn_ptr eval_list() {
     } else {
 		throw scheme_exception("Unbound variable: " + s->toString());	
     }
+    return NULL; // Never reached
 }
 
 //
@@ -280,7 +281,7 @@ fn_ptr eval_multi() {
     stack.push_back(global_envt);
     
     SchemeObject* result = S_EMPTY_LIST;
-    SchemeObject* tail_pair = S_EMPTY_LIST;
+    SchemeObject* result_tail = S_EMPTY_LIST;
     stack.push_back(result);
     SchemeObject** result_stack_ref = &(stack.back());
     
@@ -289,16 +290,16 @@ fn_ptr eval_multi() {
         SchemeObject* r = trampoline((fn_ptr)&eval);
 
 	    if (result == S_EMPTY_LIST) {
-	        result = s_cons(r, S_EMPTY_LIST);
-            tail_pair = result;
+	        result = i_cons(r, S_EMPTY_LIST);
+            result_tail = result;
             *result_stack_ref = result;
 	    } else {
-	        SchemeObject* new_tail = s_cons(r, S_EMPTY_LIST);
-	        s_set_cdr_e(tail_pair, new_tail);
-	        tail_pair = new_tail;
+	        SchemeObject* new_tail = i_cons(r, S_EMPTY_LIST);
+	        i_set_cdr_e(result_tail, new_tail);
+	        result_tail = new_tail;
 	    }
 
-        p = s_cdr(p);
+        p = i_cdr(p);
     }
     stack.pop_back();
     stack.pop_back();
@@ -732,7 +733,7 @@ fn_ptr eval_procedure_call() {
             if (args == S_EMPTY_LIST) {
                 throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
             }
-            new_envt->put(s_car(formals), s_car(args));
+            new_envt->put(i_car(formals), i_car(args));
             args = i_cdr(args);
             formals = i_cdr(formals);
         }
@@ -1049,7 +1050,7 @@ fn_ptr eval_call_macro() {
         if (args == S_EMPTY_LIST) {
             throw scheme_exception("Too few argument given in call to macro " + proc->nameAsString());
         }
-        new_envt->put(s_car(formals), s_car(args));
+        new_envt->put(i_car(formals), i_car(args));
         formals = i_cdr(formals);
         args = i_cdr(args);
     }
@@ -1116,7 +1117,7 @@ fn_ptr eval_do() {
         if (step == S_EMPTY_LIST) {
             step = varname;
         } else {
-            step = s_car(step);
+            step = i_car(step);
         }
         steps = s_cons(step, steps);
         steps_stack_pos = steps;

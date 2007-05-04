@@ -68,6 +68,7 @@ extern SchemeNumber* S_TWO;
 #define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
 #define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
 #define i_null_p(o)      ((o) == S_EMPTY_LIST ? S_TRUE : S_FALSE)
+#define i_cons(car,cdr)  (SchemePair::create((car),(cdr)))
 
 // Declaration of scheme procedures
 SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
