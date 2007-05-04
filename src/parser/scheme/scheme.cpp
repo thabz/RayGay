@@ -1411,9 +1411,9 @@ SchemeString* s_string_append(SchemeObject* strings) {
     string result = "";
     int i = 1;
     while (strings != S_EMPTY_LIST) {
-        SchemeObject* car_strings = s_car(strings);
-        assert_arg_type("string-append", i++, s_string_p, car_strings);
-        result += scm2string(car_strings);
+        SchemeObject* cur = s_car(strings);
+        assert_arg_type("string-append", i++, s_string_p, cur);
+        result += scm2string(cur);
         strings = s_cdr(strings);
     }
     return string2scm(result);
@@ -1432,7 +1432,7 @@ SchemeString* s_substring(SchemeObject* s_str, SchemeObject* s_start, SchemeObje
     int start = scm2int(s_start);
     int end = scm2int(s_end);
     int len = str.size();
-    if (start < 0 || end > len) {
+    if (start < 0 || end > len || end < start) {
         throw scheme_exception("substring: index out of range.");
     }
     return string2scm(string(str,start,end-start));

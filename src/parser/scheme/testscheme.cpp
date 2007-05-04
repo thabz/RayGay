@@ -568,6 +568,7 @@ void test_string() {
     assert_eval(s, "(substring \"ab\" 1 2)", "\"b\"");
     assert_eval(s, "(substring \"ab\" 0 1)", "\"a\"");
     assert_eval(s, "(substring \"ab\" 0 2)", "\"ab\"");
+    assert_fail(s, "(substring \"abcdef\" 3 1)");
 }
 
 void test_begin() {
