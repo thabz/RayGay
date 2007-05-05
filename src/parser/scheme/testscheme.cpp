@@ -143,9 +143,14 @@ void test_interpreter() {
     assert_eval(s, "((if #t reverse length) '(1 2 3))", "(3 2 1)");
     assert_eval(s, "((if #f reverse length) '(1 2 3))", "3");
     assert_eval(s, "((if #f reverse length) '(1 2 3))", "3");
-
+    assert_fail(s, "(if)");
+    assert_fail(s, "(if #t)");
+    
     // test define
     assert_eval(s, "(define a 10) a", "10");
+    assert_fail(s, "(define)");
+    assert_fail(s, "(define a)");
+    assert_fail(s, "(define 10 10)");
 
     // test built-in with only rst args
     assert_eval(s, "(+ 10 9 2 19 8 2 1 29 8 8 2 1 23 3 1) ", "126");
@@ -169,6 +174,7 @@ void test_interpreter() {
     assert_eval(s, "(not '())","#f");
     assert_eval(s, "(not (list))","#f");
     assert_eval(s, "(not 'nil)","#f");
+    assert_fail(s, "(not)");
 
     assert_eval(s, "(apply + (list 3 4))","7");
     assert_eval(s, "(apply + '(1 2 3))","6");
@@ -182,12 +188,21 @@ void test_interpreter() {
     assert_eval(s, "(case (* 2 3) ((2 3 5 7) 'prime) ((1 4 6 8 9) 'composite))", "composite");
     assert_eval(s, "(case (car '(c d)) ((a) 'a) ((b) 'b))", "#<unspecified>");
     assert_eval(s, "(case (car '(c d)) ((a e i o u) 'vowel) ((w y) 'semivowel) (else 'consonant))", "consonant");
-
+    assert_eval(s, "(case 2)", "#<unspecified>");
+    assert_fail(s, "(case)");
+    assert_fail(s, "(case 2 (2))");
+    assert_fail(s, "(case 2 2)");
+    
     assert_eval(s, "(cond ((> 3 2) 'greater) ((< 3 2) 'less))","greater");
     assert_eval(s, "(cond ((> 3 3) 'greater) ((< 3 3) 'less) (else 'equal))", "equal");
     assert_eval(s, "(cond ((assv 'b '((a 1) (b 2))) => cadr) (else #f))", "2");
-    assert_eval(s, "(cond ((equal? 'a 'a)) (else 'b))", "#<unspecified>");
-        
+    assert_eval(s, "(cond ((equal? 'a 'a)) (else 'b))", "#t");
+    assert_eval(s, "(cond)","#<unspecified>");
+    assert_eval(s, "(cond (17))","17");
+    assert_eval(s, "(cond ((> 3 2)))", "#t");
+    assert_fail(s, "(cond a)");
+    assert_eval(s, "(cond ('a 'b))","b");
+    
     // Brian M. Moore in thread: shadowing syntatic keywords, bug in MIT Scheme?
     // http://groups.google.com/groups?selm=6e6n88%248qf%241%40news.cc.ukans.edu        
     assert_eval(s, "((lambda lambda lambda) 'x)", "(x)");
@@ -589,6 +604,19 @@ void test_let() {
 
     assert_eval(s, "(letrec ((even? (lambda (n) (if (zero? n) #t (odd? (- n 1))))) (odd? (lambda (n) (if (zero? n) #f (even? (- n 1)))))) (even? 88))", "#t");
 
+    assert_fail(s, "(let)");
+    assert_fail(s, "(let 'a)");
+    assert_fail(s, "(let 'a 'b)");
+    assert_fail(s, "(let loop 'b)");
+    assert_fail(s, "(let loop 'b 'c)");
+    assert_fail(s, "(let*)");
+    assert_fail(s, "(let* 'a)");
+    assert_fail(s, "(let* 'a 'b)");
+    assert_fail(s, "(letrec)");
+    assert_fail(s, "(letrec 'a)");
+    assert_fail(s, "(letrec 'a 'b)");
+
+
     // From http://sisc-scheme.org/r5rs_pitfall.scm
     assert_eval(s, "(let ((ls (list 1 2 3 4))) (append ls ls '(5)))", "(1 2 3 4 1 2 3 4 5)");
     assert_eval(s, "(let ((f -)) (let f ((n (f 1))) n))", "-1");
@@ -602,6 +630,12 @@ void test_let() {
 
 void test_do() {
     Scheme* s = new Scheme();
+    assert_eval(s, "(do () (#t 'b))", "b");
+    assert_eval(s, "(do () (#t))", "#<unspecified>");
+    assert_fail(s, "(do)");
+    assert_fail(s, "(do 'a)");
+    assert_fail(s, "(do () ())");
+
     // From R^5RS 4.2.4 
     assert_eval(s, "(do ((vec (make-vector 5)) (i 0 (+ i 1))) ((= i 5) vec) (vector-set! vec i i))", "#(0 1 2 3 4)");
     assert_eval(s, "(let ((x '(1 3 5 7 9))) (do ((x x (cdr x)) (sum 0 (+ sum (car x)))) ((null? x) sum)))", "25");

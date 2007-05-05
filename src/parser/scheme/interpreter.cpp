@@ -815,7 +815,7 @@ fn_ptr eval_cond() {
         
         if (test->boolValue()) {
             if (s_cdr(clause) == S_EMPTY_LIST) {
-                global_ret = S_UNSPECIFIED;
+                global_ret = test;
                 return NULL;
             } else if (s_car(s_cdr(clause)) == ergo_symbol) {
                 // Handle (<test> => <expression>)
@@ -1084,7 +1084,7 @@ fn_ptr eval_do() {
     SchemeEnvironment* envt = global_envt;
 
     if (i_pair_p(s_car(p)) == S_FALSE && i_null_p(s_car(p)) == S_FALSE) {
-        throw scheme_exception("Bad body in let");
+        throw scheme_exception("Bad body in do");
     }
 
     // Extract formals and collect evaluated args for a lambda
@@ -1131,6 +1131,9 @@ fn_ptr eval_do() {
     
     while (true) {
         // Evaluate test
+        if (s_car(body) == S_EMPTY_LIST) {
+            throw scheme_exception("Missing exit clause in do");
+        }
         global_arg1 = s_car(s_car(body));
         SchemeObject* val = trampoline((fn_ptr)&eval);
 
