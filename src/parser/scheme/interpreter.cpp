@@ -424,7 +424,7 @@ fn_ptr eval_apply() {
 
 //
 // ((form) args)		    
-// where form is an expression that should evaluate to a function that we execute
+// where form is an expression that should evaluate to a procedure that we execute
 //
 fn_ptr eval_combo() {
     SchemeObject* s = global_arg1;
@@ -467,9 +467,9 @@ fn_ptr eval_if() {
         SchemeObject* true_case = s_car(s_cdr(p));
         global_arg1 = true_case;
         return (fn_ptr)&eval;
-    } else if (s_cdr(s_cdr(p)) != S_EMPTY_LIST) {
+    } else if (s_cddr(p) != S_EMPTY_LIST) {
         // Evaluate and return false case
-    	SchemeObject* false_case = s_car(s_cdr(s_cdr(p)));
+    	SchemeObject* false_case = s_caddr(p);
         global_arg1 = false_case;
         return (fn_ptr)&eval;
     } else {
@@ -482,23 +482,25 @@ fn_ptr eval_and() {
     SchemeObject* p = global_arg1;
     stack.push_back(p);
     
-    SchemeObject* result = S_TRUE;
+    SchemeObject *cur, *next, *result = S_TRUE;
+
     while (p != S_EMPTY_LIST) {
-        if (s_cdr(p) == S_EMPTY_LIST) {
+        cur = i_car(p);
+        next = i_cdr(p);
+        if (next == S_EMPTY_LIST) {
             // Tail call
             stack.pop_back();
-            global_arg1 = s_car(p);
+            global_arg1 = cur;
             return (fn_ptr)&eval;
         } else {
-            global_arg1 = s_car(p);
+            global_arg1 = cur;
             result = trampoline((fn_ptr)&eval);
-
             if (!result->boolValue()) {
                 stack.pop_back();
                 global_ret = result;
                 return NULL;
             }
-            p = s_cdr(p);
+            p = next;
         } 
     }
     stack.pop_back();
@@ -880,17 +882,24 @@ fn_ptr eval_case() {
 fn_ptr eval_let() {
     SchemeObject* p = global_arg1;
     SchemeEnvironment* envt = global_envt;
+    
+    if (i_null_p(p) == S_TRUE) {
+        throw scheme_exception("Bad body in let");
+    }
+    
+    SchemeObject* first_arg = i_car(p);
 
-    if (s_symbol_p(s_car(p)) == S_TRUE) {
+    if (s_symbol_p(first_arg) == S_TRUE) {
         return (fn_ptr)&eval_named_let;
     }
-    if (i_pair_p(s_car(p)) == S_FALSE && i_null_p(s_car(p)) == S_FALSE) {
+    
+    if (i_pair_p(first_arg) == S_FALSE && i_null_p(first_arg) == S_FALSE) {
         throw scheme_exception("Bad body in let");
     }
     
     // Build new bindings
     SchemeEnvironment* new_bindings = SchemeEnvironment::create(envt);
-    SchemeObject* binding_pairs = s_car(p);
+    SchemeObject* binding_pairs = first_arg;
     
     stack.push_back(new_bindings);
 
@@ -981,6 +990,10 @@ fn_ptr eval_named_let() {
 fn_ptr eval_letstar() {
     SchemeObject* p = global_arg1;
     SchemeEnvironment* envt = global_envt;
+    
+    if (i_null_p(p) == S_TRUE) {
+        throw scheme_exception("Bad body in let*");
+    }
     
     if (i_pair_p(s_car(p)) == S_FALSE && i_null_p(s_car(p)) == S_FALSE) {
         throw scheme_exception("Bad formals in let*: " + s_car(p)->toString());

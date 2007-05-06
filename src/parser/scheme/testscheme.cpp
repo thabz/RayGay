@@ -143,6 +143,7 @@ void test_interpreter() {
     assert_eval(s, "((if #t reverse length) '(1 2 3))", "(3 2 1)");
     assert_eval(s, "((if #f reverse length) '(1 2 3))", "3");
     assert_eval(s, "((if #f reverse length) '(1 2 3))", "3");
+    assert_eval(s, "((if #f + *) 3 4)", "12");
     assert_fail(s, "(if)");
     assert_fail(s, "(if #t)");
     
@@ -355,13 +356,15 @@ void test_math() {
     assert_eval(s, "(gcd 0 -4)" , "4");
     assert_eval(s, "(gcd 32 -36)" , "4");
     assert_eval(s, "(gcd 32 36 4 4 12)" , "4");
-    assert_fail(s, "(gcd 'a)");
+    assert_fail(s, "(gcd 'a)");  // Guile 1.8.1 gets this one wrong.
+    assert_fail(s, "(gcd 1.1)");
     assert_eval(s, "(lcm)" , "1");
     assert_eval(s, "(lcm 0 0)" , "0");
     assert_eval(s, "(lcm 32 -36)" , "288");
     assert_eval(s, "(lcm 10 15 4)" , "60");
     assert_eval(s, "(lcm 10 15 -4)" , "60");
     assert_fail(s, "(lcm 'a)");
+    assert_fail(s, "(lcm 1.1)");
 }
 
 void test_equals() {
@@ -396,10 +399,10 @@ void test_pairs_and_lists() {
     assert(p->toString() == "(x . y)");
     
     Scheme* s = new Scheme();
-    assert(s->eval("(list? '())") == S_TRUE);
-    assert(s->eval("(list? '(1 2 3))") == S_TRUE);
-    assert(s->eval("(list? 1)") == S_FALSE);
-    assert(s->eval("(list? '(1 2 . 3))") == S_FALSE);
+    assert_eval(s, "(list? '())", "#t");
+    assert_eval(s, "(list? '(1 2 3))", "#t");
+    assert_eval(s, "(list? 1)", "#f");
+    assert_eval(s, "(list? '(1 2 . 3))", "#f");
     
     // From R^5RS 6.3.2. Tests that list? returns #f on circular lists
     assert_eval(s, "(let ((x (list 'a))) (set-cdr! x x) (list? x))", "#f");
@@ -683,6 +686,13 @@ void test_map() {
     assert_eval(s, "(map car '((a b) (d e) (g h)))", "(a d g)");
     assert_eval(s, "(map (lambda (n) (expt n n)) '(1 2 3 4 5))", "(1 4 27 256 3125)");
     assert_eval(s, "(let ((count 0)) (map (lambda (ignored) (set! count (+ count 1)) count) '(a b)))", "(1 2)");
+
+    assert_fail(s, "(map)");
+    assert_fail(s, "(map +)");
+    assert_fail(s, "(map + '(1 2 3) '(1 2))");
+    assert_fail(s, "(map + '(1 2) '(1 2 3))");
+    assert_fail(s, "(map + '(1 2) 'a)");
+    assert_fail(s, "(map + 'a '(1 2))");
 }
 
 void test_vector() {

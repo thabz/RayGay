@@ -528,6 +528,12 @@ SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args) {
 
 SchemeObject* s_map(SchemeObject* proc, SchemeObject* lists) {
     assert_arg_type("map", 1, s_procedure_p, proc);
+    SchemeObject* lists_ptr = lists;
+    int i = 1;
+    while (lists_ptr != S_EMPTY_LIST) {
+        assert_arg_type("map", i++, s_pair_p, s_car(lists_ptr));
+        lists_ptr = i_cdr(lists_ptr);
+    }
     
     SchemePair* result = S_EMPTY_LIST;
     SchemeObject* prev = S_EMPTY_LIST;
@@ -537,8 +543,11 @@ SchemeObject* s_map(SchemeObject* proc, SchemeObject* lists) {
         // Collect args
         SchemePair* collection = S_EMPTY_LIST;
         SchemePair* prev_col = S_EMPTY_LIST;
-        SchemeObject* lists_ptr = lists;
+        lists_ptr = lists;
         while (lists_ptr != S_EMPTY_LIST) {
+            if (s_car(lists_ptr) == S_EMPTY_LIST) {
+                throw scheme_exception("Argument lists not equals length.");
+            }
             SchemeObject* arg = s_car(s_car(lists_ptr));
             s_set_car_e(lists_ptr,s_cdr(s_car(lists_ptr)));
             if (collection == S_EMPTY_LIST) {
