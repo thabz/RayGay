@@ -1,6 +1,7 @@
 
 #include "scheme.h"
 #include "lexer.h"
+#include "interpreter.h"
 #include "parser.h"
 #include <sstream>
 #include <exception>
@@ -27,6 +28,8 @@ void assert_eval(Scheme* s, string expression, string expected) {
         return;
     }
     
+    uint stacksize_before = stack.size();
+
     try {
         //cout << "Testing " << expression << endl;
         string result = s->eval(expression)->toString();
@@ -43,19 +46,24 @@ void assert_eval(Scheme* s, string expression, string expected) {
         errors_found++;
         cerr << "FAILED: " << expression << ": general exception" << endl; 
     }
+    if (stacksize_before != stack.size()) {
+        cerr << "FAILED: " << expression << " made stack explode" << endl;
+    }
 }
 
 void assert_fail(Scheme* s, string expression) {
+    uint stacksize_before = stack.size();
     try {
         s->eval(expression);
         errors_found++;
         cerr << "FAILED: " << expression;
         cerr << " didn't fail" << endl;
     } catch (scheme_exception e) {
+        if (stacksize_before != stack.size()) {
+            cerr << "FAILED: stack exploded when " << expression << " failed." << endl;
+        }
     }
 }
-
-//#define assert_eval(s,e,b)  
 
 void test_tokenizer() {
     istream* is = new istringstream("(+ 1.5 (2 . \"\\\\\\aHej\\\"\") .x)");

@@ -74,7 +74,14 @@ SchemeObject* Interpreter::interpret() {
     stack.push_back(top_level_bindings);
     global_arg1 = parsetree;
     global_envt = top_level_bindings;
-    SchemeObject* result = trampoline((fn_ptr)&eval_sequence);
+    SchemeObject* result;
+    try {
+        result = trampoline((fn_ptr)&eval_sequence);
+    } catch (scheme_exception e) {
+        stack.pop_back();
+        stack.pop_back();
+        throw e;
+    }
     stack.pop_back();
     stack.pop_back();
     return result;
@@ -94,11 +101,17 @@ SchemeObject* trampoline(fn_ptr f) {
     SchemeEnvironment* saved = global_envt;
     size_t stack_size = stack.size();
     stack.push_back(saved);
-    while (f != NULL) {
-        f = (fn_ptr)(*f)();
+    try {
+        while (f != NULL) {
+            f = (fn_ptr)(*f)();
+        }
+    } catch (scheme_exception e) {
+        global_envt = saved;
+        stack.resize(stack_size);
+        throw e;
     }
+    stack.pop_back();
     global_envt = saved;
-    stack.resize(stack_size);
     return global_ret;
 }
 
