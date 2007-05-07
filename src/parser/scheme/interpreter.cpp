@@ -1127,28 +1127,41 @@ fn_ptr eval_do() {
     SchemeObject*& varnames_stack_pos = stack.back();
 
     while (i_null_p(binding_pairs) == S_FALSE) {
-        // Eval initial binding value
-        global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
-        SchemeObject* val = trampoline((fn_ptr)&eval);
-        
-        SchemeObject* varname = s_car(s_car(binding_pairs));
+        SchemeObject* binding = i_car(binding_pairs);
+
+        if (i_pair_p(binding) == S_FALSE) {
+            throw scheme_exception("Invalid binding in do-form");
+        }
+
+        // Binding symbol
+        SchemeObject* varname = i_car(binding);
         if (s_symbol_p(varname) == S_FALSE) {
             throw scheme_exception("Invalid variable in do: " + varname->toString());
         }
-        new_envt->put(static_cast<SchemeSymbol*>(varname), val);
+        
+        if (i_cdr(binding) == S_EMPTY_LIST) {
+            throw scheme_exception("In do: missing initial value for variable " + varname->toString());
+        }
+
+        // Eval initial binding value
+        global_arg1 = i_cadr(binding);
+        SchemeObject* val = trampoline((fn_ptr)&eval);
+        
+        new_envt->put(varname, val);
         varnames = s_cons(varname, varnames);
         varnames_stack_pos = varnames;
 
-        SchemeObject* step = s_cdr(s_cdr(s_car(binding_pairs)));
+        // Save step expression
+        SchemeObject* step = i_cddr(binding);
         if (step == S_EMPTY_LIST) {
             step = varname;
         } else {
             step = i_car(step);
         }
-        steps = s_cons(step, steps);
+        steps = i_cons(step, steps);
         steps_stack_pos = steps;
 
-        binding_pairs = s_cdr(binding_pairs);
+        binding_pairs = i_cdr(binding_pairs);
     }
     
     SchemeObject* body = s_cdr(p);

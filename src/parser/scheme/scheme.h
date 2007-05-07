@@ -66,6 +66,10 @@ extern SchemeNumber* S_TWO;
 // that does no argument checking.
 #define i_car(o)         (static_cast<SchemePair*>(o)->car)
 #define i_cdr(o)         (static_cast<SchemePair*>(o)->cdr)
+#define i_caar(o)        (static_cast<SchemePair*>(static_cast<SchemePair*>(o)->car)->car)
+#define i_cadr(o)        (static_cast<SchemePair*>(static_cast<SchemePair*>(o)->cdr)->car)
+#define i_cdar(o)        (static_cast<SchemePair*>(static_cast<SchemePair*>(o)->car)->cdr)
+#define i_cddr(o)        (static_cast<SchemePair*>(static_cast<SchemePair*>(o)->cdr)->cdr)
 #define i_set_cdr_e(o,v) (static_cast<SchemePair*>(o)->cdr = (v))
 #define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
 #define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)

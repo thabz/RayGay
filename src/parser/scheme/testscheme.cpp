@@ -646,6 +646,8 @@ void test_do() {
     assert_fail(s, "(do)");
     assert_fail(s, "(do 'a)");
     assert_fail(s, "(do () ())");
+    assert_fail(s, "(do (a) (#t))");
+    assert_fail(s, "(do ((a 1) . (b 1)) (#t))");
 
     // From R^5RS 4.2.4 
     assert_eval(s, "(do ((vec (make-vector 5)) (i 0 (+ i 1))) ((= i 5) vec) (vector-set! vec i i))", "#(0 1 2 3 4)");
