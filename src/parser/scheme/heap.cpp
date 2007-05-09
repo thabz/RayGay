@@ -14,7 +14,7 @@ void Heap::addRoot(SchemeObject* root) {
 }
 
 bool Heap::timeToGarbageCollect() {
-    return ++counter > 50;
+    return ++counter > 200;
 }
 
 void Heap::popRoot() {
