@@ -37,7 +37,7 @@ class SchemeObject {
         virtual ~SchemeObject() {};
         virtual string toString() = 0;
         virtual bool boolValue() const { return true; }; // Used in conditional expressions (if, cond, and, or, do)
-        virtual ObjectType type() = 0;
+        virtual ObjectType type() const = 0;
 	    bool immutable;
 	    
 	    // For garbage collection
@@ -49,7 +49,7 @@ class SchemeUnspecified : public SchemeObject {
     public:
         SchemeUnspecified() {};
         string toString();
-        ObjectType type() { return UNSPECIFIED; };
+        ObjectType type() const { return UNSPECIFIED; };
 };
 
 class SchemeNumber : public SchemeObject {
@@ -57,7 +57,7 @@ class SchemeNumber : public SchemeObject {
         static SchemeNumber* create(double number);
         string toString();
         double number;
-  	    ObjectType type() { return NUMBER; };
+  	    ObjectType type() const { return NUMBER; };
   	private:    
   	    SchemeNumber(double number);
 };
@@ -66,7 +66,7 @@ class SchemePair : public SchemeObject {
     public:
         static SchemePair* create();
         static SchemePair* create(SchemeObject* car, SchemeObject* cdr);
-        ObjectType type() { return PAIR; };
+        ObjectType type() const { return PAIR; };
         
         string toString();
 	    SchemeObject* car;
@@ -85,7 +85,7 @@ class SchemeVector : public SchemeObject {
         ~SchemeVector();
         SchemeObject* get(int index);
         void set(SchemeObject* o, int index);
-        ObjectType type() { return VECTOR; };
+        ObjectType type() const { return VECTOR; };
         void mark();
         
         string toString();
@@ -101,7 +101,7 @@ class SchemeVector : public SchemeObject {
 class SchemeEmptyList : public SchemePair {
     public:
         string toString();
-        ObjectType type() { return EMPTY_LIST; };
+        ObjectType type() const { return EMPTY_LIST; };
         void mark();
 };
 
@@ -109,7 +109,7 @@ class SchemeSymbol : public SchemeObject {
     public:
         static SchemeSymbol* create(string s);
         string toString();
-        ObjectType type() { return SYMBOL; };
+        ObjectType type() const { return SYMBOL; };
 	    std::string str;
 	private:
         SchemeSymbol(string s);
@@ -121,7 +121,7 @@ class SchemeString : public SchemeObject {
     public:
         static SchemeString* create(string s, bool immutable = false);
         string toString();
-        ObjectType type() { return STRING; };
+        ObjectType type() const { return STRING; };
 	    std::string str;
 	private:    
         SchemeString(string s, bool immutable);
@@ -132,7 +132,7 @@ class SchemeBool : public SchemeObject {
     public:
         SchemeBool(bool b);
         string toString();
-        ObjectType type() { return BOOL; };
+        ObjectType type() const { return BOOL; };
     	bool boolean;
 	    bool boolValue() const { return boolean; };
 };
@@ -141,7 +141,7 @@ class SchemeChar : public SchemeObject {
     public:
         static SchemeChar* create(char c);
         string toString();
-        ObjectType type() { return CHAR; };
+        ObjectType type() const { return CHAR; };
 
         char c;
     private:
@@ -153,7 +153,7 @@ class SchemeContinuation : public SchemeObject {
     public:
         SchemeContinuation();
         string toString();
-        ObjectType type() { return CONTINUATION; };
+        ObjectType type() const { return CONTINUATION; };
         void call(SchemeObject* arg);
         void mark();
 
@@ -165,7 +165,7 @@ class SchemeInputPort : public SchemeObject {
     public:
         SchemeInputPort(istream* is);
         string toString();
-        ObjectType type() { return INPUT_PORT; };
+        ObjectType type() const { return INPUT_PORT; };
         istream* is;
 };
 
@@ -173,7 +173,7 @@ class SchemeOutputPort : public SchemeObject {
     public:
         SchemeOutputPort(ostream* os);
         string toString();
-        ObjectType type() { return OUTPUT_PORT; };
+        ObjectType type() const { return OUTPUT_PORT; };
         ostream* os;
 };
 
@@ -183,7 +183,7 @@ class SchemeProcedure : public SchemeObject
         static SchemeProcedure* create(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
         static SchemeProcedure* create(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_formals, SchemeObject* s_body);
         string toString();      
-        ObjectType type() { return PROCEDURE; };
+        ObjectType type() const { return PROCEDURE; };
         string nameAsString() { return name->str; };
         void setName(SchemeObject* name);
         
@@ -210,7 +210,7 @@ class SchemeProcedure : public SchemeObject
 class SchemeInternalProcedure : public SchemeObject {
     public:
         SchemeInternalProcedure(string n) : name(n) {};    
-        ObjectType type() { return INTERNAL_PROCEDURE; };
+        ObjectType type() const { return INTERNAL_PROCEDURE; };
         string toString();      
         
         string name;
@@ -220,7 +220,7 @@ class SchemeMacro : public SchemeProcedure {
     public:
         static SchemeMacro* create(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_formals, SchemeObject* s_body);
         string toString();      
-        ObjectType type() { return MACRO; };    
+        ObjectType type() const { return MACRO; };    
     protected:    
         SchemeMacro(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_req, SchemeObject* s_body);
 };
@@ -229,7 +229,7 @@ class SchemeEOF : public SchemeObject {
     public:
         SchemeEOF();
         string toString();      
-        ObjectType type() { return EOFTYPE; };    
+        ObjectType type() const { return EOFTYPE; };    
     
 };
 
@@ -237,7 +237,7 @@ class SchemeEnvironment : public SchemeObject {
     public:
         static SchemeEnvironment* create(SchemeEnvironment* parent);
         string toString();
-        ObjectType type() { return ENVIRONMENT; };    
+        ObjectType type() const { return ENVIRONMENT; };    
 
 		SchemeObject* get(SchemeObject* name);
         void put(SchemeObject* name, SchemeObject* o);
