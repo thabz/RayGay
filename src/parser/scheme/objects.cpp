@@ -288,6 +288,9 @@ void SchemeProcedure::mark() {
 //-----------------------------------------------------------
 // Internal procedure
 //-----------------------------------------------------------
+SchemeInternalProcedure::SchemeInternalProcedure(string n) : name(n) {
+};    
+
 string SchemeInternalProcedure::toString() {
     return "#<internal-procedure "+name+">";
 }

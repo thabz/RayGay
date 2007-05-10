@@ -299,8 +299,13 @@ fn_ptr eval_multi() {
     SchemeObject** result_stack_ref = &(stack.back());
     
     while (p != S_EMPTY_LIST) {
-        global_arg1 = s_car(p);
-        SchemeObject* r = trampoline((fn_ptr)&eval);
+        global_arg1 = i_car(p);
+        SchemeObject* r;
+        if (i_number_p(global_arg1) == S_TRUE) {
+            r = global_arg1;
+        } else {
+            r = trampoline((fn_ptr)&eval);
+        }
 
 	    if (result == S_EMPTY_LIST) {
 	        result = i_cons(r, S_EMPTY_LIST);

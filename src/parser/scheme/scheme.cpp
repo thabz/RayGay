@@ -1,6 +1,5 @@
 
 #include "scheme.h"
-#include <sstream>
 #include <fstream>
 #include <iomanip>
 #include <cmath>
@@ -331,19 +330,6 @@ void Scheme::assign(string variable, SchemeObject* value, SchemeEnvironment* env
 // -----------------------------------------------------
 // Procedures
 // -----------------------------------------------------
-
-inline
-void assert_arg_type(char* procname, int argnum, SchemeBool* (*test_fn)(SchemeObject*), SchemeObject* arg) {
-    if ((*test_fn)(arg) == S_FALSE) {
-        ostringstream ss;
-        ss << "Wrong argument-type in position ";
-        ss << argnum;
-        ss << " in call to ";
-        ss << string(procname);
-        ss << ": " << arg->toString();
-        throw scheme_exception(ss.str());
-    }
-}
 
 inline
 void assert_arg_not_immutable(char* procname, int argnum, SchemeObject* arg) {
@@ -687,7 +673,7 @@ SchemeBool* s_procedure_p(SchemeObject* p) {
 
 // (number? p)
 SchemeBool* s_number_p(SchemeObject* p) {
-    return (p->type() == SchemeObject::NUMBER) ? S_TRUE : S_FALSE;
+    return i_number_p(p);
 }
 
 // (integer? p)
@@ -731,12 +717,12 @@ SchemeBool* s_null_p(SchemeObject* p) {
 }
 
 SchemeObject* s_car(SchemeObject* o) {
-    assert_arg_type("car", 1, s_pair_p, o);
+    assert_arg_pair_type("car", 1, o);
     return i_car(o);
 }
 
 SchemeObject* s_cdr(SchemeObject* o) {
-    assert_arg_type("cdr", 1, s_pair_p, o);
+    assert_arg_pair_type("cdr", 1, o);
     return i_cdr(o);
 }
 
@@ -860,15 +846,16 @@ SchemeNumber* s_plus(SchemeObject* p) {
 	double result = 0;
     int i = 1;
 	while (p != S_EMPTY_LIST) {
-	    assert_arg_type("+", i++, s_number_p, s_car(p));
-		result += scm2double(s_car(p));
-        p = s_cdr(p);
+        SchemeObject* n = i_car(p);
+	    assert_arg_number_type("+", i++, n);
+		result += scm2double(n);
+        p = i_cdr(p);
 	}
 	return double2scm(result);
 }
 
 SchemeNumber* s_minus(SchemeObject* n, SchemeObject* rst) {
-    assert_arg_type("-", 1, s_number_p, n);
+    assert_arg_number_type("-", 1, n);
 	double result = scm2double(n);
 
 	if (rst == S_EMPTY_LIST) {
@@ -878,16 +865,16 @@ SchemeNumber* s_minus(SchemeObject* n, SchemeObject* rst) {
 
     int i = 2;
 	while (rst != S_EMPTY_LIST) {
-        SchemeObject* cur = s_car(rst);
-	    assert_arg_type("-", i++, s_number_p, cur);
+        SchemeObject* cur = i_car(rst);
+	    assert_arg_number_type("-", i++, cur);
 	    result -= scm2double(cur);
-        rst = s_cdr(rst);
+        rst = i_cdr(rst);
 	}
 	return double2scm(result);
 }
 
 SchemeNumber* s_divide(SchemeObject* n, SchemeObject* rst) {
-    assert_arg_type("/", 1, s_number_p, n);
+    assert_arg_number_type("/", 1, n);
 	double result = scm2double(n);
 
 	if (rst == S_EMPTY_LIST) {
@@ -897,10 +884,10 @@ SchemeNumber* s_divide(SchemeObject* n, SchemeObject* rst) {
 
     int i = 2;
 	while (rst != S_EMPTY_LIST) {
-        SchemeObject* cur = s_car(rst);
-	    assert_arg_type("/", i++, s_number_p, cur);
+        SchemeObject* cur = i_car(rst);
+	    assert_arg_number_type("/", i++, cur);
 	    result /= scm2double(cur);
-        rst = s_cdr(rst);
+        rst = i_cdr(rst);
 	}
 	return double2scm(result);
 }
@@ -909,10 +896,10 @@ SchemeNumber* s_mult(SchemeObject* p) {
 	double result = 1;
     int i = 1;
 	while (p != S_EMPTY_LIST) {
-	    assert_arg_type("*", i++, s_number_p, s_car(p));
-		double number = scm2double(s_car(p));
-		result *= number;
-		p = s_cdr(p);
+        SchemeObject* cur = i_car(p);
+	    assert_arg_number_type("*", i++, cur);
+		result *= scm2double(cur);
+		p = i_cdr(p);
 	}
 	return double2scm(result);
 }

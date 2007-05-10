@@ -209,7 +209,7 @@ class SchemeProcedure : public SchemeObject
 
 class SchemeInternalProcedure : public SchemeObject {
     public:
-        SchemeInternalProcedure(string n) : name(n) {};    
+        SchemeInternalProcedure(string n);
         ObjectType type() const { return INTERNAL_PROCEDURE; };
         string toString();      
         

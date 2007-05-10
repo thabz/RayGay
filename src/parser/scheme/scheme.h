@@ -3,6 +3,7 @@
 #define SCHEME_SCHEME_H
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include "objects.h"
 #include "heap.h"
@@ -36,7 +37,58 @@ class scheme_exception {
 		string str;
 };
 
-void assert_arg_type(char* procname, int argnum, SchemeBool* (*)(SchemeObject*), SchemeObject* arg);
+// Faster internal macro for some much used procedures
+// that does no argument checking.
+#define i_car(o)         (static_cast<SchemePair*>(o)->car)
+#define i_cdr(o)         (static_cast<SchemePair*>(o)->cdr)
+#define i_caar(o)        (static_cast<SchemePair*>(static_cast<SchemePair*>(o)->car)->car)
+#define i_cadr(o)        (static_cast<SchemePair*>(static_cast<SchemePair*>(o)->cdr)->car)
+#define i_cdar(o)        (static_cast<SchemePair*>(static_cast<SchemePair*>(o)->car)->cdr)
+#define i_cddr(o)        (static_cast<SchemePair*>(static_cast<SchemePair*>(o)->cdr)->cdr)
+#define i_set_cdr_e(o,v) (static_cast<SchemePair*>(o)->cdr = (v))
+#define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
+#define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
+#define i_number_p(o)    ((o)->type() == SchemeObject::NUMBER ? S_TRUE : S_FALSE)
+#define i_null_p(o)      ((o) == S_EMPTY_LIST ? S_TRUE : S_FALSE)
+#define i_cons(car,cdr)  (SchemePair::create((car),(cdr)))
+
+#define assert_arg_type(procname, argnum, test_fn, arg) { \
+    if ((test_fn)(arg) == S_FALSE) {                      \
+        ostringstream ss;                                 \
+        ss << "Wrong argument-type in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << string(procname);                           \
+        ss << ": " << arg->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
+#define assert_arg_pair_type(procname, argnum, arg) {     \
+    if (i_pair_p(arg) == S_FALSE) {                       \
+        ostringstream ss;                                 \
+        ss << "Wrong argument-type in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << string(procname);                           \
+        ss << ": " << arg->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
+#define assert_arg_number_type(procname, argnum, arg) {   \
+    if (i_number_p(arg) == S_FALSE) {                     \
+        ostringstream ss;                                 \
+        ss << "Wrong argument-type in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << string(procname);                           \
+        ss << ": " << arg->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
+
 void assert_arg_not_immutable(char* procname, int argnum, SchemeObject* arg);
 void assert_arg_int_in_range(char* procname, int argnum, SchemeObject* arg, int from, int to);
 void assert_arg_positive_int(char* procname, int argnum, SchemeObject* arg);
@@ -61,20 +113,6 @@ extern SchemeNumber* S_TWO;
 #define char2scm(c)    (SchemeChar::create(c))
 #define int2scm(n)     (((n) < 10 && (n) >= 0) ? S_NUMBERS[n] : SchemeNumber::create(n))
 #define double2scm(n)  (SchemeNumber::create(n))
-
-// Faster internal macro for some much used procedures
-// that does no argument checking.
-#define i_car(o)         (static_cast<SchemePair*>(o)->car)
-#define i_cdr(o)         (static_cast<SchemePair*>(o)->cdr)
-#define i_caar(o)        (static_cast<SchemePair*>(static_cast<SchemePair*>(o)->car)->car)
-#define i_cadr(o)        (static_cast<SchemePair*>(static_cast<SchemePair*>(o)->cdr)->car)
-#define i_cdar(o)        (static_cast<SchemePair*>(static_cast<SchemePair*>(o)->car)->cdr)
-#define i_cddr(o)        (static_cast<SchemePair*>(static_cast<SchemePair*>(o)->cdr)->cdr)
-#define i_set_cdr_e(o,v) (static_cast<SchemePair*>(o)->cdr = (v))
-#define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
-#define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
-#define i_null_p(o)      ((o) == S_EMPTY_LIST ? S_TRUE : S_FALSE)
-#define i_cons(car,cdr)  (SchemePair::create((car),(cdr)))
 
 // Declaration of scheme procedures
 SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b);
