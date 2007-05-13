@@ -30,7 +30,7 @@ class SchemeObject
         union {
             SchemeObject* cdr;      // For pairs
             SchemeObject* result;   // For continuations
-            uint32_t length;        // For vector
+            uint32_t length;        // For vector and strings
             map<SchemeObject*,SchemeObject*>* binding_map;	// For environments
             int req;                // For BUILT_IN_PROCEDURE
             SchemeObject* s_body;   // For USER_PROCEDURE
@@ -74,6 +74,7 @@ class SchemeObject
         void set_immutable(bool flag);
         string toString();
         void clear_inuse();
+        bool inuse() const;
         void mark();
         ~SchemeObject();
 
@@ -89,7 +90,7 @@ class SchemeObject
         void callContinuation(SchemeObject* arg);
         
         static SchemeObject* createNumber(double number);
-        static SchemeObject* createString(char* str);
+        static SchemeObject* createString(const char* str);
         static SchemeObject* createChar(char c);
         static SchemeObject* createPair(SchemeObject* car, SchemeObject* cdr);
         static SchemeObject* createVector(SchemeObject* elem, uint32_t length);
@@ -97,24 +98,39 @@ class SchemeObject
         static SchemeObject* createEmptyList();
         static SchemeObject* createUnspecified();
         static SchemeObject* createEOF();
-        static SchemeObject* createSymbol(char* str);
+        static SchemeObject* createSymbol(const char* str);
         static SchemeObject* createContinuation();
         static SchemeObject* createEnvironment(SchemeObject* parent);
         static SchemeObject* createInputPort(istream* is);
         static SchemeObject* createOutputPort(ostream* os);
         static SchemeObject* createBuiltinProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
         static SchemeObject* createUserProcedure(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
-        static SchemeObject* createInternalProcedure(SchemeObject* name);
+        static SchemeObject* createInternalProcedure(const char* name);
         static SchemeObject* createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
 
     private:
-        static map<char*,SchemeObject*> known_symbols;
+        static map<string,SchemeObject*> known_symbols;
         
 };
 
 inline
 SchemeObject::ObjectType SchemeObject::type() const {
     return ObjectType(type_and_flags & 0x0000ffff);
+}
+
+inline
+void SchemeObject::clear_inuse() {
+    type_and_flags = type_and_flags & 0x00ffffff;
+}
+
+inline
+bool SchemeObject::inuse() const {
+    return type_and_flags & 0xff000000 != 0;
+}
+
+inline
+bool SchemeObject::immutable() const {
+    return type_and_flags && 0x00ff0000 == 0;
 }
 
 #endif

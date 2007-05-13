@@ -15,22 +15,22 @@ scheme_exception::scheme_exception(string s) {
 
 unsigned long symgen_counter = 10000;
 
-SchemeBool* S_TRUE = new SchemeBool(true);
-SchemeBool* S_FALSE = new SchemeBool(false);
-SchemeEOF* S_EOF = new SchemeEOF();
-SchemeObject* S_ZERO = SchemeObject::create(0);
-SchemeObject* S_ONE = SchemeObject::create(1);
-SchemeObject* S_TWO = SchemeObject::create(2);
-SchemeObject* S_THREE = SchemeObject::create(3);
-SchemeObject* S_FOUR = SchemeObject::create(4);
-SchemeObject* S_FIVE = SchemeObject::create(5);
-SchemeObject* S_SIX = SchemeObject::create(6);
-SchemeObject* S_SEVEN = SchemeObject::create(7);
-SchemeObject* S_EIGHT = SchemeObject::create(8);
-SchemeObject* S_NINE = SchemeObject::create(9);
-SchemeUnspecified* S_UNSPECIFIED = new SchemeUnspecified;
-SchemeEmptyList* S_EMPTY_LIST = new SchemeEmptyList();
-SchemeChar* S_SPACE = char2scm(' ');
+SchemeObject* S_TRUE = SchemeObject::createBool(true);
+SchemeObject* S_FALSE = SchemeObject::createBool(false);
+SchemeObject* S_EOF = SchemeObject::createEOF();
+SchemeObject* S_ZERO = SchemeObject::createNumber(0);
+SchemeObject* S_ONE = SchemeObject::createNumber(1);
+SchemeObject* S_TWO = SchemeObject::createNumber(2);
+SchemeObject* S_THREE = SchemeObject::createNumber(3);
+SchemeObject* S_FOUR = SchemeObject::createNumber(4);
+SchemeObject* S_FIVE = SchemeObject::createNumber(5);
+SchemeObject* S_SIX = SchemeObject::createNumber(6);
+SchemeObject* S_SEVEN = SchemeObject::createNumber(7);
+SchemeObject* S_EIGHT = SchemeObject::createNumber(8);
+SchemeObject* S_NINE = SchemeObject::createNumber(9);
+SchemeObject* S_UNSPECIFIED = SchemeObject::createUnspecified();
+SchemeObject* S_EMPTY_LIST = SchemeObject::createEmptyList();
+SchemeObject* S_SPACE = char2scm(' ');
 SchemeObject* S_NUMBERS[] = {S_ZERO, S_ONE, S_TWO, S_THREE, S_FOUR, S_FIVE, S_SIX, S_SEVEN, S_EIGHT, S_NINE};
 
 SchemeObject* if_symbol;
@@ -61,9 +61,9 @@ SchemeObject* current_output_port = NULL;
 
 Interpreter* interpreter;
 
-SchemeEnvironment* null_environment = SchemeEnvironment::create(NULL);
-SchemeEnvironment* scheme_report_environment = SchemeEnvironment::create(null_environment);
-SchemeEnvironment* interaction_environment = SchemeEnvironment::create(scheme_report_environment);
+SchemeObject* null_environment = SchemeObject::createEnvironment(NULL);
+SchemeObject* scheme_report_environment = SchemeObject::createEnvironment(null_environment);
+SchemeObject* interaction_environment = SchemeObject::createEnvironment(scheme_report_environment);
 
 // Global parser used by s_read()
 Parser* global_parser = new Parser();
@@ -223,50 +223,50 @@ Scheme::Scheme() {
         assign("interaction-environment",1,0,0, (SchemeObject* (*)()) s_interaction_environment, scheme_report_environment);
 
 
-        assign("if",           new SchemeInternalProcedure("if"),null_environment);
         //assign("apply", new SchemeInternalProcedure("apply"));
-        assign("cond",         new SchemeInternalProcedure("cond"),null_environment);
-        assign("case",         new SchemeInternalProcedure("case"),null_environment);
-        assign("do",           new SchemeInternalProcedure("do"),null_environment);
-        assign("let",          new SchemeInternalProcedure("let"),null_environment);
-        assign("let*",         new SchemeInternalProcedure("let*"),null_environment);
-        assign("letrec",       new SchemeInternalProcedure("letrec"),null_environment);
-        assign("begin",        new SchemeInternalProcedure("begin"),null_environment);
-        assign("and",          new SchemeInternalProcedure("and"),null_environment);
-        assign("or",           new SchemeInternalProcedure("or"),null_environment);
-        assign("lambda",       new SchemeInternalProcedure("lambda"),null_environment);
-        assign("quote",        new SchemeInternalProcedure("quote"),null_environment);
-        assign("quasiquote",   new SchemeInternalProcedure("quasiquote"),null_environment);
-        assign("define",       new SchemeInternalProcedure("define"),null_environment);
-        assign("define-macro", new SchemeInternalProcedure("define-macro"),null_environment);
-        assign("set!",         new SchemeInternalProcedure("set!"),null_environment);
+        assign("if",           SchemeObject::createInternalProcedure("if"), null_environment);
+        assign("cond",         SchemeObject::createInternalProcedure("cond"), null_environment);
+        assign("case",         SchemeObject::createInternalProcedure("case"), null_environment);
+        assign("do",           SchemeObject::createInternalProcedure("do"), null_environment);
+        assign("let",          SchemeObject::createInternalProcedure("let"), null_environment);
+        assign("let*",         SchemeObject::createInternalProcedure("let*"), null_environment);
+        assign("letrec",       SchemeObject::createInternalProcedure("letrec"), null_environment);
+        assign("begin",        SchemeObject::createInternalProcedure("begin"), null_environment);
+        assign("and",          SchemeObject::createInternalProcedure("and"), null_environment);
+        assign("or",           SchemeObject::createInternalProcedure("or"), null_environment);
+        assign("lambda",       SchemeObject::createInternalProcedure("lambda"), null_environment);
+        assign("quote",        SchemeObject::createInternalProcedure("quote"), null_environment);
+        assign("quasiquote",   SchemeObject::createInternalProcedure("quasiquote"), null_environment);
+        assign("define",       SchemeObject::createInternalProcedure("define"), null_environment);
+        assign("define-macro", SchemeObject::createInternalProcedure("define-macro"), null_environment);
+        assign("set!",         SchemeObject::createInternalProcedure("set!"), null_environment);
 
-        current_input_port = new SchemeObject(&cin);
-        current_output_port = new SchemeObject(&cout);
+        current_input_port = SchemeObject::createInputPort(&cin);
+        current_output_port = SchemeObject::createOutputPort(&cout);
 
-        else_symbol = SchemeObject::create("else");
-        ergo_symbol = SchemeObject::create("=>");
-        unquote_symbol = SchemeObject::create("unquote");
-        unquote_splicing_symbol = SchemeObject::create("unquote-splicing");
-        unnamed_symbol = SchemeObject::create("#<unnamed>");
+        else_symbol = SchemeObject::createSymbol("else");
+        ergo_symbol = SchemeObject::createSymbol("=>");
+        unquote_symbol = SchemeObject::createSymbol("unquote");
+        unquote_splicing_symbol = SchemeObject::createSymbol("unquote-splicing");
+        unnamed_symbol = SchemeObject::createSymbol("#<unnamed>");
 
-        if_symbol = SchemeObject::create("if");
-        apply_symbol = SchemeObject::create("apply");
-        cond_symbol = SchemeObject::create("cond");
-        case_symbol = SchemeObject::create("case");
-        do_symbol = SchemeObject::create("do");
-        let_symbol = SchemeObject::create("let");
-        letstar_symbol = SchemeObject::create("let*");
-        letrec_symbol = SchemeObject::create("letrec");
-        begin_symbol = SchemeObject::create("begin");
-        and_symbol = SchemeObject::create("and");
-        or_symbol = SchemeObject::create("or");
-        lambda_symbol = SchemeObject::create("lambda");
-        quote_symbol = SchemeObject::create("quote");
-        quasiquote_symbol = SchemeObject::create("quasiquote");
-        define_symbol = SchemeObject::create("define");
-        define_macro = SchemeObject::create("define-macro");
-        set_e_symbol = SchemeObject::create("set!");
+        if_symbol = SchemeObject::createSymbol("if");
+        apply_symbol = SchemeObject::createSymbol("apply");
+        cond_symbol = SchemeObject::createSymbol("cond");
+        case_symbol = SchemeObject::createSymbol("case");
+        do_symbol = SchemeObject::createSymbol("do");
+        let_symbol = SchemeObject::createSymbol("let");
+        letstar_symbol = SchemeObject::createSymbol("let*");
+        letrec_symbol = SchemeObject::createSymbol("letrec");
+        begin_symbol = SchemeObject::createSymbol("begin");
+        and_symbol = SchemeObject::createSymbol("and");
+        or_symbol = SchemeObject::createSymbol("or");
+        lambda_symbol = SchemeObject::createSymbol("lambda");
+        quote_symbol = SchemeObject::createSymbol("quote");
+        quasiquote_symbol = SchemeObject::createSymbol("quasiquote");
+        define_symbol = SchemeObject::createSymbol("define");
+        define_macro = SchemeObject::createSymbol("define-macro");
+        set_e_symbol = SchemeObject::createSymbol("set!");
         Heap* heap = Heap::getUniqueInstance();
 
         heap->addRoot(current_output_port);
@@ -316,15 +316,15 @@ SchemeObject* Scheme::eval(string data) {
     return result;
 };
 
-void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeEnvironment* envt = interaction_environment) {
-    SchemeObject* name = SchemeObject::create(variable);
-    SchemeObject* proc = SchemeObject::create(name, req, opt, rst, fn);
-    envt->put(name, proc);
+void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* envt = interaction_environment) {
+    SchemeObject* name = SchemeObject::createSymbol(variable.c_str());
+    SchemeObject* proc = SchemeObject::createBuiltinProcedure(name, req, opt, rst, fn);
+    envt->putBinding(name, proc);
 }
 
-void Scheme::assign(string variable, SchemeObject* value, SchemeEnvironment* envt = interaction_environment) {
-    SchemeObject* name = SchemeObject::create(variable);
-    envt->put(name, value);
+void Scheme::assign(string variable, SchemeObject* value, SchemeObject* envt = interaction_environment) {
+    SchemeObject* name = SchemeObject::createSymbol(variable.c_str());
+    envt->putBinding(name, value);
 }
 
 // -----------------------------------------------------
@@ -333,7 +333,7 @@ void Scheme::assign(string variable, SchemeObject* value, SchemeEnvironment* env
 
 inline
 void assert_arg_not_immutable(char* procname, int argnum, SchemeObject* arg) {
-    if (arg->immutable) {
+    if (arg->immutable()) {
         ostringstream ss;
         ss << "Can't modify immutable object in position ";
         ss << argnum;
@@ -374,39 +374,37 @@ void assert_arg_positive_int(char* procname, int argnum, SchemeObject* arg) {
 // Equal? recursively compares the contents of pairs, vectors, and strings, applying eqv? on other objects 
 // such as numbers and symbols. A rule of thumb is that objects are generally equal? if they print the same. 
 // Equal? may fail to terminate if its arguments are circular data structures.
-SchemeBool* s_equal_p(SchemeObject* a, SchemeObject* b) {
+SchemeObject* s_equal_p(SchemeObject* a, SchemeObject* b) {
     return a->toString() == b->toString() ? S_TRUE : S_FALSE; 
 }
 
-SchemeBool* s_eqv_p(SchemeObject* a, SchemeObject* b) {
-    if (a->type() == SchemeObject::NUMBER && b->type() == SchemeObject::NUMBER) {
-        double a_n = static_cast<SchemeObject*>(a)->number;
-        double b_n = static_cast<SchemeObject*>(b)->number;
-        return a_n == b_n ? S_TRUE : S_FALSE;
-    } else if (a->type() == SchemeObject::CHAR && b->type() == SchemeObject::CHAR) {
+SchemeObject* s_eqv_p(SchemeObject* a, SchemeObject* b) {
+    if (i_number_p(a) == S_TRUE && i_number_p(b) == S_TRUE) {
+        return bool2scm(scm2double(a) == scm2double(b));
+    } else if (i_char_p(a) == S_TRUE && i_char_p(b) == S_TRUE) {
         return bool2scm(scm2char(a) == scm2char(b));
     } else {
         return bool2scm(a == b);
     }
 }
 
-SchemeBool* s_eq_p(SchemeObject* a, SchemeObject* b) {
+SchemeObject* s_eq_p(SchemeObject* a, SchemeObject* b) {
     return s_eqv_p(a,b); 
 }
 
 // (boolean? b)
-SchemeBool* s_char_p(SchemeObject* o) {
+SchemeObject* s_char_p(SchemeObject* o) {
     return o->type() == SchemeObject::CHAR ? S_TRUE : S_FALSE;
 }
 
 
 // (boolean? b)
-SchemeBool* s_boolean_p(SchemeObject* o) {
+SchemeObject* s_boolean_p(SchemeObject* o) {
     return (o == S_TRUE || o == S_FALSE) ? S_TRUE : S_FALSE;
 }
 
 // (list? a)
-SchemeBool* s_list_p(SchemeObject* o) {
+SchemeObject* s_list_p(SchemeObject* o) {
     SchemeObject *fast, *slow;
     fast = slow = o;
     while (true) {
@@ -428,7 +426,7 @@ SchemeBool* s_list_p(SchemeObject* o) {
     }
 }
 
-SchemeBool* s_circular_list_p(SchemeObject* o) {
+SchemeObject* s_circular_list_p(SchemeObject* o) {
     SchemeObject *fast, *slow;
     fast = slow = o;
     while (true) {
@@ -457,7 +455,7 @@ SchemeBool* s_circular_list_p(SchemeObject* o) {
 // TODO: Gør denne til en intern function med tail-optimization
 SchemeObject* s_call_cc(SchemeObject* s_proc) {
     assert_arg_type("proc", 1, s_procedure_p, s_proc);
-    SchemeContinuation* s_escape = new SchemeContinuation();
+    SchemeObject* s_escape = SchemeObject::createContinuation();
     size_t stack_size = stack.size();
     stack.push_back(s_escape);
     int kk = setjmp(s_escape->jmpbuf);
@@ -577,7 +575,7 @@ SchemeObject* s_for_each(SchemeObject* proc, SchemeObject* lists) {
 }
 
 
-SchemeObject* member_helper(SchemeBool* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
+SchemeObject* member_helper(SchemeObject* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
     while (i_null_p(p) == S_FALSE) {
         if ((*comparator)(obj, s_car(p)) == S_TRUE) {
             return p;
@@ -623,7 +621,7 @@ SchemeObject* s_list_ref(SchemeObject* l, SchemeObject* k) {
     return s_car(p);
 }
 
-SchemeObject* assoc_helper(SchemeBool* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* alist) {
+SchemeObject* assoc_helper(SchemeObject* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* alist) {
     while (alist != S_EMPTY_LIST) {
         if (s_pair_p(s_car(alist)) == S_FALSE) {
             throw scheme_exception("Illegal argument");
@@ -650,67 +648,67 @@ SchemeObject* s_assv(SchemeObject* obj, SchemeObject* alist) {
 }
 
 // (pair? p)
-SchemeBool* s_pair_p(SchemeObject* o) {
+SchemeObject* s_pair_p(SchemeObject* o) {
     return i_pair_p(o);
 }
 
 // (symbol? p)
-SchemeBool* s_symbol_p(SchemeObject* o) {
+SchemeObject* s_symbol_p(SchemeObject* o) {
     return i_symbol_p(o);
 }
 
 // (string? p)
-SchemeBool* s_string_p(SchemeObject* p) {
+SchemeObject* s_string_p(SchemeObject* p) {
     return (p->type() == SchemeObject::STRING) ? S_TRUE : S_FALSE;
 }
 
 // (procedure? p)
-SchemeBool* s_procedure_p(SchemeObject* p) {
+SchemeObject* s_procedure_p(SchemeObject* p) {
     return i_procedure_p(p);
 }
 
 // (number? p)
-SchemeBool* s_number_p(SchemeObject* p) {
+SchemeObject* s_number_p(SchemeObject* p) {
     return i_number_p(p);
 }
 
 // (integer? p)
-SchemeBool* s_integer_p(SchemeObject* p) {
+SchemeObject* s_integer_p(SchemeObject* p) {
     if (p->type() != SchemeObject::NUMBER) {
         return S_FALSE;
     }
-    return (static_cast<SchemeObject*>(p)->number == s_round(p)->number) ? S_TRUE : S_FALSE;
+    return scm2double(p) == scm2double(s_round(p)) ? S_TRUE : S_FALSE;
 }
 
-SchemeBool* s_complex_p(SchemeObject* n) {
+SchemeObject* s_complex_p(SchemeObject* n) {
     return S_TRUE;
 }
 
-SchemeBool* s_rational_p(SchemeObject* n) {
+SchemeObject* s_rational_p(SchemeObject* n) {
     return S_TRUE;
 }
 
-SchemeBool* s_real_p(SchemeObject* n) {
+SchemeObject* s_real_p(SchemeObject* n) {
     return S_TRUE;
 }
 
-SchemeBool* s_exact_p(SchemeObject* n) {
+SchemeObject* s_exact_p(SchemeObject* n) {
     assert_arg_type("exact?", 1, s_number_p, n);
     return s_integer_p(n);
 }
 
-SchemeBool* s_inexact_p(SchemeObject* n) {
+SchemeObject* s_inexact_p(SchemeObject* n) {
     assert_arg_type("inexact?", 1, s_number_p, n);
     return s_exact_p(n) == S_TRUE ? S_FALSE : S_TRUE;
 }
 
 // (number? p)
-SchemeBool* s_vector_p(SchemeObject* p) {
+SchemeObject* s_vector_p(SchemeObject* p) {
     return (p->type() == SchemeObject::VECTOR) ? S_TRUE : S_FALSE;
 }
 
 // (null? p)
-SchemeBool* s_null_p(SchemeObject* p) {
+SchemeObject* s_null_p(SchemeObject* p) {
     return i_null_p(p);
 }
 
@@ -750,7 +748,7 @@ SchemeObject* s_cdddr(SchemeObject* o) { return s_cxr(o, "ddd"); };
 
 // (cons a b)
 SchemeObject* s_cons(SchemeObject* car, SchemeObject* cdr) {
-    return SchemeObject::create(car, cdr);
+    return i_cons(car, cdr);
 }
 
 SchemeObject* s_list(SchemeObject* args) {
@@ -902,68 +900,64 @@ SchemeObject* s_mult(SchemeObject* p) {
 	return double2scm(result);
 }
 
-SchemeVector* s_make_vector(SchemeObject* s_count, SchemeObject* obj) {
+SchemeObject* s_make_vector(SchemeObject* s_count, SchemeObject* obj) {
     assert_arg_positive_int("make-vector", 1, s_count);
     int count = scm2int(s_count);
-    return SchemeVector::create(obj, count);
+    return SchemeObject::createVector(obj, count);
 }
 
-SchemeVector* s_vector(SchemeObject* args) {
+SchemeObject* s_vector(SchemeObject* args) {
     int c = scm2int(s_length(args));
-    SchemeObject** elems = new SchemeObject*[c];
+    SchemeObject* result = SchemeObject::createVector(S_UNSPECIFIED, c);
     int i = 0;
     while (args != S_EMPTY_LIST) {
-        elems[i++] = s_car(args);
-        args = s_cdr(args);
+        result->setVectorElem(i_car(args), i++);
+        args = i_cdr(args);
     }
-    return SchemeVector::create(elems,c);
+    return result;
 }
 
 SchemeObject* s_vector_length(SchemeObject* v) {
     assert_arg_type("vector-length", 1, s_vector_p, v);
-    SchemeVector* vv = static_cast<SchemeVector*>(v);
-    return int2scm(vv->length);
+    return int2scm(v->length);
 }
 
-SchemeVector* s_list_2_vector(SchemeObject* l) {
+SchemeObject* s_list_2_vector(SchemeObject* l) {
     assert_arg_type("list->vector", 1, s_list_p, l);
     return s_vector(l);
 }
 
-SchemeObject* s_vector_2_list(SchemeObject* o) {
-    assert_arg_type("vector->list", 1, s_vector_p, o);
-    SchemeVector* v = static_cast<SchemeVector*>(o);
+SchemeObject* s_vector_2_list(SchemeObject* v) {
+    assert_arg_type("vector->list", 1, s_vector_p, v);
     SchemeObject* result = S_EMPTY_LIST;
-    for(int i = v->length-1; i >= 0; i--) {
-	    result = s_cons(v->get(i), result);
+    for(uint i = v->length-1; i >= 0; i--) {
+	    result = s_cons(v->getVectorElem(i), result);
     }
     return result;
 }
 
 SchemeObject* s_vector_ref(SchemeObject* s_v, SchemeObject* s_index) {
     assert_arg_type("vector-ref", 1, s_vector_p, s_v);
-    SchemeVector* v = static_cast<SchemeVector*>(s_v);
-    assert_arg_int_in_range("vector-ref", 2, s_index, 0, v->length-1);
+    assert_arg_int_in_range("vector-ref", 2, s_index, 0, s_v->length-1);
     int i = scm2int(s_index);
-    return v->get(i);
+    return s_v->getVectorElem(i);
 }
 
 SchemeObject* s_vector_set_e(SchemeObject* s_vec, SchemeObject* s_index, SchemeObject* val) {
     assert_arg_type("vector-set!", 1, s_vector_p, s_vec);
     assert_arg_not_immutable("vector-set!", 1, s_vec);
-    SchemeVector* vec = static_cast<SchemeVector*>(s_vec);
+    SchemeObject* vec = static_cast<SchemeObject*>(s_vec);
     assert_arg_int_in_range("vector-set!", 2, s_index, 0, vec->length-1);
-    int i = scm2int(s_index);
-    vec->set(val, i);
+    uint i = scm2int(s_index);
+    vec->setVectorElem(val, i);
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_vector_fill_e(SchemeObject* s_vec, SchemeObject* fill) {
     assert_arg_type("vector-fill!", 1, s_vector_p, s_vec);
     assert_arg_not_immutable("vector-fill!", 1, s_vec);
-    SchemeVector* vec = static_cast<SchemeVector*>(s_vec);
-    for(int i = 0; i < vec->length; i++) {
-	    vec->set(fill, i);
+    for(uint i = 0; i < s_vec->length; i++) {
+	    s_vec->setVectorElem(fill, i);
     }
     return S_UNSPECIFIED;
 }
@@ -1202,31 +1196,31 @@ SchemeObject* s_lcm(SchemeObject* l) {
 }
 
 
-SchemeBool* s_even_p(SchemeObject* n) {
+SchemeObject* s_even_p(SchemeObject* n) {
     assert_arg_type("even?", 1, s_integer_p, n);
     return (scm2int(n) % 2 == 0) ? S_TRUE : S_FALSE;
 }
 
-SchemeBool* s_odd_p(SchemeObject* n) {
+SchemeObject* s_odd_p(SchemeObject* n) {
     assert_arg_type("odd?", 1, s_integer_p, n);
     return (abs(scm2int(n) % 2) == 1) ? S_TRUE : S_FALSE;
 }
 
-SchemeBool* s_zero_p(SchemeObject* n) {
+SchemeObject* s_zero_p(SchemeObject* n) {
     assert_arg_type("zero?", 1, s_number_p, n);
     return scm2double(n) == 0 ? S_TRUE : S_FALSE;
 }
-SchemeBool* s_negative_p(SchemeObject* n) {
+SchemeObject* s_negative_p(SchemeObject* n) {
     assert_arg_type("negative?", 1, s_number_p, n);
     return scm2double(n) < 0 ? S_TRUE : S_FALSE;
 }
 
-SchemeBool* s_positive_p(SchemeObject* n) {
+SchemeObject* s_positive_p(SchemeObject* n) {
     assert_arg_type("position?", 1, s_number_p, n);
     return scm2double(n) > 0 ? S_TRUE : S_FALSE;
 }
 
-SchemeBool* s_equal(SchemeObject* p) {
+SchemeObject* s_equal(SchemeObject* p) {
     if (p == S_EMPTY_LIST) {
         return S_TRUE;
     }
@@ -1248,7 +1242,7 @@ SchemeBool* s_equal(SchemeObject* p) {
     return S_TRUE;
 }
 
-SchemeBool* s_less(SchemeObject* p) {
+SchemeObject* s_less(SchemeObject* p) {
     if (p == S_EMPTY_LIST) {
         return S_TRUE;
     }
@@ -1270,7 +1264,7 @@ SchemeBool* s_less(SchemeObject* p) {
     return S_TRUE;
 }
 
-SchemeBool* s_greater(SchemeObject* p) {
+SchemeObject* s_greater(SchemeObject* p) {
     if (p == S_EMPTY_LIST) {
         return S_TRUE;
     }
@@ -1292,7 +1286,7 @@ SchemeBool* s_greater(SchemeObject* p) {
     return S_TRUE;
 }
 
-SchemeBool* s_less_equal(SchemeObject* p) {
+SchemeObject* s_less_equal(SchemeObject* p) {
     if (p == S_EMPTY_LIST) {
         return S_TRUE;
     }
@@ -1314,7 +1308,7 @@ SchemeBool* s_less_equal(SchemeObject* p) {
     return S_TRUE;
 }
 
-SchemeBool* s_greater_equal(SchemeObject* p) {
+SchemeObject* s_greater_equal(SchemeObject* p) {
     if (p == S_EMPTY_LIST) {
         return S_TRUE;
     }
@@ -1336,7 +1330,7 @@ SchemeBool* s_greater_equal(SchemeObject* p) {
     return S_TRUE;
 }
 
-SchemeBool* s_not(SchemeObject* o) {
+SchemeObject* s_not(SchemeObject* o) {
     return o == S_FALSE ? S_TRUE : S_FALSE;
 }
 
@@ -1367,17 +1361,16 @@ SchemeObject* s_string(SchemeObject* p) {
 
 SchemeObject* s_string_length(SchemeObject* s) {
     assert_arg_type("string-length", 1, s_string_p, s);
-    int len = static_cast<SchemeObject*>(s)->str.size();
+    int len = s->length;
     return int2scm(len);
 }
 
-SchemeChar* s_string_ref(SchemeObject* s, SchemeObject* i) {
+SchemeObject* s_string_ref(SchemeObject* s, SchemeObject* i) {
     assert_arg_type("string-ref", 1, s_string_p, s);
     assert_arg_type("string-ref", 2, s_number_p, i);
-    int index = int(i->number);
-    string& ss = scm2string(s);
-    assert_arg_int_in_range("string-ref", 2, i, 0, ss.size()-1);
-    return char2scm(ss[index]);
+    int index = scm2int(i);
+    assert_arg_int_in_range("string-ref", 2, i, 0, s->length-1);
+    return char2scm(s->str[index]);
 }	
 
 SchemeObject* s_string_set_e(SchemeObject* s, SchemeObject* i, SchemeObject* chr) {
@@ -1385,21 +1378,23 @@ SchemeObject* s_string_set_e(SchemeObject* s, SchemeObject* i, SchemeObject* chr
     assert_arg_type("string-set!", 2, s_number_p, i);
     assert_arg_type("string-set!", 3, s_char_p, chr);
     assert_arg_not_immutable("string-set!", 1, s);
-    string& ss = scm2string(s);
-    assert_arg_int_in_range("string-set!", 2, i, 0, ss.size()-1);
-    ss[scm2int(i)] = scm2char(chr);
+    assert_arg_int_in_range("string-set!", 2, i, 0, s->length-1);
+    s->str[scm2int(i)] = scm2char(chr);
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_symbol_2_string(SchemeObject* symbol) {
     assert_arg_type("symbol->string", 1, s_symbol_p, symbol);
     SchemeObject* result = SchemeObject::createString(symbol->str);
+    // TODO: String constructor shouldn't strdup the string. Just reuse point.
+    // That's why we mark it immutable.
     result->set_immutable(true);
+    return result;
 }
 
 SchemeObject* s_string_2_symbol(SchemeObject* s) {
     assert_arg_type("string->symbol", 1, s_string_p, s);
-    return SchemeObject::create(scm2string(s));
+    return SchemeObject::createSymbol(s->str);
 }
 
 SchemeObject* s_string_append(SchemeObject* strings) {
@@ -1416,7 +1411,7 @@ SchemeObject* s_string_append(SchemeObject* strings) {
 
 SchemeObject* s_string_copy(SchemeObject* str) {
     assert_arg_type("string-copy", 1, s_string_p, str);
-    return string2scm(static_cast<SchemeObject*>(str)->str);
+    return cstr2scm(str->str);
 }
 
 SchemeObject* s_substring(SchemeObject* s_str, SchemeObject* s_start, SchemeObject* s_end) {
@@ -1480,7 +1475,7 @@ SchemeObject* s_string_2_number(SchemeObject* s_string, SchemeObject* base_s) {
 }
 
 
-SchemeChar* s_integer_2_char(SchemeObject* i) {
+SchemeObject* s_integer_2_char(SchemeObject* i) {
     assert_arg_int_in_range("integer->char", 1, i, 0, 255);
     int n = scm2int(i);
     return char2scm(n);
@@ -1488,23 +1483,22 @@ SchemeChar* s_integer_2_char(SchemeObject* i) {
 
 SchemeObject* s_char_2_integer(SchemeObject* c) {
     assert_arg_type("char->integer", 1, s_char_p, c);
-    return int2scm(int(static_cast<SchemeChar*>(c)->c));
+    return int2scm(int(static_cast<SchemeObject*>(c)->c));
 }
 
 SchemeObject* s_string_2_list(SchemeObject* s) {
     assert_arg_type("string->list", 1, s_string_p, s);
-    string& ss = scm2string(s);
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* result_tail = S_EMPTY_LIST;
-    for(uint i = 0; i < ss.size(); i++) {
-	SchemeObject* newpair = s_cons(char2scm(ss[i]), S_EMPTY_LIST);
-	if (result == S_EMPTY_LIST) {
-	    result = newpair;
-	    result_tail = newpair;
-	} else {
-	    i_set_cdr_e(result_tail, newpair);
-	    result_tail = newpair;
-	}
+    for(uint i = 0; i < s->length; i++) {
+      	SchemeObject* newpair = s_cons(char2scm(s->str[i]), S_EMPTY_LIST);
+    	if (result == S_EMPTY_LIST) {
+    	    result = newpair;
+    	    result_tail = newpair;
+    	} else {
+    	    i_set_cdr_e(result_tail, newpair);
+    	    result_tail = newpair;
+    	}
     }
     return result;
 }
@@ -1522,37 +1516,37 @@ SchemeObject* s_list_2_string(SchemeObject* p) {
     return string2scm(result);
 }
 
-SchemeBool* s_char_alphabetic_p(SchemeObject* c) {
+SchemeObject* s_char_alphabetic_p(SchemeObject* c) {
     assert_arg_type("char-alphabetic?", 1, s_char_p, c);
     return bool2scm(isalpha(scm2char(c)));
 }
 
-SchemeBool* s_char_numeric_p(SchemeObject* c) {
+SchemeObject* s_char_numeric_p(SchemeObject* c) {
     assert_arg_type("char-numeric?", 1, s_char_p, c);
     return bool2scm(isdigit(scm2char(c)));
 }
 
-SchemeBool* s_char_whitespace_p(SchemeObject* c) {
+SchemeObject* s_char_whitespace_p(SchemeObject* c) {
     assert_arg_type("char-whitespace?", 1, s_char_p, c);
     return bool2scm(isspace(scm2char(c)));
 }
 
-SchemeBool* s_char_upper_case_p(SchemeObject* c) {
+SchemeObject* s_char_upper_case_p(SchemeObject* c) {
     assert_arg_type("char-upper-case?", 1, s_char_p, c);
     return bool2scm(isupper(scm2char(c)));
 }
 
-SchemeBool* s_char_lower_case_p(SchemeObject* c) {
+SchemeObject* s_char_lower_case_p(SchemeObject* c) {
     assert_arg_type("char-lower_case?", 1, s_char_p, c);
     return bool2scm(islower(scm2char(c)));
 }
 
-SchemeChar* s_char_upcase(SchemeObject* c) {
+SchemeObject* s_char_upcase(SchemeObject* c) {
     assert_arg_type("char-upcase", 1, s_char_p, c);
     return char2scm(toupper(scm2char(c)));    
 }
 
-SchemeChar* s_char_downcase(SchemeObject* c) {
+SchemeObject* s_char_downcase(SchemeObject* c) {
     assert_arg_type("char-downcase", 1, s_char_p, c);
     return char2scm(tolower(scm2char(c)));    
 }
@@ -1560,7 +1554,7 @@ SchemeChar* s_char_downcase(SchemeObject* c) {
 SchemeObject* s_symgen() {
     ostringstream ss;
     ss << symgen_counter++;
-    return SchemeObject::createSymbol("#G" + ss.str());
+    return SchemeObject::createSymbol(("#G" + ss.str()).c_str());
 }
 
 SchemeObject* s_current_output_port() {
@@ -1571,15 +1565,15 @@ SchemeObject* s_current_input_port() {
     return current_input_port;
 }
 
-SchemeBool* s_input_port_p(SchemeObject* o) {
+SchemeObject* s_input_port_p(SchemeObject* o) {
     return o->type() == SchemeObject::INPUT_PORT ? S_TRUE : S_FALSE;
 }
 
-SchemeBool* s_output_port_p(SchemeObject* o) {
+SchemeObject* s_output_port_p(SchemeObject* o) {
     return o->type() == SchemeObject::OUTPUT_PORT ? S_TRUE : S_FALSE;
 }
 
-SchemeBool* s_eof_object_p(SchemeObject* o) {
+SchemeObject* s_eof_object_p(SchemeObject* o) {
     return bool2scm(o->type() == SchemeObject::EOFTYPE);
 }
 
@@ -1589,7 +1583,7 @@ SchemeObject* s_open_input_file(SchemeObject* s_filename) {
     if (ifs->fail()) {
         throw scheme_exception("Error opening file " + s_filename->toString());
     }
-    return new SchemeObject(ifs);
+    return SchemeObject::createInputPort(ifs);
 }
 
 SchemeObject* s_open_output_file(SchemeObject* s_filename) {
@@ -1598,7 +1592,7 @@ SchemeObject* s_open_output_file(SchemeObject* s_filename) {
     if (ofs->fail()) {
         throw scheme_exception("Error opening file " + s_filename->toString() + " for writing.");
     }
-    return new SchemeObject(ofs);
+    return SchemeObject::createOutputPort(ofs);
 }
 
 SchemeObject* s_close_input_port(SchemeObject* s_port) {
@@ -1763,7 +1757,7 @@ SchemeObject* s_newline(SchemeObject* port) {
     return S_UNSPECIFIED;
 }
 
-SchemeBool* s_environment_p(SchemeObject* o) {
+SchemeObject* s_environment_p(SchemeObject* o) {
     return bool2scm(o->type() == SchemeObject::ENVIRONMENT);
 }
 
@@ -1793,7 +1787,7 @@ SchemeObject* s_interaction_environment(SchemeObject* s_version) {
 
 SchemeObject* s_eval(SchemeObject* expression, SchemeObject* s_environment) {
     assert_arg_type("eval", 2, s_environment_p, s_environment);
-    SchemeEnvironment* environment = static_cast<SchemeEnvironment*>(s_environment);
+    SchemeObject* environment = static_cast<SchemeObject*>(s_environment);
     SchemeObject* expressions = s_cons(expression, S_EMPTY_LIST);
     Interpreter interpreter = Interpreter(expressions, environment);
     return interpreter.interpret();

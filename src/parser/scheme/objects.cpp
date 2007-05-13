@@ -5,7 +5,7 @@
 #include "heap.h"
 
 // Map of known symbols
-map<char*,SchemeObject*> SchemeObject::known_symbols;
+map<string,SchemeObject*> SchemeObject::known_symbols;
 
 //-----------------------------------------------------------
 // Static factory methods
@@ -20,6 +20,7 @@ SchemeObject* SchemeObject::createNumber(double number) {
 SchemeObject* SchemeObject::createString(const char* str) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::STRING);
     result->str = strdup(str);
+    result->length = strlen(str);
     return result;
 }
 
@@ -69,12 +70,12 @@ SchemeObject* SchemeObject::createUnspecified() {
 
 SchemeObject* SchemeObject::createSymbol(const char* str) {
     SchemeObject* result;
-    char* copy = strdup(str);
-    map<string,SchemeObject*>::iterator v = known_symbols.find(string(str));
+    string strstring = string(str);
+    map<string,SchemeObject*>::iterator v = known_symbols.find(strstring);
     if (v == known_symbols.end()) {
         result = Heap::getUniqueInstance()->allocate(SchemeObject::SYMBOL);
         result->str = strdup(str);
-        known_symbols[stringstr] = result;
+        known_symbols[strstring] = result;
     } else {
         result = v->second;
     }
@@ -120,6 +121,7 @@ SchemeObject* SchemeObject::createBuiltinProcedure(SchemeObject* name, int req, 
 
 SchemeObject* SchemeObject::createUserProcedure(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body) {
     assert(i_symbol_p(name) == S_TRUE);
+    assert(envt->type() == SchemeObject::ENVIRONMENT);
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::USER_PROCEDURE);
     result->name = name;
     result->envt = envt;
@@ -138,10 +140,9 @@ SchemeObject* SchemeObject::createMacro(SchemeObject* name, SchemeObject* envt, 
     return result;
 }
 
-SchemeObject* SchemeObject::createInternalProcedure(SchemeObject* name) {
-    assert(i_symbol_p(name) == S_TRUE);
+SchemeObject* SchemeObject::createInternalProcedure(const char* name) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::INTERNAL_PROCEDURE);
-    result->name = name;
+    result->name = createSymbol(name);
     return result;
 }
 
@@ -206,15 +207,12 @@ SchemeObject::~SchemeObject() {
         case SchemeObject::VECTOR :
             delete [] elems;
             break;
+        case SchemeObject::STRING :
+            //free(str);
+            break;
+        default:
+            break;    
     }    
-}
-
-void SchemeObject::clear_inuse() {
-    type_and_flags = type_and_flags & 0x00ffffff;
-}
-
-bool SchemeObject::immutable() const {
-    return type_and_flags && 0x00ff0000 == 0;
 }
 
 void SchemeObject::set_immutable(bool flag) {
@@ -267,7 +265,7 @@ string SchemeObject::toString() {
             return boolean ? "#t" : "#f";
         case SchemeObject::VECTOR :    
             ss << "#(";
-            for(int i = 0; i < length; i++) {
+            for(uint i = 0; i < length; i++) {
                 ss << elems[i]->toString();
                 if (i < length-1) {
                     ss << " ";
@@ -277,6 +275,10 @@ string SchemeObject::toString() {
             break;
         case SchemeObject::ENVIRONMENT :    
             return "#<environment>";
+        case SchemeObject::BLANK :
+            ss << "#<blank heap slot>";
+        case SchemeObject::MACRO :
+            ss << "#<macro " << scm2string(name) << ">";
         case SchemeObject::CONTINUATION: 
             return "#<continuation>";
         case SchemeObject::USER_PROCEDURE :    
@@ -343,7 +345,7 @@ void SchemeObject::callContinuation(SchemeObject* arg) {
 //-----------------------------------------------------------
 
 SchemeObject* SchemeObject::getBinding(SchemeObject* name) {
-    assert(type() == SchemeObject::ENVIRONMENT);
+    assert(this->type() == SchemeObject::ENVIRONMENT);
     if (s_symbol_p(name) == S_FALSE) {
         throw scheme_exception(name->toString() + " is not a symbol.");
     }

@@ -17,13 +17,13 @@ class Scheme {
         SchemeObject* eval(istream* code);
 
         // For assigning variables at top-level-frame
-        void assign(string variable, double value, SchemeEnvironment* b);
-        void assign(string variable, string value, SchemeEnvironment* b);
-        void assign(string variable, bool value, SchemeEnvironment* b);
-        void assign(string variable, SchemeObject* value, SchemeEnvironment* b);
+        void assign(string variable, double value, SchemeObject* b);
+        void assign(string variable, string value, SchemeObject* b);
+        void assign(string variable, bool value, SchemeObject* b);
+        void assign(string variable, SchemeObject* value, SchemeObject* b);
         
         // For assigning built-in functions at top-level-frame
-		void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeEnvironment* b);
+		void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* b);
         
         // Look up in top-level-frame
         SchemeObject* lookup(string variable);
@@ -47,6 +47,7 @@ class scheme_exception {
 #define i_cddr(o)        (static_cast<SchemeObject*>(static_cast<SchemeObject*>(o)->cdr)->cdr)
 #define i_set_cdr_e(o,v) (static_cast<SchemeObject*>(o)->cdr = (v))
 #define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
+#define i_char_p(o)      ((o)->type() == SchemeObject::CHAR ? S_TRUE : S_FALSE)
 #define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
 #define i_number_p(o)    ((o)->type() == SchemeObject::NUMBER ? S_TRUE : S_FALSE)
 #define i_procedure_p(p) (((p)->type() == SchemeObject::BUILT_IN_PROCEDURE ||  \
@@ -107,13 +108,14 @@ extern SchemeObject* S_ONE;
 extern SchemeObject* S_TWO;
 
 // Conversion macros
-#define scm2int(o)     (int(static_cast<SchemeObject*>(o)->value))
-#define scm2double(o)  (static_cast<SchemeObject*>(o)->value)
-#define scm2string(o)  (static_cast<SchemeObject*>(o)->str)
-#define scm2char(o)    (char(static_cast<SchemeObject*>(o)->c))
+#define scm2int(o)     (int((o)->value))
+#define scm2double(o)  ((o)->value)
+#define scm2string(o)  (string((o)->str))
+#define scm2char(o)    (char((o)->c))
 #define scm2bool(o)    ((o) != S_FALSE)
 #define bool2scm(b)    ((b) ? S_TRUE : S_FALSE)
-#define string2scm(s)  (SchemeObject::createString(s))
+#define string2scm(s)  (SchemeObject::createString(s.c_str()))
+#define cstr2scm(s)    (SchemeObject::createString(s))
 #define char2scm(c)    (SchemeObject::createChar(c))
 #define int2scm(n)     (((n) < 10 && (n) >= 0) ? S_NUMBERS[n] : SchemeObject::createNumber(n))
 #define double2scm(n)  (SchemeObject::createNumber(n))

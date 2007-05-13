@@ -40,7 +40,7 @@ SchemeObject* Parser::read(istream* is) {
            result = SchemeObject::createChar(lexer->getChar());
            break;
         case Lexer::SYMBOL :
-           result = SchemeObject::createSymbol(lexer->getString());
+           result = SchemeObject::createSymbol(lexer->getString().c_str());
            break;
         case Lexer::OPEN_PAREN :
            result = read_list(is);
