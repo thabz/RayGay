@@ -930,7 +930,7 @@ SchemeObject* s_list_2_vector(SchemeObject* l) {
 SchemeObject* s_vector_2_list(SchemeObject* v) {
     assert_arg_type("vector->list", 1, s_vector_p, v);
     SchemeObject* result = S_EMPTY_LIST;
-    for(uint i = v->length-1; i >= 0; i--) {
+    for(int i = v->length-1; i >= 0; i--) {
 	    result = s_cons(v->getVectorElem(i), result);
     }
     return result;
@@ -946,10 +946,9 @@ SchemeObject* s_vector_ref(SchemeObject* s_v, SchemeObject* s_index) {
 SchemeObject* s_vector_set_e(SchemeObject* s_vec, SchemeObject* s_index, SchemeObject* val) {
     assert_arg_type("vector-set!", 1, s_vector_p, s_vec);
     assert_arg_not_immutable("vector-set!", 1, s_vec);
-    SchemeObject* vec = static_cast<SchemeObject*>(s_vec);
-    assert_arg_int_in_range("vector-set!", 2, s_index, 0, vec->length-1);
+    assert_arg_int_in_range("vector-set!", 2, s_index, 0, s_vec->length-1);
     uint i = scm2int(s_index);
-    vec->setVectorElem(val, i);
+    s_vec->setVectorElem(val, i);
     return S_UNSPECIFIED;
 }
 

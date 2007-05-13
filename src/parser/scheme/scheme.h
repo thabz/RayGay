@@ -111,7 +111,7 @@ extern SchemeObject* S_TWO;
 #define scm2int(o)     (int((o)->value))
 #define scm2double(o)  ((o)->value)
 #define scm2string(o)  (string((o)->str))
-#define scm2char(o)    (char((o)->c))
+#define scm2char(o)    ((o)->c)
 #define scm2bool(o)    ((o) != S_FALSE)
 #define bool2scm(b)    ((b) ? S_TRUE : S_FALSE)
 #define string2scm(s)  (SchemeObject::createString(s.c_str()))

@@ -102,7 +102,7 @@ SchemeObject* SchemeObject::createOutputPort(ostream* os) {
 }
 
 SchemeObject* SchemeObject::createContinuation() {
-    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::OUTPUT_PORT);
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::CONTINUATION);
     result->result = NULL;
     return result;
 }
@@ -148,8 +148,8 @@ SchemeObject* SchemeObject::createInternalProcedure(const char* name) {
 
 void SchemeObject::mark() {
     map<SchemeObject*,SchemeObject*>::iterator v;
-    if (type_and_flags && 0xff000000 == 0) {
-        type_and_flags |= 0xff000000;
+    if (!inuse()) {
+        type_and_flags |= INUSE_FLAG;
         ObjectType t = type();
         switch(t) {
             case SchemeObject::PAIR :
@@ -215,15 +215,6 @@ SchemeObject::~SchemeObject() {
     }    
 }
 
-void SchemeObject::set_immutable(bool flag) {
-    if (flag) {
-        type_and_flags |= 0x00ff0000;
-    } else {
-        type_and_flags &= 0xff00ffff;
-        
-    }
-}
-
 string SchemeObject::toString() {
     ostringstream ss;
     ObjectType t = type();
@@ -277,16 +268,21 @@ string SchemeObject::toString() {
             return "#<environment>";
         case SchemeObject::BLANK :
             ss << "#<blank heap slot>";
+            break;
         case SchemeObject::MACRO :
             ss << "#<macro " << scm2string(name) << ">";
+            break;
         case SchemeObject::CONTINUATION: 
             return "#<continuation>";
         case SchemeObject::USER_PROCEDURE :    
             ss << "#<primitive-procedure " << scm2string(name) << ">";
+            break;
         case SchemeObject::BUILT_IN_PROCEDURE :    
             ss << "#<built-in-procedure " << scm2string(name) << ">";
+            break;
         case SchemeObject::INTERNAL_PROCEDURE :    
             ss << "#<internal-procedure " << scm2string(name) << ">";
+            break;
         case SchemeObject::EOFTYPE :
             return "#<EOF>";
         case SchemeObject::INPUT_PORT :
@@ -301,6 +297,7 @@ string SchemeObject::toString() {
             } else {
                 ss << "#\\" << string(&c,1);
             }
+            break;
         case SchemeObject::EMPTY_LIST :
             return "()";
     }

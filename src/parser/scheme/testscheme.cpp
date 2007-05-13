@@ -31,7 +31,7 @@ void assert_eval(Scheme* s, string expression, string expected) {
     uint stacksize_before = stack.size();
 
     try {
-        cout << "Testing " << expression << endl;
+//        cout << "Testing " << expression << endl;
         string result = s->eval(expression)->toString();
         if (result != expected) {
             errors_found++;
@@ -104,6 +104,19 @@ void test_tokenizer() {
     delete is;
 
     delete l;
+}
+
+
+void test_objects() {
+    SchemeObject* n = SchemeObject::createNumber(1.0);
+    assert(n->type() == SchemeObject::NUMBER);
+    assert(n->immutable() == false);
+    n->set_immutable(true);
+    assert(n->immutable() == true);
+    assert(n->type() == SchemeObject::NUMBER);
+    n->set_immutable(false);
+    assert(n->immutable() == false);
+    assert(n->type() == SchemeObject::NUMBER);
 }
 
 void test_parser() {
@@ -222,7 +235,6 @@ void test_interpreter() {
 }
 
 void test_bools() {
-    return;
     Scheme* s = new Scheme();
     assert_eval(s, "(boolean? #t)", "#t");
     assert_eval(s, "(boolean? #f)", "#t");
@@ -770,6 +782,10 @@ int main(int argc, char *argv[]) {
         cout << "Test tokenizer...       ";
         test_tokenizer();
         cout << " OK" << endl;
+
+        cout << "Test objects...         ";
+        test_objects();
+        cout << " OK" << endl;
         
         cout << "Test parser...          ";
         test_parser();
@@ -778,7 +794,7 @@ int main(int argc, char *argv[]) {
         cout << "Test interpreter...     ";
         test_interpreter();
         cout << " OK" << endl;
-        
+
         cout << "Test bools...           ";
         test_bools();
         cout << " OK" << endl;

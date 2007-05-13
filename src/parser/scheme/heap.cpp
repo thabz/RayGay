@@ -22,8 +22,9 @@ void Heap::popRoot() {
 }
 
 SchemeObject* Heap::allocate(SchemeObject::ObjectType type_and_flags) {
-    SchemeObject* result = new SchemeObject();
-    result->type_and_flags = type_and_flags;
+    SchemeObject* result = new SchemeObject();    
+    result->type_and_flags = uint32_t(type_and_flags);
+    result->set_immutable(false);
     addAllocation(result);
     return result;
 }

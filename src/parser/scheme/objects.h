@@ -10,6 +10,9 @@ class SchemeEnvironment;
 
 using namespace std;
 
+#define IMMUTABLE_FLAG ((uint32_t)(1 << 20))
+#define INUSE_FLAG     ((uint32_t)(1 << 21))
+
 class SchemeObject 
 {
     public:
@@ -120,17 +123,26 @@ SchemeObject::ObjectType SchemeObject::type() const {
 
 inline
 void SchemeObject::clear_inuse() {
-    type_and_flags = type_and_flags & 0x00ffffff;
+    type_and_flags &= ~INUSE_FLAG;
 }
 
 inline
 bool SchemeObject::inuse() const {
-    return type_and_flags & 0xff000000 != 0;
+    return (type_and_flags & INUSE_FLAG) != 0;
+}
+
+inline
+void SchemeObject::set_immutable(bool flag) {
+    if (flag) {
+        type_and_flags |= IMMUTABLE_FLAG;
+    } else {
+        type_and_flags &= ~IMMUTABLE_FLAG;
+    }
 }
 
 inline
 bool SchemeObject::immutable() const {
-    return type_and_flags && 0x00ff0000 == 0;
+    return (type_and_flags & IMMUTABLE_FLAG) != 0;
 }
 
 #endif
