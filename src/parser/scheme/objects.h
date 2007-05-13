@@ -10,9 +10,44 @@ class SchemeEnvironment;
 
 using namespace std;
 
-class SchemeObject {
+class SchemeObject 
+{
     public:
-	    enum ObjectType {
+        uint32_t type_and_flags;
+        union {
+            char* str;             // For strings and symbols
+            SchemeObject* car;     // For pairs
+            double value;          // For numbers
+            bool boolean;          // For booleans
+            ::jmp_buf jmpbuf;      // For continuations
+            istream* is;           // For inputports
+            ostream* os;           // For outputports
+            char c;                // For chars
+            SchemeObject** elems;  // For vector
+            SchemeObject* parent;  // For environments. Environment.
+            SchemeObject* name;    // For macros and procedures. Symbol.
+        };
+        union {
+            SchemeObject* cdr;      // For pairs
+            SchemeObject* result;   // For continuations
+            uint32_t length;        // For vector
+            map<SchemeObject*,SchemeObject*>* binding_map;	// For environments
+            int req;                // For BUILT_IN_PROCEDURE
+            SchemeObject* s_body;   // For USER_PROCEDURE
+        };
+        union {
+            int opt;                // For BUILT_IN_PROCEDURE
+            SchemeObject* s_formals; // For USER_PROCEDURE
+        };
+
+        int rst;                // For BUILT_IN_PROCEDURE
+        SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
+
+        SchemeObject* envt; // For USER_PROCEDURE
+
+    public:        
+        enum ObjectType {
+ 		    BLANK,                  // Empty slots in heap
 		    NUMBER,
 		    EMPTY_LIST,
 		    SYMBOL,
@@ -22,233 +57,64 @@ class SchemeObject {
 		    VECTOR,
 		    PAIR,
 		    UNSPECIFIED,
- 		    PROCEDURE,
+ 		    USER_PROCEDURE,
  		    INTERNAL_PROCEDURE,
+ 		    BUILT_IN_PROCEDURE,
  		    MACRO,
  		    CONTINUATION,
  		    INPUT_PORT,
- 		    EOFTYPE,
  		    OUTPUT_PORT,
+ 		    EOFTYPE,
  		    ENVIRONMENT
 		};
-	protected:
-	    SchemeObject(bool immutable = false);
-	public:    
-        virtual ~SchemeObject() {};
-        virtual string toString() = 0;
-        virtual bool boolValue() const { return true; }; // Used in conditional expressions (if, cond, and, or, do)
-        virtual ObjectType type() const = 0;
-	    bool immutable;
-	    
-	    // For garbage collection
-        virtual void mark();
-        bool in_use;
-};
 
-class SchemeUnspecified : public SchemeObject {
     public:
-        SchemeUnspecified() {};
+        ObjectType type() const;
+        bool immutable() const;
+        void set_immutable(bool flag);
         string toString();
-        ObjectType type() const { return UNSPECIFIED; };
-};
-
-class SchemeNumber : public SchemeObject {
-    public:
-        static SchemeNumber* create(double number);
-        string toString();
-        double number;
-  	    ObjectType type() const { return NUMBER; };
-  	private:    
-  	    SchemeNumber(double number);
-};
-
-class SchemePair : public SchemeObject {
-    public:
-        static SchemePair* create();
-        static SchemePair* create(SchemeObject* car, SchemeObject* cdr);
-        ObjectType type() const { return PAIR; };
-        
-        string toString();
-	    SchemeObject* car;
-     	SchemeObject* cdr;
+        void clear_inuse();
         void mark();
+        ~SchemeObject();
+
+        SchemeObject* getVectorElem(int index);
+        void setVectorElem(SchemeObject* o, int index);
+
+		SchemeObject* getBinding(SchemeObject* name);
+        void putBinding(SchemeObject* name, SchemeObject* o);
+        void setBinding(SchemeObject* name, SchemeObject* o);
         
-     protected:	
-        SchemePair();
-        SchemePair(SchemeObject* car, SchemeObject* cdr);
-};
-
-class SchemeVector : public SchemeObject {
-    public:
-        static SchemeVector* create(SchemeObject** elems, int length);
-        static SchemeVector* create(SchemeObject* elem, int length);
-        ~SchemeVector();
-        SchemeObject* get(int index);
-        void set(SchemeObject* o, int index);
-        ObjectType type() const { return VECTOR; };
-        void mark();
+        string nameAsString();
         
-        string toString();
-        SchemeObject** elems;
-        int length;
-    protected:
-        SchemeVector(SchemeObject** elems, int length);
-        SchemeVector(SchemeObject* elems, int length);
+        void callContinuation(SchemeObject* arg);
         
-};
+        static SchemeObject* createNumber(double number);
+        static SchemeObject* createString(char* str);
+        static SchemeObject* createChar(char c);
+        static SchemeObject* createPair(SchemeObject* car, SchemeObject* cdr);
+        static SchemeObject* createVector(SchemeObject* elem, uint32_t length);
+        static SchemeObject* createBool(bool b);
+        static SchemeObject* createEmptyList();
+        static SchemeObject* createUnspecified();
+        static SchemeObject* createEOF();
+        static SchemeObject* createSymbol(char* str);
+        static SchemeObject* createContinuation();
+        static SchemeObject* createEnvironment(SchemeObject* parent);
+        static SchemeObject* createInputPort(istream* is);
+        static SchemeObject* createOutputPort(ostream* os);
+        static SchemeObject* createBuiltinProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
+        static SchemeObject* createUserProcedure(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
+        static SchemeObject* createInternalProcedure(SchemeObject* name);
+        static SchemeObject* createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
 
-
-class SchemeEmptyList : public SchemePair {
-    public:
-        string toString();
-        ObjectType type() const { return EMPTY_LIST; };
-        void mark();
-};
-
-class SchemeSymbol : public SchemeObject {
-    public:
-        static SchemeSymbol* create(string s);
-        string toString();
-        ObjectType type() const { return SYMBOL; };
-	    std::string str;
-	private:
-        SchemeSymbol(string s);
-        static map<string,SchemeSymbol*> known_symbols;    
-};
-
-
-class SchemeString : public SchemeObject {
-    public:
-        static SchemeString* create(string s, bool immutable = false);
-        string toString();
-        ObjectType type() const { return STRING; };
-	    std::string str;
-	private:    
-        SchemeString(string s, bool immutable);
-
-};
-
-class SchemeBool : public SchemeObject {
-    public:
-        SchemeBool(bool b);
-        string toString();
-        ObjectType type() const { return BOOL; };
-    	bool boolean;
-	    bool boolValue() const { return boolean; };
-};
-
-class SchemeChar : public SchemeObject {
-    public:
-        static SchemeChar* create(char c);
-        string toString();
-        ObjectType type() const { return CHAR; };
-
-        char c;
     private:
-        SchemeChar(char c);
-            
-};
-
-class SchemeContinuation : public SchemeObject {
-    public:
-        SchemeContinuation();
-        string toString();
-        ObjectType type() const { return CONTINUATION; };
-        void call(SchemeObject* arg);
-        void mark();
-
-        ::jmp_buf jmpbuf;
-        SchemeObject* result;
-};
-
-class SchemeInputPort : public SchemeObject {
-    public:
-        SchemeInputPort(istream* is);
-        string toString();
-        ObjectType type() const { return INPUT_PORT; };
-        istream* is;
-};
-
-class SchemeOutputPort : public SchemeObject {
-    public:
-        SchemeOutputPort(ostream* os);
-        string toString();
-        ObjectType type() const { return OUTPUT_PORT; };
-        ostream* os;
-};
-
-class SchemeProcedure : public SchemeObject 
-{
-    public:
-        static SchemeProcedure* create(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
-        static SchemeProcedure* create(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_formals, SchemeObject* s_body);
-        string toString();      
-        ObjectType type() const { return PROCEDURE; };
-        string nameAsString() { return name->str; };
-        void setName(SchemeObject* name);
+        static map<char*,SchemeObject*> known_symbols;
         
-        void mark();
-        
-        SchemeSymbol* name;
-
-        // Fields for builtin
-        int req;
-        int opt;
-        int rst;
-        SchemeObject* (*fn)();
-        
-        // Fields for user-function
-        SchemeObject* s_body;
-        SchemeObject* s_formals;
-        SchemeEnvironment* envt;
-        
-    protected:    
-        SchemeProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
-        SchemeProcedure::SchemeProcedure(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_formals, SchemeObject* s_body);
 };
 
-class SchemeInternalProcedure : public SchemeObject {
-    public:
-        SchemeInternalProcedure(string n);
-        ObjectType type() const { return INTERNAL_PROCEDURE; };
-        string toString();      
-        
-        string name;
-};
-
-class SchemeMacro : public SchemeProcedure {
-    public:
-        static SchemeMacro* create(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_formals, SchemeObject* s_body);
-        string toString();      
-        ObjectType type() const { return MACRO; };    
-    protected:    
-        SchemeMacro(SchemeObject* name, SchemeEnvironment* envt, SchemeObject* s_req, SchemeObject* s_body);
-};
-
-class SchemeEOF : public SchemeObject {
-    public:
-        SchemeEOF();
-        string toString();      
-        ObjectType type() const { return EOFTYPE; };    
-    
-};
-
-class SchemeEnvironment : public SchemeObject {
-    public:
-        static SchemeEnvironment* create(SchemeEnvironment* parent);
-        string toString();
-        ObjectType type() const { return ENVIRONMENT; };    
-
-		SchemeObject* get(SchemeObject* name);
-        void put(SchemeObject* name, SchemeObject* o);
-        void set(SchemeObject* name, SchemeObject* o);
-        
-        void mark();
-
-	private:
-        SchemeEnvironment(SchemeEnvironment* parent);
-        SchemeEnvironment* parent;
-        map<SchemeObject*,SchemeObject*> binding_map;	
-};
+inline
+SchemeObject::ObjectType SchemeObject::type() const {
+    return ObjectType(type_and_flags & 0x0000ffff);
+}
 
 #endif

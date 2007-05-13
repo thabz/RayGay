@@ -12,12 +12,13 @@ class Heap {
         static Heap* getUniqueInstance();
         void addRoot(SchemeObject* root);
         void popRoot();
-        void addAllocation(SchemeObject* o);
+        SchemeObject* allocate(SchemeObject::ObjectType type);
         void garbageCollect(list<SchemeObject*> &stack);
         bool timeToGarbageCollect();
         
     private:
         Heap();
+        void addAllocation(SchemeObject* o);
         void mark(list<SchemeObject*> &stack);
         void sweep();
         

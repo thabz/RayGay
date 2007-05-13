@@ -21,6 +21,13 @@ void Heap::popRoot() {
     roots.pop_back();
 }
 
+SchemeObject* Heap::allocate(uint32_t type_and_flags,) {
+    SchemeObject* result = new SchemeObject();
+    result->type_and_flags = type_and_flags;
+    addAllocation(result);
+    return result;
+}
+
 void Heap::addAllocation(SchemeObject* o) {
     allocations.push_back(o);
 }

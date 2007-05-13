@@ -10,14 +10,14 @@ SchemeObject* global_ret;
 SchemeObject* global_arg1;
 SchemeObject* global_arg2;
 SchemeObject* global_arg3;
-SchemeEnvironment* global_envt;
+SchemeObject* global_envt;
 list<SchemeObject*> stack;
 
 
 //------------------------------------------------------------------------
 // Interpreter
 //------------------------------------------------------------------------
-Interpreter::Interpreter(SchemeObject* parsetree, SchemeEnvironment* top_level_bindings) {
+Interpreter::Interpreter(SchemeObject* parsetree, SchemeObject* top_level_bindings) {
     this->parsetree = parsetree;   
 	this->top_level_bindings = top_level_bindings;
 }
@@ -98,7 +98,7 @@ SchemeObject* Interpreter::interpret() {
 // that arguments be passed in global variables [Tarditi92].
 
 SchemeObject* trampoline(fn_ptr f) {
-    SchemeEnvironment* saved = global_envt;
+    SchemeObject* saved = global_envt;
     size_t stack_size = stack.size();
     stack.push_back(saved);
     try {
@@ -117,7 +117,7 @@ SchemeObject* trampoline(fn_ptr f) {
 
 fn_ptr eval() {
     SchemeObject* s = global_arg1;
-    SchemeEnvironment* envt = global_envt;
+    SchemeObject* envt = global_envt;
 
     Heap* heap = Heap::getUniqueInstance();
     if (heap->timeToGarbageCollect()) {
@@ -131,10 +131,10 @@ fn_ptr eval() {
 	SchemeObject::ObjectType type = s->type();
 	switch(type) {
 		case SchemeObject::SYMBOL: {
-            SchemeSymbol* symbol = static_cast<SchemeSymbol*>(s);
-		    s = envt->get(symbol);
+            SchemeObject* symbol = s;
+		    s = envt->getBinding(symbol);
             if (s == NULL) {
-                throw scheme_exception("Unbound variable " + symbol->str);
+                throw scheme_exception("Unbound variable " + string(symbol->str));
             }
             global_ret = s;
             return NULL;
@@ -159,23 +159,23 @@ fn_ptr eval() {
 
 fn_ptr eval_list() {
     SchemeObject* p = global_arg1;
-    SchemeEnvironment* envt = global_envt;
+    SchemeObject* envt = global_envt;
     
 	SchemeObject* car = s_car(p);
     if (s_symbol_p(car) == S_FALSE) {
         return (fn_ptr)&eval_combo;
     }
 
-    SchemeSymbol* s = static_cast<SchemeSymbol*>(car);
+    SchemeObject* s = car;
 	SchemeObject* cdr = s_cdr(p);
 	
-	SchemeObject* proc = envt->get(s);
+	SchemeObject* proc = envt->getBinding(s);
     if (proc != NULL) {
         if (proc->type() == SchemeObject::MACRO) {
             global_arg1 = proc;
             global_arg2 = cdr;
             return (fn_ptr)&eval_call_macro;
-        } else if (proc->type() == SchemeObject::PROCEDURE) {
+        } else if (proc->type() == SchemeObject::USER_PROCEDURE || proc->type() == SchemeObject::BUILT_IN_PROCEDURE) {
             stack.push_back(proc);
             stack.push_back(cdr);
             global_arg1 = cdr;
@@ -188,7 +188,7 @@ fn_ptr eval_list() {
         } else if (proc->type() == SchemeObject::CONTINUATION) {
             global_arg1 = s_car(cdr);
             eval();
-            static_cast<SchemeContinuation*>(proc)->call(global_ret);
+            proc->callContinuation(global_ret);
         } else if (proc->type() == SchemeObject::INTERNAL_PROCEDURE) {
             if (s == if_symbol) {
                 global_arg1 = cdr;
@@ -329,12 +329,12 @@ fn_ptr eval_multi() {
 
 fn_ptr eval_define() {
     SchemeObject* p = global_arg1;
-    SchemeEnvironment* envt = global_envt;
+    SchemeObject* envt = global_envt;
     
     if (i_pair_p(s_car(p)) == S_TRUE) {
         // (define (func-name args...) body-forms...)
         SchemeObject* pa = s_car(p);
-        if (s_symbol_p(s_car(pa)) == S_FALSE) {
+        if (i_symbol_p(s_car(pa)) == S_FALSE) {
             throw scheme_exception("Bad variable");
         }
         SchemeObject* body = s_cdr(p);
@@ -346,22 +346,22 @@ fn_ptr eval_define() {
         trampoline((fn_ptr)&eval_lambda);
         SchemeObject* proc = global_ret;
         
-        envt->put(static_cast<SchemeSymbol*>(name), proc);
+        envt->putBinding(name , proc);
     } else {
         // (define var value-expr)
         if (s_length(p) != S_TWO) {
             throw scheme_exception("Missing or extra expression");
         }
         
-        if (s_symbol_p(s_car(p)) == S_FALSE) {
+        SchemeObject* s = s_car(p);
+        if (i_symbol_p(s) == S_FALSE) {
             throw scheme_exception("Bad variable");
         }
-        SchemeSymbol* s = static_cast<SchemeSymbol*>(s_car(p));
         
         global_arg1 = s_car(s_cdr(p));
         SchemeObject* v = trampoline((fn_ptr)&eval);
 
-        envt->put(s, v);
+        envt->putBinding(s, v);
     }
     global_ret = S_UNSPECIFIED;
     return NULL;
@@ -390,8 +390,8 @@ fn_ptr eval_apply() {
     global_arg1 = s_cdr(p);
     SchemeObject* args = trampoline((fn_ptr)&eval_multi);
 
-    SchemePair* collected = S_EMPTY_LIST;
-    SchemePair* prev = NULL;
+    SchemeObject* collected = S_EMPTY_LIST;
+    SchemeObject* prev = NULL;
     int i = 0;
     while (args != S_EMPTY_LIST) {
         i++;
@@ -400,7 +400,7 @@ fn_ptr eval_apply() {
             if (s_cdr(args) == S_EMPTY_LIST) {
                 // arg is a list and last argument
                 if (collected == S_EMPTY_LIST) {
-                    collected = static_cast<SchemePair*>(arg);
+                    collected = arg;
                 } else {
                     s_set_cdr_e(prev, arg);
                 }
@@ -413,7 +413,7 @@ fn_ptr eval_apply() {
                 prev = collected;
                 stack.push_back(collected);
             } else {
-                SchemePair* tmp = s_cons(arg,S_EMPTY_LIST);
+                SchemeObject* tmp = s_cons(arg,S_EMPTY_LIST);
                 s_set_cdr_e(prev, tmp);
                 prev = tmp;
             }
@@ -451,7 +451,7 @@ fn_ptr eval_combo() {
     global_arg1 = s_car(s);
     SchemeObject* proc = trampoline((fn_ptr)&eval);
     
-    if (proc->type() != SchemeObject::PROCEDURE) {
+    if (i_procedure_p(proc) == S_FALSE) {
 	    throw scheme_exception("Wrong type to apply: " + s->toString() + " does not resolve to a procedure.");
     }
     
@@ -477,7 +477,7 @@ fn_ptr eval_if() {
 
     stack.push_back(p);
     global_arg1 = s_car(p);
-    bool condition = trampoline((fn_ptr)&eval)->boolValue();
+    bool condition = scm2bool(trampoline((fn_ptr)&eval));
     stack.pop_back();
 	
     if (condition) {
@@ -513,7 +513,7 @@ fn_ptr eval_and() {
         } else {
             global_arg1 = cur;
             result = trampoline((fn_ptr)&eval);
-            if (!result->boolValue()) {
+            if (!scm2bool(result)) {
                 stack.pop_back();
                 global_ret = result;
                 return NULL;
@@ -543,7 +543,7 @@ fn_ptr eval_or() {
             global_arg1 = s_car(p);
             result = trampoline((fn_ptr)&eval);
 
-            if (result->boolValue()) {
+            if (scm2bool(result)) {
                 stack.pop_back();
                 stack.pop_back();
                 global_ret = result;
@@ -669,7 +669,7 @@ fn_ptr eval_quasiquote() {
 }
 
 fn_ptr eval_procedure_call() {
-    SchemeProcedure* proc = static_cast<SchemeProcedure*>(global_arg1);
+    SchemeObject* proc = global_arg1;
     SchemeObject* args = global_arg2;
     
     assert(proc != NULL);
@@ -679,10 +679,10 @@ fn_ptr eval_procedure_call() {
 
     SchemeObject* result = S_UNSPECIFIED;
 
-    if (proc->fn != NULL) {
+    if (proc->type() == SchemeObject::BUILT_IN_PROCEDURE) {
         SchemeObject* argsv[10];
         // Built-in function
-        int args_num = int(s_length(args)->number);
+        int args_num = scm2int(s_length(args));
         if (args_num < proc->req) {
             throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
         }
@@ -746,19 +746,19 @@ fn_ptr eval_procedure_call() {
         return NULL;
     } else {
         // User function
-        SchemeEnvironment* new_envt = SchemeEnvironment::create(proc->envt);
+        SchemeObject* new_envt = SchemeObject::createEnvironment(proc->envt);
         SchemeObject* formals = proc->s_formals;
 
         while (i_pair_p(formals) == S_TRUE) {
             if (args == S_EMPTY_LIST) {
                 throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
             }
-            new_envt->put(i_car(formals), i_car(args));
+            new_envt->putBinding(i_car(formals), i_car(args));
             args = i_cdr(args);
             formals = i_cdr(formals);
         }
         if (formals != S_EMPTY_LIST) {
-            new_envt->put(formals, args);
+            new_envt->putBinding(formals, args);
         } else if (args != S_EMPTY_LIST) {
             throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
         }
@@ -775,9 +775,9 @@ fn_ptr eval_lambda() {
     SchemeObject* formals = global_arg1;
     SchemeObject* body = global_arg2;
     SchemeObject* name = global_arg3;
-    SchemeEnvironment* envt = global_envt;
+    SchemeObject* envt = global_envt;
 
-    global_ret = SchemeProcedure::create(name, envt, formals, body);
+    global_ret = SchemeObject::createUserProcedure(name, envt, formals, body);
     return NULL;
 }
 
@@ -786,7 +786,7 @@ fn_ptr eval_set_e() {
     // we manipulate instead of doing the set(s,v)
 
     SchemeObject* p = global_arg1;
-    SchemeEnvironment* envt = global_envt;
+    SchemeObject* envt = global_envt;
 
     if (s_length(p) != S_TWO) {
         throw scheme_exception("Missing or extra expression");
@@ -795,9 +795,9 @@ fn_ptr eval_set_e() {
     if (s_symbol_p(car) == S_FALSE) {
         throw scheme_exception("Wrong type argument in position 1.");
     }
-    SchemeSymbol* s = static_cast<SchemeSymbol*>(car);
+    SchemeObject* s = car;
 
-    SchemeObject* already_bound = envt->get(s);
+    SchemeObject* already_bound = envt->getBinding(s);
     if (already_bound == NULL) {
         throw scheme_exception("Unbound variable: " + s->toString());
     }
@@ -805,7 +805,7 @@ fn_ptr eval_set_e() {
     global_arg1 = s_car(s_cdr(p));
     SchemeObject* v = trampoline((fn_ptr)&eval);
 
-    envt->set(s, v);
+    envt->setBinding(s, v);
 
     global_ret = S_UNSPECIFIED;
     return NULL;
@@ -833,7 +833,7 @@ fn_ptr eval_cond() {
         global_arg1 = test_expr;
         SchemeObject* test = trampoline((fn_ptr)&eval);
         
-        if (test->boolValue()) {
+        if (scm2bool(test)) {
             if (s_cdr(clause) == S_EMPTY_LIST) {
                 global_ret = test;
                 return NULL;
@@ -899,7 +899,7 @@ fn_ptr eval_case() {
 
 fn_ptr eval_let() {
     SchemeObject* p = global_arg1;
-    SchemeEnvironment* envt = global_envt;
+    SchemeObject* envt = global_envt;
     
     if (i_null_p(p) == S_TRUE) {
         throw scheme_exception("Bad body in let");
@@ -916,7 +916,7 @@ fn_ptr eval_let() {
     }
     
     // Build new bindings
-    SchemeEnvironment* new_bindings = SchemeEnvironment::create(envt);
+    SchemeObject* new_bindings = SchemeObject::createEnvironment(envt);
     SchemeObject* binding_pairs = first_arg;
     
     stack.push_back(new_bindings);
@@ -927,7 +927,7 @@ fn_ptr eval_let() {
         global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
         SchemeObject* val = trampoline((fn_ptr)&eval);
 
-        new_bindings->put(static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs))), val);
+        new_bindings->putBinding(s_car(s_car(binding_pairs)), val);
         binding_pairs = s_cdr(binding_pairs);
     }
     stack.pop_back();
@@ -939,7 +939,7 @@ fn_ptr eval_let() {
 
 fn_ptr eval_named_let() {
     SchemeObject* p = global_arg1;
-    SchemeEnvironment* envt = global_envt;
+    SchemeObject* envt = global_envt;
     
     stack.push_back(p);
     stack.push_back(envt);
@@ -995,9 +995,9 @@ fn_ptr eval_named_let() {
     stack.pop_back();
     stack.pop_back();
 
-    SchemeEnvironment* new_envt = SchemeEnvironment::create(envt);
-    SchemeProcedure* lambda = SchemeProcedure::create(name, new_envt, formals, s_cdr(p));
-    new_envt->put(name, lambda);
+    SchemeObject* new_envt = SchemeObject::createEnvironment(envt);
+    SchemeObject* lambda = SchemeObject::createUserProcedure(name, new_envt, formals, s_cdr(p));
+    new_envt->putBinding(name, lambda);
     
     global_arg1 = lambda;
     global_arg2 = args;
@@ -1007,7 +1007,7 @@ fn_ptr eval_named_let() {
 
 fn_ptr eval_letstar() {
     SchemeObject* p = global_arg1;
-    SchemeEnvironment* envt = global_envt;
+    SchemeObject* envt = global_envt;
     
     if (i_null_p(p) == S_TRUE) {
         throw scheme_exception("Bad body in let*");
@@ -1022,7 +1022,7 @@ fn_ptr eval_letstar() {
     }
 
     // Build new bindings
-    SchemeEnvironment* new_bindings = SchemeEnvironment::create(envt);
+    SchemeObject* new_bindings = SchemeObject::createEnvironment(envt);
     SchemeObject* binding_pairs = s_car(p);
 
     while (i_null_p(binding_pairs) == S_FALSE) {
@@ -1031,11 +1031,11 @@ fn_ptr eval_letstar() {
         global_envt = new_bindings;
         SchemeObject* val = trampoline((fn_ptr)&eval);
         
-	SchemeSymbol* sym = static_cast<SchemeSymbol*>(s_car(s_car(binding_pairs)));
-	if (sym == NULL) {
+	SchemeObject* sym = s_car(s_car(binding_pairs));
+	if (s_symbol_p(sym) == S_FALSE) {
 	    throw scheme_exception("Bad variable in let*: " + s_car(s_car(binding_pairs))->toString());
 	}
-        new_bindings->put(sym, val);
+        new_bindings->putBinding(sym, val);
         binding_pairs = s_cdr(binding_pairs);
     }
     
@@ -1050,10 +1050,10 @@ fn_ptr eval_letrec() {
 
 fn_ptr eval_define_macro() {
     SchemeObject* p = global_arg1;
-    SchemeEnvironment* envt = global_envt;
+    SchemeObject* envt = global_envt;
 
     SchemeObject* formals = s_car(p);
-    SchemePair* body = static_cast<SchemePair*>(s_cdr(p));
+    SchemeObject* body = s_cdr(p);
     SchemeObject* name = s_car(formals);
     formals = s_cdr(formals);
     
@@ -1061,32 +1061,32 @@ fn_ptr eval_define_macro() {
         throw scheme_exception("Invalid macro-name in definition: " + name->toString());
     }
 
-    SchemeMacro* macro = SchemeMacro::create(name, envt, formals, body);
-    envt->put(name, macro);
+    SchemeObject* macro = SchemeObject::createMacro(name, envt, formals, body);
+    envt->putBinding(name, macro);
     
     global_ret = S_UNSPECIFIED;
-    return (fn_ptr)NULL;
+    return (fn_ptr) NULL;
 }
 
 fn_ptr eval_call_macro() {
-    SchemeMacro* proc = static_cast<SchemeMacro*>(global_arg1);
+    SchemeObject* proc = global_arg1;
     SchemeObject* args = global_arg2;
-    SchemeEnvironment* envt = global_envt;
+    SchemeObject* envt = global_envt;
     
     // Build new environment
-    SchemeEnvironment* new_envt = SchemeEnvironment::create(proc->envt);
+    SchemeObject* new_envt = SchemeObject::createEnvironment(proc->envt);
     SchemeObject* formals = proc->s_formals;
     
     while (i_pair_p(formals) == S_TRUE) {
         if (args == S_EMPTY_LIST) {
             throw scheme_exception("Too few argument given in call to macro " + proc->nameAsString());
         }
-        new_envt->put(i_car(formals), i_car(args));
+        new_envt->putBinding(i_car(formals), i_car(args));
         formals = i_cdr(formals);
         args = i_cdr(args);
     }
     if (formals != S_EMPTY_LIST) {
-        new_envt->put(formals, args);
+        new_envt->putBinding(formals, args);
     } else if (args != S_EMPTY_LIST) {
         throw scheme_exception("Too many argument given in call to macro "+proc->nameAsString());
     }
@@ -1112,14 +1112,14 @@ fn_ptr eval_call_macro() {
 
 fn_ptr eval_do() {
     SchemeObject* p = global_arg1;
-    SchemeEnvironment* envt = global_envt;
+    SchemeObject* envt = global_envt;
 
     if (i_pair_p(s_car(p)) == S_FALSE && i_null_p(s_car(p)) == S_FALSE) {
         throw scheme_exception("Bad body in do");
     }
 
     // Extract formals and collect evaluated args for a lambda
-    SchemeEnvironment* new_envt = SchemeEnvironment::create(envt);
+    SchemeObject* new_envt = SchemeObject::createEnvironment(envt);
     SchemeObject* steps = S_EMPTY_LIST;
     SchemeObject* varnames = S_EMPTY_LIST;
     SchemeObject* binding_pairs = s_car(p);
@@ -1152,7 +1152,7 @@ fn_ptr eval_do() {
         global_arg1 = i_cadr(binding);
         SchemeObject* val = trampoline((fn_ptr)&eval);
         
-        new_envt->put(varname, val);
+        new_envt->putBinding(varname, val);
         varnames = s_cons(varname, varnames);
         varnames_stack_pos = varnames;
 
@@ -1182,7 +1182,7 @@ fn_ptr eval_do() {
         SchemeObject* val = trampoline((fn_ptr)&eval);
 
         // Return if test is true
-        if (val->boolValue()) {
+        if (scm2bool(val)) {
             if (s_cdr(s_car(body)) == S_EMPTY_LIST) {
                 global_ret = S_UNSPECIFIED;
                 stack.pop_back();
@@ -1212,7 +1212,7 @@ fn_ptr eval_do() {
         // Assign new step values
         SchemeObject* tmp = varnames;
         while(i_null_p(varnames) == S_FALSE) {
-            new_envt->put(static_cast<SchemeSymbol*>(s_car(varnames)), s_car(vals));
+            new_envt->putBinding(s_car(varnames), s_car(vals));
             varnames = s_cdr(varnames);
             vals = s_cdr(vals);
         }

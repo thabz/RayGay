@@ -6,12 +6,12 @@ Parser::Parser() {
     this->lexer = new Lexer();
 }
 
-SchemePair* Parser::parse(istream* is) {
-    SchemePair* result = S_EMPTY_LIST;
-    SchemePair* result_tail = S_EMPTY_LIST;
+SchemeObject* Parser::parse(istream* is) {
+    SchemeObject* result = S_EMPTY_LIST;
+    SchemeObject* result_tail = S_EMPTY_LIST;
     SchemeObject* o;
     while ((o = read(is)) != NULL) {
-    	SchemePair* newtail = i_cons(o, S_EMPTY_LIST);
+    	SchemeObject* newtail = i_cons(o, S_EMPTY_LIST);
     	if (result == S_EMPTY_LIST) {
     	    result = newtail;
     	    result_tail = newtail;
@@ -28,19 +28,19 @@ SchemeObject* Parser::read(istream* is) {
     Lexer::Token token = lexer->nextToken(is);
     switch(token) {
         case Lexer::NUMBER :
-           result = SchemeNumber::create(lexer->getNumber());
+           result = SchemeObject::createNumber(lexer->getNumber());
            break;
         case Lexer::STRING :
-           result = SchemeString::create(lexer->getString(),true);
+           result = SchemeObject::createString(lexer->getString().c_str());
            break;
         case Lexer::BOOLEAN :
            result = lexer->getBool() ? S_TRUE : S_FALSE;
            break;
         case Lexer::CHAR :
-           result = SchemeChar::create(lexer->getChar());
+           result = SchemeObject::createChar(lexer->getChar());
            break;
         case Lexer::SYMBOL :
-           result = SchemeSymbol::create(lexer->getString());
+           result = SchemeObject::createSymbol(lexer->getString());
            break;
         case Lexer::OPEN_PAREN :
            result = read_list(is);
@@ -69,7 +69,7 @@ SchemeObject* Parser::read(istream* is) {
            throw scheme_exception("Parser: unexpected token");
     }
     if (result != NULL) {
-        result->immutable = true;
+        result->set_immutable(true);
     }
     return result; 
 }
@@ -110,20 +110,20 @@ SchemeObject* Parser::read_list(istream* is) {
 
 SchemeObject* Parser::read_quoted(istream* is) {
     SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
-    return i_cons(SchemeSymbol::create("quote"), list);
+    return i_cons(SchemeObject::createSymbol("quote"), list);
 }
 
 SchemeObject* Parser::read_quasiquoted(istream* is) {
     SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
-    return i_cons(SchemeSymbol::create("quasiquote"), list);
+    return i_cons(SchemeObject::createSymbol("quasiquote"), list);
 }
 
 SchemeObject* Parser::read_unquoted(istream* is) {
     SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
-    return i_cons(SchemeSymbol::create("unquote"), list);
+    return i_cons(SchemeObject::createSymbol("unquote"), list);
 }
 
 SchemeObject* Parser::read_unquote_spliced(istream* is) {
     SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
-    return i_cons(SchemeSymbol::create("unquote-splicing"), list);
+    return i_cons(SchemeObject::createSymbol("unquote-splicing"), list);
 }

@@ -12,7 +12,7 @@ typedef void*(*fn_ptr)();
 class Interpreter
 {
     public:
-	    Interpreter(SchemeObject* parsetree, SchemeEnvironment* top_level);
+	    Interpreter(SchemeObject* parsetree, SchemeObject* top_level_envt);
    	    SchemeObject* interpret();
         SchemeObject* call_procedure_0(SchemeObject* procedure);
         SchemeObject* call_procedure_1(SchemeObject* procedure, SchemeObject* arg);
@@ -20,7 +20,7 @@ class Interpreter
         SchemeObject* call_procedure_n(SchemeObject* procedure, SchemeObject* args_list);
    	    
    	private:
-		SchemeEnvironment* top_level_bindings;
+		SchemeObject* top_level_bindings;
         SchemeObject* parsetree;
 };
 
