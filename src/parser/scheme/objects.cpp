@@ -208,7 +208,12 @@ SchemeObject::~SchemeObject() {
             delete [] elems;
             break;
         case SchemeObject::STRING :
-            //free(str);
+            if (!immutable()) {
+               //free(str);
+            }
+            break;
+        case SchemeObject::CONTINUATION :
+            free(jmpbuf);
             break;
         default:
             break;    
@@ -334,7 +339,7 @@ string SchemeObject::nameAsString() {
 void SchemeObject::callContinuation(SchemeObject* arg) {
     assert(type() == SchemeObject::CONTINUATION);
     this->result = arg;
-    longjmp(jmpbuf, 1);
+    longjmp(*jmpbuf, 1);
 }
 
 //-----------------------------------------------------------
@@ -343,7 +348,7 @@ void SchemeObject::callContinuation(SchemeObject* arg) {
 
 SchemeObject* SchemeObject::getBinding(SchemeObject* name) {
     assert(this->type() == SchemeObject::ENVIRONMENT);
-    if (s_symbol_p(name) == S_FALSE) {
+    if (i_symbol_p(name) == S_FALSE) {
         throw scheme_exception(name->toString() + " is not a symbol.");
     }
     map<SchemeObject*,SchemeObject*>::iterator v = binding_map->find(name);

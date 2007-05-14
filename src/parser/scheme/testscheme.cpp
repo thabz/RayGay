@@ -117,6 +117,9 @@ void test_objects() {
     n->set_immutable(false);
     assert(n->immutable() == false);
     assert(n->type() == SchemeObject::NUMBER);
+    cout << "Object size in bytes: " << sizeof(SchemeObject) << endl;
+    cout << "Double size in bytes: " << sizeof(double) << endl;
+    cout << "jmp_buf size in bytes: " << sizeof(::jmp_buf) << endl;
 }
 
 void test_parser() {

@@ -22,7 +22,7 @@ class SchemeObject
             SchemeObject* car;     // For pairs
             double value;          // For numbers
             bool boolean;          // For booleans
-            ::jmp_buf jmpbuf;      // For continuations
+            ::jmp_buf *jmpbuf;     // For continuations
             istream* is;           // For inputports
             ostream* os;           // For outputports
             char c;                // For chars

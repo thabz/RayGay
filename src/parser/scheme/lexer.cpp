@@ -42,6 +42,7 @@ Lexer::Token Lexer::nextToken(istream* is) {
             continue;
         }
         
+        // Support for multiline nested comments as specified in SRFI 30.
         if (c == '#') {
             int d = is->get();
             if (d == '|') {

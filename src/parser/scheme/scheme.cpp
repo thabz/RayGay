@@ -458,7 +458,8 @@ SchemeObject* s_call_cc(SchemeObject* s_proc) {
     SchemeObject* s_escape = SchemeObject::createContinuation();
     size_t stack_size = stack.size();
     stack.push_back(s_escape);
-    int kk = setjmp(s_escape->jmpbuf);
+    s_escape->jmpbuf = (::jmp_buf *)::malloc(sizeof(::jmp_buf));
+    int kk = setjmp(*(s_escape->jmpbuf));
     if (kk == 0) {
         SchemeObject* result = interpreter->call_procedure_1(s_proc, s_escape);
         // s_proc didn't call the escape-continuation
