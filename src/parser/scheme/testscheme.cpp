@@ -156,9 +156,9 @@ void test_parser() {
 void test_interpreter() {
     Scheme* s = new Scheme();
     assert(s->eval("") == S_UNSPECIFIED);
-   // assert(s->eval("#| xxx |#") == S_UNSPECIFIED);
+    assert(s->eval("#| xxx |#") == S_UNSPECIFIED);
     assert(s->eval("#| xxx |# ") == S_UNSPECIFIED);
- //   assert(s->eval(";xxxxx ") == S_UNSPECIFIED);
+    assert(s->eval(";xxxxx ") == S_UNSPECIFIED);
 
     // test eval_combo()
     assert_eval(s, "((if #t reverse length) '(1 2 3))", "(3 2 1)");
@@ -507,6 +507,7 @@ void test_lambda() {
     Scheme* s = new Scheme();
     assert_eval(s, "(procedure? (lambda (x) x))", "#t");
     assert_eval(s, "(procedure? cons)", "#t");
+    assert_eval(s, "(procedure? if)", "#t");
     assert_eval(s, "(procedure? 1)", "#f");
     assert_eval(s, "(procedure? 'car)","#f");
     assert_eval(s, "(procedure? (lambda (x) (* x x)))","#t");

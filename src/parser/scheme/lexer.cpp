@@ -185,7 +185,7 @@ Lexer::Token Lexer::nextToken(istream* is) {
         return Lexer::SYMBOL; 
     }
     // TODO: Check out why the stream has failed and throw exception
-    return Lexer::ERROR;
+    return is->eof() ? Lexer::END : Lexer::ERROR;
 }
 
 void Lexer::putBack(Token token) {
