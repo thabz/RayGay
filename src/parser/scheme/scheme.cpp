@@ -108,6 +108,22 @@ Scheme::Scheme() {
     	assign("cdadr"                 ,1,0,0, (SchemeObject* (*)()) s_cdadr, scheme_report_environment);
     	assign("cddar"                 ,1,0,0, (SchemeObject* (*)()) s_cddar, scheme_report_environment);
     	assign("cdddr"                 ,1,0,0, (SchemeObject* (*)()) s_cdddr, scheme_report_environment);
+    	assign("caaaar"                ,1,0,0, (SchemeObject* (*)()) s_caaaar, scheme_report_environment);
+    	assign("caaadr"                ,1,0,0, (SchemeObject* (*)()) s_caaadr, scheme_report_environment);
+    	assign("caadar"                ,1,0,0, (SchemeObject* (*)()) s_caadar, scheme_report_environment);
+    	assign("caaddr"                ,1,0,0, (SchemeObject* (*)()) s_caaddr, scheme_report_environment);
+    	assign("cadaar"                ,1,0,0, (SchemeObject* (*)()) s_cadaar, scheme_report_environment);
+    	assign("cadadr"                ,1,0,0, (SchemeObject* (*)()) s_cadadr, scheme_report_environment);
+    	assign("caddar"                ,1,0,0, (SchemeObject* (*)()) s_caddar, scheme_report_environment);
+    	assign("cadddr"                ,1,0,0, (SchemeObject* (*)()) s_cadddr, scheme_report_environment);                                       
+    	assign("cdaaar"                ,1,0,0, (SchemeObject* (*)()) s_cdaaar, scheme_report_environment);
+    	assign("cdaadr"                ,1,0,0, (SchemeObject* (*)()) s_cdaadr, scheme_report_environment);
+    	assign("cdadar"                ,1,0,0, (SchemeObject* (*)()) s_cdadar, scheme_report_environment);
+    	assign("cdaddr"                ,1,0,0, (SchemeObject* (*)()) s_cdaddr, scheme_report_environment);
+    	assign("cddaar"                ,1,0,0, (SchemeObject* (*)()) s_cddaar, scheme_report_environment);
+    	assign("cddadr"                ,1,0,0, (SchemeObject* (*)()) s_cddadr, scheme_report_environment);
+    	assign("cdddar"                ,1,0,0, (SchemeObject* (*)()) s_cdddar, scheme_report_environment);
+    	assign("cddddr"                ,1,0,0, (SchemeObject* (*)()) s_cddddr, scheme_report_environment);
     	assign("list"                  ,0,0,1, (SchemeObject* (*)()) s_list, scheme_report_environment);
     	assign("list-tail"             ,2,0,0, (SchemeObject* (*)()) s_list_tail, scheme_report_environment);
     	assign("list-ref"              ,2,0,0, (SchemeObject* (*)()) s_list_ref, scheme_report_environment);
@@ -724,8 +740,8 @@ SchemeObject* s_cdr(SchemeObject* o) {
 }
 
 SchemeObject* s_cxr(SchemeObject* o, char* x) {
-    while (x[0] != '\0') {
-        if (x[0] == 'a') {
+    while (*x != '\0') {
+        if (*x == 'a') {
             o = s_car(o);
         } else {
             o = s_cdr(o);
@@ -746,6 +762,22 @@ SchemeObject* s_cdaar(SchemeObject* o) { return s_cxr(o, "aad"); };
 SchemeObject* s_cdadr(SchemeObject* o) { return s_cxr(o, "dad"); };
 SchemeObject* s_cddar(SchemeObject* o) { return s_cxr(o, "add"); };
 SchemeObject* s_cdddr(SchemeObject* o) { return s_cxr(o, "ddd"); };
+SchemeObject* s_caaaar(SchemeObject* o) { return s_cxr(o, "aaaa"); };
+SchemeObject* s_caaadr(SchemeObject* o) { return s_cxr(o, "daaa"); };
+SchemeObject* s_caadar(SchemeObject* o) { return s_cxr(o, "adaa"); };
+SchemeObject* s_caaddr(SchemeObject* o) { return s_cxr(o, "ddaa"); };
+SchemeObject* s_cadaar(SchemeObject* o) { return s_cxr(o, "aada"); };
+SchemeObject* s_cadadr(SchemeObject* o) { return s_cxr(o, "dada"); };
+SchemeObject* s_caddar(SchemeObject* o) { return s_cxr(o, "adda"); };
+SchemeObject* s_cadddr(SchemeObject* o) { return s_cxr(o, "ddda"); };
+SchemeObject* s_cdaaar(SchemeObject* o) { return s_cxr(o, "aaad"); };
+SchemeObject* s_cdaadr(SchemeObject* o) { return s_cxr(o, "daad"); };
+SchemeObject* s_cdadar(SchemeObject* o) { return s_cxr(o, "adad"); };
+SchemeObject* s_cdaddr(SchemeObject* o) { return s_cxr(o, "ddad"); };
+SchemeObject* s_cddaar(SchemeObject* o) { return s_cxr(o, "aadd"); };
+SchemeObject* s_cddadr(SchemeObject* o) { return s_cxr(o, "dadd"); };
+SchemeObject* s_cdddar(SchemeObject* o) { return s_cxr(o, "addd"); };
+SchemeObject* s_cddddr(SchemeObject* o) { return s_cxr(o, "dddd"); };
 
 // (cons a b)
 SchemeObject* s_cons(SchemeObject* car, SchemeObject* cdr) {
