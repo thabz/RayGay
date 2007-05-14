@@ -302,6 +302,7 @@ fn_ptr eval_multi() {
         global_arg1 = i_car(p);
         SchemeObject* r;
         if (i_number_p(global_arg1) == S_TRUE) {
+            // Lame attempt at optimizing arithmetic forms
             r = global_arg1;
         } else {
             r = trampoline((fn_ptr)&eval);
@@ -680,7 +681,7 @@ fn_ptr eval_procedure_call() {
     SchemeObject* result = S_UNSPECIFIED;
 
     if (proc->type() == SchemeObject::BUILT_IN_PROCEDURE) {
-        SchemeObject* argsv[10];
+        SchemeObject* argsv[16];
         // Built-in function
         int req = proc->req();
         int opt = proc->opt();
@@ -691,13 +692,11 @@ fn_ptr eval_procedure_call() {
         if ((args_num > req + opt) && !proc->rest()) {
             throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
         }
-        if (args_num < req + opt) {
-            // TODO: append_e nogle S_UNSPECIFIED på args, så længden af args bliver req+opt.
-        }
+
         SchemeObject* a_p = args;
         try {
             if (!proc->rest()) {
-                for(int i = 0; i < 10; i++) {
+                for(int i = 0; i < 16; i++) {
                     if (i < args_num) {
                         argsv[i] = s_car(a_p);
                         a_p = s_cdr(a_p);
@@ -717,7 +716,7 @@ fn_ptr eval_procedure_call() {
                     default:  throw scheme_exception("Arguments mismatch"); 
                 }
             } else {
-                for(int i = 0; i < 10; i++) {
+                for(int i = 0; i < 16; i++) {
                     if (i < req) {
                         argsv[i] = s_car(a_p);
                         a_p = s_cdr(a_p);
