@@ -685,6 +685,8 @@ fn_ptr eval_procedure_call() {
         // Built-in function
         int req = proc->req();
         int opt = proc->opt();
+        // TODO: Avoid calling s_length. Catch the args-length mismatches
+        // when traversing the args below instead.
         int args_num = scm2int(s_length(args));
         if (args_num < req) {
             throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
@@ -705,6 +707,7 @@ fn_ptr eval_procedure_call() {
                     }
                 }
                 switch(req + opt) {
+                    // TODO: Support upto 16+16 calls. Or at least more than this.
                     case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();
                               break;
                     case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
@@ -725,6 +728,7 @@ fn_ptr eval_procedure_call() {
                         break;
                     }
                 }
+                // TODO: Support upto 16+16 calls. Or at least more than this.
                 switch(req + opt) {
                     case 0:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
                               break;
@@ -1213,9 +1217,9 @@ fn_ptr eval_do() {
         // Assign new step values
         SchemeObject* tmp = varnames;
         while(i_null_p(varnames) == S_FALSE) {
-            new_envt->putBinding(s_car(varnames), s_car(vals));
-            varnames = s_cdr(varnames);
-            vals = s_cdr(vals);
+            new_envt->putBinding(i_car(varnames), i_car(vals));
+            varnames = i_cdr(varnames);
+            vals = i_cdr(vals);
         }
         varnames = tmp;
     }
