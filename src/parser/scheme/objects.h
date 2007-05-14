@@ -10,40 +10,44 @@ class SchemeEnvironment;
 
 using namespace std;
 
-#define IMMUTABLE_FLAG ((uint32_t)(1 << 20))
-#define INUSE_FLAG     ((uint32_t)(1 << 21))
+#define IMMUTABLE_FLAG ((uint32_t)(1 << 31))
+#define INUSE_FLAG     ((uint32_t)(1 << 30))
+#define REST_FLAG      ((uint32_t)(1 << 29))
 
 class SchemeObject 
 {
     public:
         uint32_t type_and_flags;
         union {
-            char* str;             // For strings and symbols
-            SchemeObject* car;     // For pairs
-            double value;          // For numbers
-            bool boolean;          // For booleans
-            ::jmp_buf *jmpbuf;     // For continuations
-            istream* is;           // For inputports
-            ostream* os;           // For outputports
-            char c;                // For chars
-            SchemeObject** elems;  // For vector
-            SchemeObject* parent;  // For environments. Environment.
-            SchemeObject* name;    // For macros and procedures. Symbol.
-        };
-        union {
-            SchemeObject* cdr;      // For pairs
-            SchemeObject* result;   // For continuations
-            uint32_t length;        // For vector and strings
-            map<SchemeObject*,SchemeObject*>* binding_map;	// For environments
-            int req;                // For BUILT_IN_PROCEDURE
-            SchemeObject* s_body;   // For USER_PROCEDURE
+            double value;                  // For numbers
+            struct {
+                union {
+                    char* str;             // For strings and symbols
+                    SchemeObject* car;     // For pairs
+                    bool boolean;          // For booleans
+                    ::jmp_buf *jmpbuf;     // For continuations
+                    istream* is;           // For inputports
+                    ostream* os;           // For outputports
+                    char c;                // For chars
+                    SchemeObject** elems;  // For vector
+                    SchemeObject* parent;  // For environments. Environment.
+                    SchemeObject* name;    // For macros and procedures. Symbol.
+                };
+                union {
+                    SchemeObject* cdr;      // For pairs
+                    SchemeObject* result;   // For continuations
+                    uint32_t length;        // For vector and strings
+                    map<SchemeObject*,SchemeObject*>* binding_map;	// For environments
+                    int req;                // For BUILT_IN_PROCEDURE
+                    SchemeObject* s_body;   // For USER_PROCEDURE
+                };
+            };
         };
         union {
             int opt;                // For BUILT_IN_PROCEDURE
             SchemeObject* s_formals; // For USER_PROCEDURE
         };
 
-        int rst;                // For BUILT_IN_PROCEDURE
         SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
 
         SchemeObject* envt; // For USER_PROCEDURE
@@ -92,6 +96,8 @@ class SchemeObject
         
         void callContinuation(SchemeObject* arg);
         
+        bool rest() const;
+        
         static SchemeObject* createNumber(double number);
         static SchemeObject* createString(const char* str);
         static SchemeObject* createChar(char c);
@@ -119,6 +125,11 @@ class SchemeObject
 inline
 SchemeObject::ObjectType SchemeObject::type() const {
     return ObjectType(type_and_flags & 0x0000ffff);
+}
+
+inline
+bool SchemeObject::rest() const {
+    return (type_and_flags & REST_FLAG) != 0;    
 }
 
 inline

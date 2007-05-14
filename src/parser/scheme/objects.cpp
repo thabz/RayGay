@@ -114,7 +114,9 @@ SchemeObject* SchemeObject::createBuiltinProcedure(SchemeObject* name, int req, 
     result->name = name;
     result->req = req;
     result->opt = opt;
-    result->rst = rst;
+    if (rst == 1) {
+        result->type_and_flags |= REST_FLAG;        
+    }
     result->fn = fn;
     return result;
 }

@@ -686,7 +686,7 @@ fn_ptr eval_procedure_call() {
         if (args_num < proc->req) {
             throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
         }
-        if (args_num > proc->req + proc->opt && proc->rst == 0) {
+        if (args_num > proc->req + proc->opt && !proc->rest()) {
             throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
         }
         if (args_num < proc->req + proc->opt) {
@@ -694,7 +694,7 @@ fn_ptr eval_procedure_call() {
         }
         SchemeObject* a_p = args;
         try {
-            if (proc->rst == 0) {
+            if (!proc->rest()) {
                 for(int i = 0; i < 10; i++) {
                     if (i < args_num) {
                         argsv[i] = s_car(a_p);
