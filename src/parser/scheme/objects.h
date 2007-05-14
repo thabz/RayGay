@@ -13,6 +13,8 @@ using namespace std;
 #define IMMUTABLE_FLAG ((uint32_t)(1 << 31))
 #define INUSE_FLAG     ((uint32_t)(1 << 30))
 #define REST_FLAG      ((uint32_t)(1 << 29))
+#define REQ_BITS_OFFS  16
+#define OPT_BITS_OFFS  20
 
 class SchemeObject 
 {
@@ -38,18 +40,12 @@ class SchemeObject
                     SchemeObject* result;   // For continuations
                     uint32_t length;        // For vector and strings
                     map<SchemeObject*,SchemeObject*>* binding_map;	// For environments
-                    int req;                // For BUILT_IN_PROCEDURE
+                    SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
                     SchemeObject* s_body;   // For USER_PROCEDURE
                 };
             };
         };
-        union {
-            int opt;                // For BUILT_IN_PROCEDURE
-            SchemeObject* s_formals; // For USER_PROCEDURE
-        };
-
-        SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
-
+        SchemeObject* s_formals; // For USER_PROCEDURE
         SchemeObject* envt; // For USER_PROCEDURE
 
     public:        
@@ -96,7 +92,10 @@ class SchemeObject
         
         void callContinuation(SchemeObject* arg);
         
-        bool rest() const;
+        // For BUILT_IN_PROCEDURE.
+        bool rest() const;    // Takes rest argument?
+        uint32_t req() const; // No. of required arguments
+        uint32_t opt() const; // No. of optional arguments
         
         static SchemeObject* createNumber(double number);
         static SchemeObject* createString(const char* str);
@@ -130,6 +129,16 @@ SchemeObject::ObjectType SchemeObject::type() const {
 inline
 bool SchemeObject::rest() const {
     return (type_and_flags & REST_FLAG) != 0;    
+}
+
+inline
+uint32_t SchemeObject::req() const {
+    return (type_and_flags >> REQ_BITS_OFFS) & 0xf;    
+}
+
+inline
+uint32_t SchemeObject::opt() const {
+    return (type_and_flags >> OPT_BITS_OFFS) & 0xf;    
 }
 
 inline

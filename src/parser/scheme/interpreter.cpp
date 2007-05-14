@@ -682,14 +682,16 @@ fn_ptr eval_procedure_call() {
     if (proc->type() == SchemeObject::BUILT_IN_PROCEDURE) {
         SchemeObject* argsv[10];
         // Built-in function
+        int req = proc->req();
+        int opt = proc->opt();
         int args_num = scm2int(s_length(args));
-        if (args_num < proc->req) {
+        if (args_num < req) {
             throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
         }
-        if (args_num > proc->req + proc->opt && !proc->rest()) {
+        if ((args_num > req + opt) && !proc->rest()) {
             throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
         }
-        if (args_num < proc->req + proc->opt) {
+        if (args_num < req + opt) {
             // TODO: append_e nogle S_UNSPECIFIED på args, så længden af args bliver req+opt.
         }
         SchemeObject* a_p = args;
@@ -703,7 +705,7 @@ fn_ptr eval_procedure_call() {
                         argsv[i] = S_UNSPECIFIED;
                     }
                 }
-                switch(proc->req + proc->opt) {
+                switch(req + opt) {
                     case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();
                               break;
                     case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
@@ -716,7 +718,7 @@ fn_ptr eval_procedure_call() {
                 }
             } else {
                 for(int i = 0; i < 10; i++) {
-                    if (i < proc->req) {
+                    if (i < req) {
                         argsv[i] = s_car(a_p);
                         a_p = s_cdr(a_p);
                     } else {
@@ -724,7 +726,7 @@ fn_ptr eval_procedure_call() {
                         break;
                     }
                 }
-                switch(proc->req + proc->opt) {
+                switch(req + opt) {
                     case 0:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
                               break;
                     case 1:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);

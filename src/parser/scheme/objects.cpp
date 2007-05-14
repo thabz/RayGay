@@ -110,10 +110,12 @@ SchemeObject* SchemeObject::createContinuation() {
 SchemeObject* SchemeObject::createBuiltinProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)()) {
     assert(i_symbol_p(name) == S_TRUE);
     assert(rst == 0 || rst == 1);
+    assert(req >= 0 && req < 16);
+    assert(opt >= 0 && opt < 16);
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::BUILT_IN_PROCEDURE);
     result->name = name;
-    result->req = req;
-    result->opt = opt;
+    result->type_and_flags |= ((req & 0xf) << REQ_BITS_OFFS);
+    result->type_and_flags |= ((opt & 0xf) << OPT_BITS_OFFS);
     if (rst == 1) {
         result->type_and_flags |= REST_FLAG;        
     }
