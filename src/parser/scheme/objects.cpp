@@ -114,10 +114,10 @@ SchemeObject* SchemeObject::createBuiltinProcedure(SchemeObject* name, int req, 
     assert(opt >= 0 && opt < 16);
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::BUILT_IN_PROCEDURE);
     result->name = name;
-    result->type_and_flags |= ((req & 0xf) << REQ_BITS_OFFS);
-    result->type_and_flags |= ((opt & 0xf) << OPT_BITS_OFFS);
+    result->metadata |= ((req & 0xf) << REQ_BITS_OFFS);
+    result->metadata |= ((opt & 0xf) << OPT_BITS_OFFS);
     if (rst == 1) {
-        result->type_and_flags |= REST_FLAG;        
+        result->metadata |= REST_FLAG;        
     }
     result->fn = fn;
     return result;
@@ -153,7 +153,7 @@ SchemeObject* SchemeObject::createInternalProcedure(const char* name) {
 void SchemeObject::mark() {
     map<SchemeObject*,SchemeObject*>::iterator v;
     if (!inuse()) {
-        type_and_flags |= INUSE_FLAG;
+        metadata |= INUSE_FLAG;
         ObjectType t = type();
         switch(t) {
             case SchemeObject::PAIR :
@@ -205,7 +205,7 @@ void SchemeObject::mark() {
     }
 }
 
-SchemeObject::~SchemeObject() {
+void SchemeObject::finalize() {
     ObjectType t = type();
     switch(t) {
         case SchemeObject::VECTOR :

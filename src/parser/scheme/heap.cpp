@@ -21,9 +21,9 @@ void Heap::popRoot() {
     roots.pop_back();
 }
 
-SchemeObject* Heap::allocate(SchemeObject::ObjectType type_and_flags) {
+SchemeObject* Heap::allocate(SchemeObject::ObjectType metadata) {
     SchemeObject* result = new SchemeObject();    
-    result->type_and_flags = uint32_t(type_and_flags);
+    result->metadata = uint32_t(metadata);
     result->set_immutable(false);
     addAllocation(result);
     return result;
@@ -64,6 +64,7 @@ void Heap::sweep() {
         if (!in_use && o->type() != SchemeObject::SYMBOL) {
             //cout << "Deleting " << o << endl;
             i = allocations.erase(i);
+	    o->finalize();
             delete o;
         } else {
             ++i;

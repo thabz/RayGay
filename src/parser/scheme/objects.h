@@ -19,7 +19,7 @@ using namespace std;
 class SchemeObject 
 {
     public:
-        uint32_t type_and_flags;
+        uint32_t metadata;
         union {
             double value;                  // For numbers
             struct {
@@ -79,12 +79,12 @@ class SchemeObject
         void clear_inuse();
         bool inuse() const;
         void mark();
-        ~SchemeObject();
+        void finalize();
 
         SchemeObject* getVectorElem(int index);
         void setVectorElem(SchemeObject* o, int index);
 
-		SchemeObject* getBinding(SchemeObject* name);
+	SchemeObject* getBinding(SchemeObject* name);
         void putBinding(SchemeObject* name, SchemeObject* o);
         void setBinding(SchemeObject* name, SchemeObject* o);
         
@@ -123,46 +123,46 @@ class SchemeObject
 
 inline
 SchemeObject::ObjectType SchemeObject::type() const {
-    return ObjectType(type_and_flags & 0x0000ffff);
+    return ObjectType(metadata & 0x0000ffff);
 }
 
 inline
 bool SchemeObject::rest() const {
-    return (type_and_flags & REST_FLAG) != 0;    
+    return (metadata & REST_FLAG) != 0;    
 }
 
 inline
 uint32_t SchemeObject::req() const {
-    return (type_and_flags >> REQ_BITS_OFFS) & 0xf;    
+    return (metadata >> REQ_BITS_OFFS) & 0xf;    
 }
 
 inline
 uint32_t SchemeObject::opt() const {
-    return (type_and_flags >> OPT_BITS_OFFS) & 0xf;    
+    return (metadata >> OPT_BITS_OFFS) & 0xf;    
 }
 
 inline
 void SchemeObject::clear_inuse() {
-    type_and_flags &= ~INUSE_FLAG;
+    metadata &= ~INUSE_FLAG;
 }
 
 inline
 bool SchemeObject::inuse() const {
-    return (type_and_flags & INUSE_FLAG) != 0;
+    return (metadata & INUSE_FLAG) != 0;
 }
 
 inline
 void SchemeObject::set_immutable(bool flag) {
     if (flag) {
-        type_and_flags |= IMMUTABLE_FLAG;
+        metadata |= IMMUTABLE_FLAG;
     } else {
-        type_and_flags &= ~IMMUTABLE_FLAG;
+        metadata &= ~IMMUTABLE_FLAG;
     }
 }
 
 inline
 bool SchemeObject::immutable() const {
-    return (type_and_flags & IMMUTABLE_FLAG) != 0;
+    return (metadata & IMMUTABLE_FLAG) != 0;
 }
 
 #endif
