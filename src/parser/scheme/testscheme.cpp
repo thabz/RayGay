@@ -713,6 +713,7 @@ void test_map() {
     assert_eval(s, "(map car '((a b) (d e) (g h)))", "(a d g)");
     assert_eval(s, "(map (lambda (n) (expt n n)) '(1 2 3 4 5))", "(1 4 27 256 3125)");
     assert_eval(s, "(let ((count 0)) (map (lambda (ignored) (set! count (+ count 1)) count) '(a b)))", "(1 2)");
+    assert_eval(s, "(map cadr '())", "()");
 
     assert_fail(s, "(map)");
     assert_fail(s, "(map +)");

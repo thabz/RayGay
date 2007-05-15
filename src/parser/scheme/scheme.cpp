@@ -530,7 +530,7 @@ SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args) {
 SchemeObject* s_map(SchemeObject* proc, SchemeObject* lists) {
     assert_arg_type("map", 1, s_procedure_p, proc);
     SchemeObject* lists_ptr = lists;
-    int i = 1;
+    int i = 2;
     while (lists_ptr != S_EMPTY_LIST) {
         assert_arg_type("map", i++, s_pair_p, s_car(lists_ptr));
         lists_ptr = i_cdr(lists_ptr);
