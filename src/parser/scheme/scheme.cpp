@@ -693,10 +693,11 @@ SchemeObject* s_number_p(SchemeObject* p) {
 
 // (integer? p)
 SchemeObject* s_integer_p(SchemeObject* p) {
+    double i;
     if (p->type() != SchemeObject::NUMBER) {
         return S_FALSE;
     }
-    return scm2double(p) == scm2double(s_round(p)) ? S_TRUE : S_FALSE;
+    return ::modf(scm2double(p),&i) == 0.0 ? S_TRUE : S_FALSE;
 }
 
 SchemeObject* s_complex_p(SchemeObject* n) {
