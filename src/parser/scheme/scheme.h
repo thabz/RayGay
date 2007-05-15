@@ -72,7 +72,7 @@ class scheme_exception {
 #define assert_arg_pair_type(procname, argnum, arg) {     \
     if (i_pair_p(arg) == S_FALSE) {                       \
         ostringstream ss;                                 \
-        ss << "Wrong argument-type in position ";         \
+        ss << "Wrong argument-type (expecting pair) in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << string(procname);                           \
@@ -84,7 +84,19 @@ class scheme_exception {
 #define assert_arg_number_type(procname, argnum, arg) {   \
     if (i_number_p(arg) == S_FALSE) {                     \
         ostringstream ss;                                 \
-        ss << "Wrong argument-type in position ";         \
+        ss << "Wrong argument-type (expecting number) in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << string(procname);                           \
+        ss << ": " << arg->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
+#define assert_non_atom_type(procname, argnum, arg) {   \
+    if (i_pair_p(arg) == S_FALSE && i_null_p(arg) == S_FALSE) { \
+        ostringstream ss;                                 \
+        ss << "Wrong argument-type (expecting non-atom) in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << string(procname);                           \

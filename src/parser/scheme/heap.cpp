@@ -64,7 +64,7 @@ void Heap::sweep() {
         if (!in_use && o->type() != SchemeObject::SYMBOL) {
             //cout << "Deleting " << o << endl;
             i = allocations.erase(i);
-	    o->finalize();
+	        o->finalize();
             delete o;
         } else {
             ++i;

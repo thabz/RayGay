@@ -532,7 +532,7 @@ SchemeObject* s_map(SchemeObject* proc, SchemeObject* lists) {
     SchemeObject* lists_ptr = lists;
     int i = 2;
     while (lists_ptr != S_EMPTY_LIST) {
-        assert_arg_type("map", i++, s_pair_p, s_car(lists_ptr));
+        assert_non_atom_type("map", i++, i_car(lists_ptr));
         lists_ptr = i_cdr(lists_ptr);
     }
     
@@ -582,7 +582,9 @@ SchemeObject* s_map(SchemeObject* proc, SchemeObject* lists) {
         }
         lists = s_cdr(lists);
     }
-    stack.pop_back();
+    if (result != S_EMPTY_LIST) {
+        stack.pop_back();
+    }
     return result;    
 }
 
@@ -811,14 +813,14 @@ SchemeObject* s_length(SchemeObject* p) {
 }
 
 SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o) {
-    assert_arg_type("set-car!", 1, s_pair_p, p);
+    assert_arg_pair_type("set-car!", 1, p);
     assert_arg_not_immutable("set-car!", 1, p);
     static_cast<SchemeObject*>(p)->car = o;
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o) {
-    assert_arg_type("set-cdr!", 1, s_pair_p, p);
+    assert_arg_pair_type("set-cdr!", 1, p);
     assert_arg_not_immutable("set-cdr!", 1, p);
     static_cast<SchemeObject*>(p)->cdr = o;
     return S_UNSPECIFIED;
@@ -964,7 +966,7 @@ SchemeObject* s_vector_2_list(SchemeObject* v) {
     assert_arg_type("vector->list", 1, s_vector_p, v);
     SchemeObject* result = S_EMPTY_LIST;
     for(int i = v->length-1; i >= 0; i--) {
-	    result = s_cons(v->getVectorElem(i), result);
+	    result = i_cons(v->getVectorElem(i), result);
     }
     return result;
 }
@@ -995,72 +997,72 @@ SchemeObject* s_vector_fill_e(SchemeObject* s_vec, SchemeObject* fill) {
 }
 
 SchemeObject* s_sqrt(SchemeObject* n) {
-    assert_arg_type("sqrt", 1, s_number_p, n);
+    assert_arg_number_type("sqrt", 1, n);
     return double2scm(sqrt(scm2double(n)));
 }
 
 SchemeObject* s_abs(SchemeObject* n) {
-    assert_arg_type("abs", 1, s_number_p, n);
+    assert_arg_number_type("abs", 1, n);
     return double2scm(fabs(scm2double(n)));
 }
 
 
 SchemeObject* s_sin(SchemeObject* n) {
-    assert_arg_type("sin", 1, s_number_p, n);
+    assert_arg_number_type("sin", 1, n);
     return double2scm(sin(scm2double(n)));
 }
 
 SchemeObject* s_asin(SchemeObject* n) {
-    assert_arg_type("asin", 1, s_number_p, n);
+    assert_arg_number_type("asin", 1, n);
     return double2scm(asin(scm2double(n)));
 }
 
 SchemeObject* s_cos(SchemeObject* n) {
-    assert_arg_type("cos", 1, s_number_p, n);
+    assert_arg_number_type("cos", 1, n);
     return double2scm(cos(scm2double(n)));
 }
 
 SchemeObject* s_acos(SchemeObject* n) {
-    assert_arg_type("acos", 1, s_number_p, n);
+    assert_arg_number_type("acos", 1, n);
     return double2scm(acos(scm2double(n)));
 }
 
 SchemeObject* s_tan(SchemeObject* n) {
-    assert_arg_type("tan", 1, s_number_p, n);
+    assert_arg_number_type("tan", 1, n);
     return double2scm(tan(scm2double(n)));
 }
 
 SchemeObject* s_atan(SchemeObject* y, SchemeObject* x) {
-    assert_arg_type("atan", 1, s_number_p, y);
+    assert_arg_number_type("atan", 1, y);
     if (x == S_UNSPECIFIED) {
         return double2scm(atan(scm2double(y)));
     } else {
-        assert_arg_type("atan", 2, s_number_p, x);
+        assert_arg_number_type("atan", 2, x);
         return double2scm(atan2(scm2double(y), scm2double(x)));
     }
 }
 
 SchemeObject* s_log(SchemeObject* n) {
-    assert_arg_type("log", 1, s_number_p, n);
+    assert_arg_number_type("log", 1, n);
     return double2scm(log(scm2double(n)));
 }
 
 // Returns a^b
 SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
-    assert_arg_type("expt", 1, s_number_p, a);
-    assert_arg_type("expt", 1, s_number_p, b);
+    assert_arg_number_type("expt", 1, a);
+    assert_arg_number_type("expt", 2, b);
     return double2scm(pow(scm2double(a),scm2double(b)));
 }
 
 // Returns e^n
 SchemeObject* s_exp(SchemeObject* n) {
-    assert_arg_type("exp", 1, s_number_p, n);
+    assert_arg_number_type("exp", 1, n);
     return double2scm(exp(scm2double(n)));
 }
 
 // Round returns the closest integer to x, rounding to even when x is halfway between two integers.
 SchemeObject* s_round(SchemeObject* n) {
-    assert_arg_type("round", 1, s_number_p, n);
+    assert_arg_number_type("round", 1, n);
     double nn = scm2double(n);
     double flo = floor(nn);
     double cei = ceil(nn);
@@ -1083,27 +1085,27 @@ SchemeObject* s_round(SchemeObject* n) {
 
 // Ceiling returns the smallest integer not smaller than x
 SchemeObject* s_ceiling(SchemeObject* n) {
-    assert_arg_type("ceiling", 1, s_number_p, n);
+    assert_arg_number_type("ceiling", 1, n);
     return int2scm(int(ceil(scm2double(n))));
 }
 
 // Floor returns the largest integer not larger than x
 SchemeObject* s_floor(SchemeObject* n) {
-    assert_arg_type("floor", 1, s_number_p, n);
+    assert_arg_number_type("floor", 1, n);
     return int2scm(int(floor(scm2double(n))));
 }
 
 // Truncate returns the integer closest to x whose absolute value is not larger than the absolute value of x
 SchemeObject* s_truncate(SchemeObject* n) {
-    assert_arg_type("truncate", 1, s_number_p, n);
+    assert_arg_number_type("truncate", 1, n);
     return int2scm(int(trunc(scm2double(n))));
 }
 
 SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type("quotient", 1, s_integer_p, n1);
     assert_arg_type("quotient", 2, s_integer_p, n2);
-    int nn1 = int(scm2int(n1));
-    int nn2 = int(scm2int(n2));
+    int nn1 = scm2int(n1);
+    int nn2 = scm2int(n2);
     return int2scm(nn1 / nn2);
     
 }
@@ -1111,8 +1113,8 @@ SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2) {
 SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type("remainder", 1, s_integer_p, n1);
     assert_arg_type("remainder", 2, s_integer_p, n2);
-    int nn1 = int(scm2int(n1));
-    int nn2 = int(scm2int(n2));
+    int nn1 = scm2int(n1);
+    int nn2 = scm2int(n2);
     int result = nn1 % nn2;
     if (result > 0) {
         if (nn1 < 0) {
@@ -1129,8 +1131,8 @@ SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
 SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type("modulo", 1, s_integer_p, n1);
     assert_arg_type("modulo", 2, s_integer_p, n2);
-    int nn1 = int(scm2int(n1));
-    int nn2 = int(scm2int(n2));
+    int nn1 = scm2int(n1);
+    int nn2 = scm2int(n2);
     int result = nn1 % nn2;
     if (result * nn2 < 0) {
         if (result > 0) {
@@ -1144,13 +1146,13 @@ SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2) {
 
 
 SchemeObject* s_min(SchemeObject* first, SchemeObject* rest) {
-    assert_arg_type("min", 1, s_number_p, first);
+    assert_arg_number_type("min", 1, first);
     SchemeObject* result = first;
     double result_number = scm2double(result);
     int i = 2;    
 	while (rest != S_EMPTY_LIST) {
         SchemeObject* n = s_car(rest);
-	    assert_arg_type("min", i++, s_number_p, n);
+	    assert_arg_number_type("min", i++, n);
         double number = scm2double(n);
         if (number < result_number) {
             result_number = number;
@@ -1162,13 +1164,13 @@ SchemeObject* s_min(SchemeObject* first, SchemeObject* rest) {
 }
 
 SchemeObject* s_max(SchemeObject* first, SchemeObject* rest) {
-    assert_arg_type("max", 1, s_number_p, first);
+    assert_arg_number_type("max", 1, first);
     SchemeObject* result = first;
     double result_number = scm2double(result);
     int i = 2;    
 	while (rest != S_EMPTY_LIST) {
         SchemeObject* n = s_car(rest);
-	    assert_arg_type("max", i++, s_number_p, n);
+	    assert_arg_number_type("max", i++, n);
         double number = scm2double(n);
         if (number > result_number) {
             result_number = number;
@@ -1194,7 +1196,6 @@ SchemeObject* s_gcd(SchemeObject* l) {
     if (i_null_p(l) == S_TRUE) {
         return S_ZERO;
     }
-    assert_arg_type("gcd", 1, s_pair_p, l);
     assert_arg_type("gcd", 1, s_integer_p, s_car(l));
     if (i_null_p(s_cdr(l)) == S_TRUE) {
         return int2scm(abs(scm2int(s_car(l))));
@@ -1209,7 +1210,6 @@ SchemeObject* s_lcm(SchemeObject* l) {
     if (i_null_p(l) == S_TRUE) {
         return S_ONE;
     }
-    assert_arg_type("lcm", 1, s_pair_p, l);
     if (i_null_p(s_cdr(l)) == S_TRUE) {
         assert_arg_type("lcm", 1, s_integer_p, s_car(l));
         return int2scm(abs(scm2int(s_car(l))));
@@ -1239,16 +1239,16 @@ SchemeObject* s_odd_p(SchemeObject* n) {
 }
 
 SchemeObject* s_zero_p(SchemeObject* n) {
-    assert_arg_type("zero?", 1, s_number_p, n);
+    assert_arg_number_type("zero?", 1, n);
     return scm2double(n) == 0 ? S_TRUE : S_FALSE;
 }
 SchemeObject* s_negative_p(SchemeObject* n) {
-    assert_arg_type("negative?", 1, s_number_p, n);
+    assert_arg_number_type("negative?", 1, n);
     return scm2double(n) < 0 ? S_TRUE : S_FALSE;
 }
 
 SchemeObject* s_positive_p(SchemeObject* n) {
-    assert_arg_type("position?", 1, s_number_p, n);
+    assert_arg_number_type("positive?", 1, n);
     return scm2double(n) > 0 ? S_TRUE : S_FALSE;
 }
 
@@ -1256,19 +1256,19 @@ SchemeObject* s_equal(SchemeObject* p) {
     if (p == S_EMPTY_LIST) {
         return S_TRUE;
     }
-    assert_arg_type("=", 1, s_number_p, s_car(p));
+    assert_arg_number_type("=", 1, i_car(p));
     double n = scm2double(s_car(p));
-    p = s_cdr(p);
+    p = i_cdr(p);
     int i = 2;
     while (p != S_EMPTY_LIST) {
-        SchemeObject* car_p = s_car(p);
-        assert_arg_type("=", i, s_number_p, car_p);
+        SchemeObject* car_p = i_car(p);
+        assert_arg_number_type("=", i, car_p);
         double nn = scm2double(car_p);
         if (nn != n) {
             return S_FALSE;
         }
         n = nn;
-        p = s_cdr(p);
+        p = i_cdr(p);
         i++;
     }
     return S_TRUE;
@@ -1278,19 +1278,19 @@ SchemeObject* s_less(SchemeObject* p) {
     if (p == S_EMPTY_LIST) {
         return S_TRUE;
     }
-    assert_arg_type("<", 1, s_number_p, s_car(p));
+    assert_arg_number_type("<", 1, i_car(p));
     double n = scm2double(s_car(p));
     p = s_cdr(p);
     int i = 2;
     while (p != S_EMPTY_LIST) {
-        SchemeObject* car_p = s_car(p);
+        SchemeObject* car_p = i_car(p);
         assert_arg_type("<", i, s_number_p, car_p);
         double nn = scm2double(car_p);
         if (nn <= n) {
             return S_FALSE;
         }
         n = nn;
-        p = s_cdr(p);
+        p = i_cdr(p);
         i++;
     }
     return S_TRUE;
@@ -1300,19 +1300,19 @@ SchemeObject* s_greater(SchemeObject* p) {
     if (p == S_EMPTY_LIST) {
         return S_TRUE;
     }
-    assert_arg_type(">", 1, s_number_p, s_car(p));
+    assert_arg_number_type(">", 1, i_car(p));
     double n = scm2double(s_car(p));
     p = s_cdr(p);
     int i = 2;
     while (p != S_EMPTY_LIST) {
-        SchemeObject* car_p = s_car(p);
+        SchemeObject* car_p = i_car(p);
         assert_arg_type(">", i, s_number_p, car_p);
         double nn = scm2double(car_p);
         if (nn >= n) {
             return S_FALSE;
         }
         n = nn;
-        p = s_cdr(p);
+        p = i_cdr(p);
         i++;
     }
     return S_TRUE;
@@ -1322,19 +1322,19 @@ SchemeObject* s_less_equal(SchemeObject* p) {
     if (p == S_EMPTY_LIST) {
         return S_TRUE;
     }
-    assert_arg_type("<=", 1, s_number_p, s_car(p));
+    assert_arg_number_type("<=", 1, i_car(p));
     double n = scm2double(s_car(p));
     p = s_cdr(p);
     int i = 2;
     while (p != S_EMPTY_LIST) {
-        SchemeObject* car_p = s_car(p);
+        SchemeObject* car_p = i_car(p);
         assert_arg_type("<=", i, s_number_p, car_p);
         double nn = scm2double(car_p);
         if (nn < n) {
             return S_FALSE;
         }
         n = nn;
-        p = s_cdr(p);
+        p = i_cdr(p);
         i++;
     }
     return S_TRUE;
@@ -1344,19 +1344,19 @@ SchemeObject* s_greater_equal(SchemeObject* p) {
     if (p == S_EMPTY_LIST) {
         return S_TRUE;
     }
-    assert_arg_type(">=", 1, s_number_p, s_car(p));
+    assert_arg_number_type(">=", 1, i_car(p));
     double n = scm2double(s_car(p));
     p = s_cdr(p);
     int i = 2;
     while (p != S_EMPTY_LIST) {
-        SchemeObject* car_p = s_car(p);
+        SchemeObject* car_p = i_car(p);
         assert_arg_type(">=", i, s_number_p, car_p);
         double nn = scm2double(car_p);
         if (nn > n) {
             return S_FALSE;
         }
         n = nn;
-        p = s_cdr(p);
+        p = i_cdr(p);
         i++;
     }
     return S_TRUE;
@@ -1399,15 +1399,13 @@ SchemeObject* s_string_length(SchemeObject* s) {
 
 SchemeObject* s_string_ref(SchemeObject* s, SchemeObject* i) {
     assert_arg_type("string-ref", 1, s_string_p, s);
-    assert_arg_type("string-ref", 2, s_number_p, i);
-    int index = scm2int(i);
     assert_arg_int_in_range("string-ref", 2, i, 0, s->length-1);
+    int index = scm2int(i);
     return char2scm(s->str[index]);
 }	
 
 SchemeObject* s_string_set_e(SchemeObject* s, SchemeObject* i, SchemeObject* chr) {
     assert_arg_type("string-set!", 1, s_string_p, s);
-    assert_arg_type("string-set!", 2, s_number_p, i);
     assert_arg_type("string-set!", 3, s_char_p, chr);
     assert_arg_not_immutable("string-set!", 1, s);
     assert_arg_int_in_range("string-set!", 2, i, 0, s->length-1);
@@ -1461,7 +1459,7 @@ SchemeObject* s_substring(SchemeObject* s_str, SchemeObject* s_start, SchemeObje
 }
 
 SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base_s) {
-    assert_arg_type("number->string", 1, s_number_p, n);
+    assert_arg_number_type("number->string", 1, n);
     int base = 10;
     if (base_s != S_UNSPECIFIED) {
         assert_arg_type("number->string", 2, s_integer_p, base_s);

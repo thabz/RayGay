@@ -118,8 +118,6 @@ void test_objects() {
     assert(n->immutable() == false);
     assert(n->type() == SchemeObject::NUMBER);
     cout << "Object size in bytes: " << sizeof(SchemeObject) << endl;
-    cout << "Double size in bytes: " << sizeof(double) << endl;
-    cout << "jmp_buf size in bytes: " << sizeof(::jmp_buf) << endl;
 }
 
 void test_parser() {
@@ -298,20 +296,33 @@ void test_math() {
     assert_eval(s, "-3" , "-3");
     assert_eval(s, "-3.0" , "-3");
     assert_eval(s, "+3" , "3");
+    assert_eval(s, "(+ 1 2 3)" , "6");
+    assert_eval(s, "(+)" , "0");
     assert_eval(s, "(- 3)" , "-3");
     assert_eval(s, "(- 3 2)" , "1");
     assert_eval(s, "(- 3 4 5)" , "-6");
+    assert_fail(s, "(- 'a)");
+    assert_fail(s, "(-)");
     assert_eval(s, "(/ 2)" , "0.5");
     assert_eval(s, "(/ 10 2)" , "5");
     assert_eval(s, "(/ 10 2 2)" , "2.5");
-    assert_eval(s, "(- 3 4 5)" , "-6");
+    assert_fail(s, "(/ 'a)");
+    assert_fail(s, "(/)");
+    assert_eval(s, "(* 2 3 4)" , "24");
+    assert_eval(s, "(*)" , "1");
+    assert_fail(s, "(* 'a 1)");
     assert_eval(s, "(min 5)" , "5");
     assert_eval(s, "(min 3.0 1 2)" , "1");
+    assert_fail(s, "(min)");
     assert_eval(s, "(max 5)" , "5");
     assert_eval(s, "(max 3.0 1 2)" , "3");
+    assert_fail(s, "(max)");
     assert_eval(s, "(expt 3 4)" , "81");
     assert_eval(s, "(expt 0 0)" , "1");
     assert_eval(s, "(expt 0 3)" , "0");
+    assert_fail(s, "(expt 0 'a)");
+    assert_fail(s, "(expt 'a 0)");
+    assert_fail(s, "(expt 1)");
     assert_eval(s, "(< 1 2 3)" , "#t");
     assert_eval(s, "(< 1 2 2 3)" , "#f");
     assert_eval(s, "(<= 1 2 2 3)" , "#t");
@@ -322,12 +333,15 @@ void test_math() {
     assert_eval(s, "(>= 1 2 2 3)" , "#f");
     assert_eval(s, "(= 2 2 2 3)" , "#f");
     assert_eval(s, "(= 2 2 2 2)" , "#t");
+    assert_fail(s, "(= 'a)");
+    assert_fail(s, "(= 1 'a)");
     assert_eval(s, "(even? 10)" , "#t");
     assert_eval(s, "(even? -9)" , "#f");
     assert_eval(s, "(even? 0)" , "#t");
     assert_eval(s, "(odd? 31137)" , "#t");
     assert_eval(s, "(odd? 0)" , "#f");
     assert_eval(s, "(odd? -1)" , "#t");
+    assert_fail(s, "(odd? 'a)");
     assert_eval(s, "(zero? 0)" , "#t");
     assert_eval(s, "(zero? -1)" , "#f");
     assert_eval(s, "(negative? 0)" , "#f");
@@ -349,7 +363,10 @@ void test_math() {
 
     assert_eval(s, "(round 2.1)" , "2");
     assert_eval(s, "(round 2.8)" , "3");
+    assert_fail(s, "(round 'a)");
+    assert_fail(s, "(round 2.1 2.3)");
     assert_eval(s, "(floor -4.3)" , "-5");
+    assert_fail(s, "(floor 'a)");
     assert_eval(s, "(ceiling -4.3)" , "-4");
     assert_eval(s, "(truncate -4.3)" , "-4");
     assert_eval(s, "(round -4.3)" , "-4");
@@ -717,6 +734,7 @@ void test_map() {
 
     assert_fail(s, "(map)");
     assert_fail(s, "(map +)");
+    assert_fail(s, "(map 'a '(1 2 3) '(1 2 3))");
     assert_fail(s, "(map + '(1 2 3) '(1 2))");
     assert_fail(s, "(map + '(1 2) '(1 2 3))");
     assert_fail(s, "(map + '(1 2) 'a)");
@@ -725,10 +743,7 @@ void test_map() {
 
 void test_vector() {
     Scheme* s = new Scheme();
-    SchemeObject* v = s->eval("(make-vector 3)");
-    assert(v->getVectorElem(0) == S_UNSPECIFIED);
-    assert(v->getVectorElem(1) == S_UNSPECIFIED);
-    assert(v->getVectorElem(2) == S_UNSPECIFIED);
+    assert_eval(s, "(make-vector 3)","#(#<unspecified> #<unspecified> #<unspecified>)");
     assert_eval(s, "(make-vector 5 'a)", "#(a a a a a)");
     assert_eval(s, "(make-vector 2 (+ 5 1))", "#(6 6)");
     assert_eval(s, "(make-vector 0 'a)", "#()");
@@ -759,6 +774,7 @@ void test_vector() {
     assert_eval(s, "(define z (make-vector 4))(vector-fill! z 'a)z","#(a a a a)");
     assert_fail(s, "(vector-set! (make-vector 5) -1 'a)");
     assert_fail(s, "(vector-set! (make-vector 5) 5 'a)");
+    delete s;
 }
 
 void test_io() {
