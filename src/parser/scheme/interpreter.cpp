@@ -751,8 +751,8 @@ fn_ptr eval_procedure_call() {
         return NULL;
     } else {
         // User function
-        SchemeObject* new_envt = SchemeObject::createEnvironment(proc->envt);
-        SchemeObject* formals = proc->s_formals;
+        SchemeObject* new_envt = SchemeObject::createEnvironment(proc->s_envt());
+        SchemeObject* formals = proc->s_formals();
 
         while (i_pair_p(formals) == S_TRUE) {
             if (args == S_EMPTY_LIST) {
@@ -769,7 +769,7 @@ fn_ptr eval_procedure_call() {
         }
 
         global_envt = new_envt;
-        global_arg1 = proc->s_body;
+        global_arg1 = proc->s_body();
         stack.pop_back();
         stack.pop_back();
         return (fn_ptr)&eval_sequence;
@@ -1079,8 +1079,8 @@ fn_ptr eval_call_macro() {
     SchemeObject* envt = global_envt;
     
     // Build new environment
-    SchemeObject* new_envt = SchemeObject::createEnvironment(proc->envt);
-    SchemeObject* formals = proc->s_formals;
+    SchemeObject* new_envt = SchemeObject::createEnvironment(proc->s_envt());
+    SchemeObject* formals = proc->s_formals();
     
     while (i_pair_p(formals) == S_TRUE) {
         if (args == S_EMPTY_LIST) {
@@ -1102,7 +1102,7 @@ fn_ptr eval_call_macro() {
     stack.push_back(proc);
     stack.push_back(new_envt);
     global_envt = new_envt;
-    global_arg1 = proc->s_body;
+    global_arg1 = proc->s_body();
     SchemeObject* transformed_body = trampoline((fn_ptr)&eval_sequence);
     //cout << "Transformed body: " << transformed_body->toString() << endl;
     stack.pop_back();

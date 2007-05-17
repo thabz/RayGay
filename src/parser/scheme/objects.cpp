@@ -128,19 +128,16 @@ SchemeObject* SchemeObject::createUserProcedure(SchemeObject* name, SchemeObject
     assert(envt->type() == SchemeObject::ENVIRONMENT);
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::USER_PROCEDURE);
     result->name = name;
-    result->envt = envt;
-    result->s_formals = s_formals;
-    result->s_body = s_body;
+    result->s_closure_data = i_cons(s_formals, i_cons(s_body, envt));
     return result;
 }
 
 SchemeObject* SchemeObject::createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body) {
     assert(i_symbol_p(name) == S_TRUE);
+    assert(envt->type() == SchemeObject::ENVIRONMENT);
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::MACRO);
     result->name = name;
-    result->envt = envt;
-    result->s_formals = s_formals;
-    result->s_body = s_body;
+    result->s_closure_data = i_cons(s_formals, i_cons(s_body, envt));
     return result;
 }
 
@@ -182,14 +179,19 @@ void SchemeObject::mark() {
                 }
                 break;
             case SchemeObject::USER_PROCEDURE :
-                envt->mark();
-                s_formals->mark();
-                s_body->mark(); 
+                s_closure_data->mark();
+                if (name != NULL) {
+                    name->mark();
+                }
+                break;
+            case SchemeObject::MACRO :
+                s_closure_data->mark();
                 if (name != NULL) {
                     name->mark();
                 }
                 break;
             case SchemeObject::BUILT_IN_PROCEDURE :
+                s_closure_data->mark();
                 if (name != NULL) {
                     name->mark();
                 }

@@ -37,25 +37,6 @@ class scheme_exception {
 		string str;
 };
 
-// Faster internal macro for some much used procedures
-// that does no argument checking.
-#define i_car(o)         ((o)->car)
-#define i_cdr(o)         ((o)->cdr)
-#define i_caar(o)        (static_cast<SchemeObject*>(static_cast<SchemeObject*>(o)->car)->car)
-#define i_cadr(o)        (static_cast<SchemeObject*>(static_cast<SchemeObject*>(o)->cdr)->car)
-#define i_cdar(o)        (static_cast<SchemeObject*>(static_cast<SchemeObject*>(o)->car)->cdr)
-#define i_cddr(o)        (static_cast<SchemeObject*>(static_cast<SchemeObject*>(o)->cdr)->cdr)
-#define i_set_cdr_e(o,v) (static_cast<SchemeObject*>(o)->cdr = (v))
-#define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
-#define i_char_p(o)      ((o)->type() == SchemeObject::CHAR ? S_TRUE : S_FALSE)
-#define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
-#define i_number_p(o)    ((o)->type() == SchemeObject::NUMBER ? S_TRUE : S_FALSE)
-#define i_procedure_p(p) (((p)->type() == SchemeObject::BUILT_IN_PROCEDURE ||  \
-                           (p)->type() == SchemeObject::CONTINUATION       ||  \
-                           (p)->type() == SchemeObject::USER_PROCEDURE     ||  \
-                           (p)->type() == SchemeObject::INTERNAL_PROCEDURE) ? S_TRUE : S_FALSE)
-#define i_null_p(o)      ((o) == S_EMPTY_LIST ? S_TRUE : S_FALSE)
-#define i_cons(car,cdr)  (SchemeObject::createPair((car),(cdr)))
 
 #define assert_arg_type(procname, argnum, test_fn, arg) { \
     if ((test_fn)(arg) == S_FALSE) {                      \

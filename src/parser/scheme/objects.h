@@ -6,9 +6,28 @@
 #include <map>
 #include <setjmp.h>
 
-class SchemeEnvironment;
-
 using namespace std;
+
+// Faster internal macro for some much used procedures
+// that does no argument checking.
+#define i_car(o)         ((o)->car)
+#define i_cdr(o)         ((o)->cdr)
+#define i_caar(o)        (((o)->car)->car)
+#define i_cadr(o)        (((o)->cdr)->car)
+#define i_cdar(o)        (((o)->car)->cdr)
+#define i_cddr(o)        (((o)->cdr)->cdr)
+#define i_set_cdr_e(o,v) (static_cast<SchemeObject*>(o)->cdr = (v))
+#define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
+#define i_char_p(o)      ((o)->type() == SchemeObject::CHAR ? S_TRUE : S_FALSE)
+#define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
+#define i_number_p(o)    ((o)->type() == SchemeObject::NUMBER ? S_TRUE : S_FALSE)
+#define i_procedure_p(p) (((p)->type() == SchemeObject::BUILT_IN_PROCEDURE ||  \
+                           (p)->type() == SchemeObject::CONTINUATION       ||  \
+                           (p)->type() == SchemeObject::USER_PROCEDURE     ||  \
+                           (p)->type() == SchemeObject::INTERNAL_PROCEDURE) ? S_TRUE : S_FALSE)
+#define i_null_p(o)      ((o) == S_EMPTY_LIST ? S_TRUE : S_FALSE)
+#define i_cons(car,cdr)  (SchemeObject::createPair((car),(cdr)))
+
 
 #define IMMUTABLE_FLAG ((uint32_t)(1 << 31))
 #define INUSE_FLAG     ((uint32_t)(1 << 30))
@@ -41,12 +60,10 @@ class SchemeObject
                     uint32_t length;        // For vector and strings
                     map<SchemeObject*,SchemeObject*>* binding_map;	// For environments
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
-                    SchemeObject* s_body;   // For USER_PROCEDURE
+                    SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
                 };
             };
         };
-        SchemeObject* s_formals; // For USER_PROCEDURE
-        SchemeObject* envt; // For USER_PROCEDURE
 
     public:        
         enum ObjectType {
@@ -84,11 +101,16 @@ class SchemeObject
         SchemeObject* getVectorElem(int index);
         void setVectorElem(SchemeObject* o, int index);
 
-	SchemeObject* getBinding(SchemeObject* name);
+	    SchemeObject* getBinding(SchemeObject* name);
         void putBinding(SchemeObject* name, SchemeObject* o);
         void setBinding(SchemeObject* name, SchemeObject* o);
         
         string nameAsString();
+
+        // For USER_PROCEDURE and MACRO
+        SchemeObject* s_formals();
+        SchemeObject* s_body();
+        SchemeObject* s_envt();
         
         void callContinuation(SchemeObject* arg);
         
@@ -164,5 +186,21 @@ inline
 bool SchemeObject::immutable() const {
     return (metadata & IMMUTABLE_FLAG) != 0;
 }
+
+inline
+SchemeObject* SchemeObject::s_formals() {
+    return i_car(s_closure_data);
+}
+
+inline
+SchemeObject* SchemeObject::s_body() {
+    return i_cadr(s_closure_data);
+};
+
+inline
+SchemeObject* SchemeObject::s_envt() {
+    return i_cddr(s_closure_data);
+}
+
 
 #endif
