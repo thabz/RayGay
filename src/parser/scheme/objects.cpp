@@ -352,7 +352,7 @@ void SchemeObject::callContinuation(SchemeObject* arg) {
 //-----------------------------------------------------------
 
 SchemeObject* SchemeObject::getBinding(SchemeObject* name) {
-    assert(this->type() == SchemeObject::ENVIRONMENT);
+    assert(type() == SchemeObject::ENVIRONMENT);
     if (i_symbol_p(name) == S_FALSE) {
         throw scheme_exception(name->toString() + " is not a symbol.");
     }
@@ -389,7 +389,7 @@ void SchemeObject::setBinding(SchemeObject* name, SchemeObject* o) {
             throw scheme_exception("Unbound variable: " + name->toString());
         }
     } else {
-        putBinding(name,o);
+        v->second = o;
     }
 }
 
