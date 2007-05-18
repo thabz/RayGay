@@ -3,6 +3,18 @@
 ; 2007-05-09:
 ; guile ../../../scenes/bench.scm  0.58s user 0.03s system 99% cpu 0.613 total
 ; ./repl ../../../scenes/bench.scm  19.45s user 0.02s system 99% cpu 19.571 total
+;
+; 2007-05-10:
+; ./repl ../../../scenes/bench.scm  17.72s user 0.02s system 97% cpu 18.129 total
+; ./repl ../../../scenes/bench.scm  16.62s user 0.03s system 96% cpu 17.269 total
+; ./repl ../../../scenes/bench.scm  16.27s user 0.03s system 99% cpu 16.443 total
+
+; 2007-05-18 (compacted size of SchemeObject to 12 bytes)
+; ./repl ../../../scenes/bench.scm  13.64s user 0.22s system 96% cpu 14.356 total
+; 2007-05-18 (made heap an array instead of a list<>)
+; ./repl ../../../scenes/bench.scm  11.59s user 0.15s system 99% cpu 11.836 total
+; 2007-05-18 (made stack a vector<> instead of a list<>)
+; ./repl ../../../scenes/bench.scm  2.32s user 0.12s system 98% cpu 2.467 total
 
 (define (square x)
   (* x x))
