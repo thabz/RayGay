@@ -1,20 +1,26 @@
 
 #include "heap.h"
+#include "scheme.h"
 #include <iostream>
 
 Heap* Heap::unique_instance = NULL;
 
-Heap::Heap() {
-    counter = 0;
+Heap::Heap(uint32_t slots_num) {
+    allocations = new SchemeObject[slots_num];
+    for(uint i = 0; i < slots_num; i++) {
+        allocations[i].metadata = SchemeObject::BLANK;
+    }
+    next_free = allocations;
+    free_slots = slots_num;
+    this->slots_num = slots_num;
 }
 
 void Heap::addRoot(SchemeObject* root) {
-    // Only add root if it's not already in list of roots
     roots.push_back(root);
 }
 
 bool Heap::timeToGarbageCollect() {
-    return ++counter > 200;
+    return next_free > &allocations[int(0.9 * SLOTS_NUM)];
 }
 
 void Heap::popRoot() {
@@ -22,29 +28,31 @@ void Heap::popRoot() {
 }
 
 SchemeObject* Heap::allocate(SchemeObject::ObjectType metadata) {
-    SchemeObject* result = new SchemeObject();    
+    while (next_free->type() != SchemeObject::BLANK && next_free < &allocations[SLOTS_NUM]) {
+        next_free++;
+    }
+    if (next_free >= &allocations[SLOTS_NUM]) {
+        throw scheme_exception("Out of heap space");
+    }
+    SchemeObject* result = next_free;
     result->metadata = uint32_t(metadata);
     result->set_immutable(false);
-    addAllocation(result);
+    next_free++;
+    free_slots--;
     return result;
 }
 
-void Heap::addAllocation(SchemeObject* o) {
-    allocations.push_back(o);
-}
-
-void Heap::garbageCollect(list<SchemeObject*> &stack) {
-    //cout << "BEFORE: Size of heap: " << allocations.size() << endl;
+void Heap::garbageCollect(vector<SchemeObject*> &stack) {
+    //cout << "BEFORE: Size of heap: " << slots_num - free_slots << endl;
     //cout << "BEFORE: Size of roots: " << roots.size() << endl;
-    counter = 0;
     mark(stack);
     sweep();
-    //cout << "AFTER: Size of heap: " << allocations.size() << endl;
+    //cout << "AFTER: Size of heap: " << slots_num - free_slots << endl;
     //cout << "AFTER: Size of roots: " << roots.size() << endl << endl;
 }
 
-void Heap::mark(list<SchemeObject*> &stack) {
-    for(list<SchemeObject*>::iterator i = stack.begin(); i != stack.end(); i++) {
+void Heap::mark(vector<SchemeObject*> &stack) {
+    for(vector<SchemeObject*>::iterator i = stack.begin(); i != stack.end(); i++) {
         assert(*i != NULL);
         (*i)->mark();
     }   
@@ -55,20 +63,22 @@ void Heap::mark(list<SchemeObject*> &stack) {
 }
 
 void Heap::sweep() {
-    list<SchemeObject*>::iterator i = allocations.begin();
-    while (i != allocations.end()) {
-        SchemeObject* o = (*i);
-        assert(o != NULL);
-        bool in_use = o->inuse();
-        o->clear_inuse();
-        if (!in_use && o->type() != SchemeObject::SYMBOL) {
-            //cout << "Deleting " << o << endl;
-            i = allocations.erase(i);
-	        o->finalize();
-            delete o;
+    SchemeObject* cur = allocations;
+    do {
+        if (cur->type() == SchemeObject::BLANK) {
+            if (cur < next_free) {
+                cout << "Moved free pointer" << endl;
+                next_free = cur;
+            }
         } else {
-            ++i;
+            bool in_use = cur->inuse();
+            cur->clear_inuse();
+            if (!in_use && cur->type() != SchemeObject::SYMBOL) {
+                cur->finalize();
+                cur->metadata = SchemeObject::BLANK;
+                free_slots++;
+            }
         }
-    }   
+    } while (++cur != &allocations[SLOTS_NUM]);
+    next_free = allocations;
 }
-

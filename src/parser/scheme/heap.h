@@ -4,8 +4,11 @@
 
 #include "objects.h"
 #include <list>
+#include <vector>
 
 using namespace std;
+
+#define SLOTS_NUM 10000
 
 class Heap {
     public:
@@ -13,26 +16,27 @@ class Heap {
         void addRoot(SchemeObject* root);
         void popRoot();
         SchemeObject* allocate(SchemeObject::ObjectType type);
-        void garbageCollect(list<SchemeObject*> &stack);
+        void garbageCollect(vector<SchemeObject*> &stack);
         bool timeToGarbageCollect();
         
     private:
-        Heap();
-        void addAllocation(SchemeObject* o);
-        void mark(list<SchemeObject*> &stack);
+        Heap(uint32_t size);
+        void mark(vector<SchemeObject*> &stack);
         void sweep();
         
         list<SchemeObject*> roots;
-        list<SchemeObject*> allocations;
         
         static Heap* unique_instance;
-        int counter;
+        int free_slots;
+        uint32_t slots_num;
+        SchemeObject* next_free;
+        SchemeObject* allocations;
 };
 
 inline
 Heap* Heap::getUniqueInstance() {
     if (unique_instance == NULL) {
-	    unique_instance = new Heap();
+	    unique_instance = new Heap(SLOTS_NUM);
     }
     return unique_instance;
 }

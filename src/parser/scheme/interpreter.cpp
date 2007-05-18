@@ -11,7 +11,7 @@ SchemeObject* global_arg1;
 SchemeObject* global_arg2;
 SchemeObject* global_arg3;
 SchemeObject* global_envt;
-list<SchemeObject*> stack;
+vector<SchemeObject*> stack;
 
 
 //------------------------------------------------------------------------
