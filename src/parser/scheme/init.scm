@@ -49,25 +49,9 @@
 (define (string-ci<=? . l) (string-cmp? *internal*-char-ci-cmp? <= l))
 (define (string-ci>=? . l) (string-cmp? *internal*-char-ci-cmp? >= l))
 
-#|
-(define (seed) 0)
-
-(define generate-name                            
-  (let ((count (seed)))
-    (lambda (symbol)
-      (set! count (+ 1 count))
-      (string->symbol
-       (string-append (symbol->string symbol)
-                      "|"
-                      (number->string count))))))
-
-
-(defmacro values x
+(define-macro (values x)
    `(list ,@x))
 
-(defmacro call-with-values (f g)
+(define-macro (call-with-values f g)
    `(apply ,g (,f)))
 
-|#
-
-'b
