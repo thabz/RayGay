@@ -191,7 +191,6 @@ void SchemeObject::mark() {
                 }
                 break;
             case SchemeObject::BUILT_IN_PROCEDURE :
-                s_closure_data->mark();
                 if (name != NULL) {
                     name->mark();
                 }
