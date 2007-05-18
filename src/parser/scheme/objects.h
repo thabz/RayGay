@@ -17,6 +17,7 @@ using namespace std;
 #define i_cdar(o)        (((o)->car)->cdr)
 #define i_cddr(o)        (((o)->cdr)->cdr)
 #define i_set_cdr_e(o,v) ((o)->cdr = (v))
+#define i_set_car_e(o,v) ((o)->car = (v))
 #define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
 #define i_char_p(o)      ((o)->type() == SchemeObject::CHAR ? S_TRUE : S_FALSE)
 #define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
@@ -57,7 +58,7 @@ class SchemeObject
                 union {
                     SchemeObject* cdr;      // For pairs
                     SchemeObject* result;   // For continuations
-                    uint32_t length;        // For vector and strings
+                    int32_t length;         // For vector and strings
                     map<SchemeObject*,SchemeObject*>* binding_map;	// For environments
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)

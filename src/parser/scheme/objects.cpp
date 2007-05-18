@@ -158,7 +158,7 @@ void SchemeObject::mark() {
                 if (cdr != NULL) cdr->mark();
                 break;
             case SchemeObject::VECTOR :    
-                for(uint32_t i = 0; i < length; i++) {
+                for(int32_t i = 0; i < length; i++) {
                     elems[i]->mark();
                 }
                 break;
@@ -266,7 +266,7 @@ string SchemeObject::toString() {
             return boolean ? "#t" : "#f";
         case SchemeObject::VECTOR :    
             ss << "#(";
-            for(uint i = 0; i < length; i++) {
+            for(int i = 0; i < length; i++) {
                 ss << elems[i]->toString();
                 if (i < length-1) {
                     ss << " ";

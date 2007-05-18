@@ -347,44 +347,7 @@ void Scheme::assign(string variable, SchemeObject* value, SchemeObject* envt = i
 // Procedures
 // -----------------------------------------------------
 
-inline
-void assert_arg_not_immutable(char* procname, int argnum, SchemeObject* arg) {
-    if (arg->immutable()) {
-        ostringstream ss;
-        ss << "Can't modify immutable object in position ";
-        ss << argnum;
-        ss << " in call to " << string(procname);    
-        ss << ": " << arg->toString();
-        throw scheme_exception(ss.str());
-    }
-}
 
-inline
-void assert_arg_int_in_range(char* procname, int argnum, SchemeObject* arg, int from, int to) {
-    assert_arg_type(procname, argnum, s_integer_p, arg);
-    int n = scm2int(arg);
-    if (n < from || n > to) {
-        ostringstream ss;
-        ss << "Integer out of range " << from << " to " << to;
-        ss << " in position " << argnum;
-        ss << " in call to " << procname;   
-        ss << ": " << arg->toString();
-        throw scheme_exception(ss.str());
-    }
-}
-
-inline
-void assert_arg_positive_int(char* procname, int argnum, SchemeObject* arg) {
-    assert_arg_type(procname, argnum, s_integer_p, arg);
-    int n = scm2int(arg);
-    if (n < 0) {
-        ostringstream ss;
-        ss << "Negative argument in to position " << argnum;
-        ss << " in call to " << string(procname);    
-        ss << ": " << arg->toString();
-        throw scheme_exception(ss.str());
-    }
-}
 
 // (equal? a b)
 // Equal? recursively compares the contents of pairs, vectors, and strings, applying eqv? on other objects 
@@ -504,7 +467,7 @@ SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args) {
             if (s_cdr(args) == S_EMPTY_LIST) {
                 // arg is a list and last argument
                 if (collected == S_EMPTY_LIST) {
-                    collected = static_cast<SchemeObject*>(arg);
+                    collected = arg;
                 } else {
                     s_set_cdr_e(prev, arg);
                 }
@@ -816,14 +779,14 @@ SchemeObject* s_length(SchemeObject* p) {
 SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o) {
     assert_arg_pair_type("set-car!", 1, p);
     assert_arg_not_immutable("set-car!", 1, p);
-    static_cast<SchemeObject*>(p)->car = o;
+    i_set_car_e(p, o);
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o) {
     assert_arg_pair_type("set-cdr!", 1, p);
     assert_arg_not_immutable("set-cdr!", 1, p);
-    static_cast<SchemeObject*>(p)->cdr = o;
+    i_set_cdr_e(p, o);
     return S_UNSPECIFIED;
 }
 
@@ -1514,7 +1477,7 @@ SchemeObject* s_integer_2_char(SchemeObject* i) {
 
 SchemeObject* s_char_2_integer(SchemeObject* c) {
     assert_arg_type("char->integer", 1, s_char_p, c);
-    return int2scm(int(static_cast<SchemeObject*>(c)->c));
+    return int2scm(int(scm2char(c)));
 }
 
 SchemeObject* s_string_2_list(SchemeObject* s) {
@@ -1628,7 +1591,7 @@ SchemeObject* s_open_output_file(SchemeObject* s_filename) {
 
 SchemeObject* s_close_input_port(SchemeObject* s_port) {
     assert_arg_type("close-input-port", 1, s_input_port_p, s_port);
-    istream* is = static_cast<SchemeObject*>(s_port)->is;
+    istream* is = s_port->is;
     // Only file-streams can be closed in C++
     ifstream* ifs = static_cast<ifstream*>(is);
     if (ifs != NULL) {
@@ -1639,7 +1602,7 @@ SchemeObject* s_close_input_port(SchemeObject* s_port) {
 
 SchemeObject* s_close_output_port(SchemeObject* s_port) {
     assert_arg_type("close-output-port", 1, s_output_port_p, s_port);
-    ostream* os = static_cast<SchemeObject*>(s_port)->os;
+    ostream* os = s_port->os;
     // Only file-streams can be closed in C++
     ofstream* ofs = static_cast<ofstream*>(os);
     if (ofs != NULL) {
@@ -1694,7 +1657,7 @@ SchemeObject* s_read_char(SchemeObject* s_port) {
         is = s_current_input_port()->is;
     } else {
         assert_arg_type("read-char", 1, s_input_port_p, s_port);
-        is = static_cast<SchemeObject*>(s_port)->is;
+        is = s_port->is;
     }
     int c = is->get();
     if (c == -1) {
@@ -1710,7 +1673,7 @@ SchemeObject* s_peek_char(SchemeObject* s_port) {
         is = s_current_input_port()->is;
     } else {
         assert_arg_type("peek-char", 1, s_input_port_p, s_port);
-        is = static_cast<SchemeObject*>(s_port)->is;
+        is = s_port->is;
     }
     int c = is->peek();
     if (c == -1) {
@@ -1727,7 +1690,7 @@ SchemeObject* s_write_char(SchemeObject* s_char, SchemeObject* port) {
         os = s_current_output_port()->os;
     } else {
         assert_arg_type("write-char", 2, s_output_port_p, port);
-        os = static_cast<SchemeObject*>(port)->os;
+        os = port->os;
     }
     (*os) << scm2char(s_char);
     return S_UNSPECIFIED;
@@ -1739,7 +1702,7 @@ SchemeObject* s_read(SchemeObject* s_port) {
         is = s_current_input_port()->is;
     } else {
         assert_arg_type("read", 1, s_input_port_p, s_port);
-        is = static_cast<SchemeObject*>(s_port)->is;
+        is = s_port->is;
     }
     return global_parser->read(is);
 }
@@ -1763,7 +1726,7 @@ SchemeObject* s_display(SchemeObject* o, SchemeObject* port) {
         os = s_current_output_port()->os;
     } else {
         assert_arg_type("display", 2, s_output_port_p, port);
-        os = static_cast<SchemeObject*>(port)->os;
+        os = port->os;
     }
     
     if (s_string_p(o) == S_TRUE) {
@@ -1818,9 +1781,7 @@ SchemeObject* s_interaction_environment(SchemeObject* s_version) {
 
 SchemeObject* s_eval(SchemeObject* expression, SchemeObject* s_environment) {
     assert_arg_type("eval", 2, s_environment_p, s_environment);
-    SchemeObject* environment = static_cast<SchemeObject*>(s_environment);
-    SchemeObject* expressions = s_cons(expression, S_EMPTY_LIST);
-    Interpreter interpreter = Interpreter(expressions, environment);
+    SchemeObject* expressions = i_cons(expression, S_EMPTY_LIST);
+    Interpreter interpreter = Interpreter(expressions, s_environment);
     return interpreter.interpret();
 }
-

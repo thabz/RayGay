@@ -74,6 +74,43 @@ class scheme_exception {
     }                                                     \
 }
 
+#define assert_arg_int_in_range(procname, argnum, arg, from, to) {    \
+    assert_arg_type(procname, argnum, s_integer_p, arg);              \
+    int n = scm2int(arg);                                             \
+    if (n < from || n > to) {                                         \
+        ostringstream ss;                                             \
+        ss << "Integer out of range " << from << " to " << to;        \
+        ss << " in position " << argnum;                              \
+        ss << " in call to " << procname;                             \
+        ss << ": " << arg->toString();                                \
+        throw scheme_exception(ss.str());                             \
+    }                                                                 \
+}
+
+#define assert_arg_positive_int(procname, argnum, arg) {           \
+    assert_arg_type(procname, argnum, s_integer_p, arg);           \
+    int n = scm2int(arg);                                          \
+    if (n < 0) {                                                   \
+        ostringstream ss;                                          \
+        ss << "Negative argument in to position " << argnum;       \
+        ss << " in call to " << string(procname);                  \
+        ss << ": " << arg->toString();                             \
+        throw scheme_exception(ss.str());                          \
+    }                                                              \
+}
+
+
+#define assert_arg_not_immutable(procname, argnum, arg) {   \
+    if (arg->immutable()) {                                 \
+        ostringstream ss;                                   \
+        ss << "Can't modify immutable object in position "; \
+        ss << argnum;                                       \
+        ss << " in call to " << string(procname);           \
+        ss << ": " << arg->toString();                      \
+        throw scheme_exception(ss.str());                   \
+    }                                                       \
+}
+
 #define assert_non_atom_type(procname, argnum, arg) {   \
     if (i_pair_p(arg) == S_FALSE && i_null_p(arg) == S_FALSE) { \
         ostringstream ss;                                 \
@@ -85,11 +122,6 @@ class scheme_exception {
         throw scheme_exception(ss.str());                 \
     }                                                     \
 }
-
-
-void assert_arg_not_immutable(char* procname, int argnum, SchemeObject* arg);
-void assert_arg_int_in_range(char* procname, int argnum, SchemeObject* arg, int from, int to);
-void assert_arg_positive_int(char* procname, int argnum, SchemeObject* arg);
 
 // Scheme constants
 extern SchemeObject* S_TRUE;
