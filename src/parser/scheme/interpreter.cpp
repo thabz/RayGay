@@ -787,9 +787,6 @@ fn_ptr eval_lambda() {
 }
 
 fn_ptr eval_set_e() {
-    // TODO: We're doing double hashtable lookups. Both a envt->get(s) and in envt->set(s,v). Optimize by letting envt->get(s) return a binding, that
-    // we manipulate instead of doing the set(s,v)
-
     SchemeObject* p = global_arg1;
     SchemeObject* envt = global_envt;
 
@@ -797,16 +794,11 @@ fn_ptr eval_set_e() {
         throw scheme_exception("Missing or extra expression");
     }
     SchemeObject* car = s_car(p);
-    if (s_symbol_p(car) == S_FALSE) {
+    if (i_symbol_p(car) == S_FALSE) {
         throw scheme_exception("Wrong type argument in position 1.");
     }
     SchemeObject* s = car;
 
-    SchemeObject* already_bound = envt->getBinding(s);
-    if (already_bound == NULL) {
-        throw scheme_exception("Unbound variable: " + s->toString());
-    }
-    
     global_arg1 = s_car(s_cdr(p));
     SchemeObject* v = trampoline((fn_ptr)&eval);
 
