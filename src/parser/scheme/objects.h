@@ -16,7 +16,7 @@ using namespace std;
 #define i_cadr(o)        (((o)->cdr)->car)
 #define i_cdar(o)        (((o)->car)->cdr)
 #define i_cddr(o)        (((o)->cdr)->cdr)
-#define i_set_cdr_e(o,v) (static_cast<SchemeObject*>(o)->cdr = (v))
+#define i_set_cdr_e(o,v) ((o)->cdr = (v))
 #define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
 #define i_char_p(o)      ((o)->type() == SchemeObject::CHAR ? S_TRUE : S_FALSE)
 #define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
