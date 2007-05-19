@@ -313,6 +313,8 @@ string SchemeObject::toString() {
             break;
         case SchemeObject::EMPTY_LIST :
             return "()";
+        default:
+            throw scheme_exception("Unknown type in toString()");    
     }
 	return ss.str();
 }
@@ -371,7 +373,7 @@ SchemeObject* SchemeObject::getBinding(SchemeObject* name) {
     }
 }
 
-void SchemeObject::putBinding(SchemeObject* name, SchemeObject* o) {
+void SchemeObject::defineBinding(SchemeObject* name, SchemeObject* o) {
     assert(type() == SchemeObject::ENVIRONMENT);
     if (i_symbol_p(name) == S_FALSE) {
         throw scheme_exception(name->toString() + " is not a symbol.");

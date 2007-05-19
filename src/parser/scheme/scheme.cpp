@@ -335,12 +335,12 @@ SchemeObject* Scheme::eval(string data) {
 void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* envt = interaction_environment) {
     SchemeObject* name = SchemeObject::createSymbol(variable.c_str());
     SchemeObject* proc = SchemeObject::createBuiltinProcedure(name, req, opt, rst, fn);
-    envt->putBinding(name, proc);
+    envt->defineBinding(name, proc);
 }
 
 void Scheme::assign(string variable, SchemeObject* value, SchemeObject* envt = interaction_environment) {
     SchemeObject* name = SchemeObject::createSymbol(variable.c_str());
-    envt->putBinding(name, value);
+    envt->defineBinding(name, value);
 }
 
 // -----------------------------------------------------
@@ -954,7 +954,7 @@ SchemeObject* s_vector_set_e(SchemeObject* s_vec, SchemeObject* s_index, SchemeO
 SchemeObject* s_vector_fill_e(SchemeObject* s_vec, SchemeObject* fill) {
     assert_arg_type("vector-fill!", 1, s_vector_p, s_vec);
     assert_arg_not_immutable("vector-fill!", 1, s_vec);
-    for(uint i = 0; i < s_vec->length; i++) {
+    for(int i = 0; i < s_vec->length; i++) {
 	    s_vec->setVectorElem(fill, i);
     }
     return S_UNSPECIFIED;
@@ -1484,7 +1484,7 @@ SchemeObject* s_string_2_list(SchemeObject* s) {
     assert_arg_type("string->list", 1, s_string_p, s);
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* result_tail = S_EMPTY_LIST;
-    for(uint i = 0; i < s->length; i++) {
+    for(int i = 0; i < s->length; i++) {
       	SchemeObject* newpair = s_cons(char2scm(s->str[i]), S_EMPTY_LIST);
     	if (result == S_EMPTY_LIST) {
     	    result = newpair;

@@ -272,10 +272,15 @@ fn_ptr eval_sequence() {
         global_ret = S_UNSPECIFIED;
         return NULL;
     }
+    if (i_cdr(p) == S_EMPTY_LIST) {
+        // List has one element. Do a tail call.
+        global_arg1 = i_car(p);
+        return (fn_ptr)&eval;
+    }
     stack.push_back(p);
     stack.push_back(global_envt);
     while (true) {
-        if (i_null_p(i_cdr(p)) == S_TRUE) {
+        if (i_cdr(p) == S_EMPTY_LIST) {
             // The tail call, let EVAL return to this' caller
             stack.pop_back();
             stack.pop_back();
@@ -284,7 +289,7 @@ fn_ptr eval_sequence() {
         } else {
             global_arg1 = i_car(p);
             trampoline((fn_ptr)&eval);
-            p = s_cdr(p);
+            p = i_cdr(p);
         }
     }    
 }
@@ -350,7 +355,7 @@ fn_ptr eval_define() {
         trampoline((fn_ptr)&eval_lambda);
         SchemeObject* proc = global_ret;
         
-        envt->putBinding(name , proc);
+        envt->defineBinding(name , proc);
     } else {
         // (define var value-expr)
         if (s_length(p) != S_TWO) {
@@ -365,7 +370,7 @@ fn_ptr eval_define() {
         global_arg1 = s_car(s_cdr(p));
         SchemeObject* v = trampoline((fn_ptr)&eval);
 
-        envt->putBinding(s, v);
+        envt->defineBinding(s, v);
     }
     global_ret = S_UNSPECIFIED;
     return NULL;
@@ -746,12 +751,12 @@ fn_ptr eval_procedure_call() {
             if (args == S_EMPTY_LIST) {
                 throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
             }
-            new_envt->putBinding(i_car(formals), i_car(args));
+            new_envt->defineBinding(i_car(formals), i_car(args));
             args = i_cdr(args);
             formals = i_cdr(formals);
         }
         if (formals != S_EMPTY_LIST) {
-            new_envt->putBinding(formals, args);
+            new_envt->defineBinding(formals, args);
         } else if (args != S_EMPTY_LIST) {
             throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
         }
@@ -912,7 +917,7 @@ fn_ptr eval_let() {
         global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
         SchemeObject* val = trampoline((fn_ptr)&eval);
 
-        new_bindings->putBinding(s_car(s_car(binding_pairs)), val);
+        new_bindings->defineBinding(s_car(s_car(binding_pairs)), val);
         binding_pairs = s_cdr(binding_pairs);
     }
     stack.pop_back();
@@ -982,7 +987,7 @@ fn_ptr eval_named_let() {
 
     SchemeObject* new_envt = SchemeObject::createEnvironment(envt);
     SchemeObject* lambda = SchemeObject::createUserProcedure(name, new_envt, formals, s_cdr(p));
-    new_envt->putBinding(name, lambda);
+    new_envt->defineBinding(name, lambda);
     
     global_arg1 = lambda;
     global_arg2 = args;
@@ -1020,7 +1025,7 @@ fn_ptr eval_letstar() {
 	if (s_symbol_p(sym) == S_FALSE) {
 	    throw scheme_exception("Bad variable in let*: " + s_car(s_car(binding_pairs))->toString());
 	}
-        new_bindings->putBinding(sym, val);
+        new_bindings->defineBinding(sym, val);
         binding_pairs = s_cdr(binding_pairs);
     }
     
@@ -1047,7 +1052,7 @@ fn_ptr eval_define_macro() {
     }
 
     SchemeObject* macro = SchemeObject::createMacro(name, envt, formals, body);
-    envt->putBinding(name, macro);
+    envt->defineBinding(name, macro);
     
     global_ret = S_UNSPECIFIED;
     return (fn_ptr) NULL;
@@ -1066,12 +1071,12 @@ fn_ptr eval_call_macro() {
         if (args == S_EMPTY_LIST) {
             throw scheme_exception("Too few argument given in call to macro " + proc->nameAsString());
         }
-        new_envt->putBinding(i_car(formals), i_car(args));
+        new_envt->defineBinding(i_car(formals), i_car(args));
         formals = i_cdr(formals);
         args = i_cdr(args);
     }
     if (formals != S_EMPTY_LIST) {
-        new_envt->putBinding(formals, args);
+        new_envt->defineBinding(formals, args);
     } else if (args != S_EMPTY_LIST) {
         throw scheme_exception("Too many argument given in call to macro "+proc->nameAsString());
     }
@@ -1137,7 +1142,7 @@ fn_ptr eval_do() {
         global_arg1 = i_cadr(binding);
         SchemeObject* val = trampoline((fn_ptr)&eval);
         
-        new_envt->putBinding(varname, val);
+        new_envt->defineBinding(varname, val);
         varnames = s_cons(varname, varnames);
         varnames_stack_pos = varnames;
 
@@ -1197,7 +1202,7 @@ fn_ptr eval_do() {
         // Assign new step values
         SchemeObject* tmp = varnames;
         while(i_null_p(varnames) == S_FALSE) {
-            new_envt->putBinding(i_car(varnames), i_car(vals));
+            new_envt->defineBinding(i_car(varnames), i_car(vals));
             varnames = i_cdr(varnames);
             vals = i_cdr(vals);
         }

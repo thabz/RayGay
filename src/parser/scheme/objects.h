@@ -105,7 +105,7 @@ class SchemeObject
         void setVectorElem(SchemeObject* o, int index);
 
 	    SchemeObject* getBinding(SchemeObject* name);
-        void putBinding(SchemeObject* name, SchemeObject* o);
+        void defineBinding(SchemeObject* name, SchemeObject* o);
         void setBinding(SchemeObject* name, SchemeObject* o);
         
         string nameAsString();
