@@ -358,8 +358,8 @@ fn_ptr eval_define() {
         envt->defineBinding(name , proc);
     } else {
         // (define var value-expr)
-        if (s_length(p) != S_TWO) {
-            throw scheme_exception("Missing or extra expression");
+        if (p == S_EMPTY_LIST || i_cdr(p) == S_EMPTY_LIST || i_cddr(p) != S_EMPTY_LIST) {
+            throw scheme_exception("Missing or extra arguments to define");
         }
         
         SchemeObject* s = s_car(p);
@@ -783,16 +783,16 @@ fn_ptr eval_set_e() {
     SchemeObject* p = global_arg1;
     SchemeObject* envt = global_envt;
 
-    if (s_length(p) != S_TWO) {
-        throw scheme_exception("Missing or extra expression");
+    if (p == S_EMPTY_LIST || i_cdr(p) == S_EMPTY_LIST || i_cddr(p) != S_EMPTY_LIST) {
+        throw scheme_exception("Missing or extra arguments to set!");
     }
-    SchemeObject* car = s_car(p);
+    SchemeObject* car = i_car(p);
     if (i_symbol_p(car) == S_FALSE) {
         throw scheme_exception("Wrong type argument in position 1.");
     }
     SchemeObject* s = car;
 
-    global_arg1 = s_car(s_cdr(p));
+    global_arg1 = i_cadr(p);
     SchemeObject* v = trampoline((fn_ptr)&eval);
 
     envt->setBinding(s, v);
