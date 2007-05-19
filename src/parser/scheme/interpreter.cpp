@@ -131,15 +131,6 @@ fn_ptr eval() {
         global_ret = s;
         return NULL;
     } else if (i_pair_p(s) == S_TRUE) {
-        Heap* heap = Heap::getUniqueInstance();
-        if (heap->timeToGarbageCollect()) {
-            heap->addRoot(s);
-            heap->addRoot(envt);
-            heap->garbageCollect(stack);
-            heap->popRoot();
-            heap->popRoot();
-        }
-
         global_arg1 = s;
         return (fn_ptr)&eval_list;
     } else {
@@ -152,7 +143,16 @@ fn_ptr eval() {
 fn_ptr eval_list() {
     SchemeObject* p = global_arg1;
     SchemeObject* envt = global_envt;
-    
+
+    Heap* heap = Heap::getUniqueInstance();
+    if (heap->timeToGarbageCollect()) {
+        heap->addRoot(p);
+        heap->addRoot(envt);
+        heap->garbageCollect(stack);
+        heap->popRoot();
+        heap->popRoot();
+    }
+
 	SchemeObject* car = i_car(p);
     if (i_symbol_p(car) == S_FALSE) {
         return (fn_ptr)&eval_combo;
