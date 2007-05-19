@@ -71,11 +71,15 @@ class SchemeObject
  		    BLANK,                  // Empty slots in heap
 		    NUMBER,
 		    EMPTY_LIST,
-		    SYMBOL,
 		    BOOL,
 		    CHAR,
 		    STRING,
 		    VECTOR,
+ 		    EOFTYPE,
+ 		    INPUT_PORT,
+ 		    OUTPUT_PORT,
+		    SELF_EVALUATING_FORMS_ARE_BEFORE_HERE,
+		    SYMBOL,
 		    PAIR,
 		    UNSPECIFIED,
  		    USER_PROCEDURE,
@@ -83,9 +87,6 @@ class SchemeObject
  		    BUILT_IN_PROCEDURE,
  		    MACRO,
  		    CONTINUATION,
- 		    INPUT_PORT,
- 		    OUTPUT_PORT,
- 		    EOFTYPE,
  		    ENVIRONMENT
 		};
 
@@ -98,6 +99,7 @@ class SchemeObject
         bool inuse() const;
         void mark();
         void finalize();
+        bool self_evaluating() const;
 
         SchemeObject* getVectorElem(int index);
         void setVectorElem(SchemeObject* o, int index);
@@ -203,5 +205,9 @@ SchemeObject* SchemeObject::s_envt() {
     return i_cddr(s_closure_data);
 }
 
+inline
+bool SchemeObject::self_evaluating() const {
+    return type() < SchemeObject::SELF_EVALUATING_FORMS_ARE_BEFORE_HERE;
+}
 
 #endif

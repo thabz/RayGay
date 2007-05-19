@@ -118,6 +118,11 @@ SchemeObject* trampoline(fn_ptr f) {
 fn_ptr eval() {
     SchemeObject* s = global_arg1;
     SchemeObject* envt = global_envt;
+    
+    if (s->self_evaluating()) {
+        global_ret = s;
+        return NULL;
+    }
 
     Heap* heap = Heap::getUniqueInstance();
     if (heap->timeToGarbageCollect()) {
@@ -144,6 +149,7 @@ fn_ptr eval() {
 		case SchemeObject::BOOL:
 		case SchemeObject::CHAR:
 		case SchemeObject::VECTOR:
+		case SchemeObject::EOFTYPE:
 		case SchemeObject::EMPTY_LIST:
 		case SchemeObject::INPUT_PORT:
 		case SchemeObject::OUTPUT_PORT:
@@ -269,14 +275,14 @@ fn_ptr eval_sequence() {
     stack.push_back(p);
     stack.push_back(global_envt);
     while (true) {
-        if (i_null_p(s_cdr(p)) == S_TRUE) {
+        if (i_null_p(i_cdr(p)) == S_TRUE) {
             // The tail call, let EVAL return to this' caller
             stack.pop_back();
             stack.pop_back();
-            global_arg1 = s_car(p);
+            global_arg1 = i_car(p);
             return (fn_ptr)&eval;
         } else {
-            global_arg1 = s_car(p);
+            global_arg1 = i_car(p);
             trampoline((fn_ptr)&eval);
             p = s_cdr(p);
         }
@@ -299,8 +305,7 @@ fn_ptr eval_multi() {
     while (p != S_EMPTY_LIST) {
         global_arg1 = i_car(p);
         SchemeObject* r;
-        if (i_number_p(global_arg1) == S_TRUE) {
-            // Lame attempt at optimizing arithmetic forms
+        if (global_arg1->self_evaluating()) {
             r = global_arg1;
         } else {
             r = trampoline((fn_ptr)&eval);
