@@ -545,9 +545,7 @@ void test_lambda() {
     assert_eval(s, "(let () (define (f . x) x) (f))", "()");
     assert_eval(s, "(let () (define (f . x) x) (f 1 2 3 4 5 6 7))", "(1 2 3 4 5 6 7)");
     assert_eval(s, "(let () (define f (lambda x x)) (f))", "()");
-    assert_eval(s, "", "");
-    assert_eval(s, "", "");
-    assert_eval(s, "", "");
+    assert_fail(s, "((lambda))");
 }
 
 void test_macros() {

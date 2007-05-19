@@ -161,13 +161,13 @@ fn_ptr eval_list() {
     SchemeObject* p = global_arg1;
     SchemeObject* envt = global_envt;
     
-	SchemeObject* car = s_car(p);
-    if (s_symbol_p(car) == S_FALSE) {
+	SchemeObject* car = i_car(p);
+    if (i_symbol_p(car) == S_FALSE) {
         return (fn_ptr)&eval_combo;
     }
 
     SchemeObject* s = car;
-	SchemeObject* cdr = s_cdr(p);
+	SchemeObject* cdr = i_cdr(p);
 	
 	SchemeObject* proc = envt->getBinding(s);
     if (proc != NULL) {
@@ -194,7 +194,7 @@ fn_ptr eval_list() {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_if;
         	} else if (s == quote_symbol) {
-                global_ret = s_car(cdr);
+                global_ret = i_car(cdr);
                 return NULL;
         	} else if (s == define_symbol) {
                 global_arg1 = cdr;
@@ -203,7 +203,7 @@ fn_ptr eval_list() {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_define_macro;
         	} else if (s == quasiquote_symbol) {
-                global_arg1 = s_car(cdr);
+                global_arg1 = i_car(cdr);
                 return (fn_ptr)&eval_quasiquote;
         	} else if (s == lambda_symbol) {
         	    SchemeObject* formals = s_car(cdr);
