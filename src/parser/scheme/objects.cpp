@@ -220,6 +220,9 @@ void SchemeObject::finalize() {
         case SchemeObject::CONTINUATION :
             free(jmpbuf);
             break;
+        case SchemeObject::ENVIRONMENT :
+            delete binding_map;
+            break;
         default:
             break;    
     }    
