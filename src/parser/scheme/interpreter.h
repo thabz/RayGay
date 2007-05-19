@@ -32,6 +32,8 @@ fn_ptr eval_define();
 fn_ptr eval_apply();
 fn_ptr eval_apply_real();
 fn_ptr eval_procedure_call();
+fn_ptr eval_user_procedure_call();
+fn_ptr eval_built_in_procedure_call();
 fn_ptr eval_let();
 fn_ptr eval_letstar();
 fn_ptr eval_letrec();
