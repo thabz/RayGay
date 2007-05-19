@@ -122,45 +122,31 @@ fn_ptr eval() {
     if (s->self_evaluating()) {
         global_ret = s;
         return NULL;
+    } else if (i_symbol_p(s) == S_TRUE) {
+        SchemeObject* symbol = s;
+	    s = envt->getBinding(symbol);
+        if (s == NULL) {
+            throw scheme_exception("Unbound variable " + string(symbol->str));
+        }
+        global_ret = s;
+        return NULL;
+    } else if (i_pair_p(s) == S_TRUE) {
+        Heap* heap = Heap::getUniqueInstance();
+        if (heap->timeToGarbageCollect()) {
+            heap->addRoot(s);
+            heap->addRoot(envt);
+            heap->garbageCollect(stack);
+            heap->popRoot();
+            heap->popRoot();
+        }
+
+        global_arg1 = s;
+        return (fn_ptr)&eval_list;
+    } else {
+        throw scheme_exception("Unknown type: " + s->toString());
     }
 
-    Heap* heap = Heap::getUniqueInstance();
-    if (heap->timeToGarbageCollect()) {
-        heap->addRoot(s);
-        heap->addRoot(envt);
-        heap->garbageCollect(stack);
-        heap->popRoot();
-        heap->popRoot();
-    }
     
-	SchemeObject::ObjectType type = s->type();
-	switch(type) {
-		case SchemeObject::SYMBOL: {
-            SchemeObject* symbol = s;
-		    s = envt->getBinding(symbol);
-            if (s == NULL) {
-                throw scheme_exception("Unbound variable " + string(symbol->str));
-            }
-            global_ret = s;
-            return NULL;
-	    }
-		case SchemeObject::NUMBER:
-		case SchemeObject::STRING:
-		case SchemeObject::BOOL:
-		case SchemeObject::CHAR:
-		case SchemeObject::VECTOR:
-		case SchemeObject::EOFTYPE:
-		case SchemeObject::EMPTY_LIST:
-		case SchemeObject::INPUT_PORT:
-		case SchemeObject::OUTPUT_PORT:
-            global_ret = s;
-            return NULL;
-        case SchemeObject::PAIR:
-            global_arg1 = s;
-            return (fn_ptr)&eval_list;
- 		default:
-	  	    throw scheme_exception("Unknown type: " + s->toString());
-	}
 }
 
 fn_ptr eval_list() {
@@ -177,11 +163,7 @@ fn_ptr eval_list() {
 	
 	SchemeObject* proc = envt->getBinding(s);
     if (proc != NULL) {
-        if (proc->type() == SchemeObject::MACRO) {
-            global_arg1 = proc;
-            global_arg2 = cdr;
-            return (fn_ptr)&eval_call_macro;
-        } else if (proc->type() == SchemeObject::USER_PROCEDURE || proc->type() == SchemeObject::BUILT_IN_PROCEDURE) {
+        if (proc->type() == SchemeObject::USER_PROCEDURE || proc->type() == SchemeObject::BUILT_IN_PROCEDURE) {
             stack.push_back(proc);
             stack.push_back(cdr);
             global_arg1 = cdr;
@@ -192,9 +174,13 @@ fn_ptr eval_list() {
             global_arg2 = args;
             return (fn_ptr)&eval_procedure_call;
         } else if (proc->type() == SchemeObject::CONTINUATION) {
-            global_arg1 = s_car(cdr);
+            global_arg1 = i_car(cdr);
             eval();
             proc->callContinuation(global_ret);
+        } else if (proc->type() == SchemeObject::MACRO) {
+            global_arg1 = proc;
+            global_arg2 = cdr;
+            return (fn_ptr)&eval_call_macro;
         } else if (proc->type() == SchemeObject::INTERNAL_PROCEDURE) {
             if (s == if_symbol) {
                 global_arg1 = cdr;
@@ -1130,7 +1116,7 @@ fn_ptr eval_do() {
 
         // Binding symbol
         SchemeObject* varname = i_car(binding);
-        if (s_symbol_p(varname) == S_FALSE) {
+        if (i_symbol_p(varname) == S_FALSE) {
             throw scheme_exception("Invalid variable in do: " + varname->toString());
         }
         
@@ -1143,7 +1129,7 @@ fn_ptr eval_do() {
         SchemeObject* val = trampoline((fn_ptr)&eval);
         
         new_envt->defineBinding(varname, val);
-        varnames = s_cons(varname, varnames);
+        varnames = i_cons(varname, varnames);
         varnames_stack_pos = varnames;
 
         // Save step expression
@@ -1159,21 +1145,21 @@ fn_ptr eval_do() {
         binding_pairs = i_cdr(binding_pairs);
     }
     
-    SchemeObject* body = s_cdr(p);
+    SchemeObject* body = i_cdr(p);
     
     global_envt = new_envt;
     
     while (true) {
         // Evaluate test
-        if (s_car(body) == S_EMPTY_LIST) {
+        if (i_car(body) == S_EMPTY_LIST) {
             throw scheme_exception("Missing exit clause in do");
         }
-        global_arg1 = s_car(s_car(body));
+        global_arg1 = i_caar(body);
         SchemeObject* val = trampoline((fn_ptr)&eval);
 
         // Return if test is true
         if (scm2bool(val)) {
-            if (s_cdr(s_car(body)) == S_EMPTY_LIST) {
+            if (i_cdar(body) == S_EMPTY_LIST) {
                 global_ret = S_UNSPECIFIED;
                 stack.pop_back();
                 stack.pop_back();
@@ -1181,7 +1167,7 @@ fn_ptr eval_do() {
                 stack.pop_back();
                 return NULL;
             } else {
-                global_arg1 = s_cdr(s_car(body));
+                global_arg1 = s_cdar(body);
                 stack.pop_back();
                 stack.pop_back();
                 stack.pop_back();
@@ -1190,8 +1176,8 @@ fn_ptr eval_do() {
             }
         }
         
-        if (s_cdr(body) != S_EMPTY_LIST) {
-            global_arg1 = s_cdr(body);
+        if (i_cdr(body) != S_EMPTY_LIST) {
+            global_arg1 = i_cdr(body);
             trampoline((fn_ptr)&eval_sequence);
         }
         

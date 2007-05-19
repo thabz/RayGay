@@ -41,5 +41,10 @@ Heap* Heap::getUniqueInstance() {
     return unique_instance;
 }
 
+inline
+bool Heap::timeToGarbageCollect() {
+    return next_free > &allocations[int(0.9 * SLOTS_NUM)];
+}
+
 #endif
 

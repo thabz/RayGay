@@ -19,10 +19,6 @@ void Heap::addRoot(SchemeObject* root) {
     roots.push_back(root);
 }
 
-bool Heap::timeToGarbageCollect() {
-    return next_free > &allocations[int(0.9 * SLOTS_NUM)];
-}
-
 void Heap::popRoot() {
     roots.pop_back();
 }
