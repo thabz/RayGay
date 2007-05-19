@@ -287,8 +287,6 @@ fn_ptr eval_sequence() {
 // Evals a list of expressions and the returns the list of results
 //
 fn_ptr eval_multi() {
-    // TODO: Facilitate allocation of multiple cells at once instead
-    // of separate calls to s_cons.
     SchemeObject* p = global_arg1;
     stack.push_back(p);
     stack.push_back(global_envt);
@@ -681,65 +679,50 @@ fn_ptr eval_procedure_call() {
     SchemeObject* result = S_UNSPECIFIED;
 
     if (proc->type() == SchemeObject::BUILT_IN_PROCEDURE) {
-        SchemeObject* argsv[16];
         // Built-in function
+        SchemeObject* argsv[16];
         int req = proc->req();
         int opt = proc->opt();
-        // TODO: Avoid calling s_length. Catch the args-length mismatches
-        // when traversing the args below instead.
-        int args_num = scm2int(s_length(args));
-        if (args_num < req) {
-            throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
+
+        for(int i = 0; i < req; i++) {
+            if (args == S_EMPTY_LIST) {
+                throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
+            }
+            argsv[i] = i_car(args);
+            args = i_cdr(args);
         }
-        if ((args_num > req + opt) && !proc->rest()) {
+        for(int i = 0; i < opt; i++) {
+            SchemeObject* v;
+            if (args != S_EMPTY_LIST) {
+                v = i_car(args);
+                args = i_cdr(args);
+            } else {
+                v = S_UNSPECIFIED;
+            }
+            argsv[req+i] = v;
+        }
+        int num = req + opt;
+        if (!proc->rest() && args != S_EMPTY_LIST) {
             throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
         }
-
-        SchemeObject* a_p = args;
+        if (proc->rest()) {
+            argsv[req+opt] = args;
+            num++;
+        }
         try {
-            if (!proc->rest()) {
-                for(int i = 0; i < 16; i++) {
-                    if (i < args_num) {
-                        argsv[i] = s_car(a_p);
-                        a_p = s_cdr(a_p);
-                    } else {
-                        argsv[i] = S_UNSPECIFIED;
-                    }
-                }
-                switch(req + opt) {
-                    // TODO: Support upto 16+16 calls. Or at least more than this.
-                    case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();
-                              break;
-                    case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
-                              break;
-                    case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
-                              break;
-                    case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
-                              break;
-                    default:  throw scheme_exception("Arguments mismatch"); 
-                }
-            } else {
-                for(int i = 0; i < 16; i++) {
-                    if (i < req) {
-                        argsv[i] = s_car(a_p);
-                        a_p = s_cdr(a_p);
-                    } else {
-                        argsv[i] = a_p;
-                        break;
-                    }
-                }
-                // TODO: Support upto 16+16 calls. Or at least more than this.
-                switch(req + opt) {
-                    case 0:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
-                              break;
-                    case 1:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
-                              break;
-                    case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
-                              break;
-                    case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3]);
-                              break;
-                    default:  throw scheme_exception("Arguments mismatch"); 
-                }
+            switch(num) {
+                // TODO: Support up to 16+16 arguments. Or at least more than this.
+                case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();
+                          break;
+                case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
+                          break;
+                case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
+                          break;
+                case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
+                          break;
+                case 4:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2], argsv[3]);
+                          break;
+                default:  throw scheme_exception("Doesn't support that many args to a built-in function."); 
             }
         } catch (scheme_exception e) {
             string s = "In call to " + proc->nameAsString() + ": " + e.str;

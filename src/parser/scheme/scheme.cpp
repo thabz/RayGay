@@ -769,9 +769,9 @@ SchemeObject* s_reverse(SchemeObject* o)
 SchemeObject* s_length(SchemeObject* p) {
     int length = 0;
     while (p != S_EMPTY_LIST) {
-        assert_arg_type("length", 1, s_pair_p, p);
+        assert_arg_pair_type("length", 1, p);
         length++;
-        p = s_cdr(p);
+        p = i_cdr(p);
     }
     return int2scm(length);
 }
