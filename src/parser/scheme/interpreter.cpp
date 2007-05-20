@@ -707,7 +707,9 @@ fn_ptr eval_user_procedure_call() {
     return (fn_ptr)&eval_sequence;
 }
 
-fn_ptr eval_built_in_procedure_call() {
+// TODO: Avoid calling eval_multi to avoid cons'ing of temporaries.
+fn_ptr eval_built_in_procedure_call() 
+{
     SchemeObject* proc = global_arg1;
     SchemeObject* args_to_eval = global_arg2;
     
@@ -723,59 +725,59 @@ fn_ptr eval_built_in_procedure_call() {
 
     SchemeObject* result = S_UNSPECIFIED;
 
-        // Built-in function
-        SchemeObject* argsv[16];
-        int req = proc->req();
-        int opt = proc->opt();
-
-        for(int i = 0; i < req; i++) {
-            if (args == S_EMPTY_LIST) {
-                throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
-            }
-            argsv[i] = i_car(args);
+    // Built-in function
+    SchemeObject* argsv[16];
+    int req = proc->req();
+    int opt = proc->opt();
+    
+    for(int i = 0; i < req; i++) {
+        if (args == S_EMPTY_LIST) {
+            throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
+        }
+        argsv[i] = i_car(args);
+        args = i_cdr(args);
+    }
+    for(int i = 0; i < opt; i++) {
+        SchemeObject* v;
+        if (args != S_EMPTY_LIST) {
+            v = i_car(args);
             args = i_cdr(args);
+        } else {
+            v = S_UNSPECIFIED;
         }
-        for(int i = 0; i < opt; i++) {
-            SchemeObject* v;
-            if (args != S_EMPTY_LIST) {
-                v = i_car(args);
-                args = i_cdr(args);
-            } else {
-                v = S_UNSPECIFIED;
-            }
-            argsv[req+i] = v;
+        argsv[req+i] = v;
+    }
+    int num = req + opt;
+    if (!proc->rest() && args != S_EMPTY_LIST) {
+        throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
+    }
+    if (proc->rest()) {
+        argsv[req+opt] = args;
+        num++;
+    }
+    try {
+        switch(num) {
+            // TODO: Support up to 16+16 arguments. Or at least more than this.
+            case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();
+                      break;
+            case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
+                      break;
+            case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
+                      break;
+            case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
+                      break;
+            case 4:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2], argsv[3]);
+                      break;
+            default:  throw scheme_exception("Doesn't support that many args to a built-in function."); 
         }
-        int num = req + opt;
-        if (!proc->rest() && args != S_EMPTY_LIST) {
-            throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
-        }
-        if (proc->rest()) {
-            argsv[req+opt] = args;
-            num++;
-        }
-        try {
-            switch(num) {
-                // TODO: Support up to 16+16 arguments. Or at least more than this.
-                case 0:   result = (*((SchemeObject* (*)())(proc->fn)))();
-                          break;
-                case 1:   result = (*((SchemeObject* (*)(SchemeObject*))(proc->fn)))(argsv[0]);
-                          break;
-                case 2:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1]);
-                          break;
-                case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
-                          break;
-                case 4:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2], argsv[3]);
-                          break;
-                default:  throw scheme_exception("Doesn't support that many args to a built-in function."); 
-            }
-        } catch (scheme_exception e) {
-            string s = "In call to " + proc->nameAsString() + ": " + e.str;
-            throw scheme_exception(s);
-        }
-        stack.pop_back();
-        stack.pop_back();
-        global_ret = result;
-        return NULL;    
+    } catch (scheme_exception e) {
+        string s = "In call to " + proc->nameAsString() + ": " + e.str;
+        throw scheme_exception(s);
+    }
+    stack.pop_back();
+    stack.pop_back();
+    global_ret = result;
+    return NULL;    
 }
 
 fn_ptr eval_procedure_call() {
