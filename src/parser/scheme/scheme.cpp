@@ -61,9 +61,17 @@ SchemeObject* current_output_port = NULL;
 
 Interpreter* interpreter;
 
+//#define R5RS_STRICT
+
+#ifdef R5RS_STRICT 
+//SchemeObject* null_environment = SchemeObject::createEnvironment(NULL);
+//SchemeObject* scheme_report_environment = SchemeObject::createEnvironment(null_environment);
+//SchemeObject* interaction_environment = SchemeObject::createEnvironment(scheme_report_environment);
+#else 
 SchemeObject* null_environment = SchemeObject::createEnvironment(NULL);
-SchemeObject* scheme_report_environment = SchemeObject::createEnvironment(null_environment);
-SchemeObject* interaction_environment = SchemeObject::createEnvironment(scheme_report_environment);
+SchemeObject* scheme_report_environment = null_environment;
+SchemeObject* interaction_environment = null_environment;
+#endif
 
 // Global parser used by s_read()
 Parser* global_parser = new Parser();
