@@ -1,6 +1,4 @@
 
-SUBDIRS = scheme
-
 INCLUDES = -I$(top_srcdir)/src 
 
 noinst_LTLIBRARIES = libparser.la

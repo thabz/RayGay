@@ -146,7 +146,6 @@ AC_OUTPUT(Makefile \
 	  src/image/Makefile \
 	  src/imagefilters/Makefile \
 	  src/parser/Makefile \
-	  src/parser/scheme/Makefile \
 	  src/photon/Makefile \
 	  src/objects/Makefile \
 	  src/space/Makefile \
@@ -156,6 +155,7 @@ AC_OUTPUT(Makefile \
 	  src/samplers/Makefile \
 	  src/filters/Makefile \
 	  src/http/Makefile \
+	  src/scheme/Makefile \
 	  scheme/Makefile	\
 	  scenes/Makefile	\
 	  test/Makefile		\

@@ -15,6 +15,15 @@
 ; ./repl ../../../scenes/bench.scm  11.59s user 0.15s system 99% cpu 11.836 total
 ; 2007-05-18 (made stack a vector<> instead of a list<>)
 ; ./repl ../../../scenes/bench.scm  2.32s user 0.12s system 98% cpu 2.467 total
+; ./repl ../../../scenes/bench.scm  2.23s user 0.12s system 98% cpu 2.467 total
+
+; 2007-05-19 (stopped leak of binding-envts and 10 times more iterations of bench
+; ./repl ../../../scenes/bench.scm  26.41s user 0.03s system 99% cpu 26.628 total
+; ./repl ../../../scenes/bench.scm  25.38s user 0.03s system 95% cpu 26.640 total
+; ./repl ../../../scenes/bench.scm  24.73s user 0.03s system 99% cpu 24.943 total
+; ./repl ../../../scenes/bench.scm  24.33s user 0.07s system 98% cpu 24.664 total
+; ./repl ../../../scenes/bench.scm  22.89s user 0.05s system 98% cpu 23.208 total
+; ./repl ../../../scenes/bench.scm  24.24s user 0.04s system 97% cpu 24.908 total
 
 (define (square x)
   (* x x))
@@ -35,13 +44,10 @@
 
 (define sum 1.0)    
 
-;(define cc (compile (+ sum (iso-func1 1.1 2.1 3.01))))
-(define cc '(+ sum (iso-func1 1.1 2.1 3.01)))
-
 (define (bench)
   (begin
   (do ((i 0 (+ 1 i)))
-      ((= i 100000))
+      ((= i 1000000))
       (set! sum (+ sum (iso-func1 1.1 2.1 3.01))))
   (display sum)
   (newline)))
