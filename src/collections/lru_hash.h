@@ -11,6 +11,7 @@ using namespace std;
 /**
  * A least-recently-used map
  * 
+ * TODO: The list<> is very slow. Use a fixed size vector<> with a circular start-index instead.
  * The template parameters K and V are the key- and valuetype.
  */
 template <typename K, typename V> 

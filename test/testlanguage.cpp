@@ -21,6 +21,7 @@ extern "C" {
 #include <cctype>
 
 #include "collections/lru_hash.h"
+#include "collections/bucket_map.h"
 #include "mmap_allocator.h"
 #include "math/vector.h"
 
@@ -333,23 +334,41 @@ class test_swap : public Test {
            assertTrue(b == 10.9);       }
 };
 
+class test_bucket_map : public Test {
+   public:
+       void run() {
+           bucket_map<int,string> map;
+           map.insert(10, "ten");
+           map.insert(20, "twenty");
+           map.insert(40, "fourty");
+           map.insert(1000, "thousand");
+           map.insert(256+10, "other");
+           assertTrue(*map.find(10) == "ten");
+           assertTrue(*map.find(20) == "twenty");
+           assertTrue(*map.find(256+10) == "other");
+           assertTrue(*map.find(1000) == "thousand");
+           assertTrue(map.find(99) == NULL);
+       }
+};
+
 
 int main(int argc, char *argv[]) {
-        TestSuite suite;
-        suite.add("Bool",new test_bool());
-        suite.add("Modulo",new test_modulo());
-        suite.add("Lowercase",new test_lowercase());
-        suite.add("Sort",new test_sort());
-        suite.add("Sort array",new test_sort_array());
-        suite.add("Vector copy",new test_vector_copy());
-        suite.add("Vector ref",new test_vector_ref());
-        suite.add("Vector clear",new test_vector_clear());
-        suite.add("Vector erase",new test_vector_erase());
-        suite.add("Shift",new test_shift());
-        suite.add("LRU Hash",new test_lru_hash());
-        suite.add("mmap",new test_mmap());
-        suite.add("STL mmap alloc",new test_stl_mmap_allocator());
-        suite.add("Swap",new test_swap());
+    TestSuite suite;
+    suite.add("Bool",new test_bool());
+    suite.add("Modulo",new test_modulo());
+    suite.add("Lowercase",new test_lowercase());
+    suite.add("Sort",new test_sort());
+    suite.add("Sort array",new test_sort_array());
+    suite.add("Vector copy",new test_vector_copy());
+    suite.add("Vector ref",new test_vector_ref());
+    suite.add("Vector clear",new test_vector_clear());
+    suite.add("Vector erase",new test_vector_erase());
+    suite.add("Shift",new test_shift());
+    suite.add("LRU Hash",new test_lru_hash());
+    suite.add("Bucket map",new test_bucket_map());
+    suite.add("mmap",new test_mmap());
+    suite.add("STL mmap alloc",new test_stl_mmap_allocator());
+    suite.add("Swap",new test_swap());
         
     suite.run();
     suite.printStatus();
