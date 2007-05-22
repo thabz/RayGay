@@ -28,7 +28,7 @@ SCM make_arealight(SCM s_pos, SCM s_dir, SCM s_radius, SCM s_num, SCM s_jitter, 
     if (RendererSettings::uniqueInstance()->fast_preview) {
         num = 1;
     }
-    Arealight* light = new Arealight(pos,dir,radius,1,jitter);
+    Arealight* light = new Arealight(pos,dir,radius,num,jitter);
     if (!(SCM_UNBNDP (s_power) || SCM_FALSEP (s_power))) {
 	RGB power = scm2rgb(s_power);
 	light->setPower(power);
