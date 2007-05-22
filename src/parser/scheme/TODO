@@ -1,0 +1,3 @@
+
+Run ((lambda (x) (x x)) (lambda (x) (x x))) in constant space.
+
