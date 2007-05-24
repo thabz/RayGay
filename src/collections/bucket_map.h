@@ -90,16 +90,12 @@ template <typename K, typename V>
 V* bucket_map<K,V>::find(const K &key, const hash_type& h) const
 {
     bucket_map_node* node = buckets[h];
-    if (node == NULL) {
-        return NULL;    
-    } else {
-        for(; node != NULL; node = node->next) {
-            if (node->p.first == key) {
-                return &node->p.second;
-            }
+    for(; node != NULL; node = node->next) {
+        if (node->p.first == key) {
+            return &node->p.second;
         }
-        return NULL;
     }
+    return NULL;
 };
 
 template <typename K, typename V> 
