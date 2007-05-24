@@ -22,6 +22,8 @@ extern "C" {
 
 #include "collections/lru_hash.h"
 #include "collections/bucket_map.h"
+#include "collections/caseinsensitive_map.h"
+
 #include "mmap_allocator.h"
 #include "math/vector.h"
 
@@ -351,6 +353,18 @@ class test_bucket_map : public Test {
        }
 };
 
+class test_icase_map : public Test {
+   public:
+       void run() {
+	   caseinsensitive_map<int> m;
+	   m["AaaA"] = 10;
+	   m["BBBB"] = 20;
+	   assertTrue(m["aaaa"] == 10);
+	   assertTrue(m["aAAa"] == 10);
+	   assertTrue(m["bbbb"] == 20);
+	   assertTrue(m["BbbB"] == 20);
+       }
+};
 
 int main(int argc, char *argv[]) {
     TestSuite suite;
@@ -366,6 +380,7 @@ int main(int argc, char *argv[]) {
     suite.add("Shift",new test_shift());
     suite.add("LRU Hash",new test_lru_hash());
     suite.add("Bucket map",new test_bucket_map());
+    suite.add("caseinsensitive map",new test_icase_map());
     suite.add("mmap",new test_mmap());
     suite.add("STL mmap alloc",new test_stl_mmap_allocator());
     suite.add("Swap",new test_swap());
