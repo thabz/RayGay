@@ -17,6 +17,7 @@ class flat3_map
      	void insert(const K &key, const V &value);
      	V* find(const K &key) const;
 	size_t size() const;
+    map<K,V>::iterator iter;
 
     private:
 	void convert();
@@ -50,7 +51,6 @@ template <typename K, typename V>
 V* flat3_map<K,V>::find(const K &key) const
 {
     if (_size > 3) {
-	std::map<K,V>::const_iterator iter;
         iter = delegate.find(key);
 	if (iter == delegate.end()) {
 	    return NULL;
@@ -61,11 +61,11 @@ V* flat3_map<K,V>::find(const K &key) const
      switch(_size) {
 	 // Using fallthrough
          case 3 :
-             if (key == key3) return value3;
+             if (key == key3) return &value3;
          case 2 :    
-             if (key == key2) return value2;
+             if (key == key2) return &value2;
          case 1 :    
-             if (key == key1) return value1;
+             if (key == key1) return &value1;
          default:
              return NULL;    
      }
@@ -98,7 +98,7 @@ void flat3_map<K,V>::insert(const K& key, const V& value)
     }
     // Insert new
     switch(_size) {
-	case 3
+	case 3:
 	    convert();    
 	    delegate[key] = value;
 	    break;

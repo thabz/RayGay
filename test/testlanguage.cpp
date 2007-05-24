@@ -367,17 +367,15 @@ class test_icase_map : public Test {
        }
 };
 
-/*
 class test_flat3_map : public Test {
    public:
        void run() {
 	   flat3_map<char,double> m;
 	   m.insert('A',10);
 	   m.insert('B',20);
-	   assertTrue(*map.find('A') == 10);
+	   assertTrue(*m.find('A') == 10);
        }
 };
-*/
 
 int main(int argc, char *argv[]) {
     TestSuite suite;
