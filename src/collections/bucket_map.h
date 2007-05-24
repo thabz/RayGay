@@ -2,6 +2,8 @@
 #ifndef COLLECTIONS_BUCKET_MAP_H
 #define COLLECTIONS_BUCKET_MAP_H
 
+#include <string>
+
 template <typename K, typename V> 
 class bucket_map 
 {
@@ -17,7 +19,7 @@ class bucket_map
     
     private:
     	struct bucket_map_node {
-            pair<K,V> p;        
+            std::pair<K,V> p;        
             bucket_map_node* next;               
     	};
     	
@@ -26,7 +28,6 @@ class bucket_map
     	
     	// Buckets
         bucket_map_node** buckets;
-        vector<bool> empty;
 };
 
 template <typename K, typename V> 
@@ -69,6 +70,15 @@ int bucket_map<K,V>::hash(const K &key) const
     h %= num_buckets;
     return (h < 0) ? h * -1 : h;
 };
+
+/*
+template <typename V> 
+int bucket_map<std::string,V>::hash(const std::string &key) const
+{
+    // TODO: Implement something clever        
+    return 0;        
+};
+*/
 
 template <typename K, typename V> 
 V* bucket_map<K,V>::find(const K &key) const
