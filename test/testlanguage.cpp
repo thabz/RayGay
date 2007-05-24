@@ -23,6 +23,7 @@ extern "C" {
 #include "collections/lru_hash.h"
 #include "collections/bucket_map.h"
 #include "collections/caseinsensitive_map.h"
+#include "collections/flat3_map.h"
 
 #include "mmap_allocator.h"
 #include "math/vector.h"
@@ -366,6 +367,18 @@ class test_icase_map : public Test {
        }
 };
 
+/*
+class test_flat3_map : public Test {
+   public:
+       void run() {
+	   flat3_map<char,double> m;
+	   m.insert('A',10);
+	   m.insert('B',20);
+	   assertTrue(*map.find('A') == 10);
+       }
+};
+*/
+
 int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("Bool",new test_bool());
@@ -380,7 +393,8 @@ int main(int argc, char *argv[]) {
     suite.add("Shift",new test_shift());
     suite.add("LRU Hash",new test_lru_hash());
     suite.add("Bucket map",new test_bucket_map());
-    suite.add("caseinsensitive map",new test_icase_map());
+    suite.add("Caseinsensitive map",new test_icase_map());
+    suite.add("Flat 3 map",new test_flat3_map());
     suite.add("mmap",new test_mmap());
     suite.add("STL mmap alloc",new test_stl_mmap_allocator());
     suite.add("Swap",new test_swap());

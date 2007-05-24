@@ -1,35 +1,65 @@
 
+#ifndef COLLECTIONS_FLAT3_MAP
+#define COLLECTIONS_FLAT3_MAP
+
 /**
  * A map that stores keys and values in fast local fields until the size exceeds 3.
  * For greater sizes the operations are delegated to a stl::map.
  */
+
+#include <map>
  
- template <typename K, typename V> 
- class flat3_map 
- {
-     public:
-     	flat3_map(uint32_t num_buckets = 255);
-         ~bucket_map();
-     	int hash(const K &key) const;
+template <typename K, typename V> 
+class flat3_map 
+{
+    public:
+    	flat3_map();
      	void insert(const K &key, const V &value);
      	V* find(const K &key) const;
-     	V* find(const K &key, const hash_type &h) const;
+	size_t size() const;
 
-     private:
+    private:
+	void convert();
         K key1, key2, key3;
         V value1, value2, value3;
-        map<K,V> delegate;
-        size_t size;
+        std::map<K,V> delegate;
+	size_t _size;
 };
 
 template <typename K, typename V> 
-V* flat3_map<K,V>::find(const K &key, const hash_type &h) const
+flat3_map<K,V>::flat3_map()
 {
-     if (size > 3) {
-        delegate.find(key);
-        // Extract pair
+    _size = 0;
+}
+
+template <typename K, typename V> 
+size_t flat3_map<K,V>::size() const
+{
+    return _size > 3 ? delegate.size() : _size;
+}
+
+template <typename K, typename V> 
+void flat3_map<K,V>::convert() 
+{
+    delegate[key1] = value1;
+    delegate[key2] = value2;
+    delegate[key3] = value3;
+}
+
+template <typename K, typename V> 
+V* flat3_map<K,V>::find(const K &key) const
+{
+    if (_size > 3) {
+	std::map<K,V>::const_iterator iter;
+        iter = delegate.find(key);
+	if (iter == delegate.end()) {
+	    return NULL;
+	} else {
+	    return iter.second;
+	}
      }        
-     switch(size) {
+     switch(_size) {
+	 // Using fallthrough
          case 3 :
              if (key == key3) return value3;
          case 2 :    
@@ -40,3 +70,54 @@ V* flat3_map<K,V>::find(const K &key, const hash_type &h) const
              return NULL;    
      }
 }
+
+template <typename K, typename V> 
+void flat3_map<K,V>::insert(const K& key, const V& value) 
+{
+    if (_size > 3) {
+	delegate[key] = value;
+	return;
+    }
+    // Try updating existing
+    switch(_size) {
+	case 3 :
+	    if (key3 == key) {
+		value3 = value;
+		return;
+	    }
+	case 2:
+	    if (key2 == key) {
+		value2 = value;
+		return;
+	    }
+	case 1:
+	    if (key1 == key) {
+		value1 = value;
+		return;
+	    }
+    }
+    // Insert new
+    switch(_size) {
+	case 3
+	    convert();    
+	    delegate[key] = value;
+	    break;
+	case 2:
+	    key3 = key;
+	    value3 = value;
+	    break;
+	case 1:
+	    key2 = key;
+	    value2 = value;
+	    break;
+	case 0:
+	    key1 = key;
+	    value1 = value;
+	    break;
+    }
+    _size++;
+};
+
+#endif
+
+
