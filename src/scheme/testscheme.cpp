@@ -546,6 +546,8 @@ void test_lambda() {
     assert_eval(s, "(let () (define (f . x) x) (f 1 2 3 4 5 6 7))", "(1 2 3 4 5 6 7)");
     assert_eval(s, "(let () (define f (lambda x x)) (f))", "()");
     assert_fail(s, "((lambda))");
+    // Duplicate formals
+    assert_fail(s, "((lambda (x y y z) x) 10 10 10 10)");  
 }
 
 void test_macros() {
@@ -573,10 +575,8 @@ void test_define_and_set() {
     assert_eval(s, "(selftest 1 2 3 4)", "(1 2 3 4)");
     s->eval("(define (fact n) (if (equal? n 1) 1 (* n (fact (- n 1)))))");
     assert_eval(s, "(fact 6)", "720");
-    // Setting undefined var
-    assert_error(s, "(set! some-undefined-var 10)");
-    // Double define in same body
-    assert_error(s, "(define something 10)(define something 10)");
+    // Duplicate formals
+    assert_fail(s, "(define (duplicate-formals x y y z) x)");
 }
 
 void test_string() {
