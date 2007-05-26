@@ -5,6 +5,8 @@
 /**
  * A map that stores keys and values in fast local fields until the size exceeds 3.
  * For greater sizes the operations are delegated to a stl::map.
+ * 
+ * FIXME: This doesn't compile at the moment. No idea what's wrong.
  */
 
 #include <map>
@@ -17,13 +19,18 @@ class flat3_map
      	void insert(const K &key, const V &value);
      	V* find(const K &key) const;
 	size_t size() const;
-    map<K,V>::iterator iter;
 
     private:
+        typedef std::map<K,V> delegate_type;
 	void convert();
-        K key1, key2, key3;
-        V value1, value2, value3;
-        std::map<K,V> delegate;
+        K key1;
+        K key2;
+        K key3;
+        V value1;
+        V value2;
+        V value3;
+        delegate_type delegate;
+        delegate_type::const_iterator iter;
 	size_t _size;
 };
 
