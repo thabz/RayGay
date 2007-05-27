@@ -6,6 +6,8 @@
 
 /**
  * Random Number Generator
+ * TODO: Mersenne Twister et. al. are not threadsafe and some uses big statetables that thrashes the CPU cache.
+ * http://www.acm.org/tog/resources/RTNews/html/rtnv20n1.html#art10
  */
 class RNG 
 {
