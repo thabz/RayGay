@@ -462,6 +462,8 @@ int Math::solveQuadratic(double A, double B, double C, double* roots) {
  * Pertubes a vector around another vector, that is finds a random
  * vection within a cone.
  *
+ * TODO: http://www.acm.org/tog/resources/RTNews/html/rtnv20n1.html#art11 maybe faster method...
+ *
  * @param axis normalized axis of the cone
  * @param angle angle of the cone in radians
  */
