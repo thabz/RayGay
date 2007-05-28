@@ -874,6 +874,7 @@ fn_ptr eval_procedure_call() {
 }
 
 fn_ptr eval_lambda() {
+    // TODO: Memoize eval_lambda, ie. cache the result.        
     SchemeObject* formals = global_arg1;
     SchemeObject* body = global_arg2;
     SchemeObject* name = global_arg3;

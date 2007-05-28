@@ -326,6 +326,9 @@ SchemeObject* s_write(SchemeObject* o, SchemeObject* port);
 SchemeObject* s_display(SchemeObject* o, SchemeObject* port); 
 SchemeObject* s_newline(SchemeObject* port );
 
+// My extensions
+SchemeObject* s_find_duplicate(SchemeObject* l);
+
 extern SchemeObject* if_symbol;
 extern SchemeObject* cond_symbol;
 extern SchemeObject* apply_symbol;

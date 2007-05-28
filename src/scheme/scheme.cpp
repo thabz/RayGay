@@ -354,8 +354,27 @@ void Scheme::assign(string variable, SchemeObject* value, SchemeObject* envt = i
 // -----------------------------------------------------
 // Procedures
 // -----------------------------------------------------
-
-
+// Find a duplicate in a list. The list can be improper.
+// My extension.
+SchemeObject* s_find_duplicate(SchemeObject* l) {
+    while(i_pair_p(l) == S_TRUE) {
+        SchemeObject* cur = i_car(l);
+        SchemeObject* k = s_cdr(l);
+        while(i_pair_p(k) == S_TRUE) {
+            if (i_car(k) == cur) {
+                return cur;            
+            }
+            k = i_cdr(k);
+            if (i_pair_p(k) == S_FALSE) {
+                if (k == cur) {
+                    return cur;            
+                }    
+            }
+        }
+        l = i_cdr(l);
+    }
+    return S_FALSE;
+}
 
 // (equal? a b)
 // Equal? recursively compares the contents of pairs, vectors, and strings, applying eqv? on other objects 

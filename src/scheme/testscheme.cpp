@@ -570,13 +570,18 @@ void test_define_and_set() {
     assert_eval(s, "x", "50");
     s->eval("(define (square x) (* x x))");
     assert_eval(s, "(square 9)", "81");
-    s->eval("(define (selftest . x) x)");
+    assert_fail(s, "(set! x 50 5)"); // Extra args
+
     // A R^5RS spec that guile 1.6.8 fails but we don't... Fixed in guile 1.8.1
+    s->eval("(define (selftest . x) x)");
     assert_eval(s, "(selftest 1 2 3 4)", "(1 2 3 4)");
+
     s->eval("(define (fact n) (if (equal? n 1) 1 (* n (fact (- n 1)))))");
     assert_eval(s, "(fact 6)", "720");
+
     // Duplicate formals
     assert_fail(s, "(define (duplicate-formals x y y z) x)");
+    assert_fail(s, "(define (duplicate-formals x y z . y) x)");
 }
 
 void test_string() {

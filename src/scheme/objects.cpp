@@ -126,6 +126,10 @@ SchemeObject* SchemeObject::createBuiltinProcedure(SchemeObject* name, int req, 
 SchemeObject* SchemeObject::createUserProcedure(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body) {
     assert(i_symbol_p(name) == S_TRUE);
     assert(envt->type() == SchemeObject::ENVIRONMENT);
+    SchemeObject* dup = s_find_duplicate(s_formals);
+    if (dup != S_FALSE) {
+        throw scheme_exception("Duplicate formal " + dup->toString() + " in " + s_formals->toString());    
+    }
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::USER_PROCEDURE);
     result->name = name;
     result->s_closure_data = i_cons(s_formals, i_cons(s_body, envt));
@@ -135,6 +139,10 @@ SchemeObject* SchemeObject::createUserProcedure(SchemeObject* name, SchemeObject
 SchemeObject* SchemeObject::createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body) {
     assert(i_symbol_p(name) == S_TRUE);
     assert(envt->type() == SchemeObject::ENVIRONMENT);
+    SchemeObject* dup = s_find_duplicate(s_formals);
+    if (dup != S_FALSE) {
+        throw scheme_exception("Duplicate formal " + dup->toString() + " in " + s_formals->toString());    
+    }
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::MACRO);
     result->name = name;
     result->s_closure_data = i_cons(s_formals, i_cons(s_body, envt));
