@@ -171,6 +171,13 @@ void GenericKdTree<ObjectType>::prepare() {
     prepared = true;
 }
 
+/* TODO: Idea for avoid all the sorts and resorts. Start with making three
+ * sorted lists of objectpointers, sorted in x, y and z, at toplevel. Then
+ * when making a split you can pull the left-, right- and both members from
+ * these x,y,z-lists and thus avoid sorting the subsets.
+ * Also see http://www.cgg.cvut.cz/~havran/DISSVH/kdtreeconstruction.txt
+ * for Havran's addendum to his thesis for this and other ideas.
+ */
 template<class ObjectType>
 void GenericKdTree<ObjectType>::prepare(uint32_t num, const AABox& bbox, uint32_t depth, const uint32_t dest_idx) {
 
