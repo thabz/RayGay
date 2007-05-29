@@ -61,3 +61,13 @@
 * Physics-engine
 * Lav en spotlight-lightsource som er et vindue med "tern". Se http://www.skeedz.com/images/wallpaper/0280.jpg ... Support for importance sampling af environmentmaps er vel bedre.
 
+
+Snippets to implement sometime:
+
+---------------------------------------------------
+An idea from Steve Parker:
+"...leads to an optimization present in some interactive ray tracers: if you don't allow objects to be placed inside your dielectrics [transparent objects], you can avoid a scene intersection test for transmitted rays and only perform a test against the dielectric object. This is an interesting optimization because it offers a huge performance benefit for large scenes containing dielectrics (imagine a glass coffee table in a complex scene)."
+---------------------------------------------------
+"An excellent code for box-triangle overlap is on Tomas Akenine-M¨oller's web site. It is faster and more stable than previous methods and very simple to add to your code library. I strongly recommend that any object you are inserting into your grid is tested to make sure it actually overlaps your grid cell. This simple change gave a 15-17% boost in performance for a simple scene with the Stanford bunny.
+
+
