@@ -1,5 +1,4 @@
 #include <cassert>
-#include <list>
 
 #include "objects/object.h"
 #include "space/kdtree.h"
