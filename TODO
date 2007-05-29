@@ -69,5 +69,16 @@ An idea from Steve Parker:
 "...leads to an optimization present in some interactive ray tracers: if you don't allow objects to be placed inside your dielectrics [transparent objects], you can avoid a scene intersection test for transmitted rays and only perform a test against the dielectric object. This is an interesting optimization because it offers a huge performance benefit for large scenes containing dielectrics (imagine a glass coffee table in a complex scene)."
 ---------------------------------------------------
 "An excellent code for box-triangle overlap is on Tomas Akenine-M¨oller's web site. It is faster and more stable than previous methods and very simple to add to your code library. I strongly recommend that any object you are inserting into your grid is tested to make sure it actually overlaps your grid cell. This simple change gave a 15-17% boost in performance for a simple scene with the Stanford bunny.
+---------------------------------------------------
+The basic idea is simple (as most good ideas are): You form a binary tree bounding volume hierarchy from the top down by splitting along some axis, XYZ, recursively. At each parent node, note which plane was used to do the splitting. One child will be "below" this splitting plane, the other "above". Now, when tracing rays, use the ray's direction and splitting plane to quickly determine which box to intersect first. For example, if the splitting plane was along the Y axis, and the test ray's direction has a negative Y component to it, then test the bounding box that was more "above" the Y axis than "below" it. From Brandon Mansfield's page:
+
+    if (direction[axis] < 0) {
+        first = right; second = left;
+    } else {
+        first = left; second = right;
+    }
+http://www.acm.org/tog/resources/RTNews/html/rtnv19n1.html#art4
+----------------------------------------------------
+That said, I would be interested to know how this method compares to the simple optimization of first attempting to intersect the object that you intersected last time around for this type of ray. That is, you shoot an eye ray. It is found to hit a car windshield. For the next eye ray, you first try shooting a ray against this windshield object before doing anything else. If it hits (likely, in this case) you then have an excellent maximum ray length. Shooting this ray against the hierarchy will give less intersection tests for the ray, since bounding boxes beyond its maximum length are missed.
 
 
