@@ -3,8 +3,6 @@ INCLUDES = -I$(top_srcdir)/src
 
 noinst_LTLIBRARIES = libparser.la
 
-libparser_la_LIBADD = parser/libscheme.la
-
 libparser_la_SOURCES = pathfactory.cpp		\
 		       pathfactory.h		\
 		       camerafactory.cpp	\
