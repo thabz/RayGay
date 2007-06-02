@@ -71,7 +71,7 @@ extern "C" {
 using namespace std;
 
 RendererSettings* renderer_settings = RendererSettings::uniqueInstance();
-Parser* parser = new Parser();
+SceneParser* parser = new SceneParser();
 PreviewWindow* preview_window = NULL;
 std::string scenefile;
 
@@ -284,7 +284,7 @@ void render_frame(string outputfile, int jobs) {
     }
 
     // Create and prepare job pool
-    RenderJobPool* job_pool = new RenderJobPool(img_w,img_h,64);
+    RenderJobPool* job_pool = new RenderJobPool(img_w,img_h,128);
 
     TimerStats* rendering_time = new TimerStats("Renderer","Time");
     rendering_time->startTimer();

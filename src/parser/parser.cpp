@@ -27,7 +27,7 @@ char* VAR_RENDERER = "__renderer__";
 char* VAR_IMAGESIZE = "__image-size__";
 char* VAR_BACKGROUND = "__background__";
 
-Parser::Parser() {
+SceneParser::SceneParser() {
     scm_init_guile();
     init_wrapper_type();
     // Globals
@@ -37,7 +37,7 @@ Parser::Parser() {
     scm_c_define(VAR_IMAGESIZE, SCM_EOL);
     scm_c_define(VAR_BACKGROUND, SCM_EOL);
 
-    scm_c_define_gsubr("set-settings",1,0,0,(SCM (*)()) Parser::set_settings);
+    scm_c_define_gsubr("set-settings",1,0,0,(SCM (*)()) SceneParser::set_settings);
 
     // My procedures
     PathFactory::register_procs();
@@ -51,15 +51,15 @@ Parser::Parser() {
     SchemeFunctions::register_procs();
 }
 
-void Parser::assignVariable(string var, double value) {
+void SceneParser::assignVariable(string var, double value) {
     scm_c_define(var.c_str(), scm_double2num(value));
 }
 
-void Parser::parse_expr(std::string expr) {
+void SceneParser::parse_expr(std::string expr) {
     gh_eval_str(expr.c_str());
 }
 
-void Parser::parse_file(std::string filename) {
+void SceneParser::parse_file(std::string filename) {
     char original_working_dir[1024];
 
     // Change cwd to this files parent folder
@@ -77,12 +77,12 @@ void Parser::parse_file(std::string filename) {
     chdir(original_working_dir);
 }
 
-SCM Parser::lookup(string var_name) {
+SCM SceneParser::lookup(string var_name) {
 	SCM var = scm_c_lookup(var_name.c_str());
 	return scm_variable_ref(var);
 }
 
-void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
+void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     // Populate sceneobjects and lights
     SCM list = lookup(VAR_SCENE);
     if (SCM_FALSEP (scm_list_p (list))) {
@@ -174,7 +174,7 @@ void Parser::populate(Scene* scene, RendererSettings* renderersettings) {
 
 // TODO: Set fog
 
-SCM Parser::set_settings(SCM s_settings) 
+SCM SceneParser::set_settings(SCM s_settings) 
 {
     RendererSettings* renderersettings = RendererSettings::uniqueInstance();
     char* proc = "set-settings";
@@ -234,6 +234,6 @@ SCM Parser::set_settings(SCM s_settings)
 
 }
 
-string Parser::version() {
+string SceneParser::version() {
     return scm2string(scm_version());     
 }

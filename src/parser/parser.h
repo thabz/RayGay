@@ -8,9 +8,9 @@
 class Scene;
 class RendererSettings;
 
-class Parser {
+class SceneParser {
     public:
-	Parser();
+	SceneParser();
 	void assignVariable(std::string var_name, double value);
 	void populate(Scene* scene, RendererSettings* renderersettings);
 	void parse_file(std::string filename);
