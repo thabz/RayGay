@@ -2,7 +2,7 @@
 #include <libguile.h>
 #include <sstream>
 
-#include "parser/parser.h"
+#include "parser/sceneparser.h"
 #include "parser/wrapper.h"
 #include "parser/converters.h"
 

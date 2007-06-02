@@ -7,8 +7,8 @@ libparser_la_SOURCES = pathfactory.cpp		\
 		       pathfactory.h		\
 		       camerafactory.cpp	\
 		       camerafactory.h		\
-		       parser.cpp		\
-		       parser.h			\
+		       sceneparser.cpp		\
+		       sceneparser.h		\
 		       sceneobjectfactory.h	\
 		       sceneobjectfactory.cpp	\
 		       schemeisosurface.h	\

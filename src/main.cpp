@@ -57,7 +57,7 @@ extern "C" {
 #include "photon/photontracer.h"
 #include "photon/irradiancecache.h"
 
-#include "parser/parser.h"
+        #include "parser/sceneparser.h"
 
 #include "renderersettings.h"
 #include "renderjobs.h"
