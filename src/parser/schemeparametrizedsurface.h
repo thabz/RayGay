@@ -8,12 +8,13 @@
 class SchemeParametrizedSurface : public ParametrizedSurface {
 
     public:
-	SchemeParametrizedSurface(SCM s_proc, uint uRes, uint vRes, bool uClose, bool vClose, Material* material);
+	SchemeParametrizedSurface(Scheme* scheme, SCM s_proc, uint uRes, uint vRes, bool uClose, bool vClose, Material* material);
 
     protected:
 	Vector eval(double u, double v) const;
 
     private:
+        Scheme* scheme;    
 	SCM procedure_name;
 };
 

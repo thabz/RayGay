@@ -24,7 +24,7 @@ class PathFactory {
 
 	static SCM tangent_to_path(SCM s_path, SCM s_t);
 
-	static void register_procs();
+	static void register_procs(Scheme* scheme);
 };
 
 #endif

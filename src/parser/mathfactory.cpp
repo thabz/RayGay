@@ -10,23 +10,23 @@
 
 SCM random2(SCM s_min, SCM s_max) 
 {
-    double min = scm_num2double(s_min,1,"random2");
-    double max = scm_num2double(s_max,2,"random2");
+    double min = s_scm2double(s_min,1,"random2");
+    double max = s_scm2double(s_max,2,"random2");
     double result = RANDOM(min,max);
-    return scm_double2num(result);
+    return s_double2scm(result);
 }
 
 SCM noise(SCM s_point) 
 {
     Vector point = scm2vector(s_point,"noise",1);
     double n = Perlin::noise(point);
-    return scm_double2num(n);
+    return s_double2scm(n);
 }
 
 SCM noise3d(SCM s_point, SCM s_offset) 
 {
     Vector point = scm2vector(s_point,"noise3d",1);
-    double offset = scm_num2double(s_offset, 2, "noise3d");
+    double offset = s_scm2double(s_offset, 2, "noise3d");
     Vector v = Perlin::noise3d(point, offset);
     return vector2scm(v);
 }
@@ -44,7 +44,7 @@ SCM vdistance(SCM s_v1, SCM s_v2)
     Vector v1 = scm2vector(s_v1,"vdistance",1);
     Vector v2 = scm2vector(s_v2,"vdistance",2);
     double d = (v1-v2).length();
-    return scm_double2num(d);
+    return s_double2scm(d);
 }
 
 SCM vrandomunit() {
@@ -54,50 +54,50 @@ SCM vrandomunit() {
 
 SCM make_poisson_set(SCM s_w, SCM s_h, SCM s_r,  SCM s_num) {
     char* proc = "make-poisson-disc-set";
-    double w = scm_num2double(s_w, 1, proc);
-    double h = scm_num2double(s_h, 2, proc);
-    double r = scm_num2double(s_r, 3, proc);
-    int num = scm_num2int(s_num, 4, proc);
+    double w = s_scm2double(s_w, 1, proc);
+    double h = s_scm2double(s_h, 2, proc);
+    double r = s_scm2double(s_r, 3, proc);
+    int num = scm2int(s_num, 4, proc);
     Vector2* set = new Vector2[num];
     PoissonDiscDistribution distr = PoissonDiscDistribution(w,h);
     int real_num = distr.createSet(r,num,set);
-    SCM s_set = SCM_EOL;
+    SCM s_set = S_EMPTY_LIST;
     for(int i = 0; i < real_num; i++) {
 	double x = set[i][0];
 	double y = set[i][1];
-	SCM s_point = scm_list_2(scm_double2num(x), scm_double2num(y));
-	SCM s_point_wrap = scm_list_1(s_point);
-	s_set = scm_append(scm_list_2(s_set,s_point_wrap));
+	SCM s_point = i_list_2(s_double2scm(x), s_double2scm(y));
+	SCM s_point_wrap = i_list_1(s_point);
+	s_set = s_append(i_list_2(s_set,s_point_wrap)); // TODO: Use cons and not append
     }
     return s_set;
 }
 
 SCM make_halton_set(SCM s_w, SCM s_h, SCM s_num) {
     char* proc = "make-halton-set";
-    double w = scm_num2double(s_w, 1, proc);
-    double h = scm_num2double(s_h, 2, proc);
-    int num = scm_num2int(s_num, 3, proc);
+    double w = s_scm2double(s_w, 1, proc);
+    double h = s_scm2double(s_h, 2, proc);
+    int num = scm2int(s_num, 3, proc);
     Halton halton = Halton(2,2);
-    SCM s_set = SCM_EOL;
+    SCM s_set = S_EMPTY_LIST;
     for(int i = 0; i < num; i++) {
         double *values = halton.getNext();
-	SCM s_point = scm_list_2(scm_double2num(w*values[0]), scm_double2num(h*values[1]));
-	SCM s_point_wrap = scm_list_1(s_point);
-	s_set = scm_append(scm_list_2(s_set,s_point_wrap));
+	SCM s_point = i_list_2(s_double2scm(w*values[0]), s_double2scm(h*values[1]));
+	SCM s_point_wrap = i_list_1(s_point);
+	s_set = s_append(i_list_2(s_set,s_point_wrap));  // TODO: Use cons and not append
     }
     return s_set;
 }
 
 
-void MathFactory::register_procs()
+void MathFactory::register_procs(Scheme* scheme)
 {
-    scm_c_define_gsubr("random2",2,0,0, (SCM (*)()) random2);
-    scm_c_define_gsubr("noise",1,0,0, (SCM (*)()) noise);
-    scm_c_define_gsubr("noise3d",2,0,0, (SCM (*)()) noise3d);
-    scm_c_define_gsubr("vcross",2,0,0, (SCM (*)()) vcross);
-    scm_c_define_gsubr("vdistance",2,0,0, (SCM (*)()) vdistance);
-    scm_c_define_gsubr("vrandomunit",0,0,0, (SCM (*)()) vrandomunit);
-    scm_c_define_gsubr("make-poisson-disc-set",4,0,0, (SCM (*)()) make_poisson_set);
-    scm_c_define_gsubr("make-halton-set",3,0,0, (SCM (*)()) make_halton_set);
+    scheme->assign("random2",2,0,0, (SCM (*)()) random2);
+    scheme->assign("noise",1,0,0, (SCM (*)()) noise);
+    scheme->assign("noise3d",2,0,0, (SCM (*)()) noise3d);
+    scheme->assign("vcross",2,0,0, (SCM (*)()) vcross);
+    scheme->assign("vdistance",2,0,0, (SCM (*)()) vdistance);
+    scheme->assign("vrandomunit",0,0,0, (SCM (*)()) vrandomunit);
+    scheme->assign("make-poisson-disc-set",4,0,0, (SCM (*)()) make_poisson_set);
+    scheme->assign("make-halton-set",3,0,0, (SCM (*)()) make_halton_set);
 }
 

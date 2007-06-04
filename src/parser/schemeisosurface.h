@@ -9,7 +9,7 @@ class Profiler;
 
 class SchemeIsosurface : public IsoSurface {
     public:
-	SchemeIsosurface(SCM procedure_name, AABox bbox, uint32_t steps, double accuracy, double iso, Material* mat);
+	SchemeIsosurface(Scheme* scheme, SCM procedure_name, AABox bbox, uint32_t steps, double accuracy, double iso, Material* mat);
 	SceneObject* clone() const;
 
     protected:
@@ -17,6 +17,7 @@ class SchemeIsosurface : public IsoSurface {
 	double evaluateFunction(const Vector& point) const;
 
     private:
+        Scheme* scheme;    
 	SCM procedure_name;
 	AABox bbox;
 	static Profiler* profiler;

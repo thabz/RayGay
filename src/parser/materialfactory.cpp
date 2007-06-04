@@ -8,17 +8,17 @@
 SCM MaterialFactory::make_material(SCM s_options) {
     Material* material = new Material();
 
-    assert(SCM_NFALSEP (scm_list_p (s_options)));
-    uint32_t length = scm_num2int(scm_length(s_options),0,"");
+    assert(scm2bool(s_list_p (s_options)));
+    uint32_t length = scm2int(s_length(s_options),0,"");
     
     assert(length % 2 == 0);
     uint32_t argc = length / 2;
 
     for(uint32_t i = 0; i < argc; i++) {
 	size_t l;
-	char* key_c = gh_symbol2newstr(scm_list_ref(s_options, scm_int2num(i*2)),&l);
+	char* key_c = gh_symbol2newstr(s_list_ref(s_options, int2scm(i*2)),&l);
 	string key = string(key_c);
-	SCM s_value = scm_list_ref(s_options, scm_int2num(i*2+1));
+	SCM s_value = s_list_ref(s_options, int2scm(i*2+1));
 	if (key == "diffuse") {
 	    if (isTexture(s_value)) {
 		Texture* texture = scm2texture(s_value,"",0);
@@ -31,30 +31,30 @@ SCM MaterialFactory::make_material(SCM s_options) {
 	    RGB c = scm2rgb(s_value);
 	    material->setSpecularColor(c);
 	} else if (key == "ks") {
-	    double d = scm_num2double(s_value,0,"");
+	    double d = s_scm2double(s_value,0,"");
 	    material->setKs(d);
 	} else if (key == "kt") {
-	    double d = scm_num2double(s_value,0,"");
+	    double d = s_scm2double(s_value,0,"");
 	    material->setKt(d);
 	} else if (key == "kd") {
-	    double d = scm_num2double(s_value,0,"");
+	    double d = s_scm2double(s_value,0,"");
 	    material->setKd(d);
 	} else if (key == "eta") {
-	    double d = scm_num2double(s_value,0,"");
+	    double d = s_scm2double(s_value,0,"");
 	    material->setEta(d);
     	} else if (key == "gloss") {
-    	    assert(SCM_NFALSEP (scm_list_p (s_value)));
-            assert(scm_num2int(scm_length(s_value),0,"") == 2);
-            SCM s_rays = scm_list_ref(s_value, scm_int2num(0));
-            uint32_t rays = scm_num2int(s_rays,0,"");
-  	    SCM s_angle = scm_list_ref(s_value, scm_int2num(1));
-            double angle = scm_num2double(s_angle,0,"");
+    	    assert(scm2bool(s_list_p (s_value)));
+            assert(scm2int(s_length(s_value),0,"") == 2);
+            SCM s_rays = s_list_ref(s_value, int2scm(0));
+            uint32_t rays = scm2int(s_rays,0,"");
+  	    SCM s_angle = s_list_ref(s_value, int2scm(1));
+            double angle = s_scm2double(s_angle,0,"");
     	    material->enableGloss(rays,angle);
 	} else if (key == "normal") {
 	    SchemeNormalPerturber* perturber = new SchemeNormalPerturber(s_value);
 	    material->setNormalPerturber(perturber);
 	} else if (key == "specpow") {
-	    int d = scm_num2int(s_value,0,"");
+	    int d = scm2int(s_value,0,"");
 	    material->setSc(d);
 	} else {
 	    cout << "Unknown material option ignored: " << key << endl;
@@ -64,6 +64,6 @@ SCM MaterialFactory::make_material(SCM s_options) {
 }
 
 void MaterialFactory::register_procs() {
-    scm_c_define_gsubr("make-material",1,0,0,(SCM (*)()) MaterialFactory::make_material);
+    scheme->assign("make-material",1,0,0,(SCM (*)()) MaterialFactory::make_material);
 }
 

@@ -7,7 +7,7 @@
 class MaterialFactory {
     public:
 	static SCM make_material(SCM options);
-	static void register_procs();
+	static void register_procs(Scheme* scheme);
 };
 
 #endif

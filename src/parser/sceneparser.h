@@ -3,7 +3,8 @@
 #define PARSER_PARSER_H
 
 #include <string>
-#include <libguile.h>
+
+#include "scheme/scheme.h"
 
 class Scene;
 class RendererSettings;
@@ -17,8 +18,10 @@ class SceneParser {
 	void parse_expr(std::string expr);
 	static SCM set_settings(SCM s_settings);
         std::string version();
+        
     private:
 	SCM lookup(std::string var_name);
+        Scheme* scheme;
 
 };
 

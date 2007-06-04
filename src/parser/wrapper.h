@@ -4,8 +4,9 @@
 
 #include <cassert>
 #include <libguile.h>
-#include <guile/gh.h>
 #include <iostream>
+
+#include <scheme/scheme.h>
 
 using namespace std;
 
@@ -27,7 +28,7 @@ enum wrapped_type {
     SAMPLER	= 8
 };
 
-struct wrapped_object {
+struct wrapped_object : public SchemeWrappedCObject {
     union {
 	SceneObject* sceneobject;
 	Path* path;

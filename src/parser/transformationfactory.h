@@ -13,7 +13,7 @@ class TransformationFactory {
 	static SCM translate(SCM obj, SCM translation);
 	static SCM scale(SCM obj, SCM scale);
 
-	static void register_procs();
+	static void register_procs(Scheme* scheme);
 
     private:
 	static SCM transform(SCM obj, const Matrix& m, char* subr);

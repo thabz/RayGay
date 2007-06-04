@@ -24,7 +24,7 @@ class CameraFactory {
 
 	static SCM make_halton_sampler(SCM s_options);
 
-	static void register_procs();
+	static void register_procs(Scheme* scheme);
 
 };
 

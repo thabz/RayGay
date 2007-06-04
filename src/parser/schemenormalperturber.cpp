@@ -10,11 +10,10 @@ Profiler* SchemeNormalPerturber::profiler = NULL;
 SchemeNormalPerturber::SchemeNormalPerturber(SCM procedure) 
 {
     this->s_procedure = procedure;
-    
+    this->scheme = scheme;
     if (this->profiler == NULL) {
         this->profiler = Profiler::create("Scheme perturb-callbacks", "Rendering");
     }
-    
     if (!mutex_initialized) {
         pthread_mutex_init(&mutex,NULL);    
         mutex_initialized = true;
@@ -34,11 +33,10 @@ Vector SchemeNormalPerturber::_perturb(const Vector& P, const Vector& N) const
     profiler->start();
     SCM s_point = vector2scm(P);
     SCM s_normal = vector2scm(N);
-    SCM s_result = scm_call_2(s_procedure, s_point, s_normal);
+    SCM s_result = scheme->callProcedure_2(s_procedure, s_point, s_normal);
     Vector result = scm2vector(s_result, NULL, 0);
     profiler->stop();
     pthread_mutex_unlock(&mutex);
     result.normalize();
     return result;
 }
-

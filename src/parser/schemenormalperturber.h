@@ -11,13 +11,14 @@ class SchemeNormalPerturber : public NormalPerturber
 {
 
     public:
-	SchemeNormalPerturber(SCM procedure);
+        SchemeNormalPerturber(Scheme* scheme, SCM procedure);
 	~SchemeNormalPerturber();
 	
     protected:
 	Vector _perturb(const Vector& point, const Vector& normal) const;
 
     private:
+        Scheme* scheme;    
 	SCM s_procedure;
 	static Profiler* profiler;
     	static pthread_mutex_t mutex;

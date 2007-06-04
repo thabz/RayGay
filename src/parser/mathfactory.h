@@ -10,7 +10,7 @@
 class MathFactory 
 {
     public:
-	static void register_procs();
+	static void register_procs(Scheme* scheme);
 };
 
 #endif

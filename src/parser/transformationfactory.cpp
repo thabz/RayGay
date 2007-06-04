@@ -9,7 +9,7 @@
 SCM TransformationFactory::rotate(SCM s_obj, SCM s_axis, SCM s_angle) 
 {
     Vector axis = scm2vector(s_axis, "rotate", 2);
-    double angle = scm_num2double(s_angle,3,"rotate");
+    double angle = s_scm2double(s_angle,3,"rotate");
     Matrix matrix = Matrix::matrixRotate(axis,angle);
     return transform(s_obj, matrix, "rotate");
 }
@@ -34,12 +34,12 @@ SCM TransformationFactory::scale(SCM s_obj, SCM s_scale)
 SCM TransformationFactory::transform(SCM s_obj, const Matrix& m, char* subr) 
 {
     // Tjek if it's a vector
-    if (SCM_NFALSEP (scm_vector_p(s_obj))) {
-	if (3 == scm_num2int(scm_vector_length(s_obj),0,"")) {
+    if (scm2bool(s_vector_p(s_obj))) {
+	if (3 == scm2int(s_vector_length(s_obj),0,"")) {
 	    bool is_num = true;
 	    for(uint32_t i = 0; i < 3; i++) {
-		SCM thing = scm_vector_ref(s_obj, scm_int2num(i));
-		is_num &= SCM_NFALSEP(scm_number_p(thing));
+		SCM thing = s_vector_ref(s_obj, int2scm(i));
+		is_num &= scm2bool(i_number_p(thing));
 	    }
 	    if (is_num) {
 		Vector v = scm2vector(s_obj, subr, 0);
@@ -49,11 +49,11 @@ SCM TransformationFactory::transform(SCM s_obj, const Matrix& m, char* subr)
     }
     
     vector<SCM> objs;
-    if (SCM_NFALSEP (scm_list_p(s_obj))) {
-	uint32_t num = scm_num2int(scm_length(s_obj),0,"");
+    if (scm2bool(s_list_p(s_obj))) {
+	uint32_t num = scm2int(s_length(s_obj),0,"");
 	for(uint32_t i = 0; i < num; i++) {
-	    SCM s_value = scm_list_ref(s_obj, scm_int2num(i));
-	    if (SCM_NFALSEP(scm_list_p(s_value))) {
+	    SCM s_value = s_list_ref(s_obj, int2scm(i));
+	    if (scm2bool(s_list_p(s_value))) {
 	        // Recurse into embedded lists of objects    
 	        transform(s_value, m, subr);    
 	    } else {
@@ -72,9 +72,9 @@ SCM TransformationFactory::transform(SCM s_obj, const Matrix& m, char* subr)
     return s_obj;
 }
 
-void TransformationFactory::register_procs() 
+void TransformationFactory::register_procs(Scheme* scheme) 
 {
-    scm_c_define_gsubr("rotate",3,0,0,(SCM (*)()) TransformationFactory::rotate);
-    scm_c_define_gsubr("translate",2,0,0,(SCM (*)()) TransformationFactory::translate);
-    scm_c_define_gsubr("scale",2,0,0,(SCM (*)()) TransformationFactory::scale);
+    scheme->assign("rotate",3,0,0,(SCM (*)()) TransformationFactory::rotate);
+    scheme->assign("translate",2,0,0,(SCM (*)()) TransformationFactory::translate);
+    scheme->assign("scale",2,0,0,(SCM (*)()) TransformationFactory::scale);
 }
