@@ -13,6 +13,7 @@ class SceneParser {
     public:
 	SceneParser();
 	void assignVariable(std::string var_name, double value);
+	SchemeObject* lookup(std::string var_name);
 	void populate(Scene* scene, RendererSettings* renderersettings);
 	void parse_file(std::string filename);
 	void parse_expr(std::string expr);
@@ -20,7 +21,6 @@ class SceneParser {
         std::string version();
         
     private:
-	SchemeObject* lookup(std::string var_name);
         Scheme* scheme;
 
 };

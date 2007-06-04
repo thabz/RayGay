@@ -4,7 +4,7 @@
 #endif
 
 #include "testing.h"
-#include "parser/parser.h"
+#include "parser/sceneparser.h"
 #include "parser/converters.h"
 #include <cstdlib>
 #include <cmath>
@@ -14,17 +14,17 @@
 
 using namespace std;
 
-#define lookupDouble(s) scm_num2double(scm_variable_ref(scm_c_lookup(s)),0,"")
-#define lookupVector(s) scm2vector(scm_variable_ref(scm_c_lookup(s)),"",0)
-#define lookupRGBA(s) scm2rgba(scm_variable_ref(scm_c_lookup(s)),"",0)
+#define lookupDouble(s) safe_scm2double(p->lookup(s),0,"")
+#define lookupVector(s) scm2vector(p->lookup(s),"",0)
+#define lookupRGBA(s) scm2rgba(p->lookup(s),"",0)
 
 class test_parser : public Test {
     private:
 	Vector v1;
     public: 
 	void run() {
-	    Parser* p = new Parser();
-	    scm_c_define("test-predefined-a", scm_double2num(30));
+	    SceneParser* p = new SceneParser();
+            p->assignVariable("test-predefined-a", 30);
 	    p->parse_file(getLoadPrefix() + "/scenes/test.scm");
 
 	    assertTrue(IS_EQUAL(lookupDouble("test-predefined-a"),30));
