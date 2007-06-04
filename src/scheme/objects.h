@@ -21,6 +21,7 @@ using namespace std;
 #define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
 #define i_char_p(o)      ((o)->type() == SchemeObject::CHAR ? S_TRUE : S_FALSE)
 #define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
+#define i_vector_p(o)    ((o)->type() == SchemeObject::VECTOR ? S_TRUE : S_FALSE)
 #define i_number_p(o)    ((o)->type() == SchemeObject::NUMBER ? S_TRUE : S_FALSE)
 #define i_procedure_p(p) (((p)->type() == SchemeObject::BUILT_IN_PROCEDURE ||  \
                            (p)->type() == SchemeObject::CONTINUATION       ||  \
@@ -29,6 +30,9 @@ using namespace std;
 #define i_null_p(o)      ((o) == S_EMPTY_LIST ? S_TRUE : S_FALSE)
 #define i_cons(car,cdr)  (SchemeObject::createPair((car),(cdr)))
 
+#define i_list_1(a)      (i_cons((a), S_EMPTY_LIST))
+#define i_list_2(a,b)    (i_cons((a), i_cons((b), S_EMPTY_LIST)))
+#define i_list_3(a,b,c)  (i_cons((a), i_cons((b), i_cons((c), S_EMPTY_LIST))))
 
 #define IMMUTABLE_FLAG ((uint32_t)(1 << 31))
 #define INUSE_FLAG     ((uint32_t)(1 << 30))
