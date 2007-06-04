@@ -58,6 +58,7 @@ class SchemeObject
                     SchemeObject** elems;  // For vector
                     SchemeObject* parent;  // For environments. Environment.
                     SchemeObject* name;    // For macros and procedures. Symbol.
+                    int wrapped_subtype;     // For wrapped C-objects
                 };
                 union {
                     SchemeObject* cdr;      // For pairs
@@ -66,6 +67,7 @@ class SchemeObject
                     map<SchemeObject*,SchemeObject*>* binding_map;	// For environments
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
+                    void* wrapped_data;        // For wrapped C-objects
                 };
             };
         };
@@ -82,6 +84,7 @@ class SchemeObject
  		    EOFTYPE,
  		    INPUT_PORT,
  		    OUTPUT_PORT,
+ 		    WRAPPED_C_OBJECT,
 		    SELF_EVALUATING_FORMS_ARE_BEFORE_HERE,
 		    SYMBOL,
 		    PAIR,
@@ -108,11 +111,14 @@ class SchemeObject
         SchemeObject* getVectorElem(int index);
         void setVectorElem(SchemeObject* o, int index);
 
-	    SchemeObject* getBinding(SchemeObject* name);
+	SchemeObject* getBinding(SchemeObject* name);
         void defineBinding(SchemeObject* name, SchemeObject* o);
         void setBinding(SchemeObject* name, SchemeObject* o);
         
         string nameAsString();
+        
+        // For WRAPPED_C_OBJECT
+        static int registerSubtype();
 
         // For USER_PROCEDURE and MACRO
         SchemeObject* s_formals();
@@ -144,9 +150,11 @@ class SchemeObject
         static SchemeObject* createUserProcedure(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
         static SchemeObject* createInternalProcedure(const char* name);
         static SchemeObject* createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
+        static SchemeObject* createWrappedCObject(int subtype, void* data);
 
     private:
         static map<string,SchemeObject*> known_symbols;
+        static int subtypes_seq;
         
 };
 

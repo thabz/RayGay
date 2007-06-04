@@ -7,6 +7,9 @@
 // Map of known symbols
 map<string,SchemeObject*> SchemeObject::known_symbols;
 
+// Sequence for subtype identities
+int SchemeObject::subtypes_seq = 1;
+
 //-----------------------------------------------------------
 // Static factory methods
 //-----------------------------------------------------------
@@ -155,6 +158,17 @@ SchemeObject* SchemeObject::createInternalProcedure(const char* name) {
     return result;
 }
 
+SchemeObject* SchemeObject::createWrappedCObject(int subtype, void* data) {
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::WRAPPED_C_OBJECT);
+    result->wrapped_data = data;
+    result->wrapped_subtype = subtype;
+    return result;
+}
+
+int SchemeObject::registerSubtype() {
+    return subtypes_seq++;        
+}
+
 void SchemeObject::mark() {
     map<SchemeObject*,SchemeObject*>::iterator v;
     if (!inuse()) {
@@ -208,6 +222,7 @@ void SchemeObject::mark() {
                     name->mark();
                 }
                 break;
+                    
             default:
                 break;        
         }
@@ -303,6 +318,9 @@ string SchemeObject::toString() {
             break;
         case SchemeObject::INTERNAL_PROCEDURE :    
             ss << "#<internal-procedure " << scm2string(name) << ">";
+            break;
+        case SchemeObject::WRAPPED_C_OBJECT :
+            ss << "#<wrapped-c-object " << wrapped_subtype << ">";
             break;
         case SchemeObject::EOFTYPE :
             return "#<EOF>";
