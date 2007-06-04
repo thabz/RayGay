@@ -21,7 +21,7 @@ class Interpreter
         SchemeObject* call_procedure_n(SchemeObject* procedure, SchemeObject* args_list);
    	    
    	private:
-		SchemeObject* top_level_bindings;
+	SchemeObject* top_level_bindings;
         SchemeObject* parsetree;
 };
 

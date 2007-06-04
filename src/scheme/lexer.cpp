@@ -21,6 +21,10 @@ Lexer::Token Lexer::nextToken(istream* is) {
     if (is->eof()) {
         return Lexer::END;
     }
+    if (is->fail()) {
+        cerr << "Lexer failed reading input-stream. File missing?" << endl;
+        return Lexer::ERROR;
+    }
     while(!is->fail()) 
     {
         c = is->get();
@@ -133,8 +137,8 @@ Lexer::Token Lexer::nextToken(istream* is) {
                         return Lexer::ERROR;
                     }
                 } else {
-					is->unget();
-					break;
+		    is->unget();
+		    break;
                 }
             case '.' :
                 c = is->get();

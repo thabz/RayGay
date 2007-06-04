@@ -195,56 +195,56 @@ fn_ptr eval_list() {
             if (s == if_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_if;
-        	} else if (s == quote_symbol) {
+            } else if (s == quote_symbol) {
                 global_ret = i_car(cdr);
                 return NULL;
-        	} else if (s == define_symbol) {
+            } else if (s == define_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_define;
-        	} else if (s == define_macro) {
+            } else if (s == define_macro) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_define_macro;
-        	} else if (s == quasiquote_symbol) {
+            } else if (s == quasiquote_symbol) {
                 global_arg1 = i_car(cdr);
                 return (fn_ptr)&eval_quasiquote;
-        	} else if (s == lambda_symbol) {
-        	    SchemeObject* formals = s_car(cdr);
+            } else if (s == lambda_symbol) {
+        	SchemeObject* formals = s_car(cdr);
                 SchemeObject* body = s_cdr(cdr);
                 global_arg1 = formals;
                 global_arg2 = body;
                 global_arg3 = unnamed_symbol;
                 return (fn_ptr)&eval_lambda;
-        	} else if (s == let_symbol) {
+            } else if (s == let_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_let;
-        	} else if (s == do_symbol) {
+            } else if (s == do_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_do;
-        	} else if (s == letstar_symbol) {
+            } else if (s == letstar_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_letstar;
-        	} else if (s == letrec_symbol) {
+            } else if (s == letrec_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_letrec;
-        	} else if (s == apply_symbol) {
+            } else if (s == apply_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_apply;
-        	} else if (s == set_e_symbol) {
+            } else if (s == set_e_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_set_e;
-        	} else if (s == begin_symbol) {
+            } else if (s == begin_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_begin;
-        	} else if (s == cond_symbol) {
+            } else if (s == cond_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_cond;
-        	} else if (s == case_symbol) {
+            } else if (s == case_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_case;
-        	} else if (s == and_symbol) {
+            } else if (s == and_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_and;
-        	} else if (s == or_symbol) {
+            } else if (s == or_symbol) {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_or;
             } else {
@@ -359,7 +359,7 @@ fn_ptr eval_define() {
     } else {
         // (define var value-expr)
         if (p == S_EMPTY_LIST || i_cdr(p) == S_EMPTY_LIST || i_cddr(p) != S_EMPTY_LIST) {
-            throw scheme_exception("Missing or extra arguments to define");
+            throw scheme_exception("Missing or extra arguments to define: " + p->toString());
         }
         
         SchemeObject* s = s_car(p);
@@ -778,7 +778,15 @@ fn_ptr eval_built_in_procedure_call()
                       break;
             case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
                       break;
-            case 4:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2], argsv[3]);
+            case 4:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3]);
+                      break;
+            case 5:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3],argsv[4]);
+                      break;
+            case 6:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3],argsv[4],argsv[5]);
+                      break;
+            case 7:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3],argsv[4],argsv[5],argsv[6]);
+                      break;
+            case 8:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3],argsv[4],argsv[5],argsv[6],argsv[7]);
                       break;
             default:  throw scheme_exception("Doesn't support that many args to a built-in function."); 
         }
@@ -845,7 +853,15 @@ fn_ptr eval_procedure_call() {
                           break;
                 case 3:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2]);
                           break;
-                case 4:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2], argsv[3]);
+                case 4:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3]);
+                          break;
+                case 5:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3],argsv[4]);
+                          break;
+                case 6:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3],argsv[4],argsv[5]);
+                          break;
+                case 7:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3],argsv[4],argsv[5],argsv[6]);
+                          break;
+                case 8:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3],argsv[4],argsv[5],argsv[6],argsv[7]);
                           break;
                 default:  throw scheme_exception("Doesn't support that many args to a built-in function."); 
             }

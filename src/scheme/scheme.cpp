@@ -247,6 +247,7 @@ Scheme::Scheme() {
     	assign("peek-char"             ,0,1,0, (SchemeObject* (*)()) s_peek_char, scheme_report_environment);
     	assign("write-char"            ,1,1,0, (SchemeObject* (*)()) s_write_char, scheme_report_environment);
     	assign("read"                  ,0,1,0, (SchemeObject* (*)()) s_read, scheme_report_environment);
+    	assign("load"                  ,1,0,0, (SchemeObject* (*)()) s_load, scheme_report_environment);
 
     	assign("apply"                 ,1,0,1, (SchemeObject* (*)()) s_apply, scheme_report_environment);
     	assign("call-with-current-continuation" ,1,0,0, (SchemeObject* (*)()) s_call_cc, scheme_report_environment);
@@ -331,7 +332,7 @@ Scheme::Scheme() {
     }
     
     ifstream infile;
-    infile.open("init.scm", ifstream::in);
+    //infile.open("init.scm", ifstream::in);
     eval(&infile);
     infile.close();
 }
@@ -1857,4 +1858,39 @@ SchemeObject* s_eval(SchemeObject* expression, SchemeObject* s_environment) {
     SchemeObject* expressions = i_cons(expression, S_EMPTY_LIST);
     Interpreter interpreter = Interpreter(expressions, s_environment);
     return interpreter.interpret();
+}
+
+SchemeObject* s_load(SchemeObject* s_filename) {
+    char original_working_dir[1024];
+
+    assert_arg_type("load", 1, s_string_p, s_filename);
+    string filename = scm2string(s_filename);
+
+    // Change cwd to this files parent folder
+    getcwd(original_working_dir,1024);
+    string original_cwds = string(original_working_dir);
+    string cwd = string(original_working_dir) + "/" + filename;
+    string filename_clean = string(cwd);
+    int idx = cwd.find_last_of('/');
+    cwd.resize(idx);
+    filename_clean = filename_clean.substr(idx+1, filename_clean.length());
+    chdir(cwd.c_str());
+
+    ifstream infile;
+    infile.open(filename_clean.c_str(), ifstream::in);
+    if (infile.fail()) {
+        throw scheme_exception("Failed loading file: " + filename);            
+    }
+    try {
+        SchemeObject* parse_tree = global_parser->parse(&infile);
+        Interpreter interpreter = Interpreter(parse_tree, interaction_environment);
+        interpreter.interpret();
+    } catch (scheme_exception e) {
+        throw scheme_exception("In sourcefile " + filename + ": " + e.toString());    
+    }
+    infile.close();
+
+    chdir(original_working_dir);
+
+    return S_UNSPECIFIED;
 }

@@ -24,6 +24,7 @@ class test_parser : public Test {
     public: 
 	void run() {
 	    SceneParser* p = new SceneParser();
+
             p->assignVariable("test-predefined-a", 30);
 	    p->parse_file(getLoadPrefix() + "/scenes/test.scm");
 
@@ -70,7 +71,11 @@ int main(int argc, char *argv[]) {
     TestSuite suite;
 
     suite.add("Parser",new test_parser());
-    suite.run();
+    try {
+        suite.run();
+    } catch (scheme_exception e) {
+        cerr << e.toString() << endl;    
+    }        
     suite.printStatus();
     if (suite.hasFailures()) {
 	return EXIT_FAILURE;

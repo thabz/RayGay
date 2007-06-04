@@ -87,7 +87,7 @@
 
 (define (map-to-disc p)
   (let ((r (sqrt (car p)))
-        (phi (* 2PI (cadr p))))
+        (phi (* TWO-PI (cadr p))))
     (list (* r (cos phi))
           (* r (sin phi)))))
 

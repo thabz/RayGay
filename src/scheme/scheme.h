@@ -366,6 +366,7 @@ SchemeObject* s_read(SchemeObject* s_port);
 SchemeObject* s_write(SchemeObject* o, SchemeObject* port);
 SchemeObject* s_display(SchemeObject* o, SchemeObject* port); 
 SchemeObject* s_newline(SchemeObject* port );
+SchemeObject* s_load(SchemeObject* filename);
 
 // My extensions
 SchemeObject* s_find_duplicate(SchemeObject* l);

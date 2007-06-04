@@ -1,6 +1,6 @@
 
 (define PI  3.1415926535897932384626433832795029)
-(define 2PI 6.283185307179586476925286766552)
+(define TWO-PI 6.283185307179586476925286766552)
 
 (define (first vec) (car vec))
 (define (second vec) (cadr vec))

@@ -9,8 +9,8 @@
 class Parser 
 {
     public:
-	    Parser();
-	    SchemeObject* parse(istream* is);
+	Parser();
+	SchemeObject* parse(istream* is);
         SchemeObject* read(istream* is);
 
     private:
