@@ -12,11 +12,12 @@ typedef void*(*fn_ptr)();
 class Interpreter
 {
     public:
-	    Interpreter(SchemeObject* parsetree, SchemeObject* top_level_envt);
-   	    SchemeObject* interpret();
+	Interpreter(SchemeObject* parsetree, SchemeObject* top_level_envt);
+   	SchemeObject* interpret();
         SchemeObject* call_procedure_0(SchemeObject* procedure);
         SchemeObject* call_procedure_1(SchemeObject* procedure, SchemeObject* arg);
         SchemeObject* call_procedure_2(SchemeObject* procedure, SchemeObject* arg1, SchemeObject* arg2);
+        SchemeObject* call_procedure_3(SchemeObject* procedure, SchemeObject* arg1, SchemeObject* arg2, SchemeObject* arg3);
         SchemeObject* call_procedure_n(SchemeObject* procedure, SchemeObject* args_list);
    	    
    	private:

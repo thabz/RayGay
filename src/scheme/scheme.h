@@ -16,17 +16,22 @@ class Scheme {
         SchemeObject* eval(string code);
         SchemeObject* eval(istream* code);
 
-        // For assigning variables at top-level-frame
-        void assign(string variable, double value, SchemeObject* b);
-        void assign(string variable, string value, SchemeObject* b);
-        void assign(string variable, bool value, SchemeObject* b);
-        void assign(string variable, SchemeObject* value, SchemeObject* b);
+        // For assigning variables in a frame (default top-level)
+        void assign(string variable, double value, SchemeObject* envt);
+        void assign(string variable, string value, SchemeObject* envt);
+        void assign(string variable, bool value, SchemeObject* envt);
+        void assign(string variable, SchemeObject* value, SchemeObject* envt);
+
+        // Look up in frame (default top-level)
+        SchemeObject* lookup(string variable, SchemeObject* envt);
+        SchemeObject* lookup(SchemeObject* symbol, SchemeObject* envt);
         
         // For assigning built-in functions at top-level-frame
 	void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* b);
-        
-        // Look up in top-level-frame
-        SchemeObject* lookup(string variable);
+
+        SchemeObject* callProcedure_1(SchemeObject* s_proc, SchemeObject*);
+        SchemeObject* callProcedure_2(SchemeObject* s_proc, SchemeObject*, SchemeObject*);
+        SchemeObject* callProcedure_3(SchemeObject* s_proc, SchemeObject*, SchemeObject*, SchemeObject*);
 
     private:
 };
@@ -129,6 +134,19 @@ class scheme_exception {
         throw scheme_exception(ss.str());                 \
     }                                                     \
 }
+
+#define assert_arg_wrapped_type(procname, argnum, arg,subtype) {   \
+    if (i_wrapped_object_p(arg,subtype) == S_FALSE) {     \
+        ostringstream ss;                                 \
+        ss << "Wrong argument-type (expecting wrapped object subtype" << subtype << ") in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << string(procname);                           \
+        ss << ": " << arg->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
 
 // Scheme constants
 extern SchemeObject* S_TRUE;

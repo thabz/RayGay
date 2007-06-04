@@ -361,6 +361,15 @@ void Scheme::assign(string variable, SchemeObject* value, SchemeObject* envt = i
     envt->defineBinding(name, value);
 }
 
+SchemeObject* Scheme::lookup(SchemeObject* symbol, SchemeObject* envt = interaction_environment) {
+    return envt->getBinding(symbol);    
+}
+
+SchemeObject* Scheme::lookup(string variable, SchemeObject* envt = interaction_environment) {
+    SchemeObject* symbol = SchemeObject::createSymbol(variable.c_str());
+    return lookup(symbol, envt);
+}
+
 // -----------------------------------------------------
 // Procedures
 // -----------------------------------------------------
@@ -466,7 +475,17 @@ SchemeObject* s_circular_list_p(SchemeObject* o) {
     }    
 }
 
+SchemeObject* Scheme::callProcedure_1(SchemeObject* s_proc, SchemeObject* s_arg1) {
+   return interpreter->call_procedure_1(s_proc, s_arg1);        
+}
 
+SchemeObject* Scheme::callProcedure_2(SchemeObject* s_proc, SchemeObject* s_arg1, SchemeObject* s_arg2) {
+   return interpreter->call_procedure_2(s_proc, s_arg1, s_arg2);        
+}
+
+SchemeObject* Scheme::callProcedure_3(SchemeObject* s_proc, SchemeObject* s_arg1, SchemeObject* s_arg2, SchemeObject* s_arg3) {
+   return interpreter->call_procedure_3(s_proc, s_arg1, s_arg2, s_arg3);        
+}
 
 // TODO: Gør denne til en intern function med tail-optimization
 SchemeObject* s_call_cc(SchemeObject* s_proc) {

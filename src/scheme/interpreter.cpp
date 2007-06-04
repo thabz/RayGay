@@ -46,7 +46,7 @@ SchemeObject* Interpreter::call_procedure_0(SchemeObject* procedure) {
 
 SchemeObject* Interpreter::call_procedure_1(SchemeObject* procedure, SchemeObject* arg) {
     global_arg1 = procedure;
-    global_arg2 = s_cons(arg,S_EMPTY_LIST);
+    global_arg2 = i_cons(arg,S_EMPTY_LIST);
     stack.push_back(global_arg1);
     stack.push_back(global_arg2);
     SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call);
@@ -57,7 +57,7 @@ SchemeObject* Interpreter::call_procedure_1(SchemeObject* procedure, SchemeObjec
 
 SchemeObject* Interpreter::call_procedure_2(SchemeObject* procedure, SchemeObject* arg1, SchemeObject* arg2) {
     global_arg1 = procedure;
-    global_arg2 = s_cons(arg1, s_cons(arg2, S_EMPTY_LIST));
+    global_arg2 = i_cons(arg1, i_cons(arg2, S_EMPTY_LIST));
     stack.push_back(global_arg1);
     stack.push_back(global_arg2);
     SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call);
@@ -65,6 +65,18 @@ SchemeObject* Interpreter::call_procedure_2(SchemeObject* procedure, SchemeObjec
     stack.pop_back();
     return result;
 }
+
+SchemeObject* Interpreter::call_procedure_3(SchemeObject* procedure, SchemeObject* arg1, SchemeObject* arg2, SchemeObject* arg3) {
+    global_arg1 = procedure;
+    global_arg2 = i_cons(arg1, i_cons(arg2, i_cons(arg3, S_EMPTY_LIST)));
+    stack.push_back(global_arg1);
+    stack.push_back(global_arg2);
+    SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call);
+    stack.pop_back();
+    stack.pop_back();
+    return result;
+}
+
 
 SchemeObject* Interpreter::interpret() {
     if (parsetree == S_EMPTY_LIST) {

@@ -41,7 +41,7 @@ void assert_eval(Scheme* s, string expression, string expected) {
         }  
     } catch (scheme_exception e) {
         errors_found++;
-        cerr << "FAILED: " << expression << ": " << e.str << endl; 
+        cerr << "FAILED: " << expression << ": " << e.toString() << endl; 
     } catch (exception e) {
         errors_found++;
         cerr << "FAILED: " << expression << ": general exception" << endl; 
@@ -898,7 +898,7 @@ int main(int argc, char *argv[]) {
         test_begin();
 
     } catch (scheme_exception e) {
-		cerr << "Exception: " << e.str << endl;
+	cerr << "Exception: " << e.toString() << endl;
         return EXIT_FAILURE;
     }
     

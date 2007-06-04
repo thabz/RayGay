@@ -158,14 +158,14 @@ SchemeObject* SchemeObject::createInternalProcedure(const char* name) {
     return result;
 }
 
-SchemeObject* SchemeObject::createWrappedCObject(int subtype, void* data) {
+SchemeObject* SchemeObject::createWrappedCObject(int subtype, SchemeWrappedCObject* object) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::WRAPPED_C_OBJECT);
-    result->wrapped_data = data;
+    result->wrapped_object = object;
     result->wrapped_subtype = subtype;
     return result;
 }
 
-int SchemeObject::registerSubtype() {
+int SchemeObject::registerWrappedObject() {
     return subtypes_seq++;        
 }
 
@@ -222,7 +222,9 @@ void SchemeObject::mark() {
                     name->mark();
                 }
                 break;
-                    
+            case SchemeObject::WRAPPED_C_OBJECT :
+                wrapped_object->mark();
+                break;
             default:
                 break;        
         }
@@ -245,6 +247,9 @@ void SchemeObject::finalize() {
             break;
         case SchemeObject::ENVIRONMENT :
             delete binding_map;
+            break;
+        case SchemeObject::WRAPPED_C_OBJECT :
+            wrapped_object->finalize();
             break;
         default:
             break;    
@@ -320,8 +325,7 @@ string SchemeObject::toString() {
             ss << "#<internal-procedure " << scm2string(name) << ">";
             break;
         case SchemeObject::WRAPPED_C_OBJECT :
-            ss << "#<wrapped-c-object " << wrapped_subtype << ">";
-            break;
+            return wrapped_object->toString();
         case SchemeObject::EOFTYPE :
             return "#<EOF>";
         case SchemeObject::INPUT_PORT :
@@ -342,7 +346,7 @@ string SchemeObject::toString() {
         default:
             throw scheme_exception("Unknown type in toString()");    
     }
-	return ss.str();
+    return ss.str();
 }
 
 //-----------------------------------------------------------
@@ -424,4 +428,22 @@ void SchemeObject::setBinding(SchemeObject* name, SchemeObject* o) {
     }
 }
 
+//-----------------------------------------------------------
+// Environment
+//-----------------------------------------------------------
+SchemeWrappedCObject::~SchemeWrappedCObject() {
+}
 
+string SchemeWrappedCObject::toString() {
+    return "#<wrapped-c-object>";
+}
+
+/**
+ * If the wrapped object contains pointers to other scheme objects
+ * this method should be overridden to call the their mark() method.
+ */
+void SchemeWrappedCObject::mark() {
+}
+
+void SchemeWrappedCObject::finalize() {
+}

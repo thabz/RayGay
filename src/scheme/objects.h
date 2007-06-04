@@ -34,11 +34,20 @@ using namespace std;
 #define i_list_2(a,b)    (i_cons((a), i_cons((b), S_EMPTY_LIST)))
 #define i_list_3(a,b,c)  (i_cons((a), i_cons((b), i_cons((c), S_EMPTY_LIST))))
 
+#define i_wrapped_object_p(o,subtype) (((o)->type() == SchemeObject::WRAPPED_C_OBJECT && (o)->wrapped_subtype == (subtype)) ? S_TRUE : S_FALSE)
 #define IMMUTABLE_FLAG ((uint32_t)(1 << 31))
 #define INUSE_FLAG     ((uint32_t)(1 << 30))
 #define REST_FLAG      ((uint32_t)(1 << 29))
 #define REQ_BITS_OFFS  16
 #define OPT_BITS_OFFS  20
+
+class SchemeWrappedCObject {
+    public:
+        virtual ~SchemeWrappedCObject();    
+        virtual string toString();
+        virtual void mark();
+        virtual void finalize();
+};
 
 class SchemeObject 
 {
@@ -58,7 +67,7 @@ class SchemeObject
                     SchemeObject** elems;  // For vector
                     SchemeObject* parent;  // For environments. Environment.
                     SchemeObject* name;    // For macros and procedures. Symbol.
-                    int wrapped_subtype;     // For wrapped C-objects
+                    int wrapped_subtype;   // For wrapped C-objects
                 };
                 union {
                     SchemeObject* cdr;      // For pairs
@@ -67,7 +76,7 @@ class SchemeObject
                     map<SchemeObject*,SchemeObject*>* binding_map;	// For environments
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
-                    void* wrapped_data;        // For wrapped C-objects
+                    SchemeWrappedCObject* wrapped_object;
                 };
             };
         };
@@ -118,7 +127,8 @@ class SchemeObject
         string nameAsString();
         
         // For WRAPPED_C_OBJECT
-        static int registerSubtype();
+        static int registerWrappedObject();
+        void* getWrappedCObject();
 
         // For USER_PROCEDURE and MACRO
         SchemeObject* s_formals();
@@ -150,7 +160,7 @@ class SchemeObject
         static SchemeObject* createUserProcedure(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
         static SchemeObject* createInternalProcedure(const char* name);
         static SchemeObject* createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
-        static SchemeObject* createWrappedCObject(int subtype, void* data);
+        static SchemeObject* createWrappedCObject(int subtype, SchemeWrappedCObject*);
 
     private:
         static map<string,SchemeObject*> known_symbols;
@@ -220,6 +230,11 @@ SchemeObject* SchemeObject::s_envt() {
 inline
 bool SchemeObject::self_evaluating() const {
     return type() < SchemeObject::SELF_EVALUATING_FORMS_ARE_BEFORE_HERE;
+}
+
+inline
+void* SchemeObject::getWrappedCObject() { 
+        return wrapped_object; 
 }
 
 #endif
