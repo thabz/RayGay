@@ -9,8 +9,18 @@
 #include "parser.h"
 #include "interpreter.h"
 
-scheme_exception::scheme_exception(string s) {
-    this->str = s;
+scheme_exception::scheme_exception(string s) : str(s), procname(NULL) {
+}
+
+scheme_exception::scheme_exception(char* procname, string error) : str(error), procname(procname) {
+}
+
+string scheme_exception::toString() {
+    if (procname != NULL) {
+        return "In procedure " + string(procname) + ": " + str;            
+    } else {
+        return str;    
+    }     
 }
 
 unsigned long symgen_counter = 10000;
@@ -1793,7 +1803,7 @@ SchemeObject* s_null_environment(SchemeObject* s_version) {
 SchemeObject* s_scheme_report_environment(SchemeObject* s_version) {
     assert_arg_type("scheme-report-environment", 1, s_integer_p, s_version);
     if (scm2int(s_version) != 5) {
-        throw scheme_exception("Not a valid version. Only 5 is supported.");
+        throw scheme_exception("scheme-report-environment", "Not a valid version. Only 5 is supported.");
     }
     return scheme_report_environment;
 }
@@ -1801,7 +1811,7 @@ SchemeObject* s_scheme_report_environment(SchemeObject* s_version) {
 SchemeObject* s_interaction_environment(SchemeObject* s_version) {
     assert_arg_type("interaction-environment", 1, s_integer_p, s_version);
     if (scm2int(s_version) != 5) {
-        throw scheme_exception("Not a valid version. Only 5 is supported.");
+        throw scheme_exception("interaction-environment", "Not a valid version. Only 5 is supported.");
     }
     return interaction_environment;
 }

@@ -771,7 +771,7 @@ fn_ptr eval_built_in_procedure_call()
             default:  throw scheme_exception("Doesn't support that many args to a built-in function."); 
         }
     } catch (scheme_exception e) {
-        string s = "In call to " + proc->nameAsString() + ": " + e.str;
+        string s = "In call to procedure " + proc->nameAsString() + ": " + e.toString();
         throw scheme_exception(s);
     }
     stack.pop_back();
@@ -838,7 +838,7 @@ fn_ptr eval_procedure_call() {
                 default:  throw scheme_exception("Doesn't support that many args to a built-in function."); 
             }
         } catch (scheme_exception e) {
-            string s = "In call to " + proc->nameAsString() + ": " + e.str;
+            string s = "In call to procedure " + proc->nameAsString() + ": " + e.toString();
             throw scheme_exception(s);
         }
         stack.pop_back();

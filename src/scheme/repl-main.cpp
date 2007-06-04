@@ -7,32 +7,32 @@
 using namespace std;
 
 int repl() {
-	char input[64*1024];
+    char input[64*1024];
     Scheme* scheme;
     
-	try {
+    try {
         scheme = new Scheme();
     } catch (scheme_exception e) {
-		cerr << "ABORT: " << e.str << endl;
+	cerr << "ABORT: " << e.toString() << endl;
         return EXIT_FAILURE;
     }
 
-	while (true) {
- 	    cout << "raygay> " << flush;
-	    cin.getline(input, 64*1024);
-	    if (cin.eof()) {
-		    // User pressed ctrl-D.
-		    return EXIT_SUCCESS;
-	    }    
-	    try {
+    while (true) {
+        cout << "raygay> " << flush;
+        cin.getline(input, 64*1024);
+        if (cin.eof()) {
+    	    // User pressed ctrl-D.
+    	    return EXIT_SUCCESS;
+        }    
+        try {
            SchemeObject* result = scheme->eval(string(input));
            if (result != S_UNSPECIFIED) {
-	           cout << result->toString() << endl;
+               cout << result->toString() << endl;
            }
-	    } catch (scheme_exception e) {
-			cerr << "ABORT: " << e.str << endl;
- 	    }
-	}
+        } catch (scheme_exception e) {
+    	   cerr << "ABORT: " << e.toString() << endl;
+        }
+    }
 }
 
 int runfile(char* filename) {
@@ -46,7 +46,7 @@ int runfile(char* filename) {
         scheme->eval(ifs);
     } catch (scheme_exception e) {
         ifs->close();
-		cerr << "ABORT: " << e.str << endl;
+	cerr << "ABORT: " << e.toString() << endl;
         return EXIT_FAILURE;
     }
     ifs->close();

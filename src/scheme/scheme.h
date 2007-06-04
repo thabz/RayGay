@@ -23,7 +23,7 @@ class Scheme {
         void assign(string variable, SchemeObject* value, SchemeObject* b);
         
         // For assigning built-in functions at top-level-frame
-		void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* b);
+	void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* b);
         
         // Look up in top-level-frame
         SchemeObject* lookup(string variable);
@@ -33,13 +33,15 @@ class Scheme {
 
 class scheme_exception {
     public: 
-		scheme_exception(string s);
-		string str;
+	scheme_exception(string error);
+	scheme_exception(char* procname, string error);
+        string toString();
+    private:		
+	string str;
+        char* procname;
 };
 
-
-#define assert_arg_type(procname, argnum, test_fn, arg) { \
-    if ((test_fn)(arg) == S_FALSE) {                      \
+#define wrong_type_arg(procname, argnum, arg) { \
         ostringstream ss;                                 \
         ss << "Wrong argument-type in position ";         \
         ss << argnum;                                     \
@@ -47,6 +49,11 @@ class scheme_exception {
         ss << string(procname);                           \
         ss << ": " << arg->toString();                    \
         throw scheme_exception(ss.str());                 \
+}
+
+#define assert_arg_type(procname, argnum, test_fn, arg) { \
+    if ((test_fn)(arg) == S_FALSE) {                      \
+        wrong_type_arg(procname, argnum, arg);            \
     }                                                     \
 }
 
