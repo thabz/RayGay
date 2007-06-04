@@ -3,12 +3,12 @@
 #define PARSER_WRAPPER_H
 
 #include <cassert>
-#include <libguile.h>
 #include <iostream>
 
 #include <scheme/scheme.h>
 
 using namespace std;
+
 
 class SceneObject;
 class Path;
@@ -42,41 +42,41 @@ struct wrapped_object : public SchemeWrappedCObject {
     wrapped_type type;
 };
 
-struct wrapped_object* scm2wrappedobj(SCM s_smod, char* subr, int pos);
+struct wrapped_object* scm2wrappedobj(SchemeObject* s_smod, char* subr, int pos);
 
 void assert_type(struct wrapped_object* obj, wrapped_type type);
 
-Path* scm2path(SCM object_smob, char* subr, int pos);
-SCM path2scm(Path* path);
+Path* scm2path(SchemeObject* object_smob, char* subr, int pos);
+SchemeObject* path2scm(Path* path);
 
-SceneObject* scm2sceneobject(SCM object_smob, char* subr, int pos);
-SCM sceneobject2scm(SceneObject* sceneobject);
+SceneObject* scm2sceneobject(SchemeObject* object_smob, char* subr, int pos);
+SchemeObject* sceneobject2scm(SceneObject* sceneobject);
 
-Camera* scm2camera(SCM object_smob, char* subr, int pos);
-SCM camera2scm(Camera* camera);
+Camera* scm2camera(SchemeObject* object_smob, char* subr, int pos);
+SchemeObject* camera2scm(Camera* camera);
 
-SamplerFactory* scm2sampler(SCM object_smob, char* subr, int pos);
-SCM sampler2scm(SamplerFactory* sampler_factory);
+SamplerFactory* scm2sampler(SchemeObject* object_smob, char* subr, int pos);
+SchemeObject* sampler2scm(SamplerFactory* sampler_factory);
 
-Texture* scm2texture(SCM object_smob, char* subr, int pos);
-SCM texture2scm(Texture* texture);
+Texture* scm2texture(SchemeObject* object_smob, char* subr, int pos);
+SchemeObject* texture2scm(Texture* texture);
 
-SCM material2scm(Material* material);
-Material* scm2material(SCM object_smob, char* subr, int pos);
+SchemeObject* material2scm(Material* material);
+Material* scm2material(SchemeObject* object_smob, char* subr, int pos);
 
-Lightsource* scm2lightsource(SCM object_smob, char* subr, int pos);
-SCM lightsource2scm(Lightsource* lightsource);
+Lightsource* scm2lightsource(SchemeObject* object_smob, char* subr, int pos);
+SchemeObject* lightsource2scm(Lightsource* lightsource);
 
 void init_wrapper_type();
 
-bool isLightsource(SCM object_smob);
+bool isLightsource(SchemeObject* object_smob);
 
-bool isMaterial(SCM object_smob);
+bool isMaterial(SchemeObject* object_smob);
 
-bool isSceneObject(SCM object_smob);
+bool isSceneObject(SchemeObject* object_smob);
 
-bool isTexture(SCM object_smob);
+bool isTexture(SchemeObject* object_smob);
 
-bool isWrappedObject(SCM obj);
+bool isWrappedObject(SchemeObject* obj);
 
 #endif

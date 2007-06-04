@@ -2,21 +2,21 @@
 #ifndef PARSER_TRANSFORMATION_FACTORY_H
 #define PARSER_TRANSFORMATION_FACTORY_H
 
-#include <libguile.h>
+#include "scheme/scheme.h"
 
 class Matrix;
 
 class TransformationFactory {
 
     public:
-	static SCM rotate(SCM obj, SCM axis, SCM angle);
-	static SCM translate(SCM obj, SCM translation);
-	static SCM scale(SCM obj, SCM scale);
+	static SchemeObject* rotate(SchemeObject* obj, SchemeObject* axis, SchemeObject* angle);
+	static SchemeObject* translate(SchemeObject* obj, SchemeObject* translation);
+	static SchemeObject* scale(SchemeObject* obj, SchemeObject* scale);
 
 	static void register_procs(Scheme* scheme);
 
     private:
-	static SCM transform(SCM obj, const Matrix& m, char* subr);
+	static SchemeObject* transform(SchemeObject* obj, const Matrix& m, char* subr);
 };
 
 #endif

@@ -2,7 +2,7 @@
 #ifndef PARSER_LIGHTSOURCE_FACTORY_H
 #define PARSER_LIGHTSOURCE_FACTORY_H
 
-#include <libguile.h>
+#include "scheme/scheme.h"
 
 /**
  * Factory for lightsource-related Scheme-procedures.

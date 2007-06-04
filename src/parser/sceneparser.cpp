@@ -37,7 +37,7 @@ SceneParser::SceneParser() {
     scheme->assign(VAR_IMAGESIZE, S_EMPTY_LIST);
     scheme->assign(VAR_BACKGROUND, S_EMPTY_LIST);
 
-    scheme->assign("set-settings",1,0,0,(SCM (*)()) SceneParser::set_settings);
+    scheme->assign("set-settings",1,0,0,(SchemeObject* (*)()) SceneParser::set_settings);
 
     // My procedures
     PathFactory::register_procs(scheme);
@@ -89,22 +89,22 @@ void SceneParser::parse_file(std::string filename) {
     chdir(original_working_dir);
 }
 
-SCM SceneParser::lookup(string var_name) {
+SchemeObject* SceneParser::lookup(string var_name) {
     return scheme->lookup(var_name);        
 }
 
 void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     // Populate sceneobjects and lights
-    SCM list = lookup(VAR_SCENE);
+    SchemeObject* list = lookup(VAR_SCENE);
     if (list == NULL || S_FALSE == s_list_p(list)) {
 	throw scheme_exception("internal-populate-scene", "The variable '"+VAR_SCENE+"' is not a list");
     }
-    uint32_t length = scm2int(s_length(list),0,"internal-populate-scene");
+    uint32_t length = safe_scm2int(s_length(list),0,"internal-populate-scene");
 
     //cout << "Scene objects: " << length << endl;
 
     for(uint32_t i = 0; i < length; i++) {
-	SCM s_value = s_list_ref(list, int2scm(i));
+	SchemeObject* s_value = s_list_ref(list, int2scm(i));
 	//assert(!S_TRUE == (s_list_p (s_value)));
 	if (isSceneObject(s_value)) {
 	    //cout << "Found a scene object" << endl;
@@ -120,7 +120,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     }
 
     // Get renderer
-    SCM s_renderer = lookup(VAR_RENDERER);
+    SchemeObject* s_renderer = lookup(VAR_RENDERER);
     RendererSettings::RendererType type;
     if (s_renderer != NUL) {
 	string r_string = scm2string(s_renderer);
@@ -146,7 +146,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     }
 
     // Populate camera
-    SCM s_camera = lookup(VAR_CAMERA);
+    SchemeObject* s_camera = lookup(VAR_CAMERA);
     if (s_camera != NULL) {
 	Camera* camera = scm2camera(s_camera, "internal-get-camera", 0);
 	scene->setCamera(camera);
@@ -157,19 +157,19 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
 	}
     }
     
-    SCM s_image_size = lookup(VAR_IMAGESIZE);
+    SchemeObject* s_image_size = lookup(VAR_IMAGESIZE);
     if (s_image_size != NULL) {
 	assert(S_TRUE == (s_list_p (s_image_size)));
-	assert(scm2int(s_length(s_image_size),0,"") == 2);
-	SCM s_w = s_list_ref(s_image_size, S_ZERO);
-	uint32_t w = scm2int(s_w,0,"");
-	SCM s_h = s_list_ref(s_image_size, S_ONE);
-	uint32_t h = scm2int(s_h,0,"");
+	assert(safe_scm2int(s_length(s_image_size),0,"") == 2);
+	SchemeObject* s_w = s_list_ref(s_image_size, S_ZERO);
+	uint32_t w = safe_scm2int(s_w,0,"");
+	SchemeObject* s_h = s_list_ref(s_image_size, S_ONE);
+	uint32_t h = safe_scm2int(s_h,0,"");
 	renderersettings->image_width = w;
 	renderersettings->image_height = h;
     }
 
-    SCM s_background = lookup(VAR_BACKGROUND);
+    SchemeObject* s_background = lookup(VAR_BACKGROUND);
     if (s_background != NULL) {
 	char* subr = "internal: setting scene background";
 	if (isWrappedObject(s_background)) {
@@ -184,7 +184,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
 
 // TODO: Set fog
 
-SCM SceneParser::set_settings(SCM s_settings) 
+SchemeObject* SceneParser::set_settings(SchemeObject* s_settings) 
 {
     RendererSettings* renderersettings = RendererSettings::uniqueInstance();
     char* proc = "set-settings";
@@ -192,7 +192,7 @@ SCM SceneParser::set_settings(SCM s_settings)
 	if (S_FALSE == (s_list_p (s_settings))) {
 	    throw scheme_exception(proc, "The settings is not a list");
 	}
-	uint32_t length = scm2int(s_length(s_settings),0,"");
+	uint32_t length = safe_scm2int(s_length(s_settings),0,"");
 
 	assert(length % 2 == 0);
 	uint32_t argc = length / 2;
@@ -200,27 +200,27 @@ SCM SceneParser::set_settings(SCM s_settings)
 	for(uint32_t i = 0; i < argc; i++) {
 	    char* key_c = gh_symbol2newstr(s_list_ref(s_settings, int2scm(i*2)),NULL);
 	    string key = string(key_c);
-	    SCM s_value = s_list_ref(s_settings, int2scm(i*2+1));
+	    SchemeObject* s_value = s_list_ref(s_settings, int2scm(i*2+1));
 	    if (key == "globalphotons") {
-		uint32_t value = scm2int(s_value,0,proc);
+		uint32_t value = safe_scm2int(s_value,0,proc);
 		renderersettings->global_photons_num = value;
 	    } else if (key == "causticphotons") {
-		double value = s_scm2double(s_value,0,proc);
+		double value = safe_scm2double(s_value,0,proc);
 		renderersettings->caustic_photons_num = int(value);
 	    } else if (key == "estimateradius") {
-		double value = s_scm2double(s_value,0,proc);
+		double value = safe_scm2double(s_value,0,proc);
 		renderersettings->estimate_radius = int(value);
 	    } else if (key == "estimateradius") {
-		double value = s_scm2double(s_value,0,proc);
+		double value = safe_scm2double(s_value,0,proc);
 		renderersettings->estimate_radius = value;
 	    } else if (key == "estimatesamples") {
-		double value = s_scm2double(s_value,0,proc);
+		double value = safe_scm2double(s_value,0,proc);
 		renderersettings->estimate_samples = int(value);
 	    } else if (key == "finalgatherrays") {
-		double value = s_scm2double(s_value,0,proc);
+		double value = safe_scm2double(s_value,0,proc);
 		renderersettings->final_gather_rays = int(value);
 	    } else if (key == "cachetolerance") {
-		double value = s_scm2double(s_value,0,proc);
+		double value = safe_scm2double(s_value,0,proc);
 		renderersettings->cache_tolerance = value;
     	    } else if (key == "fast-preview") {
     		renderersettings->fast_preview = scm2bool(s_value) ? true : false;

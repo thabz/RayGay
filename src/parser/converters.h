@@ -4,8 +4,7 @@
 #include <vector>
 #include <string>
 #include <cassert>
-#include <libguile.h>
-#include <guile/gh.h>
+#include "scheme/scheme.h"
 #include "math/vector.h"
 #include "math/vector2.h"
 #include "math/quaternion.h"
@@ -14,22 +13,23 @@
 
 using namespace std;
 
-Vector scm2vector(SCM s_vector, char* subr, int pos);
+double safe_scm2double(SchemeObject* o, int argnum, const char* procname);
+int safe_scm2int(SchemeObject* o, int argnum, const char* procname);
 
-Vector2 scm2vector2(SCM s_vector, char* subr, int pos);
+Vector scm2vector(SchemeObject* s_vector, char* subr, int pos);
 
-Quaternion scm2quaternion(SCM s_vector, char* subr, int pos);
+Vector2 scm2vector2(SchemeObject* s_vector, char* subr, int pos);
 
-SCM vector2scm(Vector vector);
+Quaternion scm2quaternion(SchemeObject* s_vector, char* subr, int pos);
 
-RGB scm2rgb(SCM s_rgb);
+SchemeObject* vector2scm(Vector vector);
 
-RGBA scm2rgba(SCM s_rgb, char* subr, int pos);
+RGB scm2rgb(SchemeObject* s_rgb);
 
-SCM rgb2scm(RGB rgb);
+RGBA scm2rgba(SchemeObject* s_rgb, char* subr, int pos);
 
-vector<Vector> scm2vectorlist(SCM s_vector_vector, char* subr, int pos);
+SchemeObject* rgb2scm(RGB rgb);
 
-string scm2string(SCM s_string);
+vector<Vector> scm2vectorlist(SchemeObject* s_vector_vector, char* subr, int pos);
 
 #endif

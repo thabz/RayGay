@@ -2,7 +2,7 @@
 #ifndef PARSER_SCENEOBJECT_FACTORY_H
 #define PARSER_SCENEOBJECT_FACTORY_H
 
-#include <libguile.h>
+#include "scheme/scheme.h"
 
 /**
  * Factory for sceneobject-related Scheme-procedures.

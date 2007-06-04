@@ -11,15 +11,15 @@ using namespace std;
 
 std::map<std::string,Image*> TextureFactory::image_cache;
 
-SCM TextureFactory::make_texture(SCM s_filename, SCM s_repeat_x, SCM s_repeat_y, SCM s_interpolation_type) {
+SchemeObject* TextureFactory::make_texture(SchemeObject* s_filename, SchemeObject* s_repeat_x, SchemeObject* s_repeat_y, SchemeObject* s_interpolation_type) {
 
     RendererSettings* renderer_settings = RendererSettings::uniqueInstance();
 
     char* proc = "make-texture";
 
     string filename = scm2string(s_filename);
-    double rep_x = s_scm2double(s_repeat_x,2,proc);
-    double rep_y = s_scm2double(s_repeat_y,3,proc);
+    double rep_x = safe_scm2double(s_repeat_x,2,proc);
+    double rep_y = safe_scm2double(s_repeat_y,3,proc);
 
     string type_string = scm2string(s_interpolation_type);
     Texture::InterpolationType type = Texture::INTERPOLATION_NONE;
@@ -48,18 +48,18 @@ SCM TextureFactory::make_texture(SCM s_filename, SCM s_repeat_x, SCM s_repeat_y,
     return texture2scm(texture);
 }
 
-SCM TextureFactory::get_pixel(SCM s_texture, SCM s_x, SCM s_y) 
+SchemeObject* TextureFactory::get_pixel(SchemeObject* s_texture, SchemeObject* s_x, SchemeObject* s_y) 
 {
     char* proc = "get-pixel";
     Texture* texture = scm2texture(s_texture, proc, 1);
-    double x = s_scm2double(s_x, 2, proc);
-    double y = s_scm2double(s_y, 2, proc);
+    double x = safe_scm2double(s_x, 2, proc);
+    double y = safe_scm2double(s_y, 2, proc);
     RGB pixel = texture->getTexel(x,y);
     return rgb2scm(pixel);
 }
     
 
 void TextureFactory::register_procs(Scheme* scheme) {
-    scheme->assign("make-texture",4,0,0,(SCM (*)()) TextureFactory::make_texture);
-    scheme->assign("get-pixel",3,0,0,(SCM (*)()) TextureFactory::get_pixel);
+    scheme->assign("make-texture",4,0,0,(SchemeObject* (*)()) TextureFactory::make_texture);
+    scheme->assign("get-pixel",3,0,0,(SchemeObject* (*)()) TextureFactory::get_pixel);
 }

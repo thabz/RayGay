@@ -2,6 +2,8 @@
 #ifndef PARSER_NORMAL_FACTORY_H
 #define PARSER_NORMAL_FACTORY_H
 
+#include "scheme/scheme.h"
+
 class NormalFactory
 {
     public:

@@ -2,11 +2,11 @@
 #ifndef PARSER_MATERIAL_FACTORY_H
 #define PARSER_MATERIAL_FACTORY_H
 
-#include <libguile.h>
+#include "scheme/scheme.h"
 
 class MaterialFactory {
     public:
-	static SCM make_material(SCM options);
+	static SchemeObject* make_material(SchemeObject* options);
 	static void register_procs(Scheme* scheme);
 };
 

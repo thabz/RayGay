@@ -2,7 +2,7 @@
 #ifndef PARSER_SCHEME_NORMAL_PERTURBER_H
 #define PARSER_SCHEME_NORMAL_PERTURBER_H
 
-#include <libguile.h>
+#include "scheme/scheme.h"
 #include "materials/normalperturbers/normalperturber.h"
 
 class Profiler;
@@ -11,7 +11,7 @@ class SchemeNormalPerturber : public NormalPerturber
 {
 
     public:
-        SchemeNormalPerturber(Scheme* scheme, SCM procedure);
+        SchemeNormalPerturber(Scheme* scheme, SchemeObject* procedure);
 	~SchemeNormalPerturber();
 	
     protected:
@@ -19,7 +19,7 @@ class SchemeNormalPerturber : public NormalPerturber
 
     private:
         Scheme* scheme;    
-	SCM s_procedure;
+	SchemeObject* s_procedure;
 	static Profiler* profiler;
     	static pthread_mutex_t mutex;
     	static bool mutex_initialized;

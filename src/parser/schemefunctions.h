@@ -2,6 +2,8 @@
 #ifndef PARSER_SCHEMEFUNCTIONS_H
 #define PARSER_SCHEMEFUNCTIONS_H
 
+#include "scheme/scheme.h"
+
 class SchemeFunctions 
 {
     public:

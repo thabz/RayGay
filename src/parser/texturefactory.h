@@ -2,7 +2,7 @@
 #ifndef PARSER_TEXTURE_FACTORY_H
 #define PARSER_TEXTURE_FACTORY_H
 
-#include <libguile.h>
+#include "scheme/scheme.h"
 #include <map>
 
 class Image;
@@ -12,8 +12,8 @@ class Image;
  */
 class TextureFactory {
     public:
-	static SCM make_texture(SCM s_filename, SCM s_repeat_x, SCM s_repeat_y, SCM s_interpolation_type);
-	static SCM get_pixel(SCM s_texture, SCM s_x, SCM s_y);
+	static SchemeObject* make_texture(SchemeObject* s_filename, SchemeObject* s_repeat_x, SchemeObject* s_repeat_y, SchemeObject* s_interpolation_type);
+	static SchemeObject* get_pixel(SchemeObject* s_texture, SchemeObject* s_x, SchemeObject* s_y);
 
 	static void register_procs(Scheme* scheme);
 

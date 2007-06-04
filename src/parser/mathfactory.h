@@ -2,7 +2,7 @@
 #ifndef PARSER_MATH_FACTORY
 #define PARSER_MATH_FACTORY
 
-#include <libguile.h>
+#include "scheme/scheme.h"
 
 /**
  * Factory for math-related Scheme-procedures.

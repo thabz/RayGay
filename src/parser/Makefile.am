@@ -33,5 +33,3 @@ libparser_la_SOURCES = pathfactory.cpp		\
                        converters.cpp		\
 		       wrapper.cpp		\
 		       wrapper.h
-
-libparser_la_LIBADD = @GUILE_LDFLAGS@		       
