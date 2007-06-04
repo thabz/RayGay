@@ -1,40 +1,39 @@
 
 #include "parser/converters.h"
 
-// TODO: Optimize the hell out of this
 Vector scm2vector(SchemeObject* s_vector, char* subr, int pos) {
-    if (!((scm2bool(s_vector_p (s_vector))) && (scm2int(s_vector_length(s_vector)) == 3))) {
+    if (!(scm2bool(i_vector_p (s_vector)) && i_vector_length(s_vector) == 3))) {
 	wrong_type_arg(subr,pos,s_vector);
     }
 
     Vector result;
     SchemeObject* s_value;
     for(uint32_t i = 0; i < 3; i++) {
-	s_value = s_vector_ref(s_vector, int2scm(i));
+	s_value = i_vector_ref(s_vector, i);
 	result[i] = safe_scm2double(s_value, pos, subr);
     }
     return result;
 }
 
 Quaternion scm2quaternion(SchemeObject* s_vector, char* subr, int pos) {
-    if (!((scm2bool(s_vector_p (s_vector))) && (scm2int(s_vector_length(s_vector)) == 4))) {
+    if (!(scm2bool(i_vector_p (s_vector)) && i_vector_length(s_vector) == 4)) {
 	wrong_type_arg(subr,pos,s_vector);
     }
 
     double r[4];
     SchemeObject* s_value;
-    for(uint32_t i = 0; i < 3; i++) {
-	s_value = s_vector_ref(s_vector, int2scm(i));
+    for(uint32_t i = 0; i < 4; i++) {
+	s_value = i_vector_ref(s_vector, i);
 	r[i] = safe_scm2double(s_value, pos, subr);
     }
     return Quaternion(r[0], r[1], r[2], r[3]);
 }
 
 RGBA scm2rgba(SchemeObject* s_vector, char* subr, int pos) {
-    if (!((scm2bool(s_vector_p (s_vector))))) {
+    if (!((scm2bool(i_vector_p (s_vector))))) {
 	wrong_type_arg(subr,pos,s_vector);
     };
-    int l = scm2int(s_vector_length(s_vector));
+    int l = i_vector_length(s_vector);
     if (l == 3) {
 	return RGBA(scm2rgb(s_vector));
     }
@@ -45,22 +44,21 @@ RGBA scm2rgba(SchemeObject* s_vector, char* subr, int pos) {
     double r[4];
     SchemeObject* s_value;
     for(uint32_t i = 0; i < 4; i++) {
-	s_value = s_vector_ref(s_vector, int2scm(i));
+	s_value = i_vector_ref(s_vector, i);
 	r[i] = safe_scm2double(s_value, pos, subr);
     }
     return RGBA(r[0],r[1],r[2],r[3]);
 }
 
-// TODO: Optimize the hell out of this
 Vector2 scm2vector2(SchemeObject* s_vector, char* subr, int pos) {
-    if (!((scm2bool(s_vector_p (s_vector))) && (scm2int(s_vector_length(s_vector)) == 2))) {
+    if (!(scm2bool(i_vector_p (s_vector)) && i_vector_length(s_vector) == 2)) {
 	wrong_type_arg(subr,pos,s_vector);
     }
 
     double res[2];
     SchemeObject* s_value;
     for(uint32_t i = 0; i < 2; i++) {
-	s_value = s_vector_ref(s_vector, int2scm(i));
+	s_value = i_vector_ref(s_vector, i);
 	res[i] = safe_scm2double(s_value, pos, subr);
     }
     return Vector2(res[0], res[1]);

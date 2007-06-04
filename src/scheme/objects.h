@@ -34,6 +34,8 @@ using namespace std;
 #define i_list_2(a,b)    (i_cons((a), i_cons((b), S_EMPTY_LIST)))
 #define i_list_3(a,b,c)  (i_cons((a), i_cons((b), i_cons((c), S_EMPTY_LIST))))
 
+#define i_vector_ref(v,i) ((v)->elems[i])
+#define i_vector_length(v) ((v)->length)
 #define i_wrapped_object_p(o,subtype) (((o)->type() == SchemeObject::WRAPPED_C_OBJECT && (o)->wrapped_subtype == (subtype)) ? S_TRUE : S_FALSE)
 #define IMMUTABLE_FLAG ((uint32_t)(1 << 31))
 #define INUSE_FLAG     ((uint32_t)(1 << 30))
