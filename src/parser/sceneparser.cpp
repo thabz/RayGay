@@ -97,15 +97,12 @@ SchemeObject* SceneParser::lookup(string var_name) {
 void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     // Populate sceneobjects and lights
     SchemeObject* list = lookup(VAR_SCENE);
-    if (list == NULL || S_FALSE == s_list_p(list)) {
-	throw scheme_exception("internal-populate-scene", "The variable '"+string(VAR_SCENE)+"' is not a list");
+    if (list == NULL) {
+	throw scheme_exception("internal-populate-scene", "The variable '"+string(VAR_SCENE)+"' is not defined.");
     }
-    uint32_t length = safe_scm2int(s_length(list),0,"internal-populate-scene");
 
-    //cout << "Scene objects: " << length << endl;
-
-    for(uint32_t i = 0; i < length; i++) {
-	SchemeObject* s_value = s_list_ref(list, int2scm(i));
+    while (list != S_EMPTY_LIST) {
+	SchemeObject* s_value = i_car(list);
 	//assert(!S_TRUE == (s_list_p (s_value)));
 	if (isSceneObject(s_value)) {
 	    //cout << "Found a scene object" << endl;
@@ -118,6 +115,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
 	} else {
 	    throw scheme_exception("internal-populating-scene", "A non-sceneobject or non-lightsource found.");
 	}
+        list = i_cdr(list);
     }
 
     // Get renderer

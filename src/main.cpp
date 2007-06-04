@@ -202,6 +202,9 @@ void* renderThreadDo(void* obj) {
 	     << " at " << e.getSourceFile() << ":" 
 	     << e.getSourceLine() << endl;
 	exit(EXIT_FAILURE);
+    } catch (scheme_exception e) {
+        cerr << "FAIL: " << e.toString() << endl;    
+        exit(EXIT_FAILURE);
     }
     return NULL;
 }
@@ -481,6 +484,9 @@ int main(int argc, char *argv[]) {
     } catch (Exception e) {
 	cout << "Exception: " << e.getMessage() 
 	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
+	return EXIT_FAILURE;
+    } catch (scheme_exception e) {
+        cerr << "FAIL: " << e.toString() << endl;    
 	return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

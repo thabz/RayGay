@@ -9,7 +9,7 @@ class Profiler;
 
 class SchemeIsosurface : public IsoSurface {
     public:
-	SchemeIsosurface(Scheme* scheme, SchemeObject* procedure_name, AABox bbox, uint32_t steps, double accuracy, double iso, Material* mat);
+	SchemeIsosurface(Scheme* scheme, SchemeObject* procedure, AABox bbox, uint32_t steps, double accuracy, double iso, Material* mat);
 	SceneObject* clone() const;
 
     protected:
@@ -18,7 +18,7 @@ class SchemeIsosurface : public IsoSurface {
 
     private:
         Scheme* scheme;    
-	SchemeObject* procedure_name;
+	SchemeObject* procedure;
 	AABox bbox;
 	static Profiler* profiler;
     	static pthread_mutex_t mutex;

@@ -242,6 +242,8 @@ SchemeObject* make_blob(SchemeObject* s_iso, SchemeObject* s_steps, SchemeObject
 SchemeObject* SceneObjectFactory::make_isosurface(SchemeObject* s_proc, SchemeObject* s_vec_lower, SchemeObject* s_vec_higher, SchemeObject* s_iso, SchemeObject* s_steps, SchemeObject* s_accuracy, SchemeObject* s_material)
 {
     char* proc = "make-isosurface";
+    
+    assert_arg_procedure_type(proc, 1, s_proc);
 
     Vector lower = scm2vector (s_vec_lower, proc, 2);
     Vector higher = scm2vector (s_vec_higher, proc, 3);

@@ -22,7 +22,6 @@ class SceneParser {
         
     private:
         Scheme* scheme;
-
 };
 
 #endif
