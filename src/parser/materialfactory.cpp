@@ -5,20 +5,25 @@
 #include "parser/schemenormalperturber.h"
 #include "materials/material.h"
 
+Scheme* MaterialFactory::scheme;
+
 SchemeObject* MaterialFactory::make_material(SchemeObject* s_options) {
     Material* material = new Material();
 
     assert(scm2bool(s_list_p (s_options)));
-    uint32_t length = scm2int(s_length(s_options),0,"");
+    uint32_t length = safe_scm2int(s_length(s_options),0,"");
     
     assert(length % 2 == 0);
     uint32_t argc = length / 2;
 
     for(uint32_t i = 0; i < argc; i++) {
-	size_t l;
-	char* key_c = gh_symbol2newstr(s_list_ref(s_options, int2scm(i*2)),&l);
-	string key = string(key_c);
+        SchemeObject* s_key = s_list_ref(s_options, int2scm(i*2));
 	SchemeObject* s_value = s_list_ref(s_options, int2scm(i*2+1));
+        if (i_symbol_p(s_key) == S_FALSE) {
+            throw scheme_exception("Invalid camera-option-name: " + s_key->toString());
+        }    
+    	string key = s_key->toString();
+
 	if (key == "diffuse") {
 	    if (isTexture(s_value)) {
 		Texture* texture = scm2texture(s_value,"",0);
@@ -44,17 +49,17 @@ SchemeObject* MaterialFactory::make_material(SchemeObject* s_options) {
 	    material->setEta(d);
     	} else if (key == "gloss") {
     	    assert(scm2bool(s_list_p (s_value)));
-            assert(scm2int(s_length(s_value),0,"") == 2);
+            assert(safe_scm2int(s_length(s_value),0,"") == 2);
             SchemeObject* s_rays = s_list_ref(s_value, int2scm(0));
-            uint32_t rays = scm2int(s_rays,0,"");
+            uint32_t rays = safe_scm2int(s_rays,0,"");
   	    SchemeObject* s_angle = s_list_ref(s_value, int2scm(1));
             double angle = safe_scm2double(s_angle,0,"");
     	    material->enableGloss(rays,angle);
 	} else if (key == "normal") {
-	    SchemeNormalPerturber* perturber = new SchemeNormalPerturber(s_value);
+	    SchemeNormalPerturber* perturber = new SchemeNormalPerturber(scheme, s_value);
 	    material->setNormalPerturber(perturber);
 	} else if (key == "specpow") {
-	    int d = scm2int(s_value,0,"");
+	    int d = safe_scm2int(s_value,0,"");
 	    material->setSc(d);
 	} else {
 	    cout << "Unknown material option ignored: " << key << endl;
@@ -63,7 +68,8 @@ SchemeObject* MaterialFactory::make_material(SchemeObject* s_options) {
     return material2scm(material);
 }
 
-void MaterialFactory::register_procs() {
+void MaterialFactory::register_procs(Scheme* s) {
+    scheme = s;        
     scheme->assign("make-material",1,0,0,(SchemeObject* (*)()) MaterialFactory::make_material);
 }
 

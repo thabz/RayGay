@@ -57,7 +57,7 @@ extern "C" {
 #include "photon/photontracer.h"
 #include "photon/irradiancecache.h"
 
-        #include "parser/sceneparser.h"
+#include "parser/sceneparser.h"
 
 #include "renderersettings.h"
 #include "renderjobs.h"
@@ -74,8 +74,6 @@ RendererSettings* renderer_settings = RendererSettings::uniqueInstance();
 SceneParser* parser = new SceneParser();
 PreviewWindow* preview_window = NULL;
 std::string scenefile;
-
-
 
 RendererSettings* getRendererSettings() {
     return renderer_settings;

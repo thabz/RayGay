@@ -8,6 +8,8 @@ class MaterialFactory {
     public:
 	static SchemeObject* make_material(SchemeObject* options);
 	static void register_procs(Scheme* scheme);
+    private:
+        static Scheme* scheme;    	
 };
 
 #endif

@@ -1,5 +1,6 @@
 
 #include <sstream>
+#include <fstream>
 
 #include "parser/sceneparser.h"
 #include "parser/wrapper.h"
@@ -52,7 +53,7 @@ SceneParser::SceneParser() {
 }
 
 void SceneParser::assignVariable(string var, double value) {
-    scheme->assign(var.c_str(), s_double2scm(value));
+    scheme->assign(var, value);
 }
 
 void SceneParser::parse_expr(std::string expr) {
@@ -97,7 +98,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     // Populate sceneobjects and lights
     SchemeObject* list = lookup(VAR_SCENE);
     if (list == NULL || S_FALSE == s_list_p(list)) {
-	throw scheme_exception("internal-populate-scene", "The variable '"+VAR_SCENE+"' is not a list");
+	throw scheme_exception("internal-populate-scene", "The variable '"+string(VAR_SCENE)+"' is not a list");
     }
     uint32_t length = safe_scm2int(s_length(list),0,"internal-populate-scene");
 
@@ -122,7 +123,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     // Get renderer
     SchemeObject* s_renderer = lookup(VAR_RENDERER);
     RendererSettings::RendererType type;
-    if (s_renderer != NUL) {
+    if (s_renderer != NULL) {
 	string r_string = scm2string(s_renderer);
 	if (r_string == "raytracer") {
 	    type = RendererSettings::RAYTRACER;
@@ -198,9 +199,12 @@ SchemeObject* SceneParser::set_settings(SchemeObject* s_settings)
 	uint32_t argc = length / 2;
 
 	for(uint32_t i = 0; i < argc; i++) {
-	    char* key_c = gh_symbol2newstr(s_list_ref(s_settings, int2scm(i*2)),NULL);
-	    string key = string(key_c);
+            SchemeObject* s_key = s_list_ref(s_settings, int2scm(i*2));
 	    SchemeObject* s_value = s_list_ref(s_settings, int2scm(i*2+1));
+            if (i_symbol_p(s_key) == S_FALSE) {
+                throw scheme_exception("Invalid camera-option-name: " + s_key->toString());
+            }    
+   	    string key = s_key->toString();
 	    if (key == "globalphotons") {
 		uint32_t value = safe_scm2int(s_value,0,proc);
 		renderersettings->global_photons_num = value;

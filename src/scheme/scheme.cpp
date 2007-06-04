@@ -350,22 +350,39 @@ SchemeObject* Scheme::eval(string data) {
     return result;
 };
 
-void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* envt = interaction_environment) {
+void Scheme::assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* envt) {
+    if (envt == NULL) envt = interaction_environment;        
     SchemeObject* name = SchemeObject::createSymbol(variable.c_str());
     SchemeObject* proc = SchemeObject::createBuiltinProcedure(name, req, opt, rst, fn);
     envt->defineBinding(name, proc);
 }
 
-void Scheme::assign(string variable, SchemeObject* value, SchemeObject* envt = interaction_environment) {
+void Scheme::assign(string variable, SchemeObject* value, SchemeObject* envt) {
+    if (envt == NULL) envt = interaction_environment;        
     SchemeObject* name = SchemeObject::createSymbol(variable.c_str());
     envt->defineBinding(name, value);
 }
 
-SchemeObject* Scheme::lookup(SchemeObject* symbol, SchemeObject* envt = interaction_environment) {
+void Scheme::assign(string variable, double value, SchemeObject* envt) {
+    assign(variable,double2scm(value),envt);        
+}
+
+SchemeObject* Scheme::lookup(SchemeObject* symbol, SchemeObject* envt) {
+    if (envt == NULL) envt = interaction_environment;        
     return envt->getBinding(symbol);    
 }
 
-SchemeObject* Scheme::lookup(string variable, SchemeObject* envt = interaction_environment) {
+SchemeObject* Scheme::lookupOrFail(SchemeObject* symbol, SchemeObject* envt) {
+    if (envt == NULL) envt = interaction_environment;        
+    SchemeObject* result = envt->getBinding(symbol);    
+    if (result == NULL) {
+        throw scheme_exception("Unbound symbol: " + symbol->toString());    
+    }
+    return result;
+}
+
+SchemeObject* Scheme::lookup(string variable, SchemeObject* envt) {
+    if (envt == NULL) envt = interaction_environment;        
     SchemeObject* symbol = SchemeObject::createSymbol(variable.c_str());
     return lookup(symbol, envt);
 }

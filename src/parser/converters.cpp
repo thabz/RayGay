@@ -3,8 +3,7 @@
 
 // TODO: Optimize the hell out of this
 Vector scm2vector(SchemeObject* s_vector, char* subr, int pos) {
-    if (!((scm2bool(s_vector_p (s_vector))) &&
-    (scm2int(s_vector_length(s_vector), pos, subr) == 3))) {
+    if (!((scm2bool(s_vector_p (s_vector))) && (scm2int(s_vector_length(s_vector)) == 3))) {
 	wrong_type_arg(subr,pos,s_vector);
     }
 
@@ -18,8 +17,7 @@ Vector scm2vector(SchemeObject* s_vector, char* subr, int pos) {
 }
 
 Quaternion scm2quaternion(SchemeObject* s_vector, char* subr, int pos) {
-    if (!((scm2bool(s_vector_p (s_vector))) &&
-    (scm2int(s_vector_length(s_vector), pos, subr) == 4))) {
+    if (!((scm2bool(s_vector_p (s_vector))) && (scm2int(s_vector_length(s_vector)) == 4))) {
 	wrong_type_arg(subr,pos,s_vector);
     }
 
@@ -36,7 +34,7 @@ RGBA scm2rgba(SchemeObject* s_vector, char* subr, int pos) {
     if (!((scm2bool(s_vector_p (s_vector))))) {
 	wrong_type_arg(subr,pos,s_vector);
     };
-    int l = scm2int(s_vector_length(s_vector), pos, subr);
+    int l = scm2int(s_vector_length(s_vector));
     if (l == 3) {
 	return RGBA(scm2rgb(s_vector));
     }
@@ -55,8 +53,7 @@ RGBA scm2rgba(SchemeObject* s_vector, char* subr, int pos) {
 
 // TODO: Optimize the hell out of this
 Vector2 scm2vector2(SchemeObject* s_vector, char* subr, int pos) {
-    if (!((scm2bool(s_vector_p (s_vector))) &&
-    (scm2int(s_vector_length(s_vector), pos, subr) == 2))) {
+    if (!((scm2bool(s_vector_p (s_vector))) && (scm2int(s_vector_length(s_vector)) == 2))) {
 	wrong_type_arg(subr,pos,s_vector);
     }
 
@@ -70,9 +67,9 @@ Vector2 scm2vector2(SchemeObject* s_vector, char* subr, int pos) {
 }
 
 SchemeObject* vector2scm(Vector vector) {
-    SchemeObject* v0 = s_double2scm(vector[0]);
-    SchemeObject* v1 = s_double2scm(vector[1]);
-    SchemeObject* v2 = s_double2scm(vector[2]);
+    SchemeObject* v0 = double2scm(vector[0]);
+    SchemeObject* v1 = double2scm(vector[1]);
+    SchemeObject* v2 = double2scm(vector[2]);
     return s_vector(i_list_3(v0,v1,v2));    // TODO: i_list_3 slow!
 }
 
@@ -82,15 +79,15 @@ RGB scm2rgb(SchemeObject* s_rgb) {
 }
 
 SchemeObject* rgb2scm(RGB rgb) {
-    SchemeObject* r = s_double2scm(rgb.r());
-    SchemeObject* g = s_double2scm(rgb.g());
-    SchemeObject* b = s_double2scm(rgb.b());
+    SchemeObject* r = double2scm(rgb.r());
+    SchemeObject* g = double2scm(rgb.g());
+    SchemeObject* b = double2scm(rgb.b());
     return s_vector(i_list_3(r,g,b));
 }
 
 vector<Vector> scm2vectorlist(SchemeObject* s_list_vector, char* subr, int pos) {
     assert(scm2bool(s_list_p (s_list_vector)));
-    uint32_t length = scm2int(s_length(s_list_vector),0,NULL);
+    uint32_t length = scm2int(s_length(s_list_vector));
     SchemeObject* s_vector;
     vector<Vector> result;
     for(uint32_t i = 0; i < length; i++) {
@@ -107,6 +104,6 @@ double safe_scm2double(SchemeObject* o, int argnum, const char* procname) {
 }
 
 int safe_scm2int(SchemeObject* o, int argnum, const char* procname) {
-    assert_arg_int_type(procname, argnum, o);        
+    assert_arg_int_type(procname, argnum, o);
     return scm2int(o);
 }

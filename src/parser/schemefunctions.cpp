@@ -1,7 +1,8 @@
 
-#include <iostream>
 #include <cmath>
+
 #include "parser/schemefunctions.h"
+#include "parser/converters.h"
 
 SchemeObject* iso_goursats_surface(SchemeObject* s_a, SchemeObject* s_b, SchemeObject* s_c, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* s_z)
 {
@@ -23,7 +24,7 @@ SchemeObject* iso_goursats_surface(SchemeObject* s_a, SchemeObject* s_b, SchemeO
 	a * sumxyz * sumxyz +
 	b * sumxyz + 
 	c;
-    return s_double2scm(result);
+    return double2scm(result);
 
 }
 
@@ -38,7 +39,7 @@ SchemeObject* iso_torus(SchemeObject* s_R, SchemeObject* s_r, SchemeObject* s_x,
 
     double a = (R - sqrt(x*x + y*y));
     double result = a * a + z * z - r * r;
-    return s_double2scm(result);
+    return double2scm(result);
 }
 
 void SchemeFunctions::register_procs(Scheme* scheme) {

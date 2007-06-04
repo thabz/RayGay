@@ -18,8 +18,8 @@ SchemeParametrizedSurface::SchemeParametrizedSurface(
 
 Vector SchemeParametrizedSurface::eval(double u, double v) const
 {
-    SchemeObject* s_u = s_double2scm(u); 
-    SchemeObject* s_v = s_double2scm(v); 
+    SchemeObject* s_u = double2scm(u); 
+    SchemeObject* s_v = double2scm(v); 
     SchemeObject* s_result = scheme->callProcedure_2(procedure_name, s_u, s_v);
     return scm2vector(s_result, "", 0);
 }

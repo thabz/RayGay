@@ -24,7 +24,7 @@ SchemeObject* make_arealight(SchemeObject* s_pos, SchemeObject* s_dir, SchemeObj
     Vector dir = scm2vector(s_dir, "make-arealight", 2);
     double radius = safe_scm2double(s_radius,3,"make-arealight");
     double jitter = safe_scm2double(s_jitter,5,"make-arealight");
-    int num = scm2int(s_num,4,"make-arealight");
+    int num = safe_scm2int(s_num,4,"make-arealight");
     if (RendererSettings::uniqueInstance()->fast_preview) {
         num = 1;
     }
@@ -51,7 +51,7 @@ SchemeObject* make_spotlight(SchemeObject* s_pos, SchemeObject* s_lookat, Scheme
 
 SchemeObject* make_skylight(SchemeObject* s_radius, SchemeObject* s_num, SchemeObject* s_power) {
     double radius = safe_scm2double(s_radius,1,"make-skylight");
-    int num = scm2int(s_num,2,"make-skylight");
+    int num = safe_scm2int(s_num,2,"make-skylight");
     if (RendererSettings::uniqueInstance()->fast_preview) {
         num = 1;
     }

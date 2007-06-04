@@ -9,16 +9,16 @@ static int wrapped_object_tag;
 
 struct wrapped_object* scm2wrappedobj(SchemeObject* s_smob, char* subr, int pos) {
     assert_arg_wrapped_type(subr, pos, s_smob, wrapped_object_tag)
-    return (struct wrapped_object*) s_smob->wrapped_data;
+    return (struct wrapped_object*) s_smob->getWrappedCObject();
 }
 
 bool isWrappedObject(SchemeObject* obj) {
-    return i_wrapped_object_p(arg,subtype) == S_TRUE;        
+    return i_wrapped_object_p(obj, wrapped_object_tag) == S_TRUE;        
 }
 
 bool isLightsource(SchemeObject* object_smob) {
     if (isWrappedObject(object_smob)) {
-    	struct wrapped_object* o = object_smob->getWrappedCObject();
+    	struct wrapped_object* o = (struct wrapped_object*) object_smob->getWrappedCObject();
 	return o->type == LIGHTSOURCE;
     } else {
 	return false;
@@ -27,7 +27,7 @@ bool isLightsource(SchemeObject* object_smob) {
 
 bool isMaterial(SchemeObject* object_smob) {
     if (isWrappedObject(object_smob)) {
-    	struct wrapped_object* o = object_smob->getWrappedCObject();
+    	struct wrapped_object* o = (struct wrapped_object*) object_smob->getWrappedCObject();
 	return o->type == MATERIAL;
     } else {
 	return false;
@@ -37,7 +37,7 @@ bool isMaterial(SchemeObject* object_smob) {
 bool isSampler(SchemeObject* object_smob) 
 {
     if (isWrappedObject(object_smob)) {
-    	struct wrapped_object* o = object_smob->getWrappedCObject();
+    	struct wrapped_object* o = (struct wrapped_object*) object_smob->getWrappedCObject();
 	return o->type == SAMPLER;
     } else {
 	return false;
@@ -48,7 +48,7 @@ bool isSampler(SchemeObject* object_smob)
 bool isSceneObject(SchemeObject* object_smob) 
 {
     if (isWrappedObject(object_smob)) {
-    	struct wrapped_object* o = object_smob->getWrappedCObject();
+    	struct wrapped_object* o = (struct wrapped_object*) object_smob->getWrappedCObject();
 	return o->type == SCENEOBJECT;
     } else {
 	return false;
@@ -57,7 +57,7 @@ bool isSceneObject(SchemeObject* object_smob)
 
 bool isTexture(SchemeObject* object_smob) {
     if (isWrappedObject(object_smob)) {
-	struct wrapped_object* o = object_smob->getWrappedCObject();
+	struct wrapped_object* o = (struct wrapped_object*) object_smob->getWrappedCObject();
 	return o->type == TEXTURE;
     } else {
 	return false;
@@ -69,7 +69,7 @@ SchemeObject* path2scm(Path* path) {
     object = new wrapped_object();
     object->path = path;
     object->type = PATH;
-    SchemeObject::createWrappedCObject(wrapped_object_tag, object);
+    return SchemeObject::createWrappedCObject(wrapped_object_tag, object);
 }
 
 Path* scm2path(SchemeObject* object_smob, char* subr, int pos) {
@@ -86,7 +86,7 @@ SchemeObject* sceneobject2scm(SceneObject* sceneobject) {
     object = new wrapped_object();
     object->sceneobject = sceneobject;
     object->type = SCENEOBJECT;
-    SchemeObject::createWrappedCObject(wrapped_object_tag, object);
+    return SchemeObject::createWrappedCObject(wrapped_object_tag, object);
 }
 
 SceneObject* scm2sceneobject(SchemeObject* object_smob, char* subr, int pos) {
@@ -103,7 +103,7 @@ SchemeObject* sampler2scm(SamplerFactory* sampler) {
     object = new wrapped_object();
     object->sampler = sampler;
     object->type = SAMPLER;
-    SchemeObject::createWrappedCObject(wrapped_object_tag, object);
+    return SchemeObject::createWrappedCObject(wrapped_object_tag, object);
 }
 
 SamplerFactory* scm2sampler(SchemeObject* object_smob, char* subr, int pos) {
@@ -119,7 +119,7 @@ SchemeObject* camera2scm(Camera* camera) {
     object = new wrapped_object();
     object->camera = camera;
     object->type = CAMERA;
-    SchemeObject::createWrappedCObject(wrapped_object_tag, object);
+    return SchemeObject::createWrappedCObject(wrapped_object_tag, object);
 }
 
 Camera* scm2camera(SchemeObject* object_smob, char* subr, int pos) {
@@ -135,7 +135,7 @@ SchemeObject* texture2scm(Texture* texture) {
     object = new wrapped_object();
     object->type = TEXTURE; 
     object->texture = texture;
-    SchemeObject::createWrappedCObject(wrapped_object_tag, object);
+    return SchemeObject::createWrappedCObject(wrapped_object_tag, object);
 }
 
 Texture* scm2texture(SchemeObject* object_smob, char* subr, int pos) {
@@ -151,7 +151,7 @@ SchemeObject* material2scm(Material* material) {
     object = new wrapped_object();
     object->material = material;
     object->type = MATERIAL;
-    SchemeObject::createWrappedCObject(wrapped_object_tag, object);
+    return SchemeObject::createWrappedCObject(wrapped_object_tag, object);
 }
 
 Material* scm2material(SchemeObject* object_smob, char* subr, int pos) {
@@ -167,7 +167,7 @@ SchemeObject* lightsource2scm(Lightsource* lightsource) {
     object = new wrapped_object();
     object->lightsource = lightsource;
     object->type = LIGHTSOURCE;
-    SchemeObject::createWrappedCObject(wrapped_object_tag, object);
+    return SchemeObject::createWrappedCObject(wrapped_object_tag, object);
 }
 
 Lightsource* scm2lightsource(SchemeObject* object_smob, char* subr, int pos)

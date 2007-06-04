@@ -28,16 +28,19 @@ AABox SchemeIsosurface::_getBoundingBox() const {
 
 double SchemeIsosurface::evaluateFunction(const Vector& point) const {
     pthread_mutex_lock(&mutex);
-    SceneObject* procedure = scheme->lookupOrFail(procedure_name);
+    SchemeObject* procedure = scheme->lookupOrFail(procedure_name);
     if (procedure == NULL) {
         throw scheme_exception("Unbound procedure named " + procedure_name->toString());    
     }
     profiler->start();
-    SchemeObject* x = s_double2scm(point[0]); 
-    SchemeObject* y = s_double2scm(point[1]); 
-    SchemeObject* z = s_double2scm(point[2]); 
+    SchemeObject* x = double2scm(point[0]); 
+    SchemeObject* y = double2scm(point[1]); 
+    SchemeObject* z = double2scm(point[2]); 
     SchemeObject* s_result = scheme->callProcedure_3(procedure, x, y, z);
-    double result = safe_scm2double(s_result, 0, NULL);
+    if (i_number_p(s_result) == S_FALSE) {
+        throw scheme_exception("iso-function didn't return a number: " + procedure_name->toString());    
+    }
+    double result = scm2double(s_result);
     profiler->stop();
     pthread_mutex_unlock(&mutex);
     return result;

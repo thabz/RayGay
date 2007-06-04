@@ -34,7 +34,7 @@ SchemeObject* TransformationFactory::transform(SchemeObject* s_obj, const Matrix
 {
     // Tjek if it's a vector
     if (scm2bool(s_vector_p(s_obj))) {
-	if (3 == scm2int(s_vector_length(s_obj),0,"")) {
+	if (3 == safe_scm2int(s_vector_length(s_obj),0,"")) {
 	    bool is_num = true;
 	    for(uint32_t i = 0; i < 3; i++) {
 		SchemeObject* thing = s_vector_ref(s_obj, int2scm(i));
@@ -49,7 +49,7 @@ SchemeObject* TransformationFactory::transform(SchemeObject* s_obj, const Matrix
     
     vector<SchemeObject*> objs;
     if (scm2bool(s_list_p(s_obj))) {
-	uint32_t num = scm2int(s_length(s_obj),0,"");
+	uint32_t num = safe_scm2int(s_length(s_obj),0,"");
 	for(uint32_t i = 0; i < num; i++) {
 	    SchemeObject* s_value = s_list_ref(s_obj, int2scm(i));
 	    if (scm2bool(s_list_p(s_value))) {

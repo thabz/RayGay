@@ -17,18 +17,20 @@ class Scheme {
         SchemeObject* eval(istream* code);
 
         // For assigning variables in a frame (default top-level)
-        void assign(string variable, double value, SchemeObject* envt);
-        void assign(string variable, string value, SchemeObject* envt);
-        void assign(string variable, bool value, SchemeObject* envt);
-        void assign(string variable, SchemeObject* value, SchemeObject* envt);
+        void assign(string variable, double value, SchemeObject* envt = NULL);
+        void assign(string variable, string value, SchemeObject* envt = NULL);
+        void assign(string variable, bool value, SchemeObject* envt = NULL);
+        void assign(string variable, SchemeObject* value, SchemeObject* envt = NULL);
 
         // Look up in frame (default top-level)
-        SchemeObject* lookup(string variable, SchemeObject* envt);
-        SchemeObject* lookup(SchemeObject* symbol, SchemeObject* envt);
+        SchemeObject* lookup(string variable, SchemeObject* envt = NULL);
+        SchemeObject* lookup(SchemeObject* symbol, SchemeObject* envt = NULL);
+        SchemeObject* lookupOrFail(SchemeObject* symbol, SchemeObject* envt = NULL);
         
         // For assigning built-in functions at top-level-frame
-	void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* b);
+	void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* b = NULL);
 
+        // For calls from embedding code
         SchemeObject* callProcedure_1(SchemeObject* s_proc, SchemeObject*);
         SchemeObject* callProcedure_2(SchemeObject* s_proc, SchemeObject*, SchemeObject*);
         SchemeObject* callProcedure_3(SchemeObject* s_proc, SchemeObject*, SchemeObject*, SchemeObject*);
@@ -76,6 +78,18 @@ class scheme_exception {
 
 #define assert_arg_number_type(procname, argnum, arg) {   \
     if (i_number_p(arg) == S_FALSE) {                     \
+        ostringstream ss;                                 \
+        ss << "Wrong argument-type (expecting number) in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << string(procname);                           \
+        ss << ": " << arg->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
+#define assert_arg_int_type(procname, argnum, arg) {   \
+    if (s_integer_p(arg) == S_FALSE) {                     \
         ostringstream ss;                                 \
         ss << "Wrong argument-type (expecting number) in position ";         \
         ss << argnum;                                     \
@@ -156,6 +170,7 @@ extern SchemeObject* S_EMPTY_LIST;
 extern SchemeObject* S_ZERO;
 extern SchemeObject* S_ONE;
 extern SchemeObject* S_TWO;
+extern SchemeObject* S_NUMBERS[];
 
 // Conversion macros
 #define scm2int(o)     (int((o)->value))
@@ -169,6 +184,7 @@ extern SchemeObject* S_TWO;
 #define char2scm(c)    (SchemeObject::createChar(c))
 #define int2scm(n)     (((n) < 10 && (n) >= 0) ? S_NUMBERS[n] : SchemeObject::createNumber(n))
 #define double2scm(n)  (SchemeObject::createNumber(n))
+
 
 // Declaration of scheme procedures
 SchemeObject* s_equal_p(SchemeObject* a, SchemeObject* b);

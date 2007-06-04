@@ -10,7 +10,7 @@
 #include <cmath>
 #include <cassert>
 #include <iostream>
-#include <libguile.h>
+#include "scheme/scheme.h"
 
 using namespace std;
 

@@ -13,14 +13,14 @@ SchemeObject* random2(SchemeObject* s_min, SchemeObject* s_max)
     double min = safe_scm2double(s_min,1,"random2");
     double max = safe_scm2double(s_max,2,"random2");
     double result = RANDOM(min,max);
-    return s_double2scm(result);
+    return double2scm(result);
 }
 
 SchemeObject* noise(SchemeObject* s_point) 
 {
     Vector point = scm2vector(s_point,"noise",1);
     double n = Perlin::noise(point);
-    return s_double2scm(n);
+    return double2scm(n);
 }
 
 SchemeObject* noise3d(SchemeObject* s_point, SchemeObject* s_offset) 
@@ -44,7 +44,7 @@ SchemeObject* vdistance(SchemeObject* s_v1, SchemeObject* s_v2)
     Vector v1 = scm2vector(s_v1,"vdistance",1);
     Vector v2 = scm2vector(s_v2,"vdistance",2);
     double d = (v1-v2).length();
-    return s_double2scm(d);
+    return double2scm(d);
 }
 
 SchemeObject* vrandomunit() {
@@ -57,7 +57,7 @@ SchemeObject* make_poisson_set(SchemeObject* s_w, SchemeObject* s_h, SchemeObjec
     double w = safe_scm2double(s_w, 1, proc);
     double h = safe_scm2double(s_h, 2, proc);
     double r = safe_scm2double(s_r, 3, proc);
-    int num = scm2int(s_num, 4, proc);
+    int num = safe_scm2int(s_num, 4, proc);
     Vector2* set = new Vector2[num];
     PoissonDiscDistribution distr = PoissonDiscDistribution(w,h);
     int real_num = distr.createSet(r,num,set);
@@ -65,7 +65,7 @@ SchemeObject* make_poisson_set(SchemeObject* s_w, SchemeObject* s_h, SchemeObjec
     for(int i = 0; i < real_num; i++) {
 	double x = set[i][0];
 	double y = set[i][1];
-	SchemeObject* s_point = i_list_2(s_double2scm(x), s_double2scm(y));
+	SchemeObject* s_point = i_list_2(double2scm(x), double2scm(y));
 	SchemeObject* s_point_wrap = i_list_1(s_point);
 	s_set = s_append(i_list_2(s_set,s_point_wrap)); // TODO: Use cons and not append
     }
@@ -76,12 +76,12 @@ SchemeObject* make_halton_set(SchemeObject* s_w, SchemeObject* s_h, SchemeObject
     char* proc = "make-halton-set";
     double w = safe_scm2double(s_w, 1, proc);
     double h = safe_scm2double(s_h, 2, proc);
-    int num = scm2int(s_num, 3, proc);
+    int num = safe_scm2int(s_num, 3, proc);
     Halton halton = Halton(2,2);
     SchemeObject* s_set = S_EMPTY_LIST;
     for(int i = 0; i < num; i++) {
         double *values = halton.getNext();
-	SchemeObject* s_point = i_list_2(s_double2scm(w*values[0]), s_double2scm(h*values[1]));
+	SchemeObject* s_point = i_list_2(double2scm(w*values[0]), double2scm(h*values[1]));
 	SchemeObject* s_point_wrap = i_list_1(s_point);
 	s_set = s_append(i_list_2(s_set,s_point_wrap));  // TODO: Use cons and not append
     }

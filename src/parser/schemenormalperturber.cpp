@@ -7,7 +7,7 @@ pthread_mutex_t SchemeNormalPerturber::mutex;
 bool SchemeNormalPerturber::mutex_initialized = false;
 Profiler* SchemeNormalPerturber::profiler = NULL;
 
-SchemeNormalPerturber::SchemeNormalPerturber(SchemeObject* procedure) 
+SchemeNormalPerturber::SchemeNormalPerturber(Scheme* scheme, SchemeObject* procedure) 
 {
     this->s_procedure = procedure;
     this->scheme = scheme;

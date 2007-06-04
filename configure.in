@@ -76,14 +76,6 @@ AC_CHECK_LIB(m, sin,,[AC_MSG_ERROR([math library is not found])],)
 AC_CHECK_LIB(pthread, pthread_create,LIBS="-lpthread $LIBS")
 
 dnl -------------------------------------------------
-dnl Check for Guile
-dnl -------------------------------------------------
-GUILE_PROGS
-GUILE_FLAGS
-AC_SUBST(GUILE_CFLAGS)
-AC_SUBST(GUILE_LDFLAGS)
-
-dnl -------------------------------------------------
 dnl Check for GTK
 dnl -------------------------------------------------
 PKG_PROG_PKG_CONFIG
