@@ -117,6 +117,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
 	}
         list = i_cdr(list);
     }
+    scheme->assign(VAR_SCENE, S_EMPTY_LIST);
 
     // Get renderer
     SchemeObject* s_renderer = lookup(VAR_RENDERER);
