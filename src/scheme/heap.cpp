@@ -86,10 +86,12 @@ void Heap::mark(vector<SchemeObject*> &stack) {
     }   
 }
 
-// TODO: delete banks that are all blank
+// TODO: Maybe, traverse banks reversely so that we can delete more banks per run
 void Heap::sweep() {
-    for(uint i = 0; i < banks.size(); i++) {
-        SchemeObject* bank = banks[i];    
+    vector<SchemeObject*>::iterator banks_iterator = banks.begin();                
+    for(uint i = 0; i < banks.size(); i++, banks_iterator++) {
+        SchemeObject* bank = banks[i];
+        uint blank_found = 0;    
         for(uint j = 0; j < slots_per_bank; j++) {
             SchemeObject* cur = &(bank[j]);
             if (cur->type() != SchemeObject::BLANK) {
@@ -100,10 +102,19 @@ void Heap::sweep() {
                     cur->finalize();
                     cur->metadata = SchemeObject::BLANK;
                     free_slots++;
+                    blank_found++;    
                 }
+            } else {
+                blank_found++;    
             }
-        }    
+            if (blank_found == slots_per_bank) {
+                // Bank is all blank and can be free'd
+                banks.erase(banks_iterator);
+                delete [] bank;
+            }
+        }
     }
+    // TODO: Set these to the first free slot while traversing the heap above
     next_free_slot_idx = 0;
     cur_bank_idx = 0;
 }
