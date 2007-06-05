@@ -21,14 +21,17 @@
 
 using namespace std;
 
+Scene* SceneParser::scene = NULL;
+
 char* VAR_SCENE = "__scene__";
 char* VAR_CAMERA = "__camera__";
 char* VAR_RENDERER = "__renderer__";
 char* VAR_IMAGESIZE = "__image-size__";
 char* VAR_BACKGROUND = "__background__";
 
-SceneParser::SceneParser() {
-    scheme = new Scheme();        
+SceneParser::SceneParser(Scene* scene) {
+    this->scheme = new Scheme();        
+    this->scene = scene;
     init_wrapper_type();
     
     // Globals
@@ -39,6 +42,7 @@ SceneParser::SceneParser() {
     scheme->assign(VAR_BACKGROUND, S_EMPTY_LIST);
 
     scheme->assign("set-settings",1,0,0,(SchemeObject* (*)()) SceneParser::set_settings);
+    scheme->assign("__add-to-scene__",1,0,0,(SchemeObject* (*)()) SceneParser::add_to_scene);
 
     // My procedures
     PathFactory::register_procs(scheme);
@@ -94,31 +98,23 @@ SchemeObject* SceneParser::lookup(string var_name) {
     return scheme->lookup(var_name);        
 }
 
+SchemeObject* SceneParser::add_to_scene(SchemeObject* s_value) {
+    if (isSceneObject(s_value)) {
+        //cout << "Found a scene object" << endl;
+        SceneObject* sceneobject = scm2sceneobject(s_value, "internal-populate-scene", 0);
+        scene->addObject(sceneobject);
+    } else if (isLightsource(s_value)) {
+        //cout << "Found a lightsource" << endl;
+        Lightsource* light = scm2lightsource(s_value, "internal-populate-scene", 0);
+        scene->addLight(light);
+    } else {
+        throw scheme_exception("internal-populating-scene", "A non-sceneobject or non-lightsource found.");
+    }
+    return S_UNSPECIFIED;
+}
+
+
 void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
-    // Populate sceneobjects and lights
-    SchemeObject* list = lookup(VAR_SCENE);
-    if (list == NULL) {
-	throw scheme_exception("internal-populate-scene", "The variable '"+string(VAR_SCENE)+"' is not defined.");
-    }
-
-    while (list != S_EMPTY_LIST) {
-	SchemeObject* s_value = i_car(list);
-	//assert(!S_TRUE == (s_list_p (s_value)));
-	if (isSceneObject(s_value)) {
-	    //cout << "Found a scene object" << endl;
-	    SceneObject* sceneobject = scm2sceneobject(s_value, "internal-populate-scene", 0);
-	    scene->addObject(sceneobject);
-	} else if (isLightsource(s_value)) {
-	    //cout << "Found a lightsource" << endl;
-	    Lightsource* light = scm2lightsource(s_value, "internal-populate-scene", 0);
-	    scene->addLight(light);
-	} else {
-	    throw scheme_exception("internal-populating-scene", "A non-sceneobject or non-lightsource found.");
-	}
-        list = i_cdr(list);
-    }
-    scheme->assign(VAR_SCENE, S_EMPTY_LIST);
-
     // Get renderer
     SchemeObject* s_renderer = lookup(VAR_RENDERER);
     RendererSettings::RendererType type;

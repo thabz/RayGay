@@ -71,7 +71,8 @@ extern "C" {
 using namespace std;
 
 RendererSettings* renderer_settings = RendererSettings::uniqueInstance();
-SceneParser* parser = new SceneParser();
+Scene* scene = new Scene();
+SceneParser* parser = new SceneParser(scene);
 PreviewWindow* preview_window = NULL;
 std::string scenefile;
 
@@ -231,8 +232,6 @@ void render_frame(string outputfile, int jobs) {
     srand(1); // Make sure rand is seeded consistently.
 
     RendererSettings* renderersettings = getRendererSettings();
-
-    Scene* scene = new Scene();
 
     Environment::getUniqueInstance()->setScene(scene);
 
