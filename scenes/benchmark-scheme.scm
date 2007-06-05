@@ -24,6 +24,8 @@
 ; ./repl ../../../scenes/bench.scm  24.33s user 0.07s system 98% cpu 24.664 total
 ; ./repl ../../../scenes/bench.scm  22.89s user 0.05s system 98% cpu 23.208 total
 ; ./repl ../../../scenes/bench.scm  24.24s user 0.04s system 97% cpu 24.908 total
+;
+; ./src/tracer scenes/benchmark-scheme.scm out.png  22.37s user 0.10s system 99% cpu 22.604 total
 
 (define (square x)
   (* x x))

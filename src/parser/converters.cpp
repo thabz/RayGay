@@ -2,7 +2,7 @@
 #include "parser/converters.h"
 
 Vector scm2vector(SchemeObject* s_vector, char* subr, int pos) {
-    if (!(scm2bool(i_vector_p (s_vector)) && i_vector_length(s_vector) == 3))) {
+    if (!(scm2bool(i_vector_p (s_vector)) && i_vector_length(s_vector) == 3)) {
 	wrong_type_arg(subr,pos,s_vector);
     }
 

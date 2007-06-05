@@ -24,26 +24,33 @@ class Heap {
         void mark(vector<SchemeObject*> &stack);
         void sweep();
         
+        void allocateNewBank();
+        
         list<SchemeObject*> roots;
         
         static Heap* unique_instance;
-        int free_slots;
+        uint32_t free_slots;
         uint32_t slots_num;
-        SchemeObject* next_free;
-        SchemeObject* allocations;
+        uint32_t slots_per_bank;
+        vector<SchemeObject*> banks;
+        uint32_t cur_bank_idx;
+        uint32_t next_free_slot_idx;
+        uint32_t allocated;
 };
 
 inline
 Heap* Heap::getUniqueInstance() {
     if (unique_instance == NULL) {
-	    unique_instance = new Heap(SLOTS_NUM);
+	unique_instance = new Heap(SLOTS_NUM);
     }
     return unique_instance;
 }
 
 inline
 bool Heap::timeToGarbageCollect() {
-    return next_free > &allocations[int(0.9 * SLOTS_NUM)];
+    //return allocated >= SLOTS_NUM;
+    return cur_bank_idx == banks.size()-1 && next_free_slot_idx > int(0.9 * SLOTS_NUM);
+    //return allocated > 5;
 }
 
 #endif
