@@ -26,7 +26,7 @@ class Heap {
         
         void allocateNewBank();
         
-        list<SchemeObject*> roots;
+        vector<SchemeObject*> roots;
         
         static Heap* unique_instance;
         uint32_t free_slots;

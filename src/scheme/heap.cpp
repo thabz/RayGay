@@ -80,7 +80,7 @@ void Heap::mark(vector<SchemeObject*> &stack) {
         assert(*i != NULL);
         (*i)->mark();
     }   
-    for(list<SchemeObject*>::iterator i = roots.begin(); i != roots.end(); i++) {
+    for(vector<SchemeObject*>::iterator i = roots.begin(); i != roots.end(); i++) {
         assert(*i != NULL);
         (*i)->mark();
     }   
