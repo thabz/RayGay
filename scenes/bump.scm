@@ -53,12 +53,11 @@
 ;(add-to-scene (make-arealight #(1300 1300 1300) #(-1 -1 -1) 200 80 0.1))
 
 (add-to-scene
-  (list 
     (make-sphere #(8 2 8) 2 chrome)
     (translate
       (make-torus 3 1 chrome)
       #(2 1 14))
-    (make-sphere #(0 4 0) 4 chrome)))
+    (make-sphere #(0 4 0) 4 chrome))
 
 (add-to-scene
  (translate
