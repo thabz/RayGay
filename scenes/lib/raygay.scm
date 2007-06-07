@@ -6,8 +6,8 @@
 (define (add-to-scene thing . rest)
   "Add a sceneobject or a list of sceneobjects to scene"
   (if (list? thing)
-    (for-each add-to-scene thing)
-    (set! __scene__ (cons thing __scene__)))
+    (for-each __add-to-scene__ thing)
+    (__add-to-scene__ thing))
   (if (not (null? rest)) (add-to-scene rest)))  
 
 (define (set-image-size size)
