@@ -20,7 +20,7 @@ class KdTree;
  * @param jitter How many percent the light can jitter with value in [0,1]
  */
 Arealight::Arealight(const Vector& pos, const Vector& dir, double radius, int num, double jitter) : Lightsource(pos) {
-    assert(num > 1);
+    assert(num > 0);
 
     this->num = num;
     this->jitter = jitter;
