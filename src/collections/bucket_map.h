@@ -47,6 +47,12 @@ struct _bucket_map_iterator {
         return *this;
     }
     
+    _self_type operator++(int) {
+        _self_type result = *this;
+        (*this)++;
+        return result;
+    }
+    
     bool operator==(const _self_type& x) const {
         return cur_bucket == x.cur_bucket && cur_node == x.cur_node;    
     }
@@ -105,9 +111,12 @@ class bucket_map
             new_node->next = NULL;
             new_node->p = v;
             if (prev != NULL) {
+                // Append to bucket    
                 prev->next = new_node;
             } else {
+                // Start new bucket    
                 buckets[h] = new_node;
+                if (h < begin_bucket) begin_bucket = h;
             }
             return pair<iterator,bool>(iterator(h, new_node, this), true);
         }

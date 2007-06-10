@@ -355,6 +355,7 @@ class test_bucket_map : public Test {
    public:
        void run() {
            bucket_map<int,string> map;
+           assertTrue(map.begin() == map.end());
            map[10] = "ten";
            map[20] = "twenty";
            map[40] = "fourty";
@@ -368,6 +369,17 @@ class test_bucket_map : public Test {
            assertTrue(map.find(1000)->second == "thousand");
            assertTrue((*(map.find(10))).second == "ten");
            assertTrue(map[40] == "fourty");
+           bucket_map<int,string>::iterator ite = map.begin();
+           assertTrue(ite != map.end());
+           assertTrue(ite == map.begin());
+           return;
+           int i = 0;
+           while (ite != map.end()) {
+               i++;
+               ite++;
+           }
+           assertTrue(i == 6);
+           cout << "i = " << i << endl;
        }
 };
 
