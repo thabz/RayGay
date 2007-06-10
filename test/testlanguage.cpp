@@ -16,6 +16,7 @@ extern "C" {
 #include <cstdio>
 #include <iostream>
 #include <string>
+#include <map>
 #include <vector>
 #include <algorithm>
 #include <cctype>
@@ -337,20 +338,36 @@ class test_swap : public Test {
            assertTrue(b == 10.9);       }
 };
 
+
+class test_stl_map : public Test {
+   public:
+       void run() {
+           map<int,string> map;
+           map[10] = "ten";
+           assertTrue(map[10] == "ten");
+           assertTrue(map.find(20) == map.end());
+           assertTrue(map.find(10)->second == "ten");
+           assertTrue((*(map.find(10))).second == "ten");
+       }
+};
+
 class test_bucket_map : public Test {
    public:
        void run() {
            bucket_map<int,string> map;
-           map.insert(10, "ten");
-           map.insert(20, "twenty");
-           map.insert(40, "fourty");
-           map.insert(1000, "thousand");
-           map.insert(256+10, "other");
-           assertTrue(*map.find(10) == "ten");
-           assertTrue(*map.find(20) == "twenty");
-           assertTrue(*map.find(256+10) == "other");
-           assertTrue(*map.find(1000) == "thousand");
-           assertTrue(map.find(99) == NULL);
+           map[10] = "ten";
+           map[20] = "twenty";
+           map[40] = "fourty";
+           map[1000] = "thousand";
+           map[256+10] = "other";
+           map[512+10] = "other 2";
+           assertTrue(map.find(99) == map.end());
+           assertTrue(map.find(20)->second == "twenty");
+           assertTrue(map.find(256+10)->second == "other");
+           assertTrue(map.find(512+10)->second == "other 2");
+           assertTrue(map.find(1000)->second == "thousand");
+           assertTrue((*(map.find(10))).second == "ten");
+           assertTrue(map[40] == "fourty");
        }
 };
 
@@ -393,6 +410,7 @@ int main(int argc, char *argv[]) {
     suite.add("Vector clear",new test_vector_clear());
     suite.add("Vector erase",new test_vector_erase());
     suite.add("Shift",new test_shift());
+    suite.add("STL map",new test_stl_map());
     suite.add("LRU Hash",new test_lru_hash());
     suite.add("Bucket map",new test_bucket_map());
     suite.add("Caseinsensitive map",new test_icase_map());
