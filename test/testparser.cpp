@@ -11,6 +11,7 @@
 #include <cassert>
 #include <iostream>
 #include "scheme/scheme.h"
+#include "scene.h"
 
 using namespace std;
 
@@ -23,7 +24,8 @@ class test_parser : public Test {
 	Vector v1;
     public: 
 	void run() {
-	    SceneParser* p = new SceneParser();
+            Scene* scene = new Scene();        
+	    SceneParser* p = new SceneParser(scene);
 
             p->assignVariable("test-predefined-a", 30);
 	    p->parse_file(getLoadPrefix() + "/scenes/test.scm");
