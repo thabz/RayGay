@@ -118,7 +118,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     // Get renderer
     SchemeObject* s_renderer = lookup(VAR_RENDERER);
     RendererSettings::RendererType type;
-    if (s_renderer != NULL) {
+    if (s_renderer != S_EMPTY_LIST) {
 	string r_string = scm2string(s_renderer);
 	if (r_string == "raytracer") {
 	    type = RendererSettings::RAYTRACER;
@@ -143,7 +143,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
 
     // Populate camera
     SchemeObject* s_camera = lookup(VAR_CAMERA);
-    if (s_camera != NULL) {
+    if (s_camera != S_EMPTY_LIST) {
 	Camera* camera = scm2camera(s_camera, "internal-get-camera", 0);
 	scene->setCamera(camera);
     } else {
@@ -154,7 +154,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     }
     
     SchemeObject* s_image_size = lookup(VAR_IMAGESIZE);
-    if (s_image_size != NULL) {
+    if (s_image_size != S_EMPTY_LIST) {
 	assert(S_TRUE == (s_list_p (s_image_size)));
 	assert(safe_scm2int(s_length(s_image_size),0,"") == 2);
 	SchemeObject* s_w = s_list_ref(s_image_size, S_ZERO);
@@ -166,7 +166,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     }
 
     SchemeObject* s_background = lookup(VAR_BACKGROUND);
-    if (s_background != NULL) {
+    if (s_background != S_EMPTY_LIST) {
 	char* subr = "internal: setting scene background";
 	if (isWrappedObject(s_background)) {
 	    Texture* texture = scm2texture(s_background, subr, 0);
