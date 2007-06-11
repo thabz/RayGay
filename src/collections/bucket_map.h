@@ -4,6 +4,15 @@
 
 #include <utility>   // For std::pair<A,B>
 
+/* 
+   TODO: Profile
+   TODO: Test distribution of hash
+   TODO: Alloc all first nodes of bucket in one sweep, ie. make buckets an array of nodes and not pointers to nodes.
+   TODO: Make fewer buckets for the smaller bindingmaps. Make the top-level ones 256 buckets and all others 17 buckets.
+   TODO: Keep an uint end_bucket like uint begin_bucket.
+*/   
+ 
+
 template <typename K, typename V> 
 struct _bucket_map_node {
     std::pair<K,V> p;        
@@ -93,7 +102,7 @@ class bucket_map
         friend class _bucket_map_iterator<K,V>;
 
     	bucket_map(uint32_t num_buckets = 255) : num_buckets(num_buckets) {
-            if (num_buckets < 17) num_buckets = 17;
+            if (num_buckets < 17) this->num_buckets = 17;
             buckets = new node_type*[num_buckets];
             for(uint i = 0; i < num_buckets; i++) {
                 buckets[i] = NULL;

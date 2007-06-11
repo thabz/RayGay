@@ -87,7 +87,7 @@ SchemeObject* SchemeObject::createSymbol(const char* str) {
 
 SchemeObject* SchemeObject::createEnvironment(SchemeObject* parent) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::ENVIRONMENT);
-    result->binding_map = new map<SchemeObject*,SchemeObject*>();
+    result->binding_map = new binding_map_t();
     result->parent = parent;
     return result;
 }
@@ -170,7 +170,7 @@ int SchemeObject::registerWrappedObject() {
 }
 
 void SchemeObject::mark() {
-    map<SchemeObject*,SchemeObject*>::iterator v;
+    binding_map_t::iterator v;
     if (!inuse()) {
         metadata |= INUSE_FLAG;
         ObjectType t = type();
@@ -391,7 +391,7 @@ SchemeObject* SchemeObject::getBinding(SchemeObject* name) {
     if (i_symbol_p(name) == S_FALSE) {
         throw scheme_exception(name->toString() + " is not a symbol.");
     }
-    map<SchemeObject*,SchemeObject*>::iterator v = binding_map->find(name);
+    binding_map_t::iterator v = binding_map->find(name);
     if (v == binding_map->end()) {
         if (parent != NULL) {
             return parent->getBinding(name);
@@ -416,7 +416,7 @@ void SchemeObject::setBinding(SchemeObject* name, SchemeObject* o) {
     if (i_symbol_p(name) == S_FALSE) {
         throw scheme_exception(name->toString() + " is not a symbol.");
     }
-    map<SchemeObject*,SchemeObject*>::iterator v = binding_map->find(name);
+    binding_map_t::iterator v = binding_map->find(name);
     if (v == binding_map->end()) {
         if (parent != NULL) {
             parent->setBinding(name,o);

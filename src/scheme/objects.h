@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <setjmp.h>
+#include "collections/bucket_map.h"
 
 using namespace std;
 
@@ -53,6 +54,9 @@ class SchemeWrappedCObject {
 
 class SchemeObject 
 {
+    private:
+        typedef bucket_map<SchemeObject*,SchemeObject*> binding_map_t;
+        
     public:
         uint32_t metadata;
         union {
@@ -75,7 +79,7 @@ class SchemeObject
                     SchemeObject* cdr;      // For pairs
                     SchemeObject* result;   // For continuations
                     int32_t length;         // For vector and strings
-                    map<SchemeObject*,SchemeObject*>* binding_map;	// For environments
+                    binding_map_t* binding_map;	// For environments
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
                     SchemeWrappedCObject* wrapped_object;
