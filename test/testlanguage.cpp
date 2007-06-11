@@ -382,6 +382,14 @@ class test_bucket_map : public Test {
            assertTrue(map.size() > 5);
            assertTrue(i == map.size());
            assertFalse(map.empty());
+           
+           ite = map.begin();
+           i = 0;
+           while (ite != map.end()) {
+               i++;
+               ite++;
+           }
+           assertTrue(i == map.size());
        }
 };
 

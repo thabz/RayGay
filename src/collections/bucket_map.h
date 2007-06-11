@@ -2,7 +2,7 @@
 #ifndef COLLECTIONS_BUCKET_MAP_H
 #define COLLECTIONS_BUCKET_MAP_H
 
-#include <string>
+#include <utility>   // For std::pair<A,B>
 
 template <typename K, typename V> 
 struct _bucket_map_node {
@@ -16,8 +16,8 @@ template <typename K, typename V>
 struct _bucket_map_iterator {
         
     typedef _bucket_map_iterator<K,V> _self_type;
-    typedef pair<K,V>* _pointer;
-    typedef pair<K,V>& _reference;
+    typedef std::pair<K,V>* _pointer;
+    typedef std::pair<K,V>& _reference;
     
     _bucket_map_iterator(uint32_t cur_bucket, _bucket_map_node<K,V> *cur_node, bucket_map<K,V> *bmap) : cur_bucket(cur_bucket), cur_node(cur_node), bmap(bmap) {
     }
@@ -78,15 +78,36 @@ class bucket_map
         typedef uint32_t hash_type;
         typedef K key_type;
         typedef V data_type;
-        typedef pair<K,V> value_type;
+        typedef std::pair<K,V> value_type;
         typedef _bucket_map_iterator<K,V> iterator;
         typedef _bucket_map_node<K,V> node_type;
         typedef V& reference;
         typedef size_t size_type;
+        friend class _bucket_map_iterator<K,V>;
 
-    	bucket_map(uint32_t num_buckets = 255);
+    	bucket_map(uint32_t num_buckets = 255) : num_buckets(num_buckets) {
+            if (num_buckets < 17) num_buckets = 17;
+            buckets = new node_type*[num_buckets];
+            for(uint i = 0; i < num_buckets; i++) {
+                buckets[i] = NULL;
+            }
+            begin_bucket = num_buckets;
+            map_size = 0;  	        
+    	}
     	
-        ~bucket_map();
+        ~bucket_map() {
+            for(uint i = 0; i < num_buckets; i++) {
+                if (buckets[i] != NULL) {
+                    node_type* node = buckets[i]->next;
+                    while(node != NULL) {
+                        node_type* next = node->next;    
+                        delete node;
+                        node = next;
+                    }        
+                }        
+            }        
+            delete [] buckets;        
+        }
         
         iterator begin() {
             if (begin_bucket == num_buckets) {
@@ -100,16 +121,14 @@ class bucket_map
             return iterator(num_buckets, NULL, this);    
         }
                 
-    	int hash(const K &key) const;
-    	
-        pair<iterator,bool> insert(const value_type& v) {
+        std::pair<iterator,bool> insert(const value_type& v) {
             hash_type h = hash(v.first);
             node_type* node = buckets[h];
             node_type* prev = NULL;
             for(; node != NULL; node = node->next) {
                 if (node->p.first == v.first) {
                     node->p.second = v.second;
-                    return pair<iterator,bool>(iterator(h, node, this),false);
+                    return std::pair<iterator,bool>(iterator(h, node, this),false);
                 }
                 prev = node;
             }
@@ -125,21 +144,11 @@ class bucket_map
                 buckets[h] = new_node;
                 if (h < begin_bucket) begin_bucket = h;
             }
-            return pair<iterator,bool>(iterator(h, new_node, this), true);
+            return std::pair<iterator,bool>(iterator(h, new_node, this), true);
         }
     	
     	iterator find(const K &key) {
             return find(key, hash(key));
-        }
-    	
-    	iterator find(const K &key, const hash_type &h) {
-            node_type* node = buckets[h];
-            for(; node != NULL; node = node->next) {
-                if (node->p.first == key) {
-                    return iterator(h, node, this);
-                }
-            }
-            return end();
         }
     	
         reference operator[](const K& k) {
@@ -159,60 +168,42 @@ class bucket_map
     	bool empty() const {
             return map_size == 0;        
     	}
+
+    private:
+     
+    	// Number of buckets
+    	uint32_t num_buckets;
+    	 	
+    	// Buckets
+        node_type** buckets;
+
+    	iterator find(const K &key, const hash_type &h) {
+            node_type* node = buckets[h];
+            for(; node != NULL; node = node->next) {
+                if (node->p.first == key) {
+                    return iterator(h, node, this);
+                }
+            }
+            return end();
+        }
     	
+    	int hash(const K &key) const {
+            int h = int(key);
+            h += ~(h << 15);
+            h ^= (h >> 10);
+            h += (h << 3);
+            h ^= (h >> 6);
+            h += ~(h << 11);
+            h ^= (h >> 16);
+            h %= num_buckets;
+            return (h < 0) ? h * -1 : h;
+        }
+   
     	// Size of map
         size_t map_size;
     	
-    	// Number of buckets
-    	uint32_t num_buckets;
-    	
     	// First non-empty bucket
         uint32_t begin_bucket;
-    	
-    	// Buckets
-        node_type** buckets;
-};
-
-template <typename K, typename V> 
-bucket_map<K,V>::bucket_map(uint32_t num_buckets) : num_buckets(num_buckets)
-{
-    if (num_buckets < 17) num_buckets = 17;
-    buckets = new node_type*[num_buckets];
-    for(uint i = 0; i < num_buckets; i++) {
-        buckets[i] = NULL;
-    }
-    begin_bucket = num_buckets;
-    map_size = 0;
-};
-
-template <typename K, typename V> 
-bucket_map<K,V>::~bucket_map() 
-{
-    for(uint i = 0; i < num_buckets; i++) {
-        if (buckets[i] != NULL) {
-            node_type* node = buckets[i]->next;
-            while(node != NULL) {
-                node_type* next = node->next;    
-                delete node;
-                node = next;
-            }        
-        }        
-    }        
-    delete [] buckets;        
-}
-
-template <typename K, typename V> 
-int bucket_map<K,V>::hash(const K &key) const
-{
-    int h = int(key);
-    h += ~(h << 15);
-    h ^= (h >> 10);
-    h += (h << 3);
-    h ^= (h >> 6);
-    h += ~(h << 11);
-    h ^= (h >> 16);
-    h %= num_buckets;
-    return (h < 0) ? h * -1 : h;
 };
 
 #endif
