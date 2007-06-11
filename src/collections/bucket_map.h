@@ -21,6 +21,13 @@ struct _bucket_map_iterator {
     
     _bucket_map_iterator(uint32_t cur_bucket, _bucket_map_node<K,V> *cur_node, bucket_map<K,V> *bmap) : cur_bucket(cur_bucket), cur_node(cur_node), bmap(bmap) {
     }
+
+    _bucket_map_iterator(const _self_type& o) : cur_bucket(o.cur_bucket), cur_node(o.cur_node), bmap(o.bmap) {
+    }
+    
+    _bucket_map_iterator() { 
+    }
+
     
     _reference operator*() const {
         return cur_node->p;
@@ -189,12 +196,15 @@ class bucket_map
     	
     	int hash(const K &key) const {
             int h = int(key);
+            h *= 37;
+            /*
             h += ~(h << 15);
             h ^= (h >> 10);
             h += (h << 3);
             h ^= (h >> 6);
             h += ~(h << 11);
             h ^= (h >> 16);
+            */
             h %= num_buckets;
             return (h < 0) ? h * -1 : h;
         }
