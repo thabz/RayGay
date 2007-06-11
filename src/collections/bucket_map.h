@@ -30,6 +30,7 @@ struct _bucket_map_iterator {
         return &(cur_node->p);
     }
     
+    // Prefix ++
     _self_type& operator++() {
         if (cur_bucket >= bmap->num_buckets) {
             return *this;        
@@ -37,19 +38,23 @@ struct _bucket_map_iterator {
         if (cur_node->next != NULL) {
             cur_node = cur_node->next;
         } else {
-            while(cur_bucket < bmap->num_buckets && bmap->buckets[cur_bucket] != NULL) {
+            cur_bucket++;
+            while(cur_bucket < bmap->num_buckets && bmap->buckets[cur_bucket] == NULL) {
                 cur_bucket++;
             }
             if (cur_bucket < bmap->num_buckets) {
-                cur_node = bmap->buckets[cur_bucket];    
+                cur_node = bmap->buckets[cur_bucket];
+            } else {
+                cur_node = NULL;
             }
         }   
         return *this;
     }
     
+    // Postfix ++
     _self_type operator++(int) {
         _self_type result = *this;
-        (*this)++;
+        ++(*this);
         return result;
     }
     
@@ -77,6 +82,7 @@ class bucket_map
         typedef _bucket_map_iterator<K,V> iterator;
         typedef _bucket_map_node<K,V> node_type;
         typedef V& reference;
+        typedef size_t size_type;
 
     	bucket_map(uint32_t num_buckets = 255);
     	
@@ -84,7 +90,7 @@ class bucket_map
         
         iterator begin() {
             if (begin_bucket == num_buckets) {
-                return end();   
+                return end();    
             } else {
                 return iterator(begin_bucket, buckets[begin_bucket], this);    
             }
@@ -107,6 +113,7 @@ class bucket_map
                 }
                 prev = node;
             }
+            map_size++;
             node_type* new_node = new node_type();
             new_node->next = NULL;
             new_node->p = v;
@@ -145,6 +152,17 @@ class bucket_map
             }
         }
     	
+    	size_type size() const {
+            return map_size;        
+    	}
+    	
+    	bool empty() const {
+            return map_size == 0;        
+    	}
+    	
+    	// Size of map
+        size_t map_size;
+    	
     	// Number of buckets
     	uint32_t num_buckets;
     	
@@ -164,6 +182,7 @@ bucket_map<K,V>::bucket_map(uint32_t num_buckets) : num_buckets(num_buckets)
         buckets[i] = NULL;
     }
     begin_bucket = num_buckets;
+    map_size = 0;
 };
 
 template <typename K, typename V> 

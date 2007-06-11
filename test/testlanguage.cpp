@@ -343,6 +343,7 @@ class test_stl_map : public Test {
    public:
        void run() {
            map<int,string> map;
+           assertTrue(map.begin() == map.end());
            map[10] = "ten";
            assertTrue(map[10] == "ten");
            assertTrue(map.find(20) == map.end());
@@ -359,6 +360,7 @@ class test_bucket_map : public Test {
            map[10] = "ten";
            map[20] = "twenty";
            map[40] = "fourty";
+           map[1000] = "oops";
            map[1000] = "thousand";
            map[256+10] = "other";
            map[512+10] = "other 2";
@@ -372,14 +374,14 @@ class test_bucket_map : public Test {
            bucket_map<int,string>::iterator ite = map.begin();
            assertTrue(ite != map.end());
            assertTrue(ite == map.begin());
-           return;
-           int i = 0;
+           uint i = 0;
            while (ite != map.end()) {
                i++;
-               ite++;
+               ++ite;
            }
-           assertTrue(i == 6);
-           cout << "i = " << i << endl;
+           assertTrue(map.size() > 5);
+           assertTrue(i == map.size());
+           assertFalse(map.empty());
        }
 };
 
