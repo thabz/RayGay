@@ -86,6 +86,7 @@ SchemeObject* SchemeObject::createSymbol(const char* str) {
 }
 
 SchemeObject* SchemeObject::createEnvironment(SchemeObject* parent, uint32_t num_buckets) {
+    assert(num_buckets > 0);
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::ENVIRONMENT);
     result->binding_map = new binding_map_t(num_buckets);
     result->parent = parent;
@@ -391,21 +392,17 @@ SchemeObject* SchemeObject::getBinding(SchemeObject* name) {
     if (i_symbol_p(name) == S_FALSE) {
         throw scheme_exception(name->toString() + " is not a symbol.");
     }
-    binding_map_t::iterator v = binding_map->find(name);
-    binding_map_t::iterator end = binding_map->end();
-    if (v == end) {
-        SchemeObject* p = parent;
-        while (p != NULL) {
-            v = p->binding_map->find(name);
-            if (v != end) {
-                return v->second;            
-            }
-            p = p->parent;
+    SchemeObject* envt = this;
+    while (envt != NULL) {
+        binding_map_t::iterator end = envt->binding_map->end();
+        binding_map_t::iterator v = envt->binding_map->find(name);
+        if (v != end) {
+            return v->second;
+        } else {
+            envt = envt->parent;        
         }
-        return NULL;        
-    } else {
-        return v->second;
     }
+    return NULL;        
 }
 
 void SchemeObject::defineBinding(SchemeObject* name, SchemeObject* o) {
