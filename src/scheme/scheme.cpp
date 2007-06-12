@@ -78,7 +78,7 @@ Interpreter* interpreter;
 //SchemeObject* scheme_report_environment = SchemeObject::createEnvironment(null_environment);
 //SchemeObject* interaction_environment = SchemeObject::createEnvironment(scheme_report_environment);
 #else 
-SchemeObject* null_environment = SchemeObject::createEnvironment(NULL);
+SchemeObject* null_environment = SchemeObject::createEnvironment(NULL,255);
 SchemeObject* scheme_report_environment = null_environment;
 SchemeObject* interaction_environment = null_environment;
 #endif

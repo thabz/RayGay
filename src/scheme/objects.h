@@ -159,7 +159,7 @@ class SchemeObject
         static SchemeObject* createEOF();
         static SchemeObject* createSymbol(const char* str);
         static SchemeObject* createContinuation();
-        static SchemeObject* createEnvironment(SchemeObject* parent);
+        static SchemeObject* createEnvironment(SchemeObject* parent, uint32_t num_buckets = 7);
         static SchemeObject* createInputPort(istream* is);
         static SchemeObject* createOutputPort(ostream* os);
         static SchemeObject* createBuiltinProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
