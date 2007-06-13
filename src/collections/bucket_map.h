@@ -7,8 +7,6 @@
 /* 
    TODO: Profile
    TODO: Test distribution of hash
-   TODO: Alloc all first nodes of bucket in one sweep, ie. make buckets an array of nodes and not pointers to nodes.
-   TODO: Make fewer buckets for the smaller bindingmaps. Make the top-level ones 256 buckets and all others 17 buckets.
    TODO: Keep an uint end_bucket like uint begin_bucket.
 */   
  
@@ -103,7 +101,7 @@ class bucket_map
         friend class _bucket_map_iterator<K,V>;
 
     	bucket_map(uint32_t n_b = 255) : num_buckets(n_b) {
-            if (n_b < 17) num_buckets = 17;
+            assert(num_buckets > 0);
             buckets = new node_type[num_buckets];
             for(uint i = 0; i < num_buckets; i++) {
                 buckets[i].empty = true;
@@ -195,7 +193,7 @@ class bucket_map
     private:
      
     	// Number of buckets
-    	uint32_t num_buckets;
+    	const uint32_t num_buckets;
     	 	
     	// Buckets
         node_type* buckets;
@@ -210,24 +208,27 @@ class bucket_map
             return end();
         }
     	
-    	int hash(const K &key) const {
-            int h = int(key);
-            //h *= 37;
-            h += ~(h << 15);
-            h ^= (h >> 10);
-            h += (h << 3);
-            h ^= (h >> 6);
-            h += ~(h << 11);
-            h ^= (h >> 16);
-            h %= num_buckets;
-            return (h < 0) ? h * -1 : h;
-        }
+        int hash(const K &key) const;
    
     	// Size of map
         size_t map_size;
     	
     	// First non-empty bucket
         uint32_t begin_bucket;
+};
+
+template <typename K, typename V> 
+int bucket_map<K,V>::hash(const K &key) const {
+    int h = int(key);
+    //h *= 37;
+    h += ~(h << 15);
+    h ^= (h >> 10);
+    h += (h << 3);
+    h ^= (h >> 6);
+    h += ~(h << 11);
+    h ^= (h >> 16);
+    h %= num_buckets;
+    return (h < 0) ? h * -1 : h;
 };
 
 #endif
