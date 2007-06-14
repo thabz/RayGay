@@ -121,7 +121,7 @@ void test_objects() {
 }
 
 void test_parser() {
-    istream* is = new istringstream("(+ 1.5 (list? \"Hej\"))");
+    istream* is = new istringstream("(+ 1.5(list? \"Hej\"))");
     Parser* p = new Parser();
     SchemeObject* t = p->parse(is);
     SchemeObject* e = s_car(t);
