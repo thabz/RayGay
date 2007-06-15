@@ -38,6 +38,7 @@ class Lexer
         int getCurline() { return curline; };
         
     private:
+	bool isSymbolChar(char c);
         string str;
         double number;
         bool boolean;

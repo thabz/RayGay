@@ -178,19 +178,26 @@ Lexer::Token Lexer::nextToken(istream* is) {
         str = c;
         while(!is->eof()) {
             char c = is->get();
-            if (isspace(c) || c == -1 || is->eof()) {
-                break;
-            }
-            if (c == ')') {
+	    if (c == -1 || is->eof()) {
+		break;
+	    }
+	    if (!isSymbolChar(c)) {
                 is->unget();
-                break;
-            }
+		break;
+	    }
             str += c;
         }
         return Lexer::SYMBOL; 
     }
     // TODO: Check out why the stream has failed and throw exception
     return is->eof() ? Lexer::END : Lexer::ERROR;
+}
+
+bool Lexer::isSymbolChar(char c) {
+    if (isspace(c) || c == ')' || c == '(' || c == ',' || c == '#') {
+	return false;
+    }
+    return true;
 }
 
 void Lexer::putBack(Token token) {
