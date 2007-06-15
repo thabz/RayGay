@@ -104,6 +104,12 @@ void test_tokenizer() {
     delete is;
 
     delete l;
+    
+    Scheme* s = new Scheme();
+    assert_eval(s, "'((a)b)", "((a) b)");
+    assert_eval(s, "'(c(a)b)", "(c (a) b)");
+    assert_eval(s, "'(2(a)3)", "(2 (a) 3)");
+    assert_eval(s, "'(a#(b)#(c))", "(a #(b) #(c))");
 }
 
 
@@ -121,7 +127,7 @@ void test_objects() {
 }
 
 void test_parser() {
-    istream* is = new istringstream("(+ 1.5(list? \"Hej\"))");
+    istream* is = new istringstream("(+ 1.5 (list? \"Hej\"))");
     Parser* p = new Parser();
     SchemeObject* t = p->parse(is);
     SchemeObject* e = s_car(t);
