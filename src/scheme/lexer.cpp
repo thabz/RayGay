@@ -194,7 +194,7 @@ Lexer::Token Lexer::nextToken(istream* is) {
 }
 
 bool Lexer::isSymbolChar(char c) {
-    if (isspace(c) || c == ')' || c == '(' || c == ',' || c == '#') {
+    if (isspace(c) || c == ')' || c == '(' || c == ',' || c == '#' || c == '\'' || c == '`') {
 	return false;
     }
     return true;
