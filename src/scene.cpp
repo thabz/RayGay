@@ -81,10 +81,12 @@ RGBA Scene::getBackgroundColor(const Ray& ray) const {
         return bg_color; 
     } else {
 	double t = environmentSphere->fastIntersect(ray);
-	if (false) {
+	// TODO: Use correct probing depending on environment map type
+	if (true) {
 	    Intersection i;
 	    environmentSphere->fullIntersect(ray,t,i);
-	    return environmentMap->getTexel(i.getUV());
+            Vector2 uv = environmentSphere->getUV(i.getNormal());
+	    return environmentMap->getTexel(uv);
 	} else {
 	    // A light probe
 	    // See http://www.debevec.org/Probes/ for math
