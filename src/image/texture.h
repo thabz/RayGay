@@ -38,6 +38,8 @@ class Texture {
 	long getWidth() const;
 	/// Returns height of image
 	long getHeight() const;
+	/// Change interpolation type
+        void setInpolationType(InterpolationType it) { interpolation_type = it; };
 
     private:
 	double scaleU(double u) const;

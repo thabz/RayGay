@@ -18,6 +18,8 @@
 
 #include "scene.h"
 #include "renderersettings.h"
+#include "scene.h"
+#include "image/texture.h"
 
 using namespace std;
 
@@ -170,6 +172,9 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
 	char* subr = "internal: setting scene background";
 	if (isWrappedObject(s_background)) {
 	    Texture* texture = scm2texture(s_background, subr, 0);
+            if (renderersettings->fast_preview) {
+                texture->setInpolationType(Texture::INTERPOLATION_NONE);
+            }
 	    scene->setBackground(texture);
 	} else {
 	    RGBA rgba = scm2rgba(s_background, subr, 0);
