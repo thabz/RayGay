@@ -79,7 +79,11 @@ static uint32_t binomialTable[17][17] = {
  *
  * TODO: Convert recursion into loop.
  *
- * @see http://www.brpreiss.com/books/opus4/html/page467.html for a O(n^2) version.
+ * Much better and even simpler methods:
+ *
+ * http://blog.plover.com/math/choose.html
+ * http://blog.plover.com/math/choose-2.html
+ * 
  */
 unsigned long Math::binomialCoefficient(long n, long k) {
     if (k == 0 || k == n) {
