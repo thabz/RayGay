@@ -19,10 +19,8 @@
 (define chrome
   (make-material
     '( diffuse #(0.8 0.8 0.8)
-       kd 0.2
-       specular #(1.0 1.0 1.0)
-       ks 0.8
-       specpow 30)))
+       kd 1.0
+       ks 0.0)))
 
 (add-to-scene (make-pointlight #(500 1300 1300)))
 
@@ -35,45 +33,47 @@
           (* (+ a radius) (sin (* t TWO-PI)))
           0))))
 
+(define (make-villarceau-circle R r dir r-offset amplitude periods period-offset)
+   (lambda (t)
+      (let* ((tR (* t 360))
+	     (tr (* dir (+ r-offset (* t TWO-PI))))
+             (a (* amplitude (sin (+ period-offset (* t periods TWO-PI)))))
+             (p (rotate 
+ 		  (translate
+		    (vector 0 (* r (sin tr)) (* r (cos tr)))
+		    (vector 0 0 R))
+		  y-axis tR))
+             (n (vnormalize (v- p (vscale (vnormalize (vector (.x p) 0 (.z p))) R)))))
+       (v+ (vscale n a) p))))
+
 ; Stroke a path with cylinders with spheres as joints 
 (define (stroke-path path radius mat num)
   (let ((result '()))
-  (dotimes i num
-    (let* ((t1 (/ i num))
-           (t2 (/ (+ i 1) num))
-           (p1 (path t1))
-           (p2 (path t2)))
-      (set! result (cons (make-sphere p1 radius mat) result))
-      (set! result (cons (make-cylinder p1 p2 radius mat) result))))
-    result))  
+    (dotimes i num
+      (let* ((t1 (/ i num))
+        (t2 (/ (+ i 1) num))
+        (p1 (path t1))
+        (p2 (path t2)))
+   (set! result (cons (make-sphere p1 radius mat) result))
+   (set! result (cons (make-cylinder p1 p2 radius mat) result))))
+ result))  
 
 
-(define num-around 60)
-(define num-bands 15)
+(define num-around 20)
 (define torus-R 500)
 (define torus-r 100)
+(define a 10)
+(define tube-r 5)    
 
 (dotimes i num-around
-   (add-to-scene 
-     (rotate 
-        (translate 
-           (stroke-path (make-sinus-circle torus-r 20 (/ num-bands 2) (+ HALF-PI (* i PI))) 10 chrome 300)
-           (vector torus-R 0 0))
-        y-axis
-        (* (/ i num-around) 360))))
-        
-        
-(dotimes i num-bands
-  (add-to-scene
-    (let* ((t (/ i num-bands))
-           (a (* torus-r (cos (* t TWO-PI))))
-           (b (* torus-r (sin (* t TWO-PI)))))
-    (translate
-       (rotate
-          (stroke-path (make-sinus-circle (+ torus-R a) 0 num-around 0) 10 chrome 100)
-           x-axis 90)
-        (vector 0 b 0)))))
-      
-      
-      
-      
+ (add-to-scene
+    (stroke-path
+      (make-villarceau-circle torus-R torus-r 1
+       (* i (/ TWO-PI num-around)) a num-around (+ PI (* i PI)))
+      tube-r chrome 300))
+ (add-to-scene
+    (stroke-path
+      (make-villarceau-circle torus-R torus-r -1
+       (* i (/ TWO-PI num-around)) a num-around (+ HALF-PI (* i PI)))
+      tube-r chrome 300)))
+
