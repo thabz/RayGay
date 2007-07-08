@@ -20,6 +20,7 @@
 #include "renderersettings.h"
 #include "scene.h"
 #include "image/texture.h"
+#include "objects/object.h"
 
 using namespace std;
 
@@ -102,11 +103,13 @@ SchemeObject* SceneParser::lookup(string var_name) {
 
 SchemeObject* SceneParser::add_to_scene(SchemeObject* s_value) {
     if (isSceneObject(s_value)) {
-        //cout << "Found a scene object" << endl;
         SceneObject* sceneobject = scm2sceneobject(s_value, "internal-populate-scene", 0);
+        Object* o = static_cast<Object*>(sceneobject);
+        if (o != NULL && o->getMaterial() == NULL) {
+            throw scheme_exception("add-to-scene", "Object added without material: " + s_value->toString());
+        }
         scene->addObject(sceneobject);
     } else if (isLightsource(s_value)) {
-        //cout << "Found a lightsource" << endl;
         Lightsource* light = scm2lightsource(s_value, "internal-populate-scene", 0);
         scene->addLight(light);
     } else {
