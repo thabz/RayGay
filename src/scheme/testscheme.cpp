@@ -293,6 +293,8 @@ void test_symbols() {
     assert(s->eval("(symbol? '1)") == S_FALSE);
     assert(s->eval("(symbol? '())") == S_FALSE);
     assert(s->eval("(symbol? 1)") == S_FALSE);
+    assert(s->eval("(symbol? '-1-1)") == S_TRUE);
+    assert(s->eval("(symbol? '1-1)") == S_TRUE);
     assert(SchemeObject::createSymbol("a") == SchemeObject::createSymbol("a"));
     assert(SchemeObject::createSymbol("a") != SchemeObject::createSymbol("b"));
     assert_eval(s, "(eq? (string->symbol \"f\") (string->symbol \"F\"))", "#f");
@@ -303,6 +305,7 @@ void test_math() {
     assert_eval(s, "-3" , "-3");
     assert_eval(s, "-3.0" , "-3");
     assert_eval(s, "+3" , "3");
+    assert_eval(s, "1e1" , "10");
     assert_eval(s, "(+ 1 2 3)" , "6");
     assert_eval(s, "(+)" , "0");
     assert_eval(s, "(- 3)" , "-3");

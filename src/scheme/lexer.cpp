@@ -161,19 +161,17 @@ Lexer::Token Lexer::nextToken(istream* is) {
                 }
                 return Lexer::STRING;
         }
-        if (isdigit(c)) {
-            is->unget();
-            (*is) >> number;
-            return Lexer::NUMBER;
-        }
-        if (c == '-' || c == '+') {
-            if (isdigit(is->peek())) {
-                is->unget();
-                (*is) >> number;
-                return Lexer::NUMBER;
-            }
-        }
         
+        // Try reading as number
+        std::streampos pos = is->tellg();
+        is->unget();
+        (*is) >> number;
+        if (is->eof() || (!is->fail() && !isSymbolChar(is->peek()))) {
+            return Lexer::NUMBER;        
+        }
+        is->clear();
+        is->seekg(pos, ios::beg);
+
         // Read chars as a symbol
         str = c;
         while(!is->eof()) {
