@@ -13,6 +13,7 @@
 <a href="#bounding-box">bounding-box</a>
 <a href="#rotate">rotate</a>
 <a href="#translate">translate</a>
+
 <h3>Paths</h3>
 <a href="#make-circle">make-circle</a>
 <a href="#make-eclipse">make-eclipse</a>
@@ -253,6 +254,27 @@
 <p><span class="functiondef">(make-bezierpatch (<i>vector</i>:point<sub>1</sub> ... <i>vector</i>:point<sub>16</sub>) <i>int</i>:resolution<sub>x</sub> <i>int</i>:resolution<sub>y</sub> <i>material</i>:material) &rarr; <i>object</i></tt></p>
 <p>Makes a mesh of 2 &times; resolution<sub>x</sub> &times; resolution<sub>y</sub> triangles.</p>
 </div>
+
+<h2>Lightsources</h2>
+
+<div class="function">
+<h3>make-skylight</h3>
+<p><span class="functiondef">(make-skylight <i>real</i>:radius <i>int</i>:num [<i>vector</i>:power]) &rarr; <i>object</i></tt></p>
+<p>Makes a skylight with <i>num</i> pointlights uniformly placed on a hemisphere of radius <i>radius</i>.</p>
+<p><pre>
+(make-skylight 10000 20)
+</pre></p>
+</div>
+
+<div class="function">
+<h3>make-arealight</h3>
+<p><span class="functiondef">(make-arealight <i>vector</i>:position <i>vector</i>:direction <i>real</i>:radius <i>int</i>:num <i>real</i>:jitter  [<i>vector</i>:power]) &rarr; <i>object</i></tt></p>
+<p>Makes an arealight with <i>num</i> pointlights uniformly (jittering) placed on a disc of radius <i>radius</i> with normal <i>direction</i>.</p>
+<p><pre>
+(make-arealight #(1000 2000 2000) #(-0.5 -1 -1) 500 100 0.1)
+</pre></p>
+</div>
+
 
 <h2>Materials</h2>
 
