@@ -5,8 +5,6 @@
 ;; Halton tog 0.21 sekunder for 2127 punkter
 ;; rand() tog 0.04 sekunder for 2127 punkter
 
-(debug-set! stack 0)
-
 ;;(set! frame (+ 1 frame))
 ;;(display frame)
 ;;(newline)
