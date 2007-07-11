@@ -12,7 +12,7 @@ class Math {
 
     public:
 	/// Calculate a binomial coefficient
-	static unsigned long binomialCoefficient(long n, long k);
+	static long binomialCoefficient(long n, long k);
 	
 	/// Calculate a value of a Bernstein polynomial
 	static double bernsteinPolynomial(uint32_t i, uint32_t n, double t);

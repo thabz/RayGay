@@ -75,17 +75,13 @@ static uint32_t binomialTable[17][17] = {
  * \f[ {n \choose k} = 0 \quad \mbox{if } k<0 \mbox{ or } k>n. \f]
  * 
  * Using table lookup for n,k < 17.
- * Otherwise using a slow recursive function.
  *
- * TODO: Convert recursion into loop.
+ * Using the fact that choose(n,k) = n/k * choose(n-1,k-1) for the non-recursive algorithm.
  *
- * Much better and even simpler methods:
- *
- * http://blog.plover.com/math/choose.html
- * http://blog.plover.com/math/choose-2.html
- * 
+ * Also using that choose(n,k) = choose(n,n-k) which is useful when k > n/2. Calculating choose(50,2) is 
+ * the same as choose(50,48) but much faster to calculate.
  */
-unsigned long Math::binomialCoefficient(long n, long k) {
+long Math::binomialCoefficient(long n, long k) {
     if (k == 0 || k == n) {
 	return 1;
     } else if (k < 0 || k > n) {
@@ -93,7 +89,15 @@ unsigned long Math::binomialCoefficient(long n, long k) {
     } else if (k < 17 && n < 17) {
 	return binomialTable[n][k];
     } else {
-        return binomialCoefficient(n-1,k-1) + binomialCoefficient(n-1,k);
+        long d, r = 1;
+        if (k > n/2) {
+            k = n - k;        
+        }
+        for(d = 1; d <= k; d++) {
+            r *= n--;        
+            r /= d;
+        }
+        return r;
     }
 }
 
