@@ -293,10 +293,6 @@ fn_ptr eval_sequence() {
 //
 // Evals a list of expressions and the returns the list of results
 //
-// TODO: Store the eval'ed procedure-arguments directly into the 
-// procedure bindings, instead of letting eval_multi create a 
-// temporary list.
-//
 fn_ptr eval_multi() {
     SchemeObject* p = global_arg1;
     stack.push_back(p);
@@ -583,7 +579,6 @@ SchemeObject* eval_unquote_recursive(SchemeObject* o, int level) {
 }
 
 SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
-    //cout << "Level " << level << ": " << o->toString() << endl;
     SchemeObject* p = o;
     if (s_vector_p(o) == S_TRUE) {
         p = s_vector_2_list(o);
@@ -1064,9 +1059,6 @@ fn_ptr eval_named_let() {
     SchemeObject* p = global_arg1;
     SchemeObject* envt = global_envt;
     
-    stack.push_back(p);
-    stack.push_back(envt);
-
     SchemeObject* name = s_car(p);
     p = s_cdr(p);
     
@@ -1074,58 +1066,47 @@ fn_ptr eval_named_let() {
         throw scheme_exception("Bad formals in let");
     }
     
-    // Extract formals and collect evaluated args for a lambda
+    // Extract formals and collect args for a lambda
     SchemeObject* formals = S_EMPTY_LIST;
     SchemeObject* formals_tail = S_EMPTY_LIST;
-    stack.push_back(formals);
-    SchemeObject*& formals_ref = stack.back();
     SchemeObject* args = S_EMPTY_LIST;
     SchemeObject* args_tail = S_EMPTY_LIST;
-    stack.push_back(args);
-    SchemeObject*& args_ref = stack.back();
+
     SchemeObject* binding_pairs = s_car(p);
 
     while (i_null_p(binding_pairs) == S_FALSE) {
-        // Eval binding value
-        global_arg1 = s_car(s_cdr(s_car(binding_pairs)));
-        SchemeObject* val = trampoline((fn_ptr)&eval);
+        SchemeObject* binding_pair = s_car(binding_pairs);
+        SchemeObject* formal = s_car(binding_pair);
+        SchemeObject* arg = s_car(s_cdr(binding_pair));
         
     	if (formals == S_EMPTY_LIST) {
-    	    formals = s_cons(s_car(s_car(binding_pairs)), S_EMPTY_LIST);
+    	    formals = i_cons(formal, S_EMPTY_LIST);
     	    formals_tail = formals;
-    	    formals_ref = formals;
     	} else {
-    	    SchemeObject* tmp = s_cons(s_car(s_car(binding_pairs)), S_EMPTY_LIST);
-    	    s_set_cdr_e(formals_tail,tmp);
+    	    SchemeObject* tmp = i_cons(formal, S_EMPTY_LIST);
+    	    i_set_cdr_e(formals_tail,tmp);
     	    formals_tail = tmp;
     	}
 
     	if (args == S_EMPTY_LIST) {
-    	    args = s_cons(val, S_EMPTY_LIST);
+    	    args = i_cons(arg, S_EMPTY_LIST);
     	    args_tail = args;
-    	    args_ref = args;
     	} else {
-    	    SchemeObject* tmp = s_cons(val, S_EMPTY_LIST);
-    	    s_set_cdr_e(args_tail, tmp);
+    	    SchemeObject* tmp = i_cons(arg, S_EMPTY_LIST);
+    	    i_set_cdr_e(args_tail, tmp);
     	    args_tail = tmp;
     	}
 
         binding_pairs = s_cdr(binding_pairs);
     }
     
-    stack.pop_back();
-    stack.pop_back();
-    stack.pop_back();
-    stack.pop_back();
-
     SchemeObject* new_envt = SchemeObject::createEnvironment(envt);
     SchemeObject* lambda = SchemeObject::createUserProcedure(name, new_envt, formals, s_cdr(p));
     new_envt->defineBinding(name, lambda);
     
     global_arg1 = lambda;
     global_arg2 = args;
-    global_envt = new_envt;
-    return (fn_ptr)&eval_procedure_call;
+    return (fn_ptr)&eval_user_procedure_call;
 }
 
 fn_ptr eval_letstar() {

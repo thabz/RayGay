@@ -663,7 +663,7 @@ void test_let() {
     assert_eval(s, "(let ((i 10)(j 20)) (* j i))", "200");
     assert_eval(s, "(let ((x 2) (y 3)) (let* ((x 7) (z (+ x y))) (* z x)))", "70");
     assert_eval(s, "(let ((x 0)) (let ((x 1) (y (* x 1))) y))", "0");
-
+    assert_eval(s, "(let loop ((i 10) (j 100)) (if (= i 20) j (loop (+ 1 i) (- j 1))))", "90");
     assert_eval(s, "(letrec ((even? (lambda (n) (if (zero? n) #t (odd? (- n 1))))) (odd? (lambda (n) (if (zero? n) #f (even? (- n 1)))))) (even? 88))", "#t");
 
     assert_fail(s, "(let)");
