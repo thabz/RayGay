@@ -925,21 +925,21 @@ SchemeObject* s_plus(SchemeObject* p) {
 
 SchemeObject* s_minus(SchemeObject* n, SchemeObject* rst) {
     assert_arg_number_type("-", 1, n);
-	double result = scm2double(n);
-
-	if (rst == S_EMPTY_LIST) {
-	    // One-argument case is a simple negate (n => -n)
-    	return double2scm(-result);
-	}
-
+    double result = scm2double(n);
+    
+    if (rst == S_EMPTY_LIST) {
+        // One-argument case is a simple negate (n => -n)
+        return double2scm(-result);
+    }
+    
     int i = 2;
-	while (rst != S_EMPTY_LIST) {
+    while (rst != S_EMPTY_LIST) {
         SchemeObject* cur = i_car(rst);
-	    assert_arg_number_type("-", i++, cur);
-	    result -= scm2double(cur);
+        assert_arg_number_type("-", i++, cur);
+        result -= scm2double(cur);
         rst = i_cdr(rst);
-	}
-	return double2scm(result);
+    }
+    return double2scm(result);
 }
 
 SchemeObject* s_divide(SchemeObject* n, SchemeObject* rst) {

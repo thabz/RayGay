@@ -312,15 +312,15 @@ fn_ptr eval_multi() {
             r = trampoline((fn_ptr)&eval);
         }
 
-	    if (result == S_EMPTY_LIST) {
-	        result = i_cons(r, S_EMPTY_LIST);
+        if (result == S_EMPTY_LIST) {
+            result = i_cons(r, S_EMPTY_LIST);
             result_tail = result;
             *result_stack_ref = result;
-	    } else {
-	        SchemeObject* new_tail = i_cons(r, S_EMPTY_LIST);
-	        i_set_cdr_e(result_tail, new_tail);
-	        result_tail = new_tail;
-	    }
+        } else {
+            SchemeObject* new_tail = i_cons(r, S_EMPTY_LIST);
+            i_set_cdr_e(result_tail, new_tail);
+            result_tail = new_tail;
+        }
 
         p = i_cdr(p);
     }
@@ -457,7 +457,7 @@ fn_ptr eval_combo() {
     SchemeObject* proc = trampoline((fn_ptr)&eval);
     
     if (i_procedure_p(proc) == S_FALSE) {
-	    throw scheme_exception("Wrong type to apply: " + s->toString() + " does not resolve to a procedure.");
+	throw scheme_exception("Wrong type to apply: " + s->toString() + " does not resolve to a procedure.");
     }
     
     stack.push_back(proc);
@@ -715,6 +715,9 @@ fn_ptr eval_user_procedure_call() {
 }
 
 // TODO: Avoid calling eval_multi to avoid cons'ing of temporaries.
+// Instead: make the built-ins with rst-args take (int num, Stack* stack) arguments. Then this function just evals the args and pushes them to the stack.
+// The built-ins without rst-args can just be called like now, but the args are still eval'ed to the stack but pulled just before calling the proc.
+// The argsv[] must die, as it becomes GC-unsafe when eval'ing one arg at a time.
 fn_ptr eval_built_in_procedure_call() 
 {
     SchemeObject* proc = global_arg1;
