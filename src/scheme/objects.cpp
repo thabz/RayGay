@@ -263,9 +263,22 @@ string SchemeObject::toString() {
     switch(t) {
         case SchemeObject::UNSPECIFIED :
             return "#<unspecified>";
-        case SchemeObject::STRING :    
-            // TODO: s!"!\"!g and s!\!\\!g
-            return "\"" + string(str) + "\"";
+        case SchemeObject::STRING : {
+            char* s = str;
+            ss << '"';
+            while(*s) {
+                if (*s == '\\') {
+                    ss << "\\";        
+                } else if (*s == '"') {
+                    ss << "\\\"";        
+                } else {
+                    ss << *s;        
+                }
+                s++;   
+            }
+            ss << '"';
+            break;
+            }
         case SchemeObject::SYMBOL :    
             return string(str);
         case SchemeObject::PAIR : {

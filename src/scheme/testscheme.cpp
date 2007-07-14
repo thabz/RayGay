@@ -602,6 +602,7 @@ void test_string() {
     assert_eval(s, "(string? ((lambda () \"a\")))", "#t");
     assert_eval(s, "(make-string 3)","\"   \"");
     assert_eval(s, "(make-string 5 #\\z)","\"zzzzz\"");
+    assert_eval(s, "(string #\\z #\\x #\\\" #\\a)","\"zx\\\"a\"");
     assert_eval(s, "(string-length \"abcdef\")","6");
     assert_eval(s, "(string-length \"\")","0");
     assert_eval(s, "(string-length (make-string 200))","200");
