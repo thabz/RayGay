@@ -303,6 +303,24 @@ void test_char() {
     assert_eval(s, "(char>=? #\\3 #\\3 #\\2)", "#t");
     assert_eval(s, "(char>=? #\\c #\\b #\\a)", "#t");
     assert_eval(s, "(char>=? #\\a #\\b #\\a)", "#f");
+    assert_eval(s, "(char-ci=?)", "#t");
+    assert_eval(s, "(char-ci=? #\\A)", "#t");
+    assert_eval(s, "(char-ci=? #\\a #\\A #\\a)", "#t");
+    assert_eval(s, "(char-ci=? #\\a #\\B)", "#f");
+    assert_eval(s, "(char-ci=? #\\a #\\A #\\b)", "#f");
+    assert_fail(s, "(char-ci=? #\\a 'aa #\\b)");
+    assert_eval(s, "(char-ci<? #\\a #\\B #\\d)", "#t");
+    assert_eval(s, "(char-ci<? #\\A #\\B #\\b)", "#f");
+    assert_eval(s, "(char-ci>? #\\C #\\b #\\C)", "#f");
+    assert_eval(s, "(char-ci>? #\\4 #\\3 #\\1)", "#t");
+    assert_eval(s, "(char-ci>? #\\b #\\A #\\a)", "#f");
+    assert_eval(s, "(char-ci>? #\\C #\\b #\\A)", "#t");
+    assert_eval(s, "(char-ci<=? #\\A #\\B #\\d)", "#t");
+    assert_eval(s, "(char-ci<=? #\\A #\\B #\\b)", "#t");
+    assert_eval(s, "(char-ci<=? #\\D #\\B #\\c)", "#f");
+    assert_eval(s, "(char-ci>=? #\\3 #\\3 #\\2)", "#t");
+    assert_eval(s, "(char-ci>=? #\\C #\\b #\\A)", "#t");
+    assert_eval(s, "(char-ci>=? #\\a #\\b #\\A)", "#f");
 }
 
 void test_symbols() {
@@ -676,6 +694,16 @@ void test_string() {
     assert_eval(s, "(string>=? \"abcdef\"  \"abcdef\"  \"abcdeg\")", "#f");
     assert_eval(s, "(string>=? \"abcdef\"  \"abcdee\"  \"abcded\")", "#t");
     assert_fail(s, "(string>=? \"abcdef\"  \"abcdee\" 'a)");
+    assert_eval(s, "(string-ci=?  \"abcDeF\"  \"abCDef\"  \"ABcdef\")", "#t");
+    assert_eval(s, "(string-ci<?  \"AbCDeF\"  \"abCDEg\"  \"abDDef\")", "#t");
+    assert_eval(s, "(string-ci<?  \"ABCdef\"  \"abcDEF\"  \"abDDef\")", "#f");
+    assert_eval(s, "(string-ci<=? \"abcdef\"  \"abcdef\"  \"abddef\")", "#t");
+    assert_eval(s, "(string-ci>?  \"abcDEF\"  \"abcdEE\"  \"ABCded\")", "#t");
+    assert_eval(s, "(string-ci>?  \"abcdEF\"  \"abcDEF\"  \"Abcded\")", "#f");
+    assert_eval(s, "(string-ci>=? \"aBcdEF\"  \"abcDEF\"  \"aBcded\")", "#f");
+    assert_eval(s, "(string-ci>=? \"aBcdeF\"  \"abcdEF\"  \"abCdeg\")", "#f");
+    assert_eval(s, "(string-ci>=? \"abCDef\"  \"abcdEE\"  \"abCded\")", "#t");
+    assert_fail(s, "(string-ci>=? \"abcdeF\"  \"Abcdee\" 'a)");
 }
 
 void test_begin() {
