@@ -1,14 +1,6 @@
 
-(define (*internal*-char-cmp? cmp l)
-     (apply cmp (map char->integer l)))
 (define (*internal*-char-ci-cmp? cmp l)
      (apply cmp (map char->integer (map char-downcase l))))
-
-(define (char=? . l) (*internal*-char-cmp? = l))
-(define (char<? . l) (*internal*-char-cmp? < l))
-(define (char>? . l) (*internal*-char-cmp? > l))
-(define (char<=? . l) (*internal*-char-cmp? <= l))
-(define (char>=? . l) (*internal*-char-cmp? >= l))
 
 (define (char-ci=? . l) (*internal*-char-ci-cmp? = l))
 (define (char-ci<? . l) (*internal*-char-ci-cmp? < l))
@@ -35,13 +27,6 @@
 		#t
 		(and (*internal*-two-string-cmp? chcmp cmp (car l) (cadr l))
 		     (string-cmp? chcmp cmp (cdr l)))))
-
-
-(define (string=? . l) (string-cmp? *internal*-char-cmp? = l))
-(define (string<? . l) (string-cmp? *internal*-char-cmp? < l))
-(define (string>? . l) (string-cmp? *internal*-char-cmp? > l))
-(define (string<=? . l) (string-cmp? *internal*-char-cmp? <= l))
-(define (string>=? . l) (string-cmp? *internal*-char-cmp? >= l))
 
 (define (string-ci=? . l) (string-cmp? *internal*-char-ci-cmp? = l))
 (define (string-ci<? . l) (string-cmp? *internal*-char-ci-cmp? < l))
