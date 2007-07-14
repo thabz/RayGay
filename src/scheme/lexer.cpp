@@ -93,10 +93,10 @@ Lexer::Token Lexer::nextToken(istream* is) {
             case '#': 
                 n = is->get();
                 if ((n == 'f' || n == 't')) {
-					boolean = (n == 't');
-					return Lexer::BOOLEAN;
+		    boolean = (n == 't');
+		    return Lexer::BOOLEAN;
                 } else if (n == '(') {
-					return Lexer::HASH_OPEN_PAREN;           
+		    return Lexer::HASH_OPEN_PAREN;           
                 } else if (n == '\\') {
                     for(int i = 0; i < char_names_num; i++) {
                         int j = 0;
@@ -107,7 +107,6 @@ Lexer::Token Lexer::nextToken(istream* is) {
                             } else {
                                 if (*(p+1) == '\0') {
                                     // Found a match
-                                    // TODO: Check that next char in input is a closeparen or space
                                     chr = char_values[i];
                                     c = is->get();
                                     if (c == ' ' || c == ')' || is->eof()) {
@@ -124,7 +123,7 @@ Lexer::Token Lexer::nextToken(istream* is) {
                             is->unget();
                         }
                     }
-                    //  Handle that if <character> in #\<character> is alphabetic, 
+                    // Handle that if <character> in #\<character> is alphabetic, 
                     // then the character following <character> must be a delimiter 
                     // character such as a space or parenthesis.
                     chr = is->get();
@@ -152,12 +151,12 @@ Lexer::Token Lexer::nextToken(istream* is) {
                 str = "";
                 while (!is->eof()) {
                     c = is->get();
-		            if (c == '\\') {
-			            c = is->get();
+		    if (c == '\\') {
+		        c = is->get();
                     } else if (c == '"') {
                         break;
-		            }
-		            str += c;
+		    }
+		    str += c;
                 }
                 return Lexer::STRING;
         }
