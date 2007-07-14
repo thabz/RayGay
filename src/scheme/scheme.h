@@ -319,6 +319,11 @@ SchemeObject* s_char_upper_case_p(SchemeObject* c);
 SchemeObject* s_char_lower_case_p(SchemeObject* c);
 SchemeObject* s_integer_2_char(SchemeObject* i);
 SchemeObject* s_char_2_integer(SchemeObject* c);
+SchemeObject* s_char_equal_p(int num, SchemeStack::iterator args);
+SchemeObject* s_char_less_p(int num, SchemeStack::iterator args);
+SchemeObject* s_char_greater_p(int num, SchemeStack::iterator args);
+SchemeObject* s_char_less_equal_p(int num, SchemeStack::iterator args);
+SchemeObject* s_char_greater_equal_p(int num, SchemeStack::iterator args);
 
 // Math stuff
 SchemeObject* s_equal(int num, SchemeStack::iterator stack);
@@ -379,6 +384,11 @@ SchemeObject* s_string_copy(SchemeObject* string);
 SchemeObject* s_string_2_list(SchemeObject* s);
 SchemeObject* s_list_2_string(SchemeObject* p);
 SchemeObject* s_substring(SchemeObject* str, SchemeObject* start, SchemeObject* end);
+SchemeObject* s_string_equal_p(int num, SchemeStack::iterator args);
+SchemeObject* s_string_less_p(int num, SchemeStack::iterator args);
+SchemeObject* s_string_greater_p(int num, SchemeStack::iterator args);
+SchemeObject* s_string_less_equal_p(int num, SchemeStack::iterator args);
+SchemeObject* s_string_greater_equal_p(int num, SchemeStack::iterator args);
 SchemeObject* s_symgen();
 
 

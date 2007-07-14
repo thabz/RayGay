@@ -221,6 +221,12 @@ Scheme::Scheme() {
     	assign("string->number"        ,1,1,0, (SchemeObject* (*)()) s_string_2_number, scheme_report_environment);
     	assign("list->string"          ,1,0,0, (SchemeObject* (*)()) s_list_2_string, scheme_report_environment);
     	assign("string->list"          ,1,0,0, (SchemeObject* (*)()) s_string_2_list, scheme_report_environment);
+    	assign("string=?"              ,0,0,1, (SchemeObject* (*)()) s_string_equal_p, scheme_report_environment);
+    	assign("string<?"              ,0,0,1, (SchemeObject* (*)()) s_string_less_p, scheme_report_environment);
+    	assign("string>?"              ,0,0,1, (SchemeObject* (*)()) s_string_greater_p, scheme_report_environment);
+    	assign("string<=?"             ,0,0,1, (SchemeObject* (*)()) s_string_less_equal_p, scheme_report_environment);
+    	assign("string>=?"             ,0,0,1, (SchemeObject* (*)()) s_string_greater_equal_p, scheme_report_environment);
+
     	assign("char-downcase"         ,1,0,0, (SchemeObject* (*)()) s_char_downcase, scheme_report_environment);
     	assign("char-upcase"           ,1,0,0, (SchemeObject* (*)()) s_char_upcase, scheme_report_environment);
     	assign("char-alphabetic?"      ,1,0,0, (SchemeObject* (*)()) s_char_alphabetic_p, scheme_report_environment);
@@ -228,6 +234,11 @@ Scheme::Scheme() {
     	assign("char-whitespace?"      ,1,0,0, (SchemeObject* (*)()) s_char_whitespace_p, scheme_report_environment);
     	assign("char-upper-case?"      ,1,0,0, (SchemeObject* (*)()) s_char_upper_case_p, scheme_report_environment);
     	assign("char-lower-case?"      ,1,0,0, (SchemeObject* (*)()) s_char_lower_case_p, scheme_report_environment);
+    	assign("char=?"                ,0,0,1, (SchemeObject* (*)()) s_char_equal_p, scheme_report_environment);
+    	assign("char<?"                ,0,0,1, (SchemeObject* (*)()) s_char_less_p, scheme_report_environment);
+    	assign("char>?"                ,0,0,1, (SchemeObject* (*)()) s_char_greater_p, scheme_report_environment);
+    	assign("char<=?"               ,0,0,1, (SchemeObject* (*)()) s_char_less_equal_p, scheme_report_environment);
+    	assign("char>=?"               ,0,0,1, (SchemeObject* (*)()) s_char_greater_equal_p, scheme_report_environment);
     	assign("symgen"                ,0,0,0, (SchemeObject* (*)()) s_symgen, scheme_report_environment);
 
     	assign("current-input-port"    ,0,0,0, (SchemeObject* (*)()) s_current_input_port, scheme_report_environment);
@@ -435,7 +446,7 @@ SchemeObject* s_eq_p(SchemeObject* a, SchemeObject* b) {
     return s_eqv_p(a,b); 
 }
 
-// (boolean? b)
+// (char? b)
 SchemeObject* s_char_p(SchemeObject* o) {
     return o->type() == SchemeObject::CHAR ? S_TRUE : S_FALSE;
 }
@@ -1588,6 +1599,80 @@ SchemeObject* s_char_upcase(SchemeObject* c) {
 SchemeObject* s_char_downcase(SchemeObject* c) {
     assert_arg_type("char-downcase", 1, s_char_p, c);
     return char2scm(tolower(scm2char(c)));    
+}
+
+SchemeObject* char_comparer(int num, SchemeStack::iterator args, int cmp1, int cmp2, const char* name) 
+{
+    SchemeObject* prev = NULL;
+
+    for(int i = 0; i < num; i++, args++) {
+        SchemeObject* cur = *args;    
+        assert_arg_type(name, i+1, s_char_p, cur);
+        if (prev != NULL) {
+            int cmp = scm2char(prev) - scm2char(cur);
+            if (cmp > 0) cmp = 1;
+            if (cmp < 0) cmp = -1;
+            if (!(cmp == cmp1 || cmp == cmp2)) return S_FALSE;
+        }
+        prev = cur;
+    }
+    return S_TRUE;
+}
+
+SchemeObject* s_char_equal_p(int num, SchemeStack::iterator args) {
+    return char_comparer(num, args, 0, 0, "char=?");        
+}
+
+SchemeObject* s_char_less_p(int num, SchemeStack::iterator args) {
+    return char_comparer(num, args, -1, -1, "char<?");        
+}
+
+SchemeObject* s_char_greater_p(int num, SchemeStack::iterator args) {
+    return char_comparer(num, args, 1, 1, "char>?");        
+}
+
+SchemeObject* s_char_less_equal_p(int num, SchemeStack::iterator args) {
+    return char_comparer(num, args, -1, 0, "char<=?");        
+}
+
+SchemeObject* s_char_greater_equal_p(int num, SchemeStack::iterator args) {
+    return char_comparer(num, args, 1, 0, "char>=?");        
+}
+
+SchemeObject* string_comparer(int num, SchemeStack::iterator args, int cmp1, int cmp2, const char* name) 
+{
+    SchemeObject* prev = NULL;
+
+    for(int i = 0; i < num; i++, args++) {
+        SchemeObject* cur = *args;    
+        assert_arg_type(name, i+1, s_string_p, cur);
+        if (prev != NULL) {
+            int cmp = strcmp(prev->str, cur->str);
+            if (!(cmp == cmp1 || cmp == cmp2)) return S_FALSE;
+        }
+        prev = cur;
+    }
+    return S_TRUE;
+}
+
+SchemeObject* s_string_equal_p(int num, SchemeStack::iterator args) {
+    return string_comparer(num, args, 0, 0, "string=?");        
+}
+
+SchemeObject* s_string_less_p(int num, SchemeStack::iterator args) {
+    return string_comparer(num, args, -1, -1, "string<?");        
+}
+
+SchemeObject* s_string_greater_p(int num, SchemeStack::iterator args) {
+    return string_comparer(num, args, 1, 1, "string>?");        
+}
+
+SchemeObject* s_string_less_equal_p(int num, SchemeStack::iterator args) {
+    return string_comparer(num, args, -1, 0, "string<=?");        
+}
+
+SchemeObject* s_string_greater_equal_p(int num, SchemeStack::iterator args) {
+    return string_comparer(num, args, 1, 0, "string>=?");        
 }
 
 SchemeObject* s_symgen() {
