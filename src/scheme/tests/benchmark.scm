@@ -29,7 +29,9 @@
 
 ; 2007-06-11 bucket_map instead of stl::map
 ;./src/tracer scenes/benchmark-scheme.scm out.png  20.94s user 0.08s system 98% cpu 21.265 total
-
+;
+; 2007-07-13 No cons'ing when calling built-ins
+; ./repl tests/benchmark.scm  18.06s user 0.08s system 98% cpu 18.386 total
 
 (define (square x)
   (* x x))

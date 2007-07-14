@@ -10,6 +10,8 @@
 
 using namespace std;
 
+typedef vector<SchemeObject*> SchemeStack;
+
 class Scheme {
     public:
         Scheme();
@@ -54,13 +56,13 @@ class scheme_exception {
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << string(procname);                           \
-        ss << ": " << arg->toString();                    \
+        ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
 }
 
 #define assert_arg_type(procname, argnum, test_fn, arg) { \
     if ((test_fn)(arg) == S_FALSE) {                      \
-        wrong_type_arg(procname, argnum, arg);            \
+        wrong_type_arg(procname, argnum, (arg));            \
     }                                                     \
 }
 
@@ -71,7 +73,7 @@ class scheme_exception {
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << string(procname);                           \
-        ss << ": " << arg->toString();                    \
+        ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
     }                                                     \
 }
@@ -83,7 +85,7 @@ class scheme_exception {
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << string(procname);                           \
-        ss << ": " << arg->toString();                    \
+        ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
     }                                                     \
 }
@@ -96,7 +98,7 @@ class scheme_exception {
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << string(procname);                           \
-        ss << ": " << arg->toString();                    \
+        ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
     }                                                     \
 }
@@ -108,7 +110,7 @@ class scheme_exception {
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << string(procname);                           \
-        ss << ": " << arg->toString();                    \
+        ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
     }                                                     \
 }
@@ -121,7 +123,7 @@ class scheme_exception {
         ss << "Integer out of range " << from << " to " << to;        \
         ss << " in position " << argnum;                              \
         ss << " in call to " << procname;                             \
-        ss << ": " << arg->toString();                                \
+        ss << ": " << (arg)->toString();                                \
         throw scheme_exception(ss.str());                             \
     }                                                                 \
 }
@@ -133,7 +135,7 @@ class scheme_exception {
         ostringstream ss;                                          \
         ss << "Negative argument in to position " << argnum;       \
         ss << " in call to " << string(procname);                  \
-        ss << ": " << arg->toString();                             \
+        ss << ": " << (arg)->toString();                             \
         throw scheme_exception(ss.str());                          \
     }                                                              \
 }
@@ -145,7 +147,7 @@ class scheme_exception {
         ss << "Can't modify immutable object in position "; \
         ss << argnum;                                       \
         ss << " in call to " << string(procname);           \
-        ss << ": " << arg->toString();                      \
+        ss << ": " << (arg)->toString();                      \
         throw scheme_exception(ss.str());                   \
     }                                                       \
 }
@@ -157,7 +159,7 @@ class scheme_exception {
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << string(procname);                           \
-        ss << ": " << arg->toString();                    \
+        ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
     }                                                     \
 }
@@ -169,7 +171,7 @@ class scheme_exception {
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << string(procname);                           \
-        ss << ": " << arg->toString();                    \
+        ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
     }                                                     \
 }
@@ -198,6 +200,28 @@ extern SchemeObject* S_NUMBERS[];
 #define int2scm(n)     (((n) < 10 && (n) >= 0) ? S_NUMBERS[n] : SchemeObject::createNumber(n))
 #define double2scm(n)  (SchemeObject::createNumber(n))
 
+class SchemeAppendableList {
+    public:
+        SchemeAppendableList() {
+            list = S_EMPTY_LIST;
+            tail = S_EMPTY_LIST;
+        };
+        void add(SchemeObject* o) {
+            SchemeObject* pair = i_cons(o, S_EMPTY_LIST);
+            if (list == S_EMPTY_LIST) {
+                list = pair;
+                tail = pair;            
+            } else {
+                i_set_cdr_e(tail, pair);
+                tail = pair;
+            }        
+        };
+        SchemeObject* list;
+        
+    private:
+        SchemeObject* tail;
+};
+
 
 // Declaration of scheme procedures
 SchemeObject* s_equal_p(SchemeObject* a, SchemeObject* b);
@@ -207,14 +231,14 @@ SchemeObject* s_not(SchemeObject*);
 
 SchemeObject* s_call_cc(SchemeObject* proc);
 
-SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args);
+SchemeObject* s_apply(int num, SchemeStack::iterator stack);
 SchemeObject* s_null_environment(SchemeObject* version);
 SchemeObject* s_scheme_report_environment(SchemeObject* version);
 SchemeObject* s_interaction_environment(SchemeObject* version);
 SchemeObject* s_eval(SchemeObject* expression, SchemeObject* environment);
 
-SchemeObject* s_map(SchemeObject* proc, SchemeObject* lists);
-SchemeObject* s_for_each(SchemeObject* proc, SchemeObject* lists);
+SchemeObject* s_map(int num, SchemeStack::iterator stack);
+SchemeObject* s_for_each(int num, SchemeStack::iterator stack);
 
 SchemeObject* s_boolean_p(SchemeObject* o);
 SchemeObject* s_string_p(SchemeObject* o);
@@ -265,10 +289,10 @@ SchemeObject* s_cddddr(SchemeObject* o);
 SchemeObject* s_cons(SchemeObject* car, SchemeObject* cdr);
 SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o);
 SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o);
-SchemeObject* s_append(SchemeObject* args);
+SchemeObject* s_append(int num, SchemeStack::iterator stack);
 SchemeObject* s_reverse(SchemeObject* l);
 SchemeObject* s_length(SchemeObject* l);
-SchemeObject* s_list(SchemeObject* args);
+SchemeObject* s_list(int num, SchemeStack::iterator stack);
 SchemeObject* s_list_tail(SchemeObject* l, SchemeObject* k);
 SchemeObject* s_list_ref(SchemeObject* l, SchemeObject* k);
 SchemeObject* s_member(SchemeObject* obj, SchemeObject* p);
@@ -277,7 +301,7 @@ SchemeObject* s_memv(SchemeObject* obj, SchemeObject* p);
 
 // Vector stuff
 SchemeObject* s_make_vector(SchemeObject* count, SchemeObject* obj);
-SchemeObject* s_vector(SchemeObject* args);
+SchemeObject* s_vector(int num, SchemeStack::iterator stack);
 SchemeObject* s_vector_length(SchemeObject* v);
 SchemeObject* s_list_2_vector(SchemeObject* list);
 SchemeObject* s_vector_2_list(SchemeObject* v);
@@ -297,15 +321,15 @@ SchemeObject* s_integer_2_char(SchemeObject* i);
 SchemeObject* s_char_2_integer(SchemeObject* c);
 
 // Math stuff
-SchemeObject* s_equal(SchemeObject* p);
-SchemeObject* s_less(SchemeObject* p);
-SchemeObject* s_greater(SchemeObject* p);
-SchemeObject* s_less_equal(SchemeObject* p);
-SchemeObject* s_greater_equal(SchemeObject* p);
-SchemeObject* s_plus(SchemeObject* l);
-SchemeObject* s_minus(SchemeObject* n, SchemeObject* rst);
-SchemeObject* s_mult(SchemeObject* l);
-SchemeObject* s_divide(SchemeObject* n, SchemeObject* rst);
+SchemeObject* s_equal(int num, SchemeStack::iterator stack);
+SchemeObject* s_less(int num, SchemeStack::iterator stack);
+SchemeObject* s_greater(int num, SchemeStack::iterator stack);
+SchemeObject* s_less_equal(int num, SchemeStack::iterator stack);
+SchemeObject* s_greater_equal(int num, SchemeStack::iterator stack);
+SchemeObject* s_plus(int num, SchemeStack::iterator stack);
+SchemeObject* s_minus(int num, SchemeStack::iterator stack);
+SchemeObject* s_mult(int num, SchemeStack::iterator stack);
+SchemeObject* s_divide(int num, SchemeStack::iterator stack);
 SchemeObject* s_sqrt(SchemeObject* n);
 SchemeObject* s_abs(SchemeObject* n);
 SchemeObject* s_sin(SchemeObject* n);
@@ -317,10 +341,10 @@ SchemeObject* s_atan(SchemeObject* y, SchemeObject* x);
 SchemeObject* s_expt(SchemeObject* y, SchemeObject* x);
 SchemeObject* s_exp(SchemeObject* n);
 SchemeObject* s_log(SchemeObject* n);
-SchemeObject* s_min(SchemeObject* n, SchemeObject* l);
-SchemeObject* s_max(SchemeObject* n, SchemeObject* l);
-SchemeObject* s_gcd(SchemeObject* l);
-SchemeObject* s_lcm(SchemeObject* l);
+SchemeObject* s_min(int num, SchemeStack::iterator stack);
+SchemeObject* s_max(int num, SchemeStack::iterator stack);
+SchemeObject* s_gcd(int num, SchemeStack::iterator stack);
+SchemeObject* s_lcm(int num, SchemeStack::iterator stack);
 SchemeObject* s_round(SchemeObject* n);
 SchemeObject* s_floor(SchemeObject* n);
 SchemeObject* s_ceiling(SchemeObject* n);
@@ -342,7 +366,7 @@ SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2);
 
 // String stuff
 SchemeObject* s_make_string(SchemeObject* len, SchemeObject* chr);
-SchemeObject* s_string(SchemeObject* chars);
+SchemeObject* s_string(int num, SchemeStack::iterator stack);
 SchemeObject* s_string_length(SchemeObject* s);
 SchemeObject* s_string_ref(SchemeObject* s, SchemeObject* i);
 SchemeObject* s_string_set_e(SchemeObject* str, SchemeObject* i, SchemeObject* chr);
@@ -350,7 +374,7 @@ SchemeObject* s_symbol_2_string(SchemeObject* symbol);
 SchemeObject* s_string_2_symbol(SchemeObject* s);
 SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base);
 SchemeObject* s_string_2_number(SchemeObject* s, SchemeObject* base);
-SchemeObject* s_string_append(SchemeObject* strings);
+SchemeObject* s_string_append(int num, SchemeStack::iterator stack);
 SchemeObject* s_string_copy(SchemeObject* string);
 SchemeObject* s_string_2_list(SchemeObject* s);
 SchemeObject* s_list_2_string(SchemeObject* p);

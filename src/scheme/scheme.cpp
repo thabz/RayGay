@@ -92,7 +92,7 @@ Scheme::Scheme() {
     if (!globals_init) {
         globals_init = true;
 
-    	assign("map"                   ,1,0,1, (SchemeObject* (*)()) s_map, scheme_report_environment);
+    	assign("map"                   ,2,0,1, (SchemeObject* (*)()) s_map, scheme_report_environment);
     	assign("for-each"              ,1,0,1, (SchemeObject* (*)()) s_for_each, scheme_report_environment);
     	assign("equal?"                ,2,0,0, (SchemeObject* (*)()) s_equal_p, scheme_report_environment);
     	assign("eq?"                   ,2,0,0, (SchemeObject* (*)()) s_eq_p, scheme_report_environment);
@@ -191,8 +191,8 @@ Scheme::Scheme() {
     	assign("max"                   ,1,0,1, (SchemeObject* (*)()) s_max, scheme_report_environment);
     	assign("gcd"                   ,0,0,1, (SchemeObject* (*)()) s_gcd, scheme_report_environment);
     	assign("lcm"                   ,0,0,1, (SchemeObject* (*)()) s_lcm, scheme_report_environment);
-    	assign("even?"                 ,1,0,1, (SchemeObject* (*)()) s_even_p, scheme_report_environment);
-    	assign("odd?"                  ,1,0,1, (SchemeObject* (*)()) s_odd_p, scheme_report_environment);
+    	assign("even?"                 ,1,0,0, (SchemeObject* (*)()) s_even_p, scheme_report_environment);
+    	assign("odd?"                  ,1,0,0, (SchemeObject* (*)()) s_odd_p, scheme_report_environment);
     	assign("zero?"                 ,1,0,0, (SchemeObject* (*)()) s_zero_p, scheme_report_environment);
     	assign("negative?"             ,1,0,0, (SchemeObject* (*)()) s_negative_p, scheme_report_environment);
     	assign("positive?"             ,1,0,0, (SchemeObject* (*)()) s_positive_p, scheme_report_environment);
@@ -527,18 +527,20 @@ SchemeObject* s_call_cc(SchemeObject* s_proc) {
 // TODO: Det er måske nemmere at skrive denne som en macro, ala (define-macro (apply proc args) `(,proc ,@args))
 // args is a list (arg1 arg2 ... argn). argn must be a list. proc is called with the arguments
 // (append (list arg1 arg2 ...) argn)
-SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args) {
+SchemeObject* s_apply(int num, SchemeStack::iterator args) {
+        
+    SchemeObject* proc = *args++;
+    num--;
     assert_arg_type("apply", 1, s_procedure_p, proc);
 
     stack.push_back(S_EMPTY_LIST);
     SchemeObject*& collected = stack.back();
     SchemeObject* prev = NULL;
-    int i = 0;
-    while (args != S_EMPTY_LIST) {
-        i++;
-        SchemeObject* arg = s_car(args);
-        if (s_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
-            if (s_cdr(args) == S_EMPTY_LIST) {
+
+    for(int i = 0; i < num; i++) {
+        SchemeObject* arg = *args++;
+        if (i_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
+            if (i == num - 1) {
                 // arg is a list and last argument
                 if (collected == S_EMPTY_LIST) {
                     collected = arg;
@@ -550,74 +552,64 @@ SchemeObject* s_apply(SchemeObject* proc, SchemeObject* args) {
             }
         } else {
             if (collected == S_EMPTY_LIST) {
-                collected = s_cons(arg, S_EMPTY_LIST);
+                collected = i_cons(arg, S_EMPTY_LIST);
                 prev = collected;
             } else {
-                SchemeObject* tmp = s_cons(arg,S_EMPTY_LIST);
-                s_set_cdr_e(prev, tmp);
+                SchemeObject* tmp = i_cons(arg,S_EMPTY_LIST);
+                i_set_cdr_e(prev, tmp);
                 prev = tmp;
             }
         }
-        args = s_cdr(args);
     }
     stack.pop_back();
     return interpreter->call_procedure_n(proc,collected);
 }
 
-SchemeObject* s_map(SchemeObject* proc, SchemeObject* lists) {
+SchemeObject* s_map(int num, SchemeStack::iterator args) {
+
+    assert(num > 0);
+    SchemeObject* proc = *args;
     assert_arg_type("map", 1, s_procedure_p, proc);
-    SchemeObject* lists_ptr = lists;
-    int i = 2;
-    while (lists_ptr != S_EMPTY_LIST) {
-        assert_non_atom_type("map", i++, i_car(lists_ptr));
-        lists_ptr = i_cdr(lists_ptr);
+    
+    for(int i = 1; i < num; i++) {
+        assert_non_atom_type("map", i, args[i]);
     }
     
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* prev = S_EMPTY_LIST;
 
     // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver til ((2 3)(20 30)) og til sidst ((3)(30))
-    while (s_car(lists) != S_EMPTY_LIST) {
+    while (args[1] != S_EMPTY_LIST) {
         // Collect args
-        SchemeObject* collection = S_EMPTY_LIST;
-        SchemeObject* prev_col = S_EMPTY_LIST;
-        lists_ptr = lists;
-        while (lists_ptr != S_EMPTY_LIST) {
-            if (s_car(lists_ptr) == S_EMPTY_LIST) {
+        SchemeAppendableList collection;
+        for(int i = 1; i < num; i++) {
+            SchemeObject* lists_ptr = args[i];
+            if (lists_ptr == S_EMPTY_LIST) {
                 throw scheme_exception("Argument lists not equals length.");
             }
-            SchemeObject* arg = s_car(s_car(lists_ptr));
-            s_set_car_e(lists_ptr,s_cdr(s_car(lists_ptr)));
-            if (collection == S_EMPTY_LIST) {
-                collection = s_cons(arg,S_EMPTY_LIST);
-                prev_col = collection;
-            } else {
-                SchemeObject* tmp = s_cons(arg,S_EMPTY_LIST);
-                prev_col->cdr = tmp;
-                prev_col = tmp;
-                
-            }
-            lists_ptr = s_cdr(lists_ptr);
+            SchemeObject* arg = s_car(lists_ptr);
+            args[i] = s_cdr(lists_ptr);
+            collection.add(arg);
         }
         
-        SchemeObject* result_item = interpreter->call_procedure_n(proc, collection);
+        SchemeObject* result_item = interpreter->call_procedure_n(proc, collection.list);
         
         if (result == S_EMPTY_LIST) {
-            result = s_cons(result_item, S_EMPTY_LIST);
+            result = i_cons(result_item, S_EMPTY_LIST);
             prev = result;
             stack.push_back(result);
         } else {
-            SchemeObject* tmp = s_cons(result_item, S_EMPTY_LIST);
-            s_set_cdr_e(prev, tmp);
+            SchemeObject* tmp = i_cons(result_item, S_EMPTY_LIST);
+            i_set_cdr_e(prev, tmp);
             prev = tmp;
         }
     }
+    
     // Tjek at argumentlisterne var lige lange
-    while (lists != S_EMPTY_LIST) {
-        if (s_car(lists) != S_EMPTY_LIST) {
+    for(int i = 1; i < num; i++) {
+        if (args[i] != S_EMPTY_LIST) {
             throw scheme_exception("Argument lists not equals length.");
         }
-        lists = s_cdr(lists);
     }
     if (result != S_EMPTY_LIST) {
         stack.pop_back();
@@ -625,8 +617,8 @@ SchemeObject* s_map(SchemeObject* proc, SchemeObject* lists) {
     return result;    
 }
 
-SchemeObject* s_for_each(SchemeObject* proc, SchemeObject* lists) {
-    s_map(proc, lists);
+SchemeObject* s_for_each(int num, SchemeStack::iterator stack) {
+    s_map(num, stack);
     return S_UNSPECIFIED;
 }
 
@@ -824,8 +816,12 @@ SchemeObject* s_cons(SchemeObject* car, SchemeObject* cdr) {
     return i_cons(car, cdr);
 }
 
-SchemeObject* s_list(SchemeObject* args) {
-    return args;
+SchemeObject* s_list(int num, SchemeStack::iterator args) {
+    SchemeObject* result = S_EMPTY_LIST;        
+    for(int i = 0; i < num; i++) {
+        result = i_cons(args[num-1-i], result);    
+    }
+    return result;
 }
 
 SchemeObject* s_reverse(SchemeObject* o) 
@@ -864,20 +860,15 @@ SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o) {
     return S_UNSPECIFIED;
 }
 
-SchemeObject* s_append(SchemeObject* p) {
+SchemeObject* s_append(int num, SchemeStack::iterator stack) {
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* result_tail = NULL;
     
-    if (p == S_EMPTY_LIST) {
+    if (num == 0) {
         return S_EMPTY_LIST;
     }
-    
-    if (s_cdr(p) == S_EMPTY_LIST) {
-        return s_car(p);
-    }
-    int i = 1;
-    while (s_cdr(p) != S_EMPTY_LIST) {
-        SchemeObject* pp = s_car(p);
+    for(int i = 0; i < num-1; i++) {
+        SchemeObject* pp = *stack++;
         // Skip empty lists
         if (pp != S_EMPTY_LIST) {
             assert_arg_type("append", i, s_pair_p, pp);
@@ -897,80 +888,75 @@ SchemeObject* s_append(SchemeObject* p) {
 
                 pp = s_cdr(pp);
     	    }
-	    }
-        i++;
-        p = s_cdr(p);
+	}
     }
 
     // Append  final arg
     if (result != S_EMPTY_LIST) {
-        i_set_cdr_e(result_tail, s_car(p));
+        i_set_cdr_e(result_tail, *stack);
     } else {
-        result = s_car(p);
+        result = *stack;
     }
     return result;
 }
 
-SchemeObject* s_plus(SchemeObject* p) {
-	double result = 0;
-    int i = 1;
-	while (p != S_EMPTY_LIST) {
-        SchemeObject* n = i_car(p);
-	    assert_arg_number_type("+", i++, n);
-		result += scm2double(n);
-        p = i_cdr(p);
-	}
-	return double2scm(result);
-}
-
-SchemeObject* s_minus(SchemeObject* n, SchemeObject* rst) {
-    assert_arg_number_type("-", 1, n);
-    double result = scm2double(n);
-    
-    if (rst == S_EMPTY_LIST) {
-        // One-argument case is a simple negate (n => -n)
-        return double2scm(-result);
-    }
-    
-    int i = 2;
-    while (rst != S_EMPTY_LIST) {
-        SchemeObject* cur = i_car(rst);
-        assert_arg_number_type("-", i++, cur);
-        result -= scm2double(cur);
-        rst = i_cdr(rst);
+SchemeObject* s_plus(int num, SchemeStack::iterator stack) {
+    double result = 0;
+    for(int i = 0; i < num; i++) {
+        SchemeObject* n = *stack;
+        assert_arg_number_type("+", i+1, n);
+	result += scm2double(n);
+        stack++;
     }
     return double2scm(result);
 }
 
-SchemeObject* s_divide(SchemeObject* n, SchemeObject* rst) {
-    assert_arg_number_type("/", 1, n);
-	double result = scm2double(n);
-
-	if (rst == S_EMPTY_LIST) {
-        // One-argument case is a simple inverse (n => 1/n)
-    	return double2scm(1.0 / result);
-	}
-
-    int i = 2;
-	while (rst != S_EMPTY_LIST) {
-        SchemeObject* cur = i_car(rst);
-	    assert_arg_number_type("/", i++, cur);
-	    result /= scm2double(cur);
-        rst = i_cdr(rst);
-	}
-	return double2scm(result);
+SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
+    SchemeObject* o = *stack++;
+    assert_arg_number_type("-", 1, o);
+    double result = scm2double(o);
+    if (num == 1) {
+        // One-argument case is a simple negate (n => -n)
+        return double2scm(-result);
+    }
+    
+    for(int i = 1; i < num; i++) {
+        SchemeObject* n = *stack;
+        assert_arg_number_type("-", i+1, n);
+	result -= scm2double(n);
+        stack++;
+    }
+    return double2scm(result);
 }
 
-SchemeObject* s_mult(SchemeObject* p) {
-	double result = 1;
-    int i = 1;
-	while (p != S_EMPTY_LIST) {
-        SchemeObject* cur = i_car(p);
-	    assert_arg_number_type("*", i++, cur);
-		result *= scm2double(cur);
-		p = i_cdr(p);
-	}
-	return double2scm(result);
+SchemeObject* s_divide(int num, SchemeStack::iterator stack) {
+    SchemeObject* o = *stack++;
+    assert_arg_number_type("/", 1, o);
+    double result = scm2double(o);
+    
+    if (num == 1) {
+        // One-argument case is a simple inverse (n => 1/n)
+        return double2scm(1.0 / result);
+    }
+    
+    for(int i = 1; i < num; i++) {
+        SchemeObject* n = *stack;
+        assert_arg_number_type("-", i+1, n);
+	result /= scm2double(n);
+        stack++;
+    }
+    return double2scm(result);
+}
+
+SchemeObject* s_mult(int num, SchemeStack::iterator stack) {
+    double result = 1;
+    for(int i = 0; i < num; i++) {
+        SchemeObject* n = *stack;
+        assert_arg_number_type("*", i+1, n);
+	result *= scm2double(n);
+        stack++;
+    }
+    return double2scm(result);
 }
 
 SchemeObject* s_make_vector(SchemeObject* s_count, SchemeObject* obj) {
@@ -979,13 +965,10 @@ SchemeObject* s_make_vector(SchemeObject* s_count, SchemeObject* obj) {
     return SchemeObject::createVector(obj, count);
 }
 
-SchemeObject* s_vector(SchemeObject* args) {
-    int c = scm2int(s_length(args));
-    SchemeObject* result = SchemeObject::createVector(S_UNSPECIFIED, c);
-    int i = 0;
-    while (args != S_EMPTY_LIST) {
-        result->setVectorElem(i_car(args), i++);
-        args = i_cdr(args);
+SchemeObject* s_vector(int num, SchemeStack::iterator args) {
+    SchemeObject* result = SchemeObject::createVector(S_UNSPECIFIED, num);
+    for(int i = 0; i < num; i++) {
+        result->setVectorElem(args[i], i);
     }
     return result;
 }
@@ -997,14 +980,21 @@ SchemeObject* s_vector_length(SchemeObject* v) {
 
 SchemeObject* s_list_2_vector(SchemeObject* l) {
     assert_arg_type("list->vector", 1, s_list_p, l);
-    return s_vector(l);
+    int c = scm2int(s_length(l));
+    SchemeObject* result = SchemeObject::createVector(S_UNSPECIFIED, c);
+    int i = 0;
+    while (l != S_EMPTY_LIST) {
+        result->setVectorElem(i_car(l), i++);
+        l = i_cdr(l);
+    }
+    return result;
 }
 
 SchemeObject* s_vector_2_list(SchemeObject* v) {
     assert_arg_type("vector->list", 1, s_vector_p, v);
     SchemeObject* result = S_EMPTY_LIST;
     for(int i = v->length-1; i >= 0; i--) {
-	    result = i_cons(v->getVectorElem(i), result);
+	result = i_cons(v->getVectorElem(i), result);
     }
     return result;
 }
@@ -1183,40 +1173,40 @@ SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2) {
 }
 
 
-SchemeObject* s_min(SchemeObject* first, SchemeObject* rest) {
-    assert_arg_number_type("min", 1, first);
-    SchemeObject* result = first;
+SchemeObject* s_min(int num, SchemeStack::iterator stack) {
+    assert (num > 0);
+    
+    SchemeObject* result = *stack;
+    assert_arg_number_type("min", 1, result);
     double result_number = scm2double(result);
-    int i = 2;    
-	while (rest != S_EMPTY_LIST) {
-        SchemeObject* n = s_car(rest);
-	    assert_arg_number_type("min", i++, n);
+    for(int i = 1; i < num; i++) {
+        SchemeObject* n = stack[i];
+        assert_arg_number_type("min", i+1, n);
         double number = scm2double(n);
         if (number < result_number) {
             result_number = number;
             result = n;
         }
-        rest = s_cdr(rest);
-	}
-	return result;
+    }
+    return result;
 }
 
-SchemeObject* s_max(SchemeObject* first, SchemeObject* rest) {
-    assert_arg_number_type("max", 1, first);
-    SchemeObject* result = first;
+SchemeObject* s_max(int num, SchemeStack::iterator stack) {
+    assert (num > 0);
+    
+    SchemeObject* result = *stack;
+    assert_arg_number_type("max", 1, result);
     double result_number = scm2double(result);
-    int i = 2;    
-	while (rest != S_EMPTY_LIST) {
-        SchemeObject* n = s_car(rest);
-	    assert_arg_number_type("max", i++, n);
+    for(int i = 1; i < num; i++) {
+        SchemeObject* n = stack[i];
+        assert_arg_number_type("max", i+1, n);
         double number = scm2double(n);
         if (number > result_number) {
             result_number = number;
             result = n;
         }
-        rest = s_cdr(rest);
-	}
-	return result;
+    }
+    return result;
 }
 
 int gcd(int a, int b) {
@@ -1230,31 +1220,31 @@ int gcd(int a, int b) {
 }
 
 // Using Euclids algorithm and that gcd is associative thus gcd(a,b,c) = gcd(a,(gcd(b,c))) = gcd(gcd(a,b),c).
-SchemeObject* s_gcd(SchemeObject* l) {
-    if (i_null_p(l) == S_TRUE) {
+SchemeObject* s_gcd(int num, SchemeStack::iterator stack) {
+    if (num == 0) {
         return S_ZERO;
     }
-    assert_arg_type("gcd", 1, s_integer_p, s_car(l));
-    if (i_null_p(s_cdr(l)) == S_TRUE) {
-        return int2scm(abs(scm2int(s_car(l))));
+    assert_arg_int_type("gcd", 1, *stack); // This 1 is wrong as we s_gcd is recursive with descreasing num
+    if (num == 1) {
+        return int2scm(abs(scm2int(*stack)));
     }
-    int a = scm2int(s_car(l));
-    int b = scm2int(s_gcd(s_cdr(l)));
+    int a = scm2int(*stack);
+    int b = scm2int(s_gcd(num-1, ++stack));
     return int2scm(abs(gcd(a,b)));
 }
 
 // Using the property gcd(a,b) * lcm(a,b) = a * b and that lcm(a,b,c) = lcm(lcm(a,b),c) = lcm(a,lcm(b,c))
-SchemeObject* s_lcm(SchemeObject* l) {
-    if (i_null_p(l) == S_TRUE) {
+SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
+    if (num == 0) {
         return S_ONE;
     }
-    if (i_null_p(s_cdr(l)) == S_TRUE) {
-        assert_arg_type("lcm", 1, s_integer_p, s_car(l));
-        return int2scm(abs(scm2int(s_car(l))));
+    if (num == 1) {
+        assert_arg_int_type("lcm", 1, *stack); // This 1 is wrong as we s_gcd is recursive with descreasing num
+        return int2scm(abs(scm2int(*stack)));
     }
 
-    int a = abs(scm2int(s_car(l)));
-    int b = abs(scm2int(s_lcm(s_cdr(l))));
+    int a = abs(scm2int(*stack));
+    int b = abs(scm2int(s_lcm(num-1, ++stack)));
     int g = gcd(a,b);
     int r;
     if (g == 0) {
@@ -1290,112 +1280,98 @@ SchemeObject* s_positive_p(SchemeObject* n) {
     return scm2double(n) > 0 ? S_TRUE : S_FALSE;
 }
 
-SchemeObject* s_equal(SchemeObject* p) {
-    if (p == S_EMPTY_LIST) {
+// (= a b)
+SchemeObject* s_equal(int num, SchemeStack::iterator args) {
+    if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_number_type("=", 1, i_car(p));
-    double n = scm2double(s_car(p));
-    p = i_cdr(p);
-    int i = 2;
-    while (p != S_EMPTY_LIST) {
-        SchemeObject* car_p = i_car(p);
-        assert_arg_number_type("=", i, car_p);
-        double nn = scm2double(car_p);
+    assert_arg_number_type("=", 1, *args);
+    double n = scm2double(*args);
+    args ++;
+    for(int i = 1; i < num; i++) {
+        SchemeObject* v = *args++;
+        assert_arg_number_type("=", i+1, v);
+        double nn = scm2double(v);
         if (nn != n) {
             return S_FALSE;
         }
         n = nn;
-        p = i_cdr(p);
-        i++;
     }
     return S_TRUE;
 }
 
-SchemeObject* s_less(SchemeObject* p) {
-    if (p == S_EMPTY_LIST) {
+SchemeObject* s_less(int num, SchemeStack::iterator args) {
+    if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_number_type("<", 1, i_car(p));
-    double n = scm2double(s_car(p));
-    p = s_cdr(p);
-    int i = 2;
-    while (p != S_EMPTY_LIST) {
-        SchemeObject* car_p = i_car(p);
-        assert_arg_type("<", i, s_number_p, car_p);
-        double nn = scm2double(car_p);
+    assert_arg_number_type("<", 1, *args);
+    double n = scm2double(*args);
+    args ++;
+    for(int i = 1; i < num; i++) {
+        SchemeObject* v = *args++;
+        assert_arg_number_type("<", i+1, v);
+        double nn = scm2double(v);
         if (nn <= n) {
             return S_FALSE;
         }
         n = nn;
-        p = i_cdr(p);
-        i++;
     }
     return S_TRUE;
 }
 
-SchemeObject* s_greater(SchemeObject* p) {
-    if (p == S_EMPTY_LIST) {
+SchemeObject* s_greater(int num, SchemeStack::iterator args) {
+    if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_number_type(">", 1, i_car(p));
-    double n = scm2double(s_car(p));
-    p = s_cdr(p);
-    int i = 2;
-    while (p != S_EMPTY_LIST) {
-        SchemeObject* car_p = i_car(p);
-        assert_arg_type(">", i, s_number_p, car_p);
-        double nn = scm2double(car_p);
+    assert_arg_number_type(">", 1, *args);
+    double n = scm2double(*args);
+    args ++;
+    for(int i = 1; i < num; i++) {
+        SchemeObject* v = *args++;
+        assert_arg_number_type(">", i+1, v);
+        double nn = scm2double(v);
         if (nn >= n) {
             return S_FALSE;
         }
         n = nn;
-        p = i_cdr(p);
-        i++;
     }
     return S_TRUE;
 }
 
-SchemeObject* s_less_equal(SchemeObject* p) {
-    if (p == S_EMPTY_LIST) {
+SchemeObject* s_less_equal(int num, SchemeStack::iterator args) {
+    if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_number_type("<=", 1, i_car(p));
-    double n = scm2double(s_car(p));
-    p = s_cdr(p);
-    int i = 2;
-    while (p != S_EMPTY_LIST) {
-        SchemeObject* car_p = i_car(p);
-        assert_arg_type("<=", i, s_number_p, car_p);
-        double nn = scm2double(car_p);
+    assert_arg_number_type("<=", 1, *args);
+    double n = scm2double(*args);
+    args ++;
+    for(int i = 1; i < num; i++) {
+        SchemeObject* v = *args++;
+        assert_arg_number_type("<=", i+1, v);
+        double nn = scm2double(v);
         if (nn < n) {
             return S_FALSE;
         }
         n = nn;
-        p = i_cdr(p);
-        i++;
     }
     return S_TRUE;
 }
 
-SchemeObject* s_greater_equal(SchemeObject* p) {
-    if (p == S_EMPTY_LIST) {
+SchemeObject* s_greater_equal(int num, SchemeStack::iterator args) {
+    if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_number_type(">=", 1, i_car(p));
-    double n = scm2double(s_car(p));
-    p = s_cdr(p);
-    int i = 2;
-    while (p != S_EMPTY_LIST) {
-        SchemeObject* car_p = i_car(p);
-        assert_arg_type(">=", i, s_number_p, car_p);
-        double nn = scm2double(car_p);
+    assert_arg_number_type(">=", 1, *args);
+    double n = scm2double(*args);
+    args ++;
+    for(int i = 1; i < num; i++) {
+        SchemeObject* v = *args++;
+        assert_arg_number_type(">=", i+1, v);
+        double nn = scm2double(v);
         if (nn > n) {
             return S_FALSE;
         }
         n = nn;
-        p = i_cdr(p);
-        i++;
     }
     return S_TRUE;
 }
@@ -1417,14 +1393,12 @@ SchemeObject* s_make_string(SchemeObject* len, SchemeObject* chr) {
     return string2scm(s);
 }
 
-SchemeObject* s_string(SchemeObject* p) {
+SchemeObject* s_string(int num, SchemeStack::iterator args) {
     string s = "";
-    int i = 0;
-    while(p != S_EMPTY_LIST) {
-        SchemeObject* c = s_car(p);
+    for(int i = 0; i < num; i++) {
+        SchemeObject* c = args[i];
         assert_arg_type("string", i, s_char_p, c);
         s += scm2char(c);
-        p = s_cdr(p);
     }
     return string2scm(s);
 }
@@ -1465,14 +1439,11 @@ SchemeObject* s_string_2_symbol(SchemeObject* s) {
     return SchemeObject::createSymbol(s->str);
 }
 
-SchemeObject* s_string_append(SchemeObject* strings) {
+SchemeObject* s_string_append(int num, SchemeStack::iterator args) {
     string result = "";
-    int i = 1;
-    while (strings != S_EMPTY_LIST) {
-        SchemeObject* cur = s_car(strings);
-        assert_arg_type("string-append", i++, s_string_p, cur);
-        result += scm2string(cur);
-        strings = s_cdr(strings);
+    for(int i = 0; i < num; i++, args++) {
+        assert_arg_type("string-append", i+1, s_string_p, *args);
+        result += scm2string(*args);
     }
     return string2scm(result);
 }
