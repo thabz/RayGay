@@ -686,6 +686,10 @@ void test_string() {
     assert_fail(s, "(substring \"abcdef\" 3 1)");
     assert_eval(s, "(string=?  \"abcdef\"  \"abcdef\"  \"abcdef\")", "#t");
     assert_eval(s, "(string<?  \"abcdef\"  \"abcdeg\"  \"abddef\")", "#t");
+    assert_eval(s, "(string>? \"9\" \"0\")", "#t");
+    assert_eval(s, "(string=? \"9\" \"0\")", "#f");
+    assert_eval(s, "(string=? \"9\" \"9\")", "#t");
+    assert_eval(s, "(string<? \"9\" \"0\")", "#f");
     assert_eval(s, "(string<?  \"abcdef\"  \"abcdef\"  \"abddef\")", "#f");
     assert_eval(s, "(string<=? \"abcdef\"  \"abcdef\"  \"abddef\")", "#t");
     assert_eval(s, "(string>?  \"abcdef\"  \"abcdee\"  \"abcded\")", "#t");
