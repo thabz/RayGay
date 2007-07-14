@@ -698,6 +698,7 @@ fn_ptr eval_user_procedure_call() {
         formals = i_cdr(formals);
     }
     if (formals != S_EMPTY_LIST) {
+        // Rest argument    
         global_arg1 = args_to_eval;
         SchemeObject* args = trampoline((fn_ptr)&eval_multi);
         new_envt->defineBinding(formals, args);
@@ -714,10 +715,6 @@ fn_ptr eval_user_procedure_call() {
     return (fn_ptr)&eval_sequence;
 }
 
-// TODO: Avoid calling eval_multi to avoid cons'ing of temporaries.
-// Instead: make the built-ins with rst-args take (int num, Stack* stack) arguments. Then this function just evals the args and pushes them to the stack.
-// The built-ins without rst-args can just be called like now, but the args are still eval'ed to the stack but pulled just before calling the proc.
-// The argsv[] must die, as it becomes GC-unsafe when eval'ing one arg at a time.
 fn_ptr eval_built_in_procedure_call() 
 {
     SchemeObject* proc = global_arg1;
