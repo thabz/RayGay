@@ -289,8 +289,13 @@ void test_char() {
     assert_eval(s, "(char=? #\\A)", "#t");
     assert_eval(s, "(char=? #\\a #\\a #\\a)", "#t");
     assert_eval(s, "(char=? #\\a #\\b)", "#f");
+    assert_eval(s, "(char=? #\\a #\\a)", "#t");
     assert_eval(s, "(char=? #\\a #\\a #\\b)", "#f");
     assert_fail(s, "(char=? #\\a 'aa #\\b)");
+    assert_eval(s, "(char<? #\\a #\\z)", "#t");
+    assert_eval(s, "(char<? #\\0 #\\9)", "#t");
+    assert_eval(s, "(char>? #\\z #\\a)", "#t");
+    assert_eval(s, "(char>? #\\9 #\\0)", "#t");
     assert_eval(s, "(char<? #\\a #\\b #\\d)", "#t");
     assert_eval(s, "(char<? #\\a #\\b #\\b)", "#f");
     assert_eval(s, "(char>? #\\c #\\b #\\c)", "#f");
@@ -696,6 +701,7 @@ void test_string() {
     assert_eval(s, "(string<? \"1\" \"5\" \"9\")", "#t");
     assert_eval(s, "(string<? \"a\" \"z\")", "#t");
     assert_eval(s, "(string>? \"z\" \"a\")", "#t");
+    assert_eval(s, "(string>? \"zz\" \"aa\")", "#t");
     assert_eval(s, "(string>? \"c\" \"b\" \"a\")", "#t");
     assert_eval(s, "(string<?  \"abcdef\"  \"abcdef\"  \"abddef\")", "#f");
     assert_eval(s, "(string<=? \"abcdef\"  \"abcdef\"  \"abddef\")", "#t");

@@ -1673,15 +1673,14 @@ SchemeObject* string_comparer(int num, SchemeStack::iterator args, int cmp1, int
 {
     SchemeObject* prev = NULL;
 
-    for(int i = 0; i < num; i++) {
+    for(int i = 0; i < num; i++, args++) {
         SchemeObject* cur = *args;    
         assert_arg_type(name, i+1, s_string_p, cur);
         if (prev != NULL) {
-            int cmp = ci ? strcasecmp(prev->str, cur->str) : strcmp(prev->str, cur->str);
-            if (!(cmp == cmp1 || cmp == cmp2)) return S_FALSE;
+            int c = ci ? strcasecmp(prev->str, cur->str) : strcmp(prev->str, cur->str);
+            if (!(c == cmp1 || c == cmp2)) return S_FALSE;
         }
         prev = cur;
-        args++;
     }
     return S_TRUE;
 }
