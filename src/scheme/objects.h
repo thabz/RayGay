@@ -111,7 +111,8 @@ class SchemeObject
  		    BUILT_IN_PROCEDURE,
  		    MACRO,
  		    CONTINUATION,
- 		    ENVIRONMENT
+ 		    ENVIRONMENT,
+ 		    ALL_TYPE_ARE_BEFORE_HERE
 		};
 
     public:
@@ -169,6 +170,9 @@ class SchemeObject
         static SchemeObject* createInternalProcedure(const char* name);
         static SchemeObject* createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
         static SchemeObject* createWrappedCObject(int subtype, SchemeWrappedCObject*);
+        
+        // For stats
+        static string toString(ObjectType type);
 
     private:
         static map<string,SchemeObject*> known_symbols;

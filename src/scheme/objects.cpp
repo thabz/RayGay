@@ -363,6 +363,53 @@ string SchemeObject::toString() {
     return ss.str();
 }
 
+string SchemeObject::toString(ObjectType t) {
+    switch(t) {
+        case SchemeObject::UNSPECIFIED :
+            return "Unspecified";
+        case SchemeObject::STRING :
+            return "String";
+        case SchemeObject::SYMBOL :    
+            return "Symbol";
+        case SchemeObject::PAIR :
+            return "Pair";
+        case SchemeObject::NUMBER:	
+            return "Number";
+        case SchemeObject::BOOL :    
+            return "Boolean";
+        case SchemeObject::VECTOR :    
+            return "Vector";
+        case SchemeObject::ENVIRONMENT :    
+            return "Environment";
+        case SchemeObject::BLANK :
+            return "Blank heap spot";
+        case SchemeObject::MACRO :
+            return "Macro";
+        case SchemeObject::CONTINUATION: 
+            return "Continuation";
+        case SchemeObject::USER_PROCEDURE :    
+            return "User-procedure";
+        case SchemeObject::BUILT_IN_PROCEDURE :    
+            return "Built-in-procedure";
+        case SchemeObject::INTERNAL_PROCEDURE :    
+            return "Internal-procedure";
+        case SchemeObject::WRAPPED_C_OBJECT :
+            return "Wrapped C-object";
+        case SchemeObject::EOFTYPE :
+            return "EOF";
+        case SchemeObject::INPUT_PORT :
+            return "Inputport";
+        case SchemeObject::OUTPUT_PORT :    
+            return "Outputport";
+        case SchemeObject::CHAR :    
+            return "Char";
+        case SchemeObject::EMPTY_LIST :
+            return "Empty list";
+        default:
+            throw scheme_exception("Unknown type in toString()");    
+    }
+}
+
 //-----------------------------------------------------------
 // Vector
 //-----------------------------------------------------------
@@ -462,3 +509,4 @@ void SchemeWrappedCObject::mark() {
 
 void SchemeWrappedCObject::finalize() {
 }
+

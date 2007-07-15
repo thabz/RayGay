@@ -2,6 +2,7 @@
 #include "heap.h"
 #include "scheme.h"
 #include <iostream>
+#include <iomanip>
 
 Heap* Heap::unique_instance = NULL;
 
@@ -10,6 +11,14 @@ Heap::Heap(uint32_t slots_per_bank) {
     this->free_slots = 0;
     this->slots_num = 0;
     this->allocated = 0;
+    
+    for(int i = 0; i < SchemeObject::ALL_TYPE_ARE_BEFORE_HERE; i++) {
+        alloced_types[i] = 0;    
+    }
+    banks_created = 0;
+    banks_freed = 0;
+    gc_runs = 0;
+
     allocateNewBank();
 }
 
@@ -31,7 +40,7 @@ void Heap::allocateNewBank() {
     cur_bank_idx = banks.size() - 1;
     free_slots += slots_per_bank;
     slots_num += slots_per_bank;
-    //cout << "New bank allocated " << endl;
+    banks_created++;
 }
 
 SchemeObject* Heap::allocate(SchemeObject::ObjectType metadata) {
@@ -62,6 +71,7 @@ SchemeObject* Heap::allocate(SchemeObject::ObjectType metadata) {
     result->set_immutable(false);
     free_slots--;
     allocated++;
+    alloced_types[metadata]++;
     return result;
 }
 
@@ -73,6 +83,7 @@ void Heap::garbageCollect(vector<SchemeObject*> &stack) {
     //cout << "AFTER: Size of heap: " << slots_num << " free: " << free_slots << endl;
     //cout << "AFTER: Size of roots: " << roots.size() << endl << endl;
     allocated = 0;
+    gc_runs++;
 }
 
 void Heap::mark(vector<SchemeObject*> &stack) {
@@ -88,7 +99,7 @@ void Heap::mark(vector<SchemeObject*> &stack) {
 
 void Heap::sweep() {
     vector<SchemeObject*>::iterator banks_iterator = banks.begin();                
-    for(int i = 0; banks_iterator != banks.end(); i++, banks_iterator++) {
+    for(uint i = 0; banks_iterator != banks.end(); i++, banks_iterator++) {
         SchemeObject* bank = *banks_iterator;
         uint blank_found = 0;    
         for(uint j = 0; j < slots_per_bank; j++) {
@@ -110,6 +121,7 @@ void Heap::sweep() {
                 // Bank is all blank and can be free'd
                 banks.erase(banks_iterator);
                 delete [] bank;
+                banks_freed++;
             } else {
                 if (next_free_slot_idx >= j && cur_bank_idx >= i) {
                     next_free_slot_idx = j;
@@ -124,6 +136,23 @@ void Heap::sweep() {
 }
 
 void Heap::dumpStats() {
-    cout << "Heap stats" << endl;        
+    cout << "Heap allocations" << endl;
+    long total_count = 0;        
+    for(int i = 0; i < SchemeObject::ALL_TYPE_ARE_BEFORE_HERE; i++) {
+        long count = alloced_types[i];
+        if (count > 0) {
+            total_count += count;
+            string type_name = SchemeObject::toString((SchemeObject::ObjectType)i);        
+            cout << "    " << left << setw(20) << (type_name + "s") << ": " << count << endl;
+        }    
+    }
+    cout << "    " << left << setw(20) << "Total" << ": " << total_count << endl;
+    cout << "Heap banks" << endl;
+    cout << "    Created             : " << banks_created << endl;
+    cout << "    Freed               : " << banks_freed << endl;
+    cout << "    Objects per bank    : " << SLOTS_NUM << endl;
+    cout << "Garbage collection" << endl;
+    cout << "    Mark and sweep runs : " << gc_runs << endl;
+    
 }
 

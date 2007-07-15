@@ -37,6 +37,12 @@ class Heap {
         uint32_t cur_bank_idx;
         uint32_t next_free_slot_idx;
         uint32_t allocated;
+        
+    private:  /* Stats stuff */
+        uint64_t alloced_types[SchemeObject::ALL_TYPE_ARE_BEFORE_HERE];
+        int banks_created;        
+        int banks_freed;
+        int gc_runs;
 };
 
 inline
