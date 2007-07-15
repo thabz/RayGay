@@ -707,7 +707,7 @@ void test_string() {
     assert_eval(s, "(string<=? \"abcdef\"  \"abcdef\"  \"abddef\")", "#t");
     assert_eval(s, "(string>?  \"abcdef\"  \"abcdee\"  \"abcded\")", "#t");
     assert_eval(s, "(string>?  \"abcdef\"  \"abcdef\"  \"abcded\")", "#f");
-    assert_eval(s, "(string>=? \"abcdef\"  \"abcdef\"  \"abcded\")", "#f");
+    assert_eval(s, "(string>=? \"abcdef\"  \"abcdef\"  \"abcded\")", "#t");
     assert_eval(s, "(string>=? \"abcdef\"  \"abcdef\"  \"abcdeg\")", "#f");
     assert_eval(s, "(string>=? \"abcdef\"  \"abcdee\"  \"abcded\")", "#t");
     assert_fail(s, "(string>=? \"abcdef\"  \"abcdee\" 'a)");
