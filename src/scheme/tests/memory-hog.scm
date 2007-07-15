@@ -7,13 +7,15 @@
 ; kan koere med kun 100k allocations og ikke 1M.
 ;
 ; ./repl tests/memory-hog.scm  42.08s user 0.23s system 98% cpu 42.921 total
+; 
+; Fixed too frequent gc-runs:
+; ./repl -d tests/mem*  0,33s user 0,01s system 98% cpu 0,344 total
 
-(display
 (reverse 
 (let loop ((i 0)
            (l '()))
     (if (= i 100000)
         l
-	(loop (+ 1 i) (cons i l))))))
+	(loop (+ 1 i) (cons i l)))))
 (newline)    
  

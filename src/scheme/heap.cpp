@@ -130,7 +130,6 @@ void Heap::sweep() {
             }
         }
     }
-    // TODO: Set these to the first free slot while traversing the heap above
     // next_free_slot_idx = 0;
     // cur_bank_idx = 0;
 }

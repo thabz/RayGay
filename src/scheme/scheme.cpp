@@ -850,11 +850,11 @@ SchemeObject* s_reverse(SchemeObject* o)
     SchemeObject* result = S_EMPTY_LIST;
 
     while (o != S_EMPTY_LIST) {
-        assert_arg_type("reverse", 1, s_pair_p, o);
-		result = i_cons(i_car(o), result);
-		o = s_cdr(o);
-	}
-	return result;  
+        assert_arg_pair_type("reverse", 1, o);
+	result = i_cons(i_car(o), result);
+	o = i_cdr(o);
+    }
+    return result;  
 }
 
 SchemeObject* s_length(SchemeObject* p) {

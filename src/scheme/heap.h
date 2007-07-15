@@ -55,8 +55,8 @@ Heap* Heap::getUniqueInstance() {
 
 inline
 bool Heap::timeToGarbageCollect() {
-    //return allocated >= SLOTS_NUM;
-    return cur_bank_idx == banks.size()-1 && next_free_slot_idx > int(0.9 * SLOTS_NUM);
+    return allocated >= (9 * SLOTS_NUM) / 10;
+    //return cur_bank_idx == banks.size()-1 && next_free_slot_idx > int(0.9 * SLOTS_NUM);
     //return allocated > 5;
 }
 
