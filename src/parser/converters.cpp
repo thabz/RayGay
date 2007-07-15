@@ -68,7 +68,11 @@ SchemeObject* vector2scm(Vector vector) {
     SchemeObject* v0 = double2scm(vector[0]);
     SchemeObject* v1 = double2scm(vector[1]);
     SchemeObject* v2 = double2scm(vector[2]);
-    return s_vector(i_list_3(v0,v1,v2));    // TODO: i_list_3 slow!
+    SchemeObject* result = i_make_vector(3, S_UNSPECIFIED);
+    i_vector_set_e(result, 0, v0);
+    i_vector_set_e(result, 1, v1);
+    i_vector_set_e(result, 2, v2);
+    return result;
 }
 
 RGB scm2rgb(SchemeObject* s_rgb) {
@@ -80,7 +84,11 @@ SchemeObject* rgb2scm(RGB rgb) {
     SchemeObject* r = double2scm(rgb.r());
     SchemeObject* g = double2scm(rgb.g());
     SchemeObject* b = double2scm(rgb.b());
-    return s_vector(i_list_3(r,g,b));
+    SchemeObject* result = i_make_vector(3, S_UNSPECIFIED);
+    i_vector_set_e(result, 0, r);
+    i_vector_set_e(result, 1, g);
+    i_vector_set_e(result, 2, b);
+    return result;
 }
 
 vector<Vector> scm2vectorlist(SchemeObject* s_list_vector, char* subr, int pos) {

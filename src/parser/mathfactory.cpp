@@ -66,8 +66,7 @@ SchemeObject* make_poisson_set(SchemeObject* s_w, SchemeObject* s_h, SchemeObjec
 	double x = set[i][0];
 	double y = set[i][1];
 	SchemeObject* s_point = i_list_2(double2scm(x), double2scm(y));
-	SchemeObject* s_point_wrap = i_list_1(s_point);
-	s_set = s_append(i_list_2(s_set,s_point_wrap)); // TODO: Use cons and not append
+        s_set = i_cons(s_point, s_set);
     }
     return s_set;
 }
@@ -82,8 +81,7 @@ SchemeObject* make_halton_set(SchemeObject* s_w, SchemeObject* s_h, SchemeObject
     for(int i = 0; i < num; i++) {
         double *values = halton.getNext();
 	SchemeObject* s_point = i_list_2(double2scm(w*values[0]), double2scm(h*values[1]));
-	SchemeObject* s_point_wrap = i_list_1(s_point);
-	s_set = s_append(i_list_2(s_set,s_point_wrap));  // TODO: Use cons and not append
+        s_set = i_cons(s_point, s_set);
     }
     return s_set;
 }

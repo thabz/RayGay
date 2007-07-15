@@ -252,6 +252,5 @@ SchemeObject* SceneParser::set_settings(SchemeObject* s_settings)
 }
 
 string SceneParser::version() {
-    // TODO: Add VERSION        
-    return "RayGay Scheme";     
+    return string("RayGay Scheme ") + VERSION;
 }
