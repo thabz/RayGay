@@ -11,12 +11,12 @@ class Tessalation : public Mesh {
 
     public:
 	/// Constructor
-	Tessalation(const Vector center, const double radius, const uint num, const Material* mat);
+	Tessalation(const Vector center, const double radius, const uint32_t num, const Material* mat);
 
     private:
-	void split(const Vector& v1, const Vector& v2, const Vector& v3, uint depth);
+	void split(const Vector& v1, const Vector& v2, const Vector& v3, uint32_t depth);
 
-	uint max_splits;
+	uint32_t max_splits;
 	double radius;
 	Vector center;
 };

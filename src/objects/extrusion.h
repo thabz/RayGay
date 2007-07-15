@@ -16,10 +16,10 @@ class Extrusion : public Mesh {
         Extrusion(const Path& path, double radius, uint32_t segments, uint32_t pieces, Material* m);
 
 	/// Constructor for generic extrusion
-	Extrusion::Extrusion(const Path& path, const Path& circle, uint segments, uint pieces, double twists, Material* m);
+	Extrusion::Extrusion(const Path& path, const Path& circle, uint32_t segments, uint32_t pieces, double twists, Material* m);
 
     private:
-	void init(const Path& path, const Path& circle, uint segments, uint pieces, double twists);
+	void init(const Path& path, const Path& circle, uint32_t segments, uint32_t pieces, double twists);
 };
 
 #endif

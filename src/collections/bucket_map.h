@@ -7,7 +7,7 @@
 /* 
    TODO: Profile
    TODO: Test distribution of hash
-   TODO: Keep an uint end_bucket like uint begin_bucket.
+   TODO: Keep an uint32_t end_bucket like uint32_t begin_bucket.
 */   
  
 
@@ -103,7 +103,7 @@ class bucket_map
     	bucket_map(uint32_t n_b = 255) : num_buckets(n_b) {
             assert(num_buckets > 0);
             buckets = new node_type[num_buckets];
-            for(uint i = 0; i < num_buckets; i++) {
+            for(uint32_t i = 0; i < num_buckets; i++) {
                 buckets[i].empty = true;
             }
             begin_bucket = num_buckets;
@@ -111,7 +111,7 @@ class bucket_map
     	}
     	
         ~bucket_map() {
-            for(uint i = begin_bucket; i < num_buckets; i++) {
+            for(uint32_t i = begin_bucket; i < num_buckets; i++) {
                 if (!buckets[i].empty) {
                     node_type* node = buckets[i].next;
                     while(node != NULL) {

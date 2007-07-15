@@ -12,7 +12,7 @@ class Texture;
 class HeightField : public ParametrizedSurface 
 {
     public:
-	HeightField::HeightField(Texture* texture, double height, double width, double depth, uint width_divisions, uint depth_divisions, const Material* material);
+	HeightField::HeightField(Texture* texture, double height, double width, double depth, uint32_t width_divisions, uint32_t depth_divisions, const Material* material);
 
     protected:
 	Vector eval(double u, double v) const;

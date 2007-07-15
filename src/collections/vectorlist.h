@@ -25,7 +25,7 @@ class VectorList {
         void transform(const Matrix3& M);
         void normalize();
 	Vector operator[](const uint32_t i) const;
-	void reserve(uint num);
+	void reserve(uint32_t num);
 
     private:
 	std::vector<double> v;
@@ -33,13 +33,13 @@ class VectorList {
 
 inline
 Vector VectorList::get(uint32_t i) const {
-    uint k = i * 3;
+    uint32_t k = i * 3;
     return Vector(v[k],v[k+1],v[k+2]);
 }
 
 inline
 void VectorList::get(uint32_t i, Vector& dest) const {
-    uint k = i * 3;
+    uint32_t k = i * 3;
     dest[0] = v[k+0];
     dest[1] = v[k+1];
     dest[2] = v[k+2];
@@ -47,7 +47,7 @@ void VectorList::get(uint32_t i, Vector& dest) const {
 
 inline
 void VectorList::get(uint32_t i, double dest[3]) const {
-    uint k = i * 3;
+    uint32_t k = i * 3;
     dest[0] = v[k+0];
     dest[1] = v[k+1];
     dest[2] = v[k+2];
@@ -55,7 +55,7 @@ void VectorList::get(uint32_t i, double dest[3]) const {
 
 inline
 void VectorList::set(const uint32_t i, const Vector& w) {
-    uint k = i * 3;
+    uint32_t k = i * 3;
     v[k+0] = w[0];
     v[k+1] = w[1];
     v[k+2] = w[2];
@@ -63,12 +63,12 @@ void VectorList::set(const uint32_t i, const Vector& w) {
 
 inline
 Vector VectorList::operator[](const uint32_t i) const {
-    uint k = i * 3;
+    uint32_t k = i * 3;
     return Vector(v[k],v[k+1],v[k+2]);
 }
 
 inline
-uint VectorList::size() const {
+uint32_t VectorList::size() const {
     return v.size() / 3;
 }
 

@@ -28,7 +28,7 @@ void assert_eval(Scheme* s, string expression, string expected) {
         return;
     }
     
-    uint stacksize_before = stack.size();
+    uint32_t stacksize_before = stack.size();
 
     try {
 //        cout << "Testing " << expression << endl;
@@ -52,7 +52,7 @@ void assert_eval(Scheme* s, string expression, string expected) {
 }
 
 void assert_fail(Scheme* s, string expression) {
-    uint stacksize_before = stack.size();
+    uint32_t stacksize_before = stack.size();
     try {
         s->eval(expression);
         errors_found++;

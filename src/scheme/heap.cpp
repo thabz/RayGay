@@ -33,7 +33,7 @@ void Heap::popRoot() {
 void Heap::allocateNewBank() {
     SchemeObject* bank = new SchemeObject[slots_per_bank];
     banks.push_back(bank);
-    for(uint i = 0; i < slots_per_bank; i++) {
+    for(uint32_t i = 0; i < slots_per_bank; i++) {
         bank[i].metadata = SchemeObject::BLANK;
     }
     next_free_slot_idx = 0;
@@ -99,10 +99,10 @@ void Heap::mark(vector<SchemeObject*> &stack) {
 
 void Heap::sweep() {
     vector<SchemeObject*>::iterator banks_iterator = banks.begin();                
-    for(uint i = 0; banks_iterator != banks.end(); i++, banks_iterator++) {
+    for(uint32_t i = 0; banks_iterator != banks.end(); i++, banks_iterator++) {
         SchemeObject* bank = *banks_iterator;
-        uint blank_found = 0;    
-        for(uint j = 0; j < slots_per_bank; j++) {
+        uint32_t blank_found = 0;    
+        for(uint32_t j = 0; j < slots_per_bank; j++) {
             SchemeObject* cur = &(bank[j]);
             if (cur->type() != SchemeObject::BLANK) {
                 bool in_use = cur->inuse();

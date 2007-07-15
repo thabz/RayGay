@@ -54,7 +54,7 @@ class Mesh : public ObjectGroup {
 	virtual void transform(const Matrix& m);
 
 	/// Returns a (possibly) phong-interpolated normal
-	Vector normal(const uint face_idx, double u, double v) const;
+	Vector normal(const uint32_t face_idx, double u, double v) const;
 	
 	/// Material of the mesh 
 	virtual const Material* getMaterial() const;
@@ -66,7 +66,7 @@ class Mesh : public ObjectGroup {
 	void addQuad(const Vector* corners, const Vector2* uv);
 	
 	/// Add a quad to the mesh
-	void addQuad(const uint c[4], const Vector2 uv[4]);
+	void addQuad(const uint32_t c[4], const Vector2 uv[4]);
 
 	/// Add a quad to the mesh
         void addQuad(const uint32_t c[4]);
@@ -81,13 +81,13 @@ class Mesh : public ObjectGroup {
 	uint32_t addVertex(const Vector& point);
 
 	/// Add a triangle by vertex indices
-	void addTriangle(const uint v[3], const Vector2 uv[3]);
+	void addTriangle(const uint32_t v[3], const Vector2 uv[3]);
 	
 	/// Add a triangle by vertex indices
 	void addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 uv1, const Vector2 uv2);
 	
 	/// Add a triangle by vertex indices
-	void addTriangle(const uint v[3]);
+	void addTriangle(const uint32_t v[3]);
 	
 	/// A vector of all vertices
 	std::vector<Vector>* getVertices();
@@ -96,29 +96,29 @@ class Mesh : public ObjectGroup {
 	std::vector<Linesegment>* getEdges();
 	
 	/// Index into face vertices
-	Vector cornerAt(uint tri_idx, uint i) const;
+	Vector cornerAt(uint32_t tri_idx, uint32_t i) const;
 	
 	/// Index into face vertices
-	void cornerAt(uint tri_idx, uint i, double dest[3]) const;
+	void cornerAt(uint32_t tri_idx, uint32_t i, double dest[3]) const;
 	
 	/// Index into vertices 
-	Vector cornerAt(uint i) const { return corners[i]; };
+	Vector cornerAt(uint32_t i) const { return corners[i]; };
 
-	Vector2 getUV(const uint face_idx, double u, double v) const;
+	Vector2 getUV(const uint32_t face_idx, double u, double v) const;
 
 	void prepare();
 	
 	virtual SceneObject* clone() const;
 
-	void hintVertexNum(uint num);
-	void hintFaceNum(uint num);
+	void hintVertexNum(uint32_t num);
+	void hintFaceNum(uint32_t num);
 
     private:
 	MeshType meshType;
 	bool prepared;
 	int findExistingCorner(const Vector* c) const;
 	void computeInterpolatedNormals();
-	Vector phong_normal(const uint face_idx, double u, double v) const;
+	Vector phong_normal(const uint32_t face_idx, double u, double v) const;
 	std::vector<Triangle> triangles;
 
 	const Material* material;
@@ -127,27 +127,27 @@ class Mesh : public ObjectGroup {
 	VectorList corners;
 	std::vector<Vector2> uv_coords;
 	// 3 indices into corners for each face
-	std::vector<uint> faces;
+	std::vector<uint32_t> faces;
 	// 3 indices into normals for each face
-	std::vector<uint> i_normal_indices;
+	std::vector<uint32_t> i_normal_indices;
 
     protected:
-	uint facesNum() const;
+	uint32_t facesNum() const;
 
 };
 
 inline
-uint Mesh::facesNum() const {
+uint32_t Mesh::facesNum() const {
     return faces.size() / 3;
 }
 
 inline
-Vector Mesh::cornerAt(uint tri_idx, uint32_t i) const {
+Vector Mesh::cornerAt(uint32_t tri_idx, uint32_t i) const {
     return corners[faces[3 * tri_idx + i]];
 }
 
 inline
-void Mesh::cornerAt(uint tri_idx, uint32_t i, double dest[3]) const {
+void Mesh::cornerAt(uint32_t tri_idx, uint32_t i, double dest[3]) const {
     corners.get(faces[3 * tri_idx + i],dest);
 }
 

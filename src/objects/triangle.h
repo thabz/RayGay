@@ -36,7 +36,7 @@ class Triangle : public Object {
 
     public:
 	/// Constructor
-	Triangle(Mesh* m, uint tri_index);
+	Triangle(Mesh* m, uint32_t tri_index);
 
 	void transform(const Matrix& m) { };
 	const Material* getMaterial() const;

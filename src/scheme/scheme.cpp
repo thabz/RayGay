@@ -1031,7 +1031,7 @@ SchemeObject* s_vector_set_e(SchemeObject* s_vec, SchemeObject* s_index, SchemeO
     assert_arg_type("vector-set!", 1, s_vector_p, s_vec);
     assert_arg_not_immutable("vector-set!", 1, s_vec);
     assert_arg_int_in_range("vector-set!", 2, s_index, 0, s_vec->length-1);
-    uint i = scm2int(s_index);
+    uint32_t i = scm2int(s_index);
     s_vec->setVectorElem(val, i);
     return S_UNSPECIFIED;
 }

@@ -14,7 +14,7 @@ class ParametrizedSurface : public Mesh
 {
     public:
 	/// Constructor
-	ParametrizedSurface(uint uRes, uint vRes, bool uClose, bool vClose, const Material* m);
+	ParametrizedSurface(uint32_t uRes, uint32_t vRes, bool uClose, bool vClose, const Material* m);
 	void prepare();
 	void transform(const Matrix& m);
 
@@ -22,7 +22,7 @@ class ParametrizedSurface : public Mesh
 	virtual Vector eval(double u, double v) const = 0;
 
     private:
-	uint uRes, vRes;
+	uint32_t uRes, vRes;
 	bool uClose, vClose;
 	Matrix trans;
 };
