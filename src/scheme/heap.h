@@ -18,6 +18,7 @@ class Heap {
         SchemeObject* allocate(SchemeObject::ObjectType type);
         void garbageCollect(vector<SchemeObject*> &stack);
         bool timeToGarbageCollect();
+        void dumpStats();
         
     private:
         Heap(uint32_t size);

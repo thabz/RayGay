@@ -171,7 +171,6 @@ int SchemeObject::registerWrappedObject() {
 }
 
 void SchemeObject::mark() {
-    binding_map_t::iterator v;
     if (!inuse()) {
         metadata |= INUSE_FLAG;
         ObjectType t = type();
@@ -190,8 +189,8 @@ void SchemeObject::mark() {
                     result->mark();
                 }
                 break;
-            case SchemeObject::ENVIRONMENT :    
-                v = binding_map->begin();
+            case SchemeObject::ENVIRONMENT : {
+                binding_map_t::iterator v = binding_map->begin();
                 while (v != binding_map->end()) {
                     if ((*v).first != NULL) (*v).first->mark();
                     if ((*v).second != NULL) (*v).second->mark();
@@ -201,6 +200,7 @@ void SchemeObject::mark() {
                     parent->mark();
                 }
                 break;
+            }
             case SchemeObject::USER_PROCEDURE :
                 s_closure_data->mark();
                 if (name != NULL) {

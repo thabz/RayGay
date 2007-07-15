@@ -82,7 +82,7 @@ void Heap::mark(vector<SchemeObject*> &stack) {
     }   
     for(vector<SchemeObject*>::iterator i = roots.begin(); i != roots.end(); i++) {
         assert(*i != NULL);
-        (*i)->mark();
+       (*i)->mark();
     }   
 }
 
@@ -122,3 +122,8 @@ void Heap::sweep() {
     // next_free_slot_idx = 0;
     // cur_bank_idx = 0;
 }
+
+void Heap::dumpStats() {
+    cout << "Heap stats" << endl;        
+}
+
