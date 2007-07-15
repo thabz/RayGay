@@ -19,12 +19,12 @@ class Exception {
 	Exception(std::string message, const char* srcfile, uint32_t srcline);
 	std::string getMessage() { return message; };
 	std::string getSourceFile() { return sourcefile; };
-	uint getSourceLine() { return sourceline; };
+	uint32_t getSourceLine() { return sourceline; };
 
     private:
 	std::string message;
 	std::string sourcefile;
-	uint sourceline;
+	uint32_t sourceline;
 };
 
 #endif
