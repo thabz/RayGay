@@ -10,7 +10,8 @@ autoheader
 echo "Now running aclocal"
 aclocal $ACLOCAL_FLAGS -I m4
 
-if test `uname` = "Darwin"; then
+# Run glibtoolize (Darwin) or libtoolize (Linux)
+if [ `which glibtoolize` != "" ]; then
    echo "Now running glibtoolize"
    glibtoolize -f -c
 else 
