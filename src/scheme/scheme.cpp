@@ -1669,6 +1669,22 @@ SchemeObject* s_char_ci_greater_equal_p(int num, SchemeStack::iterator args) {
     return char_comparer(num, args, 1, 0, "char-ci>=?", true);
 }
 
+int stringcmp(char* s1, char* s2) {
+    while(*s1 != '\0' && *s2 != '\0' && *s2 == *s1 ) { s1++; s2++; };
+    if (*s1 == '\0' && *s2 == '\0') return 0;
+    if (*s1 != '\0' && *s2 == '\0') return 1;
+    if (*s1 == '\0' && *s2 != '\0') return -1;
+    return *s1 < *s2 ? -1 : 1;
+}
+
+int stringcasecmp(char* s1, char* s2) {
+    while(*s1 != '\0' && *s2 != '\0' && toupper(*s2) == toupper(*s1)) { s1++; s2++; };
+    if (*s1 == '\0' && *s2 == '\0') return 0;
+    if (*s1 != '\0' && *s2 == '\0') return 1;
+    if (*s1 == '\0' && *s2 != '\0') return -1;
+    return toupper(*s1) < toupper(*s2) ? -1 : 1;
+}
+
 SchemeObject* string_comparer(int num, SchemeStack::iterator args, int cmp1, int cmp2, const char* name, bool ci) 
 {
     SchemeObject* prev = NULL;
@@ -1677,7 +1693,7 @@ SchemeObject* string_comparer(int num, SchemeStack::iterator args, int cmp1, int
         SchemeObject* cur = *args;    
         assert_arg_type(name, i+1, s_string_p, cur);
         if (prev != NULL) {
-            int c = ci ? strcasecmp(prev->str, cur->str) : strcmp(prev->str, cur->str);
+            int c = ci ? stringcasecmp(prev->str, cur->str) : stringcmp(prev->str, cur->str);
             if (!(c == cmp1 || c == cmp2)) return S_FALSE;
         }
         prev = cur;
