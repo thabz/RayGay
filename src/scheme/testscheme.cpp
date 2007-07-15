@@ -686,10 +686,17 @@ void test_string() {
     assert_fail(s, "(substring \"abcdef\" 3 1)");
     assert_eval(s, "(string=?  \"abcdef\"  \"abcdef\"  \"abcdef\")", "#t");
     assert_eval(s, "(string<?  \"abcdef\"  \"abcdeg\"  \"abddef\")", "#t");
+    assert_eval(s, "(string>? \"z\" \"a\")", "#t");
+    assert_eval(s, "(string<? \"z\" \"a\")", "#f");
     assert_eval(s, "(string>? \"9\" \"0\")", "#t");
     assert_eval(s, "(string=? \"9\" \"0\")", "#f");
     assert_eval(s, "(string=? \"9\" \"9\")", "#t");
     assert_eval(s, "(string<? \"9\" \"0\")", "#f");
+    assert_eval(s, "(string<? \"0\" \"9\")", "#t");
+    assert_eval(s, "(string<? \"1\" \"5\" \"9\")", "#t");
+    assert_eval(s, "(string<? \"a\" \"z\")", "#t");
+    assert_eval(s, "(string>? \"z\" \"a\")", "#t");
+    assert_eval(s, "(string>? \"c\" \"b\" \"a\")", "#t");
     assert_eval(s, "(string<?  \"abcdef\"  \"abcdef\"  \"abddef\")", "#f");
     assert_eval(s, "(string<=? \"abcdef\"  \"abcdef\"  \"abddef\")", "#t");
     assert_eval(s, "(string>?  \"abcdef\"  \"abcdee\"  \"abcded\")", "#t");

@@ -1673,7 +1673,7 @@ SchemeObject* string_comparer(int num, SchemeStack::iterator args, int cmp1, int
 {
     SchemeObject* prev = NULL;
 
-    for(int i = 0; i < num; i++, args++) {
+    for(int i = 0; i < num; i++) {
         SchemeObject* cur = *args;    
         assert_arg_type(name, i+1, s_string_p, cur);
         if (prev != NULL) {
@@ -1681,6 +1681,7 @@ SchemeObject* string_comparer(int num, SchemeStack::iterator args, int cmp1, int
             if (!(cmp == cmp1 || cmp == cmp2)) return S_FALSE;
         }
         prev = cur;
+        args++;
     }
     return S_TRUE;
 }
