@@ -81,7 +81,7 @@ SchemeObject* SchemeObject::createSymbol(const char* str) {
         known_symbols[strstring] = result;
         int h = (int) result;
 
-#if 0
+#if 1
         h += ~(h << 15);
         h ^= (h >> 10);
         h += (h << 3);
@@ -377,7 +377,9 @@ string SchemeObject::toString() {
         case SchemeObject::EMPTY_LIST :
             return "()";
         default:
-            throw scheme_exception("Unknown type in toString()");    
+            stringstream ss;
+            ss << t;
+            throw scheme_exception("Unknown type " + ss.str() + " in toString()");    
     }
     return ss.str();
 }
