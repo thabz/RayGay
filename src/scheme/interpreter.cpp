@@ -136,7 +136,7 @@ fn_ptr eval() {
         return NULL;
     } else if (i_symbol_p(s) == S_TRUE) {
         SchemeObject* symbol = s;
-	    s = envt->getBinding(symbol);
+	s = envt->getBinding(symbol);
         if (s == NULL) {
             throw scheme_exception("Unbound variable " + string(symbol->str));
         }
@@ -165,15 +165,15 @@ fn_ptr eval_list() {
         heap->popRoot();
     }
 
-	SchemeObject* car = i_car(p);
+    SchemeObject* car = i_car(p);
     if (i_symbol_p(car) == S_FALSE) {
         return (fn_ptr)&eval_combo;
     }
 
     SchemeObject* s = car;
-	SchemeObject* cdr = i_cdr(p);
+    SchemeObject* cdr = i_cdr(p);
 	
-	SchemeObject* proc = envt->getBinding(s);
+    SchemeObject* proc = envt->getBinding(s);
     if (proc != NULL) {
         if (proc->type() == SchemeObject::USER_PROCEDURE) {
             global_arg1 = proc;

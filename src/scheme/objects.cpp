@@ -462,9 +462,8 @@ SchemeObject* SchemeObject::getBinding(SchemeObject* name) {
     }
     SchemeObject* envt = this;
     while (envt != NULL) {
-        binding_map_t::iterator end = envt->binding_map->end();
         binding_map_t::iterator v = envt->binding_map->find(name, name->hash);
-        if (v != end) {
+        if (v != envt->binding_map->end()) {
             return v->second;
         } else {
             envt = envt->parent;        
@@ -486,15 +485,19 @@ void SchemeObject::setBinding(SchemeObject* name, SchemeObject* o) {
     if (i_symbol_p(name) == S_FALSE) {
         throw scheme_exception(name->toString() + " is not a symbol.");
     }
-    binding_map_t::iterator v = binding_map->find(name, name->hash);
-    if (v == binding_map->end()) {
-        if (parent != NULL) {
-            parent->setBinding(name,o);
+    SchemeObject* envt = this;
+    while (true) {
+        binding_map_t::iterator v = envt->binding_map->find(name, name->hash);
+        if (v == envt->binding_map->end()) {
+            if (envt->parent != NULL) {
+                envt = envt->parent;    
+            } else {
+                throw scheme_exception("Unbound variable: " + name->toString());
+            }
         } else {
-            throw scheme_exception("Unbound variable: " + name->toString());
+            v->second = o;  
+            return;
         }
-    } else {
-        v->second = o;
     }
 }
 
