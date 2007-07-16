@@ -608,6 +608,7 @@ SchemeObject* s_map(int num, SchemeStack::iterator args) {
             if (lists_ptr == S_EMPTY_LIST) {
                 throw scheme_exception("Argument lists not equals length.");
             }
+            // TODO: Hvordan kan lists_ptr være null her? Se r4rstest.scm
             SchemeObject* arg = s_car(lists_ptr);
             args[i] = s_cdr(lists_ptr);
             collection.add(arg);
