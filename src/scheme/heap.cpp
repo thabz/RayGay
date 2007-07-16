@@ -153,5 +153,33 @@ void Heap::dumpStats() {
     cout << "Garbage collection" << endl;
     cout << "    Mark and sweep runs : " << gc_runs << endl;
     
+    // Dump symbols hash distributions
+    cout << "Symbols hash distribution" << endl;
+    uint32_t bits = 8;
+    int bit_cor[bits]; // Bit correlations
+    vector<SchemeObject*>::iterator banks_iterator = banks.begin();
+    int hashes = 0;                
+
+    for(uint32_t i = 0; i < bits; i++) {
+        bit_cor[i] = 0;    
+    }
+    for(uint32_t i = 0; banks_iterator != banks.end(); i++, banks_iterator++) {
+        SchemeObject* bank = *banks_iterator;
+        for(uint32_t j = 0; j < slots_per_bank; j++) {
+            SchemeObject* cur = &(bank[j]);
+            if (cur->type() == SchemeObject::SYMBOL) {
+                hashes++;
+                uint32_t h = cur->hash % (1 << bits);
+                for(uint32_t b = 0; b < bits; b++) {
+                    if (h & (1 << b)) bit_cor[b]++;        
+                }
+            }
+        }
+    }
+    cout << "    Bit correlations    : ";
+    for(uint32_t i = 0; i < bits; i++) {
+        cout << setprecision(2) << fixed << (double(bit_cor[i]) / double(hashes)) << " ";    
+    }
+    cout << endl;
 }
 
