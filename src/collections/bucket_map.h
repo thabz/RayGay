@@ -90,7 +90,7 @@ template <typename K, typename V>
 class bucket_map 
 {
     public:
-        typedef uint32_t hash_type;
+        typedef int hash_type;
         typedef K key_type;
         typedef V data_type;
         typedef std::pair<K,V> value_type;
@@ -136,8 +136,11 @@ class bucket_map
             return iterator(num_buckets, NULL, this);    
         }
                 
-        std::pair<iterator,bool> insert(const value_type& v) {
-            hash_type h = hash(v.first);
+        std::pair<iterator,bool> insert(const value_type& v, hash_type h = -1) {
+            if (h == -1) {        
+                h = hash(v.first);
+            }
+            h %= num_buckets;
             node_type* node = &buckets[h];
             node_type* prev = NULL;
             for(; node != NULL && !node->empty; node = node->next) {
@@ -169,11 +172,12 @@ class bucket_map
         }
     	
     	iterator find(const K &key) {
-            return find(key, hash(key));
+            hash_type h = hash(key);     
+            return find(key, h);
         }
     	
         reference operator[](const K& k) {
-            hash_type h = hash(k);        
+            hash_type h = hash(k);
             iterator i = find(k,h);
             if (i != end()) {
                 return i->second;
@@ -190,6 +194,17 @@ class bucket_map
             return map_size == 0;        
     	}
 
+    	iterator find(const K &key, const hash_type &h) {
+            hash_type hh = h % num_buckets;        
+            node_type* node = &buckets[hh];
+            for(; node != NULL && !node->empty; node = node->next) {
+                if (node->p.first == key) {
+                    return iterator(hh, node, this);
+                }
+            }
+            return end();
+        }
+    	
     private:
      
     	// Number of buckets
@@ -198,16 +213,6 @@ class bucket_map
     	// Buckets
         node_type* buckets;
 
-    	iterator find(const K &key, const hash_type &h) {
-            node_type* node = &buckets[h];
-            for(; node != NULL && !node->empty; node = node->next) {
-                if (node->p.first == key) {
-                    return iterator(h, node, this);
-                }
-            }
-            return end();
-        }
-    	
         int hash(const K &key) const;
    
     	// Size of map
@@ -227,7 +232,6 @@ int bucket_map<K,V>::hash(const K &key) const {
     h ^= (h >> 6);
     h += ~(h << 11);
     h ^= (h >> 16);
-    h %= num_buckets;
     return (h < 0) ? h * -1 : h;
 };
 

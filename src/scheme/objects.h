@@ -85,6 +85,7 @@ class SchemeObject
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
                     SchemeWrappedCObject* wrapped_object;
+                    int32_t hash;           // For symbols
                 };
             };
         };
@@ -162,7 +163,7 @@ class SchemeObject
         static SchemeObject* createEOF();
         static SchemeObject* createSymbol(const char* str);
         static SchemeObject* createContinuation();
-        static SchemeObject* createEnvironment(SchemeObject* parent, uint32_t num_buckets = 7);
+        static SchemeObject* createEnvironment(SchemeObject* parent, uint32_t num_buckets = 8);
         static SchemeObject* createInputPort(istream* is);
         static SchemeObject* createOutputPort(ostream* os);
         static SchemeObject* createBuiltinProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());

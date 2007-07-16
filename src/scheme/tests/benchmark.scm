@@ -32,6 +32,9 @@
 ;
 ; 2007-07-13 No cons'ing when calling built-ins
 ; ./repl tests/benchmark.scm  18.06s user 0.08s system 98% cpu 18.386 total
+;
+; 2007-07-16 Cache hash of symbol inside symbol
+; ./repl -d tests/bench*  17,22s user 0,04s system 98% cpu 17,458 total
 
 (define (square x)
   (* x x))

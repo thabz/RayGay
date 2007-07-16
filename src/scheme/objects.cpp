@@ -79,6 +79,14 @@ SchemeObject* SchemeObject::createSymbol(const char* str) {
         result = Heap::getUniqueInstance()->allocate(SchemeObject::SYMBOL);
         result->str = strdup(str);
         known_symbols[strstring] = result;
+        int h = int(result);
+        h += ~(h << 15);
+        h ^= (h >> 10);
+        h += (h << 3);
+        h ^= (h >> 6);
+        h += ~(h << 11);
+        h ^= (h >> 16);
+        result->hash = (h < 0) ? h * -1 : h;
     } else {
         result = v->second;
     }
@@ -455,7 +463,7 @@ SchemeObject* SchemeObject::getBinding(SchemeObject* name) {
     SchemeObject* envt = this;
     while (envt != NULL) {
         binding_map_t::iterator end = envt->binding_map->end();
-        binding_map_t::iterator v = envt->binding_map->find(name);
+        binding_map_t::iterator v = envt->binding_map->find(name, name->hash);
         if (v != end) {
             return v->second;
         } else {
@@ -478,7 +486,7 @@ void SchemeObject::setBinding(SchemeObject* name, SchemeObject* o) {
     if (i_symbol_p(name) == S_FALSE) {
         throw scheme_exception(name->toString() + " is not a symbol.");
     }
-    binding_map_t::iterator v = binding_map->find(name);
+    binding_map_t::iterator v = binding_map->find(name, name->hash);
     if (v == binding_map->end()) {
         if (parent != NULL) {
             parent->setBinding(name,o);
