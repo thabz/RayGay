@@ -79,14 +79,25 @@ SchemeObject* SchemeObject::createSymbol(const char* str) {
         result = Heap::getUniqueInstance()->allocate(SchemeObject::SYMBOL);
         result->str = strdup(str);
         known_symbols[strstring] = result;
-        int h = int(result);
+        int h = (int) result;
+
+#if 0
         h += ~(h << 15);
         h ^= (h >> 10);
         h += (h << 3);
         h ^= (h >> 6);
         h += ~(h << 11);
         h ^= (h >> 16);
+#else        
+        h ^= h << 3;
+        h += h >> 5;
+        h ^= h << 4;
+        h += h >> 17;
+        h ^= h << 25;
+        h += h >> 6;
+#endif        
         result->hash = (h < 0) ? h * -1 : h;
+        //result->hash = 128;
     } else {
         result = v->second;
     }

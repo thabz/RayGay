@@ -3,6 +3,8 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <iomanip>
+#include <time.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -12,6 +14,7 @@ using namespace std;
 
 bool verbose = false;
 Scheme* scheme;
+clock_t elapsed;
 
 int repl() {
     char input[64*1024];
@@ -60,8 +63,12 @@ int runfile(char* filename) {
 }
 
 void print_stats() {
-    Heap* heap = Heap::getUniqueInstance();
     cout << "------ Stats ------" << endl;       
+
+    double secs = double(elapsed) / double(CLOCKS_PER_SEC);
+    cout << "Running time            : " << fixed << setprecision(2) << secs << "s" << endl;
+    
+    Heap* heap = Heap::getUniqueInstance();
     heap->dumpStats();    
 }
 
@@ -101,13 +108,16 @@ int main(int argc, char *argv[]) {
 	}
     }        
     
+    elapsed = clock();
+    
     int result;
-
     if (optind == argc - 1) {
         result = runfile(argv[optind]);
     } else {
         result = repl();
     }    
+    
+    elapsed = clock() - elapsed;
     
     if (verbose) {
         print_stats();    

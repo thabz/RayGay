@@ -178,7 +178,7 @@ void Heap::dumpStats() {
     }
     cout << "    Bit correlations    : ";
     for(uint32_t i = 0; i < bits; i++) {
-        cout << setprecision(2) << fixed << (double(bit_cor[i]) / double(hashes)) << " ";    
+        cout << setprecision(3) << fixed << (double(bit_cor[i]) / double(hashes)) << " ";    
     }
     cout << endl;
 }
