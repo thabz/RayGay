@@ -586,7 +586,7 @@ SchemeObject* s_apply(int num, SchemeStack::iterator args) {
     return interpreter->call_procedure_n(proc,collected);
 }
 
-SchemeObject* s_map(int num, SchemeStack::iterator args) {
+SchemeObject* s_map_internal(int num, SchemeStack::iterator args, bool collect) {
 
     assert(num > 0);
     SchemeObject* proc = *args;
@@ -611,7 +611,6 @@ SchemeObject* s_map(int num, SchemeStack::iterator args) {
             if (lists_ptr == S_EMPTY_LIST) {
                 throw scheme_exception("Argument lists not equals length.");
             }
-            // TODO: Hvordan kan lists_ptr være null her? Se r4rstest.scm
             SchemeObject* arg = s_car(lists_ptr);
             cropped_args[i] = s_cdr(lists_ptr);
             collection.add(arg);
@@ -619,14 +618,16 @@ SchemeObject* s_map(int num, SchemeStack::iterator args) {
         
         SchemeObject* result_item = interpreter->call_procedure_n(proc, collection.list);
         
-        if (result == S_EMPTY_LIST) {
-            result = i_cons(result_item, S_EMPTY_LIST);
-            prev = result;
-            stack.push_back(result);
-        } else {
-            SchemeObject* tmp = i_cons(result_item, S_EMPTY_LIST);
-            i_set_cdr_e(prev, tmp);
-            prev = tmp;
+        if (collect) {
+           if (result == S_EMPTY_LIST) {
+               result = i_cons(result_item, S_EMPTY_LIST);
+               prev = result;
+               stack.push_back(result);
+           } else {
+               SchemeObject* tmp = i_cons(result_item, S_EMPTY_LIST);
+               i_set_cdr_e(prev, tmp);
+               prev = tmp;
+           }
         }
     }
     
@@ -639,14 +640,17 @@ SchemeObject* s_map(int num, SchemeStack::iterator args) {
     if (result != S_EMPTY_LIST) {
         stack.pop_back();
     }
-    return result;    
+    return collect ? result : S_UNSPECIFIED;    
 }
 
-SchemeObject* s_for_each(int num, SchemeStack::iterator stack) {
-    s_map(num, stack);
-    return S_UNSPECIFIED;
+
+SchemeObject* s_map(int num, SchemeStack::iterator args) {
+    return s_map_internal(num, args, true);
 }
 
+SchemeObject* s_for_each(int num, SchemeStack::iterator args) {
+    return s_map_internal(num, args, false);
+}
 
 SchemeObject* member_helper(SchemeObject* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
     while (i_null_p(p) == S_FALSE) {
