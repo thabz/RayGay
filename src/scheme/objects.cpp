@@ -81,7 +81,7 @@ SchemeObject* SchemeObject::createSymbol(const char* str) {
         known_symbols[strstring] = result;
         int h = (int) result;
 
-#if 1
+#if 0
         h += ~(h << 15);
         h ^= (h >> 10);
         h += (h << 3);
