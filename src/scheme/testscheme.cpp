@@ -111,6 +111,8 @@ void test_tokenizer() {
     assert_eval(s, "'(2(a)3)", "(2 (a) 3)");
     assert_eval(s, "'(a#(b)#(c))", "(a #(b) #(c))");
     assert_eval(s, "'(a'b`c,d,@e)", "(a (quote b) (quasiquote c) (unquote d) (unquote-splicing e))");
+
+    assert_eval(s, "(let ((1+2 3) (2+3 5)) (+ 1+2 2+3))", "8");
 }
 
 
