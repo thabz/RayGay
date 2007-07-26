@@ -591,26 +591,29 @@ SchemeObject* s_map(int num, SchemeStack::iterator args) {
     assert(num > 0);
     SchemeObject* proc = *args;
     assert_arg_type("map", 1, s_procedure_p, proc);
+
+    SchemeObject* cropped_args[num-1];
     
     for(int i = 1; i < num; i++) {
         assert_non_atom_type("map", i, args[i]);
+        cropped_args[i-1] = args[i];
     }
     
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* prev = S_EMPTY_LIST;
 
     // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver til ((2 3)(20 30)) og til sidst ((3)(30))
-    while (args[1] != S_EMPTY_LIST) {
+    while (cropped_args[0] != S_EMPTY_LIST) {
         // Collect args
         SchemeAppendableList collection;
-        for(int i = 1; i < num; i++) {
-            SchemeObject* lists_ptr = args[i];
+        for(int i = 0; i < num-1; i++) {
+            SchemeObject* lists_ptr = cropped_args[i];
             if (lists_ptr == S_EMPTY_LIST) {
                 throw scheme_exception("Argument lists not equals length.");
             }
             // TODO: Hvordan kan lists_ptr være null her? Se r4rstest.scm
             SchemeObject* arg = s_car(lists_ptr);
-            args[i] = s_cdr(lists_ptr);
+            cropped_args[i] = s_cdr(lists_ptr);
             collection.add(arg);
         }
         
@@ -627,9 +630,9 @@ SchemeObject* s_map(int num, SchemeStack::iterator args) {
         }
     }
     
-    // Tjek at argumentlisterne var lige lange
-    for(int i = 1; i < num; i++) {
-        if (args[i] != S_EMPTY_LIST) {
+    // Tjek at alle cropped_args nu er tomme, dvs. at argumentlisterne var lige lange
+    for(int i = 0; i < num-1; i++) {
+        if (cropped_args[i] != S_EMPTY_LIST) {
             throw scheme_exception("Argument lists not equals length.");
         }
     }
