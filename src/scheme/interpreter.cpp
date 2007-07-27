@@ -953,16 +953,15 @@ fn_ptr eval_set_e() {
     if (p == S_EMPTY_LIST || i_cdr(p) == S_EMPTY_LIST || i_cddr(p) != S_EMPTY_LIST) {
         throw scheme_exception("Missing or extra arguments to set!");
     }
-    SchemeObject* car = i_car(p);
-    if (i_symbol_p(car) == S_FALSE) {
+    SchemeObject* symbol = i_car(p);
+    if (i_symbol_p(symbol) == S_FALSE) {
         throw scheme_exception("Wrong type argument in position 1.");
     }
-    SchemeObject* s = car;
 
     global_arg1 = i_cadr(p);
-    SchemeObject* v = trampoline((fn_ptr)&eval);
+    SchemeObject* value = trampoline((fn_ptr)&eval);
 
-    envt->setBinding(s, v);
+    envt->setBinding(symbol, value);
 
     global_ret = S_UNSPECIFIED;
     return NULL;
@@ -1106,45 +1105,27 @@ fn_ptr eval_named_let() {
     }
     
     // Extract formals and collect args for a lambda
-    SchemeObject* formals = S_EMPTY_LIST;
-    SchemeObject* formals_tail = S_EMPTY_LIST;
-    SchemeObject* args = S_EMPTY_LIST;
-    SchemeObject* args_tail = S_EMPTY_LIST;
-
     SchemeObject* binding_pairs = s_car(p);
+    SchemeAppendableList formals;
+    SchemeAppendableList args;
 
     while (i_null_p(binding_pairs) == S_FALSE) {
         SchemeObject* binding_pair = s_car(binding_pairs);
         SchemeObject* formal = s_car(binding_pair);
         SchemeObject* arg = s_car(s_cdr(binding_pair));
         
-    	if (formals == S_EMPTY_LIST) {
-    	    formals = i_cons(formal, S_EMPTY_LIST);
-    	    formals_tail = formals;
-    	} else {
-    	    SchemeObject* tmp = i_cons(formal, S_EMPTY_LIST);
-    	    i_set_cdr_e(formals_tail,tmp);
-    	    formals_tail = tmp;
-    	}
-
-    	if (args == S_EMPTY_LIST) {
-    	    args = i_cons(arg, S_EMPTY_LIST);
-    	    args_tail = args;
-    	} else {
-    	    SchemeObject* tmp = i_cons(arg, S_EMPTY_LIST);
-    	    i_set_cdr_e(args_tail, tmp);
-    	    args_tail = tmp;
-    	}
+		formals.add(formal);
+		args.add(arg);
 
         binding_pairs = s_cdr(binding_pairs);
     }
     
     SchemeObject* new_envt = SchemeObject::createEnvironment(envt);
-    SchemeObject* lambda = SchemeObject::createUserProcedure(name, new_envt, formals, s_cdr(p));
+    SchemeObject* lambda = SchemeObject::createUserProcedure(name, new_envt, formals.list, s_cdr(p));
     new_envt->defineBinding(name, lambda);
     
     global_arg1 = lambda;
-    global_arg2 = args;
+    global_arg2 = args.list;
     return (fn_ptr)&eval_user_procedure_call;
 }
 
