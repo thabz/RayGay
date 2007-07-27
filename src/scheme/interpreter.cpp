@@ -735,6 +735,7 @@ fn_ptr eval_built_in_procedure_call()
     // Built-in function
     int req = proc->req();
     int opt = proc->opt();
+    bool rst = proc->rest();
     
     for(int i = 0; i < req; i++) {
         if (args == S_EMPTY_LIST) {
@@ -757,10 +758,10 @@ fn_ptr eval_built_in_procedure_call()
     }
     
     int num = req + opt;
-    if (!proc->rest() && args != S_EMPTY_LIST) {
+    if (!rst && args != S_EMPTY_LIST) {
         throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
     }
-    if (proc->rest()) {
+    if (rst) {
         while (args != S_EMPTY_LIST) {
             global_arg1 = i_car(args);
             SchemeObject* arg = trampoline((fn_ptr)&eval);
@@ -773,7 +774,7 @@ fn_ptr eval_built_in_procedure_call()
     try {
         SchemeStack::iterator stack_iter = stack.end() - num;
 
-        if (proc->rest()) {
+        if (rst) {
             result = (*((SchemeObject* (*)(int, SchemeStack::iterator))(proc->fn)))(num, stack_iter);
         } else {
             SchemeObject* argsv[num];
@@ -832,6 +833,7 @@ fn_ptr eval_procedure_call() {
         // Built-in function
         int req = proc->req();
         int opt = proc->opt();
+        bool rst = proc->rest();
 
         for(int i = 0; i < req; i++) {
             if (args == S_EMPTY_LIST) {
@@ -851,10 +853,10 @@ fn_ptr eval_procedure_call() {
 
         int num = req + opt;
         
-        if (!proc->rest() && args != S_EMPTY_LIST) {
+        if (!rst && args != S_EMPTY_LIST) {
             throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
         }
-        if (proc->rest()) {
+        if (rst) {
             while (args != S_EMPTY_LIST) {
                  stack.push_back(i_car(args));
                  args = i_cdr(args);
@@ -864,7 +866,7 @@ fn_ptr eval_procedure_call() {
         try {
             SchemeStack::iterator stack_iter = stack.end() - num;
             
-            if (proc->rest()) {
+            if (rst) {
                 result = (*((SchemeObject* (*)(int, SchemeStack::iterator))(proc->fn)))(num, stack_iter);
             } else {
                 SchemeObject* argsv[num];
@@ -1268,7 +1270,7 @@ fn_ptr eval_do() {
     stack.push_back(p);
     stack.push_back(new_envt);
     stack.push_back(steps);
-    SchemeObject*& steps_stack_pos = stack.back();
+    SchemeObject*& steps_stack_pos = stack.back();     // TODO: Explodes is stack is reallocated!
     stack.push_back(varnames);
     SchemeObject*& varnames_stack_pos = stack.back();
 

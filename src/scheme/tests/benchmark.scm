@@ -39,6 +39,10 @@
 ; 2007-07-27 Use & instead of % to find bucket
 ; ./repl -d tests/bench*  15.70s user 0.03s system 99% cpu 15.788 total
 ; ./repl -d tests/bench*  15.36s user 0.02s system 99% cpu 15.431 total
+; ./repl -d tests/bench*  14.71s user 0.02s system 99% cpu 15.431 total
+; 
+; 2007-07-27 Avoid called rest() three times in eval_built_in_procedure_call()
+; ./repl -d tests/bench*  14.21s user 0.02s system 99% cpu 14.265 total
 
 (define (square x)
   (* x x))
