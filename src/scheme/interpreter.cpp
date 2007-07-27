@@ -588,8 +588,7 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
         p = o;
     }
 
-    stack.push_back(S_EMPTY_LIST);
-    SchemeObject*& result = stack.back();
+    SchemeObject* result = S_EMPTY_LIST;
 
     if (i_pair_p(p) == S_TRUE) {
         SchemeObject* car_p = s_car(p);
@@ -611,12 +610,16 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
                     
                     if (s_car(p) == unquote_symbol) {
                         // Handle when final cdr of unproper list is a unquote
+                        stack.push_back(result);
                         s_set_cdr_e(prev,eval_unquote_recursive(p, level));
+                        stack.pop_back();
                         break;
                     }
                     
                     stack.push_back(p);
+                    stack.push_back(result);
                     SchemeObject* r = eval_quasiquote_recursive(s_car(p),level);
+                    stack.pop_back();
                     stack.pop_back();
 
                     if (i_pair_p(s_car(p)) == S_TRUE && s_car(s_car(p)) == unquote_splicing_symbol) {
@@ -646,7 +649,9 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
                 } else if (p == S_EMPTY_LIST) {
                     break;
                 } else {
-                    SchemeObject* r = eval_quasiquote_recursive(p,level);
+                    stack.push_back(result);
+                    SchemeObject* r = eval_quasiquote_recursive(p, level);
+                    stack.pop_back();
                     if (result != S_EMPTY_LIST) {
                         s_set_cdr_e(prev,r);
                     } else {
@@ -657,14 +662,12 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level) {
             }
         }
 
-        stack.pop_back();
         if (s_vector_p(o) == S_TRUE) {
             return s_list_2_vector(result);
         } else {
             return result;
         }
     } else {
-        stack.pop_back();
         return o;
     }
 }
