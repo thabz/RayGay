@@ -816,6 +816,9 @@ void test_quote() {
     assert_eval(s, "`(a `(b ,(+ 1 2)))", "(a (quasiquote (b (unquote (+ 1 2)))))");
     assert_eval(s, "`(a ,(list 1 2 ) c)", "(a (1 2) c)");
     assert_eval(s, "`(a ,@(list 1 2 ) c)", "(a 1 2 c)");
+    assert_eval(s, "(define (sqt x) (do ((i 1 (+ i 1))) ((> (* i i) x) (- i 1))))", "#<unspecified>");
+    assert_eval(s, "`#(10 5 ,(sqt 4) ,@(map sqt '(16 9)) 8)", "#(10 5 2 4 3 8)");
+    
     // From R^5RS 4.2.6
     assert_eval(s, "`(list ,(+ 1 2) 4)", "(list 3 4)");
     assert_eval(s, "(let ((name 'a)) `(list ,name ',name))", "(list a (quote a))");
