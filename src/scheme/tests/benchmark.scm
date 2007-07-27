@@ -38,6 +38,7 @@
 ;
 ; 2007-07-27 Use & instead of % to find bucket
 ; ./repl -d tests/bench*  15.70s user 0.03s system 99% cpu 15.788 total
+; ./repl -d tests/bench*  15.36s user 0.02s system 99% cpu 15.431 total
 
 (define (square x)
   (* x x))

@@ -468,12 +468,11 @@ void SchemeObject::callContinuation(SchemeObject* arg) {
 // Environment
 //-----------------------------------------------------------
 
-SchemeObject* SchemeObject::getBinding(SchemeObject* name) {
+SchemeObject* SchemeObject::getBinding(SchemeObject* symbol) {
     assert(type() == SchemeObject::ENVIRONMENT);
-    assert(name->type() == SchemeObject::SYMBOL);
 
     for(SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
-        binding_map_t::iterator v = envt->binding_map->find(name, name->hash);
+        binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
         if (v != envt->binding_map->end()) {
             return v->second;
         }
@@ -481,25 +480,23 @@ SchemeObject* SchemeObject::getBinding(SchemeObject* name) {
     return NULL;
 }
 
-void SchemeObject::defineBinding(SchemeObject* name, SchemeObject* o) {
+void SchemeObject::defineBinding(SchemeObject* symbol, SchemeObject* o) {
     assert(type() == SchemeObject::ENVIRONMENT);
-    assert(name->type() == SchemeObject::SYMBOL);
 
-    binding_map->insert(binding_map_t::value_type(name,o), name->hash);
+    binding_map->insert(binding_map_t::value_type(symbol,o), symbol->hash);
 }
 
-void SchemeObject::setBinding(SchemeObject* name, SchemeObject* o) {
+void SchemeObject::setBinding(SchemeObject* symbol, SchemeObject* o) {
     assert(type() == SchemeObject::ENVIRONMENT);
-    assert(name->type() == SchemeObject::SYMBOL);
 
     for(SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
-        binding_map_t::iterator v = envt->binding_map->find(name, name->hash);
+        binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
         if (v != envt->binding_map->end()) {
             v->second = o;  
             return;
         }
     }
-    throw scheme_exception("Unbound variable: " + name->toString());
+    throw scheme_exception("Unbound variable: " + symbol->toString());
 }
 
 //-----------------------------------------------------------

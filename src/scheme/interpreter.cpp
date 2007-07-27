@@ -129,27 +129,25 @@ SchemeObject* trampoline(fn_ptr f) {
 
 fn_ptr eval() {
     SchemeObject* s = global_arg1;
-    SchemeObject* envt = global_envt;
+    SchemeObject::ObjectType type = s->type();
     
-    if (s->self_evaluating()) {
+    if (type < SchemeObject::SELF_EVALUATING_FORMS_ARE_BEFORE_HERE) {
         global_ret = s;
         return NULL;
-    } else if (i_symbol_p(s) == S_TRUE) {
+    } else if (type == SchemeObject::SYMBOL) {
         SchemeObject* symbol = s;
-	s = envt->getBinding(symbol);
+	s = global_envt->getBinding(symbol);
         if (s == NULL) {
             throw scheme_exception("Unbound variable " + string(symbol->str));
         }
         global_ret = s;
         return NULL;
-    } else if (i_pair_p(s) == S_TRUE) {
+    } else if (type == SchemeObject::PAIR) {
         global_arg1 = s;
         return (fn_ptr)&eval_list;
     } else {
         throw scheme_exception("Unknown type: " + s->toString());
     }
-
-    
 }
 
 fn_ptr eval_list() {
@@ -336,16 +334,20 @@ fn_ptr eval_define() {
     SchemeObject* p = global_arg1;
     SchemeObject* envt = global_envt;
     
-    if (i_pair_p(s_car(p)) == S_TRUE) {
+    if (p == S_EMPTY_LIST || i_car(p) == S_EMPTY_LIST || i_cdr(p) == S_EMPTY_LIST) {
+        throw scheme_exception("Missing arguments to define: " + p->toString());
+    }
+    
+    if (i_pair_p(i_car(p)) == S_TRUE) {
         // (define (func-name args...) body-forms...)
-        SchemeObject* pa = s_car(p);
-        if (i_symbol_p(s_car(pa)) == S_FALSE) {
+        SchemeObject* pa = i_car(p);
+        if (i_symbol_p(i_car(pa)) == S_FALSE) {
             throw scheme_exception("Bad variable");
         }
-        SchemeObject* body = s_cdr(p);
-        SchemeObject* name = s_car(pa);
+        SchemeObject* body = i_cdr(p);
+        SchemeObject* name = i_car(pa);
 
-        global_arg1 = s_cdr(pa);
+        global_arg1 = i_cdr(pa);
         global_arg2 = body;
         global_arg3 = name;
         trampoline((fn_ptr)&eval_lambda);
@@ -354,16 +356,16 @@ fn_ptr eval_define() {
         envt->defineBinding(name , proc);
     } else {
         // (define var value-expr)
-        if (p == S_EMPTY_LIST || i_cdr(p) == S_EMPTY_LIST || i_cddr(p) != S_EMPTY_LIST) {
-            throw scheme_exception("Missing or extra arguments to define: " + p->toString());
+        if (i_cddr(p) != S_EMPTY_LIST) {
+            throw scheme_exception("Extra arguments to define: " + p->toString());
         }
         
-        SchemeObject* s = s_car(p);
+        SchemeObject* s = i_car(p);
         if (i_symbol_p(s) == S_FALSE) {
             throw scheme_exception("Bad variable");
         }
         
-        global_arg1 = s_car(s_cdr(p));
+        global_arg1 = i_car(i_cdr(p));
         SchemeObject* v = trampoline((fn_ptr)&eval);
 
         envt->defineBinding(s, v);

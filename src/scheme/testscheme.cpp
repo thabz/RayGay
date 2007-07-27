@@ -183,6 +183,10 @@ void test_interpreter() {
     assert_fail(s, "(define)");
     assert_fail(s, "(define a)");
     assert_fail(s, "(define 10 10)");
+    assert_fail(s, "(define a 10 20)");
+    assert_fail(s, "(define (a))");
+    assert_fail(s, "(define () 20)");
+    assert_fail(s, "(define ())");
 
     // test built-in with only rst args
     assert_eval(s, "(+ 10 9 2 19 8 2 1 29 8 8 2 1 23 3 1) ", "126");
