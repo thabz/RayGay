@@ -85,7 +85,7 @@ class SchemeObject
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
                     SchemeWrappedCObject* wrapped_object;
-                    int32_t hash;           // For symbols
+                    binding_map_t::hash_type hash;  // For symbols
                 };
             };
         };

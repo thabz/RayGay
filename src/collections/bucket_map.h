@@ -4,13 +4,6 @@
 
 #include <utility>   // For std::pair<A,B>
 
-/* 
-   TODO: Profile
-   TODO: Test distribution of hash
-   TODO: Keep an uint32_t end_bucket like uint32_t begin_bucket.
-*/   
- 
-
 template <typename K, typename V> 
 struct _bucket_map_node {
     std::pair<K,V> p;        
@@ -90,7 +83,7 @@ template <typename K, typename V>
 class bucket_map 
 {
     public:
-        typedef int hash_type;
+        typedef uint32_t hash_type;
         typedef K key_type;
         typedef V data_type;
         typedef std::pair<K,V> value_type;
@@ -99,8 +92,9 @@ class bucket_map
         typedef V& reference;
         typedef size_t size_type;
         friend class _bucket_map_iterator<K,V>;
-
-    	bucket_map(uint32_t n_b = 255) : num_buckets(n_b) {
+        
+        // n_b must be a power of two. No checking is done. TODO: Is there a fast way to check that?
+    	bucket_map(uint32_t n_b = 256) : num_buckets(n_b) {
             assert(num_buckets > 0);
             buckets = new node_type[num_buckets];
             for(uint32_t i = 0; i < num_buckets; i++) {
@@ -137,41 +131,42 @@ class bucket_map
             return end_iterator;
         }
                 
-        std::pair<iterator,bool> insert(const value_type& v, hash_type h = -1) {
-            if (h == -1) {        
-                h = hash(v.first);
-            }
-            h %= num_buckets;
+        std::pair<iterator,bool> insert(const value_type& v, hash_type h) {
+            h = h & (num_buckets-1);
             node_type* node = &buckets[h];
-            node_type* prev = NULL;
+            node_type* bucket_end = NULL;
+            // Try to modify value if key already registered
             for(; node != NULL && !node->empty; node = node->next) {
                 if (node->p.first == v.first) {
                     node->p.second = v.second;
                     return std::pair<iterator,bool>(iterator(h, node, this),false);
                 }
-                prev = node;
+                bucket_end = node;
             }
+            
+            // No luck, create new node
             map_size++;
-
             node_type* new_node;
-            if (prev == NULL) {
+            if (bucket_end == NULL) {
+                // Start new bucket    
                 new_node = &buckets[h];
+                if (h < begin_bucket) begin_bucket = h;
             } else {
+                // Append to bucket    
                 new_node = new node_type();
+                bucket_end->next = new_node;
             }
             new_node->next = NULL;
             new_node->p = v;
             new_node->empty = false;
-            if (prev != NULL) {
-                // Append to bucket    
-                prev->next = new_node;
-            } else {
-                // Start new bucket    
-                if (h < begin_bucket) begin_bucket = h;
-            }
+
             return std::pair<iterator,bool>(iterator(h, new_node, this), true);
         }
-    	
+
+        std::pair<iterator,bool> insert(const value_type& v) {
+            return insert(v, hash(v.first));        
+        }
+            	
     	iterator find(const K &key) {
             hash_type h = hash(key);     
             return find(key, h);
@@ -196,7 +191,7 @@ class bucket_map
     	}
 
     	iterator find(const K &key, const hash_type &h) {
-            hash_type hh = h % num_buckets;        
+            hash_type hh = h & (num_buckets-1);
             node_type* node = &buckets[hh];
             for(; node != NULL && !node->empty; node = node->next) {
                 if (node->p.first == key) {
@@ -220,7 +215,7 @@ class bucket_map
         size_t map_size;
     	
     	// First non-empty bucket
-        uint32_t begin_bucket;
+        hash_type begin_bucket;
         
         // End iterator
         iterator end_iterator;

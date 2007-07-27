@@ -470,49 +470,40 @@ void SchemeObject::callContinuation(SchemeObject* arg) {
 
 SchemeObject* SchemeObject::getBinding(SchemeObject* name) {
     assert(type() == SchemeObject::ENVIRONMENT);
-    if (i_symbol_p(name) == S_FALSE) {
-        throw scheme_exception(name->toString() + " is not a symbol.");
-    }
-    SchemeObject* envt = this;
-    while (envt != NULL) {
+    assert(name->type() == SchemeObject::SYMBOL);
+
+    for(SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
         binding_map_t::iterator v = envt->binding_map->find(name, name->hash);
         if (v != envt->binding_map->end()) {
             return v->second;
-        } else {
-            envt = envt->parent;        
         }
     }
-    return NULL;        
+    return NULL;
 }
 
 void SchemeObject::defineBinding(SchemeObject* name, SchemeObject* o) {
     assert(type() == SchemeObject::ENVIRONMENT);
-    if (i_symbol_p(name) == S_FALSE) {
-        throw scheme_exception(name->toString() + " is not a symbol.");
-    }
-    (*binding_map)[name] = o;
+    assert(name->type() == SchemeObject::SYMBOL);
+
+    binding_map->insert(binding_map_t::value_type(name,o), name->hash);
 }
 
 void SchemeObject::setBinding(SchemeObject* name, SchemeObject* o) {
     assert(type() == SchemeObject::ENVIRONMENT);
-    if (i_symbol_p(name) == S_FALSE) {
-        throw scheme_exception(name->toString() + " is not a symbol.");
-    }
-    SchemeObject* envt = this;
-    while (envt != NULL) {
+    assert(name->type() == SchemeObject::SYMBOL);
+
+    for(SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
         binding_map_t::iterator v = envt->binding_map->find(name, name->hash);
         if (v != envt->binding_map->end()) {
             v->second = o;  
             return;
-        } else {
-            envt = envt->parent;    
         }
     }
     throw scheme_exception("Unbound variable: " + name->toString());
 }
 
 //-----------------------------------------------------------
-// Environment
+// Wrapped objects
 //-----------------------------------------------------------
 SchemeWrappedCObject::~SchemeWrappedCObject() {
 }

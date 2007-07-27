@@ -78,7 +78,7 @@ Interpreter* interpreter;
 //SchemeObject* scheme_report_environment = SchemeObject::createEnvironment(null_environment);
 //SchemeObject* interaction_environment = SchemeObject::createEnvironment(scheme_report_environment);
 #else 
-SchemeObject* null_environment = SchemeObject::createEnvironment(NULL,255);
+SchemeObject* null_environment = SchemeObject::createEnvironment(NULL,256);
 SchemeObject* scheme_report_environment = null_environment;
 SchemeObject* interaction_environment = null_environment;
 #endif
@@ -1287,12 +1287,12 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
 
 SchemeObject* s_even_p(SchemeObject* n) {
     assert_arg_type("even?", 1, s_integer_p, n);
-    return (scm2int(n) % 2 == 0) ? S_TRUE : S_FALSE;
+    return (scm2int(n) & 0x1) == 0 ? S_TRUE : S_FALSE;
 }
 
 SchemeObject* s_odd_p(SchemeObject* n) {
     assert_arg_type("odd?", 1, s_integer_p, n);
-    return (abs(scm2int(n) % 2) == 1) ? S_TRUE : S_FALSE;
+    return (scm2int(n) & 0x1) == 1 ? S_TRUE : S_FALSE;
 }
 
 SchemeObject* s_zero_p(SchemeObject* n) {
