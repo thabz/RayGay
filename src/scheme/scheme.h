@@ -15,8 +15,8 @@ typedef vector<SchemeObject*> SchemeStack;
 class Scheme {
     public:
         Scheme();
-        SchemeObject* eval(string code);
-        SchemeObject* eval(istream* code);
+        SchemeObject* eval(string code, SchemeObject* envt = NULL);
+        SchemeObject* eval(istream* code, SchemeObject* envt = NULL);
 
         // For assigning variables in a frame (default top-level)
         void assign(string variable, double value, SchemeObject* envt = NULL);

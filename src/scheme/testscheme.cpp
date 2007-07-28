@@ -897,6 +897,8 @@ void test_call_cc() {
     Scheme* s = new Scheme();
     assert_eval(s, "(call-with-current-continuation procedure?)", "#t");
     assert_eval(s, "(call/cc (lambda (exit) (for-each (lambda (x) (if (negative? x) (exit x))) '(54 0 37 -3 245 19)) #t))", "-3");
+    assert_eval(s, "(call-with-values (lambda () (values 4 5)) (lambda (a b) b))", "5");
+    assert_eval(s, "(call-with-values * -)", "-1");
 }
 
 void test_eval() {
@@ -905,6 +907,7 @@ void test_eval() {
     assert_eval(s, "(eval '(if #t 1 2) (null-environment 5))", "1");
     assert_eval(s, "(let ((f (eval '(lambda (f x) (f x x)) (null-environment 5)))) (f + 10))", "20");
 }
+
 
 int main(int argc, char *argv[]) {
     try {

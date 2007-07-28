@@ -350,22 +350,25 @@ Scheme::Scheme() {
         heap->addRoot(unquote_symbol);
         heap->addRoot(unquote_splicing_symbol);
         heap->addRoot(unnamed_symbol);
+        
+        eval("(define-macro (values . x) `(list ,@x))", scheme_report_environment);
+        eval("(define-macro (call-with-values f g)  `(apply ,g (,f)))", scheme_report_environment);
     }
     
     ifstream infile;
     //infile.open("init.scm", ifstream::in);
-    eval(&infile);
+    eval(&infile, scheme_report_environment);
     infile.close();
 }
 
-SchemeObject* Scheme::eval(istream* is) {
-    Parser* parser = new Parser();
-    SchemeObject* parse_tree = parser->parse(is);
-    interpreter = new Interpreter(parse_tree, interaction_environment);
+SchemeObject* Scheme::eval(istream* is, SchemeObject* envt) {
+    if (envt == NULL) envt = interaction_environment;        
+    SchemeObject* parse_tree = global_parser->parse(is);
+    interpreter = new Interpreter(parse_tree, envt);
     return interpreter->interpret();
 }
 
-SchemeObject* Scheme::eval(string data) {
+SchemeObject* Scheme::eval(string data, SchemeObject* envt) {
     istream* is = new istringstream(data);
     SchemeObject* result = eval(is);
     delete is;
