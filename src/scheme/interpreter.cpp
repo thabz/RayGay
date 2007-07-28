@@ -350,10 +350,9 @@ fn_ptr eval_define() {
         global_arg1 = i_cdr(pa);
         global_arg2 = body;
         global_arg3 = name;
-        trampoline((fn_ptr)&eval_lambda);
-        SchemeObject* proc = global_ret;
+        SchemeObject* proc = trampoline((fn_ptr)&eval_lambda);
         
-        envt->defineBinding(name , proc);
+        envt->defineBinding(name, proc);
     } else {
         // (define var value-expr)
         if (i_cddr(p) != S_EMPTY_LIST) {
