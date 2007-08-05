@@ -716,6 +716,7 @@ fn_ptr eval_user_procedure_call() {
     
     global_envt = new_envt;
     global_arg1 = proc->s_body();
+    // TODO: If body is a single form, which is the case most times, then call eval-list directly on it.
     return (fn_ptr)&eval_sequence;
 }
 
