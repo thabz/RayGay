@@ -8,10 +8,10 @@
 #include "math/poisson_disc.h"
 #include "math/halton.h"
 
-SchemeObject* random2(SchemeObject* s_min, SchemeObject* s_max) 
+SchemeObject* myrandom(SchemeObject* s_min, SchemeObject* s_max) 
 {
-    double min = safe_scm2double(s_min,1,"random2");
-    double max = safe_scm2double(s_max,2,"random2");
+    double min = safe_scm2double(s_min,1,"random");
+    double max = safe_scm2double(s_max,2,"random");
     double result = RANDOM(min,max);
     return double2scm(result);
 }
@@ -89,7 +89,7 @@ SchemeObject* make_halton_set(SchemeObject* s_w, SchemeObject* s_h, SchemeObject
 
 void MathFactory::register_procs(Scheme* scheme)
 {
-    scheme->assign("random2",2,0,0, (SchemeObject* (*)()) random2);
+    scheme->assign("random",2,0,0, (SchemeObject* (*)()) myrandom);
     scheme->assign("noise",1,0,0, (SchemeObject* (*)()) noise);
     scheme->assign("noise3d",2,0,0, (SchemeObject* (*)()) noise3d);
     scheme->assign("vcross",2,0,0, (SchemeObject* (*)()) vcross);

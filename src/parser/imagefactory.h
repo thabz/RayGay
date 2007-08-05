@@ -14,6 +14,8 @@ class ImageFactory {
         static SchemeObject* make_image(SchemeObject* width, SchemeObject* height, SchemeObject* bg_color);
         static SchemeObject* load_image(SchemeObject* s_filename);
         static SchemeObject* save_image(SchemeObject* s_image, SchemeObject* s_filename);
+        static SchemeObject* image_width(SchemeObject* s_image);
+        static SchemeObject* image_height(SchemeObject* s_image);
 	static SchemeObject* set_pixel(SchemeObject* s_image, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* color);
 	static SchemeObject* get_pixel(SchemeObject* s_image, SchemeObject* s_x, SchemeObject* s_y);
 

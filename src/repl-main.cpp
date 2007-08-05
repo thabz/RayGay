@@ -1,6 +1,7 @@
 
 #include "scheme/scheme.h"
 #include "parser/imagefactory.h"
+#include "parser/mathfactory.h"
 
 #include <iostream>
 #include <sstream>
@@ -24,6 +25,7 @@ int repl() {
     try {
         scheme = new Scheme();
         ImageFactory::register_procs(scheme);
+        MathFactory::register_procs(scheme);
     } catch (scheme_exception e) {
 	cerr << "ABORT: " << e.toString() << endl;
         return EXIT_FAILURE;
@@ -56,6 +58,7 @@ int runfile(char* filename) {
     try {
         scheme = new Scheme();
         ImageFactory::register_procs(scheme);
+        MathFactory::register_procs(scheme);
         scheme->eval(ifs);
     } catch (scheme_exception e) {
         ifs->close();

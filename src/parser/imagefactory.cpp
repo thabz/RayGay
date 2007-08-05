@@ -33,6 +33,18 @@ SchemeObject* ImageFactory::save_image(SchemeObject* s_image, SchemeObject* s_fi
     return S_UNSPECIFIED;
 }
 
+SchemeObject* ImageFactory::image_width(SchemeObject* s_image) {
+    char* proc = "image-width";
+    Image* image = scm2image(s_image, proc, 1);
+    return int2scm(image->getWidth());
+}
+
+SchemeObject* ImageFactory::image_height(SchemeObject* s_image) {
+    char* proc = "image-height";
+    Image* image = scm2image(s_image, proc, 1);
+    return int2scm(image->getHeight());
+}
+
 SchemeObject* ImageFactory::set_pixel(SchemeObject* s_image, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* s_color) {
     char* proc = "set-pixel";
     Image* image = scm2image(s_image, proc, 1);
@@ -58,4 +70,6 @@ void ImageFactory::register_procs(Scheme* scheme) {
     scheme->assign("save-image",2,0,0,(SchemeObject* (*)()) ImageFactory::save_image);
     scheme->assign("set-pixel",4,0,0,(SchemeObject* (*)()) ImageFactory::set_pixel);
     scheme->assign("get-pixel",3,0,0,(SchemeObject* (*)()) ImageFactory::get_pixel);
+    scheme->assign("image-width",1,0,0,(SchemeObject* (*)()) ImageFactory::image_width);
+    scheme->assign("image-height",1,0,0,(SchemeObject* (*)()) ImageFactory::image_height);
 }
