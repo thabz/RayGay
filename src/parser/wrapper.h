@@ -14,6 +14,7 @@ class SceneObject;
 class Path;
 class Material;
 class Texture;
+class Image;
 class Lightsource;
 class Camera;
 class SamplerFactory;
@@ -25,7 +26,8 @@ enum wrapped_type {
     TEXTURE	= 5,
     LIGHTSOURCE = 6,
     CAMERA	= 7,
-    SAMPLER	= 8
+    SAMPLER	= 8,
+    IMAGE       = 9
 };
 
 struct wrapped_object : public SchemeWrappedCObject {
@@ -34,6 +36,7 @@ struct wrapped_object : public SchemeWrappedCObject {
 	Path* path;
 	Material* material;
 	Texture* texture;
+        Image* image;
 	Lightsource* lightsource;
 	Camera* camera;
 	SamplerFactory* sampler;
@@ -58,6 +61,9 @@ SchemeObject* camera2scm(Camera* camera);
 SamplerFactory* scm2sampler(SchemeObject* object_smob, char* subr, int pos);
 SchemeObject* sampler2scm(SamplerFactory* sampler_factory);
 
+Image* scm2image(SchemeObject* object_smob, char* subr, int pos);
+SchemeObject* image2scm(Image* image);
+
 Texture* scm2texture(SchemeObject* object_smob, char* subr, int pos);
 SchemeObject* texture2scm(Texture* texture);
 
@@ -76,6 +82,8 @@ bool isMaterial(SchemeObject* object_smob);
 bool isSceneObject(SchemeObject* object_smob);
 
 bool isTexture(SchemeObject* object_smob);
+
+bool isImage(SchemeObject* object_smob);
 
 bool isWrappedObject(SchemeObject* obj);
 

@@ -50,16 +50,15 @@ SchemeObject* TextureFactory::make_texture(SchemeObject* s_filename, SchemeObjec
 
 SchemeObject* TextureFactory::get_pixel(SchemeObject* s_texture, SchemeObject* s_x, SchemeObject* s_y) 
 {
-    char* proc = "get-pixel";
+    char* proc = "texture-get-pixel";
     Texture* texture = scm2texture(s_texture, proc, 1);
     double x = safe_scm2double(s_x, 2, proc);
-    double y = safe_scm2double(s_y, 2, proc);
+    double y = safe_scm2double(s_y, 3, proc);
     RGB pixel = texture->getTexel(x,y);
     return rgb2scm(pixel);
 }
-    
 
 void TextureFactory::register_procs(Scheme* scheme) {
     scheme->assign("make-texture",4,0,0,(SchemeObject* (*)()) TextureFactory::make_texture);
-    scheme->assign("get-pixel",3,0,0,(SchemeObject* (*)()) TextureFactory::get_pixel);
+    scheme->assign("texture-get-pixel",3,0,0,(SchemeObject* (*)()) TextureFactory::get_pixel);
 }

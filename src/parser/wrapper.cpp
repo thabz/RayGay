@@ -64,6 +64,15 @@ bool isTexture(SchemeObject* object_smob) {
     }
 }
 
+bool isImage(SchemeObject* object_smob) {
+    if (isWrappedObject(object_smob)) {
+	struct wrapped_object* o = (struct wrapped_object*) object_smob->getWrappedCObject();
+	return o->type == IMAGE;
+    } else {
+	return false;
+    }
+}
+
 SchemeObject* path2scm(Path* path) {
     struct wrapped_object* object;
     object = new wrapped_object();
@@ -144,6 +153,22 @@ Texture* scm2texture(SchemeObject* object_smob, char* subr, int pos) {
 	wrong_type_arg(subr, pos, object_smob);
     }
     return o->texture;
+}
+
+SchemeObject* image2scm(Image* image) {
+    struct wrapped_object* object;
+    object = new wrapped_object();
+    object->type = IMAGE; 
+    object->image = image;
+    return SchemeObject::createWrappedCObject(wrapped_object_tag, object);
+}
+
+Image* scm2image(SchemeObject* object_smob, char* subr, int pos) {
+    struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
+    if (o->type != IMAGE) {
+	wrong_type_arg(subr, pos, object_smob);
+    }
+    return o->image;
 }
 
 SchemeObject* material2scm(Material* material) {

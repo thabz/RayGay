@@ -25,6 +25,8 @@ libparser_la_SOURCES = pathfactory.cpp		\
 		       materialfactory.cpp	\
 		       texturefactory.h		\
 		       texturefactory.cpp	\
+		       imagefactory.h		\
+		       imagefactory.cpp		\
 		       mathfactory.h		\
 		       mathfactory.cpp		\
 		       schemefunctions.h	\

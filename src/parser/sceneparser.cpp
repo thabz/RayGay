@@ -8,6 +8,7 @@
 
 #include "parser/pathfactory.h"
 #include "parser/texturefactory.h"
+#include "parser/imagefactory.h"
 #include "parser/materialfactory.h"
 #include "parser/sceneobjectfactory.h"
 #include "parser/lightsourcefactory.h"
@@ -51,6 +52,7 @@ SceneParser::SceneParser(Scene* scene) {
     PathFactory::register_procs(scheme);
     TextureFactory::register_procs(scheme);
     MaterialFactory::register_procs(scheme);
+    ImageFactory::register_procs(scheme);
     SceneObjectFactory::register_procs(scheme);
     LightsourceFactory::register_procs(scheme);
     CameraFactory::register_procs(scheme);
