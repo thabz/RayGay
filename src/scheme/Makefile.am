@@ -19,10 +19,4 @@ testscheme_SOURCES = testscheme.cpp
 testscheme_LDADD = libscheme.la
 TESTS = testscheme
  
-# -----------------------------------------------------
-# Programs
-# -----------------------------------------------------
-noinst_PROGRAMS = repl
-repl_SOURCES = repl-main.cpp
-repl_LDADD = libscheme.la 
 
