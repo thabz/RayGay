@@ -50,7 +50,7 @@
 	(make-material 
 	  (list 
 	    'diffuse 
-	    (get-pixel 
+	    (texture-get-pixel 
 	      img 
 	      (/ (+ x num) (* 2 num)) 
 	      (/ (+ y num) (* 2 num)))
