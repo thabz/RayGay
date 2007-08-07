@@ -14,7 +14,8 @@ libimage_la_SOURCES = image.cpp \
 		     imageio_hdri.cpp \
 		     imageio_jpeg.cpp \
 		     imageio_png.cpp \
-		     imageio_darwin.cpp
+		     imageio_darwin.cpp \
+		     imagedrawing.cpp
 
 libimage_la_LIBADD = @JPEG_LIBS@ @PNG_LIBS@
 libimage_la_LDFLAGS = @DARWIN_LIBS@ 
@@ -26,6 +27,7 @@ EXTRA_DIST = image.h 		\
 	     imageio_hdri.h	\
              imageio_tga.h 	\
              imageio_darwin.h	\
+	     imagedrawing.h	\
              rgba.h 		\
              rgb.h 		\
              texture.h 	
