@@ -13,6 +13,9 @@ class Vector2;
 class Image 
 {
     public:
+	/// Sets a pixel safely
+        void safeSetRGBA(int x, int y, const RGBA& color); 
+	
 	/// Sets a pixel
         virtual void setRGBA(int x, int y, const RGBA& color) = 0; 
         

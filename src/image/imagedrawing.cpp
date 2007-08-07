@@ -43,9 +43,9 @@ void ImageDrawing::line(Image* image, int x0, int y0, int x1, int y1, const RGBA
     int y = y0;
     for(int x = x0; x <= x1; x++) {
 	if (steep) { 
-	    image->setRGBA(y,x,c);
+	    image->safeSetRGBA(y,x,c);
 	} else {
-	    image->setRGBA(x,y,c);
+	    image->safeSetRGBA(x,y,c);
 	}
 	error += deltay;
 	if (error > 0) {

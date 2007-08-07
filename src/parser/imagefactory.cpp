@@ -51,7 +51,7 @@ SchemeObject* ImageFactory::set_pixel(SchemeObject* s_image, SchemeObject* s_x, 
     double x = safe_scm2double(s_x, 2, proc);
     double y = safe_scm2double(s_y, 3, proc);
     RGBA color = scm2rgba(s_color, proc, 4);
-    image->setRGBA(int(x),int(y), color);
+    image->safeSetRGBA(int(x),int(y), color);
     return S_UNSPECIFIED;
 }
 
