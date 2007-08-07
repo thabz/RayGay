@@ -18,6 +18,7 @@ class ImageFactory {
         static SchemeObject* image_height(SchemeObject* s_image);
 	static SchemeObject* set_pixel(SchemeObject* s_image, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* color);
 	static SchemeObject* get_pixel(SchemeObject* s_image, SchemeObject* s_x, SchemeObject* s_y);
+	static SchemeObject* draw_line(SchemeObject* s_image, SchemeObject* s_from, SchemeObject* s_to, SchemeObject* color);
 
 	static void register_procs(Scheme* scheme);
 };
