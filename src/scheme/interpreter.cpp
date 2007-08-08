@@ -1114,8 +1114,8 @@ fn_ptr eval_named_let() {
         SchemeObject* formal = s_car(binding_pair);
         SchemeObject* arg = s_car(s_cdr(binding_pair));
         
-		formals.add(formal);
-		args.add(arg);
+	formals.add(formal);
+	args.add(arg);
 
         binding_pairs = s_cdr(binding_pairs);
     }
@@ -1244,19 +1244,24 @@ fn_ptr eval_do() {
 
     // Extract formals and collect evaluated args for a lambda
     SchemeObject* new_envt = SchemeObject::createEnvironment(envt);
-    SchemeObject* steps = S_EMPTY_LIST;
-    SchemeObject* varnames = S_EMPTY_LIST;
     SchemeObject* binding_pairs = s_car(p);
     
     stack.push_back(p);
     stack.push_back(new_envt);
-    stack.push_back(steps);
-    SchemeObject*& steps_stack_pos = stack.back();     // TODO: Explodes is stack is reallocated!
-    stack.push_back(varnames);
-    SchemeObject*& varnames_stack_pos = stack.back();
 
-    while (i_null_p(binding_pairs) == S_FALSE) {
-        SchemeObject* binding = i_car(binding_pairs);
+    SchemeObject* binding_pairs_ptr = binding_pairs;
+    uint32_t bindings_num = 0;
+    while (binding_pairs_ptr != S_EMPTY_LIST) {
+        bindings_num++;    
+        binding_pairs_ptr = i_cdr(binding_pairs_ptr);
+    }
+    
+    SchemeObject* varnames[bindings_num];
+    SchemeObject* steps[bindings_num];
+    
+    binding_pairs_ptr = binding_pairs;
+    for(uint32_t i = 0; i < bindings_num; i++) {
+        SchemeObject* binding = i_car(binding_pairs_ptr);
 
         if (i_pair_p(binding) == S_FALSE) {
             throw scheme_exception("Invalid binding in do-form");
@@ -1267,80 +1272,65 @@ fn_ptr eval_do() {
         if (i_symbol_p(varname) == S_FALSE) {
             throw scheme_exception("Invalid variable in do: " + varname->toString());
         }
-        
+        varnames[i] = varname;
+
+        // Eval initial binding value
         if (i_cdr(binding) == S_EMPTY_LIST) {
             throw scheme_exception("In do: missing initial value for variable " + varname->toString());
         }
-
-        // Eval initial binding value
         global_arg1 = i_cadr(binding);
         SchemeObject* val = trampoline((fn_ptr)&eval);
-        
         new_envt->defineBinding(varname, val);
-        varnames = i_cons(varname, varnames);
-        varnames_stack_pos = varnames;
 
         // Save step expression
         SchemeObject* step = i_cddr(binding);
-        if (step == S_EMPTY_LIST) {
-            step = varname;
-        } else {
-            step = i_car(step);
-        }
-        steps = i_cons(step, steps);
-        steps_stack_pos = steps;
-
-        binding_pairs = i_cdr(binding_pairs);
+        steps[i] = step == S_EMPTY_LIST ? varname : i_car(step);
+        binding_pairs_ptr = i_cdr(binding_pairs_ptr);
     }
     
     SchemeObject* body = i_cdr(p);
-    
+    if (body == S_EMPTY_LIST || i_pair_p(i_car(body)) == S_FALSE) {
+        throw scheme_exception("Missing exit clause in do");
+    }
+
     global_envt = new_envt;
     
     while (true) {
         // Evaluate test
-        if (i_car(body) == S_EMPTY_LIST) {
-            throw scheme_exception("Missing exit clause in do");
-        }
         global_arg1 = i_caar(body);
         SchemeObject* val = trampoline((fn_ptr)&eval);
 
         // Return if test is true
         if (scm2bool(val)) {
-            if (i_cdar(body) == S_EMPTY_LIST) {
+            stack.pop_back();
+            stack.pop_back();
+            SchemeObject* return_sequence = i_cdar(body);
+            if (return_sequence == S_EMPTY_LIST) {
                 global_ret = S_UNSPECIFIED;
-                stack.pop_back();
-                stack.pop_back();
-                stack.pop_back();
-                stack.pop_back();
                 return NULL;
             } else {
-                global_arg1 = s_cdar(body);
-                stack.pop_back();
-                stack.pop_back();
-                stack.pop_back();
-                stack.pop_back();
+                global_arg1 = return_sequence;
                 return (fn_ptr)&eval_sequence;
             }
         }
         
-        if (i_cdr(body) != S_EMPTY_LIST) {
-            global_arg1 = i_cdr(body);
-            trampoline((fn_ptr)&eval_sequence);
-        }
+        // Evaluate body
+        global_arg1 = i_cdr(body);
+        trampoline((fn_ptr)&eval_sequence);
         
         // Evaluate steps
-        global_arg1 = steps;
-        SchemeObject* vals = trampoline((fn_ptr)&eval_multi);
+        for(uint32_t i = 0; i < bindings_num; i++) {
+             global_arg1 = steps[i];        
+             SchemeObject* val = trampoline((fn_ptr)&eval);
+             stack.push_back(val);
+        }
         
         // Assign new step values
-        SchemeObject* tmp = varnames;
-        while(i_null_p(varnames) == S_FALSE) {
-            new_envt->defineBinding(i_car(varnames), i_car(vals));
-            varnames = i_cdr(varnames);
-            vals = i_cdr(vals);
+        for(uint32_t i = 0; i < bindings_num; i++) {
+             SchemeObject* val = stack.back();
+             stack.pop_back();   
+             new_envt->defineBinding(varnames[bindings_num-1-i], val);
         }
-        varnames = tmp;
     }
     return NULL; /* Never reached */
 }
