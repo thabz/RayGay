@@ -9,6 +9,7 @@ class ImageDrawing {
 
     public:
 	static void line(Image* image, int x1, int y1, int x2, int y2, const RGBA& c);
+	static void circle(Image* image, int x1, int y1, int r, const RGBA& c);
 
 };
 

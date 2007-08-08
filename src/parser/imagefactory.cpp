@@ -77,6 +77,18 @@ SchemeObject* ImageFactory::draw_line(SchemeObject* s_image, SchemeObject* s_fro
     return S_UNSPECIFIED;
 }
 
+SchemeObject* ImageFactory::draw_circle(SchemeObject* s_image, SchemeObject* s_center, SchemeObject* s_radius, SchemeObject* s_color) {
+    char* proc = "draw-line";
+    Image* image = scm2image(s_image, proc, 1);
+    // TODO: Check that s_center is a vector and that s_color is a color and that image is an image
+    double x0 = safe_scm2double(i_vector_ref(s_center, 0), 2, proc);
+    double y0 = safe_scm2double(i_vector_ref(s_center, 1), 2, proc);
+    double r = safe_scm2double(s_radius, 3, proc);
+    RGBA color = scm2rgba(s_color, proc, 4);
+    ImageDrawing::circle(image, int(x0), int(y0), int(r), color);
+    return S_UNSPECIFIED;
+}
+
 void ImageFactory::register_procs(Scheme* scheme) {
     scheme->assign("make-image",2,1,0,(SchemeObject* (*)()) ImageFactory::make_image);
     scheme->assign("load-image",1,0,0,(SchemeObject* (*)()) ImageFactory::load_image);
@@ -84,6 +96,7 @@ void ImageFactory::register_procs(Scheme* scheme) {
     scheme->assign("set-pixel",4,0,0,(SchemeObject* (*)()) ImageFactory::set_pixel);
     scheme->assign("get-pixel",3,0,0,(SchemeObject* (*)()) ImageFactory::get_pixel);
     scheme->assign("draw-line",4,0,0,(SchemeObject* (*)()) ImageFactory::draw_line);
+    scheme->assign("draw-circle",4,0,0,(SchemeObject* (*)()) ImageFactory::draw_circle);
     scheme->assign("image-width",1,0,0,(SchemeObject* (*)()) ImageFactory::image_width);
     scheme->assign("image-height",1,0,0,(SchemeObject* (*)()) ImageFactory::image_height);
 }
