@@ -4,7 +4,10 @@
 #include <algorithm>
 
 /**
- * Bresenham's algorithm
+ * Bresenham's algorithm.
+ *
+ * Lookup Gupta-Sproull if you want to do an antialiased version too.
+ * 
  */	     
 void ImageDrawing::line(Image* image, int x0, int y0, int x1, int y1, const RGBA& c) {
     bool steep = abs(y1-y0) > abs(x1-x0);
