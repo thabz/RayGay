@@ -18,6 +18,7 @@ extern "C" {
 #include "objects/ellipsoid.h"
 #include "math/poisson_disc.h"
 #include "ray.h"
+#include "ttf.h"
 
 using namespace std;
 
@@ -109,12 +110,17 @@ void init() {
     }
 }
 
+void ttf_test() {
+    TrueTypeFont* arial = new TrueTypeFont("arial.ttf");        
+}
+
 int main(int argc, char *argv[]) {
 
     cout << "Clocks/s : " << CLOCKS_PER_SEC << endl;
     init();
     //bench("Vector", bench_vector, 5);
     //bench("Ellipsoid fast intersect", bench_ellipsoid_fast_intersect, 5);
-    bench("Poisson disc", bench_poisson_disc, 5);
+    //bench("Poisson disc", bench_poisson_disc, 5);
+    ttf_test();
     return EXIT_SUCCESS;
 }
