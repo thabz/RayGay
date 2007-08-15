@@ -908,6 +908,11 @@ void test_eval() {
     assert_eval(s, "(let ((f (eval '(lambda (f x) (f x x)) (null-environment 5)))) (f + 10))", "20");
 }
 
+// Throw insane forms at the interpreter. It shouldn't crash but report errors back.
+void test_error_handling() {
+    char* procs[] = {"let", "let*", "do", "if", "and", "for-each", "+", "list"};        
+    char* args[] = {"1","#f","()","((x 10))","(())","(() x)","((#f)x)","(x 1)","(x 1 20)","1 2 3"};
+}
 
 int main(int argc, char *argv[]) {
     try {
@@ -996,6 +1001,10 @@ int main(int argc, char *argv[]) {
         cout << " OK" << endl;
 
         cout << "Test define and set...  ";
+        test_define_and_set();
+        cout << " OK" << endl;
+
+        cout << "Test error handling...  ";
         test_define_and_set();
         cout << " OK" << endl;
 
