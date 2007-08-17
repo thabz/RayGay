@@ -18,6 +18,7 @@ extern "C" {
 #include "objects/ellipsoid.h"
 #include "math/poisson_disc.h"
 #include "ray.h"
+#include "exception.h"
 #include "ttf.h"
 
 using namespace std;
@@ -115,12 +116,17 @@ void ttf_test() {
 }
 
 int main(int argc, char *argv[]) {
-
-    cout << "Clocks/s : " << CLOCKS_PER_SEC << endl;
-    init();
-    //bench("Vector", bench_vector, 5);
-    //bench("Ellipsoid fast intersect", bench_ellipsoid_fast_intersect, 5);
-    //bench("Poisson disc", bench_poisson_disc, 5);
-    ttf_test();
+    try {
+        cout << "Clocks/s : " << CLOCKS_PER_SEC << endl;
+        init();
+        //bench("Vector", bench_vector, 5);
+        //bench("Ellipsoid fast intersect", bench_ellipsoid_fast_intersect, 5);
+        //bench("Poisson disc", bench_poisson_disc, 5);
+        ttf_test();
+    } catch (Exception e) {
+    	cout << "Exception: " << e.getMessage() 
+     	     << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
+    	return EXIT_FAILURE;
+    }
     return EXIT_SUCCESS;
 }
