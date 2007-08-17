@@ -25,7 +25,7 @@ class TrueTypeFont
             public:
                 Contour(uint16_t t) : type(t) {};             
                 uint16_t type;    // 0 = lines, 1 = cur
-                list<Coord> coords;
+                vector<Coord> coords;
         };
         
         class Line : public Contour {
@@ -39,7 +39,7 @@ class TrueTypeFont
         };
         
         struct Glyph {
-            list<Contour> contours;
+            vector<Contour> contours;
             float xOffset;
         };
 
@@ -70,6 +70,7 @@ class TrueTypeFont
         uint32_t glyf_table_offset;
         uint32_t glyf_table_length;
         uint16_t indexToLocFormat;
+        uint16_t unitsPerEm;
         uint16_t numGlyphs;
         uint8_t glyphIndexArray[256];
     

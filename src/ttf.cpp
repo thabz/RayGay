@@ -142,8 +142,12 @@ void TrueTypeFont::read_head_table(uint32_t offset) {
     HeadTable headTable;
     read_struct("iiiissssssssssssssssssS", (char*)&headTable, sizeof(HeadTable));
     indexToLocFormat = headTable.indexToLocFormat;
+    unitsPerEm = headTable.unitsPerEm;
     if (indexToLocFormat != 1 && indexToLocFormat != 0) {
         throw_exception("Invalid indexToLocFormat in " + filename);    
+    }
+    if (unitsPerEm < 16 || unitsPerEm > 16384) {
+        throw_exception("Invalid unitsPerEm in " + filename);    
     }
     if (headTable.magicNumber != 0x5f0f3cf5) {
         throw_exception("Wrong magic number in " + filename);    
@@ -288,8 +292,8 @@ void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph* glyph, int16_t number
     uint16_t j = 0;
     for(uint16_t i = 0; i < numberOfContours; i++) {
         TrueTypeFont::Contour contour = TrueTypeFont::Line();    
-        while(j < endPtsOfContours[i]) {
-            TrueTypeFont::Coord coord = TrueTypeFont::Coord(float(xCoordinates[j]), float(yCoordinates[j]));        
+        while(j <= endPtsOfContours[i]) {
+            TrueTypeFont::Coord coord = TrueTypeFont::Coord(float(xCoordinates[j]) / unitsPerEm, float(yCoordinates[j]) / unitsPerEm);        
             contour.coords.push_back(coord);
             j++;        
         }
@@ -340,7 +344,6 @@ vector<TrueTypeFont::Glyph*> TrueTypeFont::getGlyphs(string str, uint32_t pts) {
 TrueTypeFont::Glyph* TrueTypeFont::getGlyph(char c, uint32_t pts) {
     return getGlyph(glyphIndexArray[uint32_t(c)]);    
 }
-
 
 
 ///////////////////////////////////////////////////////////

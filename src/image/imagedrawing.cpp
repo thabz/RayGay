@@ -2,6 +2,7 @@
 #include "image/imagedrawing.h"
 #include "image/image.h"
 #include <algorithm>
+#include "ttf.h"
 
 /**
  * Bresenham's algorithm.
@@ -69,3 +70,31 @@ void ImageDrawing::circle(Image* image, int x0, int y0, int r, const RGBA& c) {
         image->safeSetRGBA(x0-y,y0-x,c);
     }
 }
+
+void ImageDrawing::text(Image* image, int x, int y, std::string text, TrueTypeFont* font, int size, const RGBA& color) {
+    vector<TrueTypeFont::Glyph*> glyphs = font->getGlyphs(text, size);   
+    
+    for(uint32_t i = 0; i < glyphs.size(); i++) {
+        TrueTypeFont::Glyph* glyph = glyphs[i];
+        for(uint32_t j = 0; j < glyph->contours.size(); j++) {
+            TrueTypeFont::Contour contour = glyph->contours[j];
+            for(uint32_t k = 0; k < contour.coords.size(); k++) {
+                if (k > 0) {
+                    TrueTypeFont::Coord c0 = contour.coords[k-1];
+                    TrueTypeFont::Coord c1 = contour.coords[k];
+                    line(image, c0.x*size+x, y-c0.y*size, c1.x*size+x, y-c1.y*size, color);        
+                }    
+            }
+            TrueTypeFont::Coord c0 = contour.coords[contour.coords.size() - 1];
+            TrueTypeFont::Coord c1 = contour.coords[0];
+            line(image, c0.x*size+x, y-c0.y*size, c1.x*size+x, y-c1.y*size, color);        
+        }
+        
+    }
+    
+    
+    
+    
+};
+
+

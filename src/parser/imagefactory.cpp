@@ -5,6 +5,7 @@
 #include "image/image.h"
 #include "image/imageimpl.h"
 #include "image/imagedrawing.h"
+#include "ttf.h"
 
 SchemeObject* ImageFactory::make_image(SchemeObject* s_width, SchemeObject* s_height, SchemeObject* s_background_color) {
     char* proc = "make-image";        
@@ -89,6 +90,21 @@ SchemeObject* ImageFactory::draw_circle(SchemeObject* s_image, SchemeObject* s_c
     return S_UNSPECIFIED;
 }
 
+SchemeObject* ImageFactory::draw_text(SchemeObject* s_image, SchemeObject* s_pos, SchemeObject* s_text, SchemeObject* s_size, SchemeObject* s_ttf_file, SchemeObject* s_color) {
+    char* proc = "draw-line";
+    Image* image = scm2image(s_image, proc, 1);
+    double x0 = safe_scm2double(i_vector_ref(s_pos, 0), 2, proc);
+    double y0 = safe_scm2double(i_vector_ref(s_pos, 1), 2, proc);
+    string str = scm2string(s_text);
+    string ttf_filename = scm2string(s_ttf_file);
+    double size = safe_scm2double(s_size, 4, proc);
+    RGBA color = scm2rgba(s_color, proc, 6);
+    
+    TrueTypeFont* font = new TrueTypeFont(ttf_filename);
+    ImageDrawing::text(image, int(x0), int(y0), str, font, size, color);
+    return S_UNSPECIFIED;
+}
+
 void ImageFactory::register_procs(Scheme* scheme) {
     scheme->assign("make-image",2,1,0,(SchemeObject* (*)()) ImageFactory::make_image);
     scheme->assign("load-image",1,0,0,(SchemeObject* (*)()) ImageFactory::load_image);
@@ -97,6 +113,7 @@ void ImageFactory::register_procs(Scheme* scheme) {
     scheme->assign("get-pixel",3,0,0,(SchemeObject* (*)()) ImageFactory::get_pixel);
     scheme->assign("draw-line",4,0,0,(SchemeObject* (*)()) ImageFactory::draw_line);
     scheme->assign("draw-circle",4,0,0,(SchemeObject* (*)()) ImageFactory::draw_circle);
+    scheme->assign("draw-text",6,0,0,(SchemeObject* (*)()) ImageFactory::draw_text);
     scheme->assign("image-width",1,0,0,(SchemeObject* (*)()) ImageFactory::image_width);
     scheme->assign("image-height",1,0,0,(SchemeObject* (*)()) ImageFactory::image_height);
 }
