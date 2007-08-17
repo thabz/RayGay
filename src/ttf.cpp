@@ -217,16 +217,11 @@ void TrueTypeFont::read_cmap_table(uint32_t offset) {
 
 void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph* glyph, int16_t numberOfContours) {
     uint16_t endPtsOfContours[numberOfContours];
-    uint16_t numberOfPoints = 0;
     
     for(int16_t i = 0; i < numberOfContours; i++) {
-        uint16_t endPtOfContour = read_uint16();    
-        endPtsOfContours[i] = endPtOfContour;
-        if (endPtOfContour > numberOfPoints) {
-            numberOfPoints = endPtOfContour;         
-        }
+        endPtsOfContours[i] = read_uint16();
     }
-    numberOfPoints += 1;
+    uint16_t numberOfPoints = endPtsOfContours[numberOfContours-1]+1;
     
     // Skip instructions 
     uint16_t instructionLength = read_uint16();
@@ -237,49 +232,68 @@ void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph* glyph, int16_t number
     // Read RLE-encoded flags
     uint8_t flags[numberOfPoints];
     for(int16_t i = 0; i < numberOfPoints; i++) {
-        uint8_t flag = read_uint16();
+        uint8_t flag = read_uint8();
         if ((flag & 0xc0) != 0) throw_exception("Invalid glyph-flag in " + filename);
         flags[i] = flag;
-        if (flag & 0x8) {
+        if (flag & 0x08) {
             uint8_t repeat_num = read_uint8();        
             for(uint8_t j = 0; j < repeat_num; j++) {
-                flags[++i] = flag;    
-            }        
+                i++;
+                flags[i] = flag;    
+            }
         }
     }
     
     // Read coordinates
-    float xCoordinates[numberOfPoints];
-    float yCoordinates[numberOfPoints];
+    int16_t xCoordinates[numberOfPoints];
+    int16_t yCoordinates[numberOfPoints];
+    
+    int16_t xCoord = 0;
     for(uint16_t i = 0; i < numberOfPoints; i++) {
         uint8_t flag = flags[i];
         uint8_t xShort = (flag >> 1) & 1;
         uint8_t xIsSame = (flag >> 4) & 1;
         if (xShort) {
-            xCoordinates[i] = read_uint8() * (xIsSame ? 1 : -1);
+            xCoord += int16_t(read_uint8()) * (xIsSame ? 1 : -1);
         } else {
             if (xIsSame) {
-                if (i == 0) throw_exception("Invalid repeat of glyph-coordinate in " + filename);    
-                xCoordinates[i] = xCoordinates[i-1];    
+                //if (i == 0) throw_exception("Invalid repeat of glyph-coordinate in " + filename);    
+                //xCoord = xCoordinates[i-1];    
             } else {
-                xCoordinates[i] = read_int16();    
+                xCoord += read_int16();    
             }        
         }
+        xCoordinates[i] = xCoord;
     }
+    
+    int16_t yCoord = 0;
     for(uint16_t i = 0; i < numberOfPoints; i++) {
         uint8_t flag = flags[i];
         uint8_t yShort = (flag >> 2) & 1;
         uint8_t yIsSame = (flag >> 5) & 1;
         if (yShort) {
-            yCoordinates[i] = read_uint8() * (yIsSame ? 1 : -1);
+            yCoord += int16_t(read_uint8()) * (yIsSame ? 1 : -1);
         } else {
             if (yIsSame) {
-                if (i == 0) throw_exception("Invalid repeat of glyph-coordinate in " + filename);    
-                yCoordinates[i] = yCoordinates[i-1];    
+                //if (i == 0) throw_exception("Invalid repeat of glyph-coordinate in " + filename);    
+                //yCoord = yCoordinates[i-1];    
             } else {
-                yCoordinates[i] = read_int16();    
+                yCoord += read_int16();    
             }        
         }
+        yCoordinates[i] = yCoord;
+    }
+    
+    // Create our own glyph structure from the data gathered above
+    uint16_t j = 0;
+    for(uint16_t i = 0; i < numberOfContours; i++) {
+        TrueTypeFont::Contour contour = TrueTypeFont::Line();    
+        while(j < endPtsOfContours[i]) {
+            TrueTypeFont::Coord coord = TrueTypeFont::Coord(float(xCoordinates[j]), float(yCoordinates[j]));        
+            contour.coords.push_back(coord);
+            j++;        
+        }
+        glyph->contours.push_back(contour);    
     }
 }
 
@@ -293,7 +307,7 @@ void TrueTypeFont::processGlyph(TrueTypeFont::Glyph* glyph, uint32_t glyphIndex)
     GlyphDescription glyphDescr;
     read_struct("SSSSS", (char*)&glyphDescr, sizeof(GlyphDescription));
     if (glyphDescr.numberOfContours >= 0) {
-        //processSimpleGlyph(glyph, glyphDescr.numberOfContours);
+        processSimpleGlyph(glyph, glyphDescr.numberOfContours);
     } else if (glyphDescr.numberOfContours == -1) {
         processCompoundGlyph(glyph);
     } else {
@@ -312,6 +326,20 @@ TrueTypeFont::Glyph* TrueTypeFont::getGlyph(uint32_t glyphIndex) {
     return glyphs[glyphIndex];       
 }
 
+vector<TrueTypeFont::Glyph*> TrueTypeFont::getGlyphs(string str, uint32_t pts) {
+    vector<Glyph*> result;
+    result.reserve(str.size());
+    for(uint32_t i = 0; i < str.size(); i++) {
+        Glyph* glyph = getGlyph(str[i], pts);
+        // TODO: Find kerning            
+        result.push_back(glyph);
+    }
+    return result;
+}
+
+TrueTypeFont::Glyph* TrueTypeFont::getGlyph(char c, uint32_t pts) {
+    return getGlyph(glyphIndexArray[uint32_t(c)]);    
+}
 
 
 

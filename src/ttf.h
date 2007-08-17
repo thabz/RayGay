@@ -7,13 +7,48 @@
 #include <istream>
 #include <fstream>
 #include <list>
+#include <vector>
 
 using namespace std;
 
-class TrueTypeFont {
+class TrueTypeFont 
+{
+    public:
+        class Coord {
+            public:        
+                Coord(float x, float y) : x(x), y(y) {};        
+                float x,y;    
+        };
+        
+        // A contour is a closed shape
+        class Contour {
+            public:
+                Contour(uint16_t t) : type(t) {};             
+                uint16_t type;    // 0 = lines, 1 = cur
+                list<Coord> coords;
+        };
+        
+        class Line : public Contour {
+            public:        
+                Line() : Contour(0) {};    
+        };
+        
+        class Curve : public Contour {
+            public:
+                Curve() : Contour(1) {};            
+        };
+        
+        struct Glyph {
+            list<Contour> contours;
+            float xOffset;
+        };
+
     public:
         TrueTypeFont(string filename);
         ~TrueTypeFont();
+        
+        vector<Glyph*> getGlyphs(string s, uint32_t pts);
+        Glyph* getGlyph(char c, uint32_t pts);
         
     private:
             
@@ -38,32 +73,6 @@ class TrueTypeFont {
         uint16_t numGlyphs;
         uint8_t glyphIndexArray[256];
     
-        class Coord {
-            int16_t x,y;    
-        };
-        
-        // A contour is a closed shape
-        class Contour {
-            public:
-                Contour(uint16_t t) : type(t) {};             
-                uint16_t type;    // 0 = lines, 1 = cur
-                list<Coord> coords;
-        };
-        
-        class Line : public Contour {
-            public:        
-                Line() : Contour(0) {};    
-        };
-        
-        class Curve : public Contour {
-            public:
-                Curve() : Contour(1) {};            
-        };
-        
-        struct Glyph {
-            list<Contour> contours;            
-        };
-
         Glyph** glyphs;
         Glyph* getGlyph(uint32_t glyphIndex);    
 
