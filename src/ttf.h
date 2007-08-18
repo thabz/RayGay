@@ -9,36 +9,26 @@
 #include <list>
 #include <vector>
 #include <map>
+#include "math/vector2.h"
 
 using namespace std;
 
+
+/**
+ * See the specs at:
+ *
+ * http://developer.apple.com/textfonts/TTRefMan/index.html
+ * http://www.microsoft.com/typography/specs/default.htm
+ */ 
 class TrueTypeFont 
 {
     public:
-        class Coord {
-            public:        
-                Coord(float x, float y) : x(x), y(y) {};        
-                float x,y;    
-        };
-        
+
         // A contour is a closed shape
-        class Contour {
-            public:
-                Contour(uint16_t t) : type(t) {};             
-                uint16_t type;    // 0 = lines, 1 = cur
-                
-                /// The coordinates in em
-                vector<Coord> coords;
-        };
-        
-        class Line : public Contour {
-            public:        
-                Line() : Contour(0) {};    
-        };
-        
-        class Curve : public Contour {
-            public:
-                Curve() : Contour(1) {};            
+        struct Contour {
+            /// The coordinates in em
+            vector<Vector2> coords;
+            vector<bool> onCurve;
         };
         
         struct Glyph {

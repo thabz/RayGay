@@ -71,6 +71,21 @@ void ImageDrawing::circle(Image* image, int x0, int y0, int r, const RGBA& c) {
     }
 }
 
+void ImageDrawing::quadraticBezierCurve(Image* image, int x0, int y0, int x1, int y1, int x2, int y2, const RGBA& c) {
+    int xl = 0, yl = 0;
+    for(uint32_t i = 0 ; i < 1000; i++) {
+        float t = float(i) / 1000;
+        int xt = (1-t)*(1-t)*float(x0) + 2*t*(1-t)*float(x1) + t*t*float(x2);
+        int yt = (1-t)*(1-t)*float(y0) + 2*t*(1-t)*float(y1) + t*t*float(y2);
+        
+        if (i == 0 || xt != xl || yt != yl) {
+            image->safeSetRGBA(xt, yt, c);
+        }
+        xl = xt;
+        yl = yt;
+    }        
+}
+
 void ImageDrawing::text(Image* image, int x, int y, std::string text, TrueTypeFont* font, int size, const RGBA& color) {
     vector<TrueTypeFont::Glyph*> glyphs = font->getGlyphs(text);   
     
@@ -78,16 +93,28 @@ void ImageDrawing::text(Image* image, int x, int y, std::string text, TrueTypeFo
         TrueTypeFont::Glyph* glyph = glyphs[i];
         for(uint32_t j = 0; j < glyph->contours.size(); j++) {
             TrueTypeFont::Contour contour = glyph->contours[j];
-            for(uint32_t k = 0; k < contour.coords.size(); k++) {
-                if (k > 0) {
-                    TrueTypeFont::Coord c0 = contour.coords[k-1];
-                    TrueTypeFont::Coord c1 = contour.coords[k];
-                    line(image, c0.x*size+x, y-c0.y*size, c1.x*size+x, y-c1.y*size, color);        
+            vector<Vector2> coords = contour.coords;
+            coords.push_back(coords[0]);
+            coords.push_back(coords[1]);
+            vector<bool> onCurve = contour.onCurve;
+            onCurve.push_back(onCurve[0]);
+            onCurve.push_back(onCurve[1]);
+            Vector2 c0 = coords[0];
+            for(uint32_t k = 1; k < coords.size()-1; k++) {
+                Vector2 c1 = coords[k];
+                if (onCurve[k]) {
+                    line(image, c0[0]*size+x, y-c0[1]*size, c1[0]*size+x, y-c1[1]*size, color);        
+                    c0 = c1;
+                } else {
+                    Vector2 c2 = coords[k+1];
+                    if (!onCurve[k+1]) {
+                        // Reconstruct a new c2 that is on curve    
+                        c2 = (c1 + c2) * 0.5;
+                    }
+                    quadraticBezierCurve(image, c0[0]*size+x, y-c0[1]*size, c1[0]*size+x, y-c1[1]*size, c2[0]*size+x, y-c2[1]*size, color);
+                    c0 = c2;
                 }
             }
-            TrueTypeFont::Coord c0 = contour.coords[contour.coords.size() - 1];
-            TrueTypeFont::Coord c1 = contour.coords[0];
-            line(image, c0.x*size+x, y-c0.y*size, c1.x*size+x, y-c1.y*size, color);        
         }
         if (i != glyphs.size() - 1) {
             float kerning = font->getKerning(text[i], text[i+1]); 

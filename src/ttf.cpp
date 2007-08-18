@@ -387,10 +387,12 @@ void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph* glyph, int16_t number
     // Create our own glyph structure from the data gathered above
     uint16_t j = 0;
     for(uint16_t i = 0; i < numberOfContours; i++) {
-        TrueTypeFont::Contour contour = TrueTypeFont::Line();    
+        TrueTypeFont::Contour contour;
         while(j <= endPtsOfContours[i]) {
-            TrueTypeFont::Coord coord = TrueTypeFont::Coord(float(xCoordinates[j]) / unitsPerEm, float(yCoordinates[j]) / unitsPerEm);        
+            Vector2 coord = Vector2(float(xCoordinates[j]) / unitsPerEm, float(yCoordinates[j]) / unitsPerEm);        
             contour.coords.push_back(coord);
+            bool onCurve = (flags[j] & 1) == 1;
+            contour.onCurve.push_back(onCurve);
             j++;        
         }
         glyph->contours.push_back(contour);    
