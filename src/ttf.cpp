@@ -399,8 +399,62 @@ void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph* glyph, int16_t number
     }
 }
 
+#define ARG_1_AND_2_ARE_WORDS    0x0001
+#define ARGS_ARE_XY_VALUES       0x0002
+#define ROUND_XY_TO_GRID         0x0004
+#define WE_HAVE_A_SCALE          0x0008
+#define MORE_COMPONENTS          0x0020
+#define WE_HAVE_AN_X_AND_Y_SCALE 0x0040
+#define WE_HAVE_A_TWO_BY_TWO     0x0080
+#define WE_HAVE_INSTRUCTIONS     0x0100
+#define USE_MY_METRICS           0x0200
+
+// See http://developer.apple.com/textfonts/TTRefMan/RM06/Chap6glyf.html
 void TrueTypeFont::processCompoundGlyph(TrueTypeFont::Glyph* glyph) {
+    uint16_t flags;        
+    float a,b,c,d,e,f;
+    do {        
+        flags = read_uint16();    
+        uint16_t glyphIndex = read_uint16();
+
+        if (flags & ARGS_ARE_XY_VALUES) {
+            if (flags & ARG_1_AND_2_ARE_WORDS) {
+                e = read_int16();
+                f = read_int16();        
+            } else {
+                e = read_uint8();        
+                f = read_uint8();        
+            }
+            e /= unitsPerEm;
+            f /= unitsPerEm;
+        } else {
+           cout << "Unsupported composite stuff";        
+        }
         
+        if (flags & WE_HAVE_A_SCALE) {
+            a = d = read_uint16() / (1 << 14);
+            b = c = 0.0;
+        } else if (flags & WE_HAVE_AN_X_AND_Y_SCALE) {
+            a = read_uint16() / (1 << 14);
+            d = read_uint16() / (1 << 14);
+            b = c = 0.0;
+        } else if (flags & WE_HAVE_A_TWO_BY_TWO) {
+            a = read_uint16() / (1 << 14);
+            b = read_uint16() / (1 << 14);
+            c = read_uint16() / (1 << 14);
+            d = read_uint16() / (1 << 14);
+        } else {
+            a = d = 1.0;        
+            b = c = 0.0;
+        }
+        
+        int saved_pos = is->tellg();
+        TrueTypeFont::Glyph* subglyph = createGlyph(glyphIndex);
+        subglyph->transform(a,b,c,d,e,f);
+        glyph->contours.insert(glyph->contours.end(), subglyph->contours.begin(), subglyph->contours.end());
+        is->seekg(saved_pos);
+        
+    } while (flags & MORE_COMPONENTS);
 }
 
 
@@ -422,12 +476,15 @@ void TrueTypeFont::processGlyph(TrueTypeFont::Glyph* glyph, uint32_t glyphIndex)
     }
 }
 
+TrueTypeFont::Glyph* TrueTypeFont::createGlyph(uint32_t glyphIndex) {
+    TrueTypeFont::Glyph* glyph = new TrueTypeFont::Glyph();
+    processGlyph(glyph, glyphIndex);
+    return glyph;
+}
 
 TrueTypeFont::Glyph* TrueTypeFont::getGlyphFromIndex(uint32_t glyphIndex) {
     if (glyphs[glyphIndex] == NULL) {
-        TrueTypeFont::Glyph* glyph = new TrueTypeFont::Glyph();
-        glyphs[glyphIndex] = glyph;
-        processGlyph(glyph, glyphIndex);
+        glyphs[glyphIndex] = createGlyph(glyphIndex);
     }
     return glyphs[glyphIndex];       
 }
@@ -457,6 +514,26 @@ float TrueTypeFont::getKerning(char left, char right) {
         return iterator->second;    
     }
 }
+
+// See http://developer.apple.com/textfonts/TTRefMan/RM06/Chap6glyf.html
+void TrueTypeFont::Glyph::transform(float a, float b, float c, float d, float e, float f) {
+    float m = std::max(fabs(a),fabs(b));
+    float n = std::max(fabs(c),fabs(d));
+    if (abs(abs(a)-abs(c)) <= 33/65536) m *= 2;   // Shouldn't abs(c) be abs(b)
+    if (abs(abs(c)-abs(d)) <= 33/65536) n *= 2;
+        
+    for(uint32_t i = 0; i < contours.size(); i++) {
+        Contour& contour = contours[i];  
+        for(uint32_t j = 0; j < contour.coords.size(); j++) {
+            Vector2& v = contour.coords[j];        
+            float x = m * ((a/m)*v[0] + (b/m)*v[1] + e);
+            float y = n * ((c/n)*v[0] + (d/n)*v[1] + f);
+            v[0] = x;
+            v[1] = y;
+        }
+    }   
+}
+
 
 ///////////////////////////////////////////////////////////
 // Helpers

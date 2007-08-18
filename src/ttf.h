@@ -31,14 +31,17 @@ class TrueTypeFont
             vector<bool> onCurve;
         };
         
-        struct Glyph {
-            float advanceWidth;
-            float leftSideBearing;
-            float xMin, xMax;
-            float yMin, yMax;
-            // rsb = aw - (lsb + xmax - xmin)            
-            vector<Contour> contours;
-            float xOffset;
+        class Glyph {
+            public:        
+                float advanceWidth;
+                float leftSideBearing;
+                float xMin, xMax;
+                float yMin, yMax;
+                // rsb = aw - (lsb + xmax - xmin)            
+                vector<Contour> contours;
+                float xOffset;
+                
+                void transform(float a, float b, float c, float d, float e, float f);
         };
 
     public:
@@ -83,6 +86,7 @@ class TrueTypeFont
         Glyph* getGlyphFromIndex(uint32_t glyphIndex);
         map<uint32_t,float> kernings;
 
+        Glyph* createGlyph(uint32_t glyphIndex);
         void processSimpleGlyph(Glyph* glyph, int16_t numberOfContours);
         void processCompoundGlyph(Glyph* glyph);
         void processGlyph(Glyph* glyph, uint32_t glyphIndex);
