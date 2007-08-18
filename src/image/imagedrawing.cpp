@@ -86,7 +86,7 @@ void ImageDrawing::quadraticBezierCurve(Image* image, float x0, float y0, float 
     }        
 }
 
-void ImageDrawing::text(Image* image, int x, int y, std::string text, TrueTypeFont* font, int size, const RGBA& color) {
+void ImageDrawing::string(Image* image, int x, int y, std::string text, TrueTypeFont* font, int size, const RGBA& color) {
     vector<TrueTypeFont::Glyph*> glyphs = font->getGlyphs(text);   
     
     for(uint32_t i = 0; i < glyphs.size(); i++) {
