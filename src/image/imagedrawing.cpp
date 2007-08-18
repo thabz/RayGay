@@ -71,7 +71,7 @@ void ImageDrawing::circle(Image* image, int x0, int y0, int r, const RGBA& c) {
     }
 }
 
-void ImageDrawing::quadraticBezierCurve(Image* image, int x0, int y0, int x1, int y1, int x2, int y2, const RGBA& c) {
+void ImageDrawing::quadraticBezierCurve(Image* image, float x0, float y0, float x1, float y1, float x2, float y2, const RGBA& c) {
     int xl = 0, yl = 0;
     for(uint32_t i = 0 ; i < 1000; i++) {
         float t = float(i) / 1000;
