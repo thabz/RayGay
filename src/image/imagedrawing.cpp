@@ -83,18 +83,14 @@ void ImageDrawing::text(Image* image, int x, int y, std::string text, TrueTypeFo
                     TrueTypeFont::Coord c0 = contour.coords[k-1];
                     TrueTypeFont::Coord c1 = contour.coords[k];
                     line(image, c0.x*size+x, y-c0.y*size, c1.x*size+x, y-c1.y*size, color);        
-                }    
+                }
             }
             TrueTypeFont::Coord c0 = contour.coords[contour.coords.size() - 1];
             TrueTypeFont::Coord c1 = contour.coords[0];
             line(image, c0.x*size+x, y-c0.y*size, c1.x*size+x, y-c1.y*size, color);        
         }
-        
+        x += glyph->advanceWidth * size;
     }
-    
-    
-    
-    
-};
+}
 
 

@@ -50,6 +50,19 @@ struct MaximumProfileTable {
     uint16_t ignored_2[13]    __attribute__ ((packed));
 };
 
+struct HorizontalHeader {
+    uint32_t version;
+    uint16_t ascent;
+    uint16_t descent;
+    uint16_t lineGap;
+    int16_t advanceWidthMax;
+    uint16_t minLeftSideBearing;
+    uint16_t minRightSideBearing;
+    uint16_t xMaxExtent;          // max(lsb + (xMax-xMin))
+    uint16_t ignored[8];
+    uint16_t numOfLongHorMetrics;
+};
+
 struct GlyphDescription {
     int16_t numberOfContours;        
     int16_t xMin;
@@ -81,6 +94,8 @@ TrueTypeFont::TrueTypeFont(string filename) {
     uint32_t head_table_offset = 0;
     uint32_t loca_table_offset = 0;
     uint32_t maxp_table_offset = 0;
+    uint32_t hmtx_table_offset = 0;
+    uint32_t hhea_table_offset = 0;
 
     TableDirectoryEntry entry;
     for(uint32_t i = 0; i < offsetSubtable.numTables; i++) {
@@ -95,6 +110,10 @@ TrueTypeFont::TrueTypeFont(string filename) {
             loca_table_offset = entry.offset;        
         } else if (tag == "head") {
             head_table_offset = entry.offset;        
+        } else if (tag == "hhea") {
+            hhea_table_offset = entry.offset;        
+        } else if (tag == "hmtx") {
+            hmtx_table_offset = entry.offset;        
         } else if (tag == "maxp") {
             maxp_table_offset = entry.offset;        
         }
@@ -102,12 +121,13 @@ TrueTypeFont::TrueTypeFont(string filename) {
     }
     
     if (glyf_table_offset == 0 || cmap_table_offset == 0 || loca_table_offset == 0 
-                         || head_table_offset == 0 || maxp_table_offset == 0) {
+                               || head_table_offset == 0 || maxp_table_offset == 0
+                               || hmtx_table_offset == 0 || hhea_table_offset == 0) {
         throw_exception("Can't find all font headers in " + filename);    
     }
     
     // The order is not unimportant below. Head and maxp must be read before loca.
-    read_head_table(head_table_offset);   // Find indexToLocFormat
+    read_head_table(head_table_offset);   // Find indexToLocFormat and unitsPerEm
     read_maxp_table(maxp_table_offset);   // Find numGlyphs
     read_loca_table(loca_table_offset);   // Find glyphOffsets[numGlyphs]
 
@@ -118,6 +138,8 @@ TrueTypeFont::TrueTypeFont(string filename) {
     
     read_glyf_table(glyf_table_offset);
     read_cmap_table(cmap_table_offset);
+    read_hhea_table(hhea_table_offset);    // Find numOfLongHorMetrics
+    read_hmtx_table(hmtx_table_offset);
 };
 
 TrueTypeFont::~TrueTypeFont() {
@@ -182,6 +204,33 @@ void TrueTypeFont::read_loca_table(uint32_t loca_table_offset) {
         if (offset >= glyf_table_length) {
             throw_exception("Glyph offset out of bounds in " + filename);        
         }     
+    }
+}
+
+void TrueTypeFont::read_hhea_table(uint32_t offset) {
+    is->seekg(offset);
+    HorizontalHeader horizontalHeader;
+    read_struct("isssSssssssssssss", (char*)&horizontalHeader, sizeof(HorizontalHeader));
+    numOfLongHorMetrics = horizontalHeader.numOfLongHorMetrics;
+    if (numOfLongHorMetrics > numGlyphs) {
+        throw_exception("Invalid numOfLongHorMetrics in " + filename);    
+    }
+}
+
+void TrueTypeFont::read_hmtx_table(uint32_t offset) {
+    is->seekg(offset);
+    uint16_t advanceWidth = 0;
+    int16_t leftSideBearing;
+    for(uint16_t i = 0; i < numOfLongHorMetrics; i++) {
+        advanceWidth = read_uint16();
+        leftSideBearing = read_int16();
+        glyphs[i]->advanceWidth = float(advanceWidth) / unitsPerEm;
+        glyphs[i]->leftSideBearing = float(leftSideBearing) / unitsPerEm;
+    }
+    for(uint16_t i = numOfLongHorMetrics; i < numGlyphs; i++) {
+        leftSideBearing = read_int16();
+        glyphs[i]->advanceWidth = float(advanceWidth) / unitsPerEm;
+        glyphs[i]->leftSideBearing = float(leftSideBearing) / unitsPerEm;
     }
 }
 
@@ -310,6 +359,10 @@ void TrueTypeFont::processGlyph(TrueTypeFont::Glyph* glyph, uint32_t glyphIndex)
     is->seekg(glyf_table_offset + glyphOffsets[glyphIndex]);
     GlyphDescription glyphDescr;
     read_struct("SSSSS", (char*)&glyphDescr, sizeof(GlyphDescription));
+    glyph->xMin = glyphDescr.xMin;
+    glyph->xMax = glyphDescr.xMax;
+    glyph->yMin = glyphDescr.yMin;
+    glyph->yMax = glyphDescr.yMax;
     if (glyphDescr.numberOfContours >= 0) {
         processSimpleGlyph(glyph, glyphDescr.numberOfContours);
     } else if (glyphDescr.numberOfContours == -1) {
@@ -357,6 +410,9 @@ uint32_t TrueTypeFont::read_uint32() {
         uint16_t shorts[2];
     };    
     is->read((char*)&result, 4);
+    if (is->bad()) {
+        throw_exception("Error reading from " + filename);    
+    }
 #ifdef WORDS_BIGENDIAN
     return result;
 #else

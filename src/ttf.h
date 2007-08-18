@@ -39,6 +39,11 @@ class TrueTypeFont
         };
         
         struct Glyph {
+            float advanceWidth;
+            float leftSideBearing;
+            float xMin, xMax;
+            float yMin, yMax;
+            // rsb = aw - (lsb + xmax - xmin)            
             vector<Contour> contours;
             float xOffset;
         };
@@ -57,6 +62,8 @@ class TrueTypeFont
         void read_head_table(uint32_t offset);
         void read_maxp_table(uint32_t offset);
         void read_loca_table(uint32_t offset);
+        void read_hmtx_table(uint32_t offset);
+        void read_hhea_table(uint32_t offset);
         
         uint32_t read_uint32();           
         uint16_t read_uint16();
@@ -70,6 +77,7 @@ class TrueTypeFont
         uint32_t glyf_table_offset;
         uint32_t glyf_table_length;
         uint16_t indexToLocFormat;
+        uint16_t numOfLongHorMetrics;
         uint16_t unitsPerEm;
         uint16_t numGlyphs;
         uint8_t glyphIndexArray[256];
