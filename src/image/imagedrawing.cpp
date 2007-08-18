@@ -72,7 +72,7 @@ void ImageDrawing::circle(Image* image, int x0, int y0, int r, const RGBA& c) {
 }
 
 void ImageDrawing::text(Image* image, int x, int y, std::string text, TrueTypeFont* font, int size, const RGBA& color) {
-    vector<TrueTypeFont::Glyph*> glyphs = font->getGlyphs(text, size);   
+    vector<TrueTypeFont::Glyph*> glyphs = font->getGlyphs(text);   
     
     for(uint32_t i = 0; i < glyphs.size(); i++) {
         TrueTypeFont::Glyph* glyph = glyphs[i];
@@ -89,7 +89,10 @@ void ImageDrawing::text(Image* image, int x, int y, std::string text, TrueTypeFo
             TrueTypeFont::Coord c1 = contour.coords[0];
             line(image, c0.x*size+x, y-c0.y*size, c1.x*size+x, y-c1.y*size, color);        
         }
-        x += glyph->advanceWidth * size;
+        if (i != glyphs.size() - 1) {
+            float kerning = font->getKerning(text[i], text[i+1]); 
+            x += (glyph->advanceWidth + kerning)* size;
+        }
     }
 }
 

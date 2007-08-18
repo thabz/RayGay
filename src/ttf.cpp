@@ -3,6 +3,8 @@
 #include "exception.h"
 #include <iomanip>
 
+#define ids2kernkey(l,r) (((l) << 16) | (r))
+
 struct OffsetSubtable {
     uint32_t scalerType;
     uint16_t numTables;
@@ -63,6 +65,12 @@ struct HorizontalHeader {
     uint16_t numOfLongHorMetrics;
 };
 
+struct KerningSubtable {
+    uint16_t version;
+    uint16_t length;
+    uint16_t coverage;            
+};
+
 struct GlyphDescription {
     int16_t numberOfContours;        
     int16_t xMin;
@@ -96,6 +104,7 @@ TrueTypeFont::TrueTypeFont(string filename) {
     uint32_t maxp_table_offset = 0;
     uint32_t hmtx_table_offset = 0;
     uint32_t hhea_table_offset = 0;
+    uint32_t kern_table_offset = 0;
 
     TableDirectoryEntry entry;
     for(uint32_t i = 0; i < offsetSubtable.numTables; i++) {
@@ -114,6 +123,8 @@ TrueTypeFont::TrueTypeFont(string filename) {
             hhea_table_offset = entry.offset;        
         } else if (tag == "hmtx") {
             hmtx_table_offset = entry.offset;        
+        } else if (tag == "kern") {
+            kern_table_offset = entry.offset;        
         } else if (tag == "maxp") {
             maxp_table_offset = entry.offset;        
         }
@@ -140,6 +151,10 @@ TrueTypeFont::TrueTypeFont(string filename) {
     read_cmap_table(cmap_table_offset);
     read_hhea_table(hhea_table_offset);    // Find numOfLongHorMetrics
     read_hmtx_table(hmtx_table_offset);
+    
+    if (kern_table_offset != 0) {
+        read_kern_table(kern_table_offset);    
+    }
 };
 
 TrueTypeFont::~TrueTypeFont() {
@@ -234,10 +249,43 @@ void TrueTypeFont::read_hmtx_table(uint32_t offset) {
     }
 }
 
+void TrueTypeFont::read_kern_table(uint32_t offset) {
+    is->seekg(offset);
+    read_uint16();    // Ignore version
+    uint16_t nTables = read_uint16();
+    for(uint16_t i = 0; i < nTables; i++) {
+        KerningSubtable kerningSubtable;
+        read_struct("sss", (char*)&kerningSubtable, sizeof(KerningSubtable));
+        uint8_t format = kerningSubtable.coverage >> 8;
+        uint8_t horizontal = kerningSubtable.coverage & 1;
+        uint8_t minimum = kerningSubtable.coverage & 2;
+        uint8_t crossStream = kerningSubtable.coverage & 4;
+        if (horizontal != 0 && minimum == 0 && crossStream == 0 && format == 0) {
+            // We only support format 0 horizontal kerningdata
+            uint16_t nPairs = read_uint16();
+            cout << "Kerning pairs: " << nPairs << endl;
+            is->ignore(6);
+            for(uint16_t j = 0; j < nPairs; j++) {
+                uint16_t left_index = read_uint16();    
+                uint16_t right_index = read_uint16();    
+                int16_t value = read_int16();
+                float fvalue = float(value) / unitsPerEm;
+                uint32_t key = ids2kernkey(left_index, right_index);
+                kernings[key] = fvalue;
+            }
+            return;                
+        }
+        // Skip forward to next subtable
+        if (i != nTables - 1) {         
+            is->ignore(kerningSubtable.length - sizeof(KerningSubtable));        
+        }
+    }
+}
+
 void TrueTypeFont::read_glyf_table(uint32_t offset) {
     assert(glyphOffsets != NULL);        
     for(uint16_t i = 0; i < numGlyphs; i++) {
-        getGlyph(i);    
+        getGlyphFromIndex(i);    
     }
 }
 
@@ -262,7 +310,6 @@ void TrueTypeFont::read_cmap_table(uint32_t offset) {
         if (subtableHeader.format == 0) {
             for(int j = 0; j < 256; j++) {
                 glyphIndexArray[j] = read_uint8();
-//                cout << "ASCII " << j << ": glyph index " << int(glyphIndexArray[j]) << endl;
             }            
         }
     }
@@ -374,7 +421,7 @@ void TrueTypeFont::processGlyph(TrueTypeFont::Glyph* glyph, uint32_t glyphIndex)
 }
 
 
-TrueTypeFont::Glyph* TrueTypeFont::getGlyph(uint32_t glyphIndex) {
+TrueTypeFont::Glyph* TrueTypeFont::getGlyphFromIndex(uint32_t glyphIndex) {
     if (glyphs[glyphIndex] == NULL) {
         TrueTypeFont::Glyph* glyph = new TrueTypeFont::Glyph();
         glyphs[glyphIndex] = glyph;
@@ -383,21 +430,31 @@ TrueTypeFont::Glyph* TrueTypeFont::getGlyph(uint32_t glyphIndex) {
     return glyphs[glyphIndex];       
 }
 
-vector<TrueTypeFont::Glyph*> TrueTypeFont::getGlyphs(string str, uint32_t pts) {
+vector<TrueTypeFont::Glyph*> TrueTypeFont::getGlyphs(string str) {
     vector<Glyph*> result;
     result.reserve(str.size());
     for(uint32_t i = 0; i < str.size(); i++) {
-        Glyph* glyph = getGlyph(str[i], pts);
-        // TODO: Find kerning            
+        Glyph* glyph = getGlyph(str[i]);
         result.push_back(glyph);
     }
     return result;
 }
 
-TrueTypeFont::Glyph* TrueTypeFont::getGlyph(char c, uint32_t pts) {
-    return getGlyph(glyphIndexArray[uint32_t(c)]);    
+TrueTypeFont::Glyph* TrueTypeFont::getGlyph(char c) {
+    return getGlyphFromIndex(glyphIndexArray[uint32_t(c)]);    
 }
 
+float TrueTypeFont::getKerning(char left, char right) {
+    uint16_t left_index = glyphIndexArray[uint32_t(left)];    
+    uint16_t right_index = glyphIndexArray[uint32_t(right)];
+    uint32_t key = ids2kernkey(left_index, right_index);
+    map<uint32_t,float>::iterator iterator = kernings.find(key);
+    if (iterator == kernings.end()) {
+        return 0.0;    
+    } else {
+        return iterator->second;    
+    }
+}
 
 ///////////////////////////////////////////////////////////
 // Helpers

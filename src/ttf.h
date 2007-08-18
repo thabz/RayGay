@@ -8,6 +8,7 @@
 #include <fstream>
 #include <list>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -25,6 +26,8 @@ class TrueTypeFont
             public:
                 Contour(uint16_t t) : type(t) {};             
                 uint16_t type;    // 0 = lines, 1 = cur
+                
+                /// The coordinates in em
                 vector<Coord> coords;
         };
         
@@ -52,8 +55,11 @@ class TrueTypeFont
         TrueTypeFont(string filename);
         ~TrueTypeFont();
         
-        vector<Glyph*> getGlyphs(string s, uint32_t pts);
-        Glyph* getGlyph(char c, uint32_t pts);
+        vector<Glyph*> getGlyphs(string s);
+        Glyph* getGlyph(char c);
+        
+        /// The kerning in em between to chars
+        float getKerning(char left, char right);
         
     private:
             
@@ -64,6 +70,7 @@ class TrueTypeFont
         void read_loca_table(uint32_t offset);
         void read_hmtx_table(uint32_t offset);
         void read_hhea_table(uint32_t offset);
+        void read_kern_table(uint32_t offset);
         
         uint32_t read_uint32();           
         uint16_t read_uint16();
@@ -83,7 +90,8 @@ class TrueTypeFont
         uint8_t glyphIndexArray[256];
     
         Glyph** glyphs;
-        Glyph* getGlyph(uint32_t glyphIndex);    
+        Glyph* getGlyphFromIndex(uint32_t glyphIndex);
+        map<uint32_t,float> kernings;
 
         void processSimpleGlyph(Glyph* glyph, int16_t numberOfContours);
         void processCompoundGlyph(Glyph* glyph);
