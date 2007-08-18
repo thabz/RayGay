@@ -428,6 +428,7 @@ void TrueTypeFont::processCompoundGlyph(TrueTypeFont::Glyph* glyph) {
             e /= unitsPerEm;
             f /= unitsPerEm;
         } else {
+           e = f = 0;        
            cout << "Unsupported composite stuff";        
         }
         
@@ -519,7 +520,7 @@ float TrueTypeFont::getKerning(char left, char right) {
 void TrueTypeFont::Glyph::transform(float a, float b, float c, float d, float e, float f) {
     float m = std::max(fabs(a),fabs(b));
     float n = std::max(fabs(c),fabs(d));
-    if (abs(abs(a)-abs(c)) <= 33/65536) m *= 2;   // Shouldn't abs(c) be abs(b)
+    if (abs(abs(a)-abs(b)) <= 33/65536) m *= 2;
     if (abs(abs(c)-abs(d)) <= 33/65536) n *= 2;
         
     for(uint32_t i = 0; i < contours.size(); i++) {
