@@ -1,0 +1,18 @@
+<h>Truetype og 2D grafik</h>
+<p>Har lavet en filparser og renderer til <a href="http://developer.apple.com/textfonts/TTRefMan/index.html">truetype fonte</a>. Hver truetype <i>glyph</i> er beskrevet som konturer, som består af enten linier eller kvadratiske <a href="http://en.wikipedia.org/wiki/B%C3%A9zier_curve">B&eacute;zier-kurver</a>. Der findes også <i>composite glyphs</i> som består af flere andre glyphs med specielle transformeringer, f.eks. består <i>&eacute;</i> af et almindeligt <i>e</i> og en <i>´</i> accent-glyph placeret det helt rigtige sted.</p>
+<p>Der understøttes også <a href="http://en.wikipedia.org/wiki/Kerning">kerning</a>, som er specielle justeringer af afstandene mellem tegn. I nedenstående kan det ses ved at <i>j</i> går under <i>i</i>.</p>
+
+<p><a href="files/arial.png"><img border="0" src="files/_arial.png"></a></p>
+
+<p>Jeg er mest interesseret i konturerne - de fyldes ikke ud. Den overordnede plan er selvfølgelig at lave 3D-objekter ved at <i>extrude</i> truetype glyphs.</p>
+<p>Min truetype-kode bruger <a href="http://en.wikipedia.org/wiki/Unicode">Unicode</a>, <tt>wchar_t</tt> og <tt>std::wstring</tt> hele vejen igennem, hvilket er mere end man kan sige om min Scheme og <a href="http://www.schemers.org/Documents/Standards/R5RS/">R<sup>5</sup>RS-standarden</a>, som jeg har implementerede. Den kommende Scheme-standard, <a href="http://www.r6rs.org/">R<sup>6</sup>RS</a>, bruger Unicode fra inderst til yderst, så den skal jeg snart have taget hul på.</p>
+
+<p>For at kunne teste truetype-koden udvidede jeg min Scheme med flere funktioner til at plotte 2D grafik. Både punkter, linier, cirkler og B&eacute;zier-kurver. Disse grafikker kan man beregne i sin 3D-scene fil og bruge som textures direkte fra memory.</p>
+
+<p>For at teste mine plot-funktioner lavede jeg nogle test-billeder. Herunder en <a href="http://en.wikipedia.org/wiki/Iterated_function_system">bregne-fraktal</a> og nogle <a href="http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm">Bresenham-linier</a>.</p>
+
+<p><a href="files/fern.png"><img border="0" src="files/_fern.png"></a></p>
+
+<p><a href="files/lines.png"><img border="0" src="files/_lines.png"></a></p>
+
+<p>Scheme-koden til bregnen kan <a href="files/fern.scm">ses her</a>.</p>
