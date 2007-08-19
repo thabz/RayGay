@@ -7,13 +7,13 @@
 
 <p><a href="files/brulee.png"><img border="0" src="files/_brulee.png"></a></p>
 
-<p>Jeg er mest interesseret i konturerne - hvorfor jeg ikke gider fylde dem ud. Den overordnede plan er selvfølgelig at lave 3D-objekter ved at <i>extrude</i> truetype glyphs.</p>
+<p>Jeg er mest interesseret i konturerne - hvorfor jeg ikke gider fylde dem ud. Det er nu heller ikke helt nemt. Den overordnede plan er selvfølgelig at lave 3D-objekter ved at <i>extrude</i> truetype glyphs.</p>
 
 <p>Min truetype-kode bruger <a href="http://en.wikipedia.org/wiki/Unicode">Unicode</a>, <tt>wchar_t</tt> og <tt>std::wstring</tt> hele vejen igennem, hvilket er mere end man kan sige om min Scheme og <a href="http://www.schemers.org/Documents/Standards/R5RS/">R<sup>5</sup>RS-standarden</a>, som jeg implementerede. Den kommende Scheme-standard, <a href="http://www.r6rs.org/">R<sup>6</sup>RS</a>, bruger Unicode fra inderst til yderst, så den skal jeg snart have taget hul på.</p>
 
-<p>For at kunne teste truetype-koden udvidede jeg min Scheme med flere funktioner til at plotte 2D grafik. Både punkter, linier, cirkler og B&eacute;zier-kurver. Disse grafikker kan man således beregne i sin 3D-scene fil og bruge som textures direkte fra memory.</p>
+<p>For at kunne teste truetype-koden udvidede jeg min Scheme med flere funktioner til at plotte 2D grafik. Både punkter, linier, cirkler og B&eacute;zier-kurver. Disse grafikker kan man således beregne undervejs i sin 3D-scene-fil og bruge som textures direkte fra memory.</p> 
 
-<p>For at teste mine plot-funktioner lavede jeg nogle test-billeder. Herunder en <a href="http://en.wikipedia.org/wiki/Iterated_function_system">bregne-fraktal</a> og nogle <a href="http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm">Bresenham-linier</a>. Scheme-koden til bregnen kan <a href="files/fern.scm">ses her</a>.</p>
+<p>Man kan også vælge at gemme grafikken i diverse filformater fra Scheme-koden. Dermed har jeg fået lavet mig en lille testbed til at lege med forskellige 2D grafik-algoritmer i Scheme. For at prøve mine plot-funktioner af undervejs lavede jeg nogle test-billeder. Herunder en <a href="http://en.wikipedia.org/wiki/Iterated_function_system">bregne-fraktal</a> og nogle <a href="http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm">Bresenham-linier</a>. Scheme-koden til bregnen kan <a href="files/fern.scm">ses her</a>.</p>
 
 <p><a href="files/fern.png"><img border="0" src="files/_fern.png"></a></p>
 
