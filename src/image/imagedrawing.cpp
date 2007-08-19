@@ -91,9 +91,8 @@ void ImageDrawing::string(Image* image, int x, int y, std::wstring text, TrueTyp
     
     for(uint32_t i = 0; i < glyphs.size(); i++) {
         TrueTypeFont::Glyph* glyph = glyphs[i];
-        // In Arial ' ' points to the glyph '!'. We don't draw the '!' but just uses it's metrics to 
-        // advance in x. I couldn't find docs that says how to handle space, but this method seems
-        // quite sane.
+        // In Arial ' ' points to the glyph '!'. We don't draw the '!' but just uses it's advance width. I couldn't find 
+        // docs that says how to handle space, but this method seems quite sane.
         if (!font->isWhitespace(text[i])) {
             for(uint32_t j = 0; j < glyph->contours.size(); j++) {
                 TrueTypeFont::Contour contour = glyph->contours[j];
