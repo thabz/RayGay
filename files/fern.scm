@@ -18,12 +18,14 @@
           ((< r 15) (vector (+ (* -0.15 x) (* 0.28 y)) (+ (* 0.26 x) (* 0.24 y) 0.44)))
           (else (vector (+ (* 0.85 x) (* 0.04 y)) (+ (* -0.04 x) (* 0.85 y) 1.6)))))) 
 
+(define white #(1 1 1))
+(define black #(0 0 0))
 
-(define img (make-image 1000 1000 #(1 1 1)))
+(define img (make-image 1000 1000 white))
 
 (do ((i 0 (+ i 1))
      (v #(0 0) (fern v)))
     ((= i 1000000))
-    (set-pixel-scaled img #(-5 0) #(5 10) v #(0.02 0.7 0.01)))
+    (set-pixel-scaled img #(-5 0) #(5 10) v black))
 
 (save-image img "fern.png")
