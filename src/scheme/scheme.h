@@ -191,6 +191,7 @@ extern SchemeObject* S_NUMBERS[];
 #define scm2int(o)     (int((o)->value))
 #define scm2double(o)  ((o)->value)
 #define scm2string(o)  (string((o)->str))
+#define scm2wstring(o) ((o)->wstr())
 #define scm2char(o)    ((o)->c)
 #define scm2bool(o)    ((o) != S_FALSE)
 #define bool2scm(b)    ((b) ? S_TRUE : S_FALSE)

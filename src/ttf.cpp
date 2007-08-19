@@ -83,10 +83,10 @@ TrueTypeFont::TrueTypeFont(string filename) {
     this->glyphOffsets = NULL;
     this->is = NULL;
     this->glyphs = NULL;
+    this->endCode = this->startCode = this->idDelta = this->idRangeOffset = NULL;
+    this->glyphIndexArray = NULL;
     this->filename = filename;
         
-    cout << "Loading font: " << filename << endl;
-    
     this->is = new ifstream(filename.c_str(), ios::in|ios::binary);
     if (is->bad()) {
         throw_exception("Can't open " + filename);    
@@ -94,8 +94,8 @@ TrueTypeFont::TrueTypeFont(string filename) {
     
     OffsetSubtable offsetSubtable;
     read_struct("issss", (char*)&offsetSubtable, sizeof(OffsetSubtable));
-    cout << "Scalertype: " << hex << offsetSubtable.scalerType << endl;
-    cout << "Num tables " << hex << offsetSubtable.numTables << endl;
+    //cout << "Scalertype: " << hex << offsetSubtable.scalerType << endl;
+    //cout << "Num tables " << hex << offsetSubtable.numTables << endl;
     
     glyf_table_offset = 0;
     uint32_t cmap_table_offset = 0;
@@ -128,7 +128,7 @@ TrueTypeFont::TrueTypeFont(string filename) {
         } else if (tag == "maxp") {
             maxp_table_offset = entry.offset;        
         }
-        cout << "Tag: " << tag << ", length " << dec << entry.length << ", offset 0x" << hex << entry.offset << endl;
+        //cout << "Tag: " << tag << ", length " << dec << entry.length << ", offset 0x" << hex << entry.offset << endl;
     }
     
     if (glyf_table_offset == 0 || cmap_table_offset == 0 || loca_table_offset == 0 
@@ -172,6 +172,13 @@ TrueTypeFont::~TrueTypeFont() {
          delete [] glyphs;
     }
     
+    if (endCode != NULL) {
+        delete [] endCode;
+        delete [] startCode;
+        delete [] idDelta;
+        delete [] idRangeOffset;
+        delete [] glyphIndexArray;
+    }
 }
 
 void TrueTypeFont::read_head_table(uint32_t offset) {
@@ -196,7 +203,7 @@ void TrueTypeFont::read_maxp_table(uint32_t offset) {
     MaximumProfileTable maxpTable;
     read_struct("issssssssssssss", (char*)&maxpTable, sizeof(MaximumProfileTable));
     numGlyphs = maxpTable.numGlyphs;
-    cout << "numGlyphs: " << dec << numGlyphs << endl;
+//    cout << "numGlyphs: " << dec << numGlyphs << endl;
     if (numGlyphs == 0) {
         throw_exception("No glyphs in found in " + filename);    
     }
@@ -263,7 +270,7 @@ void TrueTypeFont::read_kern_table(uint32_t offset) {
         if (horizontal != 0 && minimum == 0 && crossStream == 0 && format == 0) {
             // We only support format 0 horizontal kerningdata
             uint16_t nPairs = read_uint16();
-            cout << "Kerning pairs: " << nPairs << endl;
+//            cout << "Kerning pairs: " << nPairs << endl;
             is->ignore(6);
             for(uint16_t j = 0; j < nPairs; j++) {
                 uint16_t left_index = read_uint16();    
@@ -296,23 +303,69 @@ void TrueTypeFont::read_cmap_table(uint32_t offset) {
     CmapEncodingSubtable encSubTable;
     CmapSubtableHeader subtableHeader;
     read_struct("ss", (char*)&index, sizeof(CmapIndex));
-    cout << "cmap subtables " << index.numberSubtables << endl;
+//    cout << "cmap subtables " << index.numberSubtables << endl;
+    
     uint32_t offsets[index.numberSubtables];
+    uint16_t platformIDs[index.numberSubtables];
+    uint16_t platformSpecificIDs[index.numberSubtables];
+    
     for(int i = 0; i < index.numberSubtables; i++) {
         read_struct("ssi", (char*)&encSubTable, sizeof(CmapEncodingSubtable));
         offsets[i] = encSubTable.offset;
-        cout << "cmap offset: " << offsets[i] << ", platform: " << encSubTable.platformID << ", specific: " << encSubTable.platformSpecificID << endl;
+        platformIDs[i] = encSubTable.platformID;
+        platformSpecificIDs[i] = encSubTable.platformSpecificID;
+//        cout << "cmap offset: " << offsets[i] << ", platform: " << encSubTable.platformID << ", specific: " << encSubTable.platformSpecificID << endl;
     }
+    
     for(int i = 0; i < index.numberSubtables; i++) {
         is->seekg(offset + offsets[i]);
         read_struct("sss", (char*)&subtableHeader, sizeof(CmapSubtableHeader));
+        if (subtableHeader.format == 4 && platformIDs[i] == 3 && platformSpecificIDs[i] == 1) {
+             // Found the unicode subtable
+             uint16_t segCountX2 = read_uint16();
+             is->ignore(3 * sizeof(uint16_t));
+             uint16_t segCount = segCountX2 / 2;
+             uint32_t remaining = subtableHeader.length - 4*segCount*sizeof(uint16_t) - 8*sizeof(uint16_t);
+             remaining /= 2;
+
+             endCode = new uint16_t[segCount];
+             startCode = new uint16_t[segCount];
+             idDelta = new uint16_t[segCount];
+             idRangeOffset = new uint16_t[segCount+remaining];
+
+             for(uint16_t j = 0; j < segCount; j++) {
+                 endCode[j] = read_uint16();
+             }
+             if (endCode[segCount-1] != 0xffff) throw_exception ("Invalid endcode in " + filename);
+             uint16_t ignore = read_uint16();
+             if (ignore != 0) throw_exception ("Reserved pad not zero in " + filename);
+             for(uint16_t j = 0; j < segCount; j++) {
+                 startCode[j] = read_uint16();
+             }
+             for(uint16_t j = 0; j < segCount; j++) {
+                 idDelta[j] = read_uint16();
+             }
+             for(uint16_t j = 0; j < segCount; j++) {
+                 idRangeOffset[j] = read_uint16();
+             }
+                 
+             // glyphIndexArray is tagged at the end of idRangeOffset
+             for(uint32_t j = 0; j < remaining; j++) {
+                 idRangeOffset[j+segCount] = read_uint16();    
+             }
+             return;
+        }
+        
+        /*
         cout << i << ". Format: " << subtableHeader.format << ", lang: " << subtableHeader.language << ", length: " << subtableHeader.length << endl;
         if (subtableHeader.format == 0) {
             for(int j = 0; j < 256; j++) {
                 glyphIndexArray[j] = read_uint8();
             }            
         }
+        */
     }
+    throw_exception("Font contains no unicode mappings: " + filename);
 }
 
 void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph* glyph, int16_t numberOfContours) {
@@ -323,7 +376,7 @@ void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph* glyph, int16_t number
     }
     uint16_t numberOfPoints = endPtsOfContours[numberOfContours-1]+1;
     
-    // Skip instructions 
+    // Skip instructions TODO: Use is->ignore(instructionLength)
     uint16_t instructionLength = read_uint16();
     for(int16_t i = 0; i < instructionLength; i++) {
         read_uint8();
@@ -490,23 +543,42 @@ TrueTypeFont::Glyph* TrueTypeFont::getGlyphFromIndex(uint32_t glyphIndex) {
     return glyphs[glyphIndex];       
 }
 
-vector<TrueTypeFont::Glyph*> TrueTypeFont::getGlyphs(string str) {
+uint16_t TrueTypeFont::char2glyphIndex(wchar_t wc) {
+    uint16_t c = wc;
+    uint16_t segment = 0;
+
+    while (c > endCode[segment]) segment++;
+    
+    if (startCode[segment] > c) {
+        return 0;
+    }
+    
+    uint16_t rangeOffset = idRangeOffset[segment];
+    if (rangeOffset == 0) {
+        return c + idDelta[segment];    
+    } else {
+        return *( &idRangeOffset[segment] + idRangeOffset[segment] / 2 + (c - startCode[segment]) );    
+    }
+}
+
+vector<TrueTypeFont::Glyph*> TrueTypeFont::getGlyphs(wstring str) {
     vector<Glyph*> result;
     result.reserve(str.size());
     for(uint32_t i = 0; i < str.size(); i++) {
-        Glyph* glyph = getGlyph(str[i]);
+        wchar_t c = str[i];
+        Glyph* glyph = getGlyph(c);
         result.push_back(glyph);
     }
     return result;
 }
 
-TrueTypeFont::Glyph* TrueTypeFont::getGlyph(char c) {
-    return getGlyphFromIndex(glyphIndexArray[uint32_t(c)]);    
+TrueTypeFont::Glyph* TrueTypeFont::getGlyph(wchar_t c) {
+    return getGlyphFromIndex(char2glyphIndex(c));
 }
 
-float TrueTypeFont::getKerning(char left, char right) {
-    uint16_t left_index = glyphIndexArray[uint32_t(left)];    
-    uint16_t right_index = glyphIndexArray[uint32_t(right)];
+float TrueTypeFont::getKerning(wchar_t left, wchar_t right) {
+    uint16_t left_index = char2glyphIndex(left);    
+    uint16_t right_index = char2glyphIndex(right);
     uint32_t key = ids2kernkey(left_index, right_index);
     map<uint32_t,float>::iterator iterator = kernings.find(key);
     if (iterator == kernings.end()) {
@@ -515,6 +587,11 @@ float TrueTypeFont::getKerning(char left, char right) {
         return iterator->second;    
     }
 }
+
+bool TrueTypeFont::isWhitespace(wchar_t c) {
+    return iswspace(c);        
+}
+
 
 // See http://developer.apple.com/textfonts/TTRefMan/RM06/Chap6glyf.html
 void TrueTypeFont::Glyph::transform(float a, float b, float c, float d, float e, float f) {
@@ -535,6 +612,8 @@ void TrueTypeFont::Glyph::transform(float a, float b, float c, float d, float e,
     }   
 }
 
+TrueTypeFont::Contour::Contour() {};
+TrueTypeFont::Contour::~Contour() {};
 
 ///////////////////////////////////////////////////////////
 // Helpers

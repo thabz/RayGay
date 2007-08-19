@@ -1,4 +1,5 @@
 
+#include "scheme/scheme.h"
 #include "parser/imagefactory.h"
 #include "parser/converters.h"
 #include "parser/wrapper.h"
@@ -95,7 +96,7 @@ SchemeObject* ImageFactory::draw_string(SchemeObject* s_image, SchemeObject* s_p
     Image* image = scm2image(s_image, proc, 1);
     double x0 = safe_scm2double(i_vector_ref(s_pos, 0), 2, proc);
     double y0 = safe_scm2double(i_vector_ref(s_pos, 1), 2, proc);
-    string str = scm2string(s_text);
+    wstring str = scm2wstring(s_text);
     string ttf_filename = scm2string(s_ttf_file);
     double size = safe_scm2double(s_size, 4, proc);
     RGBA color = scm2rgba(s_color, proc, 6);

@@ -26,6 +26,8 @@ class TrueTypeFont
 
         // A contour is a closed shape
         struct Contour {
+            Contour();
+            ~Contour();
             /// The coordinates in em
             vector<Vector2> coords;
             vector<bool> onCurve;
@@ -48,11 +50,14 @@ class TrueTypeFont
         TrueTypeFont(string filename);
         ~TrueTypeFont();
         
-        vector<Glyph*> getGlyphs(string s);
-        Glyph* getGlyph(char c);
+        vector<Glyph*> getGlyphs(wstring s);
+        Glyph* getGlyph(wchar_t c);
         
         /// The kerning in em between to chars
-        float getKerning(char left, char right);
+        float getKerning(wchar_t left, wchar_t right);
+        
+        // Is a char a whitespace
+        bool isWhitespace(wchar_t c);
         
     private:
             
@@ -80,7 +85,12 @@ class TrueTypeFont
         uint16_t numOfLongHorMetrics;
         uint16_t unitsPerEm;
         uint16_t numGlyphs;
-        uint8_t glyphIndexArray[256];
+        
+        uint16_t* endCode;
+        uint16_t* startCode;
+        uint16_t* idDelta;
+        uint16_t* idRangeOffset;
+        uint16_t* glyphIndexArray;
     
         Glyph** glyphs;
         Glyph* getGlyphFromIndex(uint32_t glyphIndex);
@@ -90,6 +100,7 @@ class TrueTypeFont
         void processSimpleGlyph(Glyph* glyph, int16_t numberOfContours);
         void processCompoundGlyph(Glyph* glyph);
         void processGlyph(Glyph* glyph, uint32_t glyphIndex);
+        uint16_t char2glyphIndex(wchar_t c);
 };
 
 #endif

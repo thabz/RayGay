@@ -126,6 +126,8 @@ class SchemeObject
         void mark();
         void finalize();
         bool self_evaluating() const;
+        
+        wstring wstr();
 
         SchemeObject* getVectorElem(int index);
         void setVectorElem(SchemeObject* o, int index);

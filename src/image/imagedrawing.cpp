@@ -86,33 +86,38 @@ void ImageDrawing::quadraticBezierCurve(Image* image, float x0, float y0, float 
     }        
 }
 
-void ImageDrawing::string(Image* image, int x, int y, std::string text, TrueTypeFont* font, int size, const RGBA& color) {
+void ImageDrawing::string(Image* image, int x, int y, std::wstring text, TrueTypeFont* font, int size, const RGBA& color) {
     vector<TrueTypeFont::Glyph*> glyphs = font->getGlyphs(text);   
     
     for(uint32_t i = 0; i < glyphs.size(); i++) {
         TrueTypeFont::Glyph* glyph = glyphs[i];
-        for(uint32_t j = 0; j < glyph->contours.size(); j++) {
-            TrueTypeFont::Contour contour = glyph->contours[j];
-            vector<Vector2> coords = contour.coords;
-            coords.push_back(coords[0]);
-            coords.push_back(coords[1]);
-            vector<bool> onCurve = contour.onCurve;
-            onCurve.push_back(onCurve[0]);
-            onCurve.push_back(onCurve[1]);
-            Vector2 c0 = coords[0];
-            for(uint32_t k = 1; k < coords.size()-1; k++) {
-                Vector2 c1 = coords[k];
-                if (onCurve[k]) {
-                    line(image, c0[0]*size+x, y-c0[1]*size, c1[0]*size+x, y-c1[1]*size, color);        
-                    c0 = c1;
-                } else {
-                    Vector2 c2 = coords[k+1];
-                    if (!onCurve[k+1]) {
-                        // Reconstruct a new c2 that is on curve    
-                        c2 = (c1 + c2) * 0.5;
+        // In Arial ' ' points to the glyph '!'. We don't draw the '!' but just uses it's metrics to 
+        // advance in x. I couldn't find docs that says how to handle space, but this method seems
+        // quite sane.
+        if (!font->isWhitespace(text[i])) {
+            for(uint32_t j = 0; j < glyph->contours.size(); j++) {
+                TrueTypeFont::Contour contour = glyph->contours[j];
+                vector<Vector2> coords = contour.coords;
+                coords.push_back(coords[0]);
+                coords.push_back(coords[1]);
+                vector<bool> onCurve = contour.onCurve;
+                onCurve.push_back(onCurve[0]);
+                onCurve.push_back(onCurve[1]);
+                Vector2 c0 = coords[0];
+                for(uint32_t k = 1; k < coords.size()-1; k++) {
+                    Vector2 c1 = coords[k];
+                    if (onCurve[k]) {
+                        line(image, c0[0]*size+x, y-c0[1]*size, c1[0]*size+x, y-c1[1]*size, color);        
+                        c0 = c1;
+                    } else {
+                        Vector2 c2 = coords[k+1];
+                        if (!onCurve[k+1]) {
+                            // Reconstruct a new c2 that is on curve    
+                            c2 = (c1 + c2) * 0.5;
+                        }
+                        quadraticBezierCurve(image, c0[0]*size+x, y-c0[1]*size, c1[0]*size+x, y-c1[1]*size, c2[0]*size+x, y-c2[1]*size, color);
+                        c0 = c2;
                     }
-                    quadraticBezierCurve(image, c0[0]*size+x, y-c0[1]*size, c1[0]*size+x, y-c1[1]*size, c2[0]*size+x, y-c2[1]*size, color);
-                    c0 = c2;
                 }
             }
         }

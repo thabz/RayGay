@@ -432,6 +432,27 @@ string SchemeObject::toString(ObjectType t) {
 }
 
 //-----------------------------------------------------------
+// Strings
+//-----------------------------------------------------------
+
+wstring SchemeObject::wstr() {
+    wchar_t wcstring[length+1];
+    wcstring[length] = 0;
+    mbstowcs(wcstring, str, length+1);
+    return wstring(wcstring, length);
+        
+    /*        
+    wstring result = wstring(length, 0);
+    for(int32_t i = 0; i < length; i++) {
+        uint16_t wc = 0;
+        result[i] = 41; //wc + (unsigned)str[i];    
+    }            
+    return result; 
+    */
+}
+
+
+//-----------------------------------------------------------
 // Vector
 //-----------------------------------------------------------
 
