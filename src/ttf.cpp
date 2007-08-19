@@ -543,8 +543,7 @@ TrueTypeFont::Glyph* TrueTypeFont::getGlyphFromIndex(uint32_t glyphIndex) {
     return glyphs[glyphIndex];       
 }
 
-uint16_t TrueTypeFont::char2glyphIndex(wchar_t wc) {
-    uint16_t c = wc;
+uint16_t TrueTypeFont::char2glyphIndex(wchar_t c) {
     uint16_t segment = 0;
 
     while (c > endCode[segment]) segment++;
