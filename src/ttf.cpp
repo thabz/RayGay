@@ -83,6 +83,8 @@ TrueTypeFont::TrueTypeFont(string filename) {
     this->glyphOffsets = NULL;
     this->is = NULL;
     this->glyphs = NULL;
+    this->advanceWidths = NULL;
+    this->leftSideBearings = NULL;
     this->endCode = this->startCode = this->idDelta = this->idRangeOffset = NULL;
     this->glyphIndexArray = NULL;
     this->filename = filename;
@@ -146,11 +148,12 @@ TrueTypeFont::TrueTypeFont(string filename) {
     for(uint16_t i = 0; i < numGlyphs; i++) {
         glyphs[i] = NULL;    
     }
+
+    read_hhea_table(hhea_table_offset);    // Find numOfLongHorMetrics
+    read_hmtx_table(hmtx_table_offset);    // Fill in advanceWidths and leftSideBearings
     
     read_glyf_table(glyf_table_offset);
     read_cmap_table(cmap_table_offset);
-    read_hhea_table(hhea_table_offset);    // Find numOfLongHorMetrics
-    read_hmtx_table(hmtx_table_offset);
     
     if (kern_table_offset != 0) {
         read_kern_table(kern_table_offset);    
@@ -242,17 +245,16 @@ void TrueTypeFont::read_hhea_table(uint32_t offset) {
 void TrueTypeFont::read_hmtx_table(uint32_t offset) {
     is->seekg(offset);
     uint16_t advanceWidth = 0;
-    int16_t leftSideBearing;
+    advanceWidths = new uint16_t[numGlyphs];
+    leftSideBearings = new int16_t[numGlyphs];
     for(uint16_t i = 0; i < numOfLongHorMetrics; i++) {
         advanceWidth = read_uint16();
-        leftSideBearing = read_int16();
-        glyphs[i]->advanceWidth = float(advanceWidth) / unitsPerEm;
-        glyphs[i]->leftSideBearing = float(leftSideBearing) / unitsPerEm;
+        leftSideBearings[i] = read_int16();
+        advanceWidths[i] = advanceWidth;
     }
     for(uint16_t i = numOfLongHorMetrics; i < numGlyphs; i++) {
-        leftSideBearing = read_int16();
-        glyphs[i]->advanceWidth = float(advanceWidth) / unitsPerEm;
-        glyphs[i]->leftSideBearing = float(leftSideBearing) / unitsPerEm;
+        leftSideBearings[i] = read_int16();
+        advanceWidths[i] = advanceWidth;
     }
 }
 
@@ -506,6 +508,14 @@ void TrueTypeFont::processCompoundGlyph(TrueTypeFont::Glyph* glyph) {
         TrueTypeFont::Glyph* subglyph = createGlyph(glyphIndex);
         subglyph->transform(a,b,c,d,e,f);
         glyph->contours.insert(glyph->contours.end(), subglyph->contours.begin(), subglyph->contours.end());
+        if (flags & USE_MY_METRICS) {
+            glyph->xMin = subglyph->xMin;
+            glyph->xMax = subglyph->xMax;
+            glyph->yMin = subglyph->yMin;
+            glyph->yMax = subglyph->yMax;
+            glyph->advanceWidth = subglyph->advanceWidth;
+            glyph->leftSideBearing = subglyph->leftSideBearing;
+        }
         is->seekg(saved_pos);
         
     } while (flags & MORE_COMPONENTS);
@@ -520,6 +530,8 @@ void TrueTypeFont::processGlyph(TrueTypeFont::Glyph* glyph, uint32_t glyphIndex)
     glyph->xMax = glyphDescr.xMax;
     glyph->yMin = glyphDescr.yMin;
     glyph->yMax = glyphDescr.yMax;
+    glyph->advanceWidth = float(advanceWidths[glyphIndex]) / unitsPerEm;
+    glyph->leftSideBearing = float(leftSideBearings[glyphIndex]) / unitsPerEm;
     if (glyphDescr.numberOfContours >= 0) {
         processSimpleGlyph(glyph, glyphDescr.numberOfContours);
     } else if (glyphDescr.numberOfContours == -1) {
@@ -596,15 +608,15 @@ bool TrueTypeFont::isWhitespace(wchar_t c) {
 void TrueTypeFont::Glyph::transform(float a, float b, float c, float d, float e, float f) {
     float m = std::max(fabs(a),fabs(b));
     float n = std::max(fabs(c),fabs(d));
-    if (abs(abs(a)-abs(b)) <= 33/65536) m *= 2;
-    if (abs(abs(c)-abs(d)) <= 33/65536) n *= 2;
+    if (fabs(fabs(a)-fabs(c)) <= 33/65536) m *= 2;
+    if (fabs(fabs(c)-fabs(d)) <= 33/65536) n *= 2;
         
     for(uint32_t i = 0; i < contours.size(); i++) {
         Contour& contour = contours[i];  
         for(uint32_t j = 0; j < contour.coords.size(); j++) {
             Vector2& v = contour.coords[j];        
-            float x = m * ((a/m)*v[0] + (b/m)*v[1] + e);
-            float y = n * ((c/n)*v[0] + (d/n)*v[1] + f);
+            float x = m * ((a/m)*v[0] + (c/m)*v[1] + e);
+            float y = n * ((b/n)*v[0] + (d/n)*v[1] + f);
             v[0] = x;
             v[1] = y;
         }

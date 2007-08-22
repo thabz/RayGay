@@ -91,6 +91,8 @@ class TrueTypeFont
         uint16_t* idDelta;
         uint16_t* idRangeOffset;
         uint16_t* glyphIndexArray;
+        uint16_t* advanceWidths;
+        int16_t* leftSideBearings; 
     
         Glyph** glyphs;
         Glyph* getGlyphFromIndex(uint32_t glyphIndex);
