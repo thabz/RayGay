@@ -6,6 +6,7 @@
 #include "image/image.h"
 #include "image/imageimpl.h"
 #include "image/imagedrawing.h"
+#include "imagefilters/gaussianblur.h"
 #include "ttf.h"
 
 SchemeObject* ImageFactory::make_image(SchemeObject* s_width, SchemeObject* s_height, SchemeObject* s_background_color) {
@@ -106,6 +107,17 @@ SchemeObject* ImageFactory::draw_string(SchemeObject* s_image, SchemeObject* s_p
     return S_UNSPECIFIED;
 }
 
+SchemeObject* ImageFactory::apply_gaussian_blur(SchemeObject* s_image, SchemeObject* s_radius) {
+    char* proc = "apply-gaussian-blur";
+    Image* image = scm2image(s_image, proc, 1);
+    double r = safe_scm2double(s_radius, 2, proc);
+    // TODO: Check that r is positive
+    GaussianBlur filter = GaussianBlur(r);
+    filter.apply(image);        
+    return S_UNSPECIFIED;
+}
+
+
 void ImageFactory::register_procs(Scheme* scheme) {
     scheme->assign("make-image",2,1,0,(SchemeObject* (*)()) ImageFactory::make_image);
     scheme->assign("load-image",1,0,0,(SchemeObject* (*)()) ImageFactory::load_image);
@@ -117,4 +129,5 @@ void ImageFactory::register_procs(Scheme* scheme) {
     scheme->assign("draw-string",6,0,0,(SchemeObject* (*)()) ImageFactory::draw_string);
     scheme->assign("image-width",1,0,0,(SchemeObject* (*)()) ImageFactory::image_width);
     scheme->assign("image-height",1,0,0,(SchemeObject* (*)()) ImageFactory::image_height);
+    scheme->assign("apply-gaussian-blur",2,0,0,(SchemeObject* (*)()) ImageFactory::apply_gaussian_blur);
 }

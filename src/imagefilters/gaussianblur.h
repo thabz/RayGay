@@ -4,7 +4,7 @@
 #include "imagefilters/imagefilter.h"
 
 /**
- * A filter for grayscaling an image.
+ * A filter for gaussian blurring an image.
  */
 class GaussianBlur : public ImageFilter {
     public:

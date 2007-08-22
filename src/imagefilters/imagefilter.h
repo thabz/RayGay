@@ -10,12 +10,18 @@ class Image;
 class ImageFilter {
 
     public:
+	enum EdgeAction {
+	    NONE,
+	    WRAP_EDGES,
+	    CLAMP_EDGES    
+        };
+        
 	/// Apply the filter to an image
 	virtual void apply(Image* image) = 0;
 
     protected:
 	/// Perform convolution of mask on image
-	void applyMask(Image* image, double* mask, int w, int h);
+	void applyMask(Image* image, double* mask, int w, int h, EdgeAction edgeAction);
 	void normalizeMask(double* mask, int w, int h);
 	virtual ~ImageFilter() {};
 };
