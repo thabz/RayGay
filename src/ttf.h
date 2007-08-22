@@ -19,6 +19,8 @@ using namespace std;
  *
  * http://developer.apple.com/textfonts/TTRefMan/index.html
  * http://www.microsoft.com/typography/specs/default.htm
+ * 
+ * TODO: i med diverse accenter over tegnes ikke rigtigt i arial.
  */ 
 class TrueTypeFont 
 {
