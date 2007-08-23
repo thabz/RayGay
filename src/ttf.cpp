@@ -294,7 +294,7 @@ void TrueTypeFont::read_kern_table(uint32_t offset) {
 void TrueTypeFont::read_glyf_table(uint32_t offset) {
     assert(glyphOffsets != NULL);        
     for(uint16_t i = 0; i < numGlyphs; i++) {
-        getGlyphFromIndex(i);    
+        //getGlyphFromIndex(i);    
     }
 }
 
@@ -477,8 +477,8 @@ void TrueTypeFont::processCompoundGlyph(TrueTypeFont::Glyph* glyph) {
                 e = read_int16();
                 f = read_int16();        
             } else {
-                e = read_uint8();        
-                f = read_uint8();        
+                e = read_int8();        
+                f = read_int8();        
             }
             e /= unitsPerEm;
             f /= unitsPerEm;
@@ -493,6 +493,7 @@ void TrueTypeFont::processCompoundGlyph(TrueTypeFont::Glyph* glyph) {
         } else if (flags & WE_HAVE_AN_X_AND_Y_SCALE) {
             a = read_uint16() / (1 << 14);
             d = read_uint16() / (1 << 14);
+            cout << "a " << a << " d " << d << endl;
             b = c = 0.0;
         } else if (flags & WE_HAVE_A_TWO_BY_TWO) {
             a = read_uint16() / (1 << 14);
@@ -523,6 +524,7 @@ void TrueTypeFont::processCompoundGlyph(TrueTypeFont::Glyph* glyph) {
 
 
 void TrueTypeFont::processGlyph(TrueTypeFont::Glyph* glyph, uint32_t glyphIndex) {
+//    cout << "Processing glyph " << dec << glyphIndex << endl;        
     is->seekg(glyf_table_offset + glyphOffsets[glyphIndex]);
     GlyphDescription glyphDescr;
     read_struct("SSSSS", (char*)&glyphDescr, sizeof(GlyphDescription));
@@ -584,6 +586,7 @@ vector<TrueTypeFont::Glyph*> TrueTypeFont::getGlyphs(wstring str) {
 }
 
 TrueTypeFont::Glyph* TrueTypeFont::getGlyph(wchar_t c) {
+//    cout << "Getting glyph for unicode " << setw(5) << setfill('0') << hex << c << endl;        
     return getGlyphFromIndex(char2glyphIndex(c));
 }
 
@@ -679,6 +682,12 @@ int16_t TrueTypeFont::read_int16() {
 
 uint8_t TrueTypeFont::read_uint8() {
     uint8_t result;
+    is->read((char*)&result, 1);
+    return result;            
+}
+
+int8_t TrueTypeFont::read_int8() {
+    int8_t result;
     is->read((char*)&result, 1);
     return result;            
 }

@@ -76,6 +76,7 @@ class TrueTypeFont
         uint16_t read_uint16();
         int16_t read_int16();
         uint8_t read_uint8();
+        int8_t read_int8();
         void read_struct(char* types, char* addr, uint32_t bytes);
         
         string filename;
