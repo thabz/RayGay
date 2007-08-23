@@ -28,6 +28,14 @@ SchemeObject* ImageFactory::make_image(SchemeObject* s_width, SchemeObject* s_he
     return image2scm(image);
 }
 
+SchemeObject* ImageFactory::image_copy(SchemeObject* s_image) {
+    char* proc = "image-copy";        
+    Image* image = scm2image(s_image, proc, 1);
+    Image* copy = new ImageImpl<uint8_t,4>(image->getWidth(), image->getHeight());
+    copy->copy(*image);
+    return image2scm(copy);
+}
+
 SchemeObject* ImageFactory::load_image(SchemeObject* s_filename) {
     string filename = scm2string(s_filename);        
     Image* image = Image::load(filename);
@@ -144,6 +152,7 @@ SchemeObject* ImageFactory::set_alpha_combine_mode(SchemeObject* s_mode) {
 
 void ImageFactory::register_procs(Scheme* scheme) {
     scheme->assign("make-image",2,1,0,(SchemeObject* (*)()) ImageFactory::make_image);
+    scheme->assign("image-copy",1,0,0,(SchemeObject* (*)()) ImageFactory::image_copy);
     scheme->assign("load-image",1,0,0,(SchemeObject* (*)()) ImageFactory::load_image);
     scheme->assign("save-image",2,0,0,(SchemeObject* (*)()) ImageFactory::save_image);
     scheme->assign("set-pixel",4,0,0,(SchemeObject* (*)()) ImageFactory::set_pixel);

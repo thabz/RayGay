@@ -13,6 +13,7 @@ class Image;
 class ImageFactory {
     public:
         static SchemeObject* make_image(SchemeObject* width, SchemeObject* height, SchemeObject* bg_color);
+        static SchemeObject* image_copy(SchemeObject* s_image);
         static SchemeObject* load_image(SchemeObject* s_filename);
         static SchemeObject* save_image(SchemeObject* s_image, SchemeObject* s_filename);
         static SchemeObject* image_width(SchemeObject* s_image);
