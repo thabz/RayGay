@@ -11,6 +11,7 @@ class TrueTypeFont;
 class ImageDrawing {
 
     public:
+        /// See http://panda3d.org/wiki/index.php/Texture_Blend_Modes for some blend modes.    
         enum AlphaCombineMode {
             REPLACE,
             ADD,        
