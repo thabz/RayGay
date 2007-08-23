@@ -5,9 +5,14 @@
 #include "parser/wrapper.h"
 #include "image/image.h"
 #include "image/imageimpl.h"
-#include "image/imagedrawing.h"
 #include "imagefilters/gaussianblur.h"
 #include "ttf.h"
+
+SchemeObject* ImageFactory::modulate_mode_symbol;
+SchemeObject* ImageFactory::add_mode_symbol;
+SchemeObject* ImageFactory::replace_mode_symbol;
+SchemeObject* ImageFactory::decal_mode_symbol;
+ImageDrawing::AlphaCombineMode ImageFactory::alpha_combine_mode;
 
 SchemeObject* ImageFactory::make_image(SchemeObject* s_width, SchemeObject* s_height, SchemeObject* s_background_color) {
     char* proc = "make-image";        
@@ -55,7 +60,7 @@ SchemeObject* ImageFactory::set_pixel(SchemeObject* s_image, SchemeObject* s_x, 
     double x = safe_scm2double(s_x, 2, proc);
     double y = safe_scm2double(s_y, 3, proc);
     RGBA color = scm2rgba(s_color, proc, 4);
-    image->safeSetRGBA(int(x),int(y), color);
+    ImageDrawing::pixel(image, x, y, color, alpha_combine_mode);
     return S_UNSPECIFIED;
 }
 
@@ -76,7 +81,7 @@ SchemeObject* ImageFactory::draw_line(SchemeObject* s_image, SchemeObject* s_fro
     double x1 = safe_scm2double(i_vector_ref(s_to, 0), 3, proc);
     double y1 = safe_scm2double(i_vector_ref(s_to, 1), 3, proc);
     RGBA color = scm2rgba(s_color, proc, 4);
-    ImageDrawing::line(image, int(x0), int(y0), int(x1), int(y1), color);
+    ImageDrawing::line(image, int(x0), int(y0), int(x1), int(y1), color, alpha_combine_mode);
     return S_UNSPECIFIED;
 }
 
@@ -88,7 +93,7 @@ SchemeObject* ImageFactory::draw_circle(SchemeObject* s_image, SchemeObject* s_c
     double y0 = safe_scm2double(i_vector_ref(s_center, 1), 2, proc);
     double r = safe_scm2double(s_radius, 3, proc);
     RGBA color = scm2rgba(s_color, proc, 4);
-    ImageDrawing::circle(image, int(x0), int(y0), int(r), color);
+    ImageDrawing::circle(image, int(x0), int(y0), int(r), color, alpha_combine_mode);
     return S_UNSPECIFIED;
 }
 
@@ -103,7 +108,7 @@ SchemeObject* ImageFactory::draw_string(SchemeObject* s_image, SchemeObject* s_p
     RGBA color = scm2rgba(s_color, proc, 6);
     
     TrueTypeFont* font = new TrueTypeFont(ttf_filename);
-    ImageDrawing::string(image, int(x0), int(y0), str, font, size, color);
+    ImageDrawing::string(image, int(x0), int(y0), str, font, size, color, alpha_combine_mode);
     return S_UNSPECIFIED;
 }
 
@@ -114,6 +119,25 @@ SchemeObject* ImageFactory::apply_gaussian_blur(SchemeObject* s_image, SchemeObj
     // TODO: Check that r is positive
     GaussianBlur filter = GaussianBlur(r);
     filter.apply(image);        
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* ImageFactory::set_alpha_combine_mode(SchemeObject* s_mode) {
+    char* proc = "set-alpha-combine-mode";         
+
+    assert_arg_type(proc, 1, s_symbol_p, s_mode);        
+
+    if (s_mode == decal_mode_symbol) {
+        alpha_combine_mode = ImageDrawing::DECAL;    
+    } else if (s_mode == replace_mode_symbol) {
+        alpha_combine_mode = ImageDrawing::REPLACE;    
+    } else if (s_mode == modulate_mode_symbol) {
+        alpha_combine_mode = ImageDrawing::MODULATE;    
+    } else if (s_mode == add_mode_symbol) {
+        alpha_combine_mode = ImageDrawing::ADD;    
+    } else {
+        throw scheme_exception(proc, "Unknown alpha combine mode. Use 'decal, 'replace, 'add or 'modulate.");      
+    }        
     return S_UNSPECIFIED;
 }
 
@@ -129,5 +153,14 @@ void ImageFactory::register_procs(Scheme* scheme) {
     scheme->assign("draw-string",6,0,0,(SchemeObject* (*)()) ImageFactory::draw_string);
     scheme->assign("image-width",1,0,0,(SchemeObject* (*)()) ImageFactory::image_width);
     scheme->assign("image-height",1,0,0,(SchemeObject* (*)()) ImageFactory::image_height);
+    scheme->assign("set-alpha-combine-mode",1,0,0,(SchemeObject* (*)()) ImageFactory::set_alpha_combine_mode);
     scheme->assign("apply-gaussian-blur",2,0,0,(SchemeObject* (*)()) ImageFactory::apply_gaussian_blur);
+    
+    add_mode_symbol = SchemeObject::createSymbol("add");
+    replace_mode_symbol = SchemeObject::createSymbol("replace");
+    modulate_mode_symbol = SchemeObject::createSymbol("modulate");
+    decal_mode_symbol = SchemeObject::createSymbol("decal");
+    
+    alpha_combine_mode = ImageDrawing::REPLACE;
 }
+ 
