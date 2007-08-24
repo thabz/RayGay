@@ -58,6 +58,27 @@ void ImageDrawing::line(Image* image, int x0, int y0, int x1, int y1, const RGBA
     }
 };
 
+/**
+ * Slow but using float and thus more precise
+ */	     
+void ImageDrawing::line_slow(Image* image, float x0, float y0, float x1, float y1, const RGBA& c, ImageDrawing::AlphaCombineMode am) {
+
+    float xdelta = x0 - x1;
+    float ydelta = y0 - y1;
+    int xl = 0, yl = 0;
+    for(uint32_t i = 0; i < 1000; i++) {
+        float t = float(i) / 1000;
+        int xt = x1 + t*xdelta;
+        int yt = y1 + t*ydelta;
+        if (i == 0 || xt != xl || yt != yl) {
+            pixel(image, xt, yt, c, am);
+        }
+        xl = xt;
+        yl = yt;
+    }
+};
+
+
 void ImageDrawing::circle(Image* image, int x0, int y0, int r, const RGBA& c, ImageDrawing::AlphaCombineMode am) {
     int f = 1 - r;
     int ddF_x = 0;
@@ -125,7 +146,7 @@ void ImageDrawing::string(Image* image, int x, int y, std::wstring text, TrueTyp
                 for(uint32_t k = 1; k < coords.size()-1; k++) {
                     Vector2 c1 = coords[k];
                     if (onCurve[k]) {
-                        line(image, c0[0]*size+x, y-c0[1]*size, c1[0]*size+x, y-c1[1]*size, color, am);        
+                        line_slow(image, c0[0]*size+x, y-c0[1]*size, c1[0]*size+x, y-c1[1]*size, color, am);        
                         c0 = c1;
                     } else {
                         Vector2 c2 = coords[k+1];
