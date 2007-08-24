@@ -20,6 +20,7 @@ extern "C" {
 #include "ray.h"
 #include "exception.h"
 #include "ttf.h"
+#include "gzip.h"
 
 using namespace std;
 
@@ -115,14 +116,18 @@ void ttf_test() {
     TrueTypeFont* arial = new TrueTypeFont("arial.ttf");        
 }
 
+void gzip_test() {
+    GZIP::dump_info("Makefile.gz");
+}
+
 int main(int argc, char *argv[]) {
     try {
-        cout << "Clocks/s : " << CLOCKS_PER_SEC << endl;
+//        cout << "Clocks/s : " << CLOCKS_PER_SEC << endl;
         init();
         //bench("Vector", bench_vector, 5);
         //bench("Ellipsoid fast intersect", bench_ellipsoid_fast_intersect, 5);
         //bench("Poisson disc", bench_poisson_disc, 5);
-        ttf_test();
+        gzip_test();
     } catch (Exception e) {
     	cout << "Exception: " << e.getMessage() 
      	     << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
