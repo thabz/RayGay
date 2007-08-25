@@ -11,8 +11,26 @@
  */
 class GZIP {
     public:
-        static void dump_info(std::string filename);
-	static void deflate(std::ifstream& is);
+        struct file_pos {
+            uint8_t cur_byte;
+            uint8_t bits_left_in_cur_byte;
+            std::streampos pos;
+        };
+        GZIP(std::string filename);
+        void dump_header();
+	void deflate();
+	
+    private:	
+        uint8_t read_uint8();
+        uint32_t read_bits(file_pos* state, uint8_t num);
+        void skip_header();
+        void error(std::string);
+        std::string filename;
+
+        std::streampos data_pos;
+        file_pos global_filepos;
+        std::ifstream* is;
+	
 };
 
 #endif

@@ -114,10 +114,13 @@ void init() {
 
 void ttf_test() {
     TrueTypeFont* arial = new TrueTypeFont("arial.ttf");        
+    assert(arial != NULL);
 }
 
 void gzip_test() {
-    GZIP::dump_info("Makefile.gz");
+    GZIP* gzip = new GZIP("test.gz");        
+    gzip->dump_header();
+    gzip->deflate();
 }
 
 int main(int argc, char *argv[]) {
