@@ -5,21 +5,30 @@
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
+#include <algorithm>
 
 using namespace std;
 
-
 GZIP::GZIP(std::string filename) {
     this->filename = filename;
-    this->is = new ifstream(filename.c_str(), ios::in|ios::binary);
+    this->is = new std::ifstream(filename.c_str(), ios::in|ios::binary);
     if (is->bad()) {
         error("Can't open file");
     }
     global_filepos.bits_left_in_cur_byte = 0;
+    
+    // Create the fixed Hoffman codes. See RFC 1951, sec. 3.2.6.
+    for(uint32_t i = 000; i <= 143; i++) fixed_huffman_codes[i].len = 8;
+    for(uint32_t i = 144; i <= 255; i++) fixed_huffman_codes[i].len = 9;
+    for(uint32_t i = 256; i <= 279; i++) fixed_huffman_codes[i].len = 7;
+    for(uint32_t i = 280; i <= 287; i++) fixed_huffman_codes[i].len = 8;
+    expand_tree(fixed_huffman_codes, 287);    
+    cout << "Fixed" << endl;
+    dump_codes(fixed_huffman_codes, 287);
     skip_header();
     data_pos = is->tellg();
-    cout << "Data pos " << dec << data_pos << endl;
 }
 
 void GZIP::error(std::string problem) {
@@ -89,7 +98,19 @@ void GZIP::dump_header() {
 
 void GZIP::skip_header() {
     is->seekg(0);        
-    dump_header();        
+    dump_header();  
+    
+    tree_t tree[8];
+    tree[0].len = 3;
+    tree[1].len = 3;
+    tree[2].len = 3;
+    tree[3].len = 3;
+    tree[4].len = 3;
+    tree[5].len = 2;
+    tree[6].len = 4;
+    tree[7].len = 4;
+    expand_tree(tree,7);
+    dump_codes(tree,7);  
 }
 
 
@@ -114,7 +135,7 @@ void GZIP::deflate() {
         if (BTYPE == 0) {
             // skip any remaining bits in current partially
             // processed byte
-            global_filepos->bits_left_in_cur_byte = 0;
+            global_filepos.bits_left_in_cur_byte = 0;
 
             // read LEN and NLEN (see next section)
             uint16_t LEN = read_bits(&global_filepos, 16);
@@ -130,6 +151,7 @@ void GZIP::deflate() {
                 // compressed with dynamic Huffman codes    
                 // read representation of code trees
                 
+                
             }
             
                 
@@ -139,7 +161,48 @@ void GZIP::deflate() {
     } while (!BFINAL);
 }
 
-uint32_t GZIP::read_bits(GZIP::file_pos* pos, uint8_t num) {
+// All tree.len must be filled.
+// tree must point to array of length max_code+1 
+// See RFC 1951, sec. 3.2.2
+void GZIP::expand_tree(GZIP::tree_t* tree, uint32_t max_code) {
+    uint8_t max_bits = 0;
+    
+    for(uint32_t i = 0; i  <= max_code; i++) {
+        if (tree[i].len > max_bits) {
+            max_bits = tree[i].len;        
+        }
+    }
+    
+    uint32_t bl_count[max_bits];
+    std::fill_n(bl_count, max_bits, 0);
+    for(uint32_t i = 0; i <= max_code; i++) {
+        bl_count[tree[i].len]++;    
+    }
+    
+    uint32_t next_code[max_bits];
+    uint32_t code = 0;
+    for(uint bits = 1; bits <= max_bits; bits++) {
+        code = (code + bl_count[bits-1]) << 1;
+        next_code[bits] = code;
+    }
+    
+    for(uint n = 0;  n <= max_code; n++) {
+        uint len = tree[n].len;
+        if (len != 0) {
+            tree[n].code = next_code[len];
+            next_code[len]++;
+        }
+    }    
+}
+
+void GZIP::dump_codes(GZIP::tree_t* tree, uint32_t max_code) {
+    for(uint32_t i = 0; i <= max_code; i++) {
+        uint32_t len = tree[i].len;    
+        cout << "Symbol " << setfill(' ') << setw(4) << dec << i << ":  bits " << dec << setw(2) << len << ", code " << setfill('0') << setw(3) << hex << tree[i].code << endl;
+    }        
+}
+
+uint32_t GZIP::read_bits(GZIP::file_pos_t* pos, uint8_t num) {
     uint32_t bits = 0;
     for(uint8_t i = 0; i < num; i++) {
         if (pos->bits_left_in_cur_byte == 0) {
