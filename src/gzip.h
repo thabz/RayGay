@@ -54,20 +54,19 @@ class GZIP {
         std::ifstream* is;
 	
 	// Fixed literal/length alphabet
-        alphabet_t fixed_lit_alphabet[287];
+        alphabet_t fixed_lit_alphabet[288];
 
 	// Fixed literal/length alphabet
         alphabet_t fixed_dist_alphabet[32];
         
 	// Dynamic literal/length alphabet
-        alphabet_t dynamic_lit_alphabet[287];
+        alphabet_t dynamic_lit_alphabet[288];
 	
 	// Dynamic distance alphabet
         alphabet_t dynamic_dist_alphabet[32];
         
         // Code length alphabet
         alphabet_t code_length_alphabet[19];
-        
 };
 
 #endif
