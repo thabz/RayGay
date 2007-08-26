@@ -132,7 +132,7 @@ void GZIP::process_non_compressed_block() {
     // Copy LEN bytes of data to output
     for(uint16_t i = 0; i < LEN; i++) {
         uint8_t b = read_uint8();    
-        // output b
+        buffer_out_uint8(b);
     }
 }
 
@@ -152,6 +152,7 @@ void GZIP::process_dynamic_huffman_block() {
         code_length_alphabet[weird_code_index[i]].len = len;
     }
     expand_alphabet(code_length_alphabet, 18);
+    create_tree(code_length_tree, code_length_alphabet, 18);
     
     // Create the dynamic lit-len and dist alphabets using the code_length_alphabet
     create_code_length_encoded_alphabet(dynamic_lit_alphabet, 287, HLIT);
@@ -160,20 +161,20 @@ void GZIP::process_dynamic_huffman_block() {
     process_huffman_block(dynamic_lit_alphabet, dynamic_dist_alphabet);
 }
 
-uint8_t len_extra_bits = { 0,0,0,0, 0,0,0,0,
+uint8_t len_extra_bits[] = { 0,0,0,0, 0,0,0,0,
                        1,1,1,1, 2,2,2,2,
                        3,3,3,3, 4,4,4,4,
                        5,5,5,5, 0 };
-uint16_t len_lengths = { 3,4,5,6,7,8,9,10,
+uint16_t len_lengths[] = { 3,4,5,6,7,8,9,10,
                          11,13,15,17, 19,23,27,31,
                          35,43,51,59, 67,83,99,115,
                          131,163,195,227, 258 };
 
-uint8_t dist_extra_bits = { 0,0,0,0, 1,1,2,2,
+uint8_t dist_extra_bits[] = { 0,0,0,0, 1,1,2,2,
                             3,3,4,4, 5,5,6,6,
                             7,7,8,8, 9,9,10,10,
                             11,11,12,12, 13,13 };
-uint16_t dist_distances = { 1,2,3,4, 5,7,9,13, 
+uint16_t dist_distances[] = { 1,2,3,4, 5,7,9,13, 
                             17,25,33,49, 65,97,129,193,
                             257,385,513,769, 1025,1537,2049,3073,
                             4097,6145,8193,12289, 16385,24577 };
@@ -198,6 +199,7 @@ void GZIP::process_huffman_block(GZIP::alphabet_t* lit_alphabet, GZIP::alphabet_
             d = dist_distances[d] + read_bits(&global_filepos, dist_extra_bits[d]);
             
             // Copy the bytes
+            buffer_out_copy(l, d);
         }
     }        
 }
@@ -227,7 +229,7 @@ void GZIP::deflate() {
 }
 
 /**
- * Reads and creates a new alphabet, that is Huffman encoded using the code_length_alphabet[19].
+ * Reads and creates a new alphabet, that is Huffman encoded using the code_length_tree.
  * max_code is the max code of the alphabet to create. code_lengths is the number of lengths to read.
  */
 void GZIP::create_code_length_encoded_alphabet(GZIP::alphabet_t* alphabet, uint32_t max_code, uint32_t code_lengths) {
@@ -235,7 +237,7 @@ void GZIP::create_code_length_encoded_alphabet(GZIP::alphabet_t* alphabet, uint3
     uint32_t k = 0;
     clear_alphabet(alphabet, max_code);
     for(uint32_t i = 0; i < code_lengths; i++) {
-        uint32_t code_length = read_huffman_encoded(&global_filepos, code_length_alphabet, 18);
+        uint32_t code_length = read_huffman_encoded(&global_filepos, code_length_tree, 18);
         if (code_length < 16) {
             alphabet[k++].len = code_length;
             fill = last = code_length;
@@ -305,7 +307,7 @@ void GZIP::dump_codes(GZIP::alphabet_t* tree, uint32_t max_code) {
     }        
 }
 
-uint32_t GZIP::read_huffman_encoded(GZIP::file_pos_t* pos, GZIP::alphabet_t* alphabet, uint32_t max_code) {
+uint32_t GZIP::read_huffman_encoded(GZIP::file_pos_t* pos, GZIP::tree_t* tree) {
      
 }
 
@@ -329,8 +331,16 @@ uint8_t GZIP::read_uint8() {
     return result;            
 }
 
-void write_uint8(uint32_t b) {
-        
+void GZIP::buffer_out_uint8(uint8_t b) {
+    buffer[buffer_pos++] = b;            
 }
 
+void GZIP::buffer_out_copy(uint32_t len, uint32_t dist) {
+    std::copy(buffer+buffer_pos-dist, buffer+buffer_pos-dist+len, buffer+buffer_pos);
+    buffer_pos += len;        
+}
+
+void GZIP::buffer_flush() {
+        
+}
 

@@ -30,20 +30,28 @@ class GZIP {
 	void deflate();
 	
     private:	
+        // Helpers for handling alphabets and Huffman trees   
         void expand_alphabet(alphabet_t* tree, uint32_t max_code);
         void clear_alphabet(alphabet_t* tree, uint32_t max_code);
         void dump_codes(alphabet_t* tree, uint32_t max_code);
         void create_code_length_encoded_alphabet(alphabet_t* alphabet, uint32_t max_code, uint32_t code_lengths);
+        void create_tree(tree_t* tree, alphabet_t* alphabet, uint32_t max_code);
         
+        // Methods for processing the diffent blocks
         void process_non_compressed_block();
         void process_fixed_huffman_block();
         void process_dynamic_huffman_block();
         void process_huffman_block(alphabet_t*, alphabet_t*);
             
+        // Methods for reading bits and bytes     
         uint8_t read_uint8();
         uint32_t read_bits(file_pos_t* state, uint8_t num);
         uint32_t read_huffman_encoded(GZIP::file_pos_t* pos, GZIP::alphabet_t* alphabet, uint32_t max_code);
-        void write_uint8(uint32_t b);
+
+        // Methods for handling the output
+        void buffer_out_uint8(uint8_t b);
+        void buffer_out_copy(uint32_t len, uint32_t dist);
+        void buffer_flush();
         
         void skip_header();
         void error(std::string);
@@ -53,6 +61,9 @@ class GZIP {
         file_pos_t global_filepos;
         std::ifstream* is;
 	
+        uint8_t* buffer;
+        uint32_t buffer_pos;
+	
 	// Fixed literal/length alphabet
         alphabet_t fixed_lit_alphabet[288];
 
@@ -61,12 +72,15 @@ class GZIP {
         
 	// Dynamic literal/length alphabet
         alphabet_t dynamic_lit_alphabet[288];
-	
+        tree_t* dynamic_lit_tree;
+        
 	// Dynamic distance alphabet
         alphabet_t dynamic_dist_alphabet[32];
+        tree_t* dynamic_dist_tree;
         
         // Code length alphabet
         alphabet_t code_length_alphabet[19];
+        tree_t* code_length_tree;
 };
 
 #endif
