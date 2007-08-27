@@ -328,6 +328,8 @@ void GZIP::create_tree(GZIP::tree_t* tree, GZIP::alphabet_t* alphabet, uint32_t 
         uint8_t bits_num = alphabet[letter].len;
         uint32_t code = alphabet[letter].code;
 
+        // TODO: Reverse bits in code
+
         if (bits_num > 0) {        
             // Navigate through tree, creating new non-leaf nodes as needed.
             int16_t cur_pos = 0;
