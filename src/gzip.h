@@ -21,13 +21,14 @@ class GZIP {
             uint32_t code;
         };
         struct tree_t {
-            uint16_t left;
-            uint16_t right;
-            uint32_t code;            
+            int16_t left;
+            int16_t right;
+            uint32_t letter;            
         };
         GZIP(std::string filename);
         void dump_header();
 	void deflate();
+        void dump_buffer();
 	
     private:	
         // Helpers for handling alphabets and Huffman trees   
@@ -36,17 +37,18 @@ class GZIP {
         void dump_codes(alphabet_t* tree, uint32_t max_code);
         void create_code_length_encoded_alphabet(alphabet_t* alphabet, uint32_t max_code, uint32_t code_lengths);
         void create_tree(tree_t* tree, alphabet_t* alphabet, uint32_t max_code);
+        void dump_tree(tree_t* tree);
         
         // Methods for processing the diffent blocks
         void process_non_compressed_block();
         void process_fixed_huffman_block();
         void process_dynamic_huffman_block();
-        void process_huffman_block(alphabet_t*, alphabet_t*);
+        void process_huffman_block(tree_t*, tree_t*);
             
         // Methods for reading bits and bytes     
         uint8_t read_uint8();
         uint32_t read_bits(file_pos_t* state, uint8_t num);
-        uint32_t read_huffman_encoded(GZIP::file_pos_t* pos, GZIP::alphabet_t* alphabet, uint32_t max_code);
+        uint32_t read_huffman_encoded(GZIP::file_pos_t* pos, GZIP::tree_t* tree);
 
         // Methods for handling the output
         void buffer_out_uint8(uint8_t b);
@@ -66,21 +68,23 @@ class GZIP {
 	
 	// Fixed literal/length alphabet
         alphabet_t fixed_lit_alphabet[288];
+        tree_t fixed_lit_tree[288*3];
 
 	// Fixed literal/length alphabet
         alphabet_t fixed_dist_alphabet[32];
+        tree_t fixed_dist_tree[32*3];
         
 	// Dynamic literal/length alphabet
         alphabet_t dynamic_lit_alphabet[288];
-        tree_t* dynamic_lit_tree;
+        tree_t dynamic_lit_tree[288*3];
         
 	// Dynamic distance alphabet
         alphabet_t dynamic_dist_alphabet[32];
-        tree_t* dynamic_dist_tree;
+        tree_t dynamic_dist_tree[32*3];
         
         // Code length alphabet
         alphabet_t code_length_alphabet[19];
-        tree_t* code_length_tree;
+        tree_t code_length_tree[19*3];
 };
 
 #endif

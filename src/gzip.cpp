@@ -25,15 +25,17 @@ GZIP::GZIP(std::string filename) {
     for(uint32_t i = 256; i <= 279; i++) fixed_lit_alphabet[i].len = 7;
     for(uint32_t i = 280; i <= 287; i++) fixed_lit_alphabet[i].len = 8;
     expand_alphabet(fixed_lit_alphabet, 287);
+    create_tree(fixed_lit_tree, fixed_lit_alphabet, 287);
 
     for(uint32_t i = 000; i <= 31; i++) fixed_dist_alphabet[i].len = 5;
     expand_alphabet(fixed_dist_alphabet, 31);
+    create_tree(fixed_dist_tree, fixed_dist_alphabet, 31);
         
-    cout << "Fixed dist" << endl;
-    dump_codes(fixed_dist_alphabet, 31);
-    
     skip_header();
     data_pos = is->tellg();
+    
+    buffer = new uint8_t[100*1024];
+    buffer_pos = 0;
 }
 
 void GZIP::error(std::string problem) {
@@ -105,17 +107,20 @@ void GZIP::skip_header() {
     is->seekg(0);        
     dump_header();  
     
-    alphabet_t tree[8];
-    tree[0].len = 3;
-    tree[1].len = 3;
-    tree[2].len = 3;
-    tree[3].len = 3;
-    tree[4].len = 3;
-    tree[5].len = 2;
-    tree[6].len = 4;
-    tree[7].len = 4;
-    expand_alphabet(tree,7);
-    dump_codes(tree,7);  
+    alphabet_t alphabet[8];
+    tree_t tree[8*3];
+    alphabet[0].len = 3;
+    alphabet[1].len = 3;
+    alphabet[2].len = 3;
+    alphabet[3].len = 3;
+    alphabet[4].len = 3;
+    alphabet[5].len = 2;
+    alphabet[6].len = 4;
+    alphabet[7].len = 4;
+    expand_alphabet(alphabet,7);
+    dump_codes(alphabet,7);
+    create_tree(tree, alphabet, 7);
+    dump_tree(tree);  
 }
 
 
@@ -128,6 +133,7 @@ void GZIP::process_non_compressed_block() {
     // Read LEN and NLEN (see next section)
     uint16_t LEN = read_bits(&global_filepos, 16);
     uint16_t NLEN = read_bits(&global_filepos, 16);     
+    if (NLEN != -LEN) error("Invalid LEN/NLEN");
 
     // Copy LEN bytes of data to output
     for(uint16_t i = 0; i < LEN; i++) {
@@ -137,7 +143,7 @@ void GZIP::process_non_compressed_block() {
 }
 
 void GZIP::process_fixed_huffman_block() {
-    process_huffman_block(fixed_lit_alphabet, fixed_dist_alphabet);
+    process_huffman_block(fixed_lit_tree, fixed_dist_tree);
 }
 
 void GZIP::process_dynamic_huffman_block() {
@@ -153,12 +159,21 @@ void GZIP::process_dynamic_huffman_block() {
     }
     expand_alphabet(code_length_alphabet, 18);
     create_tree(code_length_tree, code_length_alphabet, 18);
+    //dump_tree(code_length_tree);
+    cout << "E" << endl;
     
     // Create the dynamic lit-len and dist alphabets using the code_length_alphabet
     create_code_length_encoded_alphabet(dynamic_lit_alphabet, 287, HLIT);
     create_code_length_encoded_alphabet(dynamic_dist_alphabet, 31, HDIST);
+    cout << "F" << endl;
+    
+    // Create the dynamic lit-len and dist trees using the corresponding alphabets
+    create_tree(dynamic_lit_tree, dynamic_lit_alphabet, 287);
+    create_tree(dynamic_dist_tree, dynamic_dist_alphabet, 31);
+
+    cout << "G" << endl;
         
-    process_huffman_block(dynamic_lit_alphabet, dynamic_dist_alphabet);
+    process_huffman_block(dynamic_lit_tree, dynamic_dist_tree);
 }
 
 uint8_t len_extra_bits[] = { 0,0,0,0, 0,0,0,0,
@@ -180,9 +195,9 @@ uint16_t dist_distances[] = { 1,2,3,4, 5,7,9,13,
                             4097,6145,8193,12289, 16385,24577 };
 
 // process compressed data using the lit-len and dist alphabets
-void GZIP::process_huffman_block(GZIP::alphabet_t* lit_alphabet, GZIP::alphabet_t* dist_alphabet) {
+void GZIP::process_huffman_block(GZIP::tree_t* lit_tree, GZIP::tree_t* dist_tree) {
     while(true) {
-        uint32_t l = read_huffman_encoded(&global_filepos, lit_alphabet, 287);
+        uint32_t l = read_huffman_encoded(&global_filepos, lit_tree);
         if (l < 256) {
             // We have a literal
             // output l as uint8    
@@ -195,7 +210,7 @@ void GZIP::process_huffman_block(GZIP::alphabet_t* lit_alphabet, GZIP::alphabet_
             l = len_lengths[l] + read_bits(&global_filepos, len_extra_bits[l]);
             
             // Get the dist
-            uint32_t d = read_huffman_encoded(&global_filepos, dist_alphabet, 31);
+            uint32_t d = read_huffman_encoded(&global_filepos, dist_tree);
             d = dist_distances[d] + read_bits(&global_filepos, dist_extra_bits[d]);
             
             // Copy the bytes
@@ -205,6 +220,7 @@ void GZIP::process_huffman_block(GZIP::alphabet_t* lit_alphabet, GZIP::alphabet_
 }
 
 void GZIP::deflate() {
+    cout << "Deflating" << endl;        
     is->seekg(data_pos);
     uint32_t BFINAL, BTYPE;
     do {
@@ -216,15 +232,13 @@ void GZIP::deflate() {
         // BTYPE 01 - compressed with fixed Huffman codes
         // BTYPE 10 - compressed with dynamic Huffman codes
         // BTYPE 11 - reserved (error)
+        cout << "BTYPE: " << BTYPE << endl;
         switch(BTYPE) {
             case 0 : process_non_compressed_block(); break;
             case 1 : process_fixed_huffman_block(); break;
             case 2 : process_dynamic_huffman_block(); break;
             default:  error("Illegal BTYPE");
         }
-
-        return;
-                    
     } while (!BFINAL);
 }
 
@@ -237,7 +251,7 @@ void GZIP::create_code_length_encoded_alphabet(GZIP::alphabet_t* alphabet, uint3
     uint32_t k = 0;
     clear_alphabet(alphabet, max_code);
     for(uint32_t i = 0; i < code_lengths; i++) {
-        uint32_t code_length = read_huffman_encoded(&global_filepos, code_length_tree, 18);
+        uint32_t code_length = read_huffman_encoded(&global_filepos, code_length_tree);
         if (code_length < 16) {
             alphabet[k++].len = code_length;
             fill = last = code_length;
@@ -296,6 +310,54 @@ void GZIP::expand_alphabet(GZIP::alphabet_t* tree, uint32_t max_code) {
     }    
 }
 
+// Creates a tree from an alphabet. Assuming that tree points to enough reserved space.
+void GZIP::create_tree(GZIP::tree_t* tree, GZIP::alphabet_t* alphabet, uint32_t max_code) {
+    tree[0].left = -1;
+    tree[0].right = -1;
+    int16_t next_free = 1;
+    for(uint32_t letter = 0; letter <= max_code; letter++) {
+        uint8_t bits_num = alphabet[letter].len;
+        uint32_t code = alphabet[letter].code;
+        
+        // Navigate through tree, creating new non-leaf nodes as needed.
+        int16_t cur_pos = 0;
+        for(int16_t bit = bits_num-1; bit >= 0; bit--) {
+            int16_t* branch;
+            if (code & (1 << bit)) {
+               branch = &(tree[cur_pos].right);
+            } else {
+               branch = &(tree[cur_pos].left);
+            }
+            if (*branch == -1) {
+                *branch = next_free;
+                tree[next_free].right = -1;
+                tree[next_free].left = -1;
+                cur_pos = next_free;
+                next_free++;
+            } else {
+                cur_pos = *branch;    
+            }
+        }
+        tree[cur_pos].letter = letter;
+    }
+}
+
+void dump_tree_recur(GZIP::tree_t* tree, uint16_t index, int indent) {
+    if (tree[index].left == -1 || tree[index].right == -1) {
+         cout << setfill('>') << setw(indent) << " " << tree[index].letter << endl;
+    } else {
+         dump_tree_recur(tree, tree[index].left, indent + 1);   
+         dump_tree_recur(tree, tree[index].right, indent + 1);   
+    }
+}
+
+void GZIP::dump_tree(GZIP::tree_t* tree) {
+    cout << "** tree dump begin" << endl;        
+    dump_tree_recur(tree, 0, 0);            
+    cout << "** tree dump end" << endl;        
+}
+
+
 void GZIP::clear_alphabet(alphabet_t* tree, uint32_t max_code) {
     for(uint32_t i = 0; i <= max_code; i++) tree[i].len = 8;
 }
@@ -307,8 +369,16 @@ void GZIP::dump_codes(GZIP::alphabet_t* tree, uint32_t max_code) {
     }        
 }
 
-uint32_t GZIP::read_huffman_encoded(GZIP::file_pos_t* pos, GZIP::tree_t* tree) {
-     
+uint32_t GZIP::read_huffman_encoded(GZIP::file_pos_t* file_pos, GZIP::tree_t* tree) {
+    uint16_t pos = 0;
+    uint32_t bit;
+    while(true) {
+        if (tree[pos].left == -1) {
+            return tree[pos].letter;        
+        }    
+        bit = GZIP::read_bits(file_pos, 1);
+        pos = bit ? tree[pos].right : tree[pos].left;        
+    }     
 }
 
 uint32_t GZIP::read_bits(GZIP::file_pos_t* pos, uint8_t num) {
@@ -344,3 +414,9 @@ void GZIP::buffer_flush() {
         
 }
 
+void GZIP::dump_buffer() {
+    for(uint32_t i = 0; i < buffer_pos; i++) {
+        cout << buffer[i];    
+    }
+    cout << flush << endl;
+}

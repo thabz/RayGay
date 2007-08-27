@@ -121,6 +121,7 @@ void gzip_test() {
     GZIP* gzip = new GZIP("test.gz");        
     gzip->dump_header();
     gzip->deflate();
+    gzip->dump_buffer();
 }
 
 int main(int argc, char *argv[]) {
