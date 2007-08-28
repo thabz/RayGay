@@ -26,7 +26,6 @@ class GZIP {
             uint32_t letter;            
         };
         GZIP(std::string filename);
-        void dump_header();
 	void deflate();
         void dump_buffer();
 	
@@ -38,6 +37,7 @@ class GZIP {
         void create_code_length_encoded_alphabet(alphabet_t* alphabet, uint32_t max_code, uint32_t code_lengths);
         void create_tree(tree_t* tree, alphabet_t* alphabet, uint32_t max_code);
         void dump_tree(tree_t* tree);
+        void dump_tree_recur(tree_t* tree, uint16_t index, int indent);
         
         // Methods for processing the diffent blocks
         void process_non_compressed_block();

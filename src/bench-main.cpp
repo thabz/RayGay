@@ -119,7 +119,6 @@ void ttf_test() {
 
 void gzip_test() {
     GZIP* gzip = new GZIP("test.gz");        
-    gzip->dump_header();
     gzip->deflate();
     gzip->dump_buffer();
 }
