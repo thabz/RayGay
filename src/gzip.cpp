@@ -126,6 +126,9 @@ void GZIP::process_fixed_huffman_block() {
 uint8_t weird_code_index[19] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 };
 
 void GZIP::process_dynamic_huffman_block() {
+        
+    alphabet_t joined_alphabet[288+32];        
+        
     uint32_t HLIT = read_bits(&global_filepos, 5) + 257;
     uint32_t HDIST = read_bits(&global_filepos, 5) + 1;
     uint32_t HCLEN = read_bits(&global_filepos, 4) + 4;
@@ -147,20 +150,23 @@ void GZIP::process_dynamic_huffman_block() {
     cout << "E" << endl;
     
     // Create the dynamic lit-len and dist alphabets using the code_length_alphabet
-    create_code_length_encoded_alphabet(dynamic_lit_alphabet, 287, HLIT);
-    create_code_length_encoded_alphabet(dynamic_dist_alphabet, 31, HDIST);
-    
-    //cout << "Dynamic lit alphabet: " << endl;
-    //dump_codes(dynamic_dist_alphabet, 287);
+    clear_alphabet(joined_alphabet, 288+32-1);
+    cout << "F" << endl;
+    create_code_length_encoded_alphabet(joined_alphabet, HLIT+HDIST);
+    cout << "G" << endl;
+
+    expand_alphabet(joined_alphabet, 287);
+    cout << "G" << endl;
+    expand_alphabet(&joined_alphabet[288], 31);
 
     // Create the dynamic lit-len and dist trees using the corresponding alphabets
-    create_tree(dynamic_lit_tree, dynamic_lit_alphabet, 287);
-    create_tree(dynamic_dist_tree, dynamic_dist_alphabet, 31);
+    create_tree(dynamic_lit_tree, joined_alphabet, 287);
+    create_tree(dynamic_dist_tree, &joined_alphabet[288], 31);
  
     cout << "Dynamic lit tree: " << endl;
-    dump_tree(dynamic_lit_tree);
+    dump_tree(dynamic_dist_tree);
 
-    cout << "G" << endl;
+    cout << "I" << endl;
         
     process_huffman_block(dynamic_lit_tree, dynamic_dist_tree);
 }
@@ -234,40 +240,34 @@ void GZIP::deflate() {
 
 /**
  * Reads and creates a new alphabet, that is Huffman encoded using the code_length_tree.
- * max_code is the max code of the alphabet to create. code_lengths is the number of lengths to read.
+ * code_lengths is the number of lengths to read.
  *
  * Called from process_dynamic_huffman_block()
  */
-void GZIP::create_code_length_encoded_alphabet(GZIP::alphabet_t* alphabet, uint32_t max_code, uint32_t code_lengths) {
-    uint32_t last = 0, fill;
-    uint32_t k = 0;
-    clear_alphabet(alphabet, max_code);
+void GZIP::create_code_length_encoded_alphabet(GZIP::alphabet_t* alphabet, uint32_t code_lengths) {
+    uint32_t k = 0, repeats;
     for(uint32_t i = 0; i < code_lengths; i++) {
-        uint32_t code_length = read_huffman_encoded(&global_filepos, code_length_tree);
-        if (code_length < 16) {
-            alphabet[k++].len = code_length;
-            fill = last = code_length;
-        } else { 
-            uint32_t repeats = 0;
-            if (code_length == 16) {
-                repeats = 3 + read_bits(&global_filepos, 2);
-                fill = last;        
-            } else if (code_length == 17) {
-                repeats = 3 + read_bits(&global_filepos, 3);
-                fill = 0;
-            } else if (code_length == 18) {
-                repeats = 11 + read_bits(&global_filepos, 7);
-                fill = 0;
-            } else {
-                error("Illegal code length");
-                return;    
-            }
-            for(uint32_t j = 0; j < repeats; j++) {
-                alphabet[k++].len = fill;
-            }
+        uint32_t code = read_huffman_encoded(&global_filepos, code_length_tree);
+        if (code < 16) {
+            repeats = 1;
+        } else if (code == 16) {
+            repeats = 3 + read_bits(&global_filepos, 2);
+            code = alphabet[k-1].len;
+        } else if (code == 17) {
+            repeats = 3 + read_bits(&global_filepos, 3);
+            code = 0;
+        } else if (code == 18) {
+            repeats = 11 + read_bits(&global_filepos, 7);
+            code = 0;
+        } else {
+            error("Illegal code length");
+            return;    
+        }
+        //cout << "Repeats " << repeats << endl;
+        for(uint32_t j = 0; j < repeats; j++) {
+            alphabet[k++].len = code;
         }
     }
-    expand_alphabet(alphabet, max_code);
 }
 
 

@@ -34,7 +34,7 @@ class GZIP {
         void expand_alphabet(alphabet_t* tree, uint32_t max_code);
         void clear_alphabet(alphabet_t* tree, uint32_t max_code);
         void dump_codes(alphabet_t* tree, uint32_t max_code);
-        void create_code_length_encoded_alphabet(alphabet_t* alphabet, uint32_t max_code, uint32_t code_lengths);
+        void create_code_length_encoded_alphabet(alphabet_t* alphabet, uint32_t code_lengths);
         void create_tree(tree_t* tree, alphabet_t* alphabet, uint32_t max_code);
         void dump_tree(tree_t* tree);
         void dump_tree_recur(tree_t* tree, uint16_t index, int indent);
