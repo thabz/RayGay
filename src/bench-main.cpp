@@ -120,7 +120,7 @@ void ttf_test() {
 void gzip_test() {
     GZIP* gzip = new GZIP("test.gz");        
     gzip->deflate();
-    gzip->dump_buffer();
+//    gzip->dump_buffer();
 }
 
 int main(int argc, char *argv[]) {
