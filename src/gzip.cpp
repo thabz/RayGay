@@ -110,7 +110,7 @@ void GZIP::process_non_compressed_block() {
     // Read LEN and NLEN (see next section)
     uint16_t LEN = read_bits(&global_filepos, 16);
     uint16_t NLEN = read_bits(&global_filepos, 16);     
-    if (NLEN != -LEN) error("Invalid LEN/NLEN");
+    if (NLEN + LEN != 0xffff) error("NLEN is not one's complement of LEN");
 
     // Copy LEN bytes of data to output
     for(uint16_t i = 0; i < LEN; i++) {
@@ -127,6 +127,8 @@ uint8_t weird_code_index[19] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3,
 
 void GZIP::process_dynamic_huffman_block() {
         
+    alphabet_t code_length_alphabet[19];
+    tree_t code_length_tree[19*3];
     alphabet_t joined_alphabet[288+32];
         
     uint32_t HLIT = read_bits(&global_filepos, 5) + 257;
@@ -143,6 +145,7 @@ void GZIP::process_dynamic_huffman_block() {
         uint32_t len = read_bits(&global_filepos, 3);
         code_length_alphabet[weird_code_index[i]].len = len;
     }
+
     expand_alphabet(code_length_alphabet, 18);
     dump_codes(code_length_alphabet, 18);
     create_tree(code_length_tree, code_length_alphabet, 18);
@@ -152,21 +155,25 @@ void GZIP::process_dynamic_huffman_block() {
     // Create the dynamic lit-len and dist alphabets using the code_length_alphabet
     clear_alphabet(joined_alphabet, 288+32-1);
     cout << "F" << endl;
-    create_code_length_encoded_alphabet(joined_alphabet, HLIT+HDIST, 288+32-1);
+    create_code_length_encoded_alphabet(joined_alphabet, HLIT+HDIST, 288+32-1, code_length_tree);
     cout << "G" << endl;
     
     assert (&joined_alphabet[288] == joined_alphabet+288);
+    
+    if (joined_alphabet[256].len == 0) {
+        error("The end-of-block code must have non-zero bitlength.");
+    }
 
-    expand_alphabet(joined_alphabet, 287);
+    expand_alphabet(joined_alphabet, HLIT-1);
     cout << "G" << endl;
-    expand_alphabet(joined_alphabet + 288, 31);
+    expand_alphabet(joined_alphabet + HLIT, HDIST);
 
     // Create the dynamic lit-len and dist trees using the corresponding alphabets
-    create_tree(dynamic_lit_tree, joined_alphabet, 287);
-    create_tree(dynamic_dist_tree, joined_alphabet + 288, 31);
+    create_tree(dynamic_lit_tree, joined_alphabet, HLIT-1);
+    create_tree(dynamic_dist_tree, joined_alphabet + HLIT, HDIST-1);
  
     cout << "Dynamic lit tree: " << endl;
-    dump_tree(dynamic_dist_tree);
+    dump_tree(dynamic_lit_tree);
 
     cout << "I" << endl;
         
@@ -246,32 +253,34 @@ void GZIP::deflate() {
  *
  * Called from process_dynamic_huffman_block()
  */
-void GZIP::create_code_length_encoded_alphabet(GZIP::alphabet_t* alphabet, uint32_t code_lengths, uint32_t max_code) {
-    uint32_t k = 0, repeats;
-    for(uint32_t i = 0; i < code_lengths; i++) {
+void GZIP::create_code_length_encoded_alphabet(GZIP::alphabet_t* alphabet, uint32_t code_lengths, uint32_t max_code, GZIP::tree_t* code_length_tree) {
+    assert(code_lengths <= max_code+1);        
+    uint32_t k = 0, repeats, fill;
+    while (k < code_lengths) {
+//    for(uint32_t i = 0; i < code_lengths; i++) {
         uint32_t code = read_huffman_encoded(&global_filepos, code_length_tree);
         if (code < 16) {
             repeats = 1;
+            fill = code;
         } else if (code == 16) {
             repeats = 3 + read_bits(&global_filepos, 2);
-            code = alphabet[k-1].len;
+            fill = alphabet[k-1].len;
         } else if (code == 17) {
             repeats = 3 + read_bits(&global_filepos, 3);
-            code = 0;
+            fill = 0;
         } else if (code == 18) {
             repeats = 11 + read_bits(&global_filepos, 7);
-            code = 0;
+            fill = 0;
         } else {
             error("Illegal code length");
             return;    
         }
-        //cout << "Repeats " << repeats << endl;
+        cout << "Code " << code << ", repeats " << repeats << endl;
         for(uint32_t j = 0; j < repeats; j++) {
-            if (k <= max_code) {        
-                 alphabet[k++].len = code;
+            if (k <= 288+32) {        
+                 alphabet[k++].len = fill;
             } else {
-                 cout << "Warning: max_code reached. Error?" << endl;   
-                 return;
+                 cout << "max_code reached." << endl;   
             }
         }
     }
@@ -381,7 +390,10 @@ void GZIP::dump_tree(GZIP::tree_t* tree) {
 
 
 void GZIP::clear_alphabet(alphabet_t* tree, uint32_t max_code) {
-    for(uint32_t i = 0; i <= max_code; i++) tree[i].len = 0;
+    for(uint32_t i = 0; i <= max_code; i++)  {
+       tree[i].len = 0;
+       tree[i].code = 0;
+    }
 }
 
 void GZIP::dump_codes(GZIP::alphabet_t* tree, uint32_t max_code) {

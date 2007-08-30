@@ -34,7 +34,7 @@ class GZIP {
         void expand_alphabet(alphabet_t* tree, uint32_t max_code);
         void clear_alphabet(alphabet_t* tree, uint32_t max_code);
         void dump_codes(alphabet_t* tree, uint32_t max_code);
-        void create_code_length_encoded_alphabet(alphabet_t* alphabet, uint32_t code_lengths, uint32_t max_code);
+        void create_code_length_encoded_alphabet(alphabet_t* alphabet, uint32_t code_lengths, uint32_t max_code, tree_t* code_length_tree);
         void create_tree(tree_t* tree, alphabet_t* alphabet, uint32_t max_code);
         void dump_tree(tree_t* tree);
         void dump_tree_recur(tree_t* tree, uint16_t index, int indent);
@@ -76,16 +76,10 @@ class GZIP {
         tree_t fixed_dist_tree[32*3];
         
 	// Dynamic literal/length alphabet
-        alphabet_t dynamic_lit_alphabet[288];
         tree_t dynamic_lit_tree[288*10];
         
 	// Dynamic distance alphabet
-        alphabet_t dynamic_dist_alphabet[32];
         tree_t dynamic_dist_tree[32*10];
-        
-        // Code length alphabet
-        alphabet_t code_length_alphabet[19];
-        tree_t code_length_tree[19*10];
 };
 
 #endif
