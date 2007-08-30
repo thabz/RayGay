@@ -65,7 +65,7 @@ class GZIP {
         std::ifstream* is;
 	
         uint8_t* buffer;
-        uint32_t buffer_pos;
+        uint64_t buffer_pos;
 };
 
 #endif

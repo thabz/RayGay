@@ -14,7 +14,7 @@ using namespace std;
 GZIP::GZIP(std::string filename) {
     this->filename = filename;
     this->is = new std::ifstream(filename.c_str(), ios::in|ios::binary);
-    if (is->bad()) {
+    if (!is->good()) {
         error("Can't open file");
     }
     global_filepos.bits_left_in_cur_byte = 0;
@@ -40,9 +40,9 @@ void GZIP::error(std::string problem) {
 void GZIP::skip_header() {
     is->seekg(0, ios::beg);        
     
-    uint8_t b1 = read_uint8();
-    uint8_t b2 = read_uint8();
-    if (b1 != 0x1f || b2 != 0x8b) {
+    uint8_t ID1 = read_uint8();
+    uint8_t ID2 = read_uint8();
+    if (ID1 != 0x1f || ID2 != 0x8b) {
         error("Not a gzip-file");    
     }
 
@@ -58,14 +58,15 @@ void GZIP::skip_header() {
     is->ignore(4+1+1);
 
     if (flags & FHEXTRA) {
-        error("Implement me: skip extras");
+        uint16_t XLEN = read_bits(&global_filepos, 16);
+        is->ignore(XLEN);    
     }
 
     // If FNAME is set, an original file name is present,
     // terminated by a zero byte.  The name must consist of ISO
     // 8859-1 (LATIN-1) characters
     if (flags & FHNAME) {
-	cout << "Skipping fhname" << endl;
+	//cout << "Skipping fhname" << endl;
         while(read_uint8()) {};
     }
 
@@ -74,7 +75,7 @@ void GZIP::skip_header() {
     // intended for human consumption.  The comment must consist of
     // ISO 8859-1 (LATIN-1) characters.
     if (flags & FHCOMMENT) {
-	cout << "Skipping fhcomment" << endl;
+	//cout << "Skipping fhcomment" << endl;
         while(read_uint8()) {};
     }
 
@@ -83,11 +84,10 @@ void GZIP::skip_header() {
     // of the two least significant bytes of the CRC32 for all
     // bytes of the gzip header up to and not including the CRC16.
     if (flags & FHCRC) {
-	cout << "Skipping fhcrc" << endl;
+	//cout << "Skipping fhcrc" << endl;
 	is->ignore(2);
     }	
 
-    // Note, the file is ended by CRC32 AND ISIZE two 32 bit numbers.
 }
 
 void GZIP::process_non_compressed_block() {
@@ -226,8 +226,8 @@ void GZIP::deflate() {
         // BTYPE 01 - compressed with fixed Huffman codes
         // BTYPE 10 - compressed with dynamic Huffman codes
         // BTYPE 11 - reserved (error)
-        cout << "BTYPE: " << BTYPE << endl;
-        cout << "BFINAL: " << BFINAL << endl;
+        //cout << "BTYPE: " << BTYPE << endl;
+        //cout << "BFINAL: " << BFINAL << endl;
         switch(BTYPE) {
             case 0 : process_non_compressed_block(); break;
             case 1 : process_fixed_huffman_block(); break;
@@ -235,6 +235,8 @@ void GZIP::deflate() {
             default:  error("Illegal BTYPE");
         }
     } while (!BFINAL);
+
+    // The file is ended by CRC32 AND ISIZE - two 32 bit numbers.
 
     // Skip any remaining bits in current partially processed byte
     global_filepos.bits_left_in_cur_byte = 0;
@@ -245,7 +247,9 @@ void GZIP::deflate() {
     // ISIZE is the uncompressed filesize modulo 2^32
     uint32_t ISIZE = read_bits(&global_filepos, 32);
     
-    cout << "ISIZE " << dec << ISIZE << endl;
+    if (buffer_pos & 0xffffffff != ISIZE) {
+        cout << "Uncompressed data doesn't match ISIZE" << endl;    
+    }
 
     is->get();
     if (!is->eof()) {
@@ -364,7 +368,7 @@ void GZIP::create_tree(GZIP::tree_t* tree, GZIP::alphabet_t* alphabet, uint32_t 
 void GZIP::dump_tree_recur(GZIP::tree_t* tree, uint16_t index, int indent) {
     if ((tree[index].left == -1 && tree[index].right != -1) || 
         (tree[index].left != -1 && tree[index].right == -1)) {
-            error("Problem in tree");
+            error("Problem in Huffman tree");
     }
         
     if (tree[index].left == -1) {
@@ -416,7 +420,6 @@ uint32_t GZIP::read_huffman_encoded(GZIP::file_pos_t* file_pos, GZIP::tree_t* tr
         bits_num++;
         int32_t letter = find_in_tree(tree, bits, bits_num);
         if (letter >= 0) {
-            //cout << "Read letter " << dec << letter << endl;        
             return letter;         
         }    
     } while (bits_num < 255);
