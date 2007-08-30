@@ -127,7 +127,7 @@ uint8_t weird_code_index[19] = { 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3,
 
 void GZIP::process_dynamic_huffman_block() {
         
-    alphabet_t joined_alphabet[288+32];        
+    alphabet_t joined_alphabet[288+32];
         
     uint32_t HLIT = read_bits(&global_filepos, 5) + 257;
     uint32_t HDIST = read_bits(&global_filepos, 5) + 1;
@@ -152,16 +152,18 @@ void GZIP::process_dynamic_huffman_block() {
     // Create the dynamic lit-len and dist alphabets using the code_length_alphabet
     clear_alphabet(joined_alphabet, 288+32-1);
     cout << "F" << endl;
-    create_code_length_encoded_alphabet(joined_alphabet, HLIT+HDIST);
+    create_code_length_encoded_alphabet(joined_alphabet, HLIT+HDIST, 288+32-1);
     cout << "G" << endl;
+    
+    assert (&joined_alphabet[288] == joined_alphabet+288);
 
     expand_alphabet(joined_alphabet, 287);
     cout << "G" << endl;
-    expand_alphabet(&joined_alphabet[288], 31);
+    expand_alphabet(joined_alphabet + 288, 31);
 
     // Create the dynamic lit-len and dist trees using the corresponding alphabets
     create_tree(dynamic_lit_tree, joined_alphabet, 287);
-    create_tree(dynamic_dist_tree, &joined_alphabet[288], 31);
+    create_tree(dynamic_dist_tree, joined_alphabet + 288, 31);
  
     cout << "Dynamic lit tree: " << endl;
     dump_tree(dynamic_dist_tree);
@@ -244,7 +246,7 @@ void GZIP::deflate() {
  *
  * Called from process_dynamic_huffman_block()
  */
-void GZIP::create_code_length_encoded_alphabet(GZIP::alphabet_t* alphabet, uint32_t code_lengths) {
+void GZIP::create_code_length_encoded_alphabet(GZIP::alphabet_t* alphabet, uint32_t code_lengths, uint32_t max_code) {
     uint32_t k = 0, repeats;
     for(uint32_t i = 0; i < code_lengths; i++) {
         uint32_t code = read_huffman_encoded(&global_filepos, code_length_tree);
@@ -265,7 +267,12 @@ void GZIP::create_code_length_encoded_alphabet(GZIP::alphabet_t* alphabet, uint3
         }
         //cout << "Repeats " << repeats << endl;
         for(uint32_t j = 0; j < repeats; j++) {
-            alphabet[k++].len = code;
+            if (k <= max_code) {        
+                 alphabet[k++].len = code;
+            } else {
+                 cout << "Warning: max_code reached. Error?" << endl;   
+                 return;
+            }
         }
     }
 }
@@ -410,6 +417,27 @@ uint32_t GZIP::read_huffman_encoded(GZIP::file_pos_t* file_pos, GZIP::tree_t* tr
     error("Nothing matches in Huffman tree");
     return 0;
 }
+
+uint32_t GZIP::read_reversed_bits(GZIP::file_pos_t* pos, uint8_t num) {
+    uint32_t bits = 0;
+    for(uint8_t i = 0; i < num; i++) {
+        if (pos->bits_left_in_cur_byte == 0) {
+            pos->cur_byte = read_uint8();    
+            pos->bits_left_in_cur_byte = 8;   
+        }
+#if 0
+        bits |= (pos->cur_byte & 1) << i;
+        pos->cur_byte >>= 1;
+#else
+        bits <<= 1;
+        bits |= (pos->cur_byte & 1);
+        pos->cur_byte >>= 1;
+#endif        
+        pos->bits_left_in_cur_byte--;
+    }
+    return bits;   
+}
+
 
 uint32_t GZIP::read_bits(GZIP::file_pos_t* pos, uint8_t num) {
     uint32_t bits = 0;
