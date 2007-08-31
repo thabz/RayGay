@@ -1,11 +1,11 @@
 <h>Truetype og 2D grafik</h>
 <p>Har lavet en filparser og renderer til <a href="http://developer.apple.com/textfonts/TTRefMan/index.html">truetype fonte</a>. Hver truetype <i>glyph</i> er beskrevet som konturer, som består af enten linier eller kvadratiske <a href="http://en.wikipedia.org/wiki/B%C3%A9zier_curve">B&eacute;zier-kurver</a>. Der findes også <i>composite glyphs</i> som består af flere andre glyphs med specielle transformeringer, f.eks. består <i>&eacute;</i> af et almindeligt <i>e</i> og en <i>´</i> accent-glyph placeret det helt rigtige sted.</p>
 
-<p><a href="files/arial.png"><img border="0" src="files/_arial.png"></a></p>
+<p><a href="files/arial.png"><img border="0" src="files/arial_thumbnail.png"></a></p>
 
 <p>Der understøttes også <a href="http://en.wikipedia.org/wiki/Kerning">kerning</a>, som er specielle justeringer af afstandene mellem tegn. I nedenstående kan det bla. ses ved at <i>C</i> går under <i>r</i>.</p>
 
-<p><a href="files/brulee.png"><img border="0" src="files/_brulee.png"></a></p>
+<p><a href="files/brulee.png"><img border="0" src="files/brulee_thumbnail.png"></a></p>
 
 <p>Jeg er mest interesseret i konturerne - hvorfor jeg ikke gider fylde dem ud. Det er nu heller ikke helt nemt. Den overordnede plan er selvfølgelig at lave 3D-objekter ved at <i>extrude</i> truetype glyphs.</p>
 
@@ -15,6 +15,6 @@
 
 <p>Man kan også vælge at gemme grafikken i diverse filformater fra Scheme-koden. Dermed har jeg fået lavet mig en lille testbed til at lege med forskellige 2D grafik-algoritmer i Scheme. For at prøve mine plot-funktioner af undervejs lavede jeg nogle test-billeder. Herunder en <a href="http://en.wikipedia.org/wiki/Iterated_function_system">bregne-fraktal</a> og nogle <a href="http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm">Bresenham-linier</a>. Scheme-koden til bregnen kan <a href="files/fern.scm">ses her</a>.</p>
 
-<p><a href="files/fern.png"><img border="0" src="files/_fern.png"></a></p>
+<p><a href="files/fern.png"><img border="0" src="files/fern_thumbnail.png"></a></p>
 
-<p><a href="files/lines.png"><img border="0" src="files/_lines.png"></a></p>
+<p><a href="files/lines.png"><img border="0" src="files/lines_thumbnail.png"></a></p>

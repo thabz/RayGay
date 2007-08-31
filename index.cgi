@@ -91,12 +91,15 @@ a {
        color: #804080;
 }
 
-*/
 
 a img {
       border: 2px solid black;
 }
+*/
 
+img {
+    border: 0px;        
+}
 table.cal {
        font-size: 9pt;
        text-align: center
