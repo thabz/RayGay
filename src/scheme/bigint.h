@@ -13,8 +13,10 @@ class BigInt {
         BigInt(const std::string& str);
         BigInt(const BigInt& o);
         
-        bool fitsInLong();
+        bool fitsLong();
         long asLong();
+        bool fitsInt();
+        int  asInt();
         BigInt operator+(const BigInt &b) const;
         BigInt operator+(int n) const;
         BigInt& operator+=(int n);
