@@ -910,8 +910,22 @@ void test_eval() {
 
 // Throw insane forms at the interpreter. It shouldn't crash but report errors back.
 void test_error_handling() {
-    char* procs[] = {"let", "let*", "do", "if", "and", "for-each", "+", "list"};        
-    char* args[] = {"1","#f","()","((x 10))","(())","(() x)","((#f)x)","(x 1)","(x 1 20)","1 2 3"};
+//    char* procs[] = {"let", "let*", "do", "if", "and", "for-each", "+", "list"};        
+//    char* args[] = {"1","#f","()","((x 10))","(())","(() x)","((#f)x)","(x 1)","(x 1 20)","1 2 3"};
+}
+
+void test_bigint() {
+    assert(BigInt("1000") * 10 == BigInt("10000"));
+    assert(BigInt(0) * 10 == BigInt(0));
+    assert(BigInt("0") == BigInt("-0"));
+    assert(BigInt(123456789) == BigInt("123456789"));
+    assert(BigInt(-100) == BigInt("-100"));
+    assert((BigInt(123456789) * 123456789) * 123456789 == BigInt("1881676371789154860897069"));
+    assert((BigInt(123456789) + 123456789) + 123456789 == BigInt("370370367"));
+    assert(BigInt(-1000) + BigInt(1000) == BigInt(0));
+    assert(BigInt("-1000") + BigInt("1000") == BigInt("0"));
+    assert(BigInt("999999999999999999999999999999999") + BigInt("999999999999999999999999999999999") == BigInt("1999999999999999999999999999999998"));
+    assert(BigInt("123456789123456789") * BigInt("123456789123456789") == BigInt("15241578780673678515622620750190521"));
 }
 
 int main(int argc, char *argv[]) {
@@ -946,6 +960,10 @@ int main(int argc, char *argv[]) {
 
         cout << "Test math  ...          ";
         test_math();
+        cout << " OK" << endl;
+        
+        cout << "Test bigint ...         ";
+        test_bigint();
         cout << " OK" << endl;
 
         cout << "Test vector...          ";

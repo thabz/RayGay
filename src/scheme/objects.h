@@ -6,6 +6,7 @@
 #include <map>
 #include <setjmp.h>
 #include "collections/bucket_map.h"
+#include "bigint.h"
 
 using namespace std;
 
