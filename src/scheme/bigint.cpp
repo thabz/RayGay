@@ -7,7 +7,7 @@ using namespace std;
 
 #define MININT (1 << (32 - 1))
 #define MAXINT (~MININT) 
-#define RADIX (1 << 31)
+#define RADIX (1 << 30)
 
 //BigInt BigInt::_ZERO = BigInt(0);
 BigInt BigInt::_ONE = BigInt(1);
@@ -40,10 +40,20 @@ BigInt::BigInt(const string& str) {
     }       
     
     while (i < str.size()) {
-        *(this) *= 10;
-        *(this) += uint(str[i] - '0');
+#if 1            
+        digits[0] *= 10;
+        digits[0] += uint(str[i] - '0');
+        if (digits[0] >= RADIX) {
+            normalize();        
+        }    
+#else
+       *(this) *= 10;
+       *(this) += uint(str[i] - '0');
+
+#endif        
         i++;
     }
+    normalize();
     sign = is_zero() ? 1 : fsign;
 }
 
@@ -152,13 +162,57 @@ BigInt& BigInt::operator*=(int n) {
     return *this;
 }
 
+int BigInt::compare(const BigInt& b1, const BigInt& b2) {
+    if (b1.sign > b2.sign) {
+        return 1;       
+    } else if (b1.sign < b2.sign) {
+        return -1;    
+    } else if (b1.digits.size() > b2.digits.size()) {
+        return 1;    
+    } else if (b1.digits.size() < b2.digits.size()) {
+        return -1; 
+    } else {
+        // Same number of digits and same sign. Compare digits.
+        for(uint i = b1.digits.size()-1; i >= 0; i--) {
+            if (b1.digits[i] > b2.digits[i]) {
+                return 1;    
+            } else if (b1.digits[i] < b2.digits[i]) {
+                return -1;    
+            } 
+        }    
+        return 0;
+    }    
+}
+
+bool BigInt::operator<(const BigInt& o) const {
+    int c = BigInt::compare(*this, o);        
+    return c == -1;
+}
+
+bool BigInt::operator>(const BigInt& o) const {
+    int c = BigInt::compare(*this, o);        
+    return c == 1;
+}
+
+bool BigInt::operator<=(const BigInt& o) const {
+    int c = BigInt::compare(*this, o);
+    cout << "c " << c ;        
+    return c == -1 || c == 0;
+}
+
+bool BigInt::operator>=(const BigInt& o) const {
+    int c = BigInt::compare(*this, o);        
+    return c == 1 || c == 0;
+}
+
 
 // Normalize so that 
 // 1) All digits are 0 <= d < RADIX
 // 2) Sign 1 or -1
 // 3) Leading zero digits are removed
 // 4) Fix sign for zero
-void BigInt::normalize() {
+void BigInt::normalize() 
+{
     for(uint i = 0; i < digits.size()-1; i++) {
         if (digits[i] < 0) {
             digits[i+1] += digits[i] / RADIX - 1;    
@@ -183,7 +237,7 @@ void BigInt::normalize() {
     uint64_t dsize = digits.size();
     for(uint i = 0; i < dsize; i++) {
         if (digits[i] >= RADIX) {
-            if (i+1 >= digits.size()) {
+            if (i+1 >= dsize) {
                 resize(digits.size()+1);
             }        
             digits[i+1] += digits[i] / RADIX;        
@@ -194,7 +248,9 @@ void BigInt::normalize() {
     uint leading_zeroes = 0;
     for(uint i = digits.size()-1; i >= 0; i--) {
         if (digits[i] != 0) {
-            resize(std::max((uint64_t)1 ,(uint64_t)(digits.size()-leading_zeroes)));            
+            if (leading_zeroes > 0) {        
+                resize(std::max((uint64_t)1 ,(uint64_t)(digits.size()-leading_zeroes)));            
+            }
             break;
         } else {
             leading_zeroes++;        

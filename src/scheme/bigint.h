@@ -22,6 +22,10 @@ class BigInt {
         BigInt operator*(int n) const;
         BigInt& operator*=(int n);
         bool operator==(const BigInt& o) const;
+        bool operator<(const BigInt& o) const;
+        bool operator>(const BigInt& o) const;
+        bool operator<=(const BigInt& o) const;
+        bool operator>=(const BigInt& o) const;
         
         bool is_zero() const;
         
@@ -38,7 +42,8 @@ class BigInt {
         static BigInt _TWO;
     
     private:
-        void normalize();    
+        void normalize();
+        static int compare(const BigInt& b1, const BigInt& b2); 
         void resize(std::vector<long>::size_type new_digits_num);
 
     private:        
