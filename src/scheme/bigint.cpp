@@ -7,6 +7,7 @@ using namespace std;
 
 #define MININT (1 << (32 - 1))
 #define MAXINT (~MININT) 
+#define INT_BITS 32
 
 int64_t BigInt::RADIX = (int64_t(1) << 31);
 
@@ -343,7 +344,16 @@ void BigInt::resize(int32_t new_digits_num) {
     digits.resize(new_digits_num, 0);        
 }
 
-int BigInt::count_bits(uint64_t n) {
+int sizeBits() {
+    return (digits.size()-1)*INT_BITS + count_bits(digits[digits.size()-1]);	
+}
 
+int BigInt::count_bits(uint64_t n) {
+    int c = 0;	
+    while(n != 0) {
+	n >>= 1;
+	c++;
+    }	
+    return c;
 }
 
