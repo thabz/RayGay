@@ -7,25 +7,25 @@ using namespace std;
 
 #define MININT (1 << (32 - 1))
 #define MAXINT (~MININT) 
-#define RADIX (1 << 30)
 
-//BigInt BigInt::_ZERO = BigInt(0);
+int64_t BigInt::RADIX = (int64_t(1) << 31);
+
+BigInt BigInt::_ZERO = BigInt(0);
 BigInt BigInt::_ONE = BigInt(1);
 BigInt BigInt::_TWO = BigInt(2);
 
 const BigInt& BigInt::ONE = _ONE;
 const BigInt& BigInt::TWO = _TWO;
-//const BigInt& BigInt::ZERO = _ZERO;
+const BigInt& BigInt::ZERO = _ZERO;
 
-BigInt::BigInt(int n) {
+BigInt::BigInt(int32_t n) {
     sign = 1;
     digits.push_back(n);
     normalize();
-    sign = n < 0 ? -1 : 1;        
 }
 
-BigInt::BigInt(const string& str) {
-    
+BigInt::BigInt(const char* str, uint radix) 
+{
     int fsign = 1;        
 
     sign = 1;        
@@ -39,18 +39,25 @@ BigInt::BigInt(const string& str) {
         i++;    
     }       
     
-    while (i < str.size()) {
-#if 1            
-        digits[0] *= 10;
-        digits[0] += uint(str[i] - '0');
-        if (digits[0] >= RADIX) {
-            normalize();        
-        }    
-#else
-       *(this) *= 10;
-       *(this) += uint(str[i] - '0');
+    while (str[i] != '\0') {
+        char c = str[i];
+        uint32_t digit;
+        if (c >= '0' && c <= '9') {
+            digit = c - '0';        
+        } else if (c >= 'a' && c <= 'z') {
+            digit = 10 + (c - 'a');        
+        } else if (c >= 'A' && c <= 'Z') {
+            digit = 10 + (c - 'A');        
+        } else {
+            throw exception();        
+        }
+        
+        if (digit >= radix) {
+            throw exception();        
+        }
 
-#endif        
+        *(this) *= radix;
+        *(this) += digit;
         i++;
     }
     normalize();
@@ -76,7 +83,7 @@ void BigInt::dump() {
 
 bool BigInt::operator==(const BigInt& o) const {
     if (digits.size() != o.digits.size() || sign != o.sign) {
-        return 0;            
+        return false;            
     }        
     for(uint i = 0; i < digits.size(); i++) {
         if (digits[i] != o.digits[i]) return false;               
@@ -98,7 +105,7 @@ BigInt BigInt::operator+(const BigInt &v) const {
     return r;
 }
 
-BigInt BigInt::operator+(int n) const {
+BigInt BigInt::operator+(int32_t n) const {
     BigInt r = *this;    
     if (r.sign == 1) {
         r.digits[0] += n;    
@@ -109,7 +116,7 @@ BigInt BigInt::operator+(int n) const {
     return r;
 }
 
-BigInt& BigInt::operator+=(int n) {
+BigInt& BigInt::operator+=(int32_t n) {
     if (sign == 1) {
         digits[0] += n;    
     } else {
@@ -119,8 +126,10 @@ BigInt& BigInt::operator+=(int n) {
     return *this;
 }
 
-BigInt BigInt::operator*(const BigInt &o) const {
-    BigInt r = BigInt(0);
+BigInt BigInt::operator*(const BigInt &o) const 
+{
+    BigInt r = ZERO;
+
     int size = o.digits.size() + digits.size();
     r.resize(size);
     for(uint i = 0; i < digits.size(); i++) {
@@ -135,10 +144,10 @@ BigInt BigInt::operator*(const BigInt &o) const {
     return r;
 }
 
-
-BigInt BigInt::operator*(int n) const {
+BigInt BigInt::operator*(int32_t n) const 
+{
     BigInt r = *this;    
-    
+
     if (n < 0) {
         n = -n;    
         r.sign = -r.sign;
@@ -150,7 +159,7 @@ BigInt BigInt::operator*(int n) const {
     return r;
 }
 
-BigInt& BigInt::operator*=(int n) {
+BigInt& BigInt::operator*=(int32_t n) {
     if (n < 0) {
         n = -n;    
         sign = -sign;
@@ -196,7 +205,6 @@ bool BigInt::operator>(const BigInt& o) const {
 
 bool BigInt::operator<=(const BigInt& o) const {
     int c = BigInt::compare(*this, o);
-    cout << "c " << c ;        
     return c == -1 || c == 0;
 }
 
@@ -244,29 +252,19 @@ void BigInt::normalize()
             digits[i] %= RADIX;
         }    
     }
-
-    uint leading_zeroes = 0;
-    for(uint i = digits.size()-1; i >= 0; i--) {
-        if (digits[i] != 0) {
-            if (leading_zeroes > 0) {        
-                resize(std::max((uint64_t)1 ,(uint64_t)(digits.size()-leading_zeroes)));            
-            }
-            break;
-        } else {
-            leading_zeroes++;        
-        }    
-    }
+    
+    uint i = digits.size();
+    for(; i > 1 && digits[i-1] == 0; i--);
+    resize(i);
     
     // Fix sign for zero
     if (digits.size() == 1 && digits[0] == 0 && sign == -1) {
         sign = 1;   
     }
-    
-    assert(digits.size() > 0);
 }
 
 // To get a specific number of digits we pad with zeroes on the left
-void BigInt::resize(vector<long>::size_type new_digits_num) {
+void BigInt::resize(int32_t new_digits_num) {
     assert(new_digits_num > 0);
     digits.resize(new_digits_num, 0);        
 }
