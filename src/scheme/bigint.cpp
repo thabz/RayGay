@@ -342,3 +342,8 @@ void BigInt::resize(int32_t new_digits_num) {
     assert(new_digits_num > 0);
     digits.resize(new_digits_num, 0);        
 }
+
+int BigInt::count_bits(uint64_t n) {
+
+}
+
