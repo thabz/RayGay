@@ -127,8 +127,8 @@ class bucket_map
             }
         }
         
-        iterator end() {
-            return iterator(num_buckets, NULL, this);
+        iterator& end() {
+            return end_iterator;
         }
                 
         std::pair<iterator,bool> insert(const value_type& v, hash_type h) {
@@ -223,8 +223,8 @@ class bucket_map
 
 template <typename K, typename V> 
 int bucket_map<K,V>::hash(const K &key) const {
-    int h = (int) key;
-#if 1
+    int h = int(key);
+#if 0
         h += ~(h << 15);
         h ^= (h >> 10);
         h += (h << 3);
@@ -239,8 +239,7 @@ int bucket_map<K,V>::hash(const K &key) const {
         h ^= h << 25;
         h += h >> 6;
 #endif        
-        h = (h < 0) ? h * -1 : h;
-		return h;
+    return (h < 0) ? h * -1 : h;
 };
 
 #endif
