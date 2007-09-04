@@ -24,7 +24,7 @@ BigInt::BigInt(int32_t n) {
     normalize();
 }
 
-BigInt::BigInt(const char* str, uint radix) 
+BigInt::BigInt(string str, uint radix) 
 {
     int fsign = 1;        
 
@@ -68,6 +68,13 @@ BigInt::BigInt(const BigInt& o) {
     digits = o.digits;        
     sign = o.sign;
 }
+
+string toString(uint radix) {
+    char chars[] = "0123456789abcdefghijklmnopqrstuvwxyz";        
+    if (radix > 26+10 || radix == 0) throw exception();
+    return "NOT IMPLEMENTED YET";
+}
+
 
 bool BigInt::is_zero() const {
     return digits.size() == 1 && digits[0] == 0;     
@@ -126,6 +133,49 @@ BigInt& BigInt::operator+=(int32_t n) {
     return *this;
 }
 
+BigInt BigInt::operator-(const BigInt &v) const {
+    BigInt r = *this;
+    r.resize(max(r.digits.size(), v.digits.size()));
+    for(uint i = 0; i < r.digits.size(); i++) {
+        if (r.sign == v.sign) {
+            r.digits[i] -= v.digits[i];        
+        } else {
+            r.digits[i] += v.digits[i];        
+        }
+    }
+    r.normalize();
+    return r;
+        
+}
+
+BigInt BigInt::operator-(int32_t n) const {
+    BigInt r = *this;    
+    if (r.sign == 1) {
+        r.digits[0] -= n;    
+    } else {
+        r.digits[0] += n;    
+    }
+    r.normalize();
+    return r;        
+}
+
+BigInt BigInt::operator-() const {
+    BigInt r = *this;    
+    r.sign = -r.sign;
+    return r;     
+}
+
+BigInt& BigInt::operator-=(int32_t n) {
+    if (sign == 1) {
+        digits[0] -= n;    
+    } else {
+        digits[0] += n;    
+    }
+    normalize();
+    return *this;
+}
+
+
 BigInt BigInt::operator*(const BigInt &o) const 
 {
     BigInt r = ZERO;
@@ -169,6 +219,30 @@ BigInt& BigInt::operator*=(int32_t n) {
     }
     normalize();
     return *this;
+}
+
+BigInt BigInt::operator/(int32_t n) const {
+    BigInt s = *this;
+    if (n == 0) throw exception();
+    if (n < 0) {
+        n = -n;    
+        s.sign = -s.sign;
+    }
+    int64_t r = 0;
+    for(uint i = s.digits.size()-1; i >= 0; i--) {
+        r = r * RADIX + s.digits[i];    
+        s.digits[i] = r / n;
+        r %= n;
+    }
+    s.normalize();
+    return s;
+}
+
+
+BigInt BigInt::abs() const {
+    BigInt r = *this;    
+    r.sign = 1;
+    return r;    
 }
 
 int BigInt::compare(const BigInt& b1, const BigInt& b2) {

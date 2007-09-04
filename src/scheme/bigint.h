@@ -11,29 +11,33 @@ class BigInt
 {
     public:        
         BigInt(int32_t n);
-        BigInt(const char* str, uint radix = 10);
+        BigInt(std::string str, uint radix = 10);
         BigInt(const BigInt& o);
         
-<<<<<<< .mine
-        bool fitsInInt64();
-        int64_t asInt64();
-=======
-        bool fitsLong();
-        long asLong();
->>>>>>> .r7993
-        bool fitsInt();
-        int  asInt();
+        bool fitsInt64();
+        int64_t toInt64();
+        bool fitsInt32();
+        int32_t toInt32();
+        std::string toString(uint radix = 10);
+
         BigInt operator+(const BigInt &b) const;
         BigInt operator+(int32_t n) const;
         BigInt& operator+=(int32_t n);
+        BigInt operator-(const BigInt &b) const;
+        BigInt operator-(int32_t n) const;
+        BigInt operator-() const;
+        BigInt& operator-=(int32_t n);
         BigInt operator*(const BigInt &b) const;
         BigInt operator*(int32_t n) const;
         BigInt& operator*=(int32_t n);
+        BigInt operator/(int32_t n) const;
         bool operator==(const BigInt& o) const;
         bool operator<(const BigInt& o) const;
         bool operator>(const BigInt& o) const;
         bool operator<=(const BigInt& o) const;
         bool operator>=(const BigInt& o) const;
+        
+        BigInt abs() const;
         
         bool is_zero() const;
         void dump();

@@ -922,19 +922,24 @@ void test_bigint() {
     b1 += 10;
     assert(b2 == BigInt("10"));    
     assert(b1 == BigInt("20"));    
-    return;
     assert(BigInt("1000") * 10 == BigInt("10000"));
     assert(BigInt(0) * 10 == BigInt(0));
     assert(BigInt("0") == BigInt("-0"));
     assert(BigInt(123456789) == BigInt("123456789"));
     assert(BigInt(-100) == BigInt("-100"));
+    assert(-BigInt(100) == BigInt(-100));
     assert(BigInt("0").is_zero());
     assert((BigInt(123456789) + 123456789) + 123456789 == BigInt("370370367"));
     assert((BigInt("123456789") * 123456789) * 123456789 == BigInt("1881676371789154860897069"));
     assert(BigInt(-1000) + BigInt(1000) == BigInt(0));
     assert(BigInt("-1000") + BigInt("1000") == BigInt("0"));
+    assert(BigInt(100) - 20 == BigInt(80));
+    assert(BigInt("3333333333333333333") - BigInt("2222222222222222222") == BigInt("1111111111111111111"));
     assert(BigInt("999999999999999999999999999999999") + BigInt("999999999999999999999999999999999") == BigInt("1999999999999999999999999999999998"));
+    assert(BigInt("-111111111111111111").abs() == BigInt("111111111111111111"));
     assert(BigInt("123456789123456789") * BigInt("123456789123456789") == BigInt("15241578780673678515622620750190521"));
+    return;
+    assert(BigInt("9999999999999999999") / 3 == BigInt("3333333333333333333"));
     assert(BigInt("999999999999999999") > 
            BigInt("888888888888888888"));
     assert(BigInt("111111111111111111") < 
