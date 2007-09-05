@@ -40,7 +40,7 @@ class BigInt
         BigInt abs() const;
         
         bool is_zero() const;
-	int size_in_bits() const;
+	int sizeInBits() const;
         void dump();
         
     public:
@@ -58,7 +58,6 @@ class BigInt
         void normalize();
         static int compare(const BigInt& b1, const BigInt& b2); 
         void resize(int32_t new_digits_num);
-	int count_bits() const;
 
     private:        
         std::vector<int64_t> digits;    
