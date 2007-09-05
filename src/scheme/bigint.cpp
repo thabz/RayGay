@@ -2,6 +2,7 @@
 #include "bigint.h"
 #include <algorithm>
 #include <iostream>
+#include <stdexcept>
 
 using namespace std;
 
@@ -50,11 +51,11 @@ BigInt::BigInt(string str, uint radix)
         } else if (c >= 'A' && c <= 'Z') {
             digit = 10 + (c - 'A');        
         } else {
-            throw exception();        
+            throw invalid_argument("Not a valid digit: " + c);        
         }
         
         if (digit >= radix) {
-            throw exception();        
+            throw invalid_argument("Not a valid digit: " + c);        
         }
 
         *(this) *= radix;
@@ -70,9 +71,9 @@ BigInt::BigInt(const BigInt& o) {
     sign = o.sign;
 }
 
-string toString(uint radix) {
+string BigInt::toString(uint radix) const {
     char chars[] = "0123456789abcdefghijklmnopqrstuvwxyz";        
-    if (radix > 26+10 || radix == 0) throw exception();
+    if (radix > 26+10 || radix == 0) throw invalid_argument("Invalid radix");
     return "NOT IMPLEMENTED YET";
 }
 
@@ -81,7 +82,7 @@ bool BigInt::is_zero() const {
     return digits.size() == 1 && digits[0] == 0;     
 }
 
-void BigInt::dump() {
+void BigInt::dump() const {
     cout << "Sign: " << sign << endl;        
     cout << "Digits: " << digits.size() << endl;
     for(uint i = 0; i < digits.size(); i++) {
@@ -224,7 +225,7 @@ BigInt& BigInt::operator*=(int32_t n) {
 
 BigInt BigInt::operator/(int32_t n) const {
     BigInt s = *this;
-    if (n == 0) throw exception();
+    if (n == 0) throw range_error("Division by zero");
     if (n < 0) {
         n = -n;    
         s.sign = -s.sign;
@@ -238,7 +239,6 @@ BigInt BigInt::operator/(int32_t n) const {
     s.normalize();
     return s;
 }
-
 
 BigInt BigInt::abs() const {
     BigInt r = *this;    

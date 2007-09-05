@@ -938,9 +938,8 @@ void test_bigint() {
     assert(BigInt("999999999999999999999999999999999") + BigInt("999999999999999999999999999999999") == BigInt("1999999999999999999999999999999998"));
     assert(BigInt("-111111111111111111").abs() == BigInt("111111111111111111"));
     assert(BigInt("123456789123456789") * BigInt("123456789123456789") == BigInt("15241578780673678515622620750190521"));
-    assert(BigInt("ffffffffffffffffffff",16).sizeInBits() == 80);
-    return;
     assert(BigInt("9999999999999999999") / 3 == BigInt("3333333333333333333"));
+    return;
     assert(BigInt("999999999999999999") > 
            BigInt("888888888888888888"));
     assert(BigInt("111111111111111111") < 
@@ -957,6 +956,11 @@ void test_bigint() {
     // Radix test
     assert(BigInt("ff",16) == BigInt("255"));
     assert(BigInt("10001",2) == BigInt("17"));
+    
+    // Bitsizes
+    assert(BigInt("1000",2).sizeInBits() == 4);
+    assert(BigInt("ffffffffffffffffffff",16).sizeInBits() == 80);
+    
 }
 
 int main(int argc, char *argv[]) {
@@ -1062,6 +1066,10 @@ int main(int argc, char *argv[]) {
     } catch (scheme_exception e) {
 	cerr << "Exception: " << e.toString() << endl;
         return EXIT_FAILURE;
+    } catch (exception e) {
+    	cerr << "Exception: " << e.what() << endl;
+        return EXIT_FAILURE;
+            
     }
     
     return errors_found == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

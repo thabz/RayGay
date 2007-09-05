@@ -14,11 +14,11 @@ class BigInt
         BigInt(std::string str, uint radix = 10);
         BigInt(const BigInt& o);
         
-        bool fitsInt64();
-        int64_t toInt64();
-        bool fitsInt32();
-        int32_t toInt32();
-        std::string toString(uint radix = 10);
+        bool fitsInt64() const;
+        int64_t toInt64() const;
+        bool fitsInt32() const;
+        int32_t toInt32() const;
+        std::string toString(uint radix = 10) const;
 
         BigInt operator+(const BigInt &b) const;
         BigInt operator+(int32_t n) const;
@@ -41,7 +41,7 @@ class BigInt
         
         bool is_zero() const;
 	int sizeInBits() const;
-        void dump();
+        void dump() const;
         
     public:
         static const BigInt& ZERO;
