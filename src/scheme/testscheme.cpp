@@ -938,8 +938,14 @@ void test_bigint() {
     assert(BigInt("999999999999999999999999999999999") + BigInt("999999999999999999999999999999999") == BigInt("1999999999999999999999999999999998"));
     assert(BigInt("-111111111111111111").abs() == BigInt("111111111111111111"));
     assert(BigInt("123456789123456789") * BigInt("123456789123456789") == BigInt("15241578780673678515622620750190521"));
+    
+    // Division
     assert(BigInt("9999999999999999999") / 3 == BigInt("3333333333333333333"));
-    return;
+    assert(BigInt(-1000) / 10 == BigInt(-100));
+    assert(BigInt(1000) / (-10) == BigInt(-100));
+    assert(BigInt(-1000) / (-10) == BigInt(100));
+
+    // Comparators
     assert(BigInt("999999999999999999") > 
            BigInt("888888888888888888"));
     assert(BigInt("111111111111111111") < 

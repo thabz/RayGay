@@ -100,6 +100,10 @@ bool BigInt::operator==(const BigInt& o) const {
     return true;
 }
 
+bool BigInt::operator!=(const BigInt& o) const {
+    return !(*this == o);        
+}
+
 BigInt BigInt::operator+(const BigInt &v) const {
     BigInt r = *this;
     r.resize(max(r.digits.size(), v.digits.size()));
@@ -231,7 +235,8 @@ BigInt BigInt::operator/(int32_t n) const {
         s.sign = -s.sign;
     }
     int64_t r = 0;
-    for(uint i = s.digits.size()-1; i >= 0; i--) {
+    for(int i = s.digits.size()-1; i >= 0; i--) {
+//        cout << "i " << i << endl;    
         r = r * RADIX + s.digits[i];    
         s.digits[i] = r / n;
         r %= n;
@@ -257,7 +262,7 @@ int BigInt::compare(const BigInt& b1, const BigInt& b2) {
         return -1; 
     } else {
         // Same number of digits and same sign. Compare digits.
-        for(uint i = b1.digits.size()-1; i >= 0; i--) {
+        for(int i = b1.digits.size()-1; i >= 0; i--) {
             if (b1.digits[i] > b2.digits[i]) {
                 return 1;    
             } else if (b1.digits[i] < b2.digits[i]) {
