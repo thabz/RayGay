@@ -31,6 +31,7 @@ class BigInt
         BigInt operator*(int32_t n) const;
         BigInt& operator*=(int32_t n);
         BigInt operator/(int32_t n) const;
+        int32_t operator%(int32_t n) const;
         bool operator==(const BigInt& o) const;
         bool operator!=(const BigInt& o) const;
         bool operator<(const BigInt& o) const;

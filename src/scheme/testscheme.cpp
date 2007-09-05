@@ -916,34 +916,62 @@ void test_error_handling() {
 
 void test_bigint() {
         
+    // Constructor
+    assert(BigInt(123456789) == BigInt("123456789"));
+
     // Copy constructor   
     BigInt b1 = BigInt("10");
     BigInt b2 = b1;
     b1 += 10;
     assert(b2 == BigInt("10"));    
     assert(b1 == BigInt("20"));    
-    assert(BigInt("1000") * 10 == BigInt("10000"));
     assert(BigInt(0) * 10 == BigInt(0));
+
+    // Constructor radix test
+    assert(BigInt("ff",16) == BigInt("255"));
+    assert(BigInt("10001",2) == BigInt("17"));
+    
+    // toString()
+    assert(BigInt(1000).toString() == "1000");
+    assert(BigInt(65535).toString(16) == "ffff");
+    assert(BigInt(-1000).toString() == "-1000");
+    assert(BigInt("123456789123456789").toString() == "123456789123456789");
+    
+    // Zero handling
     assert(BigInt("0") == BigInt("-0"));
-    assert(BigInt(123456789) == BigInt("123456789"));
+    assert(BigInt("0").is_zero());
+    assert(BigInt("-0").is_zero());
+    
+    // Negatives
     assert(BigInt(-100) == BigInt("-100"));
     assert(-BigInt(100) == BigInt(-100));
-    assert(BigInt("0").is_zero());
-    assert((BigInt(123456789) + 123456789) + 123456789 == BigInt("370370367"));
-    assert((BigInt("123456789") * 123456789) * 123456789 == BigInt("1881676371789154860897069"));
     assert(BigInt(-1000) + BigInt(1000) == BigInt(0));
     assert(BigInt("-1000") + BigInt("1000") == BigInt("0"));
+
+    // Subtraction
     assert(BigInt(100) - 20 == BigInt(80));
     assert(BigInt("3333333333333333333") - BigInt("2222222222222222222") == BigInt("1111111111111111111"));
+    
+    // Addition
+    assert((BigInt(123456789) + 123456789) + 123456789 == BigInt("370370367"));
     assert(BigInt("999999999999999999999999999999999") + BigInt("999999999999999999999999999999999") == BigInt("1999999999999999999999999999999998"));
     assert(BigInt("-111111111111111111").abs() == BigInt("111111111111111111"));
+
+    // Multiply
+    assert(BigInt("1000") * 10 == BigInt("10000"));
     assert(BigInt("123456789123456789") * BigInt("123456789123456789") == BigInt("15241578780673678515622620750190521"));
+    assert((BigInt("123456789") * 123456789) * 123456789 == BigInt("1881676371789154860897069"));
     
     // Division
     assert(BigInt("9999999999999999999") / 3 == BigInt("3333333333333333333"));
     assert(BigInt(-1000) / 10 == BigInt(-100));
     assert(BigInt(1000) / (-10) == BigInt(-100));
     assert(BigInt(-1000) / (-10) == BigInt(100));
+    
+    // Remainder
+    assert(BigInt(100) % 10 == 0);
+    assert(BigInt("10000000000000000000000") % 3 == 1);
+    assert(BigInt("-99999999999999999992") % 3 == -2);
 
     // Comparators
     assert(BigInt("999999999999999999") > 
@@ -959,10 +987,6 @@ void test_bigint() {
     assert(BigInt("3333333333333333333") >= 
            BigInt("2222222222222222222"));
            
-    // Radix test
-    assert(BigInt("ff",16) == BigInt("255"));
-    assert(BigInt("10001",2) == BigInt("17"));
-    
     // Bitsizes
     assert(BigInt("1000",2).sizeInBits() == 4);
     assert(BigInt("ffffffffffffffffffff",16).sizeInBits() == 80);

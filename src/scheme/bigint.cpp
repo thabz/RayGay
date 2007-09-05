@@ -28,6 +28,8 @@ BigInt::BigInt(int32_t n) {
 
 BigInt::BigInt(string str, uint radix) 
 {
+    if (radix >= 37 || radix == 0) throw invalid_argument("Invalid radix");
+
     int fsign = 1;        
 
     sign = 1;        
@@ -71,12 +73,23 @@ BigInt::BigInt(const BigInt& o) {
     sign = o.sign;
 }
 
+// TODO: This is very slow
 string BigInt::toString(uint radix) const {
-    char chars[] = "0123456789abcdefghijklmnopqrstuvwxyz";        
-    if (radix > 26+10 || radix == 0) throw invalid_argument("Invalid radix");
-    return "NOT IMPLEMENTED YET";
+    char chars[37] = "0123456789abcdefghijklmnopqrstuvwxyz";        
+    if (radix >= 37 || radix == 0) throw invalid_argument("Invalid radix");
+    BigInt b = (*this).abs();
+    string s = "";
+    while (!b.is_zero()) {
+        int digit = b % radix;
+        s += chars[digit];
+        b = b / radix;         
+    }
+    if (sign == -1) {
+        s += "-";
+    }
+    std::reverse(s.begin(), s.end());
+    return s;
 }
-
 
 bool BigInt::is_zero() const {
     return digits.size() == 1 && digits[0] == 0;     
@@ -227,7 +240,8 @@ BigInt& BigInt::operator*=(int32_t n) {
     return *this;
 }
 
-BigInt BigInt::operator/(int32_t n) const {
+BigInt BigInt::operator/(int32_t n) const 
+{
     BigInt s = *this;
     if (n == 0) throw range_error("Division by zero");
     if (n < 0) {
@@ -236,7 +250,6 @@ BigInt BigInt::operator/(int32_t n) const {
     }
     int64_t r = 0;
     for(int i = s.digits.size()-1; i >= 0; i--) {
-//        cout << "i " << i << endl;    
         r = r * RADIX + s.digits[i];    
         s.digits[i] = r / n;
         r %= n;
@@ -244,6 +257,25 @@ BigInt BigInt::operator/(int32_t n) const {
     s.normalize();
     return s;
 }
+
+int32_t BigInt::operator%(int32_t n) const 
+{
+    if (n == 0) throw range_error("Division by zero");
+    if (n < 0) {
+        n = -n;    
+    }
+
+    int64_t r = 0, rad = 1;
+    for(uint i = 0; i < digits.size(); i++) {
+        r = (r + digits[i] * rad) % n;    
+        rad = (rad * RADIX) % n;
+    }
+    if (sign == -1) {
+        r = -r;    
+    }
+    return r;
+}
+
 
 BigInt BigInt::abs() const {
     BigInt r = *this;    
