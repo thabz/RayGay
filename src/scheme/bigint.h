@@ -4,11 +4,15 @@
 
 #include <vector>
 #include <string>
+#include <ostream>
 
 // The code asserts int is 32 bits
 // http://cs.marlboro.edu/term/cs-fall02/algorithms/crypto/RSA/bigint/
 class BigInt 
 {
+
+    friend std::ostream & operator<< (std::ostream &os, const BigInt &b);
+
     public:        
         BigInt(int32_t n);
         BigInt(std::string str, uint radix = 10);
@@ -22,15 +26,18 @@ class BigInt
 
         BigInt operator+(const BigInt &b) const;
         BigInt operator+(int32_t n) const;
+        BigInt& operator+=(const BigInt &b);
         BigInt& operator+=(int32_t n);
         BigInt operator-(const BigInt &b) const;
         BigInt operator-(int32_t n) const;
-        BigInt operator-() const;
+        BigInt& operator-=(const BigInt &b);
         BigInt& operator-=(int32_t n);
+        BigInt operator-() const;
         BigInt operator*(const BigInt &b) const;
         BigInt operator*(int32_t n) const;
         BigInt& operator*=(int32_t n);
         BigInt operator/(int32_t n) const;
+        BigInt operator/(const BigInt &b) const;
         int32_t operator%(int32_t n) const;
         bool operator==(const BigInt& o) const;
         bool operator!=(const BigInt& o) const;

@@ -950,6 +950,7 @@ void test_bigint() {
 
     // Subtraction
     assert(BigInt(100) - 20 == BigInt(80));
+    assert(BigInt(100) - BigInt(3) == BigInt(97));
     assert(BigInt("3333333333333333333") - BigInt("2222222222222222222") == BigInt("1111111111111111111"));
     
     // Addition
@@ -967,6 +968,10 @@ void test_bigint() {
     assert(BigInt(-1000) / 10 == BigInt(-100));
     assert(BigInt(1000) / (-10) == BigInt(-100));
     assert(BigInt(-1000) / (-10) == BigInt(100));
+    //cout << "Result " << (BigInt(100) / BigInt(2)) << endl;
+    assert(BigInt(100) / BigInt(2) == BigInt(50));
+    assert(BigInt("123456789123456789") / BigInt("123456789123456789") == BigInt(1));
+    //assert(BigInt("15241578780673678515622620750190521") / BigInt("123456789123456789") == BigInt("123456789123456789"));
     
     // Remainder
     assert(BigInt(100) % 10 == 0);
@@ -974,6 +979,7 @@ void test_bigint() {
     assert(BigInt("-99999999999999999992") % 3 == -2);
 
     // Comparators
+    assert(BigInt(50) > BigInt(25));
     assert(BigInt("999999999999999999") > 
            BigInt("888888888888888888"));
     assert(BigInt("111111111111111111") < 

@@ -152,6 +152,20 @@ BigInt& BigInt::operator+=(int32_t n) {
     return *this;
 }
 
+BigInt& BigInt::operator+=(const BigInt &v) {
+    resize(max(digits.size(), v.digits.size()));
+    for(uint i = 0; i < digits.size(); i++) {
+        if (sign == v.sign) {
+            digits[i] += v.digits[i];        
+        } else {
+            digits[i] -= v.digits[i];        
+        }
+    }
+    normalize();
+    return *this;
+}
+
+
 BigInt BigInt::operator-(const BigInt &v) const {
     BigInt r = *this;
     r.resize(max(r.digits.size(), v.digits.size()));
@@ -164,7 +178,6 @@ BigInt BigInt::operator-(const BigInt &v) const {
     }
     r.normalize();
     return r;
-        
 }
 
 BigInt BigInt::operator-(int32_t n) const {
@@ -189,6 +202,19 @@ BigInt& BigInt::operator-=(int32_t n) {
         digits[0] -= n;    
     } else {
         digits[0] += n;    
+    }
+    normalize();
+    return *this;
+}
+
+BigInt& BigInt::operator-=(const BigInt &v) {
+    resize(max(digits.size(), v.digits.size()));
+    for(uint i = 0; i < digits.size(); i++) {
+        if (sign == v.sign) {
+            digits[i] -= v.digits[i];        
+        } else {
+            digits[i] += v.digits[i];        
+        }
     }
     normalize();
     return *this;
@@ -257,6 +283,66 @@ BigInt BigInt::operator/(int32_t n) const
     s.normalize();
     return s;
 }
+
+/*
+BigInt BigInt::operator/(const BigInt &y) const 
+{
+    uint n = digits.size();
+    uint t = y.digits.size();
+
+    if (y.is_zero()) throw range_error("Division by zero");
+    if (is_zero()) return ZERO;
+    
+    if (t > n) return ZERO;    
+    
+    // We could bail out quickly if o == 1 (return this) 
+    // but I don't think the cost of the comparison makes 
+    // it worthwhile.
+    BigInt x = *this;
+
+    BigInt q;
+    BigInt r;
+    q.resize(n-t+1);
+    r.resize(t);
+}
+*/
+
+// See http://fox.wikis.com/wc.dll?Wiki~MultiprecisionDivision~VFP
+BigInt BigInt::operator/(const BigInt &b) const {
+    BigInt quotient = BigInt::ZERO;
+    BigInt newdividend = *this;
+    BigInt divisor = b;
+    
+    while(newdividend >= divisor) {
+        int diffdigits = newdividend.digits.size() - divisor.digits.size();
+        if (diffdigits > 0) {
+            if (newdividend.digits[newdividend.digits.size()-1] > divisor.digits[divisor.digits.size()-1]) {
+                BigInt offset = BigInt::ONE;
+                for(int i = 0; i < diffdigits; i++) {
+                    offset *= RADIX;           
+                }
+                BigInt newdivisor = divisor * offset;
+                newdividend = newdividend - newdivisor;
+                quotient += offset;
+            } else {
+                BigInt offset = BigInt::ONE;
+                for(int i = 0; i < diffdigits-1; i++) {
+                    offset *= RADIX;           
+                }
+                BigInt newdivisor = divisor * offset;
+                newdividend = newdividend - newdivisor;
+                quotient += offset;
+            }
+        }
+        if (newdividend.digits.size() == divisor.digits.size()) {
+            newdividend -= divisor;
+            quotient += 1;
+        }
+    }
+    return quotient;
+}
+
+
 
 int32_t BigInt::operator%(int32_t n) const 
 {
@@ -330,7 +416,7 @@ bool BigInt::operator>=(const BigInt& o) const {
 // 1) All digits are 0 <= d < RADIX
 // 2) Sign 1 or -1
 // 3) Leading zero digits are removed
-// 4) Fix sign for zero
+// 4) Fix sign for zero, ie. eliminate -0.
 void BigInt::normalize() 
 {
     for(uint i = 0; i < digits.size()-1; i++) {
@@ -390,4 +476,12 @@ int BigInt::sizeInBits() const {
     }	
     return c;
 }
+
+
+// TODO: Respect when the ostream is in dec or hex mode
+ostream & operator<<(ostream &os, const BigInt &b) {
+    os << b.toString() << endl;
+    return os;
+}
+
 
