@@ -47,8 +47,10 @@ class BigInt
         bool operator>=(const BigInt& o) const;
         
         BigInt abs() const;
+        BigInt sqrt() const;
         
         bool is_zero() const;
+        bool is_one() const;
 	int sizeInBits() const;
         void dump() const;
         

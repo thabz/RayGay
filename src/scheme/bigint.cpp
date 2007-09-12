@@ -95,6 +95,11 @@ bool BigInt::is_zero() const {
     return digits.size() == 1 && digits[0] == 0;     
 }
 
+bool BigInt::is_one() const {
+    return digits.size() == 1 && digits[0] == 1 && sign == 1;     
+}
+
+
 void BigInt::dump() const {
     cout << "Sign: " << sign << endl;        
     cout << "Digits: " << digits.size() << endl;
@@ -309,26 +314,30 @@ BigInt BigInt::operator/(const BigInt &y) const
 
 // See http://fox.wikis.com/wc.dll?Wiki~MultiprecisionDivision~VFP
 BigInt BigInt::operator/(const BigInt &b) const {
+    
+    if (b.digits.size() == 1) {
+        return *this / (b.sign * b.digits[0]);    
+    }        
+        
     BigInt quotient = BigInt::ZERO;
     BigInt newdividend = *this;
     BigInt divisor = b;
+    BigInt offset = BigInt::ZERO;
     
     while(newdividend >= divisor) {
         int diffdigits = newdividend.digits.size() - divisor.digits.size();
         if (diffdigits > 0) {
             if (newdividend.digits[newdividend.digits.size()-1] > divisor.digits[divisor.digits.size()-1]) {
-                BigInt offset = BigInt::ONE;
-                for(int i = 0; i < diffdigits; i++) {
-                    offset *= RADIX;           
-                }
+                offset = BigInt::ZERO;
+                offset.resize(diffdigits+1);
+                offset.digits[diffdigits] = 1;
                 BigInt newdivisor = divisor * offset;
                 newdividend = newdividend - newdivisor;
                 quotient += offset;
             } else {
-                BigInt offset = BigInt::ONE;
-                for(int i = 0; i < diffdigits-1; i++) {
-                    offset *= RADIX;           
-                }
+                offset = BigInt::ZERO;
+                offset.resize(diffdigits);
+                offset.digits[diffdigits-1] = 1;
                 BigInt newdivisor = divisor * offset;
                 newdividend = newdividend - newdivisor;
                 quotient += offset;
@@ -339,10 +348,53 @@ BigInt BigInt::operator/(const BigInt &b) const {
             quotient += 1;
         }
     }
-    return quotient;
+    return quotient;  
 }
 
+/*
+// Donald Knuth, The Art of Computer Programming, Volume 2, 2nd ed., 1981, pp. 257-258.
+BigInt BigInt::operator/(const BigInt &divisor) const {
+    BigInt u = *this;
+    BigInt v = divisor;
+    int n = v.digits.size();
+    int m = u.digits.size() - n;
 
+    BigInt q = 0;
+    q.resize(m+1);
+    
+    // D1 (normalize)
+    int32_t d = RADIX / (v.digits[v.digits.size()-1] + 1);
+    u *= d;
+    v *= d;
+    
+    // D2 (initialize j)
+    for(int j = 0; j <= m; j++) {
+        // D3 (calculate q_hat)
+        int32_t q_hat;
+        if (u.digits[j] == *(v.digits.end()-1)) {
+            q_hat = RADIX - 1;          
+        } else {
+            q_hat = (u.digits[j]*RADIX + u.digits[j+1]) / (*(v.digits.end()-1));
+        }
+        while (*(v.digits.end()-2)*q_hat > (u.digits[j]*RADIX + u.digits[j-1]-q_hat*(*(v.digits.end()-1)))*RADIX + u.digits[j+2]) {
+            q_hat--;        
+        }
+        
+        // D4 (multiply and subtract)
+        u -= v * q_hat; // FIXME: Do a local loop on the correct digits
+        
+        // D5 (test remainder)
+        q.digits[j] = q_hat;
+        if (u.sign == -1) {
+            // D6 (add back)
+            q.digits[j] -= 1;
+            u += v; // FIXME: Do a local loop on the correct digits
+        }
+        // D7 (loop on j)
+    }
+    return q;
+}
+*/
 
 int32_t BigInt::operator%(int32_t n) const 
 {
@@ -362,12 +414,6 @@ int32_t BigInt::operator%(int32_t n) const
     return r;
 }
 
-
-BigInt BigInt::abs() const {
-    BigInt r = *this;    
-    r.sign = 1;
-    return r;    
-}
 
 int BigInt::compare(const BigInt& b1, const BigInt& b2) {
     if (b1.sign > b2.sign) {
@@ -477,11 +523,44 @@ int BigInt::sizeInBits() const {
     return c;
 }
 
-
 // TODO: Respect when the ostream is in dec or hex mode
 ostream & operator<<(ostream &os, const BigInt &b) {
-    os << b.toString() << endl;
+    os << b.toString();
     return os;
 }
 
+// Newton's method
+BigInt BigInt::sqrt() const {
+    if (sign == -1) {
+        throw range_error("Imaginary result");
+    }
+    if (is_zero()) {
+        return BigInt::ZERO;    
+    }
+    if (is_one()) {
+        return BigInt::ONE;    
+    }
+    
+    // A good initial guess is the square root of the most significant digit times the square root of its radix part.
+    BigInt x_1 = ONE * 100;
+    
+    while(true) {
+        BigInt x_2 = (*this) / x_1;
+        BigInt diff =  x_2 - x_1;
+        if (diff.is_zero()) {
+            return x_1;         
+        }
+        if (diff.is_one()) {
+            return x_2;        
+        }
+        x_1 = (x_1 + x_2) / 2;
+        cout << "Guess " << x_1 << endl;
+    }
+}
+
+BigInt BigInt::abs() const {
+    BigInt r = *this;    
+    r.sign = 1;
+    return r;    
+}
 

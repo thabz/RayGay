@@ -971,12 +971,27 @@ void test_bigint() {
     //cout << "Result " << (BigInt(100) / BigInt(2)) << endl;
     assert(BigInt(100) / BigInt(2) == BigInt(50));
     assert(BigInt("123456789123456789") / BigInt("123456789123456789") == BigInt(1));
+    assert(BigInt("10000000000") / BigInt("1000000000") == BigInt(10));
+    assert(BigInt("10000000000") / BigInt("10000000") == BigInt(1000));
+    assert(BigInt("993850124034") / BigInt("1209237") == BigInt("821882"));
+    assert(BigInt("993850124034") / BigInt("821882") == BigInt("1209237"));
+    //assert(BigInt("") / BigInt("") == BigInt(""));
+    
+    assert(BigInt("123456789123456789") / BigInt(1) == BigInt("123456789123456789"));
+    assert(BigInt("10000000000") / BigInt("10") == BigInt("1000000000"));
+    
     //assert(BigInt("15241578780673678515622620750190521") / BigInt("123456789123456789") == BigInt("123456789123456789"));
     
     // Remainder
     assert(BigInt(100) % 10 == 0);
     assert(BigInt("10000000000000000000000") % 3 == 1);
     assert(BigInt("-99999999999999999992") % 3 == -2);
+
+    // Square root
+    assert(BigInt(100).sqrt() == BigInt(10));
+    assert(BigInt(10000).sqrt() == BigInt(100));
+    assert(BigInt("10000000000000000").sqrt() == BigInt("100000000"));
+    //assert(BigInt("15241578780673678515622620750190521").sqrt() == BigInt("123456789123456789"));
 
     // Comparators
     assert(BigInt(50) > BigInt(25));
