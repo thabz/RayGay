@@ -312,6 +312,7 @@ BigInt BigInt::operator/(const BigInt &y) const
 }
 */
 
+/*
 // See http://fox.wikis.com/wc.dll?Wiki~MultiprecisionDivision~VFP
 BigInt BigInt::operator/(const BigInt &b) const {
     
@@ -349,6 +350,71 @@ BigInt BigInt::operator/(const BigInt &b) const {
         }
     }
     return quotient;  
+}
+*/
+
+// Donald Knuth, The Art of Computer Programming, Volume 2, 2nd ed., 1981, pp. 257-258.
+BigInt BigInt::operator/(const BigInt &denom) const {
+    BigInt q = ZERO;
+    q.resize(this->digits.size() - denom.digits.size() + 1);
+    q.sign = this->sign * denom.sign;
+    int64_t q_hat; int qpos = q.size()-1;
+    int64_t d = RADIX / (denom.digits[denom.digits()-1]+1);
+
+    BigInt u = *this;
+    BigInt v = denom;
+    int64_t start = u.digits.size();
+    u *= d;
+    v *= d;
+    if (u.digits.size()-1 < start) {
+	u.resize(start+1);
+	u.digits[start] = 0;
+    }
+    while(true) {
+	if (u.abs() < v.abs()) {
+	    u = u / d;
+	    return q;
+	}
+	int i = 0; int64_t stop;
+	while(u.digits[start+i] == v.digits[v.digits.size()-1+i] && v.digits.size()-1+i != 0) i--;
+	if (u.digits[start+i]< v.digits[v.digits.size()-1+i]) 
+	    stop = start - v.digits.size() - 1 -1;
+	else 
+	    stop = start - v.digits.size() - 1;
+	
+	qhat = u.digits[start];
+	qhat = qhat * RADIX + u.digits[start-1];
+	qhat /= v.digits[v.digits.size()-1];
+	if (qhat > BASE-1) qhat = BASE-1;
+	long temp;
+	if (start-1 != 0) 
+	    temp = u.digits[start-2];
+	else 
+	    temp = 0;
+	while(v.digits[v.digits.size()-2]*qhat >
+	      (u.digits[start]*BASE + u.digits[start-1] -
+              qhat*v.digits[v.digits.size()-1])*BASE + temp)
+	    qhat--;
+
+	BigNum word = v*qhat << u.digits().size()-1;
+
+	while(start-stop < work.digits.size()) {
+	    --qhat;
+	    work -= v;
+	}
+
+	long borrow = 0;
+	work.digits[work.digits.size()-1] = 0; // Eh?
+	for(i = stop; i <= start; i++) {
+	    temp = u.
+
+	}
+
+
+
+    }
+
+
 }
 
 /*
