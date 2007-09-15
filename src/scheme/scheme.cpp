@@ -1102,6 +1102,9 @@ SchemeObject* s_atan(SchemeObject* y, SchemeObject* x) {
     }
 }
 
+// In R6RS log takes an optional base argument, which defaults to e for the natural logarithm.
+// Note that log_b(x) = log_k(x) / log_k(b) for any base k
+// For example log2(16) = log(16) / log(2) 
 SchemeObject* s_log(SchemeObject* n) {
     assert_arg_number_type("log", 1, n);
     return double2scm(log(scm2double(n)));
