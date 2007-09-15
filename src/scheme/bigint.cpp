@@ -356,10 +356,11 @@ BigInt BigInt::operator/(const BigInt &b) const {
 // Donald Knuth, The Art of Computer Programming, Volume 2, 2nd ed., 1981, pp. 257-258.
 BigInt BigInt::operator/(const BigInt &denom) const {
     BigInt q = ZERO;
-    q.resize(this->digits.size() - denom.digits.size() + 1);
+    q.resize(this->digits.size() - denom.size() + 1);
     q.sign = this->sign * denom.sign;
-    int64_t q_hat; int qpos = q.size()-1;
-    int64_t d = RADIX / (denom.digits[denom.digits()-1]+1);
+    int64_t q_hat; 
+    int qpos = q.size()-1;
+    int64_t d = RADIX / (denom.digits[denom.size()-1]+1);
 
     BigInt u = *this;
     BigInt v = denom;
@@ -382,39 +383,58 @@ BigInt BigInt::operator/(const BigInt &denom) const {
 	else 
 	    stop = start - v.digits.size() - 1;
 	
-	qhat = u.digits[start];
-	qhat = qhat * RADIX + u.digits[start-1];
-	qhat /= v.digits[v.digits.size()-1];
-	if (qhat > BASE-1) qhat = BASE-1;
+	q_hat = u.digits[start];
+	q_hat = q_hat * RADIX + u.digits[start-1];
+	q_hat /= v.digits[v.digits.size()-1];
+	if (q_hat > RADIX - 1) q_hat = RADIX - 1;
 	long temp;
 	if (start-1 != 0) 
 	    temp = u.digits[start-2];
 	else 
 	    temp = 0;
-	while(v.digits[v.digits.size()-2]*qhat >
-	      (u.digits[start]*BASE + u.digits[start-1] -
-              qhat*v.digits[v.digits.size()-1])*BASE + temp)
-	    qhat--;
+	while(v.digits[v.digits.size()-2]*q_hat >
+	      (u.digits[start]*RADIX + u.digits[start-1] -
+              q_hat*v.digits[v.digits.size()-1])*RADIX + temp)
+	    q_hat--;
 
-	BigNum word = v*qhat << u.digits().size()-1;
+        BigInt work = ONE;
+        //work = v*q_hat << u.digits().size()-1;
 
 	while(start-stop < work.digits.size()) {
-	    --qhat;
+	    --q_hat;
 	    work -= v;
 	}
 
 	long borrow = 0;
 	work.digits[work.digits.size()-1] = 0; // Eh?
 	for(i = stop; i <= start; i++) {
-	    temp = u.
-
+            temp = u.digits[i] - work.digits[i-stop] + borrow;
+            if (temp < 0){
+                borrow = -1;
+                temp += RADIX;
+            }
+            else borrow = 0;
+            u.digits[i] = temp;
 	}
+	
+	v.digits[v.digits.size()-1] = 0; // Eh?
+        while (borrow < 0 && q_hat) {
+            //oops qhat was still too big
+            //add back
+            q_hat--;
+            long carry = 0;
+            for(i = stop; i <= start; i++){
+               temp = u.digits[i] + v.digits[i-stop] + carry;
+               carry = temp / RADIX;
+               u.digits[i] = temp % RADIX;
+            }
+            borrow += carry;
+        }
 
-
-
+        q.digits[qpos--] = q_hat;
+        start = u.digits.size()-2;
+        u.normalize();
     }
-
-
 }
 
 /*
@@ -594,6 +614,25 @@ ostream & operator<<(ostream &os, const BigInt &b) {
     os << b.toString();
     return os;
 }
+
+
+// Returns this raised to the power p
+BigInt BigInt::expt(int power) const {
+    if (power == 0) {
+        return ONE;    
+    } else if (power == 1 || this->is_one()) {
+        return *this;    
+    }        
+    if (power % 2 == 0) {
+        BigInt r = this->expt(power/2);
+        return r * r;
+    } else {
+        BigInt r = this->expt(power-1);
+        return *this * r;
+    }        
+}
+
+
 
 // Newton's method
 BigInt BigInt::sqrt() const {

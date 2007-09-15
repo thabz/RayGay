@@ -48,6 +48,7 @@ class BigInt
         
         BigInt abs() const;
         BigInt sqrt() const;
+        BigInt expt(int power) const;
         
         bool is_zero() const;
         bool is_one() const;
@@ -69,6 +70,7 @@ class BigInt
         void normalize();
         static int compare(const BigInt& b1, const BigInt& b2); 
         void resize(int32_t new_digits_num);
+        int32_t size() const;
 
     private:        
         std::vector<int64_t> digits;    
@@ -76,3 +78,8 @@ class BigInt
 };
 
 #endif
+
+inline
+int32_t BigInt::size() const {
+    return digits.size();        
+}
