@@ -106,8 +106,14 @@ SchemeObject* SchemeObject::createSymbol(const char* str) {
 
 SchemeObject* SchemeObject::createEnvironment(SchemeObject* parent, uint32_t num_buckets) {
     assert(num_buckets > 0);
-    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::ENVIRONMENT);
-    result->binding_map = new binding_map_t(num_buckets);
+    SchemeObject* result;
+    if (num_buckets > 8) {
+	result = Heap::getUniqueInstance()->allocate(SchemeObject::ENVIRONMENT);
+	result->binding_map = new binding_map_t(num_buckets);
+    } else {
+	result = Heap::getUniqueInstance()->allocate(SchemeObject::SIMPLE_ENVIRONMENT);
+	result->binding_list = S_EMPTY_LIST;
+    }
     result->parent = parent;
     return result;
 }
@@ -148,7 +154,8 @@ SchemeObject* SchemeObject::createBuiltinProcedure(SchemeObject* name, int req, 
 
 SchemeObject* SchemeObject::createUserProcedure(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body) {
     assert(i_symbol_p(name) == S_TRUE);
-    assert(envt->type() == SchemeObject::ENVIRONMENT);
+    ObjectType t = envt->type();
+    assert(t == SchemeObject::ENVIRONMENT || t == SchemeObject::SIMPLE_ENVIRONMENT);
     SchemeObject* dup = s_find_duplicate(s_formals);
     if (dup != S_FALSE) {
         throw scheme_exception("Duplicate formal " + dup->toString() + " in " + s_formals->toString());    
@@ -161,7 +168,8 @@ SchemeObject* SchemeObject::createUserProcedure(SchemeObject* name, SchemeObject
 
 SchemeObject* SchemeObject::createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body) {
     assert(i_symbol_p(name) == S_TRUE);
-    assert(envt->type() == SchemeObject::ENVIRONMENT);
+    ObjectType t = envt->type();
+    assert(t == SchemeObject::ENVIRONMENT || t == SchemeObject::SIMPLE_ENVIRONMENT);
     SchemeObject* dup = s_find_duplicate(s_formals);
     if (dup != S_FALSE) {
         throw scheme_exception("Duplicate formal " + dup->toString() + " in " + s_formals->toString());    
@@ -220,6 +228,12 @@ void SchemeObject::mark() {
                 }
                 break;
             }
+            case SchemeObject::SIMPLE_ENVIRONMENT :
+		binding_list->mark();		
+                if (parent != NULL) {
+                    parent->mark();
+                }
+                break;		
             case SchemeObject::USER_PROCEDURE :
                 s_closure_data->mark();
                 if (name != NULL) {
@@ -339,6 +353,7 @@ string SchemeObject::toString() {
             ss << ")";
             break;
         case SchemeObject::ENVIRONMENT :    
+        case SchemeObject::SIMPLE_ENVIRONMENT :    
             return "#<environment>";
         case SchemeObject::BLANK :
             ss << "#<blank heap slot>";
@@ -402,6 +417,8 @@ string SchemeObject::toString(ObjectType t) {
             return "Vector";
         case SchemeObject::ENVIRONMENT :    
             return "Environment";
+        case SchemeObject::SIMPLE_ENVIRONMENT :    
+            return "Simple environment";
         case SchemeObject::BLANK :
             return "Blank heap spot";
         case SchemeObject::MACRO :
@@ -490,32 +507,65 @@ void SchemeObject::callContinuation(SchemeObject* arg) {
 //-----------------------------------------------------------
 
 SchemeObject* SchemeObject::getBinding(SchemeObject* symbol) {
-    assert(type() == SchemeObject::ENVIRONMENT);
-
     for(SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
-        binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
-        if (v != envt->binding_map->end()) {
-            return v->second;
-        }
+	ObjectType t = envt->type();
+        if (t == SchemeObject::ENVIRONMENT) {
+            binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
+            if (v != envt->binding_map->end()) {
+                return v->second;
+            }
+        } else if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
+    	    SchemeObject* list = envt->binding_list;
+	    while(list != S_EMPTY_LIST) {
+	        SchemeObject* binding = i_car(list);
+	        if (i_car(binding) == symbol) {
+	 	    return i_cdr(binding);
+	        }
+	        list = i_cdr(list);
+	    }
+	} else {
+	    throw scheme_exception("Not an environment");
+	}
     }
     return NULL;
 }
 
 void SchemeObject::defineBinding(SchemeObject* symbol, SchemeObject* o) {
-    assert(type() == SchemeObject::ENVIRONMENT);
-
-    binding_map->insert(binding_map_t::value_type(symbol,o), symbol->hash);
+    ObjectType t = type();
+    if (t == SchemeObject::ENVIRONMENT) {
+	// Insert into map
+	binding_map->insert(binding_map_t::value_type(symbol,o), symbol->hash);
+    } else if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
+	SchemeObject* binding = i_cons(symbol,o);
+	// Prepend the new binding pair
+	binding_list = i_cons(binding, binding_list);
+    } else {
+	throw scheme_exception("Not an environment");
+    }
 }
 
 void SchemeObject::setBinding(SchemeObject* symbol, SchemeObject* o) {
-    assert(type() == SchemeObject::ENVIRONMENT);
-
     for(SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
-        binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
-        if (v != envt->binding_map->end()) {
-            v->second = o;  
-            return;
-        }
+	ObjectType t = envt->type();
+	if (t == SchemeObject::ENVIRONMENT) {
+            binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
+            if (v != envt->binding_map->end()) {
+                v->second = o;  
+                return;
+   	    }
+	} else if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
+	    SchemeObject* list = envt->binding_list;
+	    while (list != S_EMPTY_LIST) {
+		SchemeObject* binding = i_car(list);
+		if (i_car(binding) == symbol) {
+		    i_set_cdr_e(binding, o);
+		    return;
+		}
+		list = i_cdr(list);
+	    }
+	} else {
+	    throw scheme_exception("Not an environment");
+	}
     }
     throw scheme_exception("Unbound variable: " + symbol->toString());
 }

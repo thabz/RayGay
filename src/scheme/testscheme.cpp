@@ -1119,7 +1119,7 @@ int main(int argc, char *argv[]) {
         cout << " OK" << endl;
 
         cout << "Test error handling...  ";
-        test_define_and_set();
+        test_error_handling();
         cout << " OK" << endl;
 
         test_begin();

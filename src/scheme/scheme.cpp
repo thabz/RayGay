@@ -1964,7 +1964,9 @@ SchemeObject* s_newline(SchemeObject* port) {
 }
 
 SchemeObject* s_environment_p(SchemeObject* o) {
-    return bool2scm(o->type() == SchemeObject::ENVIRONMENT);
+    SchemeObject::ObjectType t = o->type();
+    return bool2scm(t == SchemeObject::ENVIRONMENT || 
+	            t == SchemeObject::SIMPLE_ENVIRONMENT);
 }
 
 SchemeObject* s_null_environment(SchemeObject* s_version) {

@@ -76,11 +76,11 @@ SchemeObject* Heap::allocate(SchemeObject::ObjectType metadata) {
 }
 
 void Heap::garbageCollect(vector<SchemeObject*> &stack) {
-    //cout << "BEFORE: Size of heap: " << slots_num << " free: " << free_slots << " (" << banks.size() << ")" << endl;
+    cout << "BEFORE: Size of heap: " << slots_num << " free: " << free_slots << " (" << banks.size() << ")" << endl;
     //cout << "BEFORE: Size of roots: " << roots.size() << endl;
     mark(stack);
     sweep();
-    //cout << "AFTER: Size of heap: " << slots_num << " free: " << free_slots << endl;
+    cout << "AFTER: Size of heap: " << slots_num << " free: " << free_slots << endl;
     //cout << "AFTER: Size of roots: " << roots.size() << endl << endl;
     allocated = 0;
     gc_runs++;

@@ -83,10 +83,11 @@ class SchemeObject
                     SchemeObject* result;   // For continuations
                     int32_t length;         // For vector and strings
                     binding_map_t* binding_map;	// For environments
+		    SchemeObject* binding_list; // For simple environments 
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
                     SchemeWrappedCObject* wrapped_object;
-                    binding_map_t::hash_type hash;  // For symbols
+                    binding_map_t::hash_type hash;  // For symbols 
                 };
             };
         };
@@ -114,6 +115,7 @@ class SchemeObject
  		    MACRO,
  		    CONTINUATION,
  		    ENVIRONMENT,
+		    SIMPLE_ENVIRONMENT,
  		    ALL_TYPE_ARE_BEFORE_HERE
 		};
 
