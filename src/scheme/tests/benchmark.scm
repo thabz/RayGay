@@ -44,6 +44,10 @@
 ; 2007-07-27 Avoid called rest() three times in eval_built_in_procedure_call()
 ; ./repl -d tests/bench*  14.21s user 0.02s system 99% cpu 14.265 total
 ; ./repl -d tests/bench*  14.05s user 0.02s system 99% cpu 14.102 total
+;
+; 2007-09-26 Introducing simple environments (list of binding-pairs)
+; ./repl scheme/tests/benchmark.scm  9.63s user 0.08s system 97% cpu 9.934 total
+;
 
 (define (square x)
   (* x x))
