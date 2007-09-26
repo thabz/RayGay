@@ -225,7 +225,6 @@ BigInt& BigInt::operator-=(const BigInt &v) {
     return *this;
 }
 
-
 BigInt BigInt::operator*(const BigInt &o) const 
 {
     BigInt r = ZERO;
@@ -615,8 +614,28 @@ ostream & operator<<(ostream &os, const BigInt &b) {
     return os;
 }
 
+BigInt BigInt::times_two() const {
+    BigInt r = *this;
+    for(uint i = r.size()-1; i >= 0; i--) {
+        r.digits[i] <<= 1;
+        if (r.digits[i] >=  RADIX) {
+            if (i+1 >= r.size()) {
+                r.resize(r.size()+1);    
+            }
+            r.digits[i] -= RADIX;
+            r.digits[i+1]++;
+        }
+    }
+    return r;
+}
+
+// TODO: Optimize this. Squaring can be done with half as many mults.
+BigInt BigInt::square() const {
+    return *this * *this;        
+}
 
 // Returns this raised to the power p
+// TODO: This could be done faster by replacing recursion with a loop and by just using one bigint modified inplace, ie. *= instead of *.
 BigInt BigInt::expt(int power) const {
     if (power == 0) {
         return ONE;    
@@ -625,14 +644,12 @@ BigInt BigInt::expt(int power) const {
     }        
     if (power % 2 == 0) {
         BigInt r = this->expt(power/2);
-        return r * r;
+        return r.square();
     } else {
         BigInt r = this->expt(power-1);
         return *this * r;
     }        
 }
-
-
 
 // Newton's method
 BigInt BigInt::sqrt() const {
