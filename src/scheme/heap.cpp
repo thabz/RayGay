@@ -122,6 +122,7 @@ void Heap::sweep() {
                 banks.erase(banks_iterator);
                 delete [] bank;
                 banks_freed++;
+                free_slots -= slots_per_bank;
             } else {
                 if (next_free_slot_idx >= j && cur_bank_idx >= i) {
                     next_free_slot_idx = j;
