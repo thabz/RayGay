@@ -507,22 +507,27 @@ void SchemeObject::callContinuation(SchemeObject* arg) {
 //-----------------------------------------------------------
 
 SchemeObject* SchemeObject::getBinding(SchemeObject* symbol) {
-    for(SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
+    for (SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
 	ObjectType t = envt->type();
         if (t == SchemeObject::ENVIRONMENT) {
+            //cout << "Binding map size " << envt->binding_map->size() << endl;        
             binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
             if (v != envt->binding_map->end()) {
                 return v->second;
             }
         } else if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
     	    SchemeObject* list = envt->binding_list;
-	    while(list != S_EMPTY_LIST) {
+            int i = 0;
+	    while (list != S_EMPTY_LIST) {
 	        SchemeObject* binding = i_car(list);
 	        if (i_car(binding) == symbol) {
+                    //cout << "Found at index " << i << endl;        
 	 	    return i_cdr(binding);
 	        }
 	        list = i_cdr(list);
+                i++;
 	    }
+            //cout << "Not found in " << i << endl;
 	} else {
 	    throw scheme_exception("Not an environment");
 	}
