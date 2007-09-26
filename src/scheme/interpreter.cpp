@@ -1329,7 +1329,7 @@ fn_ptr eval_do() {
         for(uint32_t i = 0; i < bindings_num; i++) {
              SchemeObject* val = stack.back();
              stack.pop_back();   
-             new_envt->defineBinding(varnames[bindings_num-1-i], val);
+             new_envt->setBinding(varnames[bindings_num-1-i], val);
         }
     }
     return NULL; /* Never reached */
