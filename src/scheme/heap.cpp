@@ -46,7 +46,8 @@ void Heap::allocateNewBank() {
 SchemeObject* Heap::allocate(SchemeObject::ObjectType metadata) {
     SchemeObject* result = NULL;
     while (true) {
-	// Scanning through current bank looking for an empty slot
+	// Scan through current bank while 
+	// looking for an empty slot
         SchemeObject* cur_bank = banks[cur_bank_idx];    
 	SchemeObject* p = &(cur_bank[next_free_slot_idx]);
         while (next_free_slot_idx < slots_per_bank) {
