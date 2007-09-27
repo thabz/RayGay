@@ -45,28 +45,29 @@ void Heap::allocateNewBank() {
 
 SchemeObject* Heap::allocate(SchemeObject::ObjectType metadata) {
     SchemeObject* result = NULL;
-    bool done = false;
-    while (!done) {
+    while (true) {
+	// Scanning through current bank looking for an empty slot
         SchemeObject* cur_bank = banks[cur_bank_idx];    
-        while (next_free_slot_idx < slots_per_bank && !done) {
-            SchemeObject* p = &(cur_bank[next_free_slot_idx]);
+	SchemeObject* p = &(cur_bank[next_free_slot_idx]);
+        while (next_free_slot_idx < slots_per_bank) {
             if (p->type() == SchemeObject::BLANK) {
                 result = p;
-                done = true;        
+		goto found_one;
             }
+	    p++;
             next_free_slot_idx++;
         }
-        if (!done) {
-            cur_bank_idx++;
-            next_free_slot_idx = 0;
-            if (cur_bank_idx >= banks.size()) {
-                allocateNewBank();    
-            }
+
+	// Didn't find any free slot in current bank. 
+	// Move to the next bank. Create new bank if  
+	// we're at the last.
+        cur_bank_idx++;
+        next_free_slot_idx = 0;
+        if (cur_bank_idx >= banks.size()) {
+            allocateNewBank();    
         }
     }
-    if (result == NULL) {
-        throw scheme_exception("Out of heap space");    
-    }
+found_one:
     result->metadata = uint32_t(metadata);
     result->set_immutable(false);
     free_slots--;
