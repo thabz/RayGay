@@ -69,8 +69,7 @@ SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
         }
     }
 found_one:
-    result->otype = uint16_t(type);
-    result->metadata = 0;
+    result->metadata = type;
     result->set_immutable(false);
     free_slots--;
     allocated++;
@@ -104,9 +103,9 @@ void Heap::sweep() {
     vector<SchemeObject*>::iterator banks_iterator = banks.begin();                
     for(uint32_t i = 0; banks_iterator != banks.end(); i++, banks_iterator++) {
         SchemeObject* bank = *banks_iterator;
+        SchemeObject* cur = bank;
         uint32_t blank_found = 0;    
-        for(uint32_t j = 0; j < slots_per_bank; j++) {
-            SchemeObject* cur = &(bank[j]);
+        for(uint32_t j = 0; j < slots_per_bank; j++, cur++) {
             if (cur->type() != SchemeObject::BLANK) {
                 bool in_use = cur->inuse();
                 cur->clear_inuse();
