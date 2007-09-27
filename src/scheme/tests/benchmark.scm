@@ -48,7 +48,9 @@
 ; 2007-09-26 Introducing simple environments (list of binding-pairs)
 ; ./repl scheme/tests/benchmark.scm  9.61s user 0.07s system 99% cpu 9.767 total
 ; guile scheme/tests/benchmark.scm  5.52s user 0.13s system 99% cpu 5.708 total
-
+;
+; ./repl scheme/tests/benchmark.scm  9.35s user 0.05s system 99% cpu 9.429 total
+;
 
 (define (square x)
   (* x x))
