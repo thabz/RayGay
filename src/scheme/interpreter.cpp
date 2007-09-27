@@ -714,10 +714,16 @@ fn_ptr eval_user_procedure_call() {
     stack.pop_back();
     stack.pop_back();
     
+    SchemeObject* body = proc->s_body();
     global_envt = new_envt;
-    global_arg1 = proc->s_body();
-    // TODO: If body is a single form, which is the case most times, then call eval-list directly on it.
-    return (fn_ptr)&eval_sequence;
+    if (i_cdr(body) == S_EMPTY_LIST && i_pair_p(i_car(body)) == S_TRUE) {
+        // If body is a single form, which is the case most times, then call eval-list directly on it.
+        global_arg1 = i_car(body);
+        return (fn_ptr)&eval_list;
+    } else {
+        global_arg1 = body;
+        return (fn_ptr)&eval_sequence;
+    }
 }
 
 fn_ptr eval_built_in_procedure_call() 
