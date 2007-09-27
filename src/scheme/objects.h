@@ -61,6 +61,7 @@ class SchemeObject
         typedef bucket_map<SchemeObject*,SchemeObject*> binding_map_t;
         
     public:
+	// TODO: Split metadata into uint16_t type and uint16_t metadata
         uint32_t metadata;
         union {
             double value;                  // For numbers
