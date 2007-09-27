@@ -41,11 +41,11 @@ using namespace std;
 #define i_vector_set_e(v,i,e) ((v)->elems[i] = (e))
 #define i_make_vector(c,e) (SchemeObject::createVector((e), (c)))
 #define i_wrapped_object_p(o,subtype) (((o)->type() == SchemeObject::WRAPPED_C_OBJECT && (o)->wrapped_subtype == (subtype)) ? S_TRUE : S_FALSE)
-#define IMMUTABLE_FLAG ((uint32_t)(1 << 31))
-#define INUSE_FLAG     ((uint32_t)(1 << 30))
-#define REST_FLAG      ((uint32_t)(1 << 29))
-#define REQ_BITS_OFFS  16
-#define OPT_BITS_OFFS  20
+#define IMMUTABLE_FLAG ((uint32_t)(1 << 15))
+#define INUSE_FLAG     ((uint32_t)(1 << 14))
+#define REST_FLAG      ((uint32_t)(1 << 13))
+#define REQ_BITS_OFFS  0
+#define OPT_BITS_OFFS  4
 
 class SchemeWrappedCObject {
     public:
@@ -62,7 +62,8 @@ class SchemeObject
         
     public:
 	// TODO: Split metadata into uint16_t type and uint16_t metadata
-        uint32_t metadata;
+	uint16_t otype;
+        uint16_t metadata;
         union {
             double value;                  // For numbers
             struct {
@@ -189,7 +190,7 @@ class SchemeObject
 
 inline
 SchemeObject::ObjectType SchemeObject::type() const {
-    return ObjectType(metadata & 0x0000ffff);
+    return ObjectType(otype);
 }
 
 inline

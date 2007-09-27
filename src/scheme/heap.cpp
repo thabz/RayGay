@@ -43,7 +43,7 @@ void Heap::allocateNewBank() {
     banks_created++;
 }
 
-SchemeObject* Heap::allocate(SchemeObject::ObjectType metadata) {
+SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
     SchemeObject* result = NULL;
     while (true) {
 	// Scan through current bank while 
@@ -69,11 +69,12 @@ SchemeObject* Heap::allocate(SchemeObject::ObjectType metadata) {
         }
     }
 found_one:
-    result->metadata = uint32_t(metadata);
+    result->otype = uint16_t(type);
+    result->metadata = 0;
     result->set_immutable(false);
     free_slots--;
     allocated++;
-    alloced_types[metadata]++;
+    alloced_types[type]++;
     return result;
 }
 
