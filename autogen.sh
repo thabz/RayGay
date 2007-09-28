@@ -4,6 +4,7 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
+# Autoheader generates config.h.in from configure.in
 echo "Now running autoheader"
 autoheader
 
