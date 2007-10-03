@@ -20,8 +20,6 @@ using namespace std;
  *
  * http://developer.apple.com/textfonts/TTRefMan/index.html
  * http://www.microsoft.com/typography/specs/default.htm
- * 
- * TODO: i med diverse accenter over tegnes ikke rigtigt i arial.
  */ 
 class TrueTypeFont 
 {
@@ -34,10 +32,8 @@ class TrueTypeFont
                 float xMin, xMax;
                 float yMin, yMax;
                 // rsb = aw - (lsb + xmax - xmin)            
-                vector<Contour> contours;
+                Contours contours;
                 float xOffset;
-                
-                void transform(float a, float b, float c, float d, float e, float f);
         };
 
     public:

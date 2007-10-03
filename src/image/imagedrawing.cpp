@@ -127,8 +127,8 @@ void ImageDrawing::quadraticBezierCurve(Image* image, float x0, float y0, float 
 }
 
 void ImageDrawing::strokeGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* glyph, int size, const RGBA& color, ImageDrawing::AlphaCombineMode am) {
-    for(uint32_t j = 0; j < glyph->contours.size(); j++) {
-        Contour contour = glyph->contours[j];
+    for(uint32_t j = 0; j < glyph->contours.contours.size(); j++) {
+        Contour contour = glyph->contours.contours[j];
         vector<Vector2> coords = contour.coords;
         coords.push_back(coords[0]);
         coords.push_back(coords[1]);
@@ -156,10 +156,9 @@ void ImageDrawing::strokeGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* 
 
 
 void ImageDrawing::fillGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* glyph, int size, const RGBA& color, ImageDrawing::AlphaCombineMode am) {
-    for(uint32_t j = 0; j < glyph->contours.size(); j++) {
-        Contour& contour = glyph->contours[j];
+    for(uint32_t j = 0; j < glyph->contours.contours.size(); j++) {
         for(float cy = glyph->yMin*size; cy < glyph->yMax*size; cy++) {
-            vector<double> raster = contour.rasterize(glyph->xMin*size, glyph->xMax*size, cy+0.5, size);
+            vector<double> raster = glyph->contours.rasterize(glyph->xMin*size, glyph->xMax*size, cy+0.5, size);
             if (raster.size() % 2 == 0) {
                 for(uint32_t i = 0; i < raster.size(); i += 2) {
                     float begin_x = raster[i];

@@ -450,7 +450,7 @@ void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph* glyph, int16_t number
             contour.onCurve.push_back(onCurve);
             j++;        
         }
-        glyph->contours.push_back(contour);    
+        glyph->contours.contours.push_back(contour);    
     }
 }
 
@@ -507,16 +507,23 @@ void TrueTypeFont::processCompoundGlyph(TrueTypeFont::Glyph* glyph) {
         
         int saved_pos = is->tellg();
         TrueTypeFont::Glyph* subglyph = createGlyph(glyphIndex);
-        subglyph->transform(a,b,c,d,e,f);
-        glyph->contours.insert(glyph->contours.end(), subglyph->contours.begin(), subglyph->contours.end());
+        subglyph->contours.transform(a,b,c,d,e,f);
+        glyph->contours.contours.insert(glyph->contours.contours.end(), subglyph->contours.contours.begin(), subglyph->contours.contours.end());
         if (flags & USE_MY_METRICS) {
+            /*        
             glyph->xMin = subglyph->xMin;
             glyph->xMax = subglyph->xMax;
             glyph->yMin = subglyph->yMin;
             glyph->yMax = subglyph->yMax;
+            */
             glyph->advanceWidth = subglyph->advanceWidth;
             glyph->leftSideBearing = subglyph->leftSideBearing;
+            glyph->xMin = std::min(glyph->xMin, subglyph->xMin);
+            glyph->xMax = std::max(glyph->xMax, subglyph->xMax);
+            glyph->yMin = std::min(glyph->yMin, subglyph->yMin);
+            glyph->yMax = std::max(glyph->yMax, subglyph->yMax);
         }
+
         is->seekg(saved_pos);
         
     } while (flags & MORE_COMPONENTS);
@@ -604,26 +611,6 @@ float TrueTypeFont::getKerning(wchar_t left, wchar_t right) {
 
 bool TrueTypeFont::isWhitespace(wchar_t c) {
     return iswspace(c);        
-}
-
-
-// See http://developer.apple.com/textfonts/TTRefMan/RM06/Chap6glyf.html
-void TrueTypeFont::Glyph::transform(float a, float b, float c, float d, float e, float f) {
-    float m = std::max(fabs(a),fabs(b));
-    float n = std::max(fabs(c),fabs(d));
-    if (fabs(fabs(a)-fabs(c)) <= 33/65536) m *= 2;
-    if (fabs(fabs(c)-fabs(d)) <= 33/65536) n *= 2;
-        
-    for(uint32_t i = 0; i < contours.size(); i++) {
-        Contour& contour = contours[i];  
-        for(uint32_t j = 0; j < contour.coords.size(); j++) {
-            Vector2& v = contour.coords[j];        
-            float x = m * ((a/m)*v[0] + (c/m)*v[1] + e);
-            float y = n * ((b/n)*v[0] + (d/n)*v[1] + f);
-            v[0] = x;
-            v[1] = y;
-        }
-    }   
 }
 
 ///////////////////////////////////////////////////////////
