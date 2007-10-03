@@ -10,6 +10,7 @@
 #include <vector>
 #include <map>
 #include "math/vector2.h"
+#include "math/contour.h"
 
 using namespace std;
 
@@ -26,15 +27,6 @@ class TrueTypeFont
 {
     public:
 
-        // A contour is a closed shape
-        struct Contour {
-            Contour();
-            ~Contour();
-            /// The coordinates in em
-            vector<Vector2> coords;
-            vector<bool> onCurve;
-        };
-        
         class Glyph {
             public:        
                 float advanceWidth;

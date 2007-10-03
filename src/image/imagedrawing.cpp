@@ -126,6 +126,55 @@ void ImageDrawing::quadraticBezierCurve(Image* image, float x0, float y0, float 
     }        
 }
 
+void ImageDrawing::strokeGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* glyph, int size, const RGBA& color, ImageDrawing::AlphaCombineMode am) {
+    for(uint32_t j = 0; j < glyph->contours.size(); j++) {
+        Contour contour = glyph->contours[j];
+        vector<Vector2> coords = contour.coords;
+        coords.push_back(coords[0]);
+        coords.push_back(coords[1]);
+        vector<bool> onCurve = contour.onCurve;
+        onCurve.push_back(onCurve[0]);
+        onCurve.push_back(onCurve[1]);
+        Vector2 c0 = coords[0];
+        for(uint32_t k = 1; k < coords.size()-1; k++) {
+            Vector2 c1 = coords[k];
+            if (onCurve[k]) {
+                line_slow(image, c0[0]*size+x, y-c0[1]*size, c1[0]*size+x, y-c1[1]*size, color, am);        
+                c0 = c1;
+            } else {
+                Vector2 c2 = coords[k+1];
+                if (!onCurve[k+1]) {
+                    // Reconstruct a new c2 that is on curve    
+                    c2 = (c1 + c2) * 0.5;
+                }
+                quadraticBezierCurve(image, c0[0]*size+x, y-c0[1]*size, c1[0]*size+x, y-c1[1]*size, c2[0]*size+x, y-c2[1]*size, color, am);
+                c0 = c2;
+            }
+        }
+    } 
+}
+
+
+void ImageDrawing::fillGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* glyph, int size, const RGBA& color, ImageDrawing::AlphaCombineMode am) {
+    for(uint32_t j = 0; j < glyph->contours.size(); j++) {
+        Contour& contour = glyph->contours[j];
+        for(float cy = glyph->yMin*size; cy < glyph->yMax*size; cy++) {
+            vector<double> raster = contour.rasterize(glyph->xMin*size, glyph->xMax*size, cy+0.5, size);
+            if (raster.size() % 2 == 0) {
+                for(uint32_t i = 0; i < raster.size(); i += 2) {
+                    float begin_x = raster[i];
+                    float end_x = raster[i+1];
+                    for(float cx = begin_x; cx < end_x; cx++) {
+                        pixel(image, cx+x, y-cy, color, am); 
+                    }     
+                }
+            } else {
+                cout << "Skipping scanline" << endl;    
+            }
+        }
+    }        
+}
+
 void ImageDrawing::string(Image* image, int x, int y, std::wstring text, TrueTypeFont* font, int size, const RGBA& color, ImageDrawing::AlphaCombineMode am) {
     vector<TrueTypeFont::Glyph*> glyphs = font->getGlyphs(text);   
     
@@ -134,31 +183,7 @@ void ImageDrawing::string(Image* image, int x, int y, std::wstring text, TrueTyp
         // In Arial ' ' points to the glyph '!'. We don't draw the '!' but just uses it's advance width. I couldn't find 
         // docs that says how to handle space, but this method seems quite sane.
         if (!font->isWhitespace(text[i])) {
-            for(uint32_t j = 0; j < glyph->contours.size(); j++) {
-                TrueTypeFont::Contour contour = glyph->contours[j];
-                vector<Vector2> coords = contour.coords;
-                coords.push_back(coords[0]);
-                coords.push_back(coords[1]);
-                vector<bool> onCurve = contour.onCurve;
-                onCurve.push_back(onCurve[0]);
-                onCurve.push_back(onCurve[1]);
-                Vector2 c0 = coords[0];
-                for(uint32_t k = 1; k < coords.size()-1; k++) {
-                    Vector2 c1 = coords[k];
-                    if (onCurve[k]) {
-                        line_slow(image, c0[0]*size+x, y-c0[1]*size, c1[0]*size+x, y-c1[1]*size, color, am);        
-                        c0 = c1;
-                    } else {
-                        Vector2 c2 = coords[k+1];
-                        if (!onCurve[k+1]) {
-                            // Reconstruct a new c2 that is on curve    
-                            c2 = (c1 + c2) * 0.5;
-                        }
-                        quadraticBezierCurve(image, c0[0]*size+x, y-c0[1]*size, c1[0]*size+x, y-c1[1]*size, c2[0]*size+x, y-c2[1]*size, color, am);
-                        c0 = c2;
-                    }
-                }
-            }
+            fillGlyph(image, x, y, glyph, size, color, am);        
         }
         if (i != glyphs.size() - 1) {
             float kerning = font->getKerning(text[i], text[i+1]); 

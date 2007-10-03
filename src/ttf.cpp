@@ -442,7 +442,7 @@ void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph* glyph, int16_t number
     // Create our own glyph structure from the data gathered above
     uint16_t j = 0;
     for(uint16_t i = 0; i < numberOfContours; i++) {
-        TrueTypeFont::Contour contour;
+        Contour contour;
         while(j <= endPtsOfContours[i]) {
             Vector2 coord = Vector2(float(xCoordinates[j]) / unitsPerEm, float(yCoordinates[j]) / unitsPerEm);        
             contour.coords.push_back(coord);
@@ -528,10 +528,10 @@ void TrueTypeFont::processGlyph(TrueTypeFont::Glyph* glyph, uint32_t glyphIndex)
     is->seekg(glyf_table_offset + glyphOffsets[glyphIndex]);
     GlyphDescription glyphDescr;
     read_struct("SSSSS", (char*)&glyphDescr, sizeof(GlyphDescription));
-    glyph->xMin = glyphDescr.xMin;
-    glyph->xMax = glyphDescr.xMax;
-    glyph->yMin = glyphDescr.yMin;
-    glyph->yMax = glyphDescr.yMax;
+    glyph->xMin = float(glyphDescr.xMin) / unitsPerEm;
+    glyph->xMax = float(glyphDescr.xMax) / unitsPerEm;
+    glyph->yMin = float(glyphDescr.yMin) / unitsPerEm;
+    glyph->yMax = float(glyphDescr.yMax) / unitsPerEm;
     glyph->advanceWidth = float(advanceWidths[glyphIndex]) / unitsPerEm;
     glyph->leftSideBearing = float(leftSideBearings[glyphIndex]) / unitsPerEm;
     if (glyphDescr.numberOfContours >= 0) {
@@ -625,9 +625,6 @@ void TrueTypeFont::Glyph::transform(float a, float b, float c, float d, float e,
         }
     }   
 }
-
-TrueTypeFont::Contour::Contour() {};
-TrueTypeFont::Contour::~Contour() {};
 
 ///////////////////////////////////////////////////////////
 // Helpers
