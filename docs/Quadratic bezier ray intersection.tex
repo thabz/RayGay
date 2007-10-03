@@ -1,0 +1,115 @@
+\documentclass[a4paper]{report}
+%\usepackage[danish]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{bbm}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[top=3cm,left=3cm,right=3cm,bottom=2cm,foot=1cm]{geometry}
+\renewcommand{\thesection}{\arabic{section}}
+
+\title{Quadratic Bézier spline and ray intersection}
+\author{Jesper Christensen, jesper@kalliope.org}
+
+\begin{document}
+\maketitle
+
+\section{Linesegments in the plane}
+The linesegment $l: \mathbb{R} \rightarrow \mathbb{R}^2$ between points $a = (a_x,a_y)$ and $b = (b_x,b_y)$ in $\mathbb{R}^2$ with $a \ne b$ is parametrized as
+\[
+    l(t) = t a + (1-t)b , t \in [0,1]
+\]
+The ray $r: \mathbb{R} \rightarrow \mathbb{R}^2 $ with origin $o$ and direction $d \ne O$ is given by
+\[
+    r(s) = o + ds , s \ge 0
+\]
+We now proceeds to find the intersection between the ray and the linesegment
+\begin{equation}
+     l(t) = r(s) = o + ds = \left( \begin{array}{c} o_x \\
+                  o_y \end{array}\right) + 
+                  \left( \begin{array}{c} d_x \\
+                  d_y \end{array}\right) s 
+\end{equation}
+with $d_x \ne 0 \wedge d_y \ne 0$. When split into its components that leaves us two equations with two unknown $t$ and $s$. For now, let's assume that $d_x \ne 0$ and we'll solve for $s$ using the first component which gives
+\begin{equation}
+     s = \frac{l_x(t) - o_x}{d_x} \label{s_from_l}
+\end{equation}
+Inserting that into the second component gives us
+\begin{eqnarray*}
+l_y(t) = o_y + d_y \frac{l_x(t) - o_x}{d_x} & \Rightarrow \\
+d_x(ta_y + (1-t)b_y) = d_xo_y + d_y(ta_x+(1-t)b_x-o_x) & \Rightarrow \\
+t(d_x a_y - b_y d_x - d_ya_x + d_yb_x) = -d_xb_y + d_xo_y + d_yb_x - d_yo_x & \Rightarrow \\
+t = \frac{d_x(o_y-b_y) - d_y(o_x-b_x) }{d_x(a_y-b_y) - d_y(a_x-b_x)}
+\end{eqnarray*}
+Find the corresponding $s$ using \eqref{s_from_l}. The ray intersects the linesegment if $t \in [0,1]$ and  $s \ge 0$.
+The above fraction for $t$ is valid too if $d_x = 0$. In that case we would have supposed $d_y \ne 0$ and instead used second component to solve the first. The symmetry of the fraction makes it the same when all $x$ becomes $y$ and vice-versa.
+
+\section{Curves in the plane}
+The quadratic Bézier curve is the points traced by the function $ b: \mathbb{R} \rightarrow \mathbb{R}^2$ given control points $ p_0$, $p_1$ and $p_2$ with $p_0 = (p_{0x}, p_{0y})$, etc.
+\begin{equation}
+    b(t) = (1-t)^2 p_0 + 2t(1-t) p_1 + t^2 p_2 , t \in [0,1] \label{b_t}
+\end{equation}
+The ray $r: \mathbb{R} \rightarrow \mathbb{R}^2 $ with origin $o$ and direction $d \ne O$ is given by
+\[
+    r(s) = o + ds , s \ge 0
+\]
+Rewriting $b(t)$ as a quadratic polynomial with regard to $t$ gives us
+\begin{eqnarray}
+    b(t) & = & (1-t)^2 p_0 + 2t(1-t) p_1 + t^2 p_2  \\
+         & = & (t^2 + 1 - 2t)p_0 + 2p_1t - 2p_1t^2 + p_2t^2 \\
+\label{poly}         & = & (p_0 - 2p_1 + p_2)t^2 + (2p_1-2p_0)t + p_0
+\end{eqnarray}
+We now proceeds to find the intersection between the ray and the curve
+\begin{equation}
+    \left( \begin{array}{c} b_x(t) \\
+                  b_y(t) \end{array}\right) =
+    b(t) = r(s) = \left( \begin{array}{c} o_x \\
+                  o_y \end{array}\right) + 
+                  \left( \begin{array}{c} d_x \\
+                  d_y \end{array}\right) s 
+\end{equation}
+with $d_x \ne 0 \wedge d_y \ne 0$. When split into its components that leaves us two equations with two unknown $t$ and $s$. For now, let's assume that $d_x \ne 0$ and we'll solve for $s$ using the first component which gives
+\begin{equation}
+    s = \frac{b_x(t) - o_x}{d_x} \label{eq_for_s}
+\end{equation}
+Which we use to expand the second component, leaving us with a equation with the only unknown being $t$ 
+\[
+    o_y + d_y \frac{b_x(t) - o_x}{d_x} = b_y(t) \Rightarrow
+\]
+\[
+    d_y(b_x(t)-o_x) = d_x(b_y(t) - o_y)
+\]
+Expanding this using \eqref{poly} and collecting the terms leaves $t$ as the solutions to
+\begin{equation}
+\label{quad}    At^2+Bt+C = 0, t \in [0,1] 
+\end{equation}
+with coefficents
+\begin{eqnarray*}
+    A & = & d_x(p_{0y}-2p_{1y}+p_{2y}) - d_y(p_{0x}-2p_{1x}+p_{2x}) \\
+    B & = & d_x(2p_{1y}-2p_{0y}) - d_y(2p_{1x}-2p_{0x}) \\
+    C & = & d_x(p_{0y} - o_y) - d_y(p_{0x} + o_x)
+\end{eqnarray*}
+The values for $s$ can be found by substituting the roots $t$ into \eqref{eq_for_s}. Throw away the root $t$ where that substitution yields an $s<0$.
+
+On the other hand, when $d_x = 0$ and thus $d_y \ne 0$ we'll use the symmetry of the above to realize that the coefficient for \eqref{quad} simply are $-A$, $-B$, $-C$. The values of $t$ found then have matching values of $s$ given by
+\begin{equation}
+    s = \frac{b_y(t) - o_y}{d_y} \label{eq_for_s2}
+\end{equation}
+
+
+\section{The swept curve in $\mathbb{R}^3$} 
+
+Sweeping the Bézier curve a distance $e \ne 0$ along the positive z-axis yields a quadratic Bézier patch $p : \mathbb{R}^2 \rightarrow \mathbb{R}^3$, that can be parametrized as 
+\[ p(t,u) = \left( \begin{array}{c} b(t) \\ eu \end{array} \right) , u,t \in [0,1] \]
+with the two-dimensional $b(t)$ as defined in \eqref{b_t}.
+
+Describing our ray $r : \mathbb{R} \rightarrow \mathbb{R}^3$ in 3 dimensional space as well using origin $o = (o_x,o_y,o_z)$ and direction $d=(d_x,d_y,d_z)$ as $r(s) = o + ds$ with $s \ge 0$, we now look for the intersections where $p(u,v) = r(s)$. 
+Each dimension gives an equation, so we have three equations with three unknown. The third component yields
+\begin{equation}
+    o_z + d_zs = eu \Rightarrow u = \frac{o_z + d_zs}{e} \label{eq_for_u}
+\end{equation}
+We're already done now. Equation \eqref{quad} gives us the values of $t$. After discarding values outside $[0,1]$, we'll use \eqref{eq_for_s} to get corresponding values for $s$. We'll discard negative values for $s$ and use \eqref{eq_for_u} above to find the corresponding values for the parameter $u$ at the intersection points. Throw away values of $u$ not in $[0,1]$.
+
+\end{document}
+
