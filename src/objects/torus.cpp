@@ -34,6 +34,9 @@ void Torus::_fullIntersect(const Ray& world_ray, const double t, Intersection& r
     intersectionToWorld(result);
 }
 
+/**
+ * This is still inaccurate for rays originating far away.
+ */
 double Torus::_fastIntersect(const Ray& world_ray) const {
     Ray ray = rayToObject(world_ray);
 
