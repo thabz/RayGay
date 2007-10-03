@@ -252,7 +252,7 @@ fn_ptr eval_list() {
             throw scheme_exception("Wrong type to apply : " + proc->toString());	
         }
     } else {
-		throw scheme_exception("Unbound variable: " + s->toString());	
+	throw scheme_exception("Unbound variable: " + s->toString());	
     }
     return NULL; // Never reached
 }
@@ -433,7 +433,7 @@ fn_ptr eval_apply() {
         }
         stack.pop_back();
         // Hack to handle the test (apply apply `(,+ ,(list 1 2)))
-        global_arg1 = s_cons(s_car(p), collected);
+        global_arg1 = i_cons(s_car(p), collected);
         return (fn_ptr)&eval_list;
     }
 
@@ -764,9 +764,7 @@ fn_ptr eval_built_in_procedure_call()
     }
     
     int num = req + opt;
-    if (!rst && args != S_EMPTY_LIST) {
-        throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
-    }
+
     if (rst) {
         while (args != S_EMPTY_LIST) {
             global_arg1 = i_car(args);
@@ -774,6 +772,10 @@ fn_ptr eval_built_in_procedure_call()
             stack.push_back(arg);
             args = i_cdr(args);
             num++;
+        }    
+    } else {
+        if (args != S_EMPTY_LIST) {
+            throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
         }    
     }
     

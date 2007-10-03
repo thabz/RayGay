@@ -10,6 +10,7 @@ libscheme_la_SOURCES = lexer.h lexer.cpp \
                        parser.h parser.cpp \
                        heap.h heap.cpp \
                        bigint.h bigint.cpp \
+                       optimizer.h optimizer.cpp \
                        scheme.h scheme.cpp
 
 # -----------------------------------------------------

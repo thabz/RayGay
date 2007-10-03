@@ -50,6 +50,8 @@
 ; guile scheme/tests/benchmark.scm  5.52s user 0.13s system 99% cpu 5.708 total
 ; ./repl scheme/tests/benchmark.scm  9.35s user 0.05s system 99% cpu 9.429 total
 ; ./repl scheme/tests/benchmark.scm  9.20s user 0.05s system 99% cpu 9.280 total
+;
+; ./repl scheme/tests/benchmark.scm  9.06s user 0.05s system 99% cpu 9.139 total
 
 (define (square x)
   (* x x))

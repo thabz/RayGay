@@ -104,7 +104,8 @@ void Heap::sweep() {
     for(uint32_t i = 0; banks_iterator != banks.end(); i++, banks_iterator++) {
         SchemeObject* bank = *banks_iterator;
         SchemeObject* cur = bank;
-        uint32_t blank_found = 0;    
+        uint32_t blank_found = 0; 
+        bool reset = false;   
         for(uint32_t j = 0; j < slots_per_bank; j++, cur++) {
             if (cur->type() != SchemeObject::BLANK) {
                 bool in_use = cur->inuse();
@@ -119,19 +120,19 @@ void Heap::sweep() {
             } else {
                 blank_found++;    
             }
-            if (blank_found == slots_per_bank) {
-                // Bank is all blank and can be free'd
-                banks.erase(banks_iterator);
-                delete [] bank;
-                banks_freed++;
-                free_slots -= slots_per_bank;
-            } else {
-                if (next_free_slot_idx >= j && cur_bank_idx >= i) {
-                    next_free_slot_idx = j;
-                    cur_bank_idx = i;
-                }    
-            }
+            if (!reset && next_free_slot_idx >= j && cur_bank_idx >= i) {
+                next_free_slot_idx = j;
+                cur_bank_idx = i;
+                reset = true;
+            }    
         }
+        if (blank_found == slots_per_bank && i != cur_bank_idx) {
+            // Bank is all blank and can be free'd
+            banks.erase(banks_iterator);
+            delete [] bank;
+            banks_freed++;
+            free_slots -= slots_per_bank;
+        }        
     }
     // next_free_slot_idx = 0;
     // cur_bank_idx = 0;

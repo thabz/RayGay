@@ -509,13 +509,7 @@ void SchemeObject::callContinuation(SchemeObject* arg) {
 SchemeObject* SchemeObject::getBinding(SchemeObject* symbol) {
     for (SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
 	ObjectType t = envt->type();
-        if (t == SchemeObject::ENVIRONMENT) {
-            //cout << "Binding map size " << envt->binding_map->size() << endl;        
-            binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
-            if (v != envt->binding_map->end()) {
-                return v->second;
-            }
-        } else if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
+        if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
     	    SchemeObject* list = envt->binding_list;
             int i = 0;
 	    while (list != S_EMPTY_LIST) {
@@ -528,7 +522,13 @@ SchemeObject* SchemeObject::getBinding(SchemeObject* symbol) {
                 i++;
 	    }
             //cout << "Not found in " << i << endl;
-	} else {
+	} else if (t == SchemeObject::ENVIRONMENT) {
+            //cout << "Binding map size " << envt->binding_map->size() << endl;        
+            binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
+            if (v != envt->binding_map->end()) {
+                return v->second;
+            }
+        } else {
 	    throw scheme_exception("Not an environment");
 	}
     }
@@ -537,13 +537,13 @@ SchemeObject* SchemeObject::getBinding(SchemeObject* symbol) {
 
 void SchemeObject::defineBinding(SchemeObject* symbol, SchemeObject* o) {
     ObjectType t = type();
-    if (t == SchemeObject::ENVIRONMENT) {
+    if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
+    	SchemeObject* binding = i_cons(symbol,o);
+    	// Prepend the new binding pair
+    	binding_list = i_cons(binding, binding_list);
+    } else if (t == SchemeObject::ENVIRONMENT) {
 	// Insert into map
 	binding_map->insert(binding_map_t::value_type(symbol,o), symbol->hash);
-    } else if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
-	SchemeObject* binding = i_cons(symbol,o);
-	// Prepend the new binding pair
-	binding_list = i_cons(binding, binding_list);
     } else {
 	throw scheme_exception("Not an environment");
     }
@@ -552,13 +552,7 @@ void SchemeObject::defineBinding(SchemeObject* symbol, SchemeObject* o) {
 void SchemeObject::setBinding(SchemeObject* symbol, SchemeObject* o) {
     for(SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
 	ObjectType t = envt->type();
-	if (t == SchemeObject::ENVIRONMENT) {
-            binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
-            if (v != envt->binding_map->end()) {
-                v->second = o;  
-                return;
-   	    }
-	} else if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
+	if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
 	    SchemeObject* list = envt->binding_list;
 	    while (list != S_EMPTY_LIST) {
 		SchemeObject* binding = i_car(list);
@@ -568,7 +562,13 @@ void SchemeObject::setBinding(SchemeObject* symbol, SchemeObject* o) {
 		}
 		list = i_cdr(list);
 	    }
-	} else {
+	} else if (t == SchemeObject::ENVIRONMENT) {
+            binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
+            if (v != envt->binding_map->end()) {
+                v->second = o;  
+                return;
+       	    }
+    	} else {
 	    throw scheme_exception("Not an environment");
 	}
     }
