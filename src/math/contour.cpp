@@ -56,6 +56,7 @@ int Contours::intersect(double x_min, double y, const Vector2& p0, const Vector2
     double C = p0[1] - y;
 
     double roots[2];
+    if (IS_ZERO(A) && IS_ZERO(B)) return 0;
     int num = Math::solveQuadratic(A,B,C,roots);
 
     int n = 0;
