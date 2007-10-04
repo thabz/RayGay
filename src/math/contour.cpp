@@ -74,7 +74,11 @@ int Contours::intersect(double x_min, double y, const Vector2& p0, const Vector2
 
 /// Intersect a linesegment with the ray with origin (x_min,y) and direction (1,0).
 // @return 1 if intersecting, 0 otherwise. Distance written to *result.
-int Contours::intersect(double x_min, double y, const Vector2& a, const Vector2& b, double* result) {
+int Contours::intersect(double x_min, double y, const Vector2& a, const Vector2& b, double* result) 
+{
+     // Skip horizonal lines
+     if (a[1] == b[1]) return 0;        
+        
      double t = (y - b[1]) / (a[1] - b[1]);
      if (t >= 0 && t <= 1) {
          double s = t*a[0] + (1-t)*b[0] - x_min;

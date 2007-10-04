@@ -510,18 +510,20 @@ void TrueTypeFont::processCompoundGlyph(TrueTypeFont::Glyph* glyph) {
         subglyph->contours.transform(a,b,c,d,e,f);
         glyph->contours.contours.insert(glyph->contours.contours.end(), subglyph->contours.contours.begin(), subglyph->contours.contours.end());
         if (flags & USE_MY_METRICS) {
-            /*        
+            glyph->advanceWidth = std::max(glyph->advanceWidth, subglyph->advanceWidth);
+            glyph->leftSideBearing = std::min(glyph->leftSideBearing, subglyph->leftSideBearing);
+            glyph->xMin = std::min(glyph->xMin, subglyph->xMin);
+            glyph->xMax = std::max(glyph->xMax, subglyph->xMax);
+            glyph->yMin = std::min(glyph->yMin, subglyph->yMin);
+            glyph->yMax = std::max(glyph->yMax, subglyph->yMax);
+            /*
+            glyph->advanceWidth = subglyph->advanceWidth;
+            glyph->leftSideBearing = subglyph->leftSideBearing;
             glyph->xMin = subglyph->xMin;
             glyph->xMax = subglyph->xMax;
             glyph->yMin = subglyph->yMin;
             glyph->yMax = subglyph->yMax;
             */
-            glyph->advanceWidth = subglyph->advanceWidth;
-            glyph->leftSideBearing = subglyph->leftSideBearing;
-            glyph->xMin = std::min(glyph->xMin, subglyph->xMin);
-            glyph->xMax = std::max(glyph->xMax, subglyph->xMax);
-            glyph->yMin = std::min(glyph->yMin, subglyph->yMin);
-            glyph->yMax = std::max(glyph->yMax, subglyph->yMax);
         }
 
         is->seekg(saved_pos);

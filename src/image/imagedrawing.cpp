@@ -158,11 +158,12 @@ void ImageDrawing::strokeGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* 
 void ImageDrawing::fillGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* glyph, int size, const RGBA& color, ImageDrawing::AlphaCombineMode am) {
     for(uint32_t j = 0; j < glyph->contours.contours.size(); j++) {
         for(float cy = glyph->yMin*size; cy < glyph->yMax*size; cy++) {
-            vector<double> raster = glyph->contours.rasterize(glyph->xMin*size, glyph->xMax*size, cy+0.5, size);
+            vector<double> raster = glyph->contours.rasterize(glyph->xMin*size, glyph->xMax*size, cy, size);
             if (raster.size() % 2 == 0) {
                 for(uint32_t i = 0; i < raster.size(); i += 2) {
                     float begin_x = raster[i];
                     float end_x = raster[i+1];
+                    if (begin_x == end_x) continue;
                     for(float cx = begin_x; cx < end_x; cx++) {
                         pixel(image, cx+x, y-cy, color, am); 
                     }     
@@ -182,6 +183,7 @@ void ImageDrawing::string(Image* image, int x, int y, std::wstring text, TrueTyp
         // In Arial ' ' points to the glyph '!'. We don't draw the '!' but just uses it's advance width. I couldn't find 
         // docs that says how to handle space, but this method seems quite sane.
         if (!font->isWhitespace(text[i])) {
+            //strokeGlyph(image, x, y, glyph, size, RGBA(1.0,0.0,0.0,0.3), am);        
             fillGlyph(image, x, y, glyph, size, color, am);        
         }
         if (i != glyphs.size() - 1) {
