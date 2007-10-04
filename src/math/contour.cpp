@@ -61,7 +61,7 @@ int Contours::intersect(double x_min, double y, const Vector2& p0, const Vector2
     int n = 0;
     for(int i = 0; i < num; i++) {
         double t = roots[i]; 
-        if (t >= 0 && t <= 1) {
+        if (t >= 0 && t <= 1.0) {
             double s = (p0[0]-2*p1[0]+p2[0])*t*t + (2*p1[0]-2*p0[0])*t + p0[0] - x_min;
             if (s >= 0) {
                 result[n] = s;        
@@ -77,10 +77,10 @@ int Contours::intersect(double x_min, double y, const Vector2& p0, const Vector2
 int Contours::intersect(double x_min, double y, const Vector2& a, const Vector2& b, double* result) 
 {
      // Skip horizonal lines
-     if (a[1] == b[1]) return 0;        
+     if (IS_EQUAL(a[1], b[1])) return 0;        
         
      double t = (y - b[1]) / (a[1] - b[1]);
-     if (t >= 0 && t <= 1) {
+     if (t >= 0 && t <= 1.0) {
          double s = t*a[0] + (1-t)*b[0] - x_min;
          if (s >= 0) {
              *result = s;

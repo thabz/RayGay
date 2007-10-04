@@ -157,16 +157,17 @@ void ImageDrawing::strokeGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* 
 
 void ImageDrawing::fillGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* glyph, int size, const RGBA& color, ImageDrawing::AlphaCombineMode am) {
     for(uint32_t j = 0; j < glyph->contours.contours.size(); j++) {
-        for(float cy = glyph->yMin*size; cy < glyph->yMax*size; cy++) {
-            vector<double> raster = glyph->contours.rasterize(glyph->xMin*size, glyph->xMax*size, cy, size);
+        for(float cy = (glyph->yMin-0.5)*size; cy <= (glyph->yMax+0.5)*size; cy += 1.0) {
+            vector<double> raster = glyph->contours.rasterize((glyph->xMin-1)*size, (glyph->xMax+1)*size, cy, size);
             if (raster.size() % 2 == 0) {
                 for(uint32_t i = 0; i < raster.size(); i += 2) {
-                    float begin_x = raster[i];
-                    float end_x = raster[i+1];
-                    if (begin_x == end_x) continue;
-                    for(float cx = begin_x; cx < end_x; cx++) {
-                        pixel(image, cx+x, y-cy, color, am); 
-                    }     
+                    float begin_x = raster[i] + (glyph->xMin-1)*size;
+                    float end_x = raster[i+1] + (glyph->xMin-1)*size;
+                    if (IS_NEQUAL(begin_x, end_x)) {
+                        for(float cx = begin_x; cx < end_x; cx++) {
+                            pixel(image, cx+x, y-cy, color, am); 
+                        }     
+                    }
                 }
             } else {
                 cout << "Skipping scanline" << endl;    
