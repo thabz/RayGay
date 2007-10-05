@@ -23,7 +23,7 @@ vector<double> Contours::rasterize(double x_min, double x_max, double y, double 
                 double root;
                 int n = intersect(x_min, y, c0, c1, &root);
                 if (n > 0) {
-                    result.push_back(root);    
+                    result.push_back(root+x_min);    
                 }
                 c0 = c1;
             } else {
@@ -36,7 +36,7 @@ vector<double> Contours::rasterize(double x_min, double x_max, double y, double 
                 double roots[2];
                 int n = intersect(x_min, y, c0, c1, c2, roots);
                 for(int i = 0; i < n; i++) {
-                    result.push_back(roots[i]);    
+                    result.push_back(roots[i]+x_min);    
                 }
                 c0 = c2;
             }

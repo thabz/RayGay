@@ -160,9 +160,11 @@ void ImageDrawing::fillGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* gl
         for(float cy = (glyph->yMin-0.5)*size; cy <= (glyph->yMax+0.5)*size; cy += 1.0) {
             vector<double> raster = glyph->contours.rasterize((glyph->xMin-1)*size, (glyph->xMax+1)*size, cy, size);
             if (raster.size() % 2 == 0) {
+                // TODO: Iterate over int x values and decide if each pixel is inside or outside by scanning along
+                // the raster list. This avoid straigt edges that are jagged because a curce leads into it. See ¶.    
                 for(uint32_t i = 0; i < raster.size(); i += 2) {
-                    float begin_x = raster[i] + (glyph->xMin-1)*size;
-                    float end_x = raster[i+1] + (glyph->xMin-1)*size;
+                    float begin_x = raster[i];
+                    float end_x = raster[i+1];
                     if (IS_NEQUAL(begin_x, end_x)) {
                         for(float cx = begin_x; cx < end_x; cx++) {
                             pixel(image, cx+x, y-cy, color, am); 
