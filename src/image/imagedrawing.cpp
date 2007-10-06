@@ -201,7 +201,7 @@ void ImageDrawing::string(Image* image, int x, int y, std::wstring text, TrueTyp
         }
         if (i != glyphs.size() - 1) {
             float kerning = font->getKerning(text[i], text[i+1]); 
-            x += (glyph->advanceWidth + kerning)* size;
+            x += (glyph->advanceWidth + kerning) * size;
         }
     }
 }
