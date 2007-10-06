@@ -154,21 +154,31 @@ void ImageDrawing::strokeGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* 
     } 
 }
 
+RGBA applyAlpha(double a, const RGBA& c) {
+    return RGBA(c.r(), c.g(), c.b(), c.a()*a);         
+}
 
-void ImageDrawing::fillGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* glyph, int size, const RGBA& color, ImageDrawing::AlphaCombineMode am) {
+void ImageDrawing::fillGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* glyph, int size, const RGBA& color, bool aa, ImageDrawing::AlphaCombineMode am) {
     for(uint32_t j = 0; j < glyph->contours.contours.size(); j++) {
         for(float cy = (glyph->yMin-0.5)*size; cy <= (glyph->yMax+0.5)*size; cy += 1.0) {
             vector<double> raster = glyph->contours.rasterize((glyph->xMin-1)*size, (glyph->xMax+1)*size, cy, size);
             if (raster.size() % 2 == 0) {
-                // TODO: Iterate over int x values and decide if each pixel is inside or outside by scanning along
-                // the raster list. This avoid straigt edges that are jagged because a curce leads into it. See ¶.    
-                for(uint32_t i = 0; i < raster.size(); i += 2) {
-                    float begin_x = raster[i];
-                    float end_x = raster[i+1];
-                    if (IS_NEQUAL(begin_x, end_x)) {
-                        for(float cx = begin_x; cx < end_x; cx++) {
-                            pixel(image, cx+x, y-cy, color, am); 
-                        }     
+                bool inside = false;
+                uint32_t i = 0;
+                double alpha;
+                for(int cx = (glyph->xMin-1)*size; cx <= (glyph->xMax+1)*size && i < raster.size(); cx++) {
+                    if (raster[i] <= cx) {
+                        alpha = fabs(raster[i]-double(cx));
+                        if (inside) alpha = 1 - alpha;
+                        inside = !inside;
+                        i++;
+                    } else {
+                        alpha = 1;    
+                    }
+                    if (!aa) 
+                        alpha = 1;
+                    if (inside) {
+                         pixel(image, cx+x, y-cy, applyAlpha(alpha,color), am);
                     }
                 }
             } else {
@@ -187,7 +197,7 @@ void ImageDrawing::string(Image* image, int x, int y, std::wstring text, TrueTyp
         // docs that says how to handle space, but this method seems quite sane.
         if (!font->isWhitespace(text[i])) {
             //strokeGlyph(image, x, y, glyph, size, RGBA(1.0,0.0,0.0,0.3), am);        
-            fillGlyph(image, x, y, glyph, size, color, am);        
+            fillGlyph(image, x, y, glyph, size, color, false, am);        
         }
         if (i != glyphs.size() - 1) {
             float kerning = font->getKerning(text[i], text[i+1]); 
@@ -195,5 +205,3 @@ void ImageDrawing::string(Image* image, int x, int y, std::wstring text, TrueTyp
         }
     }
 }
-
-

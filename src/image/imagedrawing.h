@@ -27,7 +27,7 @@ class ImageDrawing {
         static void pixel(Image* image, float x, float y, const RGBA& c, AlphaCombineMode am = REPLACE);
 
     private:
-        static void fillGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* glyph, int size, const RGBA& color, ImageDrawing::AlphaCombineMode am);
+        static void fillGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* glyph, int size, const RGBA& color, bool aa, ImageDrawing::AlphaCombineMode am);
         static void strokeGlyph(Image* image, int x, int y, TrueTypeFont::Glyph* glyph, int size, const RGBA& color, ImageDrawing::AlphaCombineMode am);
 
 };
