@@ -128,10 +128,12 @@ void Heap::sweep() {
         }
         if (blank_found == slots_per_bank && i != cur_bank_idx) {
             // Bank is all blank and can be free'd
+            /*
             banks.erase(banks_iterator);
             delete [] bank;
             banks_freed++;
             free_slots -= slots_per_bank;
+            */
         }        
     }
     // next_free_slot_idx = 0;
