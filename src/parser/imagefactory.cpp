@@ -77,7 +77,10 @@ SchemeObject* ImageFactory::get_pixel(SchemeObject* s_image, SchemeObject* s_x, 
     Image* image = scm2image(s_image, proc, 1);
     double x = safe_scm2double(s_x, 2, proc);
     double y = safe_scm2double(s_y, 3, proc);
-    RGB pixel = image->getRGBA(int(x),int(y));
+    if (x >= image->getWidth() || x < 0 || y >= image->getHeight() || y < 0) {
+        throw scheme_exception(proc, "Coordinates out of range");      
+    }
+    RGB pixel = image->safeGetRGBA(int(x),int(y));
     return rgb2scm(pixel);
 }
 
