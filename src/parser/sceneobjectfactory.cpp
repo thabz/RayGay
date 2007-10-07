@@ -23,6 +23,7 @@
 #include "objects/marchingcubes.h"
 #include "objects/bound.h"
 #include "objects/transformedinstance.h"
+#include "objects/text.h"
 
 Scheme* SceneObjectFactory::scheme;
 
@@ -483,6 +484,20 @@ SchemeObject* bounding_box(SchemeObject* s_obj)
     return i_list_2(s_v1, s_v2);
 }
 
+SchemeObject* SceneObjectFactory::make_text(SchemeObject* s_text, SchemeObject* s_ttf_file, SchemeObject* s_size, SchemeObject* s_depth, SchemeObject* s_material) {
+    char* proc = "make-text";
+    wstring str = scm2wstring(s_text);
+    string ttf_filename = scm2string(s_ttf_file);
+    double size = safe_scm2double(s_size, 3, proc);
+    double depth = safe_scm2double(s_depth, 4, proc);
+    Material* material = scm2material(s_material,proc,5);
+
+    TrueTypeFont* font = new TrueTypeFont(ttf_filename);
+    Text* text = new Text(str, font, size, depth, material);
+    return sceneobject2scm(text);
+}
+
+
 void SceneObjectFactory::register_procs(Scheme* s) 
 {
     scheme = s;
@@ -536,5 +551,7 @@ void SceneObjectFactory::register_procs(Scheme* s)
 	    (SchemeObject* (*)()) make_instance);
     scheme->assign("bounding-box",1,0,0,
 	    (SchemeObject* (*)()) bounding_box);
+    scheme->assign("make-text",5,0,0,
+	    (SchemeObject* (*)()) SceneObjectFactory::make_text);
 }
 

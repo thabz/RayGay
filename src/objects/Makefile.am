@@ -57,6 +57,8 @@ libobjects_la_SOURCES = \
 		       tessalation.cpp	\
 		       tetrahedron.h	\
 		       tetrahedron.cpp	\
+		       text.h		\
+		       text.cpp		\
 		       torus.h		\
 		       torus.cpp	\
 		       transformedinstance.h	\
