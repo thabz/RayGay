@@ -25,6 +25,7 @@ class Lexer
             COMMA,
             COMMA_AT,
             PERIOD,
+	    DATUM_COMMENT,
             ERROR,
             END
         };

@@ -60,6 +60,10 @@ SchemeObject* Parser::read(istream* is) {
         case Lexer::COMMA_AT :
            result = read_unquote_spliced(is);
            break;
+	case Lexer::DATUM_COMMENT :
+	   read(is);  // Ignore following datum
+	   result = read(is);
+    	   break;   
         case Lexer::END :
            result = NULL;
            break;

@@ -169,6 +169,11 @@ void test_interpreter() {
     assert(s->eval("#| xxx |#") == S_UNSPECIFIED);
     assert(s->eval("#| xxx |# ") == S_UNSPECIFIED);
     assert(s->eval(";xxxxx ") == S_UNSPECIFIED);
+    assert(s->eval("#;xxxxx ") == S_UNSPECIFIED);
+    assert(s->eval("#; xxxxx ") == S_UNSPECIFIED);
+    assert_eval(s, "'(a b #; c d)", "(a b d)");
+    assert_eval(s, "'(a b (#; a b) d)", "(a b (b) d)");
+    assert_eval(s, "'(a b #;( a b) d)", "(a b d)");
 
     // test eval_combo()
     assert_eval(s, "((if #t reverse length) '(1 2 3))", "(3 2 1)");

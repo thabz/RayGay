@@ -47,6 +47,7 @@ Lexer::Token Lexer::nextToken(istream* is) {
         }
         
         // Support for multiline nested comments as specified in SRFI 30.
+	// Support for datum comments
         if (c == '#') {
             int d = is->get();
             if (d == '|') {
@@ -68,6 +69,8 @@ Lexer::Token Lexer::nextToken(istream* is) {
                     d = is->get();
                 }
                 continue;
+	    } else if (d == ';') {
+	       return Lexer::DATUM_COMMENT;	
             } else {
                 is->unget();
             }
