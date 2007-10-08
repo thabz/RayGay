@@ -44,6 +44,8 @@ SchemeObject* Parser::read(istream* is) {
            break;
         case Lexer::OPEN_PAREN :
            result = read_list(is);
+	   // TODO: Decorate the pair at the head of result
+	   // with line and maybe column info.
            break;
         case Lexer::HASH_OPEN_PAREN :
            result = s_list_2_vector(read_list(is));
