@@ -3,6 +3,8 @@
 use POSIX;
 use CGI();
 
+my @months = qw( x Jan Feb Mar Apr Maj Jun Jul Aug Sep Okt Nov Dec);
+
 (undef,undef,undef,$todaymday,$todaymonth,$todayyear,undef,undef,undef) = localtime(time);
 $todayyear += 1900;
 $todaymonth++;
@@ -50,20 +52,23 @@ Content-type: text/html; charset=ISO-8859-1
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>Blog</title>
 <link rel="alternate" type="application/rss+xml" title="RayGay blog" href="http://jesper.kalliope.org/blog/feed.cgi">
+<script src="prototype.js"></script>
+<script src="effects.js"></script>
 <style type="text/css">
 body {
       /* font-family: "Trebuchet MS",Georgia,Helvetica,Arial; */
-       font-size: 12pt;
-       height: 100%;
+      font-size: 12pt;
+      height: 100%;
       padding: 0px;
       margin: 0px 0px 0px -140px;
 }
 
 td.dateheader {
-    font-family: Arial, Helvetica;
+    font-family: Arial,Helvetica, Sans;
     border-bottom: 1px dashed #999999; 
     background-color: #f8f8f8;
     border-top: 1px dashed #999999;
+    padding: 2px 2px 2px 2px;
     font-weight: bold;
     color: #808080;
     text-align: right;
@@ -144,7 +149,7 @@ code {
 
 span.title {
        color: #408080;
-       font-family: Arial,Helvetica,Sans-serif;
+       font-family: Helvetica,Sans-serif;
        font-size: 1.1em;
 }
 
@@ -176,7 +181,7 @@ div.sidebar {
    border-left: 1px solid #c0c0c0;
    overflow: hidden;
    line-height: 150%;
-   font-family: Helvetica, Arial, sans;
+   font-family: Helvetica, sans;
 }
 
 div.sidebar a {
@@ -262,20 +267,35 @@ sub makeSidebar {
 	$name =~ s/-...html$//;
 	$ents{$name} += 1;
     }
+    my $prev_y = '';
     foreach my $name (sort {$b cmp $a} keys %ents) {
-	my $count = $ents{$name};
 	my ($y,$m) = split('-',$name);
-	$name = "<b>$name</b>" if ($y == $year && $m == $month);
-	$title = $count == 1 ? "1 entry" : "$count entries";
-	$HTML .= qq|<a title="$title" href="index.cgi?year=$y&amp;month=$m">$name</a><br>|;
+	if ($y ne $prev_y) {
+            my $icon = ''; #$y == $year ? '&#9662;' : '&#9656;';       
+	    $HTML .= qq|<a href="javascript:{}" onclick="Element.toggle('year_$y')">$icon <b>$y</b></a><br>|;
+	    my $display = $y eq $year ? 'block' : 'none';
+    	    $HTML .= qq|<div id="year_$y" style="display:$display">|;        
+	    $prev_y = $y;
+            foreach my $name (sort {$b cmp $a} keys %ents) {
+            	my ($y,$m) = split('-',$name);
+            	if ($y eq $prev_y) {
+              	    my $count = $ents{$name};
+        	    $name = $months[$m];
+        	    $name = "<b>$name</b>" if ($y == $year && $m == $month);
+        	    $title = $count == 1 ? "1 entry" : "$count entries";
+        	    $HTML .= qq|&nbsp;&nbsp;&nbsp;&nbsp;<a title="$title" href="index.cgi?year=$y&amp;month=$m">$name</a><br>|;
+            	}
+            }	            
+	    $HTML .= '</div>'    
+	}
     }
+    
     $HTML .= '<br><br><a href="library.cgi">Bibliotek</a>';
     return $HTML;
 }
 
 sub makeCal {
    my ($mon,$year) = @_;
-   my @months = qw( x Jan Feb Mar Apr Maj Jun Jul Aug Sep Okt Nov Dec);
    my $month = $months[$mon];
    my $html = '<table class="cal">';
    $html .= qq|<tr><td colspan="7" style="font-size: 10pt; color: #804080">$month $year</td></tr>|;
