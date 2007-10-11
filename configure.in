@@ -111,6 +111,18 @@ if test "$extra_warnings" = yes; then
 fi
 AC_MSG_RESULT($extra_warnings)
 
+dnl -------------------------------------------------
+dnl Code coverage testing
+dnl http://developer.apple.com/documentation/Darwin/Reference/ManPages/man1/gcov.1.html
+dnl -------------------------------------------------
+AC_MSG_CHECKING(whether --enable-gcov is specified)
+AC_ARG_ENABLE(gcov, 
+  [  --enable-gcov       Enable GNU code coverage testing.],
+  [build_gcov="yes"], [build_gcov="no"])
+if test "$build_gcov" = yes; then
+   CXXFLAGS="$CXXFLAGS -fno-inline -O2 -fprofile-arcs -ftest-coverage" 
+fi
+AC_MSG_RESULT($build_gcov)
 
 dnl -------------------------------------------------
 dnl Enable profiling
@@ -120,7 +132,7 @@ AC_ARG_ENABLE(profile,
   [  --enable-profile        Build a debugging version.],
   [build_profile="yes"], [build_profile="no"])
 if test "$build_profile" = yes; then
-   CXXFLAGS="$CXXFLAGS -pg"
+   CXXFLAGS="$CXXFLAGS -pg -O2 -fno-inline"
    LDFLAGS="$LDFLAGS -pg"
 fi
 AC_MSG_RESULT($build_profile)
