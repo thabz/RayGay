@@ -44,10 +44,12 @@ class scheme_exception {
     public: 
 	scheme_exception(string error);
 	scheme_exception(char* procname, string error);
+	scheme_exception(uint32_t line, string error);
         string toString();
     private:		
 	string str;
         char* procname;
+        uint32_t line;
 };
 
 #define wrong_type_arg(procname, argnum, arg) { \

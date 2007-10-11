@@ -4,7 +4,7 @@
 #include <cctype>
 
 Lexer::Lexer() {
-    curline = 0;
+    curline = 1;
 }
 
 int char_names_num = 2;

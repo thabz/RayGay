@@ -44,8 +44,9 @@ using namespace std;
 #define IMMUTABLE_FLAG ((uint32_t)(1 << 31))
 #define INUSE_FLAG     ((uint32_t)(1 << 30))
 #define REST_FLAG      ((uint32_t)(1 << 29))
-#define REQ_BITS_OFFS  16
-#define OPT_BITS_OFFS  20
+#define REQ_BITS_OFFS  8
+#define OPT_BITS_OFFS  12
+#define SRC_LINE_OFFS  8
 
 class SchemeWrappedCObject {
     public:
@@ -86,7 +87,7 @@ class SchemeObject
 		    SchemeObject* binding_list; // For simple environments 
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
-                    SchemeWrappedCObject* wrapped_object;
+                    SchemeWrappedCObject* wrapped_object; // For wrapped C-objects
                     binding_map_t::hash_type hash;  // For symbols 
                 };
             };
@@ -129,6 +130,8 @@ class SchemeObject
         void mark();
         void finalize();
         bool self_evaluating() const;
+        uint32_t src_line() const;
+        void set_src_line(uint32_t line);
         
         wstring wstr();
 
@@ -188,7 +191,7 @@ class SchemeObject
 
 inline
 SchemeObject::ObjectType SchemeObject::type() const {
-    return ObjectType(metadata & 0x0000ffff);
+    return ObjectType(metadata & 0x000000ff);
 }
 
 inline
@@ -205,6 +208,20 @@ inline
 uint32_t SchemeObject::opt() const {
     return (metadata >> OPT_BITS_OFFS) & 0xf;    
 }
+
+inline
+uint32_t SchemeObject::src_line() const {
+    assert(type() == PAIR);        
+    return (metadata >> SRC_LINE_OFFS) & 0x0fff;
+}
+
+inline
+void SchemeObject::set_src_line(uint32_t line) {
+    assert(type() == PAIR);
+    assert(line < 1 << 24);
+    metadata |= (line << SRC_LINE_OFFS);
+}
+
 
 inline
 void SchemeObject::clear_inuse() {

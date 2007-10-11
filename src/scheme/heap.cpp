@@ -44,6 +44,7 @@ void Heap::allocateNewBank() {
 }
 
 SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
+    assert(type < 256);        
     SchemeObject* result = NULL;
     while (true) {
 	// Scan through current bank while 

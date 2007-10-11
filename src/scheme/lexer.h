@@ -36,7 +36,7 @@ class Lexer
         double getNumber() { return number; };
         bool getBool() { return boolean; };
         char getChar() { return chr; };
-        int getCurline() { return curline; };
+        uint32_t getCurline() { return curline; };
         
     private:
 	bool isSymbolChar(char c);
@@ -44,7 +44,7 @@ class Lexer
         double number;
         bool boolean;
         char chr;
-        int curline;
+        uint32_t curline;
         list<istream*> is_stack;
         list<int> curline_stack;
         list<Token> cache;

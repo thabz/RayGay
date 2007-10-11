@@ -26,6 +26,8 @@ SchemeObject* Parser::parse(istream* is) {
 SchemeObject* Parser::read(istream* is) {
     SchemeObject* result;
     Lexer::Token token = lexer->nextToken(is);
+    uint32_t cur_line;
+    
     switch(token) {
         case Lexer::NUMBER :
            result = SchemeObject::createNumber(lexer->getNumber());
@@ -43,9 +45,18 @@ SchemeObject* Parser::read(istream* is) {
            result = SchemeObject::createSymbol(lexer->getString().c_str());
            break;
         case Lexer::OPEN_PAREN :
+           cur_line = lexer->getCurline();
            result = read_list(is);
-	   // TODO: Decorate the pair at the head of result
-	   // with line and maybe column info.
+           if (result != S_EMPTY_LIST) {
+	       // Decorate the pair at the head of result with line info.
+   	       // We need this do be able to write sensible error messages.
+	       // The object metadata only has 24 bits for the line number.
+               if (cur_line >= 1 << 24) {
+                   cout << "WARNING: Limited debugging capabilities of large file." << endl;    
+               } else {
+                   result->set_src_line(cur_line);
+               }
+           }
            break;
         case Lexer::HASH_OPEN_PAREN :
            result = s_list_2_vector(read_list(is));

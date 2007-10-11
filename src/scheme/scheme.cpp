@@ -15,6 +15,14 @@ scheme_exception::scheme_exception(string s) : str(s), procname(NULL) {
 scheme_exception::scheme_exception(char* procname, string error) : str(error), procname(procname) {
 }
 
+scheme_exception::scheme_exception(uint32_t line, string error) : procname(NULL) {
+    std::ostringstream ss;
+    ss << line;
+    ss << ": ";
+    ss << error;
+    str = ss.str();
+}
+
 string scheme_exception::toString() {
     if (procname != NULL) {
         return "In procedure " + string(procname) + ": " + str;            
