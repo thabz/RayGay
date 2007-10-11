@@ -43,6 +43,9 @@ Lexer::Token Lexer::nextToken(istream* is) {
             do {
                 c = is->get();
             } while (c != '\n' && !is->eof());
+            if (c == '\n') {
+                curline++;
+            }
             continue;
         }
         
@@ -55,6 +58,9 @@ Lexer::Token Lexer::nextToken(istream* is) {
                 int depth = 1;
                 int p = 0;
                 d = is->get();
+                if (d == '\n') {
+                    curline++;    
+                }
                 while (depth > 0) {
                     if (is->eof() || d == -1) {
                         cerr << "Unexpected end of input in nested comment" << endl;
@@ -67,6 +73,9 @@ Lexer::Token Lexer::nextToken(istream* is) {
                     }
                     p = d;
                     d = is->get();
+                    if (d == '\n') {
+                        curline++;    
+                    }
                 }
                 continue;
 	    } else if (d == ';') {

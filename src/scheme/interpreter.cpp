@@ -178,8 +178,8 @@ fn_ptr eval_list() {
             global_arg2 = cdr;
             return (fn_ptr)&eval_user_procedure_call;
         } else if (proc->type() == SchemeObject::BUILT_IN_PROCEDURE) {
-            global_arg1 = proc;
-            global_arg2 = cdr;
+            global_arg1 = p;
+            global_arg2 = proc;
             return (fn_ptr)&eval_built_in_procedure_call;
         } else if (proc->type() == SchemeObject::CONTINUATION) {
             global_arg1 = i_car(cdr);
@@ -246,13 +246,13 @@ fn_ptr eval_list() {
                 global_arg1 = cdr;
                 return (fn_ptr)&eval_or;
             } else {
-                throw scheme_exception("Unknown internal procedure: " + proc->toString());	
+                throw scheme_exception(p->src_line(), "Unknown internal procedure: " + proc->toString());	
             }            
         } else {
-            throw scheme_exception("Wrong type to apply : " + proc->toString());	
+            throw scheme_exception(p->src_line(), "Wrong type to apply : " + proc->toString());	
         }
     } else {
-	throw scheme_exception("Unbound variable: " + s->toString());	
+	throw scheme_exception(p->src_line(), "Unbound variable: " + s->toString());	
     }
     return NULL; // Never reached
 }
@@ -728,13 +728,14 @@ fn_ptr eval_user_procedure_call() {
 
 fn_ptr eval_built_in_procedure_call() 
 {
-    SchemeObject* proc = global_arg1;
-    SchemeObject* args = global_arg2;
+    SchemeObject* p = global_arg1;        
+    SchemeObject* proc = global_arg2;
+    SchemeObject* args = i_cdr(p);
     
     assert(proc != NULL);
 
     stack.push_back(proc);
-    stack.push_back(args);
+    stack.push_back(p);
 
     SchemeObject* result = S_UNSPECIFIED;
 
@@ -745,7 +746,7 @@ fn_ptr eval_built_in_procedure_call()
     
     for(int i = 0; i < req; i++) {
         if (args == S_EMPTY_LIST) {
-            throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
+            throw scheme_exception(p->src_line(), "Too few argument given in call to: "+proc->nameAsString());
         }
         global_arg1 = i_car(args);
         SchemeObject* arg = trampoline((fn_ptr)&eval);
@@ -775,7 +776,7 @@ fn_ptr eval_built_in_procedure_call()
         }    
     } else {
         if (args != S_EMPTY_LIST) {
-            throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
+            throw scheme_exception(p->src_line(), "Too many argument given in call to: "+proc->nameAsString());
         }    
     }
     
@@ -810,12 +811,12 @@ fn_ptr eval_built_in_procedure_call()
                           break;
                 case 8:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3],argsv[4],argsv[5],argsv[6],argsv[7]);
                           break;
-                default:  throw scheme_exception("Doesn't support that many args to a built-in function."); 
+                default:  throw scheme_exception(p->src_line(), "Doesn't support that many args to a built-in function."); 
             }
         }
     } catch (scheme_exception e) {
-        string s = "In call to procedure " + proc->nameAsString() + ": " + e.toString();
-        throw scheme_exception(s);
+        //string s = "In call to procedure " + proc->nameAsString() + ": " + e.toString();
+        throw scheme_exception(p->src_line(), e.toString());
     }
     for(int i = 0; i < num; i++) {
         stack.pop_back();
