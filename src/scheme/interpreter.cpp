@@ -1,4 +1,4 @@
-
+// --- C++ ---
 #include "interpreter.h"
 #include "scheme.h"
 
@@ -174,8 +174,8 @@ fn_ptr eval_list() {
     SchemeObject* proc = envt->getBinding(s);
     if (proc != NULL) {
         if (proc->type() == SchemeObject::USER_PROCEDURE) {
-            global_arg1 = proc;
-            global_arg2 = cdr;
+            global_arg1 = p;
+            global_arg2 = proc;
             return (fn_ptr)&eval_user_procedure_call;
         } else if (proc->type() == SchemeObject::BUILT_IN_PROCEDURE) {
             global_arg1 = p;
@@ -191,7 +191,7 @@ fn_ptr eval_list() {
             return (fn_ptr)&eval_call_macro;
         } else if (proc->type() == SchemeObject::INTERNAL_PROCEDURE) {
             if (s == if_symbol) {
-                global_arg1 = cdr;
+                global_arg1 = p;
                 return (fn_ptr)&eval_if;
             } else if (s == quote_symbol) {
                 global_ret = i_car(cdr);
@@ -479,21 +479,28 @@ fn_ptr eval_combo() {
 // where false-form is optional.
 //
 fn_ptr eval_if() {
-    SchemeObject* p = global_arg1;
+    SchemeObject* spair = global_arg1;        
+    SchemeObject* p = i_cdr(spair);
 
+    if (p == S_EMPTY_LIST) {
+        throw scheme_exception(spair->src_line(), "Condition missing in: if");
+    } else if (i_cdr(p) == S_EMPTY_LIST) {
+        throw scheme_exception(spair->src_line(), "Consequent missing in: if");
+    }
+    
     stack.push_back(p);
-    global_arg1 = s_car(p);
+    global_arg1 = i_car(p);
     bool condition = scm2bool(trampoline((fn_ptr)&eval));
     stack.pop_back();
-	
+
     if (condition) {
         // Evaluate and return true case
-        SchemeObject* true_case = s_car(s_cdr(p));
+        SchemeObject* true_case = i_car(i_cdr(p));
         global_arg1 = true_case;
         return (fn_ptr)&eval;
-    } else if (s_cddr(p) != S_EMPTY_LIST) {
+    } else if (i_cdr(i_cdr(p)) != S_EMPTY_LIST) {
         // Evaluate and return false case
-    	SchemeObject* false_case = s_caddr(p);
+    	SchemeObject* false_case = i_car(i_cdr(i_cdr(p)));
         global_arg1 = false_case;
         return (fn_ptr)&eval;
     } else {
@@ -677,8 +684,9 @@ fn_ptr eval_quasiquote() {
 }
 
 fn_ptr eval_user_procedure_call() {
-    SchemeObject* proc = global_arg1;
-    SchemeObject* args_to_eval = global_arg2;
+    SchemeObject* p = global_arg1;        
+    SchemeObject* proc = global_arg2;
+    SchemeObject* args_to_eval = i_cdr(p);
     
     assert(proc != NULL);
 
@@ -686,12 +694,12 @@ fn_ptr eval_user_procedure_call() {
     SchemeObject* formals = proc->s_formals();
 
     stack.push_back(proc);
-    stack.push_back(args_to_eval);
+    stack.push_back(p);
     stack.push_back(new_envt);
     
     while (i_pair_p(formals) == S_TRUE) {
         if (args_to_eval == S_EMPTY_LIST) {
-            throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
+            throw scheme_exception(p->src_line(), "Too few argument given in call to: "+proc->nameAsString());
         }
         
         global_arg1 = i_car(args_to_eval);
@@ -707,7 +715,7 @@ fn_ptr eval_user_procedure_call() {
         SchemeObject* args = trampoline((fn_ptr)&eval_multi);
         new_envt->defineBinding(formals, args);
     } else if (args_to_eval != S_EMPTY_LIST) {
-        throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
+        throw scheme_exception(p->src_line(), "Too many argument given in call to: "+proc->nameAsString());
     }
 
     stack.pop_back();
@@ -1133,8 +1141,9 @@ fn_ptr eval_named_let() {
     SchemeObject* lambda = SchemeObject::createUserProcedure(name, new_envt, formals.list, s_cdr(p));
     new_envt->defineBinding(name, lambda);
     
-    global_arg1 = lambda;
-    global_arg2 = args.list;
+    
+    global_arg1 = i_cons(S_FALSE,args.list);
+    global_arg2 = lambda;
     return (fn_ptr)&eval_user_procedure_call;
 }
 

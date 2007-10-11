@@ -180,6 +180,7 @@ void test_interpreter() {
     assert_eval(s, "((if #f reverse length) '(1 2 3))", "3");
     assert_eval(s, "((if #f reverse length) '(1 2 3))", "3");
     assert_eval(s, "((if #f + *) 3 4)", "12");
+    assert_eval(s, "(if #f 'a)", "#<unspecified>");
     assert_fail(s, "(if)");
     assert_fail(s, "(if #t)");
     

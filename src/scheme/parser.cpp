@@ -26,7 +26,7 @@ SchemeObject* Parser::parse(istream* is) {
 SchemeObject* Parser::read(istream* is) {
     SchemeObject* result;
     Lexer::Token token = lexer->nextToken(is);
-    uint32_t cur_line;
+    uint32_t cur_line = lexer->getCurline();
     
     switch(token) {
         case Lexer::NUMBER :
@@ -45,7 +45,6 @@ SchemeObject* Parser::read(istream* is) {
            result = SchemeObject::createSymbol(lexer->getString().c_str());
            break;
         case Lexer::OPEN_PAREN :
-           cur_line = lexer->getCurline();
            result = read_list(is);
            if (result != S_EMPTY_LIST) {
 	       // Decorate the pair at the head of result with line info.
@@ -81,9 +80,9 @@ SchemeObject* Parser::read(istream* is) {
            result = NULL;
            break;
         case Lexer::ERROR :
-           throw scheme_exception("Unknown lexer error");
+           throw scheme_exception(cur_line, "Unknown lexer error");
         default:
-           throw scheme_exception("Parser: unexpected token");
+           throw scheme_exception(cur_line, "Unexpected token");
     }
     if (result != NULL) {
         result->set_immutable(true);
@@ -101,25 +100,25 @@ SchemeObject* Parser::read_list(istream* is) {
             return result;
         } else if (token == Lexer::PERIOD) {
             SchemeObject* cdr = read(is);
-	        if (result == S_EMPTY_LIST) {
+	    if (result == S_EMPTY_LIST) {
                 throw scheme_exception("Parser: invalid pair");
-	        }
-	        i_set_cdr_e(result_tail, cdr);
+	    }
+	    i_set_cdr_e(result_tail, cdr);
             if (lexer->nextToken(is) != Lexer::CLOSE_PAREN) {
                 throw scheme_exception("Parser: invalid pair");
             }
             return result;
         } else if (token == Lexer::END) {
-            throw scheme_exception("Unexpected end of input");
+            throw scheme_exception("Unexpected end of input. Unbalanced parentheses?");
         } else {
             lexer->putBack(token);
     	    SchemeObject* newcell = i_cons(read(is), S_EMPTY_LIST);
     	    if (result == S_EMPTY_LIST) {
                 result = newcell;
-    		    result_tail = newcell;
+    		result_tail = newcell;
     	    } else {
-    		    i_set_cdr_e(result_tail, newcell);
-    		    result_tail = newcell;
+    		i_set_cdr_e(result_tail, newcell);
+    		result_tail = newcell;
     	    }
         }
     }
