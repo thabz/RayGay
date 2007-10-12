@@ -211,13 +211,13 @@ uint32_t SchemeObject::opt() const {
 
 inline
 uint32_t SchemeObject::src_line() const {
-    assert(type() == PAIR);        
+    assert(type() == PAIR || type() == SYMBOL);
     return (metadata >> SRC_LINE_OFFS) & 0x0fff;
 }
 
 inline
 void SchemeObject::set_src_line(uint32_t line) {
-    assert(type() == PAIR);
+    assert(type() == PAIR || type() == SYMBOL);
     assert(line < 1 << 24);
     metadata |= (line << SRC_LINE_OFFS);
 }

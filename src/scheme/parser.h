@@ -20,6 +20,8 @@ class Parser
         SchemeObject* read_unquote_spliced(istream* is);    
         SchemeObject* read_quasiquoted(istream* is);    
 
+        void decorateWithLineNumber(SchemeObject* obj, uint32_t linenumber);
+
         Lexer* lexer;
 };
 

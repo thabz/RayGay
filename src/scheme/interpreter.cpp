@@ -138,7 +138,7 @@ fn_ptr eval() {
         SchemeObject* symbol = s;
 	s = global_envt->getBinding(symbol);
         if (s == NULL) {
-            throw scheme_exception("Unbound variable " + string(symbol->str));
+            throw scheme_exception(symbol->src_line(), "Unbound variable " + string(symbol->str));
         }
         global_ret = s;
         return NULL;
@@ -252,7 +252,7 @@ fn_ptr eval_list() {
             throw scheme_exception(p->src_line(), "Wrong type to apply : " + proc->toString());	
         }
     } else {
-	throw scheme_exception(p->src_line(), "Unbound variable: " + s->toString());	
+	throw scheme_exception(s->src_line(), "Unbound variable: " + s->toString());	
     }
     return NULL; // Never reached
 }

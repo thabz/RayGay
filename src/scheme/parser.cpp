@@ -43,18 +43,12 @@ SchemeObject* Parser::read(istream* is) {
            break;
         case Lexer::SYMBOL :
            result = SchemeObject::createSymbol(lexer->getString().c_str());
+           decorateWithLineNumber(result, cur_line);           
            break;
         case Lexer::OPEN_PAREN :
            result = read_list(is);
            if (result != S_EMPTY_LIST) {
-	       // Decorate the pair at the head of result with line info.
-   	       // We need this do be able to write sensible error messages.
-	       // The object metadata only has 24 bits for the line number.
-               if (cur_line >= 1 << 24) {
-                   cout << "WARNING: Limited debugging capabilities of large file." << endl;    
-               } else {
-                   result->set_src_line(cur_line);
-               }
+               decorateWithLineNumber(result, cur_line);           
            }
            break;
         case Lexer::HASH_OPEN_PAREN :
@@ -142,4 +136,15 @@ SchemeObject* Parser::read_unquoted(istream* is) {
 SchemeObject* Parser::read_unquote_spliced(istream* is) {
     SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
     return i_cons(SchemeObject::createSymbol("unquote-splicing"), list);
+}
+
+// Decorate an object with sourcecode line number.
+// We need this do be able to write sensible error messages.
+// The object metadata only has 24 bits for the line number.
+void Parser::decorateWithLineNumber(SchemeObject* obj, uint32_t linenumber) {
+    if (linenumber >= 1 << 24) {
+        cout << "WARNING: Limited debugging capabilities of large file." << endl;    
+    } else {
+        obj->set_src_line(linenumber);
+    }
 }
