@@ -121,6 +121,7 @@ Scheme::Scheme() {
     	assign("null?"                 ,1,0,0, (SchemeObject* (*)()) s_null_p, scheme_report_environment);
     	assign("car"                   ,1,0,0, (SchemeObject* (*)()) s_car, scheme_report_environment);
     	assign("cdr"                   ,1,0,0, (SchemeObject* (*)()) s_cdr, scheme_report_environment);
+    	assign("caar"                  ,1,0,0, (SchemeObject* (*)()) s_caar, scheme_report_environment);
     	assign("cadr"                  ,1,0,0, (SchemeObject* (*)()) s_cadr, scheme_report_environment);
     	assign("cdar"                  ,1,0,0, (SchemeObject* (*)()) s_cdar, scheme_report_environment);
     	assign("cddr"                  ,1,0,0, (SchemeObject* (*)()) s_cddr, scheme_report_environment);
@@ -821,6 +822,7 @@ SchemeObject* s_cxr(SchemeObject* o, char* x) {
     return o;
 }
 
+SchemeObject* s_caar(SchemeObject* o) { return s_cxr(o, "aa"); };
 SchemeObject* s_cadr(SchemeObject* o) { return s_cxr(o, "da"); };
 SchemeObject* s_cdar(SchemeObject* o) { return s_cxr(o, "ad"); };
 SchemeObject* s_cddr(SchemeObject* o) { return s_cxr(o, "dd"); };

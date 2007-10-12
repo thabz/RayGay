@@ -197,7 +197,7 @@ fn_ptr eval_list() {
                 global_ret = i_car(cdr);
                 return NULL;
             } else if (s == define_symbol) {
-                global_arg1 = cdr;
+                global_arg1 = p;
                 return (fn_ptr)&eval_define;
             } else if (s == define_macro) {
                 global_arg1 = cdr;
@@ -331,21 +331,22 @@ fn_ptr eval_multi() {
 
 
 fn_ptr eval_define() {
-    SchemeObject* p = global_arg1;
+    SchemeObject* plist = global_arg1;
+    SchemeObject* p = i_cdr(plist);
     SchemeObject* envt = global_envt;
     
     if (p == S_EMPTY_LIST || i_car(p) == S_EMPTY_LIST || i_cdr(p) == S_EMPTY_LIST) {
-        throw scheme_exception("Missing arguments to define: " + p->toString());
+        throw scheme_exception(plist->src_line(), "Too few arguments: define");
     }
     
     if (i_pair_p(i_car(p)) == S_TRUE) {
         // (define (func-name args...) body-forms...)
         SchemeObject* pa = i_car(p);
-        if (i_symbol_p(i_car(pa)) == S_FALSE) {
-            throw scheme_exception("Bad variable");
+        SchemeObject* name = i_car(pa);
+        if (i_symbol_p(name) == S_FALSE) {
+                throw scheme_exception(plist->src_line(), "Bad variable: define: " + name->toString());
         }
         SchemeObject* body = i_cdr(p);
-        SchemeObject* name = i_car(pa);
 
         global_arg1 = i_cdr(pa);
         global_arg2 = body;
@@ -356,12 +357,12 @@ fn_ptr eval_define() {
     } else {
         // (define var value-expr)
         if (i_cddr(p) != S_EMPTY_LIST) {
-            throw scheme_exception("Extra arguments to define: " + p->toString());
+            throw scheme_exception(plist->src_line(), "Too many arguments: define");
         }
         
         SchemeObject* s = i_car(p);
         if (i_symbol_p(s) == S_FALSE) {
-            throw scheme_exception("Bad variable");
+            throw scheme_exception(plist->src_line(), "Bad variable: define: " + s->toString());
         }
         
         global_arg1 = i_car(i_cdr(p));
@@ -953,7 +954,8 @@ fn_ptr eval_procedure_call() {
 }
 
 fn_ptr eval_lambda() {
-    // TODO: Memoize eval_lambda, ie. cache the result.        
+    // TODO: Memoize eval_lambda, ie. cache the result.
+    // TODO: Check that all formals are symbols
     SchemeObject* formals = global_arg1;
     SchemeObject* body = global_arg2;
     SchemeObject* name = global_arg3;

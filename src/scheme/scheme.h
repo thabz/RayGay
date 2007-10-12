@@ -261,6 +261,7 @@ SchemeObject* s_assv(SchemeObject* obj, SchemeObject* alist);
 
 SchemeObject* s_car(SchemeObject* o);
 SchemeObject* s_cdr(SchemeObject* o);
+SchemeObject* s_caar(SchemeObject* o);
 SchemeObject* s_cadr(SchemeObject* o);
 SchemeObject* s_cdar(SchemeObject* o);
 SchemeObject* s_cddr(SchemeObject* o);

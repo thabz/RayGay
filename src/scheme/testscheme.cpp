@@ -532,6 +532,7 @@ void test_pairs_and_lists() {
     assert_eval(s, "(cdr (list 1 2))", "(2)");
     assert_eval(s, "(cadr '((a b) (c d)))", "(c d)");
     assert_eval(s, "(cdar '((a b) (c d)))", "(b)");
+    assert_eval(s, "(caar '((a b) (c d)))", "a");
     assert_eval(s, "(caadr '((a b) (c d)))", "c");
 
     assert_eval(s, "(reverse '(a b c))", "(c b a)");
