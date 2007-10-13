@@ -18,4 +18,7 @@
                  (cons (car list) greater)
                  (cdr list)
                  pivot))))))
-                 
+
+(define (vector-sort proc vector))
+
+(define (vector-sort! proc vector))
