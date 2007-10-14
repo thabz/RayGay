@@ -11,7 +11,9 @@ libscheme_la_SOURCES = lexer.h lexer.cpp \
                        heap.h heap.cpp \
                        bigint.h bigint.cpp \
                        optimizer.h optimizer.cpp \
-                       scheme.h scheme.cpp
+                       scheme.h scheme.cpp \
+                       r6rs-lib-lists.h r6rs-lib-lists.cpp \
+                       r6rs-lib-unicode.h r6rs-lib-unicode.cpp
 
 # -----------------------------------------------------
 # Tests
