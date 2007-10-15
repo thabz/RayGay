@@ -96,6 +96,7 @@ class SchemeObject
     public:        
         enum ObjectType {
  		    BLANK,                  // Empty slots in heap
+		    RESERVED,		    // Thead-reserved slots in heap
 		    NUMBER,
 		    EMPTY_LIST,
 		    BOOL,

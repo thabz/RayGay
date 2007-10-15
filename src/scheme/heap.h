@@ -9,6 +9,7 @@
 using namespace std;
 
 #define SLOTS_NUM 10000
+#define SIZE_OF_LOCAL_SLOTS 100
 
 class Heap {
     public:
@@ -25,6 +26,7 @@ class Heap {
         void mark(vector<SchemeObject*> &stack);
         void sweep();
         
+        void reserve(SchemeObject** result, uint32_t num);
         void allocateNewBank();
         
         vector<SchemeObject*> roots;
@@ -43,6 +45,12 @@ class Heap {
         int banks_created;        
         int banks_freed;
         int gc_runs;
+
+
+    private: /* Thread local stuff */
+        SchemeObject* local_bank[SIZE_OF_LOCAL_SLOTS];
+	uint32_t local_bank_index;
+        	
 };
 
 inline

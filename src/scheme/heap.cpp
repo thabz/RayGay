@@ -20,6 +20,7 @@ Heap::Heap(uint32_t slots_per_bank) {
     gc_runs = 0;
 
     allocateNewBank();
+    local_bank_index = SIZE_OF_LOCAL_SLOTS;
 }
 
 void Heap::addRoot(SchemeObject* root) {
@@ -45,7 +46,22 @@ void Heap::allocateNewBank() {
 
 SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
     assert(type < 256);        
-    SchemeObject* result = NULL;
+    if (local_bank_index >= SIZE_OF_LOCAL_SLOTS) {
+	reserve(local_bank, SIZE_OF_LOCAL_SLOTS);
+	local_bank_index = 0;
+    }
+    SchemeObject* result = local_bank[local_bank_index];
+    local_bank_index++;
+    result->metadata = type;
+    result->set_immutable(false);
+    allocated++;
+    alloced_types[type]++;
+    return result;
+}
+
+/* TODO: Guard with a mutex lock and cleanup the ugly code */
+void Heap::reserve(SchemeObject** result, uint32_t num) {
+    while (num > 0) {
     while (true) {
 	// Scan through current bank while 
 	// looking for an empty slot
@@ -53,7 +69,7 @@ SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
 	SchemeObject* p = &(cur_bank[next_free_slot_idx]);
         while (next_free_slot_idx < slots_per_bank) {
             if (p->type() == SchemeObject::BLANK) {
-                result = p;
+                *result = p;
 		goto found_one;
             }
 	    p++;
@@ -70,12 +86,11 @@ SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
         }
     }
 found_one:
-    result->metadata = type;
-    result->set_immutable(false);
-    free_slots--;
-    allocated++;
-    alloced_types[type]++;
-    return result;
+    (*result)->metadata = SchemeObject::RESERVED;
+    result++;
+    num--;
+    }
+    free_slots -= num;
 }
 
 void Heap::garbageCollect(vector<SchemeObject*> &stack) {
@@ -90,6 +105,11 @@ void Heap::garbageCollect(vector<SchemeObject*> &stack) {
 }
 
 void Heap::mark(vector<SchemeObject*> &stack) {
+    for(int i = 0; i < SIZE_OF_LOCAL_SLOTS; i++) {
+	if (local_bank[i]->type() == SchemeObject::RESERVED) {
+	    local_bank[i]->mark();
+	}
+    }
     for(vector<SchemeObject*>::iterator i = stack.begin(); i != stack.end(); i++) {
         assert(*i != NULL);
         (*i)->mark();
