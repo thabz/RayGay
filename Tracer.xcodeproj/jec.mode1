@@ -317,7 +317,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>81F7FFF20C4A9B5D00D1C2DE</string>
+										<string>813D79600CC2A0D600AB8724</string>
 										<key>history</key>
 										<array>
 											<string>81C7B5EE0ACE78990091719B</string>
@@ -340,7 +340,7 @@
 											<string>81C7B64E0ACE88F50091719B</string>
 											<string>81C7B6500ACE88F50091719B</string>
 											<string>81C7B6510ACE88F50091719B</string>
-											<string>81F7FFE20C4A1DFC00D1C2DE</string>
+											<string>81F7FFF20C4A9B5D00D1C2DE</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -403,7 +403,7 @@
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>81F7FFF60C4A9B5D00D1C2DE</string>
+										<string>813D79610CC2A0D600AB8724</string>
 										<key>history</key>
 										<array>
 											<string>81C7B5EE0ACE78990091719B</string>
@@ -421,7 +421,7 @@
 											<string>81C7B61C0ACE79230091719B</string>
 											<string>81C7B65E0ACE88F50091719B</string>
 											<string>81F7FFF30C4A9B5D00D1C2DE</string>
-											<string>81F7FFF40C4A9B5D00D1C2DE</string>
+											<string>81F7FFF60C4A9B5D00D1C2DE</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -440,7 +440,6 @@
 											<string>81C7B60D0ACE78FB0091719B</string>
 											<string>81C7B60E0ACE78FB0091719B</string>
 											<string>81C7B60F0ACE78FB0091719B</string>
-											<string>81F7FFF50C4A9B5D00D1C2DE</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -499,9 +498,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>81F7FFF70C4A9B5D00D1C2DE</string>
+				<string>813D795E0CC2A0D300AB8724</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>81F7FFF80C4A9B5D00D1C2DE</string>
+				<string>813D795F0CC2A0D300AB8724</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
@@ -636,8 +635,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>1C0AD2AF069F1E9B00FABCE6</string>
-		<string>1C530D57069F1CE1000CFCEE</string>
 		<string>/Users/jec/src/tracer/Tracer.xcodeproj</string>
 	</array>
 	<key>WindowString</key>

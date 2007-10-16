@@ -1,6 +1,7 @@
 
 AC_INIT(raygay, 0.5, jesper@kalliope.org)    
-AM_CONFIG_HEADER(config.h)    
+#AM_CONFIG_HEADER(config.h)    
+AC_CONFIG_HEADERS([config.h:config.h.in])
 AC_CONFIG_SRCDIR(src/main.cpp)
 dnl AC_CONFIG_HEADERS([config.h:config.h.in])
 
