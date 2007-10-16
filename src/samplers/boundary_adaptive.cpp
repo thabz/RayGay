@@ -1,4 +1,5 @@
 
+#include <cassert>
 #include "samplers/boundary_adaptive.h"
 #include "renderer.h"
 #include "image/image.h"

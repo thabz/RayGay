@@ -1,4 +1,5 @@
 
+#include <cassert>
 #include "samplers/uniform_jitter.h"
 #include "renderer.h"
 #include "image/image.h"
