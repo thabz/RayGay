@@ -78,7 +78,7 @@ class SchemeObject
                     SchemeObject** elems;  // For vector
                     SchemeObject* parent;  // For environments. Environment.
                     SchemeObject* name;    // For macros and procedures. Symbol.
-                    int wrapped_subtype;   // For wrapped C-objects
+                    int32_t wrapped_subtype;   // For wrapped C-objects
                 };
                 union {
                     SchemeObject* cdr;      // For pairs
