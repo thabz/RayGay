@@ -36,6 +36,9 @@ class Scheme {
         SchemeObject* callProcedure_1(SchemeObject* s_proc, SchemeObject*);
         SchemeObject* callProcedure_2(SchemeObject* s_proc, SchemeObject*, SchemeObject*);
         SchemeObject* callProcedure_3(SchemeObject* s_proc, SchemeObject*, SchemeObject*, SchemeObject*);
+        
+        // Force a garbage collection
+        void forceGarbageCollection();
 
     private:
 };

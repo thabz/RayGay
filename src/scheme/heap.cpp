@@ -62,33 +62,33 @@ SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
 /* TODO: Guard with a mutex lock and cleanup the ugly code */
 void Heap::reserve(SchemeObject** result, uint32_t num) {
     while (num > 0) {
-    while (true) {
-	// Scan through current bank while 
-	// looking for an empty slot
-        SchemeObject* cur_bank = banks[cur_bank_idx];    
-	SchemeObject* p = &(cur_bank[next_free_slot_idx]);
-        while (next_free_slot_idx < slots_per_bank) {
-            if (p->type() == SchemeObject::BLANK) {
-                *result = p;
-		goto found_one;
+        while (true) {
+    	    // Scan through current bank while 
+       	    // looking for an empty slot
+            SchemeObject* cur_bank = banks[cur_bank_idx];    
+    	    SchemeObject* p = &(cur_bank[next_free_slot_idx]);
+            while (next_free_slot_idx < slots_per_bank) {
+                if (p->type() == SchemeObject::BLANK) {
+                    *result = p;
+    		    goto found_one;
+                }
+    	        p++;
+                next_free_slot_idx++;
             }
-	    p++;
-            next_free_slot_idx++;
+    
+            // Didn't find any free slot in current bank. 
+            // Move to the next bank. Create new bank if  
+            // we're at the last.
+            cur_bank_idx++;
+            next_free_slot_idx = 0;
+            if (cur_bank_idx >= banks.size()) {
+                allocateNewBank();    
+            }
         }
-
-	// Didn't find any free slot in current bank. 
-	// Move to the next bank. Create new bank if  
-	// we're at the last.
-        cur_bank_idx++;
-        next_free_slot_idx = 0;
-        if (cur_bank_idx >= banks.size()) {
-            allocateNewBank();    
-        }
-    }
-found_one:
-    (*result)->metadata = SchemeObject::RESERVED;
-    result++;
-    num--;
+    found_one:
+        (*result)->metadata = SchemeObject::RESERVED;
+        result++;
+        num--;
     }
     free_slots -= num;
 }

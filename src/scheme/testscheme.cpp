@@ -921,6 +921,20 @@ void test_error_handling() {
 //    char* args[] = {"1","#f","()","((x 10))","(())","(() x)","((#f)x)","(x 1)","(x 1 20)","1 2 3"};
 }
 
+void test_garbagecollect() {
+    Scheme* s = new Scheme();
+    s->eval("(define a (make-vector 100000 'a))");
+    s->eval("(define b (make-vector 100000 'b))");
+    s->eval("(define c (make-vector 100000 'a))");
+    s->forceGarbageCollection();
+    assert_eval(s, "(vector-length a)", "100000");
+    assert_eval(s, "(vector-length b)", "100000");
+    assert_eval(s, "(vector-length c)", "100000");
+    s->eval("(define b #f)");
+    s->forceGarbageCollection();
+    assert_eval(s, "(equal? a c)", "#t");
+}
+
 void test_bigint() {
         
     // Constructor
@@ -1123,6 +1137,10 @@ int main(int argc, char *argv[]) {
 
         cout << "Test define and set...  ";
         test_define_and_set();
+        cout << " OK" << endl;
+
+        cout << "Test garbagecollect...  ";
+        test_garbagecollect();
         cout << " OK" << endl;
 
         cout << "Test error handling...  ";

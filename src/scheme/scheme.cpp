@@ -212,6 +212,7 @@ Scheme::Scheme() {
     	assign("vector-fill!"          ,2,0,0, (SchemeObject* (*)()) s_vector_fill_e, scheme_report_environment);
     	assign("list->vector"          ,1,0,0, (SchemeObject* (*)()) s_list_2_vector, scheme_report_environment);
     	assign("vector->list"          ,1,0,0, (SchemeObject* (*)()) s_vector_2_list, scheme_report_environment);
+
     	assign("make-string"           ,1,1,0, (SchemeObject* (*)()) s_make_string, scheme_report_environment);
     	assign("string"                ,0,0,1, (SchemeObject* (*)()) s_string, scheme_report_environment);
     	assign("string-length"         ,1,0,0, (SchemeObject* (*)()) s_string_length, scheme_report_environment);
@@ -418,6 +419,11 @@ SchemeObject* Scheme::lookup(string variable, SchemeObject* envt) {
     SchemeObject* symbol = SchemeObject::createSymbol(variable.c_str());
     return lookup(symbol, envt);
 }
+
+void Scheme::forceGarbageCollection() {
+    Heap::getUniqueInstance()->garbageCollect(stack);
+}
+
 
 // -----------------------------------------------------
 // Procedures
