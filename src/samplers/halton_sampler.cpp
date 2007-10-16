@@ -1,4 +1,5 @@
 
+#include <cassert>
 #include "samplers/halton_sampler.h"
 #include "renderer.h"
 #include "image/image.h"
