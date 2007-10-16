@@ -822,7 +822,7 @@ SchemeObject* s_cdr(SchemeObject* o) {
     return i_cdr(o);
 }
 
-SchemeObject* s_cxr(SchemeObject* o, char* x) {
+SchemeObject* s_cxr(SchemeObject* o, const char* x) {
     while (*x != '\0') {
         if (*x == 'a') {
             o = s_car(o);
