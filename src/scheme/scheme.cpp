@@ -1,4 +1,9 @@
 
+
+#if HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include "scheme.h"
 #include <fstream>
 #include <iomanip>
@@ -1175,7 +1180,13 @@ SchemeObject* s_floor(SchemeObject* n) {
 // Truncate returns the integer closest to x whose absolute value is not larger than the absolute value of x
 SchemeObject* s_truncate(SchemeObject* n) {
     assert_arg_number_type("truncate", 1, n);
-    return int2scm(int(trunc(scm2double(n))));
+    double t = scm2double(n);
+#if HAVE_TRUNC
+    double r = trunc(t);
+#else
+    double r < 0 ? -floor(-x) : floor(x);
+#endif    
+    return int2scm(int(r));
 }
 
 SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2) {
