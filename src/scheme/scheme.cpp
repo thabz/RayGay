@@ -1184,7 +1184,7 @@ SchemeObject* s_truncate(SchemeObject* n) {
 #if HAVE_TRUNC
     double r = trunc(t);
 #else
-    double r < 0 ? -floor(-t) : floor(t);
+    double r = t < 0 ? -floor(-t) : floor(t);
 #endif    
     return int2scm(int(r));
 }
