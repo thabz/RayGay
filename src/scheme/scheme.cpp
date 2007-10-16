@@ -673,6 +673,7 @@ SchemeObject* s_for_each(int num, SchemeStack::iterator args) {
     return s_map_internal("for-each",num, args, false);
 }
 
+inline
 SchemeObject* member_helper(SchemeObject* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
     while (i_null_p(p) == S_FALSE) {
         if ((*comparator)(obj, s_car(p)) == S_TRUE) {
