@@ -80,7 +80,7 @@ SchemeObject* unnamed_symbol;
 SchemeObject* current_input_port = NULL;
 SchemeObject* current_output_port = NULL;
 
-Interpreter* interpreter;
+Interpreter* interpreter = new Interpreter();
 
 //#define R5RS_STRICT
 
@@ -366,8 +366,9 @@ Scheme::Scheme() {
         
         eval("(define-macro (values . x) `(list ,@x))", scheme_report_environment);
         eval("(define-macro (call-with-values f g)  `(apply ,g (,f)))", scheme_report_environment);
+
     }
-    
+
     ifstream infile;
     //infile.open("init.scm", ifstream::in);
     eval(&infile, scheme_report_environment);
@@ -377,8 +378,7 @@ Scheme::Scheme() {
 SchemeObject* Scheme::eval(istream* is, SchemeObject* envt) {
     if (envt == NULL) envt = interaction_environment;        
     SchemeObject* parse_tree = global_parser->parse(is);
-    interpreter = new Interpreter(parse_tree, envt);
-    return interpreter->interpret();
+    return interpreter->interpret(parse_tree, envt);
 }
 
 SchemeObject* Scheme::eval(string data, SchemeObject* envt) {
@@ -2021,8 +2021,7 @@ SchemeObject* s_interaction_environment(SchemeObject* s_version) {
 SchemeObject* s_eval(SchemeObject* expression, SchemeObject* s_environment) {
     assert_arg_type("eval", 2, s_environment_p, s_environment);
     SchemeObject* expressions = i_cons(expression, S_EMPTY_LIST);
-    Interpreter interpreter = Interpreter(expressions, s_environment);
-    return interpreter.interpret();
+    return interpreter->interpret(expressions, s_environment);
 }
 
 SchemeObject* s_load(SchemeObject* s_filename) {
@@ -2048,8 +2047,7 @@ SchemeObject* s_load(SchemeObject* s_filename) {
     }
     try {
         SchemeObject* parse_tree = global_parser->parse(&infile);
-        Interpreter interpreter = Interpreter(parse_tree, interaction_environment);
-        interpreter.interpret();
+        interpreter->interpret(parse_tree, interaction_environment);
     } catch (scheme_exception e) {
         throw scheme_exception("In sourcefile " + filename + ": " + e.toString());    
     }
