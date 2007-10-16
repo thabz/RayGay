@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <setjmp.h>
+#include <cassert>
 #include "collections/bucket_map.h"
 #include "bigint.h"
 
