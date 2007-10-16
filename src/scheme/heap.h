@@ -5,6 +5,7 @@
 #include "objects.h"
 #include <list>
 #include <vector>
+#include <pthread.h>
 
 using namespace std;
 
@@ -20,7 +21,7 @@ class Heap {
         void garbageCollect(vector<SchemeObject*> &stack);
         bool timeToGarbageCollect();
         void dumpStats();
-        
+        ~Heap();
     private:
         Heap(uint32_t size);
         void mark(vector<SchemeObject*> &stack);
@@ -48,9 +49,16 @@ class Heap {
 
 
     private: /* Thread local stuff */
-        SchemeObject* local_bank[SIZE_OF_LOCAL_SLOTS];
-	uint32_t local_bank_index;
-        	
+        struct ThreadLocalCache {
+            ThreadLocalCache() {
+                index = SIZE_OF_LOCAL_SLOTS;    
+            };        
+            SchemeObject* bank[SIZE_OF_LOCAL_SLOTS];
+            uint32_t index;
+        };
+
+        pthread_key_t local_bank_key;
+	pthread_mutex_t mutex_reserve;
 };
 
 inline

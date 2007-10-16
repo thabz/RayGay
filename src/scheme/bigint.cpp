@@ -21,6 +21,8 @@ const BigInt& BigInt::ONE = _ONE;
 const BigInt& BigInt::TWO = _TWO;
 const BigInt& BigInt::ZERO = _ZERO;
 
+BigInt::~BigInt() {};
+
 BigInt::BigInt(int32_t n) {
     sign = 1;
     digits.push_back(n);

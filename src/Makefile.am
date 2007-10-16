@@ -38,8 +38,8 @@ libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libpho
 #--------------------------------------
 LIBS = @DARWIN_LIBS@		     
 
-bin_PROGRAMS = tracer server queuemanager
-noinst_PROGRAMS = bench repl
+bin_PROGRAMS = tracer server queuemanager repl
+noinst_PROGRAMS = bench 
 if OS_DARWIN
    noinst_PROGRAMS += win
 endif   

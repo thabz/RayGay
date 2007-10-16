@@ -17,6 +17,7 @@ class BigInt
         BigInt(int32_t n);
         BigInt(std::string str, uint radix = 10);
         BigInt(const BigInt& o);
+        ~BigInt();
         
         bool fitsInt64() const;
         int64_t toInt64() const;

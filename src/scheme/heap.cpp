@@ -19,8 +19,15 @@ Heap::Heap(uint32_t slots_per_bank) {
     banks_freed = 0;
     gc_runs = 0;
 
+    pthread_mutex_init(&mutex_reserve,NULL);
+    pthread_key_create(&local_bank_key,NULL);	
+
     allocateNewBank();
-    local_bank_index = SIZE_OF_LOCAL_SLOTS;
+}
+
+Heap::~Heap() {
+    // TODO: Dealloc all banks
+    // TODO: Dealloc all thread local banks         
 }
 
 void Heap::addRoot(SchemeObject* root) {
@@ -37,8 +44,6 @@ void Heap::allocateNewBank() {
     for(uint32_t i = 0; i < slots_per_bank; i++) {
         bank[i].metadata = SchemeObject::BLANK;
     }
-    next_free_slot_idx = 0;
-    cur_bank_idx = banks.size() - 1;
     free_slots += slots_per_bank;
     slots_num += slots_per_bank;
     banks_created++;
@@ -46,12 +51,18 @@ void Heap::allocateNewBank() {
 
 SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
     assert(type < 256);        
-    if (local_bank_index >= SIZE_OF_LOCAL_SLOTS) {
-	reserve(local_bank, SIZE_OF_LOCAL_SLOTS);
-	local_bank_index = 0;
+    ThreadLocalCache* local = (ThreadLocalCache*) pthread_getspecific(local_bank_key);
+    if (local == NULL) {
+        local = new ThreadLocalCache();    
+        pthread_setspecific(local_bank_key, local);
     }
-    SchemeObject* result = local_bank[local_bank_index];
-    local_bank_index++;
+    
+    if (local->index >= SIZE_OF_LOCAL_SLOTS) {
+	reserve(local->bank, SIZE_OF_LOCAL_SLOTS);
+	local->index = 0;
+    }
+    SchemeObject* result = local->bank[local->index];
+    local->index++;
     result->metadata = type;
     result->set_immutable(false);
     allocated++;
@@ -59,9 +70,14 @@ SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
     return result;
 }
 
-/* TODO: Guard with a mutex lock and cleanup the ugly code */
 void Heap::reserve(SchemeObject** result, uint32_t num) {
-    while (num > 0) {
+    pthread_mutex_lock(&mutex_reserve);
+    
+    // Create new bank(s) if needed. 
+    while (free_slots < num) {
+        allocateNewBank();    
+    }
+    for(int i = 0; i < num; i++) {
         while (true) {
     	    // Scan through current bank while 
        	    // looking for an empty slot
@@ -77,23 +93,20 @@ void Heap::reserve(SchemeObject** result, uint32_t num) {
             }
     
             // Didn't find any free slot in current bank. 
-            // Move to the next bank. Create new bank if  
-            // we're at the last.
+            // Move to the next bank. 
             cur_bank_idx++;
             next_free_slot_idx = 0;
-            if (cur_bank_idx >= banks.size()) {
-                allocateNewBank();    
-            }
         }
     found_one:
         (*result)->metadata = SchemeObject::RESERVED;
         result++;
-        num--;
     }
     free_slots -= num;
+    pthread_mutex_unlock(&mutex_reserve);
 }
 
 void Heap::garbageCollect(vector<SchemeObject*> &stack) {
+    pthread_mutex_lock(&mutex_reserve);
     //cout << "BEFORE: Size of heap: " << slots_num << " free: " << free_slots << " (" << banks.size() << ")" << endl;
     //cout << "BEFORE: Size of roots: " << roots.size() << endl;
     mark(stack);
@@ -102,14 +115,17 @@ void Heap::garbageCollect(vector<SchemeObject*> &stack) {
     //cout << "AFTER: Size of roots: " << roots.size() << endl << endl;
     allocated = 0;
     gc_runs++;
+    pthread_mutex_unlock(&mutex_reserve);
 }
 
 void Heap::mark(vector<SchemeObject*> &stack) {
+    /*        
     for(int i = 0; i < SIZE_OF_LOCAL_SLOTS; i++) {
 	if (local_bank[i]->type() == SchemeObject::RESERVED) {
 	    local_bank[i]->mark();
 	}
     }
+    */
     for(vector<SchemeObject*>::iterator i = stack.begin(); i != stack.end(); i++) {
         assert(*i != NULL);
         (*i)->mark();
@@ -128,7 +144,7 @@ void Heap::sweep() {
         uint32_t blank_found = 0; 
         bool reset = false;   
         for(uint32_t j = 0; j < slots_per_bank; j++, cur++) {
-            if (cur->type() != SchemeObject::BLANK) {
+            if (cur->type() != SchemeObject::BLANK && cur->type() != SchemeObject::RESERVED) {
                 bool in_use = cur->inuse();
                 cur->clear_inuse();
                 if (!in_use && cur->type() != SchemeObject::SYMBOL) {
