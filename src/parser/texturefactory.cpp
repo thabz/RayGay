@@ -17,7 +17,6 @@ SchemeObject* TextureFactory::make_texture(SchemeObject* s_filename, SchemeObjec
 
     char* proc = "make-texture";
 
-    string filename = scm2string(s_filename);
     double rep_x = safe_scm2double(s_repeat_x,2,proc);
     double rep_y = safe_scm2double(s_repeat_y,3,proc);
 
@@ -35,12 +34,17 @@ SchemeObject* TextureFactory::make_texture(SchemeObject* s_filename, SchemeObjec
 
     Image* image;
     try {
-	if (image_cache.find(filename) != image_cache.end()) {
-	    image = image_cache.find(filename)->second;
-	} else {
-    	    image = Image::load(filename, renderer_settings->image_alloc_model);
-	    image_cache.insert(make_pair(filename,image));
-	}
+        if (s_string_p(s_filename) == S_TRUE) {    
+            string filename = scm2string(s_filename);
+	    if (image_cache.find(filename) != image_cache.end()) {
+	        image = image_cache.find(filename)->second;
+	    } else {
+    	        image = Image::load(filename, renderer_settings->image_alloc_model);
+	        image_cache.insert(make_pair(filename,image));
+	    }
+        } else {
+            image = scm2image(s_filename, proc, 1);
+        }
     } catch (Exception e) {
 	throw scheme_exception("make-texture", e.getMessage());
     }
