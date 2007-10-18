@@ -3,8 +3,8 @@
 (load "lib/objects/make-rounded-cylinder.scm")
 
 (set! image-size '(1600 1200))
-;(set! background (make-texture "gfx/goodmorning.jpg" 1 1 "bilinear"))
-;(set! background (make-texture "gfx/alltrans.png" 1 1 "none"))
+;(set! background (make-texture "gfx/goodmorning.jpg" 1 1 'bilinear))
+;(set! background (make-texture "gfx/alltrans.png" 1 1 'none))
 (set! background '(0.337 0.417 0.527))
 
 (set! renderer "raytracer")

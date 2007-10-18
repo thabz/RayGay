@@ -22,9 +22,6 @@
        kd 1.0
        ks 0.0)))
 
-;(define earth
-;(make-texture "earth.jpg" 1 1 "bilinear"))
-
 (define green
   (make-material
 ;     (list 'diffuse earth

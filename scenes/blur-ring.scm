@@ -39,7 +39,7 @@
 (define slate-tiles
   (make-material
    (list
-       'diffuse (make-texture "gfx/js_suelo1.jpg" 6 6 "bilinear")
+       'diffuse (make-texture "gfx/js_suelo1.jpg" 6 6 'bilinear)
        'kd 1.0
        'ks 0.0)))
 

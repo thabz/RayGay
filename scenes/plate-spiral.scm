@@ -3,7 +3,7 @@
 (load "lib/objects/make-rounded-plate.scm")
 
 (set-image-size '(1024 768))
-(set-background (make-texture "gfx/goodmorning.jpg" 1 1 "bilinear"))
+(set-background (make-texture "gfx/goodmorning.jpg" 1 1 'bilinear))
 
 (set-renderer "raytracer")
 (set-camera 

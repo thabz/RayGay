@@ -1,8 +1,6 @@
 
 (load "lib/raygay.scm")
 
-;(set-background (make-texture "gfx/paledawn.jpg" 1 1 "bilinear"))
-(set-background (make-texture "gfx/goldensunset.jpg" 1 1 "bilinear"))
 (set-background #(0.95 0.95 0.95))
 
 (set-image-size '(1024 768))

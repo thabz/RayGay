@@ -21,7 +21,7 @@
        ks 0.0)))
 
 (define earth
-(make-texture "gfx/earth.jpg" 1 1 "bilinear"))
+(make-texture "gfx/earth.jpg" 1 1 'bilinear))
 
 (define green
   (make-material

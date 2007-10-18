@@ -20,7 +20,7 @@ SchemeObject* TextureFactory::make_texture(SchemeObject* s_filename, SchemeObjec
     double rep_x = safe_scm2double(s_repeat_x,2,proc);
     double rep_y = safe_scm2double(s_repeat_y,3,proc);
 
-    string type_string = scm2string(s_interpolation_type);
+    string type_string = s_interpolation_type->toString();
     Texture::InterpolationType type = Texture::INTERPOLATION_NONE;
     if (type_string == "none" || RendererSettings::uniqueInstance()->fast_preview) {
 	type = Texture::INTERPOLATION_NONE;

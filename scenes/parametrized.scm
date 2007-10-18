@@ -34,7 +34,7 @@
        ks 0.8
        specpow 30)))
 
-(define globus-texture (make-texture "gfx/test-texture.png" 2 15 "bilinear"))
+(define globus-texture (make-texture "gfx/test-texture.png" 2 15 'bilinear))
 (define globus-mat
   (make-material
    (list

@@ -7,7 +7,7 @@
 (load "lib/raygay.scm")
 
 (set-image-size '(1024 768))
-;(set! background (make-texture "gfx/goodmorning.jpg" 1 1 "bilinear"))
+;(set! background (make-texture "gfx/goodmorning.jpg" 1 1 'bilinear))
 (set-background #(0.3 0.6 0.7))
 
 (set-renderer "raytracer")

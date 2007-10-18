@@ -85,7 +85,7 @@
  ))
 
 (define watermap
- (make-texture "gfx/water.jpg" 1 1 "bilinear"))
+ (make-texture "gfx/water.jpg" 1 1 'bilinear))
 
 (add-to-scene
 	  (translate

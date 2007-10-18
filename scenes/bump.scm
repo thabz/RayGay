@@ -7,7 +7,7 @@
 
 ;(set-image-size #(1600 1200))
 (set-image-size '(640 480))
-;(set! background (make-texture "gfx/goodmorning.jpg" 1 1 "bilinear"))
+;(set! background (make-texture "gfx/goodmorning.jpg" 1 1 'bilinear))
 (set-background #(0.76 0.62 0.42))
 
 (set-renderer "raytracer")

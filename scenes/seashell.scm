@@ -34,8 +34,8 @@
        ks 0.8
        specpow 30)))
 
-;(define globus-texture (make-texture "gfx/test-texture.png" 15 5 "bilinear"))
-(define tiles-texture (make-texture "gfx/js_suelo1.jpg" 30 5 "bilinear"))
+;(define globus-texture (make-texture "gfx/test-texture.png" 15 5 'bilinear))
+(define tiles-texture (make-texture "gfx/js_suelo1.jpg" 30 5 'bilinear))
 (define tiles-material
   (make-material
    (list

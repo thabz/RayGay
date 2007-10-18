@@ -6,7 +6,7 @@
 (set-image-size '(1200 600))
 (set-image-size '(600 600))
 (set-background #(0.3 0.6 0.7))
-;(set-background (make-texture "probes/galileo_probe.hdr" 1 1 "bilinear"))
+;(set-background (make-texture "probes/galileo_probe.hdr" 1 1 'bilinear))
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera
