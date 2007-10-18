@@ -161,5 +161,5 @@ void CameraFactory::register_procs(Scheme* scheme) {
     scheme->assign("make-whitted-adaptive-sampler",1,0,0,(SchemeObject* (*)()) CameraFactory::make_whitted_adaptive_sampler);
  //   scheme->assign("make-boundary-adaptive-sampler",1,0,0,(SchemeObject* (*)()) CameraFactory::make_boundary_adaptive_sampler);
     scheme->assign("make-uniform-jitter-sampler",1,0,0,(SchemeObject* (*)()) CameraFactory::make_uniform_jitter_sampler);
-    scheme->assign("make-halton-sampler",1,0,0,(SchemeObject* (*)()) CameraFactory::make_uniform_jitter_sampler);
+    scheme->assign("make-halton-sampler",1,0,0,(SchemeObject* (*)()) CameraFactory::make_halton_sampler);
 }
