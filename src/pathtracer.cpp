@@ -19,7 +19,7 @@
 
 Pathtracer::Pathtracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, uint32_t thread_id) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
 
-    for(uint32_t i = 0; i < MAX_DEPTH; i++) {
+    for(uint32_t i = 0; i < MAX_DEPTH+1; i++) {
 	seqs.push_back(new Halton(2,2));
     }
 }
@@ -40,17 +40,12 @@ RGBA Pathtracer::tracePrimary(const Ray& ray) {
     bool intersected = space->intersectPrimary(ray, i);
     if (intersected) {
 	// Reset the quasi monte carlo sequence for each trace depth
-	for(uint32_t j = 0; j < MAX_DEPTH; j++) {
-	    seqs[j]->reset();
-	}
-	int samples = renderersettings->camera_paths;
-	RGBA result = RGBA(0.0,0.0,0.0,0.0);
-	for(int j = 0; j < samples; j++) {
-	    result = result + traceSub(intersected, i, ray, 1);
-	}
-	return result / double(samples) ;
+	//for(uint32_t j = 0; j < MAX_DEPTH; j++) {
+	//    seqs[j]->reset(RANDOM(0,1));
+	//}
+        return traceSub(intersected, i, ray, RANDOM(MAX_DEPTH-5,MAX_DEPTH));
     } else {
-	return traceSub(intersected, i, ray, 1);
+        return traceSub(intersected, i, ray, RANDOM(MAX_DEPTH-5,MAX_DEPTH));
     }
 }
 
@@ -115,7 +110,7 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 	    } 
 	}
     }
-    if (depth < 7) {
+    if (depth >= 0) {
         // Indirect diffuse color
 	if (material->getKd() > 0) {
 	    double* rnd = seqs[depth]->getNext();
@@ -124,7 +119,7 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 	    //Vector dir = normal.randomHemisphere();
 	    double cosa = dir * normal;
 	    Ray new_ray = Ray(point + 0.1*dir,dir,-1);
-	    RGB in_diff = trace(new_ray,depth+1);
+	    RGB in_diff = trace(new_ray,depth-1);
 	    result_color += material->getKd() * cosa * in_diff * material->getDiffuseColor(intersection);
 	}
 
@@ -146,7 +141,7 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 	    }
 	    Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
 	    refl_ray.fromObject = object;
-	    result_color += reflection * trace(refl_ray, depth + 1);
+	    result_color += reflection * trace(refl_ray, depth - 1);
 	}
 
 	/* Should we send a ray through the intersected object? */
@@ -156,7 +151,7 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 	    Vector T = ray.getDirection().refract(normal,ior);
 	    if (!(T == Vector(0,0,0))) {
 		Ray trans_ray = Ray(point+0.1*T,T,ior);
-		RGB trans_col = trace(trans_ray, depth + 1);
+		RGB trans_col = trace(trans_ray, depth - 1);
 		result_color += transmission * trans_col;
 	    } else {
 		// Internal reflection, see page 757.
@@ -165,7 +160,7 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 		refl_vector = refl_vector.reflect(normal);
 		refl_vector.normalize();
 		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
-		RGB refl_col = trace(refl_ray, depth + 1);
+		RGB refl_col = trace(refl_ray, depth - 1);
 		result_color += transmission * refl_col;
 		*/
 	    }

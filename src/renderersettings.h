@@ -30,8 +30,6 @@ class RendererSettings
 	int estimate_samples;
 	/// The number of rays to shoot when doing final gathering
 	int final_gather_rays;
-	/// The number of paths to shoot through each image pixel when doing path tracing
-	int camera_paths;
 	/// The tolerance in the photonmap cache
 	double cache_tolerance;
 	/// The type of renderer to use

@@ -11,7 +11,7 @@ class Ray;
 class Object;
 class Intersection;
 
-#define MAX_DEPTH 7
+#define MAX_DEPTH 12
 
 ///  A simple pathtracer
 class Pathtracer : public Renderer {

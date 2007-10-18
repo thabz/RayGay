@@ -24,7 +24,6 @@ inline RendererSettings::RendererSettings() {
     cache_tolerance = 0.1;
     threads_num = 1;
     renderertype = NONE;
-    camera_paths = 10;
     anim_frames = 1;
     image_width = 640;
     image_height = 480;
