@@ -14,7 +14,7 @@ class QMCSequence {
 	 * There is no guarantee that the sequence will be
 	 * repeated after a reset.
 	 */
-	virtual void reset() = 0;
+	virtual void reset(double seed = 0) = 0;
 
 	/**
 	 * Get next random numbers

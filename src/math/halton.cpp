@@ -30,8 +30,7 @@ Halton::~Halton() {
     delete [] values;
 }
 
-void Halton::reset() {
-    double v = 0;//RANDOM(0,1);
+void Halton::reset(double v) {
     for (int i = 0; i < dim; i++)
 	values[i] = v;
 }
