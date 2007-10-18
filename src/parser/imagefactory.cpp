@@ -18,7 +18,7 @@ SchemeObject* ImageFactory::make_image(SchemeObject* s_width, SchemeObject* s_he
     char* proc = "make-image";        
     int w = safe_scm2int(s_width, 1, proc);
     int h = safe_scm2int(s_height, 2, proc);
-    Image* image = new ImageImpl<uint8_t,4>(w, h);
+    Image* image = new ImageImpl<float,4>(w, h);
     
     if (s_background_color != S_UNSPECIFIED) {
         RGBA color = scm2rgba(s_background_color, proc, 3);
