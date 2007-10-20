@@ -1,7 +1,22 @@
 
 #include "r6rs-lib-sorting.h"
 
+void swap(SchemeObject* vec, int32_t i, int32_t j) {
+    SchemeObject* tmp = vec->getVectorElem(i);
+    vec->setVectorElem(vec->getVectorElem(j), i);
+    vec->setVectorElem(tmp, j);            
+}
+
+void quicksort(SchemeObject* proc, SchemeObject* vec, int32_t l, int32_t u) {
+    if (u <= 1) return;
+    SchemeObject* t = vec->getVectorElem(0);
+    int32_t i = l;
+    int32_t j = u;
+
+}
+
 SchemeObject* s_vector_sort_e(SchemeObject* proc, SchemeObject* vec) {
+    quicksort(proc, vec, 0, vec->length);        
     return S_UNSPECIFIED;
 }
 
