@@ -16,6 +16,10 @@
 
 using namespace std;
 
+SchemeObject* CameraFactory::s_camera_p(SchemeObject* obj) {
+    return isWrappedObjectType(obj, CAMERA);        
+}
+
 void extractCamera(SchemeObject* s_options, Camera* camera, char* function_name) {
     if (!scm2bool(s_list_p (s_options))) {
 	wrong_type_arg (function_name, 1, s_options);
@@ -102,25 +106,25 @@ void extractCamera(SchemeObject* s_options, Camera* camera, char* function_name)
  *      dof (150.0 30 (-750 0 0))
  *      aa 0))
  */
-SchemeObject* CameraFactory::make_pinhole_camera(SchemeObject* s_options) {
+SchemeObject* CameraFactory::s_make_pinhole_camera(SchemeObject* s_options) {
     Camera* camera = new Pinhole();
     extractCamera(s_options, camera, "make-pinhole-camera");
     return camera2scm(camera);
 }
 
-SchemeObject* CameraFactory::make_lat_long_camera(SchemeObject* s_options) {
+SchemeObject* CameraFactory::s_make_lat_long_camera(SchemeObject* s_options) {
     Camera* camera = new LatLong();
     extractCamera(s_options, camera, "make-lat-long-camera");
     return camera2scm(camera);
 }
 
-SchemeObject* CameraFactory::make_fisheye_camera(SchemeObject* s_options) {
+SchemeObject* CameraFactory::s_make_fisheye_camera(SchemeObject* s_options) {
     Camera* camera = new Fisheye();
     extractCamera(s_options, camera, "make-fisheye-camera");
     return camera2scm(camera);
 }
 
-SchemeObject* CameraFactory::make_whitted_adaptive_sampler(SchemeObject* s_aa_depth)
+SchemeObject* CameraFactory::s_make_whitted_adaptive_sampler(SchemeObject* s_aa_depth)
 {
     char* proc = "make-whitted-adaptive-sampler";
     int aa_depth = safe_scm2int(s_aa_depth, 1, proc);
@@ -129,7 +133,7 @@ SchemeObject* CameraFactory::make_whitted_adaptive_sampler(SchemeObject* s_aa_de
 }
 
 /*
-SchemeObject* CameraFactory::make_boundary_adaptive_sampler(SchemeObject* s_aa_depth)
+SchemeObject* CameraFactory::s_make_boundary_adaptive_sampler(SchemeObject* s_aa_depth)
 {
     char* proc = "make-boundary-adaptive-sampler";
     int aa_depth = safe_scm2int(s_aa_depth, 1, proc);
@@ -138,7 +142,7 @@ SchemeObject* CameraFactory::make_boundary_adaptive_sampler(SchemeObject* s_aa_d
 }
 */
 
-SchemeObject* CameraFactory::make_uniform_jitter_sampler(SchemeObject* s_samples_sqrt) 
+SchemeObject* CameraFactory::s_make_uniform_jitter_sampler(SchemeObject* s_samples_sqrt) 
 {
     char* proc = "make-uniform-jitter-sampler";
     int samples_sqrt = safe_scm2int(s_samples_sqrt, 1, proc);
@@ -146,7 +150,7 @@ SchemeObject* CameraFactory::make_uniform_jitter_sampler(SchemeObject* s_samples
     return sampler2scm(sampler);
 }
 
-SchemeObject* CameraFactory::make_halton_sampler(SchemeObject* s_samples_num) 
+SchemeObject* CameraFactory::s_make_halton_sampler(SchemeObject* s_samples_num) 
 {
     char* proc = "make-halton-sampler";
     int samples_num = safe_scm2int(s_samples_num, 1, proc);
@@ -154,12 +158,19 @@ SchemeObject* CameraFactory::make_halton_sampler(SchemeObject* s_samples_num)
     return sampler2scm(sampler);
 }
 
+SchemeObject* CameraFactory::s_sampler_p(SchemeObject* object) 
+{
+    return isWrappedObjectType(object, SAMPLER);
+}
+
 void CameraFactory::register_procs(Scheme* scheme) {
-    scheme->assign("make-pinhole-camera",1,0,0,(SchemeObject* (*)()) CameraFactory::make_pinhole_camera);
-    scheme->assign("make-lat-long-camera",1,0,0,(SchemeObject* (*)()) CameraFactory::make_lat_long_camera);
-    scheme->assign("make-fisheye-camera",1,0,0,(SchemeObject* (*)()) CameraFactory::make_fisheye_camera);
-    scheme->assign("make-whitted-adaptive-sampler",1,0,0,(SchemeObject* (*)()) CameraFactory::make_whitted_adaptive_sampler);
+    scheme->assign("camera?",1,0,0,(SchemeObject* (*)()) s_camera_p);
+    scheme->assign("make-pinhole-camera",1,0,0,(SchemeObject* (*)()) CameraFactory::s_make_pinhole_camera);
+    scheme->assign("make-lat-long-camera",1,0,0,(SchemeObject* (*)()) CameraFactory::s_make_lat_long_camera);
+    scheme->assign("make-fisheye-camera",1,0,0,(SchemeObject* (*)()) CameraFactory::s_make_fisheye_camera);
+    scheme->assign("sampler?",1,0,0,(SchemeObject* (*)()) s_sampler_p);
+    scheme->assign("make-whitted-adaptive-sampler",1,0,0,(SchemeObject* (*)()) CameraFactory::s_make_whitted_adaptive_sampler);
  //   scheme->assign("make-boundary-adaptive-sampler",1,0,0,(SchemeObject* (*)()) CameraFactory::make_boundary_adaptive_sampler);
-    scheme->assign("make-uniform-jitter-sampler",1,0,0,(SchemeObject* (*)()) CameraFactory::make_uniform_jitter_sampler);
-    scheme->assign("make-halton-sampler",1,0,0,(SchemeObject* (*)()) CameraFactory::make_halton_sampler);
+    scheme->assign("make-uniform-jitter-sampler",1,0,0,(SchemeObject* (*)()) CameraFactory::s_make_uniform_jitter_sampler);
+    scheme->assign("make-halton-sampler",1,0,0,(SchemeObject* (*)()) CameraFactory::s_make_halton_sampler);
 }

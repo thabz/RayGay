@@ -14,6 +14,11 @@ SchemeObject* ImageFactory::replace_mode_symbol;
 SchemeObject* ImageFactory::decal_mode_symbol;
 ImageDrawing::AlphaCombineMode ImageFactory::alpha_combine_mode;
 
+
+SchemeObject* s_image_p(SchemeObject* object) {
+    return isWrappedObjectType(object, IMAGE);        
+}
+
 SchemeObject* ImageFactory::make_image(SchemeObject* s_width, SchemeObject* s_height, SchemeObject* s_background_color) {
     char* proc = "make-image";        
     int w = safe_scm2int(s_width, 1, proc);
@@ -154,6 +159,7 @@ SchemeObject* ImageFactory::set_alpha_combine_mode(SchemeObject* s_mode) {
 
 
 void ImageFactory::register_procs(Scheme* scheme) {
+    scheme->assign("image?",1,0,0,(SchemeObject* (*)()) s_image_p);
     scheme->assign("make-image",2,1,0,(SchemeObject* (*)()) ImageFactory::make_image);
     scheme->assign("image-copy",1,0,0,(SchemeObject* (*)()) ImageFactory::image_copy);
     scheme->assign("load-image",1,0,0,(SchemeObject* (*)()) ImageFactory::load_image);

@@ -12,7 +12,7 @@ class Image;
  */
 class TextureFactory {
     public:
-	static SchemeObject* make_texture(SchemeObject* s_filename, SchemeObject* s_repeat_x, SchemeObject* s_repeat_y, SchemeObject* s_interpolation_type);
+        static SchemeObject* make_texture(SchemeObject* s_filename, SchemeObject* s_repeat_x, SchemeObject* s_repeat_y, SchemeObject* s_interpolation_type);
 	static SchemeObject* get_pixel(SchemeObject* s_texture, SchemeObject* s_x, SchemeObject* s_y);
 
 	static void register_procs(Scheme* scheme);
@@ -21,6 +21,7 @@ class TextureFactory {
 
 };
 
+SchemeObject* s_texture_p(SchemeObject* object_smob);
 
 
 #endif

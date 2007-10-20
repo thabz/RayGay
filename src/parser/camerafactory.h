@@ -10,19 +10,16 @@
 class CameraFactory {
 
     public:
-	static SchemeObject* make_pinhole_camera(SchemeObject* s_options);
+    	static SchemeObject* s_camera_p(SchemeObject* s_obj);
+	static SchemeObject* s_make_pinhole_camera(SchemeObject* s_options);
+	static SchemeObject* s_make_lat_long_camera(SchemeObject* s_options);
+	static SchemeObject* s_make_fisheye_camera(SchemeObject* s_options);
 
-	static SchemeObject* make_lat_long_camera(SchemeObject* s_options);
-
-	static SchemeObject* make_fisheye_camera(SchemeObject* s_options);
-
-	static SchemeObject* make_whitted_adaptive_sampler(SchemeObject* s_options);
-
-	static SchemeObject* make_boundary_adaptive_sampler(SchemeObject* s_options);
-
-	static SchemeObject* make_uniform_jitter_sampler(SchemeObject* s_options);
-
-	static SchemeObject* make_halton_sampler(SchemeObject* s_options);
+    	static SchemeObject* s_sampler_p(SchemeObject* s_obj);
+	static SchemeObject* s_make_whitted_adaptive_sampler(SchemeObject* s_options);
+	static SchemeObject* s_make_boundary_adaptive_sampler(SchemeObject* s_options);
+	static SchemeObject* s_make_uniform_jitter_sampler(SchemeObject* s_options);
+	static SchemeObject* s_make_halton_sampler(SchemeObject* s_options);
 
 	static void register_procs(Scheme* scheme);
 

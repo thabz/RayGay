@@ -16,60 +16,12 @@ bool isWrappedObject(SchemeObject* obj) {
     return i_wrapped_object_p(obj, wrapped_object_tag) == S_TRUE;        
 }
 
-bool isLightsource(SchemeObject* object_smob) {
-    if (isWrappedObject(object_smob)) {
-    	struct wrapped_object* o = (struct wrapped_object*) object_smob->getWrappedCObject();
-	return o->type == LIGHTSOURCE;
+SchemeObject* isWrappedObjectType(SchemeObject* object, wrapped_type type) {
+    if (isWrappedObject(object)) {
+	struct wrapped_object* o = (struct wrapped_object*) object->getWrappedCObject();
+	return bool2scm(o->type == type);
     } else {
-	return false;
-    }
-}
-
-bool isMaterial(SchemeObject* object_smob) {
-    if (isWrappedObject(object_smob)) {
-    	struct wrapped_object* o = (struct wrapped_object*) object_smob->getWrappedCObject();
-	return o->type == MATERIAL;
-    } else {
-	return false;
-    }
-}
-
-bool isSampler(SchemeObject* object_smob) 
-{
-    if (isWrappedObject(object_smob)) {
-    	struct wrapped_object* o = (struct wrapped_object*) object_smob->getWrappedCObject();
-	return o->type == SAMPLER;
-    } else {
-	return false;
-    }
-}
-
-
-bool isSceneObject(SchemeObject* object_smob) 
-{
-    if (isWrappedObject(object_smob)) {
-    	struct wrapped_object* o = (struct wrapped_object*) object_smob->getWrappedCObject();
-	return o->type == SCENEOBJECT;
-    } else {
-	return false;
-    }
-}
-
-bool isTexture(SchemeObject* object_smob) {
-    if (isWrappedObject(object_smob)) {
-	struct wrapped_object* o = (struct wrapped_object*) object_smob->getWrappedCObject();
-	return o->type == TEXTURE;
-    } else {
-	return false;
-    }
-}
-
-bool isImage(SchemeObject* object_smob) {
-    if (isWrappedObject(object_smob)) {
-	struct wrapped_object* o = (struct wrapped_object*) object_smob->getWrappedCObject();
-	return o->type == IMAGE;
-    } else {
-	return false;
+	return S_FALSE;
     }
 }
 

@@ -1,5 +1,6 @@
 
 #include "parser/sceneobjectfactory.h"
+#include "parser/materialfactory.h"
 #include "parser/converters.h"
 #include "parser/wrapper.h"
 
@@ -26,6 +27,11 @@
 #include "objects/text.h"
 
 Scheme* SceneObjectFactory::scheme;
+
+SchemeObject* s_sceneobject_p(SchemeObject* object) 
+{
+    return isWrappedObjectType(object, SCENEOBJECT);        
+}
 
 SchemeObject* make_sphere(SchemeObject* s_center, SchemeObject* s_radius, SchemeObject* s_material) 
 {
@@ -350,7 +356,7 @@ SchemeObject* make_union(SchemeObject* s_things)
     int i = 1;
     while (s_things != S_EMPTY_LIST) {
         SchemeObject* o = i_car(s_things);
-        if (isMaterial(o) && i_cdr(s_things) == S_EMPTY_LIST) {
+        if (s_material_p(o) == S_TRUE && i_cdr(s_things) == S_EMPTY_LIST) {
             material = scm2material(o, proc, i);
         } else {
    	    SceneObject* so_solid = scm2sceneobject(o, proc, i);
@@ -501,6 +507,8 @@ SchemeObject* SceneObjectFactory::make_text(SchemeObject* s_text, SchemeObject* 
 void SceneObjectFactory::register_procs(Scheme* s) 
 {
     scheme = s;
+    scheme->assign("sceneobject?",1,0,0,
+	    (SchemeObject* (*)()) s_sceneobject_p);
     scheme->assign("make-sphere",2,1,0,
 	    (SchemeObject* (*)()) make_sphere);
     scheme->assign("make-ellipsoid",2,1,0,

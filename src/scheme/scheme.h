@@ -120,6 +120,19 @@ class scheme_exception {
     }                                                     \
 }
 
+#define assert_arg_symbol_type(procname, argnum, arg) {   \
+    if (s_symbol_p(arg) == S_FALSE) {                     \
+        ostringstream ss;                                 \
+        ss << "Wrong argument-type (expecting symbol) in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << string(procname);                           \
+        ss << ": " << (arg)->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
+
 #define assert_arg_int_in_range(procname, argnum, arg, from, to) {    \
     assert_arg_type(procname, argnum, s_integer_p, arg);              \
     int n = scm2int(arg);                                             \

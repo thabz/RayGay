@@ -19,4 +19,6 @@ class SceneObjectFactory {
         static Scheme* scheme;    	
 };
 
+SchemeObject* s_sceneobject_p(SchemeObject* object);
+
 #endif

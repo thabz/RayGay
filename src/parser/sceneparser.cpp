@@ -104,14 +104,14 @@ SchemeObject* SceneParser::lookup(string var_name) {
 }
 
 SchemeObject* SceneParser::add_to_scene(SchemeObject* s_value) {
-    if (isSceneObject(s_value)) {
+    if (s_sceneobject_p(s_value) == S_TRUE) {
         SceneObject* sceneobject = scm2sceneobject(s_value, "internal-populate-scene", 0);
         Object* o = static_cast<Object*>(sceneobject);
         if (o != NULL && o->getMaterial() == NULL) {
             throw scheme_exception("add-to-scene", "Object added without material: " + s_value->toString());
         }
         scene->addObject(sceneobject);
-    } else if (isLightsource(s_value)) {
+    } else if (s_lightsource_p(s_value) == S_TRUE) {
         Lightsource* light = scm2lightsource(s_value, "internal-populate-scene", 0);
         scene->addLight(light);
     } else {
@@ -175,7 +175,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     SchemeObject* s_background = lookup(VAR_BACKGROUND);
     if (s_background != S_EMPTY_LIST) {
 	char* subr = "internal: setting scene background";
-	if (isWrappedObject(s_background)) {
+	if (s_texture_p(s_background) == S_TRUE) {
 	    Texture* texture = scm2texture(s_background, subr, 0);
             if (renderersettings->fast_preview) {
                 texture->setInpolationType(Texture::INTERPOLATION_NONE);

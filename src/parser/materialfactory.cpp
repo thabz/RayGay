@@ -1,5 +1,6 @@
 
 #include "parser/materialfactory.h"
+#include "parser/texturefactory.h"
 #include "parser/converters.h"
 #include "parser/wrapper.h"
 #include "parser/schemenormalperturber.h"
@@ -7,7 +8,12 @@
 
 Scheme* MaterialFactory::scheme;
 
-SchemeObject* MaterialFactory::make_material(SchemeObject* s_options) {
+
+SchemeObject* s_material_p(SchemeObject* object) {
+    return isWrappedObjectType(object, MATERIAL);        
+}
+
+SchemeObject* MaterialFactory::s_make_material(SchemeObject* s_options) {
     Material* material = new Material();
 
     assert(scm2bool(s_list_p (s_options)));
@@ -25,7 +31,7 @@ SchemeObject* MaterialFactory::make_material(SchemeObject* s_options) {
     	string key = s_key->toString();
 
 	if (key == "diffuse") {
-	    if (isTexture(s_value)) {
+	    if (s_texture_p(s_value) == S_TRUE) {
 		Texture* texture = scm2texture(s_value,"",0);
 		material->setDiffuseTexture(texture);
 	    } else {
@@ -70,6 +76,7 @@ SchemeObject* MaterialFactory::make_material(SchemeObject* s_options) {
 
 void MaterialFactory::register_procs(Scheme* s) {
     scheme = s;        
-    scheme->assign("make-material",1,0,0,(SchemeObject* (*)()) MaterialFactory::make_material);
+    scheme->assign("material?",1,0,0,(SchemeObject* (*)()) s_material_p);
+    scheme->assign("make-material",1,0,0,(SchemeObject* (*)()) MaterialFactory::s_make_material);
 }
 

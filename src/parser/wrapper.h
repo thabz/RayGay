@@ -75,16 +75,6 @@ SchemeObject* lightsource2scm(Lightsource* lightsource);
 
 void init_wrapper_type();
 
-bool isLightsource(SchemeObject* object_smob);
-
-bool isMaterial(SchemeObject* object_smob);
-
-bool isSceneObject(SchemeObject* object_smob);
-
-bool isTexture(SchemeObject* object_smob);
-
-bool isImage(SchemeObject* object_smob);
-
-bool isWrappedObject(SchemeObject* obj);
+SchemeObject* isWrappedObjectType(SchemeObject* obj, wrapped_type type);
 
 #endif

@@ -11,6 +11,10 @@ using namespace std;
 
 std::map<std::string,Image*> TextureFactory::image_cache;
 
+SchemeObject* s_texture_p(SchemeObject* object) {
+    return isWrappedObjectType(object, TEXTURE);        
+}
+
 SchemeObject* TextureFactory::make_texture(SchemeObject* s_filename, SchemeObject* s_repeat_x, SchemeObject* s_repeat_y, SchemeObject* s_interpolation_type) {
 
     RendererSettings* renderer_settings = RendererSettings::uniqueInstance();
@@ -19,6 +23,8 @@ SchemeObject* TextureFactory::make_texture(SchemeObject* s_filename, SchemeObjec
 
     double rep_x = safe_scm2double(s_repeat_x,2,proc);
     double rep_y = safe_scm2double(s_repeat_y,3,proc);
+
+    assert_arg_symbol_type(proc, 4, s_interpolation_type);
 
     string type_string = s_interpolation_type->toString();
     Texture::InterpolationType type = Texture::INTERPOLATION_NONE;
@@ -63,6 +69,7 @@ SchemeObject* TextureFactory::get_pixel(SchemeObject* s_texture, SchemeObject* s
 }
 
 void TextureFactory::register_procs(Scheme* scheme) {
+    scheme->assign("texture?",1,0,0,(SchemeObject* (*)()) s_texture_p);
     scheme->assign("make-texture",4,0,0,(SchemeObject* (*)()) TextureFactory::make_texture);
     scheme->assign("texture-get-pixel",3,0,0,(SchemeObject* (*)()) TextureFactory::get_pixel);
 }

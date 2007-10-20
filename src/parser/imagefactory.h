@@ -36,6 +36,7 @@ class ImageFactory {
 
 };
 
+SchemeObject* s_image_p(SchemeObject* object);
 
 
 #endif
