@@ -85,11 +85,6 @@ void PoissonDiscDistribution::boundarySampling(double r, uint32_t num) {
             // Initial seed point        
             p = Vector2(RANDOM(0,w),RANDOM(0,h));                
         } else {
-            // TODO: Er det ikke hurtigere at vi vaelger den foerste i listen
-            // og pruner dem den vej ud. Saa er boundaries-listen vel altid saa
-            // kort som muligt. Paa den anden siden er det vel dyrere at fjerne i
-            // begyndelsen af listen. Maaske vector<ArcInterval> skulle vaere
-            // list<ArcInterval>
             p = boundaries[rand() % boundaries.size()].randomPoint();        
         }     
 	ArcInterval new_boundary = ArcInterval(p,2*r);
@@ -118,11 +113,13 @@ void PoissonDiscDistribution::boundarySampling(double r, uint32_t num) {
         
 	add(p, 2*r);
 
+        /*
 	for(uint32_t j = 0; j < boundaries.size(); j++) {
 	    assert(!boundaries[j].isEmpty());
         }
+        */
 	
-//	cout << "Boundaries: " << boundaries.size() << endl;
+	//cout << "Boundaries: " << boundaries.size() << endl;
     } while ((!boundaries.empty()) && i++ < num);
 }
 
