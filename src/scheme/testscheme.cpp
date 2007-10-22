@@ -18,7 +18,6 @@ assert_eval(s, "", "");
 assert_eval(s, "", "");
 assert_eval(s, "", "");
 assert_eval(s, "", "");
-assert_eval(s, "", "");
 */
 
 int errors_found = 0;
