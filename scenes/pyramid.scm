@@ -1,4 +1,3 @@
-
 (load "lib/raygay.scm")
 
 (set-image-size '(800 600))
