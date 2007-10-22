@@ -29,7 +29,7 @@ class Lexer
             ERROR,
             END
         };
-        Lexer::Lexer();
+        Lexer();
         Token nextToken(istream* is);
         void putBack(Token token);
         string getString() { return str; };

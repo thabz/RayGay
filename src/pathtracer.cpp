@@ -43,9 +43,9 @@ RGBA Pathtracer::tracePrimary(const Ray& ray) {
 	//for(uint32_t j = 0; j < MAX_DEPTH; j++) {
 	//    seqs[j]->reset(RANDOM(0,1));
 	//}
-        return traceSub(intersected, i, ray, RANDOM(MAX_DEPTH-5,MAX_DEPTH));
+        return traceSub(intersected, i, ray, int(RANDOM(MAX_DEPTH-5,MAX_DEPTH)));
     } else {
-        return traceSub(intersected, i, ray, RANDOM(MAX_DEPTH-5,MAX_DEPTH));
+        return traceSub(intersected, i, ray, int(RANDOM(MAX_DEPTH-5,MAX_DEPTH)));
     }
 }
 

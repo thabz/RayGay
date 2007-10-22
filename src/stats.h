@@ -124,7 +124,7 @@ class Stats {
 
     private:
 	Stats();
-	static Stats* Stats::uniqueInstance;
+	static Stats* uniqueInstance;
 	long* stats;
 	map<string,clock_t> beginTimes;
 	map<string,clock_t> endTimes;

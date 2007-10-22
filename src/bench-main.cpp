@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
+#include <cassert>
 
 extern "C" {
 #include <unistd.h>

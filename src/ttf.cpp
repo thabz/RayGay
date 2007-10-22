@@ -2,6 +2,7 @@
 #include "ttf.h"
 #include "exception.h"
 #include <iomanip>
+#include <cassert>
 
 #define ids2kernkey(l,r) (((l) << 16) | (r))
 
