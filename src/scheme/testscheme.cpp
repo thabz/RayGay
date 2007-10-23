@@ -5,6 +5,7 @@
 #include "parser.h"
 #include <sstream>
 #include <exception>
+#include "testing.h"
 
 /*
 assert_eval(s, "", "");
@@ -855,7 +856,8 @@ void test_map() {
     assert_fail(s, "(map + 'a '(1 2))");
 }
 
-void test_vector() {
+struct test_vector : public Test {
+    void run() {
     Scheme* s = new Scheme();
     assert_eval(s, "(make-vector 3)","#(#<unspecified> #<unspecified> #<unspecified>)");
     assert_eval(s, "(make-vector 5 'a)", "#(a a a a a)");
@@ -890,6 +892,7 @@ void test_vector() {
     assert_fail(s, "(vector-set! (make-vector 5) 5 'a)");
     delete s;
 }
+};
 
 void test_io() {
     Scheme* s = new Scheme();
@@ -934,117 +937,125 @@ void test_garbagecollect() {
     assert_eval(s, "(equal? a c)", "#t");
 }
 
-void test_bigint() {
-        
+class test_bigint : public Test {
+    public:
+	void run() {
+
     // Constructor
-    assert(BigInt(123456789) == BigInt("123456789"));
+    assertTrue(BigInt(123456789) == BigInt("123456789"));
 
     // Copy constructor   
     BigInt b1 = BigInt("10");
     BigInt b2 = b1;
     b1 += 10;
-    assert(b2 == BigInt("10"));    
-    assert(b1 == BigInt("20"));    
-    assert(BigInt(0) * 10 == BigInt(0));
+    assertTrue(b2 == BigInt("10"));    
+    assertTrue(b1 == BigInt("20"));    
+    assertTrue(BigInt(0) * 10 == BigInt(0));
 
     // Constructor radix test
-    assert(BigInt("ff",16) == BigInt("255"));
-    assert(BigInt("10001",2) == BigInt("17"));
+    assertTrue(BigInt("ff",16) == BigInt("255"));
+    assertTrue(BigInt("10001",2) == BigInt("17"));
     
     // toString()
-    assert(BigInt(1000).toString() == "1000");
-    assert(BigInt(65535).toString(16) == "ffff");
-    assert(BigInt(-1000).toString() == "-1000");
-    assert(BigInt("123456789123456789").toString() == "123456789123456789");
+    assertTrue(BigInt(1000).toString() == "1000");
+    assertTrue(BigInt(65535).toString(16) == "ffff");
+    assertTrue(BigInt(-1000).toString() == "-1000");
+    assertTrue(BigInt("123456789123456789").toString() == "123456789123456789");
     
     // Zero handling
-    assert(BigInt("0") == BigInt("-0"));
-    assert(BigInt("0").is_zero());
-    assert(BigInt("-0").is_zero());
+    assertTrue(BigInt("0") == BigInt("-0"));
+    assertTrue(BigInt("0").is_zero());
+    assertTrue(BigInt("-0").is_zero());
     
     // Negatives
-    assert(BigInt(-100) == BigInt("-100"));
-    assert(-BigInt(100) == BigInt(-100));
-    assert(BigInt(-1000) + BigInt(1000) == BigInt(0));
-    assert(BigInt("-1000") + BigInt("1000") == BigInt("0"));
+    assertTrue(BigInt(-100) == BigInt("-100"));
+    assertTrue(-BigInt(100) == BigInt(-100));
+    assertTrue(BigInt(-1000) + BigInt(1000) == BigInt(0));
+    assertTrue(BigInt("-1000") + BigInt("1000") == BigInt("0"));
 
     // Subtraction
-    assert(BigInt(100) - 20 == BigInt(80));
-    assert(BigInt(100) - BigInt(3) == BigInt(97));
-    assert(BigInt("3333333333333333333") - BigInt("2222222222222222222") == BigInt("1111111111111111111"));
+    assertTrue(BigInt(100) - 20 == BigInt(80));
+    assertTrue(BigInt(100) - BigInt(3) == BigInt(97));
+    assertTrue(BigInt("3333333333333333333") - BigInt("2222222222222222222") == BigInt("1111111111111111111"));
     
     // Addition
-    assert((BigInt(123456789) + 123456789) + 123456789 == BigInt("370370367"));
-    assert(BigInt("999999999999999999999999999999999") + BigInt("999999999999999999999999999999999") == BigInt("1999999999999999999999999999999998"));
-    assert(BigInt("-111111111111111111").abs() == BigInt("111111111111111111"));
+    assertTrue((BigInt(123456789) + 123456789) + 123456789 == BigInt("370370367"));
+    assertTrue(BigInt("999999999999999999999999999999999") + BigInt("999999999999999999999999999999999") == BigInt("1999999999999999999999999999999998"));
+    assertTrue(BigInt("-111111111111111111").abs() == BigInt("111111111111111111"));
 
     // Multiply
-    assert(BigInt("1000") * 10 == BigInt("10000"));
-    assert(BigInt("123456789123456789") * BigInt("123456789123456789") == BigInt("15241578780673678515622620750190521"));
-    assert((BigInt("123456789") * 123456789) * 123456789 == BigInt("1881676371789154860897069"));
+    assertTrue(BigInt("1000") * 10 == BigInt("10000"));
+    assertTrue(BigInt("123456789123456789") * BigInt("123456789123456789") == BigInt("15241578780673678515622620750190521"));
+    assertTrue((BigInt("123456789") * 123456789) * 123456789 == BigInt("1881676371789154860897069"));
     
     // expt
-    assert(BigInt("100").expt(2) == BigInt("10000"));
-    assert(BigInt("2").expt(0) == BigInt(1));
-    assert(BigInt(0).expt(100) == BigInt(0));
-    assert(BigInt(31).expt(19) == BigInt("21670662219970396194714277471"));
-    assert(BigInt(17).expt(1000) * BigInt(17).expt(500) == BigInt(17).expt(1500));
-    assert(BigInt(31).expt(1000) * BigInt(31).expt(1500) == BigInt(31).expt(2500));
+    assertTrue(BigInt("100").expt(2) == BigInt("10000"));
+    assertTrue(BigInt("2").expt(0) == BigInt(1));
+    assertTrue(BigInt(0).expt(100) == BigInt(0));
+    assertTrue(BigInt(31).expt(19) == BigInt("21670662219970396194714277471"));
+    assertTrue(BigInt(17).expt(1000) * BigInt(17).expt(500) == BigInt(17).expt(1500));
+    assertTrue(BigInt(31).expt(1000) * BigInt(31).expt(1500) == BigInt(31).expt(2500));
     
     
     // Division
     /*
-    assert(BigInt("9999999999999999999") / 3 == BigInt("3333333333333333333"));
-    assert(BigInt(-1000) / 10 == BigInt(-100));
-    assert(BigInt(1000) / (-10) == BigInt(-100));
-    assert(BigInt(-1000) / (-10) == BigInt(100));
+    assertTrue(BigInt("9999999999999999999") / 3 == BigInt("3333333333333333333"));
+    assertTrue(BigInt(-1000) / 10 == BigInt(-100));
+    assertTrue(BigInt(1000) / (-10) == BigInt(-100));
+    assertTrue(BigInt(-1000) / (-10) == BigInt(100));
     //cout << "Result " << (BigInt(100) / BigInt(2)) << endl;
-    assert(BigInt(100) / BigInt(2) == BigInt(50));
-    assert(BigInt("123456789123456789") / BigInt("123456789123456789") == BigInt(1));
-    assert(BigInt("10000000000") / BigInt("1000000000") == BigInt(10));
-    assert(BigInt("10000000000") / BigInt("10000000") == BigInt(1000));
-    assert(BigInt("993850124034") / BigInt("1209237") == BigInt("821882"));
-    assert(BigInt("993850124034") / BigInt("821882") == BigInt("1209237"));
-    //assert(BigInt("") / BigInt("") == BigInt(""));
+    assertTrue(BigInt(100) / BigInt(2) == BigInt(50));
+    assertTrue(BigInt("123456789123456789") / BigInt("123456789123456789") == BigInt(1));
+    assertTrue(BigInt("10000000000") / BigInt("1000000000") == BigInt(10));
+    assertTrue(BigInt("10000000000") / BigInt("10000000") == BigInt(1000));
+    assertTrue(BigInt("993850124034") / BigInt("1209237") == BigInt("821882"));
+    assertTrue(BigInt("993850124034") / BigInt("821882") == BigInt("1209237"));
+    //assertTrue(BigInt("") / BigInt("") == BigInt(""));
     
-    assert(BigInt("123456789123456789") / BigInt(1) == BigInt("123456789123456789"));
-    assert(BigInt("10000000000") / BigInt("10") == BigInt("1000000000"));
+    assertTrue(BigInt("123456789123456789") / BigInt(1) == BigInt("123456789123456789"));
+    assertTrue(BigInt("10000000000") / BigInt("10") == BigInt("1000000000"));
     */
-    //assert(BigInt("15241578780673678515622620750190521") / BigInt("123456789123456789") == BigInt("123456789123456789"));
+    //assertTrue(BigInt("15241578780673678515622620750190521") / BigInt("123456789123456789") == BigInt("123456789123456789"));
     
     // Remainder
-    assert(BigInt(100) % 10 == 0);
-    assert(BigInt("10000000000000000000000") % 3 == 1);
-    assert(BigInt("-99999999999999999992") % 3 == -2);
+    assertTrue(BigInt(100) % 10 == 0);
+    assertTrue(BigInt("10000000000000000000000") % 3 == 1);
+    assertTrue(BigInt("-99999999999999999992") % 3 == -2);
 
     // Square root
-    //assert(BigInt(100).sqrt() == BigInt(10));
-    //assert(BigInt(10000).sqrt() == BigInt(100));
-    //assert(BigInt("10000000000000000").sqrt() == BigInt("100000000"));
-    //assert(BigInt("15241578780673678515622620750190521").sqrt() == BigInt("123456789123456789"));
+    //assertTrue(BigInt(100).sqrt() == BigInt(10));
+    //assertTrue(BigInt(10000).sqrt() == BigInt(100));
+    //assertTrue(BigInt("10000000000000000").sqrt() == BigInt("100000000"));
+    //assertTrue(BigInt("15241578780673678515622620750190521").sqrt() == BigInt("123456789123456789"));
 
     // Comparators
-    assert(BigInt(50) > BigInt(25));
-    assert(BigInt("999999999999999999") > 
+    assertTrue(BigInt(50) > BigInt(25));
+    assertTrue(BigInt("999999999999999999") > 
            BigInt("888888888888888888"));
-    assert(BigInt("111111111111111111") < 
+    assertTrue(BigInt("111111111111111111") < 
            BigInt("222222222222222222"));
-    assert(BigInt("999999999999999999999999999999999") <= 
+    assertTrue(BigInt("999999999999999999999999999999999") <= 
            BigInt("999999999999999999999999999999999"));
-    assert(BigInt("8888888888888888888") <= 
+    assertTrue(BigInt("8888888888888888888") <= 
            BigInt("9999999999999999999"));
-    assert(BigInt("3333333333333333333") >= 
+    assertTrue(BigInt("3333333333333333333") >= 
            BigInt("3333333333333333333"));
-    assert(BigInt("3333333333333333333") >= 
+    assertTrue(BigInt("3333333333333333333") >= 
            BigInt("2222222222222222222"));
            
     // Bitsizes
-    assert(BigInt("1000",2).sizeInBits() == 4);
-    assert(BigInt("ffffffffffffffffffff",16).sizeInBits() == 80);
-    
-}
+    assertTrue(BigInt("1000",2).sizeInBits() == 4);
+    assertTrue(BigInt("ffffffffffffffffffff",16).sizeInBits() == 80);
+	}
+};
 
 int main(int argc, char *argv[]) {
+    TestSuite suite;
+    suite.add("BigInt", new test_bigint());
+    suite.add("Vector", new test_vector());
+    suite.run();
+    suite.printStatus();
+
     try {
         cout << "Test tokenizer...       ";
         test_tokenizer();
@@ -1078,14 +1089,6 @@ int main(int argc, char *argv[]) {
         test_math();
         cout << " OK" << endl;
         
-        cout << "Test bigint ...         ";
-        test_bigint();
-        cout << " OK" << endl;
-
-        cout << "Test vector...          ";
-        test_vector();
-        cout << " OK" << endl;
-
         cout << "Test pairs and lists... ";
         test_pairs_and_lists();
         cout << " OK" << endl;
@@ -1156,6 +1159,10 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
             
     }
-    
-    return errors_found == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+
+    return errors_found == 0 && !suite.hasFailures() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
+
+
+
