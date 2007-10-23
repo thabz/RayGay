@@ -24,3 +24,12 @@ EXTRA_DIST = vector.h 	\
 	     contour.h		\
 	     physics.h		\
 	     constants.h
+
+# -----------------------------------------------------
+# Tests
+# -----------------------------------------------------
+check_PROGRAMS = testmath
+testmath_SOURCES = testmath.cpp
+testmath_LDADD = libmath.la
+TESTS = testmath
+

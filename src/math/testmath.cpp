@@ -6,17 +6,17 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "math/vector.h"
-#include "math/vector2.h"
-#include "math/matrix.h"
-#include "math/matrix3.h"
-#include "math/functions.h"
-#include "math/rootfinder.h"
-#include "math/polynomial.h"
-#include "math/sturmsequence.h"
-#include "math/quaternion.h"
-#include "math/interval.h"
-#include "math/poisson_disc.h"
+#include "vector.h"
+#include "vector2.h"
+#include "matrix.h"
+#include "matrix3.h"
+#include "functions.h"
+#include "rootfinder.h"
+#include "polynomial.h"
+#include "sturmsequence.h"
+#include "quaternion.h"
+#include "interval.h"
+#include "poisson_disc.h"
 #include "collections/vectorlist.h"
 #include "testing.h"
 
@@ -288,22 +288,6 @@ class matrix3_test : public Test {
 	    assertTrue(op2*op1*v == v);
 	    assertTrue((op1*op2).isIdentity());
 	    assertTrue(op1.inverse() == op2);
-	    
-	    // Test transforming a VectorList
-	    op1 = Matrix3::matrixScale(Vector(40,40,40));
-	    Vector y = Vector(0,1,0);
-	    VectorList list;
-	    for(uint i = 0; i < 10; i++) {
-	        list.push_back(y);    
-	    }
-	    list.transform(op1);
-	    for(uint i = 0; i < 10; i++) {
-	        assertTrue(list[i] == Vector(0,40,0));
-	    }
-	    list.normalize();
-	    for(uint i = 0; i < 10; i++) {
-	        assertTrue(list[i] == Vector(0,1,0));
-	    }
 	    
 	    
 	}
