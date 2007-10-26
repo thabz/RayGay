@@ -558,3 +558,25 @@ Vector2 Math::shirleyDisc(double seedx, double seedy) {
     }
     return Vector2(r * cos(phi), r * sin(phi));
 }
+
+/*
+
+Uniformly-distributed points on the unit sphere: 
+
+  (3) The trig method.  This method works only in 3-space, but it is
+      very fast.  It depends on the slightly counterintuitive fact (see
+      proof below) that each of the three coordinates of a uniformly
+      distributed point on S^2 is uniformly distributed on [-1,1] (but
+      the three are not independent, obviously).  Therefore, it
+      suffices to choose one axis (Z, say) and generate a uniformly
+      distributed value on that axis.  This constrains the chosen point
+      to lie on a circle parallel to the X-Y plane, and the obvious
+      trig method may be used to obtain the remaining coordinates.
+
+	(a) Choose z uniformly distributed in [-1,1].
+	(b) Choose t uniformly distributed on [0, 2*pi).
+	(c) Let r = sqrt(1-z^2).
+	(d) Let x = r * cos(t).
+	(e) Let y = r * sin(t).
+
+*/
