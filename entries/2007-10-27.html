@@ -3,9 +3,9 @@
 <p>Jeg har kode som finder perfekt uniformt fordelte punkter i [0,1]&times;[0,1] og har nu fundet en
 uniform mapning derfra til <i>S<sup>2</sup></i>.</p>
 <p>Den beror på, at hver af de tre koordinater for uniformt fordelte punkter på <i>S<sup>2</sup></i> faktisk er uniformt fordelte på [0,1]. De tre koordinater er selvfølgelig ikke uafhængige.</p>
-<p>Man kan derfor vælge een akse (her z-aksen) og finde en uniformt fordelt værdi på den akse. Dermed skal de resterende to koordinater findes på en cirkel parallelt til XY-planet.</p>
+<p>Man kan derfor vælge een akse (her z-aksen) og finde en uniformt fordelt værdi på den akse. Dermed skal de resterende to koordinater findes på en cirkel parallelt til XY-planet med almindeligt trigonometri.</p>
 <p>Lad <i>(s,t)</i> tilhøre [0,1]&times;[0,1]. Fastlæg <i>z</i> med det samme som 2<i>s</i>-1.
-Lad radius <i>r</i> = sqrt(1-<i>z</i><sup>2</sup>). Lad &phi; = 2 <i>t</i> &pi;. Så kan <i>(x,y,z)</i> udtrykkes som (<i>r</i> cos &phi;, <i>r</i> sin &phi;, <i>z</i>).</p>
+Lad radius <i>r</i> = sqrt(1-<i>z</i><sup>2</sup>). Lad placeringen på cirklen være &phi; = 2 <i>t</i> &pi;. Så kan <i>(x,y,z)</i> udtrykkes som (<i>r</i> cos &phi;, <i>r</i> sin &phi;, <i>z</i>).</p>
 <p>Sådan ser det ud i Scheme:</p>
 <div class="vim">(define (plane->sphere p)
    (let* ((z (- (* 2 (car p)) 1))
