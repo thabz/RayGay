@@ -559,24 +559,46 @@ Vector2 Math::shirleyDisc(double seedx, double seedy) {
     return Vector2(r * cos(phi), r * sin(phi));
 }
 
-/*
+/**
+ * If points is a collection of uniformly-distributed points in [0,1]x[0,1] 
+ * this method will return a collection of points on the unit-sphere S^2.
+ * It depends on the slightly counterintuitive fact (see
+ * proof below) that each of the three coordinates of a uniformly
+ * distributed point on S^2 is uniformly distributed on [-1,1] (but
+ * the three are not independent, obviously).  Therefore, it
+ * suffices to choose one axis (Z, say) and generate a uniformly
+ * distributed value on that axis.  This constrains the chosen point
+ * to lie on a circle parallel to the X-Y plane, and the obvious
+ * trig method may be used to obtain the remaining coordinates.
+ * 
+ * See http://www.math.niu.edu/~rusin/known-math/96/sph.rand
+ * TODO: Optimize by not throwing std::vectors around
+ * TODO: Test!
+ */
+std::vector<Vector> Math::toUnitSphere(const std::vector<Vector2>& points) {
+    std::vector<Vector> result = std::vector<Vector>(points.size());
+    result.reserve(points.size());
+    for(uint32_t i = 0; i < points.size(); i++) {
+        Vector2 p = points[i];
+        double z = p[0] * 2 - 1;
+        double t = p[1] * M_2PI;
+        double r = sqrt(1 - z*z);
+        Vector v = Vector(r * cos(t), r * sin(t), z);
+        result.push_back(v);
+    }
+    return result;
+}
 
-Uniformly-distributed points on the unit sphere: 
+/* 
+Notes to the above
 
-  (3) The trig method.  This method works only in 3-space, but it is
-      very fast.  It depends on the slightly counterintuitive fact (see
-      proof below) that each of the three coordinates of a uniformly
-      distributed point on S^2 is uniformly distributed on [-1,1] (but
-      the three are not independent, obviously).  Therefore, it
-      suffices to choose one axis (Z, say) and generate a uniformly
-      distributed value on that axis.  This constrains the chosen point
-      to lie on a circle parallel to the X-Y plane, and the obvious
-      trig method may be used to obtain the remaining coordinates.
+If h is the cosine of the half-angle of the cone, then changing the z line
+above to
 
-	(a) Choose z uniformly distributed in [-1,1].
-	(b) Choose t uniformly distributed on [0, 2*pi).
-	(c) Let r = sqrt(1-z^2).
-	(d) Let x = r * cos(t).
-	(e) Let y = r * sin(t).
+double z = h + (1-h)*p[0]
 
+will produce unit vectors constrained to be as close to the +Z axis as desired, 
+depending on h. Then a simple change of basis will re-orient them as needed. The 
+nice thing about this approach is that the cost is constant regardless of how 
+tight the cone is.
 */

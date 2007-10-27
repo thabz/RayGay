@@ -2,6 +2,7 @@
 #define MATH_FUNCTIONS_H
 
 #include "types.h"
+#include <vector>
 
 class Vector;
 class QMCSequence;
@@ -41,6 +42,8 @@ class Math {
 	static Vector perturbVector(const Vector& axis, const double angle, QMCSequence* qmc_sequence);
 
 	static Vector2 shirleyDisc(double seedx, double seedy);
+	
+        static std::vector<Vector> toUnitSphere(const std::vector<Vector2>& points);
 };
 
 inline double Math::clamp(double a) {
