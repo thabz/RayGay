@@ -27,6 +27,11 @@ class Pathtracer : public Renderer {
 	RGBA trace(const Ray&, const int depth);
 	RGBA traceSub(const bool intersected, const Intersection& i, const Ray&, const int depth);
 	RGBA tracePrimary(const Ray&);
+	
+        RGB shadeReflection(const Ray& ray, const Intersection& intersection, const int depth);
+        RGB shadeTransmission(const Ray& ray, const Intersection& intersection, const int depth);
+        RGB shadeDirectDiffuse(const Ray& ray, const Intersection& intersection, const int depth);
+        RGB shadeIndirectDiffuse(const Ray& ray, const Intersection& intersection, const int depth);
 
 	vector<QMCSequence*> seqs;
 };

@@ -69,6 +69,61 @@ RGBA Pathtracer::traceSub(const bool intersected, const Intersection& intersecti
     return color;
 }
 
+RGB Pathtracer::shadeDirectDiffuse(const Ray& ray, const Intersection& intersection, const int depth) {
+        
+}
+
+RGB Pathtracer::shadeIndirectDiffuse(const Ray& ray, const Intersection& intersection, const int depth) {
+        
+}
+
+RGB Pathtracer::shadeTransmission(const Ray& ray, const Intersection& intersection, const int depth) {
+    const Object* object = intersection.getObject();
+    const Vector point = intersection.getPoint();
+    Vector normal = intersection.getNormal();
+    const Material* material = object->getMaterial();
+
+    /* Send a ray through the intersected object */
+    // TODO: Use the ior the rays holds to allow eg. glass in water.
+    double ior = material->getEta();
+    Vector T = ray.getDirection().refract(normal,ior);
+    if (!(T == Vector(0,0,0))) {
+        Ray trans_ray = Ray(point+0.1*T,T,ior);
+        return trace(trans_ray, depth - 1);
+    } else {
+        // Internal reflection, see page 757.
+        /*
+        Vector refl_vector = -1 * ray.getDirection();
+        refl_vector = refl_vector.reflect(normal);
+        refl_vector.normalize();
+        Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
+        return trace(refl_ray, depth - 1);
+        */
+    }
+    
+}
+
+RGB Pathtracer::shadeReflection(const Ray& ray, const Intersection& intersection, const int depth) {
+    const Object* object = intersection.getObject();
+    const Vector point = intersection.getPoint();
+    Vector normal = intersection.getNormal();
+    const Material* material = object->getMaterial();
+
+    Vector refl_vector = -1 * ray.getDirection();
+    refl_vector = refl_vector.reflect(normal);
+    refl_vector.normalize();
+    if (material->glossEnabled()) {
+	/* Perturb reflecteced ray */
+	double max_angle = material->glossMaxAngle();
+	refl_vector = Math::perturbVector(refl_vector,max_angle,seqs[depth]);
+	//refl_vector = Math::perturbVector(refl_vector,max_angle);
+    }
+    Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
+    refl_ray.fromObject = object;
+    return trace(refl_ray, depth - 1);
+}
+
+
 RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const int depth) {
     Lightinfo info;
     const Object* object = intersection.getObject();
@@ -79,6 +134,8 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
     normal = material->bump(intersection,normal);
 
     RGB result_color = RGB(0.0,0.0,0.0);
+    
+    // Direct diffuse color
     const vector<Lightsource*>& lights = scene->getLightsources();
     for (vector<Lightsource*>::const_iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);
@@ -111,8 +168,12 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 	}
     }
     if (depth >= 0) {
-        // Indirect diffuse color
-	if (material->getKd() > 0) {
+        double kd = material->getKd();
+        double ks = material->getKs();
+        double kt = material->getKt();
+        double action = RANDOM(0, kd + ks + kt);
+        if (action <= kd) {
+            // Indirect diffuse color
 	    double* rnd = seqs[depth]->getNext();
 	    //Vector dir = normal.randomHemisphere(rnd[0],rnd[1]);
 	    Vector dir = normal.randomHemisphere(rnd[0],rnd[1],0.01);
@@ -120,54 +181,24 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 	    double cosa = dir * normal;
 	    Ray new_ray = Ray(point + 0.1*dir,dir,-1);
 	    RGB in_diff = trace(new_ray,depth-1);
-	    result_color += material->getKd() * cosa * in_diff * material->getDiffuseColor(intersection);
-	}
-
-	// Reflection
-	Vector2 fre = fresnel(normal,ray.getDirection(),material);
-	const double reflection = fre[0];
-	const double transmission = fre[1];
-
-	/* Bounce a reflection off the intersected object */
-	if (material->getKs() > 0 && reflection > 0) {
-	    Vector refl_vector = -1 * ray.getDirection();
-	    refl_vector = refl_vector.reflect(normal);
-	    refl_vector.normalize();
-	    if (material->glossEnabled()) {
-		/* Perturb reflecteced ray */
-		double max_angle = material->glossMaxAngle();
-		refl_vector = Math::perturbVector(refl_vector,max_angle,seqs[depth]);
-		//refl_vector = Math::perturbVector(refl_vector,max_angle);
-	    }
-	    Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
-	    refl_ray.fromObject = object;
-	    result_color += reflection * trace(refl_ray, depth - 1);
-	}
-
-	/* Should we send a ray through the intersected object? */
-	if (material->getKt() > 0.0 && transmission > 0) {
-	    // TODO: Use the ior the rays holds to allow eg. glass in water.
-	    double ior = material->getEta();
-	    Vector T = ray.getDirection().refract(normal,ior);
-	    if (!(T == Vector(0,0,0))) {
-		Ray trans_ray = Ray(point+0.1*T,T,ior);
-		RGB trans_col = trace(trans_ray, depth - 1);
-		result_color += transmission * trans_col;
-	    } else {
-		// Internal reflection, see page 757.
-		/*
-		Vector refl_vector = -1 * ray.getDirection();
-		refl_vector = refl_vector.reflect(normal);
-		refl_vector.normalize();
-		Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
-		RGB refl_col = trace(refl_ray, depth - 1);
-		result_color += transmission * refl_col;
-		*/
-	    }
-	}
+	    result_color += cosa * in_diff * material->getDiffuseColor(intersection);
+        } else if (action <= kd + ks) {
+            result_color += shadeReflection(ray, intersection, depth);    
+        } else if (action <= kd + ks + kt) {
+            Vector2 fre = fresnel(normal,ray.getDirection(),material);
+            const double reflection = fre[0];
+            const double transmission = fre[1];
+            
+            if (reflection > 0) {
+                result_color += reflection * shadeReflection(ray, intersection, depth);        
+            }
+            if (transmission > 0) {
+                result_color += transmission * shadeTransmission(ray, intersection, depth);        
+            }
+        } else {
+            cout << "What the fuck?" << endl;        
+        }
     }
-
- //   result_color.clip();
     return result_color;
 }
 
