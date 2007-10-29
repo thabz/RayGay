@@ -274,8 +274,13 @@ void test_char() {
     assert_eval(s, L"#\\newline", L"#\\newline");
     assert_eval(s, L"(integer->char 66)", L"#\\B");
     assert_eval(s, L"(integer->char 95)", L"#\\_");
+    assert_eval(s, L"(integer->char 32)", L"#\\space");
+    assert_eval(s, L"(char->integer (integer->char 5000))", L"5000");
     assert_fail(s, L"(integer->char -1)");
     assert_fail(s, L"(integer->char 'a)");
+    assert_fail(s, L"(integer->char)");
+    assert_fail(s, L"(integer->char 55297)"); // 0xD801
+    assert_fail(s, L"(integer->char 1179648)"); // 0x120000
     assert_eval(s, L"(char->integer #\\B)", L"66");
     assert_eval(s, L"(char->integer #\\_)", L"95");
     assert_eval(s, L"(<= (char->integer #\\a) (char->integer #\\b))", L"#t");

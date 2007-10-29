@@ -111,7 +111,7 @@ class scheme_exception {
 #define assert_arg_int_type(procname, argnum, arg) {   \
     if (s_integer_p(arg) == S_FALSE) {                     \
         wostringstream ss;                                 \
-        ss << "Wrong argument-type (expecting number) in position ";         \
+        ss << "Wrong argument-type (expecting integer) in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << wstring(procname);                           \

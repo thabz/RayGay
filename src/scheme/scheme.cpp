@@ -1580,8 +1580,11 @@ SchemeObject* s_string_2_number(SchemeObject* s_string, SchemeObject* base_s) {
 
 
 SchemeObject* s_integer_2_char(SchemeObject* i) {
-    assert_arg_int_in_range(L"integer->char", 1, i, 0, 255);
+    assert_arg_int_type(L"integer->char", 1, i);
     int n = scm2int(i);
+    if (n < 0 || (n >= 0xD800 && n < 0xE000) || n >= 0x110000) {
+        throw scheme_exception(L"integer->char", L"Integer out of range.");    
+    } 
     return char2scm(n);
 }
 
