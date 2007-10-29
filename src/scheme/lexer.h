@@ -30,9 +30,9 @@ class Lexer
             END
         };
         Lexer();
-        Token nextToken(istream* is);
+        Token nextToken(wistream* is);
         void putBack(Token token);
-        string getString() { return str; };
+        wstring getString() { return str; };
         double getNumber() { return number; };
         bool getBool() { return boolean; };
         char getChar() { return chr; };
@@ -40,7 +40,7 @@ class Lexer
         
     private:
 	bool isSymbolChar(char c);
-        string str;
+        wstring str;
         double number;
         bool boolean;
         char chr;

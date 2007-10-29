@@ -1,5 +1,7 @@
 
 #include "scheme/scheme.h"
+#include "scheme/filenames.h"
+
 #include "parser/imagefactory.h"
 #include "parser/mathfactory.h"
 
@@ -8,6 +10,8 @@
 #include <fstream>
 #include <iomanip>
 #include <time.h>
+#include <locale>
+#include <stdexcept>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -20,37 +24,45 @@ Scheme* scheme;
 clock_t elapsed;
 
 int repl() {
-    char input[64*1024];
+    wchar_t input[64*1024];
     
     try {
         scheme = new Scheme();
         ImageFactory::register_procs(scheme);
         MathFactory::register_procs(scheme);
     } catch (scheme_exception e) {
-	cerr << "ABORT: " << e.toString() << endl;
+	wcerr << L"ABORT: " << e.toString() << endl;
         return EXIT_FAILURE;
     }
 
     while (true) {
         cout << "raygay> " << flush;
-        cin.getline(input, 64*1024);
-        if (cin.eof()) {
+        wcin.getline(input, 64*1024);
+        if (wcin.eof()) {
     	    // User pressed ctrl-D.
     	    return EXIT_SUCCESS;
-        }    
+        } 
+           
         try {
-           SchemeObject* result = scheme->eval(string(input));
+           SchemeObject* result = scheme->eval(wstring(input));
            if (result != S_UNSPECIFIED) {
-               cout << result->toString() << endl;
+               wcout << result->toString() << endl;
            }
         } catch (scheme_exception e) {
-    	   cerr << "ABORT: " << e.toString() << endl;
+    	   wcerr << L"ABORT: " << e.toString() << endl;
         }
     }
 }
 
 int runfile(char* filename) {
-    ifstream* ifs = new ifstream(filename, ios::in);
+    wifstream* ifs = new wifstream(filename, ios::in);
+    try {
+        std::locale loc("");
+        ifs->imbue(loc);
+    } catch (std::runtime_error e) {
+        cout << "Warning: can't read system locale. UTF-8 files won't be read correctly." << endl;
+    }
+    
     if (ifs->fail()) {
         cout << "Error opening file" << endl;
         return EXIT_FAILURE;
@@ -62,7 +74,7 @@ int runfile(char* filename) {
         scheme->eval(ifs);
     } catch (scheme_exception e) {
         ifs->close();
-	cerr << "ABORT: " << e.toString() << endl;
+	wcerr << L"ABORT: " << e.toString() << endl;
         return EXIT_FAILURE;
     }
     ifs->close();
@@ -113,8 +125,8 @@ int main(int argc, char *argv[]) {
 	    default:
 		return EXIT_FAILURE;
 	}
-    }        
- 
+    }
+    
     elapsed = clock();
     
     int result;

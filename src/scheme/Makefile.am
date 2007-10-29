@@ -12,6 +12,7 @@ libscheme_la_SOURCES = lexer.h lexer.cpp \
                        bigint.h bigint.cpp \
                        optimizer.h optimizer.cpp \
                        scheme.h scheme.cpp \
+                       filenames.h filenames.cpp \
                        r6rs-lib-lists.h r6rs-lib-lists.cpp \
                        r6rs-lib-sorting.h r6rs-lib-sorting.cpp \
                        r6rs-lib-unicode.h r6rs-lib-unicode.cpp

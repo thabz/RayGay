@@ -10,15 +10,15 @@ class Parser
 {
     public:
 	Parser();
-	SchemeObject* parse(istream* is);
-        SchemeObject* read(istream* is);
+	SchemeObject* parse(wistream* is);
+        SchemeObject* read(wistream* is);
 
     private:
-        SchemeObject* read_list(istream* is);    
-        SchemeObject* read_quoted(istream* is);    
-        SchemeObject* read_unquoted(istream* is);    
-        SchemeObject* read_unquote_spliced(istream* is);    
-        SchemeObject* read_quasiquoted(istream* is);    
+        SchemeObject* read_list(wistream* is);    
+        SchemeObject* read_quoted(wistream* is);    
+        SchemeObject* read_unquoted(wistream* is);    
+        SchemeObject* read_unquote_spliced(wistream* is);    
+        SchemeObject* read_quasiquoted(wistream* is);    
 
         void decorateWithLineNumber(SchemeObject* obj, uint32_t linenumber);
 

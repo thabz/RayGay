@@ -1,7 +1,7 @@
 
 #include "parser/converters.h"
 
-Vector scm2vector(SchemeObject* s_vector, char* subr, int pos) {
+Vector scm2vector(SchemeObject* s_vector, wchar_t* subr, int pos) {
     if (!(scm2bool(i_vector_p (s_vector)) && i_vector_length(s_vector) == 3)) {
 	wrong_type_arg(subr,pos,s_vector);
     }
@@ -15,7 +15,7 @@ Vector scm2vector(SchemeObject* s_vector, char* subr, int pos) {
     return result;
 }
 
-Quaternion scm2quaternion(SchemeObject* s_vector, char* subr, int pos) {
+Quaternion scm2quaternion(SchemeObject* s_vector, wchar_t* subr, int pos) {
     if (!(scm2bool(i_vector_p (s_vector)) && i_vector_length(s_vector) == 4)) {
 	wrong_type_arg(subr,pos,s_vector);
     }
@@ -29,7 +29,7 @@ Quaternion scm2quaternion(SchemeObject* s_vector, char* subr, int pos) {
     return Quaternion(r[0], r[1], r[2], r[3]);
 }
 
-RGBA scm2rgba(SchemeObject* s_vector, char* subr, int pos) {
+RGBA scm2rgba(SchemeObject* s_vector, wchar_t* subr, int pos) {
     if (!((scm2bool(i_vector_p (s_vector))))) {
 	wrong_type_arg(subr,pos,s_vector);
     };
@@ -50,7 +50,7 @@ RGBA scm2rgba(SchemeObject* s_vector, char* subr, int pos) {
     return RGBA(r[0],r[1],r[2],r[3]);
 }
 
-Vector2 scm2vector2(SchemeObject* s_vector, char* subr, int pos) {
+Vector2 scm2vector2(SchemeObject* s_vector, wchar_t* subr, int pos) {
     if (!(scm2bool(i_vector_p (s_vector)) && i_vector_length(s_vector) == 2)) {
 	wrong_type_arg(subr,pos,s_vector);
     }
@@ -76,7 +76,7 @@ SchemeObject* vector2scm(Vector vector) {
 }
 
 RGB scm2rgb(SchemeObject* s_rgb) {
-    Vector v = scm2vector(s_rgb, "unknown", 0);
+    Vector v = scm2vector(s_rgb, L"unknown", 0);
     return RGB(v[0],v[1],v[2]);
 }
 
@@ -91,7 +91,7 @@ SchemeObject* rgb2scm(RGB rgb) {
     return result;
 }
 
-vector<Vector> scm2vectorlist(SchemeObject* s_list_vector, char* subr, int pos) {
+vector<Vector> scm2vectorlist(SchemeObject* s_list_vector, wchar_t* subr, int pos) {
     assert(scm2bool(s_list_p (s_list_vector)));
     uint32_t length = scm2int(s_length(s_list_vector));
     SchemeObject* s_vector;
@@ -104,12 +104,12 @@ vector<Vector> scm2vectorlist(SchemeObject* s_list_vector, char* subr, int pos) 
 }
 
 
-double safe_scm2double(SchemeObject* o, int argnum, const char* procname) {
+double safe_scm2double(SchemeObject* o, int argnum, const wchar_t* procname) {
     assert_arg_number_type(procname, argnum, o);        
     return scm2double(o);
 }
 
-int safe_scm2int(SchemeObject* o, int argnum, const char* procname) {
+int safe_scm2int(SchemeObject* o, int argnum, const wchar_t* procname) {
     assert_arg_int_type(procname, argnum, o);
     return scm2int(o);
 }

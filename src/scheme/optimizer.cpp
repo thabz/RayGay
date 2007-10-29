@@ -21,7 +21,7 @@ SchemeObject* Optimizer::optimizeList(SchemeObject* list, SchemeObject* envt) {
     
     SchemeObject* proc = envt->getBinding(car);
     if (proc == NULL) {
-        throw scheme_exception("Unbound variable: " + car->toString());
+        throw scheme_exception(L"Unbound variable: " + car->toString());
     }
     
     if (proc->type() != SchemeObject::USER_PROCEDURE) {

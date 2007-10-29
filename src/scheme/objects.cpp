@@ -5,7 +5,7 @@
 #include "heap.h"
 
 // Map of known symbols
-map<string,SchemeObject*> SchemeObject::known_symbols;
+map<wstring,SchemeObject*> SchemeObject::known_symbols;
 
 // Sequence for subtype identities
 int SchemeObject::subtypes_seq = 1;
@@ -20,14 +20,15 @@ SchemeObject* SchemeObject::createNumber(double number) {
     return result;
 }
 
-SchemeObject* SchemeObject::createString(const char* str) {
+SchemeObject* SchemeObject::createString(const wchar_t* str) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::STRING);
-    result->str = strdup(str);
-    result->length = strlen(str);
+    result->length = wcslen(str);
+    result->str = new wchar_t[result->length+1];
+    wcscpy(result->str, str);
     return result;
 }
 
-SchemeObject* SchemeObject::createChar(char c) {
+SchemeObject* SchemeObject::createChar(wchar_t c) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::CHAR);
     result->c = c;
     return result;
@@ -71,13 +72,14 @@ SchemeObject* SchemeObject::createUnspecified() {
     return result;
 }
 
-SchemeObject* SchemeObject::createSymbol(const char* str) {
+SchemeObject* SchemeObject::createSymbol(const wchar_t* str) {
     SchemeObject* result;
-    string strstring = string(str);
-    map<string,SchemeObject*>::iterator v = known_symbols.find(strstring);
+    wstring strstring = wstring(str);
+    map<wstring,SchemeObject*>::iterator v = known_symbols.find(strstring);
     if (v == known_symbols.end()) {
         result = Heap::getUniqueInstance()->allocate(SchemeObject::SYMBOL);
-        result->str = strdup(str);
+        result->str = new wchar_t[strstring.size()+1];
+        wcscpy(result->str, str);
         known_symbols[strstring] = result;
         int h = (int) result;
 
@@ -118,13 +120,13 @@ SchemeObject* SchemeObject::createEnvironment(SchemeObject* parent, uint32_t num
     return result;
 }
 
-SchemeObject* SchemeObject::createInputPort(istream* is) {
+SchemeObject* SchemeObject::createInputPort(wistream* is) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::INPUT_PORT);
     result->is = is;
     return result;
 }
 
-SchemeObject* SchemeObject::createOutputPort(ostream* os) {
+SchemeObject* SchemeObject::createOutputPort(wostream* os) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::OUTPUT_PORT);
     result->os = os;
     return result;
@@ -158,7 +160,7 @@ SchemeObject* SchemeObject::createUserProcedure(SchemeObject* name, SchemeObject
     assert(t == SchemeObject::ENVIRONMENT || t == SchemeObject::SIMPLE_ENVIRONMENT);
     SchemeObject* dup = s_find_duplicate(s_formals);
     if (dup != S_FALSE) {
-        throw scheme_exception("Duplicate formal " + dup->toString() + " in " + s_formals->toString());    
+        throw scheme_exception(L"Duplicate formal " + dup->toString() + L" in " + s_formals->toString());    
     }
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::USER_PROCEDURE);
     result->name = name;
@@ -172,7 +174,7 @@ SchemeObject* SchemeObject::createMacro(SchemeObject* name, SchemeObject* envt, 
     assert(t == SchemeObject::ENVIRONMENT || t == SchemeObject::SIMPLE_ENVIRONMENT);
     SchemeObject* dup = s_find_duplicate(s_formals);
     if (dup != S_FALSE) {
-        throw scheme_exception("Duplicate formal " + dup->toString() + " in " + s_formals->toString());    
+        throw scheme_exception(L"Duplicate formal " + dup->toString() + L" in " + s_formals->toString());    
     }
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::MACRO);
     result->name = name;
@@ -180,7 +182,7 @@ SchemeObject* SchemeObject::createMacro(SchemeObject* name, SchemeObject* envt, 
     return result;
 }
 
-SchemeObject* SchemeObject::createInternalProcedure(const char* name) {
+SchemeObject* SchemeObject::createInternalProcedure(const wchar_t* name) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::INTERNAL_PROCEDURE);
     result->name = createSymbol(name);
     return result;
@@ -290,184 +292,162 @@ void SchemeObject::finalize() {
     }    
 }
 
-string SchemeObject::toString() {
-    ostringstream ss;
+wstring SchemeObject::toString() {
+    wostringstream ss;
     ObjectType t = type();
     switch(t) {
         case SchemeObject::UNSPECIFIED :
-            return "#<unspecified>";
+            return L"#<unspecified>";
         case SchemeObject::STRING : {
-            char* s = str;
-            ss << '"';
+            wchar_t* s = str;
+            ss << L'"';
             while(*s) {
-                if (*s == '\\') {
-                    ss << "\\";        
-                } else if (*s == '"') {
-                    ss << "\\\"";        
+                if (*s == L'\\') {
+                    ss << L"\\";        
+                } else if (*s == L'"') {
+                    ss << L"\\\"";        
                 } else {
                     ss << *s;        
                 }
                 s++;   
             }
-            ss << '"';
+            ss << L'"';
             break;
             }
         case SchemeObject::SYMBOL :    
-            return string(str);
+            return wstring(str);
         case SchemeObject::PAIR : {
             if (s_circular_list_p(this) == S_TRUE) {
-                return "#<circular list>";
+                return L"#<circular list>";
             }
-        	ss << "(";
+            ss << L"(";
             SchemeObject *p = this;
             SchemeObject* n;
             while (true) {
-        		ss << i_car(p)->toString();
-        		n = s_cdr(p);
-        		if (n == S_EMPTY_LIST) {
-        			break;
-        		}
-        		if (s_pair_p(n) == S_FALSE) {
-        			ss << " . " << n->toString();
-        			break;
-        		}
-                p = n;
-        		ss << " ";
+        	ss << i_car(p)->toString();
+        	n = s_cdr(p);
+        	if (n == S_EMPTY_LIST) {
+        	    break;
         	}
-        	ss << ")";
+        	if (s_pair_p(n) == S_FALSE) {
+        	    ss << L" . " << n->toString();
+        	    break;
+        	}
+                p = n;
+        	ss << L" ";
+        	}
+        	ss << L")";
     	    }
             break;
         case SchemeObject::NUMBER:	
             ss << value;
             break;
         case SchemeObject::BOOL :    
-            return boolean ? "#t" : "#f";
+            return boolean ? L"#t" : L"#f";
         case SchemeObject::VECTOR :    
-            ss << "#(";
+            ss << L"#(";
             for(int i = 0; i < length; i++) {
                 ss << elems[i]->toString();
                 if (i < length-1) {
                     ss << " ";
                 }
             }
-            ss << ")";
+            ss << L")";
             break;
         case SchemeObject::ENVIRONMENT :    
         case SchemeObject::SIMPLE_ENVIRONMENT :    
-            return "#<environment>";
+            return L"#<environment>";
         case SchemeObject::BLANK :
-            ss << "#<blank heap slot>";
-            break;
+            return L"#<blank heap slot>";
         case SchemeObject::MACRO :
-            ss << "#<macro " << scm2string(name) << ">";
+            ss << L"#<macro " << scm2string(name) << L">";
             break;
         case SchemeObject::CONTINUATION: 
-            return "#<continuation>";
+            return L"#<continuation>";
         case SchemeObject::USER_PROCEDURE :    
-            ss << "#<primitive-procedure " << scm2string(name) << ">";
+            ss << L"#<primitive-procedure " << scm2string(name) << L">";
             break;
         case SchemeObject::BUILT_IN_PROCEDURE :    
-            ss << "#<built-in-procedure " << scm2string(name) << ">";
+            ss << L"#<built-in-procedure " << scm2string(name) << L">";
             break;
         case SchemeObject::INTERNAL_PROCEDURE :    
-            ss << "#<internal-procedure " << scm2string(name) << ">";
+            ss << L"#<internal-procedure " << scm2string(name) << L">";
             break;
         case SchemeObject::WRAPPED_C_OBJECT :
             return wrapped_object->toString();
         case SchemeObject::EOFTYPE :
-            return "#<EOF>";
+            return L"#<EOF>";
         case SchemeObject::INPUT_PORT :
-            return "#<input-port>";
+            return L"#<input-port>";
         case SchemeObject::OUTPUT_PORT :    
-            return "#<output-port>";
+            return L"#<output-port>";
         case SchemeObject::CHAR :    
-            if (c == ' ') {
-                return string("#\\space");
-            } else if (c == '\n') {
-                return string("#\\newline");
+            if (c == L' ') {
+                return L"#\\space";
+            } else if (c == L'\n') {
+                return L"#\\newline";
             } else {
-                ss << "#\\" << string(&c,1);
+                ss << L"#\\" << wstring(&c,1);
             }
             break;
         case SchemeObject::EMPTY_LIST :
-            return "()";
+            return L"()";
         default:
-            stringstream ss;
+            wstringstream ss;
             ss << t;
-            throw scheme_exception("Unknown type " + ss.str() + " in toString()");    
+            throw scheme_exception(L"Unknown type " + ss.str() + L" in toString()");    
     }
     return ss.str();
 }
 
-string SchemeObject::toString(ObjectType t) {
+wstring SchemeObject::toString(ObjectType t) {
     switch(t) {
         case SchemeObject::UNSPECIFIED :
-            return "Unspecified";
+            return L"Unspecified";
         case SchemeObject::STRING :
-            return "String";
+            return L"String";
         case SchemeObject::SYMBOL :    
-            return "Symbol";
+            return L"Symbol";
         case SchemeObject::PAIR :
-            return "Pair";
+            return L"Pair";
         case SchemeObject::NUMBER:	
-            return "Number";
+            return L"Number";
         case SchemeObject::BOOL :    
-            return "Boolean";
+            return L"Boolean";
         case SchemeObject::VECTOR :    
-            return "Vector";
+            return L"Vector";
         case SchemeObject::ENVIRONMENT :    
-            return "Environment";
+            return L"Environment";
         case SchemeObject::SIMPLE_ENVIRONMENT :    
-            return "Simple environment";
+            return L"Simple environment";
         case SchemeObject::BLANK :
-            return "Blank heap spot";
+            return L"Blank heap spot";
         case SchemeObject::MACRO :
-            return "Macro";
+            return L"Macro";
         case SchemeObject::CONTINUATION: 
-            return "Continuation";
+            return L"Continuation";
         case SchemeObject::USER_PROCEDURE :    
-            return "User-procedure";
+            return L"User-procedure";
         case SchemeObject::BUILT_IN_PROCEDURE :    
-            return "Built-in-procedure";
+            return L"Built-in-procedure";
         case SchemeObject::INTERNAL_PROCEDURE :    
-            return "Internal-procedure";
+            return L"Internal-procedure";
         case SchemeObject::WRAPPED_C_OBJECT :
-            return "Wrapped C-object";
+            return L"Wrapped C-object";
         case SchemeObject::EOFTYPE :
-            return "EOF";
+            return L"EOF";
         case SchemeObject::INPUT_PORT :
-            return "Inputport";
+            return L"Inputport";
         case SchemeObject::OUTPUT_PORT :    
-            return "Outputport";
+            return L"Outputport";
         case SchemeObject::CHAR :    
-            return "Char";
+            return L"Char";
         case SchemeObject::EMPTY_LIST :
-            return "Empty list";
+            return L"Empty list";
         default:
-            throw scheme_exception("Unknown type in toString()");    
+            throw scheme_exception(L"Unknown type in toString()");    
     }
 }
-
-//-----------------------------------------------------------
-// Strings
-//-----------------------------------------------------------
-
-wstring SchemeObject::wstr() {
-    wchar_t wcstring[length+1];
-    wcstring[length] = 0;
-    mbstowcs(wcstring, str, length+1);
-    return wstring(wcstring, length);
-        
-    /*        
-    wstring result = wstring(length, 0);
-    for(int32_t i = 0; i < length; i++) {
-        uint16_t wc = 0;
-        result[i] = 41; //wc + (unsigned)str[i];    
-    }            
-    return result; 
-    */
-}
-
 
 //-----------------------------------------------------------
 // Vector
@@ -487,8 +467,8 @@ void SchemeObject::setVectorElem(SchemeObject* o, int i) {
 // Procedure
 //-----------------------------------------------------------
 
-string SchemeObject::nameAsString() {
-    return string(name->str);
+wstring SchemeObject::nameAsString() {
+    return wstring(name->str);
 }
 
 
@@ -529,7 +509,7 @@ SchemeObject* SchemeObject::getBinding(SchemeObject* symbol) {
                 return v->second;
             }
         } else {
-	    throw scheme_exception("Not an environment");
+	    throw scheme_exception(L"Not an environment");
 	}
     }
     return NULL;
@@ -545,7 +525,7 @@ void SchemeObject::defineBinding(SchemeObject* symbol, SchemeObject* o) {
 	// Insert into map
 	binding_map->insert(binding_map_t::value_type(symbol,o), symbol->hash);
     } else {
-	throw scheme_exception("Not an environment");
+	throw scheme_exception(L"Not an environment");
     }
 }
 
@@ -569,10 +549,10 @@ void SchemeObject::setBinding(SchemeObject* symbol, SchemeObject* o) {
                 return;
        	    }
     	} else {
-	    throw scheme_exception("Not an environment");
+	    throw scheme_exception(L"Not an environment");
 	}
     }
-    throw scheme_exception("Unbound variable: " + symbol->toString());
+    throw scheme_exception(L"Unbound variable: " + symbol->toString());
 }
 
 //-----------------------------------------------------------
@@ -581,8 +561,8 @@ void SchemeObject::setBinding(SchemeObject* symbol, SchemeObject* o) {
 SchemeWrappedCObject::~SchemeWrappedCObject() {
 }
 
-string SchemeWrappedCObject::toString() {
-    return "#<wrapped-c-object>";
+wstring SchemeWrappedCObject::toString() {
+    return L"#<wrapped-c-object>";
 }
 
 /**

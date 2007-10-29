@@ -77,7 +77,7 @@ void Heap::reserve(SchemeObject** result, uint32_t num) {
     while (free_slots < num) {
         allocateNewBank();    
     }
-    for(int i = 0; i < num; i++) {
+    for(uint32_t i = 0; i < num; i++) {
         while (true) {
     	    // Scan through current bank while 
        	    // looking for an empty slot
@@ -184,8 +184,8 @@ void Heap::dumpStats() {
         long count = alloced_types[i];
         if (count > 0) {
             total_count += count;
-            string type_name = SchemeObject::toString((SchemeObject::ObjectType)i);        
-            cout << "    " << left << setw(20) << (type_name + "s") << ": " << count << endl;
+            wstring type_name = SchemeObject::toString((SchemeObject::ObjectType)i);        
+            wcout << "    " << left << setw(20) << (type_name + L"s") << ": " << count << endl;
         }    
     }
     cout << "    " << left << setw(20) << "Total" << ": " << total_count << endl;

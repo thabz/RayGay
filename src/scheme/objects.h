@@ -53,7 +53,7 @@ using namespace std;
 class SchemeWrappedCObject {
     public:
         virtual ~SchemeWrappedCObject();    
-        virtual string toString();
+        virtual wstring toString();
         virtual void mark();
         virtual void finalize();
 };
@@ -69,13 +69,13 @@ class SchemeObject
             double value;                  // For numbers
             struct {
                 union {
-                    char* str;             // For strings and symbols
+                    wchar_t* str;          // For strings and symbols
                     SchemeObject* car;     // For pairs
                     bool boolean;          // For booleans
                     ::jmp_buf *jmpbuf;     // For continuations
-                    istream* is;           // For inputports
-                    ostream* os;           // For outputports
-                    char c;                // For chars
+                    wistream* is;          // For inputports
+                    wostream* os;          // For outputports
+                    wchar_t c;             // For chars
                     SchemeObject** elems;  // For vector
                     SchemeObject* parent;  // For environments. Environment.
                     SchemeObject* name;    // For macros and procedures. Symbol.
@@ -129,7 +129,7 @@ class SchemeObject
         void set_immutable(bool flag);
         bool gc_protected() const;
         void set_gc_protected(bool flag);
-        string toString();
+        wstring toString();
         void clear_inuse();
         bool inuse() const;
         void mark();
@@ -147,7 +147,7 @@ class SchemeObject
         void defineBinding(SchemeObject* name, SchemeObject* o);
         void setBinding(SchemeObject* name, SchemeObject* o);
         
-        string nameAsString();
+        wstring nameAsString();
         
         // For WRAPPED_C_OBJECT
         static int registerWrappedObject();
@@ -166,30 +166,30 @@ class SchemeObject
         uint32_t opt() const; // No. of optional arguments
         
         static SchemeObject* createNumber(double number);
-        static SchemeObject* createString(const char* str);
-        static SchemeObject* createChar(char c);
+        static SchemeObject* createString(const wchar_t* str);
+        static SchemeObject* createChar(wchar_t c);
         static SchemeObject* createPair(SchemeObject* car, SchemeObject* cdr);
         static SchemeObject* createVector(SchemeObject* elem, uint32_t length);
         static SchemeObject* createBool(bool b);
         static SchemeObject* createEmptyList();
         static SchemeObject* createUnspecified();
         static SchemeObject* createEOF();
-        static SchemeObject* createSymbol(const char* str);
+        static SchemeObject* createSymbol(const wchar_t* str);
         static SchemeObject* createContinuation();
         static SchemeObject* createEnvironment(SchemeObject* parent, uint32_t num_buckets = 8);
-        static SchemeObject* createInputPort(istream* is);
-        static SchemeObject* createOutputPort(ostream* os);
+        static SchemeObject* createInputPort(wistream* is);
+        static SchemeObject* createOutputPort(wostream* os);
         static SchemeObject* createBuiltinProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
         static SchemeObject* createUserProcedure(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
-        static SchemeObject* createInternalProcedure(const char* name);
+        static SchemeObject* createInternalProcedure(const wchar_t* name);
         static SchemeObject* createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
         static SchemeObject* createWrappedCObject(int subtype, SchemeWrappedCObject*);
         
         // For stats
-        static string toString(ObjectType type);
+        static wstring toString(ObjectType type);
 
     private:
-        static map<string,SchemeObject*> known_symbols;
+        static map<wstring,SchemeObject*> known_symbols;
         static int subtypes_seq;
         
 };

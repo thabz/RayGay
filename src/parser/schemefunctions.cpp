@@ -6,7 +6,7 @@
 
 SchemeObject* iso_goursats_surface(SchemeObject* s_a, SchemeObject* s_b, SchemeObject* s_c, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* s_z)
 {
-    char* proc = "iso-goursats-surface";
+    wchar_t* proc = L"iso-goursats-surface";
     double a = safe_scm2double(s_a, 1, proc);
     double b = safe_scm2double(s_b, 2, proc);
     double c = safe_scm2double(s_c, 3, proc);
@@ -30,7 +30,7 @@ SchemeObject* iso_goursats_surface(SchemeObject* s_a, SchemeObject* s_b, SchemeO
 
 SchemeObject* iso_torus(SchemeObject* s_R, SchemeObject* s_r, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* s_z)
 {
-    char* proc = "iso-torus";
+    wchar_t* proc = L"iso-torus";
     double R = safe_scm2double(s_R, 1, proc);
     double r = safe_scm2double(s_r, 2, proc);
     double x = safe_scm2double(s_x, 3, proc);
@@ -43,7 +43,7 @@ SchemeObject* iso_torus(SchemeObject* s_R, SchemeObject* s_r, SchemeObject* s_x,
 }
 
 void SchemeFunctions::register_procs(Scheme* scheme) {
-    scheme->assign("iso-torus",5,0,0,(SchemeObject* (*)()) iso_torus);
-    scheme->assign("iso-goursats-surface",6,0,0,(SchemeObject* (*)()) iso_goursats_surface);
+    scheme->assign(L"iso-torus",5,0,0,(SchemeObject* (*)()) iso_torus);
+    scheme->assign(L"iso-goursats-surface",6,0,0,(SchemeObject* (*)()) iso_goursats_surface);
 }
 

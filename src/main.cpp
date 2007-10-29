@@ -204,7 +204,7 @@ void* renderThreadDo(void* obj) {
 	     << e.getSourceLine() << endl;
 	exit(EXIT_FAILURE);
     } catch (scheme_exception e) {
-        cerr << "FAIL: " << e.toString() << endl;    
+        wcerr << L"FAIL: " << e.toString() << endl;    
         exit(EXIT_FAILURE);
     }
     return NULL;
@@ -238,7 +238,7 @@ void render_frame(string outputfile, int jobs) {
     Profiler* parser_profiler = Profiler::create("Parsing","Prepare scene");
     parser_profiler->start();
 
-    parser->parse_file(scenefile);
+    parser->parse_file(SchemeFilenames::toString(scenefile));
     parser->populate(scene,renderersettings);
     
     parser_profiler->stop();
@@ -444,7 +444,7 @@ int main(int argc, char *argv[]) {
 		};
 		break;
 	    case 'e':
-		parser->parse_expr(optarg);
+		parser->parse_expr(SchemeFilenames::toString(optarg));
 		break;
 	    case '?':
 		cerr << "Unknown option -" << char(optopt) << endl << endl;
@@ -485,7 +485,7 @@ int main(int argc, char *argv[]) {
 	    << " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
 	return EXIT_FAILURE;
     } catch (scheme_exception e) {
-        cerr << "FAIL: " << e.toString() << endl;    
+        wcerr << L"FAIL: " << e.toString() << endl;    
 	return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

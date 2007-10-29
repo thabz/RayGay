@@ -14,5 +14,5 @@ SchemeObject* s_cons_star(int num, SchemeStack::iterator stack) {
 }
 
 void R6RSLibLists::bind(Scheme* scheme, SchemeObject* envt) {
-    scheme->assign("cons*"                     ,1,0,1, (SchemeObject* (*)()) s_cons_star, envt);
+    scheme->assign(L"cons*"                     ,1,0,1, (SchemeObject* (*)()) s_cons_star, envt);
 }

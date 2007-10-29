@@ -11,8 +11,8 @@ int char_names_num = 2;
 char* char_names[] = {"space","newline"};
 char char_values[] = {' ', '\n'};
 
-Lexer::Token Lexer::nextToken(istream* is) {
-    char n,c;
+Lexer::Token Lexer::nextToken(wistream* is) {
+    wchar_t n,c;
     if (!cache.empty()) {
         Token t = cache.front();
         cache.pop_front();
@@ -31,19 +31,19 @@ Lexer::Token Lexer::nextToken(istream* is) {
         if (is->eof() || c == -1) {
             return Lexer::END;
         }
-        if (c == '\n') {
+        if (c == L'\n') {
             curline++;
         }
         if (isspace(c)) {
             // Skip whitespace
             continue;
         }
-        if (c == ';') {
+        if (c == L';') {
             // Skip single-line comment until end of line or end of stream
             do {
                 c = is->get();
-            } while (c != '\n' && !is->eof());
-            if (c == '\n') {
+            } while (c != L'\n' && !is->eof());
+            if (c == L'\n') {
                 curline++;
             }
             continue;
@@ -160,7 +160,7 @@ Lexer::Token Lexer::nextToken(istream* is) {
                     break;
                 }
             case '"':
-                str = "";
+                str = L"";
                 while (!is->eof()) {
                     c = is->get();
 		    if (c == '\\') {

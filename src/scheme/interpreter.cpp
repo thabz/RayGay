@@ -154,7 +154,7 @@ fn_ptr eval(Interpreter::State* state) {
         SchemeObject* symbol = s;
 	s = state->global_envt->getBinding(symbol);
         if (s == NULL) {
-            throw scheme_exception(symbol->src_line(), "Unbound variable " + string(symbol->str));
+            throw scheme_exception(symbol->src_line(), L"Unbound variable " + wstring(symbol->str));
         }
         state->global_ret = s;
         return NULL;
@@ -162,7 +162,7 @@ fn_ptr eval(Interpreter::State* state) {
         state->global_arg1 = s;
         return (fn_ptr)&eval_list;
     } else {
-        throw scheme_exception("Unknown type: " + s->toString());
+        throw scheme_exception(L"Unknown type: " + s->toString());
     }
 }
 
@@ -262,13 +262,13 @@ fn_ptr eval_list(Interpreter::State* state) {
                 state->global_arg1 = cdr;
                 return (fn_ptr)&eval_or;
             } else {
-                throw scheme_exception(p->src_line(), "Unknown internal procedure: " + proc->toString());	
+                throw scheme_exception(p->src_line(), L"Unknown internal procedure: " + proc->toString());	
             }            
         } else {
-            throw scheme_exception(p->src_line(), "Wrong type to apply : " + proc->toString());	
+            throw scheme_exception(p->src_line(), L"Wrong type to apply : " + proc->toString());	
         }
     } else {
-	throw scheme_exception(s->src_line(), "Unbound variable: " + s->toString());	
+	throw scheme_exception(s->src_line(), L"Unbound variable: " + s->toString());	
     }
     return NULL; // Never reached
 }
@@ -352,7 +352,7 @@ fn_ptr eval_define(Interpreter::State* state) {
     SchemeObject* envt = state->global_envt;
     
     if (p == S_EMPTY_LIST || i_car(p) == S_EMPTY_LIST || i_cdr(p) == S_EMPTY_LIST) {
-        throw scheme_exception(plist->src_line(), "Too few arguments: define");
+        throw scheme_exception(plist->src_line(), L"Too few arguments: define");
     }
     
     if (i_pair_p(i_car(p)) == S_TRUE) {
@@ -360,7 +360,7 @@ fn_ptr eval_define(Interpreter::State* state) {
         SchemeObject* pa = i_car(p);
         SchemeObject* name = i_car(pa);
         if (i_symbol_p(name) == S_FALSE) {
-                throw scheme_exception(plist->src_line(), "Bad variable: define: " + name->toString());
+                throw scheme_exception(plist->src_line(), L"Bad variable: define: " + name->toString());
         }
         SchemeObject* body = i_cdr(p);
 
@@ -373,12 +373,12 @@ fn_ptr eval_define(Interpreter::State* state) {
     } else {
         // (define var value-expr)
         if (i_cddr(p) != S_EMPTY_LIST) {
-            throw scheme_exception(plist->src_line(), "Too many arguments: define");
+            throw scheme_exception(plist->src_line(), L"Too many arguments: define");
         }
         
         SchemeObject* s = i_car(p);
         if (i_symbol_p(s) == S_FALSE) {
-            throw scheme_exception(plist->src_line(), "Bad variable: define: " + s->toString());
+            throw scheme_exception(plist->src_line(), L"Bad variable: define: " + s->toString());
         }
         
         state->global_arg1 = i_car(i_cdr(p));
@@ -408,7 +408,7 @@ fn_ptr eval_apply(Interpreter::State* state) {
     
     state->global_arg1 = s_car(p);
     SchemeObject* proc = trampoline((fn_ptr)&eval, state);
-    assert_arg_type("apply", 1, s_procedure_p, proc);
+    assert_arg_type(L"apply", 1, s_procedure_p, proc);
     
     state->global_arg1 = s_cdr(p);
     SchemeObject* args = trampoline((fn_ptr)&eval_multi, state);
@@ -428,7 +428,7 @@ fn_ptr eval_apply(Interpreter::State* state) {
                     s_set_cdr_e(prev, arg);
                 }
             } else {
-                throw scheme_exception("Illegal argument");
+                throw scheme_exception(L"Illegal argument");
             }
         } else {
             if (collected == S_EMPTY_LIST) {
@@ -475,7 +475,7 @@ fn_ptr eval_combo(Interpreter::State* state) {
     SchemeObject* proc = trampoline((fn_ptr)&eval, state);
     
     if (i_procedure_p(proc) == S_FALSE) {
-	throw scheme_exception("Wrong type to apply: " + s->toString() + " does not resolve to a procedure.");
+	throw scheme_exception(L"Wrong type to apply: " + s->toString() + L" does not resolve to a procedure.");
     }
     
     stack.push_back(proc);
@@ -500,9 +500,9 @@ fn_ptr eval_if(Interpreter::State* state) {
     SchemeObject* p = i_cdr(spair);
 
     if (p == S_EMPTY_LIST) {
-        throw scheme_exception(spair->src_line(), "Condition missing in: if");
+        throw scheme_exception(spair->src_line(), L"Condition missing in: if");
     } else if (i_cdr(p) == S_EMPTY_LIST) {
-        throw scheme_exception(spair->src_line(), "Consequent missing in: if");
+        throw scheme_exception(spair->src_line(), L"Consequent missing in: if");
     }
     
     stack.push_back(p);
@@ -620,7 +620,7 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level, Interpreter:
         } else if (car_p == unquote_splicing_symbol && s_vector_p(o) == S_FALSE) {
             result = eval_unquote_recursive(p,level, state);
             if (s_list_p(result) == S_FALSE) {
-                throw scheme_exception("unquote-splicing must result in a list");
+                throw scheme_exception(L"unquote-splicing must result in a list");
             }
         } else if (car_p == quasiquote_symbol && level == 0) {
             result = s_cons(quasiquote_symbol, eval_quasiquote_recursive(s_cdr(o), level + 1, state));
@@ -716,7 +716,7 @@ fn_ptr eval_user_procedure_call(Interpreter::State* state) {
     
     while (i_pair_p(formals) == S_TRUE) {
         if (args_to_eval == S_EMPTY_LIST) {
-            throw scheme_exception(p->src_line(), "Too few argument given in call to: "+proc->nameAsString());
+            throw scheme_exception(p->src_line(), L"Too few argument given in call to: "+proc->nameAsString());
         }
         
         state->global_arg1 = i_car(args_to_eval);
@@ -732,7 +732,7 @@ fn_ptr eval_user_procedure_call(Interpreter::State* state) {
         SchemeObject* args = trampoline((fn_ptr)&eval_multi, state);
         new_envt->defineBinding(formals, args);
     } else if (args_to_eval != S_EMPTY_LIST) {
-        throw scheme_exception(p->src_line(), "Too many argument given in call to: "+proc->nameAsString());
+        throw scheme_exception(p->src_line(), L"Too many argument given in call to: "+proc->nameAsString());
     }
 
     stack.pop_back();
@@ -771,7 +771,7 @@ fn_ptr eval_built_in_procedure_call(Interpreter::State* state)
     
     for(int i = 0; i < req; i++) {
         if (args == S_EMPTY_LIST) {
-            throw scheme_exception(p->src_line(), "Too few argument given in call to: "+proc->nameAsString());
+            throw scheme_exception(p->src_line(), L"Too few argument given in call to: "+proc->nameAsString());
         }
         state->global_arg1 = i_car(args);
         SchemeObject* arg = trampoline((fn_ptr)&eval, state);
@@ -801,7 +801,7 @@ fn_ptr eval_built_in_procedure_call(Interpreter::State* state)
         }    
     } else {
         if (args != S_EMPTY_LIST) {
-            throw scheme_exception(p->src_line(), "Too many argument given in call to: "+proc->nameAsString());
+            throw scheme_exception(p->src_line(), L"Too many argument given in call to: "+proc->nameAsString());
         }    
     }
     
@@ -836,7 +836,7 @@ fn_ptr eval_built_in_procedure_call(Interpreter::State* state)
                           break;
                 case 8:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3],argsv[4],argsv[5],argsv[6],argsv[7]);
                           break;
-                default:  throw scheme_exception(p->src_line(), "Doesn't support that many args to a built-in function."); 
+                default:  throw scheme_exception(p->src_line(), L"Doesn't support that many args to a built-in function."); 
             }
         }
     } catch (scheme_exception e) {
@@ -871,7 +871,7 @@ fn_ptr eval_procedure_call(Interpreter::State* state) {
 
         for(int i = 0; i < req; i++) {
             if (args == S_EMPTY_LIST) {
-                throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
+                throw scheme_exception(L"Too few argument given in call to "+proc->nameAsString());
             }
             stack.push_back(i_car(args));
             args = i_cdr(args);
@@ -888,7 +888,7 @@ fn_ptr eval_procedure_call(Interpreter::State* state) {
         int num = req + opt;
         
         if (!rst && args != S_EMPTY_LIST) {
-            throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
+            throw scheme_exception(L"Too many argument given in call to "+proc->nameAsString());
         }
         if (rst) {
             while (args != S_EMPTY_LIST) {
@@ -928,11 +928,11 @@ fn_ptr eval_procedure_call(Interpreter::State* state) {
                               break;
                     case 8:   result = (*((SchemeObject* (*)(SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*,SchemeObject*))(proc->fn)))(argsv[0],argsv[1],argsv[2],argsv[3],argsv[4],argsv[5],argsv[6],argsv[7]);
                               break;
-                    default:  throw scheme_exception("Doesn't support that many args to a built-in function."); 
+                    default:  throw scheme_exception(L"Doesn't support that many args to a built-in function."); 
                 }
             }
         } catch (scheme_exception e) {
-            string s = "In call to procedure " + proc->nameAsString() + ": " + e.toString();
+            wstring s = L"In call to procedure " + proc->nameAsString() + L": " + e.toString();
             throw scheme_exception(s);
         }
         for(int i = 0; i < num; i++) {
@@ -949,7 +949,7 @@ fn_ptr eval_procedure_call(Interpreter::State* state) {
 
         while (i_pair_p(formals) == S_TRUE) {
             if (args == S_EMPTY_LIST) {
-                throw scheme_exception("Too few argument given in call to "+proc->nameAsString());
+                throw scheme_exception(L"Too few argument given in call to "+proc->nameAsString());
             }
             new_envt->defineBinding(i_car(formals), i_car(args));
             args = i_cdr(args);
@@ -958,7 +958,7 @@ fn_ptr eval_procedure_call(Interpreter::State* state) {
         if (formals != S_EMPTY_LIST) {
             new_envt->defineBinding(formals, args);
         } else if (args != S_EMPTY_LIST) {
-            throw scheme_exception("Too many argument given in call to "+proc->nameAsString());
+            throw scheme_exception(L"Too many argument given in call to "+proc->nameAsString());
         }
 
         state->global_envt = new_envt;
@@ -986,11 +986,11 @@ fn_ptr eval_set_e(Interpreter::State* state) {
     SchemeObject* envt = state->global_envt;
 
     if (p == S_EMPTY_LIST || i_cdr(p) == S_EMPTY_LIST || i_cddr(p) != S_EMPTY_LIST) {
-        throw scheme_exception("Missing or extra arguments to set!");
+        throw scheme_exception(L"Missing or extra arguments to set!");
     }
     SchemeObject* symbol = i_car(p);
     if (i_symbol_p(symbol) == S_FALSE) {
-        throw scheme_exception("Wrong type argument in position 1.");
+        throw scheme_exception(L"Wrong type argument in position 1.");
     }
 
     state->global_arg1 = i_cadr(p);
@@ -1008,13 +1008,13 @@ fn_ptr eval_cond(Interpreter::State* state) {
     while (i_null_p(p) == S_FALSE) {
         SchemeObject* clause = s_car(p);
         if (i_pair_p(clause) == S_FALSE) {
-            throw scheme_exception("Invalid clause");
+            throw scheme_exception(L"Invalid clause");
         }
         SchemeObject* test_expr = s_car(clause);
         if (test_expr == else_symbol) {
             // Handle (else <expressions> ...)
             if (i_null_p(s_cdr(p)) == S_FALSE) {
-                throw scheme_exception("else-clause must be last");
+                throw scheme_exception(L"else-clause must be last");
             }
             state->global_arg1 = s_cdr(clause);
             return (fn_ptr)&eval_sequence;
@@ -1060,13 +1060,13 @@ fn_ptr eval_case(Interpreter::State* state) {
     while (i_null_p(p) == S_FALSE) {
         SchemeObject* clause = s_car(p);
         if (i_pair_p(clause) == S_FALSE) {
-            throw scheme_exception("Invalid clause");
+            throw scheme_exception(L"Invalid clause");
         }
         SchemeObject* clause_car = s_car(clause);
         if (clause_car == else_symbol) {
             // Handle (else <expressions> ...)
             if (i_null_p(s_cdr(p)) == S_FALSE) {
-                throw scheme_exception("else-clause must be last");
+                throw scheme_exception(L"else-clause must be last");
             }
             stack.pop_back();
             state->global_arg1 = s_cdr(clause);
@@ -1078,7 +1078,7 @@ fn_ptr eval_case(Interpreter::State* state) {
                 return (fn_ptr)&eval_sequence;
             }
         } else {
-            throw scheme_exception("Invalid clause in case-statement");
+            throw scheme_exception(L"Invalid clause in case-statement");
         }
 
         p = s_cdr(p);
@@ -1093,7 +1093,7 @@ fn_ptr eval_let(Interpreter::State* state) {
     SchemeObject* envt = state->global_envt;
     
     if (i_null_p(p) == S_TRUE) {
-        throw scheme_exception("Bad body in let");
+        throw scheme_exception(L"Bad body in let");
     }
     
     SchemeObject* first_arg = i_car(p);
@@ -1103,7 +1103,7 @@ fn_ptr eval_let(Interpreter::State* state) {
     }
     
     if (i_pair_p(first_arg) == S_FALSE && i_null_p(first_arg) == S_FALSE) {
-        throw scheme_exception("Bad body in let");
+        throw scheme_exception(L"Bad body in let");
     }
     
     // Build new bindings
@@ -1136,7 +1136,7 @@ fn_ptr eval_named_let(Interpreter::State* state) {
     p = s_cdr(p);
     
     if (i_pair_p(s_car(p)) == S_FALSE && i_null_p(s_car(p)) == S_FALSE) {
-        throw scheme_exception("Bad formals in let");
+        throw scheme_exception(L"Bad formals in let");
     }
     
     // Extract formals and collect args for a lambda
@@ -1170,15 +1170,15 @@ fn_ptr eval_letstar(Interpreter::State* state) {
     SchemeObject* envt = state->global_envt;
     
     if (i_null_p(p) == S_TRUE) {
-        throw scheme_exception("Bad body in let*");
+        throw scheme_exception(L"Bad body in let*");
     }
     
     if (i_pair_p(s_car(p)) == S_FALSE && i_null_p(s_car(p)) == S_FALSE) {
-        throw scheme_exception("Bad formals in let*: " + s_car(p)->toString());
+        throw scheme_exception(L"Bad formals in let*: " + s_car(p)->toString());
     }
     
     if (i_null_p(s_cdr(p)) == S_TRUE) {
-        throw scheme_exception("Missing body in let*");
+        throw scheme_exception(L"Missing body in let*");
     }
 
     // Build new bindings
@@ -1193,7 +1193,7 @@ fn_ptr eval_letstar(Interpreter::State* state) {
         
 	SchemeObject* sym = s_car(s_car(binding_pairs));
 	if (s_symbol_p(sym) == S_FALSE) {
-	    throw scheme_exception("Bad variable in let*: " + s_car(s_car(binding_pairs))->toString());
+	    throw scheme_exception(L"Bad variable in let*: " + s_car(s_car(binding_pairs))->toString());
 	}
         new_bindings->defineBinding(sym, val);
         binding_pairs = s_cdr(binding_pairs);
@@ -1218,7 +1218,7 @@ fn_ptr eval_define_macro(Interpreter::State* state) {
     formals = s_cdr(formals);
     
     if (i_symbol_p(name) == S_FALSE) {
-        throw scheme_exception("Invalid macro-name in definition: " + name->toString());
+        throw scheme_exception(L"Invalid macro-name in definition: " + name->toString());
     }
 
     SchemeObject* macro = SchemeObject::createMacro(name, envt, formals, body);
@@ -1239,7 +1239,7 @@ fn_ptr eval_call_macro(Interpreter::State* state) {
     
     while (i_pair_p(formals) == S_TRUE) {
         if (args == S_EMPTY_LIST) {
-            throw scheme_exception("Too few argument given in call to macro " + proc->nameAsString());
+            throw scheme_exception(L"Too few argument given in call to macro " + proc->nameAsString());
         }
         new_envt->defineBinding(i_car(formals), i_car(args));
         formals = i_cdr(formals);
@@ -1248,7 +1248,7 @@ fn_ptr eval_call_macro(Interpreter::State* state) {
     if (formals != S_EMPTY_LIST) {
         new_envt->defineBinding(formals, args);
     } else if (args != S_EMPTY_LIST) {
-        throw scheme_exception("Too many argument given in call to macro "+proc->nameAsString());
+        throw scheme_exception(L"Too many argument given in call to macro "+proc->nameAsString());
     }
     
     // cout << "Body: " << proc->s_body->toString() << endl;
@@ -1275,7 +1275,7 @@ fn_ptr eval_do(Interpreter::State* state) {
     SchemeObject* envt = state->global_envt;
 
     if (i_pair_p(s_car(p)) == S_FALSE && i_null_p(s_car(p)) == S_FALSE) {
-        throw scheme_exception("Bad body in do");
+        throw scheme_exception(L"Bad body in do");
     }
 
     // Extract formals and collect evaluated args for a lambda
@@ -1300,19 +1300,19 @@ fn_ptr eval_do(Interpreter::State* state) {
         SchemeObject* binding = i_car(binding_pairs_ptr);
 
         if (i_pair_p(binding) == S_FALSE) {
-            throw scheme_exception("Invalid binding in do-form");
+            throw scheme_exception(L"Invalid binding in do-form");
         }
 
         // Binding symbol
         SchemeObject* varname = i_car(binding);
         if (i_symbol_p(varname) == S_FALSE) {
-            throw scheme_exception("Invalid variable in do: " + varname->toString());
+            throw scheme_exception(L"Invalid variable in do: " + varname->toString());
         }
         varnames[i] = varname;
 
         // Eval initial binding value
         if (i_cdr(binding) == S_EMPTY_LIST) {
-            throw scheme_exception("In do: missing initial value for variable " + varname->toString());
+            throw scheme_exception(L"In do: missing initial value for variable " + varname->toString());
         }
         state->global_arg1 = i_cadr(binding);
         SchemeObject* val = trampoline((fn_ptr)&eval, state);
@@ -1326,7 +1326,7 @@ fn_ptr eval_do(Interpreter::State* state) {
     
     SchemeObject* body = i_cdr(p);
     if (body == S_EMPTY_LIST || i_pair_p(i_car(body)) == S_FALSE) {
-        throw scheme_exception("Missing exit clause in do");
+        throw scheme_exception(L"Missing exit clause in do");
     }
 
     state->global_envt = new_envt;

@@ -1,4 +1,6 @@
 
+#include "scheme/filenames.h"
+
 #include "parser/sceneobjectfactory.h"
 #include "parser/materialfactory.h"
 #include "parser/converters.h"
@@ -35,7 +37,7 @@ SchemeObject* s_sceneobject_p(SchemeObject* object)
 
 SchemeObject* make_sphere(SchemeObject* s_center, SchemeObject* s_radius, SchemeObject* s_material) 
 {
-    char* proc = "make-sphere";
+    wchar_t* proc = L"make-sphere";
     Vector center = scm2vector(s_center, proc, 1);
     double radius = safe_scm2double(s_radius, 2, proc);
     Material* material;
@@ -50,7 +52,7 @@ SchemeObject* make_sphere(SchemeObject* s_center, SchemeObject* s_radius, Scheme
 
 SchemeObject* make_ellipsoid(SchemeObject* s_center, SchemeObject* s_radii, SchemeObject* s_material) 
 {
-    char* proc = "make-ellipsoid";
+    wchar_t* proc = L"make-ellipsoid";
     Vector center = scm2vector(s_center, proc, 1);
     Vector radii = scm2vector(s_radii, proc, 2);
     Material* material;
@@ -65,7 +67,7 @@ SchemeObject* make_ellipsoid(SchemeObject* s_center, SchemeObject* s_radii, Sche
 
 SchemeObject* make_torus(SchemeObject* s_R, SchemeObject* s_r, SchemeObject* s_material) 
 {
-    char* proc = "make-ellipsoid";
+    wchar_t* proc = L"make-to   rus";
     double R = safe_scm2double(s_R, 1, proc);
     double r = safe_scm2double(s_r, 2, proc);
     Material* material;
@@ -80,7 +82,7 @@ SchemeObject* make_torus(SchemeObject* s_R, SchemeObject* s_r, SchemeObject* s_m
 
 SchemeObject* make_box(SchemeObject* s_corner1, SchemeObject* s_corner2, SchemeObject* s_material) 
 {
-    char* proc = "make-box";
+    wchar_t* proc = L"make-box";
     Vector corner1 = scm2vector(s_corner1, proc, 1);
     Vector corner2 = scm2vector(s_corner2, proc, 2);
     Material* material = scm2material(s_material, proc, 3);
@@ -90,7 +92,7 @@ SchemeObject* make_box(SchemeObject* s_corner1, SchemeObject* s_corner2, SchemeO
 
 SchemeObject* make_solid_box(SchemeObject* s_corner1, SchemeObject* s_corner2, SchemeObject* s_material) 
 {
-    char* proc = "make-solid-box";
+    wchar_t* proc = L"make-solid-box";
     Vector corner1 = scm2vector(s_corner1, proc, 1);
     Vector corner2 = scm2vector(s_corner2, proc, 2);
     Material* material;
@@ -105,7 +107,7 @@ SchemeObject* make_solid_box(SchemeObject* s_corner1, SchemeObject* s_corner2, S
 
 SchemeObject* make_cylinder(SchemeObject* s_begin, SchemeObject* s_end, SchemeObject* s_radius, SchemeObject* s_material) 
 {
-    char* proc = "make-cylinder";
+    wchar_t* proc = L"make-cylinder";
     Vector begin = scm2vector(s_begin, proc, 1);
     Vector end = scm2vector(s_end, proc, 2);
     double radius = safe_scm2double(s_radius, 3, proc);
@@ -121,7 +123,7 @@ SchemeObject* make_cylinder(SchemeObject* s_begin, SchemeObject* s_end, SchemeOb
 
 SchemeObject* make_uncapped_cylinder(SchemeObject* s_begin, SchemeObject* s_end, SchemeObject* s_radius, SchemeObject* s_material) 
 {
-    char* proc = "make-uncapped-cylinder";
+    wchar_t* proc = L"make-uncapped-cylinder";
     Vector begin = scm2vector(s_begin, proc, 1);
     Vector end = scm2vector(s_end, proc, 2);
     double radius = safe_scm2double(s_radius, 3, proc);
@@ -137,7 +139,7 @@ SchemeObject* make_uncapped_cylinder(SchemeObject* s_begin, SchemeObject* s_end,
 
 SchemeObject* make_cone(SchemeObject* s_begin, SchemeObject* s_end, SchemeObject* s_radius_begin, SchemeObject* s_radius_end, SchemeObject* s_material) 
 {
-    char* proc = "make-cone";
+    wchar_t* proc = L"make-cone";
     Vector begin = scm2vector(s_begin, proc, 1);
     Vector end = scm2vector(s_end, proc, 2);
     double radius_begin = safe_scm2double(s_radius_begin, 3, proc);
@@ -154,7 +156,7 @@ SchemeObject* make_cone(SchemeObject* s_begin, SchemeObject* s_end, SchemeObject
 
 SchemeObject* make_uncapped_cone(SchemeObject* s_begin, SchemeObject* s_end, SchemeObject* s_radius_begin, SchemeObject* s_radius_end, SchemeObject* s_material) 
 {
-    char* proc = "make-uncapped-cone";
+    wchar_t* proc = L"make-uncapped-cone";
     Vector begin = scm2vector(s_begin, proc, 1);
     Vector end = scm2vector(s_end, proc, 2);
     double radius_begin = safe_scm2double(s_radius_begin, 3, proc);
@@ -174,7 +176,7 @@ SchemeObject* make_uncapped_cone(SchemeObject* s_begin, SchemeObject* s_end, Sch
  */
 SchemeObject* make_extrusion(SchemeObject* s_path, SchemeObject* s_circle, SchemeObject* s_twists, SchemeObject* s_segments, SchemeObject* s_pieces, SchemeObject* s_material)
 {
-    char* proc = "make-extrusion";
+    wchar_t* proc = L"make-extrusion";
     Path* path = scm2path(s_path, proc, 1);
     Path* circle = scm2path(s_circle,proc,2);
     double twists = safe_scm2double(s_twists, 3, proc);
@@ -188,7 +190,7 @@ SchemeObject* make_extrusion(SchemeObject* s_path, SchemeObject* s_circle, Schem
 
 SchemeObject* make_heightfield(SchemeObject* s_texture, SchemeObject* s_box, SchemeObject* s_w_div, SchemeObject* s_d_div, SchemeObject* s_material)
 {
-    char* proc = "make-heightfield";
+    wchar_t* proc = L"make-heightfield";
 
     Texture* texture = scm2texture(s_texture, proc, 1);
     Vector box = scm2vector (s_box, proc, 2);
@@ -202,7 +204,7 @@ SchemeObject* make_heightfield(SchemeObject* s_texture, SchemeObject* s_box, Sch
 
 SchemeObject* make_blob(SchemeObject* s_iso, SchemeObject* s_steps, SchemeObject* s_accuracy, SchemeObject* s_material, SchemeObject* s_atoms)
 {
-    char* proc = "make-blob";
+    wchar_t* proc = L"make-blob";
     double iso = safe_scm2double(s_iso, 1, proc);
     int steps = safe_scm2int(s_steps, 2, proc);
     double accuracy = safe_scm2double(s_accuracy, 3, proc);
@@ -212,13 +214,13 @@ SchemeObject* make_blob(SchemeObject* s_iso, SchemeObject* s_steps, SchemeObject
 
     // Add the atoms
     assert(scm2bool(s_list_p (s_atoms)));
-    uint32_t atoms_num = safe_scm2int(s_length(s_atoms),0,"");
+    uint32_t atoms_num = safe_scm2int(s_length(s_atoms), 0, L"");
     
     for(uint32_t i = 0; i < atoms_num; i++) {
 	SchemeObject* s_atom = s_list_ref(s_atoms, int2scm(i));
 
 	assert(scm2bool(s_list_p (s_atom)));
-	uint32_t length = safe_scm2int(s_length(s_atom),0,"");
+	uint32_t length = safe_scm2int(s_length(s_atom), 0, L"");
 
 	if (length == 3) {
 	    SchemeObject* s_center = s_list_ref(s_atom, int2scm(0));
@@ -248,7 +250,7 @@ SchemeObject* make_blob(SchemeObject* s_iso, SchemeObject* s_steps, SchemeObject
 
 SchemeObject* SceneObjectFactory::make_isosurface(SchemeObject* s_proc, SchemeObject* s_vec_lower, SchemeObject* s_vec_higher, SchemeObject* s_iso, SchemeObject* s_steps, SchemeObject* s_accuracy, SchemeObject* s_material)
 {
-    char* proc = "make-isosurface";
+    wchar_t* proc = L"make-isosurface";
     
     assert_arg_procedure_type(proc, 1, s_proc);
 
@@ -267,7 +269,7 @@ SchemeObject* SceneObjectFactory::make_isosurface(SchemeObject* s_proc, SchemeOb
 
 SchemeObject* SceneObjectFactory::make_parametrized_surface(SchemeObject* s_proc, SchemeObject* s_u_res, SchemeObject* s_v_res, SchemeObject* s_u_close, SchemeObject* s_v_close, SchemeObject* s_material)
 {
-    char* proc = "make-parametrized-surface";
+    wchar_t* proc = L"make-parametrized-surface";
 
     uint32_t uRes = safe_scm2int(s_u_res, 2, proc);
     uint32_t vRes = safe_scm2int(s_v_res, 3, proc);
@@ -281,7 +283,7 @@ SchemeObject* SceneObjectFactory::make_parametrized_surface(SchemeObject* s_proc
 
 SchemeObject* make_mesh(SchemeObject* s_material, SchemeObject* s_vertices, SchemeObject* s_triangles)
 {
-    char* proc = "make-mesh";
+    wchar_t* proc = L"make-mesh";
     uint32_t length;
 
     Material* material = scm2material(s_material, proc, 1);
@@ -289,7 +291,7 @@ SchemeObject* make_mesh(SchemeObject* s_material, SchemeObject* s_vertices, Sche
 
     // Add the vertices
     assert(scm2bool(s_list_p (s_vertices)));
-    length = safe_scm2int(s_length(s_vertices),0,"");
+    length = safe_scm2int(s_length(s_vertices), 0, L"");
     for(uint32_t i = 0; i < length; i++) {
 	SchemeObject* s_vertex = s_list_ref(s_vertices, int2scm(i));
 	Vector vertex = scm2vector(s_vertex, proc, 1);
@@ -299,7 +301,7 @@ SchemeObject* make_mesh(SchemeObject* s_material, SchemeObject* s_vertices, Sche
 
     // Add the triangles
     assert(scm2bool(s_list_p (s_triangles)));
-    length = safe_scm2int(s_length(s_triangles),0,"");
+    length = safe_scm2int(s_length(s_triangles), 0, L"");
     Vector2 uv = Vector2(0,0);
     uint32_t v[3];
     try {
@@ -312,7 +314,9 @@ SchemeObject* make_mesh(SchemeObject* s_material, SchemeObject* s_vertices, Sche
 	    mesh->addTriangle(v);
 	}
     } catch (Exception e) {
-	throw scheme_exception(proc, e.getMessage());
+        // TODO: Do better ie. convert e.getMessage to wchar_t
+        cout << e.getMessage() << endl;
+    	throw scheme_exception(proc);
     }
     cout << "Faces: " << length << endl;
 
@@ -321,21 +325,23 @@ SchemeObject* make_mesh(SchemeObject* s_material, SchemeObject* s_vertices, Sche
 
 SchemeObject* make_ply_mesh(SchemeObject* s_filename, SchemeObject* s_material)
 {
-    char* proc = "make-ply-mesh";
-    string filename = scm2string(s_filename);
+    wchar_t* proc = L"make-ply-mesh";
+    wstring filename = scm2string(s_filename);
     Material* material = scm2material(s_material, proc, 2);
     PLY* ply;
     try {
-        ply = new PLY(filename, material);
+        ply = new PLY(SchemeFilenames::toFilename(filename).c_str(), material);
     } catch (Exception e) {
-    	throw scheme_exception(proc, e.getMessage());
+        // TODO: Do better ie. convert e.getMessage to wchar_t
+        cout << e.getMessage() << endl;
+    	throw scheme_exception(proc);
     }         
     return sceneobject2scm(ply);
 }
 
 SchemeObject* make_bezierpatch(SchemeObject* s_points, SchemeObject* s_xres, SchemeObject* s_yres, SchemeObject* s_material) 
 {
-    char* proc = "make-bezierpatch";
+    wchar_t* proc = L"make-bezierpatch";
 
     vector<Vector> points = scm2vectorlist(s_points, proc,1);
     uint32_t xresolution = safe_scm2int(s_xres, 2, proc);
@@ -349,7 +355,7 @@ SchemeObject* make_bezierpatch(SchemeObject* s_points, SchemeObject* s_xres, Sch
 
 SchemeObject* make_union(SchemeObject* s_things) 
 {
-    char* proc = "make-union";
+    wchar_t* proc = L"make-union";
     Material* material = NULL;
     vector<Solid*> solids;
     
@@ -376,7 +382,7 @@ SchemeObject* make_union(SchemeObject* s_things)
 
 SchemeObject* make_difference(SchemeObject* s_left, SchemeObject* s_right, SchemeObject* s_material) 
 {
-    char* proc = "make-difference";
+    wchar_t* proc = L"make-difference";
     Material* material;
     if (s_material == S_UNSPECIFIED) {
         material = NULL;
@@ -398,7 +404,7 @@ SchemeObject* make_difference(SchemeObject* s_left, SchemeObject* s_right, Schem
 
 SchemeObject* make_intersection(SchemeObject* s_left, SchemeObject* s_right, SchemeObject* s_material) 
 {
-    char* proc = "make-intersection";
+    wchar_t* proc = L"make-intersection";
     Material* material;
     if (s_material == S_UNSPECIFIED) {
         material = NULL;
@@ -421,7 +427,7 @@ SchemeObject* make_intersection(SchemeObject* s_left, SchemeObject* s_right, Sch
 
 SchemeObject* make_julia(SchemeObject* s_c, SchemeObject* s_max_iter, SchemeObject* s_steps, SchemeObject* s_accuracy, SchemeObject* s_w_offset, SchemeObject* s_material)
 {
-    char* proc = "make-julia";
+    wchar_t* proc = L"make-julia";
 
     Quaternion c = scm2quaternion(s_c, proc, 1);
     int max_iter = safe_scm2int(s_max_iter, 2, proc);
@@ -436,7 +442,7 @@ SchemeObject* make_julia(SchemeObject* s_c, SchemeObject* s_max_iter, SchemeObje
 
 SchemeObject* make_marching_cubes(SchemeObject* s_isosurface, SchemeObject* s_subdivisions, SchemeObject* s_adaptive)
 {
-    char* proc = "make-marching-cubes";
+    wchar_t* proc = L"make-marching-cubes";
 
     SceneObject* sobj = scm2sceneobject(s_isosurface, proc, 1);
     IsoSurface* isosurface = dynamic_cast<IsoSurface*>(sobj);
@@ -449,7 +455,7 @@ SchemeObject* make_marching_cubes(SchemeObject* s_isosurface, SchemeObject* s_su
 
 SchemeObject* make_bound(SchemeObject* s_objectgroup)
 {
-    char* proc = "make-bound";
+    wchar_t* proc = L"make-bound";
     SceneObject* sobj = scm2sceneobject(s_objectgroup, proc, 1);
     ObjectGroup* objectgroup = dynamic_cast<ObjectGroup*>(sobj);
     if (objectgroup == NULL) wrong_type_arg(proc,1,s_objectgroup);
@@ -459,7 +465,7 @@ SchemeObject* make_bound(SchemeObject* s_objectgroup)
 
 SchemeObject* make_instance(SchemeObject* s_object, SchemeObject* s_material)
 {
-    char* proc = "make-instance";
+    wchar_t* proc = L"make-instance";
     SceneObject* sobj = scm2sceneobject(s_object, proc, 1);
     Object* obj = dynamic_cast<Object*>(sobj);
     if (obj == NULL) wrong_type_arg(proc,1,s_object);
@@ -477,7 +483,7 @@ SchemeObject* make_instance(SchemeObject* s_object, SchemeObject* s_material)
 
 SchemeObject* bounding_box(SchemeObject* s_obj) 
 {
-    char* proc = "bounding-box";
+    wchar_t* proc = L"bounding-box";
 
     SceneObject* sceneobj = scm2sceneobject(s_obj,proc,1);
     Object* obj = dynamic_cast<Object*>(sceneobj);
@@ -491,14 +497,14 @@ SchemeObject* bounding_box(SchemeObject* s_obj)
 }
 
 SchemeObject* SceneObjectFactory::make_text(SchemeObject* s_text, SchemeObject* s_ttf_file, SchemeObject* s_size, SchemeObject* s_depth, SchemeObject* s_material) {
-    char* proc = "make-text";
-    wstring str = scm2wstring(s_text);
-    string ttf_filename = scm2string(s_ttf_file);
+    wchar_t* proc = L"make-text";
+    wstring str = scm2string(s_text);
+    wstring wttf_filename = scm2string(s_ttf_file);
     double size = safe_scm2double(s_size, 3, proc);
     double depth = safe_scm2double(s_depth, 4, proc);
     Material* material = scm2material(s_material,proc,5);
 
-    TrueTypeFont* font = new TrueTypeFont(ttf_filename);
+    TrueTypeFont* font = new TrueTypeFont(SchemeFilenames::toFilename(wttf_filename));
     Text* text = new Text(str, font, size, depth, material);
     return sceneobject2scm(text);
 }
@@ -507,59 +513,59 @@ SchemeObject* SceneObjectFactory::make_text(SchemeObject* s_text, SchemeObject* 
 void SceneObjectFactory::register_procs(Scheme* s) 
 {
     scheme = s;
-    scheme->assign("sceneobject?",1,0,0,
+    scheme->assign(L"sceneobject?",1,0,0,
 	    (SchemeObject* (*)()) s_sceneobject_p);
-    scheme->assign("make-sphere",2,1,0,
+    scheme->assign(L"make-sphere",2,1,0,
 	    (SchemeObject* (*)()) make_sphere);
-    scheme->assign("make-ellipsoid",2,1,0,
+    scheme->assign(L"make-ellipsoid",2,1,0,
 	    (SchemeObject* (*)()) make_ellipsoid);
-    scheme->assign("make-box",3,0,0,
+    scheme->assign(L"make-box",3,0,0,
 	    (SchemeObject* (*)()) make_box);
-    scheme->assign("make-solid-box",2,1,0,
+    scheme->assign(L"make-solid-box",2,1,0,
 	    (SchemeObject* (*)()) make_solid_box);
-    scheme->assign("make-cylinder",3,1,0,
+    scheme->assign(L"make-cylinder",3,1,0,
 	    (SchemeObject* (*)()) make_cylinder);
-    scheme->assign("make-uncapped-cylinder",3,1,0,
+    scheme->assign(L"make-uncapped-cylinder",3,1,0,
 	    (SchemeObject* (*)()) make_uncapped_cylinder);
-    scheme->assign("make-cone",4,1,0,
+    scheme->assign(L"make-cone",4,1,0,
 	    (SchemeObject* (*)()) make_cone);
-    scheme->assign("make-uncapped-cone",4,1,0,
+    scheme->assign(L"make-uncapped-cone",4,1,0,
 	    (SchemeObject* (*)()) make_uncapped_cone);
-    scheme->assign("make-torus",2,1,0,
+    scheme->assign(L"make-torus",2,1,0,
 	    (SchemeObject* (*)()) make_torus);
-    scheme->assign("make-extrusion",6,0,0,
+    scheme->assign(L"make-extrusion",6,0,0,
 	    (SchemeObject* (*)()) make_extrusion);
-    scheme->assign("make-heightfield",5,0,0,
+    scheme->assign(L"make-heightfield",5,0,0,
 	    (SchemeObject* (*)()) make_heightfield);
-    scheme->assign("make-blob",5,0,0,
+    scheme->assign(L"make-blob",5,0,0,
 	    (SchemeObject* (*)()) make_blob);
-    scheme->assign("make-isosurface",7,0,0,
+    scheme->assign(L"make-isosurface",7,0,0,
 	    (SchemeObject* (*)()) SceneObjectFactory::make_isosurface);
-    scheme->assign("make-mesh",3,0,0,
+    scheme->assign(L"make-mesh",3,0,0,
 	    (SchemeObject* (*)()) make_mesh);
-    scheme->assign("make-ply-mesh",2,0,0,
+    scheme->assign(L"make-ply-mesh",2,0,0,
 	    (SchemeObject* (*)()) make_ply_mesh);
-    scheme->assign("make-bezierpatch",4,0,0,
+    scheme->assign(L"make-bezierpatch",4,0,0,
 	    (SchemeObject* (*)()) make_bezierpatch);
-    scheme->assign("make-difference",2,1,0,
+    scheme->assign(L"make-difference",2,1,0,
 	    (SchemeObject* (*)()) make_difference);
-    scheme->assign("make-intersection",2,1,0,
+    scheme->assign(L"make-intersection",2,1,0,
 	    (SchemeObject* (*)()) make_intersection);
-    scheme->assign("make-union",0,0,1,
+    scheme->assign(L"make-union",0,0,1,
 	    (SchemeObject* (*)()) make_union);
-    scheme->assign("make-parametrized-surface",6,0,0,
+    scheme->assign(L"make-parametrized-surface",6,0,0,
 	    (SchemeObject* (*)()) SceneObjectFactory::make_parametrized_surface);
-    scheme->assign("make-julia",6,0,0,
+    scheme->assign(L"make-julia",6,0,0,
 	    (SchemeObject* (*)()) make_julia);
-    scheme->assign("make-marching-cubes",3,0,0,
+    scheme->assign(L"make-marching-cubes",3,0,0,
 	    (SchemeObject* (*)()) make_marching_cubes);
-    scheme->assign("make-bound",1,0,0,
+    scheme->assign(L"make-bound",1,0,0,
 	    (SchemeObject* (*)()) make_bound);
-    scheme->assign("make-instance",1,1,0,
+    scheme->assign(L"make-instance",1,1,0,
 	    (SchemeObject* (*)()) make_instance);
-    scheme->assign("bounding-box",1,0,0,
+    scheme->assign(L"bounding-box",1,0,0,
 	    (SchemeObject* (*)()) bounding_box);
-    scheme->assign("make-text",5,0,0,
+    scheme->assign(L"make-text",5,0,0,
 	    (SchemeObject* (*)()) SceneObjectFactory::make_text);
 }
 

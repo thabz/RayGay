@@ -7,34 +7,34 @@
 
 SchemeObject* TransformationFactory::rotate(SchemeObject* s_obj, SchemeObject* s_axis, SchemeObject* s_angle) 
 {
-    Vector axis = scm2vector(s_axis, "rotate", 2);
-    double angle = safe_scm2double(s_angle,3,"rotate");
+    Vector axis = scm2vector(s_axis, L"rotate", 2);
+    double angle = safe_scm2double(s_angle, 3, L"rotate");
     Matrix matrix = Matrix::matrixRotate(axis,angle);
-    return transform(s_obj, matrix, "rotate");
+    return transform(s_obj, matrix, L"rotate");
 }
 
 SchemeObject* TransformationFactory::translate(SchemeObject* s_obj, SchemeObject* s_translation) 
 {
-    Vector translation = scm2vector(s_translation, "translate", 2);
+    Vector translation = scm2vector(s_translation, L"translate", 2);
     Matrix matrix = Matrix::matrixTranslate(translation);
-    return transform(s_obj, matrix, "translate");
+    return transform(s_obj, matrix, L"translate");
 }
 
 SchemeObject* TransformationFactory::scale(SchemeObject* s_obj, SchemeObject* s_scale) 
 {
-    Vector scale = scm2vector(s_scale, "scale", 2);
+    Vector scale = scm2vector(s_scale, L"scale", 2);
     Matrix matrix = Matrix::matrixScale(scale);
-    return transform(s_obj, matrix, "scale");
+    return transform(s_obj, matrix, L"scale");
 }
 
 /**
  * Transforms a scene object, a vector or a list of sceneobjects.
  */
-SchemeObject* TransformationFactory::transform(SchemeObject* s_obj, const Matrix& m, char* subr) 
+SchemeObject* TransformationFactory::transform(SchemeObject* s_obj, const Matrix& m, wchar_t* subr) 
 {
     // Tjek if it's a vector
     if (scm2bool(s_vector_p(s_obj))) {
-	if (3 == safe_scm2int(s_vector_length(s_obj),0,"")) {
+	if (3 == safe_scm2int(s_vector_length(s_obj), 0, L"")) {
 	    bool is_num = true;
 	    for(uint32_t i = 0; i < 3; i++) {
 		SchemeObject* thing = s_vector_ref(s_obj, int2scm(i));
@@ -49,7 +49,7 @@ SchemeObject* TransformationFactory::transform(SchemeObject* s_obj, const Matrix
     
     vector<SchemeObject*> objs;
     if (scm2bool(s_list_p(s_obj))) {
-	uint32_t num = safe_scm2int(s_length(s_obj),0,"");
+	uint32_t num = safe_scm2int(s_length(s_obj), 0, L"");
 	for(uint32_t i = 0; i < num; i++) {
 	    SchemeObject* s_value = s_list_ref(s_obj, int2scm(i));
 	    if (scm2bool(s_list_p(s_value))) {
@@ -73,7 +73,7 @@ SchemeObject* TransformationFactory::transform(SchemeObject* s_obj, const Matrix
 
 void TransformationFactory::register_procs(Scheme* scheme) 
 {
-    scheme->assign("rotate",3,0,0,(SchemeObject* (*)()) TransformationFactory::rotate);
-    scheme->assign("translate",2,0,0,(SchemeObject* (*)()) TransformationFactory::translate);
-    scheme->assign("scale",2,0,0,(SchemeObject* (*)()) TransformationFactory::scale);
+    scheme->assign(L"rotate",3,0,0,(SchemeObject* (*)()) TransformationFactory::rotate);
+    scheme->assign(L"translate",2,0,0,(SchemeObject* (*)()) TransformationFactory::translate);
+    scheme->assign(L"scale",2,0,0,(SchemeObject* (*)()) TransformationFactory::scale);
 }

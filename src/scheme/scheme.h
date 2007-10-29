@@ -15,22 +15,22 @@ typedef vector<SchemeObject*> SchemeStack;
 class Scheme {
     public:
         Scheme();
-        SchemeObject* eval(string code, SchemeObject* envt = NULL);
-        SchemeObject* eval(istream* code, SchemeObject* envt = NULL);
+        SchemeObject* eval(wstring code, SchemeObject* envt = NULL);
+        SchemeObject* eval(wistream* code, SchemeObject* envt = NULL);
 
         // For assigning variables in a frame (default top-level)
-        void assign(string variable, double value, SchemeObject* envt = NULL);
-        void assign(string variable, string value, SchemeObject* envt = NULL);
-        void assign(string variable, bool value, SchemeObject* envt = NULL);
-        void assign(string variable, SchemeObject* value, SchemeObject* envt = NULL);
+        void assign(wstring variable, double value, SchemeObject* envt = NULL);
+        void assign(wstring variable, wstring value, SchemeObject* envt = NULL);
+        void assign(wstring variable, bool value, SchemeObject* envt = NULL);
+        void assign(wstring variable, SchemeObject* value, SchemeObject* envt = NULL);
 
         // Look up in frame (default top-level)
-        SchemeObject* lookup(string variable, SchemeObject* envt = NULL);
+        SchemeObject* lookup(wstring variable, SchemeObject* envt = NULL);
         SchemeObject* lookup(SchemeObject* symbol, SchemeObject* envt = NULL);
         SchemeObject* lookupOrFail(SchemeObject* symbol, SchemeObject* envt = NULL);
         
         // For assigning built-in functions at top-level-frame
-	void assign(string variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* b = NULL);
+	void assign(wstring variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* b = NULL);
 
         // For calls from embedding code
         SchemeObject* callProcedure_1(SchemeObject* s_proc, SchemeObject*);
@@ -45,23 +45,23 @@ class Scheme {
 
 class scheme_exception {
     public: 
-	scheme_exception(string error);
-	scheme_exception(char* procname, string error);
-	scheme_exception(uint32_t line, string error);
-        string toString();
+	scheme_exception(wstring error);
+	scheme_exception(wchar_t* procname, wstring error);
+	scheme_exception(uint32_t line, wstring error);
+        wstring toString();
     private:		
-	string str;
-        char* procname;
+	wstring str;
+        wchar_t* procname;
         uint32_t line;
 };
 
 #define wrong_type_arg(procname, argnum, arg) { \
-        ostringstream ss;                                 \
-        ss << "Wrong argument-type in position ";         \
+        wostringstream ss;                                 \
+        ss << L"Wrong argument-type in position ";         \
         ss << argnum;                                     \
-        ss << " in call to ";                             \
-        ss << string(procname);                           \
-        ss << ": " << (arg)->toString();                    \
+        ss << L" in call to ";                             \
+        ss << wstring(procname);                           \
+        ss << L": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
 }
 
@@ -73,11 +73,11 @@ class scheme_exception {
 
 #define assert_arg_pair_type(procname, argnum, arg) {     \
     if (i_pair_p(arg) == S_FALSE) {                       \
-        ostringstream ss;                                 \
+        wostringstream ss;                                 \
         ss << "Wrong argument-type (expecting pair) in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
-        ss << string(procname);                           \
+        ss << wstring(procname);                           \
         ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
     }                                                     \
@@ -85,11 +85,11 @@ class scheme_exception {
 
 #define assert_arg_procedure_type(procname, argnum, arg) {     \
     if (i_procedure_p(arg) == S_FALSE) {                       \
-        ostringstream ss;                                 \
+        wostringstream ss;                                 \
         ss << "Wrong argument-type (expecting procedure) in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
-        ss << string(procname);                           \
+        ss << wstring(procname);                           \
         ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
     }                                                     \
@@ -98,11 +98,11 @@ class scheme_exception {
 
 #define assert_arg_number_type(procname, argnum, arg) {   \
     if (i_number_p(arg) == S_FALSE) {                     \
-        ostringstream ss;                                 \
+        wostringstream ss;                                 \
         ss << "Wrong argument-type (expecting number) in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
-        ss << string(procname);                           \
+        ss << wstring(procname);                           \
         ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
     }                                                     \
@@ -110,11 +110,11 @@ class scheme_exception {
 
 #define assert_arg_int_type(procname, argnum, arg) {   \
     if (s_integer_p(arg) == S_FALSE) {                     \
-        ostringstream ss;                                 \
+        wostringstream ss;                                 \
         ss << "Wrong argument-type (expecting number) in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
-        ss << string(procname);                           \
+        ss << wstring(procname);                           \
         ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
     }                                                     \
@@ -122,12 +122,12 @@ class scheme_exception {
 
 #define assert_arg_symbol_type(procname, argnum, arg) {   \
     if (s_symbol_p(arg) == S_FALSE) {                     \
-        ostringstream ss;                                 \
+        wostringstream ss;                                 \
         ss << "Wrong argument-type (expecting symbol) in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
-        ss << string(procname);                           \
-        ss << ": " << (arg)->toString();                    \
+        ss << procname;                                   \
+        ss << ": " << (arg)->toString();                  \
         throw scheme_exception(ss.str());                 \
     }                                                     \
 }
@@ -137,7 +137,7 @@ class scheme_exception {
     assert_arg_type(procname, argnum, s_integer_p, arg);              \
     int n = scm2int(arg);                                             \
     if (n < from || n > to) {                                         \
-        ostringstream ss;                                             \
+        wostringstream ss;                                             \
         ss << "Integer out of range " << from << " to " << to;        \
         ss << " in position " << argnum;                              \
         ss << " in call to " << procname;                             \
@@ -150,9 +150,9 @@ class scheme_exception {
     assert_arg_type(procname, argnum, s_integer_p, arg);           \
     int n = scm2int(arg);                                          \
     if (n < 0) {                                                   \
-        ostringstream ss;                                          \
+        wostringstream ss;                                          \
         ss << "Negative argument in to position " << argnum;       \
-        ss << " in call to " << string(procname);                  \
+        ss << " in call to " << wstring(procname);                  \
         ss << ": " << (arg)->toString();                             \
         throw scheme_exception(ss.str());                          \
     }                                                              \
@@ -161,10 +161,10 @@ class scheme_exception {
 
 #define assert_arg_not_immutable(procname, argnum, arg) {   \
     if (arg->immutable()) {                                 \
-        ostringstream ss;                                   \
+        wostringstream ss;                                   \
         ss << "Can't modify immutable object in position "; \
         ss << argnum;                                       \
-        ss << " in call to " << string(procname);           \
+        ss << " in call to " << wstring(procname);           \
         ss << ": " << (arg)->toString();                      \
         throw scheme_exception(ss.str());                   \
     }                                                       \
@@ -172,11 +172,11 @@ class scheme_exception {
 
 #define assert_non_atom_type(procname, argnum, arg) {   \
     if (i_pair_p(arg) == S_FALSE && i_null_p(arg) == S_FALSE) { \
-        ostringstream ss;                                 \
+        wostringstream ss;                                 \
         ss << "Wrong argument-type (expecting non-atom) in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
-        ss << string(procname);                           \
+        ss << wstring(procname);                           \
         ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
     }                                                     \
@@ -184,11 +184,11 @@ class scheme_exception {
 
 #define assert_arg_wrapped_type(procname, argnum, arg,subtype) {   \
     if (i_wrapped_object_p(arg,subtype) == S_FALSE) {     \
-        ostringstream ss;                                 \
+        wostringstream ss;                                 \
         ss << "Wrong argument-type (expecting wrapped object subtype" << subtype << ") in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
-        ss << string(procname);                           \
+        ss << wstring(procname);                           \
         ss << ": " << (arg)->toString();                    \
         throw scheme_exception(ss.str());                 \
     }                                                     \
@@ -208,8 +208,7 @@ extern SchemeObject* S_NUMBERS[];
 // Conversion macros
 #define scm2int(o)     (int((o)->value))
 #define scm2double(o)  ((o)->value)
-#define scm2string(o)  (string((o)->str))
-#define scm2wstring(o) ((o)->wstr())
+#define scm2string(o)  (wstring((o)->str))
 #define scm2char(o)    ((o)->c)
 #define scm2bool(o)    ((o) != S_FALSE)
 #define bool2scm(b)    ((b) ? S_TRUE : S_FALSE)

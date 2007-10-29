@@ -17,7 +17,7 @@ class TextureFactory {
 
 	static void register_procs(Scheme* scheme);
 
-	static std::map<std::string,Image*> image_cache;
+	static std::map<std::wstring,Image*> image_cache;
 
 };
 

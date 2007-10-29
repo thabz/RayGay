@@ -6,7 +6,7 @@ Parser::Parser() {
     this->lexer = new Lexer();
 }
 
-SchemeObject* Parser::parse(istream* is) {
+SchemeObject* Parser::parse(wistream* is) {
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* result_tail = S_EMPTY_LIST;
     SchemeObject* o;
@@ -23,7 +23,7 @@ SchemeObject* Parser::parse(istream* is) {
     return result;
 }
 
-SchemeObject* Parser::read(istream* is) {
+SchemeObject* Parser::read(wistream* is) {
     SchemeObject* result;
     Lexer::Token token = lexer->nextToken(is);
     uint32_t cur_line = lexer->getCurline();
@@ -74,9 +74,9 @@ SchemeObject* Parser::read(istream* is) {
            result = NULL;
            break;
         case Lexer::ERROR :
-           throw scheme_exception(cur_line, "Unknown lexer error");
+           throw scheme_exception(cur_line, L"Unknown lexer error");
         default:
-           throw scheme_exception(cur_line, "Unexpected token");
+           throw scheme_exception(cur_line, L"Unexpected token");
     }
     if (result != NULL) {
         result->set_immutable(true);
@@ -84,7 +84,7 @@ SchemeObject* Parser::read(istream* is) {
     return result; 
 }
 
-SchemeObject* Parser::read_list(istream* is) {
+SchemeObject* Parser::read_list(wistream* is) {
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* result_tail = S_EMPTY_LIST;
     Lexer::Token token;
@@ -95,15 +95,15 @@ SchemeObject* Parser::read_list(istream* is) {
         } else if (token == Lexer::PERIOD) {
             SchemeObject* cdr = read(is);
 	    if (result == S_EMPTY_LIST) {
-                throw scheme_exception("Parser: invalid pair");
+                throw scheme_exception(L"Parser: invalid pair");
 	    }
 	    i_set_cdr_e(result_tail, cdr);
             if (lexer->nextToken(is) != Lexer::CLOSE_PAREN) {
-                throw scheme_exception("Parser: invalid pair");
+                throw scheme_exception(L"Parser: invalid pair");
             }
             return result;
         } else if (token == Lexer::END) {
-            throw scheme_exception("Unexpected end of input. Unbalanced parentheses?");
+            throw scheme_exception(L"Unexpected end of input. Unbalanced parentheses?");
         } else {
             lexer->putBack(token);
     	    SchemeObject* newcell = i_cons(read(is), S_EMPTY_LIST);
@@ -118,24 +118,24 @@ SchemeObject* Parser::read_list(istream* is) {
     }
 }
 
-SchemeObject* Parser::read_quoted(istream* is) {
+SchemeObject* Parser::read_quoted(wistream* is) {
     SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
-    return i_cons(SchemeObject::createSymbol("quote"), list);
+    return i_cons(SchemeObject::createSymbol(L"quote"), list);
 }
 
-SchemeObject* Parser::read_quasiquoted(istream* is) {
+SchemeObject* Parser::read_quasiquoted(wistream* is) {
     SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
-    return i_cons(SchemeObject::createSymbol("quasiquote"), list);
+    return i_cons(SchemeObject::createSymbol(L"quasiquote"), list);
 }
 
-SchemeObject* Parser::read_unquoted(istream* is) {
+SchemeObject* Parser::read_unquoted(wistream* is) {
     SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
-    return i_cons(SchemeObject::createSymbol("unquote"), list);
+    return i_cons(SchemeObject::createSymbol(L"unquote"), list);
 }
 
-SchemeObject* Parser::read_unquote_spliced(istream* is) {
+SchemeObject* Parser::read_unquote_spliced(wistream* is) {
     SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
-    return i_cons(SchemeObject::createSymbol("unquote-splicing"), list);
+    return i_cons(SchemeObject::createSymbol(L"unquote-splicing"), list);
 }
 
 // Decorate an object with sourcecode line number.

@@ -16,7 +16,7 @@ class TransformationFactory {
 	static void register_procs(Scheme* scheme);
 
     private:
-	static SchemeObject* transform(SchemeObject* obj, const Matrix& m, char* subr);
+	static SchemeObject* transform(SchemeObject* obj, const Matrix& m, wchar_t* subr);
 };
 
 #endif

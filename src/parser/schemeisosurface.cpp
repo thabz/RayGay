@@ -35,7 +35,7 @@ double SchemeIsosurface::evaluateFunction(const Vector& point) const {
     SchemeObject* z = double2scm(point[2]); 
     SchemeObject* s_result = scheme->callProcedure_3(procedure, x, y, z);
     if (i_number_p(s_result) == S_FALSE) {
-        throw scheme_exception("iso-function didn't return a number: " + procedure->toString());    
+        throw scheme_exception(L"iso-function didn't return a number: " + procedure->toString());    
     }
     double result = scm2double(s_result);
     profiler->stop();

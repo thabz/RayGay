@@ -29,7 +29,7 @@ SchemeObject* s_char_general_category(SchemeObject* c) {
 
 void R6RSLibUnicode::bind(Scheme* scheme, SchemeObject* envt) {
     for(int i = 0; i < LastCatId; i++ ) {
-        category_symbols[i] = SchemeObject::createSymbol(category_names[i]);
+        //category_symbols[i] = SchemeObject::createSymbol(category_names[i]);
     }
-    scheme->assign("char-general-category"         ,1,0,0, (SchemeObject* (*)()) s_char_general_category, envt);
+    scheme->assign(L"char-general-category"         ,1,0,0, (SchemeObject* (*)()) s_char_general_category, envt);
 }
