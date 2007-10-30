@@ -33,8 +33,9 @@ Lexer::Token Lexer::nextToken(wistream* is) {
         }
         if (c == L'\n') {
             curline++;
+	    continue;
         }
-        if (isspace(c)) {
+        if (std::iswspace(c)) {
             // Skip whitespace
             continue;
         }
@@ -51,14 +52,14 @@ Lexer::Token Lexer::nextToken(wistream* is) {
         
         // Support for multiline nested comments as specified in SRFI 30.
 	// Support for datum comments
-        if (c == '#') {
+        if (c == L'#') {
             int d = is->get();
-            if (d == '|') {
+            if (d == L'|') {
                 // Skip (nested) multi-line comment
                 int depth = 1;
                 int p = 0;
                 d = is->get();
-                if (d == '\n') {
+                if (d == L'\n') {
                     curline++;    
                 }
                 while (depth > 0) {
@@ -66,19 +67,19 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                         cerr << "Unexpected end of input in nested comment" << endl;
                         return Lexer::ERROR;
                     }
-                    if (p == '|' && d == '#') { 
+                    if (p == L'|' && d == L'#') { 
                         depth--; p = 0; 
-                    } else if (p == '#' && d == '|') { 
+                    } else if (p == L'#' && d == L'|') { 
                         depth++; p = 0; 
                     }
                     p = d;
                     d = is->get();
-                    if (d == '\n') {
+                    if (d == L'\n') {
                         curline++;    
                     }
                 }
                 continue;
-	    } else if (d == ';') {
+	    } else if (d == L';') {
 	       return Lexer::DATUM_COMMENT;	
             } else {
                 is->unget();
@@ -86,30 +87,30 @@ Lexer::Token Lexer::nextToken(wistream* is) {
         }
 
         switch(c) {
-            case '(':
+            case L'(':
                 return Lexer::OPEN_PAREN;
-            case ')':
+            case L')':
                 return Lexer::CLOSE_PAREN;
-            case '\'':
+            case L'\'':
                 return Lexer::QUOTE;
-            case '`':
+            case L'`':
                 return Lexer::BACKQUOTE;
-            case ',':
+            case L',':
                 n = is->get();
-                if (n == '@') {
+                if (n == L'@') {
                     return Lexer::COMMA_AT;
                 } else {
                     is->unget();
                     return Lexer::COMMA;
                 }
-            case '#': 
+            case L'#': 
                 n = is->get();
-                if ((n == 'f' || n == 't')) {
-		    boolean = (n == 't');
+                if ((n == L'f' || n == L't')) {
+		    boolean = (n == L't');
 		    return Lexer::BOOLEAN;
-                } else if (n == '(') {
+                } else if (n == L'(') {
 		    return Lexer::HASH_OPEN_PAREN;           
-                } else if (n == '\\') {
+                } else if (n == L'\\') {
                     for(int i = 0; i < char_names_num; i++) {
                         int j = 0;
                         char* p = char_names[i];
@@ -117,11 +118,11 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                             if (*p != tolower(is->get())) {
                                 break;
                             } else {
-                                if (*(p+1) == '\0') {
+                                if (*(p+1) == L'\0') {
                                     // Found a match
                                     chr = char_values[i];
                                     c = is->get();
-                                    if (c == ' ' || c == ')' || is->eof()) {
+                                    if (c == L' ' || c == L')' || is->eof()) {
                                         is->unget();
                                         return Lexer::CHAR;
                                     } else {
@@ -140,7 +141,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                     // character such as a space or parenthesis.
                     chr = is->get();
                     c = is->get();
-                    if (c == ' ' || c == ')' || is->eof()) {
+                    if (c == L' ' || c == L')' || is->eof()) {
                         is->unget();
                         return Lexer::CHAR;
                     } else {
@@ -151,21 +152,21 @@ Lexer::Token Lexer::nextToken(wistream* is) {
 		    is->unget();
 		    break;
                 }
-            case '.' :
+            case L'.' :
                 c = is->get();
-                if ((isspace(c))) {
+                if ((std::iswspace(c))) {
                     return Lexer::PERIOD;
                 } else {
                     is->unget();
                     break;
                 }
-            case '"':
+            case L'"':
                 str = L"";
                 while (!is->eof()) {
                     c = is->get();
-		    if (c == '\\') {
+		    if (c == L'\\') {
 		        c = is->get();
-                    } else if (c == '"') {
+                    } else if (c == L'"') {
                         break;
 		    }
 		    str += c;
@@ -174,36 +175,47 @@ Lexer::Token Lexer::nextToken(wistream* is) {
         }
         
         // Try reading as number
-        std::streampos pos = is->tellg();
+        std::wstreampos pos = is->tellg();
         is->unget();
+	locale oldloc = is->getloc();
+	is->imbue(locale("C"));
         (*is) >> number;
+	is->imbue(oldloc);
         if (is->eof() || (!is->fail() && !isSymbolChar(is->peek()))) {
             return Lexer::NUMBER;        
         }
         is->clear();
         is->seekg(pos, ios::beg);
+	if (is->fail()) {
+	    cerr << "Seek failed. Fix number parser!" << endl;
+	    return Lexer::ERROR;
+	}
+	
 
         // Read chars as a symbol
-        str = c;
+	wstringstream ss;
+	ss << c;
         while(!is->eof()) {
-            char c = is->get();
-	    if (c == -1 || is->eof()) {
+            wchar_t e;
+	    e = is->get();
+	    if (e == -1 || is->eof()) {
 		break;
 	    }
-	    if (!isSymbolChar(c)) {
+	    if (!isSymbolChar(e)) {
                 is->unget();
 		break;
 	    }
-            str += c;
+	    ss << e;
         }
+	str = ss.str();
         return Lexer::SYMBOL; 
     }
     // TODO: Check out why the stream has failed and throw exception
     return is->eof() ? Lexer::END : Lexer::ERROR;
 }
 
-bool Lexer::isSymbolChar(char c) {
-    if (isspace(c) || c == ')' || c == '(' || c == ',' || c == '#' || c == '\'' || c == '`') {
+bool Lexer::isSymbolChar(wchar_t c) {
+    if (std::iswspace(c) || c == L')' || c == L'(' || c == L',' || c == L'#' || c == L'\'' || c == L'`') {
 	return false;
     }
     return true;

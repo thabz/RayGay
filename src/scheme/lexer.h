@@ -35,15 +35,15 @@ class Lexer
         wstring getString() { return str; };
         double getNumber() { return number; };
         bool getBool() { return boolean; };
-        char getChar() { return chr; };
+        wchar_t getChar() { return chr; };
         uint32_t getCurline() { return curline; };
         
     private:
-	bool isSymbolChar(char c);
+	bool isSymbolChar(wchar_t c);
         wstring str;
         double number;
         bool boolean;
-        char chr;
+        wchar_t chr;
         uint32_t curline;
         list<istream*> is_stack;
         list<int> curline_stack;
