@@ -177,10 +177,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
         // Try reading as number
         std::wstreampos pos = is->tellg();
         is->unget();
-	locale oldloc = is->getloc();
-	is->imbue(locale("C"));
         (*is) >> number;
-	is->imbue(oldloc);
         if (is->eof() || (!is->fail() && !isSymbolChar(is->peek()))) {
             return Lexer::NUMBER;        
         }
