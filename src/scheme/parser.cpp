@@ -30,7 +30,7 @@ SchemeObject* Parser::read(wistream* is) {
     
     switch(token) {
         case Lexer::NUMBER :
-           result = SchemeObject::createNumber(lexer->getNumber());
+	   result = lexer->getNumber();
            break;
         case Lexer::STRING :
            result = SchemeObject::createString(lexer->getString().c_str());

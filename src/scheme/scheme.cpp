@@ -1552,31 +1552,14 @@ SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base_s) {
 }
 
 SchemeObject* s_string_2_number(SchemeObject* s_string, SchemeObject* base_s) {
-    // TODO: Use i_string_2_number
     assert_arg_type(L"string->number", 1, s_string_p, s_string);
     int base = 10;
     if (base_s != S_UNSPECIFIED) {
         assert_arg_type(L"string->number", 2, s_integer_p, base_s);
         base = scm2int(base_s);
-        if (base != 10 && base != 16 && base != 8) {
-            throw scheme_exception(L"string->number invalid base: " + base_s->toString());
-        }
     }
     wstring str = scm2string(s_string);
-    wistream* is = new wistringstream(str);
-    double d;
-    if (base == 10) {
-        (*is) >> std::setbase(base) >> d;
-    } else {
-        int i;
-        (*is) >> std::setbase(base) >> i;
-        d = double(i);
-    }
-    if (!is->eof() || is->fail()) {
-        return S_FALSE;
-    }
-    delete is;
-    return double2scm(d);
+    return i_string_2_number(str, base);
 }
 
 
@@ -2131,7 +2114,7 @@ wstring extractDigits(wstring s, size_t offset, uint32_t radix) {
 }
 
 /// Returns a number object or S_FALSE in case of failure
-SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
+SchemeObject* i_string_2_number_new(wstring s, uint32_t radix) {
     bool exact = false;
     if (s.size() == 0) {
 	throw scheme_exception(L"Number formatting exception");
@@ -2157,6 +2140,23 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
 
 }
 
+SchemeObject* i_string_2_number(wstring str, uint32_t base) {
+    if (base != 10 && base != 16 && base != 8) {
+	throw scheme_exception(L"string->number invalid base");
+    }
+    wistream* is = new wistringstream(str);
+    double d;
+    if (base == 10) {
+	(*is) >> std::setbase(base) >> d;
+    } else {
+	int i;
+	(*is) >> std::setbase(base) >> i;
+        d = double(i);
+    }
+    if (!is->eof() || is->fail()) {
+        return S_FALSE;
+    }
+    delete is;
+    return double2scm(d);
 
-
-
+}

@@ -6,6 +6,8 @@
 #include <list>
 #include <iostream>
 
+class SchemeObject;
+
 using namespace std;
 
 class Lexer 
@@ -33,7 +35,7 @@ class Lexer
         Token nextToken(wistream* is);
         void putBack(Token token);
         wstring getString() { return str; };
-        double getNumber() { return number; };
+        SchemeObject* getNumber() { return number; };
         bool getBool() { return boolean; };
         wchar_t getChar() { return chr; };
         uint32_t getCurline() { return curline; };
@@ -41,7 +43,7 @@ class Lexer
     private:
 	bool isSymbolChar(wchar_t c);
         wstring str;
-        double number;
+        SchemeObject* number;
         bool boolean;
         wchar_t chr;
         uint32_t curline;

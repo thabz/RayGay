@@ -1,5 +1,6 @@
 
 #include "lexer.h"
+#include "scheme.h"
 #include <sstream>
 #include <cctype>
 
@@ -174,27 +175,11 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                 return Lexer::STRING;
         }
 
-	// TODO: Extract a wstring until reaching a
+	// Extract a wstring s until reaching a
 	// non-isSymbolChar() or is->eof() or is->fail()
-	// Return a number if i_string_2_number succeeds
+	// Return a number if i_string_2_number(s,10) succeeds
 	// otherwise return the wstring as a symbol
-        
-        // Try reading as number
-        std::wstreampos pos = is->tellg();
-        is->unget();
-        (*is) >> number;
-        if (is->eof() || (!is->fail() && !isSymbolChar(is->peek()))) {
-            return Lexer::NUMBER;        
-        }
-        is->clear();
-        is->seekg(pos, ios::beg);
-	if (is->fail()) {
-	    cerr << "Seek failed. Fix number parser!" << endl;
-	    return Lexer::ERROR;
-	}
-	
 
-        // Read chars as a symbol
 	wstringstream ss;
 	ss << c;
         while(!is->eof()) {
@@ -210,7 +195,13 @@ Lexer::Token Lexer::nextToken(wistream* is) {
 	    ss << e;
         }
 	str = ss.str();
-        return Lexer::SYMBOL; 
+
+	number = i_string_2_number(str,10);
+	if (number == S_FALSE) {
+	    return Lexer::SYMBOL; 
+	} else {
+	    return Lexer::NUMBER;
+	}
     }
     // TODO: Check out why the stream has failed and throw exception
     return is->eof() ? Lexer::END : Lexer::ERROR;

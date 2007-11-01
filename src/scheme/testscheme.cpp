@@ -72,10 +72,10 @@ void test_tokenizer() {
     assert(l->nextToken(is) == Lexer::SYMBOL);
     assert(l->getString() == L"+");
     assert(l->nextToken(is) == Lexer::NUMBER);
-    assert(l->getNumber() == 1.5);
+    assert(l->getNumber()->toString() == SchemeObject::createNumber(1.5)->toString());
     assert(l->nextToken(is) == Lexer::OPEN_PAREN);
     assert(l->nextToken(is) == Lexer::NUMBER);
-    assert(l->getNumber() == 2);
+    assert(l->getNumber()->toString() == SchemeObject::createNumber(2)->toString());
     assert(l->nextToken(is) == Lexer::PERIOD);
     assert(l->nextToken(is) == Lexer::STRING);
     assert(l->getString() == L"\\aHej\"");
