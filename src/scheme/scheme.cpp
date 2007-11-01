@@ -2116,6 +2116,7 @@ wstring extractDigits(wstring s, size_t offset, uint32_t radix) {
 /// Returns a number object or S_FALSE in case of failure
 SchemeObject* i_string_2_number_new(wstring s, uint32_t radix) {
     bool exact = false;
+    size_t offset = 0;
     if (s.size() == 0) {
 	throw scheme_exception(L"Number formatting exception");
     }
@@ -2136,8 +2137,27 @@ SchemeObject* i_string_2_number_new(wstring s, uint32_t radix) {
 	    case L'e' :
 	    case L'i' : throw scheme_exception(L"Exactness not supported");
 	}
+	offset += 2;
     }
+    wstring digits = extractDigits(s, offset, radix);
 
+    offset += digits.size();
+    if (offset == s.size()) {
+	// Done. No . or e
+    }
+    if (s[offset] == L'.' && radix == 10) {
+
+    }
+    if (offset == s.size()) {
+	// Done. or e
+    }
+    if (s[offset] == L'e') {
+
+    }
+    if (offset == s.size()) {
+	// Done
+    }
+    return S_FALSE;
 }
 
 SchemeObject* i_string_2_number(wstring str, uint32_t base) {
