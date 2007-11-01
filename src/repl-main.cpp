@@ -5,6 +5,8 @@
 #include "parser/imagefactory.h"
 #include "parser/mathfactory.h"
 
+#include "exception.h"
+
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -76,6 +78,9 @@ int runfile(char* filename) {
         ifs->close();
 	wcerr << L"ABORT: " << e.toString() << endl;
         return EXIT_FAILURE;
+    } catch (Exception e) {
+	cout << L"ABORT: " << e.getMessage() << endl;
+
     }
     ifs->close();
     return EXIT_SUCCESS;
