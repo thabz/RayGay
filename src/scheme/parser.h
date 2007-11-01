@@ -12,7 +12,6 @@ class Parser
 	Parser();
 	SchemeObject* parse(wistream* is);
         SchemeObject* read(wistream* is);
-	static SchemeObject* parseNumber(wstring s, uint32_t radix);
 
     private:
         SchemeObject* read_list(wistream* is);    

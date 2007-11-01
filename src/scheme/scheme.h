@@ -446,6 +446,7 @@ SchemeObject* s_load(SchemeObject* filename);
 
 // My extensions
 SchemeObject* s_find_duplicate(SchemeObject* l);
+SchemeObject* i_string_2_number(wstring s, uint32_t radix);
 
 extern SchemeObject* if_symbol;
 extern SchemeObject* cond_symbol;

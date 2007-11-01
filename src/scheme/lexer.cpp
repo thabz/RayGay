@@ -173,6 +173,11 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                 }
                 return Lexer::STRING;
         }
+
+	// TODO: Extract a wstring until reaching a
+	// non-isSymbolChar() or is->eof() or is->fail()
+	// Return a number if i_string_2_number succeeds
+	// otherwise return the wstring as a symbol
         
         // Try reading as number
         std::wstreampos pos = is->tellg();
