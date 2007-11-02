@@ -307,6 +307,7 @@ double SchemeObject::realValue() const {
     ObjectType t = type();
     if (t == REAL_NUMBER) return real_value;
     else if (t == INTEGER_NUMBER) return double(integer_value);
+    else return -1; // Shouldn't happen
 }
 
 inline
@@ -314,6 +315,7 @@ long SchemeObject::integerValue() const {
     ObjectType t = type();
     if (t == REAL_NUMBER) return long(real_value);
     else if (t == INTEGER_NUMBER) return integer_value;
+    else return -1; // Shouldn't happen
 }
 
 #endif

@@ -1213,6 +1213,7 @@ SchemeObject* s_atan(SchemeObject* y, SchemeObject* x) {
 // In R6RS log takes an optional base argument, which defaults to e for the natural logarithm.
 // Note that log_b(x) = log_k(x) / log_k(b) for any base k
 // For example log2(16) = log(16) / log(2) 
+// TODO: Implement
 SchemeObject* s_log(SchemeObject* n) {
     assert_arg_number_type(L"log", 1, n);
     return double2scm(log(scm2double(n)));
@@ -1664,13 +1665,8 @@ SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base_s) {
             throw scheme_exception(L"number->string invalid base: " + base_s->toString());
         }
     }
-    std::wostringstream ss;
-    if (base != 10 ) {
-        ss << std::setbase(base) << scm2int(n);
-    } else {
-        ss << std::setbase(base) << scm2double(n);
-    }
-    return string2scm(ss.str());
+    wstring s = i_number_2_string(n, base);
+    return string2scm(s);
 }
 
 SchemeObject* s_string_2_number(SchemeObject* s_string, SchemeObject* base_s) {
@@ -2342,4 +2338,23 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
         return SchemeObject::createRealNumber(sign*(t + df) * pow(10,double(e)));;
     }
     return S_FALSE;
+}
+
+wstring i_number_2_string(SchemeObject* o, uint32_t radix) {
+    std::wostringstream ss;
+    SchemeObject::ObjectType type = o->type();
+    if (type == SchemeObject::INTEGER_NUMBER) {
+        ss << std::setbase(radix) << scm2int(o);
+        return ss.str();
+    } else if (type == SchemeObject::REAL_NUMBER) {
+        ss << std::setbase(radix) << scm2double(o);
+        // A bad hack to append ".0" if ss contains no decimal point. FIXME.
+        wstring result = ss.str();
+        if (result.find(L'.') == wstring::npos) {
+            result += L".0";        
+        }
+        return result;
+    } else {
+        throw scheme_exception(L"Only support for integers and reals");
+    }
 }

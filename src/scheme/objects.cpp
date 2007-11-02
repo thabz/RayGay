@@ -348,11 +348,8 @@ wstring SchemeObject::toString() {
     	    }
             break;
         case SchemeObject::INTEGER_NUMBER:
-            ss << integer_value;     
-            break;
         case SchemeObject::REAL_NUMBER:	
-            ss << fixed << setprecision(1) << real_value;
-            break;
+            return i_number_2_string(this, 10);     
         case SchemeObject::BOOL :    
             return boolean ? L"#t" : L"#f";
         case SchemeObject::VECTOR :    
