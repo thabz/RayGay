@@ -404,6 +404,7 @@ SchemeObject* s_inexact_p(SchemeObject* n);
 SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2);
 SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2);
 SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2);
+SchemeObject* s_make_polar(SchemeObject* magnitude, SchemeObject* angle);
 SchemeObject* s_make_rectangular(SchemeObject* real, SchemeObject* imag);
 SchemeObject* s_real_part(SchemeObject* z);
 SchemeObject* s_imag_part(SchemeObject* z);

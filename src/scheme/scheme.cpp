@@ -212,6 +212,7 @@ Scheme::Scheme() {
     	assign(L"negative?"             ,1,0,0, (SchemeObject* (*)()) s_negative_p, scheme_report_environment);
     	assign(L"positive?"             ,1,0,0, (SchemeObject* (*)()) s_positive_p, scheme_report_environment);
     	assign(L"make-rectangular"      ,2,0,0, (SchemeObject* (*)()) s_make_rectangular, scheme_report_environment);
+    	assign(L"make-polar"            ,2,0,0, (SchemeObject* (*)()) s_make_polar, scheme_report_environment);
     	assign(L"real-part"             ,1,0,0, (SchemeObject* (*)()) s_real_part, scheme_report_environment);
     	assign(L"imag-part"             ,1,0,0, (SchemeObject* (*)()) s_imag_part, scheme_report_environment);
     	
@@ -801,7 +802,11 @@ SchemeObject* s_rational_p(SchemeObject* n) {
 }
 
 SchemeObject* s_real_p(SchemeObject* n) {
-    return i_number_p(n);
+    if (n->type() == SchemeObject::COMPLEX_NUMBER) {
+        return n->complexValue().imag() == 0.0 ? S_TRUE : S_FALSE;
+    } else {
+        return i_number_p(n);
+    }
 }
 
 SchemeObject* s_exact_p(SchemeObject* n) {
@@ -1451,7 +1456,16 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
     return int2scm(r);
 }
 
+SchemeObject* s_make_polar(SchemeObject* magnitude, SchemeObject* angle) {
+    assert_arg_type(L"make-polar", 1, s_real_p, magnitude);
+    assert_arg_type(L"make-polar", 2, s_real_p, angle);
+    std::complex<double> z = std::polar(magnitude->realValue(), angle->realValue());
+    return SchemeObject::createComplexNumber(z);
+}
+
 SchemeObject* s_make_rectangular(SchemeObject* real, SchemeObject* imag) {
+    assert_arg_type(L"make-rectangular", 1, s_real_p, real);
+    assert_arg_type(L"make-rectangular", 2, s_real_p, imag);
     return SchemeObject::createComplexNumber(real, imag);        
 }
 
