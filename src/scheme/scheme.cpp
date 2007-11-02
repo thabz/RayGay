@@ -1246,6 +1246,7 @@ SchemeObject* s_exp(SchemeObject* n) {
 
 // Round returns the closest integer to x, rounding to even when x is halfway between two integers.
 SchemeObject* s_round(SchemeObject* n) {
+    if (n->type() == SchemeObject::INTEGER_NUMBER) return n;
     assert_arg_number_type(L"round", 1, n);
     double nn = scm2double(n);
     double flo = floor(nn);
@@ -1269,18 +1270,21 @@ SchemeObject* s_round(SchemeObject* n) {
 
 // Ceiling returns the smallest integer not smaller than x
 SchemeObject* s_ceiling(SchemeObject* n) {
+    if (n->type() == SchemeObject::INTEGER_NUMBER) return n;
     assert_arg_number_type(L"ceiling", 1, n);
     return int2scm(int(ceil(scm2double(n))));
 }
 
 // Floor returns the largest integer not larger than x
 SchemeObject* s_floor(SchemeObject* n) {
+    if (n->type() == SchemeObject::INTEGER_NUMBER) return n;
     assert_arg_number_type(L"floor", 1, n);
     return int2scm(int(floor(scm2double(n))));
 }
 
 // Truncate returns the integer closest to x whose absolute value is not larger than the absolute value of x
 SchemeObject* s_truncate(SchemeObject* n) {
+    if (n->type() == SchemeObject::INTEGER_NUMBER) return n;
     assert_arg_number_type(L"truncate", 1, n);
     double t = scm2double(n);
 #if HAVE_TRUNC
