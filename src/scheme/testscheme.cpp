@@ -72,10 +72,10 @@ void test_tokenizer() {
     assert(l->nextToken(is) == Lexer::SYMBOL);
     assert(l->getString() == L"+");
     assert(l->nextToken(is) == Lexer::NUMBER);
-    assert(l->getNumber()->toString() == SchemeObject::createNumber(1.5)->toString());
+    assert(l->getNumber()->toString() == SchemeObject::createRealNumber(1.5)->toString());
     assert(l->nextToken(is) == Lexer::OPEN_PAREN);
     assert(l->nextToken(is) == Lexer::NUMBER);
-    assert(l->getNumber()->toString() == SchemeObject::createNumber(2)->toString());
+    assert(l->getNumber()->toString() == SchemeObject::createRealNumber(2)->toString());
     assert(l->nextToken(is) == Lexer::PERIOD);
     assert(l->nextToken(is) == Lexer::STRING);
     assert(l->getString() == L"\\aHej\"");
@@ -117,7 +117,7 @@ void test_tokenizer() {
 
 
 void test_objects() {
-    SchemeObject* n = SchemeObject::createNumber(1.0);
+    SchemeObject* n = SchemeObject::createRealNumber(1.0);
     assert(n->type() == SchemeObject::NUMBER);
     assert(n->immutable() == false);
     n->set_immutable(true);

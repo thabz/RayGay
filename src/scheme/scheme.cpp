@@ -42,16 +42,16 @@ unsigned long symgen_counter = 10000;
 SchemeObject* S_TRUE = SchemeObject::createBool(true);
 SchemeObject* S_FALSE = SchemeObject::createBool(false);
 SchemeObject* S_EOF = SchemeObject::createEOF();
-SchemeObject* S_ZERO = SchemeObject::createNumber(0);
-SchemeObject* S_ONE = SchemeObject::createNumber(1);
-SchemeObject* S_TWO = SchemeObject::createNumber(2);
-SchemeObject* S_THREE = SchemeObject::createNumber(3);
-SchemeObject* S_FOUR = SchemeObject::createNumber(4);
-SchemeObject* S_FIVE = SchemeObject::createNumber(5);
-SchemeObject* S_SIX = SchemeObject::createNumber(6);
-SchemeObject* S_SEVEN = SchemeObject::createNumber(7);
-SchemeObject* S_EIGHT = SchemeObject::createNumber(8);
-SchemeObject* S_NINE = SchemeObject::createNumber(9);
+SchemeObject* S_ZERO = SchemeObject::createRealNumber(0);
+SchemeObject* S_ONE = SchemeObject::createRealNumber(1);
+SchemeObject* S_TWO = SchemeObject::createRealNumber(2);
+SchemeObject* S_THREE = SchemeObject::createRealNumber(3);
+SchemeObject* S_FOUR = SchemeObject::createRealNumber(4);
+SchemeObject* S_FIVE = SchemeObject::createRealNumber(5);
+SchemeObject* S_SIX = SchemeObject::createRealNumber(6);
+SchemeObject* S_SEVEN = SchemeObject::createRealNumber(7);
+SchemeObject* S_EIGHT = SchemeObject::createRealNumber(8);
+SchemeObject* S_NINE = SchemeObject::createRealNumber(9);
 SchemeObject* S_UNSPECIFIED = SchemeObject::createUnspecified();
 SchemeObject* S_EMPTY_LIST = SchemeObject::createEmptyList();
 SchemeObject* S_SPACE = char2scm(' ');
@@ -2116,7 +2116,7 @@ string extractDigits(wstring s, size_t offset, uint32_t radix) {
 
 /// Returns a number object or S_FALSE in case of failure
 SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
-    double sign = 1;
+    int sign = 1;
     size_t offset = 0;
     if (s.size() == 0) {
 	return S_FALSE;
@@ -2168,7 +2168,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
     if (offset >= s.size()) {
 	// Done. No . or e
 	// We have an int or a bigint
-        return SchemeObject::createNumber(sign*t);
+        return SchemeObject::createIntegerNumber(sign*t);
     }
     
     double df = 0;
@@ -2190,7 +2190,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
     }
     if (offset >= s.size()) {
 	// Done. No e
-        return SchemeObject::createNumber(sign*(t + df));
+        return SchemeObject::createRealNumber(sign*(t + df));
     }
     
     long e = 0;
@@ -2218,7 +2218,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
         offset += exponent.size();
     }
     if (offset >= s.size()) {
-        return SchemeObject::createNumber(sign*(t + df) * pow(10,double(e)));;
+        return SchemeObject::createRealNumber(sign*(t + df) * pow(10,double(e)));;
     }
     return S_FALSE;
 }

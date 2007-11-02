@@ -14,9 +14,15 @@ int SchemeObject::subtypes_seq = 1;
 // Static factory methods
 //-----------------------------------------------------------
 
-SchemeObject* SchemeObject::createNumber(double number) {
+SchemeObject* SchemeObject::createRealNumber(double number) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::NUMBER);
-    result->value = number;
+    result->real_value = number;
+    return result;
+}
+
+SchemeObject* SchemeObject::createIntegerNumber(long number) {
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::NUMBER);
+    result->real_value = double(number);
     return result;
 }
 
@@ -340,7 +346,7 @@ wstring SchemeObject::toString() {
     	    }
             break;
         case SchemeObject::NUMBER:	
-            ss << value;
+            ss << real_value;
             break;
         case SchemeObject::BOOL :    
             return boolean ? L"#t" : L"#f";

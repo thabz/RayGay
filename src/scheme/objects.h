@@ -66,7 +66,8 @@ class SchemeObject
     public:
         uint32_t metadata;
         union {
-            double value;                  // For numbers
+            double real_value;             // For real numbers
+            long   integer_value;          // For integer numbers
             struct {
                 union {
                     wchar_t* str;          // For strings and symbols
@@ -99,7 +100,13 @@ class SchemeObject
         enum ObjectType {
  		    BLANK,                  // Empty slots in heap
 		    RESERVED,		    // Thead-reserved slots in heap
+		    NUMBERS_ARE_AFTER_HERE,
 		    NUMBER,
+		    COMPLEX_NUMBER,
+		    REAL_NUMBER,
+		    RATIONAL_NUMBER,
+		    INTEGER_NUMBER,
+		    NUMBERS_ARE_BEFORE_HERE,
 		    EMPTY_LIST,
 		    BOOL,
 		    CHAR,
@@ -165,7 +172,8 @@ class SchemeObject
         uint32_t req() const; // No. of required arguments
         uint32_t opt() const; // No. of optional arguments
         
-        static SchemeObject* createNumber(double number);
+        static SchemeObject* createRealNumber(double number);
+        static SchemeObject* createIntegerNumber(long number);
         static SchemeObject* createString(const wchar_t* str);
         static SchemeObject* createChar(wchar_t c);
         static SchemeObject* createPair(SchemeObject* car, SchemeObject* cdr);
