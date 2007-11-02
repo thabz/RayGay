@@ -15,14 +15,14 @@ int SchemeObject::subtypes_seq = 1;
 //-----------------------------------------------------------
 
 SchemeObject* SchemeObject::createRealNumber(double number) {
-    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::NUMBER);
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::REAL_NUMBER);
     result->real_value = number;
     return result;
 }
 
 SchemeObject* SchemeObject::createIntegerNumber(long number) {
-    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::NUMBER);
-    result->real_value = double(number);
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::INTEGER_NUMBER);
+    result->integer_value = number;
     return result;
 }
 
@@ -345,7 +345,10 @@ wstring SchemeObject::toString() {
         	ss << L")";
     	    }
             break;
-        case SchemeObject::NUMBER:	
+        case SchemeObject::INTEGER_NUMBER:
+            ss << integer_value;     
+            break;
+        case SchemeObject::REAL_NUMBER:	
             ss << real_value;
             break;
         case SchemeObject::BOOL :    
@@ -416,8 +419,10 @@ wstring SchemeObject::toString(ObjectType t) {
             return L"Symbol";
         case SchemeObject::PAIR :
             return L"Pair";
-        case SchemeObject::NUMBER:	
-            return L"Number";
+        case SchemeObject::INTEGER_NUMBER:	
+            return L"Integer";
+        case SchemeObject::REAL_NUMBER:	
+            return L"Real";
         case SchemeObject::BOOL :    
             return L"Boolean";
         case SchemeObject::VECTOR :    

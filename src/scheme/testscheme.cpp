@@ -75,7 +75,7 @@ void test_tokenizer() {
     assert(l->getNumber()->toString() == SchemeObject::createRealNumber(1.5)->toString());
     assert(l->nextToken(is) == Lexer::OPEN_PAREN);
     assert(l->nextToken(is) == Lexer::NUMBER);
-    assert(l->getNumber()->toString() == SchemeObject::createRealNumber(2)->toString());
+    assert(l->getNumber()->toString() == SchemeObject::createIntegerNumber(2)->toString());
     assert(l->nextToken(is) == Lexer::PERIOD);
     assert(l->nextToken(is) == Lexer::STRING);
     assert(l->getString() == L"\\aHej\"");
@@ -118,14 +118,14 @@ void test_tokenizer() {
 
 void test_objects() {
     SchemeObject* n = SchemeObject::createRealNumber(1.0);
-    assert(n->type() == SchemeObject::NUMBER);
+    assert(n->type() == SchemeObject::REAL_NUMBER);
     assert(n->immutable() == false);
     n->set_immutable(true);
     assert(n->immutable() == true);
-    assert(n->type() == SchemeObject::NUMBER);
+    assert(n->type() == SchemeObject::REAL_NUMBER);
     n->set_immutable(false);
     assert(n->immutable() == false);
-    assert(n->type() == SchemeObject::NUMBER);
+    assert(n->type() == SchemeObject::REAL_NUMBER);
     assert(sizeof(SchemeObject) == 12);
 }
 
@@ -135,7 +135,7 @@ void test_parser() {
     SchemeObject* t = p->parse(is);
     SchemeObject* e = s_car(t);
     assert(s_car(e)->type() == SchemeObject::SYMBOL);
-    assert(s_cadr(e)->type() == SchemeObject::NUMBER);
+    assert(s_cadr(e)->type() == SchemeObject::REAL_NUMBER);
     SchemeObject* inner = s_caddr(e);
     assert(s_car(inner)->type() == SchemeObject::SYMBOL);
     assert(s_car(inner)->toString() == L"list?");
@@ -427,8 +427,11 @@ void test_math() {
     assert_eval(s, L"(inexact? 2.1)" , L"#t");
     assert_eval(s, L"(inexact? 2)" , L"#f");
     assert_eval(s, L"(complex? 2)" , L"#t");
+    assert_eval(s, L"(complex? 'a)" , L"#f");
     assert_eval(s, L"(real? 2)" , L"#t");
+    assert_eval(s, L"(real? 'a)" , L"#f");
     assert_eval(s, L"(rational? 2)" , L"#t");
+    assert_eval(s, L"(rational? 'a)" , L"#f");
 
     assert_eval(s, L"(round 2.1)" , L"2");
     assert_eval(s, L"(round 2.8)" , L"3");

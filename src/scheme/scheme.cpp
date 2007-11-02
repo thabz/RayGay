@@ -779,22 +779,25 @@ SchemeObject* s_number_p(SchemeObject* p) {
 // (integer? p)
 SchemeObject* s_integer_p(SchemeObject* p) {
     double i;
-    if (p->type() != SchemeObject::NUMBER) {
-        return S_FALSE;
+    if (p->type() == SchemeObject::INTEGER_NUMBER) {
+        return S_TRUE;
+    } else if (p->type() == SchemeObject::REAL_NUMBER) {
+        return ::modf(scm2double(p),&i) == 0.0 ? S_TRUE : S_FALSE;
+    } else {
+        return S_FALSE;    
     }
-    return ::modf(scm2double(p),&i) == 0.0 ? S_TRUE : S_FALSE;
 }
 
 SchemeObject* s_complex_p(SchemeObject* n) {
-    return S_TRUE;
+    return i_number_p(n);
 }
 
 SchemeObject* s_rational_p(SchemeObject* n) {
-    return S_TRUE;
+    return i_number_p(n);
 }
 
 SchemeObject* s_real_p(SchemeObject* n) {
-    return S_TRUE;
+    return i_number_p(n);
 }
 
 SchemeObject* s_exact_p(SchemeObject* n) {
@@ -955,6 +958,18 @@ SchemeObject* s_append(int num, SchemeStack::iterator stack) {
         result = *stack;
     }
     return result;
+}
+
+SchemeObject::ObjectType representativeNumberType(int num, SchemeStack::iterator stack) {
+    SchemeObject::ObjectType type = SchemeObject::INTEGER_NUMBER;
+    for(int i = 0; i < num; i++) {
+        SchemeObject* n = *stack;
+        if (n->type() < type) {
+            type = n->type();        
+        }
+        stack++;    
+    }
+    return type;
 }
 
 SchemeObject* s_plus(int num, SchemeStack::iterator stack) {

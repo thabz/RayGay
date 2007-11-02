@@ -25,7 +25,7 @@ using namespace std;
 #define i_char_p(o)      ((o)->type() == SchemeObject::CHAR ? S_TRUE : S_FALSE)
 #define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
 #define i_vector_p(o)    ((o)->type() == SchemeObject::VECTOR ? S_TRUE : S_FALSE)
-#define i_number_p(o)    ((o)->type() == SchemeObject::NUMBER ? S_TRUE : S_FALSE)
+#define i_number_p(o)    ((o)->type() > SchemeObject::NUMBERS_ARE_AFTER_HERE && (o)->type() < SchemeObject::NUMBERS_ARE_BEFORE_HERE? S_TRUE : S_FALSE)
 #define i_procedure_p(p) (((p)->type() == SchemeObject::BUILT_IN_PROCEDURE ||  \
                            (p)->type() == SchemeObject::CONTINUATION       ||  \
                            (p)->type() == SchemeObject::USER_PROCEDURE     ||  \
@@ -101,7 +101,6 @@ class SchemeObject
  		    BLANK,                  // Empty slots in heap
 		    RESERVED,		    // Thead-reserved slots in heap
 		    NUMBERS_ARE_AFTER_HERE,
-		    NUMBER,
 		    COMPLEX_NUMBER,
 		    REAL_NUMBER,
 		    RATIONAL_NUMBER,
@@ -166,6 +165,10 @@ class SchemeObject
         SchemeObject* s_envt();
         
         void callContinuation(SchemeObject* arg);
+        
+        // For numbers
+        double realValue() const;
+        long integerValue() const;
         
         // For BUILT_IN_PROCEDURE.
         bool rest() const;    // Takes rest argument?
@@ -297,6 +300,20 @@ bool SchemeObject::self_evaluating() const {
 inline
 void* SchemeObject::getWrappedCObject() { 
         return wrapped_object; 
+}
+
+inline
+double SchemeObject::realValue() const {
+    ObjectType t = type();
+    if (t == REAL_NUMBER) return real_value;
+    else if (t == INTEGER_NUMBER) return double(integer_value);
+}
+
+inline
+long SchemeObject::integerValue() const {
+    ObjectType t = type();
+    if (t == REAL_NUMBER) return long(real_value);
+    else if (t == INTEGER_NUMBER) return integer_value;
 }
 
 #endif

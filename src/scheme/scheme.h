@@ -206,8 +206,8 @@ extern SchemeObject* S_TWO;
 extern SchemeObject* S_NUMBERS[];
 
 // Conversion macros
-#define scm2int(o)     (int((o)->real_value))
-#define scm2double(o)  ((o)->real_value)
+#define scm2double(o)  ((o)->realValue())
+#define scm2int(o)     ((o)->integerValue())
 #define scm2string(o)  (wstring((o)->str))
 #define scm2char(o)    ((o)->c)
 #define scm2bool(o)    ((o) != S_FALSE)
