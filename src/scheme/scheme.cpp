@@ -2158,6 +2158,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
         errno = 0;    
         t = strtol(digits.c_str(), NULL, radix);
         if (errno == ERANGE) {
+            // TODO: Create a bigint        
             throw scheme_exception(L"Number out of range");        
         }
             
@@ -2181,6 +2182,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
         errno = 0;    
         long f = strtol(fraction.c_str(), NULL, 10);
         if (errno == ERANGE) {
+            // TODO: Clip fraction to the possible precision.        
             throw scheme_exception(L"Number out of range");        
         }
         df = double(f) / pow(10.0, double(fraction.size()));
