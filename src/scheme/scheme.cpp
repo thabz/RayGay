@@ -10,6 +10,7 @@
 #include <cmath>
 #include <cctype>
 #include <stdexcept>
+#include <cerrno>
 
 #include "lexer.h"
 #include "parser.h"
@@ -2154,7 +2155,12 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
     if (digits.size() == 0) {
         t = 0;   
     } else {
-        t = strtol(digits.c_str(), NULL, radix);    
+        errno = 0;    
+        t = strtol(digits.c_str(), NULL, radix);
+        if (errno == ERANGE) {
+            throw scheme_exception(L"Number out of range");        
+        }
+            
     }
 
     offset += digits.size();
@@ -2172,7 +2178,11 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
             // "." is not a number        
             return S_FALSE;        
         }
+        errno = 0;    
         long f = strtol(fraction.c_str(), NULL, 10);
+        if (errno == ERANGE) {
+            throw scheme_exception(L"Number out of range");        
+        }
         df = double(f) / pow(10.0, double(fraction.size()));
         offset += fraction.size();
     }
@@ -2198,7 +2208,11 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
         if (exponent.size() == 0) {
              return S_FALSE;
         }
+        errno = 0;
         e = esign * strtol(exponent.c_str(), NULL, 10);
+        if (errno == ERANGE) {
+            throw scheme_exception(L"Number out of range");        
+        }
         offset += exponent.size();
     }
     if (offset >= s.size()) {

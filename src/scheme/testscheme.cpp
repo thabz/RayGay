@@ -702,6 +702,7 @@ void test_string() {
     assert_eval(s, L"(string->number \".2e2\")", L"20");
     assert_eval(s, L"(string->number \"8e+3\")", L"8000");
     assert_eval(s, L"(string->number \"8f3\")", L"8000");
+    assert_fail(s, L"(string->number \"#xffffffffffffffffffffff\")");
     assert_eval(s, L"(number->string 256)", L"\"256\"");
     assert_eval(s, L"(number->string 256 16)", L"\"100\"");
     assert_eval(s, L"(string->list \"\")", L"()");
