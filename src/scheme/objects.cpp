@@ -21,6 +21,20 @@ SchemeObject* SchemeObject::createRealNumber(double number) {
     return result;
 }
 
+SchemeObject* SchemeObject::createComplexNumber(SchemeObject* real, SchemeObject* imag) {
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::COMPLEX_NUMBER);
+    result->car = real;
+    result->cdr = imag;
+    return result;
+}
+
+SchemeObject* SchemeObject::createComplexNumber(std::complex<double> c) {
+    Heap* heap = Heap::getUniqueInstance();        
+    SchemeObject* real = createRealNumber(c.real());
+    SchemeObject* imag = createRealNumber(c.imag());
+    return createComplexNumber(real, imag);
+}
+
 SchemeObject* SchemeObject::createIntegerNumber(long number) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::INTEGER_NUMBER);
     result->integer_value = number;
@@ -215,6 +229,14 @@ void SchemeObject::mark() {
                 if (car != NULL) car->mark();
                 if (cdr != NULL) cdr->mark();
                 break;
+            case SchemeObject::COMPLEX_NUMBER :
+                if (car != NULL) car->mark();
+                if (cdr != NULL) cdr->mark();
+                break;
+            case SchemeObject::RATIONAL_NUMBER :
+                car->mark();
+                cdr->mark();
+                break;
             case SchemeObject::VECTOR :    
                 for(int32_t i = 0; i < length; i++) {
                     elems[i]->mark();
@@ -347,8 +369,10 @@ wstring SchemeObject::toString() {
         	ss << L")";
     	    }
             break;
-        case SchemeObject::INTEGER_NUMBER:
+        case SchemeObject::COMPLEX_NUMBER:
         case SchemeObject::REAL_NUMBER:	
+        case SchemeObject::RATIONAL_NUMBER:
+        case SchemeObject::INTEGER_NUMBER:
             return i_number_2_string(this, 10);     
         case SchemeObject::BOOL :    
             return boolean ? L"#t" : L"#f";
@@ -418,10 +442,14 @@ wstring SchemeObject::toString(ObjectType t) {
             return L"Symbol";
         case SchemeObject::PAIR :
             return L"Pair";
-        case SchemeObject::INTEGER_NUMBER:	
-            return L"Integer";
+        case SchemeObject::COMPLEX_NUMBER:	
+            return L"Complex";
         case SchemeObject::REAL_NUMBER:	
             return L"Real";
+        case SchemeObject::RATIONAL_NUMBER:	
+            return L"Rational";
+        case SchemeObject::INTEGER_NUMBER:	
+            return L"Integer";
         case SchemeObject::BOOL :    
             return L"Boolean";
         case SchemeObject::VECTOR :    

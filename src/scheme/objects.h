@@ -6,6 +6,8 @@
 #include <map>
 #include <setjmp.h>
 #include <cassert>
+#include <complex>
+
 #include "collections/bucket_map.h"
 #include "bigint.h"
 
@@ -175,6 +177,8 @@ class SchemeObject
         uint32_t req() const; // No. of required arguments
         uint32_t opt() const; // No. of optional arguments
         
+        static SchemeObject* createComplexNumber(std::complex<double> c);
+        static SchemeObject* createComplexNumber(SchemeObject* real, SchemeObject* imag);
         static SchemeObject* createRealNumber(double number);
         static SchemeObject* createIntegerNumber(long number);
         static SchemeObject* createString(const wchar_t* str);

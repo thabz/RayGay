@@ -211,6 +211,8 @@ Scheme::Scheme() {
     	assign(L"zero?"                 ,1,0,0, (SchemeObject* (*)()) s_zero_p, scheme_report_environment);
     	assign(L"negative?"             ,1,0,0, (SchemeObject* (*)()) s_negative_p, scheme_report_environment);
     	assign(L"positive?"             ,1,0,0, (SchemeObject* (*)()) s_positive_p, scheme_report_environment);
+    	assign(L"make-rectangular"      ,2,0,0, (SchemeObject* (*)()) s_make_rectangular, scheme_report_environment);
+    	
     	assign(L"not"                   ,1,0,0, (SchemeObject* (*)()) s_not, scheme_report_environment);
     	assign(L"make-vector"           ,1,1,0, (SchemeObject* (*)()) s_make_vector, scheme_report_environment);
     	assign(L"vector"                ,0,0,1, (SchemeObject* (*)()) s_vector, scheme_report_environment);
@@ -1447,6 +1449,9 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
     return int2scm(r);
 }
 
+SchemeObject* s_make_rectangular(SchemeObject* real, SchemeObject* imag) {
+    return SchemeObject::createComplexNumber(real, imag);        
+}
 
 SchemeObject* s_even_p(SchemeObject* n) {
     assert_arg_type(L"even?", 1, s_integer_p, n);

@@ -392,6 +392,7 @@ SchemeObject* s_inexact_p(SchemeObject* n);
 SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2);
 SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2);
 SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2);
+SchemeObject* s_make_rectangular(SchemeObject* real, SchemeObject* imag);
 
 // String stuff
 SchemeObject* s_make_string(SchemeObject* len, SchemeObject* chr);
