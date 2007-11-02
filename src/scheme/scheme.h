@@ -120,6 +120,18 @@ class scheme_exception {
     }                                                     \
 }
 
+#define assert_arg_complex_type(procname, argnum, arg) {   \
+    if (s_complex_p(arg) == S_FALSE) {                     \
+        wostringstream ss;                                 \
+        ss << "Wrong argument-type (expecting complex) in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << wstring(procname);                           \
+        ss << ": " << (arg)->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
 #define assert_arg_symbol_type(procname, argnum, arg) {   \
     if (s_symbol_p(arg) == S_FALSE) {                     \
         wostringstream ss;                                 \
@@ -393,6 +405,8 @@ SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2);
 SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2);
 SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2);
 SchemeObject* s_make_rectangular(SchemeObject* real, SchemeObject* imag);
+SchemeObject* s_real_part(SchemeObject* z);
+SchemeObject* s_imag_part(SchemeObject* z);
 
 // String stuff
 SchemeObject* s_make_string(SchemeObject* len, SchemeObject* chr);

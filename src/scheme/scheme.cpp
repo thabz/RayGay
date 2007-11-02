@@ -212,6 +212,8 @@ Scheme::Scheme() {
     	assign(L"negative?"             ,1,0,0, (SchemeObject* (*)()) s_negative_p, scheme_report_environment);
     	assign(L"positive?"             ,1,0,0, (SchemeObject* (*)()) s_positive_p, scheme_report_environment);
     	assign(L"make-rectangular"      ,2,0,0, (SchemeObject* (*)()) s_make_rectangular, scheme_report_environment);
+    	assign(L"real-part"             ,1,0,0, (SchemeObject* (*)()) s_real_part, scheme_report_environment);
+    	assign(L"imag-part"             ,1,0,0, (SchemeObject* (*)()) s_imag_part, scheme_report_environment);
     	
     	assign(L"not"                   ,1,0,0, (SchemeObject* (*)()) s_not, scheme_report_environment);
     	assign(L"make-vector"           ,1,1,0, (SchemeObject* (*)()) s_make_vector, scheme_report_environment);
@@ -1453,13 +1455,25 @@ SchemeObject* s_make_rectangular(SchemeObject* real, SchemeObject* imag) {
     return SchemeObject::createComplexNumber(real, imag);        
 }
 
+SchemeObject* s_real_part(SchemeObject* z) {
+    assert_arg_complex_type(L"real-part", 1, z);
+    std::complex<double> zz = z->complexValue();
+    return double2scm(zz.real());
+}
+
+SchemeObject* s_imag_part(SchemeObject* z) {
+    assert_arg_complex_type(L"imag-part", 1, z);
+    std::complex<double> zz = z->complexValue();
+    return double2scm(zz.imag());
+}
+
 SchemeObject* s_even_p(SchemeObject* n) {
-    assert_arg_type(L"even?", 1, s_integer_p, n);
+    assert_arg_int_type(L"even?", 1, n);
     return (scm2int(n) & 0x1) == 0 ? S_TRUE : S_FALSE;
 }
 
 SchemeObject* s_odd_p(SchemeObject* n) {
-    assert_arg_type(L"odd?", 1, s_integer_p, n);
+    assert_arg_int_type(L"odd?", 1, n);
     return (scm2int(n) & 0x1) == 1 ? S_TRUE : S_FALSE;
 }
 

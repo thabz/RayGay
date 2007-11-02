@@ -29,7 +29,6 @@ SchemeObject* SchemeObject::createComplexNumber(SchemeObject* real, SchemeObject
 }
 
 SchemeObject* SchemeObject::createComplexNumber(std::complex<double> c) {
-    Heap* heap = Heap::getUniqueInstance();        
     SchemeObject* real = createRealNumber(c.real());
     SchemeObject* imag = createRealNumber(c.imag());
     return createComplexNumber(real, imag);
@@ -230,8 +229,8 @@ void SchemeObject::mark() {
                 if (cdr != NULL) cdr->mark();
                 break;
             case SchemeObject::COMPLEX_NUMBER :
-                if (car != NULL) car->mark();
-                if (cdr != NULL) cdr->mark();
+                car->mark();
+                cdr->mark();
                 break;
             case SchemeObject::RATIONAL_NUMBER :
                 car->mark();

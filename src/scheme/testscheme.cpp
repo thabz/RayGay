@@ -443,6 +443,11 @@ void test_math() {
     assert_eval(s, L"(real? 'a)" , L"#f");
     assert_eval(s, L"(rational? 2)" , L"#t");
     assert_eval(s, L"(rational? 'a)" , L"#f");
+    assert_eval(s, L"(real-part (make-rectangular 1.0 2.0))", L"1.0");
+    assert_eval(s, L"(imag-part (make-rectangular 1.0 2.0))", L"2.0");
+    assert_eval(s, L"(real-part 3.0)", L"3.0");
+    assert_eval(s, L"(imag-part 3.0)", L"0.0");
+    assert_eval(s, L"(real-part 5)", L"5.0");
 
     assert_eval(s, L"(round 2.1)" , L"2");
     assert_eval(s, L"(round 2.8)" , L"3");

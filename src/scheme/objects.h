@@ -169,7 +169,9 @@ class SchemeObject
         void callContinuation(SchemeObject* arg);
         
         // For numbers
+        std::complex<double> complexValue() const;
         double realValue() const;
+        std::pair<long,long> rationalValue() const;
         long integerValue() const;
         
         // For BUILT_IN_PROCEDURE.
@@ -307,6 +309,14 @@ void* SchemeObject::getWrappedCObject() {
 }
 
 inline
+long SchemeObject::integerValue() const {
+    ObjectType t = type();
+    if (t == REAL_NUMBER) return long(real_value);
+    else if (t == INTEGER_NUMBER) return integer_value;
+    else return -1; // Shouldn't happen
+}
+
+inline
 double SchemeObject::realValue() const {
     ObjectType t = type();
     if (t == REAL_NUMBER) return real_value;
@@ -315,11 +325,13 @@ double SchemeObject::realValue() const {
 }
 
 inline
-long SchemeObject::integerValue() const {
+std::complex<double> SchemeObject::complexValue() const {
     ObjectType t = type();
-    if (t == REAL_NUMBER) return long(real_value);
-    else if (t == INTEGER_NUMBER) return integer_value;
-    else return -1; // Shouldn't happen
+    if (t == COMPLEX_NUMBER) {
+        return std::complex<double>(car->realValue(), cdr->realValue());    
+    } else {
+        return std::complex<double>(realValue());    
+    }
 }
 
 #endif
