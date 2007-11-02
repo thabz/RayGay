@@ -2076,9 +2076,9 @@ SchemeObject* s_load(SchemeObject* s_filename) {
 int extractDigit(wchar_t c, uint32_t radix) {
     int result = -1;
     result = c - L'0';
-    if (radix == 16) {
+    if (radix > 10) {
 	if (result < 0 || result > 9) {
-	    result = 10 + (tolower(c) - 'a');
+	    result = 10 + (towlower(c) - L'a');
 	}
     }
     
@@ -2090,39 +2090,39 @@ int extractDigit(wchar_t c, uint32_t radix) {
     }
 }
 
-wchar_t digitToChar(int d, uint32_t radix) {
-    if (radix == 16 && d > 9) {
-	return L'a' + d;
+char digitToChar(int d, uint32_t radix) {
+    if (radix > 10 && d > 9) {
+	return 'a' + (d - 10);
     } else {
-	return L'0' + d;
+	return '0' + d;
     }
 }
 
-wstring extractDigits(wstring s, size_t offset, uint32_t radix) {
-    wstring result;
+string extractDigits(wstring s, size_t offset, uint32_t radix) {
+    string result;
     uint32_t i = 0;
     while (offset + i < s.size()) {
 	wchar_t digit = s[offset+i];
-	int d = extractDigit(digit,radix);
+	int d = extractDigit(digit, radix);
 	if (d == -1) {
 	    return result;
 	}
-	result += digitToChar(d,radix);
+	result += digitToChar(d, radix);
 	i++;
     }
     return result;
 }
 
 /// Returns a number object or S_FALSE in case of failure
-SchemeObject* i_string_2_number_new(wstring s, uint32_t radix) {
-    bool exact = false;
+SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
+    double sign = 1;
     size_t offset = 0;
     if (s.size() == 0) {
-	throw scheme_exception(L"Number formatting exception");
+	return S_FALSE;
     }
     if (s[0] == L'#') {
 	if (s.size() == 1) {
-	    throw scheme_exception(L"Number formatting exception");
+            return S_FALSE;
 	}
 	wchar_t prefix = s[1];
 	switch(prefix) {
@@ -2135,48 +2135,74 @@ SchemeObject* i_string_2_number_new(wstring s, uint32_t radix) {
             case L'o' : radix = 8;
 			break;
 	    case L'e' :
-	    case L'i' : throw scheme_exception(L"Exactness not supported");
+            case L'i' : break;
 	}
 	offset += 2;
     }
-    wstring digits = extractDigits(s, offset, radix);
-
-    offset += digits.size();
-    if (offset == s.size()) {
-	// Done. No . or e
+    if (s[offset] == L'-') {
+        offset++;   
+        sign = -1;    
+    } else if (s[offset] == L'+') {
+        offset++;   
     }
-    if (s[offset] == L'.' && radix == 10) {
-
-    }
-    if (offset == s.size()) {
-	// Done. or e
-    }
-    if (s[offset] == L'e') {
-
-    }
-    if (offset == s.size()) {
-	// Done
-    }
-    return S_FALSE;
-}
-
-SchemeObject* i_string_2_number(wstring str, uint32_t base) {
-    if (base != 10 && base != 16 && base != 8) {
-	throw scheme_exception(L"string->number invalid base");
-    }
-    wistream* is = new wistringstream(str);
-    double d;
-    if (base == 10) {
-	(*is) >> std::setbase(base) >> d;
-    } else {
-	int i;
-	(*is) >> std::setbase(base) >> i;
-        d = double(i);
-    }
-    if (!is->eof() || is->fail()) {
+    if (offset >= s.size()) {
         return S_FALSE;
     }
-    delete is;
-    return double2scm(d);
+    
+    string digits = extractDigits(s, offset, radix);
+    long t;
+    if (digits.size() == 0) {
+        t = 0;   
+    } else {
+        t = strtol(digits.c_str(), NULL, radix);    
+    }
 
+    offset += digits.size();
+    if (offset >= s.size()) {
+	// Done. No . or e
+	// We have an int or a bigint
+        return SchemeObject::createNumber(sign*t);
+    }
+    
+    double df = 0;
+    if (s[offset] == L'.' && radix == 10) {
+        offset++;
+        string fraction = extractDigits(s, offset, 10);
+        if (digits.size() == 0 && fraction.size() == 0) {
+            // "." is not a number        
+            return S_FALSE;        
+        }
+        long f = strtol(fraction.c_str(), NULL, 10);
+        df = double(f) / pow(10.0, double(fraction.size()));
+        offset += fraction.size();
+    }
+    if (offset >= s.size()) {
+	// Done. No e
+        return SchemeObject::createNumber(sign*(t + df));
+    }
+    
+    long e = 0;
+    if (radix == 10 && (s[offset] == L'e' || s[offset] == L's' ||
+                        s[offset] == L'f' || s[offset] == L'd' || s[offset] == L'l')) {
+        offset++;
+        long esign = 1;
+        if (s[offset] == '-') {
+            esign = -1;
+            offset++;
+        }
+        if (s[offset] == '+') {
+            esign = 1;
+            offset++;
+        }
+        string exponent = extractDigits(s, offset, 10);
+        if (exponent.size() == 0) {
+             return S_FALSE;
+        }
+        e = esign * strtol(exponent.c_str(), NULL, 10);
+        offset += exponent.size();
+    }
+    if (offset >= s.size()) {
+        return SchemeObject::createNumber(sign*(t + df) * pow(10,double(e)));;
+    }
+    return S_FALSE;
 }
