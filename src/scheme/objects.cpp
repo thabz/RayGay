@@ -2,6 +2,7 @@
 #include "objects.h"
 #include "scheme.h"
 #include <sstream>
+#include <iomanip>
 #include "heap.h"
 
 // Map of known symbols
@@ -301,6 +302,7 @@ void SchemeObject::finalize() {
 wstring SchemeObject::toString() {
     wostringstream ss;
     ObjectType t = type();
+    
     switch(t) {
         case SchemeObject::UNSPECIFIED :
             return L"#<unspecified>";
@@ -349,7 +351,7 @@ wstring SchemeObject::toString() {
             ss << integer_value;     
             break;
         case SchemeObject::REAL_NUMBER:	
-            ss << real_value;
+            ss << fixed << setprecision(1) << real_value;
             break;
         case SchemeObject::BOOL :    
             return boolean ? L"#t" : L"#f";

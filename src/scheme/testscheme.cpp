@@ -225,7 +225,7 @@ void test_interpreter() {
     assert_eval(s, L"(apply * 1 2 (list 3 4))", L"24");
     assert_eval(s, L"(apply apply `(,+ ,(list 1 2)))", L"3");
     s->eval(L"(define compose (lambda (f g) (lambda args (f (apply g args)))))");
-    assert_eval(s, L"((compose sqrt *) 12 75)", L"30");  // R^5RS, Section 6.4.
+    assert_eval(s, L"((compose sqrt *) 12 75)", L"30.0");  // R^5RS, Section 6.4.
     
     assert_eval(s, L"(case (* 2 3) ((2 3 5 7) 'prime) ((1 4 6 8 9) 'composite))", L"composite");
     assert_eval(s, L"(case (car '(c d)) ((a) 'a) ((b) 'b))", L"#<unspecified>");
@@ -362,9 +362,9 @@ void test_symbols() {
 void test_math() {
     Scheme* s = new Scheme();
     assert_eval(s, L"-3" , L"-3");
-    assert_eval(s, L"-3.0" , L"-3");
+    assert_eval(s, L"-3.0" , L"-3.0");
     assert_eval(s, L"+3" , L"3");
-    assert_eval(s, L"1e1" , L"10");
+    assert_eval(s, L"1e1" , L"10.0");
     assert_eval(s, L"(+ 1 2 3)" , L"6");
     assert_eval(s, L"(+)" , L"0");
     assert_eval(s, L"(- 3)" , L"-3");
@@ -373,7 +373,7 @@ void test_math() {
     assert_fail(s, L"(- 'a)");
     assert_fail(s, L"(-)");
     assert_eval(s, L"(/ 2)" , L"0.5");
-    assert_eval(s, L"(/ 10 2)" , L"5");
+    assert_eval(s, L"(/ 10 2)" , L"5.0");
     assert_eval(s, L"(/ 10 2 2)" , L"2.5");
     assert_fail(s, L"(/ 'a)");
     assert_fail(s, L"(/)");
@@ -381,14 +381,25 @@ void test_math() {
     assert_eval(s, L"(*)" , L"1");
     assert_fail(s, L"(* 'a 1)");
     assert_eval(s, L"(min 5)" , L"5");
-    assert_eval(s, L"(min 3.0 1 2)" , L"1");
+    assert_eval(s, L"(min 3.0 1 2)" , L"1.0");
+    assert_eval(s, L"(min 3 1 2)" , L"1");
     assert_fail(s, L"(min)");
     assert_eval(s, L"(max 5)" , L"5");
-    assert_eval(s, L"(max 3.0 1 2)" , L"3");
+    assert_eval(s, L"(max 3.0 1 2)" , L"3.0");
+    assert_eval(s, L"(max 3 1.0 2)" , L"3.0");
+    assert_eval(s, L"(max 2 1 3)" , L"3");
     assert_fail(s, L"(max)");
     assert_eval(s, L"(expt 3 4)" , L"81");
+    assert_eval(s, L"(expt 3 4.0)" , L"81.0");
+    assert_eval(s, L"(expt 3.0 4)" , L"81.0");
     assert_eval(s, L"(expt 0 0)" , L"1");
+    assert_eval(s, L"(expt 0.0 0)" , L"1.0");
     assert_eval(s, L"(expt 0 3)" , L"0");
+    assert_eval(s, L"(expt 0.0 3)" , L"0.0");
+    assert_eval(s, L"(expt -3 3)" , L"-27");
+    assert_eval(s, L"(expt -3 2)" , L"9");
+    assert_eval(s, L"(expt -3 0)" , L"1");
+    assert_eval(s, L"(expt 2 -2)" , L"0.25");
     assert_fail(s, L"(expt 0 'a)");
     assert_fail(s, L"(expt 'a 0)");
     assert_fail(s, L"(expt 1)");
@@ -700,16 +711,18 @@ void test_string() {
     assert_eval(s, L"(string->number \"#b11111111\")", L"255");
     assert_eval(s, L"(string->number \"#o123\")", L"83");
     assert_eval(s, L"(string->number \"#o1000\")", L"512");
-    assert_eval(s, L"(string->number \"20e3\")", L"20000");
+    assert_eval(s, L"(string->number \"20e3\")", L"20000.0");
     assert_eval(s, L"(string->number \"42e-2\")", L"0.42");
-    assert_eval(s, L"(string->number \".2e2\")", L"20");
-    assert_eval(s, L"(string->number \"8e+3\")", L"8000");
-    assert_eval(s, L"(string->number \"8f3\")", L"8000");
+    assert_eval(s, L"(string->number \".2e2\")", L"20.0");
+    assert_eval(s, L"(string->number \"8e+3\")", L"8000.0");
+    assert_eval(s, L"(string->number \"8f3\")", L"8000.0");
     assert_fail(s, L"(string->number \"#xffffffffffffffffffffff\")");
     assert_eval(s, L"(string->number \"#xff.10\")", L"#f");
     assert_eval(s, L"(string->number \"#xffs10\")", L"#f");
     assert_eval(s, L"(number->string 256)", L"\"256\"");
     assert_eval(s, L"(number->string 256 16)", L"\"100\"");
+    assert_eval(s, L"(number->string 10.0)", L"\"10.0\"");
+    assert_eval(s, L"(number->string -10)", L"\"-10\"");
     assert_eval(s, L"(string->list \"\")", L"()");
     assert_eval(s, L"(string->list \"String\")", L"(#\\S #\\t #\\r #\\i #\\n #\\g)");
     assert_eval(s, L"(list->string '())", L"\"\"");
@@ -855,7 +868,7 @@ void test_quote() {
     assert_eval(s, L"(let ((name 'a)) `(list ,name ',name))", L"(list a (quote a))");
     assert_eval(s, L"`(a ,(+ 1 2) ,@(map abs '(4 -5 6)) b)", L"(a 3 4 5 6 b)");
     assert_eval(s, L"`(( foo ,(- 10 3)) ,@(cdr '(c)) . ,(car '(cons)))", L"((foo 7) . cons)");
-    assert_eval(s, L"`#(10 5 ,(sqrt 4) ,@(map sqrt '(16 9)) 8)", L"#(10 5 2 4 3 8)");
+    assert_eval(s, L"`#(10 5 ,(sqrt 4) ,@(map sqrt '(16 9)) 8)", L"#(10 5 2.0 4.0 3.0 8)");
     assert_eval(s, L"`(a `(b ,(+ 1 2) ,(foo ,(+ 1 3) d) e) f)", L"(a (quasiquote (b (unquote (+ 1 2)) (unquote (foo 4 d)) e)) f)");
     assert_eval(s, L"(let ((name1 'x) (name2 'y)) `(a `(b ,,name1 ,',name2 d) e))", L"(a (quasiquote (b (unquote x) (unquote (quote y)) d)) e)");
     assert_eval(s, L"(quasiquote (list (unquote (+ 1 2)) 4))", L"(list 3 4)");

@@ -215,7 +215,7 @@ extern SchemeObject* S_NUMBERS[];
 #define string2scm(s)  (SchemeObject::createString(s.c_str()))
 #define cstr2scm(s)    (SchemeObject::createString(s))
 #define char2scm(c)    (SchemeObject::createChar(c))
-#define int2scm(n)     (((n) < 10 && (n) >= 0) ? S_NUMBERS[n] : SchemeObject::createRealNumber(n))
+#define int2scm(n)     (((n) < 10 && (n) >= 0) ? S_NUMBERS[n] : SchemeObject::createIntegerNumber(n))
 #define double2scm(n)  (SchemeObject::createRealNumber(n))
 
 class SchemeAppendableList {

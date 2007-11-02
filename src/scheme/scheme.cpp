@@ -42,16 +42,16 @@ unsigned long symgen_counter = 10000;
 SchemeObject* S_TRUE = SchemeObject::createBool(true);
 SchemeObject* S_FALSE = SchemeObject::createBool(false);
 SchemeObject* S_EOF = SchemeObject::createEOF();
-SchemeObject* S_ZERO = SchemeObject::createRealNumber(0);
-SchemeObject* S_ONE = SchemeObject::createRealNumber(1);
-SchemeObject* S_TWO = SchemeObject::createRealNumber(2);
-SchemeObject* S_THREE = SchemeObject::createRealNumber(3);
-SchemeObject* S_FOUR = SchemeObject::createRealNumber(4);
-SchemeObject* S_FIVE = SchemeObject::createRealNumber(5);
-SchemeObject* S_SIX = SchemeObject::createRealNumber(6);
-SchemeObject* S_SEVEN = SchemeObject::createRealNumber(7);
-SchemeObject* S_EIGHT = SchemeObject::createRealNumber(8);
-SchemeObject* S_NINE = SchemeObject::createRealNumber(9);
+SchemeObject* S_ZERO =  SchemeObject::createIntegerNumber(0);
+SchemeObject* S_ONE =   SchemeObject::createIntegerNumber(1);
+SchemeObject* S_TWO =   SchemeObject::createIntegerNumber(2);
+SchemeObject* S_THREE = SchemeObject::createIntegerNumber(3);
+SchemeObject* S_FOUR =  SchemeObject::createIntegerNumber(4);
+SchemeObject* S_FIVE =  SchemeObject::createIntegerNumber(5);
+SchemeObject* S_SIX =   SchemeObject::createIntegerNumber(6);
+SchemeObject* S_SEVEN = SchemeObject::createIntegerNumber(7);
+SchemeObject* S_EIGHT = SchemeObject::createIntegerNumber(8);
+SchemeObject* S_NINE =  SchemeObject::createIntegerNumber(9);
 SchemeObject* S_UNSPECIFIED = SchemeObject::createUnspecified();
 SchemeObject* S_EMPTY_LIST = SchemeObject::createEmptyList();
 SchemeObject* S_SPACE = char2scm(' ');
@@ -960,10 +960,27 @@ SchemeObject* s_append(int num, SchemeStack::iterator stack) {
     return result;
 }
 
-SchemeObject::ObjectType representativeNumberType(int num, SchemeStack::iterator stack) {
+void convertNumbers(int num, SchemeStack::iterator stack, double* dest) {
+    for(int i = 0; i < num; i++) {
+        *dest = scm2double(*stack);
+        stack++;
+        dest++;
+    }
+}
+
+void convertNumbers(int num, SchemeStack::iterator stack, long* dest) {
+    for(int i = 0; i < num; i++) {
+        *dest = scm2int(*stack);
+        stack++;
+        dest++;
+    }
+}
+
+SchemeObject::ObjectType representativeNumberType(wchar_t* procname, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType type = SchemeObject::INTEGER_NUMBER;
     for(int i = 0; i < num; i++) {
         SchemeObject* n = *stack;
+        assert_arg_number_type(procname, i+1, n);
         if (n->type() < type) {
             type = n->type();        
         }
@@ -973,34 +990,64 @@ SchemeObject::ObjectType representativeNumberType(int num, SchemeStack::iterator
 }
 
 SchemeObject* s_plus(int num, SchemeStack::iterator stack) {
-    double result = 0;
-    for(int i = 0; i < num; i++) {
-        SchemeObject* n = *stack;
-        assert_arg_number_type(L"+", i+1, n);
-	result += scm2double(n);
-        stack++;
+    SchemeObject::ObjectType outType = representativeNumberType(L"+", num, stack);
+
+    if (outType == SchemeObject::REAL_NUMBER) {
+       double args[num];
+       convertNumbers(num,stack,args);
+       
+       double result = 0;
+       for(int i = 0; i < num; i++) {
+           result += args[i];    
+       }
+       return double2scm(result);
+    } else if (outType == SchemeObject::INTEGER_NUMBER) {
+       long args[num];
+       convertNumbers(num,stack,args);
+       
+       long result = 0;
+       for(int i = 0; i < num; i++) {
+           result += args[i];    
+       }
+       return int2scm(result);
+    } else {
+        throw scheme_exception(L"+", L"Only integer and real support");    
     }
-    return double2scm(result);
 }
 
 SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
-    SchemeObject* o = *stack++;
-    assert_arg_number_type(L"-", 1, o);
-    double result = scm2double(o);
-    if (num == 1) {
-        // One-argument case is a simple negate (n => -n)
-        return double2scm(-result);
-    }
-    
-    for(int i = 1; i < num; i++) {
-        SchemeObject* n = *stack;
-        assert_arg_number_type(L"-", i+1, n);
-	result -= scm2double(n);
-        stack++;
-    }
-    return double2scm(result);
+    SchemeObject::ObjectType outType = representativeNumberType(L"-", num, stack);
+    if (outType == SchemeObject::REAL_NUMBER) {
+       double args[num];
+       convertNumbers(num,stack,args);
+       double result = args[0];
+       if (num == 1) {
+           // One-argument case is a simple negate (n => -n)
+           return double2scm(-result);
+       } 
+       for(int i = 1; i < num; i++) {
+           result -= args[i];    
+       }
+       return double2scm(result);
+    } else if (outType == SchemeObject::INTEGER_NUMBER) {
+       long args[num];
+       convertNumbers(num,stack,args);
+       long result = args[0];
+       if (num == 1) {
+           // One-argument case is a simple negate (n => -n)
+           return int2scm(-result);
+       } 
+       for(int i = 1; i < num; i++) {
+           result -= args[i];    
+       }
+       return int2scm(result);
+    } else {
+        throw scheme_exception(L"-", L"Only integer and real support");    
+    }        
 }
 
+// We always return real values here. With no support for rational numbers
+// nothing else makes sense.
 SchemeObject* s_divide(int num, SchemeStack::iterator stack) {
     SchemeObject* o = *stack++;
     assert_arg_number_type(L"/", 1, o);
@@ -1021,14 +1068,30 @@ SchemeObject* s_divide(int num, SchemeStack::iterator stack) {
 }
 
 SchemeObject* s_mult(int num, SchemeStack::iterator stack) {
-    double result = 1;
-    for(int i = 0; i < num; i++) {
-        SchemeObject* n = *stack;
-        assert_arg_number_type(L"*", i+1, n);
-	result *= scm2double(n);
-        stack++;
+    SchemeObject::ObjectType outType = representativeNumberType(L"*", num, stack);
+
+    if (outType == SchemeObject::REAL_NUMBER) {
+       double args[num];
+       convertNumbers(num,stack,args);
+       
+       double result = 1;
+       for(int i = 0; i < num; i++) {
+           result *= args[i];    
+       }
+       return double2scm(result);
+            
+    } else if (outType == SchemeObject::INTEGER_NUMBER) {
+       long args[num];
+       convertNumbers(num,stack,args);
+       
+       long result = 1;
+       for(int i = 0; i < num; i++) {
+           result *= args[i];    
+       }
+       return int2scm(result);
+    } else {
+        throw scheme_exception(L"*", L"Only integer and real support");    
     }
-    return double2scm(result);
 }
 
 SchemeObject* s_make_vector(SchemeObject* s_count, SchemeObject* obj) {
@@ -1091,7 +1154,7 @@ SchemeObject* s_vector_fill_e(SchemeObject* s_vec, SchemeObject* fill) {
     assert_arg_type(L"vector-fill!", 1, s_vector_p, s_vec);
     assert_arg_not_immutable(L"vector-fill!", 1, s_vec);
     for(int i = 0; i < s_vec->length; i++) {
-	    s_vec->setVectorElem(fill, i);
+	s_vec->setVectorElem(fill, i);
     }
     return S_UNSPECIFIED;
 }
@@ -1102,8 +1165,13 @@ SchemeObject* s_sqrt(SchemeObject* n) {
 }
 
 SchemeObject* s_abs(SchemeObject* n) {
-    assert_arg_number_type(L"abs", 1, n);
-    return double2scm(fabs(scm2double(n)));
+    if (n->type() == SchemeObject::REAL_NUMBER) {
+        return double2scm(fabs(scm2double(n)));
+    } else if (n->type() == SchemeObject::INTEGER_NUMBER) {
+        return int2scm(labs(scm2int(n)));
+    } else {
+        wrong_type_arg(L"abs", 1, n);    
+    }         
 }
 
 
@@ -1152,9 +1220,21 @@ SchemeObject* s_log(SchemeObject* n) {
 
 // Returns a^b
 SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
-    assert_arg_number_type(L"expt", 1, a);
-    assert_arg_number_type(L"expt", 2, b);
-    return double2scm(pow(scm2double(a),scm2double(b)));
+    if (a->type() == SchemeObject::INTEGER_NUMBER && b->type() == SchemeObject::INTEGER_NUMBER && scm2int(b) >= 0) {
+        // TODO: Find a better algorithm for the integer case
+        long ai = scm2int(a);    
+        long bi = scm2int(b);    
+        if (bi == 0) return S_ONE;
+        long result = 1;
+        while (bi-- > 0) {
+            result *= ai;        
+        }
+        return int2scm(result);
+    } else {
+        assert_arg_number_type(L"expt", 1, a);
+        assert_arg_number_type(L"expt", 2, b);
+        return double2scm(pow(scm2double(a),scm2double(b)));
+    }
 }
 
 // Returns e^n
@@ -1256,38 +1336,64 @@ SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2) {
 
 SchemeObject* s_min(int num, SchemeStack::iterator stack) {
     assert (num > 0);
-    
-    SchemeObject* result = *stack;
-    assert_arg_number_type(L"min", 1, result);
-    double result_number = scm2double(result);
-    for(int i = 1; i < num; i++) {
-        SchemeObject* n = stack[i];
-        assert_arg_number_type(L"min", i+1, n);
-        double number = scm2double(n);
-        if (number < result_number) {
-            result_number = number;
-            result = n;
+    SchemeObject::ObjectType outType = representativeNumberType(L"min", num, stack);
+
+    if (outType == SchemeObject::REAL_NUMBER) {
+        double args[num];
+        convertNumbers(num,stack,args);
+        double result = args[0];
+        for(int i = 1; i < num; i++) {
+            if (args[i] < result) {
+                result = args[i];         
+            }    
         }
+        return double2scm(result);
+    } else if (outType == SchemeObject::INTEGER_NUMBER) {
+       long args[num];
+       convertNumbers(num,stack,args);
+       long result = args[0];
+       int index = 0;
+       for(int i = 1; i < num; i++) {
+           if (args[i] < result) {
+               result = args[i];
+               index = i;
+           }    
+       }
+       return stack[index];
+    } else {
+        throw scheme_exception(L"+", L"Only integer and real support");    
     }
-    return result;
 }
 
 SchemeObject* s_max(int num, SchemeStack::iterator stack) {
     assert (num > 0);
-    
-    SchemeObject* result = *stack;
-    assert_arg_number_type(L"max", 1, result);
-    double result_number = scm2double(result);
-    for(int i = 1; i < num; i++) {
-        SchemeObject* n = stack[i];
-        assert_arg_number_type(L"max", i+1, n);
-        double number = scm2double(n);
-        if (number > result_number) {
-            result_number = number;
-            result = n;
+    SchemeObject::ObjectType outType = representativeNumberType(L"max", num, stack);
+
+    if (outType == SchemeObject::REAL_NUMBER) {
+        double args[num];
+        convertNumbers(num,stack,args);
+        double result = args[0];
+        for(int i = 1; i < num; i++) {
+            if (args[i] > result) {
+                result = args[i];         
+            }    
         }
+        return double2scm(result);
+    } else if (outType == SchemeObject::INTEGER_NUMBER) {
+       long args[num];
+       convertNumbers(num,stack,args);
+       long result = args[0];
+       int index = 0;
+       for(int i = 1; i < num; i++) {
+           if (args[i] > result) {
+               result = args[i];
+               index = i;
+           }    
+       }
+       return stack[index];
+    } else {
+        throw scheme_exception(L"+", L"Only integer and real support");    
     }
-    return result;
 }
 
 int gcd(int a, int b) {
@@ -1590,7 +1696,7 @@ SchemeObject* s_integer_2_char(SchemeObject* i) {
 
 SchemeObject* s_char_2_integer(SchemeObject* c) {
     assert_arg_type(L"char->integer", 1, s_char_p, c);
-    return int2scm(int(scm2char(c)));
+    return int2scm(long(scm2char(c)));
 }
 
 SchemeObject* s_string_2_list(SchemeObject* s) {
