@@ -527,6 +527,10 @@ void test_math() {
     assert_eval(s, L"(numerator 13/8)", L"13");
     assert_eval(s, L"(numerator -13/8)", L"-13");
     assert_eval(s, L"(denominator -13/8)", L"8");
+
+    assert_eval(s, L"(sqrt 9)", L"3.0");
+    assert_eval(s, L"(sqrt -9)", L"0.0+3.0i");
+
     /*
     assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");

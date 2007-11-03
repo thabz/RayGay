@@ -1316,7 +1316,16 @@ SchemeObject* s_vector_fill_e(SchemeObject* s_vec, SchemeObject* fill) {
 
 SchemeObject* s_sqrt(SchemeObject* n) {
     assert_arg_number_type(L"sqrt", 1, n);
-    return double2scm(sqrt(scm2double(n)));
+    if (n->type() == SchemeObject::COMPLEX_NUMBER) {
+        return complex2scm(std::sqrt(scm2complex(n)));
+    } else {
+        double d = scm2double(n);
+        if (d < 0) {
+            return complex2scm(std::sqrt(scm2complex(n)));
+        } else {
+            return double2scm(sqrt(scm2double(n)));
+        }
+    }
 }
 
 SchemeObject* s_abs(SchemeObject* n) {
