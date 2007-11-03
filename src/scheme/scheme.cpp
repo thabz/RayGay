@@ -992,7 +992,7 @@ SchemeObject* s_append(int num, SchemeStack::iterator stack) {
     return result;
 }
 
-void convertNumbers(int num, SchemeStack::iterator stack, double* dest) {
+void coerceNumbers(int num, SchemeStack::iterator stack, double* dest) {
     for(int i = 0; i < num; i++) {
         *dest = scm2double(*stack);
         stack++;
@@ -1000,7 +1000,7 @@ void convertNumbers(int num, SchemeStack::iterator stack, double* dest) {
     }
 }
 
-void convertNumbers(int num, SchemeStack::iterator stack, long* dest) {
+void coerceNumbers(int num, SchemeStack::iterator stack, long* dest) {
     for(int i = 0; i < num; i++) {
         *dest = scm2int(*stack);
         stack++;
@@ -1008,6 +1008,26 @@ void convertNumbers(int num, SchemeStack::iterator stack, long* dest) {
     }
 }
 
+void coerceNumbers(int num, SchemeStack::iterator stack, pair<long,long>* dest) {
+    for(int i = 0; i < num; i++) {
+        *dest = scm2rational(*stack);
+        stack++;
+        dest++;
+    }
+}
+
+void coerceNumbers(int num, SchemeStack::iterator stack, std::complex<double>* dest) {
+    for(int i = 0; i < num; i++) {
+        *dest = scm2complex(*stack);
+        stack++;
+        dest++;
+    }
+}
+
+
+// This returns the best number type for the numbers in stacks. Ie. if the stack contains all integers
+// but just one rational, the rational is returned. If it's all rationals but with just one real, the
+// real-type is returned. 
 SchemeObject::ObjectType representativeNumberType(wchar_t* procname, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType type = SchemeObject::INTEGER_NUMBER;
     for(int i = 0; i < num; i++) {
@@ -1026,7 +1046,7 @@ SchemeObject* s_plus(int num, SchemeStack::iterator stack) {
 
     if (outType == SchemeObject::REAL_NUMBER) {
        double args[num];
-       convertNumbers(num,stack,args);
+       coerceNumbers(num,stack,args);
        
        double result = 0;
        for(int i = 0; i < num; i++) {
@@ -1035,13 +1055,35 @@ SchemeObject* s_plus(int num, SchemeStack::iterator stack) {
        return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
        long args[num];
-       convertNumbers(num,stack,args);
+       coerceNumbers(num,stack,args);
        
        long result = 0;
        for(int i = 0; i < num; i++) {
            result += args[i];    
        }
        return int2scm(result);
+    } else if (outType == SchemeObject::COMPLEX_NUMBER) {
+       std::complex<double> args[num];
+       coerceNumbers(num,stack,args);
+       
+       std::complex<double> result = 0;
+       for(int i = 0; i < num; i++) {
+           result += args[i];    
+       }
+       return complex2scm(result);
+    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+       pair<long,long> args[num];
+       coerceNumbers(num,stack,args);
+       
+       // Using a/b + c/d = (ad + bc)/bd
+       pair<long,long> result(0,1);
+       for(int i = 0; i < num; i++) {
+           long n = result.first * args[i].second + result.second * args[i].first;
+           long d = result.second * args[i].second;
+           result.first = n;
+           result.second = d;    
+       }
+       return rational2scm(result);
     } else {
         throw scheme_exception(L"+", L"Only integer and real support");    
     }
@@ -1051,7 +1093,7 @@ SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"-", num, stack);
     if (outType == SchemeObject::REAL_NUMBER) {
        double args[num];
-       convertNumbers(num,stack,args);
+       coerceNumbers(num,stack,args);
        double result = args[0];
        if (num == 1) {
            // One-argument case is a simple negate (n => -n)
@@ -1063,7 +1105,7 @@ SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
        return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
        long args[num];
-       convertNumbers(num,stack,args);
+       coerceNumbers(num,stack,args);
        long result = args[0];
        if (num == 1) {
            // One-argument case is a simple negate (n => -n)
@@ -1073,30 +1115,91 @@ SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
            result -= args[i];    
        }
        return int2scm(result);
+    } else if (outType == SchemeObject::COMPLEX_NUMBER) {
+       std::complex<double> args[num];
+       coerceNumbers(num,stack,args);
+       std::complex<double> result = args[0];
+       if (num == 1) {
+           // One-argument case is a simple negate (n => -n)
+           return complex2scm(-result);
+       } 
+       for(int i = 1; i < num; i++) {
+           result -= args[i];    
+       }
+       return complex2scm(result);
+    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+       pair<long,long> args[num];
+       coerceNumbers(num,stack,args);
+       
+       pair<long,long> result = args[0];
+       if (num == 1) {
+           result.first = -result.first;
+           return rational2scm(result);
+       }
+       
+       // Using a/b - c/d = (ad - bc)/bd
+       for(int i = 1; i < num; i++) {
+           long n = result.first * args[i].second - result.second * args[i].first;
+           long d = result.second * args[i].second;
+           result.first = n;
+           result.second = d;    
+       }
+       return rational2scm(result);
     } else {
         throw scheme_exception(L"-", L"Only integer and real support");    
     }        
 }
 
-// We always return real values here. With no support for rational numbers
-// nothing else makes sense.
 SchemeObject* s_divide(int num, SchemeStack::iterator stack) {
-    SchemeObject* o = *stack++;
-    assert_arg_number_type(L"/", 1, o);
-    double result = scm2double(o);
-    
-    if (num == 1) {
-        // One-argument case is a simple inverse (n => 1/n)
-        return double2scm(1.0 / result);
-    }
-    
-    for(int i = 1; i < num; i++) {
-        SchemeObject* n = *stack;
-        assert_arg_number_type(L"-", i+1, n);
-	result /= scm2double(n);
-        stack++;
-    }
-    return double2scm(result);
+    SchemeObject::ObjectType outType = representativeNumberType(L"/", num, stack);
+    if (outType == SchemeObject::REAL_NUMBER) {
+       double args[num];
+       coerceNumbers(num,stack,args);
+       double result = args[0];
+       if (num == 1) {
+           // One-argument case is a simple inverse (n => 1/n)
+           return double2scm(1.0 / result);
+       } 
+       for(int i = 1; i < num; i++) {
+           result /= args[i];    
+       }
+       return double2scm(result);
+    } else if (outType == SchemeObject::COMPLEX_NUMBER) {
+       std::complex<double> args[num];
+       coerceNumbers(num,stack,args);
+       std::complex<double> result = args[0];
+       if (num == 1) {
+           // One-argument case is a simple inverse (n => 1/n)
+           return complex2scm(1.0 / result);
+       } 
+       for(int i = 1; i < num; i++) {
+           result /= args[i];    
+       }
+       return complex2scm(result);
+    } else {
+       // Both integers and rational types are handled as rationals            
+       pair<long,long> args[num];
+       coerceNumbers(num,stack,args);
+
+       pair<long,long> result = args[0];
+       if (num == 1) {
+           // One-argument case is a simple inverse (n => 1/n)
+           // which for rationals is a swap of numerator and denominator
+           long tmp = result.first;
+           result.first = result.second;
+           result.second = tmp;
+           return rational2scm(result);
+       }
+
+       // Using a/b / c/d = ad/bc
+       for(int i = 1; i < num; i++) {
+           long n = result.first * args[i].second;
+           long d = result.second * args[i].first;
+           result.first = n;
+           result.second = d;    
+       }
+       return rational2scm(result);
+   }
 }
 
 SchemeObject* s_mult(int num, SchemeStack::iterator stack) {
@@ -1104,7 +1207,7 @@ SchemeObject* s_mult(int num, SchemeStack::iterator stack) {
 
     if (outType == SchemeObject::REAL_NUMBER) {
        double args[num];
-       convertNumbers(num,stack,args);
+       coerceNumbers(num,stack,args);
        
        double result = 1;
        for(int i = 0; i < num; i++) {
@@ -1114,13 +1217,33 @@ SchemeObject* s_mult(int num, SchemeStack::iterator stack) {
             
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
        long args[num];
-       convertNumbers(num,stack,args);
+       coerceNumbers(num,stack,args);
        
        long result = 1;
        for(int i = 0; i < num; i++) {
            result *= args[i];    
        }
        return int2scm(result);
+    } else if (outType == SchemeObject::COMPLEX_NUMBER) {
+       std::complex<double> args[num];
+       coerceNumbers(num,stack,args);
+       
+       std::complex<double> result = 1;
+       for(int i = 0; i < num; i++) {
+           result *= args[i];    
+       }
+       return complex2scm(result);
+    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+       pair<long,long> args[num];
+       coerceNumbers(num,stack,args);
+       
+       // Using a/b * c/d = ac/bd
+       pair<long,long> result(1,1);
+       for(int i = 0; i < num; i++) {
+           result.first *= args[i].first;
+           result.second *= args[i].second;
+       }
+       return rational2scm(result);
     } else {
         throw scheme_exception(L"*", L"Only integer and real support");    
     }
@@ -1379,7 +1502,7 @@ SchemeObject* s_min(int num, SchemeStack::iterator stack) {
 
     if (outType == SchemeObject::REAL_NUMBER) {
         double args[num];
-        convertNumbers(num,stack,args);
+        coerceNumbers(num,stack,args);
         double result = args[0];
         for(int i = 1; i < num; i++) {
             if (args[i] < result) {
@@ -1389,7 +1512,7 @@ SchemeObject* s_min(int num, SchemeStack::iterator stack) {
         return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
        long args[num];
-       convertNumbers(num,stack,args);
+       coerceNumbers(num,stack,args);
        long result = args[0];
        int index = 0;
        for(int i = 1; i < num; i++) {
@@ -1410,7 +1533,7 @@ SchemeObject* s_max(int num, SchemeStack::iterator stack) {
 
     if (outType == SchemeObject::REAL_NUMBER) {
         double args[num];
-        convertNumbers(num,stack,args);
+        coerceNumbers(num,stack,args);
         double result = args[0];
         for(int i = 1; i < num; i++) {
             if (args[i] > result) {
@@ -1420,7 +1543,7 @@ SchemeObject* s_max(int num, SchemeStack::iterator stack) {
         return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
        long args[num];
-       convertNumbers(num,stack,args);
+       coerceNumbers(num,stack,args);
        long result = args[0];
        int index = 0;
        for(int i = 1; i < num; i++) {
@@ -1481,6 +1604,10 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
     return int2scm(r);
 }
 
+// Reduce a rational to its normalized form, which is
+// 1) denominator > 0.
+// 2) commons terms are cancelled out.
+// 3) throw exception if denominator is zero.
 void i_normalize_rational(long* numerator, long* denominator) {
     if (*denominator == 0) {
         throw scheme_exception(L"Denominator is zero in rational");    
