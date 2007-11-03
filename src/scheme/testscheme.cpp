@@ -449,6 +449,7 @@ void test_math() {
     assert_eval(s, L"(make-rectangular 3.1 -2.2)", L"3.1-2.2i");
     assert_eval(s, L"(make-rectangular -1.0 -2.0)", L"-1.0-2.0i");
     assert_eval(s, L"(make-rectangular 4 5)", L"4.0+5.0i");
+    assert_eval(s, L"(make-rectangular 4 0)", L"4.0");
     assert_eval(s, L"(real-part 3.0)", L"3.0");
     assert_eval(s, L"(imag-part 3.0)", L"0.0");
     assert_eval(s, L"(real-part 5)", L"5.0");

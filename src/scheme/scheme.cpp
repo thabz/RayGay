@@ -2451,23 +2451,32 @@ wstring i_number_2_string(SchemeObject* o, uint32_t radix) {
         ss << std::setbase(radix) << scm2int(o);
         return ss.str();
     } else if (type == SchemeObject::RATIONAL_NUMBER) {
-        return i_number_2_string(o->numerator, radix) + L"/" + i_number_2_string(o->denominator, radix);    
-    } else if (type == SchemeObject::REAL_NUMBER) {
-        ss << std::setbase(radix) << scm2double(o);
-        // A bad hack to append ".0" if ss contains no decimal point. FIXME.
-        wstring result = ss.str();
-        if (result.find(L'.') == wstring::npos) {
-            result += L".0";        
-        }
-        return result;
-    } else if (type == SchemeObject::COMPLEX_NUMBER) {
-        ss << i_number_2_string(o->real, radix);    
-        if (o->imag->realValue() >= 0.0) {
-            ss << L"+";        
-        }
-        ss << i_number_2_string(o->imag, radix);
-        ss << L"i";
+        ss << i_number_2_string(o->numerator, radix);
+        ss << L"/";
+        ss << i_number_2_string(o->denominator, radix);
         return ss.str();
+    } else if (type == SchemeObject::REAL_NUMBER) {
+        double d = o->realValue();    
+        ss << std::setbase(radix) << d;
+        double i;
+        // Append ".0" if d contains no decimal point.
+        if (::modf(d,&i) == 0.0) {
+            ss << ".0";        
+        }
+        return ss.str();
+    } else if (type == SchemeObject::COMPLEX_NUMBER) {
+        double imag = o->imag->realValue();
+        if (imag == 0.0) {
+            return i_number_2_string(o->real, radix);        
+        } else {
+            ss << i_number_2_string(o->real, radix);
+            if (o->imag->realValue() >= 0.0) {
+                ss << L"+";        
+            }
+            ss << i_number_2_string(o->imag, radix);
+            ss << L"i";
+            return ss.str();
+        }
     } else {
         throw scheme_exception(L"Not a number");
     }
