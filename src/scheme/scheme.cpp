@@ -2460,15 +2460,12 @@ string extractDigits(wstring s, size_t offset, uint32_t radix) {
 
 /// Returns a number object or S_FALSE in case of failure
 SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
-    int sign = 1;
+    double sign = 1;
     if (s.size() == 0) {
 	return S_FALSE;
     }
-    if (s[0] == L'#') {
-	if (s.size() == 1) {
-            return S_FALSE;
-	}
-	wchar_t prefix = s[1];
+    if (s[offset] == L'#' && s.size() > offset+2) {
+	wchar_t prefix = s[offset+1];
 	switch(prefix) {
             case L'x' : radix = 16;
 			break;
@@ -2483,14 +2480,27 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
 	}
 	offset += 2;
     }
+    
+    bool sign_found = false;
     if (s[offset] == L'-') {
         offset++;   
-        sign = -1;    
+        sign = -1;
+        sign_found = true;
     } else if (s[offset] == L'+') {
         offset++;   
+        sign_found = true;
     }
     if (offset >= s.size()) {
         return S_FALSE;
+    }
+    
+    if (s[offset] == L'i' && sign_found == true) {
+        offset++;
+        if (offset >= s.size()) {
+            return SchemeObject::createComplexNumber(std::complex<double>(0.0,sign));        
+        } else {
+            return S_FALSE;        
+        }
     }
     
     string digits = extractDigits(s, offset, radix);

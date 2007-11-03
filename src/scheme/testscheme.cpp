@@ -375,6 +375,8 @@ void test_math() {
     assert_eval(s, L"(+ 1 2 3.0)" , L"6.0");
     assert_eval(s, L"(+ 1/2 2/7 3/4)" , L"43/28");
     assert_eval(s, L"(+ 1/2 4 3/2)" , L"6");
+    assert_eval(s, L"(+ 1 3i)" , L"1.0+3.0i");
+    assert_eval(s, L"(+ 1+2i 2+3i)" , L"3.0+5.0i");
     assert_eval(s, L"(- 3)" , L"-3");
     assert_eval(s, L"(- 3 2)" , L"1");
     assert_eval(s, L"(- 3 4 5)" , L"-6");
@@ -382,6 +384,8 @@ void test_math() {
     assert_eval(s, L"(- 3.0)" , L"-3.0");
     assert_eval(s, L"(- 1/2)" , L"-1/2");
     assert_eval(s, L"(- 1/2 2/7 3/4)" , L"-15/28");
+    assert_eval(s, L"(- 2+3i)" , L"-2.0-3.0i");
+    assert_eval(s, L"(- 2+2i 1+3i)" , L"1.0-1.0i");
     assert_fail(s, L"(- 'a)");
     assert_fail(s, L"(-)");
     assert_eval(s, L"(/ 2.0)" , L"0.5");
@@ -397,6 +401,9 @@ void test_math() {
     assert_eval(s, L"(*)" , L"1");
     assert_eval(s, L"(* 1/3 3 4/7)" , L"4/7");
     assert_eval(s, L"(* 1/3 3/10 4/7)" , L"2/35");
+    assert_eval(s, L"(* 2 1+i)" , L"2.0+2.0i");
+    assert_eval(s, L"(* 2 2i)" , L"0.0+4.0i");
+    assert_eval(s, L"(* 3i 2i)" , L"-6.0");
     assert_fail(s, L"(* 'a 1)");
     assert_eval(s, L"(min 5)" , L"5");
     assert_eval(s, L"(min 3.0 1 2)" , L"1.0");
@@ -748,6 +755,14 @@ void test_string() {
     assert_eval(s, L"(string->number \"2+3.3i\")", L"2.0+3.3i");
     assert_eval(s, L"(string->number \"2-1i\")", L"2.0-1.0i");
     assert_eval(s, L"(string->number \"2+1i\")", L"2.0+1.0i");
+    assert_eval(s, L"(string->number \"2+i\")", L"2.0+1.0i");
+    assert_eval(s, L"(string->number \"-i\")", L"0.0-1.0i");
+    assert_eval(s, L"(string->number \"+i\")", L"0.0+1.0i");
+    assert_eval(s, L"(string->number \"-2i\")", L"0.0-2.0i");
+    assert_eval(s, L"(string->number \"+3i\")", L"0.0+3.0i");
+    assert_eval(s, L"(string->number \"+3e2i\")", L"0.0+300.0i");
+    assert_eval(s, L"(string->number \"4e1+3e2i\")", L"40.0+300.0i");
+    assert_eval(s, L"(string->number \"i\")", L"#f");
     assert_eval(s, L"(string->number \".\")", L"#f");
     assert_eval(s, L"(string->number \"d\")", L"#f");
     assert_eval(s, L"(string->number \"#x10\")", L"16");
