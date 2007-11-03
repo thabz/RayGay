@@ -741,8 +741,13 @@ void test_string() {
     assert_eval(s, L"(string->number \"d\")", L"#f");
     assert_eval(s, L"(string->number \"i\")", L"#f");
     assert_eval(s, L"(string->number \"I\")", L"#f");
-    assert_eval(s, L"(string->number \"3i\")", L"#f");
-    assert_eval(s, L"(string->number \"3.3i\")", L"#f");
+    assert_eval(s, L"(string->number \"3i\")", L"0.0+3.0i");
+    assert_eval(s, L"(string->number \"3.3i\")", L"0.0+3.3i");
+    assert_eval(s, L"(string->number \"-4i\")", L"0.0-4.0i");
+    assert_eval(s, L"(string->number \"1.0+3.3i\")", L"1.0+3.3i");
+    assert_eval(s, L"(string->number \"2+3.3i\")", L"2.0+3.3i");
+    assert_eval(s, L"(string->number \"2-1i\")", L"2.0-1.0i");
+    assert_eval(s, L"(string->number \"2+1i\")", L"2.0+1.0i");
     assert_eval(s, L"(string->number \".\")", L"#f");
     assert_eval(s, L"(string->number \"d\")", L"#f");
     assert_eval(s, L"(string->number \"#x10\")", L"16");

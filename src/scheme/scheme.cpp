@@ -1700,12 +1700,12 @@ SchemeObject* s_equal(int num, SchemeStack::iterator args) {
     if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_number_type(L"=", 1, *args);
+    assert_arg_type(L"=", 1, s_real_p, *args);
     double n = scm2double(*args);
     args ++;
     for(int i = 1; i < num; i++) {
         SchemeObject* v = *args++;
-        assert_arg_number_type(L"=", i+1, v);
+        assert_arg_type(L"=", i+1, s_real_p, v);
         double nn = scm2double(v);
         if (nn != n) {
             return S_FALSE;
@@ -1719,12 +1719,12 @@ SchemeObject* s_less(int num, SchemeStack::iterator args) {
     if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_number_type(L"<", 1, *args);
+    assert_arg_type(L"<", 1, s_real_p, *args);
     double n = scm2double(*args);
     args ++;
     for(int i = 1; i < num; i++) {
         SchemeObject* v = *args++;
-        assert_arg_number_type(L"<", i+1, v);
+        assert_arg_type(L"<", i+1, s_real_p, v);
         double nn = scm2double(v);
         if (nn <= n) {
             return S_FALSE;
@@ -1738,12 +1738,12 @@ SchemeObject* s_greater(int num, SchemeStack::iterator args) {
     if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_number_type(L">", 1, *args);
+    assert_arg_type(L">", 1, s_real_p, *args);
     double n = scm2double(*args);
     args ++;
     for(int i = 1; i < num; i++) {
         SchemeObject* v = *args++;
-        assert_arg_number_type(L">", i+1, v);
+        assert_arg_type(L">", i+1, s_real_p, v);
         double nn = scm2double(v);
         if (nn >= n) {
             return S_FALSE;
@@ -1757,12 +1757,12 @@ SchemeObject* s_less_equal(int num, SchemeStack::iterator args) {
     if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_number_type(L"<=", 1, *args);
+    assert_arg_type(L"<=", 1, s_real_p, *args);
     double n = scm2double(*args);
     args ++;
     for(int i = 1; i < num; i++) {
         SchemeObject* v = *args++;
-        assert_arg_number_type(L"<=", i+1, v);
+        assert_arg_type(L"<=", i+1, s_real_p, v);
         double nn = scm2double(v);
         if (nn < n) {
             return S_FALSE;
@@ -1776,12 +1776,12 @@ SchemeObject* s_greater_equal(int num, SchemeStack::iterator args) {
     if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_number_type(L">=", 1, *args);
+    assert_arg_type(L">=", 1, s_real_p, *args);
     double n = scm2double(*args);
     args ++;
     for(int i = 1; i < num; i++) {
         SchemeObject* v = *args++;
-        assert_arg_number_type(L">=", i+1, v);
+        assert_arg_type(L">=", i+1, s_real_p, v);
         double nn = scm2double(v);
         if (nn > n) {
             return S_FALSE;
@@ -2538,9 +2538,10 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     
     
     double df = 0;
+    string fraction;
     if (s[offset] == L'.' && radix == 10) {
         offset++;
-        string fraction = extractDigits(s, offset, 10);
+        fraction = extractDigits(s, offset, 10);
         if (digits.size() == 0 && fraction.size() == 0) {
             // "." is not a number        
             return S_FALSE;        
@@ -2584,7 +2585,25 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         offset += exponent.size();
     }
     if (offset >= s.size()) {
-        return SchemeObject::createRealNumber(sign*(t + df) * pow(10,double(e)));;
+        return SchemeObject::createRealNumber(sign*(t + df) * pow(10,double(e)));
+    }
+    
+    if (s[offset] == L'i' && (digits.size() != 0 || fraction.size() != 0)) {
+        offset++;    
+        if (offset >= s.size()) {
+            std::complex<double> z(0, sign*(t + df) * pow(10,double(e)));    
+            return SchemeObject::createComplexNumber(z);    
+        } else {
+            return S_FALSE;        
+        }
+    }
+    
+    if (digits.size() != 0 || fraction.size() != 0) {
+        SchemeObject* imag = i_string_2_number(s, radix, offset);
+        if (imag->type() == SchemeObject::COMPLEX_NUMBER) {
+           SchemeObject* real = SchemeObject::createRealNumber(sign*(t + df) * pow(10,double(e)));;    
+           return SchemeObject::createComplexNumber(real, imag->imag);
+        }
     }
     
     return S_FALSE;
