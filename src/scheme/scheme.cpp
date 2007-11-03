@@ -479,9 +479,17 @@ SchemeObject* s_equal_p(SchemeObject* a, SchemeObject* b) {
 }
 
 SchemeObject* s_eqv_p(SchemeObject* a, SchemeObject* b) {
-    if (i_number_p(a) == S_TRUE && i_number_p(b) == S_TRUE) {
+    SchemeObject::ObjectType ta = a->type();        
+    SchemeObject::ObjectType tb = b->type();
+    if (ta == SchemeObject::INTEGER_NUMBER && tb == SchemeObject::INTEGER_NUMBER) {
+        return bool2scm(scm2int(a) == scm2int(b));
+    } else if (ta == SchemeObject::REAL_NUMBER && tb == SchemeObject::REAL_NUMBER) {
         return bool2scm(scm2double(a) == scm2double(b));
-    } else if (i_char_p(a) == S_TRUE && i_char_p(b) == S_TRUE) {
+    } else if (ta == SchemeObject::RATIONAL_NUMBER && tb == SchemeObject::RATIONAL_NUMBER) {
+        return bool2scm(scm2rational(a) == scm2rational(b));
+    } else if (ta == SchemeObject::COMPLEX_NUMBER && tb == SchemeObject::COMPLEX_NUMBER) {
+        return bool2scm(scm2complex(a) == scm2complex(b));
+    } else if (ta == SchemeObject::CHAR && tb == SchemeObject::CHAR) {
         return bool2scm(scm2char(a) == scm2char(b));
     } else {
         return bool2scm(a == b);
@@ -1333,16 +1341,16 @@ SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2) {
 SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type(L"remainder", 1, s_integer_p, n1);
     assert_arg_type(L"remainder", 2, s_integer_p, n2);
-    int nn1 = scm2int(n1);
-    int nn2 = scm2int(n2);
-    int result = nn1 % nn2;
+    long nn1 = scm2int(n1);
+    long nn2 = scm2int(n2);
+    long result = nn1 % nn2;
     if (result > 0) {
         if (nn1 < 0) {
-            result -= abs(nn2);
+            result -= labs(nn2);
         }
     } else if (result < 0) {
         if (nn1 > 0) {
-            result += abs(nn2);
+            result += labs(nn2);
         }
     }
     return int2scm(result);
@@ -1351,14 +1359,14 @@ SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
 SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type(L"modulo", 1, s_integer_p, n1);
     assert_arg_type(L"modulo", 2, s_integer_p, n2);
-    int nn1 = scm2int(n1);
-    int nn2 = scm2int(n2);
-    int result = nn1 % nn2;
+    long nn1 = scm2int(n1);
+    long nn2 = scm2int(n2);
+    long result = nn1 % nn2;
     if (result * nn2 < 0) {
         if (result > 0) {
-            result -= abs(nn2);
+            result -= labs(nn2);
         } else {
-            result += abs(nn2);
+            result += labs(nn2);
         }
     }
     return int2scm(result);
@@ -1427,8 +1435,8 @@ SchemeObject* s_max(int num, SchemeStack::iterator stack) {
     }
 }
 
-int gcd(int a, int b) {
-    int t = a;
+long i_gcd(long a, long b) {
+    long t = a;
     while(b != 0) {
         t = b;
         b = a % b;
@@ -1444,11 +1452,11 @@ SchemeObject* s_gcd(int num, SchemeStack::iterator stack) {
     }
     assert_arg_int_type(L"gcd", 1, *stack); // This 1 is wrong as we s_gcd is recursive with descreasing num
     if (num == 1) {
-        return int2scm(abs(scm2int(*stack)));
+        return int2scm(labs(scm2int(*stack)));
     }
-    int a = scm2int(*stack);
-    int b = scm2int(s_gcd(num-1, ++stack));
-    return int2scm(abs(gcd(a,b)));
+    long a = scm2int(*stack);
+    long b = scm2int(s_gcd(num-1, ++stack));
+    return int2scm(labs(i_gcd(a,b)));
 }
 
 // Using the property gcd(a,b) * lcm(a,b) = a * b and that lcm(a,b,c) = lcm(lcm(a,b),c) = lcm(a,lcm(b,c))
@@ -1458,13 +1466,13 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
     }
     if (num == 1) {
         assert_arg_int_type(L"lcm", 1, *stack); // This 1 is wrong as we s_gcd is recursive with descreasing num
-        return int2scm(abs(scm2int(*stack)));
+        return int2scm(labs(scm2int(*stack)));
     }
 
-    int a = abs(scm2int(*stack));
-    int b = abs(scm2int(s_lcm(num-1, ++stack)));
-    int g = gcd(a,b);
-    int r;
+    long a = labs(scm2int(*stack));
+    long b = labs(scm2int(s_lcm(num-1, ++stack)));
+    long g = i_gcd(a,b);
+    long r;
     if (g == 0) {
         r = 0;
     } else {
@@ -1474,6 +1482,14 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
 }
 
 void i_normalize_rational(long* numerator, long* denominator) {
+    if (*denominator == 0) {
+        throw scheme_exception(L"Denominator is zero in rational");    
+    }        
+    long gcd = i_gcd(*numerator, *denominator);
+    if (gcd != 1) {
+        *numerator /= gcd;
+        *denominator /= gcd;
+    }
     if (*denominator < 0) {
         *numerator *= -1;
         *denominator *= -1;
@@ -2384,6 +2400,9 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         }
         offset += denominator.size();
         if (offset >= s.size()) {
+            if (d == 0) {
+                throw scheme_exception(L"Invalid denominator: 0");
+            }        
             return SchemeObject::createRationalNumber(sign*t, d);        
         } else {
             return S_FALSE;        

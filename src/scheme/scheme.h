@@ -218,19 +218,20 @@ extern SchemeObject* S_TWO;
 extern SchemeObject* S_NUMBERS[];
 
 // Conversion macros
+#define scm2rational(o) ((o)->rationalValue())
 #define scm2complex(o)  ((o)->complexValue())
-#define scm2double(o)  ((o)->realValue())
-#define scm2int(o)     ((o)->integerValue())
-#define scm2string(o)  (wstring((o)->str))
-#define scm2char(o)    ((o)->c)
-#define scm2bool(o)    ((o) != S_FALSE)
-#define bool2scm(b)    ((b) ? S_TRUE : S_FALSE)
-#define string2scm(s)  (SchemeObject::createString(s.c_str()))
-#define cstr2scm(s)    (SchemeObject::createString(s))
-#define char2scm(c)    (SchemeObject::createChar(c))
-#define int2scm(n)     (((n) < 10 && (n) >= 0) ? S_NUMBERS[n] : SchemeObject::createIntegerNumber(n))
+#define scm2double(o)   ((o)->realValue())
+#define scm2int(o)      ((o)->integerValue())
+#define scm2string(o)   (wstring((o)->str))
+#define scm2char(o)     ((o)->c)
+#define scm2bool(o)     ((o) != S_FALSE)
+#define bool2scm(b)     ((b) ? S_TRUE : S_FALSE)
+#define string2scm(s)   (SchemeObject::createString(s.c_str()))
+#define cstr2scm(s)     (SchemeObject::createString(s))
+#define char2scm(c)     (SchemeObject::createChar(c))
+#define int2scm(n)      (((n) < 10 && (n) >= 0) ? S_NUMBERS[n] : SchemeObject::createIntegerNumber(n))
 #define complex2scm(n)  (SchemeObject::createComplexNumber(n))
-#define double2scm(n)  (SchemeObject::createRealNumber(n))
+#define double2scm(n)   (SchemeObject::createRealNumber(n))
 
 class SchemeAppendableList {
     public:

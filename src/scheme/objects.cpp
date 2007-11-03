@@ -44,10 +44,14 @@ SchemeObject* SchemeObject::createRationalNumber(SchemeObject* numerator, Scheme
 }
 
 SchemeObject* SchemeObject::createRationalNumber(long numerator, long denominator) {
-    i_normalize_rational(&numerator, &denominator);        
+    i_normalize_rational(&numerator, &denominator);
     SchemeObject* n = createIntegerNumber(numerator);        
-    SchemeObject* d = createIntegerNumber(denominator);
-    return createRationalNumber(n, d);
+    if (denominator == 1) {
+        return n;    
+    } else {
+        SchemeObject* d = createIntegerNumber(denominator);
+        return createRationalNumber(n, d);
+    }        
 }
 
 SchemeObject* SchemeObject::createRationalNumber(pair<long,long> rational) {

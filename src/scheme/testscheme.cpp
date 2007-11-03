@@ -365,6 +365,11 @@ void test_math() {
     assert_eval(s, L"-3.0" , L"-3.0");
     assert_eval(s, L"+3" , L"3");
     assert_eval(s, L"1e1" , L"10.0");
+    assert_eval(s, L"-2/3" , L"-2/3");
+    assert_eval(s, L"4/6" , L"2/3");
+    assert_eval(s, L"-7/14" , L"-1/2");
+    assert_eval(s, L"5/1" , L"5");
+    assert_eval(s, L"-5/1" , L"-5");
     assert_eval(s, L"(+ 1 2 3)" , L"6");
     assert_eval(s, L"(+)" , L"0");
     assert_eval(s, L"(- 3)" , L"-3");
@@ -536,6 +541,10 @@ void test_equals() {
     assert_eval(s, L"(eq? #f '())", L"#f");
     assert_eval(s, L"(eqv? #\\a #\\a)", L"#t");
     assert_eval(s, L"(eqv? #\\space #\\spAce)", L"#t");
+    assert_eval(s, L"(eqv? 1 1.0)", L"#f");
+    assert_eval(s, L"(eqv? 1.0 1.0)", L"#t");
+    assert_eval(s, L"(eqv? 1 1)", L"#t");
+    assert_eval(s, L"(eqv? 1/3 2/6)", L"#t");
 }
 
 void test_pairs_and_lists() {
