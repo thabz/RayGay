@@ -445,6 +445,10 @@ void test_math() {
     assert_eval(s, L"(rational? 'a)" , L"#f");
     assert_eval(s, L"(real-part (make-rectangular 1.0 2.0))", L"1.0");
     assert_eval(s, L"(imag-part (make-rectangular 1.0 2.0))", L"2.0");
+    assert_eval(s, L"(make-rectangular 3.1 2.2)", L"3.1+2.2i");
+    assert_eval(s, L"(make-rectangular 3.1 -2.2)", L"3.1-2.2i");
+    assert_eval(s, L"(make-rectangular -1.0 -2.0)", L"-1.0-2.0i");
+    assert_eval(s, L"(make-rectangular 4 5)", L"4.0+5.0i");
     assert_eval(s, L"(real-part 3.0)", L"3.0");
     assert_eval(s, L"(imag-part 3.0)", L"0.0");
     assert_eval(s, L"(real-part 5)", L"5.0");
@@ -494,6 +498,16 @@ void test_math() {
     assert_eval(s, L"(lcm 10 15 -4)" , L"60");
     assert_fail(s, L"(lcm 'a)");
     assert_fail(s, L"(lcm 1.1)");
+    assert_eval(s, L"(numerator 13/8)", L"13");
+    assert_eval(s, L"(numerator -13/8)", L"-13");
+    assert_eval(s, L"(denominator -13/8)", L"8");
+    /*
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+    */
 }
 
 void test_equals() {
@@ -724,6 +738,8 @@ void test_string() {
     assert_fail(s, L"(string->number \"#xffffffffffffffffffffff\")");
     assert_eval(s, L"(string->number \"#xff.10\")", L"#f");
     assert_eval(s, L"(string->number \"#xffs10\")", L"#f");
+    assert_eval(s, L"(string->number \"1/2\")", L"1/2");
+    assert_eval(s, L"(string->number \"-1/3\")", L"-1/3");
     assert_eval(s, L"(number->string 256)", L"\"256\"");
     assert_eval(s, L"(number->string 256 16)", L"\"100\"");
     assert_eval(s, L"(number->string 10.0)", L"\"10.0\"");

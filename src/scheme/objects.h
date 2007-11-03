@@ -82,7 +82,9 @@ class SchemeObject
                     SchemeObject** elems;  // For vector
                     SchemeObject* parent;  // For environments. Environment.
                     SchemeObject* name;    // For macros and procedures. Symbol.
-                    int32_t wrapped_subtype;   // For wrapped C-objects
+                    SchemeObject* real;    // For complex numbers
+                    SchemeObject* numerator;// For rational numbers
+                    int32_t wrapped_subtype;// For wrapped C-objects
                 };
                 union {
                     SchemeObject* cdr;      // For pairs
@@ -92,6 +94,8 @@ class SchemeObject
 		    SchemeObject* binding_list; // For simple environments 
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
+                    SchemeObject* imag;    // For complex numbers
+                    SchemeObject* denominator;// For rational numbers
                     SchemeWrappedCObject* wrapped_object; // For wrapped C-objects
                     binding_map_t::hash_type hash;  // For symbols 
                 };
@@ -182,6 +186,9 @@ class SchemeObject
         static SchemeObject* createComplexNumber(std::complex<double> c);
         static SchemeObject* createComplexNumber(SchemeObject* real, SchemeObject* imag);
         static SchemeObject* createRealNumber(double number);
+        static SchemeObject* createRationalNumber(SchemeObject* numerator, SchemeObject* denominator);
+        static SchemeObject* createRationalNumber(long numerator, long denominator);
+        static SchemeObject* createRationalNumber(pair<long,long> rational);
         static SchemeObject* createIntegerNumber(long number);
         static SchemeObject* createString(const wchar_t* str);
         static SchemeObject* createChar(wchar_t c);
@@ -311,9 +318,21 @@ void* SchemeObject::getWrappedCObject() {
 inline
 long SchemeObject::integerValue() const {
     ObjectType t = type();
-    if (t == REAL_NUMBER) return long(real_value);
-    else if (t == INTEGER_NUMBER) return integer_value;
+    if (t == INTEGER_NUMBER) return integer_value;
+    else if (t == REAL_NUMBER) return long(real_value);
+    else if (t == RATIONAL_NUMBER) return numerator->integer_value;
+    else if (t == COMPLEX_NUMBER) return long(real->real_value);
     else return -1; // Shouldn't happen
+}
+
+inline
+pair<long,long> SchemeObject::rationalValue() const {
+    ObjectType t = type();
+    if (t == RATIONAL_NUMBER) {
+        return pair<long,long>(numerator->integer_value, denominator->integer_value);
+    } else { 
+        return pair<long,long>(integerValue(), 1);
+    }
 }
 
 inline
@@ -321,6 +340,8 @@ double SchemeObject::realValue() const {
     ObjectType t = type();
     if (t == REAL_NUMBER) return real_value;
     else if (t == INTEGER_NUMBER) return double(integer_value);
+    else if (t == RATIONAL_NUMBER) return double(numerator->integer_value) / double(denominator->integer_value);
+    else if (t == COMPLEX_NUMBER) return real->real_value;
     else return -1; // Shouldn't happen
 }
 
@@ -330,7 +351,7 @@ std::complex<double> SchemeObject::complexValue() const {
     if (t == COMPLEX_NUMBER) {
         return std::complex<double>(car->realValue(), cdr->realValue());    
     } else {
-        return std::complex<double>(realValue());    
+        return std::complex<double>(realValue(), 0);    
     }
 }
 

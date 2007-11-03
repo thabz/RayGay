@@ -23,8 +23,8 @@ SchemeObject* SchemeObject::createRealNumber(double number) {
 
 SchemeObject* SchemeObject::createComplexNumber(SchemeObject* real, SchemeObject* imag) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::COMPLEX_NUMBER);
-    result->car = real;
-    result->cdr = imag;
+    result->real = real;
+    result->imag = imag;
     return result;
 }
 
@@ -32,6 +32,26 @@ SchemeObject* SchemeObject::createComplexNumber(std::complex<double> c) {
     SchemeObject* real = createRealNumber(c.real());
     SchemeObject* imag = createRealNumber(c.imag());
     return createComplexNumber(real, imag);
+}
+
+SchemeObject* SchemeObject::createRationalNumber(SchemeObject* numerator, SchemeObject* denominator) {
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::RATIONAL_NUMBER);
+    assert(numerator->type() == INTEGER_NUMBER);
+    assert(denominator->type() == INTEGER_NUMBER);
+    result->numerator = numerator;
+    result->denominator = denominator;
+    return result;
+}
+
+SchemeObject* SchemeObject::createRationalNumber(long numerator, long denominator) {
+    i_normalize_rational(&numerator, &denominator);        
+    SchemeObject* n = createIntegerNumber(numerator);        
+    SchemeObject* d = createIntegerNumber(denominator);
+    return createRationalNumber(n, d);
+}
+
+SchemeObject* SchemeObject::createRationalNumber(pair<long,long> rational) {
+    return createRationalNumber(rational.first, rational.second);   
 }
 
 SchemeObject* SchemeObject::createIntegerNumber(long number) {
@@ -229,12 +249,12 @@ void SchemeObject::mark() {
                 if (cdr != NULL) cdr->mark();
                 break;
             case SchemeObject::COMPLEX_NUMBER :
-                car->mark();
-                cdr->mark();
+                real->mark();
+                imag->mark();
                 break;
             case SchemeObject::RATIONAL_NUMBER :
-                car->mark();
-                cdr->mark();
+                numerator->mark();
+                denominator->mark();
                 break;
             case SchemeObject::VECTOR :    
                 for(int32_t i = 0; i < length; i++) {

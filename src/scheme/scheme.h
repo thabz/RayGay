@@ -218,6 +218,7 @@ extern SchemeObject* S_TWO;
 extern SchemeObject* S_NUMBERS[];
 
 // Conversion macros
+#define scm2complex(o)  ((o)->complexValue())
 #define scm2double(o)  ((o)->realValue())
 #define scm2int(o)     ((o)->integerValue())
 #define scm2string(o)  (wstring((o)->str))
@@ -228,6 +229,7 @@ extern SchemeObject* S_NUMBERS[];
 #define cstr2scm(s)    (SchemeObject::createString(s))
 #define char2scm(c)    (SchemeObject::createChar(c))
 #define int2scm(n)     (((n) < 10 && (n) >= 0) ? S_NUMBERS[n] : SchemeObject::createIntegerNumber(n))
+#define complex2scm(n)  (SchemeObject::createComplexNumber(n))
 #define double2scm(n)  (SchemeObject::createRealNumber(n))
 
 class SchemeAppendableList {
@@ -386,6 +388,8 @@ SchemeObject* s_min(int num, SchemeStack::iterator stack);
 SchemeObject* s_max(int num, SchemeStack::iterator stack);
 SchemeObject* s_gcd(int num, SchemeStack::iterator stack);
 SchemeObject* s_lcm(int num, SchemeStack::iterator stack);
+SchemeObject* s_numerator(SchemeObject* n);
+SchemeObject* s_denominator(SchemeObject* n);
 SchemeObject* s_round(SchemeObject* n);
 SchemeObject* s_floor(SchemeObject* n);
 SchemeObject* s_ceiling(SchemeObject* n);
@@ -408,6 +412,8 @@ SchemeObject* s_make_polar(SchemeObject* magnitude, SchemeObject* angle);
 SchemeObject* s_make_rectangular(SchemeObject* real, SchemeObject* imag);
 SchemeObject* s_real_part(SchemeObject* z);
 SchemeObject* s_imag_part(SchemeObject* z);
+SchemeObject* s_magnitude(SchemeObject* z);
+SchemeObject* s_angle(SchemeObject* z);
 
 // String stuff
 SchemeObject* s_make_string(SchemeObject* len, SchemeObject* chr);
@@ -462,9 +468,11 @@ SchemeObject* s_load(SchemeObject* filename);
 
 // My extensions
 SchemeObject* s_find_duplicate(SchemeObject* l);
-SchemeObject* i_string_2_number(wstring s, uint32_t radix);
+SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset = 0);
 wstring i_number_2_string(SchemeObject* o, uint32_t radix);
+void i_normalize_rational(long* numerator, long* denominator);
 
+        
 extern SchemeObject* if_symbol;
 extern SchemeObject* cond_symbol;
 extern SchemeObject* apply_symbol;

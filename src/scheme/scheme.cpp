@@ -206,6 +206,9 @@ Scheme::Scheme() {
     	assign(L"max"                   ,1,0,1, (SchemeObject* (*)()) s_max, scheme_report_environment);
     	assign(L"gcd"                   ,0,0,1, (SchemeObject* (*)()) s_gcd, scheme_report_environment);
     	assign(L"lcm"                   ,0,0,1, (SchemeObject* (*)()) s_lcm, scheme_report_environment);
+    	assign(L"numerator"             ,1,0,0, (SchemeObject* (*)()) s_numerator, scheme_report_environment);
+    	assign(L"denominator"           ,1,0,0, (SchemeObject* (*)()) s_denominator, scheme_report_environment);
+    	assign(L"lcm"                   ,0,0,1, (SchemeObject* (*)()) s_lcm, scheme_report_environment);
     	assign(L"even?"                 ,1,0,0, (SchemeObject* (*)()) s_even_p, scheme_report_environment);
     	assign(L"odd?"                  ,1,0,0, (SchemeObject* (*)()) s_odd_p, scheme_report_environment);
     	assign(L"zero?"                 ,1,0,0, (SchemeObject* (*)()) s_zero_p, scheme_report_environment);
@@ -215,6 +218,8 @@ Scheme::Scheme() {
     	assign(L"make-polar"            ,2,0,0, (SchemeObject* (*)()) s_make_polar, scheme_report_environment);
     	assign(L"real-part"             ,1,0,0, (SchemeObject* (*)()) s_real_part, scheme_report_environment);
     	assign(L"imag-part"             ,1,0,0, (SchemeObject* (*)()) s_imag_part, scheme_report_environment);
+    	assign(L"magnitude"             ,1,0,0, (SchemeObject* (*)()) s_magnitude, scheme_report_environment);
+    	assign(L"angle"                 ,1,0,0, (SchemeObject* (*)()) s_angle, scheme_report_environment);
     	
     	assign(L"not"                   ,1,0,0, (SchemeObject* (*)()) s_not, scheme_report_environment);
     	assign(L"make-vector"           ,1,1,0, (SchemeObject* (*)()) s_make_vector, scheme_report_environment);
@@ -781,23 +786,8 @@ SchemeObject* s_number_p(SchemeObject* p) {
     return i_number_p(p);
 }
 
-// (integer? p)
-SchemeObject* s_integer_p(SchemeObject* p) {
-    double i;
-    if (p->type() == SchemeObject::INTEGER_NUMBER) {
-        return S_TRUE;
-    } else if (p->type() == SchemeObject::REAL_NUMBER) {
-        return ::modf(scm2double(p),&i) == 0.0 ? S_TRUE : S_FALSE;
-    } else {
-        return S_FALSE;    
-    }
-}
 
 SchemeObject* s_complex_p(SchemeObject* n) {
-    return i_number_p(n);
-}
-
-SchemeObject* s_rational_p(SchemeObject* n) {
     return i_number_p(n);
 }
 
@@ -806,6 +796,31 @@ SchemeObject* s_real_p(SchemeObject* n) {
         return n->complexValue().imag() == 0.0 ? S_TRUE : S_FALSE;
     } else {
         return i_number_p(n);
+    }
+}
+
+SchemeObject* s_rational_p(SchemeObject* n) {
+    if (n->type() == SchemeObject::RATIONAL_NUMBER) {
+        return S_TRUE;
+    } else if (n->type() == SchemeObject::INTEGER_NUMBER) {
+        return S_TRUE;    
+    } else {
+        return S_FALSE;    
+    }
+}
+
+// (integer? p)
+SchemeObject* s_integer_p(SchemeObject* p) {
+    double i;
+    if (p->type() == SchemeObject::INTEGER_NUMBER) {
+        return S_TRUE;
+    } else if (p->type() == SchemeObject::RATIONAL_NUMBER) {
+        long denom = p->rationalValue().second;     
+        return bool2scm(denom == 1 || denom == -1);
+    } else if (p->type() == SchemeObject::REAL_NUMBER) {
+        return ::modf(scm2double(p),&i) == 0.0 ? S_TRUE : S_FALSE;
+    } else {
+        return S_FALSE;    
     }
 }
 
@@ -1174,7 +1189,9 @@ SchemeObject* s_sqrt(SchemeObject* n) {
 }
 
 SchemeObject* s_abs(SchemeObject* n) {
-    if (n->type() == SchemeObject::REAL_NUMBER) {
+    if (n->type() == SchemeObject::COMPLEX_NUMBER) {
+        return double2scm(std::abs(scm2complex(n)));
+    } else if (n->type() == SchemeObject::REAL_NUMBER) {
         return double2scm(fabs(scm2double(n)));
     } else if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return int2scm(labs(scm2int(n)));
@@ -1456,17 +1473,35 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
     return int2scm(r);
 }
 
+void i_normalize_rational(long* numerator, long* denominator) {
+    if (*denominator < 0) {
+        *numerator *= -1;
+        *denominator *= -1;
+    }
+}
+
+SchemeObject* s_numerator(SchemeObject* n) {
+    assert_arg_type(L"numerator", 1, s_rational_p, n);
+    return int2scm(n->rationalValue().first);
+}
+
+SchemeObject* s_denominator(SchemeObject* n) {
+    assert_arg_type(L"denominator", 1, s_rational_p, n);
+    return int2scm(n->rationalValue().second);
+}
+
 SchemeObject* s_make_polar(SchemeObject* magnitude, SchemeObject* angle) {
     assert_arg_type(L"make-polar", 1, s_real_p, magnitude);
     assert_arg_type(L"make-polar", 2, s_real_p, angle);
     std::complex<double> z = std::polar(magnitude->realValue(), angle->realValue());
-    return SchemeObject::createComplexNumber(z);
+    return complex2scm(z);
 }
 
 SchemeObject* s_make_rectangular(SchemeObject* real, SchemeObject* imag) {
     assert_arg_type(L"make-rectangular", 1, s_real_p, real);
     assert_arg_type(L"make-rectangular", 2, s_real_p, imag);
-    return SchemeObject::createComplexNumber(real, imag);        
+    std::complex<double> z(real->realValue(), imag->realValue());
+    return complex2scm(z);
 }
 
 SchemeObject* s_real_part(SchemeObject* z) {
@@ -1479,6 +1514,18 @@ SchemeObject* s_imag_part(SchemeObject* z) {
     assert_arg_complex_type(L"imag-part", 1, z);
     std::complex<double> zz = z->complexValue();
     return double2scm(zz.imag());
+}
+
+SchemeObject* s_magnitude(SchemeObject* z) {
+    assert_arg_complex_type(L"magnitude", 1, z);
+    std::complex<double> zz = z->complexValue();
+    return double2scm(std::abs(zz));        
+}
+
+SchemeObject* s_angle(SchemeObject* z) {
+    assert_arg_complex_type(L"angle", 1, z);
+    std::complex<double> zz = z->complexValue();
+    return double2scm(::atan2(zz.imag(), zz.real()));
 }
 
 SchemeObject* s_even_p(SchemeObject* n) {
@@ -2269,9 +2316,8 @@ string extractDigits(wstring s, size_t offset, uint32_t radix) {
 }
 
 /// Returns a number object or S_FALSE in case of failure
-SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
+SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     int sign = 1;
-    size_t offset = 0;
     if (s.size() == 0) {
 	return S_FALSE;
     }
@@ -2315,7 +2361,6 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
             // TODO: Create a bigint        
             throw scheme_exception(L"Number out of range");        
         }
-            
     }
 
     offset += digits.size();
@@ -2324,6 +2369,27 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
 	// We have an int or a bigint
         return SchemeObject::createIntegerNumber(sign*t);
     }
+    
+    if (s[offset] == L'/') {
+        offset++;
+        string denominator = extractDigits(s, offset, radix);
+        if (denominator.size() == 0) {
+            return S_FALSE;        
+        }
+        errno = 0;
+        long d = strtol(denominator.c_str(), NULL, radix);
+        if (errno == ERANGE) {
+            // TODO: Create a bigint        
+            throw scheme_exception(L"Number out of range");        
+        }
+        offset += denominator.size();
+        if (offset >= s.size()) {
+            return SchemeObject::createRationalNumber(sign*t, d);        
+        } else {
+            return S_FALSE;        
+        }
+    }
+    
     
     double df = 0;
     if (s[offset] == L'.' && radix == 10) {
@@ -2374,6 +2440,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix) {
     if (offset >= s.size()) {
         return SchemeObject::createRealNumber(sign*(t + df) * pow(10,double(e)));;
     }
+    
     return S_FALSE;
 }
 
@@ -2383,6 +2450,8 @@ wstring i_number_2_string(SchemeObject* o, uint32_t radix) {
     if (type == SchemeObject::INTEGER_NUMBER) {
         ss << std::setbase(radix) << scm2int(o);
         return ss.str();
+    } else if (type == SchemeObject::RATIONAL_NUMBER) {
+        return i_number_2_string(o->numerator, radix) + L"/" + i_number_2_string(o->denominator, radix);    
     } else if (type == SchemeObject::REAL_NUMBER) {
         ss << std::setbase(radix) << scm2double(o);
         // A bad hack to append ".0" if ss contains no decimal point. FIXME.
@@ -2391,7 +2460,15 @@ wstring i_number_2_string(SchemeObject* o, uint32_t radix) {
             result += L".0";        
         }
         return result;
+    } else if (type == SchemeObject::COMPLEX_NUMBER) {
+        ss << i_number_2_string(o->real, radix);    
+        if (o->imag->realValue() >= 0.0) {
+            ss << L"+";        
+        }
+        ss << i_number_2_string(o->imag, radix);
+        ss << L"i";
+        return ss.str();
     } else {
-        throw scheme_exception(L"Only support for integers and reals");
+        throw scheme_exception(L"Not a number");
     }
 }
