@@ -827,6 +827,9 @@ SchemeObject* s_integer_p(SchemeObject* p) {
         return bool2scm(denom == 1 || denom == -1);
     } else if (p->type() == SchemeObject::REAL_NUMBER) {
         return ::modf(scm2double(p),&i) == 0.0 ? S_TRUE : S_FALSE;
+    } else if (p->type() == SchemeObject::COMPLEX_NUMBER) {
+        std::complex<double> z = p->complexValue();
+        return ::modf(z.real(),&i) == 0.0 && z.imag() == 0.0 ? S_TRUE : S_FALSE;
     } else {
         return S_FALSE;    
     }
@@ -834,7 +837,7 @@ SchemeObject* s_integer_p(SchemeObject* p) {
 
 SchemeObject* s_exact_p(SchemeObject* n) {
     assert_arg_type(L"exact?", 1, s_number_p, n);
-    return s_integer_p(n);
+    return s_rational_p(n);
 }
 
 SchemeObject* s_inexact_p(SchemeObject* n) {
@@ -1695,12 +1698,12 @@ SchemeObject* s_zero_p(SchemeObject* n) {
     return scm2double(n) == 0 ? S_TRUE : S_FALSE;
 }
 SchemeObject* s_negative_p(SchemeObject* n) {
-    assert_arg_number_type(L"negative?", 1, n);
+    assert_arg_type(L"negative?", 1, s_real_p, n);
     return scm2double(n) < 0 ? S_TRUE : S_FALSE;
 }
 
 SchemeObject* s_positive_p(SchemeObject* n) {
-    assert_arg_number_type(L"positive?", 1, n);
+    assert_arg_type(L"positive?", 1, s_real_p, n);
     return scm2double(n) > 0 ? S_TRUE : S_FALSE;
 }
 
