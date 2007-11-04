@@ -909,6 +909,7 @@ void test_string() {
     assert_eval(s, L"(number->string 256 16)", L"\"100\"");
     assert_eval(s, L"(number->string 10.0)", L"\"10.0\"");
     assert_eval(s, L"(number->string -10)", L"\"-10\"");
+    assert_eval(s, L"(number->string 15/32 16)", L"\"f/20\"");
     assert_eval(s, L"(string->list \"\")", L"()");
     assert_eval(s, L"(string->list \"String\")", L"(#\\S #\\t #\\r #\\i #\\n #\\g)");
     assert_eval(s, L"(list->string '())", L"\"\"");

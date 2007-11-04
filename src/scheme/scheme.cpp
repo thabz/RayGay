@@ -2858,8 +2858,12 @@ wstring i_number_2_string(SchemeObject* o, uint32_t radix) {
         ss << i_number_2_string(o->denominator, radix);
         return ss.str();
     } else if (type == SchemeObject::REAL_NUMBER) {
-        double d = o->realValue();    
-        ss << std::setbase(radix) << d;
+        double d = o->realValue();
+        // Guile uses precision 15. We'll do the same.
+        // Comparing (* 4 (atan 1)) to the real digits of pi
+        // it looks like the precision of double is about 15 
+        // or 16 decimal digits.     
+        ss << std::setbase(radix) << std::setprecision(15) << d;
         double i;
         // Append ".0" if d contains no decimal point.
         if (::modf(d,&i) == 0.0) {
