@@ -1621,9 +1621,14 @@ SchemeObject* s_truncate(SchemeObject* n) {
 SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type(L"quotient", 1, s_integer_p, n1);
     assert_arg_type(L"quotient", 2, s_integer_p, n2);
-    int nn1 = scm2int(n1);
-    int nn2 = scm2int(n2);
-    return int2scm(nn1 / nn2);
+    long nn1 = scm2int(n1);
+    long nn2 = scm2int(n2);
+    long result = nn1 / nn2;
+    if (s_inexact_p(n1) == S_TRUE || s_inexact_p(n2) == S_TRUE) {
+        return double2scm(double(result));
+    } else {
+        return int2scm(result);
+    }
 }
 
 SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
@@ -1641,7 +1646,11 @@ SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
             result += labs(nn2);
         }
     }
-    return int2scm(result);
+    if (s_inexact_p(n1) == S_TRUE || s_inexact_p(n2) == S_TRUE) {
+        return double2scm(double(result));
+    } else {
+        return int2scm(result);
+    }
 }
 
 SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2) {
@@ -1657,7 +1666,11 @@ SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2) {
             result += labs(nn2);
         }
     }
-    return int2scm(result);
+    if (s_inexact_p(n1) == S_TRUE || s_inexact_p(n2) == S_TRUE) {
+        return double2scm(double(result));
+    } else {
+        return int2scm(result);
+    }
 }
 
 

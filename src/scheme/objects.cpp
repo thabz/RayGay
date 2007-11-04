@@ -38,6 +38,8 @@ SchemeObject* SchemeObject::createRationalNumber(SchemeObject* numerator, Scheme
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::RATIONAL_NUMBER);
     assert(numerator->type() == INTEGER_NUMBER);
     assert(denominator->type() == INTEGER_NUMBER);
+    assert(denominator->integer_value != 1);
+    assert(denominator->integer_value > 0);
     result->numerator = numerator;
     result->denominator = denominator;
     return result;
