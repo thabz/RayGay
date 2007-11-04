@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iomanip>
 #include <cmath>
+#include <complex>
 #include <cctype>
 #include <stdexcept>
 #include <cerrno>
@@ -1400,31 +1401,62 @@ SchemeObject* s_sin(SchemeObject* n) {
 
 SchemeObject* s_asin(SchemeObject* n) {
     assert_arg_number_type(L"asin", 1, n);
-    return double2scm(asin(scm2double(n)));
+    if (n->type() == SchemeObject::COMPLEX_NUMBER) {
+        complex<double> i = complex<double>(0,1);    
+        complex<double> z = scm2complex(n);
+        // Using the formula from R^5RS
+        return complex2scm(-i * std::log(i*z + std::sqrt(1.0-z*z)));     
+    } else {
+        return double2scm(::asin(scm2double(n)));
+    }
 }
 
 SchemeObject* s_cos(SchemeObject* n) {
     assert_arg_number_type(L"cos", 1, n);
-    return double2scm(cos(scm2double(n)));
+    if (n->type() == SchemeObject::COMPLEX_NUMBER) {
+        return complex2scm(std::cos(scm2complex(n)));
+    } else {
+        return double2scm(::cos(scm2double(n)));
+    }
 }
 
 SchemeObject* s_acos(SchemeObject* n) {
     assert_arg_number_type(L"acos", 1, n);
-    return double2scm(acos(scm2double(n)));
+    if (n->type() == SchemeObject::COMPLEX_NUMBER) {
+        complex<double> i = complex<double>(0,1);    
+        complex<double> z = scm2complex(n);
+        // Using the formula from R^5RS    
+        complex<double> asin_z = (-i) * std::log(i*z + std::sqrt(1.0-z*z));     
+        return complex2scm(M_PI/2.0 - asin_z);
+    } else {
+        return double2scm(::acos(scm2double(n)));
+    }
 }
 
 SchemeObject* s_tan(SchemeObject* n) {
     assert_arg_number_type(L"tan", 1, n);
-    return double2scm(tan(scm2double(n)));
+    if (n->type() == SchemeObject::COMPLEX_NUMBER) {
+        return complex2scm(std::tan(scm2complex(n)));
+    } else {
+        return double2scm(::tan(scm2double(n)));
+    }
 }
 
 SchemeObject* s_atan(SchemeObject* y, SchemeObject* x) {
     assert_arg_number_type(L"atan", 1, y);
     if (x == S_UNSPECIFIED) {
-        return double2scm(atan(scm2double(y)));
+        if (y->type() == SchemeObject::COMPLEX_NUMBER) {
+            complex<double> i = complex<double>(0,1);    
+            complex<double> z = scm2complex(y);
+            // Using the formula from R^5RS    
+            return complex2scm((std::log(1.0+i*z) - std::log(1.0-i*z)) / (2.0*i));
+        } else {
+            return double2scm(::atan(scm2double(y)));
+        }
     } else {
-        assert_arg_number_type(L"atan", 2, x);
-        return double2scm(atan2(scm2double(y), scm2double(x)));
+        assert_arg_type(L"atan", 1, s_real_p, y);
+        assert_arg_type(L"atan", 2, s_real_p, x);
+        return double2scm(::atan2(scm2double(y), scm2double(x)));
     }
 }
 
@@ -1434,7 +1466,11 @@ SchemeObject* s_atan(SchemeObject* y, SchemeObject* x) {
 // TODO: Implement
 SchemeObject* s_log(SchemeObject* n) {
     assert_arg_number_type(L"log", 1, n);
-    return double2scm(log(scm2double(n)));
+    if (n->type() == SchemeObject::COMPLEX_NUMBER) {
+        return complex2scm(std::log(scm2complex(n)));
+    } else {
+        return double2scm(::log(scm2double(n)));
+    }
 }
 
 // Returns a^b
@@ -1452,14 +1488,37 @@ SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
     } else {
         assert_arg_number_type(L"expt", 1, a);
         assert_arg_number_type(L"expt", 2, b);
-        return double2scm(pow(scm2double(a),scm2double(b)));
+        bool a_c = a->type() == SchemeObject::COMPLEX_NUMBER;
+        bool b_c = b->type() == SchemeObject::COMPLEX_NUMBER;
+        
+        if (a_c) {
+            if (b_c) {
+                return complex2scm(std::pow(scm2complex(a), scm2complex(b)));        
+            } else {
+                if (b->type() == SchemeObject::INTEGER_NUMBER) {
+                    return complex2scm(std::pow(scm2complex(a), scm2int(b)));
+                } else {   
+                    return complex2scm(std::pow(scm2complex(a), scm2double(b)));        
+                }
+            }        
+        } else {
+            if (b_c) {
+                return complex2scm(std::pow(scm2double(a), scm2complex(b)));        
+            } else {
+                return double2scm(pow(scm2double(a),scm2double(b)));
+            }           
+        }
     }
 }
 
 // Returns e^n
 SchemeObject* s_exp(SchemeObject* n) {
     assert_arg_number_type(L"exp", 1, n);
-    return double2scm(exp(scm2double(n)));
+    if (n->type() == SchemeObject::COMPLEX_NUMBER) {
+        return complex2scm(std::exp(scm2complex(n)));
+    } else {
+        return double2scm(::exp(scm2double(n)));
+    }
 }
 
 // Round returns the closest integer to x, rounding to even when x is halfway between two integers.
@@ -1491,7 +1550,15 @@ SchemeObject* s_ceiling(SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return n;
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
-        return int2scm(999);    
+        pair<long,long> z = scm2rational(n);
+        long numerator = z.first;
+        long denominator = z.second;
+        long quotient = numerator / denominator;
+        if (quotient >= 0 && numerator > 0) {
+            return int2scm(quotient+1);    
+        } else {
+            return int2scm(quotient);
+        }
     } else {
         assert_arg_type(L"ceiling", 1, s_real_p, n);
         return double2scm(ceil(scm2double(n)));
@@ -1523,7 +1590,22 @@ SchemeObject* s_truncate(SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return n;
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
-        return int2scm(999);    
+        pair<long,long> z = scm2rational(n);
+        long numerator = z.first;
+        long old_numerator = numerator;
+        long denominator = z.second;
+        if (old_numerator < 0) numerator = -numerator;
+        long quotient = numerator / denominator;
+        long flo;
+        if (quotient >= 0 && numerator > 0) {
+            flo = quotient;    
+        } else {
+            flo = quotient-1;
+        }
+        if (old_numerator < 0) {
+            flo = -flo;        
+        }
+        return int2scm(flo);    
     } else {
         assert_arg_type(L"truncate", 1, s_real_p, n);
         double t = scm2double(n);

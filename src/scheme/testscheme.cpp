@@ -430,6 +430,8 @@ void test_math() {
     assert_eval(s, L"(expt -1 -255)" , L"-1");
     assert_eval(s, L"(expt 1/3 -3)" , L"27");
     assert_eval(s, L"(expt 4/7 -3)" , L"343/64");
+    assert_eval(s, L"(expt +i 2)" , L"-1.0");
+    assert_eval(s, L"(expt 1 1+i)" , L"1.0");
     assert_fail(s, L"(expt 0 'a)");
     assert_fail(s, L"(expt 'a 0)");
     assert_fail(s, L"(expt 1)");
@@ -572,19 +574,26 @@ void test_math() {
     assert_eval(s, L"(truncate 1/2)" , L"0");
     assert_eval(s, L"(truncate -3/2)" , L"-1");
     assert_eval(s, L"(truncate -1/2)" , L"0");
+    assert_eval(s, L"(truncate -17/3)" , L"-5");
+    assert_eval(s, L"(truncate -16/3)" , L"-5");
+    assert_eval(s, L"(truncate 17/3)" , L"5");
+    assert_eval(s, L"(truncate 16/3)" , L"5");
 
     assert_eval(s, L"(modulo 13 4)" , L"1");
     assert_eval(s, L"(remainder 13 4)" , L"1");
     assert_eval(s, L"(quotient 13 4)" , L"3");
     assert_eval(s, L"(modulo -13 4)" , L"3");
+    assert_eval(s, L"(modulo -13 4.0)" , L"3.0");
     assert_eval(s, L"(remainder -13 4)" , L"-1");
     assert_eval(s, L"(quotient -13 4)" , L"-3");
+    assert_eval(s, L"(quotient -13 4.0)" , L"-3.0");
     assert_eval(s, L"(modulo 13 -4)" , L"-3");
     assert_eval(s, L"(remainder 13 -4)" , L"1");
     assert_eval(s, L"(quotient 13 -4)" , L"-3");
     assert_eval(s, L"(modulo -13 -4)" , L"-1");
     assert_eval(s, L"(remainder -13 -4)" , L"-1");    
     assert_eval(s, L"(quotient -13 -4)" , L"3");
+    assert_eval(s, L"(remainder -13 -4.0)" , L"-1.0");    
     assert_eval(s, L"(gcd)" , L"0");
     assert_eval(s, L"(gcd 5)" , L"5");
     assert_eval(s, L"(gcd -4)" , L"4"); // Guile 1.8.1 gets this one wrong.
@@ -622,6 +631,25 @@ void test_math() {
     assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");
     */
+
+    assert_eval(s, L"(sin 0)", L"0.0");
+    assert_eval(s, L"(cos 0)", L"1.0");
+    assert_eval(s, L"(tan 0)", L"0.0");
+    assert_eval(s, L"(asin 0)", L"0.0");
+    assert_eval(s, L"(acos 1)", L"0.0");
+    assert_eval(s, L"(atan 0)", L"0.0");
+    assert_eval(s, L"(log 1)", L"0.0");
+    assert_eval(s, L"(exp 0)", L"1.0");
+    assert_eval(s, L"(eqv? (sin +i) (sin 0))", L"#f");
+    assert_eval(s, L"(eqv? (cos +i) (cos 0))", L"#f");
+    assert_eval(s, L"(eqv? (tan +i) (tan 0))", L"#f");
+    assert_eval(s, L"(eqv? (asin +i) (asin 0))", L"#f");
+    assert_eval(s, L"(eqv? (acos 1+i) (acos 1))", L"#f");
+    assert_eval(s, L"(eqv? (log 1+i) (log 1))", L"#f");
+    assert_eval(s, L"(eqv? (exp +i) (exp 0))", L"#f");
+    assert_fail(s, L"(atan +i 1)");
+    assert_fail(s, L"(atan 1 +i)");
+    assert_fail(s, L"(atan +1 +i)");
 }
 
 void test_equals() {
