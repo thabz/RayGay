@@ -1465,7 +1465,7 @@ SchemeObject* s_exp(SchemeObject* n) {
 // Round returns the closest integer to x, rounding to even when x is halfway between two integers.
 SchemeObject* s_round(SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) return n;
-    assert_arg_number_type(L"round", 1, n);
+    assert_arg_type(L"round", 1, s_real_p, n);
     double nn = scm2double(n);
     double flo = floor(nn);
     double cei = ceil(nn);
@@ -1483,34 +1483,57 @@ SchemeObject* s_round(SchemeObject* n) {
              result = cei;
         }
     }
-    return int2scm(int(result));
+    return double2scm(result);
 }
 
 // Ceiling returns the smallest integer not smaller than x
 SchemeObject* s_ceiling(SchemeObject* n) {
-    if (n->type() == SchemeObject::INTEGER_NUMBER) return n;
-    assert_arg_number_type(L"ceiling", 1, n);
-    return int2scm(int(ceil(scm2double(n))));
+    if (n->type() == SchemeObject::INTEGER_NUMBER) {
+        return n;
+    } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
+        return int2scm(999);    
+    } else {
+        assert_arg_type(L"ceiling", 1, s_real_p, n);
+        return double2scm(ceil(scm2double(n)));
+    }
 }
 
 // Floor returns the largest integer not larger than x
 SchemeObject* s_floor(SchemeObject* n) {
-    if (n->type() == SchemeObject::INTEGER_NUMBER) return n;
-    assert_arg_number_type(L"floor", 1, n);
-    return int2scm(int(floor(scm2double(n))));
+    if (n->type() == SchemeObject::INTEGER_NUMBER) {
+        return n;
+    } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
+        pair<long,long> z = scm2rational(n);
+        long numerator = z.first;
+        long denominator = z.second;
+        long quotient = numerator / denominator;
+        if (quotient >= 0 && numerator > 0) {
+            return int2scm(quotient);    
+        } else {
+            return int2scm(quotient-1);
+        }
+    } else {
+        assert_arg_type(L"floor", 1, s_real_p, n);
+        return double2scm(floor(scm2double(n)));
+    }
 }
 
 // Truncate returns the integer closest to x whose absolute value is not larger than the absolute value of x
 SchemeObject* s_truncate(SchemeObject* n) {
-    if (n->type() == SchemeObject::INTEGER_NUMBER) return n;
-    assert_arg_number_type(L"truncate", 1, n);
-    double t = scm2double(n);
-#if HAVE_TRUNC
-    double r = trunc(t);
-#else
-    double r = t < 0 ? -floor(-t) : floor(t);
-#endif    
-    return int2scm(int(r));
+    if (n->type() == SchemeObject::INTEGER_NUMBER) {
+        return n;
+    } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
+        return int2scm(999);    
+    } else {
+        assert_arg_type(L"truncate", 1, s_real_p, n);
+        double t = scm2double(n);
+        #if HAVE_TRUNC
+            double r = trunc(t);
+        #else
+            double r = t < 0 ? -floor(-t) : floor(t);
+        #endif    
+        return double2scm(r);
+    }        
 }
 
 SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2) {
@@ -1519,7 +1542,6 @@ SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2) {
     int nn1 = scm2int(n1);
     int nn2 = scm2int(n2);
     return int2scm(nn1 / nn2);
-    
 }
 
 SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
@@ -1756,19 +1778,48 @@ SchemeObject* s_odd_p(SchemeObject* n) {
 
 SchemeObject* s_zero_p(SchemeObject* n) {
     assert_arg_number_type(L"zero?", 1, n);
-    return scm2double(n) == 0 ? S_TRUE : S_FALSE;
+    bool result;
+    if (n->type() == SchemeObject::INTEGER_NUMBER) {
+        result = scm2int(n) == 0;    
+    } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
+        result = scm2int(n->numerator) == 0;
+    } else if (n->type() == SchemeObject::COMPLEX_NUMBER) {
+        std::complex<double> c = n->complexValue();
+        result = c.real() == 0.0 && c.imag() == 0.0;
+    } else {
+        result = scm2double(n) == 0.0;
+    }
+    return bool2scm(result);
 }
+
 SchemeObject* s_negative_p(SchemeObject* n) {
     assert_arg_type(L"negative?", 1, s_real_p, n);
-    return scm2double(n) < 0 ? S_TRUE : S_FALSE;
+    bool result;
+    if (n->type() == SchemeObject::INTEGER_NUMBER) {
+        result = scm2int(n) < 0;    
+    } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
+        result = scm2int(n->numerator) < 0;
+    } else {
+        result = scm2double(n) < 0;
+    }
+    return bool2scm(result);
 }
 
 SchemeObject* s_positive_p(SchemeObject* n) {
     assert_arg_type(L"positive?", 1, s_real_p, n);
-    return scm2double(n) > 0 ? S_TRUE : S_FALSE;
+    bool result;
+    if (n->type() == SchemeObject::INTEGER_NUMBER) {
+        result = scm2int(n) > 0;    
+    } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
+        result = scm2int(n->numerator) > 0;
+    } else {
+        result = scm2double(n) > 0;
+    }
+    return bool2scm(result);
 }
 
 // (= a b)
+// FIXME: Numerical instable. Use integer and rational comparisons
 SchemeObject* s_equal(int num, SchemeStack::iterator args) {
     if (num == 0) {
         return S_TRUE;
@@ -1788,6 +1839,7 @@ SchemeObject* s_equal(int num, SchemeStack::iterator args) {
     return S_TRUE;
 }
 
+// FIXME: Numerical instable. Use integer and rational comparisons
 SchemeObject* s_less(int num, SchemeStack::iterator args) {
     if (num == 0) {
         return S_TRUE;
@@ -1807,25 +1859,7 @@ SchemeObject* s_less(int num, SchemeStack::iterator args) {
     return S_TRUE;
 }
 
-SchemeObject* s_greater(int num, SchemeStack::iterator args) {
-    if (num == 0) {
-        return S_TRUE;
-    }
-    assert_arg_type(L">", 1, s_real_p, *args);
-    double n = scm2double(*args);
-    args ++;
-    for(int i = 1; i < num; i++) {
-        SchemeObject* v = *args++;
-        assert_arg_type(L">", i+1, s_real_p, v);
-        double nn = scm2double(v);
-        if (nn >= n) {
-            return S_FALSE;
-        }
-        n = nn;
-    }
-    return S_TRUE;
-}
-
+// FIXME: Numerical instable. Use integer and rational comparisons
 SchemeObject* s_less_equal(int num, SchemeStack::iterator args) {
     if (num == 0) {
         return S_TRUE;
@@ -1845,6 +1879,27 @@ SchemeObject* s_less_equal(int num, SchemeStack::iterator args) {
     return S_TRUE;
 }
 
+// FIXME: Numerical instable. Use integer and rational comparisons
+SchemeObject* s_greater(int num, SchemeStack::iterator args) {        
+    if (num == 0) {
+        return S_TRUE;
+    }
+    assert_arg_type(L">", 1, s_real_p, *args);
+    double n = scm2double(*args);
+    args ++;
+    for(int i = 1; i < num; i++) {
+        SchemeObject* v = *args++;
+        assert_arg_type(L">", i+1, s_real_p, v);
+        double nn = scm2double(v);
+        if (nn >= n) {
+            return S_FALSE;
+        }
+        n = nn;
+    }
+    return S_TRUE;
+}
+
+// FIXME: Numerical instable. Use integer and rational comparisons
 SchemeObject* s_greater_equal(int num, SchemeStack::iterator args) {
     if (num == 0) {
         return S_TRUE;
