@@ -1475,16 +1475,24 @@ SchemeObject* s_log(SchemeObject* n) {
 
 // Returns a^b
 SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
-    if (a->type() == SchemeObject::INTEGER_NUMBER && b->type() == SchemeObject::INTEGER_NUMBER && scm2int(b) >= 0) {
-        // TODO: Find a better algorithm for the integer case
+    if (a->type() == SchemeObject::INTEGER_NUMBER && b->type() == SchemeObject::INTEGER_NUMBER) {
         long ai = scm2int(a);    
-        long bi = scm2int(b);    
+        long bi = scm2int(b);
+        long iter = labs(bi);    
+
         if (bi == 0) return S_ONE;
+
+        // The following algorithm while slow, is OK for the relative small long values.
         long result = 1;
-        while (bi-- > 0) {
+        while (iter-- > 0) {
             result *= ai;        
         }
-        return int2scm(result);
+        if (bi > 0) {
+            return int2scm(result);
+        } else {
+            pair<long,long> rational(1,result);
+            return rational2scm(rational);        
+        }
     } else {
         assert_arg_number_type(L"expt", 1, a);
         assert_arg_number_type(L"expt", 2, b);
