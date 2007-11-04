@@ -407,6 +407,8 @@ SchemeObject* s_rational_p(SchemeObject* n);
 SchemeObject* s_real_p(SchemeObject* n);
 SchemeObject* s_exact_p(SchemeObject* n);
 SchemeObject* s_inexact_p(SchemeObject* n);
+SchemeObject* s_exact_2_inexact(SchemeObject* n);
+SchemeObject* s_inexact_2_exact(SchemeObject* n);
 SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2);
 SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2);
 SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2);

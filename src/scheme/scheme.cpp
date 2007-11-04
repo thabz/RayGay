@@ -208,7 +208,8 @@ Scheme::Scheme() {
     	assign(L"lcm"                   ,0,0,1, (SchemeObject* (*)()) s_lcm, scheme_report_environment);
     	assign(L"numerator"             ,1,0,0, (SchemeObject* (*)()) s_numerator, scheme_report_environment);
     	assign(L"denominator"           ,1,0,0, (SchemeObject* (*)()) s_denominator, scheme_report_environment);
-    	assign(L"lcm"                   ,0,0,1, (SchemeObject* (*)()) s_lcm, scheme_report_environment);
+    	assign(L"exact->inexact"        ,1,0,0, (SchemeObject* (*)()) s_exact_2_inexact, scheme_report_environment);
+    	assign(L"inexact->exact"        ,1,0,0, (SchemeObject* (*)()) s_inexact_2_exact, scheme_report_environment);
     	assign(L"even?"                 ,1,0,0, (SchemeObject* (*)()) s_even_p, scheme_report_environment);
     	assign(L"odd?"                  ,1,0,0, (SchemeObject* (*)()) s_odd_p, scheme_report_environment);
     	assign(L"zero?"                 ,1,0,0, (SchemeObject* (*)()) s_zero_p, scheme_report_environment);
@@ -837,12 +838,44 @@ SchemeObject* s_integer_p(SchemeObject* p) {
 
 SchemeObject* s_exact_p(SchemeObject* n) {
     assert_arg_type(L"exact?", 1, s_number_p, n);
-    return s_rational_p(n);
+    return n->type() == SchemeObject::INTEGER_NUMBER ||
+           n->type() == SchemeObject::RATIONAL_NUMBER ? S_TRUE : S_FALSE;
 }
 
 SchemeObject* s_inexact_p(SchemeObject* n) {
     assert_arg_type(L"inexact?", 1, s_number_p, n);
     return s_exact_p(n) == S_TRUE ? S_FALSE : S_TRUE;
+}
+
+SchemeObject* s_exact_2_inexact(SchemeObject* n) {
+    assert_arg_type(L"exact->inexact", 1, s_number_p, n);
+    if (n->type() == SchemeObject::INTEGER_NUMBER) {
+        return double2scm(n->realValue());
+    } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
+        return double2scm(n->realValue());
+    } else  {
+        return n;
+    }
+}
+
+SchemeObject* s_inexact_2_exact(SchemeObject* n) {
+    assert_arg_type(L"inexact->exact", 1, s_real_p, n);
+    if (n->type() == SchemeObject::REAL_NUMBER || n->type() == SchemeObject::COMPLEX_NUMBER) {
+        // To converter a double to a rational, we multiply
+        // it with 10 until it's an integer number.
+        double real = n->realValue();
+        double tmp;
+        long denominator = 1;
+        while (::modf(real,&tmp) != 0.0) {
+            real *= 10;
+            denominator *= 10;
+        }
+        long numerator = long(real);
+        std::pair<long,long> rational(numerator, denominator);
+        return rational2scm(rational);
+    } else {
+        return n;    
+    }
 }
 
 // (number? p)
@@ -1346,7 +1379,11 @@ SchemeObject* s_abs(SchemeObject* n) {
 
 SchemeObject* s_sin(SchemeObject* n) {
     assert_arg_number_type(L"sin", 1, n);
-    return double2scm(sin(scm2double(n)));
+    if (n->type() == SchemeObject::COMPLEX_NUMBER) {
+        return complex2scm(std::sin(scm2complex(n)));
+    } else {
+        return double2scm(::sin(scm2double(n)));
+    }
 }
 
 SchemeObject* s_asin(SchemeObject* n) {
@@ -1636,13 +1673,25 @@ void i_normalize_rational(long* numerator, long* denominator) {
 }
 
 SchemeObject* s_numerator(SchemeObject* n) {
-    assert_arg_type(L"numerator", 1, s_rational_p, n);
-    return int2scm(n->rationalValue().first);
+    assert_arg_type(L"numerator", 1, s_real_p, n);
+    if (s_exact_p(n) == S_TRUE) {
+        return int2scm(n->rationalValue().first);
+    } else {
+        SchemeObject* z = s_inexact_2_exact(n);
+        long l = z->rationalValue().first;
+        return double2scm(double(l));
+    }
 }
 
 SchemeObject* s_denominator(SchemeObject* n) {
-    assert_arg_type(L"denominator", 1, s_rational_p, n);
-    return int2scm(n->rationalValue().second);
+    assert_arg_type(L"denominator", 1, s_real_p, n);
+    if (s_exact_p(n) == S_TRUE) {
+        return int2scm(n->rationalValue().second);
+    } else {
+        SchemeObject* z = s_inexact_2_exact(n);
+        long l = z->rationalValue().second;
+        return double2scm(double(l));
+    }
 }
 
 SchemeObject* s_make_polar(SchemeObject* magnitude, SchemeObject* angle) {
@@ -2524,7 +2573,8 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         t = strtol(digits.c_str(), NULL, radix);
         if (errno == ERANGE) {
             // TODO: Create a bigint        
-            throw scheme_exception(L"Number out of range");        
+            // throw scheme_exception(L"Number out of range");        
+            return S_FALSE;
         }
     }
 
@@ -2545,12 +2595,13 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         long d = strtol(denominator.c_str(), NULL, radix);
         if (errno == ERANGE) {
             // TODO: Create a bigint        
-            throw scheme_exception(L"Number out of range");        
+            //throw scheme_exception(L"Number out of range");        
+            return S_FALSE;
         }
         offset += denominator.size();
         if (offset >= s.size()) {
             if (d == 0) {
-                throw scheme_exception(L"Invalid denominator: 0");
+                return S_FALSE;
             }        
             return SchemeObject::createRationalNumber(sign*t, d);        
         } else {
@@ -2572,7 +2623,9 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         long f = strtol(fraction.c_str(), NULL, 10);
         if (errno == ERANGE) {
             // TODO: Clip fraction to the possible precision.        
-            throw scheme_exception(L"Number out of range");        
+            // throw scheme_exception(L"Number out of range"); 
+            return S_FALSE;
+                   
         }
         df = double(f) / pow(10.0, double(fraction.size()));
         offset += fraction.size();
@@ -2610,7 +2663,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         return SchemeObject::createRealNumber(sign*(t + df) * pow(10,double(e)));
     }
     
-    if (s[offset] == L'i' && (digits.size() != 0 || fraction.size() != 0)) {
+    if (s[offset] == L'i' && (digits.size() != 0 || fraction.size() != 0) && sign_found) {
         offset++;    
         if (offset >= s.size()) {
             std::complex<double> z(0, sign*(t + df) * pow(10,double(e)));    

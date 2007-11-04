@@ -375,7 +375,7 @@ void test_math() {
     assert_eval(s, L"(+ 1 2 3.0)" , L"6.0");
     assert_eval(s, L"(+ 1/2 2/7 3/4)" , L"43/28");
     assert_eval(s, L"(+ 1/2 4 3/2)" , L"6");
-    assert_eval(s, L"(+ 1 3i)" , L"1.0+3.0i");
+    assert_eval(s, L"(+ 1 +3i)" , L"1.0+3.0i");
     assert_eval(s, L"(+ 1+2i 2+3i)" , L"3.0+5.0i");
     assert_eval(s, L"(- 3)" , L"-3");
     assert_eval(s, L"(- 3 2)" , L"1");
@@ -402,8 +402,8 @@ void test_math() {
     assert_eval(s, L"(* 1/3 3 4/7)" , L"4/7");
     assert_eval(s, L"(* 1/3 3/10 4/7)" , L"2/35");
     assert_eval(s, L"(* 2 1+i)" , L"2.0+2.0i");
-    assert_eval(s, L"(* 2 2i)" , L"0.0+4.0i");
-    assert_eval(s, L"(* 3i 2i)" , L"-6.0");
+    assert_eval(s, L"(* 2 +2i)" , L"0.0+4.0i");
+    assert_eval(s, L"(* +3i +2i)" , L"-6.0");
     assert_fail(s, L"(* 'a 1)");
     assert_eval(s, L"(min 5)" , L"5");
     assert_eval(s, L"(min 3.0 1 2)" , L"1.0");
@@ -461,6 +461,8 @@ void test_math() {
     assert_eval(s, L"(positive? 2+0i)" , L"#t");
     assert_fail(s, L"(positive? 1+i)");
     assert_eval(s, L"(integer? 2)" , L"#t");
+    assert_eval(s, L"(integer? 2/1)" , L"#t");
+    assert_eval(s, L"(integer? 2/3)" , L"#f");
     assert_eval(s, L"(integer? 2.1)" , L"#f");
     assert_eval(s, L"(integer? 2.0)" , L"#t");
     assert_eval(s, L"(integer? 2.0+0i)" , L"#t");
@@ -476,6 +478,17 @@ void test_math() {
     assert_eval(s, L"(inexact? 2)" , L"#f");
     assert_eval(s, L"(inexact? 2/9)" , L"#f");
     assert_fail(s, L"(inexact? 'a)");
+    assert_eval(s, L"(exact->inexact 1/2)" , L"0.5");
+    assert_eval(s, L"(exact->inexact 1)" , L"1.0");
+    assert_eval(s, L"(exact->inexact 7.1)" , L"7.1");
+    assert_eval(s, L"(exact->inexact +i)", L"0.0+1.0i");
+    assert_eval(s, L"(inexact->exact 1)", L"1");
+    assert_eval(s, L"(inexact->exact 1/2)", L"1/2");
+    assert_eval(s, L"(inexact->exact 0.5)", L"1/2");
+    assert_eval(s, L"(inexact->exact 0.75)", L"3/4");
+    assert_eval(s, L"(inexact->exact 1.7)", L"17/10");
+    assert_eval(s, L"(inexact->exact 0.25+0i)", L"1/4");
+    assert_fail(s, L"(inexact->exact +i)");
     assert_eval(s, L"(complex? 2)" , L"#t");
     assert_eval(s, L"(complex? 'a)" , L"#f");
     assert_eval(s, L"(real? 2)" , L"#t");
@@ -541,10 +554,14 @@ void test_math() {
     assert_eval(s, L"(numerator 13/8)", L"13");
     assert_eval(s, L"(numerator -13/8)", L"-13");
     assert_eval(s, L"(denominator -13/8)", L"8");
-
+    assert_eval(s, L"(denominator 0)", L"1");
     assert_eval(s, L"(sqrt 9)", L"3.0");
     assert_eval(s, L"(sqrt -9)", L"0.0+3.0i");
-
+    // From R^5RS
+    assert_eval(s, L"(numerator (/ 6 4))", L"3");
+    assert_eval(s, L"(denominator (/ 6 4))", L"2");
+    assert_eval(s, L"(denominator (exact->inexact (/ 6 4)))", L"2.0");
+    
     /*
     assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");
@@ -766,8 +783,12 @@ void test_string() {
     assert_eval(s, L"(string->number \"d\")", L"#f");
     assert_eval(s, L"(string->number \"i\")", L"#f");
     assert_eval(s, L"(string->number \"I\")", L"#f");
-    assert_eval(s, L"(string->number \"3i\")", L"0.0+3.0i");
-    assert_eval(s, L"(string->number \"3.3i\")", L"0.0+3.3i");
+    assert_eval(s, L"(string->number \"3.3i\")", L"#f");
+    assert_eval(s, L"(string->number \"3i\")", L"#f");
+    assert_eval(s, L"(string->number \"33i\")", L"#f");
+    assert_eval(s, L"(string->number \"+3i\")", L"0.0+3.0i");
+    assert_eval(s, L"(string->number \"+3.3i\")", L"0.0+3.3i");
+    assert_eval(s, L"(string->number \"-33i\")", L"0.0-33.0i");
     assert_eval(s, L"(string->number \"-4i\")", L"0.0-4.0i");
     assert_eval(s, L"(string->number \"1.0+3.3i\")", L"1.0+3.3i");
     assert_eval(s, L"(string->number \"2+3.3i\")", L"2.0+3.3i");
@@ -796,7 +817,7 @@ void test_string() {
     assert_eval(s, L"(string->number \".2e2\")", L"20.0");
     assert_eval(s, L"(string->number \"8e+3\")", L"8000.0");
     assert_eval(s, L"(string->number \"8f3\")", L"8000.0");
-    assert_fail(s, L"(string->number \"#xffffffffffffffffffffff\")");
+    //assert_fail(s, L"(string->number \"#xffffffffffffffffffffff\")");
     assert_eval(s, L"(string->number \"#xff.10\")", L"#f");
     assert_eval(s, L"(string->number \"#xffs10\")", L"#f");
     assert_eval(s, L"(string->number \"1/2\")", L"1/2");
