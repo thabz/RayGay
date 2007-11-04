@@ -476,7 +476,19 @@ SchemeObject* s_find_duplicate(SchemeObject* l) {
 // such as numbers and symbols. A rule of thumb is that objects are generally equal? if they print the same. 
 // Equal? may fail to terminate if its arguments are circular data structures.
 SchemeObject* s_equal_p(SchemeObject* a, SchemeObject* b) {
-    return a->toString() == b->toString() ? S_TRUE : S_FALSE; 
+    bool result;        
+    SchemeObject::ObjectType ta = a->type();        
+    SchemeObject::ObjectType tb = b->type();
+    if (ta == SchemeObject::REAL_NUMBER && tb == SchemeObject::REAL_NUMBER) {
+        result = a->realValue() == b->realValue();    
+    } else if (ta == SchemeObject::COMPLEX_NUMBER && tb == SchemeObject::COMPLEX_NUMBER) {
+        result = a->realValue() == b->realValue();    
+    } else if (ta == SchemeObject::INTEGER_NUMBER && tb == SchemeObject::INTEGER_NUMBER) {
+        result = a->realValue() == b->realValue();    
+    } else {
+        result = a->toString() == b->toString();
+    }
+    return bool2scm(result);
 }
 
 SchemeObject* s_eqv_p(SchemeObject* a, SchemeObject* b) {

@@ -424,7 +424,12 @@ void test_math() {
     assert_eval(s, L"(expt -3 3)" , L"-27");
     assert_eval(s, L"(expt -3 2)" , L"9");
     assert_eval(s, L"(expt -3 0)" , L"1");
-    assert_eval(s, L"(expt 2 -2)" , L"0.25");
+    assert_eval(s, L"(expt 2 -2)" , L"1/4");
+    assert_eval(s, L"(expt 3 -5)" , L"1/243");
+    assert_eval(s, L"(expt -1 -256)" , L"1");
+    assert_eval(s, L"(expt -1 -255)" , L"-1");
+    assert_eval(s, L"(expt 1/3 -3)" , L"27");
+    assert_eval(s, L"(expt 4/7 -3)" , L"343/64");
     assert_fail(s, L"(expt 0 'a)");
     assert_fail(s, L"(expt 'a 0)");
     assert_fail(s, L"(expt 1)");
@@ -487,6 +492,7 @@ void test_math() {
     assert_eval(s, L"(inexact->exact 0.5)", L"1/2");
     assert_eval(s, L"(inexact->exact 0.75)", L"3/4");
     assert_eval(s, L"(inexact->exact 1.7)", L"17/10");
+    assert_eval(s, L"(inexact->exact 0.3)", L"3/10");
     assert_eval(s, L"(inexact->exact 0.25+0i)", L"1/4");
     assert_fail(s, L"(inexact->exact +i)");
     assert_eval(s, L"(complex? 2)" , L"#t");
@@ -506,21 +512,38 @@ void test_math() {
     assert_eval(s, L"(imag-part 3.0)", L"0.0");
     assert_eval(s, L"(real-part 5)", L"5.0");
 
-    assert_eval(s, L"(round 2.1)" , L"2");
-    assert_eval(s, L"(round 2.8)" , L"3");
+    assert_eval(s, L"(round 2.1)" , L"2.0");
+    assert_eval(s, L"(round 2.8)" , L"3.0");
     assert_fail(s, L"(round 'a)");
     assert_fail(s, L"(round 2.1 2.3)");
-    assert_eval(s, L"(floor -4.3)" , L"-5");
+    assert_eval(s, L"(floor -4.3)" , L"-5.0");
     assert_fail(s, L"(floor 'a)");
-    assert_eval(s, L"(ceiling -4.3)" , L"-4");
-    assert_eval(s, L"(truncate -4.3)" , L"-4");
-    assert_eval(s, L"(round -4.3)" , L"-4");
-    assert_eval(s, L"(floor 3.5)" , L"3");
-    assert_eval(s, L"(ceiling 3.5)" , L"4");
-    assert_eval(s, L"(truncate 3.5)" , L"3");
-    assert_eval(s, L"(round 3.5)" , L"4");
-    assert_eval(s, L"(round 2.5)" , L"2"); // Round to nearest even integer
+    assert_eval(s, L"(ceiling -4.3)" , L"-4.0");
+    assert_eval(s, L"(truncate -4.3)" , L"-4.0");
+    assert_eval(s, L"(round -4.3)" , L"-4.0");
+    assert_eval(s, L"(floor 3.5)" , L"3.0");
+    assert_eval(s, L"(floor 3)" , L"3");
+    assert_eval(s, L"(ceiling 3.5)" , L"4.0");
+    assert_eval(s, L"(ceiling 3)" , L"3");
+    assert_eval(s, L"(truncate 3.5)" , L"3.0");
+    assert_eval(s, L"(round 3.5)" , L"4.0");
+    assert_eval(s, L"(round 2.5)" , L"2.0"); // Round to nearest even integer
     assert_eval(s, L"(round 7)" , L"7");
+    assert_eval(s, L"(round 7/2)" , L"4");
+    assert_eval(s, L"(round 3/2)" , L"2");
+    assert_eval(s, L"(round 1/2)" , L"0");
+    assert_eval(s, L"(floor 3/2)" , L"1");
+    assert_eval(s, L"(floor 1/2)" , L"0");
+    assert_eval(s, L"(ceiling 3/2)" , L"2");
+    assert_eval(s, L"(ceiling 1/2)" , L"1");
+    assert_eval(s, L"(truncate 3/2)" , L"1");
+    assert_eval(s, L"(truncate 1/2)" , L"0");
+    assert_eval(s, L"(truncate -3/2)" , L"-1");
+    assert_eval(s, L"(truncate -1/2)" , L"0");
+    assert_eval(s, L"(floor -3/2)" , L"-2");
+    assert_eval(s, L"(floor -1/2)" , L"-1");
+    assert_eval(s, L"(ceiling -3/2)" , L"-1");
+    assert_eval(s, L"(ceiling -1/2)" , L"0");
 
     assert_eval(s, L"(modulo 13 4)" , L"1");
     assert_eval(s, L"(remainder 13 4)" , L"1");
@@ -541,12 +564,14 @@ void test_math() {
     assert_eval(s, L"(gcd 0 4)" , L"4");
     assert_eval(s, L"(gcd 0 -4)" , L"4");
     assert_eval(s, L"(gcd 32 -36)" , L"4");
+    assert_eval(s, L"(gcd 32.0 -36)" , L"4.0");
     assert_eval(s, L"(gcd 32 36 4 4 12)" , L"4");
     assert_fail(s, L"(gcd 'a)");  // Guile 1.8.1 gets this one wrong.
     assert_fail(s, L"(gcd 1.1)");
     assert_eval(s, L"(lcm)" , L"1");
     assert_eval(s, L"(lcm 0 0)" , L"0");
     assert_eval(s, L"(lcm 32 -36)" , L"288");
+    assert_eval(s, L"(lcm 32.0 -36)" , L"288.0");
     assert_eval(s, L"(lcm 10 15 4)" , L"60");
     assert_eval(s, L"(lcm 10 15 -4)" , L"60");
     assert_fail(s, L"(lcm 'a)");
@@ -579,19 +604,20 @@ void test_equals() {
     assert_eval(s, L"(equal? '(1 2 3) '(1 2 3))" , L"#t");
     assert_eval(s, L"(equal? '(1 2 (a  b) 3) '(1 2 (a b) 3))" , L"#t");
     assert_eval(s, L"(equal? '(1 2 (a c) 3) '(1 2 (a b) 3))" , L"#f");
+    assert_eval(s, L"(equal? -0.0 0.0)" , L"#t");
+    assert_eval(s, L"(equal? #f '())", L"#f");
 
     assert_eval(s, L"(eq? 'a 'a)" , L"#t");
     assert_eval(s, L"(eq? (list 'a) (list 'a))" , L"#f");
     assert_eval(s, L"(eq? '() '())" , L"#t");
     assert_eval(s, L"(eq? car car)" , L"#t");
     assert_eval(s, L"(eq? (cons 1 2) (cons 1 2))" , L"#f");
-
     assert_eval(s, L"(eq? 'a 'a)" , L"#t");
     assert_eval(s, L"(eq? (list 'a) (list 'a))" , L"#f");
     assert_eval(s, L"(eq? '() '())" , L"#t");
     assert_eval(s, L"(eq? car car)" , L"#t");
+    assert_eval(s, L"(eq? -0.0 0.0)" , L"#t");
 
-    assert_eval(s, L"(equal? #f '())", L"#f");
     assert_eval(s, L"(eqv? #f '())", L"#f");
     assert_eval(s, L"(eq? #f '())", L"#f");
     assert_eval(s, L"(eqv? #\\a #\\a)", L"#t");
@@ -600,6 +626,7 @@ void test_equals() {
     assert_eval(s, L"(eqv? 1.0 1.0)", L"#t");
     assert_eval(s, L"(eqv? 1 1)", L"#t");
     assert_eval(s, L"(eqv? 1/3 2/6)", L"#t");
+    assert_eval(s, L"(eqv? -0.0 0.0)" , L"#t");
 }
 
 void test_pairs_and_lists() {
