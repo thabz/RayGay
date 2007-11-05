@@ -11,6 +11,7 @@ template<typename K> double tan(const rational<K>&);
 template<typename K> double exp(const rational<K>&);
 template<typename K> double sqrt(const rational<K>&);
 template<typename K> rational<K> pow(const rational<K>&, const K&);
+template<typename K> rational<K> abs(const rational<K>&);
 template<typename K> K floor(const rational<K>&);
 template<typename K> K ceil(const rational<K>&);
 template<typename K> K round(const rational<K>&);
@@ -22,8 +23,8 @@ class rational
     public:
         typedef K value_type;    
         
-        rational(const K& n, const K& d);
-        rational(const K& z);
+        rational(const K& n = K(0), const K& d = K(1));
+        //rational(const K& z);
         template<typename N>
         rational(const rational<N>&);
                 
@@ -105,9 +106,11 @@ template<typename K>
 inline rational<K>::rational(const K& _n, const K& _d)  
 : n(_n), d(_d) {}; 
 
+/*
 template<typename K> 
 inline rational<K>::rational(const K& _z)  
 : n(_z), d(K(1)) {}; 
+*/
 
 /////////////////////////////////////////////////////
 // Normalize
@@ -650,6 +653,13 @@ pow(const rational<K>& a, const K& b)
    } else {
        return result.inverse();           
    }            
+}
+
+template<typename K> 
+inline rational<K> 
+abs(const rational<K>& a) 
+{
+    return a < K(0) ? -a : a;
 }
 
 /////////////////////////////////////////////////////

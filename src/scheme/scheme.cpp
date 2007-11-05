@@ -481,11 +481,13 @@ SchemeObject* s_equal_p(SchemeObject* a, SchemeObject* b) {
     SchemeObject::ObjectType ta = a->type();        
     SchemeObject::ObjectType tb = b->type();
     if (ta == SchemeObject::REAL_NUMBER && tb == SchemeObject::REAL_NUMBER) {
-        result = a->realValue() == b->realValue();    
+        result = scm2double(a) == scm2double(b);    
     } else if (ta == SchemeObject::COMPLEX_NUMBER && tb == SchemeObject::COMPLEX_NUMBER) {
-        result = a->realValue() == b->realValue();    
+        result = scm2complex(a) == scm2complex(b);    
     } else if (ta == SchemeObject::INTEGER_NUMBER && tb == SchemeObject::INTEGER_NUMBER) {
-        result = a->realValue() == b->realValue();    
+        result = scm2int(a) == scm2int(b);    
+    } else if (ta == SchemeObject::RATIONAL_NUMBER && tb == SchemeObject::RATIONAL_NUMBER) {
+        result = scm2rational(a) == scm2rational(b);  
     } else {
         result = a->toString() == b->toString();
     }
@@ -837,7 +839,7 @@ SchemeObject* s_integer_p(SchemeObject* p) {
     if (p->type() == SchemeObject::INTEGER_NUMBER) {
         return S_TRUE;
     } else if (p->type() == SchemeObject::RATIONAL_NUMBER) {
-        long denom = p->rationalValue().second;     
+	rational_type::value_type denom = p->rationalValue().denominator();     
         return bool2scm(denom == 1 || denom == -1);
     } else if (p->type() == SchemeObject::REAL_NUMBER) {
         return ::modf(scm2double(p),&i) == 0.0 ? S_TRUE : S_FALSE;
@@ -878,13 +880,13 @@ SchemeObject* s_inexact_2_exact(SchemeObject* n) {
         // it with 10 until it's an integer number.
         double real = n->realValue();
         double tmp;
-        long denominator = 1;
+	rational_type::value_type denominator = 1;
         while (::modf(real,&tmp) != 0.0) {
             real *= 10;
             denominator *= 10;
         }
-        long numerator = long(real);
-        std::pair<long,long> rational(numerator, denominator);
+        rational_type::value_type numerator = rational_type::value_type(real);
+        rational_type rational(numerator, denominator);
         return rational2scm(rational);
     } else {
         return n;    
@@ -1057,7 +1059,7 @@ void coerceNumbers(int num, SchemeStack::iterator stack, long* dest) {
     }
 }
 
-void coerceNumbers(int num, SchemeStack::iterator stack, pair<long,long>* dest) {
+void coerceNumbers(int num, SchemeStack::iterator stack, rational_type* dest) {
     for(int i = 0; i < num; i++) {
         *dest = scm2rational(*stack);
         stack++;
@@ -1121,16 +1123,12 @@ SchemeObject* s_plus(int num, SchemeStack::iterator stack) {
        }
        return complex2scm(result);
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
-       pair<long,long> args[num];
+       rational_type args[num];
        coerceNumbers(num,stack,args);
        
-       // Using a/b + c/d = (ad + bc)/bd
-       pair<long,long> result(0,1);
+       rational_type result(0);
        for(int i = 0; i < num; i++) {
-           long n = result.first * args[i].second + result.second * args[i].first;
-           long d = result.second * args[i].second;
-           result.first = n;
-           result.second = d;    
+	   result += args[i];
        }
        return rational2scm(result);
     } else {
@@ -1177,21 +1175,17 @@ SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
        }
        return complex2scm(result);
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
-       pair<long,long> args[num];
+       rational_type args[num];
        coerceNumbers(num,stack,args);
        
-       pair<long,long> result = args[0];
+       rational_type result = args[0];
        if (num == 1) {
-           result.first = -result.first;
-           return rational2scm(result);
+           return rational2scm(-result);
        }
        
        // Using a/b - c/d = (ad - bc)/bd
        for(int i = 1; i < num; i++) {
-           long n = result.first * args[i].second - result.second * args[i].first;
-           long d = result.second * args[i].second;
-           result.first = n;
-           result.second = d;    
+	   result -= args[i];
        }
        return rational2scm(result);
     } else {
@@ -1227,25 +1221,18 @@ SchemeObject* s_divide(int num, SchemeStack::iterator stack) {
        return complex2scm(result);
     } else {
        // Both integers and rational types are handled as rationals            
-       pair<long,long> args[num];
+       rational_type args[num];
        coerceNumbers(num,stack,args);
 
-       pair<long,long> result = args[0];
+       rational_type result = args[0];
        if (num == 1) {
            // One-argument case is a simple inverse (n => 1/n)
-           // which for rationals is a swap of numerator and denominator
-           long tmp = result.first;
-           result.first = result.second;
-           result.second = tmp;
-           return rational2scm(result);
+           return rational2scm(result.inverse());
        }
 
        // Using a/b / c/d = ad/bc
        for(int i = 1; i < num; i++) {
-           long n = result.first * args[i].second;
-           long d = result.second * args[i].first;
-           result.first = n;
-           result.second = d;    
+	   result /= args[i];
        }
        return rational2scm(result);
    }
@@ -1283,14 +1270,12 @@ SchemeObject* s_mult(int num, SchemeStack::iterator stack) {
        }
        return complex2scm(result);
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
-       pair<long,long> args[num];
+       rational_type args[num];
        coerceNumbers(num,stack,args);
        
-       // Using a/b * c/d = ac/bd
-       pair<long,long> result(1,1);
+       rational_type result(1);
        for(int i = 0; i < num; i++) {
-           result.first *= args[i].first;
-           result.second *= args[i].second;
+	   result *= args[i]; 
        }
        return rational2scm(result);
     } else {
@@ -1378,14 +1363,13 @@ SchemeObject* s_sqrt(SchemeObject* n) {
 }
 
 SchemeObject* s_abs(SchemeObject* n) {
-    if (n->type() == SchemeObject::COMPLEX_NUMBER) {
-        return double2scm(std::abs(scm2complex(n)));
-    } else if (n->type() == SchemeObject::REAL_NUMBER) {
-        return double2scm(fabs(scm2double(n)));
+    assert_arg_type(L"abs", 1, s_real_p, n);
+    if (n->type() == SchemeObject::RATIONAL_NUMBER) {
+        return rational2scm(abs(scm2rational(n)));
     } else if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return int2scm(labs(scm2int(n)));
     } else {
-        wrong_type_arg(L"abs", 1, n);    
+        return double2scm(fabs(scm2double(n)));
     }         
 }
 
@@ -1482,7 +1466,9 @@ SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
 
         if (bi == 0) return S_ONE;
 
-        // The following algorithm while slow, is OK for the relative small long values.
+        // The following algorithm while slow, is OK for the 
+	// relative small long values that b can hold without
+	// we overflowing anyway.
         long result = 1;
         while (iter-- > 0) {
             result *= ai;        
@@ -1490,9 +1476,11 @@ SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
         if (bi > 0) {
             return int2scm(result);
         } else {
-            pair<long,long> rational(1,result);
+            rational_type rational(1,result);
             return rational2scm(rational);        
         }
+    } else if (a->type() == SchemeObject::RATIONAL_NUMBER && b->type() == SchemeObject::INTEGER_NUMBER) {
+	return rational2scm(pow(scm2rational(a), scm2int(b)));
     } else {
         assert_arg_number_type(L"expt", 1, a);
         assert_arg_number_type(L"expt", 2, b);
@@ -1511,7 +1499,7 @@ SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
             }        
         } else {
             if (b_c) {
-                return complex2scm(std::pow(scm2double(a), scm2complex(b)));        
+                return complex2scm(std::pow(scm2double(a), scm2complex(b))); 
             } else {
                 return double2scm(pow(scm2double(a),scm2double(b)));
             }           
@@ -1558,15 +1546,7 @@ SchemeObject* s_ceiling(SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return n;
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
-        pair<long,long> z = scm2rational(n);
-        long numerator = z.first;
-        long denominator = z.second;
-        long quotient = numerator / denominator;
-        if (quotient >= 0 && numerator > 0) {
-            return int2scm(quotient+1);    
-        } else {
-            return int2scm(quotient);
-        }
+	return int2scm(ceil(scm2rational(n)));
     } else {
         assert_arg_type(L"ceiling", 1, s_real_p, n);
         return double2scm(ceil(scm2double(n)));
@@ -1578,15 +1558,7 @@ SchemeObject* s_floor(SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return n;
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
-        pair<long,long> z = scm2rational(n);
-        long numerator = z.first;
-        long denominator = z.second;
-        long quotient = numerator / denominator;
-        if (quotient >= 0 && numerator > 0) {
-            return int2scm(quotient);    
-        } else {
-            return int2scm(quotient-1);
-        }
+	return int2scm(floor(scm2rational(n)));
     } else {
         assert_arg_type(L"floor", 1, s_real_p, n);
         return double2scm(floor(scm2double(n)));
@@ -1598,22 +1570,7 @@ SchemeObject* s_truncate(SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return n;
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
-        pair<long,long> z = scm2rational(n);
-        long numerator = z.first;
-        long old_numerator = numerator;
-        long denominator = z.second;
-        if (old_numerator < 0) numerator = -numerator;
-        long quotient = numerator / denominator;
-        long flo;
-        if (quotient >= 0 && numerator > 0) {
-            flo = quotient;    
-        } else {
-            flo = quotient-1;
-        }
-        if (old_numerator < 0) {
-            flo = -flo;        
-        }
-        return int2scm(flo);    
+	return int2scm(trunc(scm2rational(n)));
     } else {
         assert_arg_type(L"truncate", 1, s_real_p, n);
         double t = scm2double(n);
@@ -1812,10 +1769,10 @@ void i_normalize_rational(long* numerator, long* denominator) {
 SchemeObject* s_numerator(SchemeObject* n) {
     assert_arg_type(L"numerator", 1, s_real_p, n);
     if (s_exact_p(n) == S_TRUE) {
-        return int2scm(n->rationalValue().first);
+        return int2scm(n->rationalValue().numerator());
     } else {
         SchemeObject* z = s_inexact_2_exact(n);
-        long l = z->rationalValue().first;
+	rational_type::value_type l = z->rationalValue().numerator();
         return double2scm(double(l));
     }
 }
@@ -1823,10 +1780,10 @@ SchemeObject* s_numerator(SchemeObject* n) {
 SchemeObject* s_denominator(SchemeObject* n) {
     assert_arg_type(L"denominator", 1, s_real_p, n);
     if (s_exact_p(n) == S_TRUE) {
-        return int2scm(n->rationalValue().second);
+        return int2scm(n->rationalValue().denominator());
     } else {
         SchemeObject* z = s_inexact_2_exact(n);
-        long l = z->rationalValue().second;
+	rational_type::value_type l = z->rationalValue().denominator();
         return double2scm(double(l));
     }
 }

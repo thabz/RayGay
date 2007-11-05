@@ -56,8 +56,8 @@ SchemeObject* SchemeObject::createRationalNumber(long numerator, long denominato
     }        
 }
 
-SchemeObject* SchemeObject::createRationalNumber(pair<long,long> rational) {
-    return createRationalNumber(rational.first, rational.second);   
+SchemeObject* SchemeObject::createRationalNumber(rational_type rational) {
+    return createRationalNumber(rational.numerator(), rational.denominator());
 }
 
 SchemeObject* SchemeObject::createIntegerNumber(long number) {

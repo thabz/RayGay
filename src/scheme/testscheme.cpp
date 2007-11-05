@@ -619,6 +619,14 @@ void test_math() {
     assert_eval(s, L"(denominator 0)", L"1");
     assert_eval(s, L"(sqrt 9)", L"3.0");
     assert_eval(s, L"(sqrt -9)", L"0.0+3.0i");
+    assert_eval(s, L"(abs -1)", L"1");
+    assert_eval(s, L"(abs -2.0)", L"2.0");
+    assert_eval(s, L"(abs 2.0)", L"2.0");
+    assert_eval(s, L"(abs -3/2)", L"3/2");
+    assert_eval(s, L"(abs 3/2)", L"3/2");
+    assert_eval(s, L"(abs 1+0i)", L"1.0");
+    assert_fail(s, L"(abs 1+i)");
+
     // From R^5RS
     assert_eval(s, L"(numerator (/ 6 4))", L"3");
     assert_eval(s, L"(denominator (/ 6 4))", L"2");

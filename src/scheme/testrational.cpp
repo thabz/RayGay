@@ -98,6 +98,10 @@ class test_trancedentals : public Test {
             assertTrue(pow(rlong(1,3), 3L) == rlong(1,27));
             assertTrue(pow(rlong(2,3), 4L) == rlong(16,81));
 
+	    assertTrue(abs(rlong(-2,3)) == rlong(2,3));
+	    assertTrue(abs(rlong(2,3)) == rlong(2,3));
+	    assertTrue(abs(rlong(2,-3)) == rlong(2,3));
+	    assertTrue(abs(rlong(-2,-3)) == rlong(2,3));
             assertTrue(sqrt(rlong(4,1)) == 2.0);
         }
 };

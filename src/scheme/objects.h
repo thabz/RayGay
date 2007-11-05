@@ -10,8 +10,11 @@
 
 #include "collections/bucket_map.h"
 #include "bigint.h"
+#include "rational.h"
 
 using namespace std;
+
+typedef rational<long> rational_type;
 
 // Faster internal macro for some much used procedures
 // that does no argument checking.
@@ -175,7 +178,7 @@ class SchemeObject
         // For numbers
         std::complex<double> complexValue() const;
         double realValue() const;
-        std::pair<long,long> rationalValue() const;
+        rational_type rationalValue() const;
         long integerValue() const;
         
         // For BUILT_IN_PROCEDURE.
@@ -188,7 +191,7 @@ class SchemeObject
         static SchemeObject* createRealNumber(double number);
         static SchemeObject* createRationalNumber(SchemeObject* numerator, SchemeObject* denominator);
         static SchemeObject* createRationalNumber(long numerator, long denominator);
-        static SchemeObject* createRationalNumber(pair<long,long> rational);
+        static SchemeObject* createRationalNumber(rational_type rational);
         static SchemeObject* createIntegerNumber(long number);
         static SchemeObject* createString(const wchar_t* str);
         static SchemeObject* createChar(wchar_t c);
@@ -326,12 +329,12 @@ long SchemeObject::integerValue() const {
 }
 
 inline
-pair<long,long> SchemeObject::rationalValue() const {
+rational_type SchemeObject::rationalValue() const {
     ObjectType t = type();
     if (t == RATIONAL_NUMBER) {
-        return pair<long,long>(numerator->integer_value, denominator->integer_value);
+        return rational_type(numerator->integer_value, denominator->integer_value);
     } else { 
-        return pair<long,long>(integerValue(), 1);
+        return rational_type(integerValue());
     }
 }
 
