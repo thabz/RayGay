@@ -32,6 +32,7 @@ class test_comparators : public Test {
 	void run() {
             assertTrue(rlong(1,2) == rlong(1,2));        
             assertTrue(rlong(1,2) == rlong(6,12));        
+            assertTrue(rlong(1,2) == rlong(-6,-12));        
             assertTrue(rlong(3,3) == 1L);        
             assertTrue(1L == rlong(3,3));
 
@@ -39,14 +40,24 @@ class test_comparators : public Test {
             assertTrue(rlong(1,2) != rlong(7,12));        
             assertTrue(rlong(3,4) != 1L);        
             assertTrue(1L != rlong(3,4));
-	        
+
             assertTrue(rlong(1,2) < rlong(3,4));        
+            assertTrue(rlong(-1,-2) < rlong(3,4));        
+            assertTrue(rlong(1,-2) < rlong(-1,4));        
+            assertTrue(rlong(1,-2) < rlong(1,-4));        
             assertTrue(rlong(1,2) < 1L);        
             assertTrue(0L < rlong(1,2));        
+            assertTrue(1L < rlong(-3,-2));        
+            assertTrue(0L < rlong(-1,-2));        
+            assertTrue(rlong(-1,2) < 0L);        
+            assertTrue(rlong(1,-2) < 0L);        
 
             assertTrue(rlong(3,4) > rlong(2,3));        
             assertTrue(1L > rlong(9,10));        
             assertTrue(rlong(1,2) > 0L);        
+            assertTrue(rlong(-1,-2) > 0L);        
+            assertTrue(0L > rlong(-1,2));        
+            assertTrue(0L > rlong(1,-2));
 
             assertTrue(rlong(3,4) >= rlong(2,3));        
             assertTrue(rlong(3,4) >= rlong(6,8));        
@@ -70,12 +81,14 @@ class test_trancedentals : public Test {
             rlong z = 0;
             assertTrue(sin(z) == 0.0);
             assertTrue(cos(z) == 1.0);
+            assertTrue(tan(z) == 0.0);
             
-            rlong x = pow(rlong(4,7), -3L);
-            assertTrue(x == rlong(343,64));
-            
-            x = pow(rlong(1,3), long(-3));
-            assertTrue(x == 27L);
+            assertTrue(pow(rlong(4,7), -3L) == rlong(343,64));
+            assertTrue(pow(rlong(1,3), -3L) == 27L);
+            assertTrue(pow(rlong(1,3), 3L) == rlong(1/27));
+            assertTrue(pow(rlong(2,3), 4L) == rlong(16/81));
+
+            assertTrue(sqrt(rlong(4,1)) == 2.0);
         }
 };
 

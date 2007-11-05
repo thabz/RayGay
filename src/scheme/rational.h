@@ -7,6 +7,8 @@ template<typename K> class rational;
 
 template<typename K> double sin(const rational<K>&);
 template<typename K> double cos(const rational<K>&);
+template<typename K> double tan(const rational<K>&);
+template<typename K> double sqrt(const rational<K>&);
 template<typename K> rational<K> pow(const rational<K>&, const K&);
 template<typename K> K floor(const rational<K>&);
 template<typename K> K ceil(const rational<K>&);
@@ -439,22 +441,35 @@ template<typename K>
 inline bool
 operator<(const rational<K>& x, const rational<K>& y) 
 {
-   return x.numerator() * y.denominator() < 
-           x.denominator() * y.numerator();
+   if ((x.denominator() > 0) == (y.denominator() > 0)) {
+       return x.numerator() * y.denominator() < 
+              x.denominator() * y.numerator();
+   } else {
+       return x.numerator() * y.denominator() > 
+              x.denominator() * y.numerator();
+   }
 }
 
 template<typename K>
 inline bool
 operator<(const K& x, const rational<K>& y) 
 {
-    return x * y.denominator() < y.numerator();
+    if (y.denominator() > 0) {        
+        return x * y.denominator() < y.numerator();
+    } else {
+        return x * y.denominator() > y.numerator();
+    }
 }
 
 template<typename K>
 inline bool
 operator<(const rational<K>& x, const K& y) 
 {
-    return x.numerator() < x.denominator() * y;
+    if (x.denominator() > 0) {
+        return x.numerator() < x.denominator() * y;
+    } else {
+        return x.numerator() > x.denominator() * y;
+    }
 }
 
 /////////////////////////////////////////////////////
@@ -465,22 +480,35 @@ template<typename K>
 inline bool
 operator>(const rational<K>& x, const rational<K>& y) 
 {
-   return x.numerator() * y.denominator() > 
-           x.denominator() * y.numerator();
+   if ((x.denominator() > 0) == (y.denominator() > 0)) {
+       return x.numerator() * y.denominator() > 
+              x.denominator() * y.numerator();
+   } else {
+       return x.numerator() * y.denominator() < 
+              x.denominator() * y.numerator();
+   }
 }
 
 template<typename K>
 inline bool
 operator>(const K& x, const rational<K>& y) 
 {
-    return x * y.denominator() > y.numerator();
+    if (y.denominator() > 0) {        
+        return x * y.denominator() > y.numerator();
+    } else {
+        return x * y.denominator() < y.numerator();
+    }
 }
 
 template<typename K>
 inline bool
 operator>(const rational<K>& x, const K& y) 
 {
-    return x.numerator() > x.denominator() * y;
+    if (x.denominator() > 0) {
+        return x.numerator() > x.denominator() * y;
+    } else {
+        return x.numerator() < x.denominator() * y;
+    }
 }
 
 ////////////////////////////////////////////////////
@@ -491,22 +519,35 @@ template<typename K>
 inline bool
 operator>=(const rational<K>& x, const rational<K>& y) 
 {
-   return x.numerator() * y.denominator() >= 
-           x.denominator() * y.numerator();
+   if ((x.denominator() > 0) == (y.denominator() > 0)) {
+       return x.numerator() * y.denominator() >= 
+              x.denominator() * y.numerator();
+   } else {
+       return x.numerator() * y.denominator() <= 
+              x.denominator() * y.numerator();
+   }
 }
 
 template<typename K>
 inline bool
 operator>=(const K& x, const rational<K>& y) 
 {
-    return x * y.denominator() >= y.numerator();
+    if (y.denominator() > 0) {        
+        return x * y.denominator() >= y.numerator();
+    } else {
+        return x * y.denominator() <= y.numerator();
+    }
 }
 
 template<typename K>
 inline bool
 operator>=(const rational<K>& x, const K& y) 
 {
-    return x.numerator() >= x.denominator() * y;
+    if (x.denominator() > 0) {
+        return x.numerator() >= x.denominator() * y;
+    } else {
+        return x.numerator() <= x.denominator() * y;
+    }
 }
 
 /////////////////////////////////////////////////////
@@ -517,23 +558,38 @@ template<typename K>
 inline bool
 operator<=(const rational<K>& x, const rational<K>& y) 
 {
-   return x.numerator() * y.denominator() <= 
-           x.denominator() * y.numerator();
+   if ((x.denominator() > 0) == (y.denominator() > 0)) {
+       return x.numerator() * y.denominator() <= 
+              x.denominator() * y.numerator();
+   } else {
+       return x.numerator() * y.denominator() >= 
+              x.denominator() * y.numerator();
+   }
 }
 
 template<typename K>
 inline bool
 operator<=(const K& x, const rational<K>& y) 
 {
-    return x * y.denominator() <= y.numerator();
+    if (y.denominator() > 0) {        
+        return x * y.denominator() <= y.numerator();
+    } else {
+        return x * y.denominator() >= y.numerator();
+    }
 }
 
 template<typename K>
 inline bool
 operator<=(const rational<K>& x, const K& y) 
 {
-    return x.numerator() <= x.denominator() * y;
+    if (x.denominator() > 0) {
+        return x.numerator() <= x.denominator() * y;
+    } else {
+        return x.numerator() >= x.denominator() * y;
+    }
+
 }
+
 /////////////////////////////////////////////////////
 // Transcendentals
 /////////////////////////////////////////////////////
@@ -550,6 +606,18 @@ cos(const rational<K>& z) {
     return ::cos(z.real());            
 }
 
+template<typename K> 
+inline double 
+tan(const rational<K>& z) {
+    return ::tan(z.real());            
+}
+
+template<typename K> 
+inline double 
+sqrt(const rational<K>& z) {
+    return ::sqrt(z.real());            
+}
+
 // Returns a^b
 template<typename K> 
 inline rational<K> 
@@ -559,7 +627,9 @@ pow(const rational<K>& a, const K& b)
    
    K iter = b < 0 ? -b : b;    
 
-   // The following algorithm while slow, is OK for the relative small long values.
+   // The following algorithm while slow, is OK for 
+   // relative small long values of b.
+   // For rational<bigint> this method should be specialized. 
    rational<K> result = 1;
    while (iter-- > 0) {
        result *= a;        
@@ -567,9 +637,13 @@ pow(const rational<K>& a, const K& b)
    if (b > 0) {
        return result;
    } else {
-       return K(1) / result;           
+       return result.inverse();           
    }            
 }
+
+/////////////////////////////////////////////////////
+// Roundings
+/////////////////////////////////////////////////////
 
 template<typename K> 
 inline K 
