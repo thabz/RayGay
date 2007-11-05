@@ -1,6 +1,7 @@
 
 #include "lexer.h"
 #include "scheme.h"
+#include "numbers.h"
 #include <sstream>
 #include <cctype>
 

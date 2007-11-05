@@ -1,6 +1,7 @@
 
 #include "objects.h"
 #include "scheme.h"
+#include "numbers.h"
 #include <sstream>
 #include <iomanip>
 #include "heap.h"
