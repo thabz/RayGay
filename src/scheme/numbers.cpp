@@ -1088,8 +1088,9 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         errno = 0;    
         t = strtol(digits.c_str(), NULL, radix);
         if (errno == ERANGE) {
-            // TODO: Create a bigint        
-            throw scheme_exception(L"Number out of range");        
+            // TODO: Create a bigint
+            return S_FALSE;        
+            //throw scheme_exception(L"Number out of range");
         }
     }
 
@@ -1110,12 +1111,14 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         long d = strtol(denominator.c_str(), NULL, radix);
         if (errno == ERANGE) {
             // TODO: Create a bigint        
-            throw scheme_exception(L"Number out of range");        
+            return S_FALSE;        
+            //throw scheme_exception(L"Number out of range");        
         }
         offset += denominator.size();
         if (offset >= s.size()) {
             if (d == 0) {
 		// TODO: return inexact +inf or -inf as per R^6RS
+                return S_FALSE;        
             }        
 	    rational_type rational(sign*t, d);
             return SchemeObject::createRationalNumber(rational.normalized());
@@ -1170,7 +1173,8 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         errno = 0;
         e = esign * strtol(exponent.c_str(), NULL, 10);
         if (errno == ERANGE) {
-            throw scheme_exception(L"Number out of range");        
+            return S_FALSE;        
+            //throw scheme_exception(L"Number out of range");        
         }
         offset += exponent.size();
     }
