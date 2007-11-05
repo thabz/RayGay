@@ -911,6 +911,8 @@ void test_string() {
     assert_eval(s, L"(string->number \"8e+3\")", L"8000.0");
     assert_eval(s, L"(string->number \"8f3\")", L"8000.0");
     assert_fail(s, L"(string->number \"#xffffffffffffffffffffff\")");
+    assert_eval(s, L"(string->number \"1.1000000000000000000000001\")", L"1.1");
+    assert_eval(s, L"(string->number \"1.0000000000000000000000001\")", L"1.0");
     assert_eval(s, L"(string->number \"#xff.10\")", L"#f");
     assert_eval(s, L"(string->number \"#xffs10\")", L"#f");
     assert_eval(s, L"(string->number \"1/2\")", L"1/2");
