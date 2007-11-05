@@ -1,5 +1,6 @@
 
 #include "parser/converters.h"
+#include "scheme/numbers.h"
 
 Vector scm2vector(SchemeObject* s_vector, wchar_t* subr, int pos) {
     if (!(scm2bool(i_vector_p (s_vector)) && i_vector_length(s_vector) == 3)) {

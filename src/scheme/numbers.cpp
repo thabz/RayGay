@@ -688,28 +688,6 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
     }
 }
 
-// Using the property gcd(a,b) * lcm(a,b) = a * b and that lcm(a,b,c) = lcm(lcm(a,b),c) = lcm(a,lcm(b,c))
-SchemeObject* s_lcm_old(int num, SchemeStack::iterator stack) {
-    if (num == 0) {
-        return S_ONE;
-    }
-    if (num == 1) {
-        assert_arg_int_type(L"lcm", 1, *stack); // This 1 is wrong as we s_gcd is recursive with descreasing num
-        return int2scm(labs(scm2int(*stack)));
-    }
-
-    long a = labs(scm2int(*stack));
-    long b = labs(scm2int(s_lcm(num-1, ++stack)));
-    long g = i_gcd(a,b);
-    long r;
-    if (g == 0) {
-        r = 0;
-    } else {
-        r = a * b / g;
-    }
-    return int2scm(r);
-}
-
 SchemeObject* s_numerator(SchemeObject* n) {
     assert_arg_type(L"numerator", 1, s_real_p, n);
     if (s_exact_p(n) == S_TRUE) {
