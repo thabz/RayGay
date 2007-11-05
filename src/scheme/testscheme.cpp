@@ -408,11 +408,15 @@ void test_math() {
     assert_eval(s, L"(min 5)" , L"5");
     assert_eval(s, L"(min 3.0 1 2)" , L"1.0");
     assert_eval(s, L"(min 3 1 2)" , L"1");
+    assert_eval(s, L"(min 1/3 1 1/2)" , L"1/3");
+    assert_fail(s, L"(min 1 2 1+i 3)");
     assert_fail(s, L"(min)");
     assert_eval(s, L"(max 5)" , L"5");
     assert_eval(s, L"(max 3.0 1 2)" , L"3.0");
     assert_eval(s, L"(max 3 1.0 2)" , L"3.0");
     assert_eval(s, L"(max 2 1 3)" , L"3");
+    assert_eval(s, L"(max 2/3 1 3/2)" , L"3/2");
+    assert_fail(s, L"(max 1 2 1+i 3)");
     assert_fail(s, L"(max)");
     assert_eval(s, L"(expt 3 4)" , L"81");
     assert_eval(s, L"(expt 3 4.0)" , L"81.0");
@@ -436,6 +440,7 @@ void test_math() {
     assert_fail(s, L"(expt 'a 0)");
     assert_fail(s, L"(expt 1)");
     assert_eval(s, L"(< 1 2 3)" , L"#t");
+    assert_eval(s, L"(< #x1/10000002 #x1/10000001)" , L"#t");
     assert_eval(s, L"(< 1 2 2 3)" , L"#f");
     assert_eval(s, L"(<= 1 2 2 3)" , L"#t");
     assert_eval(s, L"(<= 3 2 2 1)" , L"#f");

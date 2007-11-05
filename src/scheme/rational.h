@@ -695,4 +695,22 @@ trunc(const rational<K>& z) {
     return z < K(0) ? -floor(-z) : floor(z);        
 }
 
+// Round returns the closest integer to x, rounding to even when x is halfway between two integers.
+template<typename K> 
+inline K 
+round(const rational<K>& z) {
+    K flo = floor(z);        
+    K cei = ceil(z);        
+    rational<K> dflo = z - flo;        
+    rational<K> dcei = cei - z;        
+    if (dflo < dcei) {
+        return cei;    
+    } else if (dcei > dflo) {
+        return flo;    
+    } else {
+        return flo % K(2) == 0 ? flo : cei;
+    }        
+}
+
+
 #endif /* RATIONAL_H */

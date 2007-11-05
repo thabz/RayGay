@@ -417,26 +417,31 @@ SchemeObject* s_exp(SchemeObject* n) {
 
 // Round returns the closest integer to x, rounding to even when x is halfway between two integers.
 SchemeObject* s_round(SchemeObject* n) {
-    if (n->type() == SchemeObject::INTEGER_NUMBER) return n;
-    assert_arg_type(L"round", 1, s_real_p, n);
-    double nn = scm2double(n);
-    double flo = floor(nn);
-    double cei = ceil(nn);
-    double dflo = nn - flo;
-    double dcei = cei - nn;
-    double result;
-    if (dflo > dcei) {
-        result = cei;
-    } else if (dcei > dflo) {
-        result = flo;
+    if (n->type() == SchemeObject::INTEGER_NUMBER) {
+        return n;
+    } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
+     	return int2scm(round(scm2rational(n)));
     } else {
-        if(fmod(flo, 2) == 0) {
-             result = flo;
+        assert_arg_type(L"round", 1, s_real_p, n);
+        double nn = scm2double(n);
+        double flo = floor(nn);
+        double cei = ceil(nn);
+        double dflo = nn - flo;
+        double dcei = cei - nn;
+        double result;
+        if (dflo > dcei) {
+            result = cei;
+        } else if (dcei > dflo) {
+            result = flo;
         } else {
-             result = cei;
+            if(fmod(flo, 2) == 0) {
+                 result = flo;
+            } else {
+                 result = cei;
+            }
         }
+        return double2scm(result);
     }
-    return double2scm(result);
 }
 
 // Ceiling returns the smallest integer not smaller than x
@@ -563,8 +568,20 @@ SchemeObject* s_min(int num, SchemeStack::iterator stack) {
            }    
        }
        return stack[index];
+    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+       rational_type args[num];
+       coerceNumbers(num,stack,args);
+       rational_type result = args[0];
+       int index = 0;
+       for(int i = 1; i < num; i++) {
+           if (args[i] < result) {
+               result = args[i];
+               index = i;
+           }    
+       }
+       return stack[index];
     } else {
-        throw scheme_exception(L"+", L"Only integer and real support");    
+        throw scheme_exception(L"min", L"Wrong argument type");    
     }
 }
 
@@ -594,8 +611,20 @@ SchemeObject* s_max(int num, SchemeStack::iterator stack) {
            }    
        }
        return stack[index];
+    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+       rational_type args[num];
+       coerceNumbers(num,stack,args);
+       rational_type result = args[0];
+       int index = 0;
+       for(int i = 1; i < num; i++) {
+           if (args[i] > result) {
+               result = args[i];
+               index = i;
+           }    
+       }
+       return stack[index];
     } else {
-        throw scheme_exception(L"+", L"Only integer and real support");    
+       throw scheme_exception(L"max", L"Wrong argument type");    
     }
 }
 
@@ -626,6 +655,7 @@ SchemeObject* s_gcd(int num, SchemeStack::iterator stack) {
         result = labs(i_gcd(result,n));
         stack++;    
     }
+    // TODO: Make a i_exact_p macro and a representativeExactness("procname",num,stack) method
     if (outType == SchemeObject::INTEGER_NUMBER || outType == SchemeObject::RATIONAL_NUMBER) {
         return int2scm(result);    
     } else {
@@ -635,6 +665,31 @@ SchemeObject* s_gcd(int num, SchemeStack::iterator stack) {
 
 // Using the property gcd(a,b) * lcm(a,b) = a * b and that lcm(a,b,c) = lcm(lcm(a,b),c) = lcm(a,lcm(b,c))
 SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
+    if (num == 0) {
+        return S_ONE;
+    }
+    SchemeObject::ObjectType outType = representativeNumberType(L"lcm", num, stack);
+
+    assert_arg_int_type(L"lcm", 1, *stack);
+    long result = labs(scm2int(*stack));
+    stack++;
+    for(int i = 1; i < num; i++) {
+        assert_arg_int_type(L"lcm", i+1, *stack);
+        long n = labs(scm2int(*stack));
+        long g = i_gcd(n, result);
+        result = g == 0 ? 0 : n * result / g;
+        stack++;
+    }
+    // TODO: Make a i_exact_p macro and a representativeExactness("procname",num,stack) method
+    if (outType == SchemeObject::INTEGER_NUMBER || outType == SchemeObject::RATIONAL_NUMBER) {
+        return int2scm(result);    
+    } else {
+        return double2scm(double(result));    
+    }
+}
+
+// Using the property gcd(a,b) * lcm(a,b) = a * b and that lcm(a,b,c) = lcm(lcm(a,b),c) = lcm(a,lcm(b,c))
+SchemeObject* s_lcm_old(int num, SchemeStack::iterator stack) {
     if (num == 0) {
         return S_ONE;
     }
