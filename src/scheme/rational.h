@@ -387,8 +387,8 @@ template<typename K>
 inline bool
 operator==(const rational<K>& x, const rational<K>& y) 
 {
-    return x.numerator() == y.numerator() && 
-           x.denominator() == y.denominator();
+    return x.numerator() * y.denominator() == 
+           x.denominator() * y.numerator();
 }
 
 template<typename K>
@@ -413,8 +413,8 @@ template<typename K>
 inline bool
 operator!=(const rational<K>& x, const rational<K>& y) 
 {
-    return x.numerator() != y.numerator() || 
-           x.denominator() != y.denominator();
+   return x.numerator() * y.denominator() != 
+           x.denominator() * y.numerator();
 }
 
 template<typename K>
@@ -431,6 +431,109 @@ operator!=(const rational<K>& x, const K& y)
     return y * x.denominator() != x.numerator();
 }
 
+/////////////////////////////////////////////////////
+// Operator<
+/////////////////////////////////////////////////////
+
+template<typename K>
+inline bool
+operator<(const rational<K>& x, const rational<K>& y) 
+{
+   return x.numerator() * y.denominator() < 
+           x.denominator() * y.numerator();
+}
+
+template<typename K>
+inline bool
+operator<(const K& x, const rational<K>& y) 
+{
+    return x * y.denominator() < y.numerator();
+}
+
+template<typename K>
+inline bool
+operator<(const rational<K>& x, const K& y) 
+{
+    return x.numerator() < x.denominator() * y;
+}
+
+/////////////////////////////////////////////////////
+// Operator>
+/////////////////////////////////////////////////////
+
+template<typename K>
+inline bool
+operator>(const rational<K>& x, const rational<K>& y) 
+{
+   return x.numerator() * y.denominator() > 
+           x.denominator() * y.numerator();
+}
+
+template<typename K>
+inline bool
+operator>(const K& x, const rational<K>& y) 
+{
+    return x * y.denominator() > y.numerator();
+}
+
+template<typename K>
+inline bool
+operator>(const rational<K>& x, const K& y) 
+{
+    return x.numerator() > x.denominator() * y;
+}
+
+////////////////////////////////////////////////////
+// Operator>=
+/////////////////////////////////////////////////////
+
+template<typename K>
+inline bool
+operator>=(const rational<K>& x, const rational<K>& y) 
+{
+   return x.numerator() * y.denominator() >= 
+           x.denominator() * y.numerator();
+}
+
+template<typename K>
+inline bool
+operator>=(const K& x, const rational<K>& y) 
+{
+    return x * y.denominator() >= y.numerator();
+}
+
+template<typename K>
+inline bool
+operator>=(const rational<K>& x, const K& y) 
+{
+    return x.numerator() >= x.denominator() * y;
+}
+
+/////////////////////////////////////////////////////
+// Operator<=
+/////////////////////////////////////////////////////
+
+template<typename K>
+inline bool
+operator<=(const rational<K>& x, const rational<K>& y) 
+{
+   return x.numerator() * y.denominator() <= 
+           x.denominator() * y.numerator();
+}
+
+template<typename K>
+inline bool
+operator<=(const K& x, const rational<K>& y) 
+{
+    return x * y.denominator() <= y.numerator();
+}
+
+template<typename K>
+inline bool
+operator<=(const rational<K>& x, const K& y) 
+{
+    return x.numerator() <= x.denominator() * y;
+}
 /////////////////////////////////////////////////////
 // Transcendentals
 /////////////////////////////////////////////////////

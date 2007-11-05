@@ -21,10 +21,8 @@ class test_operators : public Test {
              x -= -2;
              assertTrue(x == rlong(23,5));
              x -= rlong(1,5);
-             x.normalize();
              assertTrue(x == rlong(22,5));
              x /= 11;
-             x.normalize();
              assertTrue(x == rlong(2,5));
         }
 };
@@ -32,6 +30,27 @@ class test_operators : public Test {
 class test_comparators : public Test {
     public:
 	void run() {
+            assertTrue(rlong(1,2) < rlong(3,4));        
+            assertTrue(rlong(1,2) < 1L);        
+            assertTrue(0L < rlong(1,2));        
+
+            assertTrue(rlong(3,4) > rlong(2,3));        
+            assertTrue(1L > rlong(9,10));        
+            assertTrue(rlong(1,2) > 0L);        
+
+            assertTrue(rlong(3,4) >= rlong(2,3));        
+            assertTrue(rlong(3,4) >= rlong(6,8));        
+            assertTrue(1L >= rlong(9,9));        
+            assertTrue(1L >= rlong(9,10));        
+            assertTrue(rlong(1,2) >= 0L);        
+            assertTrue(rlong(2,2) >= 1L);        
+
+            assertTrue(rlong(1,2) <= rlong(3,4));        
+            assertTrue(rlong(1,2) <= rlong(2,4));        
+            assertTrue(rlong(1,2) <= 1L);        
+            assertTrue(rlong(2,2) <= 1L);        
+            assertTrue(1L <= rlong(3,2));        
+            assertTrue(2L <= rlong(6,3));        
         }
 };
 
@@ -43,11 +62,9 @@ class test_trancedentals : public Test {
             assertTrue(cos(z) == 1.0);
             
             rlong x = pow(rlong(4,7), -3L);
-            x.normalize();
             assertTrue(x == rlong(343,64));
             
             x = pow(rlong(1,3), long(-3));
-            x.normalize();
             assertTrue(x == 27L);
         }
 };
