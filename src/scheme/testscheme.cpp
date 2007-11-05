@@ -473,6 +473,7 @@ void test_math() {
     assert_eval(s, L"(negative? 1/2)" , L"#f");
     assert_eval(s, L"(negative? -1/2)" , L"#t");
     assert_eval(s, L"(negative? 0/2)" , L"#f");
+    assert_eval(s, L"(negative? (/ 1/2 -1))" , L"#t");
     assert_eval(s, L"(positive? 0)" , L"#f");
     assert_eval(s, L"(positive? -10)" , L"#f");
     assert_eval(s, L"(positive? 2)" , L"#t");
@@ -481,6 +482,7 @@ void test_math() {
     assert_eval(s, L"(positive? 1/2)" , L"#t");
     assert_eval(s, L"(positive? 0/2)" , L"#f");
     assert_eval(s, L"(positive? -1/2)" , L"#f");
+    assert_eval(s, L"(positive? (/ 1/2 -1))" , L"#f");
     assert_eval(s, L"(integer? 2)" , L"#t");
     assert_eval(s, L"(integer? 2/1)" , L"#t");
     assert_eval(s, L"(integer? 2/3)" , L"#f");
@@ -913,6 +915,7 @@ void test_string() {
     assert_eval(s, L"(string->number \"#xffs10\")", L"#f");
     assert_eval(s, L"(string->number \"1/2\")", L"1/2");
     assert_eval(s, L"(string->number \"-1/3\")", L"-1/3");
+    assert_fail(s, L"(string->number \"1/0\")");
     assert_eval(s, L"(number->string 256)", L"\"256\"");
     assert_eval(s, L"(number->string 256 16)", L"\"100\"");
     assert_eval(s, L"(number->string 10.0)", L"\"10.0\"");

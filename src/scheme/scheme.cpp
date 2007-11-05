@@ -1411,7 +1411,7 @@ SchemeObject* s_acos(SchemeObject* n) {
         complex<double> z = scm2complex(n);
         // Using the formula from R^5RS    
         complex<double> asin_z = (-i) * std::log(i*z + std::sqrt(1.0-z*z));     
-        return complex2scm(M_PI/2.0 - asin_z);
+        return complex2scm(M_PI_2 - asin_z);
     } else {
         return double2scm(::acos(scm2double(n)));
     }
@@ -1747,32 +1747,13 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
     return int2scm(r);
 }
 
-// Reduce a rational to its normalized form, which is
-// 1) denominator > 0.
-// 2) commons terms are cancelled out.
-// 3) throw exception if denominator is zero.
-void i_normalize_rational(long* numerator, long* denominator) {
-    if (*denominator == 0) {
-        throw scheme_exception(L"Denominator is zero in rational");    
-    }        
-    long gcd = i_gcd(*numerator, *denominator);
-    if (gcd != 1) {
-        *numerator /= gcd;
-        *denominator /= gcd;
-    }
-    if (*denominator < 0) {
-        *numerator *= -1;
-        *denominator *= -1;
-    }
-}
-
 SchemeObject* s_numerator(SchemeObject* n) {
     assert_arg_type(L"numerator", 1, s_real_p, n);
     if (s_exact_p(n) == S_TRUE) {
-        return int2scm(n->rationalValue().numerator());
+	return int2scm(scm2rational(n).normalized().numerator());
     } else {
         SchemeObject* z = s_inexact_2_exact(n);
-	rational_type::value_type l = z->rationalValue().numerator();
+	rational_type::value_type l = z->rationalValue().normalized().numerator();
         return double2scm(double(l));
     }
 }
@@ -1780,10 +1761,10 @@ SchemeObject* s_numerator(SchemeObject* n) {
 SchemeObject* s_denominator(SchemeObject* n) {
     assert_arg_type(L"denominator", 1, s_real_p, n);
     if (s_exact_p(n) == S_TRUE) {
-        return int2scm(n->rationalValue().denominator());
+	return int2scm(scm2rational(n).normalized().denominator());
     } else {
         SchemeObject* z = s_inexact_2_exact(n);
-	rational_type::value_type l = z->rationalValue().denominator();
+	rational_type::value_type l = z->rationalValue().normalized().denominator();
         return double2scm(double(l));
     }
 }
@@ -1858,9 +1839,9 @@ SchemeObject* s_negative_p(SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         result = scm2int(n) < 0;    
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
-        result = scm2int(n->numerator) < 0;
+        result = scm2rational(n) < rational_type::value_type(0);
     } else {
-        result = scm2double(n) < 0;
+        result = scm2double(n) < 0.0;
     }
     return bool2scm(result);
 }
@@ -1871,9 +1852,9 @@ SchemeObject* s_positive_p(SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         result = scm2int(n) > 0;    
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
-        result = scm2int(n->numerator) > 0;
+        result = scm2rational(n) > rational_type::value_type(0);
     } else {
-        result = scm2double(n) > 0;
+        result = scm2double(n) > 0.0;
     }
     return bool2scm(result);
 }
@@ -2728,10 +2709,11 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         offset += denominator.size();
         if (offset >= s.size()) {
             if (d == 0) {
-                return S_FALSE;
+                //return S_FALSE;
 		// TODO: return inexact +inf or -inf as per R^6RS
             }        
-            return SchemeObject::createRationalNumber(sign*t, d);        
+	    rational_type rational(sign*t, d);
+            return SchemeObject::createRationalNumber(rational.normalized());
         } else {
             return S_FALSE;        
         }
@@ -2819,21 +2801,27 @@ wstring i_number_2_string(SchemeObject* o, uint32_t radix) {
         ss << std::setbase(radix) << scm2int(o);
         return ss.str();
     } else if (type == SchemeObject::RATIONAL_NUMBER) {
-        ss << i_number_2_string(o->numerator, radix);
-        ss << L"/";
-        ss << i_number_2_string(o->denominator, radix);
+	rational_type z = scm2rational(o).normalized();
+	ss << std::setbase(radix);
+	ss << z.numerator();
+	if (z.denominator() != 1) {
+            ss << L"/";
+   	    ss << z.denominator();
+	}
         return ss.str();
     } else if (type == SchemeObject::REAL_NUMBER) {
-        double d = o->realValue();
+        double d = scm2double(o);
         // Guile uses precision 15. We'll do the same.
         // Comparing (* 4 (atan 1)) to the real digits of pi
         // it looks like the precision of double is about 15 
         // or 16 decimal digits.     
-        ss << std::setbase(radix) << std::setprecision(15) << d;
+        ss << std::setbase(radix);
+       	ss << std::setprecision(15);
+        ss << d;
         double i;
         // Append ".0" if d contains no decimal point.
         if (::modf(d,&i) == 0.0) {
-            ss << ".0";        
+            ss << L".0";        
         }
         return ss.str();
     } else if (type == SchemeObject::COMPLEX_NUMBER) {

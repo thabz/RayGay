@@ -39,18 +39,21 @@ SchemeObject* SchemeObject::createRationalNumber(SchemeObject* numerator, Scheme
     assert(numerator->type() == INTEGER_NUMBER);
     assert(denominator->type() == INTEGER_NUMBER);
     assert(denominator->integer_value != 1);
-    assert(denominator->integer_value > 0);
+    assert(denominator->integer_value != -1);
     result->numerator = numerator;
     result->denominator = denominator;
     return result;
 }
 
-SchemeObject* SchemeObject::createRationalNumber(long numerator, long denominator) {
-    i_normalize_rational(&numerator, &denominator);
-    SchemeObject* n = createIntegerNumber(numerator);        
-    if (denominator == 1) {
-        return n;    
+SchemeObject* SchemeObject::createRationalNumber(rational_type::value_type numerator, rational_type::value_type denominator) {
+    if (denominator == 0) {
+        throw scheme_exception(L"Denominator is zero in rational");    
+    } else if (denominator == 1) {
+	return createIntegerNumber(numerator);        
+    } else if (denominator == -1) {
+	return createIntegerNumber(-numerator);        
     } else {
+	SchemeObject* n = createIntegerNumber(numerator);        
         SchemeObject* d = createIntegerNumber(denominator);
         return createRationalNumber(n, d);
     }        

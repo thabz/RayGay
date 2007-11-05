@@ -190,7 +190,7 @@ class SchemeObject
         static SchemeObject* createComplexNumber(SchemeObject* real, SchemeObject* imag);
         static SchemeObject* createRealNumber(double number);
         static SchemeObject* createRationalNumber(SchemeObject* numerator, SchemeObject* denominator);
-        static SchemeObject* createRationalNumber(long numerator, long denominator);
+        static SchemeObject* createRationalNumber(rational_type::value_type n, rational_type::value_type d);
         static SchemeObject* createRationalNumber(rational_type rational);
         static SchemeObject* createIntegerNumber(long number);
         static SchemeObject* createString(const wchar_t* str);
