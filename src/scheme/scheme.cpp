@@ -2691,7 +2691,7 @@ string extractDigits(wstring s, size_t offset, uint32_t radix) {
 
 /// Returns a number object or S_FALSE in case of failure
 SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
-    double sign = 1;
+    int sign = 1;
     if (s.size() == 0) {
 	return S_FALSE;
     }
