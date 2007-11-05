@@ -2729,6 +2729,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         if (offset >= s.size()) {
             if (d == 0) {
                 return S_FALSE;
+		// TODO: return inexact +inf or -inf as per R^6RS
             }        
             return SchemeObject::createRationalNumber(sign*t, d);        
         } else {
