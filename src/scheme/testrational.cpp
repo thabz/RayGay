@@ -34,6 +34,8 @@ class test_comparators : public Test {
             assertTrue(rlong(1,2) == rlong(6,12));        
             assertTrue(rlong(1,2) == rlong(-6,-12));        
             assertTrue(rlong(3,3) == 1L);        
+            assertTrue(rlong(12,3) == 4L);
+            assertTrue(4L == rlong(12,3));
             assertTrue(1L == rlong(3,3));
 
             assertTrue(rlong(1,2) != rlong(3,2));        
@@ -63,13 +65,19 @@ class test_comparators : public Test {
             assertTrue(rlong(3,4) >= rlong(6,8));        
             assertTrue(1L >= rlong(9,9));        
             assertTrue(1L >= rlong(9,10));        
+            assertTrue(1L >= rlong(-9,-10));        
+            assertTrue(0L >= rlong(-9,10));        
+            assertTrue(0L >= rlong(9,-10));        
             assertTrue(rlong(1,2) >= 0L);        
             assertTrue(rlong(2,2) >= 1L);        
+            assertTrue(rlong(-9,-10) >= -1L);        
 
             assertTrue(rlong(1,2) <= rlong(3,4));        
             assertTrue(rlong(1,2) <= rlong(2,4));        
             assertTrue(rlong(1,2) <= 1L);        
             assertTrue(rlong(2,2) <= 1L);        
+            assertTrue(rlong(2,-2) <= 1L);        
+            assertTrue(rlong(2,-2) <= -1L);        
             assertTrue(1L <= rlong(3,2));        
             assertTrue(2L <= rlong(6,3));        
         }
@@ -85,8 +93,9 @@ class test_trancedentals : public Test {
             
             assertTrue(pow(rlong(4,7), -3L) == rlong(343,64));
             assertTrue(pow(rlong(1,3), -3L) == 27L);
-            assertTrue(pow(rlong(1,3), 3L) == rlong(1/27));
-            assertTrue(pow(rlong(2,3), 4L) == rlong(16/81));
+            assertTrue(pow(rlong(1,2), 2L) == rlong(1,4));
+            assertTrue(pow(rlong(1,3), 3L) == rlong(1,27));
+            assertTrue(pow(rlong(2,3), 4L) == rlong(16,81));
 
             assertTrue(sqrt(rlong(4,1)) == 2.0);
         }
