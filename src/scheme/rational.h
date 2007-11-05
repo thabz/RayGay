@@ -8,6 +8,7 @@ template<typename K> class rational;
 template<typename K> double sin(const rational<K>&);
 template<typename K> double cos(const rational<K>&);
 template<typename K> double tan(const rational<K>&);
+template<typename K> double exp(const rational<K>&);
 template<typename K> double sqrt(const rational<K>&);
 template<typename K> rational<K> pow(const rational<K>&, const K&);
 template<typename K> K floor(const rational<K>&);
@@ -51,7 +52,7 @@ class rational
         // Returns 1/z
         rational<K> inverse() const;
         
-        void normalize();
+        rational<K> normalized() const;
 
         double real() const;
         
@@ -99,6 +100,7 @@ rational<K>::inverse() const {
 // Constructors
 /////////////////////////////////////////////////////
 
+// TODO: Should we throw an exception when _d == 0?
 template<typename K> 
 inline rational<K>::rational(const K& _n, const K& _d)  
 : n(_n), d(_d) {}; 
@@ -124,18 +126,21 @@ rational_gcd(K a, K b) {
 }
 
 template<typename K>
-inline void 
-rational<K>::normalize() 
+inline rational<K> 
+rational<K>::normalized() const 
 {
-    K gcd = rational_gcd<K>(n, d);
+    K gcd = rational_gcd<K>(numerator(), denominator());
+    K nn = numerator();
+    K dd = denominator();
     if (gcd != K(1)) {
-        n /= gcd;
-        d /= gcd;
+        nn /= gcd;
+        dd /= gcd;
     }
-    if (d < 0) {
-        n = -n;    
-        d = -d;
+    if (dd < 0) {
+        nn = -nn;    
+        dd = -dd;
     }
+    return rational<K>(nn,dd);
 }
 
 /////////////////////////////////////////////////////
@@ -610,6 +615,12 @@ template<typename K>
 inline double 
 tan(const rational<K>& z) {
     return ::tan(z.real());            
+}
+
+template<typename K> 
+inline double 
+exp(const rational<K>& z) {
+    return ::exp(z.real());            
 }
 
 template<typename K> 

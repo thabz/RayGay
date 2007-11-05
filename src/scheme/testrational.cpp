@@ -90,6 +90,7 @@ class test_trancedentals : public Test {
             assertTrue(sin(z) == 0.0);
             assertTrue(cos(z) == 1.0);
             assertTrue(tan(z) == 0.0);
+            assertTrue(exp(z) == 1.0);
             
             assertTrue(pow(rlong(4,7), -3L) == rlong(343,64));
             assertTrue(pow(rlong(1,3), -3L) == 27L);
@@ -117,12 +118,35 @@ class test_rounding : public Test {
             assertTrue(trunc(rlong(1,2)) == 0);
         }
 };
+
+class test_normalization : public Test {
+    public:
+	void run() {
+            rlong z = rlong(2,3).normalized();
+            assertTrue(z.numerator() == 2);
+            assertTrue(z.denominator() == 3);
+            z = rlong(4,2).normalized();
+            assertTrue(z.numerator() == 2);
+            assertTrue(z.denominator() == 1);
+            z = rlong(9,18).normalized();
+            assertTrue(z.numerator() == 1);
+            assertTrue(z.denominator() == 2);
+            z = rlong(9,-18).normalized();
+            assertTrue(z.numerator() == -1);
+            assertTrue(z.denominator() == 2);
+            z = rlong(-9,-18).normalized();
+            assertTrue(z.numerator() == 1);
+            assertTrue(z.denominator() == 2);
+        }
+};
+
 int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("Arithmetic", new test_operators());
     suite.add("Comparators", new test_comparators());
     suite.add("Trancedentals", new test_trancedentals());
     suite.add("Rounding", new test_rounding());
+    suite.add("Normalization", new test_normalization());
     suite.run();
     suite.printStatus();
 
