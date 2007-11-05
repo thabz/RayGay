@@ -30,6 +30,16 @@ class test_operators : public Test {
 class test_comparators : public Test {
     public:
 	void run() {
+            assertTrue(rlong(1,2) == rlong(1,2));        
+            assertTrue(rlong(1,2) == rlong(6,12));        
+            assertTrue(rlong(3,3) == 1L);        
+            assertTrue(1L == rlong(3,3));
+
+            assertTrue(rlong(1,2) != rlong(3,2));        
+            assertTrue(rlong(1,2) != rlong(7,12));        
+            assertTrue(rlong(3,4) != 1L);        
+            assertTrue(1L != rlong(3,4));
+	        
             assertTrue(rlong(1,2) < rlong(3,4));        
             assertTrue(rlong(1,2) < 1L);        
             assertTrue(0L < rlong(1,2));        
@@ -79,6 +89,10 @@ class test_rounding : public Test {
             assertTrue(ceil(rlong(-17,3)) == -5);
             assertTrue(ceil(rlong(17,3)) == 6);
             assertTrue(ceil(rlong(-1,2)) == 0);
+            assertTrue(trunc(rlong(-17,3)) == -5);
+            assertTrue(trunc(rlong(17,3)) == 5);
+            assertTrue(trunc(rlong(-1,2)) == 0);
+            assertTrue(trunc(rlong(1,2)) == 0);
         }
 };
 int main(int argc, char *argv[]) {

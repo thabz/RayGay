@@ -597,8 +597,7 @@ ceil(const rational<K>& z) {
 template<typename K> 
 inline K 
 trunc(const rational<K>& z) {
-    return z < 0 ? -floor(-z) : floor(z);        
+    return z < K(0) ? -floor(-z) : floor(z);        
 }
-
 
 #endif /* RATIONAL_H */
