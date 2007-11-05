@@ -38,3 +38,4 @@ class Text : public ObjectGroup
 };
 
 #endif
+
