@@ -528,6 +528,8 @@ void test_math() {
     assert_eval(s, L"(positive? (/ 1/2 -1))" , L"#f");
     assert_eval(s, L"(integer? 2)" , L"#t");
     assert_eval(s, L"(integer? 2/1)" , L"#t");
+    assert_eval(s, L"(integer? 4/2)" , L"#t");
+    assert_eval(s, L"(integer? (/ 4 2))" , L"#t");
     assert_eval(s, L"(integer? 2/3)" , L"#f");
     assert_eval(s, L"(integer? 2.1)" , L"#f");
     assert_eval(s, L"(integer? 2.0)" , L"#t");

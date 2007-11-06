@@ -1000,8 +1000,9 @@ SchemeObject* s_integer_p(SchemeObject* p) {
     if (p->type() == SchemeObject::INTEGER_NUMBER) {
         return S_TRUE;
     } else if (p->type() == SchemeObject::RATIONAL_NUMBER) {
-	rational_type::value_type denom = p->rationalValue().denominator();     
-        return bool2scm(denom == 1 || denom == -1);
+	rational_type r = p->rationalValue().normalized();     
+	rational_type::value_type d = r.denominator();     
+        return bool2scm(d == 1 || d == -1);
     } else if (p->type() == SchemeObject::REAL_NUMBER) {
         return ::modf(scm2double(p),&i) == 0.0 ? S_TRUE : S_FALSE;
     } else if (p->type() == SchemeObject::COMPLEX_NUMBER) {
