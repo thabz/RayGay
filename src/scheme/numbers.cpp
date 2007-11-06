@@ -38,9 +38,10 @@ void coerceNumbers(int num, SchemeStack::iterator stack, std::complex<double>* d
     }
 }
 
-// This returns the best number type for the numbers in stacks. Ie. if the stack contains all integers
-// but just one rational, the rational is returned. If it's all rationals but with just one real, the
-// real-type is returned. 
+// This returns the best number type for the numbers in stacks. Ie. if the 
+// stack contains all integers but just one rational, the rational is 
+// returned. If it's all rationals but with just one real, the real-type 
+// is returned. 
 SchemeObject::ObjectType representativeNumberType(wchar_t* procname, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType type = SchemeObject::INTEGER_NUMBER;
     for(int i = 0; i < num; i++) {
@@ -84,7 +85,7 @@ SchemeObject* s_plus(int num, SchemeStack::iterator stack) {
            result += args[i];    
        }
        return complex2scm(result);
-    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+    } else {
        rational_type args[num];
        coerceNumbers(num,stack,args);
        
@@ -93,8 +94,6 @@ SchemeObject* s_plus(int num, SchemeStack::iterator stack) {
 	   result += args[i];
        }
        return rational2scm(result);
-    } else {
-        throw scheme_exception(L"+", L"Only integer and real support");    
     }
 }
 
@@ -136,7 +135,7 @@ SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
            result -= args[i];    
        }
        return complex2scm(result);
-    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+    } else {
        rational_type args[num];
        coerceNumbers(num,stack,args);
        
@@ -150,8 +149,6 @@ SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
 	   result -= args[i];
        }
        return rational2scm(result);
-    } else {
-        throw scheme_exception(L"-", L"Only integer and real support");    
     }        
 }
 
@@ -212,7 +209,6 @@ SchemeObject* s_mult(int num, SchemeStack::iterator stack) {
            result *= args[i];    
        }
        return double2scm(result);
-            
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
        long args[num];
        coerceNumbers(num,stack,args);
@@ -231,7 +227,7 @@ SchemeObject* s_mult(int num, SchemeStack::iterator stack) {
            result *= args[i];    
        }
        return complex2scm(result);
-    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+    } else {
        rational_type args[num];
        coerceNumbers(num,stack,args);
        
@@ -240,8 +236,6 @@ SchemeObject* s_mult(int num, SchemeStack::iterator stack) {
 	   result *= args[i]; 
        }
        return rational2scm(result);
-    } else {
-        throw scheme_exception(L"*", L"Only integer and real support");    
     }
 }
 
@@ -1324,15 +1318,18 @@ void LibNumbers::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"rational?"             ,1,0,0, (SchemeObject* (*)()) s_rational_p, envt);
     scheme->assign(L"exact?"                ,1,0,0, (SchemeObject* (*)()) s_exact_p, envt);
     scheme->assign(L"inexact?"              ,1,0,0, (SchemeObject* (*)()) s_inexact_p, envt);
+
+    // Comparators
+    scheme->assign(L"="                     ,0,0,1, (SchemeObject* (*)()) s_equal, envt);
     scheme->assign(L"<"                     ,0,0,1, (SchemeObject* (*)()) s_less, envt);
     scheme->assign(L">"                     ,0,0,1, (SchemeObject* (*)()) s_greater, envt);
     scheme->assign(L"<="                    ,0,0,1, (SchemeObject* (*)()) s_less_equal, envt);
     scheme->assign(L">="                    ,0,0,1, (SchemeObject* (*)()) s_greater_equal, envt);
-    scheme->assign(L"="                     ,0,0,1, (SchemeObject* (*)()) s_equal, envt);
     scheme->assign(L"+"                     ,0,0,1, (SchemeObject* (*)()) s_plus, envt);
     scheme->assign(L"-"                     ,1,0,1, (SchemeObject* (*)()) s_minus, envt);
     scheme->assign(L"*"                     ,0,0,1, (SchemeObject* (*)()) s_mult, envt);
     scheme->assign(L"/"                     ,1,0,1, (SchemeObject* (*)()) s_divide, envt);
+
     scheme->assign(L"abs"                   ,1,0,0, (SchemeObject* (*)()) s_abs, envt);
     scheme->assign(L"tan"                   ,1,0,0, (SchemeObject* (*)()) s_tan, envt);
     scheme->assign(L"atan"                  ,1,1,0, (SchemeObject* (*)()) s_atan, envt);
@@ -1344,13 +1341,17 @@ void LibNumbers::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"log"                   ,1,0,0, (SchemeObject* (*)()) s_log, envt);
     scheme->assign(L"exp"                   ,1,0,0, (SchemeObject* (*)()) s_exp, envt);
     scheme->assign(L"expt"                  ,2,0,0, (SchemeObject* (*)()) s_expt, envt);
+
+    // Roundings
     scheme->assign(L"round"                 ,1,0,0, (SchemeObject* (*)()) s_round, envt);
     scheme->assign(L"ceiling"               ,1,0,0, (SchemeObject* (*)()) s_ceiling, envt);
     scheme->assign(L"floor"                 ,1,0,0, (SchemeObject* (*)()) s_floor, envt);
     scheme->assign(L"truncate"              ,1,0,0, (SchemeObject* (*)()) s_truncate, envt);
+
     scheme->assign(L"quotient"              ,2,0,0, (SchemeObject* (*)()) s_quotient, envt);
     scheme->assign(L"remainder"             ,2,0,0, (SchemeObject* (*)()) s_remainder, envt);
     scheme->assign(L"modulo"                ,2,0,0, (SchemeObject* (*)()) s_modulo, envt);
+    
     scheme->assign(L"min"                   ,1,0,1, (SchemeObject* (*)()) s_min, envt);
     scheme->assign(L"max"                   ,1,0,1, (SchemeObject* (*)()) s_max, envt);
     scheme->assign(L"gcd"                   ,0,0,1, (SchemeObject* (*)()) s_gcd, envt);
@@ -1364,6 +1365,8 @@ void LibNumbers::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"zero?"                 ,1,0,0, (SchemeObject* (*)()) s_zero_p, envt);
     scheme->assign(L"negative?"             ,1,0,0, (SchemeObject* (*)()) s_negative_p, envt);
     scheme->assign(L"positive?"             ,1,0,0, (SchemeObject* (*)()) s_positive_p, envt);
+
+    // Complex numbers
     scheme->assign(L"make-rectangular"      ,2,0,0, (SchemeObject* (*)()) s_make_rectangular, envt);
     scheme->assign(L"make-polar"            ,2,0,0, (SchemeObject* (*)()) s_make_polar, envt);
     scheme->assign(L"real-part"             ,1,0,0, (SchemeObject* (*)()) s_real_part, envt);

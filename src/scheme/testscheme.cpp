@@ -555,7 +555,9 @@ void test_math() {
     assert_eval(s, L"(inexact->exact 0.5)", L"1/2");
     assert_eval(s, L"(inexact->exact 0.75)", L"3/4");
     assert_eval(s, L"(inexact->exact 1.7)", L"17/10");
-    assert_eval(s, L"(inexact->exact 0.3)", L"3/10");
+    assert_eval(s, L"(exact->inexact (inexact->exact 0.3))", L"0.3");
+    assert_eval(s, L"(exact->inexact (inexact->exact 0.1))", L"0.1");
+    assert_eval(s, L"(exact->inexact (inexact->exact 0.25))", L"0.25");
     assert_eval(s, L"(inexact->exact 0.25+0i)", L"1/4");
     assert_fail(s, L"(inexact->exact +i)");
     assert_eval(s, L"(complex? 2)" , L"#t");
