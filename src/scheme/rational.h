@@ -2,6 +2,8 @@
 #ifndef RATIONAL_H
 #define RATIONAL_H
 
+#include <limits>
+
 // Forward declaration
 template<typename K> class rational;
 
@@ -712,5 +714,60 @@ round(const rational<K>& z) {
     }        
 }
 
+/////////////////////////////////////////////////////
+// Specialization of numeric_limits
+/////////////////////////////////////////////////////
+
+namespace std {
+  template<typename K>
+    struct numeric_limits<rational<K> >
+    {
+      static const bool is_specialized = true;
+
+      static rational<K> min() throw()
+      { return rational<K>(numeric_limits<K>::min(), 1); }
+      static rational<K> max() throw()
+      { return rational<K>(numeric_limits<K>::max(), 1); }
+
+      static const int digits = numeric_limits<K>::digits;
+      static const int digits10 = numeric_limits<K>::digits10;
+      static const bool is_signed = true;
+      static const bool is_integer = false;
+      static const bool is_exact = true;
+      static const int radix = 2;
+      static rational<K> epsilon() throw()
+      { return rational<K>(1, numeric_limits<K>::max()); }
+      static rational<K> round_error() throw()
+      { return rational<K>(0); }
+
+      static const int min_exponent = 0;
+      static const int min_exponent10 = 0;
+      static const int max_exponent = 0;
+      static const int max_exponent10 = 0;
+
+      static const bool has_infinity = false;
+      static const bool has_quiet_NaN = false;
+      static const bool has_signaling_NaN = false;
+      static const float_denorm_style has_denorm = denorm_absent;
+      static const bool has_denorm_loss = false;
+
+      static rational<K> infinity() throw()
+      { return rational<K>(0); }
+      static rational<K> quiet_NaN() throw()
+      { return rational<K>(0); }
+      static rational<K> signaling_NaN() throw()
+      { return rational<K>(0); }
+      static rational<K> denorm_min() throw()
+      { return rational<K>(0); }
+
+      static const bool is_iec559 = false;
+      static const bool is_bounded = true;
+      static const bool is_modulo = true;
+
+      static const bool traps = __glibcxx_integral_traps;
+      static const bool tinyness_before = false;
+        static const float_round_style round_style = round_toward_zero;
+    };
+}
 
 #endif /* RATIONAL_H */

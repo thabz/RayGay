@@ -4,6 +4,8 @@
 
 typedef rational<long> rlong;
 
+using namespace std;
+
 class test_operators : public Test {
     public:
 	void run() {
@@ -144,6 +146,17 @@ class test_normalization : public Test {
         }
 };
 
+class test_traits : public Test {
+    public:
+	void run() {
+            assertTrue(numeric_limits<rational<long> >::max() == numeric_limits<long>::max());        
+            assertTrue(numeric_limits<rational<long> >::min() == numeric_limits<long>::min());        
+            assertTrue(numeric_limits<rational<int8_t> >::max() == int8_t(127));        
+            assertFalse(numeric_limits<rational<int> >::has_infinity);        
+            assertTrue(numeric_limits<rational<int> >::is_exact);        
+        }
+};
+
 int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("Arithmetic", new test_operators());
@@ -151,6 +164,7 @@ int main(int argc, char *argv[]) {
     suite.add("Trancedentals", new test_trancedentals());
     suite.add("Rounding", new test_rounding());
     suite.add("Normalization", new test_normalization());
+    suite.add("Traits", new test_traits());
     suite.run();
     suite.printStatus();
 
