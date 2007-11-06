@@ -67,3 +67,4 @@ SchemeObject* s_angle(SchemeObject* z);
 SchemeObject* s_number_p(SchemeObject* p);
 
 #endif
+

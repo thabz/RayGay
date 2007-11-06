@@ -801,106 +801,170 @@ SchemeObject* s_positive_p(SchemeObject* n) {
 }
 
 // (= a b)
-// FIXME: Numerical instable. Use integer and rational comparisons
-SchemeObject* s_equal(int num, SchemeStack::iterator args) {
+SchemeObject* s_equal(int num, SchemeStack::iterator stack) {
+    if (num == 0)  return S_TRUE;
+    SchemeObject::ObjectType outType = representativeNumberType(L"=", num, stack);
+
+    if (outType == SchemeObject::REAL_NUMBER) {
+        double args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i] != args[i-1]) return S_FALSE;
+        }
+	return S_TRUE;
+    } else if (outType == SchemeObject::INTEGER_NUMBER) {
+       long args[num];
+       coerceNumbers(num,stack,args);
+       for(int i = 1; i < num; i++) {
+	   if (args[i] != args[i-1]) return S_FALSE;
+       }
+       return S_TRUE;
+    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+       rational_type args[num];
+       coerceNumbers(num,stack,args);
+       for(int i = 1; i < num; i++) {
+	   if (args[i] != args[i-1]) return S_FALSE;
+       }
+       return S_TRUE;
+    } else {
+       std::complex<double> args[num];
+       coerceNumbers(num,stack,args);
+       for(int i = 1; i < num; i++) {
+	   if (args[i] != args[i-1]) return S_FALSE;
+       }
+       return S_TRUE;
+    }
+}
+
+SchemeObject* s_less(int num, SchemeStack::iterator stack) {
     if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_type(L"=", 1, s_real_p, *args);
-    double n = scm2double(*args);
-    args ++;
-    for(int i = 1; i < num; i++) {
-        SchemeObject* v = *args++;
-        assert_arg_type(L"=", i+1, s_real_p, v);
-        double nn = scm2double(v);
-        if (nn != n) {
-            return S_FALSE;
+
+    SchemeObject::ObjectType outType = representativeNumberType(L"<", num, stack);
+    
+    if (outType == SchemeObject::REAL_NUMBER) {
+        double args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i-1] >= args[i]) return S_FALSE;
         }
-        n = nn;
+	return S_TRUE;
+    } else if (outType == SchemeObject::INTEGER_NUMBER) {
+        long args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i-1] >= args[i]) return S_FALSE;
+        }
+        return S_TRUE;
+    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+        rational_type args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i-1] >= args[i]) return S_FALSE;
+        }
+        return S_TRUE;
+    } else {
+        throw scheme_exception(L"<", L"Wrong argument type");    
     }
-    return S_TRUE;
 }
 
-// FIXME: Numerical instable. Use integer and rational comparisons
-SchemeObject* s_less(int num, SchemeStack::iterator args) {
+SchemeObject* s_less_equal(int num, SchemeStack::iterator stack) {
     if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_type(L"<", 1, s_real_p, *args);
-    double n = scm2double(*args);
-    args ++;
-    for(int i = 1; i < num; i++) {
-        SchemeObject* v = *args++;
-        assert_arg_type(L"<", i+1, s_real_p, v);
-        double nn = scm2double(v);
-        if (nn <= n) {
-            return S_FALSE;
+    SchemeObject::ObjectType outType = representativeNumberType(L"<=", num, stack);
+    
+    if (outType == SchemeObject::REAL_NUMBER) {
+        double args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i-1] > args[i]) return S_FALSE;
         }
-        n = nn;
+	return S_TRUE;
+    } else if (outType == SchemeObject::INTEGER_NUMBER) {
+        long args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i-1] > args[i]) return S_FALSE;
+        }
+        return S_TRUE;
+    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+        rational_type args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i-1] > args[i]) return S_FALSE;
+        }
+        return S_TRUE;
+    } else {
+        throw scheme_exception(L"<=", L"Wrong argument type");    
     }
-    return S_TRUE;
 }
 
-// FIXME: Numerical instable. Use integer and rational comparisons
-SchemeObject* s_less_equal(int num, SchemeStack::iterator args) {
+SchemeObject* s_greater(int num, SchemeStack::iterator stack) {        
     if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_type(L"<=", 1, s_real_p, *args);
-    double n = scm2double(*args);
-    args ++;
-    for(int i = 1; i < num; i++) {
-        SchemeObject* v = *args++;
-        assert_arg_type(L"<=", i+1, s_real_p, v);
-        double nn = scm2double(v);
-        if (nn < n) {
-            return S_FALSE;
+    SchemeObject::ObjectType outType = representativeNumberType(L">", num, stack);
+    
+    if (outType == SchemeObject::REAL_NUMBER) {
+        double args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i-1] <= args[i]) return S_FALSE;
         }
-        n = nn;
+	return S_TRUE;
+    } else if (outType == SchemeObject::INTEGER_NUMBER) {
+        long args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i-1] <= args[i]) return S_FALSE;
+        }
+        return S_TRUE;
+    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+        rational_type args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i-1] <= args[i]) return S_FALSE;
+        }
+        return S_TRUE;
+    } else {
+        throw scheme_exception(L">", L"Wrong argument type");    
     }
-    return S_TRUE;
 }
 
-// FIXME: Numerical instable. Use integer and rational comparisons
-SchemeObject* s_greater(int num, SchemeStack::iterator args) {        
+SchemeObject* s_greater_equal(int num, SchemeStack::iterator stack) {
     if (num == 0) {
         return S_TRUE;
     }
-    assert_arg_type(L">", 1, s_real_p, *args);
-    double n = scm2double(*args);
-    args ++;
-    for(int i = 1; i < num; i++) {
-        SchemeObject* v = *args++;
-        assert_arg_type(L">", i+1, s_real_p, v);
-        double nn = scm2double(v);
-        if (nn >= n) {
-            return S_FALSE;
-        }
-        n = nn;
-    }
-    return S_TRUE;
-}
 
-// FIXME: Numerical instable. Use integer and rational comparisons
-SchemeObject* s_greater_equal(int num, SchemeStack::iterator args) {
-    if (num == 0) {
+    SchemeObject::ObjectType outType = representativeNumberType(L"<=", num, stack);
+    
+    if (outType == SchemeObject::REAL_NUMBER) {
+        double args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i-1] < args[i]) return S_FALSE;
+        }
+	return S_TRUE;
+    } else if (outType == SchemeObject::INTEGER_NUMBER) {
+        long args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i-1] < args[i]) return S_FALSE;
+        }
         return S_TRUE;
-    }
-    assert_arg_type(L">=", 1, s_real_p, *args);
-    double n = scm2double(*args);
-    args ++;
-    for(int i = 1; i < num; i++) {
-        SchemeObject* v = *args++;
-        assert_arg_type(L">=", i+1, s_real_p, v);
-        double nn = scm2double(v);
-        if (nn > n) {
-            return S_FALSE;
+    } else if (outType == SchemeObject::RATIONAL_NUMBER) {
+        rational_type args[num];
+        coerceNumbers(num,stack,args);
+        for(int i = 1; i < num; i++) {
+ 	    if (args[i-1] < args[i]) return S_FALSE;
         }
-        n = nn;
+        return S_TRUE;
+    } else {
+        throw scheme_exception(L">=", L"Wrong argument type");    
     }
-    return S_TRUE;
 }
-
 
 // (number? p)
 SchemeObject* s_number_p(SchemeObject* p) {
