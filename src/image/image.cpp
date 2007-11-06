@@ -49,17 +49,17 @@ void Image::setRGBA(const Vector2& p, const RGBA& c) {
 ImageIO* getImageIO(const std::string& filename) {
     ImageIO* io;
 
-    if (filename.find(".jpg") != string::npos) {
+    if (filename.find(".jpg") != string::npos || filename.find(".JPG") != string::npos) {
 #ifdef OS_DARWIN
-    io = new DarwinIO();
+        io = new DarwinIO();
 #elif HAVE_JPEGLIB_H
 	io = new JpegIO();
 #else    
 	throw_exception("Support for JPEG-files is not compiled in.");
 #endif	
-    } else if (filename.find(".tga") != string::npos) {
+    } else if (filename.find(".tga") != string::npos || filename.find(".TGA") != string::npos) {
 	io = new TgaIO();
-    } else if (filename.find(".png") != string::npos) {
+    } else if (filename.find(".png") != string::npos || filename.find(".PNG") != string::npos) {
 #ifdef OS_DARWIN	
         io = new DarwinIO();
 #elif HAVE_PNG_H
@@ -67,17 +67,16 @@ ImageIO* getImageIO(const std::string& filename) {
 #else
 	throw_exception("Support for PNG-files is not compiled in.");
 #endif	
-    } else if (filename.find(".hdr") != string::npos) {
+    } else if (filename.find(".hdr") != string::npos || filename.find(".HDR") != string::npos) {
 	io = new HdriIO();
 #ifdef OS_DARWIN	
-    } else if (filename.find(".jp2") != string::npos) {
+    } else if (filename.find(".jp2") != string::npos || filename.find(".JP2") != string::npos) {
     	io = new DarwinIO();
-    } else if (filename.find(".tif") != string::npos) {
+    } else if (filename.find(".tif") != string::npos || filename.find(".TIF") != string::npos) {
     	io = new DarwinIO();
-    } else if (filename.find(".tiff") != string::npos) {
+    } else if (filename.find(".tiff") != string::npos || filename.find(".TIFF") != string::npos) {
     	io = new DarwinIO();
 #endif
-
     } else {
 	throw_exception(filename + " has unknown fileformat.");
     }
