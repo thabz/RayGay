@@ -764,7 +764,7 @@ SchemeObject* s_zero_p(SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         result = scm2int(n) == 0;    
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
-        result = scm2int(n->numerator) == 0;
+        result = scm2rational(n) == rational_type::value_type(0);
     } else if (n->type() == SchemeObject::COMPLEX_NUMBER) {
         std::complex<double> c = n->complexValue();
         result = c.real() == 0.0 && c.imag() == 0.0;

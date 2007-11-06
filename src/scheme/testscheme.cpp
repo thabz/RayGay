@@ -536,12 +536,19 @@ void test_math() {
     assert_eval(s, L"(real-part 3.0)", L"3.0");
     assert_eval(s, L"(imag-part 3.0)", L"0.0");
     assert_eval(s, L"(real-part 5)", L"5.0");
+    assert_eval(s, L"(magnitude 5)", L"5.0");
+    assert_eval(s, L"(magnitude -3)", L"3.0");
+    assert_eval(s, L"(magnitude +2i)", L"2.0");
+    assert_eval(s, L"(magnitude -8i)", L"8.0");
+    assert_eval(s, L"(angle 10)", L"0.0");
 
     assert_eval(s, L"(round 2.1)" , L"2.0");
     assert_eval(s, L"(round 2.8)" , L"3.0");
+    assert_eval(s, L"(round -2.8)" , L"-3.0");
     assert_fail(s, L"(round 'a)");
     assert_fail(s, L"(round 1+i)");
     assert_fail(s, L"(round 2.1 2.3)");
+    assert_eval(s, L"(round 2.1+0.0i)" , L"2.0");
     assert_eval(s, L"(round 3.5)" , L"4.0");
     assert_eval(s, L"(round 2.5)" , L"2.0"); // Round to nearest even integer
     assert_eval(s, L"(round 7)" , L"7");
@@ -553,6 +560,7 @@ void test_math() {
     assert_fail(s, L"(floor 'a)");
     assert_fail(s, L"(floor 1+i)");
     assert_eval(s, L"(floor 3.5)" , L"3.0");
+    assert_eval(s, L"(floor 2.1+0.0i)" , L"2.0");
     assert_eval(s, L"(floor 3)" , L"3");
     assert_eval(s, L"(floor -3/2)" , L"-2");
     assert_eval(s, L"(floor -1/2)" , L"-1");
@@ -569,6 +577,7 @@ void test_math() {
     assert_eval(s, L"(ceiling 3.5)" , L"4.0");
     assert_eval(s, L"(ceiling 3)" , L"3");
     assert_fail(s, L"(ceiling 1+i)");
+    assert_eval(s, L"(ceiling 2.1+0.0i)" , L"3.0");
     assert_eval(s, L"(ceiling 3/2)" , L"2");
     assert_eval(s, L"(ceiling 1/2)" , L"1");
     assert_eval(s, L"(ceiling -3/2)" , L"-1");
@@ -579,6 +588,8 @@ void test_math() {
     assert_eval(s, L"(ceiling 16/3)" , L"6");
     assert_eval(s, L"(truncate -4.3)" , L"-4.0");
     assert_eval(s, L"(truncate 3.5)" , L"3.0");
+    assert_eval(s, L"(truncate -3.5)" , L"-3.0");
+    assert_eval(s, L"(truncate 3.5+0.0i)" , L"3.0");
     assert_eval(s, L"(truncate 3/2)" , L"1");
     assert_eval(s, L"(truncate 1/2)" , L"0");
     assert_eval(s, L"(truncate -3/2)" , L"-1");
