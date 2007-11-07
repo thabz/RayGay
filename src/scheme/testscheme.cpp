@@ -499,6 +499,7 @@ void test_math() {
     assert_eval(s, L"(odd? 31137)" , L"#t");
     assert_eval(s, L"(odd? 0)" , L"#f");
     assert_eval(s, L"(odd? -1)" , L"#t");
+    assert_eval(s, L"(odd? -1)" , L"#t");
     assert_eval(s, L"(odd? 2.0)" , L"#f");
     assert_eval(s, L"(odd? 0/2)" , L"#f");
     assert_fail(s, L"(odd? 'a)");

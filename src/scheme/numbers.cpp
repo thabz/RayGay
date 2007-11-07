@@ -1155,9 +1155,14 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
 
     offset += digits.size();
     if (offset >= s.size()) {
-	// Done. No . or e
-	// We have an int or a bigint
-        return SchemeObject::createIntegerNumber(sign*t);
+	// Done. No . or e. We have an integer
+        if (t > numeric_limits<long>::max() ||
+            t < numeric_limits<long>::min()) {
+            // TODO: Create a bigint            
+            return S_FALSE;            
+        } else {
+            return SchemeObject::createIntegerNumber(sign*t);
+        }
     }
     
     if (s[offset] == L'/') {
