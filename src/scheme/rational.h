@@ -641,14 +641,14 @@ pow(const rational<K>& a, const K& b)
 {
    if (b == 0) return rational<K>(1);
    
-   K iter = b < 0 ? -b : b;    
-
-   // The following algorithm while slow, is OK for 
-   // relative small long values of b.
-   // For rational<bigint> this method should be specialized. 
-   rational<K> result = 1;
-   while (iter-- > 0) {
-       result *= a;        
+   K iter = b < 0 ? -b : b;
+   rational<K> x = a;
+   rational<K> result = iter % 2 ? x : 1;
+   while (iter >>= 1) {
+       x *= x;          
+       if (iter % 2) {
+           result *= x;
+       } 
    }
    if (b > 0) {
        return result;

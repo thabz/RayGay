@@ -99,6 +99,11 @@ class test_trancedentals : public Test {
             assertTrue(pow(rlong(1,2), 2L) == rlong(1,4));
             assertTrue(pow(rlong(1,3), 3L) == rlong(1,27));
             assertTrue(pow(rlong(2,3), 4L) == rlong(16,81));
+            assertTrue(pow(rlong(2,3), 9L) == rlong(512,19683));
+            assertTrue(pow(rlong(1,4), 10L) == rlong(1,1048576));
+            assertTrue(pow(rlong(3,7), 5L) == rlong(243,16807));
+            assertTrue(pow(rlong(3,7), -5L) == rlong(16807,243));
+            assertTrue(pow(rlong(3,4), -11L) == rlong(4194304,177147));
 
 	    assertTrue(abs(rlong(-2,3)) == rlong(2,3));
 	    assertTrue(abs(rlong(2,3)) == rlong(2,3));

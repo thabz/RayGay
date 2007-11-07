@@ -432,6 +432,8 @@ void test_math() {
     assert_eval(s, L"(expt -3 0)" , L"1");
     assert_eval(s, L"(expt 2 -2)" , L"1/4");
     assert_eval(s, L"(expt 3 -5)" , L"1/243");
+    assert_eval(s, L"(expt 3 -11)" , L"1/177147");
+    assert_eval(s, L"(expt 4 -12)" , L"1/16777216");
     assert_eval(s, L"(expt -1 -256)" , L"1");
     assert_eval(s, L"(expt -1 -255)" , L"-1");
     assert_eval(s, L"(expt 1/3 -3)" , L"27");
@@ -968,9 +970,10 @@ void test_string() {
     assert_eval(s, L"(string->number \".2e2\")", L"20.0");
     assert_eval(s, L"(string->number \"8e+3\")", L"8000.0");
     assert_eval(s, L"(string->number \"8f3\")", L"8000.0");
-    assert_fail(s, L"(string->number \"#xffffffffffffffffffffff\")");
+//    assert_fail(s, L"(string->number \"#xffffffffffffffffffffff\")");
     assert_eval(s, L"(string->number \"1.1000000000000000000000001\")", L"1.1");
     assert_eval(s, L"(string->number \"1.0000000000000000000000001\")", L"1.0");
+    assert_eval(s, L"(< 3.13 (string->number \"3.1415926535897932384626433832795029\") 3.15)", L"#t");
     assert_eval(s, L"(string->number \"#xff.10\")", L"#f");
     assert_eval(s, L"(string->number \"#xffs10\")", L"#f");
     assert_eval(s, L"(string->number \"1/2\")", L"1/2");

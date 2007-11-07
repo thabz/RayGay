@@ -350,21 +350,20 @@ SchemeObject* s_log(SchemeObject* n) {
 }
 
 // Returns a^b
-// TODO: Look at the template std::power<N,I>(N,I). It's an SGI extension, but hey.
 SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
     if (a->type() == SchemeObject::INTEGER_NUMBER && b->type() == SchemeObject::INTEGER_NUMBER) {
-        long ai = scm2int(a);    
         long bi = scm2int(b);
-        long iter = labs(bi);    
-
         if (bi == 0) return S_ONE;
 
-        // The following algorithm while slow, is OK for the 
-	// relative small long values that b can hold without
-	// we overflowing anyway.
-        long result = 1;
-        while (iter-- > 0) {
-            result *= ai;        
+        long iter = labs(bi);    
+        long ai = scm2int(a);    
+        long result = iter % 2 ? ai : 1;
+        
+        while (iter >>= 1) {
+            ai *= ai;        
+            if (iter % 2) {
+                result *= ai;    
+            }
         }
         if (bi > 0) {
             return int2scm(result);
@@ -1141,12 +1140,12 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     }
     
     string digits = extractDigits(s, offset, radix);
-    long t;
+    long long t;
     if (digits.size() == 0) {
         t = 0;   
     } else {
         errno = 0;    
-        t = strtol(digits.c_str(), NULL, radix);
+        t = strtoll(digits.c_str(), NULL, radix);
         if (errno == ERANGE) {
             // TODO: Create a bigint
             return S_FALSE;        
@@ -1187,7 +1186,6 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         }
     }
     
-    
     double df = 0;
     string fraction;
     if (s[offset] == L'.' && radix == 10) {
@@ -1197,15 +1195,18 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
             // "." is not a number        
             return S_FALSE;        
         }
+        
+        int longlong_digits10 = numeric_limits<long long>::digits10;
+        string clipped_fraction = fraction.substr(0,std::min(longlong_digits10,int(fraction.size())));
         errno = 0;    
-        long f = strtol(fraction.c_str(), NULL, 10);
+        long long f = strtoll(clipped_fraction.c_str(), NULL, 10);
         if (errno == ERANGE) {
             // TODO: Clip fraction to the possible precision.        
             // throw scheme_exception(L"Number out of range"); 
             return S_FALSE;
                    
         }
-        df = double(f) / pow(10.0, double(fraction.size()));
+        df = double(f) / pow(10.0, double(clipped_fraction.size()));
         offset += fraction.size();
     }
     if (offset >= s.size()) {
@@ -1280,12 +1281,8 @@ wstring i_number_2_string(SchemeObject* o, uint32_t radix) {
         return ss.str();
     } else if (type == SchemeObject::REAL_NUMBER) {
         double d = scm2double(o);
-        // Guile uses precision 15. We'll do the same.
-        // Comparing (* 4 (atan 1)) to the real digits of pi
-        // it looks like the precision of double is about 15 
-        // or 16 decimal digits.     
         ss << std::setbase(radix);
-       	ss << std::setprecision(15);
+       	ss << std::setprecision(numeric_limits<double>::digits10);
         ss << d;
         double i;
         // Append ".0" if d contains no decimal point.
