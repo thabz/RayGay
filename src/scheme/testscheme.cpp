@@ -962,10 +962,16 @@ void test_string() {
     assert_eval(s, L"(string->number \"#x100\")", L"256");
     assert_eval(s, L"(string->number \"#xff\")", L"255");
     assert_eval(s, L"(string->number \"#xFF\")", L"255");
+    assert_eval(s, L"(string->number \"#XFF\")", L"255");
+    assert_eval(s, L"(string->number \"#XffFF\")", L"65535");
     assert_eval(s, L"(string->number \"#b1000\")", L"8");
     assert_eval(s, L"(string->number \"#b11111111\")", L"255");
+    assert_eval(s, L"(string->number \"#B11111111\")", L"255");
     assert_eval(s, L"(string->number \"#o123\")", L"83");
     assert_eval(s, L"(string->number \"#o1000\")", L"512");
+    assert_eval(s, L"(string->number \"#O1000\")", L"512");
+    assert_eval(s, L"(string->number \"#d1000\")", L"1000");
+    assert_eval(s, L"(string->number \"#D1234\")", L"1234");
     assert_eval(s, L"(string->number \"20e3\")", L"20000.0");
     assert_eval(s, L"(string->number \"42e-2\")", L"0.42");
     assert_eval(s, L"(string->number \".2e2\")", L"20.0");

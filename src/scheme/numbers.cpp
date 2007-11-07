@@ -1103,15 +1103,21 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     if (s[offset] == L'#' && s.size() > offset+2) {
 	wchar_t prefix = s[offset+1];
 	switch(prefix) {
+	    case L'X' :        
             case L'x' : radix = 16;
 			break;
+	    case L'D' :        
             case L'd' : radix = 10;
 			break;
+	    case L'B' :        
             case L'b' : radix = 2;
 			break;
+	    case L'O' :        
             case L'o' : radix = 8;
 			break;
+	    case L'E' :        
 	    case L'e' :
+	    case L'I' :        
             case L'i' : break;
 	}
 	offset += 2;
