@@ -350,6 +350,7 @@ SchemeObject* s_log(SchemeObject* n) {
 }
 
 // Returns a^b
+// TODO: Look at the template std::power<N,I>(N,I). It's an SGI extension, but hey.
 SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
     if (a->type() == SchemeObject::INTEGER_NUMBER && b->type() == SchemeObject::INTEGER_NUMBER) {
         long ai = scm2int(a);    

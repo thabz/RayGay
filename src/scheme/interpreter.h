@@ -4,7 +4,7 @@
 
 #include "objects.h"
 #include "scheme.h"
-#include <setjmp.h>
+#include <csetjmp>
 #include <vector>
 #include <pthread.h>
 
