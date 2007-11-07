@@ -1235,8 +1235,17 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         e = esign * strtol(exponent.c_str(), NULL, 10);
         if (errno == ERANGE) {
             return S_FALSE;        
-            //throw scheme_exception(L"Number out of range");        
         }
+        if  (e < numeric_limits<double>::min_exponent10 ||
+             e > numeric_limits<double>::max_exponent10) {
+             return S_FALSE;     
+        }
+
+        if  (e < numeric_limits<double>::min_exponent10 ||
+             e > numeric_limits<double>::max_exponent10) {
+             return S_FALSE;     
+        }
+        
         offset += exponent.size();
     }
     if (offset >= s.size()) {
