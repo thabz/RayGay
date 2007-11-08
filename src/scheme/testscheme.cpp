@@ -642,21 +642,24 @@ void test_math() {
     assert_eval(s, L"(truncate 17/3)" , L"5");
     assert_eval(s, L"(truncate 16/3)" , L"5");
 
-    assert_eval(s, L"(modulo 13 4)" , L"1");
     assert_eval(s, L"(remainder 13 4)" , L"1");
-    assert_eval(s, L"(quotient 13 4)" , L"3");
-    assert_eval(s, L"(modulo -13 4)" , L"3");
-    assert_eval(s, L"(modulo -13 4.0)" , L"3.0");
     assert_eval(s, L"(remainder -13 4)" , L"-1");
+    assert_eval(s, L"(remainder -13 -4)" , L"-1");    
+    assert_eval(s, L"(remainder 13 -4)" , L"1");
+    assert_eval(s, L"(remainder -13 -4.0)" , L"-1.0");    
+    assert_eval(s, L"(remainder -1 -1)" , L"0");
+    assert_eval(s, L"(remainder -1 -1.0)" , L"0.0");
+    assert_eval(s, L"(remainder -1 1)" , L"0");
+    assert_eval(s, L"(quotient -13 -4)" , L"3");
+    assert_eval(s, L"(quotient 13 4)" , L"3");
     assert_eval(s, L"(quotient -13 4)" , L"-3");
     assert_eval(s, L"(quotient -13 4.0)" , L"-3.0");
-    assert_eval(s, L"(modulo 13 -4)" , L"-3");
-    assert_eval(s, L"(remainder 13 -4)" , L"1");
     assert_eval(s, L"(quotient 13 -4)" , L"-3");
+    assert_eval(s, L"(modulo -13 4)" , L"3");
+    assert_eval(s, L"(modulo -13 4.0)" , L"3.0");
+    assert_eval(s, L"(modulo 13 -4)" , L"-3");
     assert_eval(s, L"(modulo -13 -4)" , L"-1");
-    assert_eval(s, L"(remainder -13 -4)" , L"-1");    
-    assert_eval(s, L"(quotient -13 -4)" , L"3");
-    assert_eval(s, L"(remainder -13 -4.0)" , L"-1.0");    
+    assert_eval(s, L"(modulo 13 4)" , L"1");
     assert_eval(s, L"(gcd)" , L"0");
     assert_eval(s, L"(gcd 5)" , L"5");
     assert_eval(s, L"(gcd -4)" , L"4"); // Guile 1.8.1 gets this one wrong.
@@ -987,6 +990,22 @@ void test_string() {
     assert_eval(s, L"(string->number \"#xffs10\")", L"#f");
     assert_eval(s, L"(string->number \"1/2\")", L"1/2");
     assert_eval(s, L"(string->number \"-1/3\")", L"-1/3");
+    // Exactness
+    assert_eval(s, L"(string->number \"#i6/8\")", L"0.75");
+    assert_eval(s, L"(string->number \"#e1.2\")", L"6/5");
+    assert_eval(s, L"(string->number \"#i1.1\")", L"1.1");
+    assert_eval(s, L"(string->number \"#i1\")", L"1.0");
+    assert_eval(s, L"(string->number \"#i1/1\")", L"1.0");
+    assert_eval(s, L"(string->number \"#b#i100\")", L"4.0");
+    assert_eval(s, L"(string->number \"#x#x1\")",L"#f");
+    assert_eval(s, L"(string->number \"#e#e1\")",L"#f");
+    assert_eval(s, L"(string->number \"#e#i1\")",L"#f");
+    assert_eval(s, L"(string->number \"#x#e#x1\")",L"#f");
+    // Polar form
+    assert_eval(s, L"(string->number \"1@0\")", L"1.0");
+    assert_eval(s, L"(string->number \"1@+0\")", L"1.0");
+    assert_eval(s, L"(string->number \"1@-0\")", L"1.0");
+    
 //    assert_fail(s, L"(string->number \"1/0\")");
     assert_eval(s, L"(number->string 256)", L"\"256\"");
     assert_eval(s, L"(number->string 256 16)", L"\"100\"");
