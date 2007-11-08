@@ -11,25 +11,25 @@ using namespace std;
 #define MAXINT (~MININT) 
 #define INT_BITS 31
 
-int64_t BigInt::RADIX = (int64_t(1) << 31);
+int64_t bigint::RADIX = (int64_t(1) << 31);
 
-BigInt BigInt::_ZERO = BigInt(0);
-BigInt BigInt::_ONE = BigInt(1);
-BigInt BigInt::_TWO = BigInt(2);
+bigint bigint::_ZERO = bigint(0);
+bigint bigint::_ONE = bigint(1);
+bigint bigint::_TWO = bigint(2);
 
-const BigInt& BigInt::ONE = _ONE;
-const BigInt& BigInt::TWO = _TWO;
-const BigInt& BigInt::ZERO = _ZERO;
+const bigint& bigint::ONE = _ONE;
+const bigint& bigint::TWO = _TWO;
+const bigint& bigint::ZERO = _ZERO;
 
-BigInt::~BigInt() {};
+bigint::~bigint() {};
 
-BigInt::BigInt(int32_t n) {
+bigint::bigint(int32_t n) {
     sign = 1;
     digits.push_back(n);
     normalize();
 }
 
-BigInt::BigInt(string str, uint radix) 
+bigint::bigint(string str, uint radix) 
 {
     if (radix >= 37 || radix == 0) throw invalid_argument("Invalid radix");
 
@@ -71,16 +71,16 @@ BigInt::BigInt(string str, uint radix)
     sign = is_zero() ? 1 : fsign;
 }
 
-BigInt::BigInt(const BigInt& o) {
+bigint::bigint(const bigint& o) {
     digits = o.digits;        
     sign = o.sign;
 }
 
 // TODO: This is very slow
-string BigInt::toString(uint radix) const {
+string bigint::toString(uint radix) const {
     char chars[37] = "0123456789abcdefghijklmnopqrstuvwxyz";        
     if (radix >= 37 || radix == 0) throw invalid_argument("Invalid radix");
-    BigInt b = (*this).abs();
+    bigint b = (*this).abs();
     string s = "";
     while (!b.is_zero()) {
         int digit = b % radix;
@@ -94,16 +94,16 @@ string BigInt::toString(uint radix) const {
     return s;
 }
 
-bool BigInt::is_zero() const {
+bool bigint::is_zero() const {
     return digits.size() == 1 && digits[0] == 0;     
 }
 
-bool BigInt::is_one() const {
+bool bigint::is_one() const {
     return digits.size() == 1 && digits[0] == 1 && sign == 1;     
 }
 
 
-void BigInt::dump() const {
+void bigint::dump() const {
     cout << "Sign: " << sign << endl;        
     cout << "Digits: " << digits.size() << endl;
     for(uint i = 0; i < digits.size(); i++) {
@@ -111,7 +111,7 @@ void BigInt::dump() const {
     }
 }
 
-bool BigInt::operator==(const BigInt& o) const {
+bool bigint::operator==(const bigint& o) const {
     if (digits.size() != o.digits.size() || sign != o.sign) {
         return false;            
     }        
@@ -121,18 +121,18 @@ bool BigInt::operator==(const BigInt& o) const {
     return true;
 }
 
-bool BigInt::operator!=(const BigInt& o) const {
+bool bigint::operator!=(const bigint& o) const {
     return !(*this == o);        
 }
 
-BigInt BigInt::operator+(const BigInt &v) const {
-    BigInt r = *this;
+bigint bigint::operator+(const bigint &v) const {
+    bigint r = *this;
     r += v;
     return r;
 }
 
-BigInt BigInt::operator+(int32_t n) const {
-    BigInt r = *this;    
+bigint bigint::operator+(int32_t n) const {
+    bigint r = *this;    
     if (r.sign == 1) {
         r.digits[0] += n;    
     } else {
@@ -142,7 +142,7 @@ BigInt BigInt::operator+(int32_t n) const {
     return r;
 }
 
-BigInt& BigInt::operator+=(int32_t n) {
+bigint& bigint::operator+=(int32_t n) {
     if (sign == 1) {
         digits[0] += n;    
     } else {
@@ -152,7 +152,7 @@ BigInt& BigInt::operator+=(int32_t n) {
     return *this;
 }
 
-BigInt& BigInt::operator+=(const BigInt &v) {
+bigint& bigint::operator+=(const bigint &v) {
     resize(max(digits.size(), v.digits.size()));
     for(uint i = 0; i < digits.size(); i++) {
         if (sign == v.sign) {
@@ -166,8 +166,8 @@ BigInt& BigInt::operator+=(const BigInt &v) {
 }
 
 
-BigInt BigInt::operator-(const BigInt &v) const {
-    BigInt r = *this;
+bigint bigint::operator-(const bigint &v) const {
+    bigint r = *this;
     r.resize(max(r.digits.size(), v.digits.size()));
     for(uint i = 0; i < r.digits.size(); i++) {
         if (r.sign == v.sign) {
@@ -180,8 +180,8 @@ BigInt BigInt::operator-(const BigInt &v) const {
     return r;
 }
 
-BigInt BigInt::operator-(int32_t n) const {
-    BigInt r = *this;    
+bigint bigint::operator-(int32_t n) const {
+    bigint r = *this;    
     if (r.sign == 1) {
         r.digits[0] -= n;    
     } else {
@@ -191,13 +191,13 @@ BigInt BigInt::operator-(int32_t n) const {
     return r;        
 }
 
-BigInt BigInt::operator-() const {
-    BigInt r = *this;    
+bigint bigint::operator-() const {
+    bigint r = *this;    
     r.sign = -r.sign;
     return r;     
 }
 
-BigInt& BigInt::operator-=(int32_t n) {
+bigint& bigint::operator-=(int32_t n) {
     if (sign == 1) {
         digits[0] -= n;    
     } else {
@@ -207,7 +207,7 @@ BigInt& BigInt::operator-=(int32_t n) {
     return *this;
 }
 
-BigInt& BigInt::operator-=(const BigInt &v) {
+bigint& bigint::operator-=(const bigint &v) {
     resize(max(digits.size(), v.digits.size()));
     for(uint i = 0; i < digits.size(); i++) {
         if (sign == v.sign) {
@@ -220,9 +220,9 @@ BigInt& BigInt::operator-=(const BigInt &v) {
     return *this;
 }
 
-BigInt BigInt::operator*(const BigInt &o) const 
+bigint bigint::operator*(const bigint &o) const 
 {
-    BigInt r = ZERO;
+    bigint r = ZERO;
 
     int size = o.digits.size() + digits.size();
     r.resize(size);
@@ -238,9 +238,9 @@ BigInt BigInt::operator*(const BigInt &o) const
     return r;
 }
 
-BigInt BigInt::operator*(int32_t n) const 
+bigint bigint::operator*(int32_t n) const 
 {
-    BigInt r = *this;    
+    bigint r = *this;    
 
     if (n < 0) {
         n = -n;    
@@ -253,7 +253,7 @@ BigInt BigInt::operator*(int32_t n) const
     return r;
 }
 
-BigInt& BigInt::operator*=(int32_t n) {
+bigint& bigint::operator*=(int32_t n) {
     if (n < 0) {
         n = -n;    
         sign = -sign;
@@ -265,9 +265,9 @@ BigInt& BigInt::operator*=(int32_t n) {
     return *this;
 }
 
-BigInt BigInt::operator/(int32_t n) const 
+bigint bigint::operator/(int32_t n) const 
 {
-    BigInt s = *this;
+    bigint s = *this;
     if (n == 0) throw range_error("Division by zero");
     if (n < 0) {
         n = -n;    
@@ -284,7 +284,7 @@ BigInt BigInt::operator/(int32_t n) const
 }
 
 /*
-BigInt BigInt::operator/(const BigInt &y) const 
+bigint bigint::operator/(const bigint &y) const 
 {
     uint n = digits.size();
     uint t = y.digits.size();
@@ -297,10 +297,10 @@ BigInt BigInt::operator/(const BigInt &y) const
     // We could bail out quickly if o == 1 (return this) 
     // but I don't think the cost of the comparison makes 
     // it worthwhile.
-    BigInt x = *this;
+    bigint x = *this;
 
-    BigInt q;
-    BigInt r;
+    bigint q;
+    bigint r;
     q.resize(n-t+1);
     r.resize(t);
 }
@@ -308,32 +308,32 @@ BigInt BigInt::operator/(const BigInt &y) const
 
 /*
 // See http://fox.wikis.com/wc.dll?Wiki~MultiprecisionDivision~VFP
-BigInt BigInt::operator/(const BigInt &b) const {
+bigint bigint::operator/(const bigint &b) const {
     
     if (b.digits.size() == 1) {
         return *this / (b.sign * b.digits[0]);    
     }        
         
-    BigInt quotient = BigInt::ZERO;
-    BigInt newdividend = *this;
-    BigInt divisor = b;
-    BigInt offset = BigInt::ZERO;
+    bigint quotient = bigint::ZERO;
+    bigint newdividend = *this;
+    bigint divisor = b;
+    bigint offset = bigint::ZERO;
     
     while(newdividend >= divisor) {
         int diffdigits = newdividend.digits.size() - divisor.digits.size();
         if (diffdigits > 0) {
             if (newdividend.digits[newdividend.digits.size()-1] > divisor.digits[divisor.digits.size()-1]) {
-                offset = BigInt::ZERO;
+                offset = bigint::ZERO;
                 offset.resize(diffdigits+1);
                 offset.digits[diffdigits] = 1;
-                BigInt newdivisor = divisor * offset;
+                bigint newdivisor = divisor * offset;
                 newdividend = newdividend - newdivisor;
                 quotient += offset;
             } else {
-                offset = BigInt::ZERO;
+                offset = bigint::ZERO;
                 offset.resize(diffdigits);
                 offset.digits[diffdigits-1] = 1;
-                BigInt newdivisor = divisor * offset;
+                bigint newdivisor = divisor * offset;
                 newdividend = newdividend - newdivisor;
                 quotient += offset;
             }
@@ -348,16 +348,16 @@ BigInt BigInt::operator/(const BigInt &b) const {
 */
 
 // Donald Knuth, The Art of Computer Programming, Volume 2, 2nd ed., 1981, pp. 257-258.
-BigInt BigInt::operator/(const BigInt &denom) const {
-    BigInt q = ZERO;
+bigint bigint::operator/(const bigint &denom) const {
+    bigint q = ZERO;
     q.resize(this->digits.size() - denom.size() + 1);
     q.sign = this->sign * denom.sign;
     int64_t q_hat; 
     int qpos = q.size()-1;
     int64_t d = RADIX / (denom.digits[denom.size()-1]+1);
 
-    BigInt u = *this;
-    BigInt v = denom;
+    bigint u = *this;
+    bigint v = denom;
     int64_t start = u.digits.size();
     u *= d;
     v *= d;
@@ -391,7 +391,7 @@ BigInt BigInt::operator/(const BigInt &denom) const {
               q_hat*v.digits[v.digits.size()-1])*RADIX + temp)
 	    q_hat--;
 
-        BigInt work = ONE;
+        bigint work = ONE;
         //work = v*q_hat << u.digits().size()-1;
 
 	while(start-stop < work.digits.size()) {
@@ -435,13 +435,13 @@ BigInt BigInt::operator/(const BigInt &denom) const {
 
 /*
 // Donald Knuth, The Art of Computer Programming, Volume 2, 2nd ed., 1981, pp. 257-258.
-BigInt BigInt::operator/(const BigInt &divisor) const {
-    BigInt u = *this;
-    BigInt v = divisor;
+bigint bigint::operator/(const bigint &divisor) const {
+    bigint u = *this;
+    bigint v = divisor;
     int n = v.digits.size();
     int m = u.digits.size() - n;
 
-    BigInt q = 0;
+    bigint q = 0;
     q.resize(m+1);
     
     // D1 (normalize)
@@ -478,7 +478,7 @@ BigInt BigInt::operator/(const BigInt &divisor) const {
 }
 */
 
-int32_t BigInt::operator%(int32_t n) const 
+int32_t bigint::operator%(int32_t n) const 
 {
     if (n == 0) throw range_error("Division by zero");
     if (n < 0) {
@@ -497,7 +497,7 @@ int32_t BigInt::operator%(int32_t n) const
 }
 
 
-int BigInt::compare(const BigInt& b1, const BigInt& b2) {
+int bigint::compare(const bigint& b1, const bigint& b2) {
     if (b1.sign > b2.sign) {
         return 1;       
     } else if (b1.sign < b2.sign) {
@@ -519,23 +519,23 @@ int BigInt::compare(const BigInt& b1, const BigInt& b2) {
     }    
 }
 
-bool BigInt::operator<(const BigInt& o) const {
-    int c = BigInt::compare(*this, o);        
+bool bigint::operator<(const bigint& o) const {
+    int c = bigint::compare(*this, o);        
     return c == -1;
 }
 
-bool BigInt::operator>(const BigInt& o) const {
-    int c = BigInt::compare(*this, o);        
+bool bigint::operator>(const bigint& o) const {
+    int c = bigint::compare(*this, o);        
     return c == 1;
 }
 
-bool BigInt::operator<=(const BigInt& o) const {
-    int c = BigInt::compare(*this, o);
+bool bigint::operator<=(const bigint& o) const {
+    int c = bigint::compare(*this, o);
     return c == -1 || c == 0;
 }
 
-bool BigInt::operator>=(const BigInt& o) const {
-    int c = BigInt::compare(*this, o);        
+bool bigint::operator>=(const bigint& o) const {
+    int c = bigint::compare(*this, o);        
     return c == 1 || c == 0;
 }
 
@@ -545,7 +545,7 @@ bool BigInt::operator>=(const BigInt& o) const {
 // 2) Sign 1 or -1
 // 3) Leading zero digits are removed
 // 4) Fix sign for zero, ie. eliminate -0.
-void BigInt::normalize() 
+void bigint::normalize() 
 {
     for(uint i = 0; i < digits.size()-1; i++) {
         if (digits[i] < 0) {
@@ -590,12 +590,12 @@ void BigInt::normalize()
 }
 
 // To get a specific number of digits we pad with zeroes on the left
-void BigInt::resize(int32_t new_digits_num) {
+void bigint::resize(int32_t new_digits_num) {
     assert(new_digits_num > 0);
     digits.resize(new_digits_num, 0);        
 }
 
-int BigInt::sizeInBits() const {
+int bigint::sizeInBits() const {
     int c = (digits.size()-1)*INT_BITS;
     int64_t n = digits[digits.size()-1];
     while(n != 0) {
@@ -606,13 +606,13 @@ int BigInt::sizeInBits() const {
 }
 
 // TODO: Respect when the ostream is in dec or hex mode
-ostream & operator<<(ostream &os, const BigInt &b) {
+ostream & operator<<(ostream &os, const bigint &b) {
     os << b.toString();
     return os;
 }
 
-BigInt BigInt::times_two() const {
-    BigInt r = *this;
+bigint bigint::times_two() const {
+    bigint r = *this;
     for(uint i = r.size()-1; i >= 0; i--) {
         r.digits[i] <<= 1;
         if (r.digits[i] >=  RADIX) {
@@ -627,45 +627,45 @@ BigInt BigInt::times_two() const {
 }
 
 // TODO: Optimize this. Squaring can be done with half as many mults.
-BigInt BigInt::square() const {
+bigint bigint::square() const {
     return *this * *this;        
 }
 
 // Returns this raised to the power p
 // TODO: This could be done faster by replacing recursion with a loop and by just using one bigint modified inplace, ie. *= instead of *.
-BigInt BigInt::expt(int power) const {
+bigint bigint::expt(int power) const {
     if (power == 0) {
         return ONE;    
     } else if (power == 1 || this->is_one()) {
         return *this;    
     }        
     if (power % 2 == 0) {
-        BigInt r = this->expt(power/2);
+        bigint r = this->expt(power/2);
         return r.square();
     } else {
-        BigInt r = this->expt(power-1);
+        bigint r = this->expt(power-1);
         return *this * r;
     }        
 }
 
 // Newton's method
-BigInt BigInt::sqrt() const {
+bigint bigint::sqrt() const {
     if (sign == -1) {
         throw range_error("Imaginary result");
     }
     if (is_zero()) {
-        return BigInt::ZERO;    
+        return bigint::ZERO;    
     }
     if (is_one()) {
-        return BigInt::ONE;    
+        return bigint::ONE;    
     }
     
     // A good initial guess is the square root of the most significant digit times the square root of its radix part.
-    BigInt x_1 = ONE * 100;
+    bigint x_1 = ONE * 100;
     
     while(true) {
-        BigInt x_2 = (*this) / x_1;
-        BigInt diff =  x_2 - x_1;
+        bigint x_2 = (*this) / x_1;
+        bigint diff =  x_2 - x_1;
         if (diff.is_zero()) {
             return x_1;         
         }
@@ -677,8 +677,8 @@ BigInt BigInt::sqrt() const {
     }
 }
 
-BigInt BigInt::abs() const {
-    BigInt r = *this;    
+bigint bigint::abs() const {
+    bigint r = *this;    
     r.sign = 1;
     return r;    
 }
