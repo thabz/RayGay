@@ -568,7 +568,11 @@ void test_math() {
     assert_eval(s, L"(exact->inexact (inexact->exact 0.25))", L"0.25");
     assert_eval(s, L"(exact->inexact (inexact->exact 1.7))", L"1.7");
     assert_eval(s, L"(exact->inexact (inexact->exact 0.2))", L"0.2");
+    assert_eval(s, L"(exact->inexact (inexact->exact -0.2))", L"-0.2");
     assert_eval(s, L"(exact->inexact (inexact->exact 4.0))", L"4.0");
+    assert_eval(s, L"(exact->inexact (inexact->exact 11.0))", L"11.0");
+    assert_eval(s, L"(exact->inexact (inexact->exact -4.0))", L"-4.0");
+    assert_eval(s, L"(exact->inexact (inexact->exact 1234.5678))", L"1234.5678");
     
     assert_eval(s, L"(complex? 2)" , L"#t");
     assert_eval(s, L"(complex? 'a)" , L"#f");
@@ -1256,6 +1260,9 @@ void test_eval() {
 
 // Throw insane forms at the interpreter. It shouldn't crash but report errors back.
 void test_error_handling() {
+    Scheme* s = new Scheme();
+    assert_eval(s, L"(inexact->exact 4.0)", L"4");
+        
 //    wchar_t* procs[] = {L"let", L"let*", L"do", L"if", L"and", L"for-each", L"+", L"list"};        
 //    char* args[] = {"1", L"#f", L"()", L"((x 10))", L"(())", L"(() x)", L"((#f)x)", L"(x 1)", L"(x 1 20)", L"1 2 3"};
 }

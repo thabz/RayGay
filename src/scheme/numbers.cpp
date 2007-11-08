@@ -1039,34 +1039,27 @@ SchemeObject* s_inexact_2_exact(SchemeObject* n) {
     if (n->type() == SchemeObject::REAL_NUMBER || n->type() == SchemeObject::COMPLEX_NUMBER) {
         // Asserting that doubles are encoded as per the IEEEE 754 
         // standard, also known as IEC 559.
-        //cout << endl << "Decoding n = " << scm2double(n) << endl; 
         assert(numeric_limits<double>::is_iec559);
         uint64_t d;
         *((double*)(&d)) = scm2double(n);
-        //cout << "d = " << hex << d << endl;
         int32_t sign = ((d >> 63) & 1) ? -1 : 1;
-        int64_t exponent = ((d >> 52) & 0x03ff);
+        int64_t exponent = ((d >> 52) & 0x07ff);
         uint64_t bit53 = 1;
         bit53 <<= 52;
         uint64_t mantissa = d & (bit53 - 1);
-        //cout << "Exponent before: " << exponent << endl;
         if (exponent != 0 && exponent < 2047) {
             mantissa |= bit53;
             exponent -= 1023;
         } else {
             exponent = -1024;        
         }
-        
-        //cout << "Sign: " << sign << endl;
-        //cout << "Exponent: " << exponent << endl;
-        //cout << "Mantissa: " << mantissa << endl;
-        //cout << "Yir 1" << endl;
+        /*
+        cout << "Sign: " << hex << sign << endl;
+        cout << "Exponent: " << exponent << endl;
+        cout << "Mantissa: " << mantissa << endl;
+        */
         rational_type result = rational_type(sign * mantissa, bit53);
-        //cout << "Yir 2" << endl;
         result *= pow(rational_type(2), exponent);
-        //cout << "Done decoding" << endl;
-        //cout << "Result hex: " << hex << result << endl;
-        //cout << "Normalized dec: " << dec << result.normalized() << endl;
         return rational2scm(result);
     } else {
         return n;    
