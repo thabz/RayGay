@@ -1127,6 +1127,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     bool radix_prefix_seen = false;
     bool exactness_prefix_seen = false;
     bool force_inexact = false;
+    bool force_exact = false;
     while (s[offset] == L'#' && s.size() > offset+2) {
 	    wchar_t c = ::towlower(s[offset+1]);
 	    if (!radix_prefix_seen && (c == 'x' || c == 'd' || c == 'b' || c == 'o')) {
@@ -1152,7 +1153,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         } else if (!exactness_prefix_seen && (c == 'e' || c == 'i')) {
 	        switch(c) {
                 case L'E' :        
-                case L'e' : force_inexact = false;
+                case L'e' : force_exact = true;
                             exactness_prefix_seen = true;
                             break;
      	        case L'I' :        
@@ -1182,7 +1183,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     if (s[offset] == L'i' && sign_found == true) {
         offset++;
         if (offset >= s.size()) {
-            return SchemeObject::createComplexNumber(std::complex<double>(0.0,sign));        
+            return complex2scm(std::complex<double>(0.0,sign));        
         } else {
             return S_FALSE;        
         }
@@ -1204,17 +1205,17 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
 
     offset += digits.size();
     if (offset >= s.size()) {
-	// Done. No . or e. We have an integer
+	    // Done. No . or e. We have an integer
         if (t > numeric_limits<long>::max() ||
             t < numeric_limits<long>::min()) {
             // TODO: Create a bigint            
             return S_FALSE;            
         } else {
-	    if (force_inexact && exactness_prefix_seen) {
-                return SchemeObject::createRealNumber(double(sign*t));
-	    } else {
-                return SchemeObject::createIntegerNumber(sign*t);
-	    }
+	        if (force_inexact) {
+                    return double2scm(double(sign*t));
+	        } else {
+                    return int2scm(sign*t);
+	        }
         }
     }
     
@@ -1237,11 +1238,11 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
 		        // TODO: return inexact +inf or -inf as per R^6RS
                 return S_FALSE;        
             }        
-	        rational_type rational(sign*t, d);
-	        if (force_inexact && exactness_prefix_seen) {
-                   return SchemeObject::createRealNumber(rational.real());
+	        rational_type result(sign*t, d);
+	        if (force_inexact) {
+               return double2scm(result.real());
 	        } else {
-                   return SchemeObject::createRationalNumber(rational.normalized());
+               return rational2scm(result.normalized());
 	        }
         } else {
             return S_FALSE;        
@@ -1263,8 +1264,6 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         errno = 0;    
         long long f = strtoll(clipped_fraction.c_str(), NULL, 10);
         if (errno == ERANGE) {
-            // TODO: Clip fraction to the possible precision.        
-            // throw scheme_exception(L"Number out of range"); 
             return S_FALSE;
                    
         }
@@ -1272,8 +1271,9 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         offset += fraction.size();
     }
     if (offset >= s.size()) {
-	// Done. No e
-        return SchemeObject::createRealNumber(sign*(t + df));
+	    // Done. No e
+        double result = sign * (t + df);
+        return force_exact ? i_double_2_exact(result) : double2scm(result);
     }
     
     long e = 0;
@@ -1311,16 +1311,30 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         offset += exponent.size();
     }
     if (offset >= s.size()) {
-        return SchemeObject::createRealNumber(sign*(t + df) * pow(10,double(e)));
+        double result = sign*(t + df) * pow(10,double(e));
+        return force_exact ? i_double_2_exact(result) : double2scm(result);
     }
     
     if (s[offset] == L'i' && (digits.size() != 0 || fraction.size() != 0) && sign_found) {
         offset++;    
         if (offset >= s.size()) {
             std::complex<double> z(0, sign*(t + df) * pow(10,double(e)));    
-            return SchemeObject::createComplexNumber(z);    
+            return complex2scm(z);
         } else {
             return S_FALSE;        
+        }
+    }
+    
+    if (s[offset] == L'@') {
+        offset++;
+        SchemeObject* s_angle = i_string_2_number(s, radix, offset);
+        if (s_angle->type() != SchemeObject::COMPLEX_NUMBER) {
+            double angle = s_angle->realValue();
+            double magnitude = sign*(t + df) * pow(10,double(e));
+            std::complex<double> z = std::polar(magnitude, angle);
+            return complex2scm(z);
+        } else {
+            return S_FALSE;
         }
     }
     
