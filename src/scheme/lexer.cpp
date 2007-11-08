@@ -10,7 +10,7 @@ Lexer::Lexer() {
 }
 
 int char_names_num = 2;
-char* char_names[] = {"space","newline","linefeed","alarm"};
+char* char_names[] = {"space", "newline", "linefeed", "alarm"};
 wchar_t char_values[] = {0x20, 0xa, 0xa, 0x7};
 
 Lexer::Token Lexer::nextToken(wistream* is) {
