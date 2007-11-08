@@ -1102,11 +1102,12 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     }
     bool radix_prefix_seen = false;
     bool exactness_prefix_seen = false;
-    bool force_exact = false;
+    bool force_inexact = false;
     while (s[offset] == L'#' && s.size() > offset+2) {
-	wchar_t prefix = s[offset+1];
-	if (!radix_prefix_seen) {
-	    switch(prefix) {
+	wchar_t c = ::towlower(s[offset+1]);
+	if (!radix_prefix_seen && (c == 'x' || c == 'd' || 
+		                   c == 'b' || c == 'o')) {
+	    switch(c) {
 	        case L'X' :        
                 case L'x' : radix = 16;
                             radix_prefix_seen = true;
@@ -1124,19 +1125,22 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
                             radix_prefix_seen = true;
 	    		    break;
 	    }
-        } else if (!exactness_prefix_seen) {
-	    switch(prefix) {
+	    offset += 2;
+        } else if (!exactness_prefix_seen && (c == 'e' || c == 'i')) {
+	    switch(c) {
     	        case L'E' :        
-                case L'e' : force_exact = true;
+                case L'e' : force_inexact = false;
                             exactness_prefix_seen = true;
                             break;
      	        case L'I' :        
-                case L'i' : force_exact = false;
+                case L'i' : force_inexact = true;
                             exactness_prefix_seen = true;
                             break;
             }
-        }
-	offset += 2;
+	    offset += 2;
+        } else {
+	    return S_FALSE;
+	}
     } 
     
     bool sign_found = false;
@@ -1183,7 +1187,11 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
             // TODO: Create a bigint            
             return S_FALSE;            
         } else {
-            return SchemeObject::createIntegerNumber(sign*t);
+	    if (force_inexact && exactness_prefix_seen) {
+                return SchemeObject::createRealNumber(double(sign*t));
+	    } else {
+                return SchemeObject::createIntegerNumber(sign*t);
+	    }
         }
     }
     
@@ -1207,7 +1215,11 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
                 return S_FALSE;        
             }        
 	    rational_type rational(sign*t, d);
-            return SchemeObject::createRationalNumber(rational.normalized());
+	    if (force_inexact && exactness_prefix_seen) {
+                return SchemeObject::createRealNumber(rational.real());
+	    } else {
+                return SchemeObject::createRationalNumber(rational.normalized());
+	    }
         } else {
             return S_FALSE;        
         }

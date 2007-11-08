@@ -996,6 +996,7 @@ void test_string() {
     assert_eval(s, L"(string->number \"#i1.1\")", L"1.1");
     assert_eval(s, L"(string->number \"#i1\")", L"1.0");
     assert_eval(s, L"(string->number \"#i1/1\")", L"1.0");
+    assert_eval(s, L"(string->number \"#i1/2\")", L"0.5");
     assert_eval(s, L"(string->number \"#b#i100\")", L"4.0");
     assert_eval(s, L"(string->number \"#x#x1\")",L"#f");
     assert_eval(s, L"(string->number \"#e#e1\")",L"#f");
