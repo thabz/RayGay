@@ -399,6 +399,9 @@ void test_math() {
     assert_eval(s, L"(/ 10 2)" , L"5");
     assert_eval(s, L"(/ 10 2 3)" , L"5/3");
     assert_eval(s, L"(/ 3 4 5)" , L"3/20");
+    assert_eval(s, L"(/ 25 3+4i)" , L"3.0-4.0i");
+    assert_eval(s, L"(/ 25 4+3i)" , L"4.0-3.0i");
+    assert_eval(s, L"(/ 4+3i)" , L"0.16-0.12i");
     assert_eval(s, L"(* 2 3 4)" , L"24");
     assert_eval(s, L"(*)" , L"1");
     assert_eval(s, L"(* 1/3 3 4/7)" , L"4/7");
@@ -685,6 +688,9 @@ void test_math() {
     assert_eval(s, L"(denominator 0)", L"1");
     assert_eval(s, L"(sqrt 9)", L"3.0");
     assert_eval(s, L"(sqrt -9)", L"0.0+3.0i");
+    assert_fail(s, L"(sqrt)");
+    assert_fail(s, L"(sqrt 'a)");
+    assert_fail(s, L"(sqrt 123 456)");
     assert_eval(s, L"(abs -1)", L"1");
     assert_eval(s, L"(abs -2.0)", L"2.0");
     assert_eval(s, L"(abs 2.0)", L"2.0");
