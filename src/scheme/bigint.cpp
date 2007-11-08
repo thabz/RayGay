@@ -127,15 +127,7 @@ bool BigInt::operator!=(const BigInt& o) const {
 
 BigInt BigInt::operator+(const BigInt &v) const {
     BigInt r = *this;
-    r.resize(max(r.digits.size(), v.digits.size()));
-    for(uint i = 0; i < r.digits.size(); i++) {
-        if (r.sign == v.sign) {
-            r.digits[i] += v.digits[i];        
-        } else {
-            r.digits[i] -= v.digits[i];        
-        }
-    }
-    r.normalize();
+    r += v;
     return r;
 }
 

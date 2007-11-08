@@ -1067,7 +1067,7 @@ SchemeObject* i_double_2_exact(double n) {
 SchemeObject* s_inexact_2_exact(SchemeObject* n) {
     assert_arg_type(L"inexact->exact", 1, s_real_p, n);
     if (n->type() == SchemeObject::REAL_NUMBER || n->type() == SchemeObject::COMPLEX_NUMBER) {
-        return double_2_exact(scm2double(n));
+        return i_double_2_exact(scm2double(n));
     } else {
         return n;    
     }
