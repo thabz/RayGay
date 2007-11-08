@@ -485,6 +485,23 @@ SchemeObject* s_truncate(SchemeObject* n) {
     }        
 }
 
+// http://groups.google.dk/group/sci.math/msg/f62e0bfcd24264f0?
+//
+// An algorithm which does give the correct answer reasonably quickly
+// is as follows: First, find out whether there is an integer within y
+// of x; if so, the answer will be an integer, and it is easy to find out
+// which one.  Otherwise, let p1 and p2 be the integers on either side
+// of x, and let q1 := q2 := 1, so that p1/q1 < x < p2/q2.  Now repeat
+// the following as many times as necessary: Let p3 := p1+p2 and q3 := q1+q2.
+// If p3/q3 is within y of x, then it is the correct answer.  Otherwise,
+// if p3/q3 < x, let p1 := p3 and q1 := q3; if p3/q3 > x, let p2 := p3 and
+// q2 := q3.  This gives a smaller interval (p1/q1,p2/q2) still containing x.
+
+SchemeObject* s_rationalize(SchemeObject* x, SchemeObject* y) {
+    
+}
+
+
 SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type(L"quotient", 1, s_integer_p, n1);
     assert_arg_type(L"quotient", 2, s_integer_p, n2);
@@ -1190,7 +1207,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     }
     
     string digits = extractDigits(s, offset, radix);
-    long long t;
+    long long t = 0;
     if (digits.size() == 0) {
         t = 0;   
     } else {

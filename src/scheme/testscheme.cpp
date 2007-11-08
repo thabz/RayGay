@@ -370,6 +370,8 @@ void test_math() {
     assert_eval(s, L"-7/14" , L"-1/2");
     assert_eval(s, L"5/1" , L"5");
     assert_eval(s, L"-5/1" , L"-5");
+    assert_eval(s, L".1" , L"0.1");
+    assert_eval(s, L"-.1" , L"-0.1");
     assert_eval(s, L"(+)" , L"0");
     assert_eval(s, L"(+ 1 2 3)" , L"6");
     assert_eval(s, L"(+ 1 2 3.0)" , L"6.0");
@@ -582,14 +584,15 @@ void test_math() {
     assert_eval(s, L"(rational? 'a)" , L"#f");
     assert_eval(s, L"(real-part (make-rectangular 1.0 2.0))", L"1.0");
     assert_eval(s, L"(imag-part (make-rectangular 1.0 2.0))", L"2.0");
-    assert_eval(s, L"(eqv? (make-polar 10 2) 10@2)", L"#t");
-    assert_eval(s, L"(eqv? (make-polar 300 0) 300@0)", L"#t");
-    assert_eval(s, L"(eqv? (make-polar 20 -1) 20@-1)", L"#t");
     assert_eval(s, L"(make-rectangular 3.1 2.2)", L"3.1+2.2i");
     assert_eval(s, L"(make-rectangular 3.1 -2.2)", L"3.1-2.2i");
     assert_eval(s, L"(make-rectangular -1.0 -2.0)", L"-1.0-2.0i");
     assert_eval(s, L"(make-rectangular 4 5)", L"4.0+5.0i");
     assert_eval(s, L"(make-rectangular 4 0)", L"4.0");
+    assert_eval(s, L"(eqv? (make-polar 10 2) 10@2)", L"#t");
+    assert_eval(s, L"(eqv? (make-polar 300 0) 300@0)", L"#t");
+    assert_eval(s, L"(eqv? (make-polar 20 -1) 20@-1)", L"#t");
+    assert_eval(s, L"(make-polar -10 0)", L"-10.0");
     assert_eval(s, L"(real-part 3.0)", L"3.0");
     assert_eval(s, L"(imag-part 3.0)", L"0.0");
     assert_eval(s, L"(real-part 5)", L"5.0");
@@ -703,6 +706,7 @@ void test_math() {
     assert_eval(s, L"(denominator 0)", L"1");
     assert_eval(s, L"(sqrt 9)", L"3.0");
     assert_eval(s, L"(sqrt -9)", L"0.0+3.0i");
+    assert_eval(s, L"(sqrt -289)", L"0.0+17.0i");
     assert_fail(s, L"(sqrt)");
     assert_fail(s, L"(sqrt 'a)");
     assert_fail(s, L"(sqrt 123 456)");
@@ -1031,6 +1035,10 @@ void test_string() {
     assert_eval(s, L"(string->number  \"1@+i\")", L"#f");
     assert_eval(s, L"(string->number \"1@1+i\")", L"#f");
     assert_eval(s, L"(string->number \"1+i@1\")", L"#f");
+    // Simple .digits
+    assert_eval(s, L"(string->number \".1\")", L"0.1");
+    assert_eval(s, L"(string->number \"-.1\")", L"-0.1");
+    assert_eval(s, L"(string->number \".1+i\")", L"0.1+1.0i");
     
 //    assert_fail(s, L"(string->number \"1/0\")");
     assert_eval(s, L"(number->string 256)", L"\"256\"");

@@ -10,8 +10,8 @@ Lexer::Lexer() {
 }
 
 int char_names_num = 2;
-char* char_names[] = {"space","newline"};
-char char_values[] = {' ', '\n'};
+char* char_names[] = {"space","newline","linefeed","alarm"};
+wchar_t char_values[] = {0x20, 0xa, 0xa, 0x7};
 
 Lexer::Token Lexer::nextToken(wistream* is) {
     wchar_t n,c;
@@ -35,7 +35,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
         }
         if (c == L'\n') {
             curline++;
-	    continue;
+	        continue;
         }
         if (std::iswspace(c)) {
             // Skip whitespace
@@ -53,7 +53,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
         }
         
         // Support for multiline nested comments as specified in SRFI 30.
-	// Support for datum comments
+	    // Support for datum comments
         if (c == L'#') {
             int d = is->get();
             if (d == L'|') {
@@ -108,10 +108,10 @@ Lexer::Token Lexer::nextToken(wistream* is) {
             case L'#': 
                 n = is->get();
                 if ((n == L'f' || n == L't')) {
-		    boolean = (n == L't');
-		    return Lexer::BOOLEAN;
+		            boolean = (n == L't');
+		            return Lexer::BOOLEAN;
                 } else if (n == L'(') {
-		    return Lexer::HASH_OPEN_PAREN;           
+		            return Lexer::HASH_OPEN_PAREN;           
                 } else if (n == L'\\') {
                     for(int i = 0; i < char_names_num; i++) {
                         int j = 0;
@@ -151,68 +151,64 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                         return Lexer::ERROR;
                     }
                 } else {
-		    is->unget();
-		    break;
+		            is->unget();
+		            break;
                 }
             case L'.' :
                 c = is->get();
                 if ((std::iswspace(c))) {
                     return Lexer::PERIOD;
-                } else {
-                    is->unget();
-                    break;
                 }
+                is->unget();
+                break;
             case L'"':
                 str = L"";
                 while (!is->eof()) {
                     c = is->get();
-		    if (c == L'\\') {
-		        c = is->get();
+		            if (c == L'\\') {
+		                c = is->get();
                     } else if (c == L'"') {
                         break;
-		    }
-		    str += c;
+		            }
+		            str += c;
                 }
                 return Lexer::STRING;
         }
 
-	// Extract a wstring s until reaching a
-	// non-isSymbolChar() or is->eof() or is->fail()
-	// Return a number if i_string_2_number(s,10) succeeds
-	// otherwise return the wstring as a symbol
-
-	wstringstream ss;
-	ss << c;
+	    // Extract a wstring s until reaching a
+	    // non-isSymbolChar() or is->eof() or is->fail()
+	    // Return a number if i_string_2_number(s,10) succeeds
+	    // otherwise return the wstring as a symbol
+        
+	    wstringstream ss;
+	    ss << c;
         while(!is->eof()) {
             wchar_t e;
-	    e = is->get();
-	    if (e == -1 || is->eof()) {
-		break;
-	    }
-	    if (!isSymbolChar(e)) {
+	        e = is->get();
+	        if (e == -1 || is->eof()) {
+	    	    break;
+	        }
+	        if (!isSymbolChar(e)) {
                 is->unget();
-		break;
-	    }
-	    ss << e;
+	    	    break;
+	        }
+	        ss << e;
         }
-	str = ss.str();
+	    str = ss.str();
 
-	number = i_string_2_number(str,10);
-	if (number == S_FALSE) {
-	    return Lexer::SYMBOL; 
-	} else {
-	    return Lexer::NUMBER;
-	}
+	    number = i_string_2_number(str,10);
+	    if (number == S_FALSE) {
+	        return Lexer::SYMBOL; 
+	    } else {
+	        return Lexer::NUMBER;
+	    }
     }
     // TODO: Check out why the stream has failed and throw exception
     return is->eof() ? Lexer::END : Lexer::ERROR;
 }
 
 bool Lexer::isSymbolChar(wchar_t c) {
-    if (std::iswspace(c) || c == L')' || c == L'(' || c == L',' || c == L'#' || c == L'\'' || c == L'`') {
-	return false;
-    }
-    return true;
+    return !(std::iswspace(c) || c == L')' || c == L'(' || c == L',' || c == L'#' || c == L'\'' || c == L'`');
 }
 
 void Lexer::putBack(Token token) {
