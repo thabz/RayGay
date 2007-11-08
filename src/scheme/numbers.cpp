@@ -91,7 +91,7 @@ SchemeObject* s_plus(int num, SchemeStack::iterator stack) {
        
        rational_type result(0);
        for(int i = 0; i < num; i++) {
-	   result += args[i];
+	       result += args[i];
        }
        return rational2scm(result);
     }
@@ -146,7 +146,7 @@ SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
        
        // Using a/b - c/d = (ad - bc)/bd
        for(int i = 1; i < num; i++) {
-	   result -= args[i];
+	       result -= args[i];
        }
        return rational2scm(result);
     }        
@@ -377,7 +377,7 @@ SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
             return rational2scm(rational);        
         }
     } else if (a->type() == SchemeObject::RATIONAL_NUMBER && b->type() == SchemeObject::INTEGER_NUMBER) {
-	return rational2scm(pow(scm2rational(a), scm2int(b)));
+        return rational2scm(pow(scm2rational(a), scm2int(b)));
     } else {
         assert_arg_number_type(L"expt", 1, a);
         assert_arg_number_type(L"expt", 2, b);
@@ -448,7 +448,7 @@ SchemeObject* s_ceiling(SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return n;
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
-	return int2scm(ceil(scm2rational(n)));
+	    return int2scm(ceil(scm2rational(n)));
     } else {
         assert_arg_type(L"ceiling", 1, s_real_p, n);
         return double2scm(ceil(scm2double(n)));
@@ -460,7 +460,7 @@ SchemeObject* s_floor(SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return n;
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
-	return int2scm(floor(scm2rational(n)));
+	    return int2scm(floor(scm2rational(n)));
     } else {
         assert_arg_type(L"floor", 1, s_real_p, n);
         return double2scm(floor(scm2double(n)));
@@ -690,10 +690,10 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
 SchemeObject* s_numerator(SchemeObject* n) {
     assert_arg_type(L"numerator", 1, s_real_p, n);
     if (s_exact_p(n) == S_TRUE) {
-	return int2scm(scm2rational(n).normalized().numerator());
+	    return int2scm(scm2rational(n).normalized().numerator());
     } else {
         SchemeObject* z = s_inexact_2_exact(n);
-	rational_type::value_type l = z->rationalValue().normalized().numerator();
+	    rational_type::value_type l = z->rationalValue().normalized().numerator();
         return double2scm(double(l));
     }
 }
@@ -701,10 +701,10 @@ SchemeObject* s_numerator(SchemeObject* n) {
 SchemeObject* s_denominator(SchemeObject* n) {
     assert_arg_type(L"denominator", 1, s_real_p, n);
     if (s_exact_p(n) == S_TRUE) {
-	return int2scm(scm2rational(n).normalized().denominator());
+	    return int2scm(scm2rational(n).normalized().denominator());
     } else {
         SchemeObject* z = s_inexact_2_exact(n);
-	rational_type::value_type l = z->rationalValue().normalized().denominator();
+	    rational_type::value_type l = z->rationalValue().normalized().denominator();
         return double2scm(double(l));
     }
 }
@@ -808,28 +808,28 @@ SchemeObject* s_equal(int num, SchemeStack::iterator stack) {
         double args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i] != args[i-1]) return S_FALSE;
+ 	        if (args[i] != args[i-1]) return S_FALSE;
         }
 	return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
        long args[num];
        coerceNumbers(num,stack,args);
        for(int i = 1; i < num; i++) {
-	   if (args[i] != args[i-1]) return S_FALSE;
+	       if (args[i] != args[i-1]) return S_FALSE;
        }
        return S_TRUE;
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
        rational_type args[num];
        coerceNumbers(num,stack,args);
        for(int i = 1; i < num; i++) {
-	   if (args[i] != args[i-1]) return S_FALSE;
+	       if (args[i] != args[i-1]) return S_FALSE;
        }
        return S_TRUE;
     } else {
        std::complex<double> args[num];
        coerceNumbers(num,stack,args);
        for(int i = 1; i < num; i++) {
-	   if (args[i] != args[i-1]) return S_FALSE;
+	       if (args[i] != args[i-1]) return S_FALSE;
        }
        return S_TRUE;
     }
@@ -846,21 +846,21 @@ SchemeObject* s_less(int num, SchemeStack::iterator stack) {
         double args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i-1] >= args[i]) return S_FALSE;
+ 	        if (args[i-1] >= args[i]) return S_FALSE;
         }
-	return S_TRUE;
+	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
         long args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i-1] >= args[i]) return S_FALSE;
+ 	        if (args[i-1] >= args[i]) return S_FALSE;
         }
         return S_TRUE;
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
         rational_type args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i-1] >= args[i]) return S_FALSE;
+ 	        if (args[i-1] >= args[i]) return S_FALSE;
         }
         return S_TRUE;
     } else {
@@ -878,21 +878,21 @@ SchemeObject* s_less_equal(int num, SchemeStack::iterator stack) {
         double args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i-1] > args[i]) return S_FALSE;
+ 	        if (args[i-1] > args[i]) return S_FALSE;
         }
-	return S_TRUE;
+	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
         long args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i-1] > args[i]) return S_FALSE;
+ 	        if (args[i-1] > args[i]) return S_FALSE;
         }
         return S_TRUE;
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
         rational_type args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i-1] > args[i]) return S_FALSE;
+ 	        if (args[i-1] > args[i]) return S_FALSE;
         }
         return S_TRUE;
     } else {
@@ -910,21 +910,21 @@ SchemeObject* s_greater(int num, SchemeStack::iterator stack) {
         double args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i-1] <= args[i]) return S_FALSE;
+ 	        if (args[i-1] <= args[i]) return S_FALSE;
         }
-	return S_TRUE;
+	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
         long args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i-1] <= args[i]) return S_FALSE;
+ 	        if (args[i-1] <= args[i]) return S_FALSE;
         }
         return S_TRUE;
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
         rational_type args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i-1] <= args[i]) return S_FALSE;
+ 	        if (args[i-1] <= args[i]) return S_FALSE;
         }
         return S_TRUE;
     } else {
@@ -943,21 +943,21 @@ SchemeObject* s_greater_equal(int num, SchemeStack::iterator stack) {
         double args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i-1] < args[i]) return S_FALSE;
+ 	        if (args[i-1] < args[i]) return S_FALSE;
         }
-	return S_TRUE;
+	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
         long args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i-1] < args[i]) return S_FALSE;
+ 	        if (args[i-1] < args[i]) return S_FALSE;
         }
         return S_TRUE;
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
         rational_type args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
- 	    if (args[i-1] < args[i]) return S_FALSE;
+ 	        if (args[i-1] < args[i]) return S_FALSE;
         }
         return S_TRUE;
     } else {
@@ -999,8 +999,8 @@ SchemeObject* s_integer_p(SchemeObject* p) {
     if (p->type() == SchemeObject::INTEGER_NUMBER) {
         return S_TRUE;
     } else if (p->type() == SchemeObject::RATIONAL_NUMBER) {
-	rational_type r = p->rationalValue().normalized();     
-	rational_type::value_type d = r.denominator();     
+	    rational_type r = p->rationalValue().normalized();     
+	    rational_type::value_type d = r.denominator();     
         return bool2scm(d == 1 || d == -1);
     } else if (p->type() == SchemeObject::REAL_NUMBER) {
         return ::modf(scm2double(p),&i) == 0.0 ? S_TRUE : S_FALSE;
@@ -1034,33 +1034,40 @@ SchemeObject* s_exact_2_inexact(SchemeObject* n) {
     }
 }
 
+SchemeObject* i_double_2_exact(double n) {
+    // Asserting that doubles are encoded as per the IEEEE 754 
+    // standard, also known as IEC 559.
+    assert(numeric_limits<double>::is_iec559);
+    uint64_t d;
+    *((double*)(&d)) = n;
+    int32_t sign = ((d >> 63) & 1) ? -1 : 1;
+    int64_t exponent = ((d >> 52) & 0x07ff);
+    uint64_t bit53 = 1;
+    bit53 <<= 52;
+    uint64_t mantissa = d & (bit53 - 1);
+    if (exponent != 0 && exponent < 2047) {
+        mantissa |= bit53;
+        exponent -= 1023;
+    } else {
+        exponent = -1024;        
+    }
+    /*
+    cout << "Sign: " << hex << sign << endl;
+    cout << "Exponent: " << exponent << endl;
+    cout << "Mantissa: " << mantissa << endl;
+    */
+    if (abs(exponent > 63)) {
+         // TODO: Create rational<bigint>   
+    }
+    rational_type result = rational_type(sign * mantissa, bit53);
+    result *= pow(rational_type(2), exponent);
+    return rational2scm(result);
+}
+
 SchemeObject* s_inexact_2_exact(SchemeObject* n) {
     assert_arg_type(L"inexact->exact", 1, s_real_p, n);
     if (n->type() == SchemeObject::REAL_NUMBER || n->type() == SchemeObject::COMPLEX_NUMBER) {
-        // Asserting that doubles are encoded as per the IEEEE 754 
-        // standard, also known as IEC 559.
-        assert(numeric_limits<double>::is_iec559);
-        uint64_t d;
-        *((double*)(&d)) = scm2double(n);
-        int32_t sign = ((d >> 63) & 1) ? -1 : 1;
-        int64_t exponent = ((d >> 52) & 0x07ff);
-        uint64_t bit53 = 1;
-        bit53 <<= 52;
-        uint64_t mantissa = d & (bit53 - 1);
-        if (exponent != 0 && exponent < 2047) {
-            mantissa |= bit53;
-            exponent -= 1023;
-        } else {
-            exponent = -1024;        
-        }
-        /*
-        cout << "Sign: " << hex << sign << endl;
-        cout << "Exponent: " << exponent << endl;
-        cout << "Mantissa: " << mantissa << endl;
-        */
-        rational_type result = rational_type(sign * mantissa, bit53);
-        result *= pow(rational_type(2), exponent);
-        return rational2scm(result);
+        return double_2_exact(scm2double(n));
     } else {
         return n;    
     }
@@ -1075,24 +1082,24 @@ int extractDigit(wchar_t c, uint32_t radix) {
     int result = -1;
     result = c - L'0';
     if (radix > 10) {
-	if (result < 0 || result > 9) {
-	    result = 10 + (towlower(c) - L'a');
-	}
+	    if (result < 0 || result > 9) {
+	        result = 10 + (towlower(c) - L'a');
+	    }
     }
     
     // Check result
     if (result >= 0 && result < int(radix)) {
-	return result;
+	    return result;
     } else {
-	return -1;
+	    return -1;
     }
 }
 
 char digitToChar(int d, uint32_t radix) {
     if (radix > 10 && d > 9) {
-	return 'a' + (d - 10);
+	    return 'a' + (d - 10);
     } else {
-	return '0' + d;
+	    return '0' + d;
     }
 }
 
@@ -1100,13 +1107,13 @@ string extractDigits(wstring s, size_t offset, uint32_t radix) {
     string result;
     uint32_t i = 0;
     while (offset + i < s.size()) {
-	wchar_t digit = s[offset+i];
-	int d = extractDigit(digit, radix);
-	if (d == -1) {
-	    return result;
-	}
-	result += digitToChar(d, radix);
-	i++;
+	    wchar_t digit = s[offset+i];
+	    int d = extractDigit(digit, radix);
+	    if (d == -1) {
+	        return result;
+	    }
+	    result += digitToChar(d, radix);
+	    i++;
     }
     return result;
 }
@@ -1115,37 +1122,36 @@ string extractDigits(wstring s, size_t offset, uint32_t radix) {
 SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     int sign = 1;
     if (s.size() == 0) {
-	return S_FALSE;
+	    return S_FALSE;
     }
     bool radix_prefix_seen = false;
     bool exactness_prefix_seen = false;
     bool force_inexact = false;
     while (s[offset] == L'#' && s.size() > offset+2) {
-	wchar_t c = ::towlower(s[offset+1]);
-	if (!radix_prefix_seen && (c == 'x' || c == 'd' || 
-		                   c == 'b' || c == 'o')) {
-	    switch(c) {
-	        case L'X' :        
+	    wchar_t c = ::towlower(s[offset+1]);
+	    if (!radix_prefix_seen && (c == 'x' || c == 'd' || c == 'b' || c == 'o')) {
+	        switch(c) {
+	            case L'X' :        
                 case L'x' : radix = 16;
                             radix_prefix_seen = true;
-	    		    break;
-	        case L'D' :        
+	        		        break;
+	            case L'D' :        
                 case L'd' : radix = 10;
                             radix_prefix_seen = true;
-	    		    break;
-	        case L'B' :        
+	        		        break;
+	            case L'B' :        
                 case L'b' : radix = 2;
                             radix_prefix_seen = true;
-	    		    break;
-	        case L'O' :        
+	        		        break;
+	            case L'O' :        
                 case L'o' : radix = 8;
                             radix_prefix_seen = true;
-	    		    break;
-	    }
-	    offset += 2;
+	        		        break;
+	        }
+	        offset += 2;
         } else if (!exactness_prefix_seen && (c == 'e' || c == 'i')) {
-	    switch(c) {
-    	        case L'E' :        
+	        switch(c) {
+                case L'E' :        
                 case L'e' : force_inexact = false;
                             exactness_prefix_seen = true;
                             break;
@@ -1154,10 +1160,10 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
                             exactness_prefix_seen = true;
                             break;
             }
-	    offset += 2;
+	        offset += 2;
         } else {
-	    return S_FALSE;
-	}
+	        return S_FALSE;
+	    }
     } 
     
     bool sign_found = false;
@@ -1228,15 +1234,15 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         offset += denominator.size();
         if (offset >= s.size()) {
             if (d == 0) {
-		// TODO: return inexact +inf or -inf as per R^6RS
+		        // TODO: return inexact +inf or -inf as per R^6RS
                 return S_FALSE;        
             }        
-	    rational_type rational(sign*t, d);
-	    if (force_inexact && exactness_prefix_seen) {
-                return SchemeObject::createRealNumber(rational.real());
-	    } else {
-                return SchemeObject::createRationalNumber(rational.normalized());
-	    }
+	        rational_type rational(sign*t, d);
+	        if (force_inexact && exactness_prefix_seen) {
+                   return SchemeObject::createRealNumber(rational.real());
+	        } else {
+                   return SchemeObject::createRationalNumber(rational.normalized());
+	        }
         } else {
             return S_FALSE;        
         }
@@ -1336,13 +1342,13 @@ wstring i_number_2_string(SchemeObject* o, uint32_t radix) {
         ss << std::setbase(radix) << scm2int(o);
         return ss.str();
     } else if (type == SchemeObject::RATIONAL_NUMBER) {
-	rational_type z = scm2rational(o).normalized();
-	ss << std::setbase(radix);
-	ss << z.numerator();
-	if (z.denominator() != 1) {
+	    rational_type z = scm2rational(o).normalized();
+	    ss << std::setbase(radix);
+	    ss << z.numerator();
+	    if (z.denominator() != 1) {
             ss << L"/";
-   	    ss << z.denominator();
-	}
+   	        ss << z.denominator();
+	    }
         return ss.str();
     } else if (type == SchemeObject::REAL_NUMBER) {
         double d = scm2double(o);
