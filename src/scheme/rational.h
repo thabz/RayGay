@@ -3,6 +3,7 @@
 #define RATIONAL_H
 
 #include <limits>
+#include <sstream>
 
 // Forward declaration
 template<typename K> class rational;
@@ -663,6 +664,20 @@ abs(const rational<K>& a)
 {
     return a < K(0) ? -a : a;
 }
+
+///  Insertion operator for rational values.
+template<typename _Tp, typename _CharT, class _Traits>
+std::basic_ostream<_CharT, _Traits>&
+operator<<(std::basic_ostream<_CharT, _Traits>& __os, const rational<_Tp>& __x)
+  {
+    std::basic_ostringstream<_CharT, _Traits> __s;
+    __s.flags(__os.flags());
+    __s.imbue(__os.getloc());
+    __s.precision(__os.precision());
+    __s << __x.numerator() << '/' << __x.denominator();
+    return __os << __s.str();
+}
+
 
 /////////////////////////////////////////////////////
 // Roundings

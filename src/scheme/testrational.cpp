@@ -1,6 +1,7 @@
 
 #include "testing.h"
 #include "rational.h"
+#include <sstream>
 
 typedef rational<long> rlong;
 
@@ -162,6 +163,17 @@ class test_traits : public Test {
         }
 };
 
+
+class test_insertion_operator : public Test {
+    public:
+	void run() {
+            ostringstream ss;
+            rational<int64_t> r = rational<int64_t>(12345,6789);
+            ss << r;
+            assertTrue(ss.str() == "12345/6789");        
+        }
+};
+
 int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("Arithmetic", new test_operators());
@@ -170,6 +182,7 @@ int main(int argc, char *argv[]) {
     suite.add("Rounding", new test_rounding());
     suite.add("Normalization", new test_normalization());
     suite.add("Traits", new test_traits());
+    suite.add("Insertion operator", new test_insertion_operator());
     suite.run();
     suite.printStatus();
 
