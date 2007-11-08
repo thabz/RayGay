@@ -14,7 +14,7 @@
 
 using namespace std;
 
-typedef rational<long> rational_type;
+typedef rational<int64_t> rational_type;
 
 // Faster internal macro for some much used procedures
 // that does no argument checking.
@@ -72,7 +72,7 @@ class SchemeObject
         uint32_t metadata;
         union {
             double real_value;             // For real numbers
-            long   integer_value;          // For integer numbers
+            int64_t integer_value;          // For integer numbers
             struct {
                 union {
                     wchar_t* str;          // For strings and symbols
@@ -179,7 +179,7 @@ class SchemeObject
         std::complex<double> complexValue() const;
         double realValue() const;
         rational_type rationalValue() const;
-        long integerValue() const;
+        int64_t integerValue() const;
         
         // For BUILT_IN_PROCEDURE.
         bool rest() const;    // Takes rest argument?
@@ -192,7 +192,7 @@ class SchemeObject
         static SchemeObject* createRationalNumber(SchemeObject* numerator, SchemeObject* denominator);
         static SchemeObject* createRationalNumber(rational_type::value_type n, rational_type::value_type d);
         static SchemeObject* createRationalNumber(rational_type rational);
-        static SchemeObject* createIntegerNumber(long number);
+        static SchemeObject* createIntegerNumber(int64_t number);
         static SchemeObject* createString(const wchar_t* str);
         static SchemeObject* createChar(wchar_t c);
         static SchemeObject* createPair(SchemeObject* car, SchemeObject* cdr);
@@ -319,12 +319,12 @@ void* SchemeObject::getWrappedCObject() {
 }
 
 inline
-long SchemeObject::integerValue() const {
+int64_t SchemeObject::integerValue() const {
     ObjectType t = type();
     if (t == INTEGER_NUMBER) return integer_value;
-    else if (t == REAL_NUMBER) return long(real_value);
+    else if (t == REAL_NUMBER) return int64_t(real_value);
     else if (t == RATIONAL_NUMBER) return numerator->integer_value;
-    else if (t == COMPLEX_NUMBER) return long(real->real_value);
+    else if (t == COMPLEX_NUMBER) return int64_t(real->real_value);
     else return -1; // Shouldn't happen
 }
 

@@ -64,7 +64,7 @@ SchemeObject* SchemeObject::createRationalNumber(rational_type rational) {
     return createRationalNumber(rational.numerator(), rational.denominator());
 }
 
-SchemeObject* SchemeObject::createIntegerNumber(long number) {
+SchemeObject* SchemeObject::createIntegerNumber(int64_t number) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::INTEGER_NUMBER);
     result->integer_value = number;
     return result;

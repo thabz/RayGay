@@ -254,6 +254,11 @@ SchemeObject* s_sqrt(SchemeObject* n) {
     }
 }
 
+// See http://en.wikipedia.org/wiki/Integer_square_root
+SchemeObject* s_exact_integer_sqrt(SchemeObject* n) {
+    throw scheme_exception(L"Not implemented");
+}
+
 SchemeObject* s_abs(SchemeObject* n) {
     assert_arg_type(L"abs", 1, s_real_p, n);
     if (n->type() == SchemeObject::RATIONAL_NUMBER) {
@@ -1032,18 +1037,37 @@ SchemeObject* s_exact_2_inexact(SchemeObject* n) {
 SchemeObject* s_inexact_2_exact(SchemeObject* n) {
     assert_arg_type(L"inexact->exact", 1, s_real_p, n);
     if (n->type() == SchemeObject::REAL_NUMBER || n->type() == SchemeObject::COMPLEX_NUMBER) {
-        // To converter a double to a rational, we multiply
-        // it with 10 until it's an integer number.
-        double real = n->realValue();
-        double tmp;
-	rational_type::value_type denominator = 1;
-        while (::modf(real,&tmp) != 0.0) {
-            real *= 10;
-            denominator *= 10;
+        // Asserting that doubles are encoded as per the IEEEE 754 
+        // standard, also known as IEC 559.
+        //cout << endl << "Decoding n = " << scm2double(n) << endl; 
+        assert(numeric_limits<double>::is_iec559);
+        uint64_t d;
+        *((double*)(&d)) = scm2double(n);
+        //cout << "d = " << hex << d << endl;
+        int32_t sign = ((d >> 63) & 1) ? -1 : 1;
+        int64_t exponent = ((d >> 52) & 0x03ff);
+        uint64_t bit53 = 1;
+        bit53 <<= 52;
+        uint64_t mantissa = d & (bit53 - 1);
+        //cout << "Exponent before: " << exponent << endl;
+        if (exponent != 0 && exponent < 2047) {
+            mantissa |= bit53;
+            exponent -= 1023;
+        } else {
+            exponent = -1024;        
         }
-        rational_type::value_type numerator = rational_type::value_type(real);
-        rational_type rational(numerator, denominator);
-        return rational2scm(rational);
+        
+        //cout << "Sign: " << sign << endl;
+        //cout << "Exponent: " << exponent << endl;
+        //cout << "Mantissa: " << mantissa << endl;
+        //cout << "Yir 1" << endl;
+        rational_type result = rational_type(sign * mantissa, bit53);
+        //cout << "Yir 2" << endl;
+        result *= pow(rational_type(2), exponent);
+        //cout << "Done decoding" << endl;
+        //cout << "Result hex: " << hex << result << endl;
+        //cout << "Normalized dec: " << dec << result.normalized() << endl;
+        return rational2scm(result);
     } else {
         return n;    
     }
@@ -1387,6 +1411,7 @@ void LibNumbers::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"log"                   ,1,0,0, (SchemeObject* (*)()) s_log, envt);
     scheme->assign(L"exp"                   ,1,0,0, (SchemeObject* (*)()) s_exp, envt);
     scheme->assign(L"expt"                  ,2,0,0, (SchemeObject* (*)()) s_expt, envt);
+    scheme->assign(L"exact-integer-sqrt"    ,1,0,0, (SchemeObject* (*)()) s_exact_integer_sqrt, envt);
 
     // Roundings
     scheme->assign(L"round"                 ,1,0,0, (SchemeObject* (*)()) s_round, envt);

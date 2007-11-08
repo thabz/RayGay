@@ -556,16 +556,20 @@ void test_math() {
     assert_eval(s, L"(exact->inexact 1)" , L"1.0");
     assert_eval(s, L"(exact->inexact 7.1)" , L"7.1");
     assert_eval(s, L"(exact->inexact +i)", L"0.0+1.0i");
+    
     assert_eval(s, L"(inexact->exact 1)", L"1");
     assert_eval(s, L"(inexact->exact 1/2)", L"1/2");
     assert_eval(s, L"(inexact->exact 0.5)", L"1/2");
     assert_eval(s, L"(inexact->exact 0.75)", L"3/4");
-    assert_eval(s, L"(inexact->exact 1.7)", L"17/10");
+    assert_eval(s, L"(inexact->exact 0.25+0i)", L"1/4");
+    assert_fail(s, L"(inexact->exact +i)");
     assert_eval(s, L"(exact->inexact (inexact->exact 0.3))", L"0.3");
     assert_eval(s, L"(exact->inexact (inexact->exact 0.1))", L"0.1");
     assert_eval(s, L"(exact->inexact (inexact->exact 0.25))", L"0.25");
-    assert_eval(s, L"(inexact->exact 0.25+0i)", L"1/4");
-    assert_fail(s, L"(inexact->exact +i)");
+    assert_eval(s, L"(exact->inexact (inexact->exact 1.7))", L"1.7");
+    assert_eval(s, L"(exact->inexact (inexact->exact 0.2))", L"0.2");
+    assert_eval(s, L"(exact->inexact (inexact->exact 4.0))", L"4.0");
+    
     assert_eval(s, L"(complex? 2)" , L"#t");
     assert_eval(s, L"(complex? 'a)" , L"#f");
     assert_eval(s, L"(real? 2)" , L"#t");
@@ -998,7 +1002,7 @@ void test_string() {
     assert_eval(s, L"(string->number \"-1/3\")", L"-1/3");
     // Exactness
     assert_eval(s, L"(string->number \"#i6/8\")", L"0.75");
-    assert_eval(s, L"(string->number \"#e1.2\")", L"6/5");
+    assert_eval(s, L"(string->number \"#e0.25\")", L"1/4");
     assert_eval(s, L"(string->number \"#i1.1\")", L"1.1");
     assert_eval(s, L"(string->number \"#i1\")", L"1.0");
     assert_eval(s, L"(string->number \"#i1/1\")", L"1.0");

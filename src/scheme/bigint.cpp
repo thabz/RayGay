@@ -439,6 +439,8 @@ BigInt BigInt::operator/(const BigInt &denom) const {
     }
 }
 
+// Knuths algo in C: http://www.ddj.com/showArticle.jhtml?documentID=cuj9611breitz&pgno=8
+
 /*
 // Donald Knuth, The Art of Computer Programming, Volume 2, 2nd ed., 1981, pp. 257-258.
 BigInt BigInt::operator/(const BigInt &divisor) const {
