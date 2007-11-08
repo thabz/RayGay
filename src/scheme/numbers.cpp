@@ -1100,28 +1100,44 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     if (s.size() == 0) {
 	return S_FALSE;
     }
-    if (s[offset] == L'#' && s.size() > offset+2) {
+    bool radix_prefix_seen = false;
+    bool exactness_prefix_seen = false;
+    bool force_exact = false;
+    while (s[offset] == L'#' && s.size() > offset+2) {
 	wchar_t prefix = s[offset+1];
-	switch(prefix) {
-	    case L'X' :        
-            case L'x' : radix = 16;
-			break;
-	    case L'D' :        
-            case L'd' : radix = 10;
-			break;
-	    case L'B' :        
-            case L'b' : radix = 2;
-			break;
-	    case L'O' :        
-            case L'o' : radix = 8;
-			break;
-	    case L'E' :        
-	    case L'e' :
-	    case L'I' :        
-            case L'i' : break;
-	}
+	if (!radix_prefix_seen) {
+	    switch(prefix) {
+	        case L'X' :        
+                case L'x' : radix = 16;
+                            radix_prefix_seen = true;
+	    		    break;
+	        case L'D' :        
+                case L'd' : radix = 10;
+                            radix_prefix_seen = true;
+	    		    break;
+	        case L'B' :        
+                case L'b' : radix = 2;
+                            radix_prefix_seen = true;
+	    		    break;
+	        case L'O' :        
+                case L'o' : radix = 8;
+                            radix_prefix_seen = true;
+	    		    break;
+	    }
+        } else if (!exactness_prefix_seen) {
+	    switch(prefix) {
+    	        case L'E' :        
+                case L'e' : force_exact = true;
+                            exactness_prefix_seen = true;
+                            break;
+     	        case L'I' :        
+                case L'i' : force_exact = false;
+                            exactness_prefix_seen = true;
+                            break;
+            }
+        }
 	offset += 2;
-    }
+    } 
     
     bool sign_found = false;
     if (s[offset] == L'-') {
