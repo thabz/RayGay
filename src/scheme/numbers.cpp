@@ -472,7 +472,7 @@ SchemeObject* s_truncate(SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return n;
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
-	return int2scm(trunc(scm2rational(n)));
+	    return int2scm(trunc(scm2rational(n)));
     } else {
         assert_arg_type(L"truncate", 1, s_real_p, n);
         double t = scm2double(n);
@@ -497,8 +497,28 @@ SchemeObject* s_truncate(SchemeObject* n) {
 // if p3/q3 < x, let p1 := p3 and q1 := q3; if p3/q3 > x, let p2 := p3 and
 // q2 := q3.  This gives a smaller interval (p1/q1,p2/q2) still containing x.
 
-SchemeObject* s_rationalize(SchemeObject* x, SchemeObject* y) {
-    throw scheme_exception(L"Not implemented");
+SchemeObject* s_rationalize(SchemeObject* s_x, SchemeObject* s_y) {
+
+    rational_type x = scm2rational(s_x);
+    rational_type y = abs(scm2rational(s_y));
+    rational_type p1 = floor(x);
+    rational_type p2 = ceil(x);
+    
+    if (x - y < p1) {
+        return int2scm(ceil(x - y));
+    }
+    
+    while (true) {
+        rational_type p3(p1.numerator()+p2.numerator(),p1.denominator()+p2.denominator());
+        if (abs(p3 - x) < y) {
+            return rational2scm(p3);
+        }
+        if (p3 < x) { 
+            p1 = p3;
+        } else {
+            p2 = p3;
+        }
+    }
 }
 
 
@@ -1449,6 +1469,7 @@ void LibNumbers::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"floor"                 ,1,0,0, (SchemeObject* (*)()) s_floor, envt);
     scheme->assign(L"truncate"              ,1,0,0, (SchemeObject* (*)()) s_truncate, envt);
 
+    scheme->assign(L"rationalize"           ,2,0,0, (SchemeObject* (*)()) s_rationalize, envt);
     scheme->assign(L"quotient"              ,2,0,0, (SchemeObject* (*)()) s_quotient, envt);
     scheme->assign(L"remainder"             ,2,0,0, (SchemeObject* (*)()) s_remainder, envt);
     scheme->assign(L"modulo"                ,2,0,0, (SchemeObject* (*)()) s_modulo, envt);

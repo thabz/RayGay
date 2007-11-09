@@ -379,6 +379,7 @@ void test_math() {
     assert_eval(s, L"(+ 1/2 4 3/2)" , L"6");
     assert_eval(s, L"(+ 1 +3i)" , L"1.0+3.0i");
     assert_eval(s, L"(+ 1+2i 2+3i)" , L"3.0+5.0i");
+    assert_eval(s, L"(+ .1 .2)" , L"0.3");
     assert_eval(s, L"(- 3)" , L"-3");
     assert_eval(s, L"(- 3 2)" , L"1");
     assert_eval(s, L"(- 3 4 5)" , L"-6");
@@ -455,6 +456,7 @@ void test_math() {
     assert_eval(s, L"(< 1/3 1/3)" , L"#f");
     assert_eval(s, L"(< 1/2 1/3)" , L"#f");
     assert_eval(s, L"(< 1/4 1/3)" , L"#t");
+    assert_eval(s, L"(< (- 1/3 1/10) 1/3 (+ 1/3 1/10))" , L"#t");
     assert_eval(s, L"(< 1)" , L"#t");
     assert_eval(s, L"(<)" , L"#t");
     assert_fail(s, L"(< 'a)");
@@ -620,6 +622,8 @@ void test_math() {
     assert_eval(s, L"(round 3/2)" , L"2");
     assert_eval(s, L"(round 1/2)" , L"0");
     assert_eval(s, L"(round -4.3)" , L"-4.0");
+    assert_eval(s, L"(round (* 8 1/2))" , L"4");
+    assert_eval(s, L"(round (* -8 1/2))" , L"-4");
     assert_eval(s, L"(floor -4.3)" , L"-5.0");
     assert_fail(s, L"(floor 'a)");
     assert_fail(s, L"(floor 1+i)");
@@ -636,6 +640,8 @@ void test_math() {
     assert_eval(s, L"(floor -16/3)" , L"-6");
     assert_eval(s, L"(floor 17/3)" , L"5");
     assert_eval(s, L"(floor 16/3)" , L"5");
+    assert_eval(s, L"(floor (* 8 1/2))" , L"4");
+    assert_eval(s, L"(floor (* -8 1/2))" , L"-4");
     assert_eval(s, L"(ceiling -4.3)" , L"-4.0");
     assert_fail(s, L"(ceiling 1+i)");
     assert_eval(s, L"(ceiling 3.5)" , L"4.0");
@@ -650,6 +656,10 @@ void test_math() {
     assert_eval(s, L"(ceiling -16/3)" , L"-5");
     assert_eval(s, L"(ceiling 17/3)" , L"6");
     assert_eval(s, L"(ceiling 16/3)" , L"6");
+    assert_eval(s, L"(ceiling 4)" , L"4");
+    assert_eval(s, L"(ceiling 8/2)" , L"4");
+    assert_eval(s, L"(ceiling (* 8 1/2))" , L"4");
+    assert_eval(s, L"(ceiling (* -8 1/2))" , L"-4");
     assert_eval(s, L"(truncate -4.3)" , L"-4.0");
     assert_eval(s, L"(truncate 3.5)" , L"3.0");
     assert_eval(s, L"(truncate -3.5)" , L"-3.0");
@@ -662,6 +672,8 @@ void test_math() {
     assert_eval(s, L"(truncate -16/3)" , L"-5");
     assert_eval(s, L"(truncate 17/3)" , L"5");
     assert_eval(s, L"(truncate 16/3)" , L"5");
+    assert_eval(s, L"(truncate (* 8 1/2))" , L"4");
+    assert_eval(s, L"(truncate (* -8 1/2))" , L"-4");
 
     assert_eval(s, L"(remainder 13 4)" , L"1");
     assert_eval(s, L"(remainder -13 4)" , L"-1");
@@ -722,8 +734,16 @@ void test_math() {
     assert_eval(s, L"(numerator (/ 6 4))", L"3");
     assert_eval(s, L"(denominator (/ 6 4))", L"2");
     assert_eval(s, L"(denominator (exact->inexact (/ 6 4)))", L"2.0");
+
+    assert_eval(s, L"(rationalize 7 3)", L"4");
+    assert_eval(s, L"(rationalize 2 1/4)", L"2");
+    assert_eval(s, L"(rationalize 1/3 1/4)", L"1/2");
+    assert_eval(s, L"(rationalize 7/9 1/10)", L"3/4");
+    assert_eval(s, L"(rationalize 16/9 1/10)", L"7/4");
+    assert_eval(s, L"(rationalize 18/9 1/10)", L"2");
     
     /*
+    assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");

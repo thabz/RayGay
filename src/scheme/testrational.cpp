@@ -109,10 +109,10 @@ class test_trancedentals : public Test {
             assertTrue(pow(rlong(3,5), 1L) == rlong(3,5));
             assertTrue(pow(rlong(3,5), -1L) == rlong(5,3));
 
-	    assertTrue(abs(rlong(-2,3)) == rlong(2,3));
-	    assertTrue(abs(rlong(2,3)) == rlong(2,3));
-	    assertTrue(abs(rlong(2,-3)) == rlong(2,3));
-	    assertTrue(abs(rlong(-2,-3)) == rlong(2,3));
+	        assertTrue(abs(rlong(-2,3)) == rlong(2,3));
+	        assertTrue(abs(rlong(2,3)) == rlong(2,3));
+	        assertTrue(abs(rlong(2,-3)) == rlong(2,3));
+	        assertTrue(abs(rlong(-2,-3)) == rlong(2,3));
             assertTrue(sqrt(rlong(4,1)) == 2.0);
         }
 };
@@ -124,9 +124,13 @@ class test_rounding : public Test {
             assertTrue(floor(rlong(-1,2)) == -1);
             assertTrue(floor(rlong(-17,3)) == -6);
             assertTrue(floor(rlong(17,3)) == 5);
+            assertTrue(floor(rlong(7)) == 7);
+            assertTrue(floor(rlong(7,1)-rlong(3,1)) == 4);
             assertTrue(ceil(rlong(-17,3)) == -5);
             assertTrue(ceil(rlong(17,3)) == 6);
             assertTrue(ceil(rlong(-1,2)) == 0);
+            assertTrue(ceil(rlong(7,1)-rlong(3,1)) == 4);
+            assertTrue(ceil(rlong(4,1)) == 4);
             assertTrue(trunc(rlong(-17,3)) == -5);
             assertTrue(trunc(rlong(17,3)) == 5);
             assertTrue(trunc(rlong(-1,2)) == 0);
