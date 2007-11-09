@@ -9,7 +9,7 @@ using namespace std;
 
 class test_operators : public Test {
     public:
-	void run() {
+	    void run() {
              rlong z = 1;
              assertTrue(z == rlong(1));
              assertTrue(z + long(2) == rlong(3));
@@ -32,7 +32,7 @@ class test_operators : public Test {
 
 class test_comparators : public Test {
     public:
-	void run() {
+	    void run() {
             assertTrue(rlong(1,2) == rlong(1,2));        
             assertTrue(rlong(1,2) == rlong(6,12));        
             assertTrue(rlong(1,2) == rlong(-6,-12));        
@@ -88,7 +88,7 @@ class test_comparators : public Test {
 
 class test_trancedentals : public Test {
     public:
-	void run() {
+	    void run() {
             rlong z = 0;
             assertTrue(sin(z) == 0.0);
             assertTrue(cos(z) == 1.0);
@@ -119,28 +119,41 @@ class test_trancedentals : public Test {
 
 class test_rounding : public Test {
     public:
-	void run() {
+	    void run() {
+            assertTrue(round(rlong(4)) == 4);
+            assertTrue(round(rlong(-4)) == -4);
+            assertTrue(round(rlong(8,2)) == 4);
+            assertTrue(round(rlong(-8,2)) == -4);
             assertTrue(floor(rlong(1,2)) == 0);
             assertTrue(floor(rlong(-1,2)) == -1);
             assertTrue(floor(rlong(-17,3)) == -6);
             assertTrue(floor(rlong(17,3)) == 5);
             assertTrue(floor(rlong(7)) == 7);
             assertTrue(floor(rlong(7,1)-rlong(3,1)) == 4);
+            assertTrue(floor(rlong(4)) == 4);
+            assertTrue(floor(rlong(-4)) == -4);
+            assertTrue(floor(rlong(8,2)) == 4);
+            assertTrue(floor(rlong(-8,2)) == -4);
             assertTrue(ceil(rlong(-17,3)) == -5);
             assertTrue(ceil(rlong(17,3)) == 6);
             assertTrue(ceil(rlong(-1,2)) == 0);
             assertTrue(ceil(rlong(7,1)-rlong(3,1)) == 4);
             assertTrue(ceil(rlong(4,1)) == 4);
+            assertTrue(ceil(rlong(-4,1)) == -4);
+            assertTrue(ceil(rlong(8,2)) == 4);
+            assertTrue(ceil(rlong(-8,2)) == -4);
             assertTrue(trunc(rlong(-17,3)) == -5);
             assertTrue(trunc(rlong(17,3)) == 5);
             assertTrue(trunc(rlong(-1,2)) == 0);
             assertTrue(trunc(rlong(1,2)) == 0);
+            assertTrue(trunc(rlong(4)) == 4);
+            assertTrue(trunc(rlong(-4)) == -4);
         }
 };
 
 class test_normalization : public Test {
     public:
-	void run() {
+	    void run() {
             rlong z = rlong(2,3).normalized();
             assertTrue(z.numerator() == 2);
             assertTrue(z.denominator() == 3);
@@ -161,7 +174,7 @@ class test_normalization : public Test {
 
 class test_traits : public Test {
     public:
-	void run() {
+	    void run() {
             assertTrue(numeric_limits<rational<long> >::max() == numeric_limits<long>::max());        
             assertTrue(numeric_limits<rational<long> >::min() == numeric_limits<long>::min());        
             assertTrue(numeric_limits<rational<int8_t> >::max() == int8_t(127));        
@@ -173,7 +186,7 @@ class test_traits : public Test {
 
 class test_insertion_operator : public Test {
     public:
-	void run() {
+	    void run() {
             ostringstream ss;
             rational<int64_t> r = rational<int64_t>(12345,6789);
             ss << r;

@@ -736,12 +736,27 @@ void test_math() {
     assert_eval(s, L"(denominator (exact->inexact (/ 6 4)))", L"2.0");
 
     assert_eval(s, L"(rationalize 7 3)", L"4");
+    assert_eval(s, L"(rationalize -7 3)", L"-4");
     assert_eval(s, L"(rationalize 2 1/4)", L"2");
+    assert_eval(s, L"(rationalize -2 1/4)", L"-2");
     assert_eval(s, L"(rationalize 1/3 1/4)", L"1/2");
+    assert_eval(s, L"(rationalize -1/3 -1/4)", L"-1/2");
+    assert_eval(s, L"(rationalize 1/3 -1/4)", L"1/2");
     assert_eval(s, L"(rationalize 7/9 1/10)", L"3/4");
     assert_eval(s, L"(rationalize 16/9 1/10)", L"7/4");
+    assert_eval(s, L"(rationalize -16/9 1/10)", L"-7/4");
     assert_eval(s, L"(rationalize 18/9 1/10)", L"2");
-    
+    assert_eval(s, L"(rationalize -18/9 1/10)", L"-2");
+    assert_eval(s, L"(rationalize 179/17 0)", L"179/17");
+    assert_eval(s, L"(rationalize -179/17 0)", L"-179/17");
+    assert_eval(s, L"(rationalize 1/3 0.25)", L"0.5");
+    assert_eval(s, L"(rationalize (inexact->exact 0.3) 1/10)", L"1/3");
+    /*
+    assert_eval(s, L"(rationalize 12/8 0.1)", L"1.5");
+    assert_eval(s, L"(rationalize 7/8 0.1)", L"0.8");
+    assert_eval(s, L"(rationalize -7/8 0.1)", L"-0.8");
+    assert_eval(s, L"(rationalize 1.8 0.1)", L"1.75");
+    */
     /*
     assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");

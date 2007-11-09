@@ -685,7 +685,9 @@ operator<<(std::basic_ostream<_CharT, _Traits>& __os, const rational<_Tp>& __x)
 
 template<typename K> 
 inline K 
-floor(const rational<K>& z) {
+floor(const rational<K>& a) {
+    rational<K> z = a.normalized();
+    if (z.denominator() == 1) return z.numerator();
     K q = z.numerator() / z.denominator();
     if (q >= 0 && z.numerator() > 0) {
         return q;    
@@ -696,7 +698,9 @@ floor(const rational<K>& z) {
 
 template<typename K> 
 inline K 
-ceil(const rational<K>& z) {
+ceil(const rational<K>& a) {
+    rational<K> z = a.normalized();
+    if (z.denominator() == 1) return z.numerator();
     K q = z.numerator() / z.denominator();
     if (q >= 0 && z.numerator() > 0) {
         return q+1;    

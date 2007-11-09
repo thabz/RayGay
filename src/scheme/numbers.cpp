@@ -498,20 +498,38 @@ SchemeObject* s_truncate(SchemeObject* n) {
 // q2 := q3.  This gives a smaller interval (p1/q1,p2/q2) still containing x.
 
 SchemeObject* s_rationalize(SchemeObject* s_x, SchemeObject* s_y) {
-
+    assert_arg_type(L"rationalize", 1, s_real_p, s_x);
+    assert_arg_type(L"rationalize", 2, s_real_p, s_y);
+    
+    // TODO: inexact->exact returns large numerators and denominators
+    // making the following overflow.
+    bool exact = true;
+    if (s_x->type() == SchemeObject::REAL_NUMBER) {
+        exact = false;
+        s_x = s_inexact_2_exact(s_x);
+    }
+    if (s_y->type() == SchemeObject::REAL_NUMBER) {
+        exact = false;
+        s_y = s_inexact_2_exact(s_y);
+    } 
+    
     rational_type x = scm2rational(s_x);
+    rational_type::value_type sign = x >= rational_type::value_type(0) ? 1 : -1;
+    x = abs(x);
     rational_type y = abs(scm2rational(s_y));
     rational_type p1 = floor(x);
     rational_type p2 = ceil(x);
     
     if (x - y < p1) {
-        return int2scm(ceil(x - y));
+        rational_type::value_type result = sign * ceil(x - y);
+        return exact ? int2scm(result) : double2scm(double(result));
     }
     
     while (true) {
         rational_type p3(p1.numerator()+p2.numerator(),p1.denominator()+p2.denominator());
-        if (abs(p3 - x) < y) {
-            return rational2scm(p3);
+        if (abs(p3 - x) <= y) {
+            rational_type result = sign * p3;
+            return exact ? rational2scm(result) : double2scm(result.real()) ;
         }
         if (p3 < x) { 
             p1 = p3;
