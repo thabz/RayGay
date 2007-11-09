@@ -195,6 +195,14 @@ class test_parser : public Test {
             assertTrue(s_cadr(e)->type() == SchemeObject::PAIR);
             assertTrue(s_caadr(e)->type() == SchemeObject::SYMBOL);
             assertTrue(s_caadr(e)->toString() == L"a");
+            
+            // TODO: invert a assertFail(code);
+            try {
+                p->parse(new wistringstream(L"[(a b])"));
+                assertTrue(false);
+            } catch (scheme_exception e) {
+                
+            }
         }
 };
 
