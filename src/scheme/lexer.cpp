@@ -154,13 +154,14 @@ Lexer::Token Lexer::nextToken(wistream* is) {
 		            is->unget();
 		            break;
                 }
-            case L'.' :
-                c = is->get();
-                if ((std::iswspace(c))) {
+            case L'.' : {
+                wchar_t e = is->get();
+                if ((std::iswspace(e))) {
                     return Lexer::PERIOD;
                 }
                 is->unget();
                 break;
+                }
             case L'"':
                 str = L"";
                 while (!is->eof()) {
