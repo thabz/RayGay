@@ -45,12 +45,12 @@ class Scheme {
 
 class scheme_exception {
     public: 
-	scheme_exception(wstring error);
-	scheme_exception(wchar_t* procname, wstring error);
-	scheme_exception(uint32_t line, wstring error);
+	    scheme_exception(wstring error);
+	    scheme_exception(wchar_t* procname, wstring error);
+	    scheme_exception(uint32_t line, wstring error);
         wstring toString();
     private:		
-	wstring str;
+	    wstring str;
         wchar_t* procname;
         uint32_t line;
 };

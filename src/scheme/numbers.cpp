@@ -498,7 +498,7 @@ SchemeObject* s_truncate(SchemeObject* n) {
 // q2 := q3.  This gives a smaller interval (p1/q1,p2/q2) still containing x.
 
 SchemeObject* s_rationalize(SchemeObject* x, SchemeObject* y) {
-    
+    throw scheme_exception(L"Not implemented");
 }
 
 

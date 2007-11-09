@@ -893,7 +893,7 @@ SchemeObject* s_append(int num, SchemeStack::iterator stack) {
 
                 pp = s_cdr(pp);
     	    }
-	}
+	    }
     }
 
     // Append  final arg
@@ -940,7 +940,7 @@ SchemeObject* s_vector_2_list(SchemeObject* v) {
     assert_arg_type(L"vector->list", 1, s_vector_p, v);
     SchemeObject* result = S_EMPTY_LIST;
     for(int i = v->length-1; i >= 0; i--) {
-	result = i_cons(v->getVectorElem(i), result);
+	    result = i_cons(v->getVectorElem(i), result);
     }
     return result;
 }
@@ -965,7 +965,7 @@ SchemeObject* s_vector_fill_e(SchemeObject* s_vec, SchemeObject* fill) {
     assert_arg_type(L"vector-fill!", 1, s_vector_p, s_vec);
     assert_arg_not_immutable(L"vector-fill!", 1, s_vec);
     for(int i = 0; i < s_vec->length; i++) {
-	s_vec->setVectorElem(fill, i);
+	    s_vec->setVectorElem(fill, i);
     }
     return S_UNSPECIFIED;
 }
