@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include "objects.h"
 #include "heap.h"

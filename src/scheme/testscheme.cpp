@@ -133,7 +133,7 @@ void test_tokenizer() {
 
     assert_eval(s, L"(let ((1+2 3) (2+3 5)) (+ 1+2 2+3))", L"8");
     
-    assert_fail(s, L"#\\space#(1 2 3)");
+    assert_eval(s, L"#\\space#(1 2 3)", L"#(1 2 3)");
     assert_eval(s, L"#\\a(+ 1 2)", L"3");
     assert_eval(s, L"#\\space(+ 1 2)", L"3");
 }

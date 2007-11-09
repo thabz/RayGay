@@ -37,7 +37,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
             curline++;
 	        continue;
         }
-        if (std::iswspace(c)) {
+        if (isWhitespace(c)) {
             // Skip whitespace
             continue;
         }
@@ -128,7 +128,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                                     // Found a match
                                     chr = char_values[i];
                                     c = is->peek();
-                                    if (c == L' ' || c == L')' || c == L'(' || c == L']' || c == L'[' || is->eof()) {
+                                    if (isDelimiter(c) || is->eof()) {
                                         return Lexer::CHAR;
                                     } else {
                                         cerr << "Illegal char" << endl;
@@ -146,7 +146,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                     // character such as a space or parenthesis.
                     chr = is->get();
                     c = is->peek();
-                    if (c == L' ' || c == L')' || c == L'(' || c == L']' || c == L'[' || is->eof()) {
+                    if (isDelimiter(c) || is->eof()) {
                         return Lexer::CHAR;
                     } else {
                         cerr << "Illegal char" << endl;
@@ -157,7 +157,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
 		            break;
                 }
             case L'.' : 
-                if (std::iswspace(is->peek())) {
+                if (isWhitespace(is->peek())) {
                     is->ignore();
                     return Lexer::PERIOD;
                 }
@@ -209,15 +209,20 @@ Lexer::Token Lexer::nextToken(wistream* is) {
 }
 
 bool Lexer::isSymbolChar(wchar_t c) {
-    return !(std::iswspace(c) || c == L')' || c == L'(' || c == L']' || 
+    return !(isWhitespace(c) || c == L')' || c == L'(' || c == L']' || 
             c == L'[' || c == L',' || c == L'#' || c == L'\'' || c == L'`');
 }
 
 bool Lexer::isDelimiter(wchar_t c) {
-    return std::iswspace(c) || 
-           c == L'(' || c == L')' || 
+    return c == L'(' || c == L')' || 
            c == L'[' || c == L']' || 
-           c == L'"' || c == L';' || c == L'#';
+           c == L'"' || c == L';' || 
+           c == L'#' || isWhitespace(c);
+}
+
+bool Lexer::isWhitespace(wchar_t c) {
+    return std::iswspace(c);
+    // or any character whose category is Zs, Zl, or Zp.
 }
 
 void Lexer::putBack(Token token) {

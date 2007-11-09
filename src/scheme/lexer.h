@@ -46,6 +46,7 @@ class Lexer
     private:
 	    bool isSymbolChar(wchar_t c);
 	    bool isDelimiter(wchar_t c);
+	    bool isWhitespace(wchar_t c);
         wstring str;
         SchemeObject* number;
         bool boolean;
