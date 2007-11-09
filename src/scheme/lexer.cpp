@@ -93,6 +93,10 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                 return Lexer::OPEN_PAREN;
             case L')':
                 return Lexer::CLOSE_PAREN;
+            case L'[':
+                return Lexer::OPEN_BRACKET;
+            case L']':
+                return Lexer::CLOSE_BRACKET;
             case L'\'':
                 return Lexer::QUOTE;
             case L'`':
@@ -124,7 +128,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                                     // Found a match
                                     chr = char_values[i];
                                     c = is->peek();
-                                    if (c == L' ' || c == L')' || c == L'(' || is->eof()) {
+                                    if (c == L' ' || c == L')' || c == L'(' || c == L']' || c == L'[' || is->eof()) {
                                         return Lexer::CHAR;
                                     } else {
                                         cerr << "Illegal char" << endl;
@@ -142,7 +146,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                     // character such as a space or parenthesis.
                     chr = is->get();
                     c = is->peek();
-                    if (c == L' ' || c == L')' || c == L'(' || is->eof()) {
+                    if (c == L' ' || c == L')' || c == L'(' || c == L']' || c == L'[' || is->eof()) {
                         return Lexer::CHAR;
                     } else {
                         cerr << "Illegal char" << endl;
@@ -205,9 +209,23 @@ Lexer::Token Lexer::nextToken(wistream* is) {
 }
 
 bool Lexer::isSymbolChar(wchar_t c) {
-    return !(std::iswspace(c) || c == L')' || c == L'(' || c == L',' || c == L'#' || c == L'\'' || c == L'`');
+    return !(std::iswspace(c) || c == L')' || c == L'(' || c == L']' || 
+            c == L'[' || c == L',' || c == L'#' || c == L'\'' || c == L'`');
+}
+
+bool Lexer::isDelimiter(wchar_t c) {
+    return std::iswspace(c) || 
+           c == L'(' || c == L')' || 
+           c == L'[' || c == L']' || 
+           c == L'"' || c == L';' || c == L'#';
 }
 
 void Lexer::putBack(Token token) {
     cache.push_front(token);
+}
+
+Lexer::Token Lexer::peek(wistream* is) {
+    Token token = nextToken(is);
+    putBack(token);
+    return token;
 }

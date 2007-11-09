@@ -28,4 +28,3 @@
   (assert (eqv? 1/2 100/2000))
   (assert (eqv? 1/2 100/2000))
   (assert (equal? (number->string 1/2) "1/2")))
-    

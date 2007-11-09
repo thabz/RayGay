@@ -26,57 +26,67 @@ SchemeObject* Parser::parse(wistream* is) {
 SchemeObject* Parser::read(wistream* is) {
     SchemeObject* result;
     Lexer::Token token = lexer->nextToken(is);
+    Lexer::Token tmp_token;
     uint32_t cur_line = lexer->getCurline();
     
     switch(token) {
         case Lexer::NUMBER :
-	   result = lexer->getNumber();
-           break;
+	        result = lexer->getNumber();
+            break;
         case Lexer::STRING :
-           result = SchemeObject::createString(lexer->getString().c_str());
-           break;
+            result = SchemeObject::createString(lexer->getString().c_str());
+            break;
         case Lexer::BOOLEAN :
-           result = lexer->getBool() ? S_TRUE : S_FALSE;
-           break;
+            result = lexer->getBool() ? S_TRUE : S_FALSE;
+            break;
         case Lexer::CHAR :
-           result = SchemeObject::createChar(lexer->getChar());
-           break;
+            result = SchemeObject::createChar(lexer->getChar());
+            break;
         case Lexer::SYMBOL :
-           result = SchemeObject::createSymbol(lexer->getString().c_str());
-           decorateWithLineNumber(result, cur_line);           
-           break;
+            result = SchemeObject::createSymbol(lexer->getString().c_str());
+            decorateWithLineNumber(result, cur_line);           
+            break;
         case Lexer::OPEN_PAREN :
-           result = read_list(is);
-           if (result != S_EMPTY_LIST) {
-               decorateWithLineNumber(result, cur_line);           
-           }
-           break;
+        case Lexer::OPEN_BRACKET : 
+            result = read_list(is);
+            tmp_token = lexer->nextToken(is); 
+            if (token == Lexer::OPEN_PAREN && tmp_token != Lexer::CLOSE_PAREN) {
+                throw scheme_exception(cur_line, L"Unbalanced parentheses");
+            } else if (token == Lexer::OPEN_BRACKET && tmp_token != Lexer::CLOSE_BRACKET) {
+                throw scheme_exception(cur_line, L"Unbalanced brackets");
+            } else if (result != S_EMPTY_LIST) {
+                decorateWithLineNumber(result, cur_line);           
+            }
+            break;
         case Lexer::HASH_OPEN_PAREN :
-           result = s_list_2_vector(read_list(is));
-           break;
+            result = s_list_2_vector(read_list(is));
+            if (lexer->nextToken(is) != Lexer::CLOSE_PAREN) {
+                throw scheme_exception(cur_line, L"Unbalanced parentheses");
+            }
+            break;
         case Lexer::QUOTE :
-           result = read_quoted(is);
-           break;
+            result = read_quoted(is);
+            break;
         case Lexer::BACKQUOTE :
-           result = read_quasiquoted(is);
-           break;
+            result = read_quasiquoted(is);
+            break;
         case Lexer::COMMA :
-           result = read_unquoted(is);
-           break;
+            result = read_unquoted(is);
+            break;
         case Lexer::COMMA_AT :
-           result = read_unquote_spliced(is);
-           break;
-	case Lexer::DATUM_COMMENT :
-	   read(is);  // Ignore following datum
-	   result = read(is);
-    	   break;   
+            result = read_unquote_spliced(is);
+            break;
+	    case Lexer::DATUM_COMMENT :
+	        read(is);  // Ignore following datum
+	        result = read(is);
+    	    break;   
         case Lexer::END :
-           result = NULL;
-           break;
+            result = NULL;
+            break;
         case Lexer::ERROR :
-           throw scheme_exception(cur_line, L"Unknown lexer error");
+            throw scheme_exception(cur_line, L"Unknown lexer error");
         default:
-           throw scheme_exception(cur_line, L"Unexpected token");
+            throw scheme_exception(cur_line, L"Unexpected token");
     }
     if (result != NULL) {
         result->set_immutable(true);
@@ -90,15 +100,16 @@ SchemeObject* Parser::read_list(wistream* is) {
     Lexer::Token token;
     while(true) {
         token = lexer->nextToken(is);
-        if (token == Lexer::CLOSE_PAREN) {
+        if (token == Lexer::CLOSE_PAREN || token == Lexer::CLOSE_BRACKET) {
+            lexer->putBack(token);
             return result;
         } else if (token == Lexer::PERIOD) {
             SchemeObject* cdr = read(is);
-	    if (result == S_EMPTY_LIST) {
+	        if (result == S_EMPTY_LIST) {
                 throw scheme_exception(L"Parser: invalid pair");
-	    }
-	    i_set_cdr_e(result_tail, cdr);
-            if (lexer->nextToken(is) != Lexer::CLOSE_PAREN) {
+	        }
+	        i_set_cdr_e(result_tail, cdr);
+            if (lexer->peek(is) != Lexer::CLOSE_PAREN) {
                 throw scheme_exception(L"Parser: invalid pair");
             }
             return result;
@@ -109,10 +120,10 @@ SchemeObject* Parser::read_list(wistream* is) {
     	    SchemeObject* newcell = i_cons(read(is), S_EMPTY_LIST);
     	    if (result == S_EMPTY_LIST) {
                 result = newcell;
-    		result_tail = newcell;
+    		    result_tail = newcell;
     	    } else {
-    		i_set_cdr_e(result_tail, newcell);
-    		result_tail = newcell;
+    		    i_set_cdr_e(result_tail, newcell);
+    		    result_tail = newcell;
     	    }
         }
     }

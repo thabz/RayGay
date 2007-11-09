@@ -16,12 +16,14 @@ class Lexer
         enum Token {
             OPEN_PAREN,
             CLOSE_PAREN,
+            OPEN_BRACKET,
+            CLOSE_BRACKET,
+            HASH_OPEN_PAREN,
             SYMBOL,
             NUMBER,
             STRING,
             CHAR,
             BOOLEAN,
-            HASH_OPEN_PAREN,
             QUOTE,
             BACKQUOTE,
             COMMA,
@@ -34,6 +36,7 @@ class Lexer
         Lexer();
         Token nextToken(wistream* is);
         void putBack(Token token);
+        Token peek(wistream* is);
         wstring getString() { return str; };
         SchemeObject* getNumber() { return number; };
         bool getBool() { return boolean; };
@@ -41,7 +44,8 @@ class Lexer
         uint32_t getCurline() { return curline; };
         
     private:
-	bool isSymbolChar(wchar_t c);
+	    bool isSymbolChar(wchar_t c);
+	    bool isDelimiter(wchar_t c);
         wstring str;
         SchemeObject* number;
         bool boolean;

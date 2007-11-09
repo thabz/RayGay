@@ -66,21 +66,39 @@ void assert_fail(Scheme* s, wstring expression) {
 }
 
 void test_tokenizer() {
-    wistream* is = new wistringstream(L"(+ 1.5 (2 . \"\\\\\\aHej\\\"\") .x)");
+    wistream* is = new wistringstream(L"(+ 1.5 [(2 . \"\\\\\\aHej\\\"\")] .x 1)");
     Lexer* l = new Lexer();
     assert(l->nextToken(is) == Lexer::OPEN_PAREN);
     assert(l->nextToken(is) == Lexer::SYMBOL);
     assert(l->getString() == L"+");
-    assert(l->nextToken(is) == Lexer::NUMBER);
+    Lexer::Token token = l->nextToken(is);
+    assert(token == Lexer::NUMBER);
     assert(l->getNumber()->toString() == SchemeObject::createRealNumber(1.5)->toString());
+    l->putBack(token);
+    token = l->peek(is);
+    assert(token == Lexer::NUMBER);
+    assert(l->nextToken(is) == Lexer::NUMBER);
+    assert(l->nextToken(is) == Lexer::OPEN_BRACKET);
     assert(l->nextToken(is) == Lexer::OPEN_PAREN);
     assert(l->nextToken(is) == Lexer::NUMBER);
     assert(l->getNumber()->toString() == SchemeObject::createIntegerNumber(2)->toString());
     assert(l->nextToken(is) == Lexer::PERIOD);
     assert(l->nextToken(is) == Lexer::STRING);
     assert(l->getString() == L"\\aHej\"");
+    assert(l->peek(is) == Lexer::CLOSE_PAREN);
     assert(l->nextToken(is) == Lexer::CLOSE_PAREN);
+    assert(l->peek(is) == Lexer::CLOSE_BRACKET);
+    assert(l->nextToken(is) == Lexer::CLOSE_BRACKET);
     assert(l->nextToken(is) == Lexer::SYMBOL);
+    assert(l->getString() == L".x");
+    Lexer::Token t1 = l->nextToken(is);
+    assert(t1 == Lexer::NUMBER);
+    Lexer::Token t2 = l->nextToken(is);
+    assert(t2 == Lexer::CLOSE_PAREN);
+    l->putBack(t2);
+    l->putBack(t1);
+    assert(l->peek(is) == t1);
+    assert(l->nextToken(is) == Lexer::NUMBER);
     assert(l->nextToken(is) == Lexer::CLOSE_PAREN);
     assert(l->nextToken(is) == Lexer::END);
     delete is;
@@ -91,6 +109,7 @@ void test_tokenizer() {
     assert(l->nextToken(is) == Lexer::BOOLEAN);
     assert(l->getBool() == true);
     assert(l->nextToken(is) == Lexer::SYMBOL);
+    assert(l->getString() == L"f");
     assert(l->nextToken(is) == Lexer::END);
     delete is;
     
@@ -133,39 +152,51 @@ void test_objects() {
     assert(sizeof(SchemeObject) == 12);
 }
 
-void test_parser() {
-    wistream* is = new wistringstream(L"(+ 1.5 (list? \"Hej\"))");
-    Parser* p = new Parser();
-    SchemeObject* t = p->parse(is);
-    SchemeObject* e = s_car(t);
-    assert(s_car(e)->type() == SchemeObject::SYMBOL);
-    assert(s_cadr(e)->type() == SchemeObject::REAL_NUMBER);
-    SchemeObject* inner = s_caddr(e);
-    assert(s_car(inner)->type() == SchemeObject::SYMBOL);
-    assert(s_car(inner)->toString() == L"list?");
-    assert(s_cadr(inner)->type() == SchemeObject::STRING);
-    assert(s_cddr(inner)->type() == SchemeObject::EMPTY_LIST);
-    assert(s_cdddr(e)->type() == SchemeObject::EMPTY_LIST);
-    
-    is = new wistringstream(L"'(x . y)");
-    t = p->parse(is);
-    e = s_car(t);
-    assert(s_car(e)->type() == SchemeObject::SYMBOL);
-    assert(s_car(e)->toString() == L"quote");
-    assert(s_cadr(e)->type() == SchemeObject::PAIR);
-    assert(s_caadr(e)->type() == SchemeObject::SYMBOL);
-    assert(s_caadr(e)->toString() == L"x");
-    assert(s_cdadr(e)->toString() == L"y");
+class test_parser : public Test {
+    public:
+	    void run() {    
+            wistream* is = new wistringstream(L"(+ 1.5 (list? \"Hej\"))");
+            Parser* p = new Parser();
+            SchemeObject* t = p->parse(is);
+            SchemeObject* e = s_car(t);
+            assertTrue(s_car(e)->type() == SchemeObject::SYMBOL);
+            assertTrue(s_cadr(e)->type() == SchemeObject::REAL_NUMBER);
+            SchemeObject* inner = s_caddr(e);
+            assertTrue(s_car(inner)->type() == SchemeObject::SYMBOL);
+            assertTrue(s_car(inner)->toString() == L"list?");
+            assertTrue(s_cadr(inner)->type() == SchemeObject::STRING);
+            assertTrue(s_cddr(inner)->type() == SchemeObject::EMPTY_LIST);
+            assertTrue(s_cdddr(e)->type() == SchemeObject::EMPTY_LIST);
+            
+            is = new wistringstream(L"'(x . y)");
+            t = p->parse(is);
+            e = s_car(t);
+            assertTrue(s_car(e)->type() == SchemeObject::SYMBOL);
+            assertTrue(s_car(e)->toString() == L"quote");
+            assertTrue(s_cadr(e)->type() == SchemeObject::PAIR);
+            assertTrue(s_caadr(e)->type() == SchemeObject::SYMBOL);
+            assertTrue(s_caadr(e)->toString() == L"x");
+            assertTrue(s_cdadr(e)->toString() == L"y");
+            
+            is = new wistringstream(L"`(a b)");
+            t = p->parse(is);
+            e = s_car(t);
+            assertTrue(s_car(e)->type() == SchemeObject::SYMBOL);
+            assertTrue(s_car(e)->toString() == L"quasiquote");
+            assertTrue(s_cadr(e)->type() == SchemeObject::PAIR);
+            assertTrue(s_caadr(e)->type() == SchemeObject::SYMBOL);
+            assertTrue(s_caadr(e)->toString() == L"a");
 
-    is = new wistringstream(L"`(a b)");
-    t = p->parse(is);
-    e = s_car(t);
-    assert(s_car(e)->type() == SchemeObject::SYMBOL);
-    assert(s_car(e)->toString() == L"quasiquote");
-    assert(s_cadr(e)->type() == SchemeObject::PAIR);
-    assert(s_caadr(e)->type() == SchemeObject::SYMBOL);
-    assert(s_caadr(e)->toString() == L"a");
-}
+            is = new wistringstream(L"`[a b]");
+            t = p->parse(is);
+            e = s_car(t);
+            assertTrue(s_car(e)->type() == SchemeObject::SYMBOL);
+            assertTrue(s_car(e)->toString() == L"quasiquote");
+            assertTrue(s_cadr(e)->type() == SchemeObject::PAIR);
+            assertTrue(s_caadr(e)->type() == SchemeObject::SYMBOL);
+            assertTrue(s_caadr(e)->toString() == L"a");
+        }
+};
 
 void test_interpreter() {
     Scheme* s = new Scheme();
@@ -206,6 +237,7 @@ void test_interpreter() {
     // Test or and and
     assert_eval(s, L"(and (= 2 2) (> 2 1))", L"#t");
     assert_eval(s, L"(and (= 2 2) (< 2 1))", L"#f");
+    assert_eval(s, L"(and [= 2 2] [< 2 1])", L"#f");
     assert_eval(s, L"(and 1 2 'c '(f g))", L"(f g)");
     assert_eval(s, L"(and)", L"#t");
     assert_eval(s, L"(or)", L"#f");
@@ -798,6 +830,7 @@ void test_equals() {
     assert_eval(s, L"(equal? \"abc\" \"abc\")" , L"#t");
     assert_eval(s, L"(equal? '(1 2 3) '(1 2 3))" , L"#t");
     assert_eval(s, L"(equal? '(1 2 (a  b) 3) '(1 2 (a b) 3))" , L"#t");
+    assert_eval(s, L"(equal? '(1 2 [a  b] 3) '(1 2 (a b) 3))" , L"#t");
     assert_eval(s, L"(equal? '(1 2 (a c) 3) '(1 2 (a b) 3))" , L"#f");
     assert_eval(s, L"(equal? -0.0 0.0)" , L"#t");
     assert_eval(s, L"(equal? #f '())", L"#f");
@@ -1454,7 +1487,8 @@ class test_bigint : public Test {
 
 int main(int argc, char *argv[]) {
     TestSuite suite;
-    suite.add("bigint", new test_bigint());
+    suite.add("Parser", new test_parser());
+    suite.add("Bigint", new test_bigint());
     suite.add("Vector", new test_vector());
     suite.run();
     suite.printStatus();
@@ -1466,10 +1500,6 @@ int main(int argc, char *argv[]) {
 
         cout << "Test objects...         ";
         test_objects();
-        cout << " OK" << endl;
-        
-        cout << "Test parser...          ";
-        test_parser();
         cout << " OK" << endl;
         
         cout << "Test interpreter...     ";
