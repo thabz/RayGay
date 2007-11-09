@@ -510,6 +510,10 @@ fn_ptr eval_if(Interpreter::State* state) {
     bool condition = scm2bool(trampoline((fn_ptr)&eval, state));
     stack.pop_back();
 
+    if (i_cdr(i_cdr(p)) != S_EMPTY_LIST && i_cdr(i_cdr(i_cdr(p))) != S_EMPTY_LIST) {
+        throw scheme_exception(spair->src_line(), L"Too many expressions in if-statement.");
+    }
+
     if (condition) {
         // Evaluate and return true case
         SchemeObject* true_case = i_car(i_cdr(p));
