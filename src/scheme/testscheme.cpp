@@ -187,6 +187,7 @@ void test_interpreter() {
     assert_eval(s, L"(if #f 'a)", L"#<unspecified>");
     assert_fail(s, L"(if)");
     assert_fail(s, L"(if #t)");
+    assert_fail(s, L"(if #t 'a 'b 'c)");
     
     // test define
     assert_eval(s, L"(define a 10) a", L"10");
