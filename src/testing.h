@@ -58,18 +58,18 @@ class TestSuite {
 
 void TestSuite::run() {
     for(unsigned int i = 0; i < tests.size(); i++) {
-	try {
-	    cout << "    ";
-	    cout << setw(40) << left;
-	    cout << tests[i]->getName();
-	    cout << flush;        
-	    tests[i]->run();
-       	    tests[i]->printStatus();
-	} catch (Exception e) {
-	    cout << "Exception: " << e.getMessage() 
-		<< " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
-	    exit(EXIT_FAILURE);
-	}
+	    try {
+	        cout << "    ";
+	        cout << setw(40) << left;
+	        cout << tests[i]->getName();
+	        cout << flush;        
+	        tests[i]->run();
+           	    tests[i]->printStatus();
+	    } catch (Exception e) {
+	        cout << "Exception: " << e.getMessage() 
+	    	<< " at " << e.getSourceFile() << ":" << e.getSourceLine() << endl;
+	        exit(EXIT_FAILURE);
+	    }
     }
 }
 
@@ -109,18 +109,18 @@ string Test::getName() {
 void Test::_assertTrue(bool expr, char* filename, int line, char* expr_code) {
     total_asserts++;
     if (expr) {
-	succeded_asserts++;
+	    succeded_asserts++;
     } else {
-	char line_c[10];
-	sprintf(line_c,"%d",line);
-	string error_text = "Failed test: ";
-	error_text += string(filename);
-	error_text += ":";
-	error_text += string(line_c);
-	error_text += ":";
-	error_text += string(expr_code);
-	failed_output.push_back(error_text);
-	failed_asserts++;
+	    char line_c[10];
+	    sprintf(line_c,"%d",line);
+	    string error_text = "Failed test: ";
+	    error_text += string(filename);
+	    error_text += ":";
+	    error_text += string(line_c);
+	    error_text += ":";
+	    error_text += string(expr_code);
+	    failed_output.push_back(error_text);
+	    failed_asserts++;
     }
 }
 

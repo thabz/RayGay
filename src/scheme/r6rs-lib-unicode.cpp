@@ -4,9 +4,10 @@
 #include "r6rs-lib-unicode.h"
 
 enum category_ids {
-    Lu, Ll, Lt, Lm, Lo, Mn, Mc, Me, Nd, Nl, No, 
-    Ps, Pe, Pi, Pf, Pd, Pc, Po, Sc, Sm, Sk, So, Zs, Zp, Zl, Cc, 
-    Cf, Cs, Co, Cn, LastCatId
+    Lu, Ll, Lt, Lm, Lo, Mn, Mc, Me, 
+    Nd, Nl, No, Ps, Pe, Pi, Pf, Pd, 
+    Pc, Po, Sc, Sm, Sk, So, Zs, Zp, 
+    Zl, Cc, Cf, Cs, Co, Cn, LastCatId
 };
 
 #include "r6rs-lib-unicode-categories.h"

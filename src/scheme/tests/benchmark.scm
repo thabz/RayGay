@@ -74,11 +74,11 @@
 
 (define (bench)
   (begin
-  (do ((i 0 (+ 1 i)))
-      ((= i 1000000))
-      (set! sum (+ sum (iso-func1 1.1 2.1 3.01))))
-  (display sum)
-  (newline)))
+    (do ((i 0 (+ 1 i)))
+        ((= i 1000000))
+        (set! sum [+ sum (iso-func1 1.1 2.1 3.01)]))
+    (display sum)
+    (newline)))
 
 (bench)
 
