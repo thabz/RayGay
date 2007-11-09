@@ -123,9 +123,8 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                                 if (*(p+1) == L'\0') {
                                     // Found a match
                                     chr = char_values[i];
-                                    c = is->get();
-                                    if (c == L' ' || c == L')' || is->eof()) {
-                                        is->unget();
+                                    c = is->peek();
+                                    if (c == L' ' || c == L')' || c == L'(' || is->eof()) {
                                         return Lexer::CHAR;
                                     } else {
                                         cerr << "Illegal char" << endl;
@@ -142,9 +141,8 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                     // then the character following <character> must be a delimiter 
                     // character such as a space or parenthesis.
                     chr = is->get();
-                    c = is->get();
-                    if (c == L' ' || c == L')' || is->eof()) {
-                        is->unget();
+                    c = is->peek();
+                    if (c == L' ' || c == L')' || c == L'(' || is->eof()) {
                         return Lexer::CHAR;
                     } else {
                         cerr << "Illegal char" << endl;
@@ -154,14 +152,12 @@ Lexer::Token Lexer::nextToken(wistream* is) {
 		            is->unget();
 		            break;
                 }
-            case L'.' : {
-                wchar_t e = is->get();
-                if ((std::iswspace(e))) {
+            case L'.' : 
+                if (std::iswspace(is->peek())) {
+                    is->ignore();
                     return Lexer::PERIOD;
                 }
-                is->unget();
                 break;
-                }
             case L'"':
                 str = L"";
                 while (!is->eof()) {
