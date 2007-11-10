@@ -842,6 +842,8 @@ void test_equals() {
     assert_eval(s, L"(equal? '(1 2 (a c) 3) '(1 2 (a b) 3))" , L"#f");
     assert_eval(s, L"(equal? -0.0 0.0)" , L"#t");
     assert_eval(s, L"(equal? #f '())", L"#f");
+    assert_eval(s, L"(equal? 'a 'a)", L"#t");
+    assert_eval(s, L"(equal? 'a 'b)", L"#f");
 
     assert_eval(s, L"(eq? 'a 'a)" , L"#t");
     assert_eval(s, L"(eq? (list 'a) (list 'a))" , L"#f");

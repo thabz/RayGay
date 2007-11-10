@@ -444,6 +444,7 @@ extern SchemeObject* unnamed_symbol;
 extern SchemeObject* define_syntax_symbol;
 extern SchemeObject* let_syntax_symbol;
 extern SchemeObject* letrec_syntax_symbol;
+extern SchemeObject* ellipsis_symbol;
 extern SchemeObject* unnamed_symbol;
 
 #endif

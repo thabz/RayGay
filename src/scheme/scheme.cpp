@@ -81,9 +81,10 @@ SchemeObject* define_symbol;
 SchemeObject* define_macro;
 SchemeObject* set_e_symbol;
 SchemeObject* define_syntax_symbol;
+SchemeObject* unnamed_symbol;
 SchemeObject* let_syntax_symbol;
 SchemeObject* letrec_syntax_symbol;
-SchemeObject* unnamed_symbol;
+SchemeObject* ellipsis_symbol;
 
 SchemeObject* current_input_port = NULL;
 SchemeObject* current_output_port = NULL;
@@ -305,6 +306,7 @@ Scheme::Scheme() {
         define_syntax_symbol = SchemeObject::createSymbol(L"define-syntax");
         let_syntax_symbol = SchemeObject::createSymbol(L"let-syntax");
         letrec_syntax_symbol = SchemeObject::createSymbol(L"letrec-syntax");
+        ellipsis_symbol = SchemeObject::createSymbol(L"...");
         
         Heap* heap = Heap::getUniqueInstance();
 
@@ -445,6 +447,8 @@ SchemeObject* s_equal_p(SchemeObject* a, SchemeObject* b) {
         result = scm2int(a) == scm2int(b);    
     } else if (ta == SchemeObject::RATIONAL_NUMBER && tb == SchemeObject::RATIONAL_NUMBER) {
         result = scm2rational(a) == scm2rational(b);  
+    } else if (ta == SchemeObject::SYMBOL && tb == SchemeObject::SYMBOL) {
+        result = a == b;
     } else {
         result = a->toString() == b->toString();
     }
