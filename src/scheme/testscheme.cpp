@@ -200,9 +200,12 @@ class test_parser : public Test {
             try {
                 p->parse(new wistringstream(L"[(a b])"));
                 assertTrue(false);
-            } catch (scheme_exception e) {
-                
-            }
+            } catch (scheme_exception e) { }
+
+            try {
+                p->parse(new wistringstream(L"(a . b c)"));
+                assertTrue(false);
+            } catch (scheme_exception e) { }
         }
 };
 
