@@ -441,5 +441,9 @@ extern SchemeObject* define_symbol;
 extern SchemeObject* define_macro;
 extern SchemeObject* set_e_symbol;
 extern SchemeObject* unnamed_symbol;
+extern SchemeObject* define_syntax_symbol;
+extern SchemeObject* let_syntax_symbol;
+extern SchemeObject* letrec_syntax_symbol;
+extern SchemeObject* unnamed_symbol;
 
 #endif

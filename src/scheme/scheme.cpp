@@ -80,6 +80,9 @@ SchemeObject* unquote_splicing_symbol;
 SchemeObject* define_symbol;
 SchemeObject* define_macro;
 SchemeObject* set_e_symbol;
+SchemeObject* define_syntax_symbol;
+SchemeObject* let_syntax_symbol;
+SchemeObject* letrec_syntax_symbol;
 SchemeObject* unnamed_symbol;
 
 SchemeObject* current_input_port = NULL;
@@ -299,6 +302,10 @@ Scheme::Scheme() {
         define_symbol = SchemeObject::createSymbol(L"define");
         define_macro = SchemeObject::createSymbol(L"define-macro");
         set_e_symbol = SchemeObject::createSymbol(L"set!");
+        define_syntax_symbol = SchemeObject::createSymbol(L"define-syntax");
+        let_syntax_symbol = SchemeObject::createSymbol(L"let-syntax");
+        letrec_syntax_symbol = SchemeObject::createSymbol(L"letrec-syntax");
+        
         Heap* heap = Heap::getUniqueInstance();
 
         heap->addRoot(current_output_port);
