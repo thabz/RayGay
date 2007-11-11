@@ -103,8 +103,8 @@ int repl() {
 int runfile(char* filename) {
     wifstream* ifs = new wifstream(filename, ios::in);
     try {
-        std::locale loc("");
-        ifs->imbue(loc);
+        //std::locale loc("");
+        ifs->imbue(wcout.getloc());
     } catch (std::runtime_error e) {
         cout << "Warning: can't read system locale. UTF-8 files won't be read correctly." << endl;
     }
