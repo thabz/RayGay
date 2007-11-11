@@ -19,40 +19,60 @@
 #include <config.h>
 #endif
 
+#if HAVE_LIBREADLINE
+#include <readline/readline.h>
+#include <readline/history.h>
+#endif
+
 using namespace std;
 
 bool verbose = false;
 Scheme* scheme;
 clock_t elapsed;
 
+#if HAVE_LIBREADLINE
+#else
+char* readline(const char* prompt) {
+    char* input = (char*) malloc(64*1024*sizeof(char));
+    cout << "raygay> " << flush;
+    cin.getline(input, 64*1024);
+    if (cin.eof()) {
+        return NULL;
+    } 
+    return input;
+}
+int add_history(const char* line) { }
+#endif
+
 int repl() {
-    wchar_t input[64*1024];
-    
     try {
         scheme = new Scheme();
         ImageFactory::register_procs(scheme);
         MathFactory::register_procs(scheme);
     } catch (scheme_exception e) {
-	wcerr << L"ABORT: " << e.toString() << endl;
+	    wcerr << L"ABORT: " << e.toString() << endl;
         return EXIT_FAILURE;
     }
 
     while (true) {
-        cout << "raygay> " << flush;
-        wcin.getline(input, 64*1024);
-        if (wcin.eof()) {
-    	    // User pressed ctrl-D.
-    	    return EXIT_SUCCESS;
-        } 
-           
-        try {
-           SchemeObject* result = scheme->eval(wstring(input));
-           if (result != S_UNSPECIFIED) {
-               wcout << result->toString() << endl;
-           }
-        } catch (scheme_exception e) {
-    	   wcerr << L"ABORT: " << e.toString() << endl;
+        char* input = ::readline("raygay> ");
+        if (input == NULL) {
+    	    // We got an EOF, because the user pressed ctrl-D.
+            return EXIT_SUCCESS;
         }
+        if (*input != '\0') {
+            ::add_history(input);
+        }   
+        try {
+            wstring winput = SchemeFilenames::toString(string(input));
+            SchemeObject* result = scheme->eval(winput);
+            if (result != S_UNSPECIFIED) {
+                wcout << result->toString() << endl;
+            }
+        } catch (scheme_exception e) {
+    	    wcerr << L"ABORT: " << e.toString() << endl;
+        }
+        free(input);
     }
 }
 

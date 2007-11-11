@@ -61,7 +61,7 @@ queuemanager_LDADD = libtracer.la http/libhttp.la
 #--------------------------------------
 
 repl_SOURCES = repl-main.cpp
-repl_LDADD = libtracer.la 
+repl_LDADD = libtracer.la  @LIBREADLINE@
 
 #--------------------------------------
 
