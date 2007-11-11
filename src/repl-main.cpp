@@ -14,6 +14,7 @@
 #include <time.h>
 #include <locale>
 #include <stdexcept>
+#include <cstdlib>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -42,7 +43,19 @@ char* readline(const char* prompt) {
     return input;
 }
 int add_history(const char* line) { }
+int write_history(const char* line) { }
+int read_history(const char* line) { }
+int truncate_history_file(const char* line, int lines) { }
 #endif
+
+string history_filename() {
+    char* home_c = getenv("HOME");
+    if (home_c == NULL) {
+        return string("");
+    } else {
+        return string(home_c) + "/.raygay_history";
+    }
+}
 
 int repl() {
     try {
@@ -53,11 +66,21 @@ int repl() {
 	    wcerr << L"ABORT: " << e.toString() << endl;
         return EXIT_FAILURE;
     }
+    
+    string history_f = history_filename().c_str();
+    
+    if (history_f != "") {
+        read_history(history_f.c_str());
+    }
 
     while (true) {
         char* input = ::readline("raygay> ");
         if (input == NULL) {
     	    // We got an EOF, because the user pressed ctrl-D.
+    	    if (history_f != "") {
+                write_history(history_f.c_str());
+                history_truncate_file(history_f.c_str(), 1000);
+            }
             return EXIT_SUCCESS;
         }
         if (*input != '\0') {
@@ -74,6 +97,7 @@ int repl() {
         }
         free(input);
     }
+    
 }
 
 int runfile(char* filename) {
