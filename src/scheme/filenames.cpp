@@ -13,7 +13,6 @@ std::string SchemeFilenames::toFilename(std::wstring str) {
 std::wstring SchemeFilenames::toString(std::string s) {
     size_t length = s.size();        
     wchar_t wcstring[length+1];
-    wcstring[length] = 0;
     ::mbstowcs(wcstring, s.c_str(), length+1);
-    return std::wstring(wcstring, length);        
+    return std::wstring(wcstring);        
 }
