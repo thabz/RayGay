@@ -12,8 +12,40 @@
 /*
  Syntax definitions are valid only at the top level of a <program>.
  There is no define-syntax analogue of internal definitions.
-*/ 
+*/
 
+SchemeObject* Syntax::transcribe(SchemeObject* transformer, SchemeObject* expr) {
+    SchemeObject* templat = find_template(transformer, expr);
+    if (templat == NULL) {
+        throw scheme_exception(L"Invalid construct: " + expr.toString());
+    }
+    
+} 
+
+/**
+ * Find the template that correspond to the pattern that matches an expression.
+ *
+ * @param transformer the body of a syntax-rules
+ * @param expr the expression to transform 
+ * @return the corresponding template of the pattern that matches the expression
+ *         or NULL if none found.
+ */
+SchemeObject* Syntax::find_template(SchemeObject* transformer, SchemeObject* expr) {
+    SchemeObject* literals = i_car(transformer);
+    SchemeObject* syntax_rules = i_cdr(transformer);
+    // Iterate through all syntax-rules and find the pattern the matches
+    // the expr. Then return the corresponding template.
+    while (syntax_rules != S_EMPTY_LIST) {
+        SchemeObject* syntax_rule = i_car(syntax_rules);
+        SchemeObject* pattern = i_car(syntax_rule);
+        if (matches(literals, pattern, expr)) {
+            // Return the template
+            return i_cadr(syntax_rule);
+        }
+        syntax_rules = i_cdr(syntax_rules);
+    }
+    return NULL;
+}
 
 
 /**
@@ -30,6 +62,18 @@ bool Syntax::matches(SchemeObject* literals, SchemeObject* P, SchemeObject* F) {
             // the identifier ... and F is a proper list of at least n forms, 
             // the first n of which match P1 through Pn, respectively, and each 
             // remaining element of F matches Pn+1.
+            if (i_pair_p(i_cdr(P)) == S_TRUE && i_cadr(P) == ellipsis_symbol) {
+                SchemeObject* Pn1 = i_car(P);
+                while (F != S_EMPTY_LIST) {
+                    if (!matches(literals, Pn1, i_car(F))) return false;
+                    F = i_cdr(F);
+                }
+                return true;
+            } else {
+                return i_pair_p(F) == S_TRUE &&
+                       matches(literals, i_car(P), i_car(F)) &&
+                       matches(literals, i_cdr(P), i_cdr(F));    
+            }
         } else {
             // P is a list (P1 ... Pn) and F is a list of n 
             // forms that match P1 through Pn, respectively.

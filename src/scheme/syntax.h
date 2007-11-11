@@ -2,7 +2,6 @@
 #ifndef SCHEME_SYNTAX_H
 #define SCHEME_SYNTAX_H
 
-// This is what (syntax-rules ...) returns
 // These are bound to names by define-syntax, let-syntax or letrec-syntax
 class Transformer {
       
