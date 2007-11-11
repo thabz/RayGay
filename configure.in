@@ -80,7 +80,7 @@ dnl trunc,fmax,fmin are C99 functions and not available on older systems
 AC_CHECK_FUNCS(trunc fmax fmin)
 
 dnl -------------------------------------------------
-dnl readline
+dnl Check for readline. Macro taken from autoconf manual.
 dnl -------------------------------------------------
 AC_ARG_WITH([readline],
 	[AS_HELP_STRING([--with-readline],
