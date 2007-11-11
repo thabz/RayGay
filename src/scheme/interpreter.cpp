@@ -152,7 +152,7 @@ fn_ptr eval(Interpreter::State* state) {
         return NULL;
     } else if (type == SchemeObject::SYMBOL) {
         SchemeObject* symbol = s;
-	s = state->global_envt->getBinding(symbol);
+	    s = state->global_envt->getBinding(symbol);
         if (s == NULL) {
             throw scheme_exception(symbol->src_line(), L"Unbound variable " + wstring(symbol->str));
         }
@@ -268,7 +268,7 @@ fn_ptr eval_list(Interpreter::State* state) {
             throw scheme_exception(p->src_line(), L"Wrong type to apply : " + proc->toString());	
         }
     } else {
-	throw scheme_exception(s->src_line(), L"Unbound variable: " + s->toString());	
+	    throw scheme_exception(s->src_line(), L"Unbound variable: " + s->toString());	
     }
     return NULL; // Never reached
 }
