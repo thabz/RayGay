@@ -31,7 +31,7 @@ class Scheme {
         SchemeObject* lookupOrFail(SchemeObject* symbol, SchemeObject* envt = NULL);
         
         // For assigning built-in functions at top-level-frame
-	void assign(wstring variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* b = NULL);
+	    void assign(wstring variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* b = NULL);
 
         // For calls from embedding code
         SchemeObject* callProcedure_1(SchemeObject* s_proc, SchemeObject*);
@@ -40,6 +40,9 @@ class Scheme {
         
         // Force a garbage collection
         void forceGarbageCollection();
+        
+        // Get interaction environment
+        SchemeObject* getInteractionEnvironment();
 
     private:
 };

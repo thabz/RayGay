@@ -598,28 +598,51 @@ void SchemeObject::defineBinding(SchemeObject* symbol, SchemeObject* o) {
 
 void SchemeObject::setBinding(SchemeObject* symbol, SchemeObject* o) {
     for(SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
-	ObjectType t = envt->type();
-	if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
-	    SchemeObject* list = envt->binding_list;
-	    while (list != S_EMPTY_LIST) {
-		SchemeObject* binding = i_car(list);
-		if (i_car(binding) == symbol) {
-		    i_set_cdr_e(binding, o);
-		    return;
-		}
-		list = i_cdr(list);
-	    }
-	} else if (t == SchemeObject::ENVIRONMENT) {
+	    ObjectType t = envt->type();
+	    if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
+	        SchemeObject* list = envt->binding_list;
+	        while (list != S_EMPTY_LIST) {
+	    	    SchemeObject* binding = i_car(list);
+	    	    if (i_car(binding) == symbol) {
+	    	        i_set_cdr_e(binding, o);
+	    	        return;
+	    	    }
+	    	    list = i_cdr(list);
+	        }
+	    } else if (t == SchemeObject::ENVIRONMENT) {
             binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
             if (v != envt->binding_map->end()) {
                 v->second = o;  
                 return;
-       	    }
-    	} else {
-	    throw scheme_exception(L"Not an environment");
-	}
+           	}
+        } else {
+	        throw scheme_exception(L"Not an environment");
+	    }
     }
     throw scheme_exception(L"Unbound variable: " + symbol->toString());
+}
+
+vector<SchemeObject*> SchemeObject::getBindingKeys() {
+    vector<SchemeObject*> result;
+    for(SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
+	    ObjectType t = envt->type();
+	    if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
+	        SchemeObject* list = envt->binding_list;
+	        while (list != S_EMPTY_LIST) {
+                result.push_back(i_car(list));
+	    	    list = i_cdr(list);
+	        }
+	    } else if (t == SchemeObject::ENVIRONMENT) {
+            binding_map_t::iterator v = envt->binding_map->begin();
+            while (v != envt->binding_map->end()) {
+                result.push_back(v->first);
+                v++;
+            }
+        } else {
+	        throw scheme_exception(L"Not an environment");
+	    }        
+    } 
+    return result;   
 }
 
 //-----------------------------------------------------------

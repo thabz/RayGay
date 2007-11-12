@@ -158,10 +158,10 @@ class SchemeObject
         SchemeObject* getVectorElem(int index);
         void setVectorElem(SchemeObject* o, int index);
 
-	SchemeObject* getBinding(SchemeObject* name);
+	    SchemeObject* getBinding(SchemeObject* name);
         void defineBinding(SchemeObject* name, SchemeObject* o);
         void setBinding(SchemeObject* name, SchemeObject* o);
-        
+        vector<SchemeObject*> getBindingKeys();
         wstring nameAsString();
         
         // For WRAPPED_C_OBJECT

@@ -401,6 +401,10 @@ SchemeObject* Scheme::lookup(wstring variable, SchemeObject* envt) {
     return lookup(symbol, envt);
 }
 
+SchemeObject* Scheme::getInteractionEnvironment() {
+    return interaction_environment;
+}
+
 void Scheme::forceGarbageCollection() {
     Heap::getUniqueInstance()->garbageCollect(stack);
 }

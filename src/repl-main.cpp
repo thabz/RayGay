@@ -57,6 +57,30 @@ string history_filename() {
     }
 }
 
+char* binding_completion_function(const char* text, int state) {
+    static uint list_index;
+    static vector<SchemeObject*> binding_keys;
+    if (!state) {
+        list_index = 0;
+        binding_keys = scheme->getInteractionEnvironment()->getBindingKeys();
+    }
+    wstring wtext = SchemeFilenames::toString(string(text));
+    string prefix = "";
+    if (wtext[0] == L'(') {
+        prefix = "(";
+        wtext = wtext.substr(1);
+    }
+    while(list_index < binding_keys.size()) {
+        wstring wkey = binding_keys[list_index]->toString();
+        list_index++;
+        if (wkey.find(wtext) == 0) {
+            string key = prefix + SchemeFilenames::toFilename(wkey);
+            return strdup(key.c_str());
+        }
+    }
+    return NULL;
+}
+
 int repl() {
     try {
         scheme = new Scheme();
@@ -68,10 +92,12 @@ int repl() {
     }
     
     string history_f = history_filename().c_str();
+
     
     if (history_f != "") {
         read_history(history_f.c_str());
     }
+    rl_completion_entry_function = binding_completion_function;
 
     while (true) {
         char* input = ::readline("raygay> ");
