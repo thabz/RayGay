@@ -38,6 +38,7 @@ class Lexer
         void putBack(Token token);
         Token peek(wistream* is);
         wstring getString() { return str; };
+        wstring getError() { return error; };
         SchemeObject* getNumber() { return number; };
         bool getBool() { return boolean; };
         wchar_t getChar() { return chr; };
@@ -50,6 +51,7 @@ class Lexer
         wchar_t readEscapedChar(wistream* is);
         wchar_t readHexEscape(wistream* is);
         wstring str;
+        wstring error;
         SchemeObject* number;
         bool boolean;
         wchar_t chr;

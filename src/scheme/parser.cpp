@@ -84,7 +84,7 @@ SchemeObject* Parser::read(wistream* is) {
             result = NULL;
             break;
         case Lexer::ERROR :
-            throw scheme_exception(cur_line, L"Unknown lexer error");
+            throw scheme_exception(cur_line, lexer->getError());
         default:
             throw scheme_exception(cur_line, L"Unexpected token");
     }

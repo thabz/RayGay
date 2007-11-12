@@ -24,7 +24,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
         return Lexer::END;
     }
     if (is->fail()) {
-        cerr << "Lexer failed reading input-stream. File missing?" << endl;
+        error = L"Lexer failed reading input-stream. File missing?";
         return Lexer::ERROR;
     }
     while(!is->fail()) 
@@ -66,7 +66,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                 }
                 while (depth > 0) {
                     if (is->eof() || d == -1) {
-                        cerr << "Unexpected end of input in nested comment" << endl;
+                        error = L"Unexpected end of input in nested comment";
                         return Lexer::ERROR;
                     }
                     if (p == L'|' && d == L'#') { 
@@ -131,7 +131,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                                     if (isDelimiter(c) || is->eof()) {
                                         return Lexer::CHAR;
                                     } else {
-                                        cerr << "Illegal char" << endl;
+                                        error = L"Illegal char";
                                         return Lexer::ERROR;
                                     }
                                 }
@@ -149,7 +149,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                     if (isDelimiter(c) || is->eof()) {
                         return Lexer::CHAR;
                     } else {
-                        cerr << "Illegal char" << endl;
+                        error = L"Illegal char";
                         return Lexer::ERROR;
                     }
                 } else {
@@ -169,7 +169,6 @@ Lexer::Token Lexer::nextToken(wistream* is) {
 		            if (c == L'\\') {
                         c = readEscapedChar(is);
                         if (c == -1) {
-                            cerr << "Illegal char escape in string" << endl;
                             return Lexer::ERROR;
                         }
                     } else if (c == L'"') {
@@ -208,8 +207,12 @@ Lexer::Token Lexer::nextToken(wistream* is) {
 	        return Lexer::NUMBER;
 	    }
     }
-    // TODO: Check out why the stream has failed and throw exception
-    return is->eof() ? Lexer::END : Lexer::ERROR;
+    if (is->eof()) {
+        return Lexer::END;
+    } else {
+        error = L"Unknown error reading inputstream";
+        return Lexer::ERROR;
+    }
 }
 
 bool Lexer::isSymbolChar(wchar_t c) {
@@ -244,7 +247,10 @@ const wchar_t escape_values[] = {0x7,0x8,0x9,0xA,0xB,0xC,0xD,0x22,0x5C};
 
 wchar_t Lexer::readEscapedChar(wistream* is) {
     wchar_t c = is->get();
-    if (is->eof()) return -1;
+    if (is->eof()) {
+        error = L"Unexpected end of file";
+        return -1;
+    }
     wstring::size_type pos = escape_sequences.find(c);
     if (pos != escape_sequences.npos) {
         return escape_values[pos];
@@ -254,6 +260,7 @@ wchar_t Lexer::readEscapedChar(wistream* is) {
             return result;
         }
     }
+    error = L"Unvalid char-escape";
     return -1;
 }
 
@@ -262,7 +269,7 @@ wchar_t Lexer::readHexEscape(wistream* is) {
     (*is) >> hex >> n;
     // Check that n is in legal unicode range
     if (n < 0 || (n >= 0xD800 && n < 0xE000) || n >= 0x110000) {
-        cerr << "Escaped char in excluded unicode range" << endl;
+        error = L"Escaped char in excluded unicode range";
         return -1;
     }
     return wchar_t(n);
