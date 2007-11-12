@@ -167,7 +167,11 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                 while (!is->eof()) {
                     c = is->get();
 		            if (c == L'\\') {
-		                c = is->get();
+                        c = readEscapedChar(is);
+                        if (c == -1) {
+                            cerr << "Illegal char escape in string" << endl;
+                            return Lexer::ERROR;
+                        }
                     } else if (c == L'"') {
                         break;
 		            }
@@ -233,4 +237,33 @@ Lexer::Token Lexer::peek(wistream* is) {
     Token token = nextToken(is);
     putBack(token);
     return token;
+}
+
+const wstring escape_sequences(L"abtnvfr\"\\");
+const wchar_t escape_values[] = {0x7,0x8,0x9,0xA,0xB,0xC,0xD,0x22,0x5C}; 
+
+wchar_t Lexer::readEscapedChar(wistream* is) {
+    wchar_t c = is->get();
+    wstring::size_type pos = escape_sequences.find(c);
+    if (pos != escape_sequences.npos) {
+        return escape_values[pos];
+    } else if (c == L'x') {
+        wchar_t result = readHexEscape(is);
+        c = is->get();
+        if (c == L';') {
+            return result;
+        }
+    }
+    return -1;
+}
+
+wchar_t Lexer::readHexEscape(wistream* is) {
+    uint64_t n;
+    (*is) >> hex >> n;
+    // Check that n is in legal unicode range
+    if (n < 0 || (n >= 0xD800 && n < 0xE000) || n >= 0x110000) {
+        cerr << "Escaped char in excluded unicode range" << endl;
+        return -1;
+    }
+    return wchar_t(n);
 }

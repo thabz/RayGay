@@ -47,6 +47,8 @@ class Lexer
 	    bool isSymbolChar(wchar_t c);
 	    bool isDelimiter(wchar_t c);
 	    bool isWhitespace(wchar_t c);
+        wchar_t readEscapedChar(wistream* is);
+        wchar_t readHexEscape(wistream* is);
         wstring str;
         SchemeObject* number;
         bool boolean;

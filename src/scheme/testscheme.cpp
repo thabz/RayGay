@@ -66,7 +66,7 @@ void assert_fail(Scheme* s, wstring expression) {
 }
 
 void test_tokenizer() {
-    wistream* is = new wistringstream(L"(+ 1.5 [(2 . \"\\\\\\aHej\\\"\")] .x 1)");
+    wistream* is = new wistringstream(L"(+ 1.5 [(2 . \"\\\\aHej\\\"\")] .x 1)");
     Lexer* l = new Lexer();
     assert(l->nextToken(is) == Lexer::OPEN_PAREN);
     assert(l->nextToken(is) == Lexer::SYMBOL);
@@ -136,6 +136,16 @@ void test_tokenizer() {
     assert_eval(s, L"#\\space#(1 2 3)", L"#(1 2 3)");
     assert_eval(s, L"#\\a(+ 1 2)", L"3");
     assert_eval(s, L"#\\space(+ 1 2)", L"3");
+    
+    // Character escape sequences within string literals
+    assert_eval(s, L"(string->list \"abc\\n\")", L"(#\\a #\\b #\\c #\\newline)");
+    assert_eval(s, L"(string->list \"\\x4f;\\x4B;\\xa;\")", L"(#\\O #\\K #\\newline)");
+    assert_eval(s, L"(string->list \"\\x00000004f;\")", L"(#\\O)");
+    assert_fail(s, L"(string->list \"\\x4f;\\x4B\\xa;\")");
+    assert_fail(s, L"(string->list \"\\x;\")");
+    assert_fail(s, L"(string->list \"\\x41bx;\")");
+    assert_fail(s, L"(string->list \"\\xD800;\")");
+    assert_fail(s, L"(string->list \"\\x00110000;\")");
 }
 
 
