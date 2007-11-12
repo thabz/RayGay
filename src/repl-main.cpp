@@ -47,7 +47,6 @@ int write_history(const char* line) { return 0; }
 int read_history(const char* line) { return 0;  }
 int history_truncate_file(const char* line, int lines) { return 0; }
 char* (*rl_completion_entry_function)(const char*, int);
-//(char* (*)(const char*, int))* rl_completion_entry_function;
 const char* rl_basic_word_break_characters;
 #endif
 
