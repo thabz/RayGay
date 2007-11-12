@@ -340,6 +340,8 @@ Scheme::Scheme() {
         
         eval(L"(define-macro (values . x) `(list ,@x))", scheme_report_environment);
         eval(L"(define-macro (call-with-values f g)  `(apply ,g (,f)))", scheme_report_environment);
+        eval(L"(define-macro (delay e) `(lambda () ,e))", scheme_report_environment);
+        eval(L"(define-macro (force e) `(,e)", scheme_report_environment);
 
     }
 
