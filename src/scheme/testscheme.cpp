@@ -142,7 +142,10 @@ void test_tokenizer() {
     assert_eval(s, L"(string->list \"\\x4f;\\x4B;\\xa;\")", L"(#\\O #\\K #\\newline)");
     assert_eval(s, L"(string->list \"\\x00000004f;\")", L"(#\\O)");
     assert_fail(s, L"(string->list \"\\x4f;\\x4B\\xa;\")");
+    assert_fail(s, L"(string->list \"\\\")");
+    assert_fail(s, L"(string->list \"\\;\")");
     assert_fail(s, L"(string->list \"\\x;\")");
+    assert_fail(s, L"(string->list \"\\x41\")");
     assert_fail(s, L"(string->list \"\\x41bx;\")");
     assert_fail(s, L"(string->list \"\\xD800;\")");
     assert_fail(s, L"(string->list \"\\x00110000;\")");

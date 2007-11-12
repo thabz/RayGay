@@ -244,13 +244,13 @@ const wchar_t escape_values[] = {0x7,0x8,0x9,0xA,0xB,0xC,0xD,0x22,0x5C};
 
 wchar_t Lexer::readEscapedChar(wistream* is) {
     wchar_t c = is->get();
+    if (is->eof()) return -1;
     wstring::size_type pos = escape_sequences.find(c);
     if (pos != escape_sequences.npos) {
         return escape_values[pos];
     } else if (c == L'x') {
         wchar_t result = readHexEscape(is);
-        c = is->get();
-        if (c == L';') {
+        if (!is->eof() && is->get() == L';') {
             return result;
         }
     }
