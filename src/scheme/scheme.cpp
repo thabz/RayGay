@@ -73,6 +73,7 @@ SchemeObject* begin_symbol;
 SchemeObject* and_symbol;
 SchemeObject* or_symbol;
 SchemeObject* lambda_symbol;
+SchemeObject* lambda_symbol_short;
 SchemeObject* quote_symbol;
 SchemeObject* quasiquote_symbol;
 SchemeObject* unquote_symbol;
@@ -271,6 +272,7 @@ Scheme::Scheme() {
         assign(L"and",          SchemeObject::createInternalProcedure(L"and"), null_environment);
         assign(L"or",           SchemeObject::createInternalProcedure(L"or"), null_environment);
         assign(L"lambda",       SchemeObject::createInternalProcedure(L"lambda"), null_environment);
+        assign(L"\x03BB",       SchemeObject::createInternalProcedure(L"\x03BB"), null_environment);
         assign(L"quote",        SchemeObject::createInternalProcedure(L"quote"), null_environment);
         assign(L"quasiquote",   SchemeObject::createInternalProcedure(L"quasiquote"), null_environment);
         assign(L"define",       SchemeObject::createInternalProcedure(L"define"), null_environment);
@@ -298,6 +300,7 @@ Scheme::Scheme() {
         and_symbol = SchemeObject::createSymbol(L"and");
         or_symbol = SchemeObject::createSymbol(L"or");
         lambda_symbol = SchemeObject::createSymbol(L"lambda");
+        lambda_symbol_short = SchemeObject::createSymbol(L"\x03BB");
         quote_symbol = SchemeObject::createSymbol(L"quote");
         quasiquote_symbol = SchemeObject::createSymbol(L"quasiquote");
         define_symbol = SchemeObject::createSymbol(L"define");

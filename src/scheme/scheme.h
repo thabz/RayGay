@@ -436,6 +436,7 @@ extern SchemeObject* begin_symbol;
 extern SchemeObject* and_symbol;
 extern SchemeObject* or_symbol;
 extern SchemeObject* lambda_symbol;
+extern SchemeObject* lambda_symbol_short;
 extern SchemeObject* quote_symbol;
 extern SchemeObject* quasiquote_symbol;
 extern SchemeObject* unquote_symbol;

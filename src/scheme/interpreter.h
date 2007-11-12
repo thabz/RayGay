@@ -11,8 +11,8 @@
 class Interpreter
 {
     public:
-	Interpreter();
-   	SchemeObject* interpret(SchemeObject* parsetree, SchemeObject* top_level_envt);
+	    Interpreter();
+   	    SchemeObject* interpret(SchemeObject* parsetree, SchemeObject* top_level_envt);
         SchemeObject* call_procedure_0(SchemeObject* procedure);
         SchemeObject* call_procedure_1(SchemeObject* procedure, SchemeObject* arg);
         SchemeObject* call_procedure_2(SchemeObject* procedure, SchemeObject* arg1, SchemeObject* arg2);

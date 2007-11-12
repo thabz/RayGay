@@ -221,8 +221,8 @@ fn_ptr eval_list(Interpreter::State* state) {
             } else if (s == quasiquote_symbol) {
                 state->global_arg1 = i_car(cdr);
                 return (fn_ptr)&eval_quasiquote;
-            } else if (s == lambda_symbol) {
-        	SchemeObject* formals = s_car(cdr);
+            } else if (s == lambda_symbol || s == lambda_symbol_short) {
+        	    SchemeObject* formals = s_car(cdr);
                 SchemeObject* body = s_cdr(cdr);
                 state->global_arg1 = formals;
                 state->global_arg2 = body;
