@@ -255,8 +255,19 @@ SchemeObject* s_sqrt(SchemeObject* n) {
 }
 
 // See http://en.wikipedia.org/wiki/Integer_square_root
-SchemeObject* s_exact_integer_sqrt(SchemeObject* n) {
-    throw scheme_exception(L"Not implemented");
+SchemeObject* s_exact_integer_sqrt(SchemeObject* s_n) {
+    assert_arg_positive_int(L"exact-integer-sqrt", 1, s_n);
+    int64_t n = scm2int(s_n);
+    if (n == 0) {
+        return i_cons(S_ZERO, i_cons(S_ZERO, S_EMPTY_LIST));
+    }
+    int64_t xn = n;
+    int64_t x;
+    do {
+        x = xn;
+        xn = (x + (n / x)) / 2;
+    } while (abs(x-xn) > 0);
+    return i_cons(int2scm(xn),i_cons(int2scm(n-xn*xn),S_EMPTY_LIST));
 }
 
 SchemeObject* s_abs(SchemeObject* n) {

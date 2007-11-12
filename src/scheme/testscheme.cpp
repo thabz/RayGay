@@ -488,6 +488,8 @@ void test_math() {
     assert_eval(s, L"(expt 3 -5)" , L"1/243");
     assert_eval(s, L"(expt 3 -11)" , L"1/177147");
     assert_eval(s, L"(expt 4 -12)" , L"1/16777216");
+    assert_eval(s, L"(expt 5 -3)" , L"1/125");
+    assert_eval(s, L"(expt 5 3)" , L"125");
     assert_eval(s, L"(expt -1 -256)" , L"1");
     assert_eval(s, L"(expt -1 -255)" , L"-1");
     assert_eval(s, L"(expt 1/3 -3)" , L"27");
@@ -770,6 +772,13 @@ void test_math() {
     assert_fail(s, L"(sqrt)");
     assert_fail(s, L"(sqrt 'a)");
     assert_fail(s, L"(sqrt 123 456)");
+    assert_fail(s, L"(exact-integer-sqrt -123)");
+    assert_fail(s, L"(exact-integer-sqrt 1.2)");
+    assert_fail(s, L"(exact-integer-sqrt 1 2)");
+    assert_eval(s, L"(exact-integer-sqrt 4)", L"(2 0)");
+    assert_eval(s, L"(exact-integer-sqrt 5)", L"(2 1)");
+    assert_eval(s, L"(exact-integer-sqrt 0)", L"(0 0)");
+    assert_eval(s, L"(exact-integer-sqrt 18)", L"(4 2)");
     assert_eval(s, L"(abs -1)", L"1");
     assert_eval(s, L"(abs -2.0)", L"2.0");
     assert_eval(s, L"(abs 2.0)", L"2.0");
@@ -984,6 +993,10 @@ void test_lambda() {
     assert_fail(s, L"((lambda))");
     // Duplicate formals
     assert_fail(s, L"((lambda (x y y z) x) 10 10 10 10)");  
+    
+    // Delay and force
+    assert_eval(s, L"(force (delay (+ 1 2)))", L"3");
+    assert_eval(s, L"(let ((p (delay (+ 1 2)))) (list (force p) (force p)))", L"(3 3)");
 }
 
 void test_macros() {
