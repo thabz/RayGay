@@ -1100,12 +1100,16 @@ SchemeObject* s_exact_2_inexact(SchemeObject* n) {
     }
 }
 
-SchemeObject* i_double_2_exact(double n) {
+SchemeObject* i_double_2_exact(const double& n) {
     // Asserting that doubles are encoded as per the IEEEE 754 
     // standard, also known as IEC 559.
     assert(numeric_limits<double>::is_iec559);
-    uint64_t d;
-    *((double*)(&d)) = n;
+    assert(sizeof(double) == sizeof(uint64_t));
+    union {
+	uint64_t d;
+	double d_as_double;
+    };
+    d_as_double = n;
     int32_t sign = ((d >> 63) & 1) ? -1 : 1;
     int64_t exponent = ((d >> 52) & 0x07ff);
     uint64_t bit53 = 1;
