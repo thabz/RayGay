@@ -1169,6 +1169,8 @@ char digitToChar(int d, uint32_t radix) {
     }
 }
 
+// See http://jeffreystedfast.blogspot.com/2007/11/parsing-integers.html
+// for a rock solid integer parser in C.
 string extractDigits(wstring s, size_t offset, uint32_t radix) {
     string result;
     uint32_t i = 0;
