@@ -164,6 +164,7 @@ fn_ptr eval_list(Interpreter::State* state) {
     if (heap->timeToGarbageCollect()) {
         heap->addRoot(p);
         heap->addRoot(envt);
+	// TODO: Add the stacks of the other threads 
         heap->garbageCollect(state->stack);
         heap->popRoot();
         heap->popRoot();
