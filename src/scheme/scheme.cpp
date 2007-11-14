@@ -412,8 +412,12 @@ SchemeObject* Scheme::getInteractionEnvironment() {
     return interaction_environment;
 }
 
+Interpreter* Scheme::getInterpreter() {
+    return interpreter;
+}
+
 void Scheme::forceGarbageCollection() {
-    Heap::getUniqueInstance()->garbageCollect(stack);
+    Heap::getUniqueInstance()->garbageCollect(interpreter->getState()->stack);
 }
 
 
@@ -560,19 +564,20 @@ SchemeObject* Scheme::callProcedure_3(SchemeObject* s_proc, SchemeObject* s_arg1
 
 // TODO: Gør denne til en intern function med tail-optimization
 SchemeObject* s_call_cc(SchemeObject* s_proc) {
+    Interpreter::State* state = interpreter->getState();
     assert_arg_type(L"proc", 1, s_procedure_p, s_proc);
     SchemeObject* s_escape = SchemeObject::createContinuation();
-    size_t stack_size = stack.size();
-    stack.push_back(s_escape);
+    size_t stack_size = state->stack.size();
+    interpreter->getState()->stack.push_back(s_escape);
     s_escape->jmpbuf = (::jmp_buf *)::malloc(sizeof(::jmp_buf));
     int kk = setjmp(*(s_escape->jmpbuf));
     if (kk == 0) {
         SchemeObject* result = interpreter->call_procedure_1(s_proc, s_escape);
         // s_proc didn't call the escape-continuation
-        stack.resize(stack_size);
+        state->stack.resize(stack_size);
         return result;
     }
-    stack.resize(stack_size);
+    state->stack.resize(stack_size);
     return s_escape->result;
 }
 
@@ -581,13 +586,14 @@ SchemeObject* s_call_cc(SchemeObject* s_proc) {
 // args is a list (arg1 arg2 ... argn). argn must be a list. proc is called with the arguments
 // (append (list arg1 arg2 ...) argn)
 SchemeObject* s_apply(int num, SchemeStack::iterator args) {
+    Interpreter::State* state = interpreter->getState();
         
     SchemeObject* proc = *args++;
     num--;
     assert_arg_type(L"apply", 1, s_procedure_p, proc);
 
-    stack.push_back(S_EMPTY_LIST);
-    SchemeObject*& collected = stack.back();
+    state->stack.push_back(S_EMPTY_LIST);
+    SchemeObject*& collected = state->stack.back();
     SchemeObject* prev = NULL;
 
     for(int i = 0; i < num; i++) {
@@ -614,7 +620,7 @@ SchemeObject* s_apply(int num, SchemeStack::iterator args) {
             }
         }
     }
-    stack.pop_back();
+    state->stack.pop_back();
     return interpreter->call_procedure_n(proc,collected);
 }
 
@@ -654,7 +660,7 @@ SchemeObject* s_map_internal(wchar_t* procname, int num, SchemeStack::iterator a
            if (result == S_EMPTY_LIST) {
                result = i_cons(result_item, S_EMPTY_LIST);
                prev = result;
-               stack.push_back(result);
+               interpreter->getState()->stack.push_back(result);
            } else {
                SchemeObject* tmp = i_cons(result_item, S_EMPTY_LIST);
                i_set_cdr_e(prev, tmp);
@@ -670,7 +676,7 @@ SchemeObject* s_map_internal(wchar_t* procname, int num, SchemeStack::iterator a
         }
     }
     if (collect && result != S_EMPTY_LIST) {
-        stack.pop_back();
+        interpreter->getState()->stack.pop_back();
     }
     return collect ? result : S_UNSPECIFIED;    
 }

@@ -6,16 +6,6 @@
 
 using namespace std;
 
-/*
-SchemeObject* state->global_ret;
-SchemeObject* state->global_arg1;
-SchemeObject* state->global_arg2;
-SchemeObject* state->global_arg3;
-SchemeObject* state->global_envt;
-*/
-vector<SchemeObject*> stack;
-
-
 //------------------------------------------------------------------------
 // Interpreter
 //------------------------------------------------------------------------
@@ -27,11 +17,11 @@ SchemeObject* Interpreter::call_procedure_n(SchemeObject* procedure, SchemeObjec
     State* state = getState();
     state->global_arg1 = procedure;
     state->global_arg2 = args;
-    stack.push_back(state->global_arg1);
-    stack.push_back(state->global_arg2);
+    state->stack.push_back(state->global_arg1);
+    state->stack.push_back(state->global_arg2);
     SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call, state);
-    stack.pop_back();
-    stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
     return result;
 }
 
@@ -39,11 +29,11 @@ SchemeObject* Interpreter::call_procedure_0(SchemeObject* procedure) {
     State* state = getState();
     state->global_arg1 = procedure;
     state->global_arg2 = S_EMPTY_LIST;
-    stack.push_back(state->global_arg1);
-    stack.push_back(state->global_arg2);
+    state->stack.push_back(state->global_arg1);
+    state->stack.push_back(state->global_arg2);
     SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call, state);
-    stack.pop_back();
-    stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
     return result;
 }
 
@@ -51,11 +41,11 @@ SchemeObject* Interpreter::call_procedure_1(SchemeObject* procedure, SchemeObjec
     State* state = getState();
     state->global_arg1 = procedure;
     state->global_arg2 = i_cons(arg,S_EMPTY_LIST);
-    stack.push_back(state->global_arg1);
-    stack.push_back(state->global_arg2);
+    state->stack.push_back(state->global_arg1);
+    state->stack.push_back(state->global_arg2);
     SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call, state);
-    stack.pop_back();
-    stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
     return result;
 }
 
@@ -63,11 +53,11 @@ SchemeObject* Interpreter::call_procedure_2(SchemeObject* procedure, SchemeObjec
     State* state = getState();
     state->global_arg1 = procedure;
     state->global_arg2 = i_cons(arg1, i_cons(arg2, S_EMPTY_LIST));
-    stack.push_back(state->global_arg1);
-    stack.push_back(state->global_arg2);
+    state->stack.push_back(state->global_arg1);
+    state->stack.push_back(state->global_arg2);
     SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call, state);
-    stack.pop_back();
-    stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
     return result;
 }
 
@@ -75,11 +65,11 @@ SchemeObject* Interpreter::call_procedure_3(SchemeObject* procedure, SchemeObjec
     State* state = getState();
     state->global_arg1 = procedure;
     state->global_arg2 = i_cons(arg1, i_cons(arg2, i_cons(arg3, S_EMPTY_LIST)));
-    stack.push_back(state->global_arg1);
-    stack.push_back(state->global_arg2);
+    state->stack.push_back(state->global_arg1);
+    state->stack.push_back(state->global_arg2);
     SchemeObject* result = trampoline((fn_ptr)&eval_procedure_call, state);
-    stack.pop_back();
-    stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
     return result;
 }
 
@@ -89,20 +79,20 @@ SchemeObject* Interpreter::interpret(SchemeObject* parsetree, SchemeObject* top_
     if (parsetree == S_EMPTY_LIST) {
 	    return S_UNSPECIFIED;
     }
-    stack.push_back(parsetree);
-    stack.push_back(top_level_bindings);
+    state->stack.push_back(parsetree);
+    state->stack.push_back(top_level_bindings);
     state->global_arg1 = parsetree;
     state->global_envt = top_level_bindings;
     SchemeObject* result;
     try {
         result = trampoline((fn_ptr)&eval_sequence, state);
     } catch (scheme_exception e) {
-        stack.pop_back();
-        stack.pop_back();
+        state->stack.pop_back();
+        state->stack.pop_back();
         throw e;
     }
-    stack.pop_back();
-    stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
     return result;
 }
 
@@ -127,18 +117,18 @@ Interpreter::State* Interpreter::getState() {
 
 SchemeObject* trampoline(fn_ptr f, Interpreter::State* state) {
     SchemeObject* saved = state->global_envt;
-    size_t stack_size = stack.size();
-    stack.push_back(saved);
+    size_t stack_size = state->stack.size();
+    state->stack.push_back(saved);
     try {
         while (f != NULL) {
             f = (fn_ptr)(*f)(state);
         }
     } catch (scheme_exception e) {
         state->global_envt = saved;
-        stack.resize(stack_size);
+        state->stack.resize(stack_size);
         throw e;
     }
-    stack.pop_back();
+    state->stack.pop_back();
     state->global_envt = saved;
     return state->global_ret;
 }
@@ -174,7 +164,7 @@ fn_ptr eval_list(Interpreter::State* state) {
     if (heap->timeToGarbageCollect()) {
         heap->addRoot(p);
         heap->addRoot(envt);
-        heap->garbageCollect(stack);
+        heap->garbageCollect(state->stack);
         heap->popRoot();
         heap->popRoot();
     }
@@ -287,13 +277,13 @@ fn_ptr eval_sequence(Interpreter::State* state) {
         state->global_arg1 = i_car(p);
         return (fn_ptr)&eval;
     }
-    stack.push_back(p);
-    stack.push_back(state->global_envt);
+    state->stack.push_back(p);
+    state->stack.push_back(state->global_envt);
     while (true) {
         if (i_cdr(p) == S_EMPTY_LIST) {
             // The tail call, let EVAL return to this' caller
-            stack.pop_back();
-            stack.pop_back();
+            state->stack.pop_back();
+            state->stack.pop_back();
             state->global_arg1 = i_car(p);
             return (fn_ptr)&eval;
         } else {
@@ -309,13 +299,13 @@ fn_ptr eval_sequence(Interpreter::State* state) {
 //
 fn_ptr eval_multi(Interpreter::State* state) {
     SchemeObject* p = state->global_arg1;
-    stack.push_back(p);
-    stack.push_back(state->global_envt);
+    state->stack.push_back(p);
+    state->stack.push_back(state->global_envt);
     
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* result_tail = S_EMPTY_LIST;
-    stack.push_back(result);
-    SchemeObject** result_stack_ref = &(stack.back());
+    state->stack.push_back(result);
+    SchemeObject** result_stack_ref = &(state->stack.back());
     
     while (p != S_EMPTY_LIST) {
         state->global_arg1 = i_car(p);
@@ -338,9 +328,9 @@ fn_ptr eval_multi(Interpreter::State* state) {
 
         p = i_cdr(p);
     }
-    stack.pop_back();
-    stack.pop_back();
-    stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
     state->global_ret = result;
     return NULL;
 }
@@ -397,10 +387,10 @@ fn_ptr eval_begin(Interpreter::State* state) {
 
 fn_ptr eval_apply(Interpreter::State* state) {
     SchemeObject* p = state->global_arg1;
-    stack.push_back(p);
+    state->stack.push_back(p);
     
     if (s_procedure_p(s_car(p)) == S_TRUE) {
-        stack.pop_back();
+        state->stack.pop_back();
         state->global_arg1 = s_car(p);
         state->global_arg2 = s_car(s_cdr(p));
         return (fn_ptr)&eval_procedure_call;
@@ -434,7 +424,7 @@ fn_ptr eval_apply(Interpreter::State* state) {
             if (collected == S_EMPTY_LIST) {
                 collected = s_cons(arg, S_EMPTY_LIST);
                 prev = collected;
-                stack.push_back(collected);
+                state->stack.push_back(collected);
             } else {
                 SchemeObject* tmp = s_cons(arg,S_EMPTY_LIST);
                 s_set_cdr_e(prev, tmp);
@@ -446,18 +436,18 @@ fn_ptr eval_apply(Interpreter::State* state) {
 
     if (proc->type() == SchemeObject::INTERNAL_PROCEDURE) {
         if (collected != S_EMPTY_LIST) {
-            stack.pop_back();
+            state->stack.pop_back();
         }
-        stack.pop_back();
+        state->stack.pop_back();
         // Hack to handle the test (apply apply `(,+ ,(list 1 2)))
         state->global_arg1 = i_cons(s_car(p), collected);
         return (fn_ptr)&eval_list;
     }
 
     if (collected != S_EMPTY_LIST) {
-        stack.pop_back();
+        state->stack.pop_back();
     }
-    stack.pop_back();
+    state->stack.pop_back();
     state->global_arg1 = proc;
     state->global_arg2 = collected;
     return (fn_ptr)&eval_procedure_call;
@@ -469,7 +459,7 @@ fn_ptr eval_apply(Interpreter::State* state) {
 //
 fn_ptr eval_combo(Interpreter::State* state) {
     SchemeObject* s = state->global_arg1;
-    stack.push_back(s);
+    state->stack.push_back(s);
     
     state->global_arg1 = s_car(s);
     SchemeObject* proc = trampoline((fn_ptr)&eval, state);
@@ -478,13 +468,13 @@ fn_ptr eval_combo(Interpreter::State* state) {
 	throw scheme_exception(L"Wrong type to apply: " + s->toString() + L" does not resolve to a procedure.");
     }
     
-    stack.push_back(proc);
+    state->stack.push_back(proc);
     
     state->global_arg1 = s_cdr(s);
     SchemeObject* args = trampoline((fn_ptr)&eval_multi, state);
     
-    stack.pop_back();
-    stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
     
     state->global_arg1 = proc;
     state->global_arg2 = args;
@@ -505,10 +495,10 @@ fn_ptr eval_if(Interpreter::State* state) {
         throw scheme_exception(spair->src_line(), L"Consequent missing in: if");
     }
     
-    stack.push_back(p);
+    state->stack.push_back(p);
     state->global_arg1 = i_car(p);
     bool condition = scm2bool(trampoline((fn_ptr)&eval, state));
-    stack.pop_back();
+    state->stack.pop_back();
 
     if (i_cdr(i_cdr(p)) != S_EMPTY_LIST && i_cdr(i_cdr(i_cdr(p))) != S_EMPTY_LIST) {
         throw scheme_exception(spair->src_line(), L"Too many expressions in if-statement.");
@@ -532,7 +522,7 @@ fn_ptr eval_if(Interpreter::State* state) {
 
 fn_ptr eval_and(Interpreter::State* state) {
     SchemeObject* p = state->global_arg1;
-    stack.push_back(p);
+    state->stack.push_back(p);
     
     SchemeObject *cur, *next, *result = S_TRUE;
 
@@ -541,36 +531,36 @@ fn_ptr eval_and(Interpreter::State* state) {
         next = i_cdr(p);
         if (next == S_EMPTY_LIST) {
             // Tail call
-            stack.pop_back();
+            state->stack.pop_back();
             state->global_arg1 = cur;
             return (fn_ptr)&eval;
         } else {
             state->global_arg1 = cur;
             result = trampoline((fn_ptr)&eval, state);
             if (!scm2bool(result)) {
-                stack.pop_back();
+                state->stack.pop_back();
                 state->global_ret = result;
                 return NULL;
             }
             p = next;
         } 
     }
-    stack.pop_back();
+    state->stack.pop_back();
     state->global_ret = result;
     return NULL;
 }
 
 fn_ptr eval_or(Interpreter::State* state) {
     SchemeObject* p = state->global_arg1;
-    stack.push_back(p);
-    stack.push_back(state->global_envt);
+    state->stack.push_back(p);
+    state->stack.push_back(state->global_envt);
     
     SchemeObject* result = S_FALSE;
     while (p != S_EMPTY_LIST) {
         if (s_cdr(p) == S_EMPTY_LIST) {
             // Tail call
-            stack.pop_back();
-            stack.pop_back();
+            state->stack.pop_back();
+            state->stack.pop_back();
             state->global_arg1 = s_car(p);
             return (fn_ptr)&eval;
         } else {
@@ -578,16 +568,16 @@ fn_ptr eval_or(Interpreter::State* state) {
             result = trampoline((fn_ptr)&eval, state);
 
             if (scm2bool(result)) {
-                stack.pop_back();
-                stack.pop_back();
+                state->stack.pop_back();
+                state->stack.pop_back();
                 state->global_ret = result;
                 return NULL;
             }
             p = s_cdr(p);
         }
     }
-    stack.pop_back();
-    stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
     state->global_ret = result;
     return NULL;
 }
@@ -596,14 +586,14 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level, Interpreter:
 
 SchemeObject* eval_unquote_recursive(SchemeObject* o, int level, Interpreter::State* state) {
     SchemeObject* result;
-    stack.push_back(o);
+    state->stack.push_back(o);
     if (level == 0) {
         state->global_arg1 = s_car(s_cdr(o));
         result = trampoline((fn_ptr)&eval, state);
     } else {
         result = s_cons(unquote_symbol, eval_quasiquote_recursive(s_cdr(o), level-1, state));
     }
-    stack.pop_back();
+    state->stack.pop_back();
     return result;
 }
 
@@ -637,17 +627,17 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level, Interpreter:
                     
                     if (s_car(p) == unquote_symbol) {
                         // Handle when final cdr of unproper list is a unquote
-                        stack.push_back(result);
+                        state->stack.push_back(result);
                         s_set_cdr_e(prev,eval_unquote_recursive(p, level, state));
-                        stack.pop_back();
+                        state->stack.pop_back();
                         break;
                     }
                     
-                    stack.push_back(p);
-                    stack.push_back(result);
+                    state->stack.push_back(p);
+                    state->stack.push_back(result);
                     SchemeObject* r = eval_quasiquote_recursive(s_car(p),level, state);
-                    stack.pop_back();
-                    stack.pop_back();
+                    state->stack.pop_back();
+                    state->stack.pop_back();
 
                     if (i_pair_p(s_car(p)) == S_TRUE && s_car(s_car(p)) == unquote_splicing_symbol) {
                         // Splice into result
@@ -676,9 +666,9 @@ SchemeObject* eval_quasiquote_recursive(SchemeObject* o, int level, Interpreter:
                 } else if (p == S_EMPTY_LIST) {
                     break;
                 } else {
-                    stack.push_back(result);
+                    state->stack.push_back(result);
                     SchemeObject* r = eval_quasiquote_recursive(p, level, state);
-                    stack.pop_back();
+                    state->stack.pop_back();
                     if (result != S_EMPTY_LIST) {
                         s_set_cdr_e(prev,r);
                     } else {
@@ -714,9 +704,9 @@ fn_ptr eval_user_procedure_call(Interpreter::State* state) {
     SchemeObject* new_envt = SchemeObject::createEnvironment(proc->s_envt());
     SchemeObject* formals = proc->s_formals();
 
-    stack.push_back(proc);
-    stack.push_back(p);
-    stack.push_back(new_envt);
+    state->stack.push_back(proc);
+    state->stack.push_back(p);
+    state->stack.push_back(new_envt);
     
     while (i_pair_p(formals) == S_TRUE) {
         if (args_to_eval == S_EMPTY_LIST) {
@@ -739,9 +729,9 @@ fn_ptr eval_user_procedure_call(Interpreter::State* state) {
         throw scheme_exception(p->src_line(), L"Too many argument given in call to: "+proc->nameAsString());
     }
 
-    stack.pop_back();
-    stack.pop_back();
-    stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
     
     SchemeObject* body = proc->s_body();
     state->global_envt = new_envt;
@@ -763,8 +753,8 @@ fn_ptr eval_built_in_procedure_call(Interpreter::State* state)
     
     assert(proc != NULL);
 
-    stack.push_back(proc);
-    stack.push_back(p);
+    state->stack.push_back(proc);
+    state->stack.push_back(p);
 
     SchemeObject* result = S_UNSPECIFIED;
 
@@ -779,17 +769,17 @@ fn_ptr eval_built_in_procedure_call(Interpreter::State* state)
         }
         state->global_arg1 = i_car(args);
         SchemeObject* arg = trampoline((fn_ptr)&eval, state);
-        stack.push_back(arg);
+        state->stack.push_back(arg);
         args = i_cdr(args);
     }
     for(int i = 0; i < opt; i++) {
         if (args != S_EMPTY_LIST) {
             state->global_arg1 = i_car(args);
             SchemeObject* arg = trampoline((fn_ptr)&eval, state);
-            stack.push_back(arg);
+            state->stack.push_back(arg);
             args = i_cdr(args);
         } else {
-            stack.push_back(S_UNSPECIFIED);
+            state->stack.push_back(S_UNSPECIFIED);
         }
     }
     
@@ -799,7 +789,7 @@ fn_ptr eval_built_in_procedure_call(Interpreter::State* state)
         while (args != S_EMPTY_LIST) {
             state->global_arg1 = i_car(args);
             SchemeObject* arg = trampoline((fn_ptr)&eval, state);
-            stack.push_back(arg);
+            state->stack.push_back(arg);
             args = i_cdr(args);
             num++;
         }    
@@ -810,7 +800,7 @@ fn_ptr eval_built_in_procedure_call(Interpreter::State* state)
     }
     
     try {
-        SchemeStack::iterator stack_iter = stack.end() - num;
+        SchemeStack::iterator stack_iter = state->stack.end() - num;
 
         if (rst) {
             result = (*((SchemeObject* (*)(int, SchemeStack::iterator))(proc->fn)))(num, stack_iter);
@@ -848,10 +838,10 @@ fn_ptr eval_built_in_procedure_call(Interpreter::State* state)
         throw scheme_exception(p->src_line(), e.toString());
     }
     for(int i = 0; i < num; i++) {
-        stack.pop_back();
+        state->stack.pop_back();
     }
-    stack.pop_back();
-    stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
     state->global_ret = result;
     return NULL;    
 }
@@ -862,8 +852,8 @@ fn_ptr eval_procedure_call(Interpreter::State* state) {
     
     assert(proc != NULL);
     
-    stack.push_back(proc);
-    stack.push_back(args);
+    state->stack.push_back(proc);
+    state->stack.push_back(args);
     
     SchemeObject* result = S_UNSPECIFIED;
     
@@ -877,15 +867,15 @@ fn_ptr eval_procedure_call(Interpreter::State* state) {
             if (args == S_EMPTY_LIST) {
                 throw scheme_exception(L"Too few argument given in call to "+proc->nameAsString());
             }
-            stack.push_back(i_car(args));
+            state->stack.push_back(i_car(args));
             args = i_cdr(args);
         }
         for(int i = 0; i < opt; i++) {
             if (args != S_EMPTY_LIST) {
-                stack.push_back(i_car(args));
+                state->stack.push_back(i_car(args));
                 args = i_cdr(args);
             } else {
-                stack.push_back(S_UNSPECIFIED);
+                state->stack.push_back(S_UNSPECIFIED);
             }
         }
 
@@ -896,13 +886,13 @@ fn_ptr eval_procedure_call(Interpreter::State* state) {
         }
         if (rst) {
             while (args != S_EMPTY_LIST) {
-                 stack.push_back(i_car(args));
+                 state->stack.push_back(i_car(args));
                  args = i_cdr(args);
                  num++;
             }        
         }
         try {
-            SchemeStack::iterator stack_iter = stack.end() - num;
+            SchemeStack::iterator stack_iter = state->stack.end() - num;
             
             if (rst) {
                 result = (*((SchemeObject* (*)(int, SchemeStack::iterator))(proc->fn)))(num, stack_iter);
@@ -940,10 +930,10 @@ fn_ptr eval_procedure_call(Interpreter::State* state) {
             throw scheme_exception(s);
         }
         for(int i = 0; i < num; i++) {
-            stack.pop_back();
+            state->stack.pop_back();
         }
-        stack.pop_back();
-        stack.pop_back();
+        state->stack.pop_back();
+        state->stack.pop_back();
         state->global_ret = result;
         return NULL;
     } else {
@@ -967,8 +957,8 @@ fn_ptr eval_procedure_call(Interpreter::State* state) {
 
         state->global_envt = new_envt;
         state->global_arg1 = proc->s_body();
-        stack.pop_back();
-        stack.pop_back();
+        state->stack.pop_back();
+        state->stack.pop_back();
         return (fn_ptr)&eval_sequence;
     }    
 }
@@ -1053,7 +1043,7 @@ fn_ptr eval_cond(Interpreter::State* state) {
 
 fn_ptr eval_case(Interpreter::State* state) {
     SchemeObject* p = state->global_arg1;
-    stack.push_back(p);
+    state->stack.push_back(p);
 
     // Eval key       
     state->global_arg1 = s_car(p);
@@ -1072,12 +1062,12 @@ fn_ptr eval_case(Interpreter::State* state) {
             if (i_null_p(s_cdr(p)) == S_FALSE) {
                 throw scheme_exception(L"else-clause must be last");
             }
-            stack.pop_back();
+            state->stack.pop_back();
             state->global_arg1 = s_cdr(clause);
             return (fn_ptr)&eval_sequence;
         } else if (i_pair_p(clause_car) == S_TRUE) {
             if (s_memv(key,clause_car) != S_FALSE) {
-                stack.pop_back();
+                state->stack.pop_back();
                 state->global_arg1 = s_cdr(clause);
                 return (fn_ptr)&eval_sequence;
             }
@@ -1087,7 +1077,7 @@ fn_ptr eval_case(Interpreter::State* state) {
 
         p = s_cdr(p);
     }
-    stack.pop_back();
+    state->stack.pop_back();
     state->global_ret = S_UNSPECIFIED;
     return NULL;    
 }
@@ -1114,7 +1104,7 @@ fn_ptr eval_let(Interpreter::State* state) {
     SchemeObject* new_bindings = SchemeObject::createEnvironment(envt);
     SchemeObject* binding_pairs = first_arg;
     
-    stack.push_back(new_bindings);
+    state->stack.push_back(new_bindings);
 
     while (i_null_p(binding_pairs) == S_FALSE) {
         // Eval binding value
@@ -1125,7 +1115,7 @@ fn_ptr eval_let(Interpreter::State* state) {
         new_bindings->defineBinding(s_car(s_car(binding_pairs)), val);
         binding_pairs = s_cdr(binding_pairs);
     }
-    stack.pop_back();
+    state->stack.pop_back();
     
     state->global_envt = new_bindings;
     state->global_arg1 = s_cdr(p);
@@ -1257,16 +1247,16 @@ fn_ptr eval_call_macro(Interpreter::State* state) {
     
     // cout << "Body: " << proc->s_body->toString() << endl;
     // Transform body
-    stack.push_back(envt);
-    stack.push_back(proc);
-    stack.push_back(new_envt);
+    state->stack.push_back(envt);
+    state->stack.push_back(proc);
+    state->stack.push_back(new_envt);
     state->global_envt = new_envt;
     state->global_arg1 = proc->s_body();
     SchemeObject* transformed_body = trampoline((fn_ptr)&eval_sequence, state);
     //cout << "Transformed body: " << transformed_body->toString() << endl;
-    stack.pop_back();
-    stack.pop_back();
-    stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
+    state->stack.pop_back();
     
     // Eval transformed body
     state->global_envt = envt;
@@ -1286,8 +1276,8 @@ fn_ptr eval_do(Interpreter::State* state) {
     SchemeObject* new_envt = SchemeObject::createEnvironment(envt);
     SchemeObject* binding_pairs = s_car(p);
     
-    stack.push_back(p);
-    stack.push_back(new_envt);
+    state->stack.push_back(p);
+    state->stack.push_back(new_envt);
 
     SchemeObject* binding_pairs_ptr = binding_pairs;
     uint32_t bindings_num = 0;
@@ -1342,8 +1332,8 @@ fn_ptr eval_do(Interpreter::State* state) {
 
         // Return if test is true
         if (scm2bool(val)) {
-            stack.pop_back();
-            stack.pop_back();
+            state->stack.pop_back();
+            state->stack.pop_back();
             SchemeObject* return_sequence = i_cdar(body);
             if (return_sequence == S_EMPTY_LIST) {
                 state->global_ret = S_UNSPECIFIED;
@@ -1362,13 +1352,13 @@ fn_ptr eval_do(Interpreter::State* state) {
         for(uint32_t i = 0; i < bindings_num; i++) {
              state->global_arg1 = steps[i];        
              SchemeObject* val = trampoline((fn_ptr)&eval, state);
-             stack.push_back(val);
+             state->stack.push_back(val);
         }
         
         // Assign new step values
         for(uint32_t i = 0; i < bindings_num; i++) {
-             SchemeObject* val = stack.back();
-             stack.pop_back();   
+             SchemeObject* val = state->stack.back();
+             state->stack.pop_back();   
              new_envt->setBinding(varnames[bindings_num-1-i], val);
         }
     }

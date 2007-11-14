@@ -27,6 +27,7 @@ void assert_eval(Scheme* s, wstring expression, wstring expected) {
     if (expression == L"") {
         return;
     }
+    const SchemeStack& stack = s->getInterpreter()->getState()->stack;
     
     uint32_t stacksize_before = stack.size();
 
@@ -52,6 +53,7 @@ void assert_eval(Scheme* s, wstring expression, wstring expected) {
 }
 
 void assert_fail(Scheme* s, wstring expression) {
+    const SchemeStack& stack = s->getInterpreter()->getState()->stack;
     uint32_t stacksize_before = stack.size();
     try {
         s->eval(expression);

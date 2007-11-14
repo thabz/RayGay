@@ -28,8 +28,8 @@ class Interpreter
             vector<SchemeObject*> stack;
         };
 
-   private:
        State* getState();   
+   private:
        pthread_key_t state_key;
 };
 
@@ -63,7 +63,5 @@ fn_ptr eval_lambda(Interpreter::State*);
 fn_ptr eval_do(Interpreter::State*);
 fn_ptr eval_begin(Interpreter::State*);
 fn_ptr eval_list(Interpreter::State*);
-
-extern SchemeStack stack;
 
 #endif

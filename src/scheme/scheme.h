@@ -13,6 +13,8 @@ using namespace std;
 
 typedef vector<SchemeObject*> SchemeStack;
 
+class Interpreter;
+
 class Scheme {
     public:
         Scheme();
@@ -44,7 +46,9 @@ class Scheme {
         // Get interaction environment
         SchemeObject* getInteractionEnvironment();
 
-    private:
+    public:
+	// Used for testing only
+        Interpreter* getInterpreter();
 };
 
 class scheme_exception {
