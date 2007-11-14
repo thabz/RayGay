@@ -99,6 +99,9 @@ SchemeObject* Interpreter::interpret(SchemeObject* parsetree, SchemeObject* top_
 Interpreter::State* Interpreter::getState() {
     State* state = (State*) pthread_getspecific(state_key);
     if (state == NULL) {
+	// TODO: Register the new state in a list.
+	// We need states of all threads when calling
+	// for garbage-collection.
         state = new Interpreter::State();    
         pthread_setspecific(state_key, state);
     }
