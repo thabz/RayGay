@@ -257,7 +257,7 @@ Scheme::Scheme() {
         assign(L"eval"                  ,2,0,0, (SchemeObject* (*)()) s_eval, scheme_report_environment);
         assign(L"scheme-report-environment",1,0,0, (SchemeObject* (*)()) s_scheme_report_environment, scheme_report_environment);
         assign(L"null-environment"      ,1,0,0, (SchemeObject* (*)()) s_null_environment, scheme_report_environment);
-        assign(L"interaction-environment",1,0,0, (SchemeObject* (*)()) s_interaction_environment, scheme_report_environment);
+        assign(L"interaction-environment",0,0,0, (SchemeObject* (*)()) s_interaction_environment, scheme_report_environment);
 
 
         //assign("apply", new SchemeInternalProcedure("apply"));
@@ -1567,10 +1567,6 @@ SchemeObject* s_scheme_report_environment(SchemeObject* s_version) {
 }
 
 SchemeObject* s_interaction_environment(SchemeObject* s_version) {
-    assert_arg_type(L"interaction-environment", 1, s_integer_p, s_version);
-    if (scm2int(s_version) != 5) {
-        throw scheme_exception(L"interaction-environment", L"Not a valid version. Only 5 is supported.");
-    }
     return interaction_environment;
 }
 

@@ -1387,8 +1387,14 @@ void test_call_cc() {
 void test_eval() {
     Scheme* s = new Scheme();
     assert_eval(s, L"(eval '(* 7 3) (scheme-report-environment 5))", L"21");
+    assert_eval(s, L"(eval '(* 7 3) (interaction-environment))", L"21");
     assert_eval(s, L"(eval '(if #t 1 2) (null-environment 5))", L"1");
     assert_eval(s, L"(let ((f (eval '(lambda (f x) (f x x)) (null-environment 5)))) (f + 10))", L"20");
+    assert_fail(s, L"(interaction-environment 5)");
+    assert_fail(s, L"(null-environment)");
+    assert_fail(s, L"(null-environment 3)");
+    assert_fail(s, L"(scheme-report-environment)");
+    assert_fail(s, L"(scheme-report-environment 3)");
 }
 
 // Throw insane forms at the interpreter. It shouldn't crash but report errors back.
