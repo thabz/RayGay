@@ -9,6 +9,9 @@
 
 using namespace std;
 
+// TODO: SLOTS_NUM should be PAGE_SIZE and all others uses of "slot"
+// should be renamed accordingly.
+
 #define SLOTS_NUM 10000
 #define SIZE_OF_LOCAL_SLOTS 100
 

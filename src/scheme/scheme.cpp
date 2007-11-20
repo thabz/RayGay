@@ -624,6 +624,7 @@ SchemeObject* s_apply(int num, SchemeStack::iterator args) {
     return interpreter->call_procedure_n(proc,collected);
 }
 
+// TODO: Rewrite to use s_apply
 SchemeObject* s_map_internal(wchar_t* procname, int num, SchemeStack::iterator args, bool collect) {
 
     assert(num > 0);
