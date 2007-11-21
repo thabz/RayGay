@@ -9,10 +9,10 @@
 
 using namespace std;
 
-// TODO: SLOTS_NUM should be PAGE_SIZE and all others uses of "slot"
-// should be renamed accordingly.
+// Terminology: the heap is conceptually a number of pages each 
+// with PAGE_SIZE number of slots. Each slot fits one object.
 
-#define SLOTS_NUM 10000
+#define PAGE_SIZE 10000
 #define SIZE_OF_LOCAL_SLOTS 100
 
 class Heap {
@@ -31,14 +31,14 @@ class Heap {
         void sweep();
         
         void reserve(SchemeObject** result, uint32_t num);
-        void allocateNewBank();
+        void allocateNewPage();
         
         vector<SchemeObject*> roots;
         
         static Heap* unique_instance;
         uint32_t free_slots;
         uint32_t slots_num;
-        uint32_t slots_per_bank;
+        uint32_t page_size;
         vector<SchemeObject*> banks;
         uint32_t cur_bank_idx;
         uint32_t next_free_slot_idx;
@@ -46,8 +46,8 @@ class Heap {
         
     private:  /* Stats stuff */
         uint64_t alloced_types[SchemeObject::ALL_TYPE_ARE_BEFORE_HERE];
-        int banks_created;        
-        int banks_freed;
+        int pages_created;        
+        int pages_freed;
         int gc_runs;
 
 
@@ -67,16 +67,16 @@ class Heap {
 inline
 Heap* Heap::getUniqueInstance() {
     if (unique_instance == NULL) {
-	unique_instance = new Heap(SLOTS_NUM);
+	unique_instance = new Heap(PAGE_SIZE);
     }
     return unique_instance;
 }
 
 inline
 bool Heap::timeToGarbageCollect() {
-    return free_slots < slots_per_bank / 10 && allocated >= (9 * SLOTS_NUM) / 10;
-    //return allocated >= (9 * SLOTS_NUM) / 10;
-    //return cur_bank_idx == banks.size()-1 && next_free_slot_idx > int(0.9 * SLOTS_NUM);
+    return free_slots < page_size / 10 && allocated >= (9 * PAGE_SIZE) / 10;
+    //return allocated >= (9 * PAGE_SIZE) / 10;
+    //return cur_bank_idx == banks.size()-1 && next_free_slot_idx > int(0.9 * PAGE_SIZE);
     //return allocated > 5;
 }
 

@@ -6,8 +6,8 @@
 
 Heap* Heap::unique_instance = NULL;
 
-Heap::Heap(uint32_t slots_per_bank) {
-    this->slots_per_bank = slots_per_bank;
+Heap::Heap(uint32_t page_size) {
+    this->page_size = page_size;
     this->free_slots = 0;
     this->slots_num = 0;
     this->allocated = 0;
@@ -15,18 +15,18 @@ Heap::Heap(uint32_t slots_per_bank) {
     for(int i = 0; i < SchemeObject::ALL_TYPE_ARE_BEFORE_HERE; i++) {
         alloced_types[i] = 0;    
     }
-    banks_created = 0;
-    banks_freed = 0;
+    pages_created = 0;
+    pages_freed = 0;
     gc_runs = 0;
 
     pthread_mutex_init(&mutex_reserve,NULL);
     pthread_key_create(&local_bank_key,NULL);	
 
-    allocateNewBank();
+    allocateNewPage();
 }
 
 Heap::~Heap() {
-    // TODO: Dealloc all banks
+    // TODO: Dealloc all pages 
     // TODO: Dealloc all thread local banks         
 }
 
@@ -38,15 +38,15 @@ void Heap::popRoot() {
     roots.pop_back();
 }
 
-void Heap::allocateNewBank() {
-    SchemeObject* bank = new SchemeObject[slots_per_bank];
-    banks.push_back(bank);
-    for(uint32_t i = 0; i < slots_per_bank; i++) {
-        bank[i].metadata = SchemeObject::BLANK;
+void Heap::allocateNewPage() {
+    SchemeObject* page = new SchemeObject[page_size];
+    banks.push_back(page);
+    for(uint32_t i = 0; i < page_size; i++) {
+        page[i].metadata = SchemeObject::BLANK;
     }
-    free_slots += slots_per_bank;
-    slots_num += slots_per_bank;
-    banks_created++;
+    free_slots += page_size;
+    slots_num += page_size;
+    pages_created++;
 }
 
 SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
@@ -73,17 +73,17 @@ SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
 void Heap::reserve(SchemeObject** result, uint32_t num) {
     pthread_mutex_lock(&mutex_reserve);
     
-    // Create new bank(s) if needed. 
+    // Create new page(s) if needed. 
     while (free_slots < num) {
-        allocateNewBank();    
+        allocateNewPage();    
     }
     for(uint32_t i = 0; i < num; i++) {
         while (true) {
-    	    // Scan through current bank while 
+    	    // Scan through current page while 
        	    // looking for an empty slot
             SchemeObject* cur_bank = banks[cur_bank_idx];    
     	    SchemeObject* p = &(cur_bank[next_free_slot_idx]);
-            while (next_free_slot_idx < slots_per_bank) {
+            while (next_free_slot_idx < page_size) {
                 if (p->type() == SchemeObject::BLANK) {
                     *result = p;
     		    goto found_one;
@@ -143,7 +143,7 @@ void Heap::sweep() {
         SchemeObject* cur = bank;
         uint32_t blank_found = 0; 
         bool reset = false;   
-        for(uint32_t j = 0; j < slots_per_bank; j++, cur++) {
+        for(uint32_t j = 0; j < page_size; j++, cur++) {
             if (cur->type() != SchemeObject::BLANK && cur->type() != SchemeObject::RESERVED) {
                 bool in_use = cur->inuse();
                 cur->clear_inuse();
@@ -163,13 +163,13 @@ void Heap::sweep() {
                 reset = true;
             }    
         }
-        if (blank_found == slots_per_bank && i != cur_bank_idx) {
-            // Bank is all blank and can be free'd
+        if (blank_found == page_size && i != cur_bank_idx) {
+            // Page is all blank and can be free'd
             /*
             banks.erase(banks_iterator);
             delete [] bank;
-            banks_freed++;
-            free_slots -= slots_per_bank;
+            pages_freed++;
+            free_slots -= page_size;
             */
         }        
     }
@@ -189,10 +189,10 @@ void Heap::dumpStats() {
         }    
     }
     cout << "    " << left << setw(20) << "Total" << ": " << total_count << endl;
-    cout << "Heap banks" << endl;
-    cout << "    Created             : " << banks_created << endl;
-    cout << "    Freed               : " << banks_freed << endl;
-    cout << "    Objects per bank    : " << SLOTS_NUM << endl;
+    cout << "Heap pages" << endl;
+    cout << "    Created             : " << pages_created << endl;
+    cout << "    Freed               : " << pages_freed << endl;
+    cout << "    Page size (objects) : " << PAGE_SIZE << endl;
     cout << "Garbage collection" << endl;
     cout << "    Mark and sweep runs : " << gc_runs << endl;
     
@@ -208,7 +208,7 @@ void Heap::dumpStats() {
     }
     for(uint32_t i = 0; banks_iterator != banks.end(); i++, banks_iterator++) {
         SchemeObject* bank = *banks_iterator;
-        for(uint32_t j = 0; j < slots_per_bank; j++) {
+        for(uint32_t j = 0; j < page_size; j++) {
             SchemeObject* cur = &(bank[j]);
             if (cur->type() == SchemeObject::SYMBOL) {
                 hashes++;
