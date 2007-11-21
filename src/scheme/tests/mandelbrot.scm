@@ -1,29 +1,19 @@
-#light 
-open Microsoft.FSharp.Math
-open System
+; Plots a Mandelbrot fractal to the console
 
-let maxIteration = 100
+(define max-iterations 100)
 
-let modSquared (c : Complex) = c.r * c.r + c.i * c.i
+(define (mandelbrot c)
+ (define (mandelbrot-inner z iteration)
+  (cond ((> (magnitude z) 4.0) 'escaped)
+        ((= iteration max-iterations) 'did-not-escape)
+	(else (mandelbrot-inner (+ c (* z z)) (+ 1 iteration)))))
+ (mandelbrot-inner c 0))
 
-type MandelbrotResult = 
-    | DidNotEscape
-    | Escaped of int
-    
-let mandelbrot c = 
-    let rec mandelbrotInner z iterations = 
-        if(modSquared z >= 4.0)
-            then Escaped iterations
-        elif iterations = maxIteration
-            then DidNotEscape
-        else mandelbrotInner ((z * z) + c) (iterations + 1)
-    mandelbrotInner c 0
-
-for y in [-1.0..0.1..1.0] do
-    for x in [-2.0..0.05..1.0] do
-        match mandelbrot (Complex.Create (x, y)) with
-        | DidNotEscape -> Console.Write "#"
-        | Escaped _ -> Console.Write " "
-    Console.WriteLine () 
-
+(do ((y -1 (+ y 0.1)))
+ ((>= y 1))
+ (do ((x -2 (+ x 0.05)))
+  ((>= x 1) (newline))
+  (case (mandelbrot (make-rectangular x y))
+    ((escaped) (display "."))
+    ((did-not-escape) (display "#")))))
 
