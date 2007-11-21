@@ -38,7 +38,7 @@ libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libpho
 #--------------------------------------
 LIBS = @DARWIN_LIBS@		     
 
-bin_PROGRAMS = tracer server queuemanager repl
+bin_PROGRAMS = tracer server queuemanager raygay-repl
 noinst_PROGRAMS = bench 
 if OS_DARWIN
    noinst_PROGRAMS += win
@@ -60,8 +60,8 @@ queuemanager_LDADD = libtracer.la http/libhttp.la
 
 #--------------------------------------
 
-repl_SOURCES = repl-main.cpp
-repl_LDADD = libtracer.la  @LIBREADLINE@
+raygay_repl_SOURCES = repl-main.cpp
+raygay_repl_LDADD = libtracer.la  @LIBREADLINE@
 
 #--------------------------------------
 
