@@ -10,9 +10,9 @@
 using namespace std;
 
 // Terminology: the heap is conceptually a number of pages each 
-// with PAGE_SIZE number of slots. Each slot fits one object.
+// with HEAP_PAGE_SIZE number of slots. Each slot fits one object.
 
-#define PAGE_SIZE 10000
+#define HEAP_PAGE_SIZE 10000
 #define SIZE_OF_LOCAL_SLOTS 100
 
 class Heap {
@@ -67,16 +67,16 @@ class Heap {
 inline
 Heap* Heap::getUniqueInstance() {
     if (unique_instance == NULL) {
-	unique_instance = new Heap(PAGE_SIZE);
+	unique_instance = new Heap(HEAP_PAGE_SIZE);
     }
     return unique_instance;
 }
 
 inline
 bool Heap::timeToGarbageCollect() {
-    return free_slots < page_size / 10 && allocated >= (9 * PAGE_SIZE) / 10;
-    //return allocated >= (9 * PAGE_SIZE) / 10;
-    //return cur_bank_idx == banks.size()-1 && next_free_slot_idx > int(0.9 * PAGE_SIZE);
+    return free_slots < page_size / 10 && allocated >= (9 * HEAP_PAGE_SIZE) / 10;
+    //return allocated >= (9 * HEAP_PAGE_SIZE) / 10;
+    //return cur_bank_idx == banks.size()-1 && next_free_slot_idx > int(0.9 * HEAP_PAGE_SIZE);
     //return allocated > 5;
 }
 

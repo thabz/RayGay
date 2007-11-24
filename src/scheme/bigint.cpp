@@ -29,7 +29,7 @@ bigint::bigint(int32_t n) {
     normalize();
 }
 
-bigint::bigint(string str, uint radix) 
+bigint::bigint(string str, uint32_t radix) 
 {
     if (radix >= 37 || radix == 0) throw invalid_argument("Invalid radix");
 
@@ -39,7 +39,7 @@ bigint::bigint(string str, uint radix)
     digits.push_back(0);
     normalize();
 
-    uint i = 0;
+    uint32_t i = 0;
          
     if (str[0] == '-') {
         fsign = -1;
@@ -77,7 +77,7 @@ bigint::bigint(const bigint& o) {
 }
 
 // TODO: This is very slow
-string bigint::toString(uint radix) const {
+string bigint::toString(uint32_t radix) const {
     char chars[37] = "0123456789abcdefghijklmnopqrstuvwxyz";        
     if (radix >= 37 || radix == 0) throw invalid_argument("Invalid radix");
     bigint b = (*this).abs();
@@ -106,7 +106,7 @@ bool bigint::is_one() const {
 void bigint::dump() const {
     cout << "Sign: " << sign << endl;        
     cout << "Digits: " << digits.size() << endl;
-    for(uint i = 0; i < digits.size(); i++) {
+    for(uint32_t i = 0; i < digits.size(); i++) {
         cout << "   digit[" << i << "]: " << digits[i] << endl;    
     }
 }
@@ -115,7 +115,7 @@ bool bigint::operator==(const bigint& o) const {
     if (digits.size() != o.digits.size() || sign != o.sign) {
         return false;            
     }        
-    for(uint i = 0; i < digits.size(); i++) {
+    for(uint32_t i = 0; i < digits.size(); i++) {
         if (digits[i] != o.digits[i]) return false;               
     }
     return true;
@@ -154,7 +154,7 @@ bigint& bigint::operator+=(int32_t n) {
 
 bigint& bigint::operator+=(const bigint &v) {
     resize(max(digits.size(), v.digits.size()));
-    for(uint i = 0; i < digits.size(); i++) {
+    for(uint32_t i = 0; i < digits.size(); i++) {
         if (sign == v.sign) {
             digits[i] += v.digits[i];        
         } else {
@@ -169,7 +169,7 @@ bigint& bigint::operator+=(const bigint &v) {
 bigint bigint::operator-(const bigint &v) const {
     bigint r = *this;
     r.resize(max(r.digits.size(), v.digits.size()));
-    for(uint i = 0; i < r.digits.size(); i++) {
+    for(uint32_t i = 0; i < r.digits.size(); i++) {
         if (r.sign == v.sign) {
             r.digits[i] -= v.digits[i];        
         } else {
@@ -209,7 +209,7 @@ bigint& bigint::operator-=(int32_t n) {
 
 bigint& bigint::operator-=(const bigint &v) {
     resize(max(digits.size(), v.digits.size()));
-    for(uint i = 0; i < digits.size(); i++) {
+    for(uint32_t i = 0; i < digits.size(); i++) {
         if (sign == v.sign) {
             digits[i] -= v.digits[i];        
         } else {
@@ -226,8 +226,8 @@ bigint bigint::operator*(const bigint &o) const
 
     int size = o.digits.size() + digits.size();
     r.resize(size);
-    for(uint i = 0; i < digits.size(); i++) {
-        for(uint j = 0; j < o.digits.size(); j++) {
+    for(uint32_t i = 0; i < digits.size(); i++) {
+        for(uint32_t j = 0; j < o.digits.size(); j++) {
             r.digits[i+j] += digits[i] * o.digits[j];            
         }    
         r.normalize();
@@ -246,7 +246,7 @@ bigint bigint::operator*(int32_t n) const
         n = -n;    
         r.sign = -r.sign;
     }
-    for(uint i = 0; i < r.digits.size(); i++) {
+    for(uint32_t i = 0; i < r.digits.size(); i++) {
         r.digits[i] *= n;            
     }
     r.normalize();
@@ -258,7 +258,7 @@ bigint& bigint::operator*=(int32_t n) {
         n = -n;    
         sign = -sign;
     }
-    for(uint i = 0; i < digits.size(); i++) {
+    for(uint32_t i = 0; i < digits.size(); i++) {
         digits[i] *= n;            
     }
     normalize();
@@ -286,8 +286,8 @@ bigint bigint::operator/(int32_t n) const
 /*
 bigint bigint::operator/(const bigint &y) const 
 {
-    uint n = digits.size();
-    uint t = y.digits.size();
+    uint32_t n = digits.size();
+    uint32_t t = y.digits.size();
 
     if (y.is_zero()) throw range_error("Division by zero");
     if (is_zero()) return ZERO;
@@ -486,7 +486,7 @@ int32_t bigint::operator%(int32_t n) const
     }
 
     int64_t r = 0, rad = 1;
-    for(uint i = 0; i < digits.size(); i++) {
+    for(uint32_t i = 0; i < digits.size(); i++) {
         r = (r + digits[i] * rad) % n;    
         rad = (rad * RADIX) % n;
     }
@@ -547,7 +547,7 @@ bool bigint::operator>=(const bigint& o) const {
 // 4) Fix sign for zero, ie. eliminate -0.
 void bigint::normalize() 
 {
-    for(uint i = 0; i < digits.size()-1; i++) {
+    for(uint32_t i = 0; i < digits.size()-1; i++) {
         if (digits[i] < 0) {
             digits[i+1] += digits[i] / RADIX - 1;    
             digits[i] %= RADIX; 
@@ -561,7 +561,7 @@ void bigint::normalize()
     
     if (digits[digits.size()-1] < 0) {
         sign = -sign;     
-        for(uint i = 0; i < digits.size() - 1; i++) {
+        for(uint64_t i = 0; i < digits.size() - 1; i++) {
             digits[i] = RADIX - digits[i];
             digits[i+1] += 1;            
         }
@@ -569,7 +569,7 @@ void bigint::normalize()
     }
 
     uint64_t dsize = digits.size();
-    for(uint i = 0; i < dsize; i++) {
+    for(uint32_t i = 0; i < dsize; i++) {
         if (digits[i] >= RADIX) {
             if (i+1 >= dsize) {
                 resize(digits.size()+1);
@@ -579,7 +579,7 @@ void bigint::normalize()
         }    
     }
     
-    uint i = digits.size();
+    uint32_t i = digits.size();
     for(; i > 1 && digits[i-1] == 0; i--);
     resize(i);
     
@@ -613,7 +613,7 @@ ostream & operator<<(ostream &os, const bigint &b) {
 
 bigint bigint::times_two() const {
     bigint r = *this;
-    for(uint i = r.size()-1; i >= 0; i--) {
+    for(uint32_t i = r.size()-1; i >= 0; i--) {
         r.digits[i] <<= 1;
         if (r.digits[i] >=  RADIX) {
             if (i+1 >= r.size()) {

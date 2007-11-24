@@ -15,7 +15,7 @@ class bigint
 
     public:        
         bigint(int32_t n);
-        bigint(std::string str, uint radix = 10);
+        bigint(std::string str, uint32_t radix = 10);
         bigint(const bigint& o);
         ~bigint();
         
@@ -23,7 +23,7 @@ class bigint
         int64_t toInt64() const;
         bool fitsInt32() const;
         int32_t toInt32() const;
-        std::string toString(uint radix = 10) const;
+        std::string toString(uint32_t radix = 10) const;
 
         bigint& operator+=(const bigint &b);
         bigint& operator+=(int32_t n);

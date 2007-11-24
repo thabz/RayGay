@@ -192,7 +192,7 @@ void Heap::dumpStats() {
     cout << "Heap pages" << endl;
     cout << "    Created             : " << pages_created << endl;
     cout << "    Freed               : " << pages_freed << endl;
-    cout << "    Page size (objects) : " << PAGE_SIZE << endl;
+    cout << "    Page size (objects) : " << HEAP_PAGE_SIZE << endl;
     cout << "Garbage collection" << endl;
     cout << "    Mark and sweep runs : " << gc_runs << endl;
     
