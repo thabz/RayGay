@@ -60,7 +60,7 @@ string history_filename() {
 }
 
 char* binding_completion_function(const char* text, int state) {
-    static uint list_index;
+    static uint32_t list_index;
     static vector<SchemeObject*> binding_keys;
     if (!state) {
         list_index = 0;

@@ -314,13 +314,13 @@ void GZIP::expand_alphabet(GZIP::alphabet_t* tree, uint32_t max_code) {
     
     uint32_t next_code[max_bits];
     uint32_t code = 0;
-    for(uint bits = 1; bits <= max_bits; bits++) {
+    for(uint32_t bits = 1; bits <= max_bits; bits++) {
         code = (code + bl_count[bits-1]) << 1;
         next_code[bits] = code;
     }
     
-    for(uint n = 0;  n <= max_code; n++) {
-        uint len = tree[n].len;
+    for(uint32_t n = 0;  n <= max_code; n++) {
+        uint32_t len = tree[n].len;
         if (len != 0) {
             tree[n].code = next_code[len];
             next_code[len]++;
@@ -405,7 +405,7 @@ int32_t find_in_tree(GZIP::tree_t* tree, uint32_t bits, uint8_t bits_num) {
     //cout << "Bits num " << dec << int(bits_num) << endl;
     uint16_t pos = 0;        
     while(bits_num > 0) {
-        uint bit = bits & (1 << (--bits_num));
+        uint32_t bit = bits & (1 << (--bits_num));
         pos = bit ? tree[pos].right : tree[pos].left;
     }        
     return tree[pos].left == -1 ? tree[pos].letter : -1;         
