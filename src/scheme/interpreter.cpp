@@ -79,6 +79,7 @@ SchemeObject* Interpreter::interpret(SchemeObject* parsetree, SchemeObject* top_
     if (parsetree == S_EMPTY_LIST) {
 	    return S_UNSPECIFIED;
     }
+    size_t stack_size = state->stack.size();
     state->stack.push_back(parsetree);
     state->stack.push_back(top_level_bindings);
     state->global_arg1 = parsetree;
@@ -87,8 +88,7 @@ SchemeObject* Interpreter::interpret(SchemeObject* parsetree, SchemeObject* top_
     try {
         result = trampoline((fn_ptr)&eval_sequence, state);
     } catch (scheme_exception e) {
-        state->stack.pop_back();
-        state->stack.pop_back();
+        state->stack.resize(stack_size);
         throw e;
     }
     state->stack.pop_back();
@@ -120,16 +120,9 @@ Interpreter::State* Interpreter::getState() {
 
 SchemeObject* trampoline(fn_ptr f, Interpreter::State* state) {
     SchemeObject* saved = state->global_envt;
-    size_t stack_size = state->stack.size();
     state->stack.push_back(saved);
-    try {
-        while (f != NULL) {
-            f = (fn_ptr)(*f)(state);
-        }
-    } catch (scheme_exception e) {
-        state->global_envt = saved;
-        state->stack.resize(stack_size);
-        throw e;
+    while (f != NULL) {
+        f = (fn_ptr)(*f)(state);
     }
     state->stack.pop_back();
     state->global_envt = saved;
