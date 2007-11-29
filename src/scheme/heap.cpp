@@ -64,7 +64,6 @@ SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
     SchemeObject* result = local->bank[local->index];
     local->index++;
     result->metadata = type;
-    result->set_immutable(false);
     allocated++;
     alloced_types[type]++;
     return result;
