@@ -1,5 +1,5 @@
 <h>Benchmarks</h>
-<p>Under udviklingen af min Scheme har målet hele tiden været at slå GNUs Scheme <a href="http://www.gnu.org/software/guile/guile.html">Guile</a>, hvilket jeg endnu ikke gør. Guile er stadig over dobbelt så hurtig som min implementation.</p>
+<p>Under udviklingen af min Scheme, har målet hele tiden været at slå GNUs Scheme <a href="http://www.gnu.org/software/guile/guile.html">Guile</a>, hvilket jeg endnu ikke gør. Guile er stadig over dobbelt så hurtig som min implementation.</p>
 <p>Men hvor hurtig er Guile og min Scheme i forhold til at andre fortolkede sprog? Er <a href="http://www.perl.org/" title="The Perl Directory - perl.org">Perl</a> og <a href="http://www.python.org/" title="Python Programming Language -- Official Website">Python</a> og <a href="http://www.ruby-lang.org/" title="Ruby Programming Language">Ruby</a> to eller ti gange hurtigere end Guile? I hvert sprog kodede jeg en lille benchmark test, som udregner de første 36 Fibonacci tal. </p>
 <p>Nedenstående er benchmarken i hhv. Ruby, Perl, Python og Scheme.</p>
 <div class="vim">def fib(n)
@@ -51,7 +51,7 @@ for i in range(36):
   (display (fib i)) (newline))
 </div>
 <br>
-<p>Algorithmen er meget dum og genererer en masse funktions-kald. En af Scheme's forcer er tail-call optimering, hvilket dog ikke er muligt i denne algoritme (da plus-operatoren venter på resultaterne), så sammenligningen er, omend ikke særlig videnskabelig, så ihvertfald fair i den sammenhæng. Algoritmen er ikke den smarteste måde at udregne Fibonacci tal på. En simpel iteration over <tt>n</tt> ville være meget meget hurtigere, men jeg gik efter noget langsomt til denne test. Udførselstiderne er som følger. Lavest tid er bedst.
+<p>Algorithmen er meget dum og genererer en masse funktions-kald og garbage. En af Scheme's forcer er tail-call optimering, hvilket dog ikke er muligt i denne algoritme (da plus-operatoren venter på resultaterne), så sammenligningen er, omend ikke særlig videnskabelig, så ihvertfald fair i den sammenhæng. Algoritmen er ikke den smarteste måde at udregne Fibonacci tal på. En simpel iteration over <tt>n</tt> ville være meget meget hurtigere, men jeg gik efter noget langsomt til denne test. Udførselstiderne er som følger. Lavest tid er bedst.
 <table>
 	<tr><th>Sprog</th><th>Version</th><th>Tid</th></tr>
 	<tr><td>Guile</td><td>1.8.1</td><td>30.73s</td></tr>
