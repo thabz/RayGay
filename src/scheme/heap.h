@@ -61,20 +61,20 @@ class Heap {
         };
 
         pthread_key_t local_bank_key;
-	pthread_mutex_t mutex_reserve;
+	    pthread_mutex_t mutex_reserve;
 };
 
 inline
 Heap* Heap::getUniqueInstance() {
     if (unique_instance == NULL) {
-	unique_instance = new Heap(HEAP_PAGE_SIZE);
+	    unique_instance = new Heap(HEAP_PAGE_SIZE);
     }
     return unique_instance;
 }
 
 inline
 bool Heap::timeToGarbageCollect() {
-    return free_slots < page_size / 10 && allocated >= (9 * HEAP_PAGE_SIZE) / 10;
+    return free_slots < HEAP_PAGE_SIZE / 10 && allocated >= (9 * HEAP_PAGE_SIZE) / 10;
     //return allocated >= (9 * HEAP_PAGE_SIZE) / 10;
     //return cur_bank_idx == banks.size()-1 && next_free_slot_idx > int(0.9 * HEAP_PAGE_SIZE);
     //return allocated > 5;
