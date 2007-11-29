@@ -46,9 +46,12 @@ SchemeObject::ObjectType representativeNumberType(wchar_t* procname, int num, Sc
     SchemeObject::ObjectType type = SchemeObject::INTEGER_NUMBER;
     for(int i = 0; i < num; i++) {
         SchemeObject* n = *stack;
-        assert_arg_number_type(procname, i+1, n);
-        if (n->type() < type) {
-            type = n->type();        
+        SchemeObject::ObjectType t = n->type();
+        if (t <= SchemeObject::NUMBERS_ARE_AFTER_HERE || t >= SchemeObject::NUMBERS_ARE_BEFORE_HERE) {
+            wrong_type_arg(procname, i+1, n);
+        }
+        if (t < type) {
+            type = t;        
         }
         stack++;    
     }
