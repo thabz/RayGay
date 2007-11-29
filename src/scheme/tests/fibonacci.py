@@ -5,4 +5,4 @@ def fib(n):
       return fib(n-1) + fib(n-2)
 
 for i in range(36):
-    print "n=%d => %d" % (i, fib(i))
+    print "%d => %d" % (i, fib(i))

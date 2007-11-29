@@ -7,5 +7,5 @@ def fib(n)
 end
 
 36.times do |i|
-  puts "n=#{i} => #{fib(i)}"
+  puts "#{i} => #{fib(i)}"
 end

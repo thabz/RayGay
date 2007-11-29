@@ -15,8 +15,5 @@
 
 (do ((i 0 (+ i 1)))
   ((= i 36))
-  (display "n=")
-  (display i)
-  (display " => ")
-  (display (fib i))
-  (newline))
+  (display i) (display " => ")
+  (display (fib i)) (newline))
