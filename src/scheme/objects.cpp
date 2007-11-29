@@ -160,11 +160,11 @@ SchemeObject* SchemeObject::createEnvironment(SchemeObject* parent, uint32_t num
     assert(num_buckets > 0);
     SchemeObject* result;
     if (num_buckets > 8) {
-	result = Heap::getUniqueInstance()->allocate(SchemeObject::ENVIRONMENT);
-	result->binding_map = new binding_map_t(num_buckets);
+	    result = Heap::getUniqueInstance()->allocate(SchemeObject::ENVIRONMENT);
+	    result->binding_map = new binding_map_t(num_buckets);
     } else {
-	result = Heap::getUniqueInstance()->allocate(SchemeObject::SIMPLE_ENVIRONMENT);
-	result->binding_list = S_EMPTY_LIST;
+	    result = Heap::getUniqueInstance()->allocate(SchemeObject::SIMPLE_ENVIRONMENT);
+	    result->binding_list = S_EMPTY_LIST;
     }
     result->parent = parent;
     return result;
