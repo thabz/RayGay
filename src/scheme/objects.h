@@ -30,7 +30,7 @@ typedef rational<int64_t> rational_type;
 #define i_char_p(o)      ((o)->type() == SchemeObject::CHAR ? S_TRUE : S_FALSE)
 #define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
 #define i_vector_p(o)    ((o)->type() == SchemeObject::VECTOR ? S_TRUE : S_FALSE)
-#define i_number_p(o)    ((o)->type() > SchemeObject::NUMBERS_ARE_AFTER_HERE && (o)->type() < SchemeObject::NUMBERS_ARE_BEFORE_HERE? S_TRUE : S_FALSE)
+#define i_number_p(o)    ((o)->type() < SchemeObject::NUMBERS_ARE_BEFORE_HERE ? S_TRUE : S_FALSE)
 #define i_procedure_p(p) (((p)->type() == SchemeObject::BUILT_IN_PROCEDURE ||  \
                            (p)->type() == SchemeObject::CONTINUATION       ||  \
                            (p)->type() == SchemeObject::USER_PROCEDURE     ||  \
@@ -107,14 +107,13 @@ class SchemeObject
 
     public:        
         enum ObjectType {
- 		    BLANK,                  // Empty slots in heap
-		    RESERVED,		    // Thead-reserved slots in heap
-		    NUMBERS_ARE_AFTER_HERE,
 		    COMPLEX_NUMBER,
 		    REAL_NUMBER,
 		    RATIONAL_NUMBER,
 		    INTEGER_NUMBER,
 		    NUMBERS_ARE_BEFORE_HERE,
+ 		    BLANK,                      // Empty slots in heap
+		    RESERVED,		            // Thead-reserved slots in heap
 		    EMPTY_LIST,
 		    BOOL,
 		    CHAR,

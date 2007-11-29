@@ -45,15 +45,13 @@ void coerceNumbers(int num, SchemeStack::iterator stack, std::complex<double>* d
 SchemeObject::ObjectType representativeNumberType(wchar_t* procname, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType type = SchemeObject::INTEGER_NUMBER;
     for(int i = 0; i < num; i++) {
-        SchemeObject* n = *stack;
+        SchemeObject* n = *stack++;
         SchemeObject::ObjectType t = n->type();
-        if (t <= SchemeObject::NUMBERS_ARE_AFTER_HERE || t >= SchemeObject::NUMBERS_ARE_BEFORE_HERE) {
+        if (t < SchemeObject::NUMBERS_ARE_BEFORE_HERE) {
+            if (t < type) type = t;
+        } else {
             wrong_type_arg(procname, i+1, n);
         }
-        if (t < type) {
-            type = t;        
-        }
-        stack++;    
     }
     return type;
 }
@@ -102,6 +100,7 @@ SchemeObject* s_plus(int num, SchemeStack::iterator stack) {
 
 SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"-", num, stack);
+    
     if (outType == SchemeObject::REAL_NUMBER) {
        double args[num];
        coerceNumbers(num,stack,args);
