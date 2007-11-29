@@ -1,0 +1,66 @@
+<h>Benchmarks</h>
+<p>Under udviklingen af min Scheme har målet hele tiden været at slå GNUs Scheme <a href="http://www.gnu.org/software/guile/guile.html">Guile</a>, hvilket jeg endnu ikke gør. Guile er stadig over dobbelt så hurtig som min implementation.</p>
+<p>Men hvor hurtig er Guile og min Scheme i forhold til at andre fortolkede sprog? Er Perl og Python og Ruby to eller ti gange hurtigere end Guile? I hvert sprog kodede jeg en lille benchmark test, som udregner de første 36 Fibonacci tal. </p>
+<p>Nedenstående er benchmarken i hhv. Ruby, Perl, Python og Scheme.</p>
+<div class="vim">def fib(n)
+  if n &lt; 2
+    n
+  else
+    fib(n-1) + fib(n-2)
+  end
+end
+
+36.times do |i|
+  puts "#{i} : #{fib(i)}"
+end
+</div>
+<br>
+<div class="vim">sub fib {
+    my $n = shift;
+    if ($n &lt; 2) {
+        return $n
+    } else {
+        return fib($n-1) + fib($n-2);
+    }
+}
+
+foreach my $i (0..35) {
+    print "$i : ".fib($i)."\n";
+}
+</div>
+<br>
+<div class="vim">def fib(n):
+   if n &lt; 2:
+      return n
+   else:
+      return fib(n-1) + fib(n-2)
+
+for i in range(36):
+    print "%d : %d" % (i, fib(i))
+</div>
+<br>
+<div class="vim">(define (fib n)
+  (if (&lt; n 2)
+    n
+    (+ (fib (- n 1)) 
+       (fib (- n 2)))))
+
+(do ((i 0 (+ i 1)))
+  ((= i 36))
+  (display i) (display " : ")
+  (display (fib i)) (newline))
+</div>
+<br>
+<p>Algorithmen er meget dum og genererer en masse funktions-kald. En af Scheme's forcer er tail-call optimering, hvilket dog ikke er muligt i denne algoritme (da plus-operatoren venter på resultaterne), så sammenligningen er, omend ikke særlig videnskabelig, så ihvertfald fair i den sammenhæng. Algoritmen er ikke den smarteste måde at udregne Fibonacci tal på. En simpel iteration over <tt>n</tt> ville være meget meget hurtigere, men jeg gik efter noget langsomt til denne test. Udførselstiderne er som følger. Lavest tid er bedst.
+<table>
+	<tr><th>Sprog</th><th>Version</th><th>Tid</th></tr>
+	<tr><td>Guile</td><td>1.8.1</td><td>30.73s</td></tr>
+	<tr><td>Python</td><td>2.5.1</td><td>36.45s</td></tr>
+	<tr><td>Raygay</td><td>0.5.0</td><td>72.50s</td></tr>
+	<tr><td>Perl</td><td>5.8.8</td><td>74.30s</td></tr>
+	<tr><td>Ruby</td><td>1.8.6</td><td>183.87s</td></tr>
+</table>
+<br>
+</p>
+<p>Min upræcise benchmark giver følgende upræcise konklusioner: min Scheme, Raygay, er hurtigere end Perl! Python er dobbelt så hurtigt som Perl - interessant. Så det passer at Ruby er sløvt. Guile er hurtigst af alle, så det giver heldigvis mening at have den som mål.</p>
+

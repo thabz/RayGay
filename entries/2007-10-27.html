@@ -7,7 +7,7 @@ uniform mapning derfra til <i>S<sup>2</sup></i>.</p>
 <p>Lad <i>(s,t)</i> tilhøre [0,1]&times;[0,1]. Fastlæg <i>z</i> med det samme som 2<i>s</i>-1.
 Lad radius <i>r</i> = sqrt(1-<i>z</i><sup>2</sup>). Lad placeringen på cirklen være &phi; = 2 <i>t</i> &pi;. Så kan <i>(x,y,z)</i> udtrykkes som (<i>r</i> cos &phi;, <i>r</i> sin &phi;, <i>z</i>).</p>
 <p>Sådan ser det ud i Scheme:</p>
-<div class="vim">(define (plane->sphere p)
+<div class="vim" id="scheme">(define (plane->sphere p)
    (let* ((z (- (* 2 (car p)) 1))
           (t (* 2 PI (cadr p)))
           (r (sqrt (- 1 (* z z)))))
