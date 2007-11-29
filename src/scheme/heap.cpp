@@ -58,8 +58,8 @@ SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
     }
     
     if (local->index >= SIZE_OF_LOCAL_SLOTS) {
-	reserve(local->bank, SIZE_OF_LOCAL_SLOTS);
-	local->index = 0;
+	    reserve(local->bank, SIZE_OF_LOCAL_SLOTS);
+	    local->index = 0;
     }
     SchemeObject* result = local->bank[local->index];
     local->index++;
