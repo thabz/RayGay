@@ -9,9 +9,11 @@ Lexer::Lexer() {
     curline = 1;
 }
 
-int char_names_num = 2;
-char* char_names[] = {"space", "newline", "linefeed", "alarm"};
-wchar_t char_values[] = {0x20, 0xa, 0xa, 0x7};
+int char_names_num = 8;
+char* char_names[] = {"nul","tab", "backspace", "page", 
+                      "space", "newline", "linefeed", "alarm"};
+wchar_t char_values[] = {0x00, 0x09, 0x08, 0x0c, 
+                         0x20, 0x0a, 0x0a, 0x07};
 
 Lexer::Token Lexer::nextToken(wistream* is) {
     wchar_t n,c;

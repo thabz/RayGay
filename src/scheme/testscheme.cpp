@@ -333,6 +333,8 @@ void test_char() {
     assert_eval(s, L"#\\b", L"#\\b");
     assert_eval(s, L"(char->integer #\\Space)", L"32");
     assert_eval(s, L"(char->integer #\\newline)", L"10");
+    assert_eval(s, L"(char->integer #\\page)", L"12");
+    assert_eval(s, L"(char->integer #\\tab)", L"9");
     assert_eval(s, L"#\\space", L"#\\space");
     assert_eval(s, L"#\\newline", L"#\\newline");
     assert_eval(s, L"(integer->char 66)", L"#\\B");
