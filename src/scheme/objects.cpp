@@ -353,6 +353,7 @@ void SchemeObject::finalize() {
 wstring SchemeObject::toString() {
     wostringstream ss;
     ObjectType t = type();
+    wstring tmp;
     
     switch(t) {
         case SchemeObject::UNSPECIFIED :
@@ -442,13 +443,12 @@ wstring SchemeObject::toString() {
             return L"#<input-port>";
         case SchemeObject::OUTPUT_PORT :    
             return L"#<output-port>";
-        case SchemeObject::CHAR :    
-            if (c == L' ') {
-                return L"#\\space";
-            } else if (c == L'\n') {
-                return L"#\\newline";
-            } else {
+        case SchemeObject::CHAR :
+            tmp = char2charname(c);
+            if (tmp.size() == 0) {
                 ss << L"#\\" << wstring(&c,1);
+            } else {
+                ss << L"#\\" << tmp;
             }
             break;
         case SchemeObject::EMPTY_LIST :
@@ -513,6 +513,50 @@ wstring SchemeObject::toString(ObjectType t) {
             return L"Empty list";
         default:
             throw scheme_exception(L"Unknown type in toString()");    
+    }
+}
+
+//-----------------------------------------------------------
+// Chars
+//-----------------------------------------------------------
+int char_names_num = 12;
+wstring char_names[] =  {L"nul", L"tab", L"backspace", L"page", 
+                         L"space", L"newline", L"linefeed", L"alarm",
+                         L"vtab", L"return", L"esc", L"delete"};
+wchar_t char_values[] = {0x00, 0x09, 0x08, 0x0c, 
+                         0x20, 0x0a, 0x0a, 0x07,
+                         0x0b, 0x0d, 0x1b, 0x7f};
+
+wchar_t SchemeObject::charname2char(wstring s) {
+    std::map<wstring,wchar_t>* cache = NULL;
+    if (cache == NULL) {
+        cache = new map<wstring,wchar_t>();
+        for(int i = 0; i < char_names_num; i++) {
+            (*cache)[char_names[i]] = char_values[i];
+        }
+    }
+    map<wstring,wchar_t>::iterator i = cache->find(s);
+    if (i == cache->end()) {
+        return -1;
+    } else {
+        return i->second; 
+    }
+}
+
+wstring SchemeObject::char2charname(wchar_t s) {
+    std::map<wchar_t,wstring>* cache = NULL;
+    if (cache == NULL) {
+        cache = new map<wchar_t,wstring>();
+        for(int i = 0; i < char_names_num; i++) {
+            (*cache)[char_values[i]] = wstring(char_names[i]);
+        }
+        
+    } 
+    map<wchar_t,wstring>::iterator i = cache->find(s);
+    if (i == cache->end()) {
+        return L"";
+    } else {
+        return i->second; 
     }
 }
 

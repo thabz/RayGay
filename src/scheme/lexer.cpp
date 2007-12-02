@@ -9,12 +9,6 @@ Lexer::Lexer() {
     curline = 1;
 }
 
-int char_names_num = 8;
-char* char_names[] = {"nul","tab", "backspace", "page", 
-                      "space", "newline", "linefeed", "alarm"};
-wchar_t char_values[] = {0x00, 0x09, 0x08, 0x0c, 
-                         0x20, 0x0a, 0x0a, 0x07};
-
 Lexer::Token Lexer::nextToken(wistream* is) {
     wchar_t n,c;
     if (!cache.empty()) {
@@ -83,8 +77,8 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                     }
                 }
                 continue;
-	    } else if (d == L';') {
-	       return Lexer::DATUM_COMMENT;	
+	        } else if (d == L';') {
+	            return Lexer::DATUM_COMMENT;	
             } else {
                 is->unget();
             }
@@ -119,40 +113,37 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                 } else if (n == L'(') {
 		            return Lexer::HASH_OPEN_PAREN;           
                 } else if (n == L'\\') {
-                    for(int i = 0; i < char_names_num; i++) {
-                        int j = 0;
-                        char* p = char_names[i];
-                        for(j = 0; *p != '\0'; p++, j++) {
-                            if (*p != tolower(is->get())) {
-                                break;
-                            } else {
-                                if (*(p+1) == L'\0') {
-                                    // Found a match
-                                    chr = char_values[i];
-                                    c = is->peek();
-                                    if (isDelimiter(c) || is->eof()) {
-                                        return Lexer::CHAR;
-                                    } else {
-                                        error = L"Illegal char";
-                                        return Lexer::ERROR;
-                                    }
-                                }
-                            }
-                        }
-                        while (j-- >= 0) {
-                            is->unget();
-                        }
+                    wstring collected;
+                    collected += is->get();
+                    while (!(isDelimiter(is->peek()) || is->eof())) {
+                        collected += is->get();
                     }
-                    // Handle that if <character> in #\<character> is alphabetic, 
-                    // then the character following <character> must be a delimiter 
-                    // character such as a space or parenthesis.
-                    chr = is->get();
-                    c = is->peek();
-                    if (isDelimiter(c) || is->eof()) {
-                        return Lexer::CHAR;
-                    } else {
+                    if (collected.size() == 0) {
                         error = L"Illegal char";
                         return Lexer::ERROR;
+                    } else if (collected.size() == 1) {
+                        chr = collected[0];
+                        return Lexer::CHAR;
+                    } else {
+                        if (collected[0] == L'x' || collected[0] == L'X') {
+                            for(uint32_t i = 0; i < collected.size()-1; i++) {
+                                is->unget();
+                            }
+                            chr = readHexEscape(is);
+                            if (chr >= 0 && (is->peek() == -1 || isDelimiter(is->peek()) || is->eof())) {
+                                return Lexer::CHAR;
+                            } else {
+                                return Lexer::ERROR;
+                            }
+                        } else {
+                            chr = SchemeObject::charname2char(collected);
+                            if (chr >= 0) {
+                                return Lexer::CHAR;
+                            } else {
+                                error = L"Illegal charname: " + collected;
+                                return Lexer::ERROR;
+                            }
+                        }
                     }
                 } else {
 		            is->unget();

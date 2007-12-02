@@ -139,9 +139,21 @@ void test_tokenizer() {
     assert_eval(s, L"#\\a(+ 1 2)", L"3");
     assert_eval(s, L"#\\space(+ 1 2)", L"3");
     
+    // Lexing chars
+    assert_eval(s, L"#\\space", L"#\\space");
+    assert_eval(s, L"#\\return", L"#\\return");
+    assert_eval(s, L"#\\newline", L"#\\linefeed");
+    assert_eval(s, L"#\\linefeed", L"#\\linefeed");
+    assert_eval(s, L"#\\nul", L"#\\nul");
+    assert_eval(s, L"#\\alarm", L"#\\alarm");
+    assert_eval(s, L"#\\tab", L"#\\tab");
+    assert_eval(s, L"#\\x0009 ", L"#\\tab");
+    assert_eval(s, L"#\\x20", L"#\\space");
+    assert_eval(s, L"'(#\\x20)", L"(#\\space)");
+    
     // Character escape sequences within string literals
-    assert_eval(s, L"(string->list \"abc\\n\")", L"(#\\a #\\b #\\c #\\newline)");
-    assert_eval(s, L"(string->list \"\\x4f;\\x4B;\\xa;\")", L"(#\\O #\\K #\\newline)");
+    assert_eval(s, L"(string->list \"abc\\n\")", L"(#\\a #\\b #\\c #\\linefeed)");
+    assert_eval(s, L"(string->list \"\\x4f;\\x4B;\\xa;\")", L"(#\\O #\\K #\\linefeed)");
     assert_eval(s, L"(string->list \"\\x00000004f;\")", L"(#\\O)");
     assert_fail(s, L"(string->list \"\\x4f;\\x4B\\xa;\")");
     assert_fail(s, L"(string->list \"\\\")");
@@ -331,12 +343,12 @@ void test_char() {
     assert_eval(s, L"(char? 1)", L"#f");
     assert_eval(s, L"(char? 'a)", L"#f");
     assert_eval(s, L"#\\b", L"#\\b");
-    assert_eval(s, L"(char->integer #\\Space)", L"32");
+    assert_eval(s, L"(char->integer #\\space)", L"32");
     assert_eval(s, L"(char->integer #\\newline)", L"10");
     assert_eval(s, L"(char->integer #\\page)", L"12");
     assert_eval(s, L"(char->integer #\\tab)", L"9");
     assert_eval(s, L"#\\space", L"#\\space");
-    assert_eval(s, L"#\\newline", L"#\\newline");
+    assert_eval(s, L"#\\newline", L"#\\linefeed");
     assert_eval(s, L"(integer->char 66)", L"#\\B");
     assert_eval(s, L"(integer->char 95)", L"#\\_");
     assert_eval(s, L"(integer->char 32)", L"#\\space");
@@ -557,10 +569,6 @@ void test_math() {
     assert_eval(s, L"(= +i 0.0)" , L"#f");
     assert_eval(s, L"(= 2 2 2 2)" , L"#t");
     assert_eval(s, L"(= 0.25 1/4)" , L"#t");
-    // I would like the following to return #t
-    // but Guile, Scheme48, MIT-Scheme all
-    // agree on #f
-    //assert_eval(s, L"(= 3/10 0.3)" , L"#f");
     assert_fail(s, L"(= 'a)");    // Guile 1.8.1 doesn't fail here
     assert_fail(s, L"(= 1 'a)");
     assert_eval(s, L"(=)" , L"#t");
@@ -825,20 +833,11 @@ void test_math() {
     assert_eval(s, L"(rationalize -179/17 0)", L"-179/17");
     assert_eval(s, L"(rationalize 1/3 0.25)", L"0.5");
     assert_eval(s, L"(rationalize (inexact->exact 0.3) 1/10)", L"1/3");
-    /*
     assert_eval(s, L"(rationalize 12/8 0.1)", L"1.5");
     assert_eval(s, L"(rationalize 7/8 0.1)", L"0.8");
     assert_eval(s, L"(rationalize -7/8 0.1)", L"-0.8");
-    assert_eval(s, L"(rationalize 1.8 0.1)", L"1.75");
-    */
-    /*
-    assert_eval(s, L"", L"");
-    assert_eval(s, L"", L"");
-    assert_eval(s, L"", L"");
-    assert_eval(s, L"", L"");
-    assert_eval(s, L"", L"");
-    assert_eval(s, L"", L"");
-    */
+    // TODO: Nedenstående fejler da vi ikke har bigints endnu.
+    // assert_eval(s, L"(rationalize 1.8 0.1)", L"1.75");
 
     assert_eval(s, L"(sin 0)", L"0.0");
     assert_eval(s, L"(cos 0)", L"1.0");
@@ -888,7 +887,7 @@ void test_equals() {
     assert_eval(s, L"(eqv? #f '())", L"#f");
     assert_eval(s, L"(eq? #f '())", L"#f");
     assert_eval(s, L"(eqv? #\\a #\\a)", L"#t");
-    assert_eval(s, L"(eqv? #\\space #\\spAce)", L"#t");
+    assert_eval(s, L"(eqv? #\\space #\\ )", L"#t");
     assert_eval(s, L"(eqv? 1 1.0)", L"#f");
     assert_eval(s, L"(eqv? 1.0 1.0)", L"#t");
     assert_eval(s, L"(eqv? 1 1)", L"#t");
@@ -1164,6 +1163,7 @@ void test_string() {
     assert_eval(s, L"(number->string 15/32 16)", L"\"f/20\"");
     assert_eval(s, L"(string->list \"\")", L"()");
     assert_eval(s, L"(string->list \"String\")", L"(#\\S #\\t #\\r #\\i #\\n #\\g)");
+    assert_eval(s, L"(string->list \"H e j\")", L"(#\\H #\\space #\\e #\\space #\\j)");
     assert_eval(s, L"(list->string '())", L"\"\"");
     assert_eval(s, L"(list->string '(#\\S #\\t #\\r #\\i #\\n #\\g))", L"\"String\"");
     assert_eval(s, L"(define ss (string #\\S #\\t #\\r #\\i #\\n #\\g)) ss", L"\"String\"");

@@ -213,6 +213,10 @@ class SchemeObject
         
         // For stats
         static wstring toString(ObjectType type);
+        
+        // For chars
+        static wchar_t charname2char(wstring s);
+        static wstring char2charname(wchar_t c);
 
     private:
         static map<wstring,SchemeObject*> known_symbols;
