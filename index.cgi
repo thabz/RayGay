@@ -57,6 +57,7 @@ Content-type: text/html; charset=ISO-8859-1
 <style type="text/css">
 body {
       /* font-family: "Trebuchet MS",Georgia,Helvetica,Arial; */
+      font-family: Optima, Verdana, Arial, Helvetica, sans-serif;
       font-size: 12pt;
       height: 100%;
       padding: 0px;

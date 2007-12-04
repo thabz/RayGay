@@ -51,7 +51,7 @@ for i in range(36):
   (display (fib i)) (newline))
 </div>
 <br>
-<p>Algorithmen er meget dum og genererer en masse funktions-kald og garbage. En af Scheme's forcer er tail-call optimering, hvilket dog ikke er muligt i denne algoritme (da plus-operatoren venter på resultaterne), så sammenligningen er, omend ikke særlig videnskabelig, så ihvertfald fair i den sammenhæng. Algoritmen er ikke den smarteste måde at udregne Fibonacci tal på. En simpel iteration over <tt>n</tt> ville være meget meget hurtigere, men jeg gik efter noget langsomt til denne test. Udførselstiderne er som følger. Lavest tid er bedst.
+<p>Algorithen er meget dum og genererer en masse funktions-kald og garbage. En af Scheme's forcer er tail-call optimering, hvilket dog ikke er muligt i denne algoritme (da plus-operatoren venter på resultaterne), så sammenligningen er, omend ikke særlig videnskabelig, så ihvertfald fair i den sammenhæng. Algoritmen er ikke den smarteste måde at udregne Fibonacci tal på. En simpel iteration over <tt>n</tt> ville være meget meget hurtigere, men jeg gik efter noget langsomt til denne test. Udførselstiderne er som følger. Lavest tid er bedst.
 <table>
 	<tr><th>Sprog</th><th>Version</th><th>Tid</th></tr>
 	<tr><td>Guile</td><td>1.8.1</td><td>30.73s</td></tr>
