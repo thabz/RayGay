@@ -23,6 +23,13 @@ void ImageDrawing::pixel(Image* image, float xf, float yf, const RGBA& color, Im
     }    
 }
 
+void ImageDrawing::filledbox(Image* image, int x, int y, int w, int h, const RGBA& c, AlphaCombineMode am) {
+    for(int yi = y; yi < y + h; yi++) {
+        for(int xi = x; xi < x + w; xi++) {
+            pixel(image, xi, yi, c, am);
+        }
+    }
+}
 
 /**
  * Bresenham's algorithm.
