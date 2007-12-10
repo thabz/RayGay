@@ -327,6 +327,7 @@ void test_interpreter() {
     assert_eval(s, L"((lambda lambda lambda) 'x)", L"(x)");
     assert_eval(s, L"(let ((quote -)) (eqv? '1 1))", L"#f");
     assert_eval(s, L"((lambda (begin) (begin 1 2 3)) (lambda lambda lambda))", L"(1 2 3)");    
+    assert_fail(s, L"(lambda (a 1 2) 1)");
 
     delete s;
 }

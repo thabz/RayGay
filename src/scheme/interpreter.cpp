@@ -966,11 +966,20 @@ fn_ptr eval_procedure_call(Interpreter::State* state) {
 
 fn_ptr eval_lambda(Interpreter::State* state) {
     // TODO: Memoize eval_lambda, ie. cache the result.
-    // TODO: Check that all formals are symbols
     SchemeObject* formals = state->global_arg1;
     SchemeObject* body = state->global_arg2;
     SchemeObject* name = state->global_arg3;
     SchemeObject* envt = state->global_envt;
+
+    // Check that all formals are symbols
+    SchemeObject* symbols = formals;
+    while (symbols != S_EMPTY_LIST && i_symbol_p(symbols) == S_FALSE) {
+	if (i_symbol_p(i_car(symbols)) == S_FALSE) {
+	    throw scheme_exception(L"Bad variable in lambda: " + i_car(symbols)->toString());
+	}
+	symbols = i_cdr(symbols);
+    }
+
 
     state->global_ret = SchemeObject::createUserProcedure(name, envt, formals, body);
     return NULL;
