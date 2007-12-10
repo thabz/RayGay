@@ -588,6 +588,8 @@ SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
     }
 }
 
+// The R^6RS procedure.
+// TODO: Write a test for this. 
 SchemeObject* s_mod(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type(L"mod", 1, s_real_p, n1);
     assert_arg_type(L"mod", 2, s_real_p, n2);
