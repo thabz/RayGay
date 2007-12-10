@@ -588,6 +588,14 @@ SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
     }
 }
 
+SchemeObject* s_mod(SchemeObject* n1, SchemeObject* n2) {
+    assert_arg_type(L"mod", 1, s_real_p, n1);
+    assert_arg_type(L"mod", 2, s_real_p, n2);
+    double nn1 = scm2double(n1);
+    double nn2 = scm2double(n2);
+    return double2scm(::fmod(nn1,nn2));
+}
+
 SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type(L"modulo", 1, s_integer_p, n1);
     assert_arg_type(L"modulo", 2, s_integer_p, n2);
@@ -1510,6 +1518,7 @@ void LibNumbers::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"quotient"              ,2,0,0, (SchemeObject* (*)()) s_quotient, envt);
     scheme->assign(L"remainder"             ,2,0,0, (SchemeObject* (*)()) s_remainder, envt);
     scheme->assign(L"modulo"                ,2,0,0, (SchemeObject* (*)()) s_modulo, envt);
+    scheme->assign(L"mod"                ,2,0,0, (SchemeObject* (*)()) s_mod, envt);
     
     scheme->assign(L"min"                   ,1,0,1, (SchemeObject* (*)()) s_min, envt);
     scheme->assign(L"max"                   ,1,0,1, (SchemeObject* (*)()) s_max, envt);
