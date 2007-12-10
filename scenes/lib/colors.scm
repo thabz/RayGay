@@ -265,4 +265,3 @@
 (define color-yellow-green #(0.604 0.804 0.196))
 (define color-yellow #(1.000 1.000 0.000))
 
-
