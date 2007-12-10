@@ -267,6 +267,7 @@ void test_interpreter() {
     assert_fail(s, L"(define (a))");
     assert_fail(s, L"(define () 20)");
     assert_fail(s, L"(define ())");
+    assert_fail(s, L"(define (kaj \"..\") 1)");
 
     // test built-in with only rst args
     assert_eval(s, L"(+ 10 9 2 19 8 2 1 29 8 8 2 1 23 3 1) ", L"126");
@@ -299,6 +300,7 @@ void test_interpreter() {
     assert_eval(s, L"(apply list '())", L"()");
     assert_eval(s, L"(apply * 1 2 (list 3 4))", L"24");
     assert_eval(s, L"(apply apply `(,+ ,(list 1 2)))", L"3");
+    //assert_fail(s, L"(apply define (string->symbol \"xx\") 10)");
     s->eval(L"(define compose (lambda (f g) (lambda args (f (apply g args)))))");
     assert_eval(s, L"((compose sqrt *) 12 75)", L"30.0");  // R^5RS, Section 6.4.
     
