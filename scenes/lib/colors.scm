@@ -92,8 +92,8 @@
 
 (define (rgb-ramp c1 c2 t)
   (vector (linear-ramp (red-component c1) (red-component c2) t)
-          (linear-ramp (green-component c1) (green-component) t)
-          (linear-ramp (blue-component c1) (blue-component) t)))
+          (linear-ramp (green-component c1) (green-component c2) t)
+          (linear-ramp (blue-component c1) (blue-component c2) t)))
 
 (define (color-gradient num col1 col2 . col-rest)
   (let* ((cols (list->vector (cons col1 (cons col2 col-rest))))
