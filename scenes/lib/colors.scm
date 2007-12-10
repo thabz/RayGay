@@ -13,10 +13,10 @@
 
 ; See http://en.wikipedia.org/wiki/HSV_color_space
 (define (hsv->rgb hsv)
-  (let* ((H (modulo (vector-ref hsv 0) 360))
+  (let* ((H (mod (* (vector-ref hsv 0) 360) 360))
          (S (vector-ref hsv 1))
          (V (vector-ref hsv 2))
-         (Hi (modulo (floor (/ H 60.0)) 6.0))
+         (Hi (mod (floor (/ H 60.0)) 6.0))
          (f (- (/ H 60.0) Hi))
          (p (* V (- 1.0 S)))
          (q (* V (- 1.0 (* f S))))
@@ -62,7 +62,7 @@
 
 (define (normalize-hsv hsv)
   (vector 
-    (modulo (vector-ref hsv 0) 360.0)
+    (mod (vector-ref hsv 0) 1.0)
     (vector-ref hsv 1)
     (vector-ref hsv 2)))
 
