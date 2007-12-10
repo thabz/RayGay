@@ -264,7 +264,7 @@ void test_interpreter() {
     assert_fail(s, L"(define a)");
     assert_fail(s, L"(define 10 10)");
     assert_fail(s, L"(define a 10 20)");
-    assert_fail(s, L"(define (a))");
+    assert_fail(s, L"(define (a))"); // Missing body
     assert_fail(s, L"(define () 20)");
     assert_fail(s, L"(define ())");
     assert_fail(s, L"(define (kaj \"..\") 1)");

@@ -339,15 +339,19 @@ fn_ptr eval_define(Interpreter::State* state) {
     SchemeObject* envt = state->global_envt;
     
     if (p == S_EMPTY_LIST || i_car(p) == S_EMPTY_LIST || i_cdr(p) == S_EMPTY_LIST) {
-        throw scheme_exception(plist->src_line(), L"Too few arguments: define");
+        throw scheme_exception(plist->src_line(), L"Too few arguments in define");
     }
     
     if (i_pair_p(i_car(p)) == S_TRUE) {
         // (define (func-name args...) body-forms...)
         SchemeObject* pa = i_car(p);
         SchemeObject* name = i_car(pa);
-        if (i_symbol_p(name) == S_FALSE) {
-                throw scheme_exception(plist->src_line(), L"Bad variable: define: " + name->toString());
+	SchemeObject* symbols = pa;
+	while (symbols != S_EMPTY_LIST && i_symbol_p(symbols) == S_FALSE) {
+	    if (i_symbol_p(i_car(symbols)) == S_FALSE) {
+		throw scheme_exception(plist->src_line(), L"Bad variable in define: " + i_car(symbols)->toString());
+	    }
+	    symbols = i_cdr(symbols);
         }
         SchemeObject* body = i_cdr(p);
 
@@ -360,7 +364,7 @@ fn_ptr eval_define(Interpreter::State* state) {
     } else {
         // (define var value-expr)
         if (i_cddr(p) != S_EMPTY_LIST) {
-            throw scheme_exception(plist->src_line(), L"Too many arguments: define");
+            throw scheme_exception(plist->src_line(), L"Too many arguments in define");
         }
         
         SchemeObject* s = i_car(p);
