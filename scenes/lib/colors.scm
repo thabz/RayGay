@@ -60,6 +60,17 @@
          (b (string->number (substring hex-string 5 7) 16)))
      (vector (/ r 255) (/ g 255) (/ b 255))))
 
+(define (two-digit-string s)
+ (if (= 1 (string-length s))
+  (string-append "0" s)
+  s))
+
+(define (rgb->hex c)
+  (string-append "#"
+    (two-digit-string (number->string (inexact->exact (floor (* 255 (red-component c)))) 16))
+    (two-digit-string (number->string (inexact->exact (floor (* 255 (green-component c)))) 16))
+    (two-digit-string (number->string (inexact->exact (floor (* 255 (blue-component c)))) 16))))
+
 (define (normalize-hsv hsv)
   (vector 
     (mod (vector-ref hsv 0) 1.0)
