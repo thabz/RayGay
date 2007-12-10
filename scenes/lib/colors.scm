@@ -1,5 +1,7 @@
 
 ;; Inspired by http://nodebox.net/code/index.php/Colors
+;; All procedures working on a single color, should also
+;; work on a list of colors.
 
 (define (red-component c)
   (vector-ref c 0))
@@ -65,13 +67,15 @@
     (vector-ref hsv 2)))
 
 (define (color-rotate rgb angle)
-  (let ((hsv (rgb->hsv rgb)))
-    (hsv->rgb
-      (normalize-hsv 
-        (vector 
-          (+ angle (vector-ref hsv 0))
-          (vector-ref hsv 1)
-          (vector-ref hsv 2))))))
+  (if (list? rgb)
+    (map (lambda (c) (color-rotate c angle)) rgb)
+    (let ((hsv (rgb->hsv rgb)))
+      (hsv->rgb
+	(normalize-hsv 
+	  (vector 
+	    (+ angle (vector-ref hsv 0))
+	    (vector-ref hsv 1)
+	    (vector-ref hsv 2)))))))
 
 ; Not working...
 (define (color-gradient-smooth num col1 col2 . col-rest)
@@ -109,6 +113,20 @@
                          (vector-ref cols (+ 1 segment)) offset))
             result)
             (+ t (/ num)))))))
+
+; The ranges are (min . max) pairs
+(define (color-range num h-range s-range v-range)
+  (let loop ((i 0) (result '()))
+    (if (= i num) (reverse result)
+      (let ((t (/ i num)))
+	(loop
+	  (+ 1 i)
+	  (cons 
+	    (hsv->rgb 
+	      (vector (linear-ramp (car h-range) (cdr h-range) t)
+		      (linear-ramp (car s-range) (cdr s-range) t)
+		      (linear-ramp (car v-range) (cdr v-range) t)))
+	    result))))))
 
 ; Returns the complementary color, ie. the hue rotated 180 degrees.
 (define (color-complement rgb)
