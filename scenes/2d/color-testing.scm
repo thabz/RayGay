@@ -1,12 +1,22 @@
+#!/opt/local/bin/raygay-repl
 
-(load "scenes/lib/colors.scm")
+(load "lib/colors.scm")
 
 (define image (make-image 800 600 #(1 1 1)))
 
-(do ((h 0 (+ h 10)))
-  ((>= h 360))
-  (let ((c (hsv->rgb (vector h 0.5 1))))
-     (draw-filled-box image (vector h 0) #(20 20) c)
-     (draw-filled-box image (vector h 20) #(20 20) (color-complement c))))
+(do ((h 0 (+ h 0.1)))
+  ((>= h 1.0))
+  (let ((c (hsv->rgb (vector h 1 0.5)))
+        (x (* h 300)))
+     (draw-filled-box image (vector x 0) #(20 20) c)
+     (draw-filled-box image (vector x 20) #(20 20) (color-brighten c 0.2))))
+
+(define gradient (color-gradient 20 '(#(0 0 0) #(1 0 0) #(0 1 0) #(1 1 1))))
+
+(define loop ((i 0) (gradient gradient))
+  (if (< i 20) 
+    (begin
+      (draw-filled-box image (vector (* i 20) 50) #(20 20) (car gradient))
+      (loop (+ i 1) (cdr gradient)))))
 
 (save-image image "colors.png")

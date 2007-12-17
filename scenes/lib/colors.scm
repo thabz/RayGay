@@ -9,7 +9,14 @@
   (vector-ref c 1))
 (define (blue-component c)
   (vector-ref c 2))
-
+(define (hue-component c)
+  (vector-ref (rgb->hsv c) 0))
+(define (saturation-component c)
+  (vector-ref (rgb->hsv c) 1))
+(define (value-component c)
+  (vector-ref (rgb->hsv c) 2))
+(define (brightness-component c)
+  (vector-ref (rgb->hsv c) 2))
 
 ; See http://en.wikipedia.org/wiki/HSV_color_space
 (define (hsv->rgb hsv)
@@ -51,7 +58,7 @@
          (s (cond  
            ((zero? maxx) 0.0)
            (else (- 1 (/ minn maxx))))))
-      (vector h s v)))      
+      (vector (/ h 360.0) s v)))      
 
 ; Converts "#ff80ff" to #(1 128/256 1)
 (define (hex->rgb hex-string)
@@ -74,19 +81,19 @@
 (define (normalize-hsv hsv)
   (vector 
     (mod (vector-ref hsv 0) 1.0)
-    (vector-ref hsv 1)
-    (vector-ref hsv 2)))
+    (max (min (vector-ref hsv 1) 1.0) 0.0)
+    (max (min (vector-ref hsv 2) 1.0) 0.0)))
 
 (define (color-rotate rgb angle)
   (if (list? rgb)
     (map (lambda (c) (color-rotate c angle)) rgb)
     (let ((hsv (rgb->hsv rgb)))
       (hsv->rgb
-	(normalize-hsv 
-	  (vector 
-	    (+ angle (vector-ref hsv 0))
-	    (vector-ref hsv 1)
-	    (vector-ref hsv 2)))))))
+	      (normalize-hsv 
+	        (vector 
+	          (+ angle (vector-ref hsv 0))
+	          (vector-ref hsv 1)
+	          (vector-ref hsv 2)))))))
 
 ; Not working...
 (define (color-gradient-smooth num col1 col2 . col-rest)
@@ -106,24 +113,29 @@
   (+ (* t (- b a)) a))
 
 (define (rgb-ramp c1 c2 t)
-  (vector (linear-ramp (red-component c1) (red-component c2) t)
+  (vector (linear-ramp (red-component c1)   (red-component c2)   t)
           (linear-ramp (green-component c1) (green-component c2) t)
-          (linear-ramp (blue-component c1) (blue-component c2) t)))
+          (linear-ramp (blue-component c1)  (blue-component c2)  t)))
 
-(define (color-gradient num col1 col2 . col-rest)
-  (let* ((cols (list->vector (cons col1 (cons col2 col-rest))))
-         (cols-num (vector-length cols))
-         (segments-num (- cols-num 1)))
-    (let loop ((result '()) (t 0))
+(define (color-gradient-procedure colors)
+  (let* ([cols (list->vector colors)]
+         [cols-num (vector-length cols)]
+         [segments-num (- cols-num 1)])
+    (display segments-num)(newline)     
+    (lambda (t) 
+      (let* ([segment (floor (* segments-num t))]
+             [offset (- (* t segments-num) segment)])
+        (rgb-ramp (vector-ref cols segment) (vector-ref cols (+ 1 segment)) offset)))))
+
+(define (color-gradient num colors)
+    (let loop ([result '()]
+               [t 0]
+               [proc (color-gradient-procedure colors)])
       (if (>= t 1) (reverse result)
         (loop 
-          (cons 
-            (let* ((segment (floor (* segments-num t)))
-                   (offset (- (* t segments-num) segment)))
-               (rgb-ramp (vector-ref cols segment) 
-                         (vector-ref cols (+ 1 segment)) offset))
-            result)
-            (+ t (/ num)))))))
+          (cons (proc t) result)
+          (+ t (/ num))
+          proc))))
 
 ; The ranges are (min . max) pairs
 (define (color-range num h-range s-range v-range)
@@ -141,7 +153,28 @@
 
 ; Returns the complementary color, ie. the hue rotated 180 degrees.
 (define (color-complement rgb)
-   (color-rotate rgb 180.0))
+   (color-rotate rgb 0.5))
+
+(define (color-brighten rgb . amount)
+  (let ([amount (if (null? amount) 0.1 (car amount))])
+    (hsv->rgb (normalize-hsv
+      (vector (hue-component rgb)
+              (saturation-component rgb)
+              (+ (brightness-component rgb) amount))))))       
+
+(define (color-darken rgb . amount)
+  (let ([amount (if (null? amount) 0.1 (car amount))])
+    (color-brighten rgb (- amount))))
+
+(define (color-darkest colors)
+  (if (null? (cdr colors))
+     (car colors)
+     (let* ((darkest-of-cdr (color-darkest (cdr colors)))
+            (brightness-of-cdr (brightness-component darkest-of-cdr))
+            (brightness-of-car (brightness-component (car colors))))
+       (if (< brightness-of-car brightness-of-cdr)
+         (car colors)
+         (darkest-of-cdr)))))
 
 (define color-alice-blue '#(0.941 0.973 1.000))
 (define color-antique-white #(0.980 0.922 0.843))
@@ -217,24 +250,24 @@
 (define color-light-steel-blue #(0.690 0.769 0.871))
 (define color-light-yellow #(1.000 1.000 0.878))
 (define color-lime-green #(0.196 0.804 0.196))
-(define color-linen #(0.980 0.941 0.902))
-(define color-magenta #(1.000 0.000 1.000))
-(define color-maroon #(0.690 0.188 0.376))
-(define color-medium-blue #(0.000 0.000 0.804))
-(define color-medium-orchid #(0.729 0.333 0.827))
-(define color-medium-purple #(0.576 0.439 0.859))
-(define color-medium-sea-green #(0.235 0.702 0.443))
-(define color-medium-slate-blue #(0.482 0.408 0.933))
+(define color-linen               #(0.980 0.941 0.902))
+(define color-magenta             #(1.000 0.000 1.000))
+(define color-maroon              #(0.690 0.188 0.376))
+(define color-medium-blue         #(0.000 0.000 0.804))
+(define color-medium-orchid       #(0.729 0.333 0.827))
+(define color-medium-purple       #(0.576 0.439 0.859))
+(define color-medium-sea-green    #(0.235 0.702 0.443))
+(define color-medium-slate-blue   #(0.482 0.408 0.933))
 (define color-medium-spring-green #(0.000 0.980 0.604))
-(define color-medium-turquoise #(0.282 0.820 0.800))
-(define color-medium-violet-red #(0.780 0.082 0.522))
-(define color-midnight-blue #(0.098 0.098 0.439))
-(define color-mint-cream #(0.961 1.000 0.980))
-(define color-misty-rose #(1.000 0.894 0.882))
-(define color-moccasin #(1.000 0.894 0.710))
-(define color-navajo-white #(1.000 0.871 0.678))
-(define color-navy #(0.000 0.000 0.502))
-(define color-old-lace #(0.992 0.961 0.902))
+(define color-medium-turquoise    #(0.282 0.820 0.800))
+(define color-medium-violet-red   #(0.780 0.082 0.522))
+(define color-midnight-blue       #(0.098 0.098 0.439))
+(define color-mint-cream          #(0.961 1.000 0.980))
+(define color-misty-rose          #(1.000 0.894 0.882))
+(define color-moccasin            #(1.000 0.894 0.710))
+(define color-navajo-white        #(1.000 0.871 0.678))
+(define color-navy                #(0.000 0.000 0.502))
+(define color-old-lace            #(0.992 0.961 0.902))
 (define color-olive-drab #(0.420 0.557 0.137))
 (define color-orange-red #(1.000 0.271 0.000))
 (define color-orange #(1.000 0.647 0.000))
