@@ -37,8 +37,9 @@ Lexer::Token Lexer::nextToken(wistream* is) {
             // Skip whitespace
             continue;
         }
-        if (c == L';') {
-            // Skip single-line comment until end of line or end of stream
+        // Skip single-line comment until end of line or end of stream
+        // Or skip #! lines
+        if (c == L';' || (c == L'#') && is->peek() == L'!') {
             do {
                 c = is->get();
             } while (c != L'\n' && !is->eof());
@@ -130,9 +131,13 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                                 is->unget();
                             }
                             chr = readHexEscape(is);
-                            if (chr >= 0 && (is->peek() == -1 || isDelimiter(is->peek()) || is->eof())) {
+                            wchar_t tmp = is->get();
+                            if (chr >= 0 && (tmp == -1 || isDelimiter(tmp) || is->eof() || is->fail())) {
+                                is->unget();
                                 return Lexer::CHAR;
                             } else {
+                                is->unget();
+                                error = L"Illegal char: \\" + collected;
                                 return Lexer::ERROR;
                             }
                         } else {
