@@ -4,6 +4,7 @@
 
 #include "parser/imagefactory.h"
 #include "parser/mathfactory.h"
+#include "parser/pathfactory.h"
 
 #include "exception.h"
 
@@ -88,6 +89,7 @@ int repl() {
         scheme = new Scheme();
         ImageFactory::register_procs(scheme);
         MathFactory::register_procs(scheme);
+        PathFactory::register_procs(scheme);
     } catch (scheme_exception e) {
 	    wcerr << L"ABORT: " << e.toString() << endl;
         return EXIT_FAILURE;
@@ -146,6 +148,7 @@ int runfile(char* filename) {
         scheme = new Scheme();
         ImageFactory::register_procs(scheme);
         MathFactory::register_procs(scheme);
+        PathFactory::register_procs(scheme);
         scheme->eval(ifs);
     } catch (scheme_exception e) {
         ifs->close();
@@ -186,23 +189,23 @@ int main(int argc, char *argv[]) {
     int c;
     opterr = 0;
     while ((c = getopt (argc, argv, "hvd")) != -1) {
-	switch(c) {
-	    case 'h':
-		print_usage();
-		return EXIT_SUCCESS;
-	    case 'v':
-		print_version();
-		return EXIT_SUCCESS;
-	    case 'd':
-		verbose = true;
-		break;
-	    case '?':
-		cerr << "Unknown option -" << char(optopt) << endl << endl;
-		print_usage();
-		return EXIT_FAILURE;
-	    default:
-		return EXIT_FAILURE;
-	}
+	    switch(c) {
+	        case 'h':
+	    	    print_usage();
+	    	    return EXIT_SUCCESS;
+	        case 'v':
+	    	    print_version();
+	    	    return EXIT_SUCCESS;
+	        case 'd':
+	    	    verbose = true;
+	    	    break;
+	        case '?':
+	    	    cerr << "Unknown option -" << char(optopt) << endl << endl;
+	    	    print_usage();
+	    	    return EXIT_FAILURE;
+	        default:
+	    	    return EXIT_FAILURE;
+	    }
     }
     
     elapsed = clock();
