@@ -148,6 +148,7 @@ void test_tokenizer() {
     assert_eval(s, L"#\\alarm", L"#\\alarm");
     assert_eval(s, L"#\\tab", L"#\\tab");
     assert_eval(s, L"#\\x0009 ", L"#\\tab");
+    assert_eval(s, L"#\\x20 ", L"#\\space");
     assert_eval(s, L"#\\x20", L"#\\space");
     assert_eval(s, L"'(#\\x20)", L"(#\\space)");
     
@@ -771,6 +772,11 @@ void test_math() {
     assert_eval(s, L"(modulo 13 -4)" , L"-3");
     assert_eval(s, L"(modulo -13 -4)" , L"-1");
     assert_eval(s, L"(modulo 13 4)" , L"1");
+    assert_eval(s, L"(mod 2.0 1.0)" , L"0.0");
+    assert_eval(s, L"(mod 4.5 2.0)" , L"0.5");
+    assert_eval(s, L"(mod 13.0 4.0)" , L"1.0");
+    
+    
     assert_eval(s, L"(gcd)" , L"0");
     assert_eval(s, L"(gcd 5)" , L"5");
     assert_eval(s, L"(gcd -4)" , L"4"); // Guile 1.8.1 gets this one wrong.

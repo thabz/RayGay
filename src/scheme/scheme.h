@@ -158,8 +158,8 @@ class scheme_exception {
     int n = scm2int(arg);                                             \
     if (n < from || n > to) {                                         \
         wostringstream ss;                                             \
-        ss << "Integer out of range " << from << " to " << to;        \
-        ss << " in position " << argnum;                              \
+        ss << "Integer out of range [" << from << ".." << to;        \
+        ss << "] in position " << argnum;                              \
         ss << " in call to " << procname;                             \
         ss << ": " << (arg)->toString();                                \
         throw scheme_exception(ss.str());                             \
