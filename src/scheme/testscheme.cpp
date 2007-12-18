@@ -148,6 +148,7 @@ void test_tokenizer() {
     assert_eval(s, L"#\\alarm", L"#\\alarm");
     assert_eval(s, L"#\\tab", L"#\\tab");
     assert_eval(s, L"#\\x0009 ", L"#\\tab");
+    assert_eval(s, L"#\\x0009", L"#\\tab");
     assert_eval(s, L"#\\x20 ", L"#\\space");
     assert_eval(s, L"#\\x20", L"#\\space");
     assert_eval(s, L"'(#\\x20)", L"(#\\space)");

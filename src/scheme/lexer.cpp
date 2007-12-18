@@ -127,6 +127,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                         return Lexer::CHAR;
                     } else {
                         if (collected[0] == L'x' || collected[0] == L'X') {
+                            is->clear();
                             for(uint32_t i = 0; i < collected.size()-1; i++) {
                                 is->unget();
                             }
