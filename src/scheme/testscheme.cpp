@@ -848,6 +848,8 @@ void test_math() {
     assert_eval(s, L"(rationalize -7/8 0.1)", L"-0.8");
     // TODO: Nedenstående fejler da vi ikke har bigints endnu.
     // assert_eval(s, L"(rationalize 1.8 0.1)", L"1.75");
+    
+    assert_eval(s, L"(let loop ((i 0)) (if (>= i 1) i (loop (+ i (/ 100)))))", L"1");
 
     assert_eval(s, L"(sin 0)", L"0.0");
     assert_eval(s, L"(cos 0)", L"1.0");

@@ -4,6 +4,7 @@
 #include "numbers.h"
 #include <sstream>
 #include <iomanip>
+#include <limits>
 #include "heap.h"
 
 // Map of known symbols
@@ -50,17 +51,21 @@ SchemeObject* SchemeObject::createRationalNumber(rational_type::value_type numer
     if (denominator == 0) {
         throw scheme_exception(L"Denominator is zero in rational");    
     } else if (denominator == 1) {
-	return createIntegerNumber(numerator);        
+	    return createIntegerNumber(numerator);        
     } else if (denominator == -1) {
-	return createIntegerNumber(-numerator);        
+	    return createIntegerNumber(-numerator);        
     } else {
-	SchemeObject* n = createIntegerNumber(numerator);        
+	    SchemeObject* n = createIntegerNumber(numerator);        
         SchemeObject* d = createIntegerNumber(denominator);
         return createRationalNumber(n, d);
     }        
 }
 
 SchemeObject* SchemeObject::createRationalNumber(rational_type rational) {
+    if (rational.numerator() > numeric_limits<int32_t>::max() ||
+        rational.denominator() > numeric_limits<int32_t>::max()) {
+        rational = rational.normalized();    
+    }
     return createRationalNumber(rational.numerator(), rational.denominator());
 }
 
