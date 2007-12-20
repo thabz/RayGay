@@ -121,21 +121,20 @@
   (let* ([cols (list->vector colors)]
          [cols-num (vector-length cols)]
          [segments-num (- cols-num 1)])
-    (display segments-num)(newline)     
     (lambda (t) 
       (let* ([segment (floor (* segments-num t))]
              [offset (- (* t segments-num) segment)])
         (rgb-ramp (vector-ref cols segment) (vector-ref cols (+ 1 segment)) offset)))))
 
 (define (color-gradient num colors)
-    (let loop ([result '()]
-               [t 0]
-               [proc (color-gradient-procedure colors)])
-      (if (>= t 1) (reverse result)
-        (loop 
-          (cons (proc t) result)
-          (+ t (/ num))
-          proc))))
+  (let loop ([result '()]
+             [t 0]
+             [proc (color-gradient-procedure colors)])
+    (if (>= t 1) (reverse result)
+      (loop 
+        (cons (proc t) result)
+        (+ t (/ num))
+        proc))))
 
 ; The ranges are (min . max) pairs
 (define (color-range num h-range s-range v-range)
@@ -147,9 +146,9 @@
 	  (cons 
 	    (hsv->rgb 
 	      (vector (linear-ramp (car h-range) (cdr h-range) t)
-		      (linear-ramp (car s-range) (cdr s-range) t)
-		      (linear-ramp (car v-range) (cdr v-range) t)))
-	    result))))))
+ 		            (linear-ramp (car s-range) (cdr s-range) t)
+		            (linear-ramp (car v-range) (cdr v-range) t)))
+ 	    result))))))
 
 ; Returns the complementary color, ie. the hue rotated 180 degrees.
 (define (color-complement rgb)
