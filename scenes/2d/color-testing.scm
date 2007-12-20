@@ -11,10 +11,10 @@
      (draw-filled-box image (vector x 0) #(20 20) c)
      (draw-filled-box image (vector x 20) #(20 20) (color-brighten c 0.2))))
 
-(define gradient (color-gradient 20 '(#(0 0 0) #(1 0 0) #(0 1 0) #(1 1 1) #(1 1 0))))
+(define gradient (color-gradient 40 (list color-azure color-linen color-orange)))
 
 (let loop ((i 0) (gradient gradient))
-  (if (< i 20) 
+  (if (< i 40) 
     (begin
       (draw-filled-box image (vector (* i 20) 50) #(20 20) (car gradient))
       (loop (+ i 1) (cdr gradient)))))
