@@ -23,7 +23,7 @@ class Polynomial : public Function<double, double> {
 	Polynomial(const Polynomial& other);
 
 	/// General constructor
-	Polynomial(double* coefficients, uint num);
+	Polynomial(double* coefficients, uint32_t num);
 	
 	/// Constructs a quartic polynomial
 	Polynomial(double A, double B, double C, double D, double E);
@@ -44,7 +44,7 @@ class Polynomial : public Function<double, double> {
 	virtual ~Polynomial();
 
 	/// The highest power 
-	uint order() const;
+	uint32_t order() const;
 
 	/// The leading coefficient
 	double leadingCoefficient() const;
@@ -56,7 +56,7 @@ class Polynomial : public Function<double, double> {
 	Polynomial derivative() const;
 
 	/// Multiply by a power of x
-	Polynomial timesX(uint degree) const;
+	Polynomial timesX(uint32_t degree) const;
 
 	/// Comparator
 	bool operator==(const Polynomial& p) const;
@@ -70,14 +70,14 @@ class Polynomial : public Function<double, double> {
 
 	/// Polynomial long division
 	Polynomial division(const Polynomial& divisor, Polynomial& remainder) const;
-	double coefficient(uint i) const { return coefficients[i]; };
+	double coefficient(uint32_t i) const { return coefficients[i]; };
 
     private:
 	void init(const Polynomial& other);
 	void reduce();
 	
 	// Number of coefficients.
-	uint num;
+	uint32_t num;
 
 	// The coefficients. Eg. c[2]x^2 + c[1]x + c[0]
 	double* coefficients;

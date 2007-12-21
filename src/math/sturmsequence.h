@@ -45,7 +45,7 @@ class SturmSequence {
 	SturmSequence(const Polynomial& polynomial);
 
 	/// Calculate number of distinct real roots in the interval \f$ ]a,b[ \f$
-	uint rootCount(double a, double b) const;
+	uint32_t rootCount(double a, double b) const;
 
     private:
 	/// Evaluate the sequence at a point
