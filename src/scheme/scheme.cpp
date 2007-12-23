@@ -1095,11 +1095,24 @@ SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base_s) {
     if (base_s != S_UNSPECIFIED) {
         assert_arg_type(L"number->string", 2, s_integer_p, base_s);
         base = scm2int(base_s);
-        if (base != 10 && base != 16 && base != 8) {
+        if (base != 10 && base != 16 && base != 8 && base != 2) {
             throw scheme_exception(L"number->string invalid base: " + base_s->toString());
         }
     }
-    wstring s = i_number_2_string(n, base);
+    wstring s;
+    if (base == 2 && n->type() == SchemeObject::INTEGER_NUMBER) {
+        int64_t nn = scm2int(n);
+        if (nn == 0) {
+            s = L"0";
+        } else {
+            while(nn) {
+                s = ((nn & 1) ? L"1" : L"0") + s;
+                nn >>= 1;
+            }
+        }
+    } else {
+        s = i_number_2_string(n, base);
+    }
     return string2scm(s);
 }
 
