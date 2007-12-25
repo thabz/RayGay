@@ -795,6 +795,8 @@ void test_math() {
     assert_eval(s, L"(lcm 32.0 -36)" , L"288.0");
     assert_eval(s, L"(lcm 10 15 4)" , L"60");
     assert_eval(s, L"(lcm 10 15 -4)" , L"60");
+    assert_eval(s, L"(lcm 1 2 3 4 5 6 7 8 9 10)" , L"2520");
+    assert_eval(s, L"(lcm 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20)" , L"232792560");
     assert_fail(s, L"(lcm 'a)");
     assert_fail(s, L"(lcm 1.1)");
     assert_eval(s, L"(numerator 13/8)", L"13");
