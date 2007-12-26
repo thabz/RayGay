@@ -582,6 +582,8 @@ void test_math() {
     assert_eval(s, L"(even? 0)" , L"#t");
     assert_eval(s, L"(even? 2.0)" , L"#t");
     assert_eval(s, L"(even? 0/2)" , L"#t");
+    assert_eval(s, L"(even? 10/2)" , L"#f");
+    assert_eval(s, L"(even? (/ 10 2))" , L"#f");
     assert_fail(s, L"(even? 2+i)");
     assert_eval(s, L"(odd? 31137)" , L"#t");
     assert_eval(s, L"(odd? 0)" , L"#f");

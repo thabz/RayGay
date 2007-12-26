@@ -326,7 +326,7 @@ int64_t SchemeObject::integerValue() const {
     ObjectType t = type();
     if (t == INTEGER_NUMBER) return integer_value;
     else if (t == REAL_NUMBER) return int64_t(real_value);
-    else if (t == RATIONAL_NUMBER) return numerator->integer_value;
+    else if (t == RATIONAL_NUMBER) return (numerator->integer_value / denominator->integer_value);
     else if (t == COMPLEX_NUMBER) return int64_t(real->real_value);
     else return -1; // Shouldn't happen
 }
