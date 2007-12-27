@@ -533,7 +533,7 @@ wchar_t char_values[] = {0x00, 0x09, 0x08, 0x0c,
                          0x0b, 0x0d, 0x1b, 0x7f};
 
 wchar_t SchemeObject::charname2char(wstring s) {
-    std::map<wstring,wchar_t>* cache = NULL;
+    static std::map<wstring,wchar_t>* cache = NULL;
     if (cache == NULL) {
         cache = new map<wstring,wchar_t>();
         for(int i = 0; i < char_names_num; i++) {
@@ -549,7 +549,7 @@ wchar_t SchemeObject::charname2char(wstring s) {
 }
 
 wstring SchemeObject::char2charname(wchar_t s) {
-    std::map<wchar_t,wstring>* cache = NULL;
+    static std::map<wchar_t,wstring>* cache = NULL;
     if (cache == NULL) {
         cache = new map<wchar_t,wstring>();
         for(int i = 0; i < char_names_num; i++) {
