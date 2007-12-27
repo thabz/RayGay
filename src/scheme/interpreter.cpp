@@ -165,6 +165,9 @@ fn_ptr eval_list(Interpreter::State* state) {
         heap->popRoot();
         heap->popRoot();
     }
+    if (state->stack.size() > INTERPRETER_MAX_STACK_SIZE) {
+        throw scheme_exception(L"Stack overflow");
+    }
 
     SchemeObject* car = i_car(p);
     if (i_symbol_p(car) == S_FALSE) {
