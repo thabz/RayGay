@@ -287,7 +287,7 @@ void test_interpreter() {
     assert_eval(s, L"(or #f #f #f)", L"#f");
     assert_eval(s, L"(or (member 2 '(1 2 3)) #f)", L"(2 3)");
     assert_eval(s, L"(or (member 'b '(a b c)) #f)", L"(b c)");
-    assert_eval(s, L"(or (empty? '()) (car #f))", L"#t");
+    assert_eval(s, L"(or (null? '()) (car #f))", L"#t");
     assert_eval(s, L"(not #t)", L"#f");
     assert_eval(s, L"(not 3)", L"#f");
     assert_eval(s, L"(not (list 3))", L"#f");
