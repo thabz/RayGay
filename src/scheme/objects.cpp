@@ -294,7 +294,7 @@ void SchemeObject::mark() {
                 break;
             }
             case SchemeObject::SIMPLE_ENVIRONMENT :
-		binding_list->mark();		
+		        binding_list->mark();		
                 if (parent != NULL) {
                     parent->mark();
                 }
@@ -338,7 +338,7 @@ void SchemeObject::finalize() {
             break;
         case SchemeObject::STRING :
             if (!immutable()) {
-               //free(str);
+               delete [] str;
             }
             break;
         case SchemeObject::CONTINUATION :
