@@ -467,6 +467,9 @@ void test_math() {
     assert_eval(s, L"(- 3 2)" , L"1");
     assert_eval(s, L"(- 3 4 5)" , L"-6");
     assert_eval(s, L"(- 3 2.0)" , L"1.0");
+    assert_eval(s, L"(- 3 0.0)" , L"3.0");
+    assert_eval(s, L"(- 0 3.0)" , L"-3.0");
+    assert_eval(s, L"(- 0.0 3)" , L"-3.0");
     assert_eval(s, L"(- 3.0)" , L"-3.0");
     assert_eval(s, L"(- 1/2)" , L"-1/2");
     assert_eval(s, L"(- 1/2 2/7 3/4)" , L"-15/28");
@@ -495,6 +498,7 @@ void test_math() {
     assert_eval(s, L"(* 2 1+i)" , L"2.0+2.0i");
     assert_eval(s, L"(* 2 +2i)" , L"0.0+4.0i");
     assert_eval(s, L"(* +3i +2i)" , L"-6.0");
+    assert_eval(s, L"(* 1.53 0)" , L"0.0");
     assert_fail(s, L"(* 'a 1)");
     assert_eval(s, L"(min 5)" , L"5");
     assert_eval(s, L"(min 3.0 1 2)" , L"1.0");
