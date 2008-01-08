@@ -18,6 +18,7 @@
 #include "interpreter.h"
 #include "filenames.h"
 #include "numbers.h"
+#include "r6rs-lib-arithmetic.h"
 
 scheme_exception::scheme_exception(wstring s) : str(s), procname(NULL) {
 }
@@ -340,6 +341,7 @@ Scheme::Scheme() {
         heap->addRoot(unnamed_symbol);
         
         LibNumbers::bind(this, scheme_report_environment);
+	R6RSLibArithmetic::bind(this, scheme_report_environment);
         
         eval(L"(define-macro (values . x) `(list ,@x))", scheme_report_environment);
         eval(L"(define-macro (call-with-values f g)  `(apply ,g (,f)))", scheme_report_environment);

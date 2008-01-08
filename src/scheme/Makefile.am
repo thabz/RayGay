@@ -16,6 +16,7 @@ libscheme_la_SOURCES = lexer.h lexer.cpp \
                        numbers.h numbers.cpp \
                        r6rs-lib-lists.h r6rs-lib-lists.cpp \
                        r6rs-lib-sorting.h r6rs-lib-sorting.cpp \
+                       r6rs-lib-arithmetic.h r6rs-lib-arithmetic.cpp \
                        r6rs-lib-unicode.h r6rs-lib-unicode.cpp
 
 # -----------------------------------------------------
