@@ -8,6 +8,8 @@
 #include <vector>
 #include <pthread.h>
 
+#define INTERPRETER_MAX_STACK_SIZE 10000
+
 class Interpreter
 {
     public:
