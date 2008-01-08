@@ -883,6 +883,7 @@ void test_math() {
 void test_equals() {
     Scheme* s = new Scheme();
     assert_eval(s, L"(equal? 1 1)" , L"#t");
+    assert_eval(s, L"(equal? 1 1 1)" , L"#t");
     assert_eval(s, L"(equal? 1 2)" , L"#f");
     assert_eval(s, L"(equal? \"abc\" \"abc\")" , L"#t");
     assert_eval(s, L"(equal? '(1 2 3) '(1 2 3))" , L"#t");
@@ -899,7 +900,7 @@ void test_equals() {
     assert_eval(s, L"(eq? '() '())" , L"#t");
     assert_eval(s, L"(eq? car car)" , L"#t");
     assert_eval(s, L"(eq? (cons 1 2) (cons 1 2))" , L"#f");
-    assert_eval(s, L"(eq? 'a 'a)" , L"#t");
+    assert_eval(s, L"(eq? 'a 'a 'a)" , L"#t");
     assert_eval(s, L"(eq? (list 'a) (list 'a))" , L"#f");
     assert_eval(s, L"(eq? '() '())" , L"#t");
     assert_eval(s, L"(eq? car car)" , L"#t");
@@ -911,6 +912,7 @@ void test_equals() {
     assert_eval(s, L"(eqv? #\\space #\\ )", L"#t");
     assert_eval(s, L"(eqv? 1 1.0)", L"#f");
     assert_eval(s, L"(eqv? 1.0 1.0)", L"#t");
+    assert_eval(s, L"(eqv? 1.0 1.0 1.0)", L"#t");
     assert_eval(s, L"(eqv? 1 1)", L"#t");
     assert_eval(s, L"(eqv? 1/3 2/6)", L"#t");
     assert_eval(s, L"(eqv? -0.0 0.0)" , L"#t");
