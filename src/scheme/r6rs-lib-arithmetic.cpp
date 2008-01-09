@@ -11,7 +11,7 @@ SchemeObject* s_bitwise_or(int num, SchemeStack::iterator stack) {
     assert_arg_int_type(L"bitwise-or", 1, *stack);
     int64_t result = scm2int(*stack++);
     int i = 1;
-    while (i++ != num) {
+    while (i++ < num) {
         assert_arg_int_type(L"bitwise-or", i, *stack);
 	result |= (scm2int(*stack++));
 	i++;
@@ -27,24 +27,28 @@ SchemeObject* s_bitwise_and(int num, SchemeStack::iterator stack) {
     assert_arg_int_type(L"bitwise-and", 1, *stack);
     int64_t result = scm2int(*stack++);
     int i = 1;
-    while (i++ != num) {
+    while (i++ < num) {
         assert_arg_int_type(L"bitwise-and", i, *stack);
-	result &= (scm2int(*stack++));
+	    result &= (scm2int(*stack++));
     }
     return int2scm(result);
 }
 
+// This one works. The others don't.
 SchemeObject* s_bitwise_xor(int num, SchemeStack::iterator stack) {
     if (num == 0) {
-	return S_ZERO;
+	    return S_ZERO;
     }
 
     assert_arg_int_type(L"bitwise-and", 1, *stack);
-    int64_t result = scm2int(*stack++);
-    int i = 0;
-    while (i++ != num) {
-    assert_arg_int_type(L"bitwise-xor", i, *stack);
-	result ^= (scm2int(*stack++));
+    int64_t result = scm2int(*stack);
+    stack++;
+    int i = 1;
+    while (i++ < num) {
+        assert_arg_int_type(L"bitwise-xor", i, *stack);
+        int64_t n = scm2int(*stack);
+	    result ^= n;
+        stack++;
     }
     return int2scm(result);
 }
