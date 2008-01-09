@@ -34,13 +34,12 @@ void merge(SchemeObject* proc,
     }
 }
 
-void mergesort(SchemeObject* proc, SchemeObject** array, int32_t size) {
+void mergesort(SchemeObject* proc, SchemeObject** array, int32_t size, SchemeObject** tmp) {
     if (size <= 1) return;
 
-    SchemeObject* tmp[size];
     int mid = size / 2;
-    mergesort(proc, array, mid);
-    mergesort(proc, array+mid, size-mid);
+    mergesort(proc, array, mid, tmp);
+    mergesort(proc, array+mid, size-mid, tmp+mid);
     merge(proc, array, mid, array+mid, size-mid, tmp);
     for(int i = 0; i < size; i++) {
 	array[i] = tmp[i];
@@ -48,7 +47,8 @@ void mergesort(SchemeObject* proc, SchemeObject** array, int32_t size) {
 }
 
 SchemeObject* s_vector_sort_e(SchemeObject* proc, SchemeObject* vec) {
-    mergesort(proc, vec->elems, vec->length);        
+    SchemeObject* tmp[vec->length];
+    mergesort(proc, vec->elems, vec->length, tmp);
     return S_UNSPECIFIED;
 }
 
