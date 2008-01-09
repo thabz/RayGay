@@ -12,6 +12,8 @@
 // Quicksort er kun bedre, hvis du ved at du har et array af tal og 
 // dermed kan finde den perfekte pivot-værdi i linær tid.
 
+// FIXME: Make this class an object with it's very own
+// pointer to a scheme instance instead of calling static bind.
 Scheme* thescheme;
 
 void merge(SchemeObject* proc,
@@ -63,7 +65,6 @@ SchemeObject* s_list_sort(SchemeObject* proc, SchemeObject* list) {
 
 SchemeObject* s_vector_sort(SchemeObject* proc, SchemeObject* vec) {
     SchemeObject* result = SchemeObject::createVector(S_UNSPECIFIED, vec->length);
-    // TODO: Use memcpy instead.
     for(int32_t i = 0; i < vec->length; i++) {
 	result->setVectorElem(vec->getVectorElem(i), i);
     }
