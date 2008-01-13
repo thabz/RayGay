@@ -250,6 +250,13 @@ SchemeObject* SchemeObject::createWrappedCObject(int subtype, SchemeWrappedCObje
     return result;
 }
 
+SchemeObject* SchemeObject::createHashtable(hashtable_type* hash, SchemeObject* hash_func, SchemeObject* equiv) {
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::HASHTABLE);
+    result->hashtable = hash;
+    result->s_hashtable_data = i_cons(hash_func, equiv);
+    return result;
+}
+
 int SchemeObject::registerWrappedObject() {
     return subtypes_seq++;        
 }
@@ -431,6 +438,8 @@ wstring SchemeObject::toString() {
             break;
         case SchemeObject::CONTINUATION: 
             return L"#<continuation>";
+        case SchemeObject::HASHTABLE: 
+            return L"#<hashtable>";
         case SchemeObject::USER_PROCEDURE :    
             ss << L"#<primitive-procedure " << scm2string(name) << L">";
             break;
@@ -488,6 +497,8 @@ wstring SchemeObject::toString(ObjectType t) {
             return L"Boolean";
         case SchemeObject::VECTOR :    
             return L"Vector";
+        case SchemeObject::HASHTABLE :    
+            return L"Hashtable";
         case SchemeObject::ENVIRONMENT :    
             return L"Environment";
         case SchemeObject::SIMPLE_ENVIRONMENT :    
