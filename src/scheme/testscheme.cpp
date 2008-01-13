@@ -431,7 +431,9 @@ void test_char() {
 void test_symbols() {
     Scheme* s = new Scheme();
     assert_eval(s, L"(symbol? (quote a))", L"#t");
-    assert(s->eval(L"(symbol? 'a)") == S_TRUE);
+    assert_eval(s, L"(symbol? 'a)", L"#t");
+    assert_eval(s, L"(symbol? 'd1)", L"#t");
+    assert_eval(s, L"(symbol? 'd2)", L"#t");
     assert(s->eval(L"(symbol? '1)") == S_FALSE);
     assert(s->eval(L"(symbol? '())") == S_FALSE);
     assert(s->eval(L"(symbol? 1)") == S_FALSE);
@@ -1559,6 +1561,15 @@ class test_bigint : public Test {
 	}
 };
 
+void test_lib_sorting() {
+    Scheme* s = new Scheme();
+    assert_eval(s, L"(list-sort < '(9 4 8 7 8 2 0))", L"(0 2 4 7 8 8 9)");
+    assert_eval(s, L"(list-sort > '(9 4 8 7 8 2 0))", L"(9 8 8 7 4 2 0)");
+    assert_eval(s, L"(vector-sort < #(9 4 8 7 8 2 0))", L"#(0 2 4 7 8 8 9)");
+    assert_eval(s, L"(vector-sort > #(9 4 8 7 8 2 0))", L"#(9 8 8 7 4 2 0)");
+}
+
+
 int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("Parser", new test_parser());
@@ -1654,6 +1665,10 @@ int main(int argc, char *argv[]) {
 
         cout << "Test error handling...  ";
         test_error_handling();
+        cout << " OK" << endl;
+
+        cout << "Test lib sorting...  ";
+        test_lib_sorting();
         cout << " OK" << endl;
 
         test_begin();
