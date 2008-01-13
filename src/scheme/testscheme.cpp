@@ -1147,6 +1147,7 @@ void test_string() {
     assert_eval(s, L"(string->number \"1e350\")", L"#f");
     assert_eval(s, L"(string->number \"1e-350\")", L"#f");
     assert_eval(s, L"(string->number \"8f3\")", L"8000.0");
+    assert_eval(s, L"(string->number \"e10\")", L"#f");
 //    assert_fail(s, L"(string->number \"#xffffffffffffffffffffff\")");
     assert_eval(s, L"(string->number \"1.1000000000000000000000001\")", L"1.1");
     assert_eval(s, L"(string->number \"1.0000000000000000000000001\")", L"1.0");

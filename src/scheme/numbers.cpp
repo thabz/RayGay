@@ -1361,8 +1361,9 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     }
     
     long e = 0;
-    if (radix == 10 && (s[offset] == L'e' || s[offset] == L's' ||
-                        s[offset] == L'f' || s[offset] == L'd' || s[offset] == L'l')) {
+    if ((digits.size() != 0 || fraction.size() != 0) && radix == 10 && 
+            (s[offset] == L'e' || s[offset] == L's' || s[offset] == L'f' || 
+             s[offset] == L'd' || s[offset] == L'l')) {
         offset++;
         long esign = 1;
         if (s[offset] == '-') {
