@@ -754,7 +754,7 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
         assert_arg_int_type(L"lcm", i+1, *stack);
         long n = labs(scm2int(*stack));
         long g = i_gcd(n, result);
-        result = g == 0 ? 0 : n * result / g;
+        result = g == 0 ? 0 : (n / g) * result;
         stack++;
     }
     // TODO: Make a i_exact_p macro and a representativeExactness("procname",num,stack) method
