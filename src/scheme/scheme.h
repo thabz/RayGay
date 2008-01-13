@@ -205,7 +205,21 @@ class scheme_exception {
 #define assert_arg_wrapped_type(procname, argnum, arg,subtype) {   \
     if (i_wrapped_object_p(arg,subtype) == S_FALSE) {     \
         wostringstream ss;                                 \
-        ss << "Wrong argument-type (expecting wrapped object subtype" << subtype << ") in position ";         \
+        ss << "Wrong argument-type (expecting wrapped object subtype " << subtype << ") in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << wstring(procname);                           \
+        ss << ": " << (arg)->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
+#define assert_arg_procedure_that_take(procname, argnum, arg, parity) {   \
+    if (i_procedure_p(arg) == S_FALSE || \
+        !(arg->rest() > 0 || arg->req() == parity || arg->req()+arg->opt() == parity)) {    \
+        wostringstream ss;                                 \
+        ss << "Wrong argument-type (expecting procedure that takes "; \
+        ss << parity << " args) in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << wstring(procname);                           \

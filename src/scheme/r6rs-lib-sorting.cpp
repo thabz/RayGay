@@ -10,7 +10,7 @@
 // fewer than seven array elements are being sorted.[2]
 //
 // Quicksort er kun bedre, hvis du ved at du har et array af tal og 
-// dermed kan finde den perfekte pivot-vÃ¦rdi i linÃ¦r tid.
+// dermed kan finde den perfekte pivot-værdi i linær tid.
 
 // FIXME: Make this class an object with it's very own
 // pointer to a scheme instance instead of calling static bind.
@@ -22,17 +22,17 @@ void merge(SchemeObject* proc,
 	   SchemeObject** list3) {
     int i1 = 0, i2 = 0, i3 = 0;
     while(i1 < size1 && i2 < size2) {
-	if (thescheme->callProcedure_2(proc, list1[i1], list2[i2]) == S_TRUE) {
-	    list3[i3++] = list1[i1++];
-	} else {
-	    list3[i3++] = list2[i2++];
-	}
+	    if (thescheme->callProcedure_2(proc, list1[i1], list2[i2]) == S_TRUE) {
+	        list3[i3++] = list1[i1++];
+	    } else{
+	        list3[i3++] = list2[i2++];
+	    }
     }
     while(i1 < size1) {
-	list3[i3++] = list1[i1++];
+	    list3[i3++] = list1[i1++];
     }
     while(i2 < size2) {
-	list3[i3++] = list2[i2++];
+	    list3[i3++] = list2[i2++];
     }
 }
 
@@ -49,12 +49,14 @@ void mergesort(SchemeObject* proc, SchemeObject** array, int32_t size, SchemeObj
 }
 
 SchemeObject* s_vector_sort_e(SchemeObject* proc, SchemeObject* vec) {
+    assert_arg_procedure_that_take(L"vector-sort!", 1, proc, 2);
     SchemeObject* tmp[vec->length];
     mergesort(proc, vec->elems, vec->length, tmp);
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_list_sort(SchemeObject* proc, SchemeObject* list) {
+    assert_arg_procedure_that_take(L"list-sort", 1, proc, 2);
     SchemeObject* vec = s_list_2_vector(list);
     vec->set_gc_protected(true);
     s_vector_sort_e(proc,vec);
@@ -64,9 +66,10 @@ SchemeObject* s_list_sort(SchemeObject* proc, SchemeObject* list) {
 }
 
 SchemeObject* s_vector_sort(SchemeObject* proc, SchemeObject* vec) {
+    assert_arg_procedure_that_take(L"vector-sort", 1, proc, 2);
     SchemeObject* result = SchemeObject::createVector(S_UNSPECIFIED, vec->length);
     for(int32_t i = 0; i < vec->length; i++) {
-	result->setVectorElem(vec->getVectorElem(i), i);
+	    result->setVectorElem(vec->getVectorElem(i), i);
     }
     result->set_gc_protected(true);
     s_vector_sort_e(proc, result);
