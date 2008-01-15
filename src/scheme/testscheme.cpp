@@ -1096,6 +1096,7 @@ void test_string() {
     assert_eval(s, L"(string->number \"100\")", L"100");
     assert_eval(s, L"(string->number \"2.5\")", L"2.5");
     assert_eval(s, L"(string->number \"100\" 8)", L"64");
+    assert_eval(s, L"(string->number \"1234567890\")", L"1234567890");
     assert_eval(s, L"(string->number \"\")", L"#f");
     assert_eval(s, L"(string->number \"+\")", L"#f");
     assert_eval(s, L"(string->number \"-\")", L"#f");
