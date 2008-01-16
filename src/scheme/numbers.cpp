@@ -14,7 +14,7 @@ void coerceNumbers(int num, SchemeStack::iterator stack, double* dest) {
     }
 }
 
-void coerceNumbers(int num, SchemeStack::iterator stack, long* dest) {
+void coerceNumbers(int num, SchemeStack::iterator stack, int64_t* dest) {
     for(int i = 0; i < num; i++) {
         *dest = scm2int(*stack);
         stack++;
@@ -69,10 +69,10 @@ SchemeObject* s_plus(int num, SchemeStack::iterator stack) {
        }
        return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-       long args[num];
+       int64_t args[num];
        coerceNumbers(num,stack,args);
        
-       long result = 0;
+       int64_t result = 0;
        for(int i = 0; i < num; i++) {
            result += args[i];    
        }
@@ -114,9 +114,9 @@ SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
        }
        return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-       long args[num];
+       int64_t args[num];
        coerceNumbers(num,stack,args);
-       long result = args[0];
+       int64_t result = args[0];
        if (num == 1) {
            // One-argument case is a simple negate (n => -n)
            return int2scm(-result);
@@ -212,10 +212,10 @@ SchemeObject* s_mult(int num, SchemeStack::iterator stack) {
        }
        return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-       long args[num];
+       int64_t args[num];
        coerceNumbers(num,stack,args);
        
-       long result = 1;
+       int64_t result = 1;
        for(int i = 0; i < num; i++) {
            result *= args[i];    
        }
@@ -370,12 +370,12 @@ SchemeObject* s_log(SchemeObject* n) {
 // Returns a^b
 SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
     if (a->type() == SchemeObject::INTEGER_NUMBER && b->type() == SchemeObject::INTEGER_NUMBER) {
-        long bi = scm2int(b);
+        int64_t bi = scm2int(b);
         if (bi == 0) return S_ONE;
 
-        long iter = labs(bi);    
-        long ai = scm2int(a);    
-        long result = iter % 2 ? ai : 1;
+        int64_t iter = labs(bi);    
+        int64_t ai = scm2int(a);    
+        int64_t result = iter % 2 ? ai : 1;
         
         while (iter >>= 1) {
             ai *= ai;        
@@ -556,9 +556,9 @@ SchemeObject* s_rationalize(SchemeObject* s_x, SchemeObject* s_y) {
 SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type(L"quotient", 1, s_integer_p, n1);
     assert_arg_type(L"quotient", 2, s_integer_p, n2);
-    long nn1 = scm2int(n1);
-    long nn2 = scm2int(n2);
-    long result = nn1 / nn2;
+    int64_t nn1 = scm2int(n1);
+    int64_t nn2 = scm2int(n2);
+    int64_t result = nn1 / nn2;
     if (s_inexact_p(n1) == S_TRUE || s_inexact_p(n2) == S_TRUE) {
         return double2scm(double(result));
     } else {
@@ -569,9 +569,9 @@ SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2) {
 SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type(L"remainder", 1, s_integer_p, n1);
     assert_arg_type(L"remainder", 2, s_integer_p, n2);
-    long nn1 = scm2int(n1);
-    long nn2 = scm2int(n2);
-    long result = nn1 % nn2;
+    int64_t nn1 = scm2int(n1);
+    int64_t nn2 = scm2int(n2);
+    int64_t result = nn1 % nn2;
     if (result > 0) {
         if (nn1 < 0) {
             result -= labs(nn2);
@@ -601,9 +601,9 @@ SchemeObject* s_mod(SchemeObject* n1, SchemeObject* n2) {
 SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2) {
     assert_arg_type(L"modulo", 1, s_integer_p, n1);
     assert_arg_type(L"modulo", 2, s_integer_p, n2);
-    long nn1 = scm2int(n1);
-    long nn2 = scm2int(n2);
-    long result = nn1 % nn2;
+    int64_t nn1 = scm2int(n1);
+    int64_t nn2 = scm2int(n2);
+    int64_t result = nn1 % nn2;
     if (result * nn2 < 0) {
         if (result > 0) {
             result -= labs(nn2);
@@ -634,9 +634,9 @@ SchemeObject* s_min(int num, SchemeStack::iterator stack) {
         }
         return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-       long args[num];
+       int64_t args[num];
        coerceNumbers(num,stack,args);
-       long result = args[0];
+       int64_t result = args[0];
        int index = 0;
        for(int i = 1; i < num; i++) {
            if (args[i] < result) {
@@ -677,9 +677,9 @@ SchemeObject* s_max(int num, SchemeStack::iterator stack) {
         }
         return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-       long args[num];
+       int64_t args[num];
        coerceNumbers(num,stack,args);
-       long result = args[0];
+       int64_t result = args[0];
        int index = 0;
        for(int i = 1; i < num; i++) {
            if (args[i] > result) {
@@ -706,8 +706,8 @@ SchemeObject* s_max(int num, SchemeStack::iterator stack) {
 }
 
 // Euclids algorithm 
-long i_gcd(long a, long b) {
-    long t = a;
+int64_t i_gcd(int64_t a, int64_t b) {
+    int64_t t = a;
     while(b != 0) {
         t = b;
         b = a % b;
@@ -724,11 +724,11 @@ SchemeObject* s_gcd(int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"gcd", num, stack);
 
     assert_arg_int_type(L"gcd", 1, *stack);
-    long result = labs(scm2int(*stack));
+    int64_t result = labs(scm2int(*stack));
     stack++;    
     for(int i = 1; i < num; i++) {
         assert_arg_int_type(L"gcd", i+1, *stack);
-        long n = scm2int(*stack);
+        int64_t n = scm2int(*stack);
         result = labs(i_gcd(result,n));
         stack++;    
     }
@@ -748,12 +748,12 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"lcm", num, stack);
 
     assert_arg_int_type(L"lcm", 1, *stack);
-    long result = labs(scm2int(*stack));
+    int64_t result = labs(scm2int(*stack));
     stack++;
     for(int i = 1; i < num; i++) {
         assert_arg_int_type(L"lcm", i+1, *stack);
-        long n = labs(scm2int(*stack));
-        long g = i_gcd(n, result);
+        int64_t n = labs(scm2int(*stack));
+        int64_t g = i_gcd(n, result);
         result = g == 0 ? 0 : (n / g) * result;
         stack++;
     }
@@ -890,7 +890,7 @@ SchemeObject* s_equal(int num, SchemeStack::iterator stack) {
         }
 	return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-       long args[num];
+       int64_t args[num];
        coerceNumbers(num,stack,args);
        for(int i = 1; i < num; i++) {
 	       if (args[i] != args[i-1]) return S_FALSE;
@@ -928,7 +928,7 @@ SchemeObject* s_less(int num, SchemeStack::iterator stack) {
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-        long args[num];
+        int64_t args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
  	        if (args[i-1] >= args[i]) return S_FALSE;
@@ -960,7 +960,7 @@ SchemeObject* s_less_equal(int num, SchemeStack::iterator stack) {
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-        long args[num];
+        int64_t args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
  	        if (args[i-1] > args[i]) return S_FALSE;
@@ -992,7 +992,7 @@ SchemeObject* s_greater(int num, SchemeStack::iterator stack) {
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-        long args[num];
+        int64_t args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
  	        if (args[i-1] <= args[i]) return S_FALSE;
@@ -1025,7 +1025,7 @@ SchemeObject* s_greater_equal(int num, SchemeStack::iterator stack) {
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-        long args[num];
+        int64_t args[num];
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
  	        if (args[i-1] < args[i]) return S_FALSE;
@@ -1274,7 +1274,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     }
     
     string digits = extractDigits(s, offset, radix);
-    long long t = 0;
+    int64_t t = 0;
     if (digits.size() == 0) {
         t = 0;   
     } else {
@@ -1290,8 +1290,8 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     offset += digits.size();
     if (offset >= s.size()) {
 	    // Done. No . or e. We have an integer
-        if (t > numeric_limits<long>::max() ||
-            t < numeric_limits<long>::min()) {
+        if (t > numeric_limits<int64_t>::max() ||
+            t < numeric_limits<int64_t>::min()) {
             // TODO: Create a bigint            
             return S_FALSE;            
         } else {
@@ -1310,7 +1310,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
             return S_FALSE;        
         }
         errno = 0;
-        long d = strtol(denominator.c_str(), NULL, radix);
+        int64_t d = strtol(denominator.c_str(), NULL, radix);
         if (errno == ERANGE) {
             // TODO: Create a bigint        
             return S_FALSE;        
@@ -1343,10 +1343,10 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
             return S_FALSE;        
         }
         
-        int longlong_digits10 = numeric_limits<long long>::digits10;
+        int longlong_digits10 = numeric_limits<int64_t>::digits10;
         string clipped_fraction = fraction.substr(0,std::min(longlong_digits10,int(fraction.size())));
         errno = 0;    
-        long long f = strtoll(clipped_fraction.c_str(), NULL, 10);
+        int64_t f = strtoll(clipped_fraction.c_str(), NULL, 10);
         if (errno == ERANGE) {
             return S_FALSE;
                    
@@ -1360,12 +1360,12 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
         return force_exact ? i_double_2_exact(result) : double2scm(result);
     }
     
-    long e = 0;
+    int64_t e = 0;
     if ((digits.size() != 0 || fraction.size() != 0) && radix == 10 && 
             (s[offset] == L'e' || s[offset] == L's' || s[offset] == L'f' || 
              s[offset] == L'd' || s[offset] == L'l')) {
         offset++;
-        long esign = 1;
+        int64_t esign = 1;
         if (s[offset] == '-') {
             esign = -1;
             offset++;

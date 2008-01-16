@@ -465,6 +465,7 @@ void test_math() {
     assert_eval(s, L"(+ 1 +3i)" , L"1.0+3.0i");
     assert_eval(s, L"(+ 1+2i 2+3i)" , L"3.0+5.0i");
     assert_eval(s, L"(+ .1 .2)" , L"0.3");
+    assert_eval(s, L"(+ 1125899906842624 1)" , L"1125899906842625");
     assert_eval(s, L"(- 3)" , L"-3");
     assert_eval(s, L"(- 3 2)" , L"1");
     assert_eval(s, L"(- 3 4 5)" , L"-6");
@@ -479,6 +480,7 @@ void test_math() {
     assert_eval(s, L"(- 2+2i 1+3i)" , L"1.0-1.0i");
     assert_fail(s, L"(- 'a)");
     assert_fail(s, L"(-)");
+    assert_eval(s, L"(- 1125899906842624 1)" , L"1125899906842623");
     assert_eval(s, L"(/ 2.0)" , L"0.5");
     assert_eval(s, L"(/ 10.0 2)" , L"5.0");
     assert_eval(s, L"(/ 10 2.0 2)" , L"2.5");
@@ -1096,7 +1098,8 @@ void test_string() {
     assert_eval(s, L"(string->number \"100\")", L"100");
     assert_eval(s, L"(string->number \"2.5\")", L"2.5");
     assert_eval(s, L"(string->number \"100\" 8)", L"64");
-    assert_eval(s, L"(string->number \"1234567890\")", L"1234567890");
+    // Testing parsing of numbers > 32bit. This one is 2^50.
+    assert_eval(s, L"(string->number \"1125899906842624\")", L"1125899906842624"); 
     assert_eval(s, L"(string->number \"\")", L"#f");
     assert_eval(s, L"(string->number \"+\")", L"#f");
     assert_eval(s, L"(string->number \"-\")", L"#f");
