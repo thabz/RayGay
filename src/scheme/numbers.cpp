@@ -373,7 +373,7 @@ SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
         int64_t bi = scm2int(b);
         if (bi == 0) return S_ONE;
 
-        int64_t iter = labs(bi);    
+        int64_t iter = ::llabs(bi);    
         int64_t ai = scm2int(a);    
         int64_t result = iter % 2 ? ai : 1;
         

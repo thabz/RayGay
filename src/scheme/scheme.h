@@ -168,7 +168,7 @@ class scheme_exception {
 
 #define assert_arg_positive_int(procname, argnum, arg) {           \
     assert_arg_type(procname, argnum, s_integer_p, arg);           \
-    int n = scm2int(arg);                                          \
+    int64_t n = scm2int(arg);                                          \
     if (n < 0) {                                                   \
         wostringstream ss;                                          \
         ss << "Negative argument in to position " << argnum;       \

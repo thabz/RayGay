@@ -125,10 +125,11 @@ int repl() {
             }
         } catch (scheme_exception e) {
     	    wcerr << L"ABORT: " << e.toString() << endl;
+        } catch (exception e) {
+	    cout << L"ABORT: " << e.what() << endl;
         }
         free(input);
     }
-    
 }
 
 int runfile(char* filename) {
@@ -156,7 +157,10 @@ int runfile(char* filename) {
         return EXIT_FAILURE;
     } catch (Exception e) {
 	cout << L"ABORT: " << e.getMessage() << endl;
-
+        return EXIT_FAILURE;
+    } catch (exception e) {
+	cout << L"ABORT: " << e.what() << endl;
+        return EXIT_FAILURE;
     }
     ifs->close();
     return EXIT_SUCCESS;
@@ -183,7 +187,15 @@ void print_usage() {
     cout << "       -v                   Show version" << endl;
 }
 
+void no_mem_handler()
+{
+    cerr << "Out of memory" << endl;
+    throw std::bad_alloc();
+}
+
 int main(int argc, char *argv[]) {
+
+    // std::set_new_handler(&no_mem_handler);
     
     // Use getopt to parse arguments.
     int c;
