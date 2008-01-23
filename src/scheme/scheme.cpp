@@ -940,7 +940,7 @@ SchemeObject* s_append(int num, SchemeStack::iterator stack) {
 
 SchemeObject* s_make_vector(SchemeObject* s_count, SchemeObject* obj) {
     assert_arg_positive_int(L"make-vector", 1, s_count);
-    int count = scm2int(s_count);
+    int64_t count = scm2int(s_count);
     return SchemeObject::createVector(obj, count);
 }
 

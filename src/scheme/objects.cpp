@@ -102,11 +102,12 @@ SchemeObject* SchemeObject::createBool(bool b) {
     return result;
 }
 
-SchemeObject* SchemeObject::createVector(SchemeObject* elem, uint32_t length) {
+SchemeObject* SchemeObject::createVector(SchemeObject* elem, uint64_t length) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::VECTOR);
     result->elems = new SchemeObject*[length];
+    if (result->elems == NULL) throw bad_alloc();
     result->length = length;
-    for(uint32_t i = 0; i < length; i++) {
+    for(uint64_t i = 0; i < length; i++) {
         result->elems[i] = elem;
     }
     return result;

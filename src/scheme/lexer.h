@@ -45,20 +45,20 @@ class Lexer
         uint32_t getCurline() { return curline; };
         
     private:
-	    bool isSymbolChar(wchar_t c);
-	    bool isDelimiter(wchar_t c);
-	    bool isWhitespace(wchar_t c);
+        bool isSymbolChar(wchar_t c);
+	bool isDelimiter(wchar_t c);
+	bool isWhitespace(wchar_t c);
         wchar_t readEscapedChar(wistream* is);
         wchar_t readHexEscape(wistream* is);
         wstring str;
         wstring error;
         SchemeObject* number;
-        bool boolean;
         wchar_t chr;
         uint32_t curline;
         list<istream*> is_stack;
         list<int> curline_stack;
         list<Token> cache;
+        bool boolean;
 };
 
 #endif

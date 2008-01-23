@@ -64,6 +64,10 @@ void assert_fail(Scheme* s, wstring expression) {
         if (stacksize_before != stack.size()) {
             wcerr << L"FAILED: stack exploded when " << expression << L" failed." << endl;
         }
+    } catch (exception e) {
+        if (stacksize_before != stack.size()) {
+            wcerr << L"FAILED: stack exploded when " << expression << L" failed." << endl;
+        }
     }
 }
 
@@ -1369,6 +1373,7 @@ struct test_vector : public Test {
     assert_eval(s, L"(make-vector 2 (+ 5 1))", L"#(6 6)");
     assert_eval(s, L"(make-vector 0 'a)", L"#()");
     assert_fail(s, L"(make-vector -2 'a)");
+//    assert_fail(s, L"(make-vector (expt 2 50) 'a)");
     assert_eval(s, L"(vector? (make-vector 5 'a))", L"#t");
     assert_eval(s, L"(vector-length (make-vector 7))", L"7");
     assert_eval(s, L"(vector? 5)", L"#f");

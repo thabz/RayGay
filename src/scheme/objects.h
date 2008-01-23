@@ -199,7 +199,7 @@ class SchemeObject
         static SchemeObject* createString(const wchar_t* str);
         static SchemeObject* createChar(wchar_t c);
         static SchemeObject* createPair(SchemeObject* car, SchemeObject* cdr);
-        static SchemeObject* createVector(SchemeObject* elem, uint32_t length);
+        static SchemeObject* createVector(SchemeObject* elem, uint64_t length);
         static SchemeObject* createBool(bool b);
         static SchemeObject* createEmptyList();
         static SchemeObject* createUnspecified();

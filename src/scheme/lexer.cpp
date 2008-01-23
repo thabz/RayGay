@@ -264,7 +264,7 @@ wchar_t Lexer::readEscapedChar(wistream* is) {
 }
 
 wchar_t Lexer::readHexEscape(wistream* is) {
-    uint64_t n;
+    int64_t n;
     (*is) >> hex >> n;
     // Check that n is in legal unicode range
     if (n < 0 || (n >= 0xD800 && n < 0xE000) || n >= 0x110000) {
