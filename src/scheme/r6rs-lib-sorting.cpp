@@ -49,14 +49,14 @@ void mergesort(SchemeObject* proc, SchemeObject** array, int32_t size, SchemeObj
 }
 
 SchemeObject* s_vector_sort_e(SchemeObject* proc, SchemeObject* vec) {
-    assert_arg_procedure_that_take(L"vector-sort!", 1, proc, 2);
+//    assert_arg_procedure_that_take(L"vector-sort!", 1, proc, 2);
     SchemeObject* tmp[vec->length];
     mergesort(proc, vec->elems, vec->length, tmp);
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_list_sort(SchemeObject* proc, SchemeObject* list) {
-    assert_arg_procedure_that_take(L"list-sort", 1, proc, 2);
+//    assert_arg_procedure_that_take(L"list-sort", 1, proc, 2);
     SchemeObject* vec = s_list_2_vector(list);
     vec->set_gc_protected(true);
     s_vector_sort_e(proc,vec);
@@ -66,7 +66,8 @@ SchemeObject* s_list_sort(SchemeObject* proc, SchemeObject* list) {
 }
 
 SchemeObject* s_vector_sort(SchemeObject* proc, SchemeObject* vec) {
-    assert_arg_procedure_that_take(L"vector-sort", 1, proc, 2);
+// TODO: The check below doesn't work for user-defined lambdas.
+//    assert_arg_procedure_that_take(L"vector-sort", 1, proc, 2);
     SchemeObject* result = SchemeObject::createVector(S_UNSPECIFIED, vec->length);
     for(int32_t i = 0; i < vec->length; i++) {
 	    result->setVectorElem(vec->getVectorElem(i), i);
