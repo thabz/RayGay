@@ -20,6 +20,7 @@
 #include "numbers.h"
 #include "r6rs-lib-arithmetic.h"
 #include "r6rs-lib-sorting.h"
+#include "r6rs-lib-lists.h"
 
 scheme_exception::scheme_exception(wstring s) : str(s), procname(NULL) {
 }
@@ -344,6 +345,7 @@ Scheme::Scheme() {
         LibNumbers::bind(this, scheme_report_environment);
 	R6RSLibArithmetic::bind(this, scheme_report_environment);
 	R6RSLibSorting::bind(this, scheme_report_environment);
+	R6RSLibLists::bind(this, scheme_report_environment);
         
         eval(L"(define-macro (values . x) `(list ,@x))", scheme_report_environment);
         eval(L"(define-macro (call-with-values f g)  `(apply ,g (,f)))", scheme_report_environment);

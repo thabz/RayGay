@@ -5,7 +5,7 @@
 #include "scheme.h"
 
 struct R6RSLibLists {
-    void bind(Scheme* scheme, SchemeObject* envt);
+    static void bind(Scheme* scheme, SchemeObject* envt);
 };
 
 #endif
