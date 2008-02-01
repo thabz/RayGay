@@ -51,7 +51,6 @@ typedef int hashtable_type;
 #define IMMUTABLE_FLAG ((uint32_t)(1 << 31))
 #define INUSE_FLAG     ((uint32_t)(1 << 30))
 #define REST_FLAG      ((uint32_t)(1 << 29))
-#define GC_PROTECTED   ((uint32_t)(1 << 28))
 #define REQ_BITS_OFFS  8
 #define OPT_BITS_OFFS  12
 #define SRC_LINE_OFFS  8
@@ -145,8 +144,6 @@ class SchemeObject
         ObjectType type() const;
         bool immutable() const;
         void set_immutable(bool flag);
-        bool gc_protected() const;
-        void set_gc_protected(bool flag);
         wstring toString();
         void clear_inuse();
         bool inuse() const;
@@ -286,20 +283,6 @@ void SchemeObject::set_immutable(bool flag) {
 inline
 bool SchemeObject::immutable() const {
     return (metadata & IMMUTABLE_FLAG) != 0;
-}
-
-inline
-void SchemeObject::set_gc_protected(bool flag) {
-    if (flag) {
-        metadata |= GC_PROTECTED;
-    } else {
-        metadata &= ~GC_PROTECTED;
-    }
-}
-
-inline
-bool SchemeObject::gc_protected() const {
-    return (metadata & GC_PROTECTED) != 0;
 }
 
 inline

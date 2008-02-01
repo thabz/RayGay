@@ -81,7 +81,7 @@ SchemeObject* s_vector_sort(SchemeObject* proc, SchemeObject* vec) {
 	vect[i] = vec->getVectorElem(i);
     }
     mergesort(proc, vect, vec->length, tmp);
-    SchemeObject* result = SchemeObject::createVector(vect, vec->length);
+    return SchemeObject::createVector(vect, vec->length);
 }
 
 void R6RSLibSorting::bind(Scheme* scheme, SchemeObject* envt) {

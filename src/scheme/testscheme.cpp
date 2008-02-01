@@ -1676,7 +1676,7 @@ int main(int argc, char *argv[]) {
         test_error_handling();
         cout << " OK" << endl;
 
-        cout << "Test lib sorting...  ";
+        cout << "Test lib sorting...     ";
         test_lib_sorting();
         cout << " OK" << endl;
 
