@@ -1574,8 +1574,8 @@ void test_lib_sorting() {
     assert_eval(s, L"(list-sort > '(9 4 8 7 8 2 0))", L"(9 8 8 7 4 2 0)");
     assert_eval(s, L"(vector-sort < #(9 4 8 7 8 2 0))", L"#(0 2 4 7 8 8 9)");
     assert_eval(s, L"(vector-sort > #(9 4 8 7 8 2 0))", L"#(9 8 8 7 4 2 0)");
+    assert_eval(s, L"(vector-length (vector-sort (lambda (a b) (< a b)) (make-vector 100000 1)))", L"100000");
 }
-
 
 int main(int argc, char *argv[]) {
     TestSuite suite;
