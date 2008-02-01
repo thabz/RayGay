@@ -22,7 +22,7 @@ void merge(SchemeObject* proc,
 	   SchemeObject** list3) {
     int i1 = 0, i2 = 0, i3 = 0;
     while(i1 < size1 && i2 < size2) {
-	    if (thescheme->callProcedure_2(proc, list1[i1], list2[i2]) == S_TRUE) {
+	    if (thescheme->callProcedure_2(proc, list1[i1], list2[i2]) != S_FALSE) {
 	        list3[i3++] = list1[i1++];
 	    } else{
 	        list3[i3++] = list2[i2++];
