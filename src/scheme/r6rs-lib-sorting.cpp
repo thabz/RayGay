@@ -57,25 +57,31 @@ SchemeObject* s_vector_sort_e(SchemeObject* proc, SchemeObject* vec) {
 
 SchemeObject* s_list_sort(SchemeObject* proc, SchemeObject* list) {
 //    assert_arg_procedure_that_take(L"list-sort", 1, proc, 2);
-    SchemeObject* vec = s_list_2_vector(list);
-    vec->set_gc_protected(true);
-    s_vector_sort_e(proc,vec);
-    vec->set_gc_protected(false);
-    SchemeObject* result = s_vector_2_list(vec);
+    int64_t len = scm2int(s_length(list));
+    SchemeObject* vec[len];
+    SchemeObject* tmp[len];
+    for(int64_t i = 0; i < len; i++) {
+	vec[i] = i_car(list);
+	list = i_cdr(list);
+    }
+    mergesort(proc, vec, len, tmp);
+    SchemeObject* result = S_EMPTY_LIST;
+    for(int64_t i = 0; i < len; i++) {
+	result = i_cons(vec[len-1-i], result);
+    }
     return result;
 }
 
 SchemeObject* s_vector_sort(SchemeObject* proc, SchemeObject* vec) {
 // TODO: The check below doesn't work for user-defined lambdas.
 //    assert_arg_procedure_that_take(L"vector-sort", 1, proc, 2);
-    SchemeObject* result = SchemeObject::createVector(S_UNSPECIFIED, vec->length);
+    SchemeObject** vect = new SchemeObject*[vec->length];
+    SchemeObject* tmp[vec->length];
     for(int32_t i = 0; i < vec->length; i++) {
-	    result->setVectorElem(vec->getVectorElem(i), i);
+	vect[i] = vec->getVectorElem(i);
     }
-    result->set_gc_protected(true);
-    s_vector_sort_e(proc, result);
-    result->set_gc_protected(false);
-    return result;
+    mergesort(proc, vect, vec->length, tmp);
+    SchemeObject* result = SchemeObject::createVector(vect, vec->length);
 }
 
 void R6RSLibSorting::bind(Scheme* scheme, SchemeObject* envt) {

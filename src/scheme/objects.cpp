@@ -113,6 +113,13 @@ SchemeObject* SchemeObject::createVector(SchemeObject* elem, uint64_t length) {
     return result;
 }
 
+SchemeObject* SchemeObject::createVector(SchemeObject** elems, uint64_t length) {
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::VECTOR);
+    result->elems = elems;
+    result->length = length;
+    return result;
+}
+
 SchemeObject* SchemeObject::createEmptyList() {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::EMPTY_LIST);
     return result;

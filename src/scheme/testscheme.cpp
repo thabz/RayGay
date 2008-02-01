@@ -1576,6 +1576,7 @@ void test_lib_sorting() {
     assert_eval(s, L"(vector-sort > #(9 4 8 7 8 2 0))", L"#(9 8 8 7 4 2 0)");
     // The sort below will trigger a GC-run.
     assert_eval(s, L"(vector-length (vector-sort (lambda (a b) (< a b)) (make-vector 10000 1)))", L"10000");
+    assert_eval(s, L"(length (list-sort (lambda (a b) (< a b)) (vector->list (make-vector 10000 1))))", L"10000");
 }
 
 int main(int argc, char *argv[]) {
