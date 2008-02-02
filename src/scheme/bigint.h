@@ -6,12 +6,17 @@
 #include <string>
 #include <ostream>
 
+class bigint;
+
+bigint abs(const bigint&);
+
 // The code asserts int is 32 bits
 // http://cs.marlboro.edu/term/cs-fall02/algorithms/crypto/RSA/bigint/
 class bigint 
 {
 
     friend std::ostream & operator<< (std::ostream &os, const bigint &b);
+    friend bigint abs(const bigint&);
 
     public:        
         bigint(int32_t n);
@@ -48,7 +53,6 @@ class bigint
         bool operator<=(const bigint& o) const;
         bool operator>=(const bigint& o) const;
         
-        bigint abs() const;
         bigint sqrt() const;
         bigint expt(int power) const;
         bigint times_two() const;
@@ -56,7 +60,7 @@ class bigint
         
         bool is_zero() const;
         bool is_one() const;
-	    int sizeInBits() const;
+	int sizeInBits() const;
         void dump() const;
         
     public:
@@ -75,6 +79,7 @@ class bigint
         static int compare(const bigint& b1, const bigint& b2); 
         void resize(int32_t new_digits_num);
         uint32_t size() const;
+	uint32_t exp() const;
 
     private:        
         std::vector<int64_t> digits;    
@@ -87,3 +92,18 @@ inline
 uint32_t bigint::size() const {
     return digits.size();        
 }
+
+inline
+uint32_t bigint::exp() const {
+    int i = size()-1;
+    while (digits[i] == 0 && i >= 0) i--;
+    return i;
+}
+
+inline
+bigint abs(const bigint& b) {
+    bigint r = b;
+    r.sign = 1;
+    return r;
+}
+

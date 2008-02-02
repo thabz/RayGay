@@ -1460,111 +1460,112 @@ class test_bigint : public Test {
     public:
 	void run() {
 
-    // Constructor
-    assertTrue(bigint(123456789) == bigint("123456789"));
+	    // Constructor
+	    assertTrue(bigint(123456789) == bigint("123456789"));
 
-    // Copy constructor   
-    bigint b1 = bigint("10");
-    bigint b2 = b1;
-    b1 += 10;
-    assertTrue(b2 == bigint("10"));    
-    assertTrue(b1 == bigint("20"));    
-    assertTrue(bigint(0) * 10 == bigint(0));
+	    // Copy constructor   
+	    bigint b1 = bigint("10");
+	    bigint b2 = b1;
+	    b1 += 10;
+	    assertTrue(b2 == bigint("10"));    
+	    assertTrue(b1 == bigint("20"));    
+	    assertTrue(bigint(0) * 10 == bigint(0));
 
-    // Constructor radix test
-    assertTrue(bigint("ff",16) == bigint("255"));
-    assertTrue(bigint("10001",2) == bigint("17"));
-    
-    // toString()
-    assertTrue(bigint(1000).toString() == "1000");
-    assertTrue(bigint(65535).toString(16) == "ffff");
-    assertTrue(bigint(-1000).toString() == "-1000");
-    assertTrue(bigint("123456789123456789").toString() == "123456789123456789");
-    
-    // Zero handling
-    assertTrue(bigint("0") == bigint("-0"));
-    assertTrue(bigint("0").is_zero());
-    assertTrue(bigint("-0").is_zero());
-    
-    // Negatives
-    assertTrue(bigint(-100) == bigint("-100"));
-    assertTrue(-bigint(100) == bigint(-100));
-    assertTrue(bigint(-1000) + bigint(1000) == bigint(0));
-    assertTrue(bigint("-1000") + bigint("1000") == bigint("0"));
+	    // Constructor radix test
+	    assertTrue(bigint("ff",16) == bigint("255"));
+	    assertTrue(bigint("10001",2) == bigint("17"));
 
-    // Subtraction
-    assertTrue(bigint(100) - 20 == bigint(80));
-    assertTrue(bigint(100) - bigint(3) == bigint(97));
-    assertTrue(bigint("3333333333333333333") - bigint("2222222222222222222") == bigint("1111111111111111111"));
-    
-    // Addition
-    assertTrue((bigint(123456789) + 123456789) + 123456789 == bigint("370370367"));
-    assertTrue(bigint("999999999999999999999999999999999") + bigint("999999999999999999999999999999999") == bigint("1999999999999999999999999999999998"));
-    assertTrue(bigint("-111111111111111111").abs() == bigint("111111111111111111"));
+	    // toString()
+	    assertTrue(bigint(1000).toString() == "1000");
+	    assertTrue(bigint(65535).toString(16) == "ffff");
+	    assertTrue(bigint(-1000).toString() == "-1000");
+	    assertTrue(bigint("123456789123456789").toString() == "123456789123456789");
 
-    // Multiply
-    assertTrue(bigint("1000") * 10 == bigint("10000"));
-    assertTrue(bigint("123456789123456789") * bigint("123456789123456789") == bigint("15241578780673678515622620750190521"));
-    assertTrue((bigint("123456789") * 123456789) * 123456789 == bigint("1881676371789154860897069"));
-    
-    // expt
-    assertTrue(bigint("100").expt(2) == bigint("10000"));
-    assertTrue(bigint("2").expt(0) == bigint(1));
-    assertTrue(bigint(0).expt(100) == bigint(0));
-    assertTrue(bigint(31).expt(19) == bigint("21670662219970396194714277471"));
-    assertTrue(bigint(17).expt(1000) * bigint(17).expt(500) == bigint(17).expt(1500));
-    assertTrue(bigint(31).expt(1000) * bigint(31).expt(1500) == bigint(31).expt(2500));
-    
-    
-    // Division
-    /*
-    assertTrue(bigint("9999999999999999999") / 3 == bigint("3333333333333333333"));
-    assertTrue(bigint(-1000) / 10 == bigint(-100));
-    assertTrue(bigint(1000) / (-10) == bigint(-100));
-    assertTrue(bigint(-1000) / (-10) == bigint(100));
-    //cout << "Result " << (bigint(100) / bigint(2)) << endl;
-    assertTrue(bigint(100) / bigint(2) == bigint(50));
-    assertTrue(bigint("123456789123456789") / bigint("123456789123456789") == bigint(1));
-    assertTrue(bigint("10000000000") / bigint("1000000000") == bigint(10));
-    assertTrue(bigint("10000000000") / bigint("10000000") == bigint(1000));
-    assertTrue(bigint("993850124034") / bigint("1209237") == bigint("821882"));
-    assertTrue(bigint("993850124034") / bigint("821882") == bigint("1209237"));
-    //assertTrue(bigint("") / bigint("") == bigint(""));
-    
-    assertTrue(bigint("123456789123456789") / bigint(1) == bigint("123456789123456789"));
-    assertTrue(bigint("10000000000") / bigint("10") == bigint("1000000000"));
-    */
-    //assertTrue(bigint("15241578780673678515622620750190521") / bigint("123456789123456789") == bigint("123456789123456789"));
-    
-    // Remainder
-    assertTrue(bigint(100) % 10 == 0);
-    assertTrue(bigint("10000000000000000000000") % 3 == 1);
-    assertTrue(bigint("-99999999999999999992") % 3 == -2);
+	    // Zero handling
+	    assertTrue(bigint("0") == bigint("-0"));
+	    assertTrue(bigint("0").is_zero());
+	    assertTrue(bigint("-0").is_zero());
 
-    // Square root
-    //assertTrue(bigint(100).sqrt() == bigint(10));
-    //assertTrue(bigint(10000).sqrt() == bigint(100));
-    //assertTrue(bigint("10000000000000000").sqrt() == bigint("100000000"));
-    //assertTrue(bigint("15241578780673678515622620750190521").sqrt() == bigint("123456789123456789"));
+	    // Negatives
+	    assertTrue(bigint(-100) == bigint("-100"));
+	    assertTrue(-bigint(100) == bigint(-100));
+	    assertTrue(bigint(-1000) + bigint(1000) == bigint(0));
+	    assertTrue(bigint("-1000") + bigint("1000") == bigint("0"));
 
-    // Comparators
-    assertTrue(bigint(50) > bigint(25));
-    assertTrue(bigint("999999999999999999") > 
-           bigint("888888888888888888"));
-    assertTrue(bigint("111111111111111111") < 
-           bigint("222222222222222222"));
-    assertTrue(bigint("999999999999999999999999999999999") <= 
-           bigint("999999999999999999999999999999999"));
-    assertTrue(bigint("8888888888888888888") <= 
-           bigint("9999999999999999999"));
-    assertTrue(bigint("3333333333333333333") >= 
-           bigint("3333333333333333333"));
-    assertTrue(bigint("3333333333333333333") >= 
-           bigint("2222222222222222222"));
-           
-    // Bitsizes
-    assertTrue(bigint("1000",2).sizeInBits() == 4);
-    assertTrue(bigint("ffffffffffffffffffff",16).sizeInBits() == 80);
+	    // Subtraction
+	    assertTrue(bigint(100) - 20 == bigint(80));
+	    assertTrue(bigint(100) - bigint(3) == bigint(97));
+	    assertTrue(bigint("3333333333333333333") - bigint("2222222222222222222") == bigint("1111111111111111111"));
+
+	    // Addition
+	    assertTrue((bigint(123456789) + 123456789) + 123456789 == bigint("370370367"));
+	    assertTrue(bigint("999999999999999999999999999999999") + bigint("999999999999999999999999999999999") == bigint("1999999999999999999999999999999998"));
+	    assertTrue(abs(bigint("-111111111111111111")) == bigint("111111111111111111"));
+
+	    // Multiply
+	    assertTrue(bigint("1000") * 10 == bigint("10000"));
+	    assertTrue(bigint("123456789123456789") * bigint("123456789123456789") == bigint("15241578780673678515622620750190521"));
+	    assertTrue((bigint("123456789") * 123456789) * 123456789 == bigint("1881676371789154860897069"));
+
+	    // expt
+	    assertTrue(bigint("100").expt(2) == bigint("10000"));
+	    assertTrue(bigint("2").expt(0) == bigint(1));
+	    assertTrue(bigint(0).expt(100) == bigint(0));
+	    assertTrue(bigint(31).expt(19) == bigint("21670662219970396194714277471"));
+	    assertTrue(bigint(17).expt(1000) * bigint(17).expt(500) == bigint(17).expt(1500));
+	    assertTrue(bigint(31).expt(1000) * bigint(31).expt(1500) == bigint(31).expt(2500));
+
+
+	    // Division
+	    assertTrue(bigint("9999999999999999999") / 3 == bigint("3333333333333333333"));
+	    assertTrue(bigint(-1000) / 10 == bigint(-100));
+	    assertTrue(bigint(1000) / (-10) == bigint(-100));
+	    assertTrue(bigint(-1000) / (-10) == bigint(100));
+	    assertTrue(bigint(100) / bigint(2) == bigint(50));
+	    assertTrue(bigint(100) / bigint(-2) == bigint(-50));
+	    assertTrue(bigint(100) / bigint(1000) == bigint(0));
+	    assertTrue(bigint(-100) / bigint(1000) == bigint(0));
+	    assertTrue(bigint(100) / bigint(-1000) == bigint(0));
+	    assertTrue(bigint("123456789123456789") / bigint("123456789123456789") == bigint(1));
+	    assertTrue(bigint("10000000000") / bigint("1000000000") == bigint(10));
+	    assertTrue(bigint("10000000000") / bigint("10000000") == bigint(1000));
+	    assertTrue(bigint("993850124034") / bigint("1209237") == bigint("821882"));
+	    assertTrue(bigint("993850124034") / bigint("821882") == bigint("1209237"));
+	    //assertTrue(bigint("") / bigint("") == bigint(""));
+	    assertTrue(bigint("123456789123456789") / bigint(1) == bigint("123456789123456789"));
+	    assertTrue(bigint("10000000000") / bigint("10") == bigint("1000000000"));
+	    assertTrue(bigint("15241578780673678515622620750190521") / bigint("1") == bigint("15241578780673678515622620750190521"));
+	    //assertTrue(bigint("15241578780673678515622620750190521") / bigint("123456789123456789") == bigint("123456789123456789"));
+
+	    // Remainder
+	    assertTrue(bigint(100) % 10 == 0);
+	    assertTrue(bigint("10000000000000000000000") % 3 == 1);
+	    assertTrue(bigint("-99999999999999999992") % 3 == -2);
+
+	    // Square root
+	    assertTrue(bigint(100).sqrt() == bigint(10));
+	    assertTrue(bigint(10000).sqrt() == bigint(100));
+	    assertTrue(bigint("10000000000000000").sqrt() == bigint("100000000"));
+	    //assertTrue(bigint("15241578780673678515622620750190521").sqrt() == bigint("123456789123456789"));
+
+	    // Comparators
+	    assertTrue(bigint(50) > bigint(25));
+	    assertTrue(bigint("999999999999999999") > 
+		    bigint("888888888888888888"));
+	    assertTrue(bigint("111111111111111111") < 
+		    bigint("222222222222222222"));
+	    assertTrue(bigint("999999999999999999999999999999999") <= 
+		    bigint("999999999999999999999999999999999"));
+	    assertTrue(bigint("8888888888888888888") <= 
+		    bigint("9999999999999999999"));
+	    assertTrue(bigint("3333333333333333333") >= 
+		    bigint("3333333333333333333"));
+	    assertTrue(bigint("3333333333333333333") >= 
+		    bigint("2222222222222222222"));
+
+	    // Bitsizes
+	    assertTrue(bigint("1000",2).sizeInBits() == 4);
+	    assertTrue(bigint("ffffffffffffffffffff",16).sizeInBits() == 80);
 	}
 };
 
@@ -1589,10 +1590,10 @@ void test_lib_lists() {
     assert_eval(s, L"(cons* 1 2 3)", L"(1 2 . 3)");
     assert_eval(s, L"(cons* 1)", L"1");
     /*
-    assert_eval(s, L"", L"");
-    assert_eval(s, L"", L"");
-    assert_eval(s, L"", L"");
-    */
+       assert_eval(s, L"", L"");
+       assert_eval(s, L"", L"");
+       assert_eval(s, L"", L"");
+     */
 }
 
 int main(int argc, char *argv[]) {
