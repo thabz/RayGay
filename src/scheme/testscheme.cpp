@@ -863,7 +863,7 @@ void test_math() {
     assert_eval(s, L"(rationalize 12/8 0.1)", L"1.5");
     assert_eval(s, L"(rationalize 7/8 0.1)", L"0.8");
     assert_eval(s, L"(rationalize -7/8 0.1)", L"-0.8");
-    // TODO: Nedenstående fejler da vi ikke har bigints endnu.
+    // TODO: NedenstÃ¥ende fejler da vi ikke har bigints endnu.
     // assert_eval(s, L"(rationalize 1.8 0.1)", L"1.75");
     
     assert_eval(s, L"(let loop ((i 0)) (if (>= i 1) i (loop (+ i (/ 100)))))", L"1");
@@ -1579,6 +1579,22 @@ void test_lib_sorting() {
     assert_eval(s, L"(length (list-sort (lambda (a b) (< a b)) (vector->list (make-vector 10000 1))))", L"10000");
 }
 
+void test_lib_lists() {
+    Scheme* s = new Scheme();
+    assert_eval(s, L"(find even? '(3 1 4 1 5 9))", L"4");
+    assert_eval(s, L"(find even? '(3 1 5 1 5 9))", L"#f");
+    assert_eval(s, L"(filter even? '(3 1 4 1 5 9 2 6))", L"(4 2 6)");
+    assert_eval(s, L"(partition even? '(3 1 4 1 5 9 2 6))", L"((4 2 6) (3 1 1 5 9))");
+    assert_eval(s, L"(cons* 1 2 '(3 4 5))", L"(1 2 3 4 5)");
+    assert_eval(s, L"(cons* 1 2 3)", L"(1 2 . 3)");
+    assert_eval(s, L"(cons* 1)", L"1");
+    /*
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+    */
+}
+
 int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("Parser", new test_parser());
@@ -1679,6 +1695,11 @@ int main(int argc, char *argv[]) {
         cout << "Test lib sorting...     ";
         test_lib_sorting();
         cout << " OK" << endl;
+
+        cout << "Test lib lists...       ";
+        test_lib_lists();
+        cout << " OK" << endl;
+
 
         test_begin();
 

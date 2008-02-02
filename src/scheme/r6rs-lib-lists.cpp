@@ -3,15 +3,14 @@
 
 Scheme* lists_thescheme;
 
-SchemeObject* s_cons_star(int num, SchemeStack::iterator stack) {
-    assert(num > 0);        
-    if (num == 1) {
-        return *stack;
+SchemeObject* s_find(SchemeObject* proc, SchemeObject* list) {
+    while(list != S_EMPTY_LIST) {
+	if (lists_thescheme->callProcedure_1(proc, i_car(list)) != S_FALSE)  {
+	    return i_car(list);
+	}
+	list = i_cdr(list);
     }
-    SchemeObject* result;
-    for(int i = 0; i < num-1; i++) {
-  
-    }
+    return S_FALSE;
 }
 
 SchemeObject* s_filter(SchemeObject* proc, SchemeObject* list) {
@@ -52,10 +51,26 @@ SchemeObject* s_partition(SchemeObject* proc, SchemeObject* list) {
     return i_cons(true_list,i_cons(false_list,S_EMPTY_LIST));
 }
 
+SchemeObject* s_cons_star(int num, SchemeStack::iterator stack) {
+    if (num == 1) {
+        return *stack;
+    }
+
+    SchemeObject* result = i_cons(stack[num-2],stack[num-1]);
+
+    for(int i = num-3; i >= 0; i--) {
+       result = i_cons(stack[i], result);
+    }
+
+    return result;
+}
+
+
 void R6RSLibLists::bind(Scheme* scheme, SchemeObject* envt) {
     lists_thescheme = scheme;
-    scheme->assign(L"cons*"                     ,1,0,1, (SchemeObject* (*)()) s_cons_star, envt);
+    scheme->assign(L"find"                      ,2,0,0, (SchemeObject* (*)()) s_find, envt);
     scheme->assign(L"filter"                    ,2,0,0, (SchemeObject* (*)()) s_filter, envt);
     scheme->assign(L"partition"                 ,2,0,0, (SchemeObject* (*)()) s_partition, envt);
+    scheme->assign(L"cons*"                     ,1,0,1, (SchemeObject* (*)()) s_cons_star, envt);
 }
 
