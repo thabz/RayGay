@@ -565,6 +565,10 @@ SchemeObject* Scheme::callProcedure_3(SchemeObject* s_proc, SchemeObject* s_arg1
    return interpreter->call_procedure_3(s_proc, s_arg1, s_arg2, s_arg3);        
 }
 
+SchemeObject* Scheme::callProcedure_n(SchemeObject* s_proc, SchemeObject* s_args) {
+   return interpreter->call_procedure_n(s_proc, s_args);
+}
+
 // TODO: Gør denne til en intern function med tail-optimization
 SchemeObject* s_call_cc(SchemeObject* s_proc) {
     Interpreter::State* state = interpreter->getState();

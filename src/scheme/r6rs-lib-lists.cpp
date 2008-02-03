@@ -13,6 +13,98 @@ SchemeObject* s_find(SchemeObject* proc, SchemeObject* list) {
     return S_FALSE;
 }
 
+SchemeObject* s_for_all(int num, SchemeStack::iterator args) {
+    wstring procname = L"for-all";
+    SchemeObject* proc = args[0];
+    assert_arg_type(procname, 1, s_procedure_p, proc);
+
+    int empty = 0;
+    SchemeObject* cropped_args[num-1];
+    for(int i = 1; i < num; i++) {
+        assert_non_atom_type(procname, i, args[i]);
+        cropped_args[i-1] = args[i];
+	if (args[i] == S_EMPTY_LIST) empty++;
+    }
+    if (empty == num-1) return S_TRUE;
+
+    // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver 
+    // til ((2 3)(20 30)) og til sidst ((3)(30))
+    while (i_cdr(cropped_args[0]) != S_EMPTY_LIST) {
+        SchemeAppendableList collection;
+        for(int i = 0; i < num-1; i++) {
+            SchemeObject* lists_ptr = cropped_args[i];
+            if (lists_ptr == S_EMPTY_LIST) {
+                throw scheme_exception(procname + L": argument lists not equals length.");
+            }
+            SchemeObject* arg = s_car(lists_ptr);
+            cropped_args[i] = s_cdr(lists_ptr);
+            collection.add(arg);
+	}
+
+	SchemeObject* result_item = lists_thescheme->callProcedure_n(proc, collection.list);
+	if (result_item == S_FALSE) {
+	    return S_FALSE;
+	}
+    }
+
+    // Tjek at alle cropped_args kun indeholder et element, dvs. at 
+    // argumentlisterne var lige lange
+    SchemeAppendableList collection;
+    for(int i = 0; i < num-1; i++) {
+        if (i_cdr(cropped_args[i]) != S_EMPTY_LIST) {
+            throw scheme_exception(procname + L": argument lists not equals length.");
+        }
+	collection.add(i_car(cropped_args[i]));
+    }
+    return lists_thescheme->callProcedure_n(proc, collection.list);
+}
+
+SchemeObject* s_exists(int num, SchemeStack::iterator args) {
+    wstring procname = L"exists";
+    SchemeObject* proc = args[0];
+    assert_arg_type(procname, 1, s_procedure_p, proc);
+
+    int empty = 0;
+    SchemeObject* cropped_args[num-1];
+    for(int i = 1; i < num; i++) {
+        assert_non_atom_type(procname, i, args[i]);
+        cropped_args[i-1] = args[i];
+	if (args[i] == S_EMPTY_LIST) empty++;
+    }
+    if (empty == num-1) return S_FALSE;
+
+    // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver 
+    // til ((2 3)(20 30)) og til sidst ((3)(30))
+    while (i_cdr(cropped_args[0]) != S_EMPTY_LIST) {
+        SchemeAppendableList collection;
+        for(int i = 0; i < num-1; i++) {
+            SchemeObject* lists_ptr = cropped_args[i];
+            if (lists_ptr == S_EMPTY_LIST) {
+                throw scheme_exception(procname + L": argument lists not equals length.");
+            }
+            SchemeObject* arg = s_car(lists_ptr);
+            cropped_args[i] = s_cdr(lists_ptr);
+            collection.add(arg);
+	}
+
+	SchemeObject* result_item = lists_thescheme->callProcedure_n(proc, collection.list);
+	if (result_item != S_FALSE) {
+	    return result_item;
+	}
+    }
+
+    // Tjek at alle cropped_args kun indeholder et element, dvs. at 
+    // argumentlisterne var lige lange
+    SchemeAppendableList collection;
+    for(int i = 0; i < num-1; i++) {
+        if (i_cdr(cropped_args[i]) != S_EMPTY_LIST) {
+            throw scheme_exception(procname + L": argument lists not equals length.");
+        }
+	collection.add(i_car(cropped_args[i]));
+    }
+    return lists_thescheme->callProcedure_n(proc, collection.list);
+}
+
 SchemeObject* s_filter(SchemeObject* proc, SchemeObject* list) {
     vector<SchemeObject*> vec;
     while(list != S_EMPTY_LIST) {
@@ -104,12 +196,14 @@ SchemeObject* s_cons_star(int num, SchemeStack::iterator stack) {
 void R6RSLibLists::bind(Scheme* scheme, SchemeObject* envt) {
     lists_thescheme = scheme;
     scheme->assign(L"find"            ,2,0,0, (SchemeObject* (*)()) s_find, envt);
+    scheme->assign(L"for-all"         ,2,0,1, (SchemeObject* (*)()) s_for_all, envt);
+    scheme->assign(L"exists"          ,2,0,1, (SchemeObject* (*)()) s_exists, envt);
     scheme->assign(L"filter"          ,2,0,0, (SchemeObject* (*)()) s_filter, envt);
     scheme->assign(L"partition"       ,2,0,0, (SchemeObject* (*)()) s_partition, envt);
-    scheme->assign(L"cons*"           ,1,0,1, (SchemeObject* (*)()) s_cons_star, envt);
     scheme->assign(L"memp"            ,2,0,0, (SchemeObject* (*)()) s_memp, envt);
     scheme->assign(L"member"          ,2,0,0, (SchemeObject* (*)()) s_member, envt);
     scheme->assign(L"memq"            ,2,0,0, (SchemeObject* (*)()) s_memq, envt);
     scheme->assign(L"memv"            ,2,0,0, (SchemeObject* (*)()) s_memv, envt);
+    scheme->assign(L"cons*"           ,1,0,1, (SchemeObject* (*)()) s_cons_star, envt);
 }
 
