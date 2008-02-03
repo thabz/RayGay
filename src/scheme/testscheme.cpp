@@ -1597,6 +1597,13 @@ void test_lib_lists() {
     assert_eval(s, L"(exists < '() '())", L"#f");
     assert_eval(s, L"(filter even? '(3 1 4 1 5 9 2 6))", L"(4 2 6)");
     assert_eval(s, L"(partition even? '(3 1 4 1 5 9 2 6))", L"((4 2 6) (3 1 1 5 9))");
+    assert_eval(s, L"(fold-left + 0 '(1 2 3 4 5))", L"15");
+    assert_eval(s, L"(fold-left (lambda (a e) (cons e a)) '() '(1 2 3 4 5))", L"(5 4 3 2 1)");
+    assert_eval(s, L"(fold-left (lambda (count x) (if (odd? x) (+ count 1) count)) 0 '(3 1 4 1 5 9 2 6 5 3))", L"7");
+    assert_eval(s, L"(fold-left (lambda (max-len s) (max max-len (string-length s))) 0 '(\"longest\" \"long\" \"longer\"))", L"7");
+    assert_eval(s, L"(fold-left cons '(q) '(a b c))", L"((((q) . a) . b) . c)");
+    assert_eval(s, L"(fold-left + 0 '(1 2 3) '(4 5 6))", L"21");
+    assert_eval(s, L"(fold-left + 'a '() '())", L"a");
     assert_eval(s, L"(memp even? '(3 1 4 1 5 9 2 6 5))", L"(4 1 5 9 2 6 5)");
     assert_eval(s, L"(member 3 '(1 2 3 4 5))", L"(3 4 5)");
     assert_eval(s, L"(member 10 '(1 2 3 4 5))", L"#f");

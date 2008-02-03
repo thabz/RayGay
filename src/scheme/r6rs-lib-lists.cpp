@@ -13,6 +13,8 @@ SchemeObject* s_find(SchemeObject* proc, SchemeObject* list) {
     return S_FALSE;
 }
 
+// TODO: Implement this as a macro. The last call should be tail-recursive
+// according to the spec.
 SchemeObject* s_for_all(int num, SchemeStack::iterator args) {
     wstring procname = L"for-all";
     SchemeObject* proc = args[0];
@@ -59,6 +61,9 @@ SchemeObject* s_for_all(int num, SchemeStack::iterator args) {
     return lists_thescheme->callProcedure_n(proc, collection.list);
 }
 
+
+// TODO: Implement this as a macro. The last call should be tail-recursive
+// according to the spec.
 SchemeObject* s_exists(int num, SchemeStack::iterator args) {
     wstring procname = L"exists";
     SchemeObject* proc = args[0];
@@ -143,6 +148,48 @@ SchemeObject* s_partition(SchemeObject* proc, SchemeObject* list) {
     return i_cons(true_list,i_cons(false_list,S_EMPTY_LIST));
 }
 
+SchemeObject* s_fold_left(int num, SchemeStack::iterator args) {
+    wstring procname = L"fold-left";
+    SchemeObject* proc = args[0];
+    assert_arg_type(procname, 1, s_procedure_p, proc);
+
+    SchemeObject* nil = args[1];
+
+    SchemeObject* cropped_args[num-2];
+    for(int i = 2; i < num; i++) {
+        assert_non_atom_type(procname, i, args[i]);
+        cropped_args[i-2] = args[i];
+    }
+
+    // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver 
+    // til ((2 3)(20 30)) og til sidst ((3)(30))
+    while (cropped_args[0] != S_EMPTY_LIST) {
+        SchemeAppendableList collection;
+	collection.add(nil);
+        for(int i = 0; i < num-2; i++) {
+            SchemeObject* lists_ptr = cropped_args[i];
+            if (lists_ptr == S_EMPTY_LIST) {
+                throw scheme_exception(procname + L": argument lists not equals length.");
+            }
+            SchemeObject* arg = s_car(lists_ptr);
+            cropped_args[i] = s_cdr(lists_ptr);
+            collection.add(arg);
+	}
+
+	nil = lists_thescheme->callProcedure_n(proc, collection.list);
+    }
+
+    // Tjek at alle cropped_args kun indeholder et element, dvs. at 
+    // argumentlisterne var lige lange
+    SchemeAppendableList collection;
+    for(int i = 0; i < num-2; i++) {
+        if (cropped_args[i] != S_EMPTY_LIST) {
+            throw scheme_exception(procname + L": argument lists not equals length.");
+        }
+    }
+    return nil;
+}
+
 inline
 SchemeObject* member_helper(SchemeObject* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
     while (i_null_p(p) == S_FALSE) {
@@ -200,6 +247,7 @@ void R6RSLibLists::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"exists"          ,2,0,1, (SchemeObject* (*)()) s_exists, envt);
     scheme->assign(L"filter"          ,2,0,0, (SchemeObject* (*)()) s_filter, envt);
     scheme->assign(L"partition"       ,2,0,0, (SchemeObject* (*)()) s_partition, envt);
+    scheme->assign(L"fold-left"       ,3,0,1, (SchemeObject* (*)()) s_fold_left, envt);
     scheme->assign(L"memp"            ,2,0,0, (SchemeObject* (*)()) s_memp, envt);
     scheme->assign(L"member"          ,2,0,0, (SchemeObject* (*)()) s_member, envt);
     scheme->assign(L"memq"            ,2,0,0, (SchemeObject* (*)()) s_memq, envt);

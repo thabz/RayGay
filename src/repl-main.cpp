@@ -153,7 +153,7 @@ int runfile(char* filename) {
         scheme->eval(ifs);
     } catch (scheme_exception e) {
         ifs->close();
-	wcerr << L"ABORT: " << e.toString() << endl;
+	    wcerr << L"ABORT: " << e.toString() << endl;
         return EXIT_FAILURE;
     } catch (Exception e) {
 	cout << L"ABORT: " << e.getMessage() << endl;
