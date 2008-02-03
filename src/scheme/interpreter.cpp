@@ -1,6 +1,7 @@
 // --- C++ ---
 #include "interpreter.h"
 #include "scheme.h"
+#include "r6rs-lib-lists.h"
 
 #include <iostream>
 

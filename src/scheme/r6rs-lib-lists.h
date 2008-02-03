@@ -8,5 +8,7 @@ struct R6RSLibLists {
     static void bind(Scheme* scheme, SchemeObject* envt);
 };
 
+SchemeObject* s_memv(SchemeObject* obj, SchemeObject* p);
+
 #endif
 

@@ -169,9 +169,6 @@ Scheme::Scheme() {
     	assign(L"assq"                  ,2,0,0, (SchemeObject* (*)()) s_assq, scheme_report_environment);
     	assign(L"assv"                  ,2,0,0, (SchemeObject* (*)()) s_assv, scheme_report_environment);
     	assign(L"append"                ,0,0,1, (SchemeObject* (*)()) s_append, scheme_report_environment);
-    	assign(L"member"                ,2,0,0, (SchemeObject* (*)()) s_member, scheme_report_environment);
-    	assign(L"memq"                  ,2,0,0, (SchemeObject* (*)()) s_memq, scheme_report_environment);
-    	assign(L"memv"                  ,2,0,0, (SchemeObject* (*)()) s_memv, scheme_report_environment);
     	assign(L"reverse"               ,1,0,0, (SchemeObject* (*)()) s_reverse, scheme_report_environment);
     	assign(L"length"                ,1,0,0, (SchemeObject* (*)()) s_length, scheme_report_environment);
     	assign(L"cons"                  ,2,0,0, (SchemeObject* (*)()) s_cons, scheme_report_environment);
@@ -695,30 +692,6 @@ SchemeObject* s_map(int num, SchemeStack::iterator args) {
 
 SchemeObject* s_for_each(int num, SchemeStack::iterator args) {
     return s_map_internal(L"for-each",num, args, false);
-}
-
-inline
-SchemeObject* member_helper(SchemeObject* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
-    while (i_null_p(p) == S_FALSE) {
-        if ((*comparator)(obj, s_car(p)) == S_TRUE) {
-            return p;
-        } else {
-            p = s_cdr(p);
-        }
-    }
-    return S_FALSE;
-}
-
-SchemeObject* s_member(SchemeObject* obj, SchemeObject* p) {
-    return member_helper(s_equal_p, obj, p);
-}
-
-SchemeObject* s_memq(SchemeObject* obj, SchemeObject* p) {
-    return member_helper(s_eq_p, obj, p);
-}
-
-SchemeObject* s_memv(SchemeObject* obj, SchemeObject* p) {
-    return member_helper(s_eqv_p, obj, p);
 }
 
 SchemeObject* s_list_tail(SchemeObject* l, SchemeObject* k) {

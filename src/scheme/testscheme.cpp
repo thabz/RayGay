@@ -967,12 +967,6 @@ void test_pairs_and_lists() {
     assert_fail(s, L"(reverse 'a)");
     assert_fail(s, L"(reverse 'a 'b)");
     
-    assert_eval(s, L"(member 3 '(1 2 3 4 5))", L"(3 4 5)");
-    assert_eval(s, L"(member 10 '(1 2 3 4 5))", L"#f");
-    assert_eval(s, L"(member 10 '())", L"#f");
-    assert_eval(s, L"(member (list 'a) '(b (a) c))", L"((a) c)");
-    assert_eval(s, L"(memq (list 'a) '(b (a) c))", L"#f");
-    
     assert_eval(s, L"(list-tail '(1 2 3 4 5) 0)", L"(1 2 3 4 5)");
     assert_eval(s, L"(list-tail '(1 2 3 4 5) 1)", L"(2 3 4 5)");
     assert_eval(s, L"(list-tail '() 0)", L"()");
@@ -1586,6 +1580,14 @@ void test_lib_lists() {
     assert_eval(s, L"(find even? '(3 1 5 1 5 9))", L"#f");
     assert_eval(s, L"(filter even? '(3 1 4 1 5 9 2 6))", L"(4 2 6)");
     assert_eval(s, L"(partition even? '(3 1 4 1 5 9 2 6))", L"((4 2 6) (3 1 1 5 9))");
+    assert_eval(s, L"(memp even? '(3 1 4 1 5 9 2 6 5))", L"(4 1 5 9 2 6 5)");
+    assert_eval(s, L"(member 3 '(1 2 3 4 5))", L"(3 4 5)");
+    assert_eval(s, L"(member 10 '(1 2 3 4 5))", L"#f");
+    assert_eval(s, L"(member 10 '())", L"#f");
+    assert_eval(s, L"(member (list 'a) '(b (a) c))", L"((a) c)");
+    assert_eval(s, L"(memq (list 'a) '(b (a) c))", L"#f");
+    assert_eval(s, L"(memv 101 '(100 101 102))", L"(101 102)");
+    
     assert_eval(s, L"(cons* 1 2 '(3 4 5))", L"(1 2 3 4 5)");
     assert_eval(s, L"(cons* 1 2 3)", L"(1 2 . 3)");
     assert_eval(s, L"(cons* 1)", L"1");

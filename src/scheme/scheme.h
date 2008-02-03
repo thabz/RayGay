@@ -351,9 +351,6 @@ SchemeObject* s_length(SchemeObject* l);
 SchemeObject* s_list(int num, SchemeStack::iterator stack);
 SchemeObject* s_list_tail(SchemeObject* l, SchemeObject* k);
 SchemeObject* s_list_ref(SchemeObject* l, SchemeObject* k);
-SchemeObject* s_member(SchemeObject* obj, SchemeObject* p);
-SchemeObject* s_memq(SchemeObject* obj, SchemeObject* p);
-SchemeObject* s_memv(SchemeObject* obj, SchemeObject* p);
 
 // Vector stuff
 SchemeObject* s_make_vector(SchemeObject* count, SchemeObject* obj);
