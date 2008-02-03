@@ -165,9 +165,6 @@ Scheme::Scheme() {
     	assign(L"list-ref"              ,2,0,0, (SchemeObject* (*)()) s_list_ref, scheme_report_environment);
     	assign(L"set-car!"              ,2,0,0, (SchemeObject* (*)()) s_set_car_e, scheme_report_environment);
     	assign(L"set-cdr!"              ,2,0,0, (SchemeObject* (*)()) s_set_cdr_e, scheme_report_environment);
-    	assign(L"assoc"                 ,2,0,0, (SchemeObject* (*)()) s_assoc, scheme_report_environment);
-    	assign(L"assq"                  ,2,0,0, (SchemeObject* (*)()) s_assq, scheme_report_environment);
-    	assign(L"assv"                  ,2,0,0, (SchemeObject* (*)()) s_assv, scheme_report_environment);
     	assign(L"append"                ,0,0,1, (SchemeObject* (*)()) s_append, scheme_report_environment);
     	assign(L"reverse"               ,1,0,0, (SchemeObject* (*)()) s_reverse, scheme_report_environment);
     	assign(L"length"                ,1,0,0, (SchemeObject* (*)()) s_length, scheme_report_environment);
@@ -719,32 +716,6 @@ SchemeObject* s_list_ref(SchemeObject* l, SchemeObject* k) {
         throw scheme_exception(L"Index out of range: " + k->toString());
     }
     return s_car(p);
-}
-
-SchemeObject* assoc_helper(SchemeObject* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* alist) {
-    while (alist != S_EMPTY_LIST) {
-        if (s_pair_p(s_car(alist)) == S_FALSE) {
-            throw scheme_exception(L"Illegal argument");
-        }
-        SchemeObject* p = s_car(alist);
-        if ((*comparator)(obj, s_car(p)) == S_TRUE) {
-            return p;
-        }
-        alist = s_cdr(alist);
-    }
-    return S_FALSE;
-}
-
-SchemeObject* s_assoc(SchemeObject* obj, SchemeObject* alist) {
-    return assoc_helper(s_equal_p, obj, alist); 
-}
-
-SchemeObject* s_assq(SchemeObject* obj, SchemeObject* alist) {
-    return assoc_helper(s_eq_p, obj, alist); 
-}
-
-SchemeObject* s_assv(SchemeObject* obj, SchemeObject* alist) {
-    return assoc_helper(s_eqv_p, obj, alist); 
 }
 
 // (pair? p)

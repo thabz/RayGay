@@ -308,10 +308,6 @@ SchemeObject* s_pair_p(SchemeObject* p);
 SchemeObject* s_null_p(SchemeObject* p);
 SchemeObject* s_symbol_p(SchemeObject* p);
 
-SchemeObject* s_assoc(SchemeObject* obj, SchemeObject* alist);
-SchemeObject* s_assq(SchemeObject* obj, SchemeObject* alist);
-SchemeObject* s_assv(SchemeObject* obj, SchemeObject* alist);
-
 SchemeObject* s_car(SchemeObject* o);
 SchemeObject* s_cdr(SchemeObject* o);
 SchemeObject* s_caar(SchemeObject* o);

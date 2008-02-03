@@ -987,14 +987,6 @@ void test_pairs_and_lists() {
     assert_fail(s, L"(append '(a . b) '(a b c))");
     assert_fail(s, L"(append 'a '(a b c))");
 
-    s->eval(L"(define e '((a 1) (b 2) (c 3)))");
-    assert_eval(s, L"(assq 'a e)", L"(a 1)");
-    assert_eval(s, L"(assq 'b e)", L"(b 2)");
-    assert_eval(s, L"(assq 'd e)", L"#f");
-    assert_eval(s, L"(assoc (list 'a) '(((a)) ((b)) ((c))))", L"((a))");
-    assert_eval(s, L"(assq (list 'a) '(((a)) ((b)) ((c))))", L"#f");
-    assert_eval(s, L"(assv 5 '((2 3) (5 7) (11 13)))", L"(5 7)");
-    
     s->eval(L"(define e (list 'a 'b 'c 'd))");
     assert_eval(s, L"(set-car! e 'f) e", L"(f b c d)");
     assert_eval(s, L"(set-cdr! e 'g) e", L"(f . g)");
@@ -1611,7 +1603,16 @@ void test_lib_lists() {
     assert_eval(s, L"(member (list 'a) '(b (a) c))", L"((a) c)");
     assert_eval(s, L"(memq (list 'a) '(b (a) c))", L"#f");
     assert_eval(s, L"(memv 101 '(100 101 102))", L"(101 102)");
-    
+    s->eval(L"(define d '((3 a) (1 b) (4 c)))");
+    assert_eval(s, L"(assp even? d)", L"(4 c)");
+    assert_eval(s, L"(assp odd? d)", L"(3 a)");
+    s->eval(L"(define e '((a 1) (b 2) (c 3)))");
+    assert_eval(s, L"(assq 'a e)", L"(a 1)");
+    assert_eval(s, L"(assq 'b e)", L"(b 2)");
+    assert_eval(s, L"(assq 'd e)", L"#f");
+    assert_eval(s, L"(assoc (list 'a) '(((a)) ((b)) ((c))))", L"((a))");
+    assert_eval(s, L"(assq (list 'a) '(((a)) ((b)) ((c))))", L"#f");
+    assert_eval(s, L"(assv 5 '((2 3) (5 7) (11 13)))", L"(5 7)");
     assert_eval(s, L"(cons* 1 2 '(3 4 5))", L"(1 2 3 4 5)");
     assert_eval(s, L"(cons* 1 2 3)", L"(1 2 . 3)");
     assert_eval(s, L"(cons* 1)", L"1");

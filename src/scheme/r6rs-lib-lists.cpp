@@ -190,6 +190,10 @@ SchemeObject* s_fold_left(int num, SchemeStack::iterator args) {
     return nil;
 }
 
+SchemeObject* s_fold_right(int num, SchemeStack::iterator args) {
+    return S_FALSE;
+}
+
 inline
 SchemeObject* member_helper(SchemeObject* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
     while (i_null_p(p) == S_FALSE) {
@@ -225,6 +229,46 @@ SchemeObject* s_memp(SchemeObject* proc, SchemeObject* list) {
     return S_FALSE;
 }
 
+SchemeObject* assoc_helper(SchemeObject* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* alist) {
+    while (alist != S_EMPTY_LIST) {
+        if (s_pair_p(s_car(alist)) == S_FALSE) {
+            throw scheme_exception(L"Illegal argument");
+        }
+        SchemeObject* p = s_car(alist);
+        if ((*comparator)(obj, s_car(p)) == S_TRUE) {
+            return p;
+        }
+        alist = s_cdr(alist);
+    }
+    return S_FALSE;
+}
+
+SchemeObject* s_assoc(SchemeObject* obj, SchemeObject* alist) {
+    return assoc_helper(s_equal_p, obj, alist); 
+}
+
+SchemeObject* s_assq(SchemeObject* obj, SchemeObject* alist) {
+    return assoc_helper(s_eq_p, obj, alist); 
+}
+
+SchemeObject* s_assv(SchemeObject* obj, SchemeObject* alist) {
+    return assoc_helper(s_eqv_p, obj, alist); 
+}
+
+SchemeObject* s_assp(SchemeObject* proc, SchemeObject* alist) {
+    while (alist != S_EMPTY_LIST) {
+        if (s_pair_p(s_car(alist)) == S_FALSE) {
+            throw scheme_exception(L"Illegal argument");
+        }
+	if (lists_thescheme->callProcedure_1(proc, i_car(i_car(alist))) != S_FALSE)  {
+	    return i_car(alist);
+	} else {
+	    alist = i_cdr(alist);
+	}
+    }
+    return S_FALSE;
+}
+
 SchemeObject* s_cons_star(int num, SchemeStack::iterator stack) {
     if (num == 1) {
         return *stack;
@@ -248,10 +292,15 @@ void R6RSLibLists::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"filter"          ,2,0,0, (SchemeObject* (*)()) s_filter, envt);
     scheme->assign(L"partition"       ,2,0,0, (SchemeObject* (*)()) s_partition, envt);
     scheme->assign(L"fold-left"       ,3,0,1, (SchemeObject* (*)()) s_fold_left, envt);
+    scheme->assign(L"fold-right"       ,3,0,1, (SchemeObject* (*)()) s_fold_right, envt);
     scheme->assign(L"memp"            ,2,0,0, (SchemeObject* (*)()) s_memp, envt);
     scheme->assign(L"member"          ,2,0,0, (SchemeObject* (*)()) s_member, envt);
     scheme->assign(L"memq"            ,2,0,0, (SchemeObject* (*)()) s_memq, envt);
     scheme->assign(L"memv"            ,2,0,0, (SchemeObject* (*)()) s_memv, envt);
+    scheme->assign(L"assp"            ,2,0,0, (SchemeObject* (*)()) s_assp, envt);
+    scheme->assign(L"assoc"           ,2,0,0, (SchemeObject* (*)()) s_assoc, envt);
+    scheme->assign(L"assq"            ,2,0,0, (SchemeObject* (*)()) s_assq, envt);
+    scheme->assign(L"assv"            ,2,0,0, (SchemeObject* (*)()) s_assv, envt);
     scheme->assign(L"cons*"           ,1,0,1, (SchemeObject* (*)()) s_cons_star, envt);
 }
 
