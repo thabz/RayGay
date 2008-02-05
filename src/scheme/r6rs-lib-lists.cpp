@@ -292,7 +292,7 @@ void R6RSLibLists::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"filter"          ,2,0,0, (SchemeObject* (*)()) s_filter, envt);
     scheme->assign(L"partition"       ,2,0,0, (SchemeObject* (*)()) s_partition, envt);
     scheme->assign(L"fold-left"       ,3,0,1, (SchemeObject* (*)()) s_fold_left, envt);
-    scheme->assign(L"fold-right"       ,3,0,1, (SchemeObject* (*)()) s_fold_right, envt);
+    scheme->assign(L"fold-right"      ,3,0,1, (SchemeObject* (*)()) s_fold_right, envt);
     scheme->assign(L"memp"            ,2,0,0, (SchemeObject* (*)()) s_memp, envt);
     scheme->assign(L"member"          ,2,0,0, (SchemeObject* (*)()) s_member, envt);
     scheme->assign(L"memq"            ,2,0,0, (SchemeObject* (*)()) s_memq, envt);
