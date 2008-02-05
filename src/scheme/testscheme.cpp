@@ -1596,6 +1596,10 @@ void test_lib_lists() {
     assert_eval(s, L"(fold-left cons '(q) '(a b c))", L"((((q) . a) . b) . c)");
     assert_eval(s, L"(fold-left + 0 '(1 2 3) '(4 5 6))", L"21");
     assert_eval(s, L"(fold-left + 'a '() '())", L"a");
+    assert_eval(s, L"(remp even? '(3 1 4 1 5 9 2 6 5))", L"(3 1 1 5 9 5)");
+    assert_eval(s, L"(remove 1 '(3 1 4 1 5 9 2 6 5))", L"(3 4 5 9 2 6 5)");
+    assert_eval(s, L"(remv 1 '(3 1 4 1 5 9 2 6 5))", L"(3 4 5 9 2 6 5)");
+    assert_eval(s, L"(remq 'foo '(bar foo baz))", L"(bar baz)");
     assert_eval(s, L"(memp even? '(3 1 4 1 5 9 2 6 5))", L"(4 1 5 9 2 6 5)");
     assert_eval(s, L"(member 3 '(1 2 3 4 5))", L"(3 4 5)");
     assert_eval(s, L"(member 10 '(1 2 3 4 5))", L"#f");
@@ -1626,7 +1630,7 @@ void test_lib_lists() {
 int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("Parser", new test_parser());
-    suite.add("Bigint", new test_bigint());
+ //   suite.add("Bigint", new test_bigint());
     suite.add("Vector", new test_vector());
     suite.run();
     suite.printStatus();

@@ -194,6 +194,66 @@ SchemeObject* s_fold_right(int num, SchemeStack::iterator args) {
     return S_FALSE;
 }
 
+SchemeObject* s_remp(SchemeObject* proc, SchemeObject* list) {
+    vector<SchemeObject*> vec;
+    while(list != S_EMPTY_LIST) {
+	if (lists_thescheme->callProcedure_1(proc, i_car(list)) == S_FALSE)  {
+	    vec.push_back(i_car(list));
+	}
+	list = i_cdr(list);
+    }
+    SchemeObject* r = S_EMPTY_LIST;
+    for(uint32_t i = 0; i < vec.size(); i++) {
+	r = i_cons(vec[vec.size()-1-i],r);
+    }
+    return r;
+}
+
+SchemeObject* s_remove(SchemeObject* obj, SchemeObject* list) {
+    vector<SchemeObject*> vec;
+    while(list != S_EMPTY_LIST) {
+	if (s_equal_p(obj, i_car(list)) == S_FALSE)  {
+	    vec.push_back(i_car(list));
+	}
+	list = i_cdr(list);
+    }
+    SchemeObject* r = S_EMPTY_LIST;
+    for(uint32_t i = 0; i < vec.size(); i++) {
+	r = i_cons(vec[vec.size()-1-i],r);
+    }
+    return r;
+}
+
+SchemeObject* s_remv(SchemeObject* obj, SchemeObject* list) {
+    vector<SchemeObject*> vec;
+    while(list != S_EMPTY_LIST) {
+	if (s_eqv_p(obj, i_car(list)) == S_FALSE)  {
+	    vec.push_back(i_car(list));
+	}
+	list = i_cdr(list);
+    }
+    SchemeObject* r = S_EMPTY_LIST;
+    for(uint32_t i = 0; i < vec.size(); i++) {
+	r = i_cons(vec[vec.size()-1-i],r);
+    }
+    return r;
+}
+
+SchemeObject* s_remq(SchemeObject* obj, SchemeObject* list) {
+    vector<SchemeObject*> vec;
+    while(list != S_EMPTY_LIST) {
+	if (s_eq_p(obj, i_car(list)) == S_FALSE)  {
+	    vec.push_back(i_car(list));
+	}
+	list = i_cdr(list);
+    }
+    SchemeObject* r = S_EMPTY_LIST;
+    for(uint32_t i = 0; i < vec.size(); i++) {
+	r = i_cons(vec[vec.size()-1-i],r);
+    }
+    return r;
+}
+
 inline
 SchemeObject* member_helper(SchemeObject* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
     while (i_null_p(p) == S_FALSE) {
@@ -293,6 +353,10 @@ void R6RSLibLists::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"partition"       ,2,0,0, (SchemeObject* (*)()) s_partition, envt);
     scheme->assign(L"fold-left"       ,3,0,1, (SchemeObject* (*)()) s_fold_left, envt);
     scheme->assign(L"fold-right"      ,3,0,1, (SchemeObject* (*)()) s_fold_right, envt);
+    scheme->assign(L"remp"            ,2,0,0, (SchemeObject* (*)()) s_remp, envt);
+    scheme->assign(L"remove"          ,2,0,0, (SchemeObject* (*)()) s_remove, envt);
+    scheme->assign(L"remq"            ,2,0,0, (SchemeObject* (*)()) s_remq, envt);
+    scheme->assign(L"remv"            ,2,0,0, (SchemeObject* (*)()) s_remv, envt);
     scheme->assign(L"memp"            ,2,0,0, (SchemeObject* (*)()) s_memp, envt);
     scheme->assign(L"member"          ,2,0,0, (SchemeObject* (*)()) s_member, envt);
     scheme->assign(L"memq"            ,2,0,0, (SchemeObject* (*)()) s_memq, envt);
