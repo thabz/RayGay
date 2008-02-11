@@ -345,6 +345,7 @@ SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o);
 SchemeObject* s_append(int num, SchemeStack::iterator stack);
 SchemeObject* s_reverse(SchemeObject* l);
 SchemeObject* s_length(SchemeObject* l);
+int64_t       i_length(SchemeObject* p);
 SchemeObject* s_list(int num, SchemeStack::iterator stack);
 SchemeObject* s_list_tail(SchemeObject* l, SchemeObject* k);
 SchemeObject* s_list_ref(SchemeObject* l, SchemeObject* k);

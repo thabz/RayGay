@@ -21,6 +21,7 @@
 #include "r6rs-lib-arithmetic.h"
 #include "r6rs-lib-sorting.h"
 #include "r6rs-lib-lists.h"
+#include "r6rs-lib-hashtables.h"
 
 scheme_exception::scheme_exception(wstring s) : str(s), procname(NULL) {
 }
@@ -337,9 +338,10 @@ Scheme::Scheme() {
         heap->addRoot(unnamed_symbol);
         
         LibNumbers::bind(this, scheme_report_environment);
-	R6RSLibArithmetic::bind(this, scheme_report_environment);
-	R6RSLibSorting::bind(this, scheme_report_environment);
-	R6RSLibLists::bind(this, scheme_report_environment);
+	    R6RSLibArithmetic::bind(this, scheme_report_environment);
+	    R6RSLibSorting::bind(this, scheme_report_environment);
+	    R6RSLibLists::bind(this, scheme_report_environment);
+        R6RSLibHashtables::bind(this, scheme_report_environment);
         
         eval(L"(define-macro (values . x) `(list ,@x))", scheme_report_environment);
         eval(L"(define-macro (call-with-values f g)  `(apply ,g (,f)))", scheme_report_environment);
@@ -824,14 +826,18 @@ SchemeObject* s_reverse(SchemeObject* o)
     return result;  
 }
 
-SchemeObject* s_length(SchemeObject* p) {
-    int length = 0;
+int64_t i_length(SchemeObject* p) {
+    int64_t length = 0;
     while (p != S_EMPTY_LIST) {
         assert_arg_pair_type(L"length", 1, p);
         length++;
         p = i_cdr(p);
     }
-    return int2scm(length);
+    return length;
+}
+
+SchemeObject* s_length(SchemeObject* p) {
+    return int2scm(i_length(p));
 }
 
 SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o) {

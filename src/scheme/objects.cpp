@@ -258,10 +258,10 @@ SchemeObject* SchemeObject::createWrappedCObject(int subtype, SchemeWrappedCObje
     return result;
 }
 
-SchemeObject* SchemeObject::createHashtable(hashtable_type* hash, SchemeObject* hash_func, SchemeObject* equiv) {
+SchemeObject* SchemeObject::createHashtable(SchemeObject* buckets, SchemeObject* hash_func, SchemeObject* equiv_func) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::HASHTABLE);
-    result->hashtable = hash;
-    result->s_hashtable_data = i_cons(hash_func, equiv);
+    result->buckets = buckets;
+    result->s_hashtable_funcs = i_cons(hash_func, equiv_func);
     return result;
 }
 
@@ -338,6 +338,10 @@ void SchemeObject::mark() {
                 break;
             case SchemeObject::WRAPPED_C_OBJECT :
                 wrapped_object->mark();
+                break;
+            case SchemeObject::HASHTABLE :
+                buckets->mark();
+                s_hashtable_funcs->mark();
                 break;
             default:
                 break;        

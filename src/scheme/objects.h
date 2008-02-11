@@ -88,7 +88,7 @@ class SchemeObject
                     SchemeObject* real;    // For complex numbers
                     SchemeObject* numerator;// For rational numbers
                     int32_t wrapped_subtype;// For wrapped C-objects
-                    hashtable_type* hashtable;  // For hashtables
+                    SchemeObject* buckets;  // For hashtables
                 };
                 union {
                     SchemeObject* cdr;      // For pairs
@@ -98,7 +98,7 @@ class SchemeObject
 		            SchemeObject* binding_list; // For simple environments 
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
-                    SchemeObject* s_hashtable_data;   // For HASHTABLE (hash_func . equiv)
+                    SchemeObject* s_hashtable_funcs;   // For HASHTABLE (hash_func . equiv_func)
                     SchemeObject* imag;    // For complex numbers
                     SchemeObject* denominator;// For rational numbers
                     SchemeWrappedCObject* wrapped_object; // For wrapped C-objects
@@ -212,7 +212,7 @@ class SchemeObject
         static SchemeObject* createInternalProcedure(const wchar_t* name);
         static SchemeObject* createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
         static SchemeObject* createWrappedCObject(int subtype, SchemeWrappedCObject*);
-        static SchemeObject* createHashtable(hashtable_type* hash, SchemeObject* hash_func, SchemeObject* equiv);
+        static SchemeObject* createHashtable(SchemeObject* buckets, SchemeObject* hash_func, SchemeObject* equiv_func);
         
         // For stats
         static wstring toString(ObjectType type);
