@@ -59,8 +59,7 @@ SchemeObject* s_hashtable_set_e(SchemeObject* hashtable, SchemeObject* key, Sche
         }
         bucket = i_cdr(bucket);
     }
-    bucket_begin = i_cons(i_cons(key,obj), bucket_begin);
-    hashtable->buckets->elems[hash] = bucket_begin;
+    hashtable->buckets->elems[hash] = i_cons(i_cons(key,obj), bucket_begin);
     return S_UNSPECIFIED;
 }
 
@@ -76,6 +75,7 @@ SchemeObject* s_hashtable_ref(SchemeObject* hashtable, SchemeObject* key, Scheme
         if (myscheme->callProcedure_2(equiv_func, key, i_car(entry)) != S_FALSE) {
             return i_cdr(entry);
         }
+        bucket = i_cdr(bucket);
     }
     return defaul;
 }
@@ -96,6 +96,7 @@ SchemeObject* s_hashtable_contains_p(SchemeObject* hashtable, SchemeObject* key)
         if (myscheme->callProcedure_2(equiv_func, key, i_car(entry)) != S_FALSE) {
             return S_TRUE;
         }
+        bucket = i_cdr(bucket);
     }
     return S_FALSE;
 }

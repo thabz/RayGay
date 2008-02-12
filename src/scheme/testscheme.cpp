@@ -1630,7 +1630,7 @@ void test_lib_lists() {
 int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("Parser", new test_parser());
- //   suite.add("Bigint", new test_bigint());
+    suite.add("Bigint", new test_bigint());
     suite.add("Vector", new test_vector());
     suite.run();
     suite.printStatus();
