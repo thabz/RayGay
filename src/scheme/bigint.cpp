@@ -486,7 +486,7 @@ void bigint::normalize()
 
 // To get a specific number of digits we pad with zeroes on the left
 void bigint::resize(int32_t new_digits_num) {
-    cout << "Resizing: " << new_digits_num << endl;
+    //cout << "Resizing: " << new_digits_num << endl;
     assert(new_digits_num > 0);
     digits.resize(new_digits_num, 0);        
 }
