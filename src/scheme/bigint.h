@@ -96,7 +96,7 @@ uint32_t bigint::size() const {
 inline
 uint32_t bigint::exp() const {
     int i = size()-1;
-    while (digits[i] == 0 && i >= 0) i--;
+    while (digits[i] == 0 && i > 0) i--;
     return i;
 }
 
