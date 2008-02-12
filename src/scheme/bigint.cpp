@@ -486,6 +486,7 @@ void bigint::normalize()
 
 // To get a specific number of digits we pad with zeroes on the left
 void bigint::resize(int32_t new_digits_num) {
+    cout << "Resizing: " << new_digits_num << endl;
     assert(new_digits_num > 0);
     digits.resize(new_digits_num, 0);        
 }
@@ -508,7 +509,7 @@ ostream & operator<<(ostream &os, const bigint &b) {
 
 bigint bigint::times_two() const {
     bigint r = *this;
-    for(uint32_t i = r.size()-1; i >= 0; i--) {
+    for(int32_t i = r.size()-1; i >= 0; i--) {
         r.digits[i] <<= 1;
         if (r.digits[i] >=  RADIX) {
             if (i+1 >= r.size()) {
