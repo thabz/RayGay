@@ -28,7 +28,7 @@ struct R6RSLibHashtables {
 #define assert_arg_mutable_hashtable_type(procname, argnum, arg) {     \
     if (i_hashtable_p(arg) == S_FALSE || (arg)->immutable()) {                       \
         wostringstream ss;                                 \
-        ss << "Wrong argument-type (expecting pair) in position ";         \
+        ss << "Wrong argument-type (expecting mutable hashtable) in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << wstring(procname);                           \

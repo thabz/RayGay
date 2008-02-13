@@ -202,6 +202,35 @@ SchemeObject* s_hashtable_entries(SchemeObject* hashtable) {
     return i_cons(keys,i_cons(values,S_EMPTY_LIST));
 }
 
+SchemeObject* s_hashtable_copy(SchemeObject* hashtable, SchemeObject* mutab) {
+    assert_arg_hashtable_type(L"hashtable-copy", 1, hashtable);
+
+    SchemeObject* hash_func  = i_car(hashtable->s_hashtable_funcs);
+    SchemeObject* equiv_func = i_cdr(hashtable->s_hashtable_funcs);
+    SchemeObject* buckets = hashtable->buckets;
+
+    SchemeObject* copy = s_make_hashtable(hash_func, equiv_func, int2scm(buckets->length));
+
+    // Copy the buckets
+    // Note: The copy-buckets are reversed.
+    for(int32_t i = 0; i < buckets->length; i++) {
+        SchemeObject* bucket = buckets->elems[i];
+	SchemeObject* bucket_copy = S_EMPTY_LIST;
+        while (bucket != S_EMPTY_LIST) {
+            SchemeObject* e = i_car(bucket);
+	    bucket_copy = i_cons(i_cons(i_car(e),i_cdr(e)), bucket_copy);
+            bucket = i_cdr(bucket);
+        }
+	copy->buckets->elems[i] = bucket_copy;
+    }
+
+    // Set the immutable flag
+    if (mutab == S_UNSPECIFIED || mutab == S_FALSE) {
+	copy->set_immutable(true);
+    }
+    return copy;
+}
+
 
 SchemeObject* s_hashtable_equivalence_function(SchemeObject* hashtable) {
     assert_arg_hashtable_type(L"hashtable-equivalence-function", 1, hashtable);
@@ -293,6 +322,7 @@ void R6RSLibHashtables::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"hashtable-update!"    ,4,0,0, (SchemeObject* (*)()) s_hashtable_update_e, envt);
     scheme->assign(L"hashtable-contains?"  ,2,0,0, (SchemeObject* (*)()) s_hashtable_contains_p, envt);
     scheme->assign(L"hashtable-clear!"     ,1,1,0, (SchemeObject* (*)()) s_hashtable_clear_e, envt);
+    scheme->assign(L"hashtable-copy"       ,1,1,0, (SchemeObject* (*)()) s_hashtable_copy, envt);
     scheme->assign(L"hashtable-keys"       ,1,0,0, (SchemeObject* (*)()) s_hashtable_keys, envt);
     scheme->assign(L"hashtable-entries"    ,1,0,0, (SchemeObject* (*)()) s_hashtable_entries, envt);
     scheme->assign(L"hashtable-equivalence-function",1,0,0, (SchemeObject* (*)()) s_hashtable_equivalence_function, envt);
