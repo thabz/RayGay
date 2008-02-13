@@ -273,6 +273,17 @@ uint32_t string_ci_hash(std::wstring str) {
     return h;
 }
 
+uint32_t pointer_hash(void* ptr) {
+    int32_t h = int32_t(ptr);
+    h ^= h << 3;
+    h += h >> 5;
+    h ^= h << 4;
+    h += h >> 17;
+    h ^= h << 25;
+    h += h >> 6;
+    return (h < 0) ? -h : h;
+}
+
 SchemeObject* s_string_hash(SchemeObject* o) {
     assert_arg_string_type(L"string-hash", 1, o);
     // TODO: Mangle the results
@@ -287,7 +298,7 @@ SchemeObject* s_string_ci_hash(SchemeObject* o) {
 
 SchemeObject* s_symbol_hash(SchemeObject* o) {
     assert_arg_symbol_type(L"symbol-hash", 1, o);
-    return int2scm(int(string_hash(o->str)));
+    return uint2scm(pointer_hash(o));
 }
 
 SchemeObject* s_equal_hash(SchemeObject* o) {
@@ -298,6 +309,7 @@ SchemeObject* s_equal_hash(SchemeObject* o) {
 	    int64_t v = scm2int(o);
 	    result = v^(v >> 32);
     } else if (t == SchemeObject::PAIR) {
+        // TODO: Recursion will kill stack on big lists
         return int2scm(scm2int(s_equal_hash(i_car(o))) + 37 * scm2int(s_equal_hash(i_cdr(o))));    
     } else if (o == S_EMPTY_LIST) {
         return int2scm(9873);
@@ -311,20 +323,19 @@ SchemeObject* s_equal_hash(SchemeObject* o) {
     } else {
         result = string_hash(o->toString());
     }
-    return int2scm(result);
+    return uint2scm(result);
 }
 
 SchemeObject* s_eq_hash(SchemeObject* o) {
-    // TODO: Mangle the address of o
-    return int2scm(uint64_t(o));
+    return uint2scm(pointer_hash(o));
 }
 
 SchemeObject* s_eqv_hash(SchemeObject* o) {
     // TODO: Also make hashes for other numerical types, bools and chars
     if (o->type() == SchemeObject::INTEGER_NUMBER) {
-	return o;
+	    return o;
     } else {
-	return int2scm(uint64_t(o));
+	    return uint2scm(pointer_hash(o));
     }
 }
 
