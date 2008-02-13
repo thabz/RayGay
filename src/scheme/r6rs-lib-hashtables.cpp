@@ -255,6 +255,14 @@ uint32_t string_hash(std::wstring str) {
     return h;
 }
 
+uint32_t string_ci_hash(std::wstring str) {
+    uint32_t h = 1;
+    for(uint32_t i = 0; i < str.size(); i++) {
+        h *= ::towlower(str[i]) + 37;
+    }
+    return h;
+}
+
 SchemeObject* s_string_hash(SchemeObject* o) {
     assert_arg_type(L"string-hash", 1, s_string_p, o);
     // TODO: Mangle the results
@@ -263,7 +271,8 @@ SchemeObject* s_string_hash(SchemeObject* o) {
 
 SchemeObject* s_string_ci_hash(SchemeObject* o) {
     assert_arg_type(L"string-ci-hash", 1, s_string_p, o);
-    throw scheme_exception(L"Not implemented");
+    // TODO: Mangle the results
+    return int2scm(int(string_ci_hash(o->str)));
 }
 
 SchemeObject* s_symbol_hash(SchemeObject* o) {
