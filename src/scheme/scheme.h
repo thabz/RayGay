@@ -92,6 +92,30 @@ class scheme_exception {
     }                                                     \
 }
 
+#define assert_arg_string_type(procname, argnum, arg) {     \
+    if (i_string_p(arg) == S_FALSE) {                       \
+        wostringstream ss;                                 \
+        ss << "Wrong argument-type (expecting string) in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << wstring(procname);                           \
+        ss << ": " << (arg)->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
+#define assert_arg_symbol_type(procname, argnum, arg) {     \
+    if (i_symbol_p(arg) == S_FALSE) {                       \
+        wostringstream ss;                                 \
+        ss << "Wrong argument-type (expecting symbol) in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << wstring(procname);                           \
+        ss << ": " << (arg)->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
 #define assert_arg_procedure_type(procname, argnum, arg) {     \
     if (i_procedure_p(arg) == S_FALSE) {                       \
         wostringstream ss;                                 \
@@ -141,22 +165,9 @@ class scheme_exception {
     }                                                     \
 }
 
-#define assert_arg_symbol_type(procname, argnum, arg) {   \
-    if (s_symbol_p(arg) == S_FALSE) {                     \
-        wostringstream ss;                                 \
-        ss << "Wrong argument-type (expecting symbol) in position ";         \
-        ss << argnum;                                     \
-        ss << " in call to ";                             \
-        ss << procname;                                   \
-        ss << ": " << (arg)->toString();                  \
-        throw scheme_exception(ss.str());                 \
-    }                                                     \
-}
-
-
 #define assert_arg_int_in_range(procname, argnum, arg, from, to) {    \
     assert_arg_type(procname, argnum, s_integer_p, arg);              \
-    int n = scm2int(arg);                                             \
+    int64_t n = scm2int(arg);                                             \
     if (n < from || n > to) {                                         \
         wostringstream ss;                                             \
         ss << "Integer out of range [" << from << ".." << to;        \
@@ -253,6 +264,7 @@ extern SchemeObject* S_NUMBERS[];
 #define cstr2scm(s)     (SchemeObject::createString(s))
 #define char2scm(c)     (SchemeObject::createChar(c))
 #define int2scm(n)      (((n) < 10 && (n) >= 0) ? S_NUMBERS[n] : SchemeObject::createIntegerNumber(n))
+#define uint2scm(n)     (((n) < 10) ? S_NUMBERS[n] : SchemeObject::createIntegerNumber(n))
 #define complex2scm(n)  (SchemeObject::createComplexNumber(n))
 #define rational2scm(n) (SchemeObject::createRationalNumber(n))
 #define double2scm(n)   (SchemeObject::createRealNumber(n))

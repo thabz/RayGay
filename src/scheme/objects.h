@@ -30,6 +30,7 @@ typedef int hashtable_type;
 #define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
 #define i_char_p(o)      ((o)->type() == SchemeObject::CHAR ? S_TRUE : S_FALSE)
 #define i_symbol_p(o)    ((o)->type() == SchemeObject::SYMBOL ? S_TRUE : S_FALSE)
+#define i_string_p(o)    ((o)->type() == SchemeObject::STRING ? S_TRUE : S_FALSE)
 #define i_vector_p(o)    ((o)->type() == SchemeObject::VECTOR ? S_TRUE : S_FALSE)
 #define i_hashtable_p(o)    ((o)->type() == SchemeObject::HASHTABLE ? S_TRUE : S_FALSE)
 #define i_number_p(o)    ((o)->type() < SchemeObject::NUMBERS_ARE_BEFORE_HERE ? S_TRUE : S_FALSE)

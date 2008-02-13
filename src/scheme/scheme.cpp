@@ -986,20 +986,20 @@ SchemeObject* s_string(int num, SchemeStack::iterator args) {
 }
 
 SchemeObject* s_string_length(SchemeObject* s) {
-    assert_arg_type(L"string-length", 1, s_string_p, s);
+    assert_arg_string_type(L"string-length", 1, s);
     int len = s->length;
     return int2scm(len);
 }
 
 SchemeObject* s_string_ref(SchemeObject* s, SchemeObject* i) {
-    assert_arg_type(L"string-ref", 1, s_string_p, s);
+    assert_arg_string_type(L"string-ref", 1, s);
     assert_arg_int_in_range(L"string-ref", 2, i, 0, s->length-1);
     int index = scm2int(i);
     return char2scm(s->str[index]);
 }	
 
 SchemeObject* s_string_set_e(SchemeObject* s, SchemeObject* i, SchemeObject* chr) {
-    assert_arg_type(L"string-set!", 1, s_string_p, s);
+    assert_arg_string_type(L"string-set!", 1, s);
     assert_arg_type(L"string-set!", 3, s_char_p, chr);
     assert_arg_not_immutable(L"string-set!", 1, s);
     assert_arg_int_in_range(L"string-set!", 2, i, 0, s->length-1);
@@ -1008,7 +1008,7 @@ SchemeObject* s_string_set_e(SchemeObject* s, SchemeObject* i, SchemeObject* chr
 }
 
 SchemeObject* s_symbol_2_string(SchemeObject* symbol) {
-    assert_arg_type(L"symbol->string", 1, s_symbol_p, symbol);
+    assert_arg_symbol_type(L"symbol->string", 1, symbol);
     SchemeObject* result = SchemeObject::createString(symbol->str);
     // TODO: String constructor shouldn't strdup the string. Just reuse point.
     // That's why we mark it immutable.
@@ -1017,28 +1017,28 @@ SchemeObject* s_symbol_2_string(SchemeObject* symbol) {
 }
 
 SchemeObject* s_string_2_symbol(SchemeObject* s) {
-    assert_arg_type(L"string->symbol", 1, s_string_p, s);
+    assert_arg_string_type(L"string->symbol", 1, s);
     return SchemeObject::createSymbol(s->str);
 }
 
 SchemeObject* s_string_append(int num, SchemeStack::iterator args) {
     wstring result = L"";
     for(int i = 0; i < num; i++, args++) {
-        assert_arg_type(L"string-append", i+1, s_string_p, *args);
+        assert_arg_string_type(L"string-append", i+1, *args);
         result += scm2string(*args);
     }
     return string2scm(result);
 }
 
 SchemeObject* s_string_copy(SchemeObject* str) {
-    assert_arg_type(L"string-copy", 1, s_string_p, str);
+    assert_arg_string_type(L"string-copy", 1, str);
     return cstr2scm(str->str);
 }
 
 SchemeObject* s_substring(SchemeObject* s_str, SchemeObject* s_start, SchemeObject* s_end) {
-    assert_arg_type(L"substring", 1, s_string_p, s_str);
-    assert_arg_type(L"substring", 2, s_integer_p, s_start);
-    assert_arg_type(L"substring", 3, s_integer_p, s_end);
+    assert_arg_string_type(L"substring", 1, s_str);
+    assert_arg_positive_int(L"substring", 2, s_start);
+    assert_arg_positive_int(L"substring", 3, s_end);
     wstring str = scm2string(s_str);
     int start = scm2int(s_start);
     int end = scm2int(s_end);
@@ -1077,7 +1077,7 @@ SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base_s) {
 }
 
 SchemeObject* s_string_2_number(SchemeObject* s_string, SchemeObject* base_s) {
-    assert_arg_type(L"string->number", 1, s_string_p, s_string);
+    assert_arg_string_type(L"string->number", 1, s_string);
     int base = 10;
     if (base_s != S_UNSPECIFIED) {
         assert_arg_type(L"string->number", 2, s_integer_p, base_s);
@@ -1153,7 +1153,7 @@ SchemeObject* s_char_upper_case_p(SchemeObject* c) {
 }
 
 SchemeObject* s_char_lower_case_p(SchemeObject* c) {
-    assert_arg_type(L"char-lower_case?", 1, s_char_p, c);
+    assert_arg_type(L"char-lower-case?", 1, s_char_p, c);
     return bool2scm(islower(scm2char(c)));
 }
 

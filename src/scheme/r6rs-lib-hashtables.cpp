@@ -1,11 +1,15 @@
 
 #include "r6rs-lib-hashtables.h"
+#include "numbers.h";
 
 using namespace std;
 
 Scheme* myscheme;
 
 SchemeObject* s_make_hashtable(SchemeObject* hash_func, SchemeObject* equiv_func, SchemeObject* k) {
+    if (k != S_UNSPECIFIED) {
+        assert_arg_positive_int(L"make-hashtable",1,k);
+    }
     int64_t size;
     if (k == S_UNSPECIFIED) {
         size = 256;
@@ -17,12 +21,18 @@ SchemeObject* s_make_hashtable(SchemeObject* hash_func, SchemeObject* equiv_func
 }
 
 SchemeObject* s_make_eq_hashtable(SchemeObject* k) {
+    if (k != S_UNSPECIFIED) {
+        assert_arg_positive_int(L"make-eq-hashtable",1,k);
+    }
     SchemeObject* equiv_func = myscheme->lookup(L"eq?");
     SchemeObject* hash_func = myscheme->lookup(L"eq-hash");
     return s_make_hashtable(hash_func, equiv_func, k);
 }
 
 SchemeObject* s_make_eqv_hashtable(SchemeObject* k) {
+    if (k != S_UNSPECIFIED) {
+        assert_arg_positive_int(L"make-eqv-hashtable",1,k);
+    }
     SchemeObject* equiv_func = myscheme->lookup(L"eqv?");
     SchemeObject* hash_func = myscheme->lookup(L"eqv-hash");
     return s_make_hashtable(hash_func, equiv_func, k);
@@ -183,7 +193,7 @@ SchemeObject* s_hashtable_keys(SchemeObject* hashtable) {
 }
 
 SchemeObject* s_hashtable_entries(SchemeObject* hashtable) {
-    assert_arg_hashtable_type(L"hashtable-clear!", 1, hashtable);
+    assert_arg_hashtable_type(L"hashtable-entries", 1, hashtable);
     int64_t entries_num = i_hashtable_size(hashtable);
     SchemeObject* keys = i_make_vector(entries_num, S_UNSPECIFIED);
     SchemeObject* values = i_make_vector(entries_num, S_UNSPECIFIED);
@@ -199,7 +209,7 @@ SchemeObject* s_hashtable_entries(SchemeObject* hashtable) {
             bucket = i_cdr(bucket);
         }
     }
-    return i_cons(keys,i_cons(values,S_EMPTY_LIST));
+    return i_list_2(keys,values);
 }
 
 SchemeObject* s_hashtable_copy(SchemeObject* hashtable, SchemeObject* mutab) {
@@ -264,19 +274,19 @@ uint32_t string_ci_hash(std::wstring str) {
 }
 
 SchemeObject* s_string_hash(SchemeObject* o) {
-    assert_arg_type(L"string-hash", 1, s_string_p, o);
+    assert_arg_string_type(L"string-hash", 1, o);
     // TODO: Mangle the results
     return int2scm(int(string_hash(o->str)));
 }
 
 SchemeObject* s_string_ci_hash(SchemeObject* o) {
-    assert_arg_type(L"string-ci-hash", 1, s_string_p, o);
+    assert_arg_string_type(L"string-ci-hash", 1, o);
     // TODO: Mangle the results
     return int2scm(int(string_ci_hash(o->str)));
 }
 
 SchemeObject* s_symbol_hash(SchemeObject* o) {
-    assert_arg_type(L"symbol-hash", 1, s_symbol_p, o);
+    assert_arg_symbol_type(L"symbol-hash", 1, o);
     return int2scm(int(string_hash(o->str)));
 }
 
@@ -285,14 +295,14 @@ SchemeObject* s_equal_hash(SchemeObject* o) {
     SchemeObject::ObjectType t = o->type();
     uint32_t result;
     if (t == SchemeObject::INTEGER_NUMBER) {
-	int64_t v = scm2int(o);
-	result = v^(v >> 32);
+	    int64_t v = scm2int(o);
+	    result = v^(v >> 32);
     } else if (t == SchemeObject::PAIR) {
         return int2scm(scm2int(s_equal_hash(i_car(o))) + 37 * scm2int(s_equal_hash(i_cdr(o))));    
     } else if (o == S_EMPTY_LIST) {
         return int2scm(9873);
     } else if (t == SchemeObject::BOOL) {
-	// As per Java
+	    // As per Java
         result = o == S_TRUE ? 1231 : 1237;
     } else if (t == SchemeObject::STRING) {
         return s_string_hash(o);    
