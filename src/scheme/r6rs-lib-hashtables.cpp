@@ -5,14 +5,6 @@ using namespace std;
 
 Scheme* myscheme;
 
-SchemeObject* s_make_eq_hashtable(SchemeObject* k) {
-    return NULL;
-}
-
-SchemeObject* s_make_eqv_hashtable(SchemeObject* k) {
-    return NULL;
-}
-
 SchemeObject* s_make_hashtable(SchemeObject* hash_func, SchemeObject* equiv_func, SchemeObject* k) {
     int64_t size;
     if (k == S_UNSPECIFIED) {
@@ -22,6 +14,18 @@ SchemeObject* s_make_hashtable(SchemeObject* hash_func, SchemeObject* equiv_func
     }
     SchemeObject* buckets = i_make_vector(size, S_EMPTY_LIST);
     return SchemeObject::createHashtable(buckets, hash_func, equiv_func);
+}
+
+SchemeObject* s_make_eq_hashtable(SchemeObject* k) {
+    SchemeObject* equiv_func = myscheme->lookup(L"eq?");
+    SchemeObject* hash_func = myscheme->lookup(L"eq-hash");
+    return s_make_hashtable(hash_func, equiv_func, k);
+}
+
+SchemeObject* s_make_eqv_hashtable(SchemeObject* k) {
+    SchemeObject* equiv_func = myscheme->lookup(L"eqv?");
+    SchemeObject* hash_func = myscheme->lookup(L"eqv-hash");
+    return s_make_hashtable(hash_func, equiv_func, k);
 }
 
 SchemeObject* s_hashtable_p(SchemeObject* o) {
@@ -224,6 +228,7 @@ uint32_t string_hash(std::wstring str) {
 
 SchemeObject* s_string_hash(SchemeObject* o) {
     assert_arg_type(L"string-hash", 1, s_string_p, o);
+    // TODO: Mangle the results
     return int2scm(int(string_hash(o->str)));
 }
 
@@ -238,6 +243,7 @@ SchemeObject* s_symbol_hash(SchemeObject* o) {
 }
 
 SchemeObject* s_equal_hash(SchemeObject* o) {
+    // TODO: Mangle the results
     SchemeObject::ObjectType t = o->type();
     if (t == SchemeObject::INTEGER_NUMBER) {
         return o;
@@ -252,11 +258,30 @@ SchemeObject* s_equal_hash(SchemeObject* o) {
     } else {
         return int2scm(int(string_hash(o->toString())));
     }
-    return NULL;
+}
+
+SchemeObject* s_eq_hash(SchemeObject* o) {
+    // TODO: Mangle the address of o
+    return int2scm(uint64_t(o));
+}
+
+SchemeObject* s_eqv_hash(SchemeObject* o) {
+    // TODO: Also make hashes for other numerical types and chars
+    if (o->type() == SchemeObject::INTEGER_NUMBER) {
+	return o;
+    } else {
+	return int2scm(uint64_t(o));
+    }
 }
 
 void R6RSLibHashtables::bind(Scheme* scheme, SchemeObject* envt) {
     myscheme = scheme;
+    scheme->assign(L"eq-hash"              ,1,0,0, (SchemeObject* (*)()) s_eq_hash, envt);
+    scheme->assign(L"eqv-hash"             ,1,0,0, (SchemeObject* (*)()) s_eqv_hash, envt);
+    scheme->assign(L"equal-hash"           ,1,0,0, (SchemeObject* (*)()) s_equal_hash, envt);
+    scheme->assign(L"string-hash"          ,1,0,0, (SchemeObject* (*)()) s_string_hash, envt);
+    scheme->assign(L"string-ci-hash"       ,1,0,0, (SchemeObject* (*)()) s_string_ci_hash, envt);
+    scheme->assign(L"symbol-hash"          ,1,0,0, (SchemeObject* (*)()) s_symbol_hash, envt);
     scheme->assign(L"make-eq-hashtable"    ,0,1,0, (SchemeObject* (*)()) s_make_eq_hashtable, envt);
     scheme->assign(L"make-eqv-hashtable"   ,0,1,0, (SchemeObject* (*)()) s_make_eqv_hashtable, envt);
     scheme->assign(L"make-hashtable"       ,2,1,0, (SchemeObject* (*)()) s_make_hashtable, envt);
@@ -273,8 +298,4 @@ void R6RSLibHashtables::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"hashtable-equivalence-function",1,0,0, (SchemeObject* (*)()) s_hashtable_equivalence_function, envt);
     scheme->assign(L"hashtable-hash-function",1,0,0, (SchemeObject* (*)()) s_hashtable_hash_function, envt);
     scheme->assign(L"hashtable-mutable?"   ,1,0,0, (SchemeObject* (*)()) s_hashtable_mutable_p, envt);
-    scheme->assign(L"equal-hash"           ,1,0,0, (SchemeObject* (*)()) s_equal_hash, envt);
-    scheme->assign(L"string-hash"          ,1,0,0, (SchemeObject* (*)()) s_string_hash, envt);
-    scheme->assign(L"string-ci-hash"       ,1,0,0, (SchemeObject* (*)()) s_string_ci_hash, envt);
-    scheme->assign(L"symbol-hash"          ,1,0,0, (SchemeObject* (*)()) s_symbol_hash, envt);
 }
