@@ -80,9 +80,53 @@ SchemeObject* s_hashtable_ref(SchemeObject* hashtable, SchemeObject* key, Scheme
     return defaul;
 }
 
+SchemeObject* s_hashtable_update_e(SchemeObject* hashtable, SchemeObject* key, SchemeObject* proc, SchemeObject* defaul) {
+    assert_arg_mutable_hashtable_type(L"hashtable-update!", 1, hashtable);
+    SchemeObject* hash_func  = i_car(hashtable->s_hashtable_funcs);
+    SchemeObject* equiv_func = i_cdr(hashtable->s_hashtable_funcs);
+    SchemeObject* s_hash = myscheme->callProcedure_1(hash_func, key);
+    int64_t buckets_num = hashtable->buckets->length;
+    int64_t hash = scm2int(s_hash) % buckets_num;
+    SchemeObject* bucket_begin = hashtable->buckets->elems[hash];
+    SchemeObject* bucket = bucket_begin;
+    while (bucket != S_EMPTY_LIST) {
+        SchemeObject* entry = i_car(bucket);
+        if (myscheme->callProcedure_2(equiv_func, key, i_car(entry)) != S_FALSE) {
+	    SchemeObject* new_val = myscheme->callProcedure_1(proc, i_cdr(entry));
+            i_set_cdr_e(entry, new_val);
+            return S_UNSPECIFIED;
+        }
+        bucket = i_cdr(bucket);
+    }
+    SchemeObject* val = myscheme->callProcedure_1(proc, defaul);
+    hashtable->buckets->elems[hash] = i_cons(i_cons(key,val), bucket_begin);
+    return S_UNSPECIFIED;
+}
+
 SchemeObject* s_hashtable_delete_e(SchemeObject* hashtable, SchemeObject* key) {
     assert_arg_mutable_hashtable_type(L"hashtable-delete!", 1, hashtable);
-    throw scheme_exception(L"Not implemented yet");
+    SchemeObject* hash_func  = i_car(hashtable->s_hashtable_funcs);
+    SchemeObject* equiv_func = i_cdr(hashtable->s_hashtable_funcs);
+    SchemeObject* s_hash = myscheme->callProcedure_1(hash_func, key);
+    int64_t buckets_num = hashtable->buckets->length;
+    int64_t hash = scm2int(s_hash) % buckets_num;
+    SchemeObject* bucket_begin = hashtable->buckets->elems[hash];
+    SchemeObject* bucket = bucket_begin;
+    SchemeObject* prev = S_FALSE;
+    while (bucket != S_EMPTY_LIST) {
+        SchemeObject* entry = i_car(bucket);
+        if (myscheme->callProcedure_2(equiv_func, key, i_car(entry)) != S_FALSE) {
+	    if (prev != S_FALSE) {
+		i_set_cdr_e(prev, i_cdr(bucket));
+	    } else {
+		hashtable->buckets->elems[hash] = i_cdr(bucket);
+	    }
+	    return S_UNSPECIFIED;
+        }
+	prev = bucket;
+        bucket = i_cdr(bucket);
+    }
+    return S_UNSPECIFIED;
 }
 
 SchemeObject* s_hashtable_contains_p(SchemeObject* hashtable, SchemeObject* key) {
@@ -180,7 +224,7 @@ uint32_t string_hash(std::wstring str) {
 
 SchemeObject* s_string_hash(SchemeObject* o) {
     assert_arg_type(L"string-hash", 1, s_string_p, o);
-    return int2scm(string_hash(o->str));
+    return int2scm(int(string_hash(o->str)));
 }
 
 SchemeObject* s_string_ci_hash(SchemeObject* o) {
@@ -190,7 +234,7 @@ SchemeObject* s_string_ci_hash(SchemeObject* o) {
 
 SchemeObject* s_symbol_hash(SchemeObject* o) {
     assert_arg_type(L"symbol-hash", 1, s_symbol_p, o);
-    return int2scm(string_hash(o->str));
+    return int2scm(int(string_hash(o->str)));
 }
 
 SchemeObject* s_equal_hash(SchemeObject* o) {
@@ -206,7 +250,7 @@ SchemeObject* s_equal_hash(SchemeObject* o) {
     } else if (t == SchemeObject::SYMBOL) {
         return s_symbol_hash(o);    
     } else {
-        return int2scm(string_hash(o->toString()));
+        return int2scm(int(string_hash(o->toString())));
     }
     return NULL;
 }
@@ -221,6 +265,7 @@ void R6RSLibHashtables::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"hashtable-ref"        ,3,0,0, (SchemeObject* (*)()) s_hashtable_ref, envt);
     scheme->assign(L"hashtable-set!"       ,3,0,0, (SchemeObject* (*)()) s_hashtable_set_e, envt);
     scheme->assign(L"hashtable-delete!"    ,2,0,0, (SchemeObject* (*)()) s_hashtable_delete_e, envt);
+    scheme->assign(L"hashtable-update!"    ,4,0,0, (SchemeObject* (*)()) s_hashtable_update_e, envt);
     scheme->assign(L"hashtable-contains?"  ,2,0,0, (SchemeObject* (*)()) s_hashtable_contains_p, envt);
     scheme->assign(L"hashtable-clear!"     ,1,1,0, (SchemeObject* (*)()) s_hashtable_clear_e, envt);
     scheme->assign(L"hashtable-keys"       ,1,0,0, (SchemeObject* (*)()) s_hashtable_keys, envt);
