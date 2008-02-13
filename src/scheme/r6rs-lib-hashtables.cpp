@@ -283,19 +283,25 @@ SchemeObject* s_symbol_hash(SchemeObject* o) {
 SchemeObject* s_equal_hash(SchemeObject* o) {
     // TODO: Mangle the results
     SchemeObject::ObjectType t = o->type();
+    uint32_t result;
     if (t == SchemeObject::INTEGER_NUMBER) {
-        return o;
+	int64_t v = scm2int(o);
+	result = v^(v >> 32);
     } else if (t == SchemeObject::PAIR) {
         return int2scm(scm2int(s_equal_hash(i_car(o))) + 37 * scm2int(s_equal_hash(i_cdr(o))));    
     } else if (o == S_EMPTY_LIST) {
-        return int2scm(123456789);
+        return int2scm(9873);
+    } else if (t == SchemeObject::BOOL) {
+	// As per Java
+        result = o == S_TRUE ? 1231 : 1237;
     } else if (t == SchemeObject::STRING) {
         return s_string_hash(o);    
     } else if (t == SchemeObject::SYMBOL) {
         return s_symbol_hash(o);    
     } else {
-        return int2scm(int(string_hash(o->toString())));
+        result = string_hash(o->toString());
     }
+    return int2scm(result);
 }
 
 SchemeObject* s_eq_hash(SchemeObject* o) {
@@ -304,7 +310,7 @@ SchemeObject* s_eq_hash(SchemeObject* o) {
 }
 
 SchemeObject* s_eqv_hash(SchemeObject* o) {
-    // TODO: Also make hashes for other numerical types and chars
+    // TODO: Also make hashes for other numerical types, bools and chars
     if (o->type() == SchemeObject::INTEGER_NUMBER) {
 	return o;
     } else {
