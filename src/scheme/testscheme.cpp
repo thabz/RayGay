@@ -1643,6 +1643,26 @@ void test_lib_hashtables() {
     assert_eval(s, L"(= (equal-hash #t) (equal-hash #t))", L"#t");
     assert_eval(s, L"(= (equal-hash '(1 2 3)) (equal-hash '(1 2 3)))", L"#t");
     assert_eval(s, L"(= (equal-hash 'a) (equal-hash 'a))", L"#t");
+    assert_eval(s, L"(= (string-hash \"AaA\") (string-hash \"AaA\"))", L"#t");
+    assert_eval(s, L"(= (string-ci-hash \"AaA\") (string-ci-hash \"aaa\"))", L"#t");
+
+    assert_eval(s, L"(define h (make-hashtable equal-hash equal?))", L"#<unspecified>");
+    assert_eval(s, L"(define h (make-hashtable equal-hash equal? 2))", L"#<unspecified>");
+    assert_eval(s, L"(hashtable-size h)", L"0");
+    assert_eval(s, L"(eq? (hashtable-hash-function h) equal-hash)", L"#t");
+    assert_eval(s, L"(eq? (hashtable-equivalence-function h) equal?)", L"#t");
+    assert_eval(s, L"(hashtable-set! h 'a 10)", L"#<unspecified>");
+    assert_eval(s, L"(hashtable-size h)", L"1");
+    assert_eval(s, L"(hashtable-ref h 'a #f)", L"10");
+    assert_eval(s, L"(hashtable-ref h 'b 'c)", L"c");
+    assert_eval(s, L"(hashtable-set! h 'b 20)", L"#<unspecified>");
+    assert_eval(s, L"(hashtable-ref h 'b 'c)", L"20");
+    assert_eval(s, L"(hashtable-size h)", L"2");
+    assert_eval(s, L"(hashtable-set! h 'c 30)", L"#<unspecified>");
+    assert_eval(s, L"(hashtable-size h)", L"3");
+    assert_eval(s, L"(hashtable-delete! h 'a)", L"#<unspecified>");
+    assert_eval(s, L"(hashtable-delete! h 'aaa)", L"#<unspecified>");
+    assert_eval(s, L"(hashtable-size h)", L"2");
     
     /*
     assert_eval(s, L"", L"");

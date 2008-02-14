@@ -283,6 +283,7 @@ uint32_t i_string_ci_hash(std::wstring str) {
     return h;
 }
 
+inline
 uint32_t i_pointer_hash(void* ptr) {
     int32_t h = int32_t(ptr);
     h ^= h << 3;
@@ -294,10 +295,12 @@ uint32_t i_pointer_hash(void* ptr) {
     return (h < 0) ? -h : h;
 }
 
+inline
 uint32_t i_int_hash(uint64_t v) {
     return v^(v >> 32);
 }
 
+inline
 uint32_t i_double_hash(double d) {
     union {
         double dd;
@@ -307,10 +310,12 @@ uint32_t i_double_hash(double d) {
     return u.ii^(u.ii >> 32);
 }
 
+inline
 uint32_t i_rational_hash(rational_type r) {
     return i_int_hash(r.numerator()) ^ i_int_hash(r.denominator());
 }
 
+inline
 uint32_t i_complex_hash(std::complex<double> c) {
     return i_double_hash(c.real()) ^ i_double_hash(c.imag());;
 }
@@ -318,13 +323,11 @@ uint32_t i_complex_hash(std::complex<double> c) {
 
 SchemeObject* s_string_hash(SchemeObject* o) {
     assert_arg_string_type(L"string-hash", 1, o);
-    // TODO: Mangle the results
     return uint2scm(i_string_hash(o->str));
 }
 
 SchemeObject* s_string_ci_hash(SchemeObject* o) {
     assert_arg_string_type(L"string-ci-hash", 1, o);
-    // TODO: Mangle the results
     return uint2scm(i_string_ci_hash(o->str));
 }
 
@@ -334,7 +337,6 @@ SchemeObject* s_symbol_hash(SchemeObject* o) {
 }
 
 SchemeObject* s_equal_hash(SchemeObject* o) {
-    // TODO: Mangle the results
     SchemeObject::ObjectType t = o->type();
     uint32_t result;
     if (t == SchemeObject::INTEGER_NUMBER) {
