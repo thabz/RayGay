@@ -1643,6 +1643,7 @@ void test_lib_hashtables() {
     assert_eval(s, L"(= (equal-hash #t) (equal-hash #t))", L"#t");
     assert_eval(s, L"(= (equal-hash '(1 2 3)) (equal-hash '(1 2 3)))", L"#t");
     assert_eval(s, L"(= (equal-hash 'a) (equal-hash 'a))", L"#t");
+    assert_eval(s, L"(integer? (equal-hash (vector->list (make-vector 1000000 2))))", L"#t");
     assert_eval(s, L"(= (string-hash \"AaA\") (string-hash \"AaA\"))", L"#t");
     assert_eval(s, L"(= (string-ci-hash \"AaA\") (string-ci-hash \"aaa\"))", L"#t");
 

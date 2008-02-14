@@ -1,6 +1,6 @@
 
 #include "r6rs-lib-hashtables.h"
-#include "numbers.h";
+#include "numbers.h"
 
 using namespace std;
 
@@ -272,7 +272,7 @@ uint32_t i_string_hash(std::wstring str) {
         h ^= h << 25;
         h += h >> 6;
     }
-    return (h < 0) ? -h : h;
+    return h;
 }
 
 uint32_t i_string_ci_hash(std::wstring str) {
