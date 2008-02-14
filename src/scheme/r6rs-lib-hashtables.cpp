@@ -130,14 +130,14 @@ SchemeObject* s_hashtable_delete_e(SchemeObject* hashtable, SchemeObject* key) {
     while (bucket != S_EMPTY_LIST) {
         SchemeObject* entry = i_car(bucket);
         if (myscheme->callProcedure_2(equiv_func, key, i_car(entry)) != S_FALSE) {
-	    if (prev != S_FALSE) {
-		i_set_cdr_e(prev, i_cdr(bucket));
-	    } else {
-		hashtable->buckets->elems[hash] = i_cdr(bucket);
-	    }
-	    return S_UNSPECIFIED;
+	        if (prev != S_FALSE) {
+		        i_set_cdr_e(prev, i_cdr(bucket));
+	        } else {
+		        hashtable->buckets->elems[hash] = i_cdr(bucket);
+	        }
+	        return S_UNSPECIFIED;
         }
-	prev = bucket;
+	    prev = bucket;
         bucket = i_cdr(bucket);
     }
     return S_UNSPECIFIED;
@@ -296,6 +296,11 @@ uint32_t i_pointer_hash(void* ptr) {
 }
 
 inline
+uint32_t i_symbol_hash(SchemeObject* s) {
+    return i_pointer_hash(s);
+}
+
+inline
 uint32_t i_int_hash(uint64_t v) {
     return v^(v >> 32);
 }
@@ -320,7 +325,6 @@ uint32_t i_complex_hash(std::complex<double> c) {
     return i_double_hash(c.real()) ^ i_double_hash(c.imag());;
 }
 
-
 SchemeObject* s_string_hash(SchemeObject* o) {
     assert_arg_string_type(L"string-hash", 1, o);
     return uint2scm(i_string_hash(o->str));
@@ -333,19 +337,23 @@ SchemeObject* s_string_ci_hash(SchemeObject* o) {
 
 SchemeObject* s_symbol_hash(SchemeObject* o) {
     assert_arg_symbol_type(L"symbol-hash", 1, o);
-    return uint2scm(i_pointer_hash(o));
+    return uint2scm(i_symbol_hash(o));
 }
 
-SchemeObject* s_equal_hash(SchemeObject* o) {
+uint32_t i_equal_hash(SchemeObject* o) {
     SchemeObject::ObjectType t = o->type();
     uint32_t result;
     if (t == SchemeObject::INTEGER_NUMBER) {
         result = i_int_hash(scm2int(o));
     } else if (t == SchemeObject::PAIR) {
-        // TODO: Recursion will kill stack on big lists
-        return int2scm(scm2int(s_equal_hash(i_car(o))) + 37 * scm2int(s_equal_hash(i_cdr(o))));    
+        result = 13371;
+        while(i_pair_p(o) == S_TRUE) {
+            result += 37 * i_equal_hash(i_car(o));
+            o = i_cdr(o);
+        }
+        result += 37 * i_equal_hash(o);
     } else if (o == S_EMPTY_LIST) {
-        return int2scm(9873);
+        result = 9873;
     } else if (t == SchemeObject::BOOL) {
         result = o == S_TRUE ? 1231 : 1237; // As per Java
     } else if (t == SchemeObject::RATIONAL_NUMBER) {
@@ -355,13 +363,17 @@ SchemeObject* s_equal_hash(SchemeObject* o) {
     } else if (t == SchemeObject::COMPLEX_NUMBER) {
         result = i_complex_hash(scm2complex(o));
     } else if (t == SchemeObject::STRING) {
-        return s_string_hash(o);    
+        result = i_string_hash(o->str);    
     } else if (t == SchemeObject::SYMBOL) {
-        return s_symbol_hash(o);    
+        result = i_symbol_hash(o);    
     } else {
         result = i_string_hash(o->toString());
     }
-    return uint2scm(result);
+    return result;
+}
+
+SchemeObject* s_equal_hash(SchemeObject* o) {
+    return uint2scm(i_equal_hash(o));
 }
 
 SchemeObject* s_eq_hash(SchemeObject* o) {
