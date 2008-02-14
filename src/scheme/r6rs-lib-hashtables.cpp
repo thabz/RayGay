@@ -257,15 +257,25 @@ SchemeObject* s_hashtable_mutable_p(SchemeObject* hashtable) {
     return hashtable->immutable() ? S_FALSE : S_TRUE;
 }
 
-uint32_t string_hash(std::wstring str) {
+////////////////////////////////////////////////////////////////////////////////////
+// Hashing functions
+////////////////////////////////////////////////////////////////////////////////////
+
+uint32_t i_string_hash(std::wstring str) {
     uint32_t h = 1;
     for(uint32_t i = 0; i < str.size(); i++) {
         h *= str[i] + 37;
+        h ^= h << 3;
+        h += h >> 5;
+        h ^= h << 4;
+        h += h >> 17;
+        h ^= h << 25;
+        h += h >> 6;
     }
-    return h;
+    return (h < 0) ? -h : h;
 }
 
-uint32_t string_ci_hash(std::wstring str) {
+uint32_t i_string_ci_hash(std::wstring str) {
     uint32_t h = 1;
     for(uint32_t i = 0; i < str.size(); i++) {
         h *= ::towlower(str[i]) + 37;
@@ -273,7 +283,7 @@ uint32_t string_ci_hash(std::wstring str) {
     return h;
 }
 
-uint32_t pointer_hash(void* ptr) {
+uint32_t i_pointer_hash(void* ptr) {
     int32_t h = int32_t(ptr);
     h ^= h << 3;
     h += h >> 5;
@@ -284,21 +294,43 @@ uint32_t pointer_hash(void* ptr) {
     return (h < 0) ? -h : h;
 }
 
+uint32_t i_int_hash(uint64_t v) {
+    return v^(v >> 32);
+}
+
+uint32_t i_double_hash(double d) {
+    union {
+        double dd;
+        uint64_t ii;
+    } u;
+    u.dd = d;
+    return u.ii^(u.ii >> 32);
+}
+
+uint32_t i_rational_hash(rational_type r) {
+    return i_int_hash(r.numerator()) ^ i_int_hash(r.denominator());
+}
+
+uint32_t i_complex_hash(std::complex<double> c) {
+    return i_double_hash(c.real()) ^ i_double_hash(c.imag());;
+}
+
+
 SchemeObject* s_string_hash(SchemeObject* o) {
     assert_arg_string_type(L"string-hash", 1, o);
     // TODO: Mangle the results
-    return int2scm(int(string_hash(o->str)));
+    return uint2scm(i_string_hash(o->str));
 }
 
 SchemeObject* s_string_ci_hash(SchemeObject* o) {
     assert_arg_string_type(L"string-ci-hash", 1, o);
     // TODO: Mangle the results
-    return int2scm(int(string_ci_hash(o->str)));
+    return uint2scm(i_string_ci_hash(o->str));
 }
 
 SchemeObject* s_symbol_hash(SchemeObject* o) {
     assert_arg_symbol_type(L"symbol-hash", 1, o);
-    return uint2scm(pointer_hash(o));
+    return uint2scm(i_pointer_hash(o));
 }
 
 SchemeObject* s_equal_hash(SchemeObject* o) {
@@ -306,37 +338,53 @@ SchemeObject* s_equal_hash(SchemeObject* o) {
     SchemeObject::ObjectType t = o->type();
     uint32_t result;
     if (t == SchemeObject::INTEGER_NUMBER) {
-	    int64_t v = scm2int(o);
-	    result = v^(v >> 32);
+        result = i_int_hash(scm2int(o));
     } else if (t == SchemeObject::PAIR) {
         // TODO: Recursion will kill stack on big lists
         return int2scm(scm2int(s_equal_hash(i_car(o))) + 37 * scm2int(s_equal_hash(i_cdr(o))));    
     } else if (o == S_EMPTY_LIST) {
         return int2scm(9873);
     } else if (t == SchemeObject::BOOL) {
-	    // As per Java
-        result = o == S_TRUE ? 1231 : 1237;
+        result = o == S_TRUE ? 1231 : 1237; // As per Java
+    } else if (t == SchemeObject::RATIONAL_NUMBER) {
+        result = i_rational_hash(scm2rational(o));
+    } else if (t == SchemeObject::REAL_NUMBER) {
+        result = i_double_hash(scm2double(o));
+    } else if (t == SchemeObject::COMPLEX_NUMBER) {
+        result = i_complex_hash(scm2complex(o));
     } else if (t == SchemeObject::STRING) {
         return s_string_hash(o);    
     } else if (t == SchemeObject::SYMBOL) {
         return s_symbol_hash(o);    
     } else {
-        result = string_hash(o->toString());
+        result = i_string_hash(o->toString());
     }
     return uint2scm(result);
 }
 
 SchemeObject* s_eq_hash(SchemeObject* o) {
-    return uint2scm(pointer_hash(o));
+    return uint2scm(i_pointer_hash(o));
 }
 
 SchemeObject* s_eqv_hash(SchemeObject* o) {
-    // TODO: Also make hashes for other numerical types, bools and chars
-    if (o->type() == SchemeObject::INTEGER_NUMBER) {
-	    return o;
+    SchemeObject::ObjectType t = o->type();
+    uint32_t result;
+    if (t == SchemeObject::INTEGER_NUMBER) {
+        result = i_int_hash(scm2int(o));
+    } else if (t == SchemeObject::CHAR) {
+    	result = o->c;
+    } else if (t == SchemeObject::BOOL) {
+        result = o == S_TRUE ? 1231 : 1237; // As per Java
+    } else if (t == SchemeObject::RATIONAL_NUMBER) {
+        result = i_rational_hash(scm2rational(o));
+    } else if (t == SchemeObject::REAL_NUMBER) {
+        result = i_double_hash(scm2double(o));
+    } else if (t == SchemeObject::COMPLEX_NUMBER) {
+        result = i_complex_hash(scm2complex(o));
     } else {
-	    return uint2scm(pointer_hash(o));
+        result = i_pointer_hash(o);
     }
+    return uint2scm(result);
 }
 
 void R6RSLibHashtables::bind(Scheme* scheme, SchemeObject* envt) {

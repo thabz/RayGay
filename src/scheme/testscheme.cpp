@@ -863,7 +863,7 @@ void test_math() {
     assert_eval(s, L"(rationalize 12/8 0.1)", L"1.5");
     assert_eval(s, L"(rationalize 7/8 0.1)", L"0.8");
     assert_eval(s, L"(rationalize -7/8 0.1)", L"-0.8");
-    // TODO: NedenstÃ¥ende fejler da vi ikke har bigints endnu.
+    // TODO: Nedenstående fejler da vi ikke har bigints endnu.
     // assert_eval(s, L"(rationalize 1.8 0.1)", L"1.75");
     
     assert_eval(s, L"(let loop ((i 0)) (if (>= i 1) i (loop (+ i (/ 100)))))", L"1");
@@ -1627,6 +1627,30 @@ void test_lib_lists() {
      */
 }
 
+void test_lib_hashtables() {
+    Scheme* s = new Scheme();
+    assert_eval(s, L"(= (eqv-hash 100) (eqv-hash 100))", L"#t");
+    assert_eval(s, L"(= (eqv-hash 1.0) (eqv-hash 1.0))", L"#t");
+    assert_eval(s, L"(= (eqv-hash 1+i) (eqv-hash 1+i))", L"#t");
+    assert_eval(s, L"(= (eqv-hash 3/7) (eqv-hash 30/70))", L"#t");
+    assert_eval(s, L"(= (eqv-hash #\\a) (eqv-hash #\\a))", L"#t");
+    assert_eval(s, L"(= (eqv-hash #t) (eqv-hash #t))", L"#t");
+    assert_eval(s, L"(= (equal-hash 1) (equal-hash 1))", L"#t");
+    assert_eval(s, L"(= (equal-hash 1.0) (equal-hash 1.0))", L"#t");
+    assert_eval(s, L"(= (equal-hash 1+i) (equal-hash 1+i))", L"#t");
+    assert_eval(s, L"(= (equal-hash 3/7) (equal-hash 30/70))", L"#t");
+    assert_eval(s, L"(= (equal-hash #\\a) (equal-hash #\\a))", L"#t");
+    assert_eval(s, L"(= (equal-hash #t) (equal-hash #t))", L"#t");
+    assert_eval(s, L"(= (equal-hash '(1 2 3)) (equal-hash '(1 2 3)))", L"#t");
+    assert_eval(s, L"(= (equal-hash 'a) (equal-hash 'a))", L"#t");
+    
+    /*
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+     */
+}
+
 int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("Parser", new test_parser());
@@ -1730,6 +1754,10 @@ int main(int argc, char *argv[]) {
 
         cout << "Test lib lists...       ";
         test_lib_lists();
+        cout << " OK" << endl;
+
+        cout << "Test lib hashtables...  ";
+        test_lib_hashtables();
         cout << " OK" << endl;
 
 
