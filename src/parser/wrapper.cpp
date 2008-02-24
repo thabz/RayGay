@@ -19,9 +19,9 @@ bool isWrappedObject(SchemeObject* obj) {
 SchemeObject* isWrappedObjectType(SchemeObject* object, wrapped_type type) {
     if (isWrappedObject(object)) {
 	struct wrapped_object* o = (struct wrapped_object*) object->getWrappedCObject();
-	return bool2scm(o->type == type);
+	    return bool2scm(o->type == type);
     } else {
-	return S_FALSE;
+	    return S_FALSE;
     }
 }
 
@@ -36,7 +36,7 @@ SchemeObject* path2scm(Path* path) {
 Path* scm2path(SchemeObject* object_smob, wchar_t* subr, int pos) {
     struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
     if (o->type != PATH) {
-	wrong_type_arg(subr, pos, object_smob);
+	    wrong_type_arg(subr, pos, object_smob);
     }
     return o->path;
 }
@@ -53,7 +53,7 @@ SchemeObject* sceneobject2scm(SceneObject* sceneobject) {
 SceneObject* scm2sceneobject(SchemeObject* object_smob, wchar_t* subr, int pos) {
     struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
     if (o->type != SCENEOBJECT) {
-	wrong_type_arg(subr, pos, object_smob);
+	    wrong_type_arg(subr, pos, object_smob);
     }
     return o->sceneobject;
 }
@@ -70,7 +70,7 @@ SchemeObject* sampler2scm(SamplerFactory* sampler) {
 SamplerFactory* scm2sampler(SchemeObject* object_smob, wchar_t* subr, int pos) {
     struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
     if (o->type != SAMPLER) {
-	wrong_type_arg(subr, pos, object_smob);
+	    wrong_type_arg(subr, pos, object_smob);
     }
     return o->sampler;
 }
@@ -118,7 +118,7 @@ SchemeObject* image2scm(Image* image) {
 Image* scm2image(SchemeObject* object_smob, wchar_t* subr, int pos) {
     struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
     if (o->type != IMAGE) {
-	wrong_type_arg(subr, pos, object_smob);
+	    wrong_type_arg(subr, pos, object_smob);
     }
     return o->image;
 }
@@ -134,7 +134,7 @@ SchemeObject* material2scm(Material* material) {
 Material* scm2material(SchemeObject* object_smob, wchar_t* subr, int pos) {
     struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
     if (o->type != MATERIAL) {
-	wrong_type_arg(subr, pos, object_smob);
+	    wrong_type_arg(subr, pos, object_smob);
     }
     return o->material;
 }
@@ -151,7 +151,7 @@ Lightsource* scm2lightsource(SchemeObject* object_smob, wchar_t* subr, int pos)
 {
     struct wrapped_object* o = scm2wrappedobj(object_smob, subr, pos);
     if (o->type != LIGHTSOURCE) {
-	wrong_type_arg(subr, pos, object_smob);
+	    wrong_type_arg(subr, pos, object_smob);
     }
     return o->lightsource;
 }
