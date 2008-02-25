@@ -14,14 +14,14 @@ CSGUnion::CSGUnion(vector<Solid*>* solids, const Material* mat) : Solid(mat) {
     uint32_t size = solids->size();
     if (size < 2) throw_exception("At least two solids are needed.");
     if (size == 2) {
-	this->left = solids->front();
-	this->right = solids->operator[](1);
+	    this->left = solids->front();
+	    this->right = solids->operator[](1);
     } else {
-	this->left = solids->operator[](0);
-	this->right = solids->operator[](1);
-	for(uint32_t i = 2; i < size; i++) {
-	    this->right = new CSGUnion(this->right,solids->operator[](i),NULL);
-	}
+	    this->left = solids->operator[](0);
+	    this->right = solids->operator[](1);
+	    for(uint32_t i = 2; i < size; i++) {
+            this->right = new CSGUnion(this->right,solids->operator[](i),NULL);
+	    }
     }
 }
 

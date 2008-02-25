@@ -353,27 +353,24 @@ SchemeObject* make_bezierpatch(SchemeObject* s_points, SchemeObject* s_xres, Sch
     return sceneobject2scm(patch);
 }
 
-SchemeObject* make_union(SchemeObject* s_things) 
+SchemeObject* make_union(int num, SchemeStack::iterator args) 
 {
     wchar_t* proc = L"make-union";
     Material* material = NULL;
     vector<Solid*> solids;
     
-    int i = 1;
-    while (s_things != S_EMPTY_LIST) {
-        SchemeObject* o = i_car(s_things);
-        if (s_material_p(o) == S_TRUE && i_cdr(s_things) == S_EMPTY_LIST) {
+    for(int i = 0; i < num; i++) {
+        SchemeObject* o = args[i];
+        if (s_material_p(o) == S_TRUE && i == num - 1) {
             material = scm2material(o, proc, i);
         } else {
-   	    SceneObject* so_solid = scm2sceneobject(o, proc, i);
+   	        SceneObject* so_solid = scm2sceneobject(o, proc, i+1);
             Solid* solid = dynamic_cast<Solid*>(so_solid);
             if (solid == NULL) {
-                wrong_type_arg(proc, i, o);
+                wrong_type_arg(proc, i+1, o);
             }
             solids.push_back(solid);
         }
-        s_things = i_cdr(s_things);
-        i++; 
     }
 
     CSGUnion* csg = new CSGUnion(&solids, material);
@@ -387,7 +384,7 @@ SchemeObject* make_difference(SchemeObject* s_left, SchemeObject* s_right, Schem
     if (s_material == S_UNSPECIFIED) {
         material = NULL;
     } else {
-	material = scm2material(s_material,proc,3);
+	    material = scm2material(s_material,proc,3);
     }
     SceneObject* so_left = scm2sceneobject(s_left, proc, 1);
     SceneObject* so_right = scm2sceneobject(s_right, proc, 2);
@@ -551,7 +548,7 @@ void SceneObjectFactory::register_procs(Scheme* s)
 	    (SchemeObject* (*)()) make_difference);
     scheme->assign(L"make-intersection",2,1,0,
 	    (SchemeObject* (*)()) make_intersection);
-    scheme->assign(L"make-union",0,0,1,
+    scheme->assign(L"make-union",2,0,1,
 	    (SchemeObject* (*)()) make_union);
     scheme->assign(L"make-parametrized-surface",6,0,0,
 	    (SchemeObject* (*)()) SceneObjectFactory::make_parametrized_surface);
