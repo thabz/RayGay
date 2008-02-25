@@ -47,6 +47,8 @@ SchemeObject* s_odd_p(SchemeObject* n);
 SchemeObject* s_zero_p(SchemeObject* n);
 SchemeObject* s_negative_p(SchemeObject* n);
 SchemeObject* s_positive_p(SchemeObject* n);
+SchemeObject* s_finite_p(SchemeObject* n);
+SchemeObject* s_infinite_p(SchemeObject* n);
 SchemeObject* s_integer_p(SchemeObject* n);
 SchemeObject* s_complex_p(SchemeObject* n);
 SchemeObject* s_rational_p(SchemeObject* n);

@@ -851,6 +851,24 @@ SchemeObject* s_zero_p(SchemeObject* n) {
     return bool2scm(result);
 }
 
+SchemeObject* s_infinite_p(SchemeObject* n) {
+    assert_arg_number_type(L"infinite?", 1, n);
+    if (n->type() == SchemeObject::REAL_NUMBER) {
+	return bool2scm(isinf(scm2double(n)));
+    } else {
+	return S_FALSE;
+    }
+}
+
+SchemeObject* s_finite_p(SchemeObject* n) {
+    assert_arg_number_type(L"finite?", 1, n);
+    if (n->type() == SchemeObject::REAL_NUMBER) {
+	return bool2scm(finite(scm2double(n)));
+    } else {
+	return S_TRUE;
+    }
+}
+
 SchemeObject* s_negative_p(SchemeObject* n) {
     assert_arg_type(L"negative?", 1, s_real_p, n);
     bool result;
@@ -1208,6 +1226,14 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     if (s.size() == 0) {
 	    return S_FALSE;
     }
+    if (s == L"+inf.0") {
+	return double2scm(-1.0 * log(0.0));
+    } else if (s == L"-inf.0") {
+	return double2scm(log(0.0));
+    } else if (s == L"+nan.0") {
+	return double2scm(0.0 / 0.0);
+    }
+
     bool radix_prefix_seen = false;
     bool exactness_prefix_seen = false;
     bool force_inexact = false;
@@ -1451,15 +1477,21 @@ wstring i_number_2_string(SchemeObject* o, uint32_t radix) {
         return ss.str();
     } else if (type == SchemeObject::REAL_NUMBER) {
         double d = scm2double(o);
-        ss << std::setbase(radix);
-       	ss << std::setprecision(numeric_limits<double>::digits10);
-        ss << d;
-        double i;
-        // Append ".0" if d contains no decimal point.
-        if (::modf(d,&i) == 0.0) {
-            ss << L".0";        
-        }
-        return ss.str();
+	if (isinf(d) && d > 0) {
+	    ss << (d > 0 ? L"+inf.0" : L"-inf.0");
+	} else if (isnan(d)) {
+	    ss << L"+nan.0";
+	} else {
+	    ss << std::setbase(radix);
+	    ss << std::setprecision(numeric_limits<double>::digits10);
+	    ss << d;
+	    double i;
+	    // Append ".0" if d contains no decimal point.
+	    if (::modf(d,&i) == 0.0) {
+		ss << L".0";        
+	    }
+	}
+	return ss.str();
     } else if (type == SchemeObject::COMPLEX_NUMBER) {
         double imag = o->imag->realValue();
         if (imag == 0.0) {
@@ -1534,6 +1566,8 @@ void LibNumbers::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"even?"                 ,1,0,0, (SchemeObject* (*)()) s_even_p, envt);
     scheme->assign(L"odd?"                  ,1,0,0, (SchemeObject* (*)()) s_odd_p, envt);
     scheme->assign(L"zero?"                 ,1,0,0, (SchemeObject* (*)()) s_zero_p, envt);
+    scheme->assign(L"infinite?"             ,1,0,0, (SchemeObject* (*)()) s_infinite_p, envt);
+    scheme->assign(L"finite?"               ,1,0,0, (SchemeObject* (*)()) s_finite_p, envt);
     scheme->assign(L"negative?"             ,1,0,0, (SchemeObject* (*)()) s_negative_p, envt);
     scheme->assign(L"positive?"             ,1,0,0, (SchemeObject* (*)()) s_positive_p, envt);
 
