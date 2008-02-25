@@ -5,6 +5,11 @@
 using namespace std;
 
 Scheme* myscheme;
+SchemeObject* equal_p_ptr;
+SchemeObject* equal_hash_ptr;
+
+uint32_t i_equal_hash(SchemeObject* o);
+
 
 SchemeObject* s_make_hashtable(SchemeObject* hash_func, SchemeObject* equiv_func, SchemeObject* k) {
     if (k != S_UNSPECIFIED) {
@@ -80,14 +85,25 @@ SchemeObject* s_hashtable_ref(SchemeObject* hashtable, SchemeObject* key, Scheme
     assert_arg_hashtable_type(L"hashtable-ref", 1, hashtable);
     SchemeObject* hash_func  = i_car(hashtable->s_hashtable_funcs);
     SchemeObject* equiv_func = i_cdr(hashtable->s_hashtable_funcs);
-    SchemeObject* s_hash = myscheme->callProcedure_1(hash_func, key);
+    int64_t hash;
+    if (hash_func == equal_hash_ptr) {
+        hash = i_equal_hash(key);
+    } else {
+        hash = scm2int(myscheme->callProcedure_1(hash_func, key));
+    }
     int64_t buckets_num = hashtable->buckets->length;
-    int64_t hash = scm2int(s_hash) % buckets_num;
+    hash = hash % buckets_num;
     SchemeObject* bucket = hashtable->buckets->elems[hash];
     while (bucket != S_EMPTY_LIST) {
         SchemeObject* entry = i_car(bucket);
-        if (myscheme->callProcedure_2(equiv_func, key, i_car(entry)) != S_FALSE) {
-            return i_cdr(entry);
+        if (equiv_func == equal_p_ptr) {
+            if (s_equal_p(key, i_car(entry)) != S_FALSE) {
+                return i_cdr(entry);
+            }
+        } else {
+            if (myscheme->callProcedure_2(equiv_func, key, i_car(entry)) != S_FALSE) {
+                return i_cdr(entry);
+            }
         }
         bucket = i_cdr(bucket);
     }
@@ -402,7 +418,6 @@ SchemeObject* s_eqv_hash(SchemeObject* o) {
 }
 
 void R6RSLibHashtables::bind(Scheme* scheme, SchemeObject* envt) {
-    myscheme = scheme;
     scheme->assign(L"eq-hash"              ,1,0,0, (SchemeObject* (*)()) s_eq_hash, envt);
     scheme->assign(L"eqv-hash"             ,1,0,0, (SchemeObject* (*)()) s_eqv_hash, envt);
     scheme->assign(L"equal-hash"           ,1,0,0, (SchemeObject* (*)()) s_equal_hash, envt);
@@ -426,4 +441,8 @@ void R6RSLibHashtables::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"hashtable-equivalence-function",1,0,0, (SchemeObject* (*)()) s_hashtable_equivalence_function, envt);
     scheme->assign(L"hashtable-hash-function",1,0,0, (SchemeObject* (*)()) s_hashtable_hash_function, envt);
     scheme->assign(L"hashtable-mutable?"   ,1,0,0, (SchemeObject* (*)()) s_hashtable_mutable_p, envt);
+
+    myscheme = scheme;
+    equal_hash_ptr = scheme->lookup(L"equal-hash");
+    equal_p_ptr = scheme->lookup(L"equal?");
 }
