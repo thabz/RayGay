@@ -470,6 +470,8 @@ void test_math() {
     assert_eval(s, L"(+ 1+2i 2+3i)" , L"3.0+5.0i");
     assert_eval(s, L"(+ .1 .2)" , L"0.3");
     assert_eval(s, L"(+ 1125899906842624 1)" , L"1125899906842625");
+    assert_eval(s, L"(+ +inf.0 +inf.0)" , L"+inf.0");
+    assert_eval(s, L"(+ +inf.0 -inf.0)" , L"+nan.0");
     assert_eval(s, L"(- 3)" , L"-3");
     assert_eval(s, L"(- 3 2)" , L"1");
     assert_eval(s, L"(- 3 4 5)" , L"-6");
@@ -485,6 +487,7 @@ void test_math() {
     assert_fail(s, L"(- 'a)");
     assert_fail(s, L"(-)");
     assert_eval(s, L"(- 1125899906842624 1)" , L"1125899906842623");
+    assert_eval(s, L"(- +inf.0 +inf.0)", L"+nan.0");
     assert_eval(s, L"(/ 2.0)" , L"0.5");
     assert_eval(s, L"(/ 10.0 2)" , L"5.0");
     assert_eval(s, L"(/ 10 2.0 2)" , L"2.5");
@@ -499,6 +502,16 @@ void test_math() {
     assert_eval(s, L"(/ 25 3+4i)" , L"3.0-4.0i");
     assert_eval(s, L"(/ 25 4+3i)" , L"4.0-3.0i");
     assert_eval(s, L"(/ 4+3i)" , L"0.16-0.12i");
+    assert_eval(s, L"(/ +inf.0)" , L"0.0");
+    assert_eval(s, L"(/ 0.0)" , L"+inf.0");
+    assert_eval(s, L"(/ 0.0 0.0)" , L"+nan.0");
+    assert_eval(s, L"(/ 0 0.0)" , L"+nan.0");
+    assert_eval(s, L"(/ 0.0 0)" , L"+nan.0");
+    assert_eval(s, L"(/ 1.0 0.0)" , L"+inf.0");
+    assert_eval(s, L"(/ 1.0 0)" , L"+inf.0");
+    assert_eval(s, L"(/ -1.0 0.0)" , L"-inf.0");
+    assert_fail(s, L"(/ 0 0)");
+    assert_fail(s, L"(/ 3 0)");
     assert_eval(s, L"(* 2 3 4)" , L"24");
     assert_eval(s, L"(*)" , L"1");
     assert_eval(s, L"(* 1/3 3 4/7)" , L"4/7");
@@ -507,18 +520,28 @@ void test_math() {
     assert_eval(s, L"(* 2 +2i)" , L"0.0+4.0i");
     assert_eval(s, L"(* +3i +2i)" , L"-6.0");
     assert_eval(s, L"(* 1.53 0)" , L"0.0");
+    assert_eval(s, L"(* 5 +inf.0)" , L"+inf.0");
+    assert_eval(s, L"(* -5 +inf.0)" , L"-inf.0");
+    assert_eval(s, L"(* -inf.0 +inf.0)" , L"-inf.0");
+    assert_eval(s, L"(* +inf.0 +inf.0)" , L"+inf.0");
+    assert_eval(s, L"(or (nan? (* 0 +inf.0)) (zero? (* 0 +inf.0)))" , L"#t");
+    assert_eval(s, L"(or (nan? (* 0 +nan.0)) (zero? (* 0 +nan.0)))" , L"#t");
     assert_fail(s, L"(* 'a 1)");
     assert_eval(s, L"(min 5)" , L"5");
     assert_eval(s, L"(min 3.0 1 2)" , L"1.0");
     assert_eval(s, L"(min 3 1 2)" , L"1");
     assert_eval(s, L"(min 1/3 1 1/2)" , L"1/3");
     assert_fail(s, L"(min 1 2 1+i 3)");
+    assert_eval(s, L"(min 1 2 3 -inf.0)" , L"-inf.0");
+    assert_eval(s, L"(min 3 2 1 +inf.0)" , L"1.0");
     assert_fail(s, L"(min)");
     assert_eval(s, L"(max 5)" , L"5");
     assert_eval(s, L"(max 3.0 1 2)" , L"3.0");
     assert_eval(s, L"(max 3 1.0 2)" , L"3.0");
     assert_eval(s, L"(max 2 1 3)" , L"3");
     assert_eval(s, L"(max 2/3 1 3/2)" , L"3/2");
+    assert_eval(s, L"(max 1 2 3 +inf.0)" , L"+inf.0");
+    assert_eval(s, L"(max 1 2 3 -inf.0)" , L"3.0");
     assert_fail(s, L"(max 1 2 1+i 3)");
     assert_fail(s, L"(max)");
     assert_eval(s, L"(expt 3 4)" , L"81");
@@ -555,6 +578,8 @@ void test_math() {
     assert_eval(s, L"(< 1/4 1/3)" , L"#t");
     assert_eval(s, L"(< (- 1/3 1/10) 1/3 (+ 1/3 1/10))" , L"#t");
     assert_eval(s, L"(< 1)" , L"#t");
+    assert_eval(s, L"(< +nan.0 1.0)", L"#f");
+    assert_eval(s, L"(< 1.0 +nan.0)", L"#f");
     assert_eval(s, L"(<)" , L"#t");
     assert_fail(s, L"(< 'a)");
     assert_fail(s, L"(< +i)");
@@ -566,6 +591,8 @@ void test_math() {
     assert_fail(s, L"(<= 'a)");
     assert_fail(s, L"(<= +i)");
     assert_fail(s, L"(<= +i 1)");
+    assert_eval(s, L"(<= +nan.0 0.0)", L"#f");
+    assert_eval(s, L"(<= 0.0 +nan.0)", L"#f");
     assert_eval(s, L"(> 3 2 1)" , L"#t");
     assert_eval(s, L"(> 3 2 2 1)" , L"#f");
     assert_eval(s, L"(> 1)" , L"#t");
@@ -573,10 +600,13 @@ void test_math() {
     assert_fail(s, L"(> 'a)");
     assert_fail(s, L"(> +i)");
     assert_fail(s, L"(> +i 1)");
+    assert_eval(s, L"(> +nan.0 -1.0)", L"#f");
     assert_eval(s, L"(>= 3 2 2 1)" , L"#t");
     assert_eval(s, L"(>= 1 2 2 3)" , L"#f");
     assert_eval(s, L"(>= 1)" , L"#t");
     assert_eval(s, L"(>=)" , L"#t");
+    assert_eval(s, L"(>= +nan.0 0.0)", L"#f");
+    assert_eval(s, L"(>= 0.0 +nan.0)", L"#f");
     assert_fail(s, L"(>= 'a)");
     assert_fail(s, L"(>= +i)");
     assert_fail(s, L"(>= +i 1)");
@@ -590,6 +620,10 @@ void test_math() {
     assert_fail(s, L"(= 'a)");    // Guile 1.8.1 doesn't fail here
     assert_fail(s, L"(= 1 'a)");
     assert_eval(s, L"(=)" , L"#t");
+    assert_eval(s, L"(= 0.0 +nan.0)" , L"#f");
+    assert_eval(s, L"(= +nan.0 10.0)" , L"#f");
+    assert_eval(s, L"(= +nan.0 1/2)" , L"#f");
+    assert_eval(s, L"(= +nan.0 +nan.0)" , L"#f");
     assert_eval(s, L"(even? 10)" , L"#t");
     assert_eval(s, L"(even? -9)" , L"#f");
     assert_eval(s, L"(even? 0)" , L"#t");
@@ -609,9 +643,11 @@ void test_math() {
     assert_eval(s, L"(zero? 0)" , L"#t");
     assert_eval(s, L"(zero? -1)" , L"#f");
     assert_eval(s, L"(zero? 0.0)" , L"#t");
+    assert_eval(s, L"(zero? -0.0)" , L"#t");
     assert_eval(s, L"(zero? 0/2)" , L"#t");
     assert_eval(s, L"(zero? +i)" , L"#f");
     assert_eval(s, L"(zero? 1/2)" , L"#f");
+    assert_eval(s, L"(zero? +nan.0)" , L"#f");
     assert_eval(s, L"(negative? 0)" , L"#f");
     assert_eval(s, L"(negative? -10)" , L"#t");
     assert_eval(s, L"(negative? 2)" , L"#f");
@@ -622,6 +658,8 @@ void test_math() {
     assert_eval(s, L"(negative? -1/2)" , L"#t");
     assert_eval(s, L"(negative? 0/2)" , L"#f");
     assert_eval(s, L"(negative? (/ 1/2 -1))" , L"#t");
+    assert_eval(s, L"(negative? -inf.0)" , L"#t");
+    assert_eval(s, L"(negative? +inf.0)" , L"#f");
     assert_eval(s, L"(positive? 0)" , L"#f");
     assert_eval(s, L"(positive? -10)" , L"#f");
     assert_eval(s, L"(positive? 2)" , L"#t");
@@ -631,6 +669,17 @@ void test_math() {
     assert_eval(s, L"(positive? 0/2)" , L"#f");
     assert_eval(s, L"(positive? -1/2)" , L"#f");
     assert_eval(s, L"(positive? (/ 1/2 -1))" , L"#f");
+    assert_eval(s, L"(positive? +inf.0)" , L"#t");
+    assert_eval(s, L"(positive? -inf.0)" , L"#f");
+    assert_eval(s, L"(infinite? (/ 1/2 0.0))" , L"#t");
+    assert_eval(s, L"(infinite? (/ 1/2 1.0))" , L"#f");
+    assert_eval(s, L"(infinite? 5.0)" , L"#f");
+    assert_eval(s, L"(infinite? +inf.0)" , L"#t");
+    assert_eval(s, L"(infinite? -inf.0)" , L"#t");
+    assert_eval(s, L"(finite? 5)" , L"#t");
+    assert_eval(s, L"(finite? 5.0)" , L"#t");
+    assert_eval(s, L"(nan? 0.0)" , L"#f");
+    assert_eval(s, L"(nan? +nan.0)" , L"#t");
     assert_eval(s, L"(integer? 2)" , L"#t");
     assert_eval(s, L"(integer? 2/1)" , L"#t");
     assert_eval(s, L"(integer? 4/2)" , L"#t");
@@ -719,6 +768,8 @@ void test_math() {
     assert_eval(s, L"(round -4.3)" , L"-4.0");
     assert_eval(s, L"(round (* 8 1/2))" , L"4");
     assert_eval(s, L"(round (* -8 1/2))" , L"-4");
+    assert_eval(s, L"(round +inf.0)" , L"+inf.0");
+    assert_eval(s, L"(round +nan.0)" , L"+nan.0");
     assert_eval(s, L"(floor -4.3)" , L"-5.0");
     assert_fail(s, L"(floor 'a)");
     assert_fail(s, L"(floor 1+i)");
@@ -737,6 +788,7 @@ void test_math() {
     assert_eval(s, L"(floor 16/3)" , L"5");
     assert_eval(s, L"(floor (* 8 1/2))" , L"4");
     assert_eval(s, L"(floor (* -8 1/2))" , L"-4");
+    assert_eval(s, L"(floor +inf.0)" , L"+inf.0");
     assert_eval(s, L"(ceiling -4.3)" , L"-4.0");
     assert_fail(s, L"(ceiling 1+i)");
     assert_eval(s, L"(ceiling 3.5)" , L"4.0");
@@ -755,6 +807,7 @@ void test_math() {
     assert_eval(s, L"(ceiling 8/2)" , L"4");
     assert_eval(s, L"(ceiling (* 8 1/2))" , L"4");
     assert_eval(s, L"(ceiling (* -8 1/2))" , L"-4");
+    assert_eval(s, L"(ceiling -inf.0)" , L"-inf.0");
     assert_eval(s, L"(truncate -4.3)" , L"-4.0");
     assert_eval(s, L"(truncate 3.5)" , L"3.0");
     assert_eval(s, L"(truncate -3.5)" , L"-3.0");
@@ -821,6 +874,8 @@ void test_math() {
     assert_eval(s, L"(sqrt 9)", L"3.0");
     assert_eval(s, L"(sqrt -9)", L"0.0+3.0i");
     assert_eval(s, L"(sqrt -289)", L"0.0+17.0i");
+    assert_eval(s, L"(sqrt -inf.0)", L"0.0+inf.0i");
+    assert_eval(s, L"(sqrt +inf.0)", L"+inf.0");
     assert_fail(s, L"(sqrt)");
     assert_fail(s, L"(sqrt 'a)");
     assert_fail(s, L"(sqrt 123 456)");
@@ -837,6 +892,7 @@ void test_math() {
     assert_eval(s, L"(abs -3/2)", L"3/2");
     assert_eval(s, L"(abs 3/2)", L"3/2");
     assert_eval(s, L"(abs 1+0i)", L"1.0");
+    assert_eval(s, L"(abs -inf.0)", L"+inf.0");
     assert_fail(s, L"(abs 1+i)");
 
     // From R^5RS
@@ -874,8 +930,16 @@ void test_math() {
     assert_eval(s, L"(asin 0)", L"0.0");
     assert_eval(s, L"(acos 1)", L"0.0");
     assert_eval(s, L"(atan 0)", L"0.0");
+    assert_eval(s, L"(< -1.6 (atan -inf.0) -1.5)", L"#t");
+    assert_eval(s, L"(> 1.6 (atan +inf.0) 1.5)", L"#t");
     assert_eval(s, L"(log 1)", L"0.0");
+    assert_eval(s, L"(log 0.0)", L"-inf.0");
+    assert_fail(s, L"(log 0)");
+    assert_eval(s, L"(log +inf.0)", L"+inf.0");
+    assert_eval(s, L"(nan? (log -inf.0))", L"#f");
     assert_eval(s, L"(exp 0)", L"1.0");
+    assert_eval(s, L"(exp +inf.0)", L"+inf.0");
+    assert_eval(s, L"(exp -inf.0)", L"0.0");
     assert_eval(s, L"(eqv? (sin +i) (sin 0))", L"#f");
     assert_eval(s, L"(eqv? (cos +i) (cos 0))", L"#f");
     assert_eval(s, L"(eqv? (tan +i) (tan 0))", L"#f");
