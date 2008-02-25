@@ -749,6 +749,7 @@ void test_math() {
     assert_eval(s, L"(magnitude -8i)", L"8.0");
     assert_eval(s, L"(magnitude 10.5@2)", L"10.5");
     assert_eval(s, L"(angle 10)", L"0.0");
+    assert_eval(s, L"(< 3.14159264 (angle -1) 3.14159266)", L"#t");
     assert_eval(s, L"(angle 1@1.3)", L"1.3");
     assert_eval(s, L"(angle 10@2.87)", L"2.87");
 
@@ -937,6 +938,7 @@ void test_math() {
     assert_fail(s, L"(log 0)");
     assert_eval(s, L"(log +inf.0)", L"+inf.0");
     assert_eval(s, L"(nan? (log -inf.0))", L"#f");
+    assert_eval(s, L"(< 3.14159264 (imag-part (log -inf.0)) 3.14159266)", L"#t");
     assert_eval(s, L"(exp 0)", L"1.0");
     assert_eval(s, L"(exp +inf.0)", L"+inf.0");
     assert_eval(s, L"(exp -inf.0)", L"0.0");
