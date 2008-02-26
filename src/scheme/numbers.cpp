@@ -1122,7 +1122,8 @@ SchemeObject* s_integer_p(SchemeObject* p) {
 	    rational_type::value_type d = r.denominator();     
         return bool2scm(d == 1 || d == -1);
     } else if (p->type() == SchemeObject::REAL_NUMBER) {
-        return ::modf(scm2double(p),&i) == 0.0 ? S_TRUE : S_FALSE;
+        double d = scm2double(p);
+        return !::isnan(d) && !::isinf(d) && ::modf(d,&i) == 0.0 ? S_TRUE : S_FALSE;
     } else if (p->type() == SchemeObject::COMPLEX_NUMBER) {
         std::complex<double> z = p->complexValue();
         return ::modf(z.real(),&i) == 0.0 && z.imag() == 0.0 ? S_TRUE : S_FALSE;
