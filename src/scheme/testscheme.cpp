@@ -550,6 +550,7 @@ void test_math() {
     assert_eval(s, L"(expt 0 0)" , L"1");
     assert_eval(s, L"(expt 0.0 0)" , L"1.0");
     assert_eval(s, L"(expt 0 3)" , L"0");
+    assert_eval(s, L"(expt 0 3)" , L"0");
     assert_eval(s, L"(expt 0.0 3)" , L"0.0");
     assert_eval(s, L"(expt -3 3)" , L"-27");
     assert_eval(s, L"(expt -3 2)" , L"9");
@@ -567,7 +568,7 @@ void test_math() {
     assert_eval(s, L"(expt +i 2)" , L"-1.0");
     assert_eval(s, L"(expt 1 1+i)" , L"1.0");
     assert_fail(s, L"(expt 0 'a)");
-    assert_fail(s, L"(expt 'a 0)");
+    assert_fail(s, L"(expt 'a 0)");    // Guile 1.8.3 doesn't fail here
     assert_fail(s, L"(expt 1)");
     assert_eval(s, L"(< 1 2 3)" , L"#t");
     assert_eval(s, L"(< #x1/10000002 #x1/10000001)" , L"#t");

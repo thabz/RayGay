@@ -641,6 +641,7 @@ inline rational<K>
 pow(const rational<K>& a, const K& b) 
 {
    if (b == 0) return rational<K>(1);
+   if (a.numerator() == 0) return rational<K>(0);
    
    K iter = b < 0 ? -b : b;
    rational<K> x = a;

@@ -378,10 +378,12 @@ SchemeObject* s_log(SchemeObject* n) {
 SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
     if (a->type() == SchemeObject::INTEGER_NUMBER && b->type() == SchemeObject::INTEGER_NUMBER) {
         int64_t bi = scm2int(b);
+        int64_t ai = scm2int(a);    
+
         if (bi == 0) return S_ONE;
+        if (ai == 0) return S_ZERO;
 
         int64_t iter = ::llabs(bi);    
-        int64_t ai = scm2int(a);    
         int64_t result = iter % 2 ? ai : 1;
         
         while (iter >>= 1) {
