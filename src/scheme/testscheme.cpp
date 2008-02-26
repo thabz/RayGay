@@ -1742,6 +1742,18 @@ void test_lib_hashtables() {
     assert_eval(s, L"(hashtable-delete! h 'aaa)", L"#<unspecified>");
     assert_eval(s, L"(hashtable-size h)", L"2");
     
+    assert_eval(s, L"(hashtable-clear! h)", L"#<unspecified>");
+    assert_eval(s, L"(hashtable-size h)", L"0");
+    wchar_t str[100]; 
+    for(int i = 0; i < 5000; i++) {
+        ::swprintf(str, 100, L"(hashtable-set! h %d %d)", i, i);
+        assert_eval(s, str, L"#<unspecified>");
+    }
+    for(int i = 0; i < 5000; i++) {
+        ::swprintf(str, 100, L"(= %d (hashtable-ref h %d #f))", i, i);
+        assert_eval(s, str, L"#t");
+    }
+    
     /*
     assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");

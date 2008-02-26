@@ -2,6 +2,9 @@
 #include "r6rs-lib-hashtables.h"
 #include "numbers.h"
 
+
+#define DEFAULT_BUCKETS_NUM 16
+
 using namespace std;
 
 Scheme* myscheme;
@@ -9,18 +12,13 @@ SchemeObject* equal_p_ptr;
 SchemeObject* equal_hash_ptr;
 
 uint32_t i_equal_hash(SchemeObject* o);
-
+void i_hashtable_resize(SchemeObject* hashtable);
 
 SchemeObject* s_make_hashtable(SchemeObject* hash_func, SchemeObject* equiv_func, SchemeObject* k) {
     if (k != S_UNSPECIFIED) {
         assert_arg_positive_int(L"make-hashtable",1,k);
     }
-    int64_t size;
-    if (k == S_UNSPECIFIED) {
-        size = 256;
-    } else {
-        size = scm2int(k);
-    }
+    int64_t size = k == S_UNSPECIFIED ? DEFAULT_BUCKETS_NUM : scm2int(k);
     SchemeObject* buckets = i_make_vector(size, S_EMPTY_LIST);
     return SchemeObject::createHashtable(buckets, hash_func, equiv_func);
 }
@@ -51,18 +49,25 @@ SchemeObject* s_hashtable_p(SchemeObject* o) {
 // If add is 0 the existing size is set to 0.
 void i_hashtable_update_size(SchemeObject* hashtable, int add) {
     SchemeObject* size_pair = i_cddr(hashtable->s_hashtable_meta);
-    uint64_t size = scm2int(i_car(size_pair));
+    int64_t size = scm2int(i_car(size_pair));
     if (add == 0) {
         size = 0;
     }
     i_set_car_e(size_pair, int2scm(size+add));
+    
+    // Find whether we need to resize the buckets number
+    int64_t buckets_num = hashtable->buckets->length;
+    if ((add > 0 && size+add > 2*buckets_num) ||
+        (add < 0 && size+add < buckets_num/2)) {
+        i_hashtable_resize(hashtable);
+    }
 }
 
 SchemeObject* s_hashtable_clear_e(SchemeObject* hashtable, SchemeObject* k) {
     assert_arg_mutable_hashtable_type(L"hashtable-clear!", 1, hashtable);
     int64_t size;
     if (k == S_UNSPECIFIED) {
-        size = 256;
+        size = DEFAULT_BUCKETS_NUM;
     } else {
         size = scm2int(k);
     }
@@ -202,6 +207,59 @@ SchemeObject* s_hashtable_size(SchemeObject* hashtable) {
     return i_caddr(hashtable->s_hashtable_meta);
 }
 
+// Double the number of buckets when the hashtable size > 2*buckets.
+// Halve the number of buckets when the hashtable size < buckets/2.
+// In both cases all entries needs to be re-added with their new hashvalues.
+void i_hashtable_resize(SchemeObject* hashtable) {
+    int64_t buckets_num = hashtable->buckets->length;
+    int64_t entries_num = i_hashtable_size(hashtable);
+    int64_t new_buckets_num = buckets_num;
+    if (entries_num == 0) {
+        new_buckets_num = DEFAULT_BUCKETS_NUM;
+    } else if (entries_num < buckets_num/2) {
+        new_buckets_num = buckets_num/2;
+    } else if (entries_num > buckets_num*2) {
+        new_buckets_num = buckets_num*2;
+    }
+    if (new_buckets_num == buckets_num) {
+        return;
+    }
+    
+    //cout << "Resizing hash to size " << new_buckets_num << endl;
+    SchemeObject* hash_func  = i_car(hashtable->s_hashtable_meta);
+    int64_t hashes[entries_num];
+    int64_t index = 0;
+    
+    // First find all the hashes. We do this before building the new bucket-lists
+    // as the calls into Scheme might incur a garbage-collection.
+    for(int64_t i = 0; i < buckets_num; i++) {
+        SchemeObject* bucket = hashtable->buckets->elems[i];
+        while (bucket != S_EMPTY_LIST) {
+            SchemeObject* entry = i_car(bucket);
+            SchemeObject* s_hash = myscheme->callProcedure_1(hash_func, i_car(entry));
+            hashes[index++] = scm2int(s_hash);
+            bucket = i_cdr(bucket);
+        }
+    }
+    
+    // Build the new buckets-lists
+    index = 0;
+    SchemeObject* new_buckets = i_make_vector(new_buckets_num, S_EMPTY_LIST);
+    for(int64_t i = 0; i < buckets_num; i++) {
+        SchemeObject* bucket = hashtable->buckets->elems[i];
+        while (bucket != S_EMPTY_LIST) {
+            SchemeObject* entry = i_car(bucket);
+            int64_t hash = hashes[index] % new_buckets_num;
+            new_buckets->elems[hash] = i_cons(entry, new_buckets->elems[hash]);
+            index++;
+            bucket = i_cdr(bucket);
+        }
+    }
+    hashtable->buckets = new_buckets;
+}
+
+
+
 SchemeObject* s_hashtable_keys(SchemeObject* hashtable) {
     assert_arg_hashtable_type(L"hashtable-clear!", 1, hashtable);
     int64_t entries_num = i_hashtable_size(hashtable);
@@ -252,18 +310,18 @@ SchemeObject* s_hashtable_copy(SchemeObject* hashtable, SchemeObject* mutab) {
     // Note: The copy-buckets are reversed.
     for(int32_t i = 0; i < buckets->length; i++) {
         SchemeObject* bucket = buckets->elems[i];
-	SchemeObject* bucket_copy = S_EMPTY_LIST;
+	    SchemeObject* bucket_copy = S_EMPTY_LIST;
         while (bucket != S_EMPTY_LIST) {
             SchemeObject* e = i_car(bucket);
 	    bucket_copy = i_cons(i_cons(i_car(e),i_cdr(e)), bucket_copy);
             bucket = i_cdr(bucket);
         }
-	copy->buckets->elems[i] = bucket_copy;
+	    copy->buckets->elems[i] = bucket_copy;
     }
 
     // Set the immutable flag
     if (mutab == S_UNSPECIFIED || mutab == S_FALSE) {
-	copy->set_immutable(true);
+	    copy->set_immutable(true);
     }
     return copy;
 }
