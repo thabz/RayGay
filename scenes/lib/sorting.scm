@@ -5,19 +5,30 @@
     list
     (let loop ((less '())
                 (greater '())
+		(equal '())
                 (list list)
                 (pivot (car list)))
        (if (null? list)
-         (append (list-sort proc less) (list-sort proc greater))
-         (if (proc (car list) pivot)
+         (append (list-sort proc less) equal (list-sort proc greater))
+	 (cond
+	  ((equal? (car list) pivot)
+	   (loop less
+	         greater
+		 (cons (car list) equal)
+		 (cdr list)
+		 pivot))
+          ((proc (car list) pivot)
            (loop (cons (car list) less)
                  greater
+		 equal
                  (cdr list)
-                 pivot)
+                 pivot))
+          (else
            (loop less
                  (cons (car list) greater)
+		 equal
                  (cdr list)
-                 pivot))))))
+                 pivot)))))))
 
 (define (vector-sort proc vector))
 
