@@ -25,6 +25,7 @@ typedef int hashtable_type;
 #define i_cadr(o)        (((o)->cdr)->car)
 #define i_cdar(o)        (((o)->car)->cdr)
 #define i_cddr(o)        (((o)->cdr)->cdr)
+#define i_caddr(o)       ((((o)->cdr)->cdr)->car)
 #define i_set_cdr_e(o,v) ((o)->cdr = (v))
 #define i_set_car_e(o,v) ((o)->car = (v))
 #define i_pair_p(o)      ((o)->type() == SchemeObject::PAIR ? S_TRUE : S_FALSE)
@@ -100,7 +101,7 @@ class SchemeObject
 		            SchemeObject* binding_list; // For simple environments 
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
-                    SchemeObject* s_hashtable_funcs;   // For HASHTABLE (hash_func . equiv_func)
+                    SchemeObject* s_hashtable_meta;   // For HASHTABLE (hash_func equiv_func . size)
                     SchemeObject* imag;    // For complex numbers
                     SchemeObject* denominator;// For rational numbers
                     SchemeWrappedCObject* wrapped_object; // For wrapped C-objects

@@ -681,6 +681,7 @@ void test_math() {
     assert_eval(s, L"(nan? 0.0)" , L"#f");
     assert_eval(s, L"(nan? +nan.0)" , L"#t");
     assert_eval(s, L"(integer? 2)" , L"#t");
+    assert_eval(s, L"(number? +nan.0)" , L"#t");
     assert_eval(s, L"(integer? 2/1)" , L"#t");
     assert_eval(s, L"(integer? 4/2)" , L"#t");
     assert_eval(s, L"(integer? (/ 4 2))" , L"#t");
@@ -689,6 +690,19 @@ void test_math() {
     assert_eval(s, L"(integer? 2.0)" , L"#t");
     assert_eval(s, L"(integer? 2.0+0i)" , L"#t");
     assert_eval(s, L"(integer? 2.0+i)" , L"#f");
+    assert_eval(s, L"(integer? +inf.0)" , L"#f");
+    assert_eval(s, L"(integer? +nan.0)" , L"#f");
+    assert_eval(s, L"(complex? 2)" , L"#t");
+    assert_eval(s, L"(complex? 'a)" , L"#f");
+    assert_eval(s, L"(complex? +inf.0)" , L"#t");
+    assert_eval(s, L"(real? 2)" , L"#t");
+    assert_eval(s, L"(real? 'a)" , L"#f");
+    assert_eval(s, L"(real? +nan.0)" , L"#t");
+    assert_eval(s, L"(rational? 2)" , L"#t");
+    assert_eval(s, L"(rational? 'a)" , L"#f");
+    assert_eval(s, L"(rational? +nan.0)" , L"#f");
+    assert_eval(s, L"(rational? -inf.0)" , L"#f");
+
     assert_eval(s, L"(exact? 2.1)" , L"#f");
     assert_eval(s, L"(exact? 2.0)" , L"#f");
     assert_eval(s, L"(exact? 2)" , L"#t");
@@ -697,6 +711,7 @@ void test_math() {
     assert_fail(s, L"(exact? 'a)");
     assert_eval(s, L"(inexact? 2.1)" , L"#t");
     assert_eval(s, L"(inexact? 2.0)" , L"#t");
+    assert_eval(s, L"(inexact? +inf.0)" , L"#t");
     assert_eval(s, L"(inexact? 2)" , L"#f");
     assert_eval(s, L"(inexact? 2/9)" , L"#f");
     assert_fail(s, L"(inexact? 'a)");
@@ -722,12 +737,6 @@ void test_math() {
     assert_eval(s, L"(exact->inexact (inexact->exact -4.0))", L"-4.0");
     assert_eval(s, L"(exact->inexact (inexact->exact 1234.5678))", L"1234.5678");
     
-    assert_eval(s, L"(complex? 2)" , L"#t");
-    assert_eval(s, L"(complex? 'a)" , L"#f");
-    assert_eval(s, L"(real? 2)" , L"#t");
-    assert_eval(s, L"(real? 'a)" , L"#f");
-    assert_eval(s, L"(rational? 2)" , L"#t");
-    assert_eval(s, L"(rational? 'a)" , L"#f");
     assert_eval(s, L"(real-part (make-rectangular 1.0 2.0))", L"1.0");
     assert_eval(s, L"(imag-part (make-rectangular 1.0 2.0))", L"2.0");
     assert_eval(s, L"(make-rectangular 3.1 2.2)", L"3.1+2.2i");
@@ -1726,6 +1735,8 @@ void test_lib_hashtables() {
     assert_eval(s, L"(hashtable-ref h 'b 'c)", L"20");
     assert_eval(s, L"(hashtable-size h)", L"2");
     assert_eval(s, L"(hashtable-set! h 'c 30)", L"#<unspecified>");
+    assert_eval(s, L"(hashtable-size h)", L"3");
+    assert_eval(s, L"(hashtable-set! h 'b 0)", L"#<unspecified>");
     assert_eval(s, L"(hashtable-size h)", L"3");
     assert_eval(s, L"(hashtable-delete! h 'a)", L"#<unspecified>");
     assert_eval(s, L"(hashtable-delete! h 'aaa)", L"#<unspecified>");
