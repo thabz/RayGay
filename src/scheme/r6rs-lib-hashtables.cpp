@@ -3,7 +3,7 @@
 #include "numbers.h"
 
 
-#define DEFAULT_BUCKETS_NUM 16
+#define DEFAULT_INITIAL_CAPACITY 16
 
 using namespace std;
 
@@ -18,7 +18,7 @@ SchemeObject* s_make_hashtable(SchemeObject* hash_func, SchemeObject* equiv_func
     if (k != S_UNSPECIFIED) {
         assert_arg_positive_int(L"make-hashtable",1,k);
     }
-    int64_t size = k == S_UNSPECIFIED ? DEFAULT_BUCKETS_NUM : scm2int(k);
+    int64_t size = k == S_UNSPECIFIED ? DEFAULT_INITIAL_CAPACITY : scm2int(k);
     SchemeObject* buckets = i_make_vector(size, S_EMPTY_LIST);
     return SchemeObject::createHashtable(buckets, hash_func, equiv_func);
 }
@@ -57,8 +57,8 @@ void i_hashtable_update_size(SchemeObject* hashtable, int add) {
     
     // Find whether we need to resize the buckets number
     int64_t buckets_num = hashtable->buckets->length;
-    if ((add > 0 && size+add > 2*buckets_num) ||
-        (add < 0 && size+add < buckets_num/2)) {
+    if ((add > 0 && size+add > 1.75*buckets_num) ||
+        (add < 0 && size+add < 0.25*buckets_num)) {
         i_hashtable_resize(hashtable);
     }
 }
@@ -67,7 +67,7 @@ SchemeObject* s_hashtable_clear_e(SchemeObject* hashtable, SchemeObject* k) {
     assert_arg_mutable_hashtable_type(L"hashtable-clear!", 1, hashtable);
     int64_t size;
     if (k == S_UNSPECIFIED) {
-        size = DEFAULT_BUCKETS_NUM;
+        size = DEFAULT_INITIAL_CAPACITY;
     } else {
         size = scm2int(k);
     }
@@ -76,7 +76,6 @@ SchemeObject* s_hashtable_clear_e(SchemeObject* hashtable, SchemeObject* k) {
     i_hashtable_update_size(hashtable, 0);
     return S_UNSPECIFIED;
 }
-
 
 SchemeObject* s_hashtable_set_e(SchemeObject* hashtable, SchemeObject* key, SchemeObject* obj) {
     assert_arg_mutable_hashtable_type(L"hashtable-set!", 1, hashtable);
@@ -215,7 +214,7 @@ void i_hashtable_resize(SchemeObject* hashtable) {
     int64_t entries_num = i_hashtable_size(hashtable);
     int64_t new_buckets_num = buckets_num;
     if (entries_num == 0) {
-        new_buckets_num = DEFAULT_BUCKETS_NUM;
+        new_buckets_num = DEFAULT_INITIAL_CAPACITY;
     } else if (entries_num < buckets_num/2) {
         new_buckets_num = buckets_num/2;
     } else if (entries_num > buckets_num*2) {
@@ -237,7 +236,7 @@ void i_hashtable_resize(SchemeObject* hashtable) {
         while (bucket != S_EMPTY_LIST) {
             SchemeObject* entry = i_car(bucket);
             SchemeObject* s_hash = myscheme->callProcedure_1(hash_func, i_car(entry));
-            hashes[index++] = scm2int(s_hash);
+            hashes[index++] = scm2int(s_hash) % new_buckets_num;
             bucket = i_cdr(bucket);
         }
     }
@@ -249,7 +248,7 @@ void i_hashtable_resize(SchemeObject* hashtable) {
         SchemeObject* bucket = hashtable->buckets->elems[i];
         while (bucket != S_EMPTY_LIST) {
             SchemeObject* entry = i_car(bucket);
-            int64_t hash = hashes[index] % new_buckets_num;
+            int64_t hash = hashes[index];
             new_buckets->elems[hash] = i_cons(entry, new_buckets->elems[hash]);
             index++;
             bucket = i_cdr(bucket);
@@ -313,7 +312,7 @@ SchemeObject* s_hashtable_copy(SchemeObject* hashtable, SchemeObject* mutab) {
 	    SchemeObject* bucket_copy = S_EMPTY_LIST;
         while (bucket != S_EMPTY_LIST) {
             SchemeObject* e = i_car(bucket);
-	    bucket_copy = i_cons(i_cons(i_car(e),i_cdr(e)), bucket_copy);
+	        bucket_copy = i_cons(i_cons(i_car(e),i_cdr(e)), bucket_copy);
             bucket = i_cdr(bucket);
         }
 	    copy->buckets->elems[i] = bucket_copy;
@@ -345,6 +344,15 @@ SchemeObject* s_hashtable_mutable_p(SchemeObject* hashtable) {
 ////////////////////////////////////////////////////////////////////////////////////
 // Hashing functions
 ////////////////////////////////////////////////////////////////////////////////////
+
+
+uint32_t rehash(uint32_t h) {
+    h += ~(h << 9);
+    h ^=  (h >> 14);
+    h +=  (h << 4);
+    h ^=  (h >> 10);
+    return h;
+}
 
 uint32_t i_string_hash(std::wstring str) {
     uint32_t h = 1;
@@ -387,7 +395,12 @@ uint32_t i_symbol_hash(SchemeObject* s) {
 
 inline
 uint32_t i_int_hash(uint64_t v) {
-    return v^(v >> 32);
+    uint64_t h = v^(v >> 32);
+    h += ~(h << 9);
+    h ^=  (h >> 14);
+    h +=  (h << 4);
+    h ^=  (h >> 10);
+    return h;
 }
 
 inline
