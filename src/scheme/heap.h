@@ -9,6 +9,8 @@
 
 using namespace std;
 
+// TODO: http://en.wikipedia.org/wiki/Cheney's_algorithm is the simplest copying garbagecollector.
+
 // Terminology: the heap is conceptually a number of pages each 
 // with HEAP_PAGE_SIZE number of slots. Each slot fits one object.
 
