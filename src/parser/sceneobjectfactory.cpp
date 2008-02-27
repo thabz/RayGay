@@ -1,6 +1,8 @@
 
 #include "scheme/filenames.h"
 
+#include "environment.h"
+
 #include "parser/sceneobjectfactory.h"
 #include "parser/materialfactory.h"
 #include "parser/converters.h"
@@ -284,41 +286,43 @@ SchemeObject* SceneObjectFactory::make_parametrized_surface(SchemeObject* s_proc
 SchemeObject* make_mesh(SchemeObject* s_material, SchemeObject* s_vertices, SchemeObject* s_triangles)
 {
     wchar_t* proc = L"make-mesh";
-    uint32_t length;
+    uint32_t flength, vlength;
 
     Material* material = scm2material(s_material, proc, 1);
     Mesh* mesh = new Mesh(Mesh::MESH_PHONG, material);
 
     // Add the vertices
     assert(scm2bool(s_list_p (s_vertices)));
-    length = safe_scm2int(s_length(s_vertices), 0, L"");
-    for(uint32_t i = 0; i < length; i++) {
-	SchemeObject* s_vertex = s_list_ref(s_vertices, int2scm(i));
-	Vector vertex = scm2vector(s_vertex, proc, 1);
-	mesh->addVertex(vertex);
+    vlength = safe_scm2int(s_length(s_vertices), 0, L"");
+    for(uint32_t i = 0; i < vlength; i++) {
+	    SchemeObject* s_vertex = s_list_ref(s_vertices, int2scm(i));
+	    Vector vertex = scm2vector(s_vertex, proc, 1);
+	    mesh->addVertex(vertex);
     }
-    cout << "Vertices: " << length << endl;
 
     // Add the triangles
     assert(scm2bool(s_list_p (s_triangles)));
-    length = safe_scm2int(s_length(s_triangles), 0, L"");
+    flength = safe_scm2int(s_length(s_triangles), 0, L"");
     Vector2 uv = Vector2(0,0);
     uint32_t v[3];
     try {
-	for(uint32_t i = 0; i < length; i++) {
-	    SchemeObject* s_triangle = s_list_ref(s_triangles, int2scm(i));
-	    Vector triangle = scm2vector(s_triangle, proc, 2);
-	    v[0] = uint32_t(triangle[0]);
-	    v[1] = uint32_t(triangle[1]);
-	    v[2] = uint32_t(triangle[2]);
-	    mesh->addTriangle(v);
-	}
+	    for(uint32_t i = 0; i < flength; i++) {
+	        SchemeObject* s_triangle = s_list_ref(s_triangles, int2scm(i));
+	        Vector triangle = scm2vector(s_triangle, proc, 2);
+	        v[0] = uint32_t(triangle[0]);
+	        v[1] = uint32_t(triangle[1]);
+	        v[2] = uint32_t(triangle[2]);
+	        mesh->addTriangle(v);
+	    }
     } catch (Exception e) {
         // TODO: Do better ie. convert e.getMessage to wchar_t
-        cout << e.getMessage() << endl;
+        cerr << e.getMessage() << endl;
     	throw scheme_exception(proc);
     }
-    cout << "Faces: " << length << endl;
+    
+    if (Environment::getUniqueInstance()->isVerbose()) {
+        cout << "Created mesh with " << vlength << " vertices and " << flength << " faces." << endl;
+    }
 
     return sceneobject2scm(mesh);
 }
@@ -333,7 +337,7 @@ SchemeObject* make_ply_mesh(SchemeObject* s_filename, SchemeObject* s_material)
         ply = new PLY(SchemeFilenames::toFilename(filename).c_str(), material);
     } catch (Exception e) {
         // TODO: Do better ie. convert e.getMessage to wchar_t
-        cout << e.getMessage() << endl;
+        cerr << e.getMessage() << endl;
     	throw scheme_exception(proc);
     }         
     return sceneobject2scm(ply);
