@@ -88,12 +88,10 @@ void Arealight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo
 	} else {
 	*/
 	    for(int i = 0; i < num; i++) {
-		if (i % 2 != 0) {
 		    bool occluded = probeSublight(i,inter,space,depth);
 		    if (!occluded) {
-			count++;
+			    count++;
 		    }
-		}
 	    }
 	    info->intensity = double(count) / num;
 	//}
