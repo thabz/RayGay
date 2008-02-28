@@ -1776,6 +1776,8 @@ void test_lib_bytevectors() {
     assert_eval(s, L"(bytevector=? (make-bytevector 900 200) (make-bytevector 900 200))", L"#t");
     assert_eval(s, L"(bytevector=? (make-bytevector 901 200) (make-bytevector 900 200))", L"#f");
     assert_eval(s, L"(bytevector=? (make-bytevector 900 201) (make-bytevector 900 200))", L"#f");
+    assert_eval(s, L"(bytevector=? #vu8(1 2 3 5) #vu8(1 2 3 5))", L"#t");
+    assert_eval(s, L"(bytevector=? #vu8(1 2 3 5) #vu8(1 2 4 5))", L"#f");
     assert_eval(s, L"(bytevector=? (make-bytevector 0) (make-bytevector 0))", L"#t");
     assert_fail(s, L"(bytevector=? (make-bytevector 0))");
     assert_fail(s, L"(bytevector=?)");
