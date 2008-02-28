@@ -1766,11 +1766,13 @@ void test_lib_bytevectors() {
     Scheme* s = new Scheme();
 
     assert_eval(s, L"(bytevector? (make-bytevector 1000 200))", L"#t");
+    assert_eval(s, L"(bytevector? #vu8(1 2 3 ))", L"#t");
     assert_eval(s, L"(make-bytevector 3 200)", L"#vu8(200 200 200)");
     assert_eval(s, L"(make-bytevector 2 -1)", L"#vu8(255 255)");
     assert_eval(s, L"(make-bytevector 0)", L"#vu8()");
     assert_fail(s, L"(make-bytevector 0 'a)");
-    assert_eval(s, L"(bytevector-length (make-bytevector 900 200))", L"900");
+    assert_eval(s, L"(bytevector-length #vu8(1 2 3 4))", L"4");
+    assert_eval(s, L"(bytevector-length (make-bytevector 9000 200))", L"9000");
     assert_eval(s, L"(bytevector=? (make-bytevector 900 200) (make-bytevector 900 200))", L"#t");
     assert_eval(s, L"(bytevector=? (make-bytevector 901 200) (make-bytevector 900 200))", L"#f");
     assert_eval(s, L"(bytevector=? (make-bytevector 900 201) (make-bytevector 900 200))", L"#f");

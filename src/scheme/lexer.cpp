@@ -111,6 +111,18 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                 if ((n == L'f' || n == L't')) {
 		            boolean = (n == L't');
 		            return Lexer::BOOLEAN;
+                } else if (n == L'v') {
+                    wstring collected;
+                    collected += is->get();
+                    while (is->peek() != L'(' && !is->eof()) {
+                        collected += is->get();
+                    }
+                    if (collected == L"u8" && is->get() == L'(') {
+                        return Lexer::VU8_OPEN_PAREN;
+                    } else {
+                        error = L"Illegal bytevector literal";
+                        return Lexer::ERROR;
+                    }
                 } else if (n == L'(') {
 		            return Lexer::HASH_OPEN_PAREN;           
                 } else if (n == L'\\') {
