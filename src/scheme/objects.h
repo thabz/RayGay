@@ -34,6 +34,7 @@ typedef int hashtable_type;
 #define i_string_p(o)    ((o)->type() == SchemeObject::STRING ? S_TRUE : S_FALSE)
 #define i_vector_p(o)    ((o)->type() == SchemeObject::VECTOR ? S_TRUE : S_FALSE)
 #define i_hashtable_p(o)    ((o)->type() == SchemeObject::HASHTABLE ? S_TRUE : S_FALSE)
+#define i_bytevector_p(o)    ((o)->type() == SchemeObject::BYTEVECTOR ? S_TRUE : S_FALSE)
 #define i_number_p(o)    ((o)->type() < SchemeObject::NUMBERS_ARE_BEFORE_HERE ? S_TRUE : S_FALSE)
 #define i_procedure_p(p) (((p)->type() == SchemeObject::BUILT_IN_PROCEDURE ||  \
                            (p)->type() == SchemeObject::CONTINUATION       ||  \
@@ -124,6 +125,7 @@ class SchemeObject
 		    CHAR,
 		    STRING,
 		    VECTOR,
+		    BYTEVECTOR,
  		    EOFTYPE,
  		    INPUT_PORT,
  		    OUTPUT_PORT,
