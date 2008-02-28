@@ -1765,6 +1765,26 @@ void test_lib_hashtables() {
 void test_lib_bytevectors() {
     Scheme* s = new Scheme();
 
+    assert_eval(s, L"(bytevector? (make-bytevector 1000 200))", L"#t");
+    assert_eval(s, L"(make-bytevector 3 200)", L"#vu8(200 200 200)");
+    assert_eval(s, L"(make-bytevector 2 -1)", L"#vu8(255 255)");
+    assert_eval(s, L"(make-bytevector 0)", L"#vu8()");
+    assert_fail(s, L"(make-bytevector 0 'a)");
+    assert_eval(s, L"(bytevector-length (make-bytevector 900 200))", L"900");
+    assert_eval(s, L"(bytevector=? (make-bytevector 900 200) (make-bytevector 900 200))", L"#t");
+    assert_eval(s, L"(bytevector=? (make-bytevector 901 200) (make-bytevector 900 200))", L"#f");
+    assert_eval(s, L"(bytevector=? (make-bytevector 900 201) (make-bytevector 900 200))", L"#f");
+    assert_eval(s, L"(bytevector=? (make-bytevector 0) (make-bytevector 0))", L"#t");
+    assert_fail(s, L"(bytevector=? (make-bytevector 0))");
+    assert_fail(s, L"(bytevector=?)");
+    assert_eval(s, L"(equal? (make-bytevector 900 200) (make-bytevector 900 200))", L"#t");
+    assert_eval(s, L"(let ((b (make-bytevector 3 200))) (bytevector-fill! b 10) b)", L"#vu8(10 10 10)");
+
+    assert_eval(s, L"(u8-list->bytevector '(-1 2 3))", L"#vu8(255 2 3)");
+    assert_eval(s, L"(u8-list->bytevector '())", L"#vu8()");
+    assert_fail(s, L"(u8-list->bytevector '(1 2 3 800))");
+    assert_fail(s, L"(u8-list->bytevector)");
+
     assert_eval(s, L"(string->utf8 (string #\\x05D0))", L"#vu8(215 144)");
     assert_eval(s, L"(string->utf8 (string #\\x00A2))", L"#vu8(194 162)");
     assert_eval(s, L"(string->utf8 (string #\\x25E6))", L"#vu8(226 151 166)");

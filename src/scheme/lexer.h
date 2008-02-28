@@ -19,6 +19,7 @@ class Lexer
             OPEN_BRACKET,
             CLOSE_BRACKET,
             HASH_OPEN_PAREN,
+            VU8_OPEN_PAREN,
             SYMBOL,
             NUMBER,
             STRING,
@@ -29,7 +30,7 @@ class Lexer
             COMMA,
             COMMA_AT,
             PERIOD,
-	    DATUM_COMMENT,
+	        DATUM_COMMENT,
             ERROR,
             END
         };
@@ -46,8 +47,8 @@ class Lexer
         
     private:
         bool isSymbolChar(wchar_t c);
-	bool isDelimiter(wchar_t c);
-	bool isWhitespace(wchar_t c);
+	    bool isDelimiter(wchar_t c);
+	    bool isWhitespace(wchar_t c);
         wchar_t readEscapedChar(wistream* is);
         wchar_t readHexEscape(wistream* is);
         wstring str;

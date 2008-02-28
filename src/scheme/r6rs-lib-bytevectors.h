@@ -13,6 +13,9 @@ struct R6RSLibBytevectors {
     static void bind(Scheme* scheme, SchemeObject* envt);
 };
 
+SchemeObject* s_bytevector_equal_p(SchemeObject* b1, SchemeObject* b2);
+SchemeObject* s_u8_list_2_bytevector(SchemeObject* l);
+
 #define assert_arg_bytevector_type(procname, argnum, arg) {     \
     if (i_bytevector_p(arg) == S_FALSE) {                       \
         wostringstream ss;                                 \

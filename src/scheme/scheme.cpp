@@ -468,6 +468,8 @@ SchemeObject* s_equal_p(SchemeObject* a, SchemeObject* b) {
         result = scm2rational(a) == scm2rational(b);  
     } else if (ta == SchemeObject::SYMBOL && tb == SchemeObject::SYMBOL) {
         result = a == b;
+    } else if (ta == SchemeObject::BYTEVECTOR && tb == SchemeObject::BYTEVECTOR) {
+        return s_bytevector_equal_p(a,b);
     } else {
         result = a->toString() == b->toString();
     }
@@ -955,7 +957,7 @@ SchemeObject* s_vector_set_e(SchemeObject* s_vec, SchemeObject* s_index, SchemeO
 SchemeObject* s_vector_fill_e(SchemeObject* s_vec, SchemeObject* fill) {
     assert_arg_type(L"vector-fill!", 1, s_vector_p, s_vec);
     assert_arg_not_immutable(L"vector-fill!", 1, s_vec);
-    for(int i = 0; i < s_vec->length; i++) {
+    for(uint32_t i = 0; i < s_vec->length; i++) {
 	    s_vec->setVectorElem(fill, i);
     }
     return S_UNSPECIFIED;
@@ -1108,7 +1110,7 @@ SchemeObject* s_string_2_list(SchemeObject* s) {
     assert_arg_type(L"string->list", 1, s_string_p, s);
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* result_tail = S_EMPTY_LIST;
-    for(int i = 0; i < s->length; i++) {
+    for(uint32_t i = 0; i < s->length; i++) {
       	SchemeObject* newpair = s_cons(char2scm(s->str[i]), S_EMPTY_LIST);
     	if (result == S_EMPTY_LIST) {
     	    result = newpair;

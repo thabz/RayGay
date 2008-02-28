@@ -8,14 +8,14 @@ SchemeObject* s_bytevector_p(SchemeObject* o) {
 
 SchemeObject* s_make_bytevector(SchemeObject* s_k, SchemeObject* s_fill) {
     assert_arg_positive_int(L"make-bytevector",1, s_k);
-    uint64_t k = scm2int(s_k);
+    uint32_t k = scm2int(s_k);
     uint8_t* bytes = new uint8_t[k];
     
     if (s_fill != S_UNSPECIFIED) {
         assert_arg_int_in_range(L"make-bytevector", 2, s_fill, -128, 255);
         int64_t f = scm2int(s_fill);
         uint8_t fill = f < 0 ? 256 + f : f;
-        for(uint64_t i = 0; i < k; i++) {
+        for(uint32_t i = 0; i < k; i++) {
             bytes[i] = fill;
         }
     }
@@ -27,6 +27,72 @@ SchemeObject* s_bytevector_length(SchemeObject* bytevector) {
     assert_arg_bytevector_type(L"bytevector-length", 1, bytevector);
     return int2scm(bytevector->length);
 }
+
+SchemeObject* s_bytevector_equal_p(SchemeObject* b1, SchemeObject* b2) {
+    assert_arg_bytevector_type(L"bytevector=?", 1, b1);
+    assert_arg_bytevector_type(L"bytevector=?", 2, b2);
+    if (b1->length != b2->length) return S_FALSE;
+    for(uint32_t i = 0; i < b1->length; i++) {
+        if (b1->bytevector[i] != b2->bytevector[i]) return S_FALSE;
+    }
+    return S_TRUE;
+}
+
+SchemeObject* s_bytevector_fill_e(SchemeObject* bytevector, SchemeObject* s_fill) {
+    assert_arg_bytevector_type(L"bytevector-fill!", 1, bytevector);
+    assert_arg_int_in_range(L"make-bytevector", 2, s_fill, -128, 255);
+    int64_t f = scm2int(s_fill);
+    uint8_t fill = f < 0 ? 256 + f : f;
+    for(uint32_t i = 0; i < bytevector->length; i++) {
+        bytevector->bytevector[i] = fill;
+    }
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* s_bytevector_copy_e(SchemeObject* bytevector, SchemeObject* s_fill) {
+    return S_UNSPECIFIED;
+}
+
+
+SchemeObject* s_bytevector_copy(SchemeObject* bytevector) {
+    assert_arg_bytevector_type(L"bytevector-copy", 1, bytevector);
+
+    uint8_t* copy = new uint8_t[bytevector->length];
+    for(uint32_t i = 0; i < bytevector->length; i++) {
+        copy[i] = bytevector->bytevector[i];
+    }
+    return SchemeObject::createBytevector(copy, bytevector->length);
+}
+
+SchemeObject* s_u8_list_2_bytevector(SchemeObject* l) {
+    if (l == S_EMPTY_LIST) {
+        return SchemeObject::createBytevector(NULL, 0);
+    }
+    assert_arg_pair_type(L"u8-list->bytevector", 1, l);
+
+    SchemeObject* p = l;
+    uint32_t outlen = 0;
+    while (p != S_EMPTY_LIST) {
+        outlen++;
+        p = i_cdr(p);
+    }
+    
+    uint8_t* bytes = new uint8_t[outlen];
+
+    p = l;
+    int32_t i = 0;
+    while (p != S_EMPTY_LIST) {
+        SchemeObject* s_f = i_car(p);
+        assert_arg_int_in_range(L"u8-list->bytevector (list content)", 1, s_f, -128, 255);
+        int64_t f = scm2int(s_f);
+        bytes[i++] = f < 0 ? 256 + f : f;
+        p = i_cdr(p);
+    }
+    
+    return SchemeObject::createBytevector(bytes, outlen);
+}
+
+
 
 #define BIT8 0x80
 #define BIT7 0x40
@@ -149,8 +215,13 @@ SchemeObject* s_utf8_2_string(SchemeObject* bytevector) {
 
 void R6RSLibBytevectors::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"bytevector?"           ,1,0,0, (SchemeObject* (*)()) s_bytevector_p, envt);
-    scheme->assign(L"bytevector-length"     ,1,0,0, (SchemeObject* (*)()) s_bytevector_length, envt);
     scheme->assign(L"make-bytevector"       ,1,1,0, (SchemeObject* (*)()) s_make_bytevector, envt);
+    scheme->assign(L"bytevector-length"     ,1,0,0, (SchemeObject* (*)()) s_bytevector_length, envt);
+    scheme->assign(L"bytevector=?"          ,2,0,0, (SchemeObject* (*)()) s_bytevector_equal_p, envt);
+    scheme->assign(L"bytevector-fill!"      ,2,0,0, (SchemeObject* (*)()) s_bytevector_fill_e, envt);
+    scheme->assign(L"bytevector-copy!"      ,5,0,0, (SchemeObject* (*)()) s_bytevector_copy_e, envt);
+    scheme->assign(L"bytevector-copy"       ,1,0,0, (SchemeObject* (*)()) s_bytevector_copy, envt);
+    scheme->assign(L"u8-list->bytevector"   ,1,0,0, (SchemeObject* (*)()) s_u8_list_2_bytevector, envt);
     scheme->assign(L"string->utf8"          ,1,0,0, (SchemeObject* (*)()) s_string_2_utf8, envt);
     scheme->assign(L"utf8->string"          ,1,0,0, (SchemeObject* (*)()) s_utf8_2_string, envt);
 }
