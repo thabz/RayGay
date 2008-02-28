@@ -1,31 +1,41 @@
 
 (load "lib/raygay.scm")
 (load "lib/objects/make-venus.scm")
+(load "lib/objects/make-continuous-studio-backdrop.scm")
+(load "lib/colors.scm")
 
 (set-image-size '(1024 768))
-(set-background #(0.3 0.6 0.7))
-;(set-background (make-texture "gfx/goodmorning.jpg" 1 1 'bilinear))
+(set-background color-white)
 
 (set-renderer "raytracer")
 (set-camera 
-  (make-pinhole-camera 
-    '( pos #(1 10 20)
-       lookat #(0 0 0)
+  (make-pinhole-camera '( 
+       pos #(0 5 40)
+       lookat #(0 5 16)
        up #(0 1 0)
        fov 45
-       aa 4)))
+       aa 3)))
 
-(define chrome
+(define (body-material c)
   (make-material
-    (list 'diffuse #(0.9 0.7 0.8)
-	  'kd 0.8
-	  'specular #(1.0 1.0 1.0)
-	  'ks 0.2
-       'specpow 35
-       )))
+    (list 'diffuse c
+	        'kd 0.8
+	        'specular color-white
+   	      'ks 0.2
+          'specpow 35)))
 
+(define matte-white 
+  (make-material
+    (list 'diffuse color-white 
+	  'kd 1.0
+	  'ks 0.0)))
 
-(add-to-scene (make-pointlight #(1300 1300 1300)))
+;(add-to-scene (make-pointlight #(1300 1300 1300)))
+(add-to-scene (make-arealight #(1300 1300 1300) #(-1 -1 -1) 200 256 0.1))
 
-(add-to-scene (make-venus chrome))
+(add-to-scene (make-continuous-studio-backdrop #(40 30 40) 10 matte-white))  
+
+(add-to-scene (translate (make-venus (body-material color-papaya-whip)) #(-5.5 5 16)))
+(add-to-scene (translate (make-venus (body-material color-peach-puff)) #(0 5 16)))
+(add-to-scene (translate (make-venus (body-material color-navajo-white)) #(5.5 5 16)))
     

@@ -5,4 +5,6 @@
 (load "objects/make-rounded-box.scm")
 (load "objects/make-bounding-box.scm")
 (load "objects/make-pill.scm")
+(load "objects/make-continuous-studio-backdrop.scm")
+
 
