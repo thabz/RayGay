@@ -87,6 +87,7 @@ class SchemeObject
                     wostream* os;          // For outputports
                     wchar_t c;             // For chars
                     SchemeObject** elems;  // For vector
+                    uint8_t* bytevector;
                     SchemeObject* parent;  // For environments. Environment.
                     SchemeObject* name;    // For macros and procedures. Symbol.
                     SchemeObject* real;    // For complex numbers
@@ -97,7 +98,7 @@ class SchemeObject
                 union {
                     SchemeObject* cdr;      // For pairs
                     SchemeObject* result;   // For continuations
-                    int32_t length;         // For vector and strings
+                    uint32_t length;         // For vector, bytevector and strings
                     binding_map_t* binding_map;	// For environments
 		            SchemeObject* binding_list; // For simple environments 
                     SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
@@ -203,6 +204,7 @@ class SchemeObject
         static SchemeObject* createPair(SchemeObject* car, SchemeObject* cdr);
         static SchemeObject* createVector(SchemeObject* elem, uint64_t length);
         static SchemeObject* createVector(SchemeObject** elems, uint64_t length);
+        static SchemeObject* createBytevector(uint8_t* elems, uint64_t length);
         static SchemeObject* createBool(bool b);
         static SchemeObject* createEmptyList();
         static SchemeObject* createUnspecified();

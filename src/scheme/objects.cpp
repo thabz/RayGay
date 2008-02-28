@@ -120,6 +120,13 @@ SchemeObject* SchemeObject::createVector(SchemeObject** elems, uint64_t length) 
     return result;
 }
 
+SchemeObject* SchemeObject::createBytevector(uint8_t* elems, uint64_t length) {
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::BYTEVECTOR);
+    result->bytevector = elems;
+    result->length = length;
+    return result;
+}
+
 SchemeObject* SchemeObject::createEmptyList() {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::EMPTY_LIST);
     return result;
@@ -366,6 +373,9 @@ void SchemeObject::finalize() {
         case SchemeObject::ENVIRONMENT :
             delete binding_map;
             break;
+        case SchemeObject::BYTEVECTOR :
+            delete [] bytevector;
+            break;
         case SchemeObject::WRAPPED_C_OBJECT :
             wrapped_object->finalize();
             break;
@@ -432,8 +442,18 @@ wstring SchemeObject::toString() {
             return boolean ? L"#t" : L"#f";
         case SchemeObject::VECTOR :    
             ss << L"#(";
-            for(int i = 0; i < length; i++) {
+            for(uint32_t i = 0; i < length; i++) {
                 ss << elems[i]->toString();
+                if (i < length-1) {
+                    ss << " ";
+                }
+            }
+            ss << L")";
+            break;
+        case SchemeObject::BYTEVECTOR :    
+            ss << L"#vu8(";
+            for(uint32_t i = 0; i < length; i++) {
+                ss << bytevector[i];
                 if (i < length-1) {
                     ss << " ";
                 }
@@ -509,6 +529,8 @@ wstring SchemeObject::toString(ObjectType t) {
             return L"Boolean";
         case SchemeObject::VECTOR :    
             return L"Vector";
+        case SchemeObject::BYTEVECTOR :    
+            return L"Bytevector";
         case SchemeObject::HASHTABLE :    
             return L"Hashtable";
         case SchemeObject::ENVIRONMENT :    

@@ -19,6 +19,7 @@
 #include "filenames.h"
 #include "numbers.h"
 #include "r6rs-lib-arithmetic.h"
+#include "r6rs-lib-bytevectors.h"
 #include "r6rs-lib-sorting.h"
 #include "r6rs-lib-lists.h"
 #include "r6rs-lib-hashtables.h"
@@ -339,6 +340,7 @@ Scheme::Scheme() {
         
         LibNumbers::bind(this, scheme_report_environment);
 	    R6RSLibArithmetic::bind(this, scheme_report_environment);
+	    R6RSLibBytevectors::bind(this, scheme_report_environment);
 	    R6RSLibSorting::bind(this, scheme_report_environment);
 	    R6RSLibLists::bind(this, scheme_report_environment);
         R6RSLibHashtables::bind(this, scheme_report_environment);

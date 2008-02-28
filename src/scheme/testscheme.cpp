@@ -1762,6 +1762,22 @@ void test_lib_hashtables() {
      */
 }
 
+void test_lib_bytevectors() {
+    Scheme* s = new Scheme();
+
+    assert_eval(s, L"(string->utf8 (string #\\x05D0))", L"#vu8(215 144)");
+    assert_eval(s, L"(string->utf8 (string #\\x00A2))", L"#vu8(194 162)");
+    assert_eval(s, L"(string->utf8 (string #\\x25E6))", L"#vu8(226 151 166)");
+    assert_eval(s, L"(string->utf8 (string #\\x10146))", L"#vu8(240 144 133 134)");
+
+    /*
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+     */
+}
+
+
 int main(int argc, char *argv[]) {
     TestSuite suite;
     suite.add("Parser", new test_parser());
@@ -1869,6 +1885,10 @@ int main(int argc, char *argv[]) {
 
         cout << "Test lib hashtables...  ";
         test_lib_hashtables();
+        cout << " OK" << endl;
+
+        cout << "Test lib bytevectors... ";
+        test_lib_bytevectors();
         cout << " OK" << endl;
 
 
