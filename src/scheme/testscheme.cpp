@@ -1813,6 +1813,12 @@ void test_lib_bytevectors() {
     assert_eval(s, L"(bytevector->u8-list #vu8())", L"()");
     assert_fail(s, L"(bytevector->u8-list 'a)");
 
+    assert_eval(s, L"(define b (u8-list->bytevector '(255 255 255 255 255 255 255 255 255 255 255 255 255 255 255 253)))", L"#<unspecified>");
+    assert_eval(s, L"(bytevector-u16-ref b 14 'little)", L"65023");
+    assert_eval(s, L"(bytevector-u16-ref b 14 'big)", L"65533");
+    assert_eval(s, L"(bytevector-s16-ref b 14 'little)", L"-513");
+    assert_eval(s, L"(bytevector-s16-ref b 14 'big)", L"-3");
+
     assert_eval(s, L"(string->utf8 (string #\\x05D0))", L"#vu8(215 144)");
     assert_eval(s, L"(string->utf8 (string #\\x00A2))", L"#vu8(194 162)");
     assert_eval(s, L"(string->utf8 (string #\\x25E6))", L"#vu8(226 151 166)");
@@ -1821,6 +1827,8 @@ void test_lib_bytevectors() {
 
         
     /*
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");
      */

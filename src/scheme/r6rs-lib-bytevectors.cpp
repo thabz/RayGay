@@ -1,6 +1,18 @@
 #include "r6rs-lib-bytevectors.h"
 #include "scheme.h"
 #include "numbers.h"
+#include <config.h>
+
+SchemeObject* little_symbol;
+SchemeObject* big_symbol;
+
+SchemeObject* s_native_endianness() {
+#if WORDS_BIGENDIAN
+    return big_symbol;
+#else
+    return little_symbol;
+#endif
+}
 
 SchemeObject* s_bytevector_p(SchemeObject* o) {
     return bool2scm(i_bytevector_p(o));
@@ -122,6 +134,55 @@ SchemeObject* s_bytevector_s8_set_e(SchemeObject* bytevector, SchemeObject* k, S
     return S_UNSPECIFIED;
 }
 
+SchemeObject* s_bytevector_u16_ref(SchemeObject* bytevector, SchemeObject* s_k, SchemeObject* endianness) {
+    assert_arg_bytevector_type(L"bytevector-u16-ref", 1, bytevector);
+    assert_arg_int_in_range(L"bytevector-u16-ref", 2, s_k, 0, bytevector->length-2);
+    assert_arg_symbol_type(L"bytevector-u16-ref", 3, endianness);
+    uint32_t k = scm2int(s_k);
+    uint64_t result;
+    uint8_t b1 = bytevector->bytevector[k];
+    uint8_t b2 = bytevector->bytevector[k+1];
+    if (endianness == big_symbol) {
+        result = b1 << 8 | b2;
+    } else if (endianness == little_symbol){
+        result = b2 << 8 | b1;
+    } else {
+        throw scheme_exception(L"bytevector-u16-ref", L"Unknown endianness");
+    }
+    return uint2scm(result);
+}
+
+SchemeObject* s_bytevector_s16_ref(SchemeObject* bytevector, SchemeObject* s_k, SchemeObject* endianness) {
+    assert_arg_bytevector_type(L"bytevector-s16-ref", 1, bytevector);
+    assert_arg_int_in_range(L"bytevector-s16-ref", 2, s_k, 0, bytevector->length-2);
+    assert_arg_symbol_type(L"bytevector-s16-ref", 3, endianness);
+    uint32_t k = scm2int(s_k);
+    int64_t result;
+    uint8_t b1 = bytevector->bytevector[k];
+    uint8_t b2 = bytevector->bytevector[k+1];
+    if (endianness == big_symbol) {
+        result = b1 > 127 ? b1 - 256 : b1;
+        result = result << 8 | b2;
+    } else if (endianness == little_symbol){
+        result = b2 > 127 ? b2 - 256 : b2;
+        result = result << 8 | b1;
+    } else {
+        throw scheme_exception(L"bytevector-s16-ref", L"Unknown endianness");
+    }
+    return int2scm(result);
+}
+
+SchemeObject* s_bytevector_u16_native_ref(SchemeObject* bytevector, SchemeObject* s_k) {
+    assert_arg_bytevector_type(L"bytevector-u16-native-ref", 1, bytevector);
+    assert_arg_int_in_range(L"bytevector-u16-native-ref", 2, s_k, 0, bytevector->length-2);
+    return s_bytevector_u16_ref(bytevector, s_k, s_native_endianness());
+}
+
+SchemeObject* s_bytevector_s16_native_ref(SchemeObject* bytevector, SchemeObject* s_k) {
+    assert_arg_bytevector_type(L"bytevector-s16-native-ref", 1, bytevector);
+    assert_arg_int_in_range(L"bytevector-s16-native-ref", 2, s_k, 0, bytevector->length-2);
+    return s_bytevector_s16_ref(bytevector, s_k, s_native_endianness());
+}
 
 SchemeObject* s_u8_list_2_bytevector(SchemeObject* l) {
     if (l == S_EMPTY_LIST) {
@@ -281,6 +342,7 @@ SchemeObject* s_utf8_2_string(SchemeObject* bytevector) {
 }
 
 void R6RSLibBytevectors::bind(Scheme* scheme, SchemeObject* envt) {
+    scheme->assign(L"native_endianness"     ,0,0,0, (SchemeObject* (*)()) s_native_endianness, envt);
     scheme->assign(L"bytevector?"           ,1,0,0, (SchemeObject* (*)()) s_bytevector_p, envt);
     scheme->assign(L"make-bytevector"       ,1,1,0, (SchemeObject* (*)()) s_make_bytevector, envt);
     scheme->assign(L"bytevector-length"     ,1,0,0, (SchemeObject* (*)()) s_bytevector_length, envt);
@@ -292,8 +354,15 @@ void R6RSLibBytevectors::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"bytevector-s8-ref"     ,2,0,0, (SchemeObject* (*)()) s_bytevector_s8_ref, envt);
     scheme->assign(L"bytevector-u8-set!"    ,3,0,0, (SchemeObject* (*)()) s_bytevector_u8_set_e, envt);
     scheme->assign(L"bytevector-s8-set!"    ,3,0,0, (SchemeObject* (*)()) s_bytevector_s8_set_e, envt);
+
+    scheme->assign(L"bytevector-u16-ref"    ,3,0,0, (SchemeObject* (*)()) s_bytevector_u16_ref, envt);
+    scheme->assign(L"bytevector-s16-ref"    ,3,0,0, (SchemeObject* (*)()) s_bytevector_s16_ref, envt);
+
     scheme->assign(L"u8-list->bytevector"   ,1,0,0, (SchemeObject* (*)()) s_u8_list_2_bytevector, envt);
     scheme->assign(L"bytevector->u8-list"   ,1,0,0, (SchemeObject* (*)()) s_bytevector_2_u8_list, envt);
     scheme->assign(L"string->utf8"          ,1,0,0, (SchemeObject* (*)()) s_string_2_utf8, envt);
     scheme->assign(L"utf8->string"          ,1,0,0, (SchemeObject* (*)()) s_utf8_2_string, envt);
+
+    little_symbol = SchemeObject::createSymbol(L"little");
+    big_symbol = SchemeObject::createSymbol(L"big");
 }
