@@ -930,7 +930,7 @@ void test_math() {
     assert_eval(s, L"(rationalize 12/8 0.1)", L"1.5");
     assert_eval(s, L"(rationalize 7/8 0.1)", L"0.8");
     assert_eval(s, L"(rationalize -7/8 0.1)", L"-0.8");
-    // TODO: Nedenstående fejler da vi ikke har bigints endnu.
+    // TODO: NedenstÂende fejler da vi ikke har bigints endnu.
     // assert_eval(s, L"(rationalize 1.8 0.1)", L"1.75");
     
     assert_eval(s, L"(let loop ((i 0)) (if (>= i 1) i (loop (+ i (/ 100)))))", L"1");
@@ -1783,8 +1783,10 @@ void test_lib_bytevectors() {
     assert_fail(s, L"(bytevector=?)");
     assert_eval(s, L"(equal? (make-bytevector 900 200) (make-bytevector 900 200))", L"#t");
     assert_eval(s, L"(let ((b (make-bytevector 3 200))) (bytevector-fill! b 10) b)", L"#vu8(10 10 10)");
-    assert_eval(s, L"(let ((b (u8-list->bytevector ’(1 2 3 4 5 6 7 8)))) (bytevector-copy! b 0 b 3 4) (bytevector->u8-list b))", L"(1 2 3 1 2 3 4 8)");
-
+    assert_eval(s, L"(let ((b (u8-list->bytevector '(1 2 3 4 5 6 7 8)))) (bytevector-copy! b 0 b 3 4) (bytevector->u8-list b))", L"(1 2 3 1 2 3 4 8)");
+    assert_eval(s, L"(let ((b (u8-list->bytevector '(1 2 3 4 5 6 7 8)))) (bytevector-copy! b 3 b 0 4) (bytevector->u8-list b))", L"(4 5 6 7 5 6 7 8)");
+    assert_eval(s, L"(bytevector-copy #vu8(1 2 3))", L"#vu8(1 2 3)");
+    
     assert_eval(s, L"(let ((b1 (make-bytevector 16 -127)) (b2 (make-bytevector 16 255))) (list (bytevector-s8-ref b1 0) (bytevector-u8-ref b1 0) (bytevector-s8-ref b2 0) (bytevector-u8-ref b2 0)))", L"(-127 129 -1 255)");
     assert_eval(s, L"(bytevector-u8-ref #vu8(1 2 3) 0)", L"1");
     assert_eval(s, L"(bytevector-u8-ref #vu8(1 2 3) 2)", L"3");
@@ -1815,6 +1817,7 @@ void test_lib_bytevectors() {
     assert_eval(s, L"(string->utf8 (string #\\x00A2))", L"#vu8(194 162)");
     assert_eval(s, L"(string->utf8 (string #\\x25E6))", L"#vu8(226 151 166)");
     assert_eval(s, L"(string->utf8 (string #\\x10146))", L"#vu8(240 144 133 134)");
+    assert_eval(s, L"(string->utf8 (utf8->string #vu8(195 134 98 108 101 103 114 195 184 100)))", L"#vu8(195 134 98 108 101 103 114 195 184 100)");
 
         
     /*

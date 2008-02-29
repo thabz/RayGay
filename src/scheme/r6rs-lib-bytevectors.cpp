@@ -64,10 +64,16 @@ SchemeObject* s_bytevector_copy_e(SchemeObject* source, SchemeObject* s_source_s
     uint32_t source_start = scm2int(s_source_start);
     uint32_t target_start = scm2int(s_target_start);
 
-    for(int32_t i = 0; i < k; i++) {
-        target->bytevector[target_start+i] = source->bytevector[source_start+i];
+    if (source == target && source_start < target_start) {
+        // Reverse copy when possible overlapping
+        for(int32_t i = k-1; i >= 0; i--) {
+            target->bytevector[target_start+i] = source->bytevector[source_start+i];
+        }
+    } else {
+        for(int32_t i = 0; i < k; i++) {
+            target->bytevector[target_start+i] = source->bytevector[source_start+i];
+        }
     }
-
     return S_UNSPECIFIED;
 }
 
