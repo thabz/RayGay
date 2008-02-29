@@ -40,6 +40,7 @@ SchemeObject* s_bytevector_equal_p(SchemeObject* b1, SchemeObject* b2) {
 
 SchemeObject* s_bytevector_fill_e(SchemeObject* bytevector, SchemeObject* s_fill) {
     assert_arg_bytevector_type(L"bytevector-fill!", 1, bytevector);
+    assert_arg_not_immutable(L"bytevector-fill!", 1, bytevector);
     assert_arg_int_in_range(L"make-bytevector", 2, s_fill, -128, 255);
     int64_t f = scm2int(s_fill);
     uint8_t fill = f < 0 ? 256 + f : f;
@@ -49,7 +50,24 @@ SchemeObject* s_bytevector_fill_e(SchemeObject* bytevector, SchemeObject* s_fill
     return S_UNSPECIFIED;
 }
 
-SchemeObject* s_bytevector_copy_e(SchemeObject* bytevector, SchemeObject* s_fill) {
+SchemeObject* s_bytevector_copy_e(SchemeObject* source, SchemeObject* s_source_start, 
+                                  SchemeObject* target, SchemeObject* s_target_start, 
+                                  SchemeObject* s_k) {
+    assert_arg_bytevector_type(L"bytevector-copy!", 1, source);
+    assert_arg_bytevector_type(L"bytevector-copy!", 3, target);
+    assert_arg_not_immutable(L"bytevector-copy!", 3, target);
+    assert_arg_positive_int(L"bytevector-copy!",5, s_k);
+    int64_t k = scm2int(s_k);
+    assert_arg_int_in_range(L"bytevector-copy!", 2, s_source_start, 0, source->length-1-k);
+    assert_arg_int_in_range(L"bytevector-copy!", 4, s_target_start, 0, target->length-1-k);
+    
+    uint32_t source_start = scm2int(s_source_start);
+    uint32_t target_start = scm2int(s_target_start);
+
+    for(int32_t i = 0; i < k; i++) {
+        target->bytevector[target_start+i] = source->bytevector[source_start+i];
+    }
+
     return S_UNSPECIFIED;
 }
 
@@ -63,6 +81,41 @@ SchemeObject* s_bytevector_copy(SchemeObject* bytevector) {
     }
     return SchemeObject::createBytevector(copy, bytevector->length);
 }
+
+SchemeObject* s_bytevector_u8_ref(SchemeObject* bytevector, SchemeObject* k) {
+    assert_arg_bytevector_type(L"bytevector-u8-ref", 1, bytevector);
+    assert_arg_int_in_range(L"bytevector-u8-ref", 2, k, 0, bytevector->length-1);
+    return uint2scm(bytevector->bytevector[scm2int(k)]);
+}
+
+SchemeObject* s_bytevector_s8_ref(SchemeObject* bytevector, SchemeObject* k) {
+    assert_arg_bytevector_type(L"bytevector-s8-ref", 1, bytevector);
+    assert_arg_int_in_range(L"bytevector-s8-ref", 2, k, 0, bytevector->length-1);
+    uint8_t b = bytevector->bytevector[scm2int(k)];
+    int64_t r = b > 127 ? b - 256 : b;
+    return int2scm(r);
+}
+
+SchemeObject* s_bytevector_u8_set_e(SchemeObject* bytevector, SchemeObject* k, SchemeObject* octet) {
+    assert_arg_bytevector_type(L"bytevector-u8-set!", 1, bytevector);
+    assert_arg_not_immutable(L"bytevector-u8-set!", 1, bytevector);
+    assert_arg_int_in_range(L"bytevector-u8-set!", 2, k, 0, bytevector->length-1);
+    assert_arg_int_in_range(L"bytevector-u8-set!", 3, octet, 0, 255);
+    bytevector->bytevector[scm2int(k)] = scm2int(octet);
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* s_bytevector_s8_set_e(SchemeObject* bytevector, SchemeObject* k, SchemeObject* byte) {
+    assert_arg_bytevector_type(L"bytevector-s8-set!", 1, bytevector);
+    assert_arg_not_immutable(L"bytevector-s8-set!", 1, bytevector);
+    assert_arg_int_in_range(L"bytevector-s8-set!", 2, k, 0, bytevector->length-1);
+    assert_arg_int_in_range(L"bytevector-s8-set!", 3, byte, -128, 127);
+    int64_t f = scm2int(byte);
+    uint8_t b = f < 0 ? 256 + f : f;
+    bytevector->bytevector[scm2int(k)] = b;
+    return S_UNSPECIFIED;
+}
+
 
 SchemeObject* s_u8_list_2_bytevector(SchemeObject* l) {
     if (l == S_EMPTY_LIST) {
@@ -92,7 +145,15 @@ SchemeObject* s_u8_list_2_bytevector(SchemeObject* l) {
     return SchemeObject::createBytevector(bytes, outlen);
 }
 
-
+SchemeObject* s_bytevector_2_u8_list(SchemeObject* bytevector) {
+    assert_arg_bytevector_type(L"bytevector->u8-list", 1, bytevector);
+    SchemeAppendableList result;
+    
+    for(uint32_t i = 0; i < bytevector->length; i++) {
+        result.add(uint2scm(bytevector->bytevector[i]));
+    }
+    return result.list;
+}
 
 #define BIT8 0x80
 #define BIT7 0x40
@@ -221,7 +282,12 @@ void R6RSLibBytevectors::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"bytevector-fill!"      ,2,0,0, (SchemeObject* (*)()) s_bytevector_fill_e, envt);
     scheme->assign(L"bytevector-copy!"      ,5,0,0, (SchemeObject* (*)()) s_bytevector_copy_e, envt);
     scheme->assign(L"bytevector-copy"       ,1,0,0, (SchemeObject* (*)()) s_bytevector_copy, envt);
+    scheme->assign(L"bytevector-u8-ref"     ,2,0,0, (SchemeObject* (*)()) s_bytevector_u8_ref, envt);
+    scheme->assign(L"bytevector-s8-ref"     ,2,0,0, (SchemeObject* (*)()) s_bytevector_s8_ref, envt);
+    scheme->assign(L"bytevector-u8-set!"    ,3,0,0, (SchemeObject* (*)()) s_bytevector_u8_set_e, envt);
+    scheme->assign(L"bytevector-s8-set!"    ,3,0,0, (SchemeObject* (*)()) s_bytevector_s8_set_e, envt);
     scheme->assign(L"u8-list->bytevector"   ,1,0,0, (SchemeObject* (*)()) s_u8_list_2_bytevector, envt);
+    scheme->assign(L"bytevector->u8-list"   ,1,0,0, (SchemeObject* (*)()) s_bytevector_2_u8_list, envt);
     scheme->assign(L"string->utf8"          ,1,0,0, (SchemeObject* (*)()) s_string_2_utf8, envt);
     scheme->assign(L"utf8->string"          ,1,0,0, (SchemeObject* (*)()) s_utf8_2_string, envt);
 }

@@ -1783,19 +1783,41 @@ void test_lib_bytevectors() {
     assert_fail(s, L"(bytevector=?)");
     assert_eval(s, L"(equal? (make-bytevector 900 200) (make-bytevector 900 200))", L"#t");
     assert_eval(s, L"(let ((b (make-bytevector 3 200))) (bytevector-fill! b 10) b)", L"#vu8(10 10 10)");
+    assert_eval(s, L"(let ((b (u8-list->bytevector ’(1 2 3 4 5 6 7 8)))) (bytevector-copy! b 0 b 3 4) (bytevector->u8-list b))", L"(1 2 3 1 2 3 4 8)");
 
+    assert_eval(s, L"(let ((b1 (make-bytevector 16 -127)) (b2 (make-bytevector 16 255))) (list (bytevector-s8-ref b1 0) (bytevector-u8-ref b1 0) (bytevector-s8-ref b2 0) (bytevector-u8-ref b2 0)))", L"(-127 129 -1 255)");
+    assert_eval(s, L"(bytevector-u8-ref #vu8(1 2 3) 0)", L"1");
+    assert_eval(s, L"(bytevector-u8-ref #vu8(1 2 3) 2)", L"3");
+    assert_fail(s, L"(bytevector-u8-ref #vu8(1 2 3) 3)");
+    assert_eval(s, L"(bytevector-s8-ref #vu8(1 2 -128) 2)", L"-128");
+    assert_eval(s, L"(bytevector-s8-ref #vu8(255 2 -128) 0)", L"-1");
+    assert_fail(s, L"(bytevector-s8-ref #vu8(1 2 3) 3)");
+    assert_eval(s, L"(let ((b (make-bytevector 16 -127))) (bytevector-s8-set! b 0 -126) (bytevector-u8-set! b 1 246) (list (bytevector-s8-ref b 0) (bytevector-u8-ref b 0) (bytevector-s8-ref b 1) (bytevector-u8-ref b 1)))", L"(-126 130 -10 246)");
+    assert_fail(s, L"(bytevector-u8-set! #vu8(1 2 3 ) 0 1)");
+    assert_fail(s, L"(bytevector-u8-set! (make-bytevector 10 0) 10 1)");
+    assert_fail(s, L"(bytevector-u8-set! (make-bytevector 10 0) -1 1)");
+    assert_fail(s, L"(bytevector-u8-set! (make-bytevector 10 0) 0 256)");
+    assert_fail(s, L"(bytevector-u8-set! (make-bytevector 10 0) -1 -1)");
+    assert_fail(s, L"(bytevector-s8-set! #vu8(1 2 3 ) 0 1)");
+    assert_fail(s, L"(bytevector-s8-set! (make-bytevector 10 0) 10 1)");
+    assert_fail(s, L"(bytevector-s8-set! (make-bytevector 10 0) -1 1)");
+    assert_fail(s, L"(bytevector-s8-set! (make-bytevector 10 0) 0 128)");
+    assert_fail(s, L"(bytevector-s8-set! (make-bytevector 10 0) 0 -129)");
     assert_eval(s, L"(u8-list->bytevector '(-1 2 3))", L"#vu8(255 2 3)");
     assert_eval(s, L"(u8-list->bytevector '())", L"#vu8()");
     assert_fail(s, L"(u8-list->bytevector '(1 2 3 800))");
     assert_fail(s, L"(u8-list->bytevector)");
+    assert_eval(s, L"(bytevector->u8-list #vu8(255 128 1 2 3))", L"(255 128 1 2 3)");
+    assert_eval(s, L"(bytevector->u8-list #vu8())", L"()");
+    assert_fail(s, L"(bytevector->u8-list 'a)");
 
     assert_eval(s, L"(string->utf8 (string #\\x05D0))", L"#vu8(215 144)");
     assert_eval(s, L"(string->utf8 (string #\\x00A2))", L"#vu8(194 162)");
     assert_eval(s, L"(string->utf8 (string #\\x25E6))", L"#vu8(226 151 166)");
     assert_eval(s, L"(string->utf8 (string #\\x10146))", L"#vu8(240 144 133 134)");
 
+        
     /*
-    assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");
      */
