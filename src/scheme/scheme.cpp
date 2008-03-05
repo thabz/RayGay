@@ -1331,53 +1331,53 @@ SchemeObject* s_eof_object_p(SchemeObject* o) {
 
 SchemeObject* s_open_input_file(SchemeObject* s_filename) {
     assert_arg_type(L"open-input-file", 1, s_string_p, s_filename);
-    wifstream* ifs = new wifstream(SchemeFilenames::toFilename(scm2string(s_filename)).c_str(), ios::in);
+    wifstream* wifs = new wifstream(SchemeFilenames::toFilename(scm2string(s_filename)).c_str(), ios::in);
 
     try {
-        ifs->imbue(locale(""));
+        wifs->imbue(locale(""));
     } catch (std::runtime_error e) {
         wcout << L"Warning: can't read system locale. Any UTF-8 data in " << scm2string(s_filename) << L" won't be read correctly." << endl;
     }
 
-    if (ifs->fail()) {
+    if (wifs->fail()) {
         throw scheme_exception(L"Error opening file " + s_filename->toString());
     }
-    return SchemeObject::createInputPort(ifs);
+    return SchemeObject::createInputPort(wifs);
 }
 
 SchemeObject* s_open_output_file(SchemeObject* s_filename) {
     assert_arg_type(L"open-output-file", 1, s_string_p, s_filename);
-    wofstream* ofs = new wofstream(SchemeFilenames::toFilename(scm2string(s_filename)).c_str(), ios::out);
+    wofstream* wofs = new wofstream(SchemeFilenames::toFilename(scm2string(s_filename)).c_str(), ios::out);
     try {
-        ofs->imbue(locale(""));
+        wofs->imbue(locale(""));
     } catch (std::runtime_error e) {
         wcout << L"Warning: can't read system locale. Any UTF-8 written to " << scm2string(s_filename) << L" won't work." << endl;
     }
     
-    if (ofs->fail()) {
+    if (wofs->fail()) {
         throw scheme_exception(L"Error opening file " + s_filename->toString() + L" for writing.");
     }
-    return SchemeObject::createOutputPort(ofs);
+    return SchemeObject::createOutputPort(wofs);
 }
 
 SchemeObject* s_close_input_port(SchemeObject* s_port) {
     assert_arg_type(L"close-input-port", 1, s_input_port_p, s_port);
-    wistream* is = s_port->is;
+    wistream* wis = s_port->wis;
     // Only file-streams can be closed in C++
-    wifstream* ifs = static_cast<wifstream*>(is);
-    if (ifs != NULL) {
-       ifs->close();
+    wifstream* wifs = static_cast<wifstream*>(wis);
+    if (wifs != NULL) {
+       wifs->close();
     }
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_close_output_port(SchemeObject* s_port) {
     assert_arg_type(L"close-output-port", 1, s_output_port_p, s_port);
-    wostream* os = s_port->os;
+    wostream* wos = s_port->wos;
     // Only file-streams can be closed in C++
-    wofstream* ofs = static_cast<wofstream*>(os);
-    if (ofs != NULL) {
-       ofs->close();
+    wofstream* wofs = static_cast<wofstream*>(wos);
+    if (wofs != NULL) {
+       wofs->close();
     }
     return S_UNSPECIFIED;
 }
@@ -1423,14 +1423,14 @@ SchemeObject* s_with_input_from_file(SchemeObject* s_filename, SchemeObject* s_t
 }
 
 SchemeObject* s_read_char(SchemeObject* s_port) {
-    wistream* is;
+    wistream* wis;
     if (s_port == S_UNSPECIFIED) {
-        is = s_current_input_port()->is;
+        wis = s_current_input_port()->wis;
     } else {
         assert_arg_type(L"read-char", 1, s_input_port_p, s_port);
-        is = s_port->is;
+        wis = s_port->wis;
     }
-    int c = is->get();
+    int c = wis->get();
     if (c == -1) {
         return S_EOF;
     } else {
@@ -1439,14 +1439,14 @@ SchemeObject* s_read_char(SchemeObject* s_port) {
 }
 
 SchemeObject* s_peek_char(SchemeObject* s_port) {
-    wistream* is;
+    wistream* wis;
     if (s_port == S_UNSPECIFIED) {
-        is = s_current_input_port()->is;
+        wis = s_current_input_port()->wis;
     } else {
         assert_arg_type(L"peek-char", 1, s_input_port_p, s_port);
-        is = s_port->is;
+        wis = s_port->wis;
     }
-    int c = is->peek();
+    int c = wis->peek();
     if (c == -1) {
         return S_EOF;
     } else {
@@ -1456,69 +1456,69 @@ SchemeObject* s_peek_char(SchemeObject* s_port) {
 
 SchemeObject* s_write_char(SchemeObject* s_char, SchemeObject* port) {
     assert_arg_type(L"write-char", 1, s_char_p, s_char);
-    wostream* os;
+    wostream* wos;
     if (port == S_UNSPECIFIED) {
-        os = s_current_output_port()->os;
+        wos = s_current_output_port()->wos;
     } else {
         assert_arg_type(L"write-char", 2, s_output_port_p, port);
-        os = port->os;
+        wos = port->wos;
     }
-    (*os) << scm2char(s_char);
+    (*wos) << scm2char(s_char);
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_read(SchemeObject* s_port) {
-    wistream* is;
+    wistream* wis;
     if (s_port == S_UNSPECIFIED) {
-        is = s_current_input_port()->is;
+        wis = s_current_input_port()->wis;
     } else {
         assert_arg_type(L"read", 1, s_input_port_p, s_port);
-        is = s_port->is;
+        wis = s_port->wis;
     }
-    return global_parser->read(is);
+    return global_parser->read(wis);
 }
 
 
 SchemeObject* s_write(SchemeObject* o, SchemeObject* port) {
-    wostream* os;
+    wostream* wos;
     if (port == S_UNSPECIFIED) {
-        os = s_current_output_port()->os;
+        wos = s_current_output_port()->wos;
     } else {
         assert_arg_type(L"write", 2, s_output_port_p, port);
-        os = port->os;
+        wos = port->wos;
     }
-    (*os) << o->toString();
+    (*wos) << o->toString();
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_display(SchemeObject* o, SchemeObject* port) {
-    wostream* os;
+    wostream* wos;
     if (port == S_UNSPECIFIED) {
-        os = s_current_output_port()->os;
+        wos = s_current_output_port()->wos;
     } else {
         assert_arg_type(L"display", 2, s_output_port_p, port);
-        os = port->os;
+        wos = port->wos;
     }
     
     if (s_string_p(o) == S_TRUE) {
-        (*os) << o->str;
+        (*wos) << o->str;
     } else if (s_char_p(o) == S_TRUE) {
-        (*os) << o->c;
+        (*wos) << o->c;
     } else {
-        (*os) << o->toString();
+        (*wos) << o->toString();
     }
     return S_UNSPECIFIED;
 }
 
 SchemeObject* s_newline(SchemeObject* port) {
-    wostream* os;
+    wostream* wos;
     if (port == S_UNSPECIFIED) {
-        os = s_current_output_port()->os;
+        wos = s_current_output_port()->wos;
     } else {
         assert_arg_type(L"write", 2, s_output_port_p, port);
-        os = port->os;
+        wos = port->wos;
     }
-    (*os) << endl;        
+    (*wos) << endl;        
     return S_UNSPECIFIED;
 }
 

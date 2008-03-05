@@ -75,36 +75,36 @@ class SchemeObject
     public:
         uint32_t metadata;
         union {
-            double real_value;             // For real numbers
-            int64_t integer_value;          // For integer numbers
+            double real_value;               // For real numbers
+            int64_t integer_value;           // For integer numbers
             struct {
                 union {
-                    wchar_t* str;          // For strings and symbols
-                    SchemeObject* car;     // For pairs
-                    bool boolean;          // For booleans
-                    ::jmp_buf *jmpbuf;     // For continuations
-                    wistream* is;          // For inputports
-                    wostream* os;          // For outputports
-                    wchar_t c;             // For chars
-                    SchemeObject** elems;  // For vector
+                    wchar_t* str;            // For strings and symbols
+                    SchemeObject* car;       // For pairs
+                    bool boolean;            // For booleans
+                    ::jmp_buf *jmpbuf;       // For continuations
+                    wistream* wis;           // For old inputports and stringbased inputports
+                    wostream* wos;           // For old outputports
+                    wchar_t c;               // For chars
+                    SchemeObject** elems;    // For vector
                     uint8_t* bytevector;
-                    SchemeObject* parent;  // For environments. Environment.
-                    SchemeObject* name;    // For macros and procedures. Symbol.
-                    SchemeObject* real;    // For complex numbers
-                    SchemeObject* numerator;// For rational numbers
-                    int32_t wrapped_subtype;// For wrapped C-objects
-                    SchemeObject* buckets;  // For hashtables
+                    SchemeObject* parent;    // For environments. Environment.
+                    SchemeObject* name;      // For macros and procedures. Symbol.
+                    SchemeObject* real;      // For complex numbers
+                    SchemeObject* numerator; // For rational numbers
+                    int32_t wrapped_subtype; // For wrapped C-objects
+                    SchemeObject* buckets;   // For hashtables
                 };
                 union {
-                    SchemeObject* cdr;      // For pairs
-                    SchemeObject* result;   // For continuations
+                    SchemeObject* cdr;       // For pairs
+                    SchemeObject* result;    // For continuations
                     uint32_t length;         // For vector, bytevector and strings
                     binding_map_t* binding_map;	// For environments
 		            SchemeObject* binding_list; // For simple environments 
-                    SchemeObject* (*fn)();  // For BUILT_IN_PROCEDURE
+                    SchemeObject* (*fn)();   // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
-                    SchemeObject* s_hashtable_meta;   // For HASHTABLE (hash_func equiv_func . size)
-                    SchemeObject* imag;    // For complex numbers
+                    SchemeObject* s_hashtable_meta; // For HASHTABLE (hash_func equiv_func . size)
+                    SchemeObject* imag;      // For complex numbers
                     SchemeObject* denominator;// For rational numbers
                     SchemeWrappedCObject* wrapped_object; // For wrapped C-objects
                     binding_map_t::hash_type hash;  // For symbols 
@@ -130,6 +130,7 @@ class SchemeObject
  		    EOFTYPE,
  		    INPUT_PORT,
  		    OUTPUT_PORT,
+ 		    PORT,
  		    WRAPPED_C_OBJECT,
 		    UNSPECIFIED,
 		    HASHTABLE,

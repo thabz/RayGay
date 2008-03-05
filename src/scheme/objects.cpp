@@ -190,15 +190,15 @@ SchemeObject* SchemeObject::createEnvironment(SchemeObject* parent, uint32_t num
     return result;
 }
 
-SchemeObject* SchemeObject::createInputPort(wistream* is) {
+SchemeObject* SchemeObject::createInputPort(wistream* wis) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::INPUT_PORT);
-    result->is = is;
+    result->wis = wis;
     return result;
 }
 
-SchemeObject* SchemeObject::createOutputPort(wostream* os) {
+SchemeObject* SchemeObject::createOutputPort(wostream* wos) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::OUTPUT_PORT);
-    result->os = os;
+    result->wos = wos;
     return result;
 }
 
@@ -294,7 +294,7 @@ void SchemeObject::mark() {
                 denominator->mark();
                 break;
             case SchemeObject::VECTOR :    
-                for(int32_t i = 0; i < length; i++) {
+                for(uint32_t i = 0; i < length; i++) {
                     elems[i]->mark();
                 }
                 break;
