@@ -12,16 +12,16 @@ class Image;
  */
 class TextureFactory {
     public:
-        static SchemeObject* make_texture(SchemeObject* s_filename, SchemeObject* s_repeat_x, SchemeObject* s_repeat_y, SchemeObject* s_interpolation_type);
-	static SchemeObject* get_pixel(SchemeObject* s_texture, SchemeObject* s_x, SchemeObject* s_y);
+        static SchemeObject* make_texture(Scheme* scheme, SchemeObject* s_filename, SchemeObject* s_repeat_x, SchemeObject* s_repeat_y, SchemeObject* s_interpolation_type);
+	    static SchemeObject* get_pixel(Scheme* scheme, SchemeObject* s_texture, SchemeObject* s_x, SchemeObject* s_y);
 
-	static void register_procs(Scheme* scheme);
+	    static void register_procs(Scheme* scheme);
 
-	static std::map<std::wstring,Image*> image_cache;
+	    static std::map<std::wstring,Image*> image_cache;
 
 };
 
-SchemeObject* s_texture_p(SchemeObject* object_smob);
+SchemeObject* s_texture_p(Scheme* scheme, SchemeObject* object_smob);
 
 
 #endif

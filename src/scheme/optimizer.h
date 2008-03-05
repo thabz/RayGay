@@ -19,7 +19,7 @@
  */
 class Optimizer {
     public:
-        static SchemeObject* optimizeList(SchemeObject* list, SchemeObject* envt);
+        static SchemeObject* optimizeList(Scheme* scheme, SchemeObject* list, SchemeObject* envt);
         
     private:
         static SchemeObject* optimizeSymbol(SchemeObject* symbol, SchemeObject* envt);

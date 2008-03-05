@@ -109,15 +109,15 @@ SchemeObject* SceneParser::lookup(wstring var_name) {
     return scheme->lookup(var_name);        
 }
 
-SchemeObject* SceneParser::add_to_scene(SchemeObject* s_value) {
-    if (s_sceneobject_p(s_value) == S_TRUE) {
+SchemeObject* SceneParser::add_to_scene(Scheme* scheme, SchemeObject* s_value) {
+    if (s_sceneobject_p(scheme, s_value) == S_TRUE) {
         SceneObject* sceneobject = scm2sceneobject(s_value, L"internal-populate-scene", 0);
         Object* o = static_cast<Object*>(sceneobject);
         if (o != NULL && o->getMaterial() == NULL) {
             throw scheme_exception(L"add-to-scene", L"Object added without material: " + s_value->toString());
         }
         scene->addObject(sceneobject);
-    } else if (s_lightsource_p(s_value) == S_TRUE) {
+    } else if (s_lightsource_p(scheme, s_value) == S_TRUE) {
         Lightsource* light = scm2lightsource(s_value, L"internal-populate-scene", 0);
         scene->addLight(light);
     } else {
@@ -168,20 +168,20 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     
     SchemeObject* s_image_size = lookup(VAR_IMAGESIZE);
     if (s_image_size != S_EMPTY_LIST) {
-	assert(S_TRUE == (s_list_p (s_image_size)));
-	assert(safe_scm2int(s_length(s_image_size), 0, L"") == 2);
-	SchemeObject* s_w = s_list_ref(s_image_size, S_ZERO);
-	uint32_t w = safe_scm2int(s_w, 0, L"");
-	SchemeObject* s_h = s_list_ref(s_image_size, S_ONE);
-	uint32_t h = safe_scm2int(s_h, 0, L"");
-	renderersettings->image_width = w;
-	renderersettings->image_height = h;
+    	assert(S_TRUE == (s_list_p (scheme, s_image_size)));
+    	assert(safe_scm2int(s_length(scheme, s_image_size), 0, L"") == 2);
+    	SchemeObject* s_w = s_list_ref(scheme, s_image_size, int2scm(0));
+    	uint32_t w = safe_scm2int(s_w, 0, L"");
+    	SchemeObject* s_h = s_list_ref(scheme, s_image_size, int2scm(1));
+    	uint32_t h = safe_scm2int(s_h, 0, L"");
+    	renderersettings->image_width = w;
+    	renderersettings->image_height = h;
     }
 
     SchemeObject* s_background = lookup(VAR_BACKGROUND);
     if (s_background != S_EMPTY_LIST) {
 	wchar_t* subr = L"internal: setting scene background";
-	if (s_texture_p(s_background) == S_TRUE) {
+	if (s_texture_p(scheme, s_background) == S_TRUE) {
 	    Texture* texture = scm2texture(s_background, subr, 0);
             if (renderersettings->fast_preview) {
                 texture->setInpolationType(Texture::INTERPOLATION_NONE);
@@ -196,22 +196,22 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
 
 // TODO: Set fog
 
-SchemeObject* SceneParser::set_settings(SchemeObject* s_settings) 
+SchemeObject* SceneParser::set_settings(Scheme* scheme, SchemeObject* s_settings) 
 {
     RendererSettings* renderersettings = RendererSettings::uniqueInstance();
     wchar_t* proc = L"set-settings";
     if (S_FALSE == i_null_p(s_settings)) {
-	if (S_FALSE == (s_list_p (s_settings))) {
-	    throw scheme_exception(proc, L"The settings is not a list");
-	}
-	uint32_t length = safe_scm2int(s_length(s_settings), 0, L"");
+	    if (S_FALSE == (s_list_p(scheme, s_settings))) {
+	        throw scheme_exception(proc, L"The settings is not a list");
+	    }
+	uint32_t length = safe_scm2int(s_length(scheme, s_settings), 0, L"");
 
 	assert(length % 2 == 0);
 	uint32_t argc = length / 2;
 
 	for(uint32_t i = 0; i < argc; i++) {
-            SchemeObject* s_key = s_list_ref(s_settings, int2scm(i*2));
-	    SchemeObject* s_value = s_list_ref(s_settings, int2scm(i*2+1));
+            SchemeObject* s_key = s_list_ref(scheme, s_settings, int2scm(i*2));
+	        SchemeObject* s_value = s_list_ref(scheme, s_settings, int2scm(i*2+1));
             if (i_symbol_p(s_key) == S_FALSE) {
                 throw scheme_exception(L"Invalid camera-option-name: " + s_key->toString());
             }    

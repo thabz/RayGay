@@ -93,13 +93,13 @@ SchemeObject* rgb2scm(RGB rgb) {
 }
 
 vector<Vector> scm2vectorlist(SchemeObject* s_list_vector, wchar_t* subr, int pos) {
-    assert(scm2bool(s_list_p (s_list_vector)));
-    uint32_t length = scm2int(s_length(s_list_vector));
+    assert(scm2bool(i_list_p (s_list_vector)));
+    uint32_t length = i_length(s_list_vector);
     SchemeObject* s_vector;
     vector<Vector> result;
     for(uint32_t i = 0; i < length; i++) {
-	s_vector = s_list_ref(s_list_vector,int2scm(i));
-	result.push_back(scm2vector(s_vector, subr, pos));
+	    s_vector = i_list_ref(s_list_vector,int2scm(i));
+	    result.push_back(scm2vector(s_vector, subr, pos));
     }
     return result;
 }

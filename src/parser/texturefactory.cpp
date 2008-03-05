@@ -13,11 +13,11 @@ using namespace std;
 
 std::map<std::wstring,Image*> TextureFactory::image_cache;
 
-SchemeObject* s_texture_p(SchemeObject* object) {
+SchemeObject* s_texture_p(Scheme* scheme, SchemeObject* object) {
     return isWrappedObjectType(object, TEXTURE);        
 }
 
-SchemeObject* TextureFactory::make_texture(SchemeObject* s_filename, SchemeObject* s_repeat_x, SchemeObject* s_repeat_y, SchemeObject* s_interpolation_type) {
+SchemeObject* TextureFactory::make_texture(Scheme* scheme, SchemeObject* s_filename, SchemeObject* s_repeat_x, SchemeObject* s_repeat_y, SchemeObject* s_interpolation_type) {
 
     RendererSettings* renderer_settings = RendererSettings::uniqueInstance();
 
@@ -31,37 +31,37 @@ SchemeObject* TextureFactory::make_texture(SchemeObject* s_filename, SchemeObjec
     wstring type_string = s_interpolation_type->toString();
     Texture::InterpolationType type = Texture::INTERPOLATION_NONE;
     if (type_string == L"none" || RendererSettings::uniqueInstance()->fast_preview) {
-	type = Texture::INTERPOLATION_NONE;
+	    type = Texture::INTERPOLATION_NONE;
     } else if (type_string == L"bilinear") {
-	type = Texture::INTERPOLATION_BILINEAR;
+	    type = Texture::INTERPOLATION_BILINEAR;
     } else if (type_string == L"bicubic") {
-	type = Texture::INTERPOLATION_BICUBIC;
+	    type = Texture::INTERPOLATION_BICUBIC;
     } else {
-	throw scheme_exception(L"make-texture", L"Unknown interpolationtype: " + type_string);
+	    throw scheme_exception(L"make-texture", L"Unknown interpolationtype: " + type_string);
     }
 
     Image* image;
     try {
-        if (s_string_p(s_filename) == S_TRUE) {    
+        if (s_string_p(scheme, s_filename) == S_TRUE) {    
             wstring filename = scm2string(s_filename);
-	    if (image_cache.find(filename) != image_cache.end()) {
-	        image = image_cache.find(filename)->second;
-	    } else {
-    	        image = Image::load(SchemeFilenames::toFilename(filename), renderer_settings->image_alloc_model);
-	        image_cache.insert(make_pair(filename,image));
-	    }
+	        if (image_cache.find(filename) != image_cache.end()) {
+	            image = image_cache.find(filename)->second;
+	        } else {
+	            image = Image::load(SchemeFilenames::toFilename(filename), renderer_settings->image_alloc_model);
+	            image_cache.insert(make_pair(filename,image));
+	        }
         } else {
             image = scm2image(s_filename, proc, 1);
         }
     } catch (Exception e) {
         cout << e.getMessage() << endl;    
-	throw scheme_exception(L"make-texture");
+	    throw scheme_exception(L"make-texture");
     }
     Texture* texture = new Texture(image, Vector2(rep_x,rep_y), type);
     return texture2scm(texture);
 }
 
-SchemeObject* TextureFactory::get_pixel(SchemeObject* s_texture, SchemeObject* s_x, SchemeObject* s_y) 
+SchemeObject* TextureFactory::get_pixel(Scheme* scheme, SchemeObject* s_texture, SchemeObject* s_x, SchemeObject* s_y) 
 {
     wchar_t* proc = L"texture-get-pixel";
     Texture* texture = scm2texture(s_texture, proc, 1);

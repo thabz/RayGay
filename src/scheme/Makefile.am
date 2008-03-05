@@ -19,6 +19,9 @@ libscheme_la_SOURCES = lexer.h lexer.cpp \
                        r6rs-lib-hashtables.h r6rs-lib-hashtables.cpp \
                        r6rs-lib-sorting.h r6rs-lib-sorting.cpp \
                        r6rs-lib-arithmetic.h r6rs-lib-arithmetic.cpp \
+                       r6rs-lib-io-common.h r6rs-lib-io-common.cpp \
+                       r6rs-lib-io-simple.h r6rs-lib-io-simple.cpp \
+                       r6rs-lib-io-ports.h r6rs-lib-io-ports.cpp \
                        r6rs-lib-unicode.h r6rs-lib-unicode.cpp
 
 # -----------------------------------------------------

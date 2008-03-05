@@ -12,20 +12,20 @@ class Image;
  */
 class ImageFactory {
     public:
-        static SchemeObject* make_image(SchemeObject* width, SchemeObject* height, SchemeObject* bg_color);
-        static SchemeObject* image_copy(SchemeObject* s_image);
-        static SchemeObject* load_image(SchemeObject* s_filename);
-        static SchemeObject* save_image(SchemeObject* s_image, SchemeObject* s_filename);
-        static SchemeObject* image_width(SchemeObject* s_image);
-        static SchemeObject* image_height(SchemeObject* s_image);
-        static SchemeObject* set_alpha_combine_mode(SchemeObject* s_mode);
-	    static SchemeObject* set_pixel(SchemeObject* s_image, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* color);
-	    static SchemeObject* get_pixel(SchemeObject* s_image, SchemeObject* s_x, SchemeObject* s_y);
-	    static SchemeObject* draw_line(SchemeObject* s_image, SchemeObject* s_from, SchemeObject* s_to, SchemeObject* color);
-	    static SchemeObject* draw_filled_box(SchemeObject* s_image, SchemeObject* s_pos, SchemeObject* s_size, SchemeObject* color);
-	    static SchemeObject* draw_circle(SchemeObject* s_image, SchemeObject* s_center, SchemeObject* s_radius, SchemeObject* color);
-        static SchemeObject* draw_string(SchemeObject* s_image, SchemeObject* s_center, SchemeObject* s_text, SchemeObject* s_size, SchemeObject* s_ttf_file, SchemeObject* s_color);
-        static SchemeObject* apply_gaussian_blur(SchemeObject* s_image, SchemeObject* s_radius);
+        static SchemeObject* make_image(Scheme* scheme, SchemeObject* width, SchemeObject* height, SchemeObject* bg_color);
+        static SchemeObject* image_copy(Scheme* scheme, SchemeObject* s_image);
+        static SchemeObject* load_image(Scheme* scheme, SchemeObject* s_filename);
+        static SchemeObject* save_image(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_filename);
+        static SchemeObject* image_width(Scheme* scheme, SchemeObject* s_image);
+        static SchemeObject* image_height(Scheme* scheme, SchemeObject* s_image);
+        static SchemeObject* set_alpha_combine_mode(Scheme* scheme, SchemeObject* s_mode);
+	    static SchemeObject* set_pixel(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* color);
+	    static SchemeObject* get_pixel(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_x, SchemeObject* s_y);
+	    static SchemeObject* draw_line(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_from, SchemeObject* s_to, SchemeObject* color);
+	    static SchemeObject* draw_filled_box(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_pos, SchemeObject* s_size, SchemeObject* color);
+	    static SchemeObject* draw_circle(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_center, SchemeObject* s_radius, SchemeObject* color);
+        static SchemeObject* draw_string(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_center, SchemeObject* s_text, SchemeObject* s_size, SchemeObject* s_ttf_file, SchemeObject* s_color);
+        static SchemeObject* apply_gaussian_blur(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_radius);
 	    static void register_procs(Scheme* scheme);
 
         static ImageDrawing::AlphaCombineMode alpha_combine_mode;
@@ -37,7 +37,7 @@ class ImageFactory {
 
 };
 
-SchemeObject* s_image_p(SchemeObject* object);
+SchemeObject* s_image_p(Scheme* scheme, SchemeObject* object);
 
 #endif
 

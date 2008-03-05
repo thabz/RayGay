@@ -56,7 +56,7 @@ SchemeObject::ObjectType representativeNumberType(wchar_t* procname, int num, Sc
     return type;
 }
 
-SchemeObject* s_plus(int num, SchemeStack::iterator stack) {
+SchemeObject* s_plus(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"+", num, stack);
 
     if (outType == SchemeObject::REAL_NUMBER) {
@@ -98,7 +98,7 @@ SchemeObject* s_plus(int num, SchemeStack::iterator stack) {
     }
 }
 
-SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
+SchemeObject* s_minus(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"-", num, stack);
     
     if (outType == SchemeObject::REAL_NUMBER) {
@@ -154,7 +154,7 @@ SchemeObject* s_minus(int num, SchemeStack::iterator stack) {
     }        
 }
 
-SchemeObject* s_divide(int num, SchemeStack::iterator stack) {
+SchemeObject* s_divide(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"/", num, stack);
     if (outType == SchemeObject::REAL_NUMBER) {
        double args[num];
@@ -199,7 +199,7 @@ SchemeObject* s_divide(int num, SchemeStack::iterator stack) {
    }
 }
 
-SchemeObject* s_mult(int num, SchemeStack::iterator stack) {
+SchemeObject* s_mult(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"*", num, stack);
 
     if (outType == SchemeObject::REAL_NUMBER) {
@@ -242,7 +242,7 @@ SchemeObject* s_mult(int num, SchemeStack::iterator stack) {
 }
 
 
-SchemeObject* s_sqrt(SchemeObject* n) {
+SchemeObject* s_sqrt(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"sqrt", 1, n);
     if (n->type() == SchemeObject::COMPLEX_NUMBER) {
         return complex2scm(std::sqrt(scm2complex(n)));
@@ -257,11 +257,11 @@ SchemeObject* s_sqrt(SchemeObject* n) {
 }
 
 // See http://en.wikipedia.org/wiki/Integer_square_root
-SchemeObject* s_exact_integer_sqrt(SchemeObject* s_n) {
+SchemeObject* s_exact_integer_sqrt(Scheme* scheme, SchemeObject* s_n) {
     assert_arg_positive_int(L"exact-integer-sqrt", 1, s_n);
     int64_t n = scm2int(s_n);
     if (n == 0) {
-        return i_list_2(S_ZERO,S_ZERO);
+        return i_list_2(int2scm(0),int2scm(0));
     }
     int64_t xn = n;
     int64_t x;
@@ -272,8 +272,8 @@ SchemeObject* s_exact_integer_sqrt(SchemeObject* s_n) {
     return i_list_2(int2scm(xn), int2scm(n-xn*xn));
 }
 
-SchemeObject* s_abs(SchemeObject* n) {
-    assert_arg_type(L"abs", 1, s_real_p, n);
+SchemeObject* s_abs(Scheme* scheme, SchemeObject* n) {
+    assert_arg_real_type(L"abs", 1, n);
     if (n->type() == SchemeObject::RATIONAL_NUMBER) {
         return rational2scm(abs(scm2rational(n)));
     } else if (n->type() == SchemeObject::INTEGER_NUMBER) {
@@ -284,7 +284,7 @@ SchemeObject* s_abs(SchemeObject* n) {
 }
 
 
-SchemeObject* s_sin(SchemeObject* n) {
+SchemeObject* s_sin(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"sin", 1, n);
     if (n->type() == SchemeObject::COMPLEX_NUMBER) {
         return complex2scm(std::sin(scm2complex(n)));
@@ -293,7 +293,7 @@ SchemeObject* s_sin(SchemeObject* n) {
     }
 }
 
-SchemeObject* s_asin(SchemeObject* n) {
+SchemeObject* s_asin(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"asin", 1, n);
     if (n->type() == SchemeObject::COMPLEX_NUMBER) {
         complex<double> i = complex<double>(0,1);    
@@ -305,7 +305,7 @@ SchemeObject* s_asin(SchemeObject* n) {
     }
 }
 
-SchemeObject* s_cos(SchemeObject* n) {
+SchemeObject* s_cos(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"cos", 1, n);
     if (n->type() == SchemeObject::COMPLEX_NUMBER) {
         return complex2scm(std::cos(scm2complex(n)));
@@ -314,7 +314,7 @@ SchemeObject* s_cos(SchemeObject* n) {
     }
 }
 
-SchemeObject* s_acos(SchemeObject* n) {
+SchemeObject* s_acos(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"acos", 1, n);
     if (n->type() == SchemeObject::COMPLEX_NUMBER) {
         complex<double> i = complex<double>(0,1);    
@@ -327,7 +327,7 @@ SchemeObject* s_acos(SchemeObject* n) {
     }
 }
 
-SchemeObject* s_tan(SchemeObject* n) {
+SchemeObject* s_tan(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"tan", 1, n);
     if (n->type() == SchemeObject::COMPLEX_NUMBER) {
         return complex2scm(std::tan(scm2complex(n)));
@@ -336,7 +336,7 @@ SchemeObject* s_tan(SchemeObject* n) {
     }
 }
 
-SchemeObject* s_atan(SchemeObject* y, SchemeObject* x) {
+SchemeObject* s_atan(Scheme* scheme, SchemeObject* y, SchemeObject* x) {
     assert_arg_number_type(L"atan", 1, y);
     if (x == S_UNSPECIFIED) {
         if (y->type() == SchemeObject::COMPLEX_NUMBER) {
@@ -348,8 +348,8 @@ SchemeObject* s_atan(SchemeObject* y, SchemeObject* x) {
             return double2scm(::atan(scm2double(y)));
         }
     } else {
-        assert_arg_type(L"atan", 1, s_real_p, y);
-        assert_arg_type(L"atan", 2, s_real_p, x);
+        assert_arg_real_type(L"atan", 1, y);
+        assert_arg_real_type(L"atan", 2, x);
         return double2scm(::atan2(scm2double(y), scm2double(x)));
     }
 }
@@ -358,7 +358,7 @@ SchemeObject* s_atan(SchemeObject* y, SchemeObject* x) {
 // Note that log_b(x) = log_k(x) / log_k(b) for any base k
 // For example log2(16) = log(16) / log(2) 
 // TODO: Implement
-SchemeObject* s_log(SchemeObject* n) {
+SchemeObject* s_log(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"log", 1, n);
     if (n->type() == SchemeObject::COMPLEX_NUMBER) {
         return complex2scm(std::log(scm2complex(n)));
@@ -375,13 +375,13 @@ SchemeObject* s_log(SchemeObject* n) {
 }
 
 // Returns a^b
-SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
+SchemeObject* s_expt(Scheme* scheme, SchemeObject* a, SchemeObject* b) {
     if (a->type() == SchemeObject::INTEGER_NUMBER && b->type() == SchemeObject::INTEGER_NUMBER) {
         int64_t bi = scm2int(b);
         int64_t ai = scm2int(a);    
 
-        if (bi == 0) return S_ONE;
-        if (ai == 0) return S_ZERO;
+        if (bi == 0) return int2scm(1);
+        if (ai == 0) return int2scm(0);
 
         int64_t iter = ::llabs(bi);    
         int64_t result = iter % 2 ? ai : 1;
@@ -427,7 +427,7 @@ SchemeObject* s_expt(SchemeObject* a, SchemeObject* b) {
 }
 
 // Returns e^n
-SchemeObject* s_exp(SchemeObject* n) {
+SchemeObject* s_exp(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"exp", 1, n);
     if (n->type() == SchemeObject::COMPLEX_NUMBER) {
         return complex2scm(std::exp(scm2complex(n)));
@@ -437,13 +437,13 @@ SchemeObject* s_exp(SchemeObject* n) {
 }
 
 // Round returns the closest integer to x, rounding to even when x is halfway between two integers.
-SchemeObject* s_round(SchemeObject* n) {
+SchemeObject* s_round(Scheme* scheme, SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return n;
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
      	return int2scm(round(scm2rational(n)));
     } else {
-        assert_arg_type(L"round", 1, s_real_p, n);
+        assert_arg_real_type(L"round", 1, n);
         double nn = scm2double(n);
         double flo = floor(nn);
         double cei = ceil(nn);
@@ -466,37 +466,37 @@ SchemeObject* s_round(SchemeObject* n) {
 }
 
 // Ceiling returns the smallest integer not smaller than x
-SchemeObject* s_ceiling(SchemeObject* n) {
+SchemeObject* s_ceiling(Scheme* scheme, SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return n;
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
 	    return int2scm(ceil(scm2rational(n)));
     } else {
-        assert_arg_type(L"ceiling", 1, s_real_p, n);
+        assert_arg_real_type(L"ceiling", 1, n);
         return double2scm(ceil(scm2double(n)));
     }
 }
 
 // Floor returns the largest integer not larger than x
-SchemeObject* s_floor(SchemeObject* n) {
+SchemeObject* s_floor(Scheme* scheme, SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return n;
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
 	    return int2scm(floor(scm2rational(n)));
     } else {
-        assert_arg_type(L"floor", 1, s_real_p, n);
+        assert_arg_real_type(L"floor", 1, n);
         return double2scm(floor(scm2double(n)));
     }
 }
 
 // Truncate returns the integer closest to x whose absolute value is not larger than the absolute value of x
-SchemeObject* s_truncate(SchemeObject* n) {
+SchemeObject* s_truncate(Scheme* scheme, SchemeObject* n) {
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return n;
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
 	    return int2scm(trunc(scm2rational(n)));
     } else {
-        assert_arg_type(L"truncate", 1, s_real_p, n);
+        assert_arg_real_type(L"truncate", 1, n);
         double t = scm2double(n);
         #if HAVE_TRUNC
             double r = trunc(t);
@@ -519,20 +519,20 @@ SchemeObject* s_truncate(SchemeObject* n) {
 // if p3/q3 < x, let p1 := p3 and q1 := q3; if p3/q3 > x, let p2 := p3 and
 // q2 := q3.  This gives a smaller interval (p1/q1,p2/q2) still containing x.
 
-SchemeObject* s_rationalize(SchemeObject* s_x, SchemeObject* s_y) {
-    assert_arg_type(L"rationalize", 1, s_real_p, s_x);
-    assert_arg_type(L"rationalize", 2, s_real_p, s_y);
+SchemeObject* s_rationalize(Scheme* scheme, SchemeObject* s_x, SchemeObject* s_y) {
+    assert_arg_real_type(L"rationalize", 1, s_x);
+    assert_arg_real_type(L"rationalize", 2, s_y);
     
     // TODO: inexact->exact returns large numerators and denominators
     // making the following overflow.
     bool exact = true;
     if (s_x->type() == SchemeObject::REAL_NUMBER) {
         exact = false;
-        s_x = s_inexact_2_exact(s_x);
+        s_x = s_inexact_2_exact(scheme,s_x);
     }
     if (s_y->type() == SchemeObject::REAL_NUMBER) {
         exact = false;
-        s_y = s_inexact_2_exact(s_y);
+        s_y = s_inexact_2_exact(scheme,s_y);
     } 
     
     rational_type x = scm2rational(s_x);
@@ -562,22 +562,22 @@ SchemeObject* s_rationalize(SchemeObject* s_x, SchemeObject* s_y) {
 }
 
 
-SchemeObject* s_quotient(SchemeObject* n1, SchemeObject* n2) {
-    assert_arg_type(L"quotient", 1, s_integer_p, n1);
-    assert_arg_type(L"quotient", 2, s_integer_p, n2);
+SchemeObject* s_quotient(Scheme* scheme, SchemeObject* n1, SchemeObject* n2) {
+    assert_arg_int_type(L"quotient", 1, n1);
+    assert_arg_int_type(L"quotient", 2, n2);
     int64_t nn1 = scm2int(n1);
     int64_t nn2 = scm2int(n2);
     int64_t result = nn1 / nn2;
-    if (s_inexact_p(n1) == S_TRUE || s_inexact_p(n2) == S_TRUE) {
+    if (s_inexact_p(scheme,n1) == S_TRUE || s_inexact_p(scheme,n2) == S_TRUE) {
         return double2scm(double(result));
     } else {
         return int2scm(result);
     }
 }
 
-SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
-    assert_arg_type(L"remainder", 1, s_integer_p, n1);
-    assert_arg_type(L"remainder", 2, s_integer_p, n2);
+SchemeObject* s_remainder(Scheme* scheme, SchemeObject* n1, SchemeObject* n2) {
+    assert_arg_int_type(L"remainder", 1, n1);
+    assert_arg_int_type(L"remainder", 2, n2);
     int64_t nn1 = scm2int(n1);
     int64_t nn2 = scm2int(n2);
     int64_t result = nn1 % nn2;
@@ -590,7 +590,7 @@ SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
             result += labs(nn2);
         }
     }
-    if (s_inexact_p(n1) == S_TRUE || s_inexact_p(n2) == S_TRUE) {
+    if (s_inexact_p(scheme,n1) == S_TRUE || s_inexact_p(scheme,n2) == S_TRUE) {
         return double2scm(double(result));
     } else {
         return int2scm(result);
@@ -599,17 +599,17 @@ SchemeObject* s_remainder(SchemeObject* n1, SchemeObject* n2) {
 
 // The R^6RS procedure.
 // TODO: Write a test for this. 
-SchemeObject* s_mod(SchemeObject* n1, SchemeObject* n2) {
-    assert_arg_type(L"mod", 1, s_real_p, n1);
-    assert_arg_type(L"mod", 2, s_real_p, n2);
+SchemeObject* s_mod(Scheme* scheme, SchemeObject* n1, SchemeObject* n2) {
+    assert_arg_real_type(L"mod", 1, n1);
+    assert_arg_real_type(L"mod", 2, n2);
     double nn1 = scm2double(n1);
     double nn2 = scm2double(n2);
     return double2scm(::fmod(nn1,nn2));
 }
 
-SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2) {
-    assert_arg_type(L"modulo", 1, s_integer_p, n1);
-    assert_arg_type(L"modulo", 2, s_integer_p, n2);
+SchemeObject* s_modulo(Scheme* scheme, SchemeObject* n1, SchemeObject* n2) {
+    assert_arg_int_type(L"modulo", 1, n1);
+    assert_arg_int_type(L"modulo", 2, n2);
     int64_t nn1 = scm2int(n1);
     int64_t nn2 = scm2int(n2);
     int64_t result = nn1 % nn2;
@@ -620,7 +620,7 @@ SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2) {
             result += labs(nn2);
         }
     }
-    if (s_inexact_p(n1) == S_TRUE || s_inexact_p(n2) == S_TRUE) {
+    if (s_inexact_p(scheme, n1) == S_TRUE || s_inexact_p(scheme, n2) == S_TRUE) {
         return double2scm(double(result));
     } else {
         return int2scm(result);
@@ -628,7 +628,7 @@ SchemeObject* s_modulo(SchemeObject* n1, SchemeObject* n2) {
 }
 
 
-SchemeObject* s_min(int num, SchemeStack::iterator stack) {
+SchemeObject* s_min(Scheme* scheme, int num, SchemeStack::iterator stack) {
     assert (num > 0);
     SchemeObject::ObjectType outType = representativeNumberType(L"min", num, stack);
 
@@ -671,7 +671,7 @@ SchemeObject* s_min(int num, SchemeStack::iterator stack) {
     }
 }
 
-SchemeObject* s_max(int num, SchemeStack::iterator stack) {
+SchemeObject* s_max(Scheme* scheme, int num, SchemeStack::iterator stack) {
     assert (num > 0);
     SchemeObject::ObjectType outType = representativeNumberType(L"max", num, stack);
 
@@ -726,9 +726,9 @@ int64_t i_gcd(int64_t a, int64_t b) {
 }
 
 // Using that gcd is associative thus gcd(a,b,c) = gcd(a,(gcd(b,c))) = gcd(gcd(a,b),c).
-SchemeObject* s_gcd(int num, SchemeStack::iterator stack) {
+SchemeObject* s_gcd(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (num == 0) {
-        return S_ZERO;
+        return int2scm(0);
     }
     SchemeObject::ObjectType outType = representativeNumberType(L"gcd", num, stack);
 
@@ -750,9 +750,9 @@ SchemeObject* s_gcd(int num, SchemeStack::iterator stack) {
 }
 
 // Using the property gcd(a,b) * lcm(a,b) = a * b and that lcm(a,b,c) = lcm(lcm(a,b),c) = lcm(a,lcm(b,c))
-SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
+SchemeObject* s_lcm(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (num == 0) {
-        return S_ONE;
+        return int2scm(1);
     }
     SchemeObject::ObjectType outType = representativeNumberType(L"lcm", num, stack);
 
@@ -774,77 +774,77 @@ SchemeObject* s_lcm(int num, SchemeStack::iterator stack) {
     }
 }
 
-SchemeObject* s_numerator(SchemeObject* n) {
-    assert_arg_type(L"numerator", 1, s_real_p, n);
-    if (s_exact_p(n) == S_TRUE) {
+SchemeObject* s_numerator(Scheme* scheme, SchemeObject* n) {
+    assert_arg_real_type(L"numerator", 1, n);
+    if (s_exact_p(scheme,n) == S_TRUE) {
 	    return int2scm(scm2rational(n).normalized().numerator());
     } else {
-        SchemeObject* z = s_inexact_2_exact(n);
+        SchemeObject* z = s_inexact_2_exact(scheme,n);
 	    rational_type::value_type l = z->rationalValue().normalized().numerator();
         return double2scm(double(l));
     }
 }
 
-SchemeObject* s_denominator(SchemeObject* n) {
-    assert_arg_type(L"denominator", 1, s_real_p, n);
-    if (s_exact_p(n) == S_TRUE) {
+SchemeObject* s_denominator(Scheme* scheme, SchemeObject* n) {
+    assert_arg_real_type(L"denominator", 1, n);
+    if (s_exact_p(scheme,n) == S_TRUE) {
 	    return int2scm(scm2rational(n).normalized().denominator());
     } else {
-        SchemeObject* z = s_inexact_2_exact(n);
+        SchemeObject* z = s_inexact_2_exact(scheme,n);
 	    rational_type::value_type l = z->rationalValue().normalized().denominator();
         return double2scm(double(l));
     }
 }
 
-SchemeObject* s_make_polar(SchemeObject* magnitude, SchemeObject* angle) {
-    assert_arg_type(L"make-polar", 1, s_real_p, magnitude);
-    assert_arg_type(L"make-polar", 2, s_real_p, angle);
+SchemeObject* s_make_polar(Scheme* scheme, SchemeObject* magnitude, SchemeObject* angle) {
+    assert_arg_real_type(L"make-polar", 1, magnitude);
+    assert_arg_real_type(L"make-polar", 2, angle);
     std::complex<double> z = std::polar(magnitude->realValue(), angle->realValue());
     return complex2scm(z);
 }
 
-SchemeObject* s_make_rectangular(SchemeObject* real, SchemeObject* imag) {
-    assert_arg_type(L"make-rectangular", 1, s_real_p, real);
-    assert_arg_type(L"make-rectangular", 2, s_real_p, imag);
+SchemeObject* s_make_rectangular(Scheme* scheme, SchemeObject* real, SchemeObject* imag) {
+    assert_arg_real_type(L"make-rectangular", 1, real);
+    assert_arg_real_type(L"make-rectangular", 2, imag);
     std::complex<double> z(real->realValue(), imag->realValue());
     return complex2scm(z);
 }
 
-SchemeObject* s_real_part(SchemeObject* z) {
+SchemeObject* s_real_part(Scheme* scheme, SchemeObject* z) {
     assert_arg_complex_type(L"real-part", 1, z);
     std::complex<double> zz = z->complexValue();
     return double2scm(zz.real());
 }
 
-SchemeObject* s_imag_part(SchemeObject* z) {
+SchemeObject* s_imag_part(Scheme* scheme, SchemeObject* z) {
     assert_arg_complex_type(L"imag-part", 1, z);
     std::complex<double> zz = z->complexValue();
     return double2scm(zz.imag());
 }
 
-SchemeObject* s_magnitude(SchemeObject* z) {
+SchemeObject* s_magnitude(Scheme* scheme, SchemeObject* z) {
     assert_arg_complex_type(L"magnitude", 1, z);
     std::complex<double> zz = z->complexValue();
     return double2scm(std::abs(zz));        
 }
 
-SchemeObject* s_angle(SchemeObject* z) {
+SchemeObject* s_angle(Scheme* scheme, SchemeObject* z) {
     assert_arg_complex_type(L"angle", 1, z);
     std::complex<double> zz = z->complexValue();
     return double2scm(::atan2(zz.imag(), zz.real()));
 }
 
-SchemeObject* s_even_p(SchemeObject* n) {
+SchemeObject* s_even_p(Scheme* scheme, SchemeObject* n) {
     assert_arg_int_type(L"even?", 1, n);
     return (scm2int(n) & 0x1) == 0 ? S_TRUE : S_FALSE;
 }
 
-SchemeObject* s_odd_p(SchemeObject* n) {
+SchemeObject* s_odd_p(Scheme* scheme, SchemeObject* n) {
     assert_arg_int_type(L"odd?", 1, n);
     return (scm2int(n) & 0x1) == 1 ? S_TRUE : S_FALSE;
 }
 
-SchemeObject* s_zero_p(SchemeObject* n) {
+SchemeObject* s_zero_p(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"zero?", 1, n);
     bool result;
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
@@ -861,7 +861,7 @@ SchemeObject* s_zero_p(SchemeObject* n) {
     return bool2scm(result);
 }
 
-SchemeObject* s_infinite_p(SchemeObject* n) {
+SchemeObject* s_infinite_p(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"infinite?", 1, n);
     if (n->type() == SchemeObject::REAL_NUMBER) {
 	    return bool2scm(::isinf(scm2double(n)));
@@ -870,7 +870,7 @@ SchemeObject* s_infinite_p(SchemeObject* n) {
     }
 }
 
-SchemeObject* s_finite_p(SchemeObject* n) {
+SchemeObject* s_finite_p(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"finite?", 1, n);
     if (n->type() == SchemeObject::REAL_NUMBER) {
 	    return bool2scm(!::isinf(scm2double(n)));
@@ -879,7 +879,7 @@ SchemeObject* s_finite_p(SchemeObject* n) {
     }
 }
 
-SchemeObject* s_nan_p(SchemeObject* n) {
+SchemeObject* s_nan_p(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"finite?", 1, n);
     if (n->type() == SchemeObject::REAL_NUMBER) {
 	    return bool2scm(::isnan(scm2double(n)));
@@ -889,8 +889,8 @@ SchemeObject* s_nan_p(SchemeObject* n) {
 }
 
 
-SchemeObject* s_negative_p(SchemeObject* n) {
-    assert_arg_type(L"negative?", 1, s_real_p, n);
+SchemeObject* s_negative_p(Scheme* scheme, SchemeObject* n) {
+    assert_arg_real_type(L"negative?", 1, n);
     bool result;
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         result = scm2int(n) < 0;    
@@ -902,8 +902,8 @@ SchemeObject* s_negative_p(SchemeObject* n) {
     return bool2scm(result);
 }
 
-SchemeObject* s_positive_p(SchemeObject* n) {
-    assert_arg_type(L"positive?", 1, s_real_p, n);
+SchemeObject* s_positive_p(Scheme* scheme, SchemeObject* n) {
+    assert_arg_real_type(L"positive?", 1, n);
     bool result;
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         result = scm2int(n) > 0;    
@@ -916,7 +916,7 @@ SchemeObject* s_positive_p(SchemeObject* n) {
 }
 
 // (= a b)
-SchemeObject* s_equal(int num, SchemeStack::iterator stack) {
+SchemeObject* s_equal(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (num == 0)  return S_TRUE;
     SchemeObject::ObjectType outType = representativeNumberType(L"=", num, stack);
 
@@ -952,7 +952,7 @@ SchemeObject* s_equal(int num, SchemeStack::iterator stack) {
     }
 }
 
-SchemeObject* s_less(int num, SchemeStack::iterator stack) {
+SchemeObject* s_less(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (num == 0) {
         return S_TRUE;
     }
@@ -986,7 +986,7 @@ SchemeObject* s_less(int num, SchemeStack::iterator stack) {
     }
 }
 
-SchemeObject* s_less_equal(int num, SchemeStack::iterator stack) {
+SchemeObject* s_less_equal(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (num == 0) {
         return S_TRUE;
     }
@@ -1019,7 +1019,7 @@ SchemeObject* s_less_equal(int num, SchemeStack::iterator stack) {
     }
 }
 
-SchemeObject* s_greater(int num, SchemeStack::iterator stack) {        
+SchemeObject* s_greater(Scheme* scheme, int num, SchemeStack::iterator stack) {        
     if (num == 0) {
         return S_TRUE;
     }
@@ -1052,7 +1052,7 @@ SchemeObject* s_greater(int num, SchemeStack::iterator stack) {
     }
 }
 
-SchemeObject* s_greater_equal(int num, SchemeStack::iterator stack) {
+SchemeObject* s_greater_equal(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (num == 0) {
         return S_TRUE;
     }
@@ -1087,16 +1087,19 @@ SchemeObject* s_greater_equal(int num, SchemeStack::iterator stack) {
 }
 
 // (number? p)
-SchemeObject* s_number_p(SchemeObject* p) {
+SchemeObject* s_number_p(Scheme* scheme, SchemeObject* p) {
     return i_number_p(p);
 }
 
-
-SchemeObject* s_complex_p(SchemeObject* n) {
+SchemeObject* i_complex_p(SchemeObject* n) {
     return i_number_p(n);
 }
 
-SchemeObject* s_real_p(SchemeObject* n) {
+SchemeObject* s_complex_p(Scheme* scheme, SchemeObject* n) {
+    return i_number_p(n);
+}
+
+SchemeObject* i_real_p(SchemeObject* n) {
     if (n->type() == SchemeObject::COMPLEX_NUMBER) {
         return n->complexValue().imag() == 0.0 ? S_TRUE : S_FALSE;
     } else {
@@ -1104,7 +1107,11 @@ SchemeObject* s_real_p(SchemeObject* n) {
     }
 }
 
-SchemeObject* s_rational_p(SchemeObject* n) {
+SchemeObject* s_real_p(Scheme* scheme, SchemeObject* n) {
+    return i_real_p(n);
+}
+
+SchemeObject* s_rational_p(Scheme* scheme, SchemeObject* n) {
     if (n->type() == SchemeObject::RATIONAL_NUMBER) {
         return S_TRUE;
     } else if (n->type() == SchemeObject::INTEGER_NUMBER) {
@@ -1114,8 +1121,7 @@ SchemeObject* s_rational_p(SchemeObject* n) {
     }
 }
 
-// (integer? p)
-SchemeObject* s_integer_p(SchemeObject* p) {
+SchemeObject* i_integer_p(SchemeObject* p) {
     double i;
     if (p->type() == SchemeObject::INTEGER_NUMBER) {
         return S_TRUE;
@@ -1134,19 +1140,24 @@ SchemeObject* s_integer_p(SchemeObject* p) {
     }
 }
 
-SchemeObject* s_exact_p(SchemeObject* n) {
-    assert_arg_type(L"exact?", 1, s_number_p, n);
+// (integer? p)
+SchemeObject* s_integer_p(Scheme* scheme, SchemeObject* p) {
+    return i_integer_p(p);
+}
+
+SchemeObject* s_exact_p(Scheme* scheme, SchemeObject* n) {
+    assert_arg_number_type(L"exact?", 1, n);
     return n->type() == SchemeObject::INTEGER_NUMBER ||
            n->type() == SchemeObject::RATIONAL_NUMBER ? S_TRUE : S_FALSE;
 }
 
-SchemeObject* s_inexact_p(SchemeObject* n) {
-    assert_arg_type(L"inexact?", 1, s_number_p, n);
-    return s_exact_p(n) == S_TRUE ? S_FALSE : S_TRUE;
+SchemeObject* s_inexact_p(Scheme* scheme, SchemeObject* n) {
+    assert_arg_number_type(L"inexact?", 1, n);
+    return s_exact_p(scheme,n) == S_TRUE ? S_FALSE : S_TRUE;
 }
 
-SchemeObject* s_exact_2_inexact(SchemeObject* n) {
-    assert_arg_type(L"exact->inexact", 1, s_number_p, n);
+SchemeObject* s_exact_2_inexact(Scheme* scheme, SchemeObject* n) {
+    assert_arg_number_type(L"exact->inexact", 1, n);
     if (n->type() == SchemeObject::INTEGER_NUMBER) {
         return double2scm(n->realValue());
     } else if (n->type() == SchemeObject::RATIONAL_NUMBER) {
@@ -1190,8 +1201,8 @@ SchemeObject* i_double_2_exact(const double& n) {
     return rational2scm(result);
 }
 
-SchemeObject* s_inexact_2_exact(SchemeObject* n) {
-    assert_arg_type(L"inexact->exact", 1, s_real_p, n);
+SchemeObject* s_inexact_2_exact(Scheme* scheme, SchemeObject* n) {
+    assert_arg_real_type(L"inexact->exact", 1, n);
     if (n->type() == SchemeObject::REAL_NUMBER || n->type() == SchemeObject::COMPLEX_NUMBER) {
         return i_double_2_exact(scm2double(n));
     } else {
@@ -1247,7 +1258,7 @@ string extractDigits(wstring s, size_t offset, uint32_t radix) {
 }
 
 /// Returns a number object or S_FALSE in case of failure
-SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
+SchemeObject* i_string_2_number(Scheme* scheme, wstring s, uint32_t radix, size_t offset) {
     int sign = 1;
     if (s.size() == 0) {
 	    return S_FALSE;
@@ -1464,7 +1475,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     
     if (s[offset] == L'@') {
         offset++;
-        SchemeObject* s_angle = i_string_2_number(s, radix, offset);
+        SchemeObject* s_angle = i_string_2_number(scheme, s, radix, offset);
         if (s_angle->type() != SchemeObject::COMPLEX_NUMBER) {
             double angle = s_angle->realValue();
             double magnitude = sign*(t + df) * pow(10,double(e));
@@ -1476,7 +1487,7 @@ SchemeObject* i_string_2_number(wstring s, uint32_t radix, size_t offset) {
     }
     
     if (digits.size() != 0 || fraction.size() != 0) {
-        SchemeObject* imag = i_string_2_number(s, radix, offset);
+        SchemeObject* imag = i_string_2_number(scheme, s, radix, offset);
         if (imag->type() == SchemeObject::COMPLEX_NUMBER) {
            SchemeObject* real = SchemeObject::createRealNumber(sign*(t + df) * pow(10,double(e)));;    
            return SchemeObject::createComplexNumber(real, imag->imag);

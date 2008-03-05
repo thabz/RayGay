@@ -10,7 +10,7 @@
  * The caller should then copy car and cdr of returned list into head-pair of original list
  * to modify the running source code in place.
  */ 
-SchemeObject* Optimizer::optimizeList(SchemeObject* list, SchemeObject* envt) {
+SchemeObject* Optimizer::optimizeList(Scheme* scheme, SchemeObject* list, SchemeObject* envt) {
     // To write the modified list into program-source-memory just modify list's car and cdr
     // and it's a completely new list.        
     SchemeObject* car = i_car(list);
@@ -37,14 +37,14 @@ SchemeObject* Optimizer::optimizeList(SchemeObject* list, SchemeObject* envt) {
         if (arg->type() == SchemeObject::SYMBOL) {
             optimized_arg = optimizeSymbol(arg, envt);
         } else if (arg->type() == SchemeObject::PAIR) {
-            optimized_arg = optimizeList(arg, envt);
+            optimized_arg = optimizeList(scheme, arg, envt);
         } else {
             optimized_arg = arg;        
         }
         optimized_args = i_cons(optimized_arg, optimized_args);
         args = i_cdr(args);    
     }
-    optimized_args = s_reverse(optimized_args);
+    optimized_args = s_reverse(scheme, optimized_args);
     
     return list;
 }

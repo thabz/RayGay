@@ -1,11 +1,9 @@
 
 #include "r6rs-lib-lists.h"
 
-Scheme* lists_thescheme;
-
-SchemeObject* s_find(SchemeObject* proc, SchemeObject* list) {
+SchemeObject* s_find(Scheme* scheme, SchemeObject* proc, SchemeObject* list) {
     while(list != S_EMPTY_LIST) {
-	if (lists_thescheme->callProcedure_1(proc, i_car(list)) != S_FALSE)  {
+	if (scheme->callProcedure_1(proc, i_car(list)) != S_FALSE)  {
 	    return i_car(list);
 	}
 	list = i_cdr(list);
@@ -15,21 +13,21 @@ SchemeObject* s_find(SchemeObject* proc, SchemeObject* list) {
 
 // TODO: Implement this as a macro. The last call should be tail-recursive
 // according to the spec.
-SchemeObject* s_for_all(int num, SchemeStack::iterator args) {
+SchemeObject* s_for_all(Scheme* scheme, int num, SchemeStack::iterator args) {
     wstring procname = L"for-all";
     SchemeObject* proc = args[0];
-    assert_arg_type(procname, 1, s_procedure_p, proc);
+    assert_arg_procedure_type(procname, 1, proc);
 
     int empty = 0;
     SchemeObject* cropped_args[num-1];
     for(int i = 1; i < num; i++) {
         assert_non_atom_type(procname, i, args[i]);
         cropped_args[i-1] = args[i];
-	if (args[i] == S_EMPTY_LIST) empty++;
+	    if (args[i] == S_EMPTY_LIST) empty++;
     }
     if (empty == num-1) return S_TRUE;
 
-    // Vi skralder af lists i hvert gennemlÃ¸b. SÃ¥ ((1 2 3)(10 20 30)) bliver 
+    // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver 
     // til ((2 3)(20 30)) og til sidst ((3)(30))
     while (i_cdr(cropped_args[0]) != S_EMPTY_LIST) {
         SchemeAppendableList collection;
@@ -38,15 +36,15 @@ SchemeObject* s_for_all(int num, SchemeStack::iterator args) {
             if (lists_ptr == S_EMPTY_LIST) {
                 throw scheme_exception(procname + L": argument lists not equals length.");
             }
-            SchemeObject* arg = s_car(lists_ptr);
-            cropped_args[i] = s_cdr(lists_ptr);
+            SchemeObject* arg = s_car(scheme,lists_ptr);
+            cropped_args[i] = s_cdr(scheme,lists_ptr);
             collection.add(arg);
-	}
+	    }
 
-	SchemeObject* result_item = lists_thescheme->callProcedure_n(proc, collection.list);
-	if (result_item == S_FALSE) {
-	    return S_FALSE;
-	}
+	    SchemeObject* result_item = scheme->callProcedure_n(proc, collection.list);
+	    if (result_item == S_FALSE) {
+	        return S_FALSE;
+	    }
     }
 
     // Tjek at alle cropped_args kun indeholder et element, dvs. at 
@@ -56,18 +54,18 @@ SchemeObject* s_for_all(int num, SchemeStack::iterator args) {
         if (i_cdr(cropped_args[i]) != S_EMPTY_LIST) {
             throw scheme_exception(procname + L": argument lists not equals length.");
         }
-	collection.add(i_car(cropped_args[i]));
+	    collection.add(i_car(cropped_args[i]));
     }
-    return lists_thescheme->callProcedure_n(proc, collection.list);
+    return scheme->callProcedure_n(proc, collection.list);
 }
 
 
 // TODO: Implement this as a macro. The last call should be tail-recursive
 // according to the spec.
-SchemeObject* s_exists(int num, SchemeStack::iterator args) {
+SchemeObject* s_exists(Scheme* scheme, int num, SchemeStack::iterator args) {
     wstring procname = L"exists";
     SchemeObject* proc = args[0];
-    assert_arg_type(procname, 1, s_procedure_p, proc);
+    assert_arg_procedure_type(procname, 1, proc);
 
     int empty = 0;
     SchemeObject* cropped_args[num-1];
@@ -78,7 +76,7 @@ SchemeObject* s_exists(int num, SchemeStack::iterator args) {
     }
     if (empty == num-1) return S_FALSE;
 
-    // Vi skralder af lists i hvert gennemlÃ¸b. SÃ¥ ((1 2 3)(10 20 30)) bliver 
+    // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver 
     // til ((2 3)(20 30)) og til sidst ((3)(30))
     while (i_cdr(cropped_args[0]) != S_EMPTY_LIST) {
         SchemeAppendableList collection;
@@ -87,15 +85,15 @@ SchemeObject* s_exists(int num, SchemeStack::iterator args) {
             if (lists_ptr == S_EMPTY_LIST) {
                 throw scheme_exception(procname + L": argument lists not equals length.");
             }
-            SchemeObject* arg = s_car(lists_ptr);
-            cropped_args[i] = s_cdr(lists_ptr);
+            SchemeObject* arg = s_car(scheme,lists_ptr);
+            cropped_args[i] = s_cdr(scheme,lists_ptr);
             collection.add(arg);
-	}
+	    }
 
-	SchemeObject* result_item = lists_thescheme->callProcedure_n(proc, collection.list);
-	if (result_item != S_FALSE) {
-	    return result_item;
-	}
+	    SchemeObject* result_item = scheme->callProcedure_n(proc, collection.list);
+	    if (result_item != S_FALSE) {
+	        return result_item;
+	    }
     }
 
     // Tjek at alle cropped_args kun indeholder et element, dvs. at 
@@ -107,13 +105,13 @@ SchemeObject* s_exists(int num, SchemeStack::iterator args) {
         }
 	collection.add(i_car(cropped_args[i]));
     }
-    return lists_thescheme->callProcedure_n(proc, collection.list);
+    return scheme->callProcedure_n(proc, collection.list);
 }
 
-SchemeObject* s_filter(SchemeObject* proc, SchemeObject* list) {
+SchemeObject* s_filter(Scheme* scheme, SchemeObject* proc, SchemeObject* list) {
     vector<SchemeObject*> vec;
     while(list != S_EMPTY_LIST) {
-	if (lists_thescheme->callProcedure_1(proc, i_car(list)) != S_FALSE)  {
+	if (scheme->callProcedure_1(proc, i_car(list)) != S_FALSE)  {
 	    vec.push_back(i_car(list));
 	}
 	list = i_cdr(list);
@@ -125,11 +123,11 @@ SchemeObject* s_filter(SchemeObject* proc, SchemeObject* list) {
     return r;
 }
 
-SchemeObject* s_partition(SchemeObject* proc, SchemeObject* list) {
+SchemeObject* s_partition(Scheme* scheme, SchemeObject* proc, SchemeObject* list) {
     vector<SchemeObject*> true_vec;
     vector<SchemeObject*> false_vec;
     while(list != S_EMPTY_LIST) {
-	if (lists_thescheme->callProcedure_1(proc, i_car(list)) != S_FALSE)  {
+	if (scheme->callProcedure_1(proc, i_car(list)) != S_FALSE)  {
 	    true_vec.push_back(i_car(list));
 	} else {
 	    false_vec.push_back(i_car(list));
@@ -148,10 +146,10 @@ SchemeObject* s_partition(SchemeObject* proc, SchemeObject* list) {
     return i_cons(true_list,i_cons(false_list,S_EMPTY_LIST));
 }
 
-SchemeObject* s_fold_left(int num, SchemeStack::iterator args) {
+SchemeObject* s_fold_left(Scheme* scheme, int num, SchemeStack::iterator args) {
     wstring procname = L"fold-left";
     SchemeObject* proc = args[0];
-    assert_arg_type(procname, 1, s_procedure_p, proc);
+    assert_arg_procedure_type(procname, 1, proc);
 
     SchemeObject* nil = args[1];
 
@@ -161,22 +159,22 @@ SchemeObject* s_fold_left(int num, SchemeStack::iterator args) {
         cropped_args[i-2] = args[i];
     }
 
-    // Vi skralder af lists i hvert gennemlÃ¸b. SÃ¥ ((1 2 3)(10 20 30)) bliver 
+    // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver 
     // til ((2 3)(20 30)) og til sidst ((3)(30))
     while (cropped_args[0] != S_EMPTY_LIST) {
         SchemeAppendableList collection;
-	collection.add(nil);
+	    collection.add(nil);
         for(int i = 0; i < num-2; i++) {
             SchemeObject* lists_ptr = cropped_args[i];
             if (lists_ptr == S_EMPTY_LIST) {
                 throw scheme_exception(procname + L": argument lists not equals length.");
             }
-            SchemeObject* arg = s_car(lists_ptr);
-            cropped_args[i] = s_cdr(lists_ptr);
+            SchemeObject* arg = s_car(scheme,lists_ptr);
+            cropped_args[i] = s_cdr(scheme,lists_ptr);
             collection.add(arg);
-	}
+	    }
 
-	nil = lists_thescheme->callProcedure_n(proc, collection.list);
+	    nil = scheme->callProcedure_n(proc, collection.list);
     }
 
     // Tjek at alle cropped_args kun indeholder et element, dvs. at 
@@ -190,14 +188,14 @@ SchemeObject* s_fold_left(int num, SchemeStack::iterator args) {
     return nil;
 }
 
-SchemeObject* s_fold_right(int num, SchemeStack::iterator args) {
+SchemeObject* s_fold_right(Scheme* scheme, int num, SchemeStack::iterator args) {
     return S_FALSE;
 }
 
-SchemeObject* s_remp(SchemeObject* proc, SchemeObject* list) {
+SchemeObject* s_remp(Scheme* scheme, SchemeObject* proc, SchemeObject* list) {
     vector<SchemeObject*> vec;
     while(list != S_EMPTY_LIST) {
-	if (lists_thescheme->callProcedure_1(proc, i_car(list)) == S_FALSE)  {
+	if (scheme->callProcedure_1(proc, i_car(list)) == S_FALSE)  {
 	    vec.push_back(i_car(list));
 	}
 	list = i_cdr(list);
@@ -209,10 +207,10 @@ SchemeObject* s_remp(SchemeObject* proc, SchemeObject* list) {
     return r;
 }
 
-SchemeObject* s_remove(SchemeObject* obj, SchemeObject* list) {
+SchemeObject* s_remove(Scheme* scheme, SchemeObject* obj, SchemeObject* list) {
     vector<SchemeObject*> vec;
     while(list != S_EMPTY_LIST) {
-	if (s_equal_p(obj, i_car(list)) == S_FALSE)  {
+	if (s_equal_p(scheme,obj, i_car(list)) == S_FALSE)  {
 	    vec.push_back(i_car(list));
 	}
 	list = i_cdr(list);
@@ -224,10 +222,10 @@ SchemeObject* s_remove(SchemeObject* obj, SchemeObject* list) {
     return r;
 }
 
-SchemeObject* s_remv(SchemeObject* obj, SchemeObject* list) {
+SchemeObject* s_remv(Scheme* scheme, SchemeObject* obj, SchemeObject* list) {
     vector<SchemeObject*> vec;
     while(list != S_EMPTY_LIST) {
-	if (s_eqv_p(obj, i_car(list)) == S_FALSE)  {
+	if (s_eqv_p(scheme,obj, i_car(list)) == S_FALSE)  {
 	    vec.push_back(i_car(list));
 	}
 	list = i_cdr(list);
@@ -239,10 +237,10 @@ SchemeObject* s_remv(SchemeObject* obj, SchemeObject* list) {
     return r;
 }
 
-SchemeObject* s_remq(SchemeObject* obj, SchemeObject* list) {
+SchemeObject* s_remq(Scheme* scheme, SchemeObject* obj, SchemeObject* list) {
     vector<SchemeObject*> vec;
     while(list != S_EMPTY_LIST) {
-	if (s_eq_p(obj, i_car(list)) == S_FALSE)  {
+	if (s_eq_p(scheme,obj, i_car(list)) == S_FALSE)  {
 	    vec.push_back(i_car(list));
 	}
 	list = i_cdr(list);
@@ -255,32 +253,32 @@ SchemeObject* s_remq(SchemeObject* obj, SchemeObject* list) {
 }
 
 inline
-SchemeObject* member_helper(SchemeObject* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
+SchemeObject* member_helper(Scheme* scheme, SchemeObject* (comparator)(Scheme*,SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* p) {
     while (i_null_p(p) == S_FALSE) {
-        if ((*comparator)(obj, s_car(p)) == S_TRUE) {
+        if ((*comparator)(scheme, obj, s_car(scheme,p)) == S_TRUE) {
             return p;
         } else {
-            p = s_cdr(p);
+            p = s_cdr(scheme,p);
         }
     }
     return S_FALSE;
 }
 
-SchemeObject* s_member(SchemeObject* obj, SchemeObject* p) {
-    return member_helper(s_equal_p, obj, p);
+SchemeObject* s_member(Scheme* scheme, SchemeObject* obj, SchemeObject* p) {
+    return member_helper(scheme, s_equal_p, obj, p);
 }
 
-SchemeObject* s_memq(SchemeObject* obj, SchemeObject* p) {
-    return member_helper(s_eq_p, obj, p);
+SchemeObject* s_memq(Scheme* scheme, SchemeObject* obj, SchemeObject* p) {
+    return member_helper(scheme, s_eq_p, obj, p);
 }
 
-SchemeObject* s_memv(SchemeObject* obj, SchemeObject* p) {
-    return member_helper(s_eqv_p, obj, p);
+SchemeObject* s_memv(Scheme* scheme, SchemeObject* obj, SchemeObject* p) {
+    return member_helper(scheme, s_eqv_p, obj, p);
 }
 
-SchemeObject* s_memp(SchemeObject* proc, SchemeObject* list) {
+SchemeObject* s_memp(Scheme* scheme, SchemeObject* proc, SchemeObject* list) {
     while (list != S_EMPTY_LIST) {
-	if (lists_thescheme->callProcedure_1(proc, i_car(list)) != S_FALSE)  {
+	if (scheme->callProcedure_1(proc, i_car(list)) != S_FALSE)  {
 	    return list;
 	} else {
 	    list = i_cdr(list);
@@ -289,38 +287,38 @@ SchemeObject* s_memp(SchemeObject* proc, SchemeObject* list) {
     return S_FALSE;
 }
 
-SchemeObject* assoc_helper(SchemeObject* (comparator)(SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* alist) {
+SchemeObject* assoc_helper(Scheme* scheme, SchemeObject* (comparator)(Scheme*,SchemeObject*,SchemeObject*), SchemeObject* obj, SchemeObject* alist) {
     while (alist != S_EMPTY_LIST) {
-        if (s_pair_p(s_car(alist)) == S_FALSE) {
+        if (i_pair_p(s_car(scheme,alist)) == S_FALSE) {
             throw scheme_exception(L"Illegal argument");
         }
-        SchemeObject* p = s_car(alist);
-        if ((*comparator)(obj, s_car(p)) == S_TRUE) {
+        SchemeObject* p = s_car(scheme, alist);
+        if ((*comparator)(scheme, obj, s_car(scheme, p)) == S_TRUE) {
             return p;
         }
-        alist = s_cdr(alist);
+        alist = s_cdr(scheme,alist);
     }
     return S_FALSE;
 }
 
-SchemeObject* s_assoc(SchemeObject* obj, SchemeObject* alist) {
-    return assoc_helper(s_equal_p, obj, alist); 
+SchemeObject* s_assoc(Scheme* scheme, SchemeObject* obj, SchemeObject* alist) {
+    return assoc_helper(scheme, s_equal_p, obj, alist); 
 }
 
-SchemeObject* s_assq(SchemeObject* obj, SchemeObject* alist) {
-    return assoc_helper(s_eq_p, obj, alist); 
+SchemeObject* s_assq(Scheme* scheme, SchemeObject* obj, SchemeObject* alist) {
+    return assoc_helper(scheme, s_eq_p, obj, alist); 
 }
 
-SchemeObject* s_assv(SchemeObject* obj, SchemeObject* alist) {
-    return assoc_helper(s_eqv_p, obj, alist); 
+SchemeObject* s_assv(Scheme* scheme, SchemeObject* obj, SchemeObject* alist) {
+    return assoc_helper(scheme, s_eqv_p, obj, alist); 
 }
 
-SchemeObject* s_assp(SchemeObject* proc, SchemeObject* alist) {
+SchemeObject* s_assp(Scheme* scheme, SchemeObject* proc, SchemeObject* alist) {
     while (alist != S_EMPTY_LIST) {
-        if (s_pair_p(s_car(alist)) == S_FALSE) {
+        if (i_pair_p(s_car(scheme,alist)) == S_FALSE) {
             throw scheme_exception(L"Illegal argument");
         }
-	if (lists_thescheme->callProcedure_1(proc, i_car(i_car(alist))) != S_FALSE)  {
+	if (scheme->callProcedure_1(proc, i_car(i_car(alist))) != S_FALSE)  {
 	    return i_car(alist);
 	} else {
 	    alist = i_cdr(alist);
@@ -329,7 +327,7 @@ SchemeObject* s_assp(SchemeObject* proc, SchemeObject* alist) {
     return S_FALSE;
 }
 
-SchemeObject* s_cons_star(int num, SchemeStack::iterator stack) {
+SchemeObject* s_cons_star(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (num == 1) {
         return *stack;
     }
@@ -345,7 +343,6 @@ SchemeObject* s_cons_star(int num, SchemeStack::iterator stack) {
 
 
 void R6RSLibLists::bind(Scheme* scheme, SchemeObject* envt) {
-    lists_thescheme = scheme;
     scheme->assign(L"find"            ,2,0,0, (SchemeObject* (*)()) s_find, envt);
     scheme->assign(L"for-all"         ,2,0,1, (SchemeObject* (*)()) s_for_all, envt);
     scheme->assign(L"exists"          ,2,0,1, (SchemeObject* (*)()) s_exists, envt);

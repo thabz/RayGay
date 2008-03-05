@@ -3,8 +3,9 @@
 #include <vector>
 #include "r6rs-lib-bytevectors.h"
 
-Parser::Parser() {
-    this->lexer = new Lexer();
+Parser::Parser(Scheme* scheme) {
+    this->lexer = new Lexer(scheme);
+    this->scheme = scheme;
 }
 
 SchemeObject* Parser::parse(wistream* is) {
@@ -60,13 +61,13 @@ SchemeObject* Parser::read(wistream* is) {
             }
             break;
         case Lexer::HASH_OPEN_PAREN :
-            result = s_list_2_vector(read_list(is));
+            result = s_list_2_vector(scheme,read_list(is));
             if (lexer->nextToken(is) != Lexer::CLOSE_PAREN) {
                 throw scheme_exception(cur_line, L"Unbalanced parentheses");
             }
             break;
         case Lexer::VU8_OPEN_PAREN :
-            result = s_u8_list_2_bytevector(read_list(is));
+            result = s_u8_list_2_bytevector(scheme,read_list(is));
             if (lexer->nextToken(is) != Lexer::CLOSE_PAREN) {
                 throw scheme_exception(cur_line, L"Unbalanced parentheses");
             }

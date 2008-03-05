@@ -106,7 +106,7 @@ void Heap::reserve(SchemeObject** result, uint32_t num) {
 
 void Heap::garbageCollect(vector<SchemeObject*> &stack) {
     pthread_mutex_lock(&mutex_reserve);
-    //cout << "BEFORE: Size of heap: " << slots_num << " free: " << free_slots << " (" << banks.size() << ")" << endl;
+    // cout << "BEFORE: Size of heap: " << slots_num << " free: " << free_slots << " (" << banks.size() << ")" << endl;
     //cout << "BEFORE: Size of roots: " << roots.size() << endl;
     mark(stack);
     sweep();

@@ -12,6 +12,6 @@ class LightsourceFactory {
 	static void register_procs(Scheme* scheme);
 };
 
-SchemeObject* s_lightsource_p(SchemeObject* object);
+SchemeObject* s_lightsource_p(Scheme* scheme, SchemeObject* object);
 
 #endif

@@ -9,8 +9,8 @@
 class Parser 
 {
     public:
-	Parser();
-	SchemeObject* parse(wistream* is);
+	    Parser(Scheme* scheme);
+	    SchemeObject* parse(wistream* is);
         SchemeObject* read(wistream* is);
 
     private:
@@ -23,6 +23,7 @@ class Parser
         void decorateWithLineNumber(SchemeObject* obj, uint32_t linenumber);
 
         Lexer* lexer;
+        Scheme* scheme;
 };
 
 #endif

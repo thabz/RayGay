@@ -228,7 +228,7 @@ SchemeObject* SchemeObject::createUserProcedure(SchemeObject* name, SchemeObject
     assert(i_symbol_p(name) == S_TRUE);
     ObjectType t = envt->type();
     assert(t == SchemeObject::ENVIRONMENT || t == SchemeObject::SIMPLE_ENVIRONMENT);
-    SchemeObject* dup = s_find_duplicate(s_formals);
+    SchemeObject* dup = i_find_duplicate(s_formals);
     if (dup != S_FALSE) {
         throw scheme_exception(L"Duplicate formal " + dup->toString() + L" in " + s_formals->toString());    
     }
@@ -242,7 +242,7 @@ SchemeObject* SchemeObject::createMacro(SchemeObject* name, SchemeObject* envt, 
     assert(i_symbol_p(name) == S_TRUE);
     ObjectType t = envt->type();
     assert(t == SchemeObject::ENVIRONMENT || t == SchemeObject::SIMPLE_ENVIRONMENT);
-    SchemeObject* dup = s_find_duplicate(s_formals);
+    SchemeObject* dup = i_find_duplicate(s_formals);
     if (dup != S_FALSE) {
         throw scheme_exception(L"Duplicate formal " + dup->toString() + L" in " + s_formals->toString());    
     }
@@ -268,7 +268,7 @@ SchemeObject* SchemeObject::createWrappedCObject(int subtype, SchemeWrappedCObje
 SchemeObject* SchemeObject::createHashtable(SchemeObject* buckets, SchemeObject* hash_func, SchemeObject* equiv_func) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::HASHTABLE);
     result->buckets = buckets;
-    result->s_hashtable_meta = i_list_3(hash_func, equiv_func, S_ZERO);
+    result->s_hashtable_meta = i_list_3(hash_func, equiv_func, int2scm(0));
     return result;
 }
 
@@ -411,24 +411,24 @@ wstring SchemeObject::toString() {
         case SchemeObject::SYMBOL :    
             return wstring(str);
         case SchemeObject::PAIR : {
-            if (s_circular_list_p(this) == S_TRUE) {
+            if (i_circular_list_p(this) == S_TRUE) {
                 return L"#<circular list>";
             }
             ss << L"(";
             SchemeObject *p = this;
             SchemeObject* n;
             while (true) {
-        	ss << i_car(p)->toString();
-        	n = s_cdr(p);
-        	if (n == S_EMPTY_LIST) {
-        	    break;
-        	}
-        	if (s_pair_p(n) == S_FALSE) {
-        	    ss << L" . " << n->toString();
-        	    break;
-        	}
+        	    ss << i_car(p)->toString();
+        	    n = i_cdr(p);
+        	    if (n == S_EMPTY_LIST) {
+        	        break;
+        	    }
+        	    if (i_pair_p(n) == S_FALSE) {
+        	        ss << L" . " << n->toString();
+        	        break;
+        	    }
                 p = n;
-        	ss << L" ";
+        	    ss << L" ";
         	}
         	ss << L")";
     	    }
@@ -649,29 +649,29 @@ void SchemeObject::callContinuation(SchemeObject* arg) {
 
 SchemeObject* SchemeObject::getBinding(SchemeObject* symbol) {
     for (SchemeObject* envt = this; envt != NULL; envt = envt->parent) {
-	ObjectType t = envt->type();
+	    ObjectType t = envt->type();
         if (t == SchemeObject::SIMPLE_ENVIRONMENT) {
     	    SchemeObject* list = envt->binding_list;
             int i = 0;
-	    while (list != S_EMPTY_LIST) {
-	        SchemeObject* binding = i_car(list);
-	        if (i_car(binding) == symbol) {
-                    //cout << "Found at index " << i << endl;        
-	 	    return i_cdr(binding);
-	        }
-	        list = i_cdr(list);
+	        while (list != S_EMPTY_LIST) {
+	            SchemeObject* binding = i_car(list);
+	            if (i_car(binding) == symbol) {
+                //cout << "Found at index " << i << endl;        
+	 	            return i_cdr(binding);
+	            }
+	            list = i_cdr(list);
                 i++;
-	    }
+	        }
             //cout << "Not found in " << i << endl;
-	} else if (t == SchemeObject::ENVIRONMENT) {
+	    } else if (t == SchemeObject::ENVIRONMENT) {
             //cout << "Binding map size " << envt->binding_map->size() << endl;        
             binding_map_t::iterator v = envt->binding_map->find(symbol, symbol->hash);
             if (v != envt->binding_map->end()) {
                 return v->second;
             }
         } else {
-	    throw scheme_exception(L"Not an environment");
-	}
+	        throw scheme_exception(L"Not an environment");
+	    }
     }
     return NULL;
 }

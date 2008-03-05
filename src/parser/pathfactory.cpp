@@ -20,7 +20,7 @@ using namespace std;
  * Usage:
  *  (make-circle center radius normal) -> path
  */
-SchemeObject* PathFactory::make_circle(SchemeObject* s_center, SchemeObject* s_radius, SchemeObject* s_normal) {
+SchemeObject* PathFactory::make_circle(Scheme* scheme, SchemeObject* s_center, SchemeObject* s_radius, SchemeObject* s_normal) {
     wchar_t* proc = L"make-circle";
     Vector center = scm2vector(s_center, proc, 1);
     double radius = safe_scm2double(s_radius, 2, proc);
@@ -34,7 +34,7 @@ SchemeObject* PathFactory::make_circle(SchemeObject* s_center, SchemeObject* s_r
  * Usage:
  *  (make-ellipse center radius1 radius2 normal) -> path
  */
-SchemeObject* PathFactory::make_ellipse(SchemeObject* s_center, SchemeObject* s_radius1, SchemeObject* s_radius2, SchemeObject* s_normal) {
+SchemeObject* PathFactory::make_ellipse(Scheme* scheme, SchemeObject* s_center, SchemeObject* s_radius1, SchemeObject* s_radius2, SchemeObject* s_normal) {
     wchar_t* proc = L"make-ellipse";
     Vector center = scm2vector(s_center, proc, 1);
     Vector normal = scm2vector(s_normal, proc, 2);
@@ -49,7 +49,7 @@ SchemeObject* PathFactory::make_ellipse(SchemeObject* s_center, SchemeObject* s_
  * Usage:
  *  (make-linesegment from to) -> path
  */
-SchemeObject* PathFactory::make_linesegment(SchemeObject* s_from, SchemeObject* s_to) {
+SchemeObject* PathFactory::make_linesegment(Scheme* scheme, SchemeObject* s_from, SchemeObject* s_to) {
     wchar_t* proc = L"make-linesegment";
     Vector from = scm2vector(s_from, proc, 1);
     Vector to = scm2vector(s_to, proc, 2);
@@ -62,7 +62,7 @@ SchemeObject* PathFactory::make_linesegment(SchemeObject* s_from, SchemeObject* 
  * Usage:
  * (make-spiral path radius windings offset) -> path
  */
-SchemeObject* PathFactory::make_spiral(SchemeObject* s_path, SchemeObject* s_radius, SchemeObject* s_windings, SchemeObject* s_offset) {
+SchemeObject* PathFactory::make_spiral(Scheme* scheme, SchemeObject* s_path, SchemeObject* s_radius, SchemeObject* s_windings, SchemeObject* s_offset) {
     wchar_t* proc = L"make-spiral";
     Path* path = scm2path(s_path, proc, 1);
     double radius = safe_scm2double(s_radius,2,proc);
@@ -71,12 +71,12 @@ SchemeObject* PathFactory::make_spiral(SchemeObject* s_path, SchemeObject* s_rad
     return path2scm(new Spiral(path,radius,windings,offset));
 }
 
-SchemeObject* PathFactory::make_bezierspline(SchemeObject* s_vector_vector) {
+SchemeObject* PathFactory::make_bezierspline(Scheme* scheme, SchemeObject* s_vector_vector) {
     vector<Vector> vectors = scm2vectorlist(s_vector_vector, L"make-bezierspline",1);
     return path2scm(new BezierSpline(vectors));
 }
 
-SchemeObject* PathFactory::make_catmullrom_spline(SchemeObject* s_vector_vector) {
+SchemeObject* PathFactory::make_catmullrom_spline(Scheme* scheme, SchemeObject* s_vector_vector) {
     vector<Vector> vectors = scm2vectorlist(s_vector_vector, L"make-catmullrom-spline",1);
     return path2scm(new CatmullRomSpline(vectors));
 }
@@ -88,7 +88,7 @@ SchemeObject* PathFactory::make_catmullrom_spline(SchemeObject* s_vector_vector)
  * Usage:
  * (point-on-path path t) -> vector
  */
-SchemeObject* PathFactory::point_on_path(SchemeObject* s_path, SchemeObject* s_t) {
+SchemeObject* PathFactory::point_on_path(Scheme* scheme, SchemeObject* s_path, SchemeObject* s_t) {
     Path* path = scm2path(s_path, L"point-on-path", 1);
     double t = safe_scm2double(s_t, 2, L"point-on-path");
     Vector v = path->getPoint(t);
@@ -101,7 +101,7 @@ SchemeObject* PathFactory::point_on_path(SchemeObject* s_path, SchemeObject* s_t
  * Usage:
  * (tangent-on-path path t) -> vector
  */
-SchemeObject* PathFactory::tangent_to_path(SchemeObject* s_path, SchemeObject* s_t) {
+SchemeObject* PathFactory::tangent_to_path(Scheme* scheme, SchemeObject* s_path, SchemeObject* s_t) {
     Path* path = scm2path(s_path, L"tangent-to-path", 1);
     double t = safe_scm2double(s_t, 2, L"tangent-to-path");
     Vector v = path->getTangent(t);

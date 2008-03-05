@@ -85,6 +85,8 @@ class SchemeObject
                     ::jmp_buf *jmpbuf;       // For continuations
                     wistream* wis;           // For old inputports and stringbased inputports
                     wostream* wos;           // For old outputports
+                    istream* is;             // For new inputports 
+                    ostream* os;             // For new outputports 
                     wchar_t c;               // For chars
                     SchemeObject** elems;    // For vector
                     uint8_t* bytevector;

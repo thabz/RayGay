@@ -8,7 +8,7 @@
 #include "math/poisson_disc.h"
 #include "math/halton.h"
 
-SchemeObject* myrandom(SchemeObject* s_min, SchemeObject* s_max) 
+SchemeObject* myrandom(Scheme* scheme, SchemeObject* s_min, SchemeObject* s_max) 
 {
     double min = safe_scm2double(s_min,1,L"random");
     double max = safe_scm2double(s_max,2,L"random");
@@ -16,14 +16,14 @@ SchemeObject* myrandom(SchemeObject* s_min, SchemeObject* s_max)
     return double2scm(result);
 }
 
-SchemeObject* noise(SchemeObject* s_point) 
+SchemeObject* noise(Scheme* scheme, SchemeObject* s_point) 
 {
     Vector point = scm2vector(s_point,L"noise",1);
     double n = Perlin::noise(point);
     return double2scm(n);
 }
 
-SchemeObject* noise3d(SchemeObject* s_point, SchemeObject* s_offset) 
+SchemeObject* noise3d(Scheme* scheme, SchemeObject* s_point, SchemeObject* s_offset) 
 {
     Vector point = scm2vector(s_point,L"noise3d",1);
     double offset = safe_scm2double(s_offset, 2, L"noise3d");
@@ -31,7 +31,7 @@ SchemeObject* noise3d(SchemeObject* s_point, SchemeObject* s_offset)
     return vector2scm(v);
 }
 
-SchemeObject* vcross(SchemeObject* s_v1, SchemeObject* s_v2) 
+SchemeObject* vcross(Scheme* scheme, SchemeObject* s_v1, SchemeObject* s_v2) 
 {
     Vector v1 = scm2vector(s_v1,L"vcross",1);
     Vector v2 = scm2vector(s_v2,L"vcross",2);
@@ -39,7 +39,7 @@ SchemeObject* vcross(SchemeObject* s_v1, SchemeObject* s_v2)
     return vector2scm(cross);
 }
 
-SchemeObject* vdistance(SchemeObject* s_v1, SchemeObject* s_v2) 
+SchemeObject* vdistance(Scheme* scheme, SchemeObject* s_v1, SchemeObject* s_v2) 
 {
     Vector v1 = scm2vector(s_v1,L"vdistance",1);
     Vector v2 = scm2vector(s_v2,L"vdistance",2);
@@ -47,12 +47,12 @@ SchemeObject* vdistance(SchemeObject* s_v1, SchemeObject* s_v2)
     return double2scm(d);
 }
 
-SchemeObject* vrandomunit() {
+SchemeObject* vrandomunit(Scheme* scheme) {
     Vector v = Vector::randomUnitVector();
     return vector2scm(v);
 }
 
-SchemeObject* make_poisson_set(SchemeObject* s_w, SchemeObject* s_h, SchemeObject* s_r,  SchemeObject* s_num) {
+SchemeObject* make_poisson_set(Scheme* scheme, SchemeObject* s_w, SchemeObject* s_h, SchemeObject* s_r,  SchemeObject* s_num) {
     wchar_t* proc = L"make-poisson-disc-set";
     double w = safe_scm2double(s_w, 1, proc);
     double h = safe_scm2double(s_h, 2, proc);
@@ -71,7 +71,7 @@ SchemeObject* make_poisson_set(SchemeObject* s_w, SchemeObject* s_h, SchemeObjec
     return s_set;
 }
 
-SchemeObject* make_halton_set(SchemeObject* s_w, SchemeObject* s_h, SchemeObject* s_num) {
+SchemeObject* make_halton_set(Scheme* scheme, SchemeObject* s_w, SchemeObject* s_h, SchemeObject* s_num) {
     wchar_t* proc = L"make-halton-set";
     double w = safe_scm2double(s_w, 1, proc);
     double h = safe_scm2double(s_h, 2, proc);

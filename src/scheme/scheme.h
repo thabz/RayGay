@@ -14,6 +14,7 @@ using namespace std;
 typedef vector<SchemeObject*> SchemeStack;
 
 class Interpreter;
+class Parser;
 
 class Scheme {
     public:
@@ -36,6 +37,7 @@ class Scheme {
 	    void assign(wstring variable, int req, int opt, int rst, SchemeObject* (*fn)(), SchemeObject* b = NULL);
 
         // For calls from embedding code
+        SchemeObject* callProcedure_0(SchemeObject* s_proc);
         SchemeObject* callProcedure_1(SchemeObject* s_proc, SchemeObject*);
         SchemeObject* callProcedure_2(SchemeObject* s_proc, SchemeObject*, SchemeObject*);
         SchemeObject* callProcedure_3(SchemeObject* s_proc, SchemeObject*, SchemeObject*, SchemeObject*);
@@ -47,10 +49,58 @@ class Scheme {
         // Get interaction environment
         SchemeObject* getInteractionEnvironment();
 
+        SchemeObject* current_input_port;
+        SchemeObject* current_output_port;
+        
+        SchemeObject* if_symbol;
+        SchemeObject* cond_symbol;
+        SchemeObject* apply_symbol;
+        SchemeObject* else_symbol;
+        SchemeObject* ergo_symbol;
+        SchemeObject* case_symbol;
+        SchemeObject* do_symbol;
+        SchemeObject* let_symbol;
+        SchemeObject* letstar_symbol;
+        SchemeObject* letrec_symbol;
+        SchemeObject* begin_symbol;
+        SchemeObject* and_symbol;
+        SchemeObject* or_symbol;
+        SchemeObject* lambda_symbol;
+        SchemeObject* lambda_symbol_short;
+        SchemeObject* quote_symbol;
+        SchemeObject* quasiquote_symbol;
+        SchemeObject* unquote_symbol;
+        SchemeObject* unquote_splicing_symbol;
+        SchemeObject* define_symbol;
+        SchemeObject* define_macro_symbol;
+        SchemeObject* set_e_symbol;
+        SchemeObject* define_syntax_symbol;
+        SchemeObject* unnamed_symbol;
+        SchemeObject* let_syntax_symbol;
+        SchemeObject* letrec_syntax_symbol;
+        SchemeObject* ellipsis_symbol;
+        
+        SchemeObject* null_environment;
+        SchemeObject* scheme_report_environment;
+        SchemeObject* interaction_environment;
+        
     public:
-	// Used for testing only
+   	    // Used for testing only
         Interpreter* getInterpreter();
+        
+        // Used by (read) only
+        Parser* getParser() { return parser; };
+        
+    private:
+        Interpreter* interpreter;
+        Parser* parser;    
 };
+
+extern SchemeObject* S_UNSPECIFIED;
+extern SchemeObject* S_EMPTY_LIST;
+extern SchemeObject* S_EOF;
+extern SchemeObject* S_TRUE;
+extern SchemeObject* S_FALSE;
 
 class scheme_exception {
     public: 
@@ -58,6 +108,7 @@ class scheme_exception {
 	    scheme_exception(wchar_t* procname, wstring error);
 	    scheme_exception(uint32_t line, wstring error);
         wstring toString();
+        
     private:		
 	    wstring str;
         wchar_t* procname;
@@ -74,8 +125,8 @@ class scheme_exception {
         throw scheme_exception(ss.str());                 \
 }
 
-#define assert_arg_type(procname, argnum, test_fn, arg) { \
-    if ((test_fn)(arg) == S_FALSE) {                      \
+#define assert_arg_type(scheme,procname, argnum, test_fn, arg) { \
+    if ((test_fn)(scheme,arg) == S_FALSE) {                      \
         wrong_type_arg(procname, argnum, (arg));            \
     }                                                     \
 }
@@ -92,10 +143,34 @@ class scheme_exception {
     }                                                     \
 }
 
+#define assert_arg_vector_type(procname, argnum, arg) {     \
+    if (i_vector_p(arg) == S_FALSE) {                       \
+        wostringstream ss;                                 \
+        ss << "Wrong argument-type (expecting vector) in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << wstring(procname);                           \
+        ss << ": " << (arg)->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
 #define assert_arg_string_type(procname, argnum, arg) {     \
     if (i_string_p(arg) == S_FALSE) {                       \
         wostringstream ss;                                 \
         ss << "Wrong argument-type (expecting string) in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << wstring(procname);                           \
+        ss << ": " << (arg)->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
+#define assert_arg_char_type(procname, argnum, arg) {     \
+    if (i_char_p(arg) == S_FALSE) {                       \
+        wostringstream ss;                                 \
+        ss << "Wrong argument-type (expecting char) in position ";         \
         ss << argnum;                                     \
         ss << " in call to ";                             \
         ss << wstring(procname);                           \
@@ -142,7 +217,7 @@ class scheme_exception {
 }
 
 #define assert_arg_int_type(procname, argnum, arg) {   \
-    if (s_integer_p(arg) == S_FALSE) {                     \
+    if (i_integer_p(arg) == S_FALSE) {                     \
         wostringstream ss;                                 \
         ss << "Wrong argument-type (expecting integer) in position ";         \
         ss << argnum;                                     \
@@ -154,7 +229,7 @@ class scheme_exception {
 }
 
 #define assert_arg_complex_type(procname, argnum, arg) {   \
-    if (s_complex_p(arg) == S_FALSE) {                     \
+    if (i_complex_p(arg) == S_FALSE) {                     \
         wostringstream ss;                                 \
         ss << "Wrong argument-type (expecting complex) in position ";         \
         ss << argnum;                                     \
@@ -165,8 +240,20 @@ class scheme_exception {
     }                                                     \
 }
 
+#define assert_arg_real_type(procname, argnum, arg) {   \
+    if (i_real_p(arg) == S_FALSE) {                     \
+        wostringstream ss;                                 \
+        ss << "Wrong argument-type (expecting real) in position ";         \
+        ss << argnum;                                     \
+        ss << " in call to ";                             \
+        ss << wstring(procname);                           \
+        ss << ": " << (arg)->toString();                    \
+        throw scheme_exception(ss.str());                 \
+    }                                                     \
+}
+
 #define assert_arg_int_in_range(procname, argnum, arg, from, to) {    \
-    assert_arg_type(procname, argnum, s_integer_p, arg);              \
+    assert_arg_int_type(procname, argnum, arg);              \
     int64_t n = scm2int(arg);                                             \
     if (n < from || n > to) {                                         \
         wostringstream ss;                                             \
@@ -179,7 +266,7 @@ class scheme_exception {
 }
 
 #define assert_arg_positive_int(procname, argnum, arg) {           \
-    assert_arg_type(procname, argnum, s_integer_p, arg);           \
+    assert_arg_int_type(procname, argnum, arg);           \
     int64_t n = scm2int(arg);                                          \
     if (n < 0) {                                                   \
         wostringstream ss;                                          \
@@ -241,15 +328,6 @@ class scheme_exception {
 }
 
 
-// Scheme constants
-extern SchemeObject* S_TRUE;
-extern SchemeObject* S_FALSE;
-extern SchemeObject* S_UNSPECIFIED;
-extern SchemeObject* S_EMPTY_LIST;
-extern SchemeObject* S_ZERO;
-extern SchemeObject* S_ONE;
-extern SchemeObject* S_TWO;
-extern SchemeObject* S_NUMBERS[];
 
 // Conversion macros
 #define scm2rational(o) ((o)->rationalValue())
@@ -263,8 +341,8 @@ extern SchemeObject* S_NUMBERS[];
 #define string2scm(s)   (SchemeObject::createString(s.c_str()))
 #define cstr2scm(s)     (SchemeObject::createString(s))
 #define char2scm(c)     (SchemeObject::createChar(c))
-#define int2scm(n)      (((n) < 10 && (n) >= 0) ? S_NUMBERS[n] : SchemeObject::createIntegerNumber(n))
-#define uint2scm(n)     (((n) < 10) ? S_NUMBERS[n] : SchemeObject::createIntegerNumber(n))
+#define int2scm(n)      (SchemeObject::createIntegerNumber(n))
+#define uint2scm(n)     (SchemeObject::createIntegerNumber(n))
 #define complex2scm(n)  (SchemeObject::createComplexNumber(n))
 #define rational2scm(n) (SchemeObject::createRationalNumber(n))
 #define double2scm(n)   (SchemeObject::createRealNumber(n))
@@ -293,187 +371,140 @@ class SchemeAppendableList {
 
 
 // Declaration of scheme procedures
-SchemeObject* s_equal_p(SchemeObject* a, SchemeObject* b);
-SchemeObject* s_eq_p(SchemeObject* a, SchemeObject* b);
-SchemeObject* s_eqv_p(SchemeObject* a, SchemeObject* b);
-SchemeObject* s_not(SchemeObject*);
+SchemeObject* s_equal_p(Scheme* scheme, SchemeObject* a, SchemeObject* b);
+SchemeObject* s_eq_p(Scheme* scheme, SchemeObject* a, SchemeObject* b);
+SchemeObject* s_eqv_p(Scheme* scheme, SchemeObject* a, SchemeObject* b);
+SchemeObject* s_not(Scheme* scheme, SchemeObject*);
 
-SchemeObject* s_call_cc(SchemeObject* proc);
+SchemeObject* s_call_cc(Scheme* scheme, SchemeObject* proc);
 
-SchemeObject* s_apply(int num, SchemeStack::iterator stack);
-SchemeObject* s_null_environment(SchemeObject* version);
-SchemeObject* s_scheme_report_environment(SchemeObject* version);
-SchemeObject* s_interaction_environment(SchemeObject* version);
-SchemeObject* s_eval(SchemeObject* expression, SchemeObject* environment);
+SchemeObject* s_apply(Scheme* scheme, int num, SchemeStack::iterator stack);
+SchemeObject* s_null_environment(Scheme* scheme, SchemeObject* version);
+SchemeObject* s_scheme_report_environment(Scheme* scheme, SchemeObject* version);
+SchemeObject* s_interaction_environment(Scheme* scheme, SchemeObject* version);
+SchemeObject* s_eval(Scheme* scheme, SchemeObject* expression, SchemeObject* environment);
 
-SchemeObject* s_map(int num, SchemeStack::iterator stack);
-SchemeObject* s_for_each(int num, SchemeStack::iterator stack);
+SchemeObject* s_map(Scheme* scheme, int num, SchemeStack::iterator stack);
+SchemeObject* s_for_each(Scheme* scheme, int num, SchemeStack::iterator stack);
 
-SchemeObject* s_boolean_p(SchemeObject* o);
-SchemeObject* s_string_p(SchemeObject* o);
-SchemeObject* s_char_p(SchemeObject* o);
-SchemeObject* s_procedure_p(SchemeObject* o);
-SchemeObject* s_list_p(SchemeObject* p);
-SchemeObject* s_circular_list_p(SchemeObject* p);
-SchemeObject* s_vector_p(SchemeObject* p);
-SchemeObject* s_pair_p(SchemeObject* p);
-SchemeObject* s_null_p(SchemeObject* p);
-SchemeObject* s_symbol_p(SchemeObject* p);
+SchemeObject* s_boolean_p(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_string_p(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_char_p(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_procedure_p(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_list_p(Scheme* scheme, SchemeObject* p);
+SchemeObject* i_list_p(SchemeObject* p);
+SchemeObject* s_vector_p(Scheme* scheme, SchemeObject* p);
+SchemeObject* s_pair_p(Scheme* scheme, SchemeObject* p);
+SchemeObject* s_null_p(Scheme* scheme, SchemeObject* p);
+SchemeObject* s_symbol_p(Scheme* scheme, SchemeObject* p);
 
-SchemeObject* s_car(SchemeObject* o);
-SchemeObject* s_cdr(SchemeObject* o);
-SchemeObject* s_caar(SchemeObject* o);
-SchemeObject* s_cadr(SchemeObject* o);
-SchemeObject* s_cdar(SchemeObject* o);
-SchemeObject* s_cddr(SchemeObject* o);
-SchemeObject* s_caaar(SchemeObject* o);
-SchemeObject* s_caadr(SchemeObject* o);
-SchemeObject* s_cadar(SchemeObject* o);
-SchemeObject* s_caddr(SchemeObject* o);
-SchemeObject* s_cdaar(SchemeObject* o);
-SchemeObject* s_cdadr(SchemeObject* o);
-SchemeObject* s_cddar(SchemeObject* o);
-SchemeObject* s_cdddr(SchemeObject* o);
-SchemeObject* s_caaaar(SchemeObject* o);
-SchemeObject* s_caaadr(SchemeObject* o);
-SchemeObject* s_caadar(SchemeObject* o);
-SchemeObject* s_caaddr(SchemeObject* o);
-SchemeObject* s_cadaar(SchemeObject* o);
-SchemeObject* s_cadadr(SchemeObject* o);
-SchemeObject* s_caddar(SchemeObject* o);
-SchemeObject* s_cadddr(SchemeObject* o);
-SchemeObject* s_cdaaar(SchemeObject* o);
-SchemeObject* s_cdaadr(SchemeObject* o);
-SchemeObject* s_cdadar(SchemeObject* o);
-SchemeObject* s_cdaddr(SchemeObject* o);
-SchemeObject* s_cddaar(SchemeObject* o);
-SchemeObject* s_cddadr(SchemeObject* o);
-SchemeObject* s_cdddar(SchemeObject* o);
-SchemeObject* s_cddddr(SchemeObject* o);
+SchemeObject* s_car(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cdr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_caar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cadr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cdar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cddr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_caaar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_caadr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cadar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_caddr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cdaar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cdadr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cddar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cdddr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_caaaar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_caaadr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_caadar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_caaddr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cadaar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cadadr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_caddar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cadddr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cdaaar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cdaadr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cdadar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cdaddr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cddaar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cddadr(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cdddar(Scheme* scheme, SchemeObject* o);
+SchemeObject* s_cddddr(Scheme* scheme, SchemeObject* o);
 
-SchemeObject* s_cons(SchemeObject* car, SchemeObject* cdr);
-SchemeObject* s_set_car_e(SchemeObject* p, SchemeObject* o);
-SchemeObject* s_set_cdr_e(SchemeObject* p, SchemeObject* o);
-SchemeObject* s_append(int num, SchemeStack::iterator stack);
-SchemeObject* s_reverse(SchemeObject* l);
-SchemeObject* s_length(SchemeObject* l);
+SchemeObject* s_cons(Scheme* scheme, SchemeObject* car, SchemeObject* cdr);
+SchemeObject* s_set_car_e(Scheme* scheme, SchemeObject* p, SchemeObject* o);
+SchemeObject* s_set_cdr_e(Scheme* scheme, SchemeObject* p, SchemeObject* o);
+SchemeObject* s_append(Scheme* scheme, int num, SchemeStack::iterator stack);
+SchemeObject* s_reverse(Scheme* scheme, SchemeObject* l);
+SchemeObject* s_length(Scheme* scheme, SchemeObject* l);
 int64_t       i_length(SchemeObject* p);
-SchemeObject* s_list(int num, SchemeStack::iterator stack);
-SchemeObject* s_list_tail(SchemeObject* l, SchemeObject* k);
-SchemeObject* s_list_ref(SchemeObject* l, SchemeObject* k);
+SchemeObject* s_list(Scheme* scheme, int num, SchemeStack::iterator stack);
+SchemeObject* i_list_tail(SchemeObject* l, SchemeObject* k);
+SchemeObject* s_list_tail(Scheme* scheme, SchemeObject* l, SchemeObject* k);
+SchemeObject* i_list_ref(SchemeObject* l, SchemeObject* k);
+SchemeObject* s_list_ref(Scheme* scheme, SchemeObject* l, SchemeObject* k);
 
 // Vector stuff
-SchemeObject* s_make_vector(SchemeObject* count, SchemeObject* obj);
-SchemeObject* s_vector(int num, SchemeStack::iterator stack);
-SchemeObject* s_vector_length(SchemeObject* v);
-SchemeObject* s_list_2_vector(SchemeObject* list);
-SchemeObject* s_vector_2_list(SchemeObject* v);
-SchemeObject* s_vector_ref(SchemeObject* v, SchemeObject* i);
-SchemeObject* s_vector_set_e(SchemeObject* vec, SchemeObject* index, SchemeObject* val);
-SchemeObject* s_vector_fill_e(SchemeObject* vec, SchemeObject* fill);
+SchemeObject* s_make_vector(Scheme* scheme, SchemeObject* count, SchemeObject* obj);
+SchemeObject* s_vector(Scheme* scheme, int num, SchemeStack::iterator stack);
+SchemeObject* s_vector_length(Scheme* scheme, SchemeObject* v);
+SchemeObject* s_list_2_vector(Scheme* scheme, SchemeObject* list);
+SchemeObject* s_vector_2_list(Scheme* scheme, SchemeObject* v);
+SchemeObject* s_vector_ref(Scheme* scheme, SchemeObject* v, SchemeObject* i);
+SchemeObject* s_vector_set_e(Scheme* scheme, SchemeObject* vec, SchemeObject* index, SchemeObject* val);
+SchemeObject* s_vector_fill_e(Scheme* scheme, SchemeObject* vec, SchemeObject* fill);
 
 // Char stuff
-SchemeObject* s_char_upcase(SchemeObject* c);
-SchemeObject* s_char_downcase(SchemeObject* c);
-SchemeObject* s_char_alphabetic_p(SchemeObject* c);
-SchemeObject* s_char_numeric_p(SchemeObject* c);
-SchemeObject* s_char_whitespace_p(SchemeObject* c);
-SchemeObject* s_char_upper_case_p(SchemeObject* c);
-SchemeObject* s_char_lower_case_p(SchemeObject* c);
-SchemeObject* s_integer_2_char(SchemeObject* i);
-SchemeObject* s_char_2_integer(SchemeObject* c);
-SchemeObject* s_char_equal_p(int num, SchemeStack::iterator args);
-SchemeObject* s_char_less_p(int num, SchemeStack::iterator args);
-SchemeObject* s_char_greater_p(int num, SchemeStack::iterator args);
-SchemeObject* s_char_less_equal_p(int num, SchemeStack::iterator args);
-SchemeObject* s_char_greater_equal_p(int num, SchemeStack::iterator args);
-SchemeObject* s_char_ci_equal_p(int num, SchemeStack::iterator args);
-SchemeObject* s_char_ci_less_p(int num, SchemeStack::iterator args);
-SchemeObject* s_char_ci_greater_p(int num, SchemeStack::iterator args);
-SchemeObject* s_char_ci_less_equal_p(int num, SchemeStack::iterator args);
-SchemeObject* s_char_ci_greater_equal_p(int num, SchemeStack::iterator args);
+SchemeObject* s_char_upcase(Scheme* scheme, SchemeObject* c);
+SchemeObject* s_char_downcase(Scheme* scheme, SchemeObject* c);
+SchemeObject* s_char_alphabetic_p(Scheme* scheme, SchemeObject* c);
+SchemeObject* s_char_numeric_p(Scheme* scheme, SchemeObject* c);
+SchemeObject* s_char_whitespace_p(Scheme* scheme, SchemeObject* c);
+SchemeObject* s_char_upper_case_p(Scheme* scheme, SchemeObject* c);
+SchemeObject* s_char_lower_case_p(Scheme* scheme, SchemeObject* c);
+SchemeObject* s_integer_2_char(Scheme* scheme, SchemeObject* i);
+SchemeObject* s_char_2_integer(Scheme* scheme, SchemeObject* c);
+SchemeObject* s_char_equal_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_char_less_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_char_greater_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_char_less_equal_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_char_greater_equal_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_char_ci_equal_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_char_ci_less_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_char_ci_greater_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_char_ci_less_equal_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_char_ci_greater_equal_p(Scheme* scheme, int num, SchemeStack::iterator args);
 
 // String stuff
-SchemeObject* s_make_string(SchemeObject* len, SchemeObject* chr);
-SchemeObject* s_string(int num, SchemeStack::iterator stack);
-SchemeObject* s_string_length(SchemeObject* s);
-SchemeObject* s_string_ref(SchemeObject* s, SchemeObject* i);
-SchemeObject* s_string_set_e(SchemeObject* str, SchemeObject* i, SchemeObject* chr);
-SchemeObject* s_symbol_2_string(SchemeObject* symbol);
-SchemeObject* s_string_2_symbol(SchemeObject* s);
-SchemeObject* s_number_2_string(SchemeObject* n, SchemeObject* base);
-SchemeObject* s_string_2_number(SchemeObject* s, SchemeObject* base);
-SchemeObject* s_string_append(int num, SchemeStack::iterator stack);
-SchemeObject* s_string_copy(SchemeObject* string);
-SchemeObject* s_string_2_list(SchemeObject* s);
-SchemeObject* s_list_2_string(SchemeObject* p);
-SchemeObject* s_substring(SchemeObject* str, SchemeObject* start, SchemeObject* end);
-SchemeObject* s_string_equal_p(int num, SchemeStack::iterator args);
-SchemeObject* s_string_less_p(int num, SchemeStack::iterator args);
-SchemeObject* s_string_greater_p(int num, SchemeStack::iterator args);
-SchemeObject* s_string_less_equal_p(int num, SchemeStack::iterator args);
-SchemeObject* s_string_greater_equal_p(int num, SchemeStack::iterator args);
-SchemeObject* s_string_ci_equal_p(int num, SchemeStack::iterator args);
-SchemeObject* s_string_ci_less_p(int num, SchemeStack::iterator args);
-SchemeObject* s_string_ci_greater_p(int num, SchemeStack::iterator args);
-SchemeObject* s_string_ci_less_equal_p(int num, SchemeStack::iterator args);
-SchemeObject* s_string_ci_greater_equal_p(int num, SchemeStack::iterator args);
-SchemeObject* s_symgen();
+SchemeObject* s_make_string(Scheme* scheme, SchemeObject* len, SchemeObject* chr);
+SchemeObject* s_string(Scheme* scheme, int num, SchemeStack::iterator stack);
+SchemeObject* s_string_length(Scheme* scheme, SchemeObject* s);
+SchemeObject* s_string_ref(Scheme* scheme, SchemeObject* s, SchemeObject* i);
+SchemeObject* s_string_set_e(Scheme* scheme, SchemeObject* str, SchemeObject* i, SchemeObject* chr);
+SchemeObject* s_symbol_2_string(Scheme* scheme, SchemeObject* symbol);
+SchemeObject* s_string_2_symbol(Scheme* scheme, SchemeObject* s);
+SchemeObject* s_number_2_string(Scheme* scheme, SchemeObject* n, SchemeObject* base);
+SchemeObject* s_string_2_number(Scheme* scheme, SchemeObject* s, SchemeObject* base);
+SchemeObject* s_string_append(Scheme* scheme, int num, SchemeStack::iterator stack);
+SchemeObject* s_string_copy(Scheme* scheme, SchemeObject* string);
+SchemeObject* s_string_2_list(Scheme* scheme, SchemeObject* s);
+SchemeObject* s_list_2_string(Scheme* scheme, SchemeObject* p);
+SchemeObject* s_substring(Scheme* scheme, SchemeObject* str, SchemeObject* start, SchemeObject* end);
+SchemeObject* s_string_equal_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_string_less_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_string_greater_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_string_less_equal_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_string_greater_equal_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_string_ci_equal_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_string_ci_less_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_string_ci_greater_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_string_ci_less_equal_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_string_ci_greater_equal_p(Scheme* scheme, int num, SchemeStack::iterator args);
+SchemeObject* s_symgen(Scheme* scheme);
 
 // Input and output stuff
-SchemeObject* s_current_input_port();
-SchemeObject* s_current_output_port();
-SchemeObject* s_input_port_p(SchemeObject* o);
-SchemeObject* s_output_port_p(SchemeObject* o);
-SchemeObject* s_eof_object_p(SchemeObject* o);
-SchemeObject* s_open_input_file(SchemeObject* s_filename);
-SchemeObject* s_open_output_file(SchemeObject* s_filename);
-SchemeObject* s_close_input_port(SchemeObject* s_port);
-SchemeObject* s_close_output_port(SchemeObject* s_port);
-SchemeObject* s_call_with_input_file(SchemeObject* s_filename, SchemeObject* proc);
-SchemeObject* s_call_with_output_file(SchemeObject* s_filename, SchemeObject* proc);
-SchemeObject* s_with_input_from_file(SchemeObject* s_filename, SchemeObject* thunk);
-SchemeObject* s_with_output_to_file(SchemeObject* s_filename, SchemeObject* thunk);
-SchemeObject* s_read_char(SchemeObject* s_port);
-SchemeObject* s_peek_char(SchemeObject* s_port);
-SchemeObject* s_write_char(SchemeObject* s_char, SchemeObject* s_port);
-SchemeObject* s_read(SchemeObject* s_port);
-SchemeObject* s_write(SchemeObject* o, SchemeObject* port);
-SchemeObject* s_display(SchemeObject* o, SchemeObject* port); 
-SchemeObject* s_newline(SchemeObject* port );
-SchemeObject* s_load(SchemeObject* filename);
+SchemeObject* s_load(Scheme* scheme, SchemeObject* filename);
 
 // My extensions
-SchemeObject* s_find_duplicate(SchemeObject* l);
-
-        
-extern SchemeObject* if_symbol;
-extern SchemeObject* cond_symbol;
-extern SchemeObject* apply_symbol;
-extern SchemeObject* else_symbol;
-extern SchemeObject* ergo_symbol;
-extern SchemeObject* case_symbol;
-extern SchemeObject* do_symbol;
-extern SchemeObject* let_symbol;
-extern SchemeObject* letstar_symbol;
-extern SchemeObject* letrec_symbol;
-extern SchemeObject* begin_symbol;
-extern SchemeObject* and_symbol;
-extern SchemeObject* or_symbol;
-extern SchemeObject* lambda_symbol;
-extern SchemeObject* lambda_symbol_short;
-extern SchemeObject* quote_symbol;
-extern SchemeObject* quasiquote_symbol;
-extern SchemeObject* unquote_symbol;
-extern SchemeObject* unquote_splicing_symbol;
-extern SchemeObject* define_symbol;
-extern SchemeObject* define_macro;
-extern SchemeObject* set_e_symbol;
-extern SchemeObject* unnamed_symbol;
-extern SchemeObject* define_syntax_symbol;
-extern SchemeObject* let_syntax_symbol;
-extern SchemeObject* letrec_syntax_symbol;
-extern SchemeObject* ellipsis_symbol;
-extern SchemeObject* unnamed_symbol;
+SchemeObject* i_find_duplicate(SchemeObject* l);
+SchemeObject* i_circular_list_p(SchemeObject* p);
 
 #endif

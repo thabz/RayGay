@@ -7,6 +7,7 @@
 #include <iostream>
 
 class SchemeObject;
+class Scheme;
 
 using namespace std;
 
@@ -34,7 +35,7 @@ class Lexer
             ERROR,
             END
         };
-        Lexer();
+        Lexer(Scheme*);
         Token nextToken(wistream* is);
         void putBack(Token token);
         Token peek(wistream* is);
@@ -60,6 +61,7 @@ class Lexer
         list<int> curline_stack;
         list<Token> cache;
         bool boolean;
+        Scheme* scheme;
 };
 
 #endif

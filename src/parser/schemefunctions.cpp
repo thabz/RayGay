@@ -4,7 +4,7 @@
 #include "parser/schemefunctions.h"
 #include "parser/converters.h"
 
-SchemeObject* iso_goursats_surface(SchemeObject* s_a, SchemeObject* s_b, SchemeObject* s_c, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* s_z)
+SchemeObject* iso_goursats_surface(Scheme* scheme, SchemeObject* s_a, SchemeObject* s_b, SchemeObject* s_c, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* s_z)
 {
     wchar_t* proc = L"iso-goursats-surface";
     double a = safe_scm2double(s_a, 1, proc);
@@ -28,7 +28,7 @@ SchemeObject* iso_goursats_surface(SchemeObject* s_a, SchemeObject* s_b, SchemeO
 
 }
 
-SchemeObject* iso_torus(SchemeObject* s_R, SchemeObject* s_r, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* s_z)
+SchemeObject* iso_torus(Scheme* scheme, SchemeObject* s_R, SchemeObject* s_r, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* s_z)
 {
     wchar_t* proc = L"iso-torus";
     double R = safe_scm2double(s_R, 1, proc);

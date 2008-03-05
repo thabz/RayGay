@@ -3,9 +3,9 @@
 #include "scheme.h"
 #include "numbers.h"
 
-SchemeObject* s_bitwise_or(int num, SchemeStack::iterator stack) {
+SchemeObject* s_bitwise_or(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (num == 0) {
-	return S_ZERO;
+	    return int2scm(0);
     }
 
     assert_arg_int_type(L"bitwise-or", 1, *stack);
@@ -19,9 +19,9 @@ SchemeObject* s_bitwise_or(int num, SchemeStack::iterator stack) {
     return int2scm(result);
 }
 
-SchemeObject* s_bitwise_and(int num, SchemeStack::iterator stack) {
+SchemeObject* s_bitwise_and(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (num == 0) {
-	return int2scm(-1);
+	    return int2scm(-1);
     }
 
     assert_arg_int_type(L"bitwise-and", 1, *stack);
@@ -35,9 +35,9 @@ SchemeObject* s_bitwise_and(int num, SchemeStack::iterator stack) {
 }
 
 // This one works. The others don't.
-SchemeObject* s_bitwise_xor(int num, SchemeStack::iterator stack) {
+SchemeObject* s_bitwise_xor(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (num == 0) {
-	    return S_ZERO;
+	    return int2scm(0);
     }
 
     assert_arg_int_type(L"bitwise-and", 1, *stack);
@@ -53,17 +53,17 @@ SchemeObject* s_bitwise_xor(int num, SchemeStack::iterator stack) {
     return int2scm(result);
 }
 
-SchemeObject* s_bitwise_ior(int num, SchemeStack::iterator stack) {
+SchemeObject* s_bitwise_ior(Scheme* scheme, int num, SchemeStack::iterator stack) {
     throw scheme_exception(L"Not implemented");
 }
 
-SchemeObject* s_bitwise_not(SchemeObject* ei) {
+SchemeObject* s_bitwise_not(Scheme* scheme, SchemeObject* ei) {
     assert_arg_int_type(L"bitwise-not", 1, ei);
     int64_t result = scm2int(ei);
     return int2scm(~result);
 }
 
-SchemeObject* s_bitwise_if(SchemeObject* ei1, SchemeObject* ei2, SchemeObject* ei3) {
+SchemeObject* s_bitwise_if(Scheme* scheme, SchemeObject* ei1, SchemeObject* ei2, SchemeObject* ei3) {
     throw scheme_exception(L"Not implemented");
 //    return s_bitwise_ior(s_bitwise_and(ei1,ei2), 
 //	                 s_bitwise_and(s_bitwise_not(ei1), ei3))

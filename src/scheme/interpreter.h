@@ -13,7 +13,7 @@
 class Interpreter
 {
     public:
-	    Interpreter();
+	    Interpreter(Scheme* scheme);
    	    SchemeObject* interpret(SchemeObject* parsetree, SchemeObject* top_level_envt);
         SchemeObject* call_procedure_0(SchemeObject* procedure);
         SchemeObject* call_procedure_1(SchemeObject* procedure, SchemeObject* arg);
@@ -27,12 +27,14 @@ class Interpreter
             SchemeObject* global_arg2;
             SchemeObject* global_arg3;
             SchemeObject* global_envt;
+            Scheme* scheme;
             vector<SchemeObject*> stack;
         };
 
        State* getState();   
    private:
        pthread_key_t state_key;
+       Scheme* scheme;
 };
 
 typedef void*(*fn_ptr)(Interpreter::State*);

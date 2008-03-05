@@ -5,8 +5,9 @@
 #include <sstream>
 #include <cctype>
 
-Lexer::Lexer() {
+Lexer::Lexer(Scheme* scheme) {
     curline = 1;
+    this->scheme = scheme;
 }
 
 Lexer::Token Lexer::nextToken(wistream* is) {
@@ -211,7 +212,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
         }
 	    str = ss.str();
 
-	    number = i_string_2_number(str,10);
+	    number = i_string_2_number(scheme, str,10);
 	    if (number == S_FALSE) {
 	        return Lexer::SYMBOL; 
 	    } else {
