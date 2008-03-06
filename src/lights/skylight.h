@@ -11,18 +11,17 @@ class Object;
 class Skylight: public Lightsource {
 
     public:
-	/// Constructor
-	Skylight(double radius, int num);
-	virtual ~Skylight() {};
-	void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const;
+	    Skylight(double radius, int num);
+	    virtual ~Skylight() {};
+	    void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const;
         void transform(const Matrix& m) {};
 
     private:
-	std::vector<Vector> positions;
-	// TODO: Not threadsafe! Make this thread_local. Identical problem in arealight.
-	mutable std::vector<ShadowCache> shadowcaches;
-	double radius;
-	int num;
+	    std::vector<Vector> positions;
+	    // TODO: Not threadsafe! Make this thread_local. Identical problem in arealight.
+	    mutable std::vector<ShadowCache> shadowcaches;
+	    double radius;
+	    int num;
 };
 
 #endif
