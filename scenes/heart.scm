@@ -15,7 +15,7 @@
        lookat #(0 0 0)
        up #(0 1 0)
        fov 45
-       aa 1)))
+       aa 2)))
 
 (define ground
   (make-material
@@ -33,9 +33,9 @@
 
 (let loop ((i 0))
   (if (not(= i balls) )
-    (let* ((x (random2 (- size) size))
- 	         (y (random2 (- size) size))
-	         (z (random2 (- size) size))
+    (let* ((x (random (- size) size))
+ 	         (y (random (- size) size))
+	         (z (random (- size) size))
  	         (v (- (expt (+ (* 2 x x) (* y y) (* z z) -1) 3)
 		             (* x x z z z 0.1)
 		             (* y y z z z))))
@@ -44,11 +44,11 @@
 	 (add-to-scene
 	      (make-ellipsoid 
 		(vector (* y 400) (* z 400) (* x 400))
-		(vector (random2 10 30) (random2 10 30) (random2 10 30))
+		(vector (random 10 30) (random 10 30) (random 10 30))
 		(make-material
 		  (list 
 		    'diffuse
-		    (vector (random2 0.9 1) (random2 0.3 0.5) (random2 0.3 0.35))
+		    (vector (random 0.9 1) (random 0.3 0.5) (random 0.3 0.35))
 		    'kd 0.8
 		    'specular (vector 0.5 0.5 0.5)
 		    'ks 0.2
