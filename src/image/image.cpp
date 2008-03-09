@@ -32,15 +32,15 @@ Image::~Image() {
 }
 
 void Image::safeSetRGBA(int x, int y, const RGBA& c) {
-    if (x >= 0 && x < width && y >= 0 && y < height) {
+    if (x >= 0 && x < int(width) && y >= 0 && y < int(height)) {
 	setRGBA(x,y,c);
     }
 }
 
 void Image::setRGBA(const Vector2& p, const RGBA& c) {
-    uint32_t x = int(p[0]);
-    uint32_t y = int(p[1]);
-    if (x >= 0 && x < width && y >= 0 && y < height) {
+    int32_t x = int(p[0]);
+    int32_t y = int(p[1]);
+    if (x >= 0 && x < int(width) && y >= 0 && y < int(height)) {
 	setRGBA(x,y,c);
     }
 }
