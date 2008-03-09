@@ -196,6 +196,12 @@ SchemeObject* SchemeObject::createInputPort(wistream* wis) {
     return result;
 }
 
+SchemeObject* SchemeObject::createInputPort(istream* is) {
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::INPUT_PORT);
+    result->is = is;
+    return result;
+}
+
 SchemeObject* SchemeObject::createOutputPort(wostream* wos) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::OUTPUT_PORT);
     result->wos = wos;

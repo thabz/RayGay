@@ -18,11 +18,21 @@ SchemeObject* s_current_input_port(Scheme* scheme) {
     return scheme->current_input_port;
 }
 
-SchemeObject* s_input_port_p(Scheme* scheme, SchemeObject* o) {
+
+
+SchemeObject* i_input_port_p(SchemeObject* o) {
     return o->type() == SchemeObject::INPUT_PORT ? S_TRUE : S_FALSE;
 }
 
-SchemeObject* s_output_port_p(Scheme* scheme, SchemeObject* o) {
+SchemeObject* i_output_port_p(SchemeObject* o) {
     return o->type() == SchemeObject::OUTPUT_PORT ? S_TRUE : S_FALSE;
+}
+
+SchemeObject* s_input_port_p(Scheme* scheme, SchemeObject* o) {
+    return i_input_port_p(o);
+}
+
+SchemeObject* s_output_port_p(Scheme* scheme, SchemeObject* o) {
+    return i_output_port_p(o);
 }
 

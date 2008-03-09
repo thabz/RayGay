@@ -54,6 +54,7 @@ typedef int hashtable_type;
 #define i_wrapped_object_p(o,subtype) (((o)->type() == SchemeObject::WRAPPED_C_OBJECT && (o)->wrapped_subtype == (subtype)) ? S_TRUE : S_FALSE)
 #define IMMUTABLE_FLAG ((uint32_t)(1 << 31))
 #define INUSE_FLAG     ((uint32_t)(1 << 30))
+#define TEXTUAL_PORT   ((uint32_t)(1 << 29))
 #define REST_FLAG      ((uint32_t)(1 << 29))
 #define REQ_BITS_OFFS  8
 #define OPT_BITS_OFFS  12
@@ -153,6 +154,8 @@ class SchemeObject
         ObjectType type() const;
         bool immutable() const;
         void set_immutable(bool flag);
+        bool textual() const;
+        void set_textual(bool flag);
         wstring toString();
         void clear_inuse();
         bool inuse() const;
@@ -216,6 +219,7 @@ class SchemeObject
         static SchemeObject* createContinuation();
         static SchemeObject* createEnvironment(SchemeObject* parent, uint32_t num_buckets = 8);
         static SchemeObject* createInputPort(wistream* is);
+        static SchemeObject* createInputPort(istream* is);
         static SchemeObject* createOutputPort(wostream* os);
         static SchemeObject* createBuiltinProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
         static SchemeObject* createUserProcedure(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
@@ -293,6 +297,20 @@ void SchemeObject::set_immutable(bool flag) {
 inline
 bool SchemeObject::immutable() const {
     return (metadata & IMMUTABLE_FLAG) != 0;
+}
+
+inline
+void SchemeObject::set_textual(bool flag) {
+    if (flag) {
+        metadata |= TEXTUAL_PORT;
+    } else {
+        metadata &= ~TEXTUAL_PORT;
+    }
+}
+
+inline
+bool SchemeObject::textual() const {
+    return (metadata & TEXTUAL_PORT) != 0;    
 }
 
 inline

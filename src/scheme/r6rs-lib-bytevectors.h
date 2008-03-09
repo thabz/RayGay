@@ -28,5 +28,8 @@ SchemeObject* s_u8_list_2_bytevector(Scheme*, SchemeObject* l);
     }                                                     \
 }
 
+#define uint8toint8(b) ((b) > 127 ? (b) - 256 : (b))
+#define int8touint8(c) ((c) < 0 ? 256 + (c) : (c));
+
 #endif
 
