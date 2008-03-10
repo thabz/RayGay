@@ -206,7 +206,6 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 #define ONE_BIT_MASK    0x01  // 00000001
 
 wchar_t UTF8Codec::get(istream* is) {
-    cout << "Inside UTF-8" << endl;
     int32_t c = is->get();
     if (c == -1 || c < 128) {
         return c;
