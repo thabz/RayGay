@@ -84,6 +84,13 @@ SchemeObject* s_binary_port_p(Scheme* scheme, SchemeObject* obj) {
     return i_binary_port_p(obj);
 }
 
+SchemeObject* s_port_eof_p(Scheme* scheme, SchemeObject* obj) {
+    if (i_input_port_p(obj) == S_TRUE) {
+        return obj->is->eof() || obj->is->peek() == -1 ? S_TRUE : S_FALSE;
+    }
+    return S_FALSE;
+}
+
 SchemeObject* s_transcoded_port(Scheme* scheme, SchemeObject* port, SchemeObject* transcoder) {
     SchemeObject* newport;
     if (i_input_port_p(port) == S_TRUE) {
@@ -176,6 +183,7 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 	scheme->assign(L"textual-port?"         ,1,0,0, (SchemeObject* (*)()) s_textual_port_p, envt);
 	scheme->assign(L"binary-port?"          ,1,0,0, (SchemeObject* (*)()) s_binary_port_p, envt);
 	scheme->assign(L"transcoded-port"       ,2,0,0, (SchemeObject* (*)()) s_transcoded_port, envt);
+	scheme->assign(L"port-eof?"             ,1,0,0, (SchemeObject* (*)()) s_port_eof_p, envt);
 	scheme->assign(L"open-bytevector-input-port"
 	                                        ,1,1,0, (SchemeObject* (*)()) s_open_bytevector_input_port, envt);
 	scheme->assign(L"get-u8"                ,1,0,0, (SchemeObject* (*)()) s_get_u8, envt);
