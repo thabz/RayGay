@@ -193,24 +193,28 @@ SchemeObject* SchemeObject::createEnvironment(SchemeObject* parent, uint32_t num
 SchemeObject* SchemeObject::createInputPort(wistream* wis) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::INPUT_PORT);
     result->wis = wis;
+    result->transcoder = NULL;
     return result;
 }
 
 SchemeObject* SchemeObject::createInputPort(istream* is) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::INPUT_PORT);
     result->is = is;
+    result->transcoder = NULL;
     return result;
 }
 
 SchemeObject* SchemeObject::createOutputPort(wostream* wos) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::OUTPUT_PORT);
     result->wos = wos;
+    result->transcoder = NULL;
     return result;
 }
 
 SchemeObject* SchemeObject::createOutputPort(ostream* os) {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::OUTPUT_PORT);
     result->os = os;
+    result->transcoder = NULL;
     return result;
 }
 
