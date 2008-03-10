@@ -91,6 +91,14 @@ SchemeObject* s_port_eof_p(Scheme* scheme, SchemeObject* obj) {
     return S_FALSE;
 }
 
+SchemeObject* s_port_transcoder(Scheme* scheme, SchemeObject* port) {
+    assert_arg_input_port_type(L"port-transcoder", 1, port);
+    if (i_textual_port_p(port) == S_TRUE && port->transcoder != NULL) {
+	return port->transcoder;
+    }
+    return S_FALSE;
+}
+
 SchemeObject* s_transcoded_port(Scheme* scheme, SchemeObject* port, SchemeObject* transcoder) {
     SchemeObject* newport;
     if (i_input_port_p(port) == S_TRUE) {
@@ -180,6 +188,7 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 	                                        ,1,0,0, (SchemeObject* (*)()) s_transcoder_error_handling_mode, envt);
 	scheme->assign(L"transcoder-codec"      ,1,0,0, (SchemeObject* (*)()) s_transcoder_codec, envt);
 	scheme->assign(L"port?"                 ,1,0,0, (SchemeObject* (*)()) s_port_p, envt);
+	scheme->assign(L"port-transcoder"       ,1,0,0, (SchemeObject* (*)()) s_port_transcoder, envt);
 	scheme->assign(L"textual-port?"         ,1,0,0, (SchemeObject* (*)()) s_textual_port_p, envt);
 	scheme->assign(L"binary-port?"          ,1,0,0, (SchemeObject* (*)()) s_binary_port_p, envt);
 	scheme->assign(L"transcoded-port"       ,2,0,0, (SchemeObject* (*)()) s_transcoded_port, envt);
