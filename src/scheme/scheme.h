@@ -43,6 +43,9 @@ class Scheme {
         SchemeObject* callProcedure_3(SchemeObject* s_proc, SchemeObject*, SchemeObject*, SchemeObject*);
         SchemeObject* callProcedure_n(SchemeObject* s_proc, SchemeObject* args_list);
         
+        // Globals that we want to keep away from the garbage collector
+        void keepForever(SchemeObject*);
+        
         // Force a garbage collection
         void forceGarbageCollection();
         

@@ -4,21 +4,6 @@
 #include "r6rs-lib-bytevectors.h"
 #include "scheme.h"
 
-#define CODEC_UTF8   1
-#define CODEC_LATIN1 2
-#define CODEC_UTF16  3
-#define EOL_STYLE_LF    0 
-#define EOL_STYLE_CR    1
-#define EOL_STYLE_CRLF  2
-#define EOL_STYLE_NEL   3
-#define EOL_STYLE_CRNEL 4
-#define EOL_STYLE_LS    5
-#define ERROR_HANDLING_MODE_REPLACE 0
-#define ERROR_HANDLING_MODE_IGNORE  1
-#define ERROR_HANDLING_MODE_RAISE   2
-
-
-
 SchemeObject* latin1_codec;
 SchemeObject* utf8_codec;
 SchemeObject* utf16_codec;
@@ -173,10 +158,19 @@ SchemeObject* s_get_char(Scheme* scheme, SchemeObject* port) {
     return c == -1 ? S_EOF : char2scm(c);
 }
 
+SchemeObject* s_get_string_n(Scheme* scheme, SchemeObject* port) {
+    return S_FALSE;
+}
+
 void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
+    
     latin1_codec = SchemeObject::createCodec(new Latin1Codec());
     utf8_codec = SchemeObject::createCodec(new UTF8Codec());
     utf16_codec = SchemeObject::createCodec(new UTF16Codec());
+    
+    scheme->keepForever(latin1_codec);
+    scheme->keepForever(utf8_codec);
+    scheme->keepForever(utf16_codec);
     
 	scheme->assign(L"latin-1-codec"         ,0,0,0, (SchemeObject* (*)()) s_latin_1_codec, envt);
 	scheme->assign(L"utf-8-codec"           ,0,0,0, (SchemeObject* (*)()) s_utf_8_codec, envt);

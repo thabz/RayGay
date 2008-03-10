@@ -364,6 +364,11 @@ void Scheme::forceGarbageCollection() {
     Heap::getUniqueInstance()->garbageCollect(interpreter->getState()->stack);
 }
 
+void Scheme::keepForever(SchemeObject* obj) {
+    Heap::getUniqueInstance()->addRoot(obj);
+}
+
+
 
 // -----------------------------------------------------
 // Procedures
@@ -667,7 +672,7 @@ SchemeObject* i_list_tail(SchemeObject* l, SchemeObject* k) {
 }
 
 SchemeObject* s_list_tail(Scheme* scheme, SchemeObject* l, SchemeObject* k) {
-    assert_arg_pair_type(L"list-tail", 1, l);
+    assert_non_atom_type(L"list-tail", 1, l);
     assert_arg_positive_int(L"list-tail", 2, k);
     return i_list_tail(l,k);
 }
