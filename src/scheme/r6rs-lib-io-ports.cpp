@@ -3,6 +3,7 @@
 #include "r6rs-lib-io-common.h"
 #include "r6rs-lib-bytevectors.h"
 #include "scheme.h"
+#include "numbers.h"
 
 SchemeObject* latin1_codec;
 SchemeObject* utf8_codec;
@@ -158,8 +159,25 @@ SchemeObject* s_get_char(Scheme* scheme, SchemeObject* port) {
     return c == -1 ? S_EOF : char2scm(c);
 }
 
-SchemeObject* s_get_string_n(Scheme* scheme, SchemeObject* port) {
-    return S_FALSE;
+SchemeObject* s_get_string_n(Scheme* scheme, SchemeObject* port, SchemeObject* count) {
+    assert_arg_input_port_type(L"get-string-n", 1, port);
+    assert_arg_textual_port_type(L"get-string-n", 1, port);
+    assert_arg_positive_int(L"get-string-n", 2, count);
+    int32_t n = scm2int(count);
+    if (n == 0) {
+        return string2scm(wstring(L""));
+    }
+    wchar_t chars[n+1];
+    int32_t i;
+    for(i = 0; i < n; i++) {
+        wchar_t c = i_get_char(port);
+        if (c == -1) {
+            break;
+        }
+        chars[i] = c;
+    }
+    chars[i] = 0;
+    return i == 0 ? S_EOF : string2scm(wstring(chars, n));
 }
 
 void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
@@ -192,6 +210,7 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 	scheme->assign(L"get-u8"                ,1,0,0, (SchemeObject* (*)()) s_get_u8, envt);
 	scheme->assign(L"lookahead-u8"          ,1,0,0, (SchemeObject* (*)()) s_lookahead_u8, envt);
 	scheme->assign(L"get-char"              ,1,0,0, (SchemeObject* (*)()) s_get_char, envt);
+	scheme->assign(L"get-string-n"          ,2,0,0, (SchemeObject* (*)()) s_get_string_n, envt);
 
     // Defined in io-common
 	scheme->assign(L"current-input-port"    ,0,0,0, (SchemeObject* (*)()) s_current_input_port, envt);
