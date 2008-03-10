@@ -208,6 +208,12 @@ SchemeObject* SchemeObject::createOutputPort(wostream* wos) {
     return result;
 }
 
+SchemeObject* SchemeObject::createOutputPort(ostream* os) {
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::OUTPUT_PORT);
+    result->os = os;
+    return result;
+}
+
 SchemeObject* SchemeObject::createContinuation() {
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::CONTINUATION);
     result->result = NULL;
@@ -275,6 +281,12 @@ SchemeObject* SchemeObject::createHashtable(SchemeObject* buckets, SchemeObject*
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::HASHTABLE);
     result->buckets = buckets;
     result->s_hashtable_meta = i_list_3(hash_func, equiv_func, int2scm(0));
+    return result;
+}
+
+SchemeObject* SchemeObject::createCodec(Codec* codec) {
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::CODEC);
+    result->codec = codec;
     return result;
 }
 
@@ -355,6 +367,12 @@ void SchemeObject::mark() {
             case SchemeObject::HASHTABLE :
                 buckets->mark();
                 s_hashtable_meta->mark();
+                break;
+            case SchemeObject::INPUT_PORT :
+            case SchemeObject::OUTPUT_PORT :
+                if (transcoder != NULL) {
+                    transcoder->mark();
+                }
                 break;
             default:
                 break;        
@@ -495,6 +513,8 @@ wstring SchemeObject::toString() {
             return L"#<input-port>";
         case SchemeObject::OUTPUT_PORT :    
             return L"#<output-port>";
+        case SchemeObject::CODEC :    
+            return L"#<codec>";
         case SchemeObject::CHAR :
             tmp = char2charname(c);
             if (tmp.size() == 0) {
@@ -563,6 +583,8 @@ wstring SchemeObject::toString(ObjectType t) {
             return L"Inputport";
         case SchemeObject::OUTPUT_PORT :    
             return L"Outputport";
+        case SchemeObject::CODEC :    
+            return L"Codec";
         case SchemeObject::CHAR :    
             return L"Char";
         case SchemeObject::EMPTY_LIST :

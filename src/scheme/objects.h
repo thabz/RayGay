@@ -54,11 +54,13 @@ typedef int hashtable_type;
 #define i_wrapped_object_p(o,subtype) (((o)->type() == SchemeObject::WRAPPED_C_OBJECT && (o)->wrapped_subtype == (subtype)) ? S_TRUE : S_FALSE)
 #define IMMUTABLE_FLAG ((uint32_t)(1 << 31))
 #define INUSE_FLAG     ((uint32_t)(1 << 30))
-#define TEXTUAL_PORT   ((uint32_t)(1 << 29))
 #define REST_FLAG      ((uint32_t)(1 << 29))
 #define REQ_BITS_OFFS  8
 #define OPT_BITS_OFFS  12
 #define SRC_LINE_OFFS  8
+
+// For ports
+#define TEXTUAL_PORT        ((uint32_t)(1 << 29))
 
 class SchemeWrappedCObject {
     public:
@@ -67,6 +69,8 @@ class SchemeWrappedCObject {
         virtual void mark();
         virtual void finalize();
 };
+
+class Codec;
 
 class SchemeObject 
 {
@@ -97,6 +101,7 @@ class SchemeObject
                     SchemeObject* numerator; // For rational numbers
                     int32_t wrapped_subtype; // For wrapped C-objects
                     SchemeObject* buckets;   // For hashtables
+                    Codec* codec;            // For textual codecs
                 };
                 union {
                     SchemeObject* cdr;       // For pairs
@@ -110,7 +115,8 @@ class SchemeObject
                     SchemeObject* imag;      // For complex numbers
                     SchemeObject* denominator;// For rational numbers
                     SchemeWrappedCObject* wrapped_object; // For wrapped C-objects
-                    binding_map_t::hash_type hash;  // For symbols 
+                    binding_map_t::hash_type hash;  // For symbols
+                    SchemeObject* transcoder;  // For ports
                 };
             };
         };
@@ -137,6 +143,7 @@ class SchemeObject
  		    WRAPPED_C_OBJECT,
 		    UNSPECIFIED,
 		    HASHTABLE,
+		    CODEC,
 		    SELF_EVALUATING_FORMS_ARE_BEFORE_HERE,
 		    SYMBOL,
 		    PAIR,
@@ -221,6 +228,8 @@ class SchemeObject
         static SchemeObject* createInputPort(wistream* is);
         static SchemeObject* createInputPort(istream* is);
         static SchemeObject* createOutputPort(wostream* os);
+        static SchemeObject* createOutputPort(ostream* os);
+        static SchemeObject* createCodec(Codec* codec);
         static SchemeObject* createBuiltinProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
         static SchemeObject* createUserProcedure(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
         static SchemeObject* createInternalProcedure(const wchar_t* name);
