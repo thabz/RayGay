@@ -159,6 +159,19 @@ SchemeObject* s_get_char(Scheme* scheme, SchemeObject* port) {
     return c == -1 ? S_EOF : char2scm(c);
 }
 
+// Returns -1 if EOF, otherwise an int in the range [0,255].
+wchar_t i_lookahead_char(SchemeObject* textual_input_port) {
+    return textual_input_port->transcoder->car->codec->peek(textual_input_port->is);
+}
+
+SchemeObject* s_lookahead_char(Scheme* scheme, SchemeObject* port) {
+    assert_arg_input_port_type(L"lookahead-char", 1, port);
+    assert_arg_textual_port_type(L"lookahead-char", 1, port);
+    wchar_t c = i_lookahead_char(port);
+    return c == -1 ? S_EOF : char2scm(c);
+}
+
+
 SchemeObject* s_get_string_n(Scheme* scheme, SchemeObject* port, SchemeObject* count) {
     assert_arg_input_port_type(L"get-string-n", 1, port);
     assert_arg_textual_port_type(L"get-string-n", 1, port);
@@ -210,6 +223,7 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 	scheme->assign(L"get-u8"                ,1,0,0, (SchemeObject* (*)()) s_get_u8, envt);
 	scheme->assign(L"lookahead-u8"          ,1,0,0, (SchemeObject* (*)()) s_lookahead_u8, envt);
 	scheme->assign(L"get-char"              ,1,0,0, (SchemeObject* (*)()) s_get_char, envt);
+	scheme->assign(L"lookahead-char"        ,1,0,0, (SchemeObject* (*)()) s_lookahead_char, envt);
 	scheme->assign(L"get-string-n"          ,2,0,0, (SchemeObject* (*)()) s_get_string_n, envt);
 
     // Defined in io-common
@@ -220,6 +234,11 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 	scheme->assign(L"eof-object?"           ,1,0,0, (SchemeObject* (*)()) s_eof_object_p, envt);
 }
 
+wchar_t Codec::peek(istream* is) {
+    wchar_t c = this->get(is);
+    this->unget(is);
+    return c;
+}
 
 #define LEN4_MASK 0xf8   // 11111000
 #define LEN4_VAL  0xf0   // 11110000
@@ -257,6 +276,14 @@ wchar_t UTF8Codec::get(istream* is) {
     return c;
 }
 
+void UTF8Codec::unget(istream* is) {
+    int32_t c;
+    do {
+        is->unget();
+        c = is->peek();
+    } while (c >= 128 && (c & LEN2_VAL) != LEN2_VAL);
+}
+
 wchar_t UTF16Codec::get(istream* is) {
     int32_t c = is->get();
     if (c == -1 || c < 128) {
@@ -279,8 +306,16 @@ wchar_t UTF16Codec::get(istream* is) {
     return c;
 }
 
+void UTF16Codec::unget(istream* is) {
+    is->unget();
+    is->unget();
+}
+
 wchar_t Latin1Codec::get(istream* is) {
     int32_t c = is->get();
     return c;
 }
 
+void Latin1Codec::unget(istream* is) {
+    is->unget();
+}

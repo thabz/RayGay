@@ -19,7 +19,8 @@ class Codec {
         virtual ~Codec() {};
     //    virtual void put(ostream* os, wchar_t c) = 0;
         virtual wchar_t get(istream* is) = 0;
-     //   virtual wchar_t peek(istream* is) = 0;
+        virtual void unget(istream* is) = 0;
+        wchar_t peek(istream* is);
 };
 
 class Latin1Codec : public Codec {
@@ -28,7 +29,7 @@ class Latin1Codec : public Codec {
         ~Latin1Codec() {};
         void put(ostream* os, wchar_t c);
         wchar_t get(istream* is);
-        wchar_t peek(istream* is);
+        void unget(istream* is);
 };
 
 class UTF8Codec : public Codec {
@@ -37,7 +38,7 @@ class UTF8Codec : public Codec {
         ~UTF8Codec() {};
         void put(ostream* os, wchar_t c);
         wchar_t get(istream* is);
-        wchar_t peek(istream* is);
+        void unget(istream* is);
 };
 
 class UTF16Codec : public Codec {
@@ -46,7 +47,7 @@ class UTF16Codec : public Codec {
         ~UTF16Codec() {};
         void put(ostream* os, wchar_t c);
         wchar_t get(istream* is);
-        wchar_t peek(istream* is);
+        void unget(istream* is);
 };
 
 
