@@ -50,8 +50,6 @@ class UTF16Codec : public Codec {
         void unget(istream* is);
 };
 
-
-
 #define assert_arg_input_port_type(procname, argnum, arg) {     \
     if (i_input_port_p(arg) == S_FALSE) {                       \
         wostringstream ss;                                 \

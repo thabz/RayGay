@@ -171,6 +171,9 @@ SchemeObject* s_lookahead_char(Scheme* scheme, SchemeObject* port) {
     return c == -1 ? S_EOF : char2scm(c);
 }
 
+void i_unget_char(SchemeObject* textual_input_port) {
+    return textual_input_port->transcoder->car->codec->unget(textual_input_port->is);
+}
 
 SchemeObject* s_get_string_n(Scheme* scheme, SchemeObject* port, SchemeObject* count) {
     assert_arg_input_port_type(L"get-string-n", 1, port);
