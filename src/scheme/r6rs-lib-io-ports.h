@@ -18,37 +18,47 @@ class Codec {
         Codec() {};
         virtual ~Codec() {};
     //    virtual void put(ostream* os, wchar_t c) = 0;
-        virtual wchar_t get(istream* is) = 0;
-        virtual void unget(istream* is) = 0;
-        wchar_t peek(istream* is);
+        virtual wchar_t get(SchemeObject* port) = 0;
+        virtual void unget(SchemeObject* port) = 0;
+        wchar_t peek(SchemeObject* is);
 };
 
 class Latin1Codec : public Codec {
     public: 
         Latin1Codec() {};
         ~Latin1Codec() {};
-        void put(ostream* os, wchar_t c);
-        wchar_t get(istream* is);
-        void unget(istream* is);
+        void put(SchemeObject* port, wchar_t c);
+        wchar_t get(SchemeObject* port);
+        void unget(SchemeObject* port);
 };
 
 class UTF8Codec : public Codec {
     public: 
         UTF8Codec() {};
         ~UTF8Codec() {};
-        void put(ostream* os, wchar_t c);
-        wchar_t get(istream* is);
-        void unget(istream* is);
+        void put(SchemeObject* port, wchar_t c);
+        wchar_t get(SchemeObject* port);
+        void unget(SchemeObject* port);
 };
 
 class UTF16Codec : public Codec {
     public: 
         UTF16Codec() {};
         ~UTF16Codec() {};
-        void put(ostream* os, wchar_t c);
-        wchar_t get(istream* is);
-        void unget(istream* is);
+        void put(SchemeObject* port, wchar_t c);
+        wchar_t get(SchemeObject* port);
+        void unget(SchemeObject* port);
 };
+
+class RawUnicodeCodec : public Codec {
+    public: 
+        RawUnicodeCodec() {};
+        ~RawUnicodeCodec() {};
+        void put(SchemeObject* port, wchar_t c);
+        wchar_t get(SchemeObject* port);
+        void unget(SchemeObject* port);
+};
+
 
 #define assert_arg_input_port_type(procname, argnum, arg) {     \
     if (i_input_port_p(arg) == S_FALSE) {                       \

@@ -8,6 +8,7 @@
 SchemeObject* latin1_codec;
 SchemeObject* utf8_codec;
 SchemeObject* utf16_codec;
+SchemeObject* rawunicode_codec;
 
 SchemeObject* s_latin_1_codec(Scheme* scheme) {
     return latin1_codec;
@@ -20,7 +21,6 @@ SchemeObject* s_utf_8_codec(Scheme* scheme) {
 SchemeObject* s_utf_16_codec(Scheme* scheme) {
     return utf16_codec;
 }
-
 
 SchemeObject* s_make_transcoder(Scheme* scheme, SchemeObject* codec, SchemeObject* eol_style, SchemeObject* handling_mode) {
     if (eol_style == S_UNSPECIFIED) {
@@ -114,6 +114,16 @@ SchemeObject* s_open_bytevector_input_port(Scheme* scheme, SchemeObject* bytevec
     return port;    
 }
 
+SchemeObject* s_open_string_input_port(Scheme* scheme, SchemeObject* str) {
+    assert_arg_string_type(L"open-string-input-port", 1, str);
+    wstring s = scm2string(str);
+    wistringstream* wiss = new wistringstream(s, istringstream::in);
+    SchemeObject* port = SchemeObject::createInputPort(wiss);
+    port->set_textual(true);
+    port->transcoder = s_make_transcoder(scheme, rawunicode_codec, S_UNSPECIFIED, S_UNSPECIFIED);
+    return port;
+}
+
 
 // Returns -1 if EOF, otherwise an int in the range [0,255].
 int32_t i_get_u8(SchemeObject* binary_input_port) {
@@ -149,7 +159,7 @@ SchemeObject* s_lookahead_u8(SchemeObject* scheme, SchemeObject* port) {
 
 // Returns -1 if EOF, otherwise an int in the range [0,255].
 wchar_t i_get_char(SchemeObject* textual_input_port) {
-    return textual_input_port->transcoder->car->codec->get(textual_input_port->is);
+    return textual_input_port->transcoder->car->codec->get(textual_input_port);
 }
 
 SchemeObject* s_get_char(Scheme* scheme, SchemeObject* port) {
@@ -161,7 +171,7 @@ SchemeObject* s_get_char(Scheme* scheme, SchemeObject* port) {
 
 // Returns -1 if EOF, otherwise an int in the range [0,255].
 wchar_t i_lookahead_char(SchemeObject* textual_input_port) {
-    return textual_input_port->transcoder->car->codec->peek(textual_input_port->is);
+    return textual_input_port->transcoder->car->codec->peek(textual_input_port);
 }
 
 SchemeObject* s_lookahead_char(Scheme* scheme, SchemeObject* port) {
@@ -172,7 +182,7 @@ SchemeObject* s_lookahead_char(Scheme* scheme, SchemeObject* port) {
 }
 
 void i_unget_char(SchemeObject* textual_input_port) {
-    return textual_input_port->transcoder->car->codec->unget(textual_input_port->is);
+    return textual_input_port->transcoder->car->codec->unget(textual_input_port);
 }
 
 SchemeObject* s_get_string_n(Scheme* scheme, SchemeObject* port, SchemeObject* count) {
@@ -201,10 +211,12 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
     latin1_codec = SchemeObject::createCodec(new Latin1Codec());
     utf8_codec = SchemeObject::createCodec(new UTF8Codec());
     utf16_codec = SchemeObject::createCodec(new UTF16Codec());
+    rawunicode_codec = SchemeObject::createCodec(new RawUnicodeCodec());
     
     scheme->keepForever(latin1_codec);
     scheme->keepForever(utf8_codec);
     scheme->keepForever(utf16_codec);
+    scheme->keepForever(rawunicode_codec);
     
 	scheme->assign(L"latin-1-codec"         ,0,0,0, (SchemeObject* (*)()) s_latin_1_codec, envt);
 	scheme->assign(L"utf-8-codec"           ,0,0,0, (SchemeObject* (*)()) s_utf_8_codec, envt);
@@ -223,6 +235,7 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 	scheme->assign(L"port-eof?"             ,1,0,0, (SchemeObject* (*)()) s_port_eof_p, envt);
 	scheme->assign(L"open-bytevector-input-port"
 	                                        ,1,1,0, (SchemeObject* (*)()) s_open_bytevector_input_port, envt);
+	scheme->assign(L"open-string-input-port",1,1,0, (SchemeObject* (*)()) s_open_string_input_port, envt);
 	scheme->assign(L"get-u8"                ,1,0,0, (SchemeObject* (*)()) s_get_u8, envt);
 	scheme->assign(L"lookahead-u8"          ,1,0,0, (SchemeObject* (*)()) s_lookahead_u8, envt);
 	scheme->assign(L"get-char"              ,1,0,0, (SchemeObject* (*)()) s_get_char, envt);
@@ -237,9 +250,9 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 	scheme->assign(L"eof-object?"           ,1,0,0, (SchemeObject* (*)()) s_eof_object_p, envt);
 }
 
-wchar_t Codec::peek(istream* is) {
-    wchar_t c = this->get(is);
-    this->unget(is);
+wchar_t Codec::peek(SchemeObject* port) {
+    wchar_t c = this->get(port);
+    this->unget(port);
     return c;
 }
 
@@ -257,7 +270,8 @@ wchar_t Codec::peek(istream* is) {
 #define TWO_BIT_MASK    0x03  // 00000011
 #define ONE_BIT_MASK    0x01  // 00000001
 
-wchar_t UTF8Codec::get(istream* is) {
+wchar_t UTF8Codec::get(SchemeObject* port) {
+    istream* is = port->is;
     int32_t c = is->get();
     if (c == -1 || c < 128) {
         return c;
@@ -279,7 +293,8 @@ wchar_t UTF8Codec::get(istream* is) {
     return c;
 }
 
-void UTF8Codec::unget(istream* is) {
+void UTF8Codec::unget(SchemeObject* port) {
+    istream* is = port->is;
     int32_t c;
     do {
         is->unget();
@@ -287,7 +302,8 @@ void UTF8Codec::unget(istream* is) {
     } while (c >= 128 && (c & LEN2_VAL) != LEN2_VAL);
 }
 
-wchar_t UTF16Codec::get(istream* is) {
+wchar_t UTF16Codec::get(SchemeObject* port) {
+    istream* is = port->is;
     int32_t c = is->get();
     if (c == -1 || c < 128) {
         return c;
@@ -309,16 +325,25 @@ wchar_t UTF16Codec::get(istream* is) {
     return c;
 }
 
-void UTF16Codec::unget(istream* is) {
-    is->unget();
-    is->unget();
+void UTF16Codec::unget(SchemeObject* port) {
+    port->is->unget();
+    port->is->unget();
 }
 
-wchar_t Latin1Codec::get(istream* is) {
-    int32_t c = is->get();
+wchar_t Latin1Codec::get(SchemeObject* port) {
+    int32_t c = port->is->get();
     return c;
 }
 
-void Latin1Codec::unget(istream* is) {
-    is->unget();
+void Latin1Codec::unget(SchemeObject* port) {
+    port->is->unget();
+}
+
+
+wchar_t RawUnicodeCodec::get(SchemeObject* port) {
+    return port->wis->get();
+}
+
+void RawUnicodeCodec::unget(SchemeObject* port) {
+    port->wis->unget();
 }
