@@ -277,12 +277,40 @@ wchar_t Lexer::readEscapedChar(wistream* is) {
 }
 
 wchar_t Lexer::readHexEscape(wistream* is) {
-    int64_t n;
-    (*is) >> hex >> n;
+    uint64_t n = 0;
+    bool done = false;
+    bool digits_found = 0;
+    while(!done) {
+	if (is->eof()) {
+	    done = true;
+	} else {
+	    wchar_t c = is->get();
+	    if (c == -1) {
+		done = true;
+	    } else if (c >= L'0' && c <= L'9') {
+		n = (n << 4) | (c - L'0');
+		digits_found++;
+	    } else if (c >= L'a' && c <= L'f') {
+		n = (n << 4) | (c + 10 - L'a');
+		digits_found++;
+	    } else if (c >= L'A' && c <= L'F') {
+		n = (n << 4) | (c + 10 - L'A');
+		digits_found++;
+	    } else {
+		is->unget();
+		done = true;
+	    }
+	}
+    }
+    if (digits_found == 0) {
+	return -1;
+    }
+
     // Check that n is in legal unicode range
-    if (n < 0 || (n >= 0xD800 && n < 0xE000) || n >= 0x110000) {
+    if ((n >= 0xD800 && n < 0xE000) || n >= 0x110000) {
         error = L"Escaped char in excluded unicode range";
         return -1;
     }
     return wchar_t(n);
 }
+
