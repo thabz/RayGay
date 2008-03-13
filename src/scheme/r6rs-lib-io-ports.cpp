@@ -255,9 +255,9 @@ SchemeObject* s_get_string_all(Scheme* scheme, SchemeObject* port) {
     return i == 0 ? S_EOF : string2scm(str);
 }
 
-SchemeObject* s_get_string_line(Scheme* scheme, SchemeObject* port) {
-    assert_arg_input_port_type(L"get-string-line", 1, port);
-    assert_arg_textual_port_type(L"get-string-line", 1, port);
+SchemeObject* s_get_line(Scheme* scheme, SchemeObject* port) {
+    assert_arg_input_port_type(L"get-line", 1, port);
+    assert_arg_textual_port_type(L"get-line", 1, port);
     wstring str = L"";
     
     int32_t i = 0;
@@ -316,7 +316,7 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 	scheme->assign(L"lookahead-char"        ,1,0,0, (SchemeObject* (*)()) s_lookahead_char, envt);
 	scheme->assign(L"get-string-n"          ,2,0,0, (SchemeObject* (*)()) s_get_string_n, envt);
 	scheme->assign(L"get-string-all"        ,1,0,0, (SchemeObject* (*)()) s_get_string_all, envt);
-	scheme->assign(L"get-string-line"       ,1,0,0, (SchemeObject* (*)()) s_get_string_line, envt);
+	scheme->assign(L"get-line"              ,1,0,0, (SchemeObject* (*)()) s_get_line, envt);
 
     // Defined in io-common
 	scheme->assign(L"current-input-port"    ,0,0,0, (SchemeObject* (*)()) s_current_input_port, envt);
