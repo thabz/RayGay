@@ -25,14 +25,23 @@ SchemeObject* s_utf_16_codec(Scheme* scheme) {
     return utf16_codec;
 }
 
+SchemeObject* s_native_eol_style(Scheme* scheme) {
+    return SchemeObject::createSymbol(L"crlf");
+}
+
 SchemeObject* s_make_transcoder(Scheme* scheme, SchemeObject* codec, SchemeObject* eol_style, SchemeObject* handling_mode) {
     if (eol_style == S_UNSPECIFIED) {
-        eol_style = SchemeObject::createSymbol(L"crlf");
+        eol_style = s_native_eol_style(scheme);
     } 
     if (handling_mode == S_UNSPECIFIED) {
         handling_mode = SchemeObject::createSymbol(L"replace");
     }
     return i_list_3(codec, eol_style, handling_mode);
+}
+
+SchemeObject* s_native_transcoder(Scheme* scheme) {
+    SchemeObject* codec = s_utf_8_codec(scheme);
+    return s_make_transcoder(scheme, codec, S_UNSPECIFIED, S_UNSPECIFIED);
 }
 
 SchemeObject* s_transcoder_codec(Scheme* scheme, SchemeObject* transcoder) {
@@ -105,6 +114,9 @@ SchemeObject* s_open_file_input_port(Scheme* scheme, SchemeObject* filename, Sch
     ifstream* ifs = new ifstream(SchemeFilenames::toFilename(scm2string(filename)).c_str(), ios::in);
     if (ifs->fail()) {
         throw scheme_exception(L"Error opening file " + filename->toString());
+    }
+    if (file_options != S_FALSE || buffer_mode != S_FALSE) {
+        cout << "open-file-inputport: Not support for file-options and buffer-mode. Arguments ignored." << endl;
     }
     SchemeObject* port = SchemeObject::createInputPort(ifs);
     if (maybe_transcoder == S_FALSE || maybe_transcoder == S_UNSPECIFIED) {
@@ -240,7 +252,9 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 	scheme->assign(L"latin-1-codec"         ,0,0,0, (SchemeObject* (*)()) s_latin_1_codec, envt);
 	scheme->assign(L"utf-8-codec"           ,0,0,0, (SchemeObject* (*)()) s_utf_8_codec, envt);
 	scheme->assign(L"utf-16-codec"          ,0,0,0, (SchemeObject* (*)()) s_utf_16_codec, envt);
+	scheme->assign(L"native-eol-style"      ,0,0,0, (SchemeObject* (*)()) s_native_eol_style, envt);
 	scheme->assign(L"make-transcoder"       ,1,2,0, (SchemeObject* (*)()) s_make_transcoder, envt);
+	scheme->assign(L"native-transcoder"     ,0,0,0, (SchemeObject* (*)()) s_native_transcoder, envt);
 	scheme->assign(L"transcoder-codec"      ,1,0,0, (SchemeObject* (*)()) s_transcoder_codec, envt);
 	scheme->assign(L"transcoder-eol-style"  ,1,0,0, (SchemeObject* (*)()) s_transcoder_eol_style, envt);
 	scheme->assign(L"transcoder-error-handling-mode"
