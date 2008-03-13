@@ -281,29 +281,29 @@ wchar_t Lexer::readHexEscape(wistream* is) {
     bool done = false;
     bool digits_found = 0;
     while(!done) {
-	if (is->eof()) {
-	    done = true;
-	} else {
-	    wchar_t c = is->get();
-	    if (c == -1) {
-		done = true;
-	    } else if (c >= L'0' && c <= L'9') {
-		n = (n << 4) | (c - L'0');
-		digits_found++;
-	    } else if (c >= L'a' && c <= L'f') {
-		n = (n << 4) | (c + 10 - L'a');
-		digits_found++;
-	    } else if (c >= L'A' && c <= L'F') {
-		n = (n << 4) | (c + 10 - L'A');
-		digits_found++;
+	    if (is->eof()) {
+	        done = true;
 	    } else {
-		is->unget();
-		done = true;
+	        wchar_t c = is->get();
+	        if (c == -1) {
+	    	    done = true;
+	        } else if (c >= L'0' && c <= L'9') {
+	    	    n = (n << 4) | (c - L'0');
+	    	    digits_found++;
+	        } else if (c >= L'a' && c <= L'f') {
+	    	    n = (n << 4) | (c + 10 - L'a');
+	    	    digits_found++;
+	        } else if (c >= L'A' && c <= L'F') {
+	    	    n = (n << 4) | (c + 10 - L'A');
+	    	    digits_found++;
+	        } else {
+	    	    is->unget();
+	    	    done = true;
+	        }
 	    }
-	}
     }
     if (digits_found == 0) {
-	return -1;
+	    return -1;
     }
 
     // Check that n is in legal unicode range

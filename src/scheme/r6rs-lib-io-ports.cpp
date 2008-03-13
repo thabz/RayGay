@@ -1,9 +1,12 @@
 
+#include <fstream>
+
 #include "r6rs-lib-io-ports.h"
 #include "r6rs-lib-io-common.h"
 #include "r6rs-lib-bytevectors.h"
 #include "scheme.h"
 #include "numbers.h"
+#include "filenames.h"
 
 SchemeObject* latin1_codec;
 SchemeObject* utf8_codec;
@@ -80,7 +83,7 @@ SchemeObject* s_port_eof_p(Scheme* scheme, SchemeObject* obj) {
 SchemeObject* s_port_transcoder(Scheme* scheme, SchemeObject* port) {
     assert_arg_input_port_type(L"port-transcoder", 1, port);
     if (i_textual_port_p(port) == S_TRUE && port->transcoder != NULL) {
-	return port->transcoder;
+	    return port->transcoder;
     }
     return S_FALSE;
 }
@@ -95,6 +98,22 @@ SchemeObject* s_transcoded_port(Scheme* scheme, SchemeObject* port, SchemeObject
     newport->set_textual(true);
     newport->transcoder = transcoder;
     return newport;
+}
+
+SchemeObject* s_open_file_input_port(Scheme* scheme, SchemeObject* filename, SchemeObject* file_options, SchemeObject* buffer_mode, SchemeObject* maybe_transcoder) {
+    assert_arg_string_type(L"open-file-input-port", 1, filename);
+    ifstream* ifs = new ifstream(SchemeFilenames::toFilename(scm2string(filename)).c_str(), ios::in);
+    if (ifs->fail()) {
+        throw scheme_exception(L"Error opening file " + filename->toString());
+    }
+    SchemeObject* port = SchemeObject::createInputPort(ifs);
+    if (maybe_transcoder == S_FALSE || maybe_transcoder == S_UNSPECIFIED) {
+        port->set_textual(false);
+    } else {
+        port->set_textual(true);
+        port->transcoder = maybe_transcoder;
+    }
+    return port;
 }
 
 SchemeObject* s_open_bytevector_input_port(Scheme* scheme, SchemeObject* bytevector, SchemeObject* maybe_transcoder) {
@@ -233,6 +252,7 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 	scheme->assign(L"binary-port?"          ,1,0,0, (SchemeObject* (*)()) s_binary_port_p, envt);
 	scheme->assign(L"transcoded-port"       ,2,0,0, (SchemeObject* (*)()) s_transcoded_port, envt);
 	scheme->assign(L"port-eof?"             ,1,0,0, (SchemeObject* (*)()) s_port_eof_p, envt);
+	scheme->assign(L"open-file-input-port"  ,1,3,0, (SchemeObject* (*)()) s_open_file_input_port, envt);
 	scheme->assign(L"open-bytevector-input-port"
 	                                        ,1,1,0, (SchemeObject* (*)()) s_open_bytevector_input_port, envt);
 	scheme->assign(L"open-string-input-port",1,1,0, (SchemeObject* (*)()) s_open_string_input_port, envt);
