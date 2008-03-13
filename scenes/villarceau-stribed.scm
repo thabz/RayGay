@@ -27,8 +27,8 @@
 (define (make-villarceau-circle R r dir r-offset amplitude periods period-offset)
    (lambda (t)
       (let* ((tR (* t 360))
-	     (tr (* dir (+ r-offset (* t TWO-PI))))
-             (a (* amplitude (sin (+ period-offset (* t periods TWO-PI)))))
+	     (tr (* dir (+ r-offset (* t 2π))))
+             (a (* amplitude (sin (+ period-offset (* t periods 2π)))))
              (p (rotate 
  		  (translate
 		    (vector 0 (* r (sin tr)) (* r (cos tr)))
@@ -82,7 +82,7 @@
     (translate 
     (stroke-path
       (make-villarceau-circle torus-R torus-r 1
-       (* i (/ TWO-PI num-around)) a num-around HALF-PI)
+       (* i (/ 2π num-around)) a num-around π/2)
       tube-r
       (make-material
         `( diffuse ,(hsv->rgb (vector (* i (/ 360 num-around)) 0.5 1.0))

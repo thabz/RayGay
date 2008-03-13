@@ -12,7 +12,7 @@
        lookat #(0 100 0)
        up #(0 1 0)
        fov 45
-       aa 4)))
+       aa 3)))
 
 (define brown
   (make-material
@@ -54,14 +54,12 @@
       #(1700 -1 1700) 
       brown))
 
-(define PI 3.141592654)
-
 (define (func u v)
- (let* ((phi (* 4 PI v)))
+ (let* (( φ (* 4 π v)))
   (vector
-   (* u 400 (cos phi))
+   (* u 400 (cos φ))
    (* 700 v)
-   (* u 400 (sin phi))
+   (* u 400 (sin φ))
 
    )))
 

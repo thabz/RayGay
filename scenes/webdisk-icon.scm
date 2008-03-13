@@ -53,8 +53,6 @@
 (define R 400)
 (define r 14)
 
-(define PI 3.14)    
-
 (let loop ((i 0))
   (if (< i longitudes)
    (begin
@@ -68,7 +66,7 @@
 
 (let loop ((i (- 1 lattitudes)))
   (if (< i lattitudes)
-    (let* ((a (* PI (/ i (* 2 lattitudes))))
+    (let* ((a (* π (/ i (* 2 lattitudes))))
 	   (RR (abs (* R (cos a))))
 	   (h (* R (sin a))))
       (display RR)

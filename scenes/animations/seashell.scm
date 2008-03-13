@@ -28,13 +28,11 @@
 (add-to-scene (make-pointlight #(500 2600 1300)))
 (add-to-scene (make-pointlight #(-500 2600 1300)))
 
-(define PI 3.141592654)
-
 (define (func u01 v01)
-  (let* ((u (* u01 8 PI))
-	 (v (* v01 2 PI)) 
-	 (e6 (exp (/ u (* 6 PI))))
-	 (e3 (exp (/ u (* 3 PI))))
+  (let* ((u (* u01 8 π))
+	 (v (* v01 2 π)) 
+	 (e6 (exp (/ u (* 6 π))))
+	 (e3 (exp (/ u (* 3 π))))
 	 (c (cos (* 0.5 v)))
 	 (c2 (* c c)))
     (vector

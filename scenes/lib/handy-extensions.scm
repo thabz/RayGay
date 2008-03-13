@@ -1,9 +1,9 @@
 
-;(define PI  3.1415926535897932384626433832795029)
-;(define TWO-PI 6.283185307179586476925286766552)
-(define PI (* 4.0 (atan 1.0)))
-(define TWO-PI (* 2.0 PI))
-(define HALF-PI (/ PI 2.0))
+;(define π  3.1415926535897932384626433832795029)
+;(define 2π 6.283185307179586476925286766552)
+(define π (* 4.0 (atan 1.0)))
+(define 2π (* 2.0 π))
+(define π/2 (/ π 2.0))
 
 (define (first vec) (car vec))
 (define (second vec) (cadr vec))
