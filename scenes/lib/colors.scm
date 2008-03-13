@@ -86,7 +86,7 @@
 
 (define (color-rotate rgb angle)
   (if (list? rgb)
-    (map (lambda (c) (color-rotate c angle)) rgb)
+    (map (λ (c) (color-rotate c angle)) rgb)
     (let ((hsv (rgb->hsv rgb)))
       (hsv->rgb
 	      (normalize-hsv 
@@ -121,7 +121,7 @@
   (let* ([cols (list->vector colors)]
          [cols-num (vector-length cols)]
          [segments-num (- cols-num 1)])
-    (lambda (t) 
+    (λ (t) 
       (let* ([segment (floor (* segments-num t))]
              [offset (- (* t segments-num) segment)])
         (rgb-ramp (vector-ref cols segment) (vector-ref cols (+ 1 segment)) offset)))))
