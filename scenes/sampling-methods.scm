@@ -85,9 +85,9 @@
 
 (define (map-to-disc p)
   (let ((r (sqrt (car p)))
-        (phi (* 2 π (cadr p))))
-    (list (* r (cos phi))
-          (* r (sin phi)))))
+        ( φ (* 2 π (cadr p))))
+    (list (* r (cos φ))
+          (* r (sin φ)))))
 
 (define (-1-1-to-0-w-w p)
   (let ((half-w (/ w 2)))
