@@ -5,7 +5,7 @@
 (load "lib/colors.scm")
 
 (set-image-size '(1024 768))
-(set-background color-white)
+(set-background (color 'white))
 
 (set-renderer "raytracer")
 (set-camera 
@@ -20,13 +20,13 @@
   (make-material
     (list 'diffuse c
 	        'kd 0.8
-	        'specular color-white
+	        'specular (color 'white)
    	      'ks 0.2
           'specpow 35)))
 
 (define matte-white 
   (make-material
-    (list 'diffuse color-white 
+    (list 'diffuse (color 'white)
 	  'kd 1.0
 	  'ks 0.0)))
 
@@ -35,7 +35,7 @@
 
 (add-to-scene (make-continuous-studio-backdrop #(40 30 40) 10 matte-white))  
 
-(add-to-scene (translate (make-venus (body-material color-papaya-whip)) #(-5.5 5 16)))
-(add-to-scene (translate (make-venus (body-material color-peach-puff)) #(0 5 16)))
-(add-to-scene (translate (make-venus (body-material color-navajo-white)) #(5.5 5 16)))
+(add-to-scene (translate (make-venus (body-material (color 'papaya-whip))) #(-5.5 5 16)))
+(add-to-scene (translate (make-venus (body-material (color 'peach-puff))) #(0 5 16)))
+(add-to-scene (translate (make-venus (body-material (color 'navajo-white))) #(5.5 5 16)))
     

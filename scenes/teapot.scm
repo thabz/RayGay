@@ -6,7 +6,7 @@
 (set-image-size image-size-360-hd)
 (set-image-size image-size-1080-hd)
 
-(set-background color-tan)
+(set-background (color 'tan))
 
 (set-renderer "raytracer")
 (set-camera 
@@ -19,7 +19,7 @@
 
 (define brown
   (make-material
-    (list 'diffuse color-moccasin
+    (list 'diffuse (color 'moccasin)
           'kd 1.0
           'ks 0.0)))
 
