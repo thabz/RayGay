@@ -13,6 +13,16 @@ struct R6RSLibIOPorts {
     static void bind(Scheme* scheme, SchemeObject* envt);
 };
 
+wchar_t i_get_char(SchemeObject* textual_input_port);
+wchar_t i_lookahead_char(SchemeObject* textual_input_port);
+void i_unget_char(SchemeObject* textual_input_port);
+SchemeObject* i_port_eof_p(SchemeObject* port);
+SchemeObject* s_utf_8_codec(Scheme* scheme);
+SchemeObject* i_open_string_input_port(Scheme*, wstring s);
+SchemeObject* s_open_file_input_port(Scheme* scheme, SchemeObject* filename, SchemeObject* file_options, SchemeObject* buffer_mode, SchemeObject* maybe_transcoder);
+SchemeObject* s_make_transcoder(Scheme* scheme, SchemeObject* codec, SchemeObject* eol_style, SchemeObject* handling_mode);
+
+
 class Codec {
     public:
         Codec() {};

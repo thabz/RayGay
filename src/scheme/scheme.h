@@ -20,7 +20,7 @@ class Scheme {
     public:
         Scheme();
         SchemeObject* eval(wstring code, SchemeObject* envt = NULL);
-        SchemeObject* eval(wistream* code, SchemeObject* envt = NULL);
+        SchemeObject* eval(SchemeObject* port, SchemeObject* envt = NULL);
 
         // For assigning variables in a frame (default top-level)
         void assign(wstring variable, double value, SchemeObject* envt = NULL);

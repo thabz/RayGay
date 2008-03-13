@@ -36,9 +36,9 @@ class Lexer
             END
         };
         Lexer(Scheme*);
-        Token nextToken(wistream* is);
+        Token nextToken(SchemeObject* port);
         void putBack(Token token);
-        Token peek(wistream* is);
+        Token peek(SchemeObject* port);
         wstring getString() { return str; };
         wstring getError() { return error; };
         SchemeObject* getNumber() { return number; };
@@ -50,8 +50,8 @@ class Lexer
         bool isSymbolChar(wchar_t c);
 	    bool isDelimiter(wchar_t c);
 	    bool isWhitespace(wchar_t c);
-        wchar_t readEscapedChar(wistream* is);
-        wchar_t readHexEscape(wistream* is);
+        wchar_t readEscapedChar(SchemeObject* port);
+        wchar_t readHexEscape(SchemeObject* port);
         wstring str;
         wstring error;
         SchemeObject* number;

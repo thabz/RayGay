@@ -1,6 +1,7 @@
 
 #include "scheme/scheme.h"
 #include "scheme/filenames.h"
+#include "scheme/r6rs-lib-io-ports.h"
 
 #include "parser/imagefactory.h"
 #include "parser/mathfactory.h"
@@ -133,36 +134,29 @@ int repl() {
 }
 
 int runfile(char* filename) {
-    wifstream* ifs = new wifstream(filename, ios::in);
-    try {
-        //std::locale loc("");
-        ifs->imbue(wcout.getloc());
-    } catch (std::runtime_error e) {
-        cout << "Warning: can't read system locale. UTF-8 files won't be read correctly." << endl;
-    }
-    
-    if (ifs->fail()) {
-        cout << "Error opening file" << endl;
-        return EXIT_FAILURE;
-    }
+    string s = string(filename);
+    wstring wfilename = SchemeFilenames::toString(s);
     try {
         scheme = new Scheme();
         ImageFactory::register_procs(scheme);
         MathFactory::register_procs(scheme);
         PathFactory::register_procs(scheme);
-        scheme->eval(ifs);
+
+        SchemeObject* transcoder = s_make_transcoder(scheme, s_utf_8_codec(scheme), S_UNSPECIFIED, S_UNSPECIFIED);
+        SchemeObject* port = s_open_file_input_port(scheme, string2scm(wfilename), S_FALSE, S_FALSE, transcoder);
+        scheme->eval(port);
     } catch (scheme_exception e) {
-        ifs->close();
+    // TODO: Close port
 	    wcerr << L"ABORT: " << e.toString() << endl;
         return EXIT_FAILURE;
     } catch (Exception e) {
-	cout << L"ABORT: " << e.getMessage() << endl;
+	    cout << L"ABORT: " << e.getMessage() << endl;
         return EXIT_FAILURE;
     } catch (exception e) {
-	cout << L"ABORT: " << e.what() << endl;
+	    cout << L"ABORT: " << e.what() << endl;
         return EXIT_FAILURE;
     }
-    ifs->close();
+    // TODO: Close port
     return EXIT_SUCCESS;
 }
 

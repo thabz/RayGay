@@ -1,33 +1,32 @@
 
+#include <sstream>
+#include <cctype>
+
 #include "lexer.h"
 #include "scheme.h"
 #include "numbers.h"
-#include <sstream>
-#include <cctype>
+#include "r6rs-lib-io-ports.h"
 
 Lexer::Lexer(Scheme* scheme) {
     curline = 1;
     this->scheme = scheme;
 }
 
-Lexer::Token Lexer::nextToken(wistream* is) {
+Lexer::Token Lexer::nextToken(SchemeObject* port) {
     wchar_t n,c;
     if (!cache.empty()) {
         Token t = cache.front();
         cache.pop_front();
         return t;
     }
-    if (is->eof()) {
+    if (i_port_eof_p(port) == S_TRUE) {
         return Lexer::END;
     }
-    if (is->fail()) {
-        error = L"Lexer failed reading input-stream. File missing?";
-        return Lexer::ERROR;
-    }
-    while(!is->fail()) 
+
+    while(true) 
     {
-        c = is->get();
-        if (is->eof() || c == -1) {
+        c = i_get_char(port);
+        if (c == -1) {
             return Lexer::END;
         }
         if (c == L'\n') {
@@ -40,10 +39,10 @@ Lexer::Token Lexer::nextToken(wistream* is) {
         }
         // Skip single-line comment until end of line or end of stream
         // Or skip #! lines
-        if (c == L';' || (c == L'#') && is->peek() == L'!') {
+        if (c == L';' || (c == L'#') && i_lookahead_char(port) == L'!') {
             do {
-                c = is->get();
-            } while (c != L'\n' && !is->eof());
+                c = i_get_char(port);
+            } while (c != L'\n' && i_port_eof_p(port) == S_FALSE);
             if (c == L'\n') {
                 curline++;
             }
@@ -53,17 +52,17 @@ Lexer::Token Lexer::nextToken(wistream* is) {
         // Support for multiline nested comments as specified in SRFI 30.
 	    // Support for datum comments
         if (c == L'#') {
-            int d = is->get();
+            int d = i_get_char(port);
             if (d == L'|') {
                 // Skip (nested) multi-line comment
                 int depth = 1;
                 int p = 0;
-                d = is->get();
+                d = i_get_char(port);
                 if (d == L'\n') {
                     curline++;    
                 }
                 while (depth > 0) {
-                    if (is->eof() || d == -1) {
+                    if (d == -1) {
                         error = L"Unexpected end of input in nested comment";
                         return Lexer::ERROR;
                     }
@@ -73,7 +72,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                         depth++; p = 0; 
                     }
                     p = d;
-                    d = is->get();
+                    d = i_get_char(port);
                     if (d == L'\n') {
                         curline++;    
                     }
@@ -82,7 +81,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
 	        } else if (d == L';') {
 	            return Lexer::DATUM_COMMENT;	
             } else {
-                is->unget();
+                i_unget_char(port);
             }
         }
 
@@ -100,25 +99,25 @@ Lexer::Token Lexer::nextToken(wistream* is) {
             case L'`':
                 return Lexer::BACKQUOTE;
             case L',':
-                n = is->get();
+                n = i_get_char(port);
                 if (n == L'@') {
                     return Lexer::COMMA_AT;
                 } else {
-                    is->unget();
+                    i_unget_char(port);
                     return Lexer::COMMA;
                 }
             case L'#': 
-                n = is->get();
+                n = i_get_char(port);
                 if ((n == L'f' || n == L't')) {
 		            boolean = (n == L't');
 		            return Lexer::BOOLEAN;
                 } else if (n == L'v') {
                     wstring collected;
-                    collected += is->get();
-                    while (is->peek() != L'(' && !is->eof()) {
-                        collected += is->get();
+                    collected += i_get_char(port);
+                    while (i_lookahead_char(port) != L'(' && i_port_eof_p(port) == S_FALSE) {
+                        collected += i_get_char(port);
                     }
-                    if (collected == L"u8" && is->get() == L'(') {
+                    if (collected == L"u8" && i_get_char(port) == L'(') {
                         return Lexer::VU8_OPEN_PAREN;
                     } else {
                         error = L"Illegal bytevector literal";
@@ -128,9 +127,9 @@ Lexer::Token Lexer::nextToken(wistream* is) {
 		            return Lexer::HASH_OPEN_PAREN;           
                 } else if (n == L'\\') {
                     wstring collected;
-                    collected += is->get();
-                    while (!(isDelimiter(is->peek()) || is->eof())) {
-                        collected += is->get();
+                    collected += i_get_char(port);
+                    while (!(isDelimiter(i_lookahead_char(port)) || i_lookahead_char(port) == -1)) {
+                        collected += i_get_char(port);
                     }
                     if (collected.size() == 0) {
                         error = L"Illegal char";
@@ -140,17 +139,14 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                         return Lexer::CHAR;
                     } else {
                         if (collected[0] == L'x' || collected[0] == L'X') {
-                            is->clear();
                             for(uint32_t i = 0; i < collected.size()-1; i++) {
-                                is->unget();
+                                i_unget_char(port);
                             }
-                            chr = readHexEscape(is);
-                            wchar_t tmp = is->get();
-                            if (chr >= 0 && (tmp == -1 || isDelimiter(tmp) || is->eof() || is->fail())) {
-                                is->unget();
+                            chr = readHexEscape(port);
+                            wchar_t tmp = i_lookahead_char(port);
+                            if (chr >= 0 && (tmp == -1 || isDelimiter(tmp))) {
                                 return Lexer::CHAR;
                             } else {
-                                is->unget();
                                 error = L"Illegal char: \\" + collected;
                                 return Lexer::ERROR;
                             }
@@ -165,21 +161,21 @@ Lexer::Token Lexer::nextToken(wistream* is) {
                         }
                     }
                 } else {
-		            is->unget();
+		            i_unget_char(port);
 		            break;
                 }
             case L'.' : 
-                if (isWhitespace(is->peek())) {
-                    is->ignore();
+                if (isWhitespace(i_lookahead_char(port))) {
+                    i_get_char(port);
                     return Lexer::PERIOD;
                 }
                 break;
             case L'"':
                 str = L"";
-                while (!is->eof()) {
-                    c = is->get();
+                while (i_port_eof_p(port) == S_FALSE) {
+                    c = i_get_char(port);
 		            if (c == L'\\') {
-                        c = readEscapedChar(is);
+                        c = readEscapedChar(port);
                         if (c == -1) {
                             return Lexer::ERROR;
                         }
@@ -198,14 +194,14 @@ Lexer::Token Lexer::nextToken(wistream* is) {
         
 	    wstringstream ss;
 	    ss << c;
-        while(!is->eof()) {
+        while(i_port_eof_p(port) == S_FALSE) {
             wchar_t e;
-	        e = is->get();
-	        if (e == -1 || is->eof()) {
+	        e = i_get_char(port);
+	        if (e == -1) {
 	    	    break;
 	        }
 	        if (!isSymbolChar(e)) {
-                is->unget();
+                i_unget_char(port);
 	    	    break;
 	        }
 	        ss << e;
@@ -219,7 +215,7 @@ Lexer::Token Lexer::nextToken(wistream* is) {
 	        return Lexer::NUMBER;
 	    }
     }
-    if (is->eof()) {
+    if (i_port_eof_p(port) == S_TRUE) {
         return Lexer::END;
     } else {
         error = L"Unknown error reading inputstream";
@@ -248,8 +244,8 @@ void Lexer::putBack(Token token) {
     cache.push_front(token);
 }
 
-Lexer::Token Lexer::peek(wistream* is) {
-    Token token = nextToken(is);
+Lexer::Token Lexer::peek(SchemeObject* port) {
+    Token token = nextToken(port);
     putBack(token);
     return token;
 }
@@ -257,9 +253,9 @@ Lexer::Token Lexer::peek(wistream* is) {
 const wstring escape_sequences(L"abtnvfr\"\\");
 const wchar_t escape_values[] = {0x7,0x8,0x9,0xA,0xB,0xC,0xD,0x22,0x5C}; 
 
-wchar_t Lexer::readEscapedChar(wistream* is) {
-    wchar_t c = is->get();
-    if (is->eof()) {
+wchar_t Lexer::readEscapedChar(SchemeObject* port) {
+    wchar_t c = i_get_char(port);
+    if (i_port_eof_p(port) == S_TRUE) {
         error = L"Unexpected end of file";
         return -1;
     }
@@ -267,8 +263,8 @@ wchar_t Lexer::readEscapedChar(wistream* is) {
     if (pos != escape_sequences.npos) {
         return escape_values[pos];
     } else if (c == L'x') {
-        wchar_t result = readHexEscape(is);
-        if (!is->eof() && is->get() == L';') {
+        wchar_t result = readHexEscape(port);
+        if (i_port_eof_p(port) == S_FALSE && i_get_char(port) == L';') {
             return result;
         }
     }
@@ -276,30 +272,26 @@ wchar_t Lexer::readEscapedChar(wistream* is) {
     return -1;
 }
 
-wchar_t Lexer::readHexEscape(wistream* is) {
+wchar_t Lexer::readHexEscape(SchemeObject* port) {
     uint64_t n = 0;
-    bool done = false;
-    bool digits_found = 0;
-    while(!done) {
-	    if (is->eof()) {
-	        done = true;
+    int digits_found = 0;
+    wchar_t c;
+    while(true) {
+	    c = i_get_char(port);
+	    if (c == -1) {
+		    break;
+	    } else if (c >= L'0' && c <= L'9') {
+		    n = (n << 4) | (c - L'0');
+		    digits_found++;
+	    } else if (c >= L'a' && c <= L'f') {
+		    n = (n << 4) | (c + 10 - L'a');
+		    digits_found++;
+	    } else if (c >= L'A' && c <= L'F') {
+		    n = (n << 4) | (c + 10 - L'A');
+		    digits_found++;
 	    } else {
-	        wchar_t c = is->get();
-	        if (c == -1) {
-	    	    done = true;
-	        } else if (c >= L'0' && c <= L'9') {
-	    	    n = (n << 4) | (c - L'0');
-	    	    digits_found++;
-	        } else if (c >= L'a' && c <= L'f') {
-	    	    n = (n << 4) | (c + 10 - L'a');
-	    	    digits_found++;
-	        } else if (c >= L'A' && c <= L'F') {
-	    	    n = (n << 4) | (c + 10 - L'A');
-	    	    digits_found++;
-	        } else {
-	    	    is->unget();
-	    	    done = true;
-	        }
+		    i_unget_char(port);
+		    break;
 	    }
     }
     if (digits_found == 0) {

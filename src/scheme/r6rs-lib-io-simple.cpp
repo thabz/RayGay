@@ -144,14 +144,12 @@ SchemeObject* s_write_char(Scheme* scheme, SchemeObject* s_char, SchemeObject* p
 }
 
 SchemeObject* s_read(Scheme* scheme, SchemeObject* s_port) {
-    wistream* wis;
     if (s_port == S_UNSPECIFIED) {
-        wis = s_current_input_port(scheme)->wis;
+        s_port = s_current_input_port(scheme);
     } else {
         assert_arg_type(scheme, L"read", 1, s_input_port_p, s_port);
-        wis = s_port->wis;
     }
-    return scheme->getParser()->read(wis);
+    return scheme->getParser()->read(s_port);
 }
 
 

@@ -302,16 +302,15 @@ Scheme::Scheme() {
     */
 }
 
-SchemeObject* Scheme::eval(wistream* is, SchemeObject* envt) {
+SchemeObject* Scheme::eval(SchemeObject* port, SchemeObject* envt) {
     if (envt == NULL) envt = interaction_environment;        
-    SchemeObject* parse_tree = parser->parse(is);
+    SchemeObject* parse_tree = parser->parse(port);
     return interpreter->interpret(parse_tree, envt);
 }
 
 SchemeObject* Scheme::eval(wstring data, SchemeObject* envt) {
-    wistream* is = new wistringstream(data);
-    SchemeObject* result = eval(is);
-    delete is;
+    SchemeObject* port = i_open_string_input_port(this, data);
+    SchemeObject* result = eval(port, envt);
     return result;
 };
 
@@ -1325,25 +1324,16 @@ SchemeObject* s_load(Scheme* scheme, SchemeObject* s_filename) {
     filename_clean = filename_clean.substr(idx+1, filename_clean.length());
     chdir(SchemeFilenames::toFilename(cwd).c_str());
 
-    wifstream infile;
-    infile.open(SchemeFilenames::toFilename(filename_clean).c_str(), ifstream::in);
-    try {
-        infile.imbue(locale(""));
-    } catch (std::runtime_error e) {
-        cout << "Warning: can't read system locale. UTF-8 files won't be read correctly." << endl;
-    }
+    SchemeObject* transcoder = s_make_transcoder(scheme, s_utf_8_codec(scheme), S_UNSPECIFIED, S_UNSPECIFIED);
+    SchemeObject* port = s_open_file_input_port(scheme, string2scm(filename_clean), S_FALSE, S_FALSE, transcoder);
     
-    if (infile.fail()) {
-        throw scheme_exception(L"Failed loading file: " + filename);            
-    }
     try {
-        SchemeObject* parse_tree = scheme->getParser()->parse(&infile);
+        SchemeObject* parse_tree = scheme->getParser()->parse(port);
         scheme->getInterpreter()->interpret(parse_tree, scheme->interaction_environment);
     } catch (scheme_exception e) {
         throw scheme_exception(L"In sourcefile " + filename + L": " + e.toString());    
     }
-    infile.close();
-
+    // TODO: Close port
     chdir(original_working_dir);
 
     return S_UNSPECIFIED;

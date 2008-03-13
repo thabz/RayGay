@@ -17,6 +17,7 @@
 #include "parser/transformationfactory.h"
 #include "parser/mathfactory.h"
 #include "parser/schemefunctions.h"
+#include "scheme/r6rs-lib-io-ports.h"
 
 #include "scene.h"
 #include "renderersettings.h"
@@ -82,25 +83,15 @@ void SceneParser::parse_file(std::wstring filename) {
     filename_clean = filename_clean.substr(idx+1, filename_clean.length());
     chdir(SchemeFilenames::toFilename(cwd).c_str());
 
-    wifstream* ifs = new wifstream(SchemeFilenames::toFilename(filename_clean).c_str(), ios::in);
-    try {
-        ifs->imbue(locale(""));
-    } catch (std::runtime_error e) {
-        wcout << L"Warning: can't read system locale. Any UTF-8 data in " << filename << L" won't be read correctly." << endl;
-    }
+    SchemeObject* transcoder = s_make_transcoder(scheme, s_utf_8_codec(scheme), S_UNSPECIFIED, S_UNSPECIFIED);
+    SchemeObject* port = s_open_file_input_port(scheme, string2scm(filename_clean), S_FALSE, S_FALSE, transcoder);
     
-    if (ifs->fail()) {
-        cout << "Error opening file" << endl;
-        exit(EXIT_FAILURE);
-    }
     try {
-        scheme->eval(ifs);
+        scheme->eval(port);
     } catch (scheme_exception e) {
-        ifs->close();
-	wcerr << L"ABORT: " << e.toString() << endl;
+	    wcerr << L"ABORT: " << e.toString() << endl;
         exit(EXIT_FAILURE);
     }
-    ifs->close();
 
     chdir(original_working_dir);
 }

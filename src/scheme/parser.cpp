@@ -8,11 +8,11 @@ Parser::Parser(Scheme* scheme) {
     this->scheme = scheme;
 }
 
-SchemeObject* Parser::parse(wistream* is) {
+SchemeObject* Parser::parse(SchemeObject* port) {
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* result_tail = S_EMPTY_LIST;
     SchemeObject* o;
-    while ((o = read(is)) != NULL) {
+    while ((o = read(port)) != NULL) {
     	SchemeObject* newtail = i_cons(o, S_EMPTY_LIST);
     	if (result == S_EMPTY_LIST) {
     	    result = newtail;
@@ -25,9 +25,9 @@ SchemeObject* Parser::parse(wistream* is) {
     return result;
 }
 
-SchemeObject* Parser::read(wistream* is) {
+SchemeObject* Parser::read(SchemeObject* port) {
     SchemeObject* result;
-    Lexer::Token token = lexer->nextToken(is);
+    Lexer::Token token = lexer->nextToken(port);
     Lexer::Token tmp_token;
     uint32_t cur_line = lexer->getCurline();
     
@@ -50,8 +50,8 @@ SchemeObject* Parser::read(wistream* is) {
             break;
         case Lexer::OPEN_PAREN :
         case Lexer::OPEN_BRACKET : 
-            result = read_list(is);
-            tmp_token = lexer->nextToken(is); 
+            result = read_list(port);
+            tmp_token = lexer->nextToken(port); 
             if (token == Lexer::OPEN_PAREN && tmp_token != Lexer::CLOSE_PAREN) {
                 throw scheme_exception(cur_line, L"Unbalanced parentheses");
             } else if (token == Lexer::OPEN_BRACKET && tmp_token != Lexer::CLOSE_BRACKET) {
@@ -61,32 +61,32 @@ SchemeObject* Parser::read(wistream* is) {
             }
             break;
         case Lexer::HASH_OPEN_PAREN :
-            result = s_list_2_vector(scheme,read_list(is));
-            if (lexer->nextToken(is) != Lexer::CLOSE_PAREN) {
+            result = s_list_2_vector(scheme,read_list(port));
+            if (lexer->nextToken(port) != Lexer::CLOSE_PAREN) {
                 throw scheme_exception(cur_line, L"Unbalanced parentheses");
             }
             break;
         case Lexer::VU8_OPEN_PAREN :
-            result = s_u8_list_2_bytevector(scheme,read_list(is));
-            if (lexer->nextToken(is) != Lexer::CLOSE_PAREN) {
+            result = s_u8_list_2_bytevector(scheme,read_list(port));
+            if (lexer->nextToken(port) != Lexer::CLOSE_PAREN) {
                 throw scheme_exception(cur_line, L"Unbalanced parentheses");
             }
             break;
         case Lexer::QUOTE :
-            result = read_quoted(is);
+            result = read_quoted(port);
             break;
         case Lexer::BACKQUOTE :
-            result = read_quasiquoted(is);
+            result = read_quasiquoted(port);
             break;
         case Lexer::COMMA :
-            result = read_unquoted(is);
+            result = read_unquoted(port);
             break;
         case Lexer::COMMA_AT :
-            result = read_unquote_spliced(is);
+            result = read_unquote_spliced(port);
             break;
 	    case Lexer::DATUM_COMMENT :
-	        read(is);  // Ignore following datum
-	        result = read(is);
+	        read(port);  // Ignore following datum
+	        result = read(port);
     	    break;   
         case Lexer::END :
             result = NULL;
@@ -102,22 +102,22 @@ SchemeObject* Parser::read(wistream* is) {
     return result; 
 }
 
-SchemeObject* Parser::read_list(wistream* is) {
+SchemeObject* Parser::read_list(SchemeObject* port) {
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* result_tail = S_EMPTY_LIST;
     Lexer::Token token;
     while(true) {
-        token = lexer->nextToken(is);
+        token = lexer->nextToken(port);
         if (token == Lexer::CLOSE_PAREN || token == Lexer::CLOSE_BRACKET) {
             lexer->putBack(token);
             return result;
         } else if (token == Lexer::PERIOD) {
-            SchemeObject* cdr = read(is);
+            SchemeObject* cdr = read(port);
 	        if (result == S_EMPTY_LIST) {
                 throw scheme_exception(L"Parser: invalid pair");
 	        }
 	        i_set_cdr_e(result_tail, cdr);
-            if (lexer->peek(is) != Lexer::CLOSE_PAREN) {
+            if (lexer->peek(port) != Lexer::CLOSE_PAREN) {
                 throw scheme_exception(L"Parser: invalid pair");
             }
             return result;
@@ -125,7 +125,7 @@ SchemeObject* Parser::read_list(wistream* is) {
             throw scheme_exception(L"Unexpected end of input. Unbalanced parentheses?");
         } else {
             lexer->putBack(token);
-    	    SchemeObject* newcell = i_cons(read(is), S_EMPTY_LIST);
+    	    SchemeObject* newcell = i_cons(read(port), S_EMPTY_LIST);
     	    if (result == S_EMPTY_LIST) {
                 result = newcell;
     		    result_tail = newcell;
@@ -137,23 +137,23 @@ SchemeObject* Parser::read_list(wistream* is) {
     }
 }
 
-SchemeObject* Parser::read_quoted(wistream* is) {
-    SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
+SchemeObject* Parser::read_quoted(SchemeObject* port) {
+    SchemeObject* list = i_cons(read(port), S_EMPTY_LIST);
     return i_cons(SchemeObject::createSymbol(L"quote"), list);
 }
 
-SchemeObject* Parser::read_quasiquoted(wistream* is) {
-    SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
+SchemeObject* Parser::read_quasiquoted(SchemeObject* port) {
+    SchemeObject* list = i_cons(read(port), S_EMPTY_LIST);
     return i_cons(SchemeObject::createSymbol(L"quasiquote"), list);
 }
 
-SchemeObject* Parser::read_unquoted(wistream* is) {
-    SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
+SchemeObject* Parser::read_unquoted(SchemeObject* port) {
+    SchemeObject* list = i_cons(read(port), S_EMPTY_LIST);
     return i_cons(SchemeObject::createSymbol(L"unquote"), list);
 }
 
-SchemeObject* Parser::read_unquote_spliced(wistream* is) {
-    SchemeObject* list = i_cons(read(is), S_EMPTY_LIST);
+SchemeObject* Parser::read_unquote_spliced(SchemeObject* port) {
+    SchemeObject* list = i_cons(read(port), S_EMPTY_LIST);
     return i_cons(SchemeObject::createSymbol(L"unquote-splicing"), list);
 }
 

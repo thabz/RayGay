@@ -82,9 +82,17 @@ SchemeObject* s_binary_port_p(Scheme* scheme, SchemeObject* obj) {
     return i_binary_port_p(obj);
 }
 
+SchemeObject* i_port_eof_p(SchemeObject* port) {
+    if (i_textual_port_p(port) && port->transcoder != NULL) {
+        return port->transcoder->car->codec->peek(port) == -1 ? S_TRUE : S_FALSE;
+    } else {
+        return port->is->eof() || port->is->peek() == -1 ? S_TRUE : S_FALSE;
+    }
+}
+
 SchemeObject* s_port_eof_p(Scheme* scheme, SchemeObject* obj) {
     if (i_input_port_p(obj) == S_TRUE) {
-        return obj->is->eof() || obj->is->peek() == -1 ? S_TRUE : S_FALSE;
+        return i_port_eof_p(obj);
     }
     return S_FALSE;
 }
@@ -145,14 +153,17 @@ SchemeObject* s_open_bytevector_input_port(Scheme* scheme, SchemeObject* bytevec
     return port;    
 }
 
-SchemeObject* s_open_string_input_port(Scheme* scheme, SchemeObject* str) {
-    assert_arg_string_type(L"open-string-input-port", 1, str);
-    wstring s = scm2string(str);
+SchemeObject* i_open_string_input_port(Scheme* scheme, wstring s) {
     wistringstream* wiss = new wistringstream(s, istringstream::in);
     SchemeObject* port = SchemeObject::createInputPort(wiss);
     port->set_textual(true);
     port->transcoder = s_make_transcoder(scheme, rawunicode_codec, S_UNSPECIFIED, S_UNSPECIFIED);
     return port;
+}
+
+SchemeObject* s_open_string_input_port(Scheme* scheme, SchemeObject* str) {
+    assert_arg_string_type(L"open-string-input-port", 1, str);
+    return i_open_string_input_port(scheme, scm2string(str));
 }
 
 
@@ -376,6 +387,7 @@ void UTF8Codec::unget(SchemeObject* port) {
         is->unget();
         c = is->peek();
     } while (c >= 128 && (c & LEN2_VAL) != LEN2_VAL);
+    is->clear();
 }
 
 wchar_t UTF16Codec::get(SchemeObject* port) {
@@ -404,6 +416,7 @@ wchar_t UTF16Codec::get(SchemeObject* port) {
 void UTF16Codec::unget(SchemeObject* port) {
     port->is->unget();
     port->is->unget();
+    port->is->clear();
 }
 
 wchar_t Latin1Codec::get(SchemeObject* port) {
@@ -413,6 +426,7 @@ wchar_t Latin1Codec::get(SchemeObject* port) {
 
 void Latin1Codec::unget(SchemeObject* port) {
     port->is->unget();
+    port->is->clear();
 }
 
 
@@ -422,4 +436,5 @@ wchar_t RawUnicodeCodec::get(SchemeObject* port) {
 
 void RawUnicodeCodec::unget(SchemeObject* port) {
     port->wis->unget();
+    port->wis->clear();
 }
