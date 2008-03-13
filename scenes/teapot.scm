@@ -3,14 +3,16 @@
 (load "lib/colors.scm")
 (load "lib/objects/make-teapot.scm")
 
-(set-image-size '(640 480))
+(set-image-size image-size-360-hd)
+(set-image-size image-size-1080-hd)
+
 (set-background color-tan)
 
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
     '( pos #(0 200 600)
-       lookat #(0 20 0)
+       lookat #(0 -25 0)
        up #(0 1 0)
        fov 45
        aa 3)))
