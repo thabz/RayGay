@@ -37,7 +37,7 @@
 (define atoms '())
 
 (dotimes i num
-   (set! atoms (cons (list (vector (random2 -5 5) (random2 -5 5) (random2 -5 5)) 
+   (set! atoms (cons (list (vector (random -5 5) (random -5 5) (random -5 5)) 
                            radius weight) 
                      atoms)))
 
