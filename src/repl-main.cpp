@@ -102,7 +102,7 @@ int repl() {
     if (history_f != "") {
         read_history(history_f.c_str());
     }
-    rl_completion_entry_function = binding_completion_function;
+    //rl_completion_entry_function = binding_completion_function;
     rl_basic_word_break_characters = " \t\n\"'`;()";
     
     while (true) {
