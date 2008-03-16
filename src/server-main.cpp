@@ -51,7 +51,7 @@ void print_usage() {
 
 void print_version() {
     cout << "Raygay Server " << VERSION << endl;
-    cout << "Copyright (C) 2004, 2005, 2006, 2007 Jesper Christensen" << endl;
+    cout << "Copyright (C) 2004, 2005, 2006, 2007, 2008 Jesper Christensen" << endl;
     /*
     cout << "   Guile: " << parser->version() << endl;
     cout << "   Kernel pagesize: " << getpagesize() << " bytes" << endl;
