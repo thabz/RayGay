@@ -57,7 +57,7 @@ do
         echo "Rendering $SCENE_FILE frame $i of $FRAMES_NUM to $OUTPUT_FILE"
         EXPR="(define frame $i) (define clock (/ $i $FRAMES_NUM)) $FAST_PREVIEW_SCHEME"
         echo $EXPR
-        ./src/tracer -b -e "$EXPR" $SCENE_FILE $OUTPUT_FILE
+        ./src/raygay -b -e "$EXPR" $SCENE_FILE $OUTPUT_FILE
         if [ $? -ne 0 ]; then
           exit $?
         fi

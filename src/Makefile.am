@@ -38,25 +38,25 @@ libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libpho
 #--------------------------------------
 LIBS = @DARWIN_LIBS@		     
 
-bin_PROGRAMS = tracer server queuemanager raygay-repl
+bin_PROGRAMS = raygay raygay-server raygay-queuemanager raygay-repl
 noinst_PROGRAMS = bench 
 if OS_DARWIN
    noinst_PROGRAMS += win
 endif   
 
-tracer_SOURCES = main.cpp window-gtk.cpp window-gtk.h window-icon.h
+raygay_SOURCES = main.cpp window-gtk.cpp window-gtk.h window-icon.h
 #tracer_CXXFLAGS = $(GTK_CFLAGS) $(CXXFLAGS)
-tracer_LDADD = libtracer.la @GTK_LIBS@
+raygay_LDADD = libtracer.la @GTK_LIBS@
 
 #--------------------------------------
 
-server_SOURCES = server-main.cpp
-server_LDADD = libtracer.la http/libhttp.la
+raygay_server_SOURCES = server-main.cpp
+raygay_server_LDADD = libtracer.la http/libhttp.la
 
 #--------------------------------------
 
-queuemanager_SOURCES = queuemanager-main.cpp
-queuemanager_LDADD = libtracer.la http/libhttp.la
+raygay_queuemanager_SOURCES = queuemanager-main.cpp
+raygay_queuemanager_LDADD = libtracer.la http/libhttp.la
 
 #--------------------------------------
 
