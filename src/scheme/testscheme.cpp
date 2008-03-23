@@ -1843,6 +1843,20 @@ void test_lib_bytevectors() {
      */
 }
 
+void test_lib_io_ports() {
+    Scheme* s = new Scheme();
+    assert_eval(s, L"(textual-port? (open-string-input-port \"foobar\"))", L"#t");
+    assert_eval(s, L"(binary-port? (open-string-input-port \"foobar\"))", L"#f");
+    assert_eval(s, L"(textual-port? (open-bytevector-input-port #vu8(195 134 98)))", L"#f");
+    assert_eval(s, L"(binary-port? (open-bytevector-input-port #vu8(195 134 98)))", L"#t");
+
+    /*
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+    assert_eval(s, L"", L"");
+     */
+}
 
 int main(int argc, char *argv[]) {
     TestSuite suite;
@@ -1964,6 +1978,9 @@ int main(int argc, char *argv[]) {
         test_lib_bytevectors();
         cout << " OK" << endl;
 
+        cout << "Test lib io ports...    ";
+        test_lib_io_ports();
+        cout << " OK" << endl;
 
         test_begin();
 
