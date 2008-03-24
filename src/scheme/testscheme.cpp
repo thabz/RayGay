@@ -1850,6 +1850,16 @@ void test_lib_io_ports() {
     assert_eval(s, L"(textual-port? (open-bytevector-input-port #vu8(195 134 98)))", L"#f");
     assert_eval(s, L"(binary-port? (open-bytevector-input-port #vu8(195 134 98)))", L"#t");
 
+    // Read from a bytevector
+    assert_eval(s, L"(define p (open-bytevector-input-port #vu8(195 134 98)))", L"#<unspecified>");
+    assert_eval(s, L"(lookahead-u8 p)", L"195");
+    assert_eval(s, L"(get-u8 p)", L"195");
+    assert_eval(s, L"(get-u8 p)", L"134");
+    assert_eval(s, L"(lookahead-u8 p)", L"98");
+    assert_eval(s, L"(get-u8 p)", L"98");
+    assert_eval(s, L"(lookahead-u8 p)", L"#<EOF>");
+    assert_eval(s, L"(get-u8 p)", L"#<EOF>");
+
     /*
     assert_eval(s, L"", L"");
     assert_eval(s, L"", L"");
