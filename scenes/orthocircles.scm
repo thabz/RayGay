@@ -1,4 +1,20 @@
 ; The orthocircles implicit surface is defined by
-; ((x² + y² – 1)² + z²) * ((y² + z² – 1)² + x²) * ((z² + x² – 1)² + y²) – 0.0375² * (1 + 3 * (x² + y² + z²)) = 0 
+; ((xÂ² + yÂ² â€“ 1)Â² + zÂ²) * ((yÂ² + zÂ² â€“ 1)Â² + xÂ²) * ((zÂ² + xÂ² â€“ 1)Â² + yÂ²) â€“ 0.0375Â² * (1 + 3 * (xÂ² + yÂ² + zÂ²)) = 0 
 ;
 ; See http://www.flickr.com/photos/mylaboratory/417717535/in/set-72157603650366417/
+
+(define (sqr n) (* n n))
+
+(define (orthocircles x y z)
+  (let ((xÂ² (* x x))
+        (yÂ² (* y y))
+        (zÂ² (* z z)))
+   (-
+    (* (+ (sqr (+ xÂ² yÂ² â€“1)) zÂ²)
+       (+ (sqr (+ yÂ² zÂ² â€“1)) xÂ²)
+       (+ (sqr (+ zÂ² xÂ² â€“1)) yÂ²)) 
+    (* (sqr 0.0375) 
+       (+ 1 
+         (* 3 (+ xÂ² yÂ² zÂ²)))))))
+
+         
