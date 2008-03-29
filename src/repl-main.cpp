@@ -85,9 +85,9 @@ char* binding_completion_function(const char* text, int state) {
     return NULL;
 }
 
-int repl() {
+int repl(int argc, char *argv[]) {
     try {
-        scheme = new Scheme();
+        scheme = new Scheme(argc,argv);
         ImageFactory::register_procs(scheme);
         MathFactory::register_procs(scheme);
         PathFactory::register_procs(scheme);
@@ -134,11 +134,11 @@ int repl() {
     }
 }
 
-int runfile(char* filename) {
+int runfile(int argc, char *argv[], char* filename) {
     string s = string(filename);
     wstring wfilename = SchemeFilenames::toString(s);
     try {
-        scheme = new Scheme();
+        scheme = new Scheme(argc, argv);
         ImageFactory::register_procs(scheme);
         MathFactory::register_procs(scheme);
         PathFactory::register_procs(scheme);
@@ -219,9 +219,9 @@ int main(int argc, char *argv[]) {
     
     int result;
     if (optind == argc - 1) {
-        result = runfile(argv[optind]);
+        result = runfile(argc,argv,argv[optind]);
     } else {
-        result = repl();
+        result = repl(argc,argv);
     }    
     
     elapsed = clock() - elapsed;

@@ -19,6 +19,7 @@ class Parser;
 class Scheme {
     public:
         Scheme();
+        Scheme(int argc, char *argv[]);
         SchemeObject* eval(wstring code, SchemeObject* envt = NULL);
         SchemeObject* eval(SchemeObject* port, SchemeObject* envt = NULL);
 
