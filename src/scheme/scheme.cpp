@@ -57,10 +57,6 @@ unsigned long symgen_counter = 10000;
 
 bool globals_init = false;
 
-Scheme::Scheme() {
-    Scheme::Scheme(0, NULL);
-}
-
 Scheme::Scheme(int argc, char *argv[]) {
     
     if (!globals_init) {
