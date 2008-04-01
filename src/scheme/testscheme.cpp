@@ -112,7 +112,6 @@ void test_tokenizer() {
     assert(l->nextToken(is) == Lexer::NUMBER);
     assert(l->nextToken(is) == Lexer::CLOSE_PAREN);
     assert(l->nextToken(is) == Lexer::END);
-    delete is;
     
     is = string2port(L"#f #tf");
     assert(l->nextToken(is) == Lexer::BOOLEAN);
@@ -122,7 +121,6 @@ void test_tokenizer() {
     assert(l->nextToken(is) == Lexer::SYMBOL);
     assert(l->getString() == L"f");
     assert(l->nextToken(is) == Lexer::END);
-    delete is;
     
     is = string2port(L"a `b #| comment #| nested comment |# ... |# ");
     assert(l->nextToken(is) == Lexer::SYMBOL);
@@ -131,7 +129,6 @@ void test_tokenizer() {
     assert(l->nextToken(is) == Lexer::SYMBOL);
     assert(l->getString() == L"b");
     assert(l->nextToken(is) == Lexer::END);
-    delete is;
 
     delete l;
     
@@ -1868,10 +1865,10 @@ void test_lib_io_ports() {
      */
 }
 
-int main(int argc, char *argv[]) {
+int main(int , char *) {
     TestSuite suite;
     suite.add("Parser", new test_parser());
-    suite.add("Bigint", new test_bigint());
+    //suite.add("Bigint", new test_bigint());
     suite.add("Vector", new test_vector());
     assert(::isnan(sqrt(-1.0)));
 
