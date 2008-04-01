@@ -5,7 +5,6 @@
 #include <cerrno>
 #include <iomanip>
 
-
 void coerceNumbers(int num, SchemeStack::iterator stack, double* dest) {
     for(int i = 0; i < num; i++) {
         *dest = scm2double(*stack);
@@ -796,33 +795,33 @@ SchemeObject* s_denominator(Scheme* scheme, SchemeObject* n) {
     }
 }
 
-SchemeObject* s_make_polar(Scheme* scheme, SchemeObject* magnitude, SchemeObject* angle) {
+SchemeObject* s_make_polar(Scheme*, SchemeObject* magnitude, SchemeObject* angle) {
     assert_arg_real_type(L"make-polar", 1, magnitude);
     assert_arg_real_type(L"make-polar", 2, angle);
     std::complex<double> z = std::polar(magnitude->realValue(), angle->realValue());
     return complex2scm(z);
 }
 
-SchemeObject* s_make_rectangular(Scheme* scheme, SchemeObject* real, SchemeObject* imag) {
+SchemeObject* s_make_rectangular(Scheme*, SchemeObject* real, SchemeObject* imag) {
     assert_arg_real_type(L"make-rectangular", 1, real);
     assert_arg_real_type(L"make-rectangular", 2, imag);
     std::complex<double> z(real->realValue(), imag->realValue());
     return complex2scm(z);
 }
 
-SchemeObject* s_real_part(Scheme* scheme, SchemeObject* z) {
+SchemeObject* s_real_part(Scheme*, SchemeObject* z) {
     assert_arg_complex_type(L"real-part", 1, z);
     std::complex<double> zz = z->complexValue();
     return double2scm(zz.real());
 }
 
-SchemeObject* s_imag_part(Scheme* scheme, SchemeObject* z) {
+SchemeObject* s_imag_part(Scheme*, SchemeObject* z) {
     assert_arg_complex_type(L"imag-part", 1, z);
     std::complex<double> zz = z->complexValue();
     return double2scm(zz.imag());
 }
 
-SchemeObject* s_magnitude(Scheme* scheme, SchemeObject* z) {
+SchemeObject* s_magnitude(Scheme*, SchemeObject* z) {
     assert_arg_complex_type(L"magnitude", 1, z);
     std::complex<double> zz = z->complexValue();
     return double2scm(std::abs(zz));        
@@ -1268,7 +1267,7 @@ SchemeObject* i_string_2_number(Scheme* scheme, wstring s, uint32_t radix, size_
     } else if (s == L"-inf.0") {
 	    return double2scm(log(0.0));
     } else if (s == L"+nan.0") {
-	    return double2scm(::nan(NULL));
+	    return double2scm(sqrt(-1.0));
     }
 
     bool radix_prefix_seen = false;
