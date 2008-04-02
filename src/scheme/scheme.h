@@ -16,6 +16,11 @@ typedef vector<SchemeObject*> SchemeStack;
 class Interpreter;
 class Parser;
 
+extern SchemeObject* i_integer_p(SchemeObject*);
+extern SchemeObject* i_complex_p(SchemeObject*);
+extern SchemeObject* i_real_p(SchemeObject*);
+
+
 class Scheme {
     public:
         Scheme(int argc = 0, char *argv[] = NULL);

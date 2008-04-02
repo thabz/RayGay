@@ -333,11 +333,15 @@ void Scheme::assign(wstring variable, double value, SchemeObject* envt) {
 
 SchemeObject* Scheme::lookup(SchemeObject* symbol, SchemeObject* envt) {
     if (envt == NULL) envt = interaction_environment;        
+    assert(envt != NULL);
+    assert(symbol != NULL);
     return envt->getBinding(symbol);    
 }
 
 SchemeObject* Scheme::lookupOrFail(SchemeObject* symbol, SchemeObject* envt) {
     if (envt == NULL) envt = interaction_environment;        
+    assert(envt != NULL);
+    assert(symbol != NULL);
     SchemeObject* result = envt->getBinding(symbol);    
     if (result == NULL) {
         throw scheme_exception(L"Unbound symbol: " + symbol->toString());    
@@ -346,7 +350,8 @@ SchemeObject* Scheme::lookupOrFail(SchemeObject* symbol, SchemeObject* envt) {
 }
 
 SchemeObject* Scheme::lookup(wstring variable, SchemeObject* envt) {
-    if (envt == NULL) envt = interaction_environment;        
+    if (envt == NULL) envt = interaction_environment;
+    assert(envt != NULL);
     SchemeObject* symbol = SchemeObject::createSymbol(variable.c_str());
     return lookup(symbol, envt);
 }
