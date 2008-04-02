@@ -141,7 +141,7 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
 	double attenuation = (*p)->getAttenuation(point);
 
 	if (attenuation > double(0)) {
-	    (*p)->getLightinfo(intersection,space,&info,depth);
+	    (*p)->getSingleLightinfo(intersection,space,&info,depth);
 	    if (info.cos > 0.0) {
 		RGB color = RGB(0.0,0.0,0.0);
 		// Check for blocking objects

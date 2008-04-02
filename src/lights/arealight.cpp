@@ -98,6 +98,20 @@ void Arealight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo
     }
 }
 
+void Arealight::getSingleLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const {
+    Vector direction_to_light;
+    info->direction_to_light = position - inter.getPoint();
+    info->direction_to_light.normalize();
+    info->cos = info->direction_to_light * inter.getNormal();
+
+    if (info->cos > 0.0) {
+        int sublight = int(RANDOM(0,num));
+	    bool occluded = probeSublight(sublight,inter,space,depth);
+	    info->intensity = occluded ? 0 : 1;
+    }
+}
+
+
 bool Arealight::probeSublight(int i, const Intersection& inter, KdTree* space, uint32_t depth) const {
     Vector direction_to_light = getPosition(i) - inter.getPoint();
     double dist_to_light = direction_to_light.length();

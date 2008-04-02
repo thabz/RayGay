@@ -59,3 +59,7 @@ double Lightsource::getAttenuation(const Vector& point) const {
 Ray Lightsource::getRandomPhotonRay() const {
     return Ray(getPosition(), Vector::randomUnitVector(), 0);
 }
+
+void Lightsource::getSingleLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const {
+    return getLightinfo(inter,space,info,depth);
+}

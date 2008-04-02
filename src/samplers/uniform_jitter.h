@@ -7,7 +7,7 @@
 class UniformJitterFactory: public SamplerFactory
 {
     public:
-	UniformJitterFactory(uint32_t samples_sqrt);
+	UniformJitterFactory(uint32_t samples);
 	Sampler* createInstance(Image* img, Renderer* renderer);
 	
     private:

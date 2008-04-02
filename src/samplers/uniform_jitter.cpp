@@ -6,10 +6,10 @@
 #include "renderjobs.h"
 #include "math/vector2.h"
 
-UniformJitter::UniformJitter(Image* image, Renderer* renderer, uint32_t samples_sqrt) : Sampler(image,renderer) 
+UniformJitter::UniformJitter(Image* image, Renderer* renderer, uint32_t samples) : Sampler(image,renderer) 
 {
-    assert(samples_sqrt > 0);
-    this->samples_sqrt = samples_sqrt;
+    assert(samples > 0);
+    this->samples_sqrt = sqrt(samples);
 }
 
 void UniformJitter::render(const RenderJob& job) 

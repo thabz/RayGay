@@ -12,22 +12,23 @@ class Object;
 class Arealight : public Lightsource {
 
     public:
-	/// Constructor
-	Arealight(const Vector& pos, const Vector& dir, double radius, int num, double jitter);
-	virtual ~Arealight();
-	void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const;
+	    /// Constructor
+	    Arealight(const Vector& pos, const Vector& dir, double radius, int num, double jitter);
+	    virtual ~Arealight();
+	    void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const;
+        void getSingleLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const;
         void transform(const Matrix& m);
 
     private:
-	std::vector<Circle*> circles;
-	// TODO: Not threadsafe! Make this thread_local. Identical problem in skylight.
-	mutable std::vector<ShadowCache> shadowcaches;
-	std::vector<double> ts;
-	double jitter;
-	int num;
+	    std::vector<Circle*> circles;
+	    // TODO: Not threadsafe! Make this thread_local. Identical problem in skylight.
+	    mutable std::vector<ShadowCache> shadowcaches;
+	    std::vector<double> ts;
+	    double jitter;
+	    int num;
 
-	Vector getPosition(int i) const;
-	bool probeSublight(int i, const Intersection& inter, KdTree* space, uint32_t depth) const;
+	    Vector getPosition(int i) const;
+	    bool probeSublight(int i, const Intersection& inter, KdTree* space, uint32_t depth) const;
 };
 
 #endif

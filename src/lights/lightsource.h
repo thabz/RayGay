@@ -30,9 +30,11 @@ class Lightsource {
 	 * @param depth the number of times the ray has been reflected or refracted
 	 */
 	virtual void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const = 0;
+
+    virtual void getSingleLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const;
 	
 	/// Apply a transformation
-        virtual void transform(const Matrix& m);
+    virtual void transform(const Matrix& m);
 
 	/// Set attenuation parameters
 	void setAttenuation(double fadeDistance, double fadePower);
