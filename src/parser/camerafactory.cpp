@@ -76,10 +76,10 @@ void extractCamera(Scheme* scheme, SchemeObject* s_options, Camera* camera, wcha
 	    camera->setZoom(offset, width);
 	} else if (key == L"sampler" && fast_preview) {
 	    cout << "Ignoring Sampler setting because of fast preview." << endl;    
-    	} else if (key == L"aa" && fast_preview) {
-    	    cout << "Ignoring AA setting because of fast preview." << endl;
-    	} else if (key == L"dof" && fast_preview) {
-    	    cout << "Ignoring depth-of-field setting because of fast preview." << endl;
+    } else if (key == L"aa" && fast_preview) {
+        cout << "Ignoring AA setting because of fast preview." << endl;
+    } else if (key == L"dof" && fast_preview) {
+        cout << "Ignoring depth-of-field setting because of fast preview." << endl;
 	} else {        
 	    wcout << L"Unknown camera option: " << key << endl;
 	}
@@ -127,7 +127,8 @@ SchemeObject* CameraFactory::s_make_fisheye_camera(Scheme* scheme, SchemeObject*
 SchemeObject* CameraFactory::s_make_whitted_adaptive_sampler(Scheme* scheme, SchemeObject* s_aa_depth)
 {
     wchar_t* proc = L"make-whitted-adaptive-sampler";
-    int aa_depth = safe_scm2int(s_aa_depth, 1, proc);
+    assert_arg_positive_int(proc, 1, s_aa_depth);
+    int aa_depth = scm2int(s_aa_depth);
     SamplerFactory* sampler = new WhittedAdaptiveFactory(aa_depth);
     return sampler2scm(sampler);
 }
@@ -136,24 +137,27 @@ SchemeObject* CameraFactory::s_make_whitted_adaptive_sampler(Scheme* scheme, Sch
 SchemeObject* CameraFactory::s_make_boundary_adaptive_sampler(Scheme* scheme, SchemeObject* s_aa_depth)
 {
     wchar_t* proc = L"make-boundary-adaptive-sampler";
-    int aa_depth = safe_scm2int(s_aa_depth, 1, proc);
+    assert_arg_positive_int(proc, 1, s_aa_depth);
+    int aa_depth = scm2int(s_aa_depth);
     SamplerFactory* sampler = new BoundaryAdaptiveFactory(aa_depth);
     return sampler2scm(sampler);
 }
 */
 
-SchemeObject* CameraFactory::s_make_uniform_jitter_sampler(Scheme* scheme, SchemeObject* s_samples_sqrt) 
+SchemeObject* CameraFactory::s_make_uniform_jitter_sampler(Scheme* scheme, SchemeObject* s_samples_num) 
 {
     wchar_t* proc = L"make-uniform-jitter-sampler";
-    int samples_sqrt = safe_scm2int(s_samples_sqrt, 1, proc);
-    SamplerFactory* sampler = new UniformJitterFactory(samples_sqrt);
+    assert_arg_positive_int(proc, 1, s_samples_num);
+    int samples_num = scm2int(s_samples_num);
+    SamplerFactory* sampler = new UniformJitterFactory(samples_num);
     return sampler2scm(sampler);
 }
 
 SchemeObject* CameraFactory::s_make_halton_sampler(Scheme* scheme, SchemeObject* s_samples_num) 
 {
     wchar_t* proc = L"make-halton-sampler";
-    int samples_num = safe_scm2int(s_samples_num, 1, proc);
+    assert_arg_positive_int(proc, 1, s_samples_num);
+    int samples_num = scm2int(s_samples_num);
     SamplerFactory* sampler = new HaltonSamplerFactory(samples_num);
     return sampler2scm(sampler);
 }
