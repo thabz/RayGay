@@ -375,7 +375,7 @@ wchar_t UTF8Codec::get(SchemeObject* port) {
         c = (c << 6) | (is->get() & SIX_BIT_MASK);
         c = (c << 6) | (is->get() & SIX_BIT_MASK);
     } else {
-        // Invalid UTF-8 sequence
+        throw invalid_encoding();
     }
     return c;
 }
@@ -408,7 +408,7 @@ wchar_t UTF16Codec::get(SchemeObject* port) {
         c = (c << 6) | (is->get() & SIX_BIT_MASK);
         c = (c << 6) | (is->get() & SIX_BIT_MASK);
     } else {
-        // Invalid UTF-8 sequence
+        throw invalid_encoding();
     }
     return c;
 }

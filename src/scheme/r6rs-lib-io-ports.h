@@ -22,6 +22,9 @@ SchemeObject* i_open_string_input_port(Scheme*, wstring s);
 SchemeObject* s_open_file_input_port(Scheme* scheme, SchemeObject* filename, SchemeObject* file_options, SchemeObject* buffer_mode, SchemeObject* maybe_transcoder);
 SchemeObject* s_make_transcoder(Scheme* scheme, SchemeObject* codec, SchemeObject* eol_style, SchemeObject* handling_mode);
 
+struct invalid_encoding {
+    
+};
 
 class Codec {
     public:
