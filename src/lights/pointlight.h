@@ -13,12 +13,12 @@ class Object;
 class Pointlight : public Lightsource {
 
     public:
-	/// Constructor
+	    /// Constructor
         Pointlight(const Vector& pos);
-	void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const;
+	    void getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const;
 
     private:
-	pthread_key_t shadowcache_key;
+	    pthread_key_t shadowcache_key;
 };
 
 #endif

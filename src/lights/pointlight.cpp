@@ -15,8 +15,8 @@ void Pointlight::getLightinfo(const Intersection& inter, KdTree* space, Lightinf
 
     ShadowCache* shadowcache = (ShadowCache*) pthread_getspecific(shadowcache_key);
     if (shadowcache == NULL) {
-	shadowcache = new ShadowCache();
-	pthread_setspecific(shadowcache_key, shadowcache);
+	    shadowcache = new ShadowCache();
+	    pthread_setspecific(shadowcache_key, shadowcache);
     }
     
     // Move intersection point ESPILON along surface normal to 
@@ -26,22 +26,21 @@ void Pointlight::getLightinfo(const Intersection& inter, KdTree* space, Lightinf
     info->direction_to_light = position - surface_point;
     double dist_to_light = info->direction_to_light.length();
     if (IS_ZERO(dist_to_light)) {
-	info->cos = 0.0;
-	info->intensity = 0.0;
-	return;
-
+	    info->cos = 0.0;
+	    info->intensity = 0.0;
+	    return;
     }
     info->direction_to_light = info->direction_to_light / dist_to_light;
     info->cos = info->direction_to_light * inter.getNormal();
 
     if (info->cos > 0.0) {
-	Ray ray_to_light = Ray(surface_point,info->direction_to_light,-1.0);
-	const Object* ignore = NULL;
-	if (!inter.getObject()->canSelfshadow()) {
-	    ignore = inter.getObject();
-	}
-	bool occluded = shadowcache->occluded(ray_to_light,dist_to_light,depth,space, ignore);
-	info->intensity = occluded ? 0.0 : 1.0;
+	    Ray ray_to_light = Ray(surface_point,info->direction_to_light,-1.0);
+	    const Object* ignore = NULL;
+	    if (!inter.getObject()->canSelfshadow()) {
+	        ignore = inter.getObject();
+	    }
+	    bool occluded = shadowcache->occluded(ray_to_light,dist_to_light,depth,space, ignore);
+	    info->intensity = occluded ? 0.0 : 1.0;
     }
 }
 
