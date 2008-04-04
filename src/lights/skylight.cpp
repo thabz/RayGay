@@ -10,10 +10,12 @@ Skylight::Skylight (double radius, int num) : Lightsource(Vector(0,0,0)) {
     this->radius = radius;
     this->num = num;
     Halton qmc = Halton(2,2);
+
+    pthread_key_create(&shadowcaches_key,NULL);	
+
     for(int i = 0; i < num; i++) {
 	    Vector pos = Math::perturbVector(Vector(0,1,0),DEG2RAD(89),&qmc);
 	    positions.push_back(pos*radius);
-	    shadowcaches.push_back(ShadowCache());
     }
 }
 
@@ -28,7 +30,7 @@ void Skylight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo*
 	    cos_tmp = direction_to_light * inter.getNormal();
 	    if (cos_tmp > 0.0) {
 	        Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
-	        bool occluded = shadowcaches[i].occluded(ray_to_light,dist_to_light,depth,space);
+            bool occluded = probe(i, ray_to_light, dist_to_light, depth, space);
 	        if (!occluded) { 
 	    	    count++;
 	    	    cos_total += cos_tmp;
@@ -43,15 +45,25 @@ void Skylight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo*
 void Skylight::getSingleLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const {
     int sublight = int(RANDOM(0,num));
 
-    Vector direction_to_light;
     info->direction_to_light = positions[sublight] - inter.getPoint();
     info->direction_to_light.normalize();
     info->cos = info->direction_to_light * inter.getNormal();
     double dist_to_light = info->direction_to_light.length();
 
     if (info->cos > 0.0) {
-        Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
-        bool occluded = shadowcaches[num].occluded(ray_to_light,dist_to_light,depth,space);
+        Ray ray_to_light = Ray(inter.getPoint(),info->direction_to_light,-1.0);
+        bool occluded = probe(num, ray_to_light, dist_to_light, depth, space);
 	    info->intensity = occluded ? 0 : 1;
     }
 }
+
+bool Skylight::probe(int num, const Ray& ray, double dist, uint32_t depth, KdTree* space) const {
+    std::vector<ShadowCache>* shadowcaches = (std::vector<ShadowCache>*) pthread_getspecific(shadowcaches_key);
+    if (shadowcaches == NULL) {
+	    shadowcaches = new std::vector<ShadowCache>(num);
+	    pthread_setspecific(shadowcaches_key, shadowcaches);
+    }
+    return (*shadowcaches)[num].occluded(ray,dist,depth,space);
+}
+
+

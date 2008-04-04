@@ -25,18 +25,19 @@ Arealight::Arealight(const Vector& pos, const Vector& dir, double radius, int nu
     this->num = num;
     this->jitter = jitter;
 
-    /* De N punkter skal placeres på N koncentriske bånd omkring P. Disse
-     * N bånd skal have samme areal A, så punkterne er dækker cirklens 
-     * areal med bedste fordeling. Dette A er PI * R^2 / N.
+    pthread_key_create(&shadowcaches_key,NULL);	
+
+    /* De N punkter skal placeres pÃ¥ N koncentriske bÃ¥nd omkring P. Disse
+     * N bÃ¥nd skal have samme areal A, sÃ¥ punkterne er dÃ¦kker cirklens 
+     * areal med bedste fordeling. Dette A er Ï€ * R^2 / N.
      *
      * r(n) for 0 <= n <= N bliver dermed n * A / PI dvs.  
      * r(n) = sqrt(n/N)*R for n mellem 0 og N.
      */
     for(int i = 0; i < num; i++) {
-	double r = radius*sqrt(double(i)/(num-1));
-	circles.push_back(new Circle(pos,r,dir));
-	ts.push_back(RANDOM(0,1));
-	shadowcaches.push_back(ShadowCache());
+	    double r = radius*sqrt(double(i)/(num-1));
+	    circles.push_back(new Circle(pos,r,dir));
+	    ts.push_back(RANDOM(0,1));
     }
 }
 
@@ -46,7 +47,7 @@ Arealight::~Arealight() {
 void Arealight::transform(const Matrix& m) {
     Lightsource::transform(m);
     for(int i = 0; i < num; i++) {
-	circles[i]->transform(m);
+	    circles[i]->transform(m);
     }
 }
 
@@ -64,37 +65,15 @@ void Arealight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo
     info->cos = info->direction_to_light * inter.getNormal();
 
     if (info->cos > 0.0) {
-	int count = 0;
+	    int count = 0;
 
-	/*
-        // First feelers
-	int tested = 0;
-	int count_true = 0;
-	int count_false = 0;
-	for(int i = 0; i < num; i += 2) {
-	    bool occluded = probeSublight(i,inter,space,depth);
-	    tested++;
-	    if (occluded) {
-		count_true++;
-	    } else {
-		count_false++;
-		count++;
-	    }
-	}
-	if (count_false == tested) {
-	    info->intensity = 1.0;
-	} else if (count_true == tested) {
-	    info->intensity = 0.0;
-	} else {
-	*/
-	    for(int i = 0; i < num; i++) {
-		    bool occluded = probeSublight(i,inter,space,depth);
-		    if (!occluded) {
-			    count++;
-		    }
-	    }
+        for(int i = 0; i < num; i++) {
+	        bool occluded = probeSublight(i,inter,space,depth);
+	        if (!occluded) {
+		        count++;
+            }
+        }
 	    info->intensity = double(count) / num;
-	//}
     }
 }
 
@@ -116,12 +95,18 @@ bool Arealight::probeSublight(int i, const Intersection& inter, KdTree* space, u
     Vector direction_to_light = getPosition(i) - inter.getPoint();
     double dist_to_light = direction_to_light.length();
     if (IS_ZERO(dist_to_light)) {
-	return false;
+	    return false;
     }
     direction_to_light *= 1.0/dist_to_light;
 
     Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
 
-    bool occluded = shadowcaches[i].occluded(ray_to_light,dist_to_light,depth,space);
+    std::vector<ShadowCache>* shadowcaches = (std::vector<ShadowCache>*) pthread_getspecific(shadowcaches_key);
+    if (shadowcaches == NULL) {
+	    shadowcaches = new std::vector<ShadowCache>(num);
+	    pthread_setspecific(shadowcaches_key, shadowcaches);
+    }
+
+    bool occluded = (*shadowcaches)[i].occluded(ray_to_light,dist_to_light,depth,space);
     return occluded;
 }

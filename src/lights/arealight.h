@@ -21,11 +21,10 @@ class Arealight : public Lightsource {
 
     private:
 	    std::vector<Circle*> circles;
-	    // TODO: Not threadsafe! Make this thread_local. Identical problem in skylight.
-	    mutable std::vector<ShadowCache> shadowcaches;
 	    std::vector<double> ts;
 	    double jitter;
 	    int num;
+	    pthread_key_t shadowcaches_key;
 
 	    Vector getPosition(int i) const;
 	    bool probeSublight(int i, const Intersection& inter, KdTree* space, uint32_t depth) const;
