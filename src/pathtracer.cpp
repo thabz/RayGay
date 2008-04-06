@@ -20,7 +20,7 @@
 Pathtracer::Pathtracer(RendererSettings* settings, Image* img, Scene* scene, KdTree* spc, RenderJobPool* job_pool, uint32_t thread_id) : Renderer(settings,img,scene,spc,job_pool,thread_id) {
 
     for(uint32_t i = 0; i < MAX_DEPTH+1; i++) {
-	seqs.push_back(new Halton(2,2));
+	    seqs.push_back(new Halton(2,2));
     }
 }
 
@@ -28,7 +28,7 @@ RGBA Pathtracer::getPixel(const Vector2& v) {
     Camera* camera = scene->getCamera();
     Ray ray = camera->getRay(v[0],v[1]);
     if (ray.ignore()) {
-	return RGBA(0,0,0,0);
+	    return RGBA(0,0,0,0);
     }
     ray.fromObject = camera;
     return tracePrimary(ray);
@@ -174,21 +174,21 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
         double action = RANDOM(0, kd + ks + kt);
         if (action <= kd) {
             // Indirect diffuse color
-	    double* rnd = seqs[depth]->getNext();
-	    //Vector dir = normal.randomHemisphere(rnd[0],rnd[1]);
-	    Vector dir = normal.randomHemisphere(rnd[0],rnd[1],0.01);
-	    //Vector dir = normal.randomHemisphere();
-	    double cosa = dir * normal;
-	    Ray new_ray = Ray(point + 0.1*dir,dir,-1);
-	    RGB in_diff = trace(new_ray,depth-1);
-	    result_color += cosa * in_diff * material->getDiffuseColor(intersection);
+	        double* rnd = seqs[depth]->getNext();
+	        //Vector dir = normal.randomHemisphere(rnd[0],rnd[1]);
+	        Vector dir = normal.randomHemisphere(rnd[0],rnd[1],0.01);
+	        //Vector dir = normal.randomHemisphere();
+	        double cosa = dir * normal;
+	        Ray new_ray = Ray(point + 0.1*dir,dir,-1);
+	        RGB in_diff = trace(new_ray,depth-1);
+	        result_color += cosa * in_diff * material->getDiffuseColor(intersection);
         } else if (action <= kd + ks) {
             result_color += shadeReflection(ray, intersection, depth);    
         } else if (action <= kd + ks + kt) {
             Vector2 fre = fresnel(normal,ray.getDirection(),material);
             const double reflection = fre[0];
             const double transmission = fre[1];
-            
+                
             if (reflection > 0) {
                 result_color += reflection * shadeReflection(ray, intersection, depth);        
             }
