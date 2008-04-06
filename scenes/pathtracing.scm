@@ -1,4 +1,11 @@
 
+
+;; FIXME: The glossy surface leaves black spots.
+;; refl_vector = Math::perturbVector(refl_vector,max_angle,seqs[depth]);
+;; in pathtracer.cpp is the culprit. Using
+;; refl_vector = Math::perturbVector(refl_vector,max_angle);
+;; gives no black spots but more noisy output-image.
+
 (load "lib/raygay.scm")
 
 (define bgimage (make-image 1024 1024 #(1.2 1.2 1.2)))
