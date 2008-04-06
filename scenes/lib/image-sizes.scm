@@ -28,7 +28,7 @@
 (define image-size-24-inch-intel-imac   '(1920 1200))
 (define image-size-20-inch-apple-cinema '(1680 1050))
 (define image-size-20-inch-intel-imac   '(1680 1050))
-(define image-size-17-inch-macbook-pro  '(1680 1050)     ; 17" Macbook Pro
+(define image-size-17-inch-macbook-pro  '(1680 1050))     ; 17" Macbook Pro
 (define image-size-17-inch-g4-powerbook '(1440 900))     ; 17" G4 Powerbook (Toves)
 (define image-size-15-inch-macbook-pro  '(1440 900))     ; 15" Macbook Pro
 (define image-size-13-inch-macbook      '(1280 800))     ; 13.3" Macbook
