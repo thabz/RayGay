@@ -497,7 +497,6 @@ Vector Math::perturbVector(const Vector& axis, const double angle) {
  * @param angle angle of the cone in radians
  * @param qmc_sequence a 2-dimensional quasi-Monto-Carlo sequence to use for random numbers
  */
-/*
 Vector Math::perturbVector(const Vector& axis, const double angle, QMCSequence* qmc_sequence) {
     Vector result;
     Vector axisP = axis.toPolar();
@@ -512,8 +511,8 @@ Vector Math::perturbVector(const Vector& axis, const double angle, QMCSequence* 
 
     return result;
 }
-*/
 // FIXME: This works better than the above but distribution is not uniform.
+/*
 Vector Math::perturbVector(const Vector& axis, const double angle, QMCSequence* qmc_sequence) {
     Vector result;
     double* rnds;
@@ -524,6 +523,7 @@ Vector Math::perturbVector(const Vector& axis, const double angle, QMCSequence* 
 
     return result;
 }
+*/
 
 /**
  * Low distortion maps of a point on [0,1]^2 to the unit disc.
