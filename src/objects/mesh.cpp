@@ -266,6 +266,9 @@ void Mesh::addTriangle(const Vector& c1, const Vector& c2, const Vector& c3) {
 
 // ----------------------------------------------------------------------------
 void Mesh::transform(const Matrix& M) {
+    if (prepared == false) {
+        cout << "Warning: transforming unprepared mesh" << endl;
+    }
     corners.transform(M);
     Matrix3 rotation = M.extractRotation();
     normals.transform(rotation);
