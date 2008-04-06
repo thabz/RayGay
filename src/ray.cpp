@@ -1,7 +1,7 @@
 
 #include "ray.h"
 
-long Ray::seq = 0;
+int64_t Ray::seq = 0;
 
 Ray::Ray() {
     id = -1;

@@ -7,52 +7,49 @@
 class Object;
 
 /// Describing a ray, that is an origin and a direction Vector.
-class Ray {
+class Ray 
+{
     public:
-	Ray();
-	/// Constructor
-	Ray(const Vector& o, const Vector&  direction, const double indice);
-	/// Destructor
-	~Ray() { };
-
-	/// The rays origin
-	const Vector& getOrigin() const { return origin; };
-	/// The rays direction
-	const Vector& getDirection() const { return direction; };
-
+	    Ray();
+	    /// Constructor
+	    Ray(const Vector& o, const Vector&  direction, const double indice);
+	    /// Destructor
+	    ~Ray() { };
+        
+	    /// The rays origin
+	    const Vector& getOrigin() const { return origin; };
+	    /// The rays direction
+	    const Vector& getDirection() const { return direction; };
+        
         /// Rays direction (x,y,z) with inverted components ((1/x),(1/y),(1/x))
-	Vector getInverseDirection() const;
-
+	    Vector getInverseDirection() const;
+        
         /// The material the ray is travelling in where 1.0 is vacuum.
-	double getIndiceOfRefraction() const { return indice_of_refraction; };
-
-	/// Accessor for the unique id of this ray, that is automatically assigned.
-	const long getId() const { return id; };
-
-	/// Get a point on the ray
-	Vector getPoint(const double t) const { return origin + t * direction; };
-
-	bool isCaustic() const;
-	bool ignore() const { return id == -1; };
-
-	mutable double t_scale;
-
-	/// Number of specular bounces since leaving light
+	    double getIndiceOfRefraction() const { return indice_of_refraction; };
+        
+	    /// Accessor for the unique id of this ray, that is automatically assigned.
+	    const int64_t getId() const { return id; };
+        
+	    /// Get a point on the ray
+	    Vector getPoint(const double t) const { return origin + t * direction; };
+        
+	    bool isCaustic() const;
+	    bool ignore() const { return id == -1; };
+        
+	    mutable double t_scale;
+        
+	    /// Number of specular bounces since leaving light
         int specularBounces;
-	int diffuseBounces;
-	const void* fromObject;
+	    int diffuseBounces;
+	    const void* fromObject;
 
 	
     private:
-	long id;
-	static long seq;
-	double indice_of_refraction; 
-	Vector origin; ///< The rays origin
-	Vector direction; ///< Unit vector of rays direction
-
-    public:
-
-
+	    int64_t id;
+	    static int64_t seq;
+	    double indice_of_refraction; 
+	    Vector origin; ///< The rays origin
+	    Vector direction; ///< Unit vector of rays direction
 };
 
 inline

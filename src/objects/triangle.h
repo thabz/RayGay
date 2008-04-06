@@ -17,9 +17,9 @@ struct CachedVertex {
     double vert0[3], vert1[3], vert2[3];
     double edge1[3], edge2[3];
     const Triangle* triangle;
-    long last_ray_id;
     double last_t;
-}; // 140 bytes
+    int64_t last_ray_id;
+}; // 144 bytes
 
 
 class TriangleVertexCache {
