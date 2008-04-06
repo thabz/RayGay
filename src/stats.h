@@ -102,13 +102,13 @@ class Stats {
 	/// Returns the singleton
 	static Stats* getUniqueInstance();
 	/// Inserts a value
-	void put(StatsKey, long value);
+	void put(StatsKey, int64_t value);
 	/// Gets a value
-	long get(StatsKey key) const;
+	int64_t get(StatsKey key) const;
 	/// Increases a value by one
 	void inc(StatsKey key);
 	/// Increases a value by an amount
-	void inc(StatsKey key, long amount);
+	void inc(StatsKey key, int64_t amount);
 	/// Prints out the stats
 	void dump() const;
 	/// Remove all stats
@@ -125,7 +125,7 @@ class Stats {
     private:
 	Stats();
 	static Stats* uniqueInstance;
-	long* stats;
+	int64_t* stats;
 	map<string,clock_t> beginTimes;
 	map<string,clock_t> endTimes;
 	bool disabled;

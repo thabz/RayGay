@@ -27,54 +27,53 @@ Stats* Stats::uniqueInstance = NULL;
 
 Stats* Stats::getUniqueInstance() {
     if (uniqueInstance == NULL) {
-	uniqueInstance = new Stats();
+	    uniqueInstance = new Stats();
     }
     return uniqueInstance;
 }
 
 Stats::Stats() {
     disabled = false;
-    stats = new long[STATS_LAST+1];
+    stats = new int64_t[STATS_LAST+1];
     clear();
 }
 
-void Stats::put(StatsKey key, long value) {
+void Stats::put(StatsKey key, int64_t value) {
     if (!disabled) {
-	stats[key] = value;
+	    stats[key] = value;
     }
 }
 
-long Stats::get(StatsKey key) const {
+int64_t Stats::get(StatsKey key) const {
     return stats[key];
 }
 
 void Stats::clear() {
     for(int i = 0; i < STATS_LAST; i++) {
-	stats[i] = 0;
+	    stats[i] = 0;
     }
 }
 
 void Stats::dump() const {
     // Print key/value pairs
-    map<string,long>::const_iterator cur_entry;
     for(int i = 0; i < STATS_LAST; i++) {
-	if (stats[i] > 0) {
-	    cout << StatsStrings[i] << ": " << stats[i] << endl;
-	}
+	    if (stats[i] > 0) {
+	        cout << StatsStrings[i] << ": " << stats[i] << endl;
+	    }
     }
 
     // Print time measures
     map<string,clock_t>::const_iterator cur_time;
     for(cur_time = beginTimes.begin(); cur_time != beginTimes.end(); cur_time++) {
-	cout << cur_time->first;
-	if (endTimes.find(cur_time->first) != endTimes.end()) {
-	    long secs = long(double(endTimes.find(cur_time->first)->second - cur_time->second) / CLOCKS_PER_SEC);
-	    cout << ": ";
-	    cout << setfill('0') << setw(2) << secs / 60;
-	    cout << ":";
-	    cout << setfill('0') << setw(2) << secs % 60;
-	    cout << endl;
-	}
+	    cout << cur_time->first;
+	    if (endTimes.find(cur_time->first) != endTimes.end()) {
+	        long secs = long(double(endTimes.find(cur_time->first)->second - cur_time->second) / CLOCKS_PER_SEC);
+	        cout << ": ";
+	        cout << setfill('0') << setw(2) << secs / 60;
+	        cout << ":";
+	        cout << setfill('0') << setw(2) << secs % 60;
+	        cout << endl;
+	    }
     }
 }
 
@@ -118,9 +117,9 @@ Statistics::~Statistics()
 void Statistics::dumpAll()
 {
     for(uint32_t i = 0; i < stats.size(); i++) {
-	cout << stats[i]->group << "/" << stats[i]->name << ": ";
-	stats[i]->out();
-	cout << endl;
+	    cout << stats[i]->group << "/" << stats[i]->name << ": ";
+	    stats[i]->out();
+	    cout << endl;
     }
 }
 
@@ -180,7 +179,7 @@ void CounterStats::put(double v)
 }
 
 void CounterStats::out() const {
-    cout << long(value);
+    cout << int64_t(value);
 }
 
 ///////////////////////////////////////////////////
@@ -200,10 +199,10 @@ void PercentageStats::setTotal(double value)
 void PercentageStats::out() const 
 {
     if (total != 0.0) {
-	double percentage = 100.0 * value / total;
-	cout << percentage << "%";
+	    double percentage = 100.0 * value / total;
+	    cout << percentage << "%";
     } else {
-	cout << "N/A";
+	    cout << "N/A";
     }
 }
 
