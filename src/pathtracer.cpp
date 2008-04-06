@@ -55,16 +55,16 @@ RGBA Pathtracer::traceSub(const bool intersected, const Intersection& intersecti
     double intersect_distance = HUGE_DOUBLE;
 
     if (intersected) {
-	color = shade(ray,intersection,depth);
+	    color = shade(ray,intersection,depth);
     } else {
-	color = scene->getBackgroundColor(ray);
+	    color = scene->getBackgroundColor(ray);
     }
 
     if (scene->fogEnabled()) {
-	intersect_distance = (intersection.getPoint() - ray.getOrigin()).length();
-	double D = scene->getFogDistance();
-	double v = expf(-intersect_distance/D);
-	color =  (color * v) + (scene->getFogColor() * (1-v));
+	    intersect_distance = (intersection.getPoint() - ray.getOrigin()).length();
+	    double D = scene->getFogDistance();
+	    double v = expf(-intersect_distance/D);
+	    color =  (color * v) + (scene->getFogColor() * (1-v));
     }
     return color;
 }
@@ -113,10 +113,10 @@ RGB Pathtracer::shadeReflection(const Ray& ray, const Intersection& intersection
     refl_vector = refl_vector.reflect(normal);
     refl_vector.normalize();
     if (material->glossEnabled()) {
-	/* Perturb reflecteced ray */
-	double max_angle = material->glossMaxAngle();
-	refl_vector = Math::perturbVector(refl_vector,max_angle,seqs[depth]);
-	//refl_vector = Math::perturbVector(refl_vector,max_angle);
+	    /* Perturb reflecteced ray */
+	    double max_angle = material->glossMaxAngle();
+	    refl_vector = Math::perturbVector(refl_vector,max_angle,seqs[depth]);
+	    //refl_vector = Math::perturbVector(refl_vector,max_angle);
     }
     Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
     refl_ray.fromObject = object;
@@ -138,34 +138,34 @@ RGB Pathtracer::shade(const Ray& ray, const Intersection& intersection, const in
     // Direct diffuse color
     const vector<Lightsource*>& lights = scene->getLightsources();
     for (vector<Lightsource*>::const_iterator p = lights.begin(); p != lights.end(); p++) {
-	double attenuation = (*p)->getAttenuation(point);
-
-	if (attenuation > double(0)) {
-	    (*p)->getSingleLightinfo(intersection,space,&info,depth);
-	    if (info.cos > 0.0) {
-		RGB color = RGB(0.0,0.0,0.0);
-		// Check for blocking objects
-		if (info.intensity > 0.0) {
-		    double intensity = info.intensity * attenuation;
-		    // Direct diffuse color
-		    if (material->getKd() > 0) {
-			color =  intensity * info.cos * material->getKd() * material->getDiffuseColor(intersection);
-		    }
-
-		    // Specular color (Phong)
-		    if (material->getKs() > 0.0) {
-			Vector light_reflect = info.direction_to_light.reflect(normal);
-			light_reflect.normalize();
-			double rv = light_reflect * (-1 * ray.getDirection());
-			if (rv > 0.0) {
-			    rv = pow(rv,material->getSc());
-			    color = color + ( intensity * rv *  material->getKs() * material->getSpecularColor());
-			}
-		    }
-		}
-		result_color += color;
-	    } 
-	}
+	    double attenuation = (*p)->getAttenuation(point);
+        
+	    if (attenuation > double(0)) {
+	        (*p)->getSingleLightinfo(intersection,space,&info,depth);
+	        if (info.cos > 0.0) {
+	    	    RGB color = RGB(0.0,0.0,0.0);
+	    	    // Check for blocking objects
+	    	    if (info.intensity > 0.0) {
+	    	        double intensity = info.intensity * attenuation;
+	    	        // Direct diffuse color
+	    	        if (material->getKd() > 0) {
+	    	    	    color =  intensity * info.cos * material->getKd() * material->getDiffuseColor(intersection);
+	    	        }
+                
+	    	        // Specular color (Phong)
+	    	        if (material->getKs() > 0.0) {
+	    	    	    Vector light_reflect = info.direction_to_light.reflect(normal);
+	    	    	    light_reflect.normalize();
+	    	    	    double rv = light_reflect * (-1 * ray.getDirection());
+	    	    	    if (rv > 0.0) {
+	    	    	        rv = pow(rv,material->getSc());
+	    	    	        color = color + ( intensity * rv *  material->getKs() * material->getSpecularColor());
+	    	    	    }
+	    	        }
+	    	    }
+	    	    result_color += color;
+	        } 
+	    }
     }
     if (depth >= 0) {
         double kd = material->getKd();
