@@ -3,7 +3,6 @@
 #define MATH_FUNCTION_H
 
 #include "math/vector.h"
-#include "types.h"
 
 /**
  * A template for functions.

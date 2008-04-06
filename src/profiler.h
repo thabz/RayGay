@@ -29,7 +29,7 @@ class Profiler
         static void dump(Profiler* p, double percentage, uint32_t indent);
 	double secs();
 
-	long accumulated_time;
+	int64_t accumulated_time;
 	string name;
 	string parent;
 	static vector<Profiler*> profilers;

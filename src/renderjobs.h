@@ -59,8 +59,8 @@ class RenderJobPool {
     private:
 	void init(int w, int h, int initial_cell_size);
 	std::deque<RenderJob*> jobs;
-	unsigned long pixels_fully_rendered;
-	unsigned long total_image_pixels;
+	uint64_t pixels_fully_rendered;
+	uint64_t total_image_pixels;
 	pthread_mutex_t mutex_jobs;
 	pthread_mutex_t mutex_cout;
 	int last_percentage;

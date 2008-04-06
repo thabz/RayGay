@@ -6,7 +6,6 @@
 #include <config.h>
 #endif
 
-#include "types.h"
 #include "math/vector.h"
 #include "aabox.h"
 #include <vector>

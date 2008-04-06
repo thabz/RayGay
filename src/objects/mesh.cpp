@@ -4,7 +4,6 @@
 #include <cassert>
 #include <map>
 
-#include "types.h"
 #include "exception.h"
 #include "objects/mesh.h"
 #include "math/matrix.h"

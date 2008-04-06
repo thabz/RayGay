@@ -1,7 +1,6 @@
 #ifndef MATH_FUNCTIONS_H
 #define MATH_FUNCTIONS_H
 
-#include "types.h"
 #include <vector>
 
 class Vector;

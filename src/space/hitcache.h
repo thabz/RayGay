@@ -3,7 +3,6 @@
 #define SPACE_HITCACHE_H
 
 #include "math/vector2.h"
-#include "types.h"
 
 class Object;
 

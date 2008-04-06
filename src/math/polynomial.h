@@ -3,7 +3,6 @@
 #define MATH_POLYNOMIAL_H
 
 #include <iosfwd>
-#include "types.h"
 #include "math/constants.h"
 #include "math/function.h"
 

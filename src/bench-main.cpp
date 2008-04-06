@@ -56,7 +56,7 @@ void bench_vector() {
     Vector one = Vector(1,1,1);
     Vector two = Vector(2,2,2);
     Vector sum = Vector(0,0,0);
-    for(long i = 0; i < 500000000; i++) {
+    for(int64_t i = 0; i < 500000000; i++) {
 	sum += random_vectors[i & 1023];
 	sum = sum + one;
 	sum = sum + two * 4.0;
