@@ -144,13 +144,15 @@ void TimerStats::stopTimer()
 void TimerStats::out() const 
 {
     double secs = double(end_time - begin_time) / CLOCKS_PER_SEC;
+    int whole_hours = int(secs / 3600);
     int whole_minutes = int(secs / 60);
-    int whole_seconds = int(secs - whole_minutes * 60);
-    int hundreds = int(100.0 * (secs - whole_minutes * 60 - whole_seconds));
-    cout << setfill('0') << setw(2) << whole_minutes;
-    cout << ":";
-    cout << setfill('0') << setw(2) << whole_seconds;
-    cout << ".";
+    int whole_seconds = int(secs);
+    int hundreds = int(100.0 * (secs - whole_seconds));
+    if (whole_hours > 0) {
+	cout << whole_hours << ":";
+    }
+    cout << setfill('0') << setw(2) << whole_minutes % 60 << ":";
+    cout << setfill('0') << setw(2) << whole_seconds % 60 << ".";
     cout << setfill('0') << setw(2) << hundreds;
 }
 
