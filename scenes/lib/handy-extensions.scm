@@ -79,5 +79,9 @@
     ((>= ,var ,to))
     ,@body))
       
-      
-      
+;; Unicode fun
+
+(define ￮ make-sphere)
+(define □ make-box)
+(define ■ make-solid-box)
+
