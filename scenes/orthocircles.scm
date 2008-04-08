@@ -1,15 +1,18 @@
 ; The orthocircles implicit surface is defined by
-; ((xx + yy ñ 1)≤ + zz) * ((yy + zz ñ 1)≤ + xx) * ((zz + xx ñ 1)≤ + yy) ñ 
-; 0.0375≤ * (1 + 3 * (xx + yy + zz)) = 0 
+; ((x² + y² – 1)² + z²) * ((y² + z² – 1)² + x²) * ((z² + x² – 1)² + y²) – 
+; 0.0375² * (1 + 3 * (x² + y² + z²)) = 0 
 ;
 ; See http://www.flickr.com/photos/mylaboratory/417717535/in/set-72157603650366417/
+
+(define high-quality #f)
 
 
 (load "lib/raygay.scm")
 (load "lib/colors.scm")
 
-(set-image-size image-size-360-hd)
-(set-image-size image-size-1080-hd)
+(if high-quality
+  (set-image-size image-size-23-inch-apple-cinema)
+  (set-image-size image-size-360-hd))
 
 (set-background (color 'azure))
 
@@ -21,7 +24,7 @@
        'lookat #(0 0 0)
        'up #(0 1 0)
        'fov 45
-       'sampler (make-halton-sampler 4000)
+       'sampler (make-halton-sampler (if high-quality 1000 10))
        )))
 
 (define brown
@@ -45,17 +48,19 @@
        'specpow 15)))
 
 
-(define (sqar n) (* n n))
+(define (sqr n) (* n n))
 
 (define (orthocircles x y z)
-  (let ((xx (* x x))
-        (yy (* y y))
-        (zz (* z z)))
-   (- (* (+ (sqar (+ xx yy -1)) zz)
-         (+ (sqar (+ yy zz -1)) xx)
-         (+ (sqar (+ zz xx -1)) yy))
-      (* (sqar 0.0375)
-         (+ 1 (* 3 (+ xx yy zz)))))))
+  (let ((x² (* x x))
+        (y² (* y y))
+        (z² (* z z)))
+   (-
+    (* (+ (sqr (+ x² y² -1)) z²)
+       (+ (sqr (+ y² z² -1)) x²)
+       (+ (sqr (+ z² x² -1)) y²)) 
+    (* (sqr 0.0375) 
+       (+ 1 
+         (* 3 (+ x² y² z²)))))))
 
 (add-to-scene (make-arealight #(1300 1300 1300) #(-1 -1 -1) 200 256 0.1))
 
@@ -77,5 +82,6 @@
         100         ; steps
         0.000001    ; accuracy
         brown) 
-    200 #t)
+    (if high-quality 200 50) 
+    #t)
 #(0 0 0))) 
