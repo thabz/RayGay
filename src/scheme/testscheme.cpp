@@ -1870,7 +1870,7 @@ int main(int , char *) {
     suite.add("Parser", new test_parser());
     //suite.add("Bigint", new test_bigint());
     suite.add("Vector", new test_vector());
-    assert(::isnan(sqrt(-1.0)));
+    assert(std::isnan(sqrt(-1.0)));
 
     try {
         suite.run();
