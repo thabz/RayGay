@@ -431,7 +431,12 @@ SchemeObject* s_exp(Scheme* scheme, SchemeObject* n) {
     if (n->type() == SchemeObject::COMPLEX_NUMBER) {
         return complex2scm(std::exp(scm2complex(n)));
     } else {
-        return double2scm(std::exp(scm2double(n)));
+	double d = scm2double(n);
+	if (::isinf(d)) {
+	    return double2scm(d > 0 ? -log(0.0) : 0.0);
+	} else {
+	    return double2scm(std::exp(d));
+	}
     }
 }
 
