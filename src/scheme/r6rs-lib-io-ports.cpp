@@ -274,8 +274,11 @@ SchemeObject* s_get_line(Scheme* scheme, SchemeObject* port) {
     int32_t i = 0;
     while(true) {
         wchar_t c = i_get_char(port);
+        // TODO: Respect the port's eol-style here
         if (c == -1) {
             break;
+	    } else if (c == L'\r') {
+		    // Ignore
         } else if (c == L'\n') {
             i++;
             break;
