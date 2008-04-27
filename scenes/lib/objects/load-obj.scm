@@ -3,39 +3,62 @@
 ; (string-split #\space "abc def ghi") -> ("abc" "def" ghi")
 ; (string-split #\/ "1/2/3") -> ("1" "2" "3")
 (define (string-split chr str)
- (let* ((ip (open-string-input-port s))
-        (pp (open-string-output-port))
-	(op (car pp))
-	(extract (cadr pp)))
-  (let loop ((result '()))
-   (cond 
-    ((port-eof? ip) 
-     (reverse result))
-    ((eqv? (lookahead-char ip) c)
-      (get-char ip)
-      (loop (cons (extract) result)))
-    (else
-      (put-char op (get-char ip))
-      (loop result))))))
+ (let loop ((i 0))
+  (cond
+   ((= i (string-length str))
+    (list str))
+   ((char=? (string-ref str i) chr)
+    (cons (substring str 0 i)
+          (string-split chr (substring str (+ i 1) (string-length str)))))
+   (else
+    (loop (+ i 1))))))
+
+(define (extract-vector lst)
+ (list->vector (map string->number lst)))
+
+(define (extract-face lst)
+ (map 
+  (lambda (ll) (map string->number ll))
+  (map
+   (lambda (part) (string-split #\/ part))
+   lst)))
 
 ; This will load and parse a .obj file and return a mesh sceneobject.
 (define (load-obj filename)
- (let ((ip (open-file-input-port filename)))
+ (let ((ip (transcoded-port (open-file-input-port filename) 
+                            (make-transcoder (latin-1-codec)))))
   (let lineloop ((vectors '()) 
 		 (normals '())
 		 (uvs '())
 		 (faces '()))
    (if (port-eof? ip)
-    (make-mesh vectors normals uvs faces)
+    (begin
+      (display normals)(newline)
+      (make-mesh vectors normals uvs faces))
     (let* ((line (get-line ip))
- 	   (line-tokens (string-split line))
+ 	   (line-tokens (string-split #\space line))
  	   (cmd (car line-tokens))
  	   (args (cdr line-tokens)))
+;     (display line)(newline)
      (cond
-      ((equal? "v" cmd))
-      ((equal? "vt" cmd))
-      ((equal? "vn" cmd))
-      ((equal? "f" cmd))
+      ((equal? "v" cmd)
+       (lineloop 
+          (cons (extract-vector args) vectors)
+          normals uvs faces))
+      ((equal? "vt" cmd)
+       (lineloop 
+          vectors normals
+          (cons (extract-vector args) uvs)
+          faces))
+      ((equal? "vn" cmd)
+       (lineloop 
+          vectors 
+          (cons (extract-vector args) normals)
+          uvs faces))
+      ((equal? "f" cmd)
+       (lineloop 
+          vectors normals uvs
+          (cons (extract-face args) faces)))
       (else
        (lineloop vectors normals uvs faces))))))))
 
