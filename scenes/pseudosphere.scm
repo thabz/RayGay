@@ -1,13 +1,15 @@
 
 (load "lib/raygay.scm")
 (load "lib/colors.scm")
+(load "lib/hyperbolic-functions.scm")
 
 ; http://www.geom.uiuc.edu/zoo/diffgeom/pseudosphere/eqns.html
 
-(set-image-size image-size-1080-hd)
 (set-image-size image-size-360-hd)
+(set-image-size image-size-1080-hd)
 
 (set-background (color 'tan))
+(set-background (color 'white))
 
 (set-renderer "raytracer")
 (set-camera 
@@ -16,7 +18,7 @@
        lookat #(0 0 0)
        up #(0 1 0)
        fov 45
-       aa 0)))
+       aa 3)))
 
 (define brown
   (make-material
@@ -35,10 +37,10 @@
 (define checkered 
   (make-material
     (list 'diffuse 
-       (make-texture "gfx/chess.png" 1 1 'none)
-       'kd 0.2
+       (make-texture "gfx/chess.png" 12 5 'none)
+       'kd 1.0
        'specular #(1.0 1.0 1.0)
-       'ks 0.8
+       'ks 0.0
        'specpow 30)))
 
 (add-to-scene (make-pointlight #(500 1000 1000)))
@@ -49,20 +51,18 @@
 
 ;(add-to-scene (make-continuous-studio-backdrop #(800 400 400) 15 brown))  
 
+(define (reparameterize x a b)
+ (+ a (* x (- b (* 2 a)))))
+
+
 (define (pseudo-sphere _u _v)
- (let* ((b 0.01)
-	(u (* 2 π _u))
-;        (v (+ b (* π _v (- 1 (* 2 b)))))
-        (v (* 0.99 _v))
-	(a 10000)
-	(d (+ (atan (- a) (/ π 2 ))))
-	(w (+ (atan (- (* 2 a v (/ 1 π)) a)) (/ π 2 )))
-	(v1 (+ (/ (* (- π (* 2 b))(- w d)) (- π (* 2 d))) b))
-        (x (* 4 (sin u) (sin v1)))
-        (y (* 4 (cos u) (sin v1)))
-	(z (* 4 (+ (cos v1) (log (tan (/ v1 2)))))))
-  (vector x y z)))
+  (let* ((u (reparameterize _u -5 5))
+	 (v (reparameterize _v 0 (* 2 π)))
+	 (x (* 4 (sech u) (cos v)))
+	 (y (* 4 (sech u) (sin v)))
+	 (z (* 4 (- u (tanh u)))))
+   (vector x y z)))
 
 (add-to-scene 
- (make-parametrized-surface pseudo-sphere 100 100 #f #f checkered))
+ (make-parametrized-surface pseudo-sphere 400 100 #f #f checkered))
 
