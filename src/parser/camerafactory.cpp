@@ -127,7 +127,7 @@ SchemeObject* CameraFactory::s_make_fisheye_camera(Scheme* scheme, SchemeObject*
 SchemeObject* CameraFactory::s_make_whitted_adaptive_sampler(Scheme* scheme, SchemeObject* s_aa_depth)
 {
     wchar_t* proc = L"make-whitted-adaptive-sampler";
-    assert_arg_positive_int(proc, 1, s_aa_depth);
+    assert_arg_non_negative_int(proc, 1, s_aa_depth);
     int aa_depth = scm2int(s_aa_depth);
     SamplerFactory* sampler = new WhittedAdaptiveFactory(aa_depth);
     return sampler2scm(sampler);
@@ -137,7 +137,7 @@ SchemeObject* CameraFactory::s_make_whitted_adaptive_sampler(Scheme* scheme, Sch
 SchemeObject* CameraFactory::s_make_boundary_adaptive_sampler(Scheme* scheme, SchemeObject* s_aa_depth)
 {
     wchar_t* proc = L"make-boundary-adaptive-sampler";
-    assert_arg_positive_int(proc, 1, s_aa_depth);
+    assert_arg_non_negative_int(proc, 1, s_aa_depth);
     int aa_depth = scm2int(s_aa_depth);
     SamplerFactory* sampler = new BoundaryAdaptiveFactory(aa_depth);
     return sampler2scm(sampler);

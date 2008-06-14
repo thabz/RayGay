@@ -936,7 +936,7 @@ void test_math() {
     assert_eval(s, L"(rationalize 12/8 0.1)", L"1.5");
     assert_eval(s, L"(rationalize 7/8 0.1)", L"0.8");
     assert_eval(s, L"(rationalize -7/8 0.1)", L"-0.8");
-    // TODO: NedenstÂende fejler da vi ikke har bigints endnu.
+    // TODO: NedenstÃ‚ende fejler da vi ikke har bigints endnu.
     // assert_eval(s, L"(rationalize 1.8 0.1)", L"1.75");
     
     assert_eval(s, L"(let loop ((i 0)) (if (>= i 1) i (loop (+ i (/ 100)))))", L"1");
@@ -1731,6 +1731,8 @@ void test_lib_hashtables() {
 
     assert_eval(s, L"(define h (make-hashtable equal-hash equal?))", L"#<unspecified>");
     assert_eval(s, L"(define h (make-hashtable equal-hash equal? 2))", L"#<unspecified>");
+    assert_fail(s, L"(define h (make-hashtable equal-hash equal? -1))");
+    assert_fail(s, L"(define h (make-hashtable equal-hash equal? 0))");
     assert_eval(s, L"(hashtable-size h)", L"0");
     assert_eval(s, L"(eq? (hashtable-hash-function h) equal-hash)", L"#t");
     assert_eval(s, L"(eq? (hashtable-equivalence-function h) equal?)", L"#t");

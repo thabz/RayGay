@@ -19,7 +19,7 @@ SchemeObject* s_bytevector_p(Scheme* scheme, SchemeObject* o) {
 }
 
 SchemeObject* s_make_bytevector(Scheme* scheme, SchemeObject* s_k, SchemeObject* s_fill) {
-    assert_arg_positive_int(L"make-bytevector",1, s_k);
+    assert_arg_non_negative_int(L"make-bytevector",1, s_k);
     uint32_t k = scm2int(s_k);
     uint8_t* bytes = new uint8_t[k];
     
@@ -68,7 +68,7 @@ SchemeObject* s_bytevector_copy_e(Scheme* scheme, SchemeObject* source, SchemeOb
     assert_arg_bytevector_type(L"bytevector-copy!", 1, source);
     assert_arg_bytevector_type(L"bytevector-copy!", 3, target);
     assert_arg_not_immutable(L"bytevector-copy!", 3, target);
-    assert_arg_positive_int(L"bytevector-copy!",5, s_k);
+    assert_arg_non_negative_int(L"bytevector-copy!",5, s_k);
     int64_t k = scm2int(s_k);
     assert_arg_int_in_range(L"bytevector-copy!", 2, s_source_start, 0, source->length-1-k);
     assert_arg_int_in_range(L"bytevector-copy!", 4, s_target_start, 0, target->length-1-k);

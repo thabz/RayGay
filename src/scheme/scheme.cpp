@@ -531,7 +531,7 @@ SchemeObject* Scheme::callProcedure_n(SchemeObject* s_proc, SchemeObject* s_args
    return interpreter->call_procedure_n(s_proc, s_args);
 }
 
-// TODO: Gør denne til en intern function med tail-optimization
+// TODO: GÃ¸r denne til en intern function med tail-optimization
 SchemeObject* s_call_cc(Scheme* scheme, SchemeObject* s_proc) {
     Interpreter* interpreter = scheme->getInterpreter();
     Interpreter::State* state = interpreter->getState();
@@ -551,8 +551,8 @@ SchemeObject* s_call_cc(Scheme* scheme, SchemeObject* s_proc) {
     return s_escape->result;
 }
 
-// TODO: Gør denne til en intern function (igen) med tail-optimization i kaldet til proc.
-// TODO: Det er måske nemmere at skrive denne som en macro, ala (define-macro (apply proc args) `(,proc ,@args))
+// TODO: GÃ¸r denne til en intern function (igen) med tail-optimization i kaldet til proc.
+// TODO: Det er mÃ¥ske nemmere at skrive denne som en macro, ala (define-macro (apply proc args) `(,proc ,@args))
 // args is a list (arg1 arg2 ... argn). argn must be a list. proc is called with the arguments
 // (append (list arg1 arg2 ...) argn)
 SchemeObject* s_apply(Scheme* scheme, int num, SchemeStack::iterator args) {
@@ -611,7 +611,7 @@ SchemeObject* s_map_internal(Scheme* scheme, wchar_t* procname, int num, SchemeS
     SchemeObject* result = S_EMPTY_LIST;
     SchemeObject* prev = S_EMPTY_LIST;
 
-    // Vi skralder af lists i hvert gennemløb. Så ((1 2 3)(10 20 30)) bliver til ((2 3)(20 30)) og til sidst ((3)(30))
+    // Vi skralder af lists i hvert gennemlÃ¸b. SÃ¥ ((1 2 3)(10 20 30)) bliver til ((2 3)(20 30)) og til sidst ((3)(30))
     while (cropped_args[0] != S_EMPTY_LIST) {
         // Collect args
         SchemeAppendableList collection;
@@ -677,7 +677,7 @@ SchemeObject* i_list_tail(SchemeObject* l, SchemeObject* k) {
 
 SchemeObject* s_list_tail(Scheme* scheme, SchemeObject* l, SchemeObject* k) {
     assert_non_atom_type(L"list-tail", 1, l);
-    assert_arg_positive_int(L"list-tail", 2, k);
+    assert_arg_non_negative_int(L"list-tail", 2, k);
     return i_list_tail(l,k);
 }
 
@@ -691,7 +691,7 @@ SchemeObject* i_list_ref(SchemeObject* l, SchemeObject* k) {
 
 SchemeObject* s_list_ref(Scheme* scheme, SchemeObject* l, SchemeObject* k) {
     assert_arg_pair_type(L"list-ref", 1, l);
-    assert_arg_positive_int(L"list-ref", 2, k);
+    assert_arg_non_negative_int(L"list-ref", 2, k);
     return i_list_ref(l, k);
 }
 
@@ -871,7 +871,7 @@ SchemeObject* s_append(Scheme* scheme, int num, SchemeStack::iterator stack) {
 }
 
 SchemeObject* s_make_vector(Scheme* scheme, SchemeObject* s_count, SchemeObject* obj) {
-    assert_arg_positive_int(L"make-vector", 1, s_count);
+    assert_arg_non_negative_int(L"make-vector", 1, s_count);
     int64_t count = scm2int(s_count);
     return SchemeObject::createVector(obj, count);
 }
@@ -1013,8 +1013,8 @@ SchemeObject* s_string_copy(Scheme* scheme, SchemeObject* str) {
 
 SchemeObject* s_substring(Scheme* scheme, SchemeObject* s_str, SchemeObject* s_start, SchemeObject* s_end) {
     assert_arg_string_type(L"substring", 1, s_str);
-    assert_arg_positive_int(L"substring", 2, s_start);
-    assert_arg_positive_int(L"substring", 3, s_end);
+    assert_arg_non_negative_int(L"substring", 2, s_start);
+    assert_arg_non_negative_int(L"substring", 3, s_end);
     wstring str = scm2string(s_str);
     int start = scm2int(s_start);
     int end = scm2int(s_end);

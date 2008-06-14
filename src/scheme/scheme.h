@@ -273,12 +273,24 @@ class scheme_exception {
     }                                                                 \
 }
 
-#define assert_arg_positive_int(procname, argnum, arg) {           \
+#define assert_arg_non_negative_int(procname, argnum, arg) {           \
     assert_arg_int_type(procname, argnum, arg);           \
     int64_t n = scm2int(arg);                                          \
     if (n < 0) {                                                   \
         wostringstream ss;                                          \
         ss << "Negative argument in to position " << argnum;       \
+        ss << " in call to " << wstring(procname);                  \
+        ss << ": " << (arg)->toString();                             \
+        throw scheme_exception(ss.str());                          \
+    }                                                              \
+}
+
+#define assert_arg_positive_int(procname, argnum, arg) {           \
+    assert_arg_int_type(procname, argnum, arg);           \
+    int64_t n = scm2int(arg);                                          \
+    if (n <= 0) {                                                   \
+        wostringstream ss;                                          \
+        ss << "Non-positive argument in to position " << argnum;       \
         ss << " in call to " << wstring(procname);                  \
         ss << ": " << (arg)->toString();                             \
         throw scheme_exception(ss.str());                          \

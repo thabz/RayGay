@@ -230,7 +230,7 @@ void i_unget_char(SchemeObject* textual_input_port) {
 SchemeObject* s_get_string_n(Scheme* scheme, SchemeObject* port, SchemeObject* count) {
     assert_arg_input_port_type(L"get-string-n", 1, port);
     assert_arg_textual_port_type(L"get-string-n", 1, port);
-    assert_arg_positive_int(L"get-string-n", 2, count);
+    assert_arg_non_negative_int(L"get-string-n", 2, count);
     int32_t n = scm2int(count);
     if (n == 0) {
         return string2scm(wstring(L""));

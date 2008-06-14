@@ -257,7 +257,7 @@ SchemeObject* s_sqrt(Scheme* scheme, SchemeObject* n) {
 
 // See http://en.wikipedia.org/wiki/Integer_square_root
 SchemeObject* s_exact_integer_sqrt(Scheme* scheme, SchemeObject* s_n) {
-    assert_arg_positive_int(L"exact-integer-sqrt", 1, s_n);
+    assert_arg_non_negative_int(L"exact-integer-sqrt", 1, s_n);
     int64_t n = scm2int(s_n);
     if (n == 0) {
         return i_list_2(int2scm(0),int2scm(0));
