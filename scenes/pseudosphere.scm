@@ -1,10 +1,14 @@
 
+; Made for an article by Henrik Kragh Sørensen to be published in the book Romantikkens Verden, Aarhus Universitetsforlag, 2008.
+
 (load "lib/raygay.scm")
 (load "lib/colors.scm")
 (load "lib/hyperbolic-functions.scm")
+(load "lib/objects/wireframing.scm")
 
 ; http://www.geom.uiuc.edu/zoo/diffgeom/pseudosphere/eqns.html
 
+(set-image-size image-size-720-hd)
 (set-image-size image-size-360-hd)
 (set-image-size image-size-1080-hd)
 
@@ -22,7 +26,7 @@
 
 (define brown
   (make-material
-    (list 'diffuse (color 'moccasin)
+    (list 'diffuse (color 'tan)
           'kd 1.0
           'ks 0.0)))
 
@@ -43,9 +47,9 @@
        'ks 0.0
        'specpow 30)))
 
-(add-to-scene (make-pointlight #(500 1000 1000)))
+;(add-to-scene (make-pointlight #(500 1000 1000)))
 ;(add-to-scene (make-pointlight #(-500 1500 1300)))
-;(add-to-scene (make-arealight #(500 1000 1000) #(-0.5 -1 -1) 200 256 0.1))
+(add-to-scene (make-arealight #(500 1000 1000) #(-0.5 -1 -1) 200 256 0.1))
 
 ;(add-to-scene (make-box #(-1700 -51 -1700) #(1700 1 1700) brown))
 
@@ -53,7 +57,6 @@
 
 (define (reparameterize x a b)
  (+ a (* x (- b (* 2 a)))))
-
 
 (define (pseudo-sphere _u _v)
   (let* ((u (reparameterize _u -5 5))
@@ -63,6 +66,7 @@
 	 (z (* 4 (- u (tanh u)))))
    (vector x y z)))
 
-(add-to-scene 
- (make-parametrized-surface pseudo-sphere 400 100 #f #f checkered))
+(add-to-scene (make-parametrized-surface pseudo-sphere 400 100 #f #f checkered))
+
+(add-to-scene (make-parametric-surface-as-wireframe pseudo-sphere 24 10 400 100 0.03 brown))
 
