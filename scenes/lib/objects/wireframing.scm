@@ -11,7 +11,15 @@
    (set! result (cons (make-cylinder p1 p2 radius mat) result))))
  result))  
 
-; Make a wiremesh out of a parametric surface.
+;; Make a wiremesh out of a parametric surface.
+;; @param surface-func the parametric description of the surface 
+;;        as a function (u,v) -> R^3.
+;; @param u-wires number of wires in the u-dimension.
+;; @param v-wires number of wires in the v-dimension.
+;; @param u-num number of cylinders to build each u-wire with. 
+;; @param v-num number of cylinders to build each v-wire with. 
+;; @param radius radius of the wires.
+;; @param mat material of the wires.
 (define (make-parametric-surface-as-wireframe 
 	 surface-func u-wires v-wires u-num v-num radius mat)
  (define result '())
