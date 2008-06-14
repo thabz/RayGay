@@ -57,13 +57,13 @@ void Skylight::getSingleLightinfo(const Intersection& inter, KdTree* space, Ligh
     }
 }
 
-bool Skylight::probe(int num, const Ray& ray, double dist, uint32_t depth, KdTree* space) const {
+bool Skylight::probe(int i, const Ray& ray, double dist, uint32_t depth, KdTree* space) const {
     std::vector<ShadowCache>* shadowcaches = (std::vector<ShadowCache>*) pthread_getspecific(shadowcaches_key);
     if (shadowcaches == NULL) {
 	    shadowcaches = new std::vector<ShadowCache>(num);
 	    pthread_setspecific(shadowcaches_key, shadowcaches);
     }
-    return (*shadowcaches)[num].occluded(ray,dist,depth,space);
+    return (*shadowcaches)[i].occluded(ray,dist,depth,space);
 }
 
 
