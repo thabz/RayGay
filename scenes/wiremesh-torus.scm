@@ -1,5 +1,6 @@
 
 (load "lib/raygay.scm")
+(load "lib/objects/wireframing.scm")
 
 (set-background #(0.95 0.95 0.95))
 
@@ -35,19 +36,6 @@
 		  y-axis tR))
              (n (vnormalize (v- p (vscale (vnormalize (vector (.x p) 0 (.z p))) R)))))
        (v+ (vscale n a) p))))
-
-; Stroke a path with cylinders with spheres as joints 
-(define (stroke-path path radius mat num)
-  (let ((result '()))
-    (dotimes i num
-      (let* ((t1 (/ i num))
-        (t2 (/ (+ i 1) num))
-        (p1 (path t1))
-        (p2 (path t2)))
-   (set! result (cons (make-sphere p1 radius mat) result))
-   (set! result (cons (make-cylinder p1 p2 radius mat) result))))
- result))  
-
 
 (define num-around 30)
 (define torus-R 500)

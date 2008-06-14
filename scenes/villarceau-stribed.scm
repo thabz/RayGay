@@ -1,5 +1,7 @@
 
 (load "lib/raygay.scm")
+(load "lib/objects/wireframing.scm")
+(load "lib/colors.scm")
 
 (set-background #(0.95 0.95 0.95))
 
@@ -37,37 +39,6 @@
              (n (vnormalize (v- p (vscale (vnormalize (vector (.x p) 0 (.z p))) R)))))
        (v+ (vscale n a) p))))
 
-; Stroke a path with cylinders with spheres as joints 
-(define (stroke-path path radius mat num)
-  (let ((result '()))
-    (dotimes i num
-      (let* ((t1 (/ i num))
-        (t2 (/ (+ i 1) num))
-        (p1 (path t1))
-        (p2 (path t2)))
-   (set! result (cons (make-sphere p1 radius mat) result))
-   (set! result (cons (make-cylinder p1 p2 radius mat) result))))
- result))  
-
-; See http://en.wikipedia.org/wiki/HSV_color_space
-(define (hsv->rgb hsv)
-  (let* ((H (vector-ref hsv 0))
-         (S (vector-ref hsv 1))
-         (V (vector-ref hsv 2))
-         (Hi (modulo (floor (/ H 60)) 6))
-         (f (- (/ H 60) Hi))
-         (p (* V (- 1 S)))
-         (q (* V (- 1 (* f S))))
-         (t (* V (- 1 (* (- 1 f) S)))))
-    (case Hi 
-      ((0) (vector V t p))     
-      ((1) (vector q V p))     
-      ((2) (vector p V t))     
-      ((3) (vector p q V))     
-      ((4) (vector t p V))     
-      ((5) (vector V p q)))))
-
-
 (define num-around 16)
 (define torus-R 500)
 (define torus-r 100)
@@ -85,7 +56,7 @@
        (* i (/ 2π num-around)) a num-around π/2)
       tube-r
       (make-material
-        `( diffuse ,(hsv->rgb (vector (* i (/ 360 num-around)) 0.5 1.0))
+        `( diffuse ,(hsv->rgb (vector (/ i num-around) 0.5 1.0))
            kd 0.6
            specular #(1.0 1.0 1.0)
            ks 0.4
