@@ -43,7 +43,7 @@
 
 ; 1.85:1 formats
 ; A popular aspect for many movies 
-(define image-size-720-hd '(1280 688))
+(define image-size-1.85 '(1280 688))
 
 ; 2.35:1 formats
 ; Another popular aspect for many movies
