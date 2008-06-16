@@ -173,6 +173,14 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
     	renderersettings->image_height = h;
     }
 
+    if (renderersettings->fast_preview) {
+    	uint32_t w = renderersettings->image_width;
+    	uint32_t h = renderersettings->image_height;
+        float ratio = float(w) / float(h);
+        renderersettings->image_width = 320;
+    	renderersettings->image_height = 320 / ratio;
+    }
+
     SchemeObject* s_background = lookup(VAR_BACKGROUND);
     if (s_background != S_EMPTY_LIST) {
 	wchar_t* subr = L"internal: setting scene background";
