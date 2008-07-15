@@ -80,14 +80,26 @@ class Mesh : public ObjectGroup {
 	/// Adds a new vertex to the mesh
 	uint32_t addVertex(const Vector& point);
 
+	/// Adds a new normal to the mesh
+	uint32_t addNormal(const Vector& normal);
+
+	/// Adds a new uv-texture-point to the mesh
+	uint32_t addNormal(const Vector2& uv);
+
 	/// Add a triangle by vertex indices
 	void addTriangle(const uint32_t v[3], const Vector2 uv[3]);
+
+	/// Add a triangle by vertex, normal and uv vertice 
+	void addTriangle(const uint32_t v[3], const uint32_t n[3], const uint32_t uv[3]);
 	
 	/// Add a triangle by vertex indices
 	void addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 uv1, const Vector2 uv2);
 	
 	/// Add a triangle by vertex indices
 	void addTriangle(const uint32_t v[3]);
+
+        /// Add a new uv texture point to the mesh
+        uint32_t addUV(const Vector2& uv);
 	
 	/// A vector of all vertices
 	std::vector<Vector>* getVertices();
@@ -116,6 +128,7 @@ class Mesh : public ObjectGroup {
     private:
 	MeshType meshType;
 	bool prepared;
+        bool interpolate_normals;
 	int findExistingCorner(const Vector* c) const;
 	void computeInterpolatedNormals();
 	Vector phong_normal(const uint32_t face_idx, double u, double v) const;
@@ -130,6 +143,8 @@ class Mesh : public ObjectGroup {
 	std::vector<uint32_t> faces;
 	// 3 indices into normals for each face
 	std::vector<uint32_t> i_normal_indices;
+	// 3 indices into uvs for each face
+	std::vector<uint32_t> i_uv_indices;
 
     protected:
 	uint32_t facesNum() const;

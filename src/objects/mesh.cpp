@@ -28,6 +28,7 @@ Mesh::Mesh(MeshType type, const Material* mat) {
     meshType = type;
     prepared = false;
     material = mat;
+    interpolate_normals = meshType == Mesh::MESH_PHONG;
     if (interpolate_normals_profiler == NULL) {
         interpolate_normals_profiler = Profiler::create("Interpolate normals", "Prepare objects");            
     }
@@ -46,7 +47,7 @@ void Mesh::addSelf(KdTree* space) {
 void Mesh::prepare() {
     if (prepared == true) return;
 
-    if (meshType == Mesh::MESH_PHONG) {
+    if (interpolate_normals) {
         interpolate_normals_profiler->start();    
 	computeInterpolatedNormals();
 	interpolate_normals_profiler->stop();
@@ -122,6 +123,29 @@ uint32_t Mesh::addVertex(const Vector& point) {
     return corners.size() -1;
 }
 
+/**
+ * Adds a new normal to the mesh.
+ *
+ * @param point the normal to add
+ * @return index of the new normal 
+ */
+uint32_t Mesh::addNormal(const Vector& normal) {
+    normals.push_back(normal);
+    interpolate_normals = false;
+    return normals.size() -1;
+}
+
+/**
+ * Adds a new uv texture point to the mesh.
+ *
+ * @param point the uv point to add
+ * @return index of the new uv point 
+ */
+uint32_t Mesh::addUV(const Vector2& uv) {
+    uv_coords.push_back(uv);
+    return uv_coords.size() -1;
+}
+
 void Mesh::addTriangle(const uint32_t v[3]) {
     Vector2 uv[3];
     addTriangle(v,uv);
@@ -135,6 +159,18 @@ void Mesh::addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 
     addTriangle(v,uv);
 }
 
+void Mesh::addTriangle(const uint32_t v[3], const uint32_t n[3], const uint32_t uv[3]) {
+   faces.push_back(v[0]);
+   faces.push_back(v[1]);
+   faces.push_back(v[2]);
+   i_normal_indices.push_back(n[0]);
+   i_normal_indices.push_back(n[1]);
+   i_normal_indices.push_back(n[2]);
+   i_uv_indices.push_back(uv[0]);
+   i_uv_indices.push_back(uv[1]);
+   i_uv_indices.push_back(uv[2]);
+   interpolate_normals = false;
+}
 
 void Mesh::addTriangle(const uint32_t v[3], const Vector2 uv[3]) {
 
