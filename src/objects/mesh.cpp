@@ -172,6 +172,15 @@ void Mesh::addTriangle(const uint32_t v[3], const uint32_t n[3], const uint32_t 
    interpolate_normals = false;
 }
 
+void Mesh::addTriangle(const uint32_t v[3], const uint32_t uv[3]) {
+   faces.push_back(v[0]);
+   faces.push_back(v[1]);
+   faces.push_back(v[2]);
+   i_uv_indices.push_back(uv[0]);
+   i_uv_indices.push_back(uv[1]);
+   i_uv_indices.push_back(uv[2]);
+}
+
 void Mesh::addTriangle(const uint32_t v[3], const Vector2 uv[3]) {
 
     // Check vertex indices are within bounds

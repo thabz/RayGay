@@ -83,14 +83,14 @@ class Mesh : public ObjectGroup {
 	/// Adds a new normal to the mesh
 	uint32_t addNormal(const Vector& normal);
 
-	/// Adds a new uv-texture-point to the mesh
-	uint32_t addNormal(const Vector2& uv);
-
 	/// Add a triangle by vertex indices
 	void addTriangle(const uint32_t v[3], const Vector2 uv[3]);
 
 	/// Add a triangle by vertex, normal and uv vertice 
 	void addTriangle(const uint32_t v[3], const uint32_t n[3], const uint32_t uv[3]);
+
+	/// Add a triangle by vertex and uv 
+	void addTriangle(const uint32_t v[3], const uint32_t uv[3]);
 	
 	/// Add a triangle by vertex indices
 	void addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 uv1, const Vector2 uv2);
@@ -98,8 +98,8 @@ class Mesh : public ObjectGroup {
 	/// Add a triangle by vertex indices
 	void addTriangle(const uint32_t v[3]);
 
-        /// Add a new uv texture point to the mesh
-        uint32_t addUV(const Vector2& uv);
+    /// Add a new uv texture point to the mesh
+    uint32_t addUV(const Vector2& uv);
 	
 	/// A vector of all vertices
 	std::vector<Vector>* getVertices();

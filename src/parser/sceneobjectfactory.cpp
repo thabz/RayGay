@@ -29,6 +29,7 @@
 #include "objects/bound.h"
 #include "objects/transformedinstance.h"
 #include "objects/text.h"
+#include "objects/obj.h"
 
 Scheme* SceneObjectFactory::scheme;
 
@@ -343,6 +344,25 @@ SchemeObject* make_ply_mesh(Scheme* scheme, SchemeObject* s_filename, SchemeObje
     return sceneobject2scm(ply);
 }
 
+
+SchemeObject* make_obj_mesh(Scheme* scheme, SchemeObject* s_filename, SchemeObject* s_material)
+{
+    wchar_t* proc = L"make-obj-mesh";
+    wstring filename = scm2string(s_filename);
+    Material* material = scm2material(s_material, proc, 2);
+    OBJ* obj;
+    try {
+        obj = new OBJ(SchemeFilenames::toFilename(filename), material);
+    } catch (Exception e) {
+        // TODO: Do better ie. convert e.getMessage to wchar_t
+        cerr << e.getMessage() << endl;
+    	throw scheme_exception(proc);
+    }         
+    return sceneobject2scm(obj);
+}
+
+
+
 SchemeObject* make_bezierpatch(Scheme* scheme, SchemeObject* s_points, SchemeObject* s_xres, SchemeObject* s_yres, SchemeObject* s_material) 
 {
     wchar_t* proc = L"make-bezierpatch";
@@ -546,6 +566,8 @@ void SceneObjectFactory::register_procs(Scheme* s)
 	    (SchemeObject* (*)()) make_mesh);
     scheme->assign(L"make-ply-mesh",2,0,0,
 	    (SchemeObject* (*)()) make_ply_mesh);
+    scheme->assign(L"make-obj-mesh",2,0,0,
+	    (SchemeObject* (*)()) make_obj_mesh);
     scheme->assign(L"make-bezierpatch",4,0,0,
 	    (SchemeObject* (*)()) make_bezierpatch);
     scheme->assign(L"make-difference",2,1,0,

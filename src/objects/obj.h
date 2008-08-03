@@ -13,7 +13,9 @@
 class OBJ : public Mesh 
 {
     public: 
-        OBJ(std::string filename, const Material* material);    
+        OBJ(std::string filename, const Material* material);
+    private:
+        int readFace(istream& is, int* vertex_idx, int* uv_idx, int* normal_idx, uint32_t max_verts);    
 };
 
 #endif

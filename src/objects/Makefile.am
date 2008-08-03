@@ -38,6 +38,8 @@ libobjects_la_SOURCES = \
 		       object.cpp	\
 		       objectgroup.h	\
 		       objectgroup.cpp	\
+		       obj.cpp \
+		       obj.h \
 		       parametrizedsurface.h \
 		       parametrizedsurface.cpp \
 		       ply.h		\
