@@ -4,12 +4,12 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
+echo "Now running aclocal"
+aclocal $ACLOCAL_FLAGS -I m4
+
 # Autoheader generates config.h.in from configure.in
 echo "Now running autoheader"
 autoheader
-
-echo "Now running aclocal"
-aclocal $ACLOCAL_FLAGS -I m4
 
 # Run glibtoolize (Darwin) or libtoolize (Linux)
 if [ `which glibtoolize` != "" ]; then
