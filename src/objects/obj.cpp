@@ -14,17 +14,19 @@ OBJ::OBJ(string filename, const Material* m) : Mesh(Mesh::MESH_PHONG, m)
         throw_exception("Error opening file. Wrong filename?");     
     }
     
-    string mode = "  ";
-    
-    while (!file.eof()) {
-        mode = "  ";
-        while(file.peek() == ' ' || file.peek() == '\n') { file.get(); }
+    char* cmode = new char[10];
+    int line = 1;
+    do {
+        while (::isspace(file.peek())) { file.get(); }
         int i = 0;
         do {
-            mode[i++] = file.get();
-        } while (file.peek() != ' ' && file.peek() != '\n');
+            cmode[i++] = file.get();
+        } while (!::isspace(file.peek()) && i < 10 && !file.eof());
+        cmode[i] = '\0';
+        string mode(cmode);
+        //cout << "*" << mode << "*" << endl;
 
-        if (mode == "#") {
+        if (mode == "#" || mode == "g" || mode == "usemtl" || mode == "mtllib") {
             do {} while (file.get() != '\n');
         } else if (mode == "v") {
             double x,y,z;
@@ -55,27 +57,31 @@ OBJ::OBJ(string filename, const Material* m) : Mesh(Mesh::MESH_PHONG, m)
                     addQuad((uint32_t*)verts, (uint32_t*)uvs, (uint32_t*)normals);
                 }
             } else {
-               throw_exception("Too many verts in face. Only 3 or 4 supported.");        
+                cout << "Ignored face with " << num << " verts. Only 3 or 4 supported." << endl;
+                //throw_exception("Too many verts in face. Only 3 or 4 supported.");
             }
         } else if (mode == "vn") {
             double x,y,z;
             file >> x;    
             file >> y;    
             file >> z;
-            addNormal(Vector(x,y,z));
+            Vector n = Vector(x,y,z);
+            n.normalize();
+            addNormal();
         } else if (mode == "vt") {
             double u,v;
             file >> u;
             file >> v;
             addUV(Vector2(u,v));
         } else {
-            cerr << mode << " line ignored in " << filename << endl;
+            cerr << mode << " line ignored in " << filename << " at line " << line << endl;
+            do {} while (file.get() != '\n');
         }
-    }
-
+        line++;
+        while (::isspace(file.peek())) { file.get(); }
+    } while (!file.eof());
+    delete [] cmode;
     file.close();
-    
-    cout << "Done." << endl;
 }
 
 int OBJ::readFace(istream& is, int* vertex_idx, int* uv_idx, int* normal_idx, uint32_t max_verts) {
@@ -86,12 +92,16 @@ int OBJ::readFace(istream& is, int* vertex_idx, int* uv_idx, int* normal_idx, ui
         idxs[0] = -1; idxs[1] = -1; idxs[2] = -1;
         int j = 0;
         do {
-           is >> idxs[j++];
+           
+           is >> idxs[j];
            // The indices in the obj-files are 1-based, so readjust.
-           idxs[j++]--; 
-        } while (is.peek() == '/' && j < 3);
+           idxs[j]--;
+           j++; 
+           is.clear();
+           if (is.peek() == '/') is.ignore();
+        } while (!::isspace(is.peek()) && j < 3);
         while(is.peek() == ' ') { is.get(); }
-        if (is.peek() == '\n' || is.eof()) {
+        if (is.peek() == '\n' || is.peek() == '\r' || is.eof()) {
             done = true;
         }
         vertex_idx[i] = idxs[0];
