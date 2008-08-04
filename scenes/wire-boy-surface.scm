@@ -15,7 +15,7 @@
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
-    '( pos #(4.5 1.5 2.75 )
+    '( pos #(0 4.5 3.5)
        lookat #(0 0 0)
        up #(0 1 0)
        fov 35

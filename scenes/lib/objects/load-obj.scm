@@ -24,7 +24,8 @@
    lst)))
 
 ; This will load and parse a .obj file and return a mesh sceneobject.
-(define (load-obj filename)
+; There a builtin function "load-obj" that is much faster.
+(define (load-obj-scheme filename)
  (let ((ip (transcoded-port (open-file-input-port filename) 
                             (make-transcoder (latin-1-codec)))))
   (let lineloop ((vectors '()) 
