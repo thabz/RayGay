@@ -47,7 +47,13 @@ OBJ::OBJ(string filename, const Material* m) : Mesh(Mesh::MESH_PHONG, m)
                     addTriangle((uint32_t*)verts, (uint32_t*)uvs, (uint32_t*)normals);
                 }
             } else if (num == 4) {
-                //addQuad(f);
+                if (uvs[0] == -1) {
+                    addQuad((uint32_t*)verts);
+                } else if (normals[0] == -1) {
+                    addQuad((uint32_t*)verts, (uint32_t*)uvs);
+                } else {
+                    addQuad((uint32_t*)verts, (uint32_t*)uvs, (uint32_t*)normals);
+                }
             } else {
                throw_exception("Too many verts in face. Only 3 or 4 supported.");        
             }
@@ -81,6 +87,8 @@ int OBJ::readFace(istream& is, int* vertex_idx, int* uv_idx, int* normal_idx, ui
         int j = 0;
         do {
            is >> idxs[j++];
+           // The indices in the obj-files are 1-based, so readjust.
+           idxs[j++]--; 
         } while (is.peek() == '/' && j < 3);
         while(is.peek() == ' ') { is.get(); }
         if (is.peek() == '\n' || is.eof()) {

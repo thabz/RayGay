@@ -24,10 +24,10 @@ class test_parser : public Test {
 	Vector v1;
     public: 
 	void run() {
-            Scene* scene = new Scene();        
+        Scene* scene = new Scene();        
 	    SceneParser* p = new SceneParser(scene);
 
-            p->assignVariable(L"test-predefined-a", 30);
+        p->assignVariable(L"test-predefined-a", 30);
 	    p->parse_file(SchemeFilenames::toString(getLoadPrefix() + "/scenes/test.scm"));
 
 	    assertTrue(IS_EQUAL(lookupDouble(L"test-predefined-a"),30));
@@ -54,7 +54,6 @@ class test_parser : public Test {
 	    v1 = Vector(4,-2,2);
 	    v1.normalize();
 	    assertTrue(lookupVector(L"test-vnormalize-2") == v1);
-	    delete p;
 
 	    assertTrue(lookupVector(L"test-translate-1") == Vector(2,3,4));
 	    assertTrue(lookupVector(L"test-translate-2") == Vector(1,0,-1));

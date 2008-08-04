@@ -19,7 +19,7 @@ class Box : public Mesh {
 	/// Destructor
 	~Box();
     private:
-	void prepareBox(const Vector a, const Vector b);
+	void prepareBox(const Vector& a, const Vector& b);
 };
 
 #endif

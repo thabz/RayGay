@@ -24,16 +24,16 @@ SurfaceOfRevolution::SurfaceOfRevolution(const vector<Vector2>& _points, uint32_
 
     // Convert to triangle mesh
     for(int y = 0; y < points_num - 1; y++) {
-	Circle b = Circle(Vector(0,points[y][1],0),points[y][0],Vector(0,1,0));
-	Circle e = Circle(Vector(0,points[y+1][1],0),points[y+1][0],Vector(0,1,0));
-	b.getPoints(segments,bp);
-	e.getPoints(segments,ep);
-
-	for(uint32_t i = 0; i < segments; i++) {
-	    uint32_t j = (i + 1) % segments;
-	    addTriangle(ep[j],bp[j],bp[i]);
-	    addTriangle(ep[i],ep[j],bp[i]);
-	}
+	    Circle b = Circle(Vector(0,points[y][1],0),points[y][0],Vector(0,1,0));
+	    Circle e = Circle(Vector(0,points[y+1][1],0),points[y+1][0],Vector(0,1,0));
+	    b.getPoints(segments,bp);
+	    e.getPoints(segments,ep);
+        
+	    for(uint32_t i = 0; i < segments; i++) {
+	        uint32_t j = (i + 1) % segments;
+	        addTriangle(addVertex(ep[j]),addVertex(bp[j]),addVertex(bp[i]));
+	        addTriangle(addVertex(ep[i]),addVertex(ep[j]),addVertex(bp[i]));
+	    }
     }
 
     delete [] bp;

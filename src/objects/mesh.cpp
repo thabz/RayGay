@@ -40,7 +40,7 @@ Mesh::~Mesh() {
 
 void Mesh::addSelf(KdTree* space) {
     for(uint32_t i = 0; i < triangles.size(); i++) {
-	space->addObject(&triangles[i]);
+	    space->addObject(&triangles[i]);
     }
 }
 
@@ -49,12 +49,12 @@ void Mesh::prepare() {
 
     if (interpolate_normals) {
         interpolate_normals_profiler->start();    
-	computeInterpolatedNormals();
-	interpolate_normals_profiler->stop();
+	    computeInterpolatedNormals();
+	    interpolate_normals_profiler->stop();
     }
 
     for(uint32_t i = 0; i < triangles.size(); i++) {
-	triangles[i].prepare();
+	    triangles[i].prepare();
     }
 
     prepared = true;
@@ -66,50 +66,69 @@ void Mesh::prepare() {
  * @param c must a pointer to three Vectors
  * @param uv must a pointer to three Vector2s
  */
+ /*
 void Mesh::addTriangle(const Vector* c, const Vector2* uv) {
 
     uint32_t verts[3];
 
     for(int i = 0; i < 3; i++) {
-	int new_index = findExistingCorner(&c[i]);
-	if (new_index == -1) {
-	   corners.push_back(c[i]);
-	   new_index = corners.size() - 1;
-	}
-	verts[i] = new_index;
+	    int new_index = findExistingCorner(&c[i]);
+	    if (new_index == -1) {
+	        corners.push_back(c[i]);
+	        new_index = corners.size() - 1;
+	    }
+	    verts[i] = new_index;
     }
     addTriangle(verts,uv);
+}
+
+*/
+
+uint32_t Mesh::findOrAddVertex(const Vector& v) {
+    uint32_t size = corners.size();
+    for(uint32_t i = 0; i < size; i++) {
+	    if (corners[i] == v) return i;
+    }
+    return addVertex(v);
 }
 
 /**
  * Add a quad to the mesh. This results in two triangles being added.
  *
- * @param corners A pointer to four vertices in clockwise direction
- * @param uv A pointer to four uv coordinates
+ * @param c Indices to four vertices in clockwise direction
+ * @param uv Indices to four uv-coordinates
+ * @param n Indices to four normals
  */
-void Mesh::addQuad(const Vector* corners, const Vector2* uv) {
-    addTriangle(corners[0],corners[1],corners[2],
-	        uv[0],uv[1],uv[2]);
-    addTriangle(corners[0],corners[2],corners[3],
-	        uv[0],uv[2],uv[3]);
-}
-
-void Mesh::addQuad(const uint32_t c[4], const Vector2 uv[4]) {
-    uint32_t k[3];
-    Vector2 uvk[3];
-
-    k[0] = c[0]; k[1] = c[1]; k[2] = c[2];
-    uvk[0] = uv[0]; uvk[1] = uv[1]; uvk[2] = uv[2];
-    addTriangle(k,uvk);
-
-    k[0] = c[0]; k[1] = c[2]; k[2] = c[3];
-    uvk[0] = uv[0]; uvk[1] = uv[2]; uvk[2] = uv[3];
-    addTriangle(k,uvk);
-}
-
-void Mesh::addQuad(const uint32_t c[4]) {
-    Vector2 uvk[4];
-    addQuad(c,uvk);
+void Mesh::addQuad(const uint32_t c[4], const uint32_t uv[4], const uint32_t n[4]) {
+    uint32_t tc[3];
+    uint32_t tuv[3];
+    uint32_t tn[3];
+    
+    if (uv != NULL && n != NULL) {
+        tc[0] = c[0]; tc[1] = c[1]; tc[2] = c[2];
+        tuv[0] = uv[0]; tuv[1] = uv[1]; tuv[2] = uv[2];
+        tn[0] = n[0]; tn[1] = n[1]; tn[2] = n[2];
+        addTriangle(tc,tuv,tn);
+        
+        tc[0] = c[0]; tc[1] = c[2]; tc[2] = c[3];
+        tuv[0] = uv[0]; tuv[1] = uv[2]; tuv[2] = uv[3];
+        tn[0] = n[0]; tn[1] = n[2]; tn[2] = n[3];
+        addTriangle(tc,tuv,tn);
+    } else if (uv != NULL && n == NULL) {
+        tc[0] = c[0]; tc[1] = c[1]; tc[2] = c[2];
+        tuv[0] = uv[0]; tuv[1] = uv[1]; tuv[2] = uv[2];
+        addTriangle(tc,tuv);
+        
+        tc[0] = c[0]; tc[1] = c[2]; tc[2] = c[3];
+        tuv[0] = uv[0]; tuv[1] = uv[2]; tuv[2] = uv[3];
+        addTriangle(tc,tuv);
+    } else {
+        tc[0] = c[0]; tc[1] = c[1]; tc[2] = c[2];
+        addTriangle(tc);
+        
+        tc[0] = c[0]; tc[1] = c[2]; tc[2] = c[3];
+        addTriangle(tc);
+    }
 }
 
 /**
@@ -120,7 +139,7 @@ void Mesh::addQuad(const uint32_t c[4]) {
  */
 uint32_t Mesh::addVertex(const Vector& point) {
     corners.push_back(point);
-    return corners.size() -1;
+    return corners.size() - 1;
 }
 
 /**
@@ -132,7 +151,7 @@ uint32_t Mesh::addVertex(const Vector& point) {
 uint32_t Mesh::addNormal(const Vector& normal) {
     normals.push_back(normal);
     interpolate_normals = false;
-    return normals.size() -1;
+    return normals.size() - 1;
 }
 
 /**
@@ -143,44 +162,57 @@ uint32_t Mesh::addNormal(const Vector& normal) {
  */
 uint32_t Mesh::addUV(const Vector2& uv) {
     uv_coords.push_back(uv);
-    return uv_coords.size() -1;
+    return uv_coords.size() - 1;
 }
 
-void Mesh::addTriangle(const uint32_t v[3]) {
-    Vector2 uv[3];
-    addTriangle(v,uv);
-}
-
-void Mesh::addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 uv1, const Vector2 uv2) {
+void Mesh::addTriangle(uint32_t v0, uint32_t v1, uint32_t v2, uint32_t uv0, uint32_t uv1, uint32_t uv2) {
     uint32_t v[3];
-    Vector2 uv[3];
+    uint32_t uv[3];
     v[0] = v0; v[1] = v1; v[2] = v2;
     uv[0] = uv0; uv[1] = uv1; uv[2] = uv2;
     addTriangle(v,uv);
 }
 
-void Mesh::addTriangle(const uint32_t v[3], const uint32_t n[3], const uint32_t uv[3]) {
-   faces.push_back(v[0]);
-   faces.push_back(v[1]);
-   faces.push_back(v[2]);
-   i_normal_indices.push_back(n[0]);
-   i_normal_indices.push_back(n[1]);
-   i_normal_indices.push_back(n[2]);
-   i_uv_indices.push_back(uv[0]);
-   i_uv_indices.push_back(uv[1]);
-   i_uv_indices.push_back(uv[2]);
-   interpolate_normals = false;
+void Mesh::addTriangle(uint32_t v0, uint32_t v1, uint32_t v2) {
+    uint32_t v[3];
+    v[0] = v0; v[1] = v1; v[2] = v2;
+    addTriangle(v);
 }
 
-void Mesh::addTriangle(const uint32_t v[3], const uint32_t uv[3]) {
-   faces.push_back(v[0]);
-   faces.push_back(v[1]);
-   faces.push_back(v[2]);
-   i_uv_indices.push_back(uv[0]);
-   i_uv_indices.push_back(uv[1]);
-   i_uv_indices.push_back(uv[2]);
+void Mesh::addTriangle(const uint32_t v[3], const uint32_t uv[3], const uint32_t n[3]) {
+    uint32_t max_idx = corners.size() - 1;
+    if (v[0] > max_idx || v[1] > max_idx || v[2] > max_idx ||
+        v[0] < 0 || v[1] < 0 || v[2] < 0) {
+	    char vs[200];
+	    sprintf(vs, "Triangle (%d,%d,%d) out of bounds",v[0],v[1],v[2]);
+	    throw_exception(vs);
+    }
+    faces.push_back(v[0]);
+    faces.push_back(v[1]);
+    faces.push_back(v[2]);
+    if (uv != NULL) {
+        i_uv_indices.push_back(uv[0]);
+        i_uv_indices.push_back(uv[1]);
+        i_uv_indices.push_back(uv[2]);
+    }
+    if (n != NULL) {
+        i_normal_indices.push_back(n[0]);
+        i_normal_indices.push_back(n[1]);
+        i_normal_indices.push_back(n[2]);
+        interpolate_normals = false;
+    } else {
+        Vector c[3];
+        c[0] = cornerAt(v[0]);
+        c[1] = cornerAt(v[1]);
+        c[2] = cornerAt(v[2]);
+        Vector normal = Vector::xProduct(c[1] - c[0], c[2] - c[0]);
+        normal.normalize();
+        normals.push_back(normal);
+    }
+    triangles.push_back(Triangle(this, (faces.size() / 3) - 1));
 }
 
+/*
 void Mesh::addTriangle(const uint32_t v[3], const Vector2 uv[3]) {
 
     // Check vertex indices are within bounds
@@ -210,6 +242,7 @@ void Mesh::addTriangle(const uint32_t v[3], const Vector2 uv[3]) {
 
     triangles.push_back(Triangle(this, (faces.size() / 3) - 1));
 }
+*/
 
 void Mesh::computeInterpolatedNormals() {
 
@@ -269,19 +302,19 @@ void Mesh::computeInterpolatedNormals() {
     delete [] adj;
 }
 
-// TODO: Optimize by keeping a stl::set with all corners.
-int Mesh::findExistingCorner(const Vector* c) const {
+/*
+int Mesh::findExistingCorner(const Vector& c) const {
     uint32_t size = corners.size();
     for(uint32_t i = 0; i < size; i++) {
-	if (corners[i] == *c) return i;
+	    if (corners[i] == c) return i;
     }
     return -1;
 }
+*/
 
 // ----------------------------------------------------------------------------
 /**
  * Add a triangle to this mesh
- */
 void Mesh::addTriangle(const Vector& c1, const Vector& c2, const Vector& c3,
 	const Vector2& uv1, const Vector2& uv2,const Vector2& uv3) {
     Vector c[3];
@@ -294,10 +327,10 @@ void Mesh::addTriangle(const Vector& c1, const Vector& c2, const Vector& c3,
     uv[2] = uv3;
     addTriangle(c,uv);
 }
+ */
 
 /**
  * Add a triangle to this mesh
- */
 void Mesh::addTriangle(const Vector& c1, const Vector& c2, const Vector& c3) {
     Vector c[3];
     c[0] = c1;
@@ -306,6 +339,7 @@ void Mesh::addTriangle(const Vector& c1, const Vector& c2, const Vector& c3) {
     Vector2 uv[3];
     addTriangle(c,uv);
 }
+ */
 
 
 // ----------------------------------------------------------------------------
@@ -325,9 +359,9 @@ void Mesh::transform(const Matrix& M) {
 // ----------------------------------------------------------------------------
 Vector Mesh::normal(const uint32_t face_idx, double u, double v) const {
     if (meshType == Mesh::MESH_PHONG) {
-	return phong_normal(face_idx,u,v);
+	    return phong_normal(face_idx,u,v);
     } else {
-	return normals[face_idx];
+	    return normals[face_idx];
     }
 }
 
@@ -337,7 +371,7 @@ Vector Mesh::phong_normal(const uint32_t face_idx, double u, double v) const {
     Vector result = Vector(0,0,0);
     Vector weight = Vector(1-u-v,u,v);
     for(uint32_t j = 0; j < 3; j++) {
-	result += normals[i_normal_indices[offset + j]] * weight[j];
+	    result += normals[i_normal_indices[offset + j]] * weight[j];
     }
     result.normalize();
     return result;
@@ -348,10 +382,13 @@ const Material* Mesh::getMaterial() const {
 }
 
 Vector2 Mesh::getUV(const uint32_t face_idx, double u, double v) const {
+    if (i_uv_indices.size() == 0) {
+        return Vector2(0,0);
+    }
     uint32_t offset = face_idx * 3;
-    return uv_coords[offset + 0] * (1-u-v) +
-           uv_coords[offset + 1] * u +
-           uv_coords[offset + 2] * v;
+    return uv_coords[i_uv_indices[offset + 0]] * (1-u-v) +
+           uv_coords[i_uv_indices[offset + 1]] * u +
+           uv_coords[i_uv_indices[offset + 2]] * v;
 }
 
 std::vector<Vector>* Mesh::getVertices() {
@@ -372,23 +409,23 @@ std::vector<Linesegment>* Mesh::getEdges() {
     uint32_t faces_num = faces.size() / 3;
 
     for(uint32_t t = 0; t < faces_num; t++) {
-	// Insert all edges into edgeMap
-	for(int i = 0; i < 3; i++) {
-	    int j = (i + 1) % 3;
-	    EdgeKey key = EdgeKey(faces[t*3+i],faces[t*3+j]);
-	    Edge* edge = edgeMap[key];
-	    if (edge == NULL) {
-		edge = new Edge(faces[t*3+i],faces[t*3+j]);
-		edgeMap[key] = edge;
+	    // Insert all edges into edgeMap
+	    for(int i = 0; i < 3; i++) {
+	        int j = (i + 1) % 3;
+	        EdgeKey key = EdgeKey(faces[t*3+i],faces[t*3+j]);
+	        Edge* edge = edgeMap[key];
+	        if (edge == NULL) {
+	    	    edge = new Edge(faces[t*3+i],faces[t*3+j]);
+	    	    edgeMap[key] = edge;
+	        }
 	    }
-	}
     }
 
     std::vector<Linesegment>* result = new std::vector<Linesegment>;
     for(EdgeMapType::iterator h = edgeMap.begin(); h != edgeMap.end(); h++) {
-	Edge* edge = h->second;
-	Linesegment s = Linesegment(corners[edge->vertex[0]],corners[edge->vertex[1]]);
-	result->push_back(s);
+	    Edge* edge = h->second;
+	    Linesegment s = Linesegment(corners[edge->vertex[0]],corners[edge->vertex[1]]);
+	    result->push_back(s);
     }
     return result;
 }
@@ -400,14 +437,27 @@ SceneObject* Mesh::clone() const {
     // Copy vertices
     uint32_t num = corners.size();
     for(uint32_t i = 0; i < num; i++) {
-	clone->addVertex(corners[i]);
+	    clone->addVertex(corners[i]);
     }
 
-    // Copy triangles and that's it.
-    num = faces.size() / 3;
-    for (uint32_t i = 0; i < num; i++) {
-	clone->addTriangle(&faces[i*3],&uv_coords[i*3]);
+    // Normals
+    num = normals.size();
+    for(uint32_t i = 0; i < num; i++) {
+	    clone->addNormal(normals[i]);
     }
+    clone->i_normal_indices = i_normal_indices;
+    
+    // Faces
+    num = faces.size() / 3;
+    for(uint32_t i = 0; i < num; i++) {
+	    clone->addTriangle(faces[i*3+0], faces[i*3+1], faces[i*3+2]);
+    }
+
+    clone->i_uv_indices = i_uv_indices;
+    clone->uv_coords = uv_coords;
+
+    clone->interpolate_normals = interpolate_normals;
+
     return clone;
 }
 

@@ -21,17 +21,17 @@ Tessalation::Tessalation(const Vector center, const double radius, const uint32_
 
 void Tessalation::split(const Vector& v1, const Vector& v2, const Vector& v3, uint32_t depth) {
     if (depth > max_splits) {
-	Mesh::addTriangle(v1,v2,v3);
+	    Mesh::addTriangle(findOrAddVertex(v1),findOrAddVertex(v2),findOrAddVertex(v3));
     } else {
-	Vector c = (v1 + v2 + v3) / double(3);
-	c -= center;
-	c.normalize();
-	c *= radius;
-	c += center;
-	depth++;
-	split(v1,v2,c,depth);
-	split(v2,v3,c,depth);
-	split(v3,v1,c,depth);
+	    Vector c = (v1 + v2 + v3) / double(3);
+	    c -= center;
+	    c.normalize();
+	    c *= radius;
+	    c += center;
+	    depth++;
+	    split(v1,v2,c,depth);
+	    split(v2,v3,c,depth);
+	    split(v3,v1,c,depth);
     }
 }
 

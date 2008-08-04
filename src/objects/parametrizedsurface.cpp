@@ -34,7 +34,7 @@ void ParametrizedSurface::prepare() {
     hintFaceNum(uRes * vRes);
 
     uint32_t c[4];
-    Vector2 uvs[4];
+    uint32_t uvs[4];
     double uStep = 1.0 / double(uRes);
     double vStep = 1.0 / double(vRes);
 
@@ -45,10 +45,10 @@ void ParametrizedSurface::prepare() {
 	    double v1 = (0 + v) * vStep;
 	    double v2 = (1 + v) * vStep;
 
-	    uvs[0] = Vector2(u1,v1);
-	    uvs[1] = Vector2(u1,v2);
-	    uvs[2] = Vector2(u2,v2);
-	    uvs[3] = Vector2(u2,v1);
+	    uvs[0] = addUV(Vector2(u1,v1));
+	    uvs[1] = addUV(Vector2(u1,v2));
+	    uvs[2] = addUV(Vector2(u2,v2));
+	    uvs[3] = addUV(Vector2(u2,v1));
 
 	    /*
 	    c[0] = (u + 0) + (v + 0) * uVerticesNum;

@@ -7,6 +7,7 @@ class Material;
 class Vector;
 
 /// A tetrahedron
+/// TODO: Implement this simple object in Scheme instead
 class Tetrahedron : public Mesh {
 
     public:

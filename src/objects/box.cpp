@@ -19,33 +19,36 @@ Box::Box(const Vector c, double width, double height, double depth, Material* m)
     prepareBox(c - extend, c + extend);
 }
 
-void Box::prepareBox(const Vector a, const Vector b) {
+void Box::prepareBox(const Vector& a, const Vector& b) {
     // Back left bottom
-    Vector c2 = Vector(min(a[0],b[0]),min(a[1],b[1]),min(a[2],b[2]));
+    Vector aa = Vector(min(a[0],b[0]),min(a[1],b[1]),min(a[2],b[2]));
     // Front right top
-    Vector c7 = Vector(max(a[0],b[0]),max(a[1],b[1]),max(a[2],b[2]));
+    Vector bb = Vector(max(a[0],b[0]),max(a[1],b[1]),max(a[2],b[2]));
+    
+    uint32_t c2 = addVertex(aa);
+    uint32_t c7 = addVertex(bb);
     
     // Back right bottom
-    Vector c1 = Vector(c7[0],c2[1],c2[2]);
+    uint32_t c1 = addVertex(Vector(bb[0],aa[1],aa[2]));
     // Back left top
-    Vector c4 = Vector(c2[0],c7[1],c2[2]);
+    uint32_t c4 = addVertex(Vector(aa[0],bb[1],aa[2]));
     // Back right top
-    Vector c3 = Vector(c7[0],c7[1],c2[2]);
+    uint32_t c3 = addVertex(Vector(bb[0],bb[1],aa[2]));
     // Front right bottom
-    Vector c5 = Vector(c7[0],c2[1],c7[2]);
+    uint32_t c5 = addVertex(Vector(bb[0],aa[1],bb[2]));
     // Front left bottom
-    Vector c6 = Vector(c2[0],c2[1],c7[2]);
+    uint32_t c6 = addVertex(Vector(aa[0],aa[1],bb[2]));
     // Front left top
-    Vector c8 = Vector(c2[0],c7[1],c7[2]);
+    uint32_t c8 = addVertex(Vector(aa[0],bb[1],bb[2]));
 
     // Bottom left
-    Vector2 uv00 = Vector2(0.0,1.0);
+    uint32_t uv00 = addUV(Vector2(0.0,1.0));
     // Top left
-    Vector2 uv01 = Vector2(0.0,0.0);
+    uint32_t uv01 = addUV(Vector2(0.0,0.0));
     // Bottom right
-    Vector2 uv10 = Vector2(1.0,1.0);
+    uint32_t uv10 = addUV(Vector2(1.0,1.0));
     // Top right
-    Vector2 uv11 = Vector2(1.0,0.0);
+    uint32_t uv11 = addUV(Vector2(1.0,0.0));
 
     // Back face
     Mesh::addTriangle(c1,c2,c3,uv00,uv10,uv01);

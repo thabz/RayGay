@@ -63,41 +63,31 @@ class Mesh : public ObjectGroup {
 	void addTriangle(const Vector* corners, const Vector2* uv);
 	
 	/// Add a quad to the mesh
-	void addQuad(const Vector* corners, const Vector2* uv);
-	
-	/// Add a quad to the mesh
-	void addQuad(const uint32_t c[4], const Vector2 uv[4]);
-
-	/// Add a quad to the mesh
-        void addQuad(const uint32_t c[4]);
+    void addQuad(const uint32_t c[4], const uint32_t uv[4] = NULL, const uint32_t n[4] = NULL);
         
 	/// Add a triangle to the mesh
-        void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3);
+//    void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3);
 	
 	/// Add a triangle to the mesh with uv-texture-coordinates
-        void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3, const Vector2& uv1, const Vector2& uv2,const Vector2& uv3);
+//    void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3, const Vector2& uv1, const Vector2& uv2,const Vector2& uv3);
 
 	/// Adds a new vertex to the mesh
 	uint32_t addVertex(const Vector& point);
-
+	/// Reuse an existing vertex or add a new to the mesh
+    uint32_t findOrAddVertex(const Vector& v);
+    
 	/// Adds a new normal to the mesh
 	uint32_t addNormal(const Vector& normal);
 
-	/// Add a triangle by vertex indices
-	void addTriangle(const uint32_t v[3], const Vector2 uv[3]);
-
 	/// Add a triangle by vertex, normal and uv vertice 
-	void addTriangle(const uint32_t v[3], const uint32_t n[3], const uint32_t uv[3]);
+	void addTriangle(const uint32_t v[3], const uint32_t uv[3] = NULL, const uint32_t n[3] = NULL);
 
-	/// Add a triangle by vertex and uv 
-	void addTriangle(const uint32_t v[3], const uint32_t uv[3]);
-	
 	/// Add a triangle by vertex indices
-	void addTriangle(int v0, int v1, int v2, const Vector2 uv0, const Vector2 uv1, const Vector2 uv2);
-	
-	/// Add a triangle by vertex indices
-	void addTriangle(const uint32_t v[3]);
+	void addTriangle(uint32_t v0, uint32_t v1, uint32_t v2, uint32_t uv0, uint32_t uv1, uint32_t uv2);
 
+	/// Add a triangle by vertex indices
+	void addTriangle(uint32_t v0, uint32_t v1, uint32_t v2);
+	
     /// Add a new uv texture point to the mesh
     uint32_t addUV(const Vector2& uv);
 	
@@ -126,13 +116,13 @@ class Mesh : public ObjectGroup {
 	void hintFaceNum(uint32_t num);
 
     private:
-	MeshType meshType;
-	bool prepared;
+	    MeshType meshType;
+	    bool prepared;
         bool interpolate_normals;
-	int findExistingCorner(const Vector* c) const;
-	void computeInterpolatedNormals();
-	Vector phong_normal(const uint32_t face_idx, double u, double v) const;
-	std::vector<Triangle> triangles;
+	    //int findExistingCorner(const Vector* c) const;
+	    void computeInterpolatedNormals();
+	    Vector phong_normal(const uint32_t face_idx, double u, double v) const;
+	    std::vector<Triangle> triangles;
 
 	const Material* material;
 
