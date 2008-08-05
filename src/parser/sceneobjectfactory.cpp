@@ -489,13 +489,19 @@ SchemeObject* make_instance(Scheme* scheme, SchemeObject* s_object, SchemeObject
     wchar_t* proc = L"make-instance";
     SceneObject* sobj = scm2sceneobject(s_object, proc, 1);
     Object* obj = dynamic_cast<Object*>(sobj);
-    if (obj == NULL) wrong_type_arg(proc,1,s_object);
+    if (obj == NULL) {
+        wrong_type_arg(proc,1,s_object);
+        if (dynamic_cast<ObjectGroup*>(sobj) != NULL) {
+            cout << "Hint: If you're trying to make an transformed instance of an objectgroup, such as a mesh, try wrap it in a (make-bound ...) to make it intersectable." << endl;
+            // TODO: Should we just do that bounding transparently to the user - for a simpler experience?
+        }
+    }
 
     TransformedInstance* instance;
     if (s_material == S_UNSPECIFIED) {
         instance = new TransformedInstance(obj);
     } else {
-	Material* material = scm2material(s_material,proc,3);
+	    Material* material = scm2material(s_material,proc,3);
         instance = new TransformedInstance(obj, material);
     }
     return sceneobject2scm(instance);
