@@ -52,6 +52,7 @@ Content-type: text/html; charset=ISO-8859-1
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>Blog</title>
 <link rel="alternate" type="application/rss+xml" title="RayGay blog" href="http://jesper.kalliope.org/blog/feed.cgi">
+<link rel="apple-touch-icon" href="logo.png">
 <script src="prototype.js"></script>
 <script src="effects.js"></script>
 <style type="text/css">
@@ -298,7 +299,7 @@ sub makeCal {
    my $month = $months[$mon];
    my $html = '<table class="cal">';
    $html .= qq|<tr><td colspan="7" style="font-size: 10pt; color: #804080">$month $year</td></tr>|;
-   $html .= qq|<tr><th>Man</th><th>Tirs</th><th>Ons</th><th>Tors</th><th>Fre</th><th>Lør</th><th>Søn</th></tr>|;
+   $html .= qq|<tr><th>Man</th><th>Tirs</th><th>Ons</th><th>Tors</th><th>Fre</th><th>LÃ¸r</th><th>SÃ¸n</th></tr>|;
    $html .= qq|<tr height="1"><td height="1" bgcolor="#808080" colspan="7"><img height="1" width="1" src="trans1x1.gif"></td></tr>|;
    my $time =  POSIX::mktime(0, 0, 12, 1, $mon-1, $year-1900, 0, 0, 0);
    $html .= '<tr>';
