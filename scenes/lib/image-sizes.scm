@@ -47,3 +47,23 @@
 
 ; 2.35:1 formats
 ; Another popular aspect for many movies
+
+  
+; For printing on paper.
+; Photos are normally printed at 240dpi and posters at 300dpi.
+
+;; Converts dpi to dots-per-millimeter. Using 1inch = 2.54mm
+(define (dpi->dpmm dpi) (/ dpi 25.4))
+
+(define (mm&dpi->pixels mm dpi)
+  (inexact->exact (round (* mm (dpi->dpmm dpi)))))
+
+; A4 is 297mm x 210mm in landscape.
+(define a4-landscape@300dpi (list (mm&dpi->pixels 297 300) (mm&dpi->pixels 210 300))) ; -> (3508 2480)
+(define a4-landscape@240dpi (list (mm&dpi->pixels 297 240) (mm&dpi->pixels 210 240))) ; -> (2806 1984)
+
+; A3 is 420mm x 297mm in landscape
+
+; A5 is 210mm x 148mm in landscape
+
+
