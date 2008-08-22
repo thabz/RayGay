@@ -67,7 +67,7 @@ OBJ::OBJ(string filename, const Material* m) : Mesh(Mesh::MESH_PHONG, m)
             file >> z;
             Vector n = Vector(x,y,z);
             n.normalize();
-            addNormal();
+            addNormal(n);
         } else if (mode == "vt") {
             double u,v;
             file >> u;
