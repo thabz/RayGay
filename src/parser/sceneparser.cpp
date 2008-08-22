@@ -107,7 +107,7 @@ SchemeObject* SceneParser::lookup(wstring var_name) {
 SchemeObject* SceneParser::add_to_scene(Scheme* scheme, SchemeObject* s_value) {
     if (s_sceneobject_p(scheme, s_value) == S_TRUE) {
         SceneObject* sceneobject = scm2sceneobject(s_value, L"internal-populate-scene", 0);
-        Object* o = static_cast<Object*>(sceneobject);
+        Object* o = dynamic_cast<Object*>(sceneobject);
         if (o != NULL && o->getMaterial() == NULL) {
             throw scheme_exception(L"add-to-scene", L"Object added without material: " + s_value->toString());
         }
