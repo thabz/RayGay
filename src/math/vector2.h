@@ -42,6 +42,11 @@ class Vector2
 	// Returns length of vector
 	double length() const;
 
+    /// x-component of this vector
+    double x() const { return _vector[0]; };
+    /// y-component of this vector
+    double y() const { return _vector[1]; };
+
     protected:
 	Float _vector[2]; ///< The x,y components of the vector
 };
