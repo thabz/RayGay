@@ -41,7 +41,7 @@ Glyph::Glyph(TrueTypeFont::Glyph* glyph, const Material* material) {
                 // Add linesegment from c0 to c1
                 Vector2 middle = (c0 + c1) * 0.5;
                 //ExtrudedLine* l = new ExtrudedLine(c0, c1, material);    
-                ExtrudedCurve* c = new ExtrudedCurve(c0, middle, c1, material);
+                ExtrudedCurve* c = new ExtrudedCurve(c0, c0, c1, material);
                 ObjectGroup::addObject(c);
                 // Continue from control point c1
                 c0 = c1;
@@ -234,11 +234,9 @@ void ExtrudedCurve::_fullIntersect(const Ray& world_ray, const double world_t, I
     double t = world_t*ray.t_scale;
     
     Vector p = ray.getPoint(t);
-    Vector2 along = b(findClosestT(ray) + 2000*EPSILON);
+    Vector2 along = b(findClosestT(ray) + EPSILON);
     Vector p2 = p - Vector(along.x(), along.y(), p.z());
-    Vector p3 = p - Vector(p.x(), p.y(), p.z() - 2000*EPSILON);
-    p2.normalize();
-    p3.normalize();
+    Vector p3 = p - Vector(p.x(), p.y(), p.z() - EPSILON);
     Vector n = Vector::xProduct(p3,p2);
     n.normalize();
     Vector2 uv; // No support for UV-coordinates
