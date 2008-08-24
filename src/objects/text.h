@@ -42,6 +42,23 @@ class ExtrudedCurve : public Object, public Transformer
         Vector2 p0, p1, p2;
 };
 
+class GlyphFace : public Object, public Transformer 
+{
+    public:
+        GlyphFace(TrueTypeFont::Glyph* glyph, double z_direction, const Material* material);
+        AABox getBoundingBox() const;    	
+	    void transform(const Matrix& m);
+	    SceneObject* clone() const;
+	
+    protected:
+	    void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
+	    double _fastIntersect(const Ray& ray) const;
+        
+    private:
+        Vector normal;
+        TrueTypeFont::Glyph* glyph;
+};
+
 
 // A Glyph is an objectgroup of ExtrudedLines and ExtrudedCurves.
 class Glyph : public ObjectGroup

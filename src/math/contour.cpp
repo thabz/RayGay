@@ -6,8 +6,11 @@
 
 using namespace std;
 
-bool Contours::isInside(const Vector2& p) const {
-    return false;        
+bool Contours::isInside(const Vector2& p, double x_max, double size) const {
+    // TODO: This can be done faster without allocating the vector<double>
+    // and just keep updating an inside-outside bool.
+    vector<double> intersections = rasterize(p.x(), x_max, p.y(), size);
+    return intersections.size() % 2 == 1;
 }
 
 vector<double> Contours::rasterize(double x_min, double x_max, double y, double size) const {

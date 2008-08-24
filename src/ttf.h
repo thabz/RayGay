@@ -32,8 +32,10 @@ class TrueTypeFont
                 float xMin, xMax;
                 float yMin, yMax;
                 // rsb = aw - (lsb + xmax - xmin)            
-                Contours contours;
                 float xOffset;
+                Contours contours;
+                
+                bool isInside(const Vector2& p) const;
         };
 
     public:

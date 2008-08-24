@@ -20,7 +20,7 @@ class Contours {
         void transform(float a, float b, float c, float d, float e, float f);
         std::vector<Contour> contours;        
 
-        bool isInside(const Vector2& point) const;
+        bool isInside(const Vector2& point, double x_max, double size) const;
         std::vector<double> rasterize(double x_min, double x_max, double y, double size = 1) const;
 
     private:

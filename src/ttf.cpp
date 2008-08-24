@@ -616,6 +616,14 @@ bool TrueTypeFont::isWhitespace(wchar_t c) {
     return iswspace(c);        
 }
 
+bool TrueTypeFont::Glyph::isInside(const Vector2& p) const {
+    if (p.x() < xMin || p.x() > xMax || 
+        p.y() < yMin || p.y() > yMax) {
+            return false;
+    }
+    return contours.isInside(p, xMax+10*EPSILON, 1);
+}
+
 ///////////////////////////////////////////////////////////
 // Helpers
 ///////////////////////////////////////////////////////////
