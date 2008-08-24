@@ -91,7 +91,7 @@ with coefficents
 \begin{eqnarray*}
     A & = & d_x(p_{0y}-2p_{1y}+p_{2y}) - d_y(p_{0x}-2p_{1x}+p_{2x}) \\
     B & = & d_x(2p_{1y}-2p_{0y}) - d_y(2p_{1x}-2p_{0x}) \\
-    C & = & d_x(p_{0y} - o_y) - d_y(p_{0x} + o_x)
+    C & = & d_x(p_{0y} - o_y) - d_y(p_{0x} - o_x)
 \end{eqnarray*}
 The values for $s$ can be found by substituting the roots $t$ into \eqref{eq_for_s}. Throw away the root $t$ where that substitution yields an $s<0$.
 
@@ -113,7 +113,7 @@ Each dimension gives an equation, so we have three equations with three unknown.
 \begin{equation}
     o_z + d_zs = eu \Rightarrow u = \frac{o_z + d_zs}{e} \label{eq_for_u}
 \end{equation}
-We're already done now. Equation \eqref{quad} gives us the values of $t$. After discarding values outside $[0,1]$, we'll use \eqref{eq_for_s} to get corresponding values for $s$. We'll discard negative values for $s$ and use \eqref{eq_for_u} above to find the corresponding values for the parameter $u$ at the intersection points. Throw away values of $u$ not in $[0,1]$.
+We're already done now. Equation \eqref{quad} gives us the values of $t$. After discarding values outside $[0,1]$, we'll use \eqref{eq_for_s} to get corresponding values for $s$. We'll discard negative values for $s$ and use \eqref{eq_for_u} above to find the corresponding values for the parameter $u$ at the intersection points. Throw away values of $s$ that makes $u$ fall outside of $[0,1]$.
 
 \end{document}
 

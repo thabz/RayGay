@@ -41,7 +41,7 @@ Glyph::Glyph(TrueTypeFont::Glyph* glyph, const Material* material) {
                 // Add linesegment from c0 to c1
                 Vector2 middle = (c0 + c1) * 0.5;
                 //ExtrudedLine* l = new ExtrudedLine(c0, c1, material);    
-                ExtrudedCurve* c = new ExtrudedCurve(c0,middle,c1,material);
+                ExtrudedCurve* c = new ExtrudedCurve(c0, middle, c1, material);
                 ObjectGroup::addObject(c);
                 // Continue from control point c1
                 c0 = c1;
@@ -127,7 +127,7 @@ ExtrudedLine::ExtrudedLine(const Vector2& c1, const Vector2& c2, const Material*
 }
 
 AABox ExtrudedLine::getBoundingBox() const {
-    return bboxToWorld(AABox(Vector(c1[0], c1[1], 0), Vector(c2[0], c2[1], 1)));
+    return bboxToWorld(AABox(Vector(c1[0], c1[1], -EPSILON), Vector(c2[0], c2[1], 1+EPSILON)));
 }
 
 void ExtrudedLine::transform(const Matrix& m) {
@@ -156,13 +156,13 @@ ExtrudedCurve::ExtrudedCurve(const Vector2& p0, const Vector2& p1, const Vector2
 
 AABox ExtrudedCurve::getBoundingBox() const {
     Vector points[6];
-    double e = 10*EPSILON;
-    points[0] = Vector(p0[0], p0[1],  -e);
-    points[1] = Vector(p0[0], p0[1], 1+e);
-    points[2] = Vector(p1[0], p1[1],  -e);
-    points[3] = Vector(p1[0], p1[1], 1+e);
-    points[4] = Vector(p2[0], p2[1],  -e);
-    points[5] = Vector(p2[0], p2[1], 1+e);
+    double e = 100*EPSILON;
+    points[0] = Vector(p0[0]-e, p0[1]-e,  -e);
+    points[1] = Vector(p0[0]+e, p0[1]+e, 1+e);
+    points[2] = Vector(p1[0]-e, p1[1]-e,  -e);
+    points[3] = Vector(p1[0]+e, p1[1]+e, 1+e);
+    points[4] = Vector(p2[0]-e, p2[1]-e,  -e);
+    points[5] = Vector(p2[0]+e, p2[1]+e, 1+e);
     return bboxToWorld(AABox::enclosure(points, 6));
 }
 
@@ -183,55 +183,50 @@ double ExtrudedCurve::findClosestT(const Ray& ray) const {
     Vector d = ray.getDirection();
     Vector o = ray.getOrigin();
     double A = d.x() * (p0.y() - 2*p1.y() + p2.y())  - d.y() * (p0.x() - 2*p1.x() + p2.x());
-    double B = d.x() * (2*p0.y() + 2*p1.y()) - d.y() * (2*p1.x() - 2*p0.x());
-    double C = d.x() * (p0.y() - o.y()) - d.y() * (p0.x() + o.x());
+    double B = d.x() * (2*p1.y()- 2*p0.y()) - d.y() * (2*p1.x() - 2*p0.x());
+    double C = d.x() * (p0.y() - o.y()) - d.y() * (p0.x() - o.x());
     double D = B*B - 4*A*C;
     if (D < 0) return -1;
     D = sqrt(D);
     double t0 = (-B - D) / (2*A);
     double t1 = (-B + D) / (2*A);
-    double u0 = -1, u1 = -1;
     double s0 = -1, s1 = -1;
     if (t0 >= 0 && t0 <= 1) {
         s0 = (b(t0).x() - o.x()) / d.x();
         if (s0 >= 0) {
-            u0 = o.z() + d.z() * s0;
-            if (u0 < 0 || u0 > 1) s0 = -1;
+            double u = o.z() + d.z() * s0;
+            if (u < 0 || u > 1) t0 = -1;
         }
     }
     if (t1 >= 0 && t1 <= 1) {
         s1 = (b(t1).x() - o.x()) / d.x();
         if (s1 >= 0) {
-            u1 = o.z() + d.z() * s1;
-            if (u1 < 0 || u1 > 1) s1 = -1;
+            double u = o.z() + d.z() * s1;
+            if (u < 0 || u > 1) t1 = -1;
         }
     }
-    if (s0 >= 0 && s1 >= 0 && s0 < s1) return s0;
-    if (s0 >= 0 && s1 >= 0) return s1;
-    if (s0 >= 0) return s0;
-    if (s1 >= 0) return s1;
+    if (s0 >= 0 && s1 >= 0 && s0 < s1) return t0;
+    if (s0 >= 0 && s1 >= 0) return t1;
+    if (s0 >= 0) return t0;
+    if (s1 >= 0) return t1;
     return -1;
 }
 
 double ExtrudedCurve::_fastIntersect(const Ray& world_ray) const {
     Ray ray = rayToObject(world_ray);
-    double res = findClosestT(ray);
-    return res / ray.t_scale;
-    /*
     double t = findClosestT(ray);
     double u = -1, s = -1;
     if (t >= 0 && t <= 1) {
         Vector d = ray.getDirection();
         Vector o = ray.getOrigin();
-        double s = (b(t).x() - o.x()) / d.x();
+        s = (b(t).x() - o.x()) / d.x();
         if (s >= 0) {
             u = o.z() + d.z() * s;
             if (u < 0 || u > 1) s = -1;
         }
         if (s < 0) s = -1;
     }
-    return s;
-    */
+    return s / ray.t_scale;
 }
 
 void ExtrudedCurve::_fullIntersect(const Ray& world_ray, const double world_t, Intersection& result) const {
@@ -239,9 +234,12 @@ void ExtrudedCurve::_fullIntersect(const Ray& world_ray, const double world_t, I
     double t = world_t*ray.t_scale;
     
     Vector p = ray.getPoint(t);
-    Vector2 along = b(findClosestT(ray) + EPSILON);
-    Vector p2 = Vector(along.x(),along.y(),p.z());
-    Vector n = Vector::xProduct(p,p2);
+    Vector2 along = b(findClosestT(ray) + 2000*EPSILON);
+    Vector p2 = p - Vector(along.x(), along.y(), p.z());
+    Vector p3 = p - Vector(p.x(), p.y(), p.z() - 2000*EPSILON);
+    p2.normalize();
+    p3.normalize();
+    Vector n = Vector::xProduct(p3,p2);
     n.normalize();
     Vector2 uv; // No support for UV-coordinates
     result = Intersection(p,t,n,uv);
