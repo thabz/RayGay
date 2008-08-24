@@ -76,8 +76,8 @@ GlyphFace::GlyphFace(TrueTypeFont::Glyph* glyph, double z_direction, const Mater
 }
 
 AABox GlyphFace::getBoundingBox() const {
-    return bboxToWorld(AABox(Vector(glyph->xMin, glyph->yMin, -EPSILON),
-                             Vector(glyph->xMax, glyph->xMax, EPSILON)));
+    return bboxToWorld(AABox(Vector(glyph->xMin, glyph->yMin, -10*EPSILON),
+                             Vector(glyph->xMax, glyph->yMax, 10*EPSILON)));
 }
 
 void GlyphFace::transform(const Matrix& m) {
@@ -156,12 +156,13 @@ ExtrudedCurve::ExtrudedCurve(const Vector2& p0, const Vector2& p1, const Vector2
 
 AABox ExtrudedCurve::getBoundingBox() const {
     Vector points[6];
-    points[0] = Vector(p0[0], p0[1],  -EPSILON);
-    points[1] = Vector(p0[0], p0[1], 1+EPSILON);
-    points[2] = Vector(p1[0], p1[1],  -EPSILON);
-    points[3] = Vector(p1[0], p1[1], 1+EPSILON);
-    points[4] = Vector(p2[0], p2[1],  -EPSILON);
-    points[5] = Vector(p2[0], p2[1], 1+EPSILON);
+    double e = 10*EPSILON;
+    points[0] = Vector(p0[0], p0[1],  -e);
+    points[1] = Vector(p0[0], p0[1], 1+e);
+    points[2] = Vector(p1[0], p1[1],  -e);
+    points[3] = Vector(p1[0], p1[1], 1+e);
+    points[4] = Vector(p2[0], p2[1],  -e);
+    points[5] = Vector(p2[0], p2[1], 1+e);
     return bboxToWorld(AABox::enclosure(points, 6));
 }
 
@@ -182,7 +183,7 @@ double ExtrudedCurve::findClosestT(const Ray& ray) const {
     Vector d = ray.getDirection();
     Vector o = ray.getOrigin();
     double A = d.x() * (p0.y() - 2*p1.y() + p2.y())  - d.y() * (p0.x() - 2*p1.x() + p2.x());
-    double B = d.x() * (2*p0.y() + 2*p1.y()) - d.y() * (2*p0.x() + 2*p1.x());
+    double B = d.x() * (2*p0.y() + 2*p1.y()) - d.y() * (2*p1.x() - 2*p0.x());
     double C = d.x() * (p0.y() - o.y()) - d.y() * (p0.x() + o.x());
     double D = B*B - 4*A*C;
     if (D < 0) return -1;
@@ -213,9 +214,9 @@ double ExtrudedCurve::findClosestT(const Ray& ray) const {
 }
 
 double ExtrudedCurve::_fastIntersect(const Ray& world_ray) const {
-    Ray local_ray = rayToObject(world_ray);
-    double res = findClosestT(local_ray);
-    return res / local_ray.t_scale;
+    Ray ray = rayToObject(world_ray);
+    double res = findClosestT(ray);
+    return res / ray.t_scale;
     /*
     double t = findClosestT(ray);
     double u = -1, s = -1;
