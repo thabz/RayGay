@@ -41,7 +41,7 @@ Glyph::Glyph(TrueTypeFont::Glyph* glyph, const Material* material) {
                 // Add linesegment from c0 to c1
                 Vector2 middle = (c0 + c1) * 0.5;
                 //ExtrudedLine* l = new ExtrudedLine(c0, c1, material);    
-                ExtrudedCurve* c = new ExtrudedCurve(c0, c0, c1, material);
+                ExtrudedCurve* c = new ExtrudedCurve(c0, c1, c1, material);
                 ObjectGroup::addObject(c);
                 // Continue from control point c1
                 c0 = c1;
@@ -76,8 +76,9 @@ GlyphFace::GlyphFace(TrueTypeFont::Glyph* glyph, double z_direction, const Mater
 }
 
 AABox GlyphFace::getBoundingBox() const {
-    return bboxToWorld(AABox(Vector(glyph->xMin, glyph->yMin, -10*EPSILON),
-                             Vector(glyph->xMax, glyph->yMax, 10*EPSILON)));
+    double e = 100*EPSILON;
+    return bboxToWorld(AABox(Vector(glyph->xMin, glyph->yMin, -e),
+                             Vector(glyph->xMax, glyph->yMax, e)));
 }
 
 void GlyphFace::transform(const Matrix& m) {
