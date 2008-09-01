@@ -7,8 +7,10 @@
 using namespace std;
 
 bool Contours::isInside(const Vector2& p, double x_max, double size) const {
+    // TODO: Use zero-winding rule as described by 
+    // Apple in http://developer.apple.com/textfonts/TTRefMan/RM02/Chap2.html#distinguishing
     // TODO: This can be done faster without allocating the vector<double>
-    // and just keep updating an inside-outside bool.
+    // and just keep updating an inside-outside bool or a winding number int.
     vector<double> intersections = rasterize(p.x(), x_max, p.y(), size);
     return intersections.size() % 2 == 1;
 }
@@ -65,6 +67,8 @@ int Contours::intersect(double x_min, double y, const Vector2& p0, const Vector2
     int n = 0;
     for(int i = 0; i < num; i++) {
         double t = roots[i]; 
+        // TODO: Skal nok være t < 1.0, så vi ikke løber ind i dobbelskæringer.
+        // Se plottet af @ på http://localhost/blog/files/filled-text.png
         if (t >= 0 && t <= 1.0) {
             double s = (p0[0]-2*p1[0]+p2[0])*t*t + (2*p1[0]-2*p0[0])*t + p0[0] - x_min;
             if (s >= 0) {
@@ -84,6 +88,8 @@ int Contours::intersect(double x_min, double y, const Vector2& a, const Vector2&
      if (IS_EQUAL(a[1], b[1])) return 0;        
         
      double t = (y - b[1]) / (a[1] - b[1]);
+     // TODO: Skal nok være t < 1.0, så vi ikke løber ind i dobbelskæringer.
+     // Se plottet af @ på http://localhost/blog/files/filled-text.png
      if (t >= 0 && t <= 1.0) {
          double s = t*a[0] + (1-t)*b[0] - x_min;
          if (s >= 0) {
