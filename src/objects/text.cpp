@@ -128,7 +128,9 @@ ExtrudedLine::ExtrudedLine(const Vector2& c1, const Vector2& c2, const Material*
 }
 
 AABox ExtrudedLine::getBoundingBox() const {
-    return bboxToWorld(AABox(Vector(c1[0], c1[1], -EPSILON), Vector(c2[0], c2[1], 1+EPSILON)));
+    double e = 100*EPSILON;
+    return bboxToWorld(AABox(Vector(c1[0]-e, c1[1]-e, -EPSILON), 
+                             Vector(c2[0]+e, c2[1]+e, 1+EPSILON)));
 }
 
 void ExtrudedLine::transform(const Matrix& m) {
@@ -157,7 +159,7 @@ ExtrudedCurve::ExtrudedCurve(const Vector2& p0, const Vector2& p1, const Vector2
 
 AABox ExtrudedCurve::getBoundingBox() const {
     Vector points[6];
-    double e = 100*EPSILON;
+    double e = 1000*EPSILON;
     points[0] = Vector(p0[0]-e, p0[1]-e,  -e);
     points[1] = Vector(p0[0]+e, p0[1]+e, 1+e);
     points[2] = Vector(p1[0]-e, p1[1]-e,  -e);

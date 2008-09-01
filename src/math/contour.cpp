@@ -26,9 +26,12 @@ vector<double> Contours::rasterize(double x_min, double x_max, double y, double 
             Vector2 c1 = contour.coords[j] * size;
             if (contour.onCurve[j]) {
                 double root;
+                if (IS_NEQUAL(c0.y(),c1.y()) && IS_NEQUAL(y,c0.y()) && IS_NEQUAL(y, c1.y()) 
+                    && IS_NEQUAL(c0.x(), x_min) && IS_NEQUAL(c1.x(), x_min))  {
                 int n = intersect(x_min, y, c0, c1, &root);
                 if (n > 0) {
                     result.push_back(root+x_min);    
+                }
                 }
                 c0 = c1;
             } else {
@@ -69,7 +72,7 @@ int Contours::intersect(double x_min, double y, const Vector2& p0, const Vector2
         double t = roots[i]; 
         // TODO: Skal nok være t < 1.0, så vi ikke løber ind i dobbelskæringer.
         // Se plottet af @ på http://localhost/blog/files/filled-text.png
-        if (t >= 0 && t <= 1.0) {
+        if (t > 0 && t <= 1.0) {
             double s = (p0[0]-2*p1[0]+p2[0])*t*t + (2*p1[0]-2*p0[0])*t + p0[0] - x_min;
             if (s >= 0) {
                 result[n] = s;        
@@ -87,10 +90,9 @@ int Contours::intersect(double x_min, double y, const Vector2& a, const Vector2&
      // Skip horizonal lines
      if (IS_EQUAL(a[1], b[1])) return 0;        
         
+     // TODO: Handle near zero-division below.
      double t = (y - b[1]) / (a[1] - b[1]);
-     // TODO: Skal nok være t < 1.0, så vi ikke løber ind i dobbelskæringer.
-     // Se plottet af @ på http://localhost/blog/files/filled-text.png
-     if (t >= 0 && t <= 1.0) {
+     if (t > 0 && t <= 1.0) {
          double s = t*a[0] + (1-t)*b[0] - x_min;
          if (s >= 0) {
              *result = s;
