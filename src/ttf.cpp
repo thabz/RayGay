@@ -91,13 +91,15 @@ TrueTypeFont::TrueTypeFont(string filename) {
     this->filename = filename;
         
     this->is = new ifstream(filename.c_str(), ios::in|ios::binary);
-    if (is->bad()) {
+    if (is->fail()) {
         throw_exception("Can't open " + filename);    
     }
     
     OffsetSubtable offsetSubtable;
     read_struct("issss", (char*)&offsetSubtable, sizeof(OffsetSubtable));
-    //cout << "Scalertype: " << hex << offsetSubtable.scalerType << endl;
+    if (offsetSubtable.scalerType == 0x4f54544f /* OTTO */ ) {
+        throw_exception("Missing support for OpenType CFF outlines, as required by the file " + filename);    
+    } 
     //cout << "Num tables " << hex << offsetSubtable.numTables << endl;
     
     glyf_table_offset = 0;
