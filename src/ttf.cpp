@@ -110,6 +110,7 @@ TrueTypeFont::TrueTypeFont(string filename) {
     uint32_t hmtx_table_offset = 0;
     uint32_t hhea_table_offset = 0;
     uint32_t kern_table_offset = 0;
+    uint32_t gsub_table_offset = 0;
 
     TableDirectoryEntry entry;
     for(uint32_t i = 0; i < offsetSubtable.numTables; i++) {
@@ -132,8 +133,10 @@ TrueTypeFont::TrueTypeFont(string filename) {
             kern_table_offset = entry.offset;        
         } else if (tag == "maxp") {
             maxp_table_offset = entry.offset;        
+        } else if (tag == "GSUB") {
+            gsub_table_offset = entry.offset;        
         }
-        //cout << "Tag: " << tag << ", length " << dec << entry.length << ", offset 0x" << hex << entry.offset << endl;
+        cout << "Tag: " << tag << ", length " << dec << entry.length << ", offset 0x" << hex << entry.offset << endl;
     }
     
     if (glyf_table_offset == 0 || cmap_table_offset == 0 || loca_table_offset == 0 
@@ -592,8 +595,10 @@ vector<TrueTypeFont::Glyph*> TrueTypeFont::getGlyphs(wstring str) {
     for(uint32_t i = 0; i < str.size(); i++) {
         wchar_t c = str[i];
         Glyph* glyph = getGlyph(c);
+        glyph->isWhitespace = ::iswspace(c);
         result.push_back(glyph);
     }
+    // TODO: Using information in the GSUB table handle ligatures.
     return result;
 }
 
@@ -612,10 +617,6 @@ float TrueTypeFont::getKerning(wchar_t left, wchar_t right) {
     } else {
         return iterator->second;    
     }
-}
-
-bool TrueTypeFont::isWhitespace(wchar_t c) {
-    return iswspace(c);        
 }
 
 bool TrueTypeFont::Glyph::isInside(const Vector2& p) const {

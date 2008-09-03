@@ -34,6 +34,7 @@ class TrueTypeFont
                 // rsb = aw - (lsb + xmax - xmin)            
                 float xOffset;
                 Contours contours;
+                bool isWhitespace;
                 
                 bool isInside(const Vector2& p) const;
         };
@@ -47,9 +48,6 @@ class TrueTypeFont
         
         /// The kerning in em between to chars
         float getKerning(wchar_t left, wchar_t right);
-        
-        // Is a char a whitespace
-        bool isWhitespace(wchar_t c);
         
     private:
             

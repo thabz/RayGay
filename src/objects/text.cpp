@@ -12,7 +12,7 @@ Text::Text(std::wstring text, TrueTypeFont* font, double size, double depth, con
     double x = 0.0;        
     for(uint32_t i = 0; i < tt_glyphs.size(); i++) {
         TrueTypeFont::Glyph* tt_glyph = tt_glyphs[i];    
-        if (!font->isWhitespace(text[i])) {
+        if (!tt_glyph->isWhitespace) {
             Glyph* glyph = new Glyph(tt_glyph, material);
             glyph->transform(Matrix::matrixScale(Vector(size,size,depth)));
             glyph->transform(Matrix::matrixTranslate(Vector(x,0,0)));

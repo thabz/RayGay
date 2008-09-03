@@ -202,7 +202,7 @@ void ImageDrawing::string(Image* image, int x, int y, std::wstring text, TrueTyp
         TrueTypeFont::Glyph* glyph = glyphs[i];
         // In Arial ' ' points to the glyph '!'. We don't draw the '!' but just uses it's advance width. I couldn't find 
         // docs that says how to handle space, but this method seems quite sane.
-        if (!font->isWhitespace(text[i])) {
+        if (!glyph->isWhitespace) {
             //strokeGlyph(image, x, y, glyph, size, RGBA(1.0,0.0,0.0,0.3), am);        
             fillGlyph(image, x, y, glyph, size, color, false, am);        
         }
