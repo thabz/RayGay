@@ -80,6 +80,8 @@ struct GlyphDescription {
     int16_t yMax;
 };
 
+
+
 TrueTypeFont::TrueTypeFont(string filename) {
     this->glyphOffsets = NULL;
     this->is = NULL;
@@ -136,7 +138,7 @@ TrueTypeFont::TrueTypeFont(string filename) {
         } else if (tag == "GSUB") {
             gsub_table_offset = entry.offset;        
         }
-        cout << "Tag: " << tag << ", length " << dec << entry.length << ", offset 0x" << hex << entry.offset << endl;
+        //cout << "Tag: " << tag << ", length " << dec << entry.length << ", offset 0x" << hex << entry.offset << endl;
     }
     
     if (glyf_table_offset == 0 || cmap_table_offset == 0 || loca_table_offset == 0 
@@ -163,6 +165,9 @@ TrueTypeFont::TrueTypeFont(string filename) {
     
     if (kern_table_offset != 0) {
         read_kern_table(kern_table_offset);    
+    }
+    if (gsub_table_offset != 0) {
+        read_gsub_table(gsub_table_offset);
     }
 };
 
@@ -229,10 +234,12 @@ void TrueTypeFont::read_loca_table(uint32_t loca_table_offset) {
         if (indexToLocFormat == 1) {
             offset = read_uint32();        
         } else {
-            offset = uint32_t(read_uint16()) * 2;
+            offset = read_uint16();
+            offset *= 2;
         }
         glyphOffsets[i] = offset;   
-        if (offset >= glyf_table_length) {
+        if (offset > glyf_table_length) {
+            cout << offset << endl;
             throw_exception("Glyph offset out of bounds in " + filename);        
         }     
     }
@@ -374,6 +381,10 @@ void TrueTypeFont::read_cmap_table(uint32_t offset) {
         */
     }
     throw_exception("Font contains no unicode mappings: " + filename);
+}
+
+void TrueTypeFont::read_gsub_table(uint32_t offset) {
+    is->seekg(offset);
 }
 
 void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph* glyph, int16_t numberOfContours) {
