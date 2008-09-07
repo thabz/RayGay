@@ -52,9 +52,9 @@ Material::~Material() {
 }
 
 RGB Material::getDiffuseColor(const Intersection& i) const {
-    if (texture_diffuse!= NULL) {
-	Vector2 uv = i.getUV();
-	return texture_diffuse->getTexel(uv);
+    if (texture_diffuse != NULL) {
+	    Vector2 uv = i.getUV();
+	    return texture_diffuse->getTexel(uv);
     } else {
         return _diffuseColor;
     }
@@ -63,27 +63,27 @@ RGB Material::getDiffuseColor(const Intersection& i) const {
 
 Vector Material::bump(const Intersection& i, const Vector& normal) const {
     if (normal_perturber != NULL) {
-	return normal_perturber->perturb(i.getPoint(), normal);
+        return normal_perturber->perturb(i.getPoint(), normal);
     } else if (texture_bump != NULL) {
-	double u,v,w,h;
-	Vector2 uv = i.getUV();
-	u = uv[0]; v = uv[1];
-	    
-	w = texture_bump->getWidth();
-	h = texture_bump->getHeight();
+        double u,v,w,h;
+        Vector2 uv = i.getUV();
+        u = uv[0]; v = uv[1];
 
-	Vector v0 = Vector(0,0,getBumpValue(u,v));
-	Vector v1 = Vector(0,-1,getBumpValue(u,v+1.0/h));
-	Vector v2 = Vector(1,0,getBumpValue(u+1.0/w,v));
-	Vector bumpnormal = Vector::xProduct(v1-v0,v2-v0);
-	bumpnormal.normalize();
-	Matrix orient = Matrix::matrixOrient(normal,Vector(0,1,0));
-	bumpnormal = orient * bumpnormal;
-	bumpnormal = (fabs(bumpHeight) * bumpnormal) + normal;
-	bumpnormal.normalize();
-	return bumpnormal;
+        w = texture_bump->getWidth();
+        h = texture_bump->getHeight();
+
+        Vector v0 = Vector(0,0,getBumpValue(u,v));
+        Vector v1 = Vector(0,-1,getBumpValue(u,v+1.0/h));
+        Vector v2 = Vector(1,0,getBumpValue(u+1.0/w,v));
+        Vector bumpnormal = Vector::xProduct(v1-v0,v2-v0);
+        bumpnormal.normalize();
+        Matrix orient = Matrix::matrixOrient(normal,Vector(0,1,0));
+        bumpnormal = orient * bumpnormal;
+        bumpnormal = (fabs(bumpHeight) * bumpnormal) + normal;
+        bumpnormal.normalize();
+        return bumpnormal;
     } else {
-	return normal;
+        return normal;
     }
 }
 
