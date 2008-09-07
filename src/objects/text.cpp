@@ -97,7 +97,7 @@ double GlyphFace::_fastIntersect(const Ray& world_ray) const {
     // Find the point p where the ray intersects the xy-plane
     if (d.z() == 0) return -1;
     double t = -o.z() / d.z();
-    if (t < 0) return -1;
+    if (t < EPSILON) return -1;
     
     Vector pp = ray.getPoint(t);
     Vector2 p = Vector2(pp.x(), pp.y());
@@ -223,11 +223,11 @@ double ExtrudedCurve::_fastIntersect(const Ray& world_ray) const {
         Vector d = ray.getDirection();
         Vector o = ray.getOrigin();
         s = (b(t).x() - o.x()) / d.x();
-        if (s >= 0) {
+        if (s >= EPSILON) {
             u = o.z() + d.z() * s;
-            if (u < 0 || u > 1) s = -1;
+            if (u < EPSILON || u > 1-EPSILON) s = -1;
         }
-        if (s < 0) s = -1;
+        if (s < EPSILON) s = -1;
     }
     return s / ray.t_scale;
 }
