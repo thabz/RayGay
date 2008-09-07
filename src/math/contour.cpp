@@ -9,13 +9,50 @@ using namespace std;
 bool Contours::isInside(const Vector2& p, double x_max, double size) const {
     // TODO: Use zero-winding rule as described by 
     // Apple in http://developer.apple.com/textfonts/TTRefMan/RM02/Chap2.html#distinguishing
-    // TODO: This can be done faster without allocating the vector<double>
-    // and just keep updating an inside-outside bool or a winding number int.
-    vector<double> intersections = rasterize(p.x(), x_max, p.y(), size);
-    return intersections.size() % 2 == 1;
+    
+    double y = p.y();
+    double x_min = p.x();
+    int intersections = 0;
+    for(uint32_t m = 0; m < contours.size(); m++) {
+        const Contour& contour = contours[m];    
+        Vector2 c0 = contour.coords[0] * size;
+        for(uint32_t k = 1; k <= contour.coords.size(); k++) {
+            uint32_t j = k % contour.coords.size();    
+            Vector2 c1 = contour.coords[j] * size;
+            if (contour.onCurve[j]) {
+                double root;
+                if (IS_NEQUAL(c0.y(),c1.y()) && IS_NEQUAL(y,c0.y()) && IS_NEQUAL(y, c1.y()) 
+                    && IS_NEQUAL(c0.x(), x_min) && IS_NEQUAL(c1.x(), x_min))  {
+                    int n = intersect(x_min, y, c0, c1, &root);
+                    if (n > 0) {
+                        intersections++;    
+                    }
+                }
+                c0 = c1;
+            } else {
+                uint32_t j = (k+1) % contour.coords.size();    
+                Vector2 c2 = contour.coords[j] * size;
+                if (!contour.onCurve[j]) {
+                    // Reconstruct a new c2 that is on curve    
+                    c2 = (c1 + c2) * 0.5;
+                }
+                double roots[2];
+                int n = intersect(x_min, y, c0, c1, c2, roots);
+                for(int i = 0; i < n; i++) {
+                    intersections++;    
+                }
+                c0 = c2;
+            }
+        }
+    }
+
+    return intersections % 2 == 1;
 }
 
 vector<double> Contours::rasterize(double x_min, double x_max, double y, double size) const {
+    // TODO: Use zero-winding rule as described by 
+    // Apple in http://developer.apple.com/textfonts/TTRefMan/RM02/Chap2.html#distinguishing
+
     vector<double> result;        
 
     for(uint32_t m = 0; m < contours.size(); m++) {
@@ -90,7 +127,6 @@ int Contours::intersect(double x_min, double y, const Vector2& a, const Vector2&
      // Skip horizonal lines
      if (IS_EQUAL(a[1], b[1])) return 0;        
         
-     // TODO: Handle near zero-division below.
      double t = (y - b[1]) / (a[1] - b[1]);
      if (t > 0 && t <= 1.0) {
          double s = t*a[0] + (1-t)*b[0] - x_min;
