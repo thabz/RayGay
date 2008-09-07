@@ -59,6 +59,7 @@ class TrueTypeFont
         void read_hmtx_table(uint32_t offset);
         void read_hhea_table(uint32_t offset);
         void read_kern_table(uint32_t offset);
+        void read_gsub_table(uint32_t offset);
         
         uint32_t read_uint32();           
         uint16_t read_uint16();
