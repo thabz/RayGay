@@ -116,6 +116,17 @@ SchemeObject* ImageFactory::draw_filled_box(Scheme* scheme, SchemeObject* s_imag
 }
 
 
+SchemeObject* ImageFactory::draw_filled_circle(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_pos, SchemeObject* s_radius, SchemeObject* s_color) {
+    wchar_t* proc = L"draw-filled-circle";
+    Image* image = scm2image(s_image, proc, 1);
+    double x = safe_scm2double(i_vector_ref(s_pos, 0), 2, proc);
+    double y = safe_scm2double(i_vector_ref(s_pos, 1), 2, proc);
+    double r = safe_scm2double(s_radius, 3, proc);
+    RGBA color = scm2rgba(s_color, proc, 4);
+    ImageDrawing::filledcircle(image, x, y, r, color, alpha_combine_mode);
+    return S_UNSPECIFIED;
+}
+
 SchemeObject* ImageFactory::draw_circle(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_center, SchemeObject* s_radius, SchemeObject* s_color) {
     wchar_t* proc = L"draw-line";
     Image* image = scm2image(s_image, proc, 1);
@@ -185,6 +196,7 @@ void ImageFactory::register_procs(Scheme* scheme) {
     scheme->assign(L"draw-circle",4,0,0,(SchemeObject* (*)()) ImageFactory::draw_circle);
     scheme->assign(L"draw-string",6,0,0,(SchemeObject* (*)()) ImageFactory::draw_string);
     scheme->assign(L"draw-filled-box",4,0,0,(SchemeObject* (*)()) ImageFactory::draw_filled_box);
+    scheme->assign(L"draw-filled-circle",4,0,0,(SchemeObject* (*)()) ImageFactory::draw_filled_circle);
     scheme->assign(L"image-width",1,0,0,(SchemeObject* (*)()) ImageFactory::image_width);
     scheme->assign(L"image-height",1,0,0,(SchemeObject* (*)()) ImageFactory::image_height);
     scheme->assign(L"set-alpha-combine-mode",1,0,0,(SchemeObject* (*)()) ImageFactory::set_alpha_combine_mode);

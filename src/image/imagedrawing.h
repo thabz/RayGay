@@ -26,6 +26,7 @@ class ImageDrawing
         static void quadraticBezierCurve(Image* image, float x0, float y0, float x1, float y1, float x2, float y2, const RGBA& c, AlphaCombineMode am = REPLACE);
         static void pixel(Image* image, float x, float y, const RGBA& c, AlphaCombineMode am = REPLACE);
 	    static void filledbox(Image* image, int x, int y, int w, int h, const RGBA& c, AlphaCombineMode am = REPLACE);
+	    static void filledcircle(Image* image, float x, float y, float r, const RGBA& c, AlphaCombineMode am = REPLACE);
         
 
     private:

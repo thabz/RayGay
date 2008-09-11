@@ -12,11 +12,11 @@ void ImageDrawing::pixel(Image* image, float xf, float yf, const RGBA& color, Im
         RGBA c = color;
         double a = c.a();
         if (a < 1.0) {
-            RGBA existing = image->getRGBA(x,y);    
+            RGB existing = image->getRGBA(x,y);    
             if (am == ImageDrawing::ADD) {
                 c = existing + c * a;
             } else if (am == ImageDrawing::DECAL) {
-                c = c * a + existing * (1 - a);
+                c = (c * a) + (existing * (1.0 - a));
             } 
         }        
         image->setRGBA(x,y,c); 
@@ -30,6 +30,26 @@ void ImageDrawing::filledbox(Image* image, int x, int y, int w, int h, const RGB
         }
     }
 }
+
+void ImageDrawing::filledcircle(Image* image, float x, float y, float r, const RGBA& c, AlphaCombineMode am) {
+    for(float yi = y-r; yi < y+r; yi++) {
+        float phi = ::asin(::abs(yi-y)/r);
+        float xr = abs(::cos(phi)*r);
+        // Antialiased begin point
+        float a = 1 - ((x-xr) - int(x-xr));
+        RGBA d = RGBA(c.r(), c.g(), c.b(), c.a() * a);
+        pixel(image, int(x-xr), yi, d, ImageDrawing::DECAL);
+        // Middle 
+        for(float xi = x-xr+1; xi <= int(x+xr); xi++) {
+            pixel(image, xi, yi, c);
+        }
+        // Antialiased end point
+        a = ((x+xr) - int(x+xr));
+        d = RGBA(c.r(), c.g(), c.b(), c.a() * a);
+        pixel(image, int(x+xr), yi, d, ImageDrawing::DECAL);
+    }
+}
+
 
 /**
  * Bresenham's algorithm.

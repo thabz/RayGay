@@ -24,6 +24,7 @@ class ImageFactory {
 	    static SchemeObject* draw_line(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_from, SchemeObject* s_to, SchemeObject* color);
 	    static SchemeObject* draw_filled_box(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_pos, SchemeObject* s_size, SchemeObject* color);
 	    static SchemeObject* draw_circle(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_center, SchemeObject* s_radius, SchemeObject* color);
+	    static SchemeObject* draw_filled_circle(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_center, SchemeObject* s_radius, SchemeObject* color);
         static SchemeObject* draw_string(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_center, SchemeObject* s_text, SchemeObject* s_size, SchemeObject* s_ttf_file, SchemeObject* s_color);
         static SchemeObject* apply_gaussian_blur(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_radius);
 	    static void register_procs(Scheme* scheme);
