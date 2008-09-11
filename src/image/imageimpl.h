@@ -175,6 +175,14 @@ RGBA ImageImpl<uint8_t,1>::getRGBA(int x, int y) const
 
 template<>
 inline
+RGBA ImageImpl<float,1>::getRGBA(int x, int y) const
+{
+    uint32_t o = offset(x,y);
+    double v = data[o];
+    return RGBA(v,v,v,1);
+}
+template<>
+inline
 void ImageImpl<double,3>::setRGBA(int x, int y, const RGBA& c)
 {
     uint32_t o = offset(x,y);
@@ -243,6 +251,14 @@ void ImageImpl<uint8_t,1>::setRGBA(int x, int y, const RGBA& c)
 {
     uint32_t o = offset(x,y);
     data[o] = uint8_t(c.r() * 255);
+}
+
+template<>
+inline
+void ImageImpl<float,1>::setRGBA(int x, int y, const RGBA& c)
+{
+    uint32_t o = offset(x,y);
+    data[o] = float(c.r());
 }
 
 #endif
