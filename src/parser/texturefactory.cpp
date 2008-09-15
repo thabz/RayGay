@@ -84,6 +84,9 @@ SchemeObject* TextureFactory::make_multi_texture(Scheme* scheme, SchemeObject* s
     } else {
 	    throw scheme_exception(L"make-multi-texture", L"Unknown interpolationtype: " + type_string);
     }
+    
+    assert_arg_positive_int(proc, 2, s_tiles_per_row);
+    assert_arg_positive_int(proc, 3, s_memory_cached);
 
     uint32_t tiles_per_row = safe_scm2uint(s_tiles_per_row, 2, proc);
     uint32_t memory_cached = safe_scm2uint(s_memory_cached, 3, proc);

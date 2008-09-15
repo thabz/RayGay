@@ -6,6 +6,9 @@
 using namespace std;
 
 MultiTexture::MultiTexture(vector<string> filenames, uint32_t tiles_per_row, uint32_t memory_cached, const Vector2& repeat_uv, Texture::InterpolationType it) : Texture(repeat_uv, it) {
+    assert(memory_cached > 0);
+    assert(tiles_per_row > 0);
+    assert(filenames.size() > 0);
     this->memory_cached = memory_cached;
     this->filenames = filenames;
     this->tiles_per_row = tiles_per_row;
