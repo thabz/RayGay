@@ -26,6 +26,7 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
+#include <string>
 
 extern "C" {
 #include <unistd.h>
@@ -238,7 +239,17 @@ void render_frame(string outputfile, int jobs) {
     Profiler* parser_profiler = Profiler::create("Parsing","Prepare scene");
     parser_profiler->start();
 
-    parser->parse_file(SchemeFilenames::toString(scenefile));
+    char original_working_dir[2048];
+    getcwd(original_working_dir, 2048);
+    wstring original_cwds = SchemeFilenames::toString(string(original_working_dir));
+    wstring cwd = original_cwds + L"/" + SchemeFilenames::toString(scenefile);
+    wstring filename_clean = wstring(cwd);
+    int idx = cwd.find_last_of(L'/');
+    cwd.resize(idx);
+    filename_clean = filename_clean.substr(idx+1, filename_clean.length());
+    chdir(SchemeFilenames::toFilename(cwd).c_str());
+
+    parser->parse_file(filename_clean);
     parser->populate(scene,renderersettings);
     
     parser_profiler->stop();
@@ -346,7 +357,7 @@ void render_frame(string outputfile, int jobs) {
         delete causticsmap;
         delete irradiancecache;
     }
-    
+
     // Apply filters if any
     FilterStack* filterstack = Environment::getUniqueInstance()->getFilterStack();
     if (filterstack != NULL) {
@@ -354,6 +365,8 @@ void render_frame(string outputfile, int jobs) {
 	do_filtering(img,filterstack);
 	Stats::getUniqueInstance()->endTimer("Applying filters");
     }
+
+    chdir(original_working_dir);
 
     Profiler* save_profiler = Profiler::create("Saving image", "RayGay");
     save_profiler->start();

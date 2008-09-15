@@ -61,6 +61,15 @@ long Texture::getHeight() const {
 // Private methods
 /////////////////////////////////////////////////////
 
+inline
+RGBA Texture::getRGBWrapped(int x, int y) const {
+    x %= width;
+    y %= height;
+    if (x < 0) x += width;
+    if (y < 0) y += height;
+    return getRGB(x,y);
+}
+
 #define tile(x) ((x) < 0 ? 1.0 - fmod(x,1) : fmod(x,1))
 
 inline

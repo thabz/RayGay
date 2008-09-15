@@ -49,7 +49,7 @@ class Texture {
 	RGB getBiLinearTexel(double u, double v) const;
 	/// Helper for getBiCubicTexel()
 	double biCubicR(const double x) const;
-	virtual RGBA getRGBWrapped(int x, int y) const = 0; 
+	RGBA getRGBWrapped(int x, int y) const; 
 	virtual RGBA getRGB(int x, int y) const = 0;
 	
 	Vector2 repeat_uv;

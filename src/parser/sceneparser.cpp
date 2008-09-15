@@ -76,19 +76,8 @@ void SceneParser::parse_expr(std::wstring expr) {
 }
 
 void SceneParser::parse_file(std::wstring filename) {
-    char original_working_dir[2048];
-
-    getcwd(original_working_dir, 2048);
-    wstring original_cwds = SchemeFilenames::toString(string(original_working_dir));
-    wstring cwd = original_cwds + L"/" + filename;
-    wstring filename_clean = wstring(cwd);
-    int idx = cwd.find_last_of(L'/');
-    cwd.resize(idx);
-    filename_clean = filename_clean.substr(idx+1, filename_clean.length());
-    chdir(SchemeFilenames::toFilename(cwd).c_str());
-
     SchemeObject* transcoder = s_make_transcoder(scheme, s_utf_8_codec(scheme), S_UNSPECIFIED, S_UNSPECIFIED);
-    SchemeObject* port = s_open_file_input_port(scheme, string2scm(filename_clean), S_FALSE, S_FALSE, transcoder);
+    SchemeObject* port = s_open_file_input_port(scheme, string2scm(filename), S_FALSE, S_FALSE, transcoder);
     
     try {
         scheme->eval(port);
@@ -96,8 +85,6 @@ void SceneParser::parse_file(std::wstring filename) {
 	    wcerr << L"ABORT: " << e.toString() << endl;
         exit(EXIT_FAILURE);
     }
-
-    chdir(original_working_dir);
 }
 
 SchemeObject* SceneParser::lookup(wstring var_name) {

@@ -15,6 +15,7 @@ using namespace std;
 
 double safe_scm2double(SchemeObject* o, int argnum, const wchar_t* procname);
 int safe_scm2int(SchemeObject* o, int argnum, const wchar_t* procname);
+uint32_t safe_scm2uint(SchemeObject* o, int argnum, const wchar_t* procname);
 
 Vector scm2vector(SchemeObject* s_vector, wchar_t* subr, int pos);
 

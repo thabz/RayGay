@@ -114,3 +114,8 @@ int safe_scm2int(SchemeObject* o, int argnum, const wchar_t* procname) {
     assert_arg_int_type(procname, argnum, o);
     return scm2int(o);
 }
+
+uint32_t safe_scm2uint(SchemeObject* o, int argnum, const wchar_t* procname) {
+    assert_arg_non_negative_int(procname, argnum, o);
+    return scm2int(o);
+}

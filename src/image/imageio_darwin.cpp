@@ -68,20 +68,13 @@ Image* DarwinIO::load(const std::string& filename, Allocator::model_t model)
     bool has_alpha = CGImageGetAlphaInfo(imageRef) != kCGImageAlphaNone;
     CGBitmapInfo source_bitmap_info = CGImageGetBitmapInfo(imageRef);
     bool uses_floats = source_bitmap_info & kCGBitmapFloatComponents != 0;
-    int cpp = CGImageGetBitsPerPixel(imageRef) / CGImageGetBitsPerComponent(imageRef);
-//    int cpp = 1;
+    
     Image* result;
     if (has_alpha) {
         if (uses_floats) {
             result = new ImageImpl<float,4>(w,h,model);
         } else {
             result = new ImageImpl<uint8_t,4>(w,h,model);
-        }   
-    } else if (cpp == 1) {
-        if (uses_floats) {
-            result = new ImageImpl<float,1>(w,h,model);
-        } else {
-            result = new ImageImpl<uint8_t,1>(w,h,model);
         }   
     } else {
         if (uses_floats) {
@@ -131,6 +124,10 @@ Image* DarwinIO::load(const std::string& filename, Allocator::model_t model)
                     result->setRGBA(x,y,c);
             }
     }
+    ::free(data);
+    CFRelease(imageRef);
+    CFRelease(contextRef);
+    CFRelease(colorSpace);
     return result;
 }
 
