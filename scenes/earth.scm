@@ -52,13 +52,14 @@
     
 
 (define earth-radius 6371.0)
-(define camera-height 2000)
-(define camera-position casablanca)
-(define camera-lookat oslo)
+(define camera-height 700)
+(define camera-position moscow)
+(define camera-lookat aarhus)
 (define camera-unit-sphere (latlong->unitsphere camera-position))
+(define sun-above casablanca)  
 
-(set-image-size image-size-23-inch-apple-cinema)
 (set-image-size '(640 480))
+(set-image-size image-size-23-inch-apple-cinema)
 (set-background #(0 0 0))
 (set-renderer "raytracer")
 (set-camera 
@@ -92,9 +93,11 @@
        ks 0.9
        specpow 30)))
 
-(add-to-scene (list
-  (make-pointlight #(0 0 1.495e8))
-(make-pointlight (vscale camera-unit-sphere 30000))))
+(add-to-scene 
+  (make-pointlight (vscale (latlong->unitsphere sun-above) 1.495e8)))
+ 
+
+;(make-pointlight (vscale camera-unit-sphere 30000))
 
 (add-to-scene
   (rotate 
@@ -111,6 +114,7 @@
 (add-pin oslo l)
 (add-pin stockholm l)
 (add-pin cairo l)
+(add-pin casablanca l)
 (add-pin madrid l)
 (add-pin buenos-aires l)
 (add-pin santiago l)
