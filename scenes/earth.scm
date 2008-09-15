@@ -52,9 +52,9 @@
     
 
 (define earth-radius 6371.0)
-(define camera-height 700)
+(define camera-height 1000)
 (define camera-position moscow)
-(define camera-lookat aarhus)
+(define camera-lookat paris)
 (define camera-unit-sphere (latlong->unitsphere camera-position))
 (define sun-above casablanca)  
 
@@ -69,11 +69,24 @@
           'lookat (vscale (latlong->unitsphere camera-lookat) earth-radius)
           'up camera-unit-sphere
           'fov 45
-          'aa 3)))
+          'aa 0)))
+
+
+(define tiles '())
+
+(define ground-texture
+  (if #f
+    (make-texture "gfx/EarthMap_2500x1250.jpg" 1 1 'bilinear)
+    (make-multi-texture
+    (do ((y 0 (+ y 1))) ((= y 32) (reverse tiles))
+     (do ((x 0 (+ x 1))) ((= x 64))
+       (set! tiles (cons 
+         (string-append "gfx/level5/tx_" (number->string x) "_" (number->string y) ".jpg") tiles))))
+    64 10 1 1 'bilinear)))
 
 (define ground-material
   (make-material
-    (list 'diffuse (make-texture "gfx/EarthMap_2500x1250.jpg" 1 1 'bilinear)
+    (list 'diffuse ground-texture
           'kd 1.0
           'ks 0.0)))
 
@@ -108,7 +121,7 @@
 (define l 300)  
 (add-pin london l)
 (add-pin paris l)
-;(add-pin aarhus l)
+(add-pin aarhus l)
 (add-pin moscow l)
 (add-pin berlin l)
 (add-pin oslo l)
