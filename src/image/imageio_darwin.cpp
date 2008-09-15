@@ -49,8 +49,13 @@ void DarwinIO::save(const Image* const image, const std::string& filename) const
 
     CGImageDestinationAddImage(imageDest, imageRef, NULL);
     CGImageDestinationFinalize(imageDest);
+    ::free(data);
     CFRelease(path);
     CFRelease(url);
+    CFRelease(imageDest);
+    CFRelease(imageRef);
+    CFRelease(contextRef);
+    CFRelease(colorSpace);
 }
 
 Image* DarwinIO::load(const std::string& filename, Allocator::model_t model) 
@@ -128,6 +133,7 @@ Image* DarwinIO::load(const std::string& filename, Allocator::model_t model)
     CFRelease(imageRef);
     CFRelease(contextRef);
     CFRelease(colorSpace);
+    CFRelease(source);
     return result;
 }
 
