@@ -6,6 +6,7 @@
 #include "parser/wrapper.h"
 #include "image/image.h"
 #include "image/texture.h"
+#include "image/simpletexture.h"
 #include "exception.h"
 #include "renderersettings.h"
 
@@ -57,7 +58,7 @@ SchemeObject* TextureFactory::make_texture(Scheme* scheme, SchemeObject* s_filen
         cout << e.getMessage() << endl;    
 	    throw scheme_exception(L"make-texture");
     }
-    Texture* texture = new Texture(image, Vector2(rep_x,rep_y), type);
+    Texture* texture = new SimpleTexture(image, Vector2(rep_x,rep_y), type);
     return texture2scm(texture);
 }
 

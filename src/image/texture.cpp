@@ -1,6 +1,5 @@
 
 #include "image/texture.h"
-#include "image/image.h"
 #include "profiler.h"
 
 Profiler* Texture::profiler = NULL;
@@ -10,26 +9,18 @@ Profiler* Texture::profiler = NULL;
 /////////////////////////////////////////////////////
 
 /**
- * @param image The Image to wrap
  * @param repeat_uv The number of horizonal and vertical tiles
  * @param it The interpolation method to use when getting texels
  */
-Texture::Texture(Image* image, const Vector2& repeat_uv, InterpolationType it) {
-    this->image = image;
+Texture::Texture(const Vector2& repeat_uv, InterpolationType it) {
     this->repeat_uv = repeat_uv;
     this->interpolation_type = it;
-    this->width = image->getWidth();
-    this->height = image->getHeight();
     if (this->profiler == NULL) {
         this->profiler = Profiler::create("Texture lookup", "Rendering");
     }
 }
 
-/**
- * The destructor deletes the wrapped Image.
- */
 Texture::~Texture() {
-    delete image;
 }
 
 /**
@@ -58,16 +49,12 @@ RGB Texture::getTexel(double u, double v) const {
     profiler->stop();
 }
 
-void Texture::grayscale() {
-    image->grayscale();
-}
-
 long Texture::getWidth() const {
-    return image->getWidth(); 
+    return width; 
 }
 
 long Texture::getHeight() const { 
-    return image->getHeight(); 
+    return height; 
 }
 
 /////////////////////////////////////////////////////
@@ -89,14 +76,6 @@ double Texture::scaleV(double v) const {
 }
 
 
-inline
-RGBA Texture::getRGBWrapped(int x, int y) const {
-    x %= width;
-    y %= height;
-    if (x < 0) x += width;
-    if (y < 0) y += height;
-    return image->getRGBA(x,y);
-}
 
 RGB Texture::getNormalTexel(double u, double v) const {
     u = scaleU(u); v = scaleV(v);
@@ -154,7 +133,7 @@ RGB Texture::getBiCubicTexel(double u, double v) const {
 	realx = beginx;
 	for(int m = -1; m <= 2; m++) {
 	    if (++realx >= width) realx = 0;
-	    result += image->getRGBA(realx,realy) * (biCubicR(m-dx) * biCubicR(dy-n));
+	    result += getRGB(realx,realy) * (biCubicR(m-dx) * biCubicR(dy-n));
 	}
     }
     return result / 36.0;
@@ -180,10 +159,10 @@ RGB Texture::getBiLinearTexel(double u, double v) const {
     double lr = dx * dy;
 
     if (xi < width - 1 && yi < height - 1) {
-	return image->getRGBA(xi,yi) * ul +
-	       image->getRGBA(xi,yi+1) * ll +
-	       image->getRGBA(xi+1,yi) * ur +
-	       image->getRGBA(xi+1,yi+1) * lr;
+	return getRGB(xi,yi) * ul +
+	       getRGB(xi,yi+1) * ll +
+	       getRGB(xi+1,yi) * ur +
+	       getRGB(xi+1,yi+1) * lr;
 
     } else {
 	return getRGBWrapped(xi,yi) * ul +

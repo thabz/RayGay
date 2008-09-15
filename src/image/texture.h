@@ -6,7 +6,6 @@
 #include "image/rgba.h"
 #include "math/vector2.h"
 
-class Image;
 class Profiler;
 
 /**
@@ -25,15 +24,13 @@ class Texture {
 	};
 
 	/// Constructor
-	Texture(Image* image, const Vector2& repeat_uv, InterpolationType it);
+	Texture(const Vector2& repeat_uv, InterpolationType it);
 	/// Destructor
-	~Texture();
+	virtual ~Texture();
 	/// Get a texel
 	RGB getTexel(double u, double v) const;
 	/// Get a texel
 	RGB getTexel(const Vector2& uv) const;
-	/// Grayscale the image
-	void grayscale();
 	/// Returns width of image
 	long getWidth() const;
 	/// Returns height of image
@@ -52,13 +49,14 @@ class Texture {
 	RGB getBiLinearTexel(double u, double v) const;
 	/// Helper for getBiCubicTexel()
 	double biCubicR(const double x) const;
-	RGBA getRGBWrapped(int x, int y) const;
+	virtual RGBA getRGBWrapped(int x, int y) const = 0; 
+	virtual RGBA getRGB(int x, int y) const = 0;
 	
-	Image* image;
-	long width, height;
 	Vector2 repeat_uv;
 	InterpolationType interpolation_type;
 	static Profiler* profiler;
+    protected:
+	long width, height;
 };
 
 #endif

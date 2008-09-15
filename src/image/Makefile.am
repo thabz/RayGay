@@ -9,6 +9,7 @@ libimage_la_SOURCES = image.cpp \
                      rgb.cpp \
                      rgba.cpp \
                      texture.cpp \
+		     simpletexture.cpp \
                      imageio.cpp \
 		     imageio_tga.cpp \
 		     imageio_hdri.cpp \
@@ -30,4 +31,5 @@ EXTRA_DIST = image.h 		\
 	     imagedrawing.h	\
              rgba.h 		\
              rgb.h 		\
-             texture.h 	
+             texture.h 	        \
+	     simpletexture.h
