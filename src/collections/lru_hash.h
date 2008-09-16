@@ -15,10 +15,10 @@ using namespace std;
  * The template parameters K and V are the key- and valuetype.
  */
 template <typename K, typename V> 
-class LRUHash 
+class lru_hash 
 {
     public:
-	LRUHash(uint32_t max_size);
+	lru_hash(uint32_t max_size);
 	void insert(const K& key, const V& value);
 	V* find(const K& key);
 
@@ -40,12 +40,12 @@ class LRUHash
 };
 
 template <typename K, typename V> 
-LRUHash<K,V>::LRUHash(uint32_t max_size) : max_size(max_size)
+lru_hash<K,V>::lru_hash(uint32_t max_size) : max_size(max_size)
 {
 };
 
 template <typename K, typename V> 
-V* LRUHash<K,V>::find(const K& key)
+V* lru_hash<K,V>::find(const K& key)
 {
     map_iter_type map_iter = table.find(key);
     if (map_iter == table.end()) {
@@ -62,7 +62,7 @@ V* LRUHash<K,V>::find(const K& key)
 
 
 template <typename K, typename V> 
-void LRUHash<K,V>::insert(const K& key, const V& value)
+void lru_hash<K,V>::insert(const K& key, const V& value)
 {
     V* val = find(key);
 

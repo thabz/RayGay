@@ -3,6 +3,7 @@
 #define IMAGE_MULTI_TEXTURE_H
 
 #include "image/texture.h"
+#include "collections/lru_hash.h"
 #include <vector>
 #include <string>
 
@@ -22,8 +23,7 @@ class MultiTexture : public Texture {
 
     	mutable pthread_mutex_t mutex_loader;
 	    std::vector<std::string> filenames;
-	    mutable std::vector<Image*> images;
-	    mutable std::vector<int> positions;
+	    lru_hash<int,Image*>* images;
 	    uint32_t tiles_per_row;
 	    uint32_t memory_cached;
 	    uint32_t tile_width;
