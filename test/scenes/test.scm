@@ -1,5 +1,5 @@
 
-(load "../../scenes/lib/vector-math.scm")
+(load "../scenes/lib/vector-math.scm")
 (define test-define-1 10)
 
 ; Testing vector math

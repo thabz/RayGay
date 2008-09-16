@@ -228,7 +228,7 @@ class test_vector_erase : public Test {
 class test_lru_hash : public Test {
         public:
         void run() {
-    LRUHash<int,int> lru = LRUHash<int,int>(3);
+    lru_hash<int,int> lru = lru_hash<int,int>(3);
     lru.insert(1,101);
     lru.insert(2,102);
     lru.insert(3,103);

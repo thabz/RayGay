@@ -9,6 +9,7 @@
 
 #include "image/imageimpl.h"
 #include "image/texture.h"
+#include "image/simpletexture.h"
 #include "testing.h"
 
 using namespace std;
@@ -115,7 +116,7 @@ class test_texture : public Test {
 	    RGBA col = RGBA(1,0,0,1);
     	    Image* img = new ImageImpl<double,4>(32,32);
     	    img->clear(col);
-    	    Texture* tex = new Texture(img, Vector2(1,1), Texture::INTERPOLATION_BICUBIC);
+    	    Texture* tex = new SimpleTexture(img, Vector2(1,1), Texture::INTERPOLATION_BICUBIC);
     	    for(double x = 0; x < 1.5; x += 1.0 / 128) {
                 for(double y = 0; y < 1.5; y += 1.0 / 128) {
                     RGBA c = tex->getTexel(x,y);        

@@ -28,6 +28,7 @@
 #include "space/kdtree.h"
 #include "image/image.h"
 #include "image/texture.h"
+#include "image/simpletexture.h"
 #include "paths/linesegment.h"
 #include "paths/circle.h"
 #include "testing.h"
@@ -1391,7 +1392,7 @@ class heightfield_test : public Test {
     public: 
 	void run() {
 	    Image* img = Image::load(getLoadPrefix() + "/gfx/water.tga");
-	    Texture* texture = new Texture(img,Vector2(2,2),Texture::INTERPOLATION_BILINEAR);
+	    Texture* texture = new SimpleTexture(img,Vector2(2,2),Texture::INTERPOLATION_BILINEAR);
 	    HeightField* h = new HeightField(texture, 10, 200, 200, 10, 10, NULL);
 	    h->prepare();
 
