@@ -1,5 +1,7 @@
 ;; Texture is from http://www.oera.net/How2/TextureMaps2.htm
 ;; They also supply textures of skies and bumpmaps.
+;; HQ textures from
+;; http://www.celestiamotherlode.net/catalog/earth.php
 
 (load "lib/raygay.scm")
 
@@ -52,8 +54,8 @@
     
 
 (define earth-radius 6371.0)
-(define camera-height 1000)
-(define camera-position moscow)
+(define camera-height 10)
+(define camera-position aarhus)
 (define camera-lookat paris)
 (define camera-unit-sphere (latlong->unitsphere camera-position))
 (define sun-above casablanca)  
@@ -82,7 +84,7 @@
      (do ((x 0 (+ x 1))) ((= x 64))
        (set! tiles (cons 
          (string-append "gfx/level5/tx_" (number->string x) "_" (number->string y) ".jpg") tiles))))
-    64 10 1 1 'bilinear)))
+    64 50 1 1 'bilinear)))
 
 (define ground-material
   (make-material
@@ -121,8 +123,8 @@
 (define l 300)  
 (add-pin london l)
 (add-pin paris l)
-(add-pin aarhus l)
-(add-pin moscow l)
+;(add-pin aarhus l)
+;(add-pin moscow l)
 (add-pin berlin l)
 (add-pin oslo l)
 (add-pin stockholm l)
