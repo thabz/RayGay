@@ -12,16 +12,9 @@ MultiTexture::MultiTexture(vector<string> filenames, uint32_t tiles_per_row, uin
     this->memory_cached = memory_cached;
     this->filenames = filenames;
     this->tiles_per_row = tiles_per_row;
-    this->nextpos = 0;
     pthread_mutex_init(&mutex_loader,NULL);
     this->images = new lru_hash<int,Image*>(memory_cached);
 
-    /*
-    for(uint32_t i = 0; i < memory_cached; i++) {
-        images.push_back(NULL);
-        positions.push_back(-1);
-    }
-    */
     Image* first_tile = getTile(0);
     this->tile_width = first_tile->getWidth();
     this->tile_height = first_tile->getHeight();
@@ -38,8 +31,8 @@ RGBA MultiTexture::getRGB(int x, int y) const {
 }
 
 Image* MultiTexture::getTile(uint32_t index) const {
-    Image* image = *(images->find(index));
-    if (image != NULL) return image;
+    Image** image_ptr = images->find(index);
+    if (image_ptr != NULL) return *image_ptr;
     
     // Not found. We'll need to load it.
     if (index >= filenames.size()) {
@@ -47,17 +40,9 @@ Image* MultiTexture::getTile(uint32_t index) const {
     }
     
     pthread_mutex_lock(&mutex_loader);
-    cout << "Loading " << filenames[index] << endl;
-    image = Image::load(filenames[index],Allocator::MALLOC_ONLY);
+    //cout << "Loading " << filenames[index] << endl;
+    Image* image = Image::load(filenames[index],Allocator::MALLOC_ONLY);
     images->insert(index,image);
-    /*
-    nextpos = (nextpos+1) % memory_cached;
-    if (images[nextpos] != NULL) {
-        delete images[nextpos];
-    }
-    images[nextpos] = image;
-    positions[nextpos] = index;
-    */
     pthread_mutex_unlock(&mutex_loader);
     return image;
 }

@@ -16,19 +16,17 @@ class MultiTexture : public Texture {
     public:
 	    MultiTexture(std::vector<std::string> filenames, uint32_t tiles_per_row, uint32_t memory_cached, const Vector2& repeat_uv, Texture::InterpolationType it);
 
-
     private:
 	    RGBA getRGB(int x, int y) const;
         Image* getTile(uint32_t index) const;
 
     	mutable pthread_mutex_t mutex_loader;
 	    std::vector<std::string> filenames;
-	    lru_hash<int,Image*>* images;
+	    mutable lru_hash<int,Image*>* images;
 	    uint32_t tiles_per_row;
 	    uint32_t memory_cached;
 	    uint32_t tile_width;
 	    uint32_t tile_height;
-        mutable uint32_t nextpos;
 };
 
 #endif
