@@ -29,12 +29,23 @@
 (define (degrees->radians deg)
   (* 2 π (/ deg 360.0)))
 
-(define (latlong->unitsphere latlong)
+;; Convert latlong to polar coordinates.
+;;
+;; rho is a the angle around the equator [0,2π]
+;; phi is the angle from pole to pole [-π,π]
+(define (latlong->phi&rho latlong)
   (let* ((lat (degrees->radians (+ (car latlong) (/ (cadr latlong) 60) (/ (caddr latlong) 360))))
          (lo (cddddr latlong))
          (long (degrees->radians (+ (car lo) (/ (cadr lo) 60) (/ (caddr lo) 360))))
          (phi (- π/2 (if (equal? (cadddr latlong) 'N) lat (- lat))))
          (rho (if (equal? (cadddr lo) 'W) (- long) long)))
+    (list phi rho)))
+
+;; Convert a latlong to a point on the unit-sphere.
+(define (latlong->unitsphere latlong)
+  (let* ((phirho (latlong->phi&rho latlong))
+         (phi (car phirho))
+         (rho (cadr phirho)))
     (vector
       (* (sin rho) (sin phi))
       (cos phi)
@@ -79,7 +90,7 @@
 (define tiles '())
 
 (define ground-texture
-  (if #f
+  (if #t
     (make-texture "gfx/EarthMap_2500x1250.jpg" 1 1 'bilinear)
     (make-multi-texture
     (do ((y 0 (+ y 1))) ((= y 32) (reverse tiles))
