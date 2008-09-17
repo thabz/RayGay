@@ -8,6 +8,7 @@
 #include <string>
 
 class Image;
+class Profiler;
 
 /**
  * A multitexture is one that is composed of a grid of images.
@@ -27,6 +28,9 @@ class MultiTexture : public Texture {
 	    uint32_t memory_cached;
 	    uint32_t tile_width;
 	    uint32_t tile_height;
+    	static Profiler* profiler;
+    	static Profiler* profiler_lookup;
+        mutable uint32_t nextpos;
 };
 
 #endif

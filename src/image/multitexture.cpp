@@ -1,7 +1,11 @@
 
 #include "image/multitexture.h"
 #include "image/image.h"
+#include "profiler.h"
 #include "exception.h"
+
+Profiler* MultiTexture::profiler = NULL;
+Profiler* MultiTexture::profiler_lookup = NULL;
 
 using namespace std;
 
@@ -12,6 +16,11 @@ MultiTexture::MultiTexture(vector<string> filenames, uint32_t tiles_per_row, uin
     this->memory_cached = memory_cached;
     this->filenames = filenames;
     this->tiles_per_row = tiles_per_row;
+    if (profiler == NULL) {
+        profiler = Profiler::create("Texture loading", "Rendering");
+        profiler_lookup = Profiler::create("Texture lookup", "Rendering");
+    }
+    this->nextpos = 0;
     pthread_mutex_init(&mutex_loader,NULL);
     this->images = new lru_hash<int,Image*>(memory_cached);
 
@@ -40,9 +49,11 @@ Image* MultiTexture::getTile(uint32_t index) const {
     }
     
     pthread_mutex_lock(&mutex_loader);
-    //cout << "Loading " << filenames[index] << endl;
+//    cout << "Loading " << filenames[index] << endl;
+    profiler->start();        
     Image* image = Image::load(filenames[index],Allocator::MALLOC_ONLY);
     images->insert(index,image);
+    profiler->stop();
     pthread_mutex_unlock(&mutex_loader);
     return image;
 }
