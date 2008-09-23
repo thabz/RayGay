@@ -149,7 +149,8 @@ SchemeObject* s_read(Scheme* scheme, SchemeObject* s_port) {
     } else {
         assert_arg_type(scheme, L"read", 1, s_input_port_p, s_port);
     }
-    return scheme->getParser()->read(s_port);
+    SchemeObject* result = scheme->getParser()->read(s_port);
+    return result == NULL ? S_EOF : result;
 }
 
 

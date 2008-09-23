@@ -26,7 +26,7 @@ SchemeObject* Parser::parse(SchemeObject* port) {
 }
 
 SchemeObject* Parser::read(SchemeObject* port) {
-    SchemeObject* result;
+    SchemeObject* result = NULL;
     Lexer::Token token = lexer->nextToken(port);
     Lexer::Token tmp_token;
     uint32_t cur_line = lexer->getCurline();
