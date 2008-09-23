@@ -4,12 +4,16 @@
 ;; work on a list of colors.
 
 (define (red-component c)
+  "Returns the red component of a color c as a number between 0 and 1."
   (vector-ref c 0))
 (define (green-component c)
+  "Returns the green component of a color c as a number between 0 and 1."
   (vector-ref c 1))
 (define (blue-component c)
+  "Returns the blue component of a color c as a number between 0 and 1."
   (vector-ref c 2))
 (define (hue-component c)
+  "Returns the hue component of a color c as a number between 0 and 1."
   (vector-ref (rgb->hsv c) 0))
 (define (saturation-component c)
   (vector-ref (rgb->hsv c) 1))
@@ -20,6 +24,7 @@
 
 ; See http://en.wikipedia.org/wiki/HSV_color_space
 (define (hsv->rgb hsv)
+  "Converts a color from HSV to RGB colorspaces."
   (let* ((H (mod (* (vector-ref hsv 0) 360) 360))
          (S (vector-ref hsv 1))
          (V (vector-ref hsv 2))
@@ -38,6 +43,7 @@
 
 ; See http://en.wikipedia.org/wiki/HSV_color_space
 (define (rgb->hsv rgb)
+  "Converts a color from HSV to RGB colorspaces."
   (let* ((r (red-component rgb))
          (g (green-component rgb))
          (b (blue-component rgb))
@@ -60,8 +66,8 @@
            (else (- 1 (/ minn maxx))))))
       (vector (/ h 360.0) s v)))      
 
-; Converts "#ff80ff" to #(1 128/256 1)
 (define (hex->rgb hex-string)
+  "Converts a string representing a HTML hex-color to RGB. Eg. converts \"#ff80ff\" to #(1 128/256 1)"
   (let* ((r (string->number (substring hex-string 1 3) 16))
          (g (string->number (substring hex-string 3 5) 16))
          (b (string->number (substring hex-string 5 7) 16)))
@@ -150,9 +156,9 @@
 		            (linear-ramp (car v-range) (cdr v-range) t)))
  	    result))))))
 
-; Returns the complementary color, ie. the hue rotated 180 degrees.
 (define (color-complement rgb)
-   (color-rotate rgb 0.5))
+  "Returns the complementary color, ie. the hue rotated 180 degrees."
+  (color-rotate rgb 0.5))
 
 (define (color-brighten rgb . amount)
   (let ([amount (if (null? amount) 0.1 (car amount))])
@@ -166,6 +172,7 @@
     (color-brighten rgb (- amount))))
 
 (define (color-darkest colors)
+  "Returns the darkest color in a list of colors"
   (if (null? (cdr colors))
      (car colors)
      (let* ((darkest-of-cdr (color-darkest (cdr colors)))

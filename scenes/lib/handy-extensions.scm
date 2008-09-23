@@ -9,32 +9,32 @@
 (define (second vec) (cadr vec))
 (define (third vec) (caddr vec))
 
-; Shortcut for rotating around the x-axis
 (define (rotate-x obj angle)
-    (rotate obj x-axis angle))
+  "Shortcut for rotating around the x-axis"
+  (rotate obj x-axis angle))
 
-; Shortcut for rotating around the y-axis        
 (define (rotate-y obj angle)
-    (rotate obj y-axis angle))
+  "Shortcut for rotating around the y-axis"
+  (rotate obj y-axis angle))
 
-; Shortcut for rotating around the z-axis
 (define (rotate-z obj angle)
-    (rotate obj z-axis angle))
+  "Shortcut for rotating around the z-axis"
+  (rotate obj z-axis angle))
 
-; Shortcut for rotating 180 degress around the x-axis
 (define (flip-x obj)
-    (rotate-x obj 180))        
+  "Shortcut for rotating 180 degress around the x-axis"
+  (rotate-x obj 180))        
 
-; Shortcut for rotating 180 degress around the y-axis
 (define (flip-y obj)
-    (rotate-y obj 180))        
+  "Shortcut for rotating 180 degress around the y-axis"
+  (rotate-y obj 180))        
 
-; Shortcut for rotating 180 degress around the z-axis
 (define (flip-z obj)
-    (rotate-z obj 180))        
+  "Shortcut for rotating 180 degress around the z-axis"
+  (rotate-z obj 180))        
                   
-; Print followed by a newline                                            
 (define (displayln t)
+  "Print the string t, followed by a newline"
     (display t)
     (newline ))
 
