@@ -2,6 +2,7 @@
 (load "vector-math.scm")
 (load "handy-extensions.scm")
 (load "image-sizes.scm")
+(load "object-factory.scm")
 
 (define (add-to-scene thing . rest)
   "Add a sceneobject or a list of sceneobjects to scene"

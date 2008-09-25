@@ -592,7 +592,7 @@ void SceneObjectFactory::register_procs(Scheme* s)
 	    (SchemeObject* (*)()) make_bound);
     scheme->assign(L"make-instance",1,1,0,
 	    (SchemeObject* (*)()) make_instance);
-    scheme->assign(L"bounding-box",1,0,0,
+    scheme->assign(L"$bounding-box",1,0,0,
 	    (SchemeObject* (*)()) bounding_box);
     scheme->assign(L"make-text",5,0,0,
 	    (SchemeObject* (*)()) SceneObjectFactory::make_text);
