@@ -1,3 +1,5 @@
+; See http://www.processing.org/reference/index_ext.html
+; for some great functions.
 
 ;(define π  3.1415926535897932384626433832795029)
 ;(define 2π 6.283185307179586476925286766552)
@@ -42,6 +44,31 @@
   "Returns a random element from a list"        
   (list-ref l (random (length l))))
 
+(define (lerp a b t)
+  "Calculates a number between two numbers at a specific increment. The t parameter is the 
+   amount to interpolate between the two values where 0.0 equal to the first point, 0.1 is 
+   very near the first point, 0.5 is half-way in between, etc. The lerp function is convenient 
+   for creating motion along a straight path and for drawing dotted lines."
+  (+ a (* t (- b a))))
+
+
+(define (constrain value upperbound lowerbound)
+  (max (min value upperbound) lowerbound))
+
+(define (remap value low1 high1 low2 high2)
+  "Remaps a value in the interval [low1,high1] to the interval [low2,high2]"
+  (lerp low2 high2 (/ (- value low1) (- high1 low1))))
+  
+(define (degrees radian-value)
+  "Converts a radian measure to its corresponding value in degrees"
+  (* 360.0 (/ radian-value 2π)))  
+
+(define (radians degree-value)
+  "Converts a degree measure to its corresponding value in radians"
+  (* 2π (/ degree-value 360.0)))  
+
+; TODO: Make (random b) be an alias for (random 0 b)
+  
 (define (keyframing t keyframes)
   (let* ((sum (apply + (map car keyframes)))
          (scaled-t (* sum t)))
@@ -81,7 +108,7 @@
       
 ;; Unicode fun
 
-(define ￮ make-sphere)
-(define □ make-box)
-(define ■ make-solid-box)
+;(define ￮ make-sphere)
+;(define □ make-box)
+;(define ■ make-solid-box)
 

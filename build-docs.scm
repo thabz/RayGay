@@ -1,3 +1,5 @@
+(load "scenes/lib/handy-extensions.scm")
+
 ;; Build the documentation
 (define source-files (list
   "scenes/lib/colors.scm"
@@ -5,10 +7,14 @@
   "scenes/lib/handy-extensions.scm"
   "scenes/lib/raygay.scm"))  
   
-(define (handle-source-file source-file output-html-file)
+(define functions '())  
+  
+(define (extract-from-source-file source-file)
+  "Returns a list of pairs. A pair (definition . description) for each
+   function found in the source-file."
   (let ((f (open-file-input-port source-file #f #f (native-transcoder))))
-    (do ((i 1 (+ i 1)))
-      ((port-eof? f) (close-input-port f))
+    (let loop ((result '()))
+      (if (port-eof? f) result
       (let ((datum (read f)))
         (if (and (not (eof-object? datum))
                  (list? datum)
@@ -16,14 +22,15 @@
                  (equal? (car datum) 'define)
                  (list? (cadr datum))
                  (string? (caddr datum)))
-            (begin
-              (display (cadr datum))
-              (newline)     
-              (display (caddr datum))
-              (newline)))))))
+            (loop (cons (cons (cadr datum) (caddr datum)) result))
+            (loop result)))))))
 
+(define (parse-source-files source-files)
 (let loop-files ((files source-files))
-  (if (not (null? files))
-    (begin
-      (handle-source-file (car files) (string-append (car files) ".html"))
-      (loop-files (cdr files)))))
+  (when (not (null? files))
+    (set! functions (append functions (extract-from-source-file (car files))))
+    (loop-files (cdr files)))))
+
+(parse-source-files source-files)
+
+        

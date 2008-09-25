@@ -47,3 +47,11 @@
     (vector (/ (.x v) l)
             (/ (.y v) l)
             (/ (.z v) l))))
+
+(define (vlerp a b t)
+  "Calculates a point between two points at a specific increment. The t parameter is the 
+   amount to interpolate between the two points where 0.0 equal to the first point, 0.1 is 
+   very near the first point, 0.5 is half-way in between, etc. The lerp function is convenient 
+   for creating motion along a straight path and for drawing dotted lines."
+  (v+ a (vscale (v- b a) t)))
+
