@@ -17,7 +17,7 @@
 AABox::AABox() {
 }
 
-AABox::AABox(const Vector c1, const Vector c2) {
+AABox::AABox(const Vector& c1, const Vector& c2) {
     _c1[0] = fmin(c1[0],c2[0]);
     _c1[1] = fmin(c1[1],c2[1]);
     _c1[2] = fmin(c1[2],c2[2]);

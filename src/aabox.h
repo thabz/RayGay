@@ -21,7 +21,7 @@ class AABox {
 	AABox();
 	
         /// Constructor
-	AABox(const Vector corner1, const Vector corner2);
+	AABox(const Vector& corner1, const Vector& corner2);
 	
         /// Constructor
 	AABox(const std::vector<Vector>& swarm);
