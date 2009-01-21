@@ -110,6 +110,7 @@ Image* JpegIO::load(const std::string& filename, Allocator::model_t model) {
 	}
 	y++;
     }
+    delete [] line;
                                                                                
     jpeg_finish_decompress(&cinfo);
     jpeg_destroy_decompress(&cinfo);

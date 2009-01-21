@@ -185,6 +185,7 @@ Image* TgaIO::load(const std::string& filename, Allocator::model_t model) {
 	    image->setRGBA(x,height-1-y,line[x]);
 	}
     }
+    delete [] line;
     ::fclose(Handle);
     return image;
 }
