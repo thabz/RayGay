@@ -22,8 +22,13 @@ using namespace std;
 
 Scene::Scene() {
     environmentMap = NULL;
+    environmentSphere = NULL;
     camera = NULL;
+
     fog_enabled = false;
+    fog_distance = 0;
+    fog_color = RGBA(0.0,0,0,1);
+
     setBackground(RGBA(0.0,0,0,1));
 }
 
