@@ -122,13 +122,15 @@ pre {
 
 div.vim {
        background-color: #e0e0c0;
-       border: 1px solid #808060;
+       border: 0px solid #808060;
        color: #202020;
        padding: 10px;
        font-family: LucidaTypewriter, Courier, sans-serif;
        font-size: 10pt;
        white-space: pre;
        -moz-border-radius: 6.5px;
+       -webkit-border-radius: 6.5px;
+       -webkit-box-shadow: 2px 2px 8px rgba(0,0,0,0.8);
 }
 
 div.shell {
