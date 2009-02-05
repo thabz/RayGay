@@ -18,6 +18,6 @@ end
 entry_filenames = Dir.glob("entries/*.html")
 entry_filenames.each { |f|
     e = Entry.new(f)
-    puts e.date	
+    puts e.date
 }
 
