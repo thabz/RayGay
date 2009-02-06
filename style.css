@@ -1,0 +1,136 @@
+body {
+      /* font-family: "Trebuchet MS",Georgia,Helvetica,Arial; */
+      font-family: Optima, Verdana, Arial, Helvetica, sans-serif;
+      font-size: 12pt;
+      height: 100%;
+      padding: 0px;
+      margin: 0px 0px 0px -140px;
+}
+
+td.dateheader {
+    font-family: Arial,Helvetica, Sans;
+    border-bottom: 1px dashed #999999; 
+    background-color: #f8f8f8;
+    border-top: 1px dashed #999999;
+    padding: 2px 2px 2px 2px;
+    font-weight: bold;
+    color: #808080;
+    text-align: right;
+    letter-spacing: 2pt;
+}
+
+span.title {
+       color: #202080;
+    letter-spacing: 0.1em;
+}
+
+p {
+       margin-top: 0px;
+}
+
+A 		{ color: #CC6633; text-decoration: none; } 
+A:link		{ color: #CC6633; text-decoration: none; } 
+A:visited	{ color: #808080; text-decoration: none; } 
+A:active	{ color: #FF9966;  } 
+A:hover		{ color: #FF9966; text-decoration: underline; } 
+
+/*
+a {
+       text-decoration: none;
+       color: #804080;
+}
+
+
+a img {
+      border: 2px solid black;
+}
+*/
+
+img {
+    border: 0px;        
+}
+table.cal {
+       font-size: 9pt;
+       text-align: center
+}
+
+table.cal th {
+       color: #408080;
+}
+
+pre {
+       color: #808040;
+}
+
+div.vim {
+       background-color: #e0e0c0;
+       border: 0px solid #808060;
+       color: #202020;
+       padding: 10px;
+       font-family: LucidaTypewriter, Courier, sans-serif;
+       font-size: 10pt;
+       white-space: pre;
+       -moz-border-radius: 6.5px;
+       -webkit-border-radius: 6.5px;
+       -webkit-box-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+}
+
+div.shell {
+       background-color: #202060;
+       border: 1px solid #8080c0;
+       color: #c0c0c0;
+       padding: 10px;
+       font-family: LucidaTypewriter, Courier, sans-serif;
+       font-size: 10pt;
+       white-space: pre;
+}
+
+tt {
+       color: #808040;
+}
+
+code {
+       color: #808040;
+}
+
+span.title {
+       color: #408080;
+       font-family: Helvetica,Sans-serif;
+       font-size: 1.1em;
+}
+
+blockquote {
+       font-size: 0.9em;
+}
+
+acronym, abbr {
+     border-bottom: thin dashed green;
+}
+
+ol.chinese li {
+  list-style-type: cjk-ideographic;
+  padding-bottom: 1em;
+}
+
+div.sidebar {
+   top: 0px;
+   right: 0px;	
+   height: 100%;
+   width: 140px;
+   float: none;
+   position: fixed;	  
+   background-color: #eae8e3;
+   background-image: url(logo.png);
+   background-repeat: no-repeat;
+   background-position: bottom center;
+   padding: 4px 0px 0px 20px;
+   border-left: 1px solid #c0c0c0;
+   overflow: hidden;
+   line-height: 150%;
+   font-family: Helvetica, sans;
+}
+
+div.sidebar a {
+   color: #808080;
+   font-size: 0.8em;
+}
