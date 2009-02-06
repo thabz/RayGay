@@ -22,6 +22,10 @@ class Entry
       "#{outdir}/#{date.day}.html"
     end
     
+    def mtime
+      File.mtime(filename)
+    end
+    
     def read_input_html
       # TODO: Support for Markdown files also
       if content.nil?
@@ -66,10 +70,11 @@ def make_calendar(date, years, entries_by_month)
 end
 
 def make_month(entries, years, entries_by_month)
-    date = entries[0].date
-    outdir =  "#{BUILD_DIR}/#{date.year}"
-    outfile = "#{outdir}/#{date.month}.html"
-    html = '<tr><td><h1 style="color: black; font-family:arial,helvetica,sans-serif"><a href="./"><i style="font-family:serif; font-weight:normal">Blog</i></a></h1></td></tr>'
+  date = entries[0].date
+  outdir =  "#{BUILD_DIR}/#{date.year}"
+  outfile = "#{outdir}/#{date.month}.html"
+  if (not FileUtils.uptodate?(outfile, entries.map { |e| e.filename }))
+    html = '<tr><td><h1 style="color: black; font-family:arial,helvetica,sans-serif"><a href="index.html"><i style="font-family:serif; font-weight:normal">Blog</i></a></h1></td></tr>'
     html += '<tr><td>&nbsp;</td></tr>'
     html += '<tr><td>&nbsp;</td></tr>'
     entries.each { |e|
@@ -82,20 +87,30 @@ def make_month(entries, years, entries_by_month)
     layout = layout.gsub('CALENDAR', make_calendar(date,years, entries_by_month))
     puts "Outputting #{outfile}"
     File.new(outfile,"w+").write(layout)
+  end
 end
 
-FileUtils.mkdir_p(BUILD_DIR)
+def latest_entry(entries)
+  latest = entries[0]
+  entries.each { |e|
+    if e.date > latest.date
+      latest = e
+    end
+  }
+  latest
+end
+
+FileUtils.mkdir_p("#{BUILD_DIR}/files")
 FileUtils.cp('style.css',BUILD_DIR)
 FileUtils.cp('favicon.png',BUILD_DIR)
 FileUtils.cp('logo.png',BUILD_DIR)
 FileUtils.cp('prototype-1.6.0.3.js',BUILD_DIR)
-if (not File.exists?(BUILD_DIR+"/files")) 
-  FileUtils.cp_r('files', BUILD_DIR, :preserve=>true)
-end
+FileUtils.cp(Dir.glob('files/*'), "#{BUILD_DIR}/files")
 entries_by_month = Hash.new
 
 entry_filenames = Dir.glob("entries/*.html")
 all_years = Hash.new
+all_entries = Array.new
 
 entry_filenames.each { |f|
     e = Entry.new(f)
@@ -106,9 +121,12 @@ entry_filenames.each { |f|
       entries_by_month[key] = [e]
     end
     all_years[e.date.year] = 1
+    all_entries.push e
 }
 
 entries_by_month.each_key { |key|
   make_month(entries_by_month[key], all_years.keys.sort.reverse, entries_by_month)
 }
 
+l = latest_entry(all_entries)
+FileUtils.cp("#{BUILD_DIR}/#{l.date.year}/#{l.date.month}.html", "#{BUILD_DIR}/index.html")
