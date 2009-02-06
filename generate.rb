@@ -49,13 +49,15 @@ class Entry
     end
 end
 
-def make_calendar(years, entries_by_month)
+def make_calendar(date, years, entries_by_month)
    html = ''
    years.each { |year|
-     html += "#{year}<br>"
+     html += date.year == year ? "<b>#{year}</b>" : "#{year}"
+     html += "<br>"
      12.downto(1) { |i|
         if (entries_by_month.member?("#{year}-#{i}")) 
-           html += "<a href='#{year}/#{i}.html'>#{i}</a>&nbsp;"
+          link_text = (date.month == i and date.year == year) ? "<b>#{i}</b>" : "#{i}"
+          html += "<a href='#{year}/#{i}.html'>#{link_text}</a>&nbsp;"
         end
      }
      html += "<br>"
@@ -67,7 +69,9 @@ def make_month(entries, years, entries_by_month)
     date = entries[0].date
     outdir =  "#{BUILD_DIR}/#{date.year}"
     outfile = "#{outdir}/#{date.month}.html"
-    html = ''
+    html = '<tr><td><h1 style="color: black; font-family:arial,helvetica,sans-serif"><a href="./"><i style="font-family:serif; font-weight:normal">Blog</i></a></h1></td></tr>'
+    html += '<tr><td>&nbsp;</td></tr>'
+    html += '<tr><td>&nbsp;</td></tr>'
     entries.each { |e|
       html += e.output_html
     }
@@ -75,13 +79,16 @@ def make_month(entries, years, entries_by_month)
     layout = File.new("layout-monthly.html").read
     layout = layout.gsub('CONTENT', html)
     layout = layout.gsub('TITLE', "Raygay blog for #{date.year}/#{date.month}")
-    layout = layout.gsub('CALENDAR', make_calendar(years, entries_by_month))
+    layout = layout.gsub('CALENDAR', make_calendar(date,years, entries_by_month))
+    puts "Outputting #{outfile}"
     File.new(outfile,"w+").write(layout)
 end
 
 FileUtils.mkdir_p(BUILD_DIR)
 FileUtils.cp('style.css',BUILD_DIR)
 FileUtils.cp('favicon.png',BUILD_DIR)
+FileUtils.cp('logo.png',BUILD_DIR)
+FileUtils.cp('prototype-1.6.0.3.js',BUILD_DIR)
 if (not File.exists?(BUILD_DIR+"/files")) 
   FileUtils.cp_r('files', BUILD_DIR, :preserve=>true)
 end
