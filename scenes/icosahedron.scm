@@ -7,6 +7,7 @@
 (set-background #(0.95 0.95 0.95))
 
 (set-image-size '(1600 1200))
+(set-image-size '(800 600))
 (set-renderer "raytracer")
 
 (set-camera 
@@ -15,7 +16,7 @@
       lookat #(0 0 0)
       up ,y-axis
       fov 45
-      aa 3)))
+      aa 0)))
 
 (define chrome
   (make-material
@@ -128,8 +129,11 @@
          (p3 (caddr s))
          (a1 (point-on-line #(0 0 0) p1 0.8))
          (a2 (point-on-line #(0 0 0) p2 0.8))
-         (a3 (point-on-line #(0 0 0) p3 0.8)))
+         (a3 (point-on-line #(0 0 0) p3 0.8))
+          (pm (middle-point tri)))
   (add-to-scene
+    (make-cylinder
+      pm (vscale 1.2 pm) 0.01 (mat 0.2))
     (make-mesh 
       (mat 0.2) 
       ;      0  1  2  3  4  5
@@ -148,7 +152,7 @@
 
 (define (handle-tri tri)
   (handle-tris
-   (split-tris (split-tris (split-tri tri)))))
+  (split-tris (split-tri tri))))
 
 (define (add-face face)
   (let ((tri 
