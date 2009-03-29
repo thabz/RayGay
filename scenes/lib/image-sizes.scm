@@ -62,9 +62,14 @@
 (define a4-landscape@300dpi (list (mm&dpi->pixels 297 300) (mm&dpi->pixels 210 300))) ; -> (3508 2480)
 (define a4-landscape@240dpi (list (mm&dpi->pixels 297 240) (mm&dpi->pixels 210 240))) ; -> (2806 1984)
 
-
 ; A3 is 420mm x 297mm in landscape
 ; A5 is 210mm x 148mm in landscape
 
 ; A6 is 148mm x 105mm in landscape. Postcards are this size.
 (define a6-landscape@300dpi (list (mm&dpi->pixels 148 300) (mm&dpi->pixels 105 300))) ; -> (1748 1240)
+
+; For printing on standard photo papers in landscape
+(define photo-15x10@300dpi  (list (mm&dpi->pixels 150 300) (mm&dpi->pixels 100 300))) ; -> (1772 1181)
+(define photo-15x10@240dpi  (list (mm&dpi->pixels 150 240) (mm&dpi->pixels 100 240))) ; -> (1417 945)
+
+
