@@ -570,9 +570,9 @@ void SceneObjectFactory::register_procs(Scheme* s)
 	    (SchemeObject* (*)()) SceneObjectFactory::make_isosurface);
     scheme->assign(L"make-mesh",3,0,0,
 	    (SchemeObject* (*)()) make_mesh);
-    scheme->assign(L"make-ply-mesh",2,0,0,
+    scheme->assign(L"$make-ply-mesh",2,0,0,
 	    (SchemeObject* (*)()) make_ply_mesh);
-    scheme->assign(L"make-obj-mesh",2,0,0,
+    scheme->assign(L"$make-obj-mesh",2,0,0,
 	    (SchemeObject* (*)()) make_obj_mesh);
     scheme->assign(L"make-bezierpatch",4,0,0,
 	    (SchemeObject* (*)()) make_bezierpatch);
