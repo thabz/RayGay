@@ -24,10 +24,15 @@
           (- (.z a) (.z b))))          
           
 (define (vscale v s)
-  "Scale a vector"        
-  (vector (* (.x v) s)
-          (* (.y v) s)
-          (* (.z v) s)))                    
+  "Scale a vector. v is a vector and s a scalar - or vice versa."
+  (if (vector? v)
+    (vector (* (.x v) s)
+            (* (.y v) s)
+            (* (.z v) s))
+    (vector (* (.x s) v)
+            (* (.y s) v)
+            (* (.z s) v))))
+                                
 
 (define v* vscale)
           
