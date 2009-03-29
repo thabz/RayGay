@@ -65,6 +65,9 @@ class Material {
 
 	bool requiresUV() const;
 
+	bool hasAlphaShadows() const { return this->alpha_shadows; };
+	void hasAlphaShadows(bool v) { this->alpha_shadows = v; };
+
     protected:
 	double getBumpValue(double u, double v) const;
 	Vector2 scaleUV(const Vector2& v) const;
@@ -93,6 +96,8 @@ class Material {
 
 	double _kt;
 	double eta;
+
+	bool alpha_shadows;
 
     private:
 	void reset();

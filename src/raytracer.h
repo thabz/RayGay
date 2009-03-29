@@ -20,7 +20,7 @@ class Raytracer : public Renderer {
     private:
 	RGBA getPixel(const Vector2& v);
 
-	RGB shade(const Ray&, Intersection&, const int depth);
+	RGBA shade(const Ray&, Intersection&, const int depth);
 	RGBA trace(const Ray&, const int depth);
 	RGBA traceSub(const bool intersected, Intersection& i, const Ray&, const int depth);
 	RGBA tracePrimary(const Ray&);

@@ -51,6 +51,11 @@ RGBA Raytracer::traceSub(const bool intersected, Intersection& intersection, con
 	color = shade(ray,intersection,depth);
     } else {
         color = scene->getBackgroundColor(ray);
+	/*
+	if (depth > 1) {
+	    color = RGBA(color.r(), color.g(), color.b(), 1.0);
+	}
+	*/
     }
 
     if (scene->fogEnabled()) {
@@ -66,7 +71,7 @@ RGBA Raytracer::traceSub(const bool intersected, Intersection& intersection, con
     return color;
 }
 
-RGB Raytracer::shade(const Ray& ray, Intersection& intersection, const int depth) {
+RGBA Raytracer::shade(const Ray& ray, Intersection& intersection, const int depth) {
     Lightinfo info;
     const Object* object = intersection.getObject();
     const Vector point = intersection.getPoint();
@@ -78,7 +83,10 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, const int depth
     intersection.setNormal(normal);
     
     double ambient_intensity = 0.2;
-    RGB result_color = material->getDiffuseColor(intersection) * ambient_intensity;
+    RGBA result_color = material->getDiffuseColor(intersection) * ambient_intensity;
+    if (material->hasAlphaShadows() && depth == 1) {
+	result_color = RGBA(0,0,0,0);
+    }
     const vector<Lightsource*>& lights = scene->getLightsources();
     for (vector<Lightsource*>::const_iterator p = lights.begin(); p != lights.end(); p++) {
 	double attenuation = (*p)->getAttenuation(point);
@@ -86,7 +94,7 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, const int depth
 	if (attenuation > double(0)) {
 	    (*p)->getLightinfo(intersection,space,&info,depth);
 	    if (info.cos > 0.0) {
-		RGB color = RGB(0.0,0.0,0.0);
+		RGBA color = RGB(0.0,0.0,0.0);
 		// Check for blocking objects
 		if (info.intensity > 0.0) {
 		    double intensity = info.intensity * attenuation;
@@ -105,6 +113,9 @@ RGB Raytracer::shade(const Ray& ray, Intersection& intersection, const int depth
 			    color = color + ( intensity * rv *  material->getKs() * material->getSpecularColor());
 			}
 		    }
+		}
+		if (material->hasAlphaShadows() && depth == 1) {
+		    color = RGBA(0.0,0.0,0.0,1 - Math::clamp(info.intensity));
 		}
 		result_color += color;
 	    } 

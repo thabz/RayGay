@@ -44,6 +44,7 @@ void Material::reset() {
    gloss_enabled = false;
    no_shadow = false;
    _spec_coeff = 1;
+   alpha_shadows = false;
 }
 
 Material::~Material() {

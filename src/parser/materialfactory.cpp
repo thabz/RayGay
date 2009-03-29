@@ -53,6 +53,11 @@ SchemeObject* MaterialFactory::s_make_material(Scheme* scheme, SchemeObject* s_o
 	    } else if (key == L"eta") {
 	        double d = safe_scm2double(s_value,0,L"");
 	        material->setEta(d);
+	    } else if (key == L"alpha-shadows") {
+		bool yes = scm2bool(s_value);
+	        material->hasAlphaShadows(yes);
+		material->setKs(0);
+		material->setKt(0);
         } else if (key == L"gloss") {
             assert(scm2bool(s_list_p (scheme, s_value)));
             assert(safe_scm2int(s_length(scheme, s_value),0,L"") == 2);
