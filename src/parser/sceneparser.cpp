@@ -103,7 +103,7 @@ SchemeObject* SceneParser::add_to_scene(Scheme* scheme, SchemeObject* s_value) {
         Lightsource* light = scm2lightsource(s_value, L"internal-populate-scene", 0);
         scene->addLight(light);
     } else {
-        throw scheme_exception(L"internal-populating-scene", L"A non-sceneobject or non-lightsource found.");
+        throw scheme_exception(L"internal-populating-scene", L"A non-sceneobject or non-lightsource found: " + s_value->toString());
     }
     return S_UNSPECIFIED;
 }
