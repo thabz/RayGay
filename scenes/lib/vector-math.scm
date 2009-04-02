@@ -46,6 +46,13 @@
   "Length of a vector"        
   (sqrt (vdot v v)))        
 
+(define (vcrossproduct b c)
+ "Crossproduct of two vectors"
+ (vector
+  (- (* (.y b) (.z c)) (* (.z b) (.y c)))
+  (- (* (.z b) (.x c)) (* (.x b) (.z c)))
+  (- (* (.x b) (.y c)) (* (.y b) (.x c))))) 
+
 (define (vnormalize v)
   "Normalize a vector"        
   (let ((l (vlength v)))        
