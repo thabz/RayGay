@@ -7,9 +7,6 @@
 
 (define (optimize-mesh m)
   "Optimizes a mesh by removing unused vertices"
-  ; This works by using a hashtable where the
-  ; keys are the old indices and the values
-  ; and the renumbered indices.
   (define old->new (make-hashtable eqv-hash eqv?))
   (define new->old (make-hashtable eqv-hash eqv?))
   (define faces (cadr m))
@@ -45,34 +42,56 @@
   ; Return the new mesh
   (list new-vertices new-faces))
 
-(define (hidden-face? t1 t2 t3 p)
-)
+(define (collapse-nearby-vertices mesh ε)
+  "Optimizes a mesh collapsing vertices that are closer than ε"
+  ) 
 
-; Returns a mesh that is the convex hull of a group of points.
-; http://www.cse.unsw.edu.au/~lambert/java/3d/source/Incremental.java
+(define (facing? v1 v2 v3 p)
+ "Is the triangle with vertices t1, t2, t3 (clockwise) facing p?"
+ (let ((n (vcrossproduct (v- v3 v1) (v- v3 v2))))
+  (negative? (vdot n (v- p v1)))))
+
+; 
+; http://www.eecs.tufts.edu/~mhorn01/comp163/algorithm.html
+; Using the 3D Incremental Convex Hull algorithm.
 (define (convex-hull points)
- (if (< (length points) 2)
+ "Returns a mesh that is the convex hull of a group of points."
+
+ (define (find-border-edges faces)
+  "From a group of connected faces return those edges that "
+  "only connects to one face."
+  ; Note: Don't mess up the clockwiseness of each edge...
+ )
+
+ (define (find-facing-faces hull p)
+  "Returns the faces of a hull that \"p can see.\""
+  (filter 
+   (lambda (face)
+    ; Note this will work if face has more than 3 vertices. If the 
+    ; triangle formed by the first 3 vertices is facing p then the 
+    ; whole polygon is.
+    (facing? (list-ref (car hull) (car face))
+             (list-ref (car hull) (cadr face))
+	     (list-ref (car hull) (caddr face))
+	     p))
+   (cadr hull)))
+
+ (define (add-point hull p)
+  "Incrementally grow the hull by adding a point p"
+  (let ((facing-faces (find-facing-faces hull p)))
+   (if (null? facing-faces)
+    hull ; p is inside hull so return original hull.
+    (let ((border-edges (find-border-edges facing-faces)))
+     ; Remove facing-faces from hull
+     ; Add new faces from p to all border-edges
+
+ (define initial-hull
+  (list (car points) (cadr points) (caddr points) (cadddr points))
+  (list '(0 3 1) '(0 1 2) '(1 3 2) '(3 0 2)))
+
+ (if (< (length points) 3)
   '()
-  (let point-loop ((faces '())
-       	           (points points))
-   (null? points)
-     faces
-   (let es-loop ((es 
-   (let face-loop ((facs faces)
-		   (es '()))
-    (if (null? facs) 
-     es
-     (if (not (hidden-face? (car facs) (car points)))
- 	; Update bounary of hole
- 	(face-loop (cdr facs)
-	 ; Append to es here
-	)
-        (face-loop (cdr facs) es))))))
-    (if (null? es)
-     (point-loop faces (cdr points))
-     (point-loop (append faces
-		 ; Make new faces out of es
-		 (map ... es))
-		 ) (cdr points))))))
+  (fold-right add-point initial-hull points)))
+
 
 
