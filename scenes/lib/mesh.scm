@@ -97,13 +97,22 @@
 
  (define (add-point hull p)
   "Incrementally grow the hull by adding a point p"
-  (let ((facing-faces (find-facing-faces hull p)))
+  (let* ((facing-faces (find-facing-faces hull p))
+ 	 (new-index (length (car hull)))
+	 (vertices (append (car hull) (list p)))
+         ; Remove facing-faces from hull's faces
+	 (faces (fold-right remove (cadr hull) facing-faces))
+	 (border-edges (find-border-edges facing-faces)))
    (if (null? facing-faces)
     hull ; p is inside hull so return original hull.
-    (let ((border-edges (find-border-edges facing-faces))
-          ; Remove facing-faces from hull
-          (faces (fold-left remove (cadr hull) facing-faces)))
-     ; Add new faces from p to all border-edges
+    ; Loop adds new faces from p to all border-edges
+    (let loop ((border-edges border-edges)
+               (faces faces))
+     (if (null? border-edges)
+      (list vertices faces) ; Return new hull
+      (loop (cdr border-edges)
+            (cons (list (caar border-edges) (cadar border-edges) new-index)
+	          faces))))))) 
 
  (define initial-hull
   (list (car points) (cadr points) (caddr points) (cadddr points))
@@ -111,7 +120,5 @@
 
  (if (< (length points) 3)
   '()
-  (fold-right add-point initial-hull points)))
-
-
+  (optimize-mesh (fold-right add-point initial-hull points))))
 
