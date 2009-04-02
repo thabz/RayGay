@@ -56,12 +56,31 @@
 ; Using the 3D Incremental Convex Hull algorithm.
 (define (convex-hull points)
  "Returns a mesh that is the convex hull of a group of points."
+ 
+ (define (find-edges face)
+  "Returns a list of pair representing edges. "
+  "Ie. turns (a b c) into ((a b) (b c) (c a))"
+  (let loop ((f face)
+   	     (r '()))
+   (if (null? (cdr f))
+    (cons (list (car f) (car face)) r)
+    (loop (cdr f) (list (car f) (cadr f))))))
 
  (define (find-border-edges faces)
   "From a group of connected faces return those edges that "
   "only connects to one face."
-  ; Note: Don't mess up the clockwiseness of each edge...
- )
+  (let face-loop ((faces faces)
+		  (hash (make-hashtable equal?)))
+   (if (null? faces)
+    (hashtable-keys hash)
+    (let edge-loop ((edges (find-edges (car faces))))
+     (if (null? edges)
+      (face-loop (cdr faces) hash)
+      (begin
+       (if (hashtable-ref hash (reverse (car edges)))
+	(hashtable-delete! hash (reverse (car edges)))
+ 	(hashtable-put hash (car edges)))
+       (edge-loop (cdr edges))))))))
 
  (define (find-facing-faces hull p)
   "Returns the faces of a hull that \"p can see.\""
@@ -81,8 +100,9 @@
   (let ((facing-faces (find-facing-faces hull p)))
    (if (null? facing-faces)
     hull ; p is inside hull so return original hull.
-    (let ((border-edges (find-border-edges facing-faces)))
-     ; Remove facing-faces from hull
+    (let ((border-edges (find-border-edges facing-faces))
+          ; Remove facing-faces from hull
+          (faces (fold-left remove (cadr hull) facing-faces)))
      ; Add new faces from p to all border-edges
 
  (define initial-hull
