@@ -1,9 +1,10 @@
 
-(load "lib/raygay.scm")
+(load "../lib/raygay.scm")
 
 (set-image-size '(1600 1200))
 (set-image-size '(320 240))
 (set-image-size '(640 480))
+(set-image-size '(1280 720))
 (set-background #(0.8 0.7 0.3))
 
 (set-renderer "raytracer")

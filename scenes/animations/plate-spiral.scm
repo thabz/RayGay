@@ -2,8 +2,8 @@
 (load "../lib/raygay.scm")
 (load "../lib/objects/make-rounded-plate.scm")
 
-(set-image-size '(640 480))
-(set-background (make-texture "../gfx/goodmorning.jpg" 1 1 "bilinear"))
+(set-image-size '(1280 720))
+(set-background (make-texture "../gfx/goodmorning.jpg" 1 1 'bilinear))
 
 (set-renderer "raytracer")
 (set-camera 
