@@ -44,13 +44,15 @@
          (face-loop seq (cdr face)))))))
   
   (define new-vertices 
-    (map (lambda (i) (list-ref vertices i))
-         (vector->list (hashtable-keys old->new))))  
+    (map 
+     (lambda (i) 
+      (list-ref vertices (hashtable-ref new->old i #f)))
+     (vector->list (hashtable-keys new->old))))  
 
   (define new-faces
     (map (lambda (face)
-	  (map (lambda (old-index)
-		(hashtable-ref old->new old-index #f)) 
+	  (map (lambda (i)
+		(hashtable-ref old->new i #f)) 
 	       face)) 
          faces))
 
@@ -151,4 +153,5 @@
  (if (< (length points) 3)
   '()
   (optimize-mesh (fold-left add-point initial-hull (cddddr points)))))
+  ;(fold-left add-point initial-hull (cddddr points))))
 
