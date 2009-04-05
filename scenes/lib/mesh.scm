@@ -47,7 +47,8 @@
     (map 
      (lambda (i) 
       (list-ref vertices (hashtable-ref new->old i #f)))
-     (vector->list (hashtable-keys new->old))))  
+     (list-sort < 
+     (vector->list (hashtable-keys new->old)))))  
 
   (define new-faces
     (map (lambda (face)
