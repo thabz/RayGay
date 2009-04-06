@@ -327,6 +327,11 @@ class mesh_test : public Test {
 	    r = Ray(Vector(10.5,10.5,100),Vector(0,0,-1),1);
 	    assertTrue(bsp->intersect(r,inter));
 	    assertEqualV(inter.getPoint(), Vector(10.5,10.5,1));
+
+	    // Test ray from inside
+	    r = Ray(Vector(0.5,0.8,0.5),Vector(0,0,-1),1);
+	    assertTrue(bsp->intersect(r,inter));
+	    assertEqualV(inter.getPoint(), Vector(0.5,0.8,-1));
 	}
 };
 

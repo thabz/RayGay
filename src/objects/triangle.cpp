@@ -168,12 +168,11 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 	  return -1.0;
       }
    }
-#if 0 
-   // Backface culling
+#if 1 // 0 = Backface culling, 1 = No backface culling
    else if (det < -EPSILON)
    {
       // calculate distance from vert0 to ray origin
-      SUB(tvec,ray.getOrigin(),vert0)
+      SUB(tvec,ray.getOrigin(),cv->vert0)
       
       // calculate U parameter and test bounds
       u = DOT(tvec,pvec);
@@ -181,7 +180,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 	 return -1;
       
       // prepare to test V parameter
-      CROSS(qvec,tvec,edge1);
+      CROSS(qvec,tvec,cv->edge1);
       
       // calculate V parameter and test bounds
       v = DOT(ray.getDirection(),qvec);
