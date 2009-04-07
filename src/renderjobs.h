@@ -48,7 +48,7 @@ class RenderJobPool {
 
     public:
 	/// Constructor
-	RenderJobPool(int width, int height, int initial_cell_size);
+	RenderJobPool(int width, int height, int initial_cell_size = -1);
 	/// Add a job to the pool.
 	void addJob(RenderJob job);
 	/// Get next job to be done.

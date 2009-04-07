@@ -23,6 +23,9 @@ using namespace std;
  * @param initial_cell_size Size of the initial tiles
  */
 RenderJobPool::RenderJobPool(int w, int h, int initial_cell_size) {
+    if (initial_cell_size == -1) {
+	initial_cell_size = min(w,h) / 8;
+    }
     pthread_mutex_init(&mutex_jobs,NULL);
     pthread_mutex_init(&mutex_cout,NULL);
     pixels_fully_rendered = 0;

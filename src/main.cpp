@@ -295,7 +295,7 @@ void render_frame(string outputfile, int jobs) {
     }
 
     // Create and prepare job pool
-    RenderJobPool* job_pool = new RenderJobPool(img_w,img_h,128);
+    RenderJobPool* job_pool = new RenderJobPool(img_w,img_h);
 
     TimerStats* rendering_time = new TimerStats("Renderer","Time");
     rendering_time->startTimer();
