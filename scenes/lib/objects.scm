@@ -6,5 +6,6 @@
 (load "objects/make-bounding-box.scm")
 (load "objects/make-pill.scm")
 (load "objects/make-continuous-studio-backdrop.scm")
+(load "objects/make-convex-hull.scm")
 
 

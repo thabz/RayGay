@@ -154,5 +154,4 @@
  (if (< (length points) 3)
   '()
   (optimize-mesh (fold-left add-point initial-hull (cddddr points)))))
-  ;(fold-left add-point initial-hull (cddddr points))))
 

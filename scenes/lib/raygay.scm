@@ -2,6 +2,7 @@
 (load "vector-math.scm")
 (load "handy-extensions.scm")
 (load "image-sizes.scm")
+(load "mesh.scm")
 (load "object-factory.scm")
 
 (define (add-to-scene thing . rest)
