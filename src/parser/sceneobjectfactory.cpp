@@ -309,14 +309,23 @@ SchemeObject* make_mesh(Scheme* scheme, SchemeObject* s_material, SchemeObject* 
     try {
 	    for(uint32_t i = 0; i < flength; i++) {
 	        SchemeObject* s_triangle = s_list_ref(scheme, s_triangles, int2scm(i));
-	        Vector triangle = scm2vector(s_triangle, proc, 2);
-	        v[0] = uint32_t(triangle[0]);
-	        v[1] = uint32_t(triangle[1]);
-	        v[2] = uint32_t(triangle[2]);
-	        mesh->addTriangle(v);
+		if (scm2bool(s_vector_p(scheme, s_triangle))) {
+		    Vector triangle = scm2vector(s_triangle, proc, 2);
+		    v[0] = uint32_t(triangle[0]);
+		    v[1] = uint32_t(triangle[1]);
+		    v[2] = uint32_t(triangle[2]);
+		} else if (scm2bool(s_list_p(scheme, s_triangle))) {
+		    for(int j = 0; j < 3; j++) {
+			SchemeObject* s_i = s_list_ref(scheme, s_triangle, int2scm(j));
+			v[j] = safe_scm2int(s_i, 2, proc);
+		    }
+		} else {
+		    wrong_type_arg(proc, 2, s_triangle);
+		}
+		mesh->addTriangle(v);
 	    }
     } catch (Exception e) {
-        // TODO: Do better ie. convert e.getMessage to wchar_t
+	// TODO: Do better ie. convert e.getMessage to wchar_t
         cerr << e.getMessage() << endl;
     	throw scheme_exception(proc);
     }
