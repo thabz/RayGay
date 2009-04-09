@@ -20,17 +20,18 @@ Skylight::Skylight (double radius, int num) : Lightsource(Vector(0,0,0)) {
 }
 
 void Skylight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const {
+    Vector surface_point = inter.getPoint() + 1000*EPSILON * inter.getOriginalNormal();
     int count = 0;
     double cos_total = 0;
     double cos_tmp;
     for(int i = 0; i < num; i++) {
-	    Vector direction_to_light = positions[i] - inter.getPoint();
+	    Vector direction_to_light = positions[i] - surface_point;
 	    double dist_to_light = direction_to_light.length();
 	    direction_to_light = direction_to_light / dist_to_light;
 	    cos_tmp = direction_to_light * inter.getNormal();
 	    if (cos_tmp > 0.0) {
-	        Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
-            bool occluded = probe(i, ray_to_light, dist_to_light, depth, space);
+	        Ray ray_to_light = Ray(surface_point,direction_to_light,-1.0);
+                bool occluded = probe(i, ray_to_light, dist_to_light, depth, space);
 	        if (!occluded) { 
 	    	    count++;
 	    	    cos_total += cos_tmp;
@@ -43,15 +44,16 @@ void Skylight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo*
 }
 
 void Skylight::getSingleLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const {
+    Vector surface_point = inter.getPoint() + 1000*EPSILON * inter.getOriginalNormal();
     int sublight = int(RANDOM(0,num));
 
-    info->direction_to_light = positions[sublight] - inter.getPoint();
+    info->direction_to_light = positions[sublight] - surface_point;
     info->direction_to_light.normalize();
     info->cos = info->direction_to_light * inter.getNormal();
     double dist_to_light = info->direction_to_light.length();
 
     if (info->cos > 0.0) {
-        Ray ray_to_light = Ray(inter.getPoint(),info->direction_to_light,-1.0);
+        Ray ray_to_light = Ray(surface_point,info->direction_to_light,-1.0);
         bool occluded = probe(num, ray_to_light, dist_to_light, depth, space);
 	    info->intensity = occluded ? 0 : 1;
     }

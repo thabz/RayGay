@@ -92,14 +92,16 @@ void Arealight::getSingleLightinfo(const Intersection& inter, KdTree* space, Lig
 
 
 bool Arealight::probeSublight(int i, const Intersection& inter, KdTree* space, uint32_t depth) const {
-    Vector direction_to_light = getPosition(i) - inter.getPoint();
+    Vector surface_point = inter.getPoint() + 1000*EPSILON * inter.getOriginalNormal();
+
+    Vector direction_to_light = getPosition(i) - surface_point;
     double dist_to_light = direction_to_light.length();
     if (IS_ZERO(dist_to_light)) {
 	    return false;
     }
     direction_to_light *= 1.0/dist_to_light;
 
-    Ray ray_to_light = Ray(inter.getPoint(),direction_to_light,-1.0);
+    Ray ray_to_light = Ray(surface_point, direction_to_light, -1.0);
 
     std::vector<ShadowCache>* shadowcaches = (std::vector<ShadowCache>*) pthread_getspecific(shadowcaches_key);
     if (shadowcaches == NULL) {

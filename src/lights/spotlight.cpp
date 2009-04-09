@@ -34,12 +34,13 @@ void Spotlight::transform(const Matrix& m) {
 }
 
 void Spotlight::getLightinfo(const Intersection& inter, KdTree* space, Lightinfo* info, uint32_t depth) const {
-    info->direction_to_light = this->getPosition() - inter.getPoint();
+    Vector surface_point = inter.getPoint() + 1000*EPSILON * inter.getOriginalNormal();
+    info->direction_to_light = this->getPosition() - surface_point;
     double dist_to_light = info->direction_to_light.length();
     info->direction_to_light.normalize();
     info->cos = info->direction_to_light * inter.getNormal();
     if (info->cos > 0.0) {
-	Ray ray_to_light = Ray(inter.getPoint(),info->direction_to_light,-1.0);
+	Ray ray_to_light = Ray(surface_point,info->direction_to_light,-1.0);
 	bool in = space->intersectForShadow(ray_to_light,dist_to_light);
 	info->intensity =  in ? 0.0 : 1.0;
 
