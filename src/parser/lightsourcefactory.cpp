@@ -27,8 +27,8 @@ SchemeObject* s_make_arealight(Scheme* scheme, SchemeObject* s_pos, SchemeObject
     Vector pos = scm2vector(s_pos, L"make-arealight", 1);
     Vector dir = scm2vector(s_dir, L"make-arealight", 2);
     double radius = safe_scm2double(s_radius,3,L"make-arealight");
-    double jitter = safe_scm2double(s_jitter,5,L"make-arealight");
     int num = safe_scm2int(s_num,4,L"make-arealight");
+    double jitter = safe_scm2double(s_jitter,5,L"make-arealight");
     if (RendererSettings::uniqueInstance()->fast_preview) {
         return s_make_pointlight(scheme, s_pos, s_power);
     }

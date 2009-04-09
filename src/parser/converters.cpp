@@ -119,3 +119,30 @@ uint32_t safe_scm2uint(SchemeObject* o, int argnum, const wchar_t* procname) {
     assert_arg_non_negative_int(procname, argnum, o);
     return scm2int(o);
 }
+
+/**
+ * Takes a list of options (such as ('diffuse #(0 0 0) 'kd 0 'ks 0)) and
+ * returns them as a hash.
+vector<std::wstring,SchemeObject*> args2hash(Scheme* scheme, wchar_t* proc, SchemeObject* s_options) {
+    vector<std::wstring,SchemeObject*> h;
+
+    if (!scm2bool(s_list_p (scheme, s_options))) {
+	    wrong_type_arg (proc, 1, s_options);
+    }
+    uint32_t length = safe_scm2int(s_length(scheme, s_options), 0, L"");
+
+    assert(length % 2 == 0);
+    uint32_t argc = length / 2;
+
+    for(uint32_t i = 0; i < argc; i++) {
+        SchemeObject* s_key = s_list_ref(scheme, s_options, int2scm(i*2));
+        if (i_symbol_p(s_key) == S_FALSE) {
+            throw scheme_exception(L"Invalid option-name in : " + (wstring(proc)) + s_key->toString());
+        }    
+	wstring key = s_key->toString();
+	SchemeObject* s_value = s_list_ref(scheme, s_options, int2scm(i*2+1));
+	h[key] = s_value;
+    }
+    return h;
+}
+ */
