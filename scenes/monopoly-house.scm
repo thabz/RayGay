@@ -62,5 +62,4 @@
 
 
 (add-to-scene (make-rounded-convex-hull house-points 0.05 red))
-(add-to-scene (make-convex-hull house-points red))
 
