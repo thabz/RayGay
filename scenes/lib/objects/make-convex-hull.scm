@@ -7,6 +7,7 @@
  "Like make-convex-hull but with rounded edges and corners."
 
  (define hull (convex-hull points))
+ (define result '())
 
  (define (make-thick-triangle v1 v2 v3 thickness material)
   (let* ((n (vnormalize (vcrossproduct (v- v3 v1) (v- v3 v2))))
@@ -15,32 +16,37 @@
          (points (list (v+ v1 nscaled+) (v+ v1 nscaled-) (v+ v2 nscaled+)
  	   	      (v+ v2 nscaled-) (v+ v3 nscaled+) (v+ v3 nscaled-)))
  	(hull (convex-hull points)))
-   (make-mesh material (car hull) (cadr hull))))
+        (make-mesh material (car hull) (cadr hull))))
 
  ; Add edges
  (for-each 
   (lambda (edge)
-   (add-to-scene
+   (set! result (cons
     (make-cylinder 
      (list-ref (car hull) (car edge))
      (list-ref (car hull) (cadr edge))
-     radius material)))
+     radius material) result)))
   (mesh-extract-edges hull))
  
  ; Add vertices
  (for-each
   (lambda (p)
-   (add-to-scene (make-sphere p radius material)))
+   (set! result (cons
+    (make-sphere p radius material) result)))
   (car hull))
 
+ ; Add faces
  (for-each
   (lambda (face)
-   (add-to-scene
-   (make-thick-triangle
-    (list-ref (car hull) (car face))
-    (list-ref (car hull) (cadr face))
-    (list-ref (car hull) (caddr face))
-    radius material)))
-  (cadr hull)))
+   (set! result (cons
+    (make-thick-triangle
+     (list-ref (car hull) (car face))
+     (list-ref (car hull) (cadr face))
+     (list-ref (car hull) (caddr face))
+     radius material) result)))
+  (cadr hull))
+
+    
+ result)
 
 
