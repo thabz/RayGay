@@ -1679,6 +1679,10 @@ void test_lib_lists() {
     assert_eval(s, L"(fold-left + 0 '(1 2 3) '(4 5 6))", L"21");
     assert_eval(s, L"(fold-left + 'a '() '())", L"a");
     assert_eval(s, L"(fold-right + 0 '(1 2 3 4 5))", L"15");
+    assert_eval(s, L"(fold-right cons '() '(1 2 3 4 5))", L"(1 2 3 4 5)");
+    assert_eval(s, L"(fold-right (lambda (x l) (if (odd? x) (cons x l) l)) '() '(3 1 4 1 5 9 2 6 5))", L"(3 1 1 5 9 5)");
+    assert_eval(s, L"(fold-right cons '(q) '(a b c))", L"(a b c q)");
+    assert_eval(s, L"(fold-right + 0 '(1 2 3) '(4 5 6))", L"21");
     assert_eval(s, L"(remp even? '(3 1 4 1 5 9 2 6 5))", L"(3 1 1 5 9 5)");
     assert_eval(s, L"(remove 1 '(3 1 4 1 5 9 2 6 5))", L"(3 4 5 9 2 6 5)");
     assert_eval(s, L"(remv 1 '(3 1 4 1 5 9 2 6 5))", L"(3 4 5 9 2 6 5)");

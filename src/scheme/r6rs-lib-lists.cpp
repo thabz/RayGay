@@ -189,7 +189,50 @@ SchemeObject* s_fold_left(Scheme* scheme, int num, SchemeStack::iterator args) {
 }
 
 SchemeObject* s_fold_right(Scheme* scheme, int num, SchemeStack::iterator args) {
-    return S_FALSE;
+    wstring procname = L"fold-right";
+    SchemeObject* proc = args[0];
+    assert_arg_procedure_type(procname, 1, proc);
+
+    SchemeObject* nil = args[1];
+
+    SchemeObject* cropped_args[num-2];
+    for(int i = 2; i < num; i++) {
+        assert_non_atom_type(procname, i, args[i]);
+        cropped_args[i-2] = args[i];
+    }
+
+    // Find længden på cropped_args
+    int64_t length = i_length(cropped_args[0]);
+    for(int i = 1; i < num-2; i++) {
+	// Tjek at argumentlisterne er lige lange
+        if (length != i_length(cropped_args[i])) {
+            throw scheme_exception(procname + L": argument lists not equals length.");
+	};
+    }
+
+    // Kopier alle argument til en tabel. Vender desuden rækkefølgen
+    // på listernes indhold.
+    SchemeObject* args_table[num-2][length];
+    for(int i = 0; i < num-2; i++) {
+	for(int64_t j = 0; j < length; j++) {
+	    args_table[i][length-j-1] = i_car(cropped_args[i]);
+	    cropped_args[i] = i_cdr(cropped_args[i]);
+	}
+    }
+
+    // Med alle data tjekket og indsat i tabellen er selve 
+    // fold-right nu helt simpel. 
+    for(int j = 0; j < length; j++) {
+        SchemeAppendableList collection;
+        for(int i = 0; i < num-2; i++) {
+	    SchemeObject* o = args_table[i][j];
+            collection.add(o);
+        }
+	collection.add(nil);
+
+        nil = scheme->callProcedure_n(proc, collection.list);
+    }
+    return nil;
 }
 
 SchemeObject* s_remp(Scheme* scheme, SchemeObject* proc, SchemeObject* list) {
