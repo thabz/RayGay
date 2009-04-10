@@ -13,15 +13,6 @@
      (vector->list (hashtable-keys h)))
     (hashtable-set! h (car items) #t))))
 
-(define (remove-all to-be-removed target-list)
-  "Remove all items from to-be-removed from target-list"
-  (let loop ((to to-be-removed)
-             (ta target-list))
-   (if (null? to)
-    ta
-    (loop (cdr to) (remove (car to) ta)))))
-; Ovenstående kunne måske skrives (fold-right remove to ta)
-
 (define (optimize-mesh m)
   "Optimizes a mesh by removing unused vertices"
   (define old->new (make-eqv-hashtable))
@@ -132,8 +123,7 @@
  	 (new-index (length (car hull)))
 	 (vertices (append (car hull) (list p)))
          ; Remove facing-faces from hull's faces
-	 ;(faces (fold-left remove (cadr hull) facing-faces))
-	 (faces (remove-all facing-faces (cadr hull)))
+	 (faces (fold-right remove (cadr hull) facing-faces))
 	 (border-edges (find-border-edges facing-faces)))
    (if (null? facing-faces)
     hull ; p is inside hull so return original hull.
