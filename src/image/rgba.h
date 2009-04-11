@@ -40,6 +40,9 @@ class RGBA : public RGB {
 	RGBA& operator=(const RGBA& v);
     
         RGBA clamped() const;
+
+	static RGBA avg(RGBA* c, int num);
+
     private:
 	double alpha;
 };
@@ -65,6 +68,15 @@ RGBA::RGBA(double r, double g, double b, double a) : RGB(r,g,b)	{
 }
 
 inline
+RGBA& RGBA::operator=(const RGBA& v) {
+    _vector[0] = v._vector[0];
+    _vector[1] = v._vector[1];
+    _vector[2] = v._vector[2];
+    alpha = v.alpha;
+    return *this;
+}
+
+inline
 RGBA RGBA::operator*(double c) const {
      return RGBA(r()*c,g()*c,b()*c,alpha*c);
 }
@@ -75,17 +87,19 @@ RGBA RGBA::operator/(double c) const {
 }
 
 inline
-RGBA RGBA::operator+(const RGBA& c) const {
-     return RGBA(r()+c.r(),g()+c.g(),b()+c.b(),a()+c.a());
-}
-
-inline
 RGBA RGBA::operator+=(const RGBA& c) {
     _vector[0] += c.r();
     _vector[1] += c.g();
     _vector[2] += c.b();
     alpha += c.a();
     return (*this);
+}
+
+inline
+RGBA RGBA::operator+(const RGBA& c) const {
+    RGBA r = *this;
+    r += c;
+    return r;
 }
 
 inline
@@ -105,14 +119,6 @@ bool RGBA::operator==(const RGBA& x) const {
            IS_EQUAL(a(),x.a());
 }
 
-inline
-RGBA& RGBA::operator=(const RGBA& v) {
-    _vector[0] = v._vector[0];
-    _vector[1] = v._vector[1];
-    _vector[2] = v._vector[2];
-    alpha = v.alpha;
-    return *this;
-}
 
 inline
 RGBA RGBA::clamped() const {

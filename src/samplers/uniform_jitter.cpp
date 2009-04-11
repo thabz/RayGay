@@ -17,19 +17,19 @@ void UniformJitter::render(const RenderJob& job)
     RGBA color;
     double x_r, y_r;
     double jitter_width = 1.0 / double(samples_sqrt);
+    RGBA c[samples_sqrt*samples_sqrt];
     for (int y = job.begin_y; y < job.end_y && !aborting; y++) {
 	for (int x = job.begin_x; x < job.end_x && !aborting; x++) {
-	    color = RGBA(0.0,0.0,0.0,0.0);
 	    for(uint32_t x_0 = 0; x_0 < samples_sqrt; x_0++) {
 		for(uint32_t y_0 = 0; y_0 < samples_sqrt; y_0++) {
 		    x_r = double(x) + (double(x_0) / double(samples_sqrt));
 		    y_r = double(y) + (double(y_0) / double(samples_sqrt));
 		    x_r += RANDOM(0.0, jitter_width);
 		    y_r += RANDOM(0.0, jitter_width);
-		    color += sample(Vector2(x_r,y_r));
+		    c[x_0 + y_0*samples_sqrt] = sample(Vector2(x_r,y_r));
 		}
 	    }
-	    color = color / (samples_sqrt * samples_sqrt);
+	    color = RGBA::avg(c, samples_sqrt * samples_sqrt);
 	    setPixel(x,y,color);
 	}
     }

@@ -18,14 +18,14 @@ void HaltonSampler::render(const RenderJob& job)
 {
     RGBA color;
     halton_seq->reset();
+    RGBA c[samples_num];
     for (int y = job.begin_y; y < job.end_y && !aborting; y++) {
 	for (int x = job.begin_x; x < job.end_x && !aborting; x++) {
-	    color = RGBA(0.0,0.0,0.0,0.0);
 	    for(uint32_t n = 0; n < samples_num; n++) {
 		double* p = halton_seq->getNext();
-		color += sample(p[0]+x,p[1]+y);
+		c[n] = sample(p[0]+x,p[1]+y);
 	    }
-	    color = color / double(samples_num);
+	    color = RGBA::avg(c,samples_num);
 	    setPixel(x,y,color);
 	}
     }

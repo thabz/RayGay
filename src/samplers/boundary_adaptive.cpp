@@ -133,7 +133,7 @@ RGBA BoundaryAdaptive::getSubPixel(uint32_t curLevel, const Vector2& center, Pix
 #undef JIT
 
 
-    RGBA c1,c2,c3,c4;
+    RGBA c[4],c1,c2,c3,c4;
 
     // Trace upper left corner
     if (!block->isActive(x1,y1)) {
@@ -194,7 +194,8 @@ RGBA BoundaryAdaptive::getSubPixel(uint32_t curLevel, const Vector2& center, Pix
     }
 
     // Return average
-    return (c1 + c2 + c3 + c4) * 0.25;
+    c[0] = c1; c[1] = c2; c[2] = c3; c[3] = c4;
+    return RGBA::avg(c,4);
 }
 
 inline
