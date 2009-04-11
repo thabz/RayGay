@@ -1,5 +1,5 @@
 (define (make-convex-hull points material)
- (define hull (convex-hull house-points))
+ (define hull (convex-hull points))
  (make-mesh material (car hull) (cadr hull)))
 
 

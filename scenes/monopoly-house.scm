@@ -2,14 +2,14 @@
 (load "lib/raygay.scm")
 (load "lib/mesh.scm")
 
-(set-background #(0 0 0 0))
+(set-background #(1 1 1 0))
 
 (set-image-size '(256 256))
 (set-renderer "raytracer")
 
 (set-camera 
   (make-pinhole-camera 
-    `(pos #(2.5 0.2 6)
+    `(pos #(2.5 0.2 4)
       lookat #(0 0 0)
       up ,y-axis
       fov 45
@@ -52,7 +52,7 @@
 
 (define random-unit-points
  (let loop ((result '()))
-  (if (= (length result) 50)
+  (if (= (length result) 60)
    result
    (loop 
     (cons

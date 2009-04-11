@@ -79,8 +79,9 @@
 
 (define (facing? v1 v2 v3 p)
  "Is the triangle with vertices t1, t2, t3 (clockwise) facing p?"
- (let ((n (vcrossproduct (v- v3 v1) (v- v3 v2))))
-  (negative? (vdot n (v- p v1)))))
+ (let ((n (vcrossproduct (v- v3 v1) (v- v3 v2)))
+       (ε 0.000001))
+  (< ε (vdot n (v- p v1)))))
 
 ; 
 ; http://www.eecs.tufts.edu/~mhorn01/comp163/algorithm.html
