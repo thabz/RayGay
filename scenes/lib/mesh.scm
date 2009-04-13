@@ -13,6 +13,9 @@
      (vector->list (hashtable-keys h)))
     (hashtable-set! h (car items) #t))))
 
+(define (join-parallel-touching-faces m)
+#f)
+
 (define (optimize-mesh m)
   "Optimizes a mesh by removing unused vertices"
   (define old->new (make-eqv-hashtable))
@@ -20,7 +23,7 @@
   (define faces (cadr m))
   (define vertices (car m))
   
-  ; Fill the hashtable
+  ; Fill the hashtables
   (let insert-loop ((seq 0) (faces faces))
    (if (not (null? faces))
     (let face-loop ((seq seq)
@@ -137,6 +140,8 @@
             (cons (list (caar border-edges) (cadar border-edges) new-index)
 	          faces))))))) 
 
+ ;; TODO: Consider when the first four points are planar. Does this
+ ;; initial-hull work then?
  (define initial-hull
   (list
    (list (car points) (cadr points) (caddr points) (cadddr points))
