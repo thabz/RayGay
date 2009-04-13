@@ -48,7 +48,7 @@
     (expand (list 1 phi 0))
     (expand (list phi 0 1))))))
 
-(define dodocahedron-vertices
+(define dodecahedron-vertices
  (snap-to-unit-sphere
   (map list->vector (append
    (expand (list 1 1 1))
