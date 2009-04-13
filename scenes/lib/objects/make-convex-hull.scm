@@ -22,7 +22,7 @@
  (for-each 
   (lambda (edge)
    (set! result (cons
-    (make-cylinder 
+    (make-uncapped-cylinder 
      (list-ref (car hull) (car edge))
      (list-ref (car hull) (cadr edge))
      radius material) result)))
