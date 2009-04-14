@@ -13,6 +13,55 @@
      (vector->list (hashtable-keys h)))
     (hashtable-set! h (car items) #t))))
 
+(define (face-find-edges face)
+ "Returns a list of pair representing edges. "
+ "Ie. turns (a b c) into ((a b) (b c) (c a))"
+ (let loop ((f face)
+  	     (r '()))
+  (if (null? (cdr f))
+   (reverse (cons (list (car f) (car face)) r))
+   (loop (cdr f) (cons (list (car f) (cadr f)) r)))))
+
+(define (make-edge->face-hash m)
+ "Makes a hash where keys are edges (as (a b) lists) "
+ "and values are faces. Direction matters, and the "
+ "reverse edge (b a) points to the neighbouring face."
+ (let ((h (make-hashtable equal-hash equal?)))
+  (do ((faces (cdr m) (cdr faces)))
+   ((null? faces) h) 
+   (do ((edges (face-find-edges (car faces))))
+    ((null? edges))
+    (hashtable-set! h (car edges) (car faces))))))
+
+(define (make-face->neighbours-hash m)
+ "Makes a hash where the keys are faces and the values are "
+ "lists of the neighbouring faces."
+ (let ((h (make-hashtable equal-hash equal?))
+       (edge->face (make-edge->face-hash m)))
+  (do ((faces (cdr m) (cdr faces)))
+   ((null? faces) h) 
+   (let loop ((edges (face-find-edges (car faces)))
+              (neighbours '()))
+    (if (null? edges)
+     (hashtable-set! h (car faces) neighbours)
+     (loop (cdr edges) 
+           (cons (hashtable-ref edge->face (reverse (car edges)) #f) neighbours))))))) 
+
+(define (face-normal v1 v2 v3)
+ (vnormalize (vcrossproduct (v- v3 v1) (v- v3 v2))))
+
+(define (parallel-faces? mesh face1 face2)
+ "Returns whether the to faces have the same normal."
+ (let ((n1 (face-normal (list-ref (car mesh) (car face1))
+                        (list-ref (car mesh) (cadr face1))
+                        (list-ref (car mesh) (caddr face1))))
+       (n2 (face-normal (list-ref (car mesh) (car face2))
+                        (list-ref (car mesh) (cadr face2))
+                        (list-ref (car mesh) (caddr face2))))
+       (ε 0.000001))
+ (< (abs (vdist n1 n2)) ε))) 
+ 
+
  ; 1) Build face->neighbours hash
  ; 2) Have an outer seen-hash with faces as keys.
  ; 3) Iter over all faces unless seen.
@@ -69,14 +118,6 @@
   "Optimizes a mesh collapsing vertices that are closer than ε"
   ) 
 
-(define (face-find-edges face)
- "Returns a list of pair representing edges. "
- "Ie. turns (a b c) into ((a b) (b c) (c a))"
- (let loop ((f face)
-  	     (r '()))
-  (if (null? (cdr f))
-   (reverse (cons (list (car f) (car face)) r))
-   (loop (cdr f) (cons (list (car f) (cadr f)) r)))))
 
 (define (mesh-extract-edges mesh)
   "Returns a list of two-item lists" 
@@ -93,7 +134,7 @@
 
 (define (facing? v1 v2 v3 p)
  "Is the triangle with vertices t1, t2, t3 (clockwise) facing p?"
- (let ((n (vcrossproduct (v- v3 v1) (v- v3 v2)))
+ (let ((n (face-normal v1 v2 v3))
        (ε 0.000001))
   (< ε (vdot n (v- p v1)))))
 
