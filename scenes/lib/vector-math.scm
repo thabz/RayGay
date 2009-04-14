@@ -46,6 +46,10 @@
   "Length of a vector"        
   (sqrt (vdot v v)))        
 
+(define (vdist v1 v2)
+ "Distance between two vectors"
+ (vlength (v- v1 v2))
+
 (define (vcrossproduct b c)
  "Crossproduct of two vectors"
  (vector
