@@ -13,6 +13,17 @@
      (vector->list (hashtable-keys h)))
     (hashtable-set! h (car items) #t))))
 
+ ; 1) Build face->neighbours hash
+ ; 2) Have an outer seen-hash with faces as keys.
+ ; 3) Iter over all faces unless seen.
+ ; 4) For each face recurse over neighbours unless seen.
+ ; 5) Add parallel neighbours to a new-face collection recursively.
+ ; 5.1) Those we take are added to outer seen-hash.
+ ; 5.2) The non-parallel we leave are added to a inner seen-hash
+ ;      to avoid infinite loops.
+ ; 6) Join these together with a variant of face-find-edges.
+ ; 7) Add new faces to a new-faces collection
+ ; 8) Return original vertices with new-faces.
 (define (join-parallel-touching-faces m)
 #f)
 
