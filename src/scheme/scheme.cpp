@@ -405,6 +405,7 @@ SchemeObject* i_find_duplicate(SchemeObject* l) {
 // Equal? may fail to terminate if its arguments are circular data structures.
 SchemeObject* s_equal_p(Scheme* scheme, SchemeObject* a, SchemeObject* b) {
     bool result;        
+    if (a == b) return S_TRUE;
     SchemeObject::ObjectType ta = a->type();        
     SchemeObject::ObjectType tb = b->type();
     if (ta == SchemeObject::REAL_NUMBER && tb == SchemeObject::REAL_NUMBER) {
@@ -426,6 +427,7 @@ SchemeObject* s_equal_p(Scheme* scheme, SchemeObject* a, SchemeObject* b) {
 }
 
 SchemeObject* s_eqv_p(Scheme* scheme, SchemeObject* a, SchemeObject* b) {
+    if (a == b) return S_TRUE;
     SchemeObject::ObjectType ta = a->type();        
     SchemeObject::ObjectType tb = b->type();
     if (ta == SchemeObject::INTEGER_NUMBER && tb == SchemeObject::INTEGER_NUMBER) {
@@ -444,6 +446,7 @@ SchemeObject* s_eqv_p(Scheme* scheme, SchemeObject* a, SchemeObject* b) {
 }
 
 SchemeObject* s_eq_p(Scheme* scheme, SchemeObject* a, SchemeObject* b) {
+    // TODO: Is eq? really the same as eqv?
     return s_eqv_p(scheme,a,b); 
 }
 
