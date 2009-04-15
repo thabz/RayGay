@@ -20,7 +20,7 @@ class bigint
 
     public:        
         bigint(int32_t n);
-        bigint(std::string str, uint32_t radix = 10);
+        bigint(const std::string& str, uint32_t radix = 10);
         bigint(const bigint& o);
         ~bigint();
         

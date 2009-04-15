@@ -29,7 +29,7 @@ bigint::bigint(int32_t n) {
     normalize();
 }
 
-bigint::bigint(string str, uint32_t radix) 
+bigint::bigint(const string& str, uint32_t radix) 
 {
     if (radix >= 37 || radix == 0) throw invalid_argument("Invalid radix");
 
