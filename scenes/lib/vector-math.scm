@@ -48,7 +48,7 @@
 
 (define (vdist v1 v2)
  "Distance between two vectors"
- (vlength (v- v1 v2))
+ (vlength (v- v1 v2)))
 
 (define (vcrossproduct b c)
  "Crossproduct of two vectors"
