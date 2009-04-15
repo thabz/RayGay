@@ -1,5 +1,5 @@
 
-SUBDIRS = gfx scenes
+SUBDIRS = gfx scheme
 
 INCLUDES = -I$(top_srcdir)/src 
 LDADD = $(top_builddir)/src/libtracer.la
