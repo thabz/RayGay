@@ -20,7 +20,7 @@ SchemeObject* CameraFactory::s_camera_p(Scheme* scheme, SchemeObject* obj) {
     return isWrappedObjectType(obj, CAMERA);        
 }
 
-void extractCamera(Scheme* scheme, SchemeObject* s_options, Camera* camera, wchar_t* function_name) {
+void extractCamera(Scheme* scheme, SchemeObject* s_options, Camera* camera, const wchar_t* function_name) {
     if (!scm2bool(s_list_p (scheme, s_options))) {
 	    wrong_type_arg (function_name, 1, s_options);
     }
@@ -126,7 +126,7 @@ SchemeObject* CameraFactory::s_make_fisheye_camera(Scheme* scheme, SchemeObject*
 
 SchemeObject* CameraFactory::s_make_whitted_adaptive_sampler(Scheme* scheme, SchemeObject* s_aa_depth)
 {
-    wchar_t* proc = L"make-whitted-adaptive-sampler";
+    const wchar_t* proc = L"make-whitted-adaptive-sampler";
     assert_arg_non_negative_int(proc, 1, s_aa_depth);
     int aa_depth = scm2int(s_aa_depth);
     SamplerFactory* sampler = new WhittedAdaptiveFactory(aa_depth);
@@ -136,7 +136,7 @@ SchemeObject* CameraFactory::s_make_whitted_adaptive_sampler(Scheme* scheme, Sch
 /*
 SchemeObject* CameraFactory::s_make_boundary_adaptive_sampler(Scheme* scheme, SchemeObject* s_aa_depth)
 {
-    wchar_t* proc = L"make-boundary-adaptive-sampler";
+    const wchar_t* proc = L"make-boundary-adaptive-sampler";
     assert_arg_non_negative_int(proc, 1, s_aa_depth);
     int aa_depth = scm2int(s_aa_depth);
     SamplerFactory* sampler = new BoundaryAdaptiveFactory(aa_depth);
@@ -146,7 +146,7 @@ SchemeObject* CameraFactory::s_make_boundary_adaptive_sampler(Scheme* scheme, Sc
 
 SchemeObject* CameraFactory::s_make_uniform_jitter_sampler(Scheme* scheme, SchemeObject* s_samples_num) 
 {
-    wchar_t* proc = L"make-uniform-jitter-sampler";
+    const wchar_t* proc = L"make-uniform-jitter-sampler";
     assert_arg_positive_int(proc, 1, s_samples_num);
     int samples_num = scm2int(s_samples_num);
     SamplerFactory* sampler = new UniformJitterFactory(samples_num);
@@ -155,7 +155,7 @@ SchemeObject* CameraFactory::s_make_uniform_jitter_sampler(Scheme* scheme, Schem
 
 SchemeObject* CameraFactory::s_make_halton_sampler(Scheme* scheme, SchemeObject* s_samples_num) 
 {
-    wchar_t* proc = L"make-halton-sampler";
+    const wchar_t* proc = L"make-halton-sampler";
     assert_arg_positive_int(proc, 1, s_samples_num);
     int samples_num = scm2int(s_samples_num);
     SamplerFactory* sampler = new HaltonSamplerFactory(samples_num);

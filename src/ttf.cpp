@@ -646,7 +646,6 @@ uint32_t TrueTypeFont::read_uint32() {
     union { 
         uint32_t result;
         uint8_t bytes[4];
-        uint16_t shorts[2];
     };    
     is->read((char*)&result, 4);
     if (is->bad()) {
@@ -702,7 +701,7 @@ int8_t TrueTypeFont::read_int8() {
 }
 
 
-void TrueTypeFont::read_struct(char* types, char* addr, uint32_t bytes) {
+void TrueTypeFont::read_struct(const char* types, char* addr, uint32_t bytes) {
     int i = 0;
     while(bytes > 0) {
         char t = types[i++];            

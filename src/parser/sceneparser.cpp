@@ -33,11 +33,11 @@ using namespace std;
 
 Scene* SceneParser::scene = NULL;
 
-wchar_t* VAR_SCENE = L"__scene__";
-wchar_t* VAR_CAMERA = L"__camera__";
-wchar_t* VAR_RENDERER = L"__renderer__";
-wchar_t* VAR_IMAGESIZE = L"__image-size__";
-wchar_t* VAR_BACKGROUND = L"__background__";
+const wchar_t* VAR_SCENE = L"__scene__";
+const wchar_t* VAR_CAMERA = L"__camera__";
+const wchar_t* VAR_RENDERER = L"__renderer__";
+const wchar_t* VAR_IMAGESIZE = L"__image-size__";
+const wchar_t* VAR_BACKGROUND = L"__background__";
 
 SceneParser::SceneParser(Scene* scene) {
     this->scheme = new Scheme();        
@@ -170,7 +170,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
 
     SchemeObject* s_background = lookup(VAR_BACKGROUND);
     if (s_background != S_EMPTY_LIST) {
-	wchar_t* subr = L"internal: setting scene background";
+	const wchar_t* subr = L"internal: setting scene background";
 	if (s_texture_p(scheme, s_background) == S_TRUE) {
 	    Texture* texture = scm2texture(s_background, subr, 0);
             if (renderersettings->fast_preview) {
@@ -189,7 +189,7 @@ void SceneParser::populate(Scene* scene, RendererSettings* renderersettings) {
 SchemeObject* SceneParser::set_settings(Scheme* scheme, SchemeObject* s_settings) 
 {
     RendererSettings* renderersettings = RendererSettings::uniqueInstance();
-    wchar_t* proc = L"set-settings";
+    const wchar_t* proc = L"set-settings";
     if (S_FALSE == i_null_p(s_settings)) {
 	    if (S_FALSE == (s_list_p(scheme, s_settings))) {
 	        throw scheme_exception(proc, L"The settings is not a list");

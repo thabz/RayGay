@@ -45,32 +45,32 @@ struct wrapped_object : public SchemeWrappedCObject {
     wrapped_type type;
 };
 
-struct wrapped_object* scm2wrappedobj(SchemeObject* s_smod, wchar_t* subr, int pos);
+struct wrapped_object* scm2wrappedobj(SchemeObject* s_smod, const wchar_t* subr, int pos);
 
 void assert_type(struct wrapped_object* obj, wrapped_type type);
 
-Path* scm2path(SchemeObject* object_smob, wchar_t* subr, int pos);
+Path* scm2path(SchemeObject* object_smob, const wchar_t* subr, int pos);
 SchemeObject* path2scm(Path* path);
 
-SceneObject* scm2sceneobject(SchemeObject* object_smob, wchar_t* subr, int pos);
+SceneObject* scm2sceneobject(SchemeObject* object_smob, const wchar_t* subr, int pos);
 SchemeObject* sceneobject2scm(SceneObject* sceneobject);
 
-Camera* scm2camera(SchemeObject* object_smob, wchar_t* subr, int pos);
+Camera* scm2camera(SchemeObject* object_smob, const wchar_t* subr, int pos);
 SchemeObject* camera2scm(Camera* camera);
 
-SamplerFactory* scm2sampler(SchemeObject* object_smob, wchar_t* subr, int pos);
+SamplerFactory* scm2sampler(SchemeObject* object_smob, const wchar_t* subr, int pos);
 SchemeObject* sampler2scm(SamplerFactory* sampler_factory);
 
-Image* scm2image(SchemeObject* object_smob, wchar_t* subr, int pos);
+Image* scm2image(SchemeObject* object_smob, const wchar_t* subr, int pos);
 SchemeObject* image2scm(Image* image);
 
-Texture* scm2texture(SchemeObject* object_smob, wchar_t* subr, int pos);
+Texture* scm2texture(SchemeObject* object_smob, const wchar_t* subr, int pos);
 SchemeObject* texture2scm(Texture* texture);
 
 SchemeObject* material2scm(Material* material);
-Material* scm2material(SchemeObject* object_smob, wchar_t* subr, int pos);
+Material* scm2material(SchemeObject* object_smob, const wchar_t* subr, int pos);
 
-Lightsource* scm2lightsource(SchemeObject* object_smob, wchar_t* subr, int pos);
+Lightsource* scm2lightsource(SchemeObject* object_smob, const wchar_t* subr, int pos);
 SchemeObject* lightsource2scm(Lightsource* lightsource);
 
 void init_wrapper_type();

@@ -30,7 +30,7 @@ SchemeObject* TransformationFactory::scale(Scheme* scheme, SchemeObject* s_obj, 
 /**
  * Transforms a scene object, a vector or a list of sceneobjects.
  */
-SchemeObject* TransformationFactory::transform(Scheme* scheme, SchemeObject* s_obj, const Matrix& m, wchar_t* subr) 
+SchemeObject* TransformationFactory::transform(Scheme* scheme, SchemeObject* s_obj, const Matrix& m, const wchar_t* subr) 
 {
     // Tjek if it's a vector
     if (scm2bool(s_vector_p(scheme, s_obj))) {

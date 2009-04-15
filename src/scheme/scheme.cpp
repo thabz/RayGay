@@ -36,7 +36,7 @@ SchemeObject* S_FALSE;
 scheme_exception::scheme_exception(wstring s) : str(s), procname(NULL) {
 }
 
-scheme_exception::scheme_exception(wchar_t* procname, wstring error) : str(error), procname(procname) {
+scheme_exception::scheme_exception(const wchar_t* procname, wstring error) : str(error), procname(procname) {
 }
 
 scheme_exception::scheme_exception(uint32_t line, wstring error) : procname(NULL) {
@@ -598,7 +598,7 @@ SchemeObject* s_apply(Scheme* scheme, int num, SchemeStack::iterator args) {
 }
 
 // TODO: Rewrite to use s_apply
-SchemeObject* s_map_internal(Scheme* scheme, wchar_t* procname, int num, SchemeStack::iterator args, bool collect) {
+SchemeObject* s_map_internal(Scheme* scheme, const wchar_t* procname, int num, SchemeStack::iterator args, bool collect) {
     Interpreter* interpreter = scheme->getInterpreter();
     assert(num > 0);
     SchemeObject* proc = *args;

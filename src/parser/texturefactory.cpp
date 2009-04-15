@@ -23,7 +23,7 @@ SchemeObject* TextureFactory::make_texture(Scheme* scheme, SchemeObject* s_filen
 
     RendererSettings* renderer_settings = RendererSettings::uniqueInstance();
 
-    wchar_t* proc = L"make-texture";
+    const wchar_t* proc = L"make-texture";
 
     double rep_x = safe_scm2double(s_repeat_x,2,proc);
     double rep_y = safe_scm2double(s_repeat_y,3,proc);
@@ -66,7 +66,7 @@ SchemeObject* TextureFactory::make_texture(Scheme* scheme, SchemeObject* s_filen
 
 SchemeObject* TextureFactory::make_multi_texture(Scheme* scheme, SchemeObject* s_filenames, SchemeObject* s_tiles_per_row, SchemeObject* s_memory_cached, SchemeObject* s_repeat_x, SchemeObject* s_repeat_y, SchemeObject* s_interpolation_type) {
 
-    wchar_t* proc = L"make-multi-texture";
+    const wchar_t* proc = L"make-multi-texture";
 
     double rep_x = safe_scm2double(s_repeat_x,4,proc);
     double rep_y = safe_scm2double(s_repeat_y,5,proc);
@@ -107,7 +107,7 @@ SchemeObject* TextureFactory::make_multi_texture(Scheme* scheme, SchemeObject* s
 
 SchemeObject* TextureFactory::get_pixel(Scheme* scheme, SchemeObject* s_texture, SchemeObject* s_x, SchemeObject* s_y) 
 {
-    wchar_t* proc = L"texture-get-pixel";
+    const wchar_t* proc = L"texture-get-pixel";
     Texture* texture = scm2texture(s_texture, proc, 1);
     double x = safe_scm2double(s_x, 2, proc);
     double y = safe_scm2double(s_y, 3, proc);

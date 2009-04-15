@@ -53,7 +53,7 @@ SchemeObject* vrandomunit(Scheme* scheme) {
 }
 
 SchemeObject* make_poisson_set(Scheme* scheme, SchemeObject* s_w, SchemeObject* s_h, SchemeObject* s_r,  SchemeObject* s_num) {
-    wchar_t* proc = L"make-poisson-disc-set";
+    const wchar_t* proc = L"make-poisson-disc-set";
     double w = safe_scm2double(s_w, 1, proc);
     double h = safe_scm2double(s_h, 2, proc);
     double r = safe_scm2double(s_r, 3, proc);
@@ -72,7 +72,7 @@ SchemeObject* make_poisson_set(Scheme* scheme, SchemeObject* s_w, SchemeObject* 
 }
 
 SchemeObject* make_halton_set(Scheme* scheme, SchemeObject* s_w, SchemeObject* s_h, SchemeObject* s_num) {
-    wchar_t* proc = L"make-halton-set";
+    const wchar_t* proc = L"make-halton-set";
     double w = safe_scm2double(s_w, 1, proc);
     double h = safe_scm2double(s_h, 2, proc);
     int num = safe_scm2int(s_num, 3, proc);

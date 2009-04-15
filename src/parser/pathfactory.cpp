@@ -21,7 +21,7 @@ using namespace std;
  *  (make-circle center radius normal) -> path
  */
 SchemeObject* PathFactory::make_circle(Scheme* scheme, SchemeObject* s_center, SchemeObject* s_radius, SchemeObject* s_normal) {
-    wchar_t* proc = L"make-circle";
+    const wchar_t* proc = L"make-circle";
     Vector center = scm2vector(s_center, proc, 1);
     double radius = safe_scm2double(s_radius, 2, proc);
     Vector normal = scm2vector(s_normal, proc, 3);
@@ -35,7 +35,7 @@ SchemeObject* PathFactory::make_circle(Scheme* scheme, SchemeObject* s_center, S
  *  (make-ellipse center radius1 radius2 normal) -> path
  */
 SchemeObject* PathFactory::make_ellipse(Scheme* scheme, SchemeObject* s_center, SchemeObject* s_radius1, SchemeObject* s_radius2, SchemeObject* s_normal) {
-    wchar_t* proc = L"make-ellipse";
+    const wchar_t* proc = L"make-ellipse";
     Vector center = scm2vector(s_center, proc, 1);
     Vector normal = scm2vector(s_normal, proc, 2);
     double radius1 = safe_scm2double(s_radius1,3,proc);
@@ -50,7 +50,7 @@ SchemeObject* PathFactory::make_ellipse(Scheme* scheme, SchemeObject* s_center, 
  *  (make-linesegment from to) -> path
  */
 SchemeObject* PathFactory::make_linesegment(Scheme* scheme, SchemeObject* s_from, SchemeObject* s_to) {
-    wchar_t* proc = L"make-linesegment";
+    const wchar_t* proc = L"make-linesegment";
     Vector from = scm2vector(s_from, proc, 1);
     Vector to = scm2vector(s_to, proc, 2);
     return path2scm(new Linesegment(from, to));
@@ -63,7 +63,7 @@ SchemeObject* PathFactory::make_linesegment(Scheme* scheme, SchemeObject* s_from
  * (make-spiral path radius windings offset) -> path
  */
 SchemeObject* PathFactory::make_spiral(Scheme* scheme, SchemeObject* s_path, SchemeObject* s_radius, SchemeObject* s_windings, SchemeObject* s_offset) {
-    wchar_t* proc = L"make-spiral";
+    const wchar_t* proc = L"make-spiral";
     Path* path = scm2path(s_path, proc, 1);
     double radius = safe_scm2double(s_radius,2,proc);
     double windings = safe_scm2double(s_windings,3,proc);

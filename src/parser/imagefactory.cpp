@@ -22,7 +22,7 @@ SchemeObject* s_image_p(Scheme* scheme, SchemeObject* object) {
 }
 
 SchemeObject* ImageFactory::make_image(Scheme* scheme, SchemeObject* s_width, SchemeObject* s_height, SchemeObject* s_background_color) {
-    wchar_t* proc = L"make-image";        
+    const wchar_t* proc = L"make-image";        
     int w = safe_scm2int(s_width, 1, proc);
     int h = safe_scm2int(s_height, 2, proc);
     Image* image = new ImageImpl<float,4>(w, h);
@@ -36,7 +36,7 @@ SchemeObject* ImageFactory::make_image(Scheme* scheme, SchemeObject* s_width, Sc
 }
 
 SchemeObject* ImageFactory::image_copy(Scheme* scheme, SchemeObject* s_image) {
-    wchar_t* proc = L"image-copy";        
+    const wchar_t* proc = L"image-copy";        
     Image* image = scm2image(s_image, proc, 1);
     Image* copy = new ImageImpl<uint8_t,4>(image->getWidth(), image->getHeight());
     copy->copy(*image);
@@ -50,7 +50,7 @@ SchemeObject* ImageFactory::load_image(Scheme* scheme, SchemeObject* s_filename)
 }
 
 SchemeObject* ImageFactory::save_image(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_filename) {
-    wchar_t* proc = L"save-image";
+    const wchar_t* proc = L"save-image";
     Image* image = scm2image(s_image, proc, 1);
     string filename = SchemeFilenames::toFilename(scm2string(s_filename));
     image->save(filename);
@@ -58,19 +58,19 @@ SchemeObject* ImageFactory::save_image(Scheme* scheme, SchemeObject* s_image, Sc
 }
 
 SchemeObject* ImageFactory::image_width(Scheme* scheme, SchemeObject* s_image) {
-    wchar_t* proc = L"image-width";
+    const wchar_t* proc = L"image-width";
     Image* image = scm2image(s_image, proc, 1);
     return int2scm(image->getWidth());
 }
 
 SchemeObject* ImageFactory::image_height(Scheme* scheme, SchemeObject* s_image) {
-    wchar_t* proc = L"image-height";
+    const wchar_t* proc = L"image-height";
     Image* image = scm2image(s_image, proc, 1);
     return int2scm(image->getHeight());
 }
 
 SchemeObject* ImageFactory::set_pixel(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* s_color) {
-    wchar_t* proc = L"set-pixel";
+    const wchar_t* proc = L"set-pixel";
     Image* image = scm2image(s_image, proc, 1);
     double x = safe_scm2double(s_x, 2, proc);
     double y = safe_scm2double(s_y, 3, proc);
@@ -80,7 +80,7 @@ SchemeObject* ImageFactory::set_pixel(Scheme* scheme, SchemeObject* s_image, Sch
 }
 
 SchemeObject* ImageFactory::get_pixel(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_x, SchemeObject* s_y) {
-    wchar_t* proc = L"get-pixel";
+    const wchar_t* proc = L"get-pixel";
     Image* image = scm2image(s_image, proc, 1);
     double x = safe_scm2double(s_x, 2, proc);
     double y = safe_scm2double(s_y, 3, proc);
@@ -92,7 +92,7 @@ SchemeObject* ImageFactory::get_pixel(Scheme* scheme, SchemeObject* s_image, Sch
 }
 
 SchemeObject* ImageFactory::draw_line(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_from, SchemeObject* s_to, SchemeObject* s_color) {
-    wchar_t* proc = L"draw-line";
+    const wchar_t* proc = L"draw-line";
     Image* image = scm2image(s_image, proc, 1);
     double x0 = safe_scm2double(i_vector_ref(s_from, 0), 2, proc);
     double y0 = safe_scm2double(i_vector_ref(s_from, 1), 2, proc);
@@ -104,7 +104,7 @@ SchemeObject* ImageFactory::draw_line(Scheme* scheme, SchemeObject* s_image, Sch
 }
 
 SchemeObject* ImageFactory::draw_filled_box(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_pos, SchemeObject* s_size, SchemeObject* s_color) {
-    wchar_t* proc = L"draw-filled-box";
+    const wchar_t* proc = L"draw-filled-box";
     Image* image = scm2image(s_image, proc, 1);
     double x = safe_scm2double(i_vector_ref(s_pos, 0), 2, proc);
     double y = safe_scm2double(i_vector_ref(s_pos, 1), 2, proc);
@@ -117,7 +117,7 @@ SchemeObject* ImageFactory::draw_filled_box(Scheme* scheme, SchemeObject* s_imag
 
 
 SchemeObject* ImageFactory::draw_filled_circle(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_pos, SchemeObject* s_radius, SchemeObject* s_color) {
-    wchar_t* proc = L"draw-filled-circle";
+    const wchar_t* proc = L"draw-filled-circle";
     Image* image = scm2image(s_image, proc, 1);
     double x = safe_scm2double(i_vector_ref(s_pos, 0), 2, proc);
     double y = safe_scm2double(i_vector_ref(s_pos, 1), 2, proc);
@@ -128,7 +128,7 @@ SchemeObject* ImageFactory::draw_filled_circle(Scheme* scheme, SchemeObject* s_i
 }
 
 SchemeObject* ImageFactory::draw_circle(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_center, SchemeObject* s_radius, SchemeObject* s_color) {
-    wchar_t* proc = L"draw-line";
+    const wchar_t* proc = L"draw-line";
     Image* image = scm2image(s_image, proc, 1);
     // TODO: Check that s_center is a vector and that s_color is a color and that image is an image
     double x0 = safe_scm2double(i_vector_ref(s_center, 0), 2, proc);
@@ -140,7 +140,7 @@ SchemeObject* ImageFactory::draw_circle(Scheme* scheme, SchemeObject* s_image, S
 }
 
 SchemeObject* ImageFactory::draw_string(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_pos, SchemeObject* s_text, SchemeObject* s_size, SchemeObject* s_ttf_file, SchemeObject* s_color) {
-    wchar_t* proc = L"draw-string";
+    const wchar_t* proc = L"draw-string";
     Image* image = scm2image(s_image, proc, 1);
     double x0 = safe_scm2double(i_vector_ref(s_pos, 0), 2, proc);
     double y0 = safe_scm2double(i_vector_ref(s_pos, 1), 2, proc);
@@ -155,7 +155,7 @@ SchemeObject* ImageFactory::draw_string(Scheme* scheme, SchemeObject* s_image, S
 }
 
 SchemeObject* ImageFactory::apply_gaussian_blur(Scheme* scheme, SchemeObject* s_image, SchemeObject* s_radius) {
-    wchar_t* proc = L"apply-gaussian-blur";
+    const wchar_t* proc = L"apply-gaussian-blur";
     Image* image = scm2image(s_image, proc, 1);
     double r = safe_scm2double(s_radius, 2, proc);
     // TODO: Check that r is positive
@@ -165,7 +165,7 @@ SchemeObject* ImageFactory::apply_gaussian_blur(Scheme* scheme, SchemeObject* s_
 }
 
 SchemeObject* ImageFactory::set_alpha_combine_mode(Scheme* scheme, SchemeObject* s_mode) {
-    wchar_t* proc = L"set-alpha-combine-mode";         
+    const wchar_t* proc = L"set-alpha-combine-mode";         
 
     assert_arg_type(scheme, proc, 1, s_symbol_p, s_mode);        
 

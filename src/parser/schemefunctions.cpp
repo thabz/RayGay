@@ -6,7 +6,7 @@
 
 SchemeObject* iso_goursats_surface(Scheme* scheme, SchemeObject* s_a, SchemeObject* s_b, SchemeObject* s_c, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* s_z)
 {
-    wchar_t* proc = L"iso-goursats-surface";
+    const wchar_t* proc = L"iso-goursats-surface";
     double a = safe_scm2double(s_a, 1, proc);
     double b = safe_scm2double(s_b, 2, proc);
     double c = safe_scm2double(s_c, 3, proc);
@@ -30,7 +30,7 @@ SchemeObject* iso_goursats_surface(Scheme* scheme, SchemeObject* s_a, SchemeObje
 
 SchemeObject* iso_torus(Scheme* scheme, SchemeObject* s_R, SchemeObject* s_r, SchemeObject* s_x, SchemeObject* s_y, SchemeObject* s_z)
 {
-    wchar_t* proc = L"iso-torus";
+    const wchar_t* proc = L"iso-torus";
     double R = safe_scm2double(s_R, 1, proc);
     double r = safe_scm2double(s_r, 2, proc);
     double x = safe_scm2double(s_x, 3, proc);

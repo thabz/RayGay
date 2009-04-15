@@ -41,7 +41,7 @@ void coerceNumbers(int num, SchemeStack::iterator stack, std::complex<double>* d
 // stack contains all integers but just one rational, the rational is 
 // returned. If it's all rationals but with just one real, the real-type 
 // is returned. 
-SchemeObject::ObjectType representativeNumberType(wchar_t* procname, int num, SchemeStack::iterator stack) {
+SchemeObject::ObjectType representativeNumberType(const wchar_t* procname, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType type = SchemeObject::INTEGER_NUMBER;
     for(int i = 0; i < num; i++) {
         SchemeObject* n = *stack++;
