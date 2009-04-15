@@ -15,20 +15,21 @@
 
 using namespace std;
 
+#define lookupInt(s) safe_scm2int(p->lookup(s),0,L"")
 #define lookupDouble(s) safe_scm2double(p->lookup(s),0,L"")
 #define lookupVector(s) scm2vector(p->lookup(s),L"",0)
 #define lookupRGBA(s) scm2rgba(p->lookup(s),L"",0)
 
-class test_parser : public Test {
+class test_vector_math : public Test {
     private:
 	Vector v1;
     public: 
 	void run() {
-        Scene* scene = new Scene();        
+	    Scene* scene = new Scene();        
 	    SceneParser* p = new SceneParser(scene);
 
-        p->assignVariable(L"test-predefined-a", 30);
-	    p->parse_file(SchemeFilenames::toString(getLoadPrefix() + "/scheme/vector-math.scm"));
+	    p->assignVariable(L"test-predefined-a", 30);
+	    p->parse_file(SchemeFilenames::toString(getLoadPrefix() + "/scheme/test-vector-math.scm"));
 
 	    assertTrue(IS_EQUAL(lookupDouble(L"test-predefined-a"),30));
 	    assertTrue(IS_EQUAL(lookupDouble(L"test-define-1"),10));
@@ -68,14 +69,48 @@ class test_parser : public Test {
 	}
 };
 
+class test_mesh : public Test {
+    private:
+	Vector v1;
+    public: 
+	void run() {
+	    Scene* scene = new Scene();        
+	    SceneParser* p = new SceneParser(scene);
+
+	    p->assignVariable(L"test-predefined-a", 30);
+	    p->parse_file(SchemeFilenames::toString(getLoadPrefix() + "/scheme/test-mesh.scm"));
+
+	    assertTrue(lookupInt(L"tetrahedron-vertices-num") == 4);
+	    assertTrue(lookupInt(L"tetrahedron-faces-num") == 4);
+	    assertTrue(lookupInt(L"tetrahedron-edges-num") == 6);
+
+	    assertTrue(lookupInt(L"hexahedron-vertices-num") == 8);
+	    assertTrue(lookupInt(L"hexahedron-faces-num") == 6*2);
+	    assertTrue(lookupInt(L"hexahedron-edges-num") == 12+6);
+	    
+	    assertTrue(lookupInt(L"octahedron-vertices-num") == 6);
+	    assertTrue(lookupInt(L"octahedron-faces-num") == 8);
+	    assertTrue(lookupInt(L"octahedron-edges-num") == 12);
+
+	    assertTrue(lookupInt(L"dodecahedron-vertices-num") == 20);
+	    assertTrue(lookupInt(L"dodecahedron-faces-num") == 12*3);
+	    assertTrue(lookupInt(L"dodecahedron-edges-num") == 30 + 12*2);
+
+	    assertTrue(lookupInt(L"icosahedron-vertices-num") == 12);
+	    assertTrue(lookupInt(L"icosahedron-faces-num") == 20);
+	    assertTrue(lookupInt(L"icosahedron-edges-num") == 30);
+	}
+};
+
 int main(int argc, char *argv[]) {
     TestSuite suite;
 
-    suite.add("Parser",new test_parser());
+    suite.add("Vector math",new test_vector_math());
+    suite.add("Mesh",new test_mesh());
     try {
-        suite.run();
+	suite.run();
     } catch (scheme_exception e) {
-        wcerr << e.toString() << endl;    
+	wcerr << e.toString() << endl;    
     }        
     suite.printStatus();
     if (suite.hasFailures()) {

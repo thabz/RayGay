@@ -1,2 +1,2 @@
 
-EXTRA_DIST = test.scm 
+EXTRA_DIST = test-vector-math.scm test-mesh.scm
