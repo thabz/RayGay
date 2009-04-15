@@ -29,7 +29,7 @@
  (snap-to-unit-sphere
  '(#(1 1 1) #(-1 -1 1) #(-1 1 -1) #(1 -1 -1))))
 
-(define cube-vertices
+(define hexahedron-vertices
  (snap-to-unit-sphere
   (map list->vector 
    (expand (list 1 1 1)))))
