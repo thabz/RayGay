@@ -28,7 +28,7 @@ class test_parser : public Test {
 	    SceneParser* p = new SceneParser(scene);
 
         p->assignVariable(L"test-predefined-a", 30);
-	    p->parse_file(SchemeFilenames::toString(getLoadPrefix() + "/scenes/test.scm"));
+	    p->parse_file(SchemeFilenames::toString(getLoadPrefix() + "/scheme/vector-math.scm"));
 
 	    assertTrue(IS_EQUAL(lookupDouble(L"test-predefined-a"),30));
 	    assertTrue(IS_EQUAL(lookupDouble(L"test-define-1"),10));

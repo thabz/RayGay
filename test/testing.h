@@ -30,7 +30,7 @@ class Test {
 	void setName(string name);
 	virtual ~Test();
 	virtual void run() = 0;
-	void _assertTrue(bool expr, char* filename, int line, char* expr_code);
+	void _assertTrue(bool expr, const char* filename, int line, const char* expr_code);
 	void printStatus();
 	bool hasFailures();
 	string getLoadPrefix();
@@ -106,7 +106,7 @@ string Test::getName() {
     return name;        
 }
 
-void Test::_assertTrue(bool expr, char* filename, int line, char* expr_code) {
+void Test::_assertTrue(bool expr, const char* filename, int line, const char* expr_code) {
     total_asserts++;
     if (expr) {
 	succeded_asserts++;
