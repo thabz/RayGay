@@ -120,7 +120,8 @@
 
 
 (define (mesh-extract-edges mesh)
-  "Returns a list of two-item lists" 
+  "Returns a list of two-item lists. (a b) and (b a) is considered "
+  "the same edge."
   (let faceloop ((faces (cadr mesh))
                  (result '()))
    (if (null? faces)
