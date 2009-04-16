@@ -509,7 +509,7 @@ ostream & operator<<(ostream &os, const bigint &b) {
 
 bigint bigint::times_two() const {
     bigint r = *this;
-    for(int32_t i = r.size()-1; i >= 0; i--) {
+    for(uint32_t i = r.size()-1; i >= 0; i--) {
         r.digits[i] <<= 1;
         if (r.digits[i] >=  RADIX) {
             if (i+1 >= r.size()) {
