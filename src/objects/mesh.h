@@ -61,9 +61,12 @@ class Mesh : public ObjectGroup {
 
 	/// Add a triangle to the mesh
 	void addTriangle(const Vector* corners, const Vector2* uv);
+
+	/// Add a convex polygon to the mesh
+	void addConvexPolygon(int num, const uint32_t* c, const uint32_t* uv = NULL, const uint32_t* n = NULL);
 	
 	/// Add a quad to the mesh
-    void addQuad(const uint32_t c[4], const uint32_t uv[4] = NULL, const uint32_t n[4] = NULL);
+        void addQuad(const uint32_t c[4], const uint32_t uv[4] = NULL, const uint32_t n[4] = NULL);
         
 	/// Add a triangle to the mesh
 //    void addTriangle(const Vector& c1, const Vector& c2, const Vector& c3);

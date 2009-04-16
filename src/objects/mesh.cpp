@@ -132,6 +132,41 @@ void Mesh::addQuad(const uint32_t c[4], const uint32_t uv[4], const uint32_t n[4
 }
 
 /**
+ * Add a convex polygon to the mesh. This results in several triangles being added.
+ *
+ * @param c Indices to vertices in clockwise direction
+ * @param uv Indices to the same number of uv-coordinates
+ * @param n Indices to the same number of normals
+ */
+void Mesh::addConvexPolygon(int num, const uint32_t* c, const uint32_t* uv, const uint32_t* n) {
+    uint32_t tc[3];
+    uint32_t tuv[3];
+    uint32_t tn[3];
+    
+    if (num < 3) {
+       throw_exception("polygon with less than 3 vertices added to mesh");
+    }
+
+    // Break polygon into fan of triangles with common point c[0]
+    for(int i = 2; i < num; i++) {
+	tc[0] = c[0]; tc[1] = c[i-1]; tc[2] = c[i];
+	if (uv != NULL) {
+	    tuv[0] = uv[0]; tuv[1] = uv[i-1]; tuv[2] = uv[i];
+	}
+	if (n != NULL) {
+	    tn[0] = n[0]; tn[1] = n[i-1]; tn[2] = n[i];
+	}
+	if (uv != NULL && n != NULL) {
+	    addTriangle(tc,tuv,tn);
+	} else if (uv != NULL && n == NULL) {
+	    addTriangle(tc,tuv);
+	} else {
+	    addTriangle(tc);
+	}
+    }
+}
+
+/**
  * Adds a new vertex to the mesh.
  *
  * @param point the vertex to add
