@@ -92,7 +92,7 @@ void Arealight::getSingleLightinfo(const Intersection& inter, KdTree* space, Lig
 
 
 bool Arealight::probeSublight(int i, const Intersection& inter, KdTree* space, uint32_t depth) const {
-    Vector surface_point = inter.getPoint() + 1000*EPSILON * inter.getOriginalNormal();
+    Vector surface_point = inter.getPoint() + EPSILON * inter.getOriginalNormal();
 
     Vector direction_to_light = getPosition(i) - surface_point;
     double dist_to_light = direction_to_light.length();
