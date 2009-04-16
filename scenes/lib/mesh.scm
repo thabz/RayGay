@@ -13,6 +13,14 @@
      (vector->list (hashtable-keys h)))
     (hashtable-set! h (car items) #t))))
 
+(define (shuffle items)
+ "Shuffle a list"
+ (let* ((v (list->vector items))
+        (l (vector-length v)))
+  (do ((i 0 (+ i 1)))
+   ((= i l) (vector->list v))
+   (vector-set! v (vector-ref v (random 0 l)) (random 0 l)))))
+
 (define (face-find-edges face)
  "Returns a list of pair representing edges. "
  "Ie. turns (a b c) into ((a b) (b c) (c a))"
