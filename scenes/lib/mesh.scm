@@ -19,7 +19,11 @@
         (l (vector-length v)))
   (do ((i 0 (+ i 1)))
    ((= i l) (vector->list v))
-   (vector-set! v (vector-ref v (random 0 l)) (random 0 l)))))
+   (let* ((r (floor (random 0 l)))
+	  (v-i (vector-ref v i))
+	  (v-r (vector-ref v r)))
+    (vector-set! v i v-r)
+    (vector-set! v r v-i)))))
 
 (define (face-find-edges face)
  "Returns a list of pair representing edges. "
@@ -152,6 +156,8 @@
 ; Using the 3D Incremental Convex Hull algorithm.
 (define (convex-hull points)
  "Returns a mesh that is the convex hull of a group of points."
+ 
+ (define points (shuffle points))
 
  (define (find-border-edges faces)
   "From a group of connected faces return those edges that "
