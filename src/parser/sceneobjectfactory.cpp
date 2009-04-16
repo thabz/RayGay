@@ -305,24 +305,26 @@ SchemeObject* make_mesh(Scheme* scheme, SchemeObject* s_material, SchemeObject* 
     assert(scm2bool(s_list_p (scheme, s_triangles)));
     flength = safe_scm2int(s_length(scheme, s_triangles), 0, L"");
     Vector2 uv = Vector2(0,0);
-    uint32_t v[3];
     try {
 	    for(uint32_t i = 0; i < flength; i++) {
 	        SchemeObject* s_triangle = s_list_ref(scheme, s_triangles, int2scm(i));
-		if (scm2bool(s_vector_p(scheme, s_triangle))) {
-		    Vector triangle = scm2vector(s_triangle, proc, 2);
-		    v[0] = uint32_t(triangle[0]);
-		    v[1] = uint32_t(triangle[1]);
-		    v[2] = uint32_t(triangle[2]);
-		} else if (scm2bool(s_list_p(scheme, s_triangle))) {
-		    for(int j = 0; j < 3; j++) {
-			SchemeObject* s_i = s_list_ref(scheme, s_triangle, int2scm(j));
-			v[j] = safe_scm2int(s_i, 2, proc);
+		if (scm2bool(i_vector_p(s_triangle))) {
+		    int num = i_vector_length(s_triangle);
+		    uint32_t v[num];
+		    for(int j = 0; j < num; j++) {
+			v[j] = safe_scm2int(i_vector_ref(s_triangle,j), 2, proc);
 		    }
+		    mesh->addConvexPolygon(num, v);
+		} else if (scm2bool(i_list_p(s_triangle))) {
+		    int num = i_length(s_triangle);
+		    uint32_t v[num];
+		    for(int j = 0; j < num; j++) {
+			v[j] = safe_scm2int(s_list_ref(scheme, s_triangle, int2scm(j)), 2, proc);
+		    }
+		    mesh->addConvexPolygon(num, v);
 		} else {
 		    wrong_type_arg(proc, 2, s_triangle);
 		}
-		mesh->addTriangle(v);
 	    }
     } catch (Exception e) {
 	// TODO: Do better ie. convert e.getMessage to wchar_t
