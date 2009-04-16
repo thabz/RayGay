@@ -25,6 +25,27 @@
     (vector-set! v i v-r)
     (vector-set! v r v-i)))))
 
+(define (face-normal v1 v2 v3)
+ "Normalvector of the triangle spanned by v1 v2 v3"
+ (vnormalize (vcrossproduct (v- v3 v1) (v- v3 v2))))
+
+(define (near-zero? f)
+ (< (abs f) 0.000001))
+
+(define (planar? v1 v2 v3 v4)
+ "Are the four points in the same plane?"
+ (let ((n1 (face-normal v1 v2 v3))
+       (n2 (face-normal v2 v3 v4)))
+  (or (near-zero? (vdist n1 n2))
+      (near-zero? (vdist (v* n1 -1) n2)))))
+
+(define (facing? v1 v2 v3 p)
+ "Is the triangle with vertices t1, t2, t3 (clockwise) facing p?"
+ (let ((n (face-normal v1 v2 v3))
+       (ε 0.0001))
+  (< ε (vdot n (v- p v1)))))
+
+
 (define (face-find-edges face)
  "Returns a list of pair representing edges. "
  "Ie. turns (a b c) into ((a b) (b c) (c a))"
@@ -59,8 +80,6 @@
      (loop (cdr edges) 
            (cons (hashtable-ref edge->face (reverse (car edges)) #f) neighbours))))))) 
 
-(define (face-normal v1 v2 v3)
- (vnormalize (vcrossproduct (v- v3 v1) (v- v3 v2))))
 
 (define (parallel-faces? mesh face1 face2)
  "Returns whether the to faces have the same normal."
@@ -145,12 +164,6 @@
       (edgeloop (cdr edges)
                  (cons (list-sort < (car edges)) result)))))))
 
-(define (facing? v1 v2 v3 p)
- "Is the triangle with vertices t1, t2, t3 (clockwise) facing p?"
- (let ((n (face-normal v1 v2 v3))
-       (ε 0.000001))
-  (< ε (vdot n (v- p v1)))))
-
 ; 
 ; http://www.eecs.tufts.edu/~mhorn01/comp163/algorithm.html
 ; Using the 3D Incremental Convex Hull algorithm.
@@ -188,6 +201,17 @@
 	     p))
    (cadr hull)))
 
+ (define (find-planar-faces hull p)
+  "Returns the faces of a hull that p are planar with"
+  (filter 
+   (lambda (face)
+    (planar? (list-ref (car hull) (car face))
+             (list-ref (car hull) (cadr face))
+	     (list-ref (car hull) (caddr face))
+	     p))
+   (cadr hull)))
+
+
  (define (add-point hull p)
   "Incrementally grow the hull by adding a point p"
   (let* ((facing-faces (find-facing-faces hull p))
@@ -207,14 +231,13 @@
             (cons (list (caar border-edges) (cadar border-edges) new-index)
 	          faces))))))) 
 
- ;; TODO: Consider when the first four points are planar. Does this
- ;; initial-hull work then?
+ (define initial-points (list (car points) (cadr points) (caddr points)))
+
  (define initial-hull
-  (list
-   (list (car points) (cadr points) (caddr points) (cadddr points))
-   (list '(0 3 1) '(0 1 2) '(1 3 2) '(3 0 2))))
+  (list initial-points (list '(0 1 2) '(0 2 1))))
 
  (if (< (length points) 3)
-  '()
-  (optimize-mesh (fold-left add-point initial-hull (cddddr points)))))
+  'error
+  (optimize-mesh 
+   (fold-left add-point initial-hull (cdddr points)))))
 
