@@ -88,7 +88,7 @@ double Texture::scaleV(double v) const {
 
 RGB Texture::getNormalTexel(double u, double v) const {
     u = scaleU(u); v = scaleV(v);
-    return getRGBWrapped(int(u*(width-1)),int(v*(height-1)));
+    return getRGBWrapped(int(u*width),int(v*height));
 }
 
 #define BiCubicP(x) (x) > 0 ? (x) : 0
@@ -120,8 +120,8 @@ double Texture::biCubicR(const double x) const {
 RGB Texture::getBiCubicTexel(double u, double v) const {
     u = scaleU(u); v = scaleV(v);
 
-    double x = u*(width-1);
-    double y = v*(height-1);
+    double x = u * width;
+    double y = v * height;
     int i = int(x); int j = int(y);
 
     double dx = x-i; double dy = y-j;
@@ -157,8 +157,8 @@ RGB Texture::getBiCubicTexel(double u, double v) const {
 RGB Texture::getBiLinearTexel(double u, double v) const {
     u = scaleU(u); v = scaleV(v);
 
-    double x = u*(width-1);
-    double y = v*(height-1);
+    double x = u * width;
+    double y = v * height;
     int xi = int(x); int yi = int(y);
     double dx = x - xi; double dy = y - yi;
 

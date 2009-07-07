@@ -18,7 +18,7 @@ using namespace std;
 #if 1
 #define assertEqualColor(n,m) assertTrue((n - m).brightness() < 0.1)
 #else
-#define assertEqualColor(a,b) assertTrue((a) == (b))
+#define assertEqualColor(a,b) assertTrue(IS_EQUAL((a).r(),(b).r()) && IS_EQUAL((a).g(),(b).g()) && IS_EQUAL((a).b(),(b).b()))
 #endif
 
 class test_rgba : public Test {
@@ -123,6 +123,20 @@ class test_texture : public Test {
                     assertTrue(c == col);
                 }   	            
     	    }
+
+
+	    // Test with texture backed by a 2x2 pixel image
+	    RGBA blue = RGBA(0,0,0.5,1);
+	    RGBA red = RGBA(1,0,0,1);
+    	    img = new ImageImpl<double,4>(2,2);
+    	    img->clear(blue);
+	    img->setRGBA(1,1,red);
+	    img->setRGBA(0,0,red);
+    	    tex = new SimpleTexture(img, Vector2(1,1), Texture::INTERPOLATION_NONE);
+	    assertEqualColor(tex->getTexel(0.1,0.1), red);
+	    assertEqualColor(tex->getTexel(0.9,0.9), red);
+	    assertEqualColor(tex->getTexel(0.1,0.9), blue);
+	    assertEqualColor(tex->getTexel(0.9,0.1), blue);
         }
 };
 
