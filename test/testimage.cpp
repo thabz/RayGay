@@ -14,11 +14,13 @@
 
 using namespace std;
 
+#define IS_SORTA_ZERO(p) (fabs(p) < 0.1)
+#define IS_SORTA_EQUAL(a,b) (IS_SORTA_ZERO((a) - (b)))
 
-#if 1
+#if 0
 #define assertEqualColor(n,m) assertTrue((n - m).brightness() < 0.1)
 #else
-#define assertEqualColor(a,b) assertTrue(IS_EQUAL((a).r(),(b).r()) && IS_EQUAL((a).g(),(b).g()) && IS_EQUAL((a).b(),(b).b()))
+#define assertEqualColor(x,y) assertTrue(IS_SORTA_EQUAL((x).r(),(y).r()) && IS_SORTA_EQUAL((x).g(),(y).g()) && IS_SORTA_EQUAL((x).b(),(y).b()))
 #endif
 
 class test_rgba : public Test {
@@ -144,7 +146,7 @@ class test_png : public Test {
     public:
 	void run() {
 	    // Test basic save and load
-	    RGBA color = RGBA(1.0,0.0,0.0,128.0/255.0);
+	    RGBA color = RGBA(1.0,1.0,0.0,128.0/255.0);
 
 	    Image* img = new ImageImpl<double,4>(10,20);
 	    img->setRGBA(5,15,color);
@@ -178,7 +180,8 @@ class test_png : public Test {
 	    img = Image::load(getLoadPrefix() + "/gfx/withpalette.png");
 	    assertTrue(img->getWidth() == 10);
 	    assertTrue(img->getHeight() == 10);
-	    assertEqualColor(img->getRGBA(0,0), RGBA(1.0,1,0,1.0));
+	    assertEqualColor(img->getRGBA(1,1), RGB(1.0,1.0,1.0));
+	    assertEqualColor(img->getRGBA(0,0), RGB(1.0,0.0,0.0));
 	    delete img;
 	    
 	    img = Image::load(getLoadPrefix() + "/gfx/16x12x3.png");
