@@ -36,9 +36,9 @@ libtracer_la_SOURCES = \
 libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libphoton.la lights/liblights.la materials/libmaterials.la collections/libcollections.la objects/libobjects.la paths/libpaths.la math/libmath.la  image/libimage.la space/libspace.la shaders/libshaders.la cameras/libcameras.la imagefilters/libimagefilters.la filters/libfilters.la scheme/libscheme.la
 
 #--------------------------------------
-LIBS = @DARWIN_LIBS@		     
+LIBS = @DARWIN_LIBS@
 
-bin_PROGRAMS = raygay raygay-server raygay-queuemanager raygay-repl
+bin_PROGRAMS = raygay raygay-server raygay-queuemanager raygay-repl raygay-mpi
 noinst_PROGRAMS = bench 
 if OS_DARWIN
    noinst_PROGRAMS += win
@@ -73,6 +73,10 @@ if OS_DARWIN
    win_LDADD = libtracer.la 
    win_LDFLAGS = @DARWIN_LIBS@
 endif
+
+raygay_mpi_SOURCES = mpi-main.cpp
+raygay_mpi_LDADD = @MPI_LIBS@
+raygay_mpi_CFLAGS = @MPI_CXXFLAGS@
 
 #--------------------------------------
 
