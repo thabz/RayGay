@@ -4,6 +4,7 @@
 (load "image-sizes.scm")
 (load "mesh.scm")
 (load "object-factory.scm")
+(load "color-defs.scm")
 
 (define (add-to-scene thing . rest)
   "Add a sceneobject or a list of sceneobjects to scene"
