@@ -7,24 +7,27 @@
 
 SchemeObject* TransformationFactory::rotate(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_axis, SchemeObject* s_angle) 
 {
-    Vector axis = scm2vector(s_axis, L"rotate", 2);
-    double angle = safe_scm2double(s_angle, 3, L"rotate");
+    wchar_t* usage = L"(rotate object axis angle)";
+    Vector axis = scm2vector(s_axis, usage, 2);
+    double angle = safe_scm2double(s_angle, 3, usage);
     Matrix matrix = Matrix::matrixRotate(axis,angle);
-    return transform(scheme, s_obj, matrix, L"rotate");
+    return transform(scheme, s_obj, matrix, usage);
 }
 
 SchemeObject* TransformationFactory::translate(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_translation) 
 {
-    Vector translation = scm2vector(s_translation, L"translate", 2);
+    wchar_t* usage = L"(translate object translation-vector)";
+    Vector translation = scm2vector(s_translation, usage, 2);
     Matrix matrix = Matrix::matrixTranslate(translation);
-    return transform(scheme, s_obj, matrix, L"translate");
+    return transform(scheme, s_obj, matrix, usage);
 }
 
 SchemeObject* TransformationFactory::scale(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_scale) 
 {
-    Vector scale = scm2vector(s_scale, L"scale", 2);
+    wchar_t* usage = L"(scale object scale-vector)";
+    Vector scale = scm2vector(s_scale, usage, 2);
     Matrix matrix = Matrix::matrixScale(scale);
-    return transform(scheme, s_obj, matrix, L"scale");
+    return transform(scheme, s_obj, matrix, usage);
 }
 
 /**

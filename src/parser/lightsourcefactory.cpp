@@ -13,7 +13,8 @@ SchemeObject* s_lightsource_p(Scheme* scheme, SchemeObject* object) {
 }
 
 SchemeObject* s_make_pointlight(Scheme* scheme, SchemeObject* s_pos, SchemeObject* s_power) {
-    Vector pos = scm2vector(s_pos, L"make-pointlight", 1);
+    wchar_t* proc = L"(make-pointlight pos [power])";
+    Vector pos = scm2vector(s_pos, proc, 1);
     Pointlight* light = new Pointlight(pos);
     if (s_power != S_UNSPECIFIED) {
 	RGB power = scm2rgb(s_power);
@@ -23,12 +24,12 @@ SchemeObject* s_make_pointlight(Scheme* scheme, SchemeObject* s_pos, SchemeObjec
 }
 
 SchemeObject* s_make_arealight(Scheme* scheme, SchemeObject* s_pos, SchemeObject* s_dir, SchemeObject* s_radius, SchemeObject* s_num, SchemeObject* s_jitter, SchemeObject* s_power) {
-    
-    Vector pos = scm2vector(s_pos, L"make-arealight", 1);
-    Vector dir = scm2vector(s_dir, L"make-arealight", 2);
-    double radius = safe_scm2double(s_radius,3,L"make-arealight");
-    int num = safe_scm2int(s_num,4,L"make-arealight");
-    double jitter = safe_scm2double(s_jitter,5,L"make-arealight");
+    wchar_t* proc = L"(make-arealight pos dir radius num jitter [power])";
+    Vector pos = scm2vector(s_pos, proc, 1);
+    Vector dir = scm2vector(s_dir, proc, 2);
+    double radius = safe_scm2double(s_radius, 3, proc);
+    int num = safe_scm2int(s_num, 4, proc);
+    double jitter = safe_scm2double(s_jitter, 5, proc);
     if (RendererSettings::uniqueInstance()->fast_preview) {
         return s_make_pointlight(scheme, s_pos, s_power);
     }
@@ -41,10 +42,11 @@ SchemeObject* s_make_arealight(Scheme* scheme, SchemeObject* s_pos, SchemeObject
 }
 
 SchemeObject* s_make_spotlight(Scheme* scheme, SchemeObject* s_pos, SchemeObject* s_lookat, SchemeObject* s_angle, SchemeObject* s_cut_angle, SchemeObject* s_power) {
-    Vector pos = scm2vector(s_pos, L"make-spotlight", 1);
-    Vector lookat= scm2vector(s_lookat, L"make-spotlight", 2);
-    double angle = safe_scm2double(s_angle,3,L"make-spotlight");
-    double cut_angle = safe_scm2double(s_cut_angle,4,L"make-spotlight");
+    wchar_t* proc = L"(make-spotlight pos lookat angle cut-angle [power])";
+    Vector pos = scm2vector(s_pos, proc, 1);
+    Vector lookat= scm2vector(s_lookat, proc, 2);
+    double angle = safe_scm2double(s_angle,3,proc);
+    double cut_angle = safe_scm2double(s_cut_angle,4,proc);
     Spotlight* light = new Spotlight(pos,lookat,angle,cut_angle);
     if (s_power != S_UNSPECIFIED) {
 	RGB power = scm2rgb(s_power);
@@ -54,8 +56,9 @@ SchemeObject* s_make_spotlight(Scheme* scheme, SchemeObject* s_pos, SchemeObject
 }
 
 SchemeObject* s_make_skylight(Scheme* scheme, SchemeObject* s_radius, SchemeObject* s_num, SchemeObject* s_power) {
-    double radius = safe_scm2double(s_radius,1,L"make-skylight");
-    int num = safe_scm2int(s_num,2,L"make-skylight");
+    wchar_t* proc = L"(make-skylight radius num [power])";
+    double radius = safe_scm2double(s_radius, 1, proc);
+    int num = safe_scm2int(s_num, 2, proc);
     if (RendererSettings::uniqueInstance()->fast_preview) {
         num = 1;
     }
