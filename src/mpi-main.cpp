@@ -14,19 +14,27 @@ enum tags {
     READY_FOR_WORK,
     RETURNING_WORK,
     HERE_IS_SOME_WORK,
+    THERE_IS_NO_MORE_WORK
 };
 
 void master() {
     char buff[BUFSIZE];
     bool done = false;
     MPI::Status stat; 
+    int jobs = 100;
     while(!done) {
 	MPI::COMM_WORLD.Recv(buff, 1024, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, stat);
 	int tag = stat.Get_tag();
 	if (tag == READY_FOR_WORK) {
 	    int source = stat.Get_source();
-	    cout << "Source " << source << " ready for work." << endl;
-	    MPI::COMM_WORLD.Send(NULL, 0, MPI_CHAR, source, HERE_IS_SOME_WORK);
+	    if (jobs > 0) {
+		--jobs;
+		cout << "Source " << source << " getting work." << endl;
+		MPI::COMM_WORLD.Send(NULL, 0, MPI_CHAR, source, HERE_IS_SOME_WORK);
+	    } else {
+		cout << "Source " << source << " laid off." << endl;
+		MPI::COMM_WORLD.Send(NULL, 0, MPI_CHAR, source, THERE_IS_NO_MORE_WORK);
+	    }
 	} else if (tag == RETURNING_WORK) {
 	    int source = stat.Get_source();
 	    cout << "Source " << source << " returned some work." << endl;
@@ -37,15 +45,20 @@ void master() {
 void slave(int myid) {
     char buff[BUFSIZE];
     bool done = false;
-    MPI_Status stat; 
+    MPI::Status stat; 
     srandom((unsigned int)&stat);
     while(!done) {
         MPI::COMM_WORLD.Send(NULL, 0, MPI_CHAR, 0, READY_FOR_WORK);
-	MPI::COMM_WORLD.Recv(buff, 1024, MPI_CHAR, 0, HERE_IS_SOME_WORK);
-	int secs = random() & 7;
-	cout << " Slave " << myid << " got some work for " << secs << " seconds." << endl;
-	sleep(secs);
-        MPI::COMM_WORLD.Send(NULL, 0, MPI_CHAR, 0, RETURNING_WORK);
+	MPI::COMM_WORLD.Recv(buff, 1024, MPI_CHAR, 0, MPI_ANY_TAG, stat);
+	int tag = stat.Get_tag();
+	if (tag == THERE_IS_NO_MORE_WORK) {
+	    done = true;
+	} else if (tag == HERE_IS_SOME_WORK) {
+	    int usecs = random() & 1000000; 
+   	    cout << " Slave " << myid << " got some work for " << usecs << " microseconds." << endl;
+	    usleep(usecs);
+            MPI::COMM_WORLD.Send(NULL, 0, MPI_CHAR, 0, RETURNING_WORK);
+	}
     }
 }
  
@@ -64,6 +77,8 @@ int main(int argc, char *argv[])
    } else {
        slave(myid);
    }
+
+   cout << "Exit for process " << myid << endl;
  
    MPI::Finalize(); /* MPI Programs end with MPI Finalize; this is a weak synchronization point */
    return 0;
