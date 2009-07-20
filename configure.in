@@ -91,30 +91,14 @@ dnl -------------------------------------------------
 dnl Check for MPI library. 
 dnl -------------------------------------------------
 
-AC_ARG_WITH([mpi],
-  [AS_HELP_STRING([--with-mpi=@<:@ARG@:>@],
-    [Use MPI (possible values : no, yes, check) @<:@default=check@:>@])],
-  [],
-  [with_mpi=check])
-
-AS_IF([test "x$with_mpi" != xno],
-  [if test "x$with_mpi" = xcheck; then
-     ACX_MPI([AC_DEFINE([HAVE_MPI], 1, [Defined if you have libmpi])
-              with_mpi=yes
-	      MPI_LIBS=`mpicxx --showme:link`
-	      AC_SUBST(MPI_LIBS)
-	      MPI_CFLAGS=`mpicxx --showme:compile`
-	      AC_SUBST(MPI_CXXFLAGS)],
-	      with_mpi=no)
-   elif test "x$with_mpi" = xyes; then
-     ACX_MPI(AC_DEFINE([HAVE_MPI], 1, [Defined if you have libmpi]),
-             with_mpi=no)
-     test "x$with_mpi" = xyes || AC_MSG_FAILURE(
-       [--with-mpi=$with_mpi was given, but test for $with_mpi failed])
-   fi
-  ])
-
-echo $MPILIBS
+ACX_MPI([AC_DEFINE([HAVE_MPI], 1, [Defined if you have libmpi])
+      with_mpi=yes
+      MPI_LIBS=`mpicxx --showme:link`
+      AC_SUBST(MPI_LIBS)
+      MPI_CFLAGS=`mpicxx --showme:compile`
+      AC_SUBST(MPI_CXXFLAGS)],
+      with_mpi=no)
+AM_CONDITIONAL(HAVE_MPI, test "x$with_mpi" = "xyes")
 
 dnl -------------------------------------------------
 dnl Check for readline. Macro taken from autoconf manual.

@@ -38,11 +38,14 @@ libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libpho
 #--------------------------------------
 LIBS = @DARWIN_LIBS@
 
-bin_PROGRAMS = raygay raygay-server raygay-queuemanager raygay-repl raygay-mpi
+bin_PROGRAMS = raygay raygay-server raygay-queuemanager raygay-repl 
 noinst_PROGRAMS = bench 
 if OS_DARWIN
    noinst_PROGRAMS += win
 endif   
+if HAVE_MPI 
+   bin_PROGRAMS += raygay-mpi
+endif
 
 raygay_SOURCES = main.cpp window-gtk.cpp window-gtk.h window-icon.h
 #tracer_CXXFLAGS = $(GTK_CFLAGS) $(CXXFLAGS)
@@ -74,9 +77,11 @@ if OS_DARWIN
    win_LDFLAGS = @DARWIN_LIBS@
 endif
 
-raygay_mpi_SOURCES = mpi-main.cpp
-raygay_mpi_LDADD = @MPI_LIBS@
-raygay_mpi_CFLAGS = @MPI_CXXFLAGS@
+if HAVE_MPI 
+   raygay_mpi_SOURCES = mpi-main.cpp
+   raygay_mpi_LDADD = @MPI_LIBS@
+   raygay_mpi_CFLAGS = @MPI_CXXFLAGS@
+endif
 
 #--------------------------------------
 
