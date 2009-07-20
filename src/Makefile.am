@@ -80,7 +80,7 @@ endif
 if HAVE_MPI 
    raygay_mpi_SOURCES = mpi-main.cpp
    raygay_mpi_LDADD = @MPI_LIBS@
-   raygay_mpi_CFLAGS = @MPI_CXXFLAGS@
+   raygay_mpi_CXXFLAGS = @MPI_CXXFLAGS@
 endif
 
 #--------------------------------------

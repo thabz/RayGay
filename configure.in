@@ -95,7 +95,7 @@ ACX_MPI([AC_DEFINE([HAVE_MPI], 1, [Defined if you have libmpi])
       with_mpi=yes
       MPI_LIBS=`mpicxx --showme:link`
       AC_SUBST(MPI_LIBS)
-      MPI_CFLAGS=`mpicxx --showme:compile`
+      MPI_CXXFLAGS=`mpicxx --showme:compile`
       AC_SUBST(MPI_CXXFLAGS)],
       with_mpi=no)
 AM_CONDITIONAL(HAVE_MPI, test "x$with_mpi" = "xyes")
