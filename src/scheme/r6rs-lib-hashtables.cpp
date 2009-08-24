@@ -377,7 +377,7 @@ uint32_t i_string_ci_hash(std::wstring str) {
 
 inline
 uint32_t i_pointer_hash(void* ptr) {
-    int32_t h = int32_t(ptr);
+    int32_t h = int64_t(ptr) & 0xffffffff;
     h ^= h << 3;
     h += h >> 5;
     h ^= h << 4;

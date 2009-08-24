@@ -90,6 +90,8 @@ void sendDirRecursively(HTTPClient* client, string dir_name) {
     if ((fd = open(dir_name.c_str(), O_RDONLY, 0)) < 0) {
         throw_exception("Error opening " + dir_name);
     }
+    // getdirentries is deprecated. Use readdir instead.
+    /*
     while ((len = getdirentries(fd, (char*)buffer, sizeof(buffer), &base)) > 0) {
         for( i = 0, p = buffer; i < len; i += p[2], p += p[2]/2) {
             struct dirent *e = (struct dirent *) p;
@@ -106,6 +108,7 @@ void sendDirRecursively(HTTPClient* client, string dir_name) {
             }
         }
     }
+    */
 }
 
 void* slaveThreadDo(void* obj) {

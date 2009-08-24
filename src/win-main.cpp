@@ -20,6 +20,8 @@ using namespace std;
 
 int main(int argc, char *argv[]) 
 {
+    /* Carbon deprecated in Mac OS X 10.6 */
+    /*
    CFStringRef title = CFSTR("RayGay");
         
     WindowRef window;
@@ -42,4 +44,5 @@ int main(int argc, char *argv[])
     ShowWindow(window);
     sleep(100);      
     return EXIT_SUCCESS;
+    */
 }

@@ -46,7 +46,13 @@ void slave(int myid) {
     char buff[BUFSIZE];
     bool done = false;
     MPI::Status stat; 
-    srandom((unsigned int)&stat);
+    srandom((uint64_t)&stat);
+    char processor_name[MPI_MAX_PROCESSOR_NAME];
+    int namelen;
+
+    MPI::Get_processor_name(processor_name, namelen);
+    cout << "...Processor name: " << processor_name << endl;
+
     while(!done) {
         MPI::COMM_WORLD.Send(NULL, 0, MPI_CHAR, 0, READY_FOR_WORK);
 	MPI::COMM_WORLD.Recv(buff, 1024, MPI_CHAR, 0, MPI_ANY_TAG, stat);
@@ -54,9 +60,13 @@ void slave(int myid) {
 	if (tag == THERE_IS_NO_MORE_WORK) {
 	    done = true;
 	} else if (tag == HERE_IS_SOME_WORK) {
-	    int usecs = random() & 1000000; 
+	    int usecs = random() & 10000000 + 10; 
    	    cout << " Slave " << myid << " got some work for " << usecs << " microseconds." << endl;
-	    usleep(usecs);
+	    //usleep(usecs);
+	    int j = 10;
+	    for(int i = 0; i < usecs; i++) {
+		j *= j + i;
+	    }
             MPI::COMM_WORLD.Send(NULL, 0, MPI_CHAR, 0, RETURNING_WORK);
 	}
     }

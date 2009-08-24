@@ -151,7 +151,7 @@ SchemeObject* SchemeObject::createSymbol(const wchar_t* str) {
         result->str = new wchar_t[strstring.size()+1];
         wcscpy(result->str, str);
         known_symbols[strstring] = result;
-        int h = (int) result;
+        int32_t h = ((int64_t) result) & 0xffffffff;
 
 #if 0
         h += ~(h << 15);
