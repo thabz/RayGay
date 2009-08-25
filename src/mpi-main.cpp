@@ -46,7 +46,7 @@ void slave(int myid) {
     char buff[BUFSIZE];
     bool done = false;
     MPI::Status stat; 
-    srandom((uint64_t)&stat);
+    srandom((intptr_t)&stat);
     char processor_name[MPI_MAX_PROCESSOR_NAME];
     int namelen;
 

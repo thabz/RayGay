@@ -64,7 +64,7 @@ class mmap_allocator : public std::allocator<T> {
             ::lseek(file, byte_size-1, SEEK_SET);
             ::write(file, "", 1);
             pointer result = static_cast<pointer>(::mmap(NULL, byte_size, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0));
-            if (result == (void*)-1) {
+            if (intptr_t(result) == -1) {
                result = NULL;     
             }
             return result;

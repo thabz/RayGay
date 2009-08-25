@@ -76,7 +76,7 @@ void* Allocator::allocate_mmap(size_t size) {
 	 throw_exception("Couldn't write to tmp file");
      }
      void* result = ::mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0);
-     if (result == (void*)-1) {
+     if (intptr_t(result) == -1) {
         result = NULL;     
      }
      if (result != NULL) {
