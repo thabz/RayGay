@@ -168,7 +168,7 @@ double Triangle::_fastIntersect(const Ray& ray) const {
 	  return -1.0;
       }
    }
-#if 1 // 0 = Backface culling, 1 = No backface culling
+#if 0 // 0 = Backface culling, 1 = No backface culling
    else if (det < -EPSILON)
    {
       // calculate distance from vert0 to ray origin
