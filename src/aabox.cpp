@@ -208,13 +208,11 @@ Vector AABox::normal(const Vector& p) const {
     }
 }
 
-
 /**
- * The array must be deleted after use.
+ * @param must be a pointer to an array with length 8.
  */
-Vector* AABox::getCorners() const {
-    Vector* corners = new Vector[8];
-    Vector* c = corners;
+void AABox::getCorners(Vector* dest) const {
+    Vector* c = dest;
     assert(c != NULL);
     c[0] = Vector(_c1[0],_c1[1],_c1[2]);
     c[1] = Vector(_c1[0],_c1[1],_c2[2]);
@@ -224,7 +222,15 @@ Vector* AABox::getCorners() const {
     c[5] = Vector(_c2[0],_c1[1],_c2[2]);
     c[6] = Vector(_c2[0],_c2[1],_c1[2]);
     c[7] = Vector(_c2[0],_c2[1],_c2[2]);
-    return c;
+}
+
+/**
+ * The array must be deleted after use.
+ */
+Vector* AABox::getCorners() const {
+    Vector* corners = new Vector[8];
+    getCorners(corners);
+    return corners;
 }
 
 AABox AABox::doUnion(const AABox& b1, const AABox& b2) {

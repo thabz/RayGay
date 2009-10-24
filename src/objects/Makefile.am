@@ -24,6 +24,8 @@ libobjects_la_SOURCES = \
 		       ellipsoid.cpp	\
 		       extrusion.h	\
 		       extrusion.cpp	\
+		       halfspace.h	\
+		       halfspace.cpp	\
 		       heightfield.h	\
 		       heightfield.cpp	\
 		       isosurface.h	\

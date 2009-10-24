@@ -32,8 +32,17 @@ class Object : public SceneObject {
 	/// The smallest box containing this object
 	virtual AABox getBoundingBox() const = 0;
 
-        virtual int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
-	
+	/**
+	 * Refine an intersection. This is used when pruning the Kd-Tree.
+	 * Many objects have empty space in their bounding boxes. If an
+	 * voxel only intersects empty space in an objects bounding box
+	 * the objects can safely be removed from said voxel during pruning.
+	 *
+	 * This methods allows for a more refined test of whether an object
+	 * lies in a voxel's bounding box.
+	 */
+	virtual int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
+
 	/// Prepares the object before rendering
 	virtual void prepare();
 

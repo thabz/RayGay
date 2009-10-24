@@ -77,8 +77,11 @@ class AABox {
 	/// Returns the smallest box that inclose the points
 	static AABox enclosure(Vector* points, int num);
 
-	/// Returns a length 8 array of the corners
+	/// Returns a newly allocated length 8 array of the corners
 	Vector* getCorners() const; 
+
+	/// Writes a length 8 array of the corners
+	void getCorners(Vector* dest) const;
 
 	/// Returns the area of this box' surface
         double area() const;
