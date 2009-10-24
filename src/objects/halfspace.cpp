@@ -4,21 +4,20 @@
 #include "math/matrix.h"
 #include "math/vector.h"
 
-Halfspace::Halfspace(const Vector& point, const Vector& normal, const Material* material) : Solid(material)
+Halfspace::Halfspace(const Vector& normal, double d, const Material* material) : Solid(material)
 {
-    this->point = point;
+    this->d = d;
     this->normal = normal;
 }
 
 Halfspace::Halfspace(const Vector& a, const Vector& b, const Vector& c, const Material* material) : Solid(material)
 {
-    this->point = a;
     this->normal = Vector::xProduct(b-a, c-a);
+    this->d = -(this->normal * a);
 }
 
 void Halfspace::transform(const Matrix& m) 
 {
-    point = m * point;
     normal = m.extractRotation() * normal;
 }
 
@@ -32,19 +31,27 @@ AABox Halfspace::getBoundingBox() const
 
 SceneObject* Halfspace::clone() const
 {
-    return new Halfspace(point,normal,getMaterial());
+    return new Halfspace(normal, d, getMaterial());
 }
 
 // See http://en.wikipedia.org/wiki/Line-plane_intersection
 double Halfspace::_fastIntersect(const Ray& ray) const 
 {
-    // TODO: Implement me.
-    return 0;
+    double denominator = normal * ray.getDirection(); 
+    if (IS_ZERO(denominator)) {
+	return -1;
+    } else {
+	return (-d - normal * ray.getOrigin()) / denominator;
+    }
+
 }
 
 void Halfspace::_fullIntersect(const Ray& ray, double t, Intersection& i) const
 {
-    // TODO: Implement me.
+    Vector p = ray.getPoint(t);
+    Vector n = normal;
+    Vector2 uv;
+    i = Intersection(p,t,n,uv);
 }
 
 int Halfspace::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const 
@@ -63,11 +70,17 @@ int Halfspace::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const
 
 void Halfspace::allIntersections(const Ray& ray, vector<Intersection>& result) const 
 {
-    // TODO: Implement me.
+    double t = fastIntersect(ray);
+    if (t > 0) {
+	Intersection i;
+	fullIntersect(ray,t,i);
+	result.push_back(i);
+    }
 }
 
-bool Halfspace::inside(const Vector& p) const
+// See http://mathworld.wolfram.com/Plane.html
+bool Halfspace::inside(const Vector& x) const 
 {
-    // TODO: Implement me.
-    return false;
+    double D = normal * x + d;
+    return D < 0;
 }

@@ -10,12 +10,11 @@ class Ray;
 class Matrix;
 class Vector2;
 
-// TODO: Implement this CSG object
 class Halfspace : public Solid {
 
     public:
-	/// Construct a halfspace from any point of the surface and a normal
-	Halfspace(const Vector& point, const Vector& normal, const Material* material);
+	/// Construct a halfspace from a normal and distance from origin
+	Halfspace(const Vector& normal, double d, const Material* material);
 
 	/// Construct a halfspace from any tree point on the surface which are not co-linear
 	Halfspace(const Vector& a, const Vector& b, const Vector& c, const Material* material);
@@ -29,7 +28,15 @@ class Halfspace : public Solid {
         bool inside(const Vector& p) const;
 
     private:
-	Vector point;
+	// We describe the plane in so-called Hessian normal form, which is
+	// that all  points p on the surface satisfy the following:
+	// n \dot p + d = 0 
+	// The surface is then completely describe by a normal and distance
+	// from origin.
+
+	// Distance from origin
+	double d;
+	// Normal vector
 	Vector normal;
 };
 
