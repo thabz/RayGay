@@ -1,4 +1,5 @@
 
+#include <limits>
 #include "objects/halfspace.h"
 #include "aabox.h"
 #include "math/matrix.h"
@@ -23,6 +24,8 @@ void Halfspace::transform(const Matrix& m)
 
 AABox Halfspace::getBoundingBox() const 
 {
+    double maxi = numeric_limits<double>::max();
+    double mini = numeric_limits<double>::min();
     // Return the whole world if the normal is not axis-aligned.
     // Otherwise we return a huge boundingbox that only contains half the world.
     // TODO: Implement me.
