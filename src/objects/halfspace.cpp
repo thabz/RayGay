@@ -24,12 +24,26 @@ void Halfspace::transform(const Matrix& m)
 
 AABox Halfspace::getBoundingBox() const 
 {
-    double maxi = numeric_limits<double>::max();
-    double mini = numeric_limits<double>::min();
     // Return the whole world if the normal is not axis-aligned.
     // Otherwise we return a huge boundingbox that only contains half the world.
-    // TODO: Implement me.
-    return AABox();
+    double maxi = numeric_limits<double>::max();
+    double mini = numeric_limits<double>::min();
+    Vector mi = Vector(mini,mini,mini);
+    Vector ma = Vector(maxi,maxi,maxi);
+    if (IS_EQUAL(normal[0],1)) {
+	mi[0] = d - EPSILON;
+    } else if (IS_EQUAL(normal[0],-1)) {
+	ma[0] = d + EPSILON;
+    } else if (IS_EQUAL(normal[1],1)) {
+	mi[1] = d - EPSILON;
+    } else if (IS_EQUAL(normal[1],-1)) {
+	ma[1] = d + EPSILON;
+    } else if (IS_EQUAL(normal[2],1)) {
+	mi[2] = d - EPSILON;
+    } else if (IS_EQUAL(normal[2],-1)) {
+	ma[2] = d + EPSILON;
+    }
+    return AABox(mi,ma);
 }
 
 SceneObject* Halfspace::clone() const
