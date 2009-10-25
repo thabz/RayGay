@@ -233,8 +233,38 @@ class halfspace_test : public Test {
 	    assertTrue(s->inside(Vector(0,-0.1,0)));
 	    assertTrue(s->inside(Vector(0,-100,0)));
 	    assertTrue(s->inside(Vector(10,-100,10)));
+	    assertTrue(s->inside(Vector(-10,-10,-10)));
+	    assertTrue(s->inside(Vector(10,-10,-10)));
+	    assertTrue(s->inside(Vector(-10,-10,10)));
 	    assertFalse(s->inside(Vector(0,0.1,0)));
 	    assertFalse(s->inside(Vector(10,0.1,10)));
+	   
+	    assertTrue(intersects(s,Vector(0,10,0),Vector(0,-1,0)));
+	    assertTrue(intersects(s,Vector(10,99,10),Vector(-1,-1,0)));
+	    assertTrue(intersects(s,Vector(-1,10,-1),Vector(0,-1,0)));
+	    assertTrue(intersects(s,Vector(1,10,1),Vector(0,-1,0)));
+	    assertTrue(intersects(s,Vector(1,10,-1),Vector(0,-1,0)));
+	    assertTrue(intersects(s,Vector(-1,10,1),Vector(0,-1,0)));
+	    assertFalse(intersects(s,Vector(0,1,0),Vector(0,1,0)));
+	    assertFalse(intersects(s,Vector(0,1,0),Vector(1,0,0)));
+
+	    KdTree* bsp = new KdTree();
+	    s->addSelf(bsp);
+	    bsp->prepare();
+	    Intersection inter;
+	    Ray r = Ray(Vector(0,10,0),Vector(0,-1,0),1);
+	    assertTrue(bsp->intersect(r,inter));
+	    assertEqualV(inter.getPoint(), Vector(0,0,0));
+	    r = Ray(Vector(10,10,10),Vector(0,-1,0),1);
+	    assertTrue(bsp->intersect(r,inter));
+	    assertEqualV(inter.getPoint(), Vector(10,0,10));
+	    r = Ray(Vector(-10,10,-10),Vector(0,-1,0),1);
+	    assertTrue(bsp->intersect(r,inter));
+	    assertEqualV(inter.getPoint(), Vector(-10,0,-10));
+
+
+	    assertTrue(normalCheck(s,100));
+	    assertTrue(transparentCheck(s,100));
 	}
 };
 

@@ -26,6 +26,7 @@ public:
     Vector(const Vector& v); ///< Copy constructor
     Vector(double x, double y, double z); ///< Initializing constructor
     void normalize(); ///< Normalize vector so that |v| = 1
+    Vector normalized() const; ///< Normalize vector so that |v| = 1
     void scale(float s); ///< Scale the vector
     double norm() const; ///< Returns squared length of vector
     double length() const; ///< Returns length of vector
@@ -200,6 +201,13 @@ void Vector::normalize() {
 	_vector[1] *= s;
 	_vector[2] *= s;
 //    }
+}
+
+inline
+Vector Vector::normalized() const {
+    Vector result = *this;
+    result.normalize();
+    return result;
 }
 
 inline

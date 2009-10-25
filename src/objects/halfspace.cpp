@@ -8,12 +8,13 @@
 Halfspace::Halfspace(const Vector& normal, double d, const Material* material) : Solid(material)
 {
     this->d = d;
-    this->normal = normal;
+    this->normal = normal.normalized();
 }
 
 Halfspace::Halfspace(const Vector& a, const Vector& b, const Vector& c, const Material* material) : Solid(material)
 {
     this->normal = Vector::xProduct(b-a, c-a);
+    this->normal.normalize();
     this->d = -(this->normal * a);
 }
 
@@ -30,19 +31,22 @@ AABox Halfspace::getBoundingBox() const
     double mini = numeric_limits<double>::min();
     Vector mi = Vector(mini,mini,mini);
     Vector ma = Vector(maxi,maxi,maxi);
+    return AABox(mi,ma);
+    
     if (IS_EQUAL(normal[0],1)) {
-	mi[0] = d - EPSILON;
-    } else if (IS_EQUAL(normal[0],-1)) {
 	ma[0] = d + EPSILON;
+    } else if (IS_EQUAL(normal[0],-1)) {
+	mi[0] = d - EPSILON;
     } else if (IS_EQUAL(normal[1],1)) {
-	mi[1] = d - EPSILON;
-    } else if (IS_EQUAL(normal[1],-1)) {
 	ma[1] = d + EPSILON;
+    } else if (IS_EQUAL(normal[1],-1)) {
+	mi[1] = d - EPSILON;
     } else if (IS_EQUAL(normal[2],1)) {
-	mi[2] = d - EPSILON;
-    } else if (IS_EQUAL(normal[2],-1)) {
 	ma[2] = d + EPSILON;
+    } else if (IS_EQUAL(normal[2],-1)) {
+	mi[2] = d - EPSILON;
     }
+    
     return AABox(mi,ma);
 }
 
@@ -58,7 +62,7 @@ double Halfspace::_fastIntersect(const Ray& ray) const
     if (IS_ZERO(denominator)) {
 	return -1;
     } else {
-	return (-d - normal * ray.getOrigin()) / denominator;
+	return -(d + normal * ray.getOrigin()) / denominator;
     }
 
 }
@@ -73,6 +77,7 @@ void Halfspace::_fullIntersect(const Ray& ray, double t, Intersection& i) const
 
 int Halfspace::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const 
 {
+    return 0;
     // If any of the voxel_bbox' corners are inside the halfspace,
     // we have an intersection.
     Vector corners[8];

@@ -14,6 +14,7 @@
 #include "objects/ellipsoid.h"
 #include "objects/box.h"
 #include "objects/solidbox.h"
+#include "objects/halfspace.h"
 #include "objects/cylinder.h"
 #include "objects/cone.h"
 #include "objects/torus.h"
@@ -51,6 +52,36 @@ SchemeObject* make_sphere(Scheme* scheme, SchemeObject* s_center, SchemeObject* 
     }
     Sphere* sphere = new Sphere(center,radius,material);
     return sceneobject2scm(sphere);
+}
+
+SchemeObject* make_halfspace(Scheme* scheme, SchemeObject* s_obj1, SchemeObject* s_obj2, SchemeObject* s_obj3, SchemeObject* s_obj4) 
+{
+    // Four possible calling conventions
+    // (make-halfspace normal distance)
+    // (make-halfspace normal distance material)
+    // (make-halfspace p0 p1 p2)
+    // (make-halfspace p0 p1 p2 material)
+    const wchar_t* proc = L"make-halfspace";
+    Material* material = NULL;
+    Halfspace* halfspace;
+    
+    if (i_vector_p(s_obj2) == S_TRUE) {
+	Vector p0 = scm2vector(s_obj1,proc,1);
+	Vector p1 = scm2vector(s_obj2,proc,2);
+	Vector p2 = scm2vector(s_obj3,proc,3);
+	if (s_obj4 != S_UNSPECIFIED) {
+	    material = scm2material(s_obj4,proc,4);
+	}
+	halfspace = new Halfspace(p0,p1,p2,material);
+    } else {
+	Vector n = scm2vector(s_obj1, proc, 1);
+	double d = safe_scm2double(s_obj2, 2, proc);
+	if (s_obj3 != S_UNSPECIFIED) {
+	    material = scm2material(s_obj3,proc,4);
+	}
+	halfspace = new Halfspace(n,d,material);
+    }
+    return sceneobject2scm(halfspace);
 }
 
 SchemeObject* make_ellipsoid(Scheme* scheme, SchemeObject* s_center, SchemeObject* s_radii, SchemeObject* s_material) 
@@ -555,6 +586,8 @@ void SceneObjectFactory::register_procs(Scheme* s)
 	    (SchemeObject* (*)()) s_sceneobject_p);
     scheme->assign(L"make-sphere",2,1,0,
 	    (SchemeObject* (*)()) make_sphere);
+    scheme->assign(L"make-halfspace",2,2,0,
+	    (SchemeObject* (*)()) make_halfspace);
     scheme->assign(L"make-ellipsoid",2,1,0,
 	    (SchemeObject* (*)()) make_ellipsoid);
     scheme->assign(L"make-box",3,0,0,
