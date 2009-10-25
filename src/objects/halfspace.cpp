@@ -27,11 +27,10 @@ AABox Halfspace::getBoundingBox() const
 {
     // Return the whole world if the normal is not axis-aligned.
     // Otherwise we return a huge boundingbox that only contains half the world.
-    double maxi = numeric_limits<double>::max();
-    double mini = numeric_limits<double>::min();
+    double maxi = HUGE_DOUBLE;
+    double mini = -HUGE_DOUBLE;
     Vector mi = Vector(mini,mini,mini);
     Vector ma = Vector(maxi,maxi,maxi);
-    return AABox(mi,ma);
     
     if (IS_EQUAL(normal[0],1)) {
 	ma[0] = d + EPSILON;
@@ -77,7 +76,6 @@ void Halfspace::_fullIntersect(const Ray& ray, double t, Intersection& i) const
 
 int Halfspace::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const 
 {
-    return 0;
     // If any of the voxel_bbox' corners are inside the halfspace,
     // we have an intersection.
     Vector corners[8];
