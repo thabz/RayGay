@@ -26,6 +26,7 @@ class Halfspace : public Solid {
 	int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
 	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
         bool inside(const Vector& p) const;
+	bool canSelfshadow() const;
 
     private:
 	// We describe the plane in so-called Hessian normal form, which is

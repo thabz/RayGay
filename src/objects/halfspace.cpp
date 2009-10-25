@@ -104,3 +104,7 @@ bool Halfspace::inside(const Vector& x) const
     double D = normal * x + d;
     return D < 0;
 }
+
+bool Halfspace::canSelfshadow() const {
+    return false;
+}
