@@ -68,6 +68,7 @@ void Box::prepareBox(const Vector& a, const Vector& b) {
     // Top face
     Mesh::addTriangle(c3,c4,c7,uv11,uv01,uv10); 
     Mesh::addTriangle(c4,c8,c7,uv01,uv00,uv10);
+    Mesh::prepare();
 }
 
 Box::~Box() {

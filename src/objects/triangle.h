@@ -13,6 +13,14 @@ class Triangle;
 
 #define CACHE_ENTRIES 512 
 
+// If backface culling is enabled, away-pointing triangle
+// are invisible. Thus no intersection registers when shooting
+// a ray from inside a mesh. Backface culling gives faster
+// triangle-intersection checking. Also it gives more robust
+// intersection checking for shadow rays originating on the
+// surface.
+#define TRIANGLE_BACKFACE_CULLING
+
 struct CachedVertex {
     double vert0[3], vert1[3], vert2[3];
     double edge1[3], edge2[3];

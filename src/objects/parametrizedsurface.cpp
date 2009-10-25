@@ -64,8 +64,8 @@ void ParametrizedSurface::prepare() {
 	    addQuad(c,uvs);
 	}
     }
-    Mesh::transform(trans);
     Mesh::prepare();
+    Mesh::transform(trans);
 }
 
 void ParametrizedSurface::transform(const Matrix& m) {

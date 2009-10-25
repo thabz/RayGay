@@ -10,6 +10,7 @@
 #include "materials/material.h"
 #include "objects/bound.h"
 #include "objects/sphere.h"
+#include "objects/halfspace.h"
 #include "objects/solidbox.h"
 #include "objects/cone.h"
 #include "objects/csg.h"
@@ -224,6 +225,19 @@ class sphere_test : public Test {
 	}
 };
 
+class halfspace_test : public Test {
+    public:
+	void run() {
+	    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
+	    Halfspace* s = new Halfspace(Vector(0,1,0),0.0,m);
+	    assertTrue(s->inside(Vector(0,-0.1,0)));
+	    assertTrue(s->inside(Vector(0,-100,0)));
+	    assertTrue(s->inside(Vector(10,-100,10)));
+	    assertFalse(s->inside(Vector(0,0.1,0)));
+	    assertFalse(s->inside(Vector(10,0.1,10)));
+	}
+};
+
 class box_test : public Test {
     public: 
 	void run() {
@@ -328,10 +342,12 @@ class mesh_test : public Test {
 	    assertTrue(bsp->intersect(r,inter));
 	    assertEqualV(inter.getPoint(), Vector(10.5,10.5,1));
 
-	    // Test ray from inside
+            #ifndef TRIANGLE_BACKFACE_CULLING
+	    // Test ray from inside.
 	    r = Ray(Vector(0.5,0.8,0.5),Vector(0,0,-1),1);
 	    assertTrue(bsp->intersect(r,inter));
 	    assertEqualV(inter.getPoint(), Vector(0.5,0.8,-1));
+	    #endif
 	}
 };
 
@@ -1449,6 +1465,7 @@ int main(int argc, char *argv[]) {
 
     suite.add("Ray", new ray_test());
     suite.add("Sphere",new sphere_test());
+    suite.add("Halfspace",new halfspace_test());
     suite.add("Cylinder",new cylinder_test());
     suite.add("Torus",new torus_test());
     suite.add("Solid box",new solidbox_test());
