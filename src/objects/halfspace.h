@@ -13,7 +13,8 @@ class Vector2;
 class Halfspace : public Solid {
 
     public:
-	/// Construct a halfspace from a normal and distance from origin
+	/// Construct a halfspace from a normal and distance from origin along normal.
+	/// Thus origin is outside the halfspace if d < 0.
 	Halfspace(const Vector& normal, double d, const Material* material);
 
 	/// Construct a halfspace from any tree point on the surface which are not co-linear
