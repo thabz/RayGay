@@ -5,6 +5,10 @@
 #include "objects/object.h"
 #include "objects/solid.h"
 
+// TODO: Because of numeric imprecision or something in the BSP-code  
+// TODO: we can only return boundingboxes that are the whole world.
+//#define HALFSPACE_OPTIMIZED_AABOX
+
 class Intersection;
 class Ray;
 class Matrix;
@@ -15,9 +19,10 @@ class Halfspace : public Solid {
     public:
 	/// Construct a halfspace from a normal and distance from origin along normal.
 	/// Thus origin is outside the halfspace if d < 0.
-	Halfspace(const Vector& normal, double d, const Material* material);
-
-	/// Construct a halfspace from any tree point on the surface which are not co-linear
+	Halfspace(const Vector& n, double d, const Material* mat);
+	/// Construct a halfspace from a normal and a point on the surface
+	Halfspace(const Vector& n, const Vector& p, const Material* mat);
+	/// Construct a halfspace from any three non-co-linear points on the surface 
 	Halfspace(const Vector& a, const Vector& b, const Vector& c, const Material* material);
 	void transform(const Matrix& m);
 	AABox getBoundingBox() const;
@@ -30,6 +35,8 @@ class Halfspace : public Solid {
 	bool canSelfshadow() const;
 
     private:
+	void init(const Vector& n, const Vector& p);
+
 	// We describe the plane in so-called Hessian normal form, which is
 	// that all  points p on the surface satisfy the following:
 	// n \dot p + d = 0 

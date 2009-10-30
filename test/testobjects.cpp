@@ -228,6 +228,7 @@ class sphere_test : public Test {
 class halfspace_test : public Test {
     public:
 	void run() {
+	    AABox b;
 	    Material* m = new Material(RGB(1.0,0.2,0.2),0.75,RGB(1.0,1.0,1.0),0.75,30);
 	    Halfspace* s = new Halfspace(Vector(0,1,0),0.0,m);
 	    assertTrue(s->inside(Vector(0,-0.1,0)));
@@ -262,9 +263,113 @@ class halfspace_test : public Test {
 	    assertTrue(bsp->intersect(r,inter));
 	    assertEqualV(inter.getPoint(), Vector(-10,0,-10));
 
-
 	    assertTrue(normalCheck(s,100));
 	    assertTrue(transparentCheck(s,100));
+
+	    s = new Halfspace(Vector(0,-1,0),0.0,m);
+	    assertTrue(s->inside(Vector(0,1,0)));
+	    assertFalse(s->inside(Vector(0,-1,0)));
+
+	    // Halfspace is below the plane y = -1
+	    s = new Halfspace(Vector(0,1,0),1.0,m);
+	    assertTrue(s->inside(Vector(0,-2,0)));
+	    assertFalse(s->inside(Vector(0,0,0)));
+	    assertFalse(s->inside(Vector(0,2,0)));
+	    s = new Halfspace(Vector(0,1,0),Vector(0,-1,0),m);
+	    assertTrue(s->inside(Vector(0,-2,0)));
+	    assertFalse(s->inside(Vector(0,0,0)));
+	    assertFalse(s->inside(Vector(0,2,0)));
+#ifdef HALFSPACE_OPTIMIZED_AABOX
+	    b = s->getBoundingBox();
+	    assertTrue(b.inside(Vector(0,-2,0)));
+	    assertTrue(b.inside(Vector(0,-1,0)));
+	    assertFalse(b.inside(Vector(0,0,0)));
+	    assertFalse(b.inside(Vector(0,2,0)));
+#endif
+
+	    // Halfspace is below the plane y = 1
+	    s = new Halfspace(Vector(0,1,0),-1.0,m);
+	    assertTrue(s->inside(Vector(0,-2,0)));
+	    assertTrue(s->inside(Vector(0,0,0)));
+	    assertFalse(s->inside(Vector(0,2,0)));
+	    s = new Halfspace(Vector(0,1,0),Vector(0,1,0),m);
+	    assertTrue(s->inside(Vector(0,-2,0)));
+	    assertTrue(s->inside(Vector(0,0,0)));
+	    assertFalse(s->inside(Vector(0,2,0)));
+#ifdef HALFSPACE_OPTIMIZED_AABOX
+	    b = s->getBoundingBox();
+	    assertTrue(b.inside(Vector(0,-2,0)));
+	    assertTrue(b.inside(Vector(0,0,0)));
+	    assertTrue(b.inside(Vector(0,1,0)));
+	    assertFalse(b.inside(Vector(0,2,0)));
+#endif
+
+	    // Halfspace is over the plane y = -1
+	    s = new Halfspace(Vector(0,-1,0),-1.0,m);
+	    assertFalse(s->inside(Vector(0,-2,0)));
+	    assertTrue(s->inside(Vector(0,0,0)));
+	    assertTrue(s->inside(Vector(0,2,0)));
+	    s = new Halfspace(Vector(0,-1,0),Vector(0,-1,0),m);
+	    assertFalse(s->inside(Vector(0,-2,0)));
+	    assertTrue(s->inside(Vector(0,0,0)));
+	    assertTrue(s->inside(Vector(0,2,0)));
+#ifdef HALFSPACE_OPTIMIZED_AABOX
+	    b = s->getBoundingBox();
+	    assertFalse(b.inside(Vector(0,-2,0)));
+	    assertTrue(b.inside(Vector(0,-1,0)));
+	    assertTrue(b.inside(Vector(0,0,0)));
+	    assertTrue(b.inside(Vector(0,2,0)));
+#endif
+
+	    // Halfspace is over the plane y = 1
+	    s = new Halfspace(Vector(0,-1,0),1.0,m);
+	    assertFalse(s->inside(Vector(0,-2,0)));
+	    assertFalse(s->inside(Vector(0,0,0)));
+	    assertTrue(s->inside(Vector(0,2,0)));
+	    s = new Halfspace(Vector(0,-1,0),Vector(0,1,0),m);
+	    assertFalse(s->inside(Vector(0,-2,0)));
+	    assertFalse(s->inside(Vector(0,0,0)));
+	    assertTrue(s->inside(Vector(0,2,0)));
+#ifdef HALFSPACE_OPTIMIZED_AABOX
+	    b = s->getBoundingBox();
+	    assertFalse(b.inside(Vector(0,-2,0)));
+	    assertFalse(b.inside(Vector(0,0,0)));
+	    assertTrue(b.inside(Vector(0,1,0)));
+	    assertTrue(b.inside(Vector(0,2,0)));
+#endif
+
+	    // Test transformation by creating a halfspace and 
+	    // one point inside it and one point outside it.
+	    // Rotate and translate the hell out of all three and check that
+	    // the inside point is still inside and that the outside point is 
+	    // still outside
+	    // Also shoot a ray from the outside point towards the inside 
+	    // point and check that a correct intersection occurs.
+	    // Halfspace is y <= 0
+	    s = new Halfspace(Vector(0,1,0),0.0,m);
+	    Vector in = Vector(0,-2,0);
+	    Vector out = Vector(0,2,0);
+	    for(int i = 0; i < 1000; i++) {
+		Vector angles = Vector(RANDOM(0,M_2PI), RANDOM(0,M_2PI), RANDOM(0,M_2PI));
+		Vector trans = Vector(RANDOM(-10,10), RANDOM(-10,10), RANDOM(-10,10));
+		Matrix m = Matrix::matrixRotate(angles);
+		m *= Matrix::matrixTranslate(trans);
+		in = m * in;
+		out = m * out;
+		s->transform(m);
+		assertFalse(s->inside(out));
+		assertTrue(s->inside(in));
+
+		Vector dir = (in-out).normalized();
+		Ray ray = Ray(out, dir, 1);
+		Intersection inter;
+		double t = s->fastIntersect(ray);
+		assertTrue(t > 0);
+		s->fullIntersect(ray, t, inter);
+		//cout << inter.getPoint() << " == " << 0.5*(in+out) << endl;
+		assertTrue(inter.isIntersected());
+		assertEqualV(inter.getPoint(), 0.5*(in+out));
+	    }
 	}
 };
 

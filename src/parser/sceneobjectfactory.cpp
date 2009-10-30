@@ -56,24 +56,39 @@ SchemeObject* make_sphere(Scheme* scheme, SchemeObject* s_center, SchemeObject* 
 
 SchemeObject* make_halfspace(Scheme* scheme, SchemeObject* s_obj1, SchemeObject* s_obj2, SchemeObject* s_obj3, SchemeObject* s_obj4) 
 {
-    // Four possible calling conventions
-    // (make-halfspace normal distance)
-    // (make-halfspace normal distance material)
-    // (make-halfspace p0 p1 p2)
-    // (make-halfspace p0 p1 p2 material)
+    // Six possible calling conventions
+    // 1 (make-halfspace normal distance)
+    // 2 (make-halfspace normal distance material)
+    // 3 (make-halfspace normal point)
+    // 4 (make-halfspace normal point material)
+    // 5 (make-halfspace p0 p1 p2)
+    // 6 (make-halfspace p0 p1 p2 material)
     const wchar_t* proc = L"make-halfspace";
     Material* material = NULL;
     Halfspace* halfspace;
-    
+
     if (i_vector_p(s_obj2) == S_TRUE) {
-	Vector p0 = scm2vector(s_obj1,proc,1);
-	Vector p1 = scm2vector(s_obj2,proc,2);
-	Vector p2 = scm2vector(s_obj3,proc,3);
-	if (s_obj4 != S_UNSPECIFIED) {
-	    material = scm2material(s_obj4,proc,4);
+	if (i_vector_p(s_obj3) == S_TRUE) {
+	    // Cases 5 and 6
+	    Vector p0 = scm2vector(s_obj1,proc,1);
+	    Vector p1 = scm2vector(s_obj2,proc,2);
+	    Vector p2 = scm2vector(s_obj3,proc,3);
+	    if (s_obj4 != S_UNSPECIFIED) {
+		material = scm2material(s_obj4,proc,4);
+	    }
+	    halfspace = new Halfspace(p0,p1,p2,material);
+	} else {
+	    // Cases 3 and 4 
+	    Vector n = scm2vector(s_obj1,proc,1);
+	    Vector p = scm2vector(s_obj2,proc,2);
+	    if (s_obj3 != S_UNSPECIFIED) {
+		material = scm2material(s_obj3,proc,3);
+	    }
+	    halfspace = new Halfspace(n,p,material);
+
 	}
-	halfspace = new Halfspace(p0,p1,p2,material);
     } else {
+	// Cases 1 and 2
 	Vector n = scm2vector(s_obj1, proc, 1);
 	double d = safe_scm2double(s_obj2, 2, proc);
 	if (s_obj3 != S_UNSPECIFIED) {

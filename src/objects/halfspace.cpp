@@ -11,40 +11,54 @@ Halfspace::Halfspace(const Vector& normal, double d, const Material* material) :
     this->normal = normal.normalized();
 }
 
+Halfspace::Halfspace(const Vector& normal, const Vector& point, const Material* material) : Solid(material)
+{
+    init(normal.normalized(), point);
+}
+
 Halfspace::Halfspace(const Vector& a, const Vector& b, const Vector& c, const Material* material) : Solid(material)
 {
-    this->normal = Vector::xProduct(b-a, c-a);
-    this->normal.normalize();
-    this->d = -(this->normal * a);
+    init(Vector::xProduct(b-a, c-a), a);
+}
+
+void Halfspace::init(const Vector& normal, const Vector& point) {
+    this->normal = normal.normalized();
+    this->d = -(this->normal * point);
 }
 
 void Halfspace::transform(const Matrix& m) 
 {
+    // We transform by simply using the d and normal to find a point on the surface.
+    // That point and the normal are transformed and then used to init a new halfspace.
+    Vector point = -d * normal;
+    point = m * point;
     normal = m.extractRotation() * normal;
+    init(normal, point);
 }
 
 AABox Halfspace::getBoundingBox() const 
 {
     // Return the whole world if the normal is not axis-aligned.
-    // Otherwise we return a huge boundingbox that only contains half the world.
-    double maxi = HUGE_DOUBLE;
-    double mini = -HUGE_DOUBLE;
-    Vector mi = Vector(mini,mini,mini);
-    Vector ma = Vector(maxi,maxi,maxi);
+    // Otherwise we return a huge boundingbox that only contains 
+    // half the world.
+    Vector mi = Vector(-HUGE_DOUBLE, -HUGE_DOUBLE, -HUGE_DOUBLE);
+    Vector ma = Vector(HUGE_DOUBLE, HUGE_DOUBLE, HUGE_DOUBLE);
     
+#ifdef HALFSPACE_OPTIMIZED_AABOX
     if (IS_EQUAL(normal[0],1)) {
-	ma[0] = d + EPSILON;
+	ma[0] = -d + EPSILON;
     } else if (IS_EQUAL(normal[0],-1)) {
 	mi[0] = d - EPSILON;
     } else if (IS_EQUAL(normal[1],1)) {
-	ma[1] = d + EPSILON;
+	ma[1] = -d + EPSILON;
     } else if (IS_EQUAL(normal[1],-1)) {
 	mi[1] = d - EPSILON;
     } else if (IS_EQUAL(normal[2],1)) {
-	ma[2] = d + EPSILON;
+	ma[2] = -d + EPSILON;
     } else if (IS_EQUAL(normal[2],-1)) {
 	mi[2] = d - EPSILON;
     }
+#endif
     
     return AABox(mi,ma);
 }
@@ -54,16 +68,15 @@ SceneObject* Halfspace::clone() const
     return new Halfspace(normal, d, getMaterial());
 }
 
-// See http://en.wikipedia.org/wiki/Line-plane_intersection
 double Halfspace::_fastIntersect(const Ray& ray) const 
 {
+    // See http://en.wikipedia.org/wiki/Line-plane_intersection
     double denominator = normal * ray.getDirection(); 
     if (IS_ZERO(denominator)) {
 	return -1;
     } else {
 	return -(d + normal * ray.getOrigin()) / denominator;
     }
-
 }
 
 void Halfspace::_fullIntersect(const Ray& ray, double t, Intersection& i) const
