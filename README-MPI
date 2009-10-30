@@ -1,0 +1,6 @@
+$ mpirun  --host mac-mini.local,localhost,toves-imac.local uptime 
+
+Tutorials
+http://www.mcs.anl.gov/research/projects/mpi/tutorial/mpiintro/ppframe.htm
+
+
