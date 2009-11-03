@@ -77,6 +77,28 @@ Vector iNormal(Object* o, const Vector& origin, const Vector& dir) {
 }
 
 /**
+ * This fires a bunch of rays at an object.
+ * This assumes that (0,0,0) is inside the object
+ */
+bool intersectionCheck(Object* object, double radius) {
+    int failures = 0;
+    int num = 10000;
+    int checked = 0;
+    for(int i = 0; i < num; i++) {
+	Vector v = Vector::randomUnitVector();
+	Vector pos = v * radius;
+	Vector dir = -1 * v;
+	Ray ray = Ray(pos,dir,-1);
+	if (!intersects(object,ray)) {
+	    failures++;
+	}
+	checked++;
+    }
+    //cout << "Checked points: " << checked << endl;
+    return failures == 0;
+}
+
+/**
  * This fires a bunch of rays at an object and checks
  * that the returned normals all have length one.
  */
@@ -127,6 +149,7 @@ bool transparentCheck(Object* object, double radius) {
     //cout << "Checked points: " << checked << endl;
     return failures == 0;
 }
+
 
 class ray_test : public Test {
     public:
@@ -220,6 +243,7 @@ class sphere_test : public Test {
 
 	    // Test returned normals
 	    s = Sphere(Vector(0,0,0),20.0,NULL);
+	    assertTrue(intersectionCheck(&s,100));
 	    assertTrue(normalCheck(&s,100));
 	    assertTrue(transparentCheck(&s,100));
 	}
@@ -264,7 +288,6 @@ class halfspace_test : public Test {
 	    assertEqualV(inter.getPoint(), Vector(-10,0,-10));
 
 	    assertTrue(normalCheck(s,100));
-	    assertTrue(transparentCheck(s,100));
 
 	    s = new Halfspace(Vector(0,-1,0),0.0,m);
 	    assertTrue(s->inside(Vector(0,1,0)));
@@ -690,6 +713,9 @@ class cylinder_test : public Test {
 	    assertTrue(iNormal(cyl,Vector(0,5,100),Vector(0,0,-1)) == Vector(0,0,1));
 	    assertTrue(iPoint(cyl,Vector(1000,5,0),Vector(-1,0,0)) == Vector(3,5,0));
 	    assertTrue(iNormal(cyl,Vector(1000,5,0),Vector(-1,0,0)) == Vector(1,0,0));
+
+	    cyl = new Cylinder(Vector(-5,-10,-5),Vector(5,10,5),10,true,m);
+	    assertTrue(intersectionCheck(cyl,1000));
 
 	    cyl = new Cylinder(Vector(-3,-10,-4),Vector(1,10,3),1,true,m);
 	    cyl->transform(Matrix::matrixScale(Vector(3,10,2)));
