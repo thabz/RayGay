@@ -89,7 +89,8 @@ bool intersectionCheck(Object* object, double radius) {
 	Vector pos = v * radius;
 	Vector dir = -1 * v;
 	Ray ray = Ray(pos,dir,-1);
-	if (!intersects(object,ray)) {
+	double t = object->fastIntersect(ray);
+	if (t <= 0 || t > radius) {
 	    failures++;
 	}
 	checked++;
@@ -714,7 +715,11 @@ class cylinder_test : public Test {
 	    assertTrue(iPoint(cyl,Vector(1000,5,0),Vector(-1,0,0)) == Vector(3,5,0));
 	    assertTrue(iNormal(cyl,Vector(1000,5,0),Vector(-1,0,0)) == Vector(1,0,0));
 
-	    cyl = new Cylinder(Vector(-5,-10,-5),Vector(5,10,5),10,true,m);
+	    cyl = new Cylinder(Vector(-5,-10,-5),Vector(5,10,3),10,true,m);
+	    assertTrue(intersectionCheck(cyl,1000));
+	    cyl->transform(Matrix::matrixRotate(Vector(0.1,1.2,2.5)));
+	    assertTrue(intersectionCheck(cyl,1000));
+	    cyl->transform(Matrix::matrixScale(Vector(0.5,0.2,0.5)));
 	    assertTrue(intersectionCheck(cyl,1000));
 
 	    cyl = new Cylinder(Vector(-3,-10,-4),Vector(1,10,3),1,true,m);
