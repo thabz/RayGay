@@ -4,6 +4,8 @@
 //#include "math/vector.h"
 //#include "math/matrix.h"
 
+#include <stdint.h>
+
 class Vector;
 class Matrix;
 

@@ -13,6 +13,7 @@
 #define CONSTANTS_H
 
 #include <cmath>
+#include <stdint.h>
 
 #define Float double
 
