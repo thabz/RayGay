@@ -15,3 +15,9 @@
    corner and max being the maximum corner of the axis-aligned
    boundingbox of the sceneobject o."
   ($bounding-box o))
+
+(define (intersect object ray-origin ray-direction)
+  "Find the intersection between an object and a ray.
+   Returns #f if no intersection; otherwise a list (point normal)"
+  ($intersect object ray-origin ray-direction))
+

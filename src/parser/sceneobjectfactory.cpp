@@ -580,6 +580,29 @@ SchemeObject* bounding_box(Scheme* scheme, SchemeObject* s_obj)
     return i_list_2(s_v1, s_v2);
 }
 
+SchemeObject* intersect(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_origin, SchemeObject* s_direction) 
+{
+    const wchar_t* proc = L"$intersect";
+
+    SceneObject* sceneobj = scm2sceneobject(s_obj,proc,1);
+    Vector origin = scm2vector(s_origin, proc, 2);
+    Vector direction = scm2vector(s_direction, proc, 3);
+    Object* obj = dynamic_cast<Object*>(sceneobj);
+    if (obj == NULL) wrong_type_arg(proc,1,s_obj);
+
+    Ray ray = Ray(origin,direction,1);
+    double t = obj->fastIntersect(ray);
+    if (t <= 0) {
+	return S_FALSE;
+    }
+    Intersection intersection;
+    obj->fullIntersect(ray,t,intersection);
+
+    SchemeObject* s_point = vector2scm(intersection.getPoint());
+    SchemeObject* s_normal = vector2scm(intersection.getNormal());
+    return i_list_2(s_point, s_normal);
+}
+
 SchemeObject* SceneObjectFactory::make_text(Scheme* scheme, SchemeObject* s_text, SchemeObject* s_ttf_file, SchemeObject* s_size, SchemeObject* s_depth, SchemeObject* s_material) {
     const wchar_t* proc = L"make-text";
     wstring str = scm2string(s_text);
@@ -655,5 +678,7 @@ void SceneObjectFactory::register_procs(Scheme* s)
 	    (SchemeObject* (*)()) bounding_box);
     scheme->assign(L"make-text",5,0,0,
 	    (SchemeObject* (*)()) SceneObjectFactory::make_text);
+    scheme->assign(L"$intersect",3,0,0,
+	    (SchemeObject* (*)()) intersect);
 }
 
