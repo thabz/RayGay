@@ -603,6 +603,17 @@ SchemeObject* intersect(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_ori
     return i_list_2(s_point, s_normal);
 }
 
+SchemeObject* inside_p(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_point) 
+{
+    const wchar_t* proc = L"$inside?";
+
+    SceneObject* sceneobj = scm2sceneobject(s_obj,proc,1);
+    Vector point = scm2vector(s_point, proc, 2);
+    Solid* obj = dynamic_cast<Solid*>(sceneobj);
+    if (obj == NULL) wrong_type_arg(proc,1,s_obj);
+    return bool2scm(obj->inside(point));
+}
+
 SchemeObject* SceneObjectFactory::make_text(Scheme* scheme, SchemeObject* s_text, SchemeObject* s_ttf_file, SchemeObject* s_size, SchemeObject* s_depth, SchemeObject* s_material) {
     const wchar_t* proc = L"make-text";
     wstring str = scm2string(s_text);
@@ -680,5 +691,7 @@ void SceneObjectFactory::register_procs(Scheme* s)
 	    (SchemeObject* (*)()) SceneObjectFactory::make_text);
     scheme->assign(L"$intersect",3,0,0,
 	    (SchemeObject* (*)()) intersect);
+    scheme->assign(L"$inside?",2,0,0,
+	    (SchemeObject* (*)()) inside_p);
 }
 

@@ -16,6 +16,10 @@
    boundingbox of the sceneobject o."
   ($bounding-box o))
 
+(define (inside? object point)
+  "Says whether the point is inside the solid object"
+  ($inside? object point))
+
 (define (intersect object ray-origin ray-direction)
   "Find the intersection between an object and a ray.
    Returns #f if no intersection; otherwise a list (point normal)"
