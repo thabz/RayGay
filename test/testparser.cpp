@@ -102,11 +102,22 @@ class test_mesh : public Test {
 	}
 };
 
+class schemefunctions_test : public Test {
+    public: 
+	void run() {
+	    Scene* scene = new Scene();        
+	    SceneParser* p = new SceneParser(scene);
+	    cout << endl;
+	    p->parse_file(SchemeFilenames::toString(getLoadPrefix() + "/scheme/test-objects.scm"));
+	}
+};
+
 int main(int argc, char *argv[]) {
     TestSuite suite;
 
     suite.add("Vector math",new test_vector_math());
     suite.add("Mesh",new test_mesh());
+    suite.add("Scheme tests",new schemefunctions_test());
     try {
 	suite.run();
     } catch (scheme_exception e) {
