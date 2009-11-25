@@ -2,6 +2,10 @@
 (load "../scenes/lib/vector-math.scm")
 (load "../scenes/lib/object-factory.scm")
 
+;; ---------------------------------------------
+;; Helpers for testing objects
+;; ---------------------------------------------
+
 (define (intersect? object origin direction)
  (not (eq? #f (intersect object origin direction))))
 
@@ -10,6 +14,10 @@
 
 (define (intersection-normal object origin direction)
  (cadr (intersect object origin direction)))
+ 
+;; ---------------------------------------------
+;; Halfspace
+;; ---------------------------------------------
 
 (define (test-halfspace)
  (let ((y<10 (make-halfspace #(0 1 0) #(0 10 0)))
@@ -38,5 +46,23 @@
     (not (inside? slab #(0 4 0))))))
  (test "That 1 = 1" (= 1 1))))
 
-(run-test "Halfspaces" test-halfspace)
+;; ---------------------------------------------
+;; Sphere
+;; ---------------------------------------------
+
+(define (test-sphere)
+ (let ((s1 (make-sphere #(0 0 0) 10)))
+  (test "Inside/outside tests"
+   (and
+    (inside? s1 #(0 5 0))
+    (not (inside? s1 #(10 10 10)))
+    (inside? s1 #(-5 -5 -5))))
+  (test "1 = 1" (= 1 1))))
+
+;; ---------------------------------------------
+;; Run the suite 
+;; ---------------------------------------------
+
+(run-test "Halfspace" test-halfspace)
+(run-test "Sphere" test-sphere)
 
