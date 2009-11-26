@@ -24,7 +24,7 @@
         (y>5  (make-halfspace #(0 -1 0) #(0 5 0)))
         (ybetween5and10 (make-intersection y<10 y>5))
         (xbetween5and10 
-	 (rotate (make-instance ybetween5and10) #(0 0 1) 45)))
+	 (rotate (make-instance ybetween5and10) #(0 0 1) 90)))
  (test "Intersection test from outside" 
    (intersect? y<10 #(0 100 0) #(0 -1 0)))
  (test "Intersection from the outside" 
