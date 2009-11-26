@@ -22,7 +22,9 @@
 (define (test-halfspace)
  (let* ((y<10 (make-halfspace #(0 1 0) #(0 10 0)))
         (y>5  (make-halfspace #(0 -1 0) #(0 5 0)))
-        (ybetween5and10 (make-intersection y<10 y>5)))
+        (ybetween5and10 (make-intersection y<10 y>5))
+        (xbetween5and10 
+	 (rotate (make-instance ybetween5and10) #(0 0 1) 45)))
  (test "Intersection test from outside" 
    (intersect? y<10 #(0 100 0) #(0 -1 0)))
  (test "Intersection from the outside" 
@@ -52,6 +54,11 @@
   (near-equal?
    (intersect ybetween5and10 #(1 -100 1) #(0 1 0))
    (list #(1 5 1) #(0 -1 0))))
+ (test "Inside rotated instance" 
+   (and
+    (not (inside? xbetween5and10 #(11 0 0)))
+    (inside? xbetween5and10 #(7 0 0))
+    (not (inside? xbetween5and10 #(4 0 0)))))
  (test "That 1 = 1" (= 1 1))))
 
 ;; ---------------------------------------------

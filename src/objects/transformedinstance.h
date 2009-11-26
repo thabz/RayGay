@@ -4,6 +4,7 @@
 
 #include "transformer.h"
 #include "objects/object.h"
+#include "objects/solid.h"
 
 /**
  * A transformed instance of an object.
@@ -12,7 +13,7 @@
  * around the scene in different positions, with
  * only one instance being kept in memory.
  */
-class TransformedInstance : public Object, public Transformer {
+class TransformedInstance : public Object, public SolidInterface, public Transformer {
 
     public:
 	TransformedInstance(Object* object);
@@ -23,6 +24,10 @@ class TransformedInstance : public Object, public Transformer {
 	void transform(const Matrix& m);
 
         void fullIntersect(const Ray& ray, const double t, Intersection& result) const;
+
+        bool inside(const Vector& p) const;
+	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
+	AABox getContainedBox() const;
 
     private:
 	double _fastIntersect(const Ray& ray) const;

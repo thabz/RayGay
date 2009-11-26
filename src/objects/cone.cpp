@@ -16,7 +16,7 @@
  * @param has_caps  	Whether caps should be checked for intersection too
  * @param material	Material of the cone
  */
-Cone::Cone(const Vector& begin, const Vector& end, double radius_begin, double radius_end, bool has_caps, const Material* material) : Solid (material) {
+Cone::Cone(const Vector& begin, const Vector& end, double radius_begin, double radius_end, bool has_caps, const Material* material) : Solid(material) {
 
     this->begin = begin;
     this->end = end;

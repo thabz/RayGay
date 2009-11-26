@@ -3,6 +3,7 @@
 #include "ray.h"
 #include "aabox.h"
 #include "intersection.h"
+#include "exception.h"
 
 TransformedInstance::TransformedInstance(Object* object) : Object(object->getMaterial()) {
     this->object = object;
@@ -28,10 +29,32 @@ AABox TransformedInstance::getBoundingBox() const {
 }
 
 SceneObject* TransformedInstance::clone() const {
-    return new TransformedInstance(*this);
+    return new TransformedInstance(object);
 }
 
 void TransformedInstance::transform(const Matrix& m) {
     Transformer::transform(m);
 }
 
+void TransformedInstance::allIntersections(const Ray& ray, std::vector<Intersection>& result) const {
+    Solid* solid = dynamic_cast<Solid*>(object);
+    if (solid == NULL) {
+	throw_exception("Transformed instance is not a solid");
+    }
+    Ray local_ray = rayToObject(ray);
+    solid->allIntersections(local_ray, result);
+}
+
+bool TransformedInstance::inside(const Vector& p) const {
+    Solid* solid = dynamic_cast<Solid*>(object);
+    if (solid == NULL) {
+	throw_exception("Transformed instance is not a solid");
+    }
+    return solid->inside(pointToObject(p));
+
+}
+
+AABox TransformedInstance::getContainedBox() const {
+    Vector tiny = Vector(EPSILON,EPSILON,EPSILON);
+    return AABox(-1 * tiny, tiny);
+}

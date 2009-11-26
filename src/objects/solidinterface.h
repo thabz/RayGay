@@ -1,16 +1,15 @@
 
-#ifndef OBJECTS_SOLID_H
-#define OBJECTS_SOLID_H
+#ifndef OBJECTS_SOLID_INTERFACE_H
+#define OBJECTS_SOLID_INTERFACE_H
 
 #include "objects/object.h"
-#include "objects/solidinterface.h"
 #include <vector>
 
 /**
  * Objects that can be used as part of CSG objects must
  * implement this interface.
  */
-class Solid : public Object, public SolidInterface {
+class SolidInterface {
 
     public:
 
@@ -28,16 +27,13 @@ class Solid : public Object, public SolidInterface {
 	/**
 	 * Returns largest AABox inscribed in this object.
 	 */
-	virtual AABox getContainedBox() const;
+	virtual AABox getContainedBox() const = 0;
 
         /**
          * Says whether a point is inside the object
          */
         virtual bool inside(const Vector& p) const = 0;
-
-    protected:
-	/// Protected constructor
-	Solid(const Material* mat) : Object(mat) {};
 };
 
 #endif
+
