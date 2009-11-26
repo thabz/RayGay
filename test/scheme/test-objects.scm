@@ -54,6 +54,10 @@
   (near-equal?
    (intersect ybetween5and10 #(1 -100 1) #(0 1 0))
    (list #(1 5 1) #(0 -1 0))))
+ (test "All-intersections"
+   (near-equal? 
+    (all-intersections ybetween5and10 #(0 100 0) #(0 -1 0))
+    '((#(0 10 0) #(0 1 0)) (#(0 5 0) #(0 -1 0)))))
  (test "Inside rotated instance" 
    (and
     (not (inside? xbetween5and10 #(11 0 0)))
@@ -72,6 +76,10 @@
     (inside? s1 #(0 5 0))
     (not (inside? s1 #(10 10 10)))
     (inside? s1 #(-5 -5 -5))))
+  (test "All intersections"
+   (near-equal? 
+    (all-intersections s1 #(0 100 0) #(0 -1 0))
+    '((#(0 10 0) #(0 1 0)) (#(0 -10 0) #(0 -1 0)))))
   (test "1 = 1" (= 1 1))))
 
 ;; ---------------------------------------------

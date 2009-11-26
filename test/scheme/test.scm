@@ -5,19 +5,17 @@
 
 (define (near-equal? a b)
  (cond
+  ((and (null? a) (null? b)) #t)
   ((and (list? a) (list? b))
-   (let loop ((l (map near-equal? a b)))
-    (cond
-     ((null? l) #t)
-     ((not (car l)) #f)
-     (else (loop (cdr l))))))
+   (and 
+    (= (length a) (length b))
+    (near-equal? (car a) (car b))
+    (near-equal? (cdr a) (cdr b))))
   ((and (real? a) (real? b)) 
    (> 0.0001 (abs (- a b))))
-  ((vector? a) 
-   (and
-    (near-equal? (vector-ref a 0) (vector-ref b 0))
-    (near-equal? (vector-ref a 1) (vector-ref b 1))
-    (near-equal? (vector-ref a 2) (vector-ref b 2))))))
+  ((and (vector? a) (vector? b))
+   (near-equal? (vector->list a) (vector->list b)))
+  (else #f)))
 
 ;; ---------------------------------------------
 ;; The testing framework
