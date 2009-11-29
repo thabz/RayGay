@@ -22,7 +22,9 @@
 (define (test-halfspace)
  (let* ((y<10 (make-halfspace #(0 1 0) #(0 10 0)))
         (y>5  (make-halfspace #(0 -1 0) #(0 5 0)))
+        (y<5  (make-halfspace #(0 1 0) #(0 5 0)))
         (ybetween5and10 (make-intersection y<10 y>5))
+        (ybetween5and10-II (make-difference y<10 y<5))
         (xbetween5and10 
 	 (rotate (make-instance ybetween5and10) #(0 0 1) 90)))
  (test "Intersection test from outside" 
@@ -46,17 +48,31 @@
     (not (inside? ybetween5and10 #(0 11 0)))
     (inside? ybetween5and10 #(0 7 0))
     (not (inside? ybetween5and10 #(0 4 0)))))
+ (test "Inside slab II with CSG intersection of two halfplanes" 
+   (and
+    (not (inside? ybetween5and10-II #(0 11 0)))
+    (inside? ybetween5and10-II #(0 7 0))
+    (not (inside? ybetween5and10-II #(0 4 0)))))
  (test "Intersect slab from over it"
   (near-equal?
    (intersect ybetween5and10 #(5 100 5) #(0 -1 0))
+   (list #(5 10 5) #(0 1 0))))
+; (display (intersect ybetween5and10-II #(5 100 5) #(0 -1 0)))
+ (test "Intersect slab II from over it"
+  (near-equal?
+   (intersect ybetween5and10-II #(5 100 5) #(0 -1 0))
    (list #(5 10 5) #(0 1 0))))
  (test "Intersect slab from under it"
   (near-equal?
    (intersect ybetween5and10 #(1 -100 1) #(0 1 0))
    (list #(1 5 1) #(0 -1 0))))
- (test "All-intersections"
+ (test "All-intersections 1"
    (near-equal? 
     (all-intersections ybetween5and10 #(0 100 0) #(0 -1 0))
+    '((#(0 10 0) #(0 1 0)) (#(0 5 0) #(0 -1 0)))))
+ (test "All-intersections 2"
+   (near-equal? 
+    (all-intersections ybetween5and10-II #(0 100 0) #(0 -1 0))
     '((#(0 10 0) #(0 1 0)) (#(0 5 0) #(0 -1 0)))))
  (test "Inside rotated instance" 
    (and
