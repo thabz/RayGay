@@ -25,3 +25,8 @@
    Returns #f if no intersection; otherwise a list (point normal)"
   ($intersect object ray-origin ray-direction))
 
+(define (all-intersections object ray-origin ray-direction)
+  "Find all the intersection between a solid object and a ray.
+   Returns a list of (point normal) lists."
+  ($all-intersections object ray-origin ray-direction))
+
