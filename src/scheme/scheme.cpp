@@ -250,7 +250,9 @@ Scheme::Scheme(int argc, char *argv[]) {
     assign(L"set!",         SchemeObject::createInternalProcedure(L"set!"), null_environment);
     
     current_input_port = SchemeObject::createInputPort(&wcin);
+    current_input_port->set_textual(true);
     current_output_port = SchemeObject::createOutputPort(&wcout);
+    current_output_port->set_textual(true);
     
     Heap* heap = Heap::getUniqueInstance();
 
