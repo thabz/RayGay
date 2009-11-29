@@ -1,6 +1,6 @@
 (load "scheme/test.scm")
-(load "../scenes/lib/vector-math.scm")
-(load "../scenes/lib/object-factory.scm")
+(load "../../scenes/lib/vector-math.scm")
+(load "../../scenes/lib/object-factory.scm")
 
 ;; ---------------------------------------------
 ;; Helpers for testing objects

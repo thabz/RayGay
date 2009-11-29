@@ -108,7 +108,7 @@ class schemefunctions_test : public Test {
 	    Scene* scene = new Scene();        
 	    SceneParser* p = new SceneParser(scene);
 	    cout << endl;
-	    p->parse_file(SchemeFilenames::toString(getLoadPrefix() + "/scheme/test-objects.scm"));
+	    p->parse_file(SchemeFilenames::toString(getLoadPrefix() + "/scheme/tests.scm"));
 	}
 };
 
