@@ -12,6 +12,7 @@ SchemeObject* i_input_port_p(SchemeObject* o);
 SchemeObject* i_output_port_p(SchemeObject* o);
 SchemeObject* s_current_input_port(Scheme* scheme);
 SchemeObject* s_current_output_port(Scheme* scheme);
+SchemeObject* i_put_datum(Scheme* scheme, SchemeObject* p, SchemeObject* o);
 
 #endif
 

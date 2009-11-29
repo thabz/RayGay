@@ -161,6 +161,29 @@ SchemeObject* i_open_string_input_port(Scheme* scheme, wstring s) {
     return port;
 }
 
+SchemeObject* s_open_string_output_port(Scheme* scheme) {
+    wostringstream* woss = new wostringstream(ostringstream::out);
+    SchemeObject* port = SchemeObject::createOutputPort(woss);
+    port->set_textual(true);
+    port->transcoder = s_make_transcoder(scheme, rawunicode_codec, S_UNSPECIFIED, S_UNSPECIFIED);
+    wostringstream unique_id;
+    unique_id << L"$$internal$$port-id-";
+    unique_id << uint64_t(&woss);
+    scheme->assign(unique_id.str(), port);
+    wostringstream code;
+    code << L"(lambda () ($$internal$$extract-string-from-string-output-port ";
+    code << unique_id.str();
+    code << L"))";
+    SchemeObject* call_back = scheme->eval(code.str());
+    assert(i_procedure_p(call_back) == S_TRUE);
+    return i_list_2(port, call_back);
+}
+
+SchemeObject* s_internal_extract_string(Scheme* scheme, SchemeObject* port) {
+    wostringstream* woss = (wostringstream*)(port->os);
+    return string2scm(woss->str());
+}
+
 SchemeObject* s_open_string_input_port(Scheme* scheme, SchemeObject* str) {
     assert_arg_string_type(L"open-string-input-port", 1, str);
     return i_open_string_input_port(scheme, scm2string(str));
@@ -209,6 +232,30 @@ SchemeObject* s_get_char(Scheme* scheme, SchemeObject* port) {
     assert_arg_textual_port_type(L"get-char", 1, port);
     wchar_t c = i_get_char(port);
     return c == -1 ? S_EOF : char2scm(c);
+}
+
+SchemeObject* s_put_char(Scheme* scheme, SchemeObject* port, SchemeObject* c) {
+    assert_arg_output_port_type(L"put-char", 1, port);
+    assert_arg_textual_port_type(L"put-char", 1, port);
+    wostream* wos = port->wos;
+    (*wos) << scm2char(c);
+    return S_UNSPECIFIED;
+}
+
+// TODO: Use opt1 and opt2 to substring str.
+SchemeObject* s_put_string(Scheme* scheme, SchemeObject* port, SchemeObject* str, SchemeObject* opt1, SchemeObject* opt2) {
+    assert_arg_output_port_type(L"put-string", 1, port);
+    assert_arg_textual_port_type(L"put-string", 1, port);
+    assert_arg_string_type(L"put-string", 2, str);
+    wostream* wos = port->wos;
+    (*wos) << scm2string(str);
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* s_put_datum(Scheme* scheme, SchemeObject* port, SchemeObject* obj) {
+    assert_arg_output_port_type(L"put-datum", 1, port);
+    assert_arg_textual_port_type(L"put-datum", 1, port);
+    return i_put_datum(scheme, port, obj);
 }
 
 // Returns -1 if EOF, otherwise an int in the range [0,255].
@@ -324,9 +371,14 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 	scheme->assign(L"open-bytevector-input-port"
 	                                        ,1,1,0, (SchemeObject* (*)()) s_open_bytevector_input_port, envt);
 	scheme->assign(L"open-string-input-port",1,1,0, (SchemeObject* (*)()) s_open_string_input_port, envt);
+	scheme->assign(L"open-string-output-port",0,0,0, (SchemeObject* (*)()) s_open_string_output_port, envt);
+	scheme->assign(L"$$internal$$extract-string-from-string-output-port",1,0,0, (SchemeObject* (*)()) s_internal_extract_string, envt);
 	scheme->assign(L"get-u8"                ,1,0,0, (SchemeObject* (*)()) s_get_u8, envt);
 	scheme->assign(L"lookahead-u8"          ,1,0,0, (SchemeObject* (*)()) s_lookahead_u8, envt);
 	scheme->assign(L"get-char"              ,1,0,0, (SchemeObject* (*)()) s_get_char, envt);
+	scheme->assign(L"put-char"              ,2,0,0, (SchemeObject* (*)()) s_put_char, envt);
+	scheme->assign(L"put-string"            ,2,2,0, (SchemeObject* (*)()) s_put_string, envt);
+	scheme->assign(L"put-datum"             ,2,0,0, (SchemeObject* (*)()) s_put_datum, envt);
 	scheme->assign(L"lookahead-char"        ,1,0,0, (SchemeObject* (*)()) s_lookahead_char, envt);
 	scheme->assign(L"get-string-n"          ,2,0,0, (SchemeObject* (*)()) s_get_string_n, envt);
 	scheme->assign(L"get-string-all"        ,1,0,0, (SchemeObject* (*)()) s_get_string_all, envt);
@@ -338,6 +390,7 @@ void R6RSLibIOPorts::bind(Scheme* scheme, SchemeObject* envt) {
 	scheme->assign(L"input-port?"           ,1,0,0, (SchemeObject* (*)()) s_input_port_p, envt);
 	scheme->assign(L"output-port?"          ,1,0,0, (SchemeObject* (*)()) s_output_port_p, envt);
 	scheme->assign(L"eof-object?"           ,1,0,0, (SchemeObject* (*)()) s_eof_object_p, envt);
+	scheme->assign(L"eof-object"            ,0,0,0, (SchemeObject* (*)()) s_eof_object, envt);
 }
 
 wchar_t Codec::peek(SchemeObject* port) {

@@ -1478,6 +1478,7 @@ void test_io() {
     assert_eval(s, L"(output-port? (current-input-port))", L"#f");
     assert_eval(s, L"(input-port? (current-output-port))", L"#f");
     assert_eval(s, L"(output-port? (current-output-port))", L"#t");
+    assert_eval(s, L"(eof-object? (eof-object))", L"#t");
 }
 
 void test_call_cc() {

@@ -36,3 +36,15 @@ SchemeObject* s_output_port_p(Scheme* scheme, SchemeObject* o) {
     return i_output_port_p(o);
 }
 
+SchemeObject* i_put_datum(Scheme* scheme, SchemeObject* port, SchemeObject* o) {
+    wostream* wos = port->wos;
+    if (i_string_p(o) == S_TRUE) {
+        (*wos) << o->str;
+    } else if (i_char_p(o) == S_TRUE) {
+        (*wos) << o->c;
+    } else {
+        (*wos) << o->toString();
+    }
+    return S_UNSPECIFIED;
+    return S_UNSPECIFIED;
+}

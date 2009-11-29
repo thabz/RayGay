@@ -167,22 +167,12 @@ SchemeObject* s_write(Scheme* scheme, SchemeObject* o, SchemeObject* port) {
 }
 
 SchemeObject* s_display(Scheme* scheme, SchemeObject* o, SchemeObject* port) {
-    wostream* wos;
     if (port == S_UNSPECIFIED) {
-        wos = s_current_output_port(scheme)->wos;
+        port = s_current_output_port(scheme);
     } else {
         assert_arg_type(scheme, L"display", 2, s_output_port_p, port);
-        wos = port->wos;
     }
-    
-    if (i_string_p(o) == S_TRUE) {
-        (*wos) << o->str;
-    } else if (i_char_p(o) == S_TRUE) {
-        (*wos) << o->c;
-    } else {
-        (*wos) << o->toString();
-    }
-    return S_UNSPECIFIED;
+    return i_put_datum(scheme, port, o);
 }
 
 SchemeObject* s_newline(Scheme* scheme, SchemeObject* port) {
