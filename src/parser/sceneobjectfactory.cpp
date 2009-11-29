@@ -603,13 +603,37 @@ SchemeObject* intersect(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_ori
     return i_list_2(s_point, s_normal);
 }
 
+SchemeObject* all_intersections(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_origin, SchemeObject* s_direction) 
+{
+    const wchar_t* proc = L"$all-intersections";
+
+    SceneObject* sceneobj = scm2sceneobject(s_obj,proc,1);
+    Vector origin = scm2vector(s_origin, proc, 2);
+    Vector direction = scm2vector(s_direction, proc, 3);
+    SolidInterface* obj = dynamic_cast<SolidInterface*>(sceneobj);
+    if (obj == NULL) wrong_type_arg(proc,1,s_obj);
+
+    vector<Intersection> intersections;
+    Ray ray = Ray(origin,direction,1);
+    obj->allIntersections(ray, intersections);
+    SchemeObject* result = S_EMPTY_LIST;
+    for(uint32_t i = 0; i < intersections.size(); i++) {
+	Intersection& intersection = intersections[i];
+	SchemeObject* s_point = vector2scm(intersection.getPoint());
+	SchemeObject* s_normal = vector2scm(intersection.getNormal());
+	SchemeObject* s_intersection = i_list_2(s_point, s_normal);
+	result = s_cons(scheme, s_intersection, result);
+    }
+    return s_reverse(scheme, result);
+}
+
 SchemeObject* inside_p(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_point) 
 {
     const wchar_t* proc = L"$inside?";
 
     SceneObject* sceneobj = scm2sceneobject(s_obj,proc,1);
     Vector point = scm2vector(s_point, proc, 2);
-    Solid* obj = dynamic_cast<Solid*>(sceneobj);
+    SolidInterface* obj = dynamic_cast<SolidInterface*>(sceneobj);
     if (obj == NULL) wrong_type_arg(proc,1,s_obj);
     return bool2scm(obj->inside(point));
 }
@@ -691,6 +715,8 @@ void SceneObjectFactory::register_procs(Scheme* s)
 	    (SchemeObject* (*)()) SceneObjectFactory::make_text);
     scheme->assign(L"$intersect",3,0,0,
 	    (SchemeObject* (*)()) intersect);
+    scheme->assign(L"$all-intersections",3,0,0,
+	    (SchemeObject* (*)()) all_intersections);
     scheme->assign(L"$inside?",2,0,0,
 	    (SchemeObject* (*)()) inside_p);
 }
