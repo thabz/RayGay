@@ -1,6 +1,7 @@
 ;; 
 ;; Implementation of SRFI 48: Intermediate Format Strings
 ;; http://srfi.schemers.org/srfi-48/
+;;
 ;; ~a	Any	(display obj) for humans	yes
 ;; ~s	Slashified	(write obj) for parsers	yes
 ;; ~w	WriteCircular	(write-with-shared-structure obj) like ~s, but handles recursive structures	yes
@@ -50,6 +51,14 @@
        ((#\b) (put-string output-port (number->string (car objs) 2)) 
 	      (loop (cdr objs)))
        ((#\c) (put-char output-port (car objs))
+	      (loop (cdr objs)))
+       ((#\K) (put-string output-port 
+	       (apply format (cons #f (cons (car objs) (cadr objs))))) 
+	      (loop (cddr objs)))
+       ((#\?) (put-string output-port 
+	       (apply format (cons #f (cons (car objs) (cadr objs))))) 
+	      (loop (cddr objs)))
+       ((#\s) (write (car objs) output-port)
 	      (loop (cdr objs)))
        ((#\a) (put-datum output-port (car objs)) 
 	      (loop (cdr objs))))))
