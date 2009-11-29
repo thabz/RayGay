@@ -180,7 +180,7 @@ SchemeObject* s_newline(Scheme* scheme, SchemeObject* port) {
     if (port == S_UNSPECIFIED) {
         wos = s_current_output_port(scheme)->wos;
     } else {
-        assert_arg_type(scheme, L"write", 2, s_output_port_p, port);
+        assert_arg_type(scheme, L"newline", 2, s_output_port_p, port);
         wos = port->wos;
     }
     (*wos) << endl;        
