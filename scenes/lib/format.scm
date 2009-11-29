@@ -21,15 +21,27 @@
 ;; ~_	Space	a single space character is output	no
 ;; ~h	Help	outputs one line of call synopsis, one line of comment, and one line of synopsis for each format directive, starting with the directive (e.g. "~t")	no
 
-(define (format port format-string . objs)
- (let* ((par (open-string-output-port))
-	(output-port (car par))
-	(output-callback (cadr par))
-	(eof (eof-object))
-	(format-port (open-string-input-port format-string)))
+(define (format . args)
+ (cond
+  ((null? args) #f)
+  ((string? (car args))
+   (apply format (cons #f args)))
+  ((eqv? #t (car args))
+   (apply format (cons (current-output-port) (cdr args))))
+  ((eqv? #f (car args))
+   (let* ((par (open-string-output-port))
+  	  (output-port (car par))
+	  (output-callback (cadr par)))
+    (apply format (cons output-port (cdr args)))
+    (output-callback)))
+  ((port? (car args))
+   (let* ((output-port (car args))
+	  (format-string (cadr args))
+	  (objs (cddr args))
+	  (format-port (open-string-input-port format-string)))
   (let loop ((objs objs))
    (cond 
-    ((port-eof? format-port) (output-callback))
+    ((port-eof? format-port))
     ((equal? (lookahead-char format-port) #\~) 
      (let ((ignored (get-char format-port))
            (c (get-char format-port)))
@@ -64,5 +76,5 @@
 	      (loop (cdr objs))))))
     (else 
      (put-char output-port (get-char format-port))
-     (loop objs))))))
+     (loop objs))))))))
 
