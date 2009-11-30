@@ -198,6 +198,26 @@
         (inside? csg #(0 0 16))
         (not (inside? csg #(0 0 14)))
         (not (inside? csg #(0 0 0)))))
+  (test "Hollow sphere"
+   (let* ((s1 (make-sphere #(0 0 0) 30))
+	  (s2 (make-sphere #(0 0 0) 29))
+	  (csg (make-difference s1 s2)))
+    (near-equal?
+     (all-intersections csg #(0 0 1000) #(0 0 -1))
+     '((#(0 0 30) #(0 0 1))
+       (#(0 0 29) #(0 0 -1))
+       (#(0 0 -29) #(0 0 1))
+       (#(0 0 -30) #(0 0 -1))))))
+  (test "Hollow ellipsoid"
+   (let* ((s1 (make-ellipsoid #(0 0 0) #(10 20 30)))
+	  (s2 (make-ellipsoid #(0 0 0) #(9 19 29)))
+	  (csg (make-difference s1 s2)))
+    (near-equal?
+     (all-intersections csg #(0 0 1000) #(0 0 -1))
+     '((#(0 0 30) #(0 0 1))
+       (#(0 0 29) #(0 0 -1))
+       (#(0 0 -29) #(0 0 1))
+       (#(0 0 -30) #(0 0 -1))))))
   (test "." #t)))
 
 ;; ---------------------------------------------
