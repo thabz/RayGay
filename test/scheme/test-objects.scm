@@ -128,9 +128,9 @@
   (test "." #t)))
 
 ;; ---------------------------------------------
-;; Test CSG Difference
+;; Test CSG Intersection
 ;; ---------------------------------------------
-(define (test-csg-difference)
+(define (test-csg-intersection)
  (let* ((s1 (make-sphere #(0 0 10) 15))
         (s2 (make-sphere #(0 0 -10) 15))
         (s3 (make-sphere #(0 0 0) 15))
@@ -138,14 +138,67 @@
         (csg (make-intersection s1 s3))
         (csg2 (make-intersection csg s3))
         (csg3 (make-intersection csg2 s4)))
-  (test "Intersection 1" 
+  (test "All intersections" 
    (near-equal? 
     (all-intersections csg #(0 0 100) #(0 0 -1))
     '((#(0 0 15) #(0 0 1)) (#(0 0 -5) #(0 0 -1)))))
-  (test "Ray that misses 1"
-   (null? (all-intersections csg #(0 1000 -10) #(0 -1 0))))
+  (test "Intersections"
+   (and
+    (near-equal?
+     (intersect csg #(0 0 1000) #(0 0 -1)) '(#(0 0 15) #(0 0 1)))
+    (near-equal?
+     (intersect csg #(0 0 -1000) #(0 0 1)) '(#(0 0 -5) #(0 0 -1)))))
+  (test "Inside"
+   (and (not (inside? csg #(0 0 16)))
+        (inside? csg #(0 0 14))
+        (inside? csg #(0 0 -4))
+        (not (inside? csg #(0 0 -6)))))
+  (test "Ray that misses"
+   (and
+    (null? (all-intersections csg #(0 1000 -10) #(0 -1 0)))
+    (null? (all-intersections csg #(0 1000 20) #(0 -1 0)))))
+  (let* ((s1 (make-sphere #(0 0 10) 5))
+         (s2 (make-sphere #(0 0 -10) 5))  
+	 (csg (make-intersection s1 s2)))
+   (test "Intersecting the void"
+    (null? (all-intersections csg #(0 0 1000) #(0 0 -1))))
+   (test "Inside void"
+    (not (or (inside? csg #(0 0 0))
+	     (inside? csg #(0 0 10))
+	     (inside? csg #(0 0 -10))
+	     (inside? csg #(0 0 26))
+	     (inside? csg #(0 0 26))))))
   (test "." #t)))
 
+;; ---------------------------------------------
+;; Test CSG Difference
+;; ---------------------------------------------
+(define (test-csg-difference)
+ (let* ((s1 (make-sphere #(0 0 10) 15))
+        (s2 (make-sphere #(0 0 0) 15))
+        (csg (make-difference s1 s2)))
+  (test "All intersections" 
+   (near-equal? 
+    (all-intersections csg #(0 0 100) #(0 0 -1))
+    '((#(0 0 25) #(0 0 1)) (#(0 0 15) #(0 0 -1)))))
+  (test "Intersections"
+   (and
+    (near-equal?
+     (intersect csg #(0 0 1000) #(0 0 -1)) '(#(0 0 25) #(0 0 1)))
+    (near-equal?
+     (intersect csg #(0 0 -1000) #(0 0 1)) '(#(0 0 15) #(0 0 -1)))
+    (not (intersect csg #(0 0 25.1) #(0 0 1)))
+    (not (intersect csg #(0 0 25) #(0 0 1)))
+    (not (intersect csg #(0 0 14) #(0 0 -1)))
+    (not (intersect csg #(0 0 14.99) #(0 0 -1)))
+    (not (intersect csg #(0 0 15) #(0 0 -1)))))
+  (test "Inside"
+   (and (not (inside? csg #(0 0 26)))
+        (inside? csg #(0 0 24))
+        (inside? csg #(0 0 16))
+        (not (inside? csg #(0 0 14)))
+        (not (inside? csg #(0 0 0)))))
+  (test "." #t)))
 
 ;; ---------------------------------------------
 ;; Run the suite 
@@ -154,5 +207,6 @@
 (run-test "Halfspace" test-halfspace)
 (run-test "Sphere" test-sphere)
 (run-test "CSG Union" test-csg-union)
+(run-test "CSG Intersection" test-csg-intersection)
 (run-test "CSG Difference" test-csg-difference)
 
