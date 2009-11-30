@@ -142,6 +142,8 @@
    (near-equal? 
     (all-intersections csg #(0 0 100) #(0 0 -1))
     '((#(0 0 15) #(0 0 1)) (#(0 0 -5) #(0 0 -1)))))
+  (test "Ray that misses 1"
+   (null? (all-intersections csg #(0 1000 -10) #(0 -1 0))))
   (test "." #t)))
 
 
