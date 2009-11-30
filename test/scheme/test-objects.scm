@@ -99,9 +99,58 @@
   (test "1 = 1" (= 1 1))))
 
 ;; ---------------------------------------------
+;; Test CSG Union
+;; ---------------------------------------------
+(define (test-csg-union)
+ (let* ((s1 (make-sphere #(0 0 10) 15))
+        (s2 (make-sphere #(0 0 -10) 15))
+        (s3 (make-sphere #(0 0 0) 15))
+        (s4 (make-sphere #(0 0 -50) 10))
+        (csg (make-union s1 s2))
+        (csg2 (make-union csg s3))
+        (csg3 (make-union csg2 s4)))
+  (test "Intersection 1" 
+   (near-equal? 
+    (map car (all-intersections csg #(0 0 100) #(0 0 -1)))
+    '(#(0 0 25) #(0 0 -25))))
+  (test "Intersection 2"
+   (near-equal? 
+    (map car (all-intersections csg2 #(0 0 100) #(0 0 -1)))
+    '(#(0 0 25) #(0 0 -25))))
+  (test "Intersection 3"
+   (near-equal? 
+    (map car (all-intersections csg3 #(0 0 100) #(0 0 -1)))
+    '(#(0 0 25) #(0 0 -25) #(0 0 -40) #(0 0 -60))))
+  (test "Intersection from inside"
+   (near-equal? 
+    (map car (all-intersections csg3 #(0 0 0) #(0 0 -1)))
+    '(#(0 0 -25) #(0 0 -40) #(0 0 -60))))
+  (test "." #t)))
+
+;; ---------------------------------------------
+;; Test CSG Difference
+;; ---------------------------------------------
+(define (test-csg-difference)
+ (let* ((s1 (make-sphere #(0 0 10) 15))
+        (s2 (make-sphere #(0 0 -10) 15))
+        (s3 (make-sphere #(0 0 0) 15))
+        (s4 (make-sphere #(0 0 -50) 10))
+        (csg (make-intersection s1 s3))
+        (csg2 (make-intersection csg s3))
+        (csg3 (make-intersection csg2 s4)))
+  (test "Intersection 1" 
+   (near-equal? 
+    (all-intersections csg #(0 0 100) #(0 0 -1))
+    '((#(0 0 15) #(0 0 1)) (#(0 0 -5) #(0 0 -1)))))
+  (test "." #t)))
+
+
+;; ---------------------------------------------
 ;; Run the suite 
 ;; ---------------------------------------------
 
 (run-test "Halfspace" test-halfspace)
 (run-test "Sphere" test-sphere)
+(run-test "CSG Union" test-csg-union)
+(run-test "CSG Difference" test-csg-difference)
 
