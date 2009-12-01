@@ -22,6 +22,16 @@
 ;; ~h	Help	outputs one line of call synopsis, one line of comment, and one line of synopsis for each format directive, starting with the directive (e.g. "~t")	no
 
 (define (format . args)
+ (define (put-padded port width obj)
+  "Place obj as string within a space-padded field"
+  (let* ((str (if (number? obj) (number->string obj) obj))
+         (strw (string-length str)))
+   (if (> strw width)
+    (put-string port str)
+    (let* ((sw (- width strw))
+ 	   (s (list->string (vector->list (make-vector sw #\space)))))
+     (put-string port s)
+     (put-string port str)))))
  (cond
   ((null? args) #f)
   ((string? (car args))
@@ -64,12 +74,20 @@
 	      (loop (cdr objs)))
        ((#\c) (put-char output-port (car objs))
 	      (loop (cdr objs)))
-       ((#\K) (put-string output-port 
+       ((#\? #\K) (put-string output-port 
 	       (apply format (cons #f (cons (car objs) (cadr objs))))) 
 	      (loop (cddr objs)))
-       ((#\?) (put-string output-port 
-	       (apply format (cons #f (cons (car objs) (cadr objs))))) 
-	      (loop (cddr objs)))
+       ((#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9)
+	      (let digit-loop ((digits (list c)))
+	       (let ((d (get-char format-port)))
+		(if (equal? d #\F)
+		 (begin
+		  (put-padded 
+		   output-port
+		   (string->number (list->string (reverse digits))) 
+		   (car objs))
+		  (loop (cdr objs)))
+		 (digit-loop (cons d digits))))))
        ((#\s) (write (car objs) output-port)
 	      (loop (cdr objs)))
        ((#\a) (put-datum output-port (car objs)) 
