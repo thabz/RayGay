@@ -54,7 +54,7 @@
     ((port-eof? format-port))
     ((equal? (lookahead-char format-port) #\~) 
      (let ((ignored (get-char format-port))
-           (c (get-char format-port)))
+           (c (char-downcase (get-char format-port))))
       (case c
        ((#\~) (put-char output-port c) 
 	      (loop objs))
@@ -74,13 +74,13 @@
 	      (loop (cdr objs)))
        ((#\c) (put-char output-port (car objs))
 	      (loop (cdr objs)))
-       ((#\? #\K) (put-string output-port 
+       ((#\? #\k) (put-string output-port 
 	       (apply format (cons #f (cons (car objs) (cadr objs))))) 
 	      (loop (cddr objs)))
        ((#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9)
 	      (let digit-loop ((digits (list c)))
-	       (let ((d (get-char format-port)))
-		(if (equal? d #\F)
+	       (let ((d (char-downcase (get-char format-port))))
+		(if (equal? d #\f)
 		 (begin
 		  (put-padded 
 		   output-port
