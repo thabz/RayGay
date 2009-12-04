@@ -107,6 +107,7 @@ void Halfspace::allIntersections(const Ray& ray, vector<Intersection>& result) c
     if (t > 0) {
 	Intersection i;
 	fullIntersect(ray,t,i);
+	i.isEntering(i.getNormal() * ray.getDirection() < 0);
 	result.push_back(i);
     }
 }
