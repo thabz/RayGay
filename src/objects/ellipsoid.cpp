@@ -45,16 +45,20 @@ SceneObject* Ellipsoid::clone() const {
     return new Ellipsoid(*this);
 }
 
-void Ellipsoid::allIntersections(const Ray& world_ray, vector<Intersection>& result2) const {
+uint32_t Ellipsoid::maxIntersections() const {
+    return 2;
+}
+
+uint32_t Ellipsoid::allIntersections(const Ray& world_ray, Intersection* result) const {
     Ray local_ray = rayToObject(world_ray);
-    vector<Intersection> result1;
-    sphere->allIntersections(local_ray,result1);
-    for(uint32_t i = 0; i < result1.size(); i++) {
-	Intersection is = result1[i];
+    uint32_t num = sphere->allIntersections(local_ray,result);
+    for(uint32_t i = 0; i < num; i++) {
+	Intersection is = result[i];
 	intersectionToWorld(is);
 	is.setT(is.getT() / local_ray.t_scale);
-	result2.push_back(is);
+	result[i] = is;
     }
+    return num;
 }
 
 bool Ellipsoid::inside(const Vector& point) const {

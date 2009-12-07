@@ -26,7 +26,8 @@ class TransformedInstance : public Object, public SolidInterface, public Transfo
         void fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 
         bool inside(const Vector& p) const;
-	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
+	uint32_t allIntersections(const Ray& ray, Intersection* result) const;
+	uint32_t maxIntersections() const;
 	AABox getContainedBox() const;
 
     private:

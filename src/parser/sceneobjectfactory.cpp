@@ -613,11 +613,11 @@ SchemeObject* all_intersections(Scheme* scheme, SchemeObject* s_obj, SchemeObjec
     SolidInterface* obj = dynamic_cast<SolidInterface*>(sceneobj);
     if (obj == NULL) wrong_type_arg(proc,1,s_obj);
 
-    vector<Intersection> intersections;
     Ray ray = Ray(origin,direction,1);
-    obj->allIntersections(ray, intersections);
+    Intersection intersections[obj->maxIntersections()];
+    uint32_t num = obj->allIntersections(ray, intersections);
     SchemeObject* result = S_EMPTY_LIST;
-    for(uint32_t i = 0; i < intersections.size(); i++) {
+    for(uint32_t i = 0; i < num; i++) {
 	Intersection& intersection = intersections[i];
 	SchemeObject* s_point = vector2scm(intersection.getPoint());
 	SchemeObject* s_normal = vector2scm(intersection.getNormal());

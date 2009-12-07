@@ -185,14 +185,17 @@ SceneObject* Cone::clone() const {
     return new Cone(*this);
 }
 
-void Cone::allIntersections(const Ray& ray, vector<Intersection>& result) const {
+uint32_t Cone::maxIntersections() const {
+    return 2;
+}
+
+uint32_t Cone::allIntersections(const Ray& ray, Intersection* result) const {
     double roots[2];
-    int num = allPositiveRoots(ray,roots);
-    result.reserve(num);
+    uint32_t num = allPositiveRoots(ray,roots);
     for(int i = 0; i < num; i++) {
 	Intersection inter;
 	fullIntersect(ray,roots[i],inter);
-	result.push_back(inter);
+	result[i] = inter;
     }
     if (num == 1) {
 	result[0].isEntering(false);
@@ -200,6 +203,7 @@ void Cone::allIntersections(const Ray& ray, vector<Intersection>& result) const 
 	result[0].isEntering(true);
 	result[1].isEntering(false);
     }
+    return num;
 }
 
 bool Cone::inside(const Vector& point) const {

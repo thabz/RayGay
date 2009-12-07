@@ -22,7 +22,12 @@ class SolidInterface {
 	 * @param ray the ray to intersect with.
 	 * @param result the intersections are added here.
 	 */
-	virtual void allIntersections(const Ray& ray, vector<Intersection>& result) const = 0;
+	virtual uint32_t allIntersections(const Ray& ray, Intersection* result) const = 0;
+
+	/**
+	 * Returns the maximum number of intersections allIntersections(...) can return.
+	 */
+	virtual uint32_t maxIntersections() const = 0;
 
 	/**
 	 * Returns largest AABox inscribed in this object.

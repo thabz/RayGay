@@ -30,7 +30,8 @@ class Halfspace : public Solid {
 	double _fastIntersect(const Ray& ray) const;
 	void _fullIntersect(const Ray&, double, Intersection&) const;
 	int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
-	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
+	uint32_t allIntersections(const Ray& ray, Intersection* result) const;
+	uint32_t maxIntersections() const;
         bool inside(const Vector& p) const;
 	bool canSelfshadow() const;
 

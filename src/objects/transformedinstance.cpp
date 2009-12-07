@@ -36,13 +36,21 @@ void TransformedInstance::transform(const Matrix& m) {
     Transformer::transform(m);
 }
 
-void TransformedInstance::allIntersections(const Ray& ray, std::vector<Intersection>& result) const {
+uint32_t TransformedInstance::maxIntersections() const {
+    Solid* solid = dynamic_cast<Solid*>(object);
+    if (solid == NULL) {
+	throw_exception("Transformed instance is not a solid");
+    }
+    return solid->maxIntersections();
+}
+
+uint32_t TransformedInstance::allIntersections(const Ray& ray, Intersection* result) const {
     Solid* solid = dynamic_cast<Solid*>(object);
     if (solid == NULL) {
 	throw_exception("Transformed instance is not a solid");
     }
     Ray local_ray = rayToObject(ray);
-    solid->allIntersections(local_ray, result);
+    return solid->allIntersections(local_ray, result);
 }
 
 bool TransformedInstance::inside(const Vector& p) const {

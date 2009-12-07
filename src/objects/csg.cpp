@@ -7,10 +7,13 @@
 CSGIntersection::CSGIntersection(Solid* left, Solid* right, const Material* mat) : Solid(mat) {
     this->left = left;
     this->right = right;
+    this->max_intersections = left->maxIntersections() + right->maxIntersections();
 }
+
 CSGDifference::CSGDifference(Solid* left, Solid* right, const Material* mat) : Solid(mat) {
     this->left = left;
     this->right = right;
+    this->max_intersections = left->maxIntersections() + right->maxIntersections();
 }
 
 SceneObject* CSGIntersection::clone() const {
@@ -53,6 +56,15 @@ bool CSGDifference::inside(const Vector& p) const {
     return left->inside(p) && !right->inside(p);        
 }
 
+uint32_t CSGIntersection::maxIntersections() const {
+    if (max_intersections == 0) throw_exception("What!");
+    return max_intersections;
+}
+
+uint32_t CSGDifference::maxIntersections() const {
+    if (max_intersections == 0) throw_exception("What!");
+    return max_intersections;
+}
 
 /**
  * Find all intersections.
@@ -62,131 +74,131 @@ bool CSGDifference::inside(const Vector& p) const {
  * 
  * \f[ R - L = R  \cap \neg L     \f]
  */
-void CSGDifference::allIntersections(const Ray& ray, vector<Intersection>& result) const {
-    vector<Intersection> left_int;
+uint32_t CSGDifference::allIntersections(const Ray& ray, Intersection* result) const {
+    Intersection left_int[left->maxIntersections()];
     bool left_inside = false;
-    left->allIntersections(ray,left_int);
-    if (left_int.empty()) return;
-    if (left_int.size() > 0) {
-	left_inside = !left_int.front().isEntering();
+    uint32_t left_num = left->allIntersections(ray,left_int);
+    if (left_num == 0) return 0;
+    if (left_num > 0) {
+	left_inside = !left_int[0].isEntering();
     }
 
-    vector<Intersection> right_int;
+    Intersection right_int[right->maxIntersections()];
     bool right_inside = false;
-    right->allIntersections(ray,right_int);
-    if (right_int.size() > 0) {
-	right_inside = !right_int.front().isEntering();
+    uint32_t right_num = right->allIntersections(ray,right_int);
+    if (right_num > 0) {
+	right_inside = !right_int[0].isEntering();
     }
 
     // Invert all directions of right
-    for(uint32_t i = 0; i < right_int.size(); i++) {
+    for(uint32_t i = 0; i < right_num; i++) {
 	right_int[i].isEntering(!right_int[i].isEntering());
 	right_int[i].flipNormal();
     }
     right_inside = !right_inside;
-    if (right_int.empty() && !right_inside) return;
+    if (right_num == 0 && !right_inside) return 0;
     
     // Merge intersections while preserving order
     uint32_t l = 0;
     uint32_t r = 0;
-    result.reserve(left_int.size() + right_int.size());
-    while (l < left_int.size() && r < right_int.size()) {
+    uint32_t j = 0;
+    while (l < left_num && r < right_num) {
 	if (left_int[l].getT() < right_int[r].getT()) {
-	    Intersection i = left_int[l];
+	    Intersection i = left_int[l++];
 	    left_inside = i.isEntering();
-	    l++;
 	    if (right_inside) {
-		result.push_back(i);
+		result[j++] = i;
 	    }
 	} else {
-	    Intersection i = right_int[r];
+	    Intersection i = right_int[r++];
 	    right_inside = i.isEntering();
-	    r++;
 	    if (left_inside) {
-		result.push_back(i);
+		result[j++] = i;
 	    }
 	}
     }
     // Copy remaining if still inside other 
-    while (l < left_int.size() && right_inside) 
-	result.push_back(left_int[l++]);
-    while (r < right_int.size() && left_inside) 
-	result.push_back(right_int[r++]);
+    while (l < left_num && right_inside) 
+	result[j++] = left_int[l++];
+    while (r < right_num && left_inside) 
+	result[j++] = right_int[r++];
+    return j;
 }
 
-void CSGIntersection::allIntersections(const Ray& ray, vector<Intersection>& result) const {
-    vector<Intersection> left_int;
-    left->allIntersections(ray,left_int);
-    if (left_int.empty()) return;
+uint32_t CSGIntersection::allIntersections(const Ray& ray, Intersection* result) const {
+    Intersection* left_int = (Intersection*)::alloca(sizeof(Intersection)*left->maxIntersections());
+    uint32_t left_num = left->allIntersections(ray,left_int);
     bool left_inside = false;
-    if (left_int.size() > 0) {
+    if (left_num > 0) {
 	left_inside = !left_int[0].isEntering();
+    } else {
+	return 0;
     }
 
-    vector<Intersection> right_int;
-    right->allIntersections(ray,right_int);
-    if (right_int.empty()) return;
+    Intersection* right_int = (Intersection*)::alloca(sizeof(Intersection)*right->maxIntersections());
+    uint32_t right_num = right->allIntersections(ray,right_int);
     bool right_inside = false;
-    if (right_int.size() > 0) {
+    if (right_num > 0) {
 	right_inside = !right_int[0].isEntering();
+    } else {
+	return 0;
     }
     
     // Merge intersections while preserving order
-    result.reserve(left_int.size() + right_int.size());
     uint32_t l = 0;
     uint32_t r = 0;
-    while (l < left_int.size() && r < right_int.size()) {
+    uint32_t j = 0;
+    while (l < left_num && r < right_num) {
 	if (left_int[l].getT() < right_int[r].getT()) {
-	    Intersection i = left_int[l];
+	    Intersection i = left_int[l++];
 	    left_inside = i.isEntering();
-	    l++;
 	    if (right_inside) {
-		result.push_back(i);
+		result[j++] = i;
 	    }
 	} else {
-	    Intersection i = right_int[r];
+	    Intersection i = right_int[r++];
 	    right_inside = i.isEntering();
-	    r++;
 	    if (left_inside) {
-		result.push_back(i);
+		result[j++] = i;
 	    }
 	}
     }
     // Copy remaining if still inside other 
-    while (l < left_int.size() && right_inside) 
-	result.push_back(left_int[l++]);
-    while (r < right_int.size() && left_inside) 
-	result.push_back(right_int[r++]);
+    while (l < left_num && right_inside) 
+	result[j++] = left_int[l++];
+    while (r < right_num && left_inside) 
+	result[j++] = right_int[r++];
+    return j;
 }
 
 double CSGDifference::_fastIntersect(const Ray& ray) const {
-    vector<Intersection> all;
-    allIntersections(ray,all);
-    return all.empty() ? -1 : all.front().getT();
+    Intersection* all = (Intersection*)::alloca(sizeof(Intersection)*maxIntersections());
+    uint32_t num = allIntersections(ray,all);
+    return num == 0 ? -1 : all[0].getT();
 }
 
 double CSGIntersection::_fastIntersect(const Ray& ray) const {
-    vector<Intersection> all;
-    allIntersections(ray,all);
-    return all.empty() ? -1 : all.front().getT();
+    Intersection* all = (Intersection*)::alloca(sizeof(Intersection)*maxIntersections());
+    uint32_t num = allIntersections(ray,all);
+    return num == 0 ? -1 : all[0].getT();
 }
 
 
 void CSGDifference::_fullIntersect(const Ray& ray, const double t, Intersection& result) const {
-    vector<Intersection> all;
-    allIntersections(ray,all);
-    if (!all.empty()) {
-	result = all.front();
+    Intersection* all = (Intersection*)::alloca(sizeof(Intersection)*maxIntersections());
+    uint32_t num = allIntersections(ray,all);
+    if (num > 0) {
+	result = all[0];
     } else {
 	throw_exception("This shouldn't happen...");
     }
 }
 
 void CSGIntersection::_fullIntersect(const Ray& ray, const double t, Intersection& result) const {
-    vector<Intersection> all;
-    allIntersections(ray,all);
-    if (!all.empty()) {
-	result = all.front();
+    Intersection* all = (Intersection*)::alloca(sizeof(Intersection)*maxIntersections());
+    uint32_t num = allIntersections(ray,all);
+    if (num > 0) {
+	result = all[0];
     } else {
 	throw_exception("This shouldn't happen...");
     }

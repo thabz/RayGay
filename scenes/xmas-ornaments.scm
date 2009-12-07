@@ -6,6 +6,10 @@
 
 (define fast-preview #t)
 
+; Times:
+; Old allIntersections(vector<Intersection> ...)   50.28s
+; allIntersections with alloca Intersections       19.62s
+
 ;; -------------------------------------------------------------------------
 ;; Materiale
 ;; -------------------------------------------------------------------------

@@ -101,15 +101,21 @@ int Halfspace::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const
     return -1;
 }
 
-void Halfspace::allIntersections(const Ray& ray, vector<Intersection>& result) const 
+uint32_t Halfspace::maxIntersections() const {
+    return 1;
+}
+
+uint32_t Halfspace::allIntersections(const Ray& ray, Intersection* result) const 
 {
     double t = fastIntersect(ray);
     if (t > 0) {
 	Intersection i;
 	fullIntersect(ray,t,i);
 	i.isEntering(i.getNormal() * ray.getDirection() < 0);
-	result.push_back(i);
+	result[0] = i;
+	return 1;
     }
+    return 0;
 }
 
 // See http://mathworld.wolfram.com/Plane.html

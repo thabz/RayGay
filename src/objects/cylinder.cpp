@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "cylinder.h"
+#include "exception.h"
 #include "aabox.h"
 #include "math/vector2.h"
 
@@ -57,6 +58,7 @@ Vector Cylinder::getNormal(const Vector& local_point) const {
     }
     // The vector below is normalized as the cylinder has a radius
     // of 1 in object space.
+    // FIXME: What? No need to normalize if r == 1.
     Vector normal = Vector(local_point.x(),local_point.y(),0);
     normal.normalize();
     return normal;
@@ -170,14 +172,17 @@ SceneObject* Cylinder::clone() const {
     return new Cylinder(*this);
 }
 
-void Cylinder::allIntersections(const Ray& ray, vector<Intersection>& result) const {
+uint32_t Cylinder::maxIntersections() const {
+    return 2;
+}
+
+uint32_t Cylinder::allIntersections(const Ray& ray, Intersection* result) const {
     double roots[2];
     uint32_t num = allPositiveRoots(ray,roots);
-    result.reserve(num);
     for(uint32_t i = 0; i < num; i++) {
 	Intersection inter;
 	fullIntersect(ray,roots[i],inter);
-	result.push_back(inter);
+	result[i] = inter;
     }
     if (num == 1) {
 	result[0].isEntering(false);
@@ -185,7 +190,7 @@ void Cylinder::allIntersections(const Ray& ray, vector<Intersection>& result) co
 	result[0].isEntering(true);
 	result[1].isEntering(false);
     }
-    return;
+    return num;
 }
 
 bool Cylinder::inside(const Vector& point) const {

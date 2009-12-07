@@ -169,18 +169,22 @@ SceneObject* Torus::clone() const {
     return new Torus(*this);
 }
 
-void Torus::allIntersections(const Ray& ray, vector<Intersection>& result) const {
+uint32_t Torus::maxIntersections() const {
+    return 4;
+}
+
+uint32_t Torus::allIntersections(const Ray& ray, Intersection* result) const {
     double roots[4];
     int num = allPositiveRoots(ray,roots);
-    result.reserve(num);
     bool entering = (num % 2) == 0;
     for(int i = 0; i < num; i++) {
 	Intersection inter;
 	fullIntersect(ray,roots[i],inter);
 	inter.isEntering(entering);
 	entering = !entering;
-	result.push_back(inter);
+	result[i] = inter;
     }
+    return num;
 }
 
 bool Torus::inside(const Vector& point) const {

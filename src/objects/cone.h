@@ -27,7 +27,8 @@ class Cone : public Solid, public Transformer {
 	AABox getBoundingBox() const;
 
 	SceneObject* clone() const;
-	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
+	uint32_t allIntersections(const Ray& ray, Intersection* result) const;
+	uint32_t maxIntersections() const;
 
         bool inside(const Vector& point) const;
 

@@ -8,21 +8,39 @@
 CSGUnion::CSGUnion(Solid* left, Solid* right, const Material* mat) : Solid(mat) {
     this->left = left;
     this->right = right;
+    this->max_intersections = left->maxIntersections() + right->maxIntersections();
 }
 
 CSGUnion::CSGUnion(vector<Solid*>* solids, const Material* mat) : Solid(mat) {
     uint32_t size = solids->size();
-    if (size < 2) throw_exception("At least two solids are needed.");
-    if (size == 2) {
-	    this->left = solids->front();
-	    this->right = solids->operator[](1);
+    if (size < 2) {
+	throw_exception("At least two solids are needed.");
+    } else if (size == 2) {
+	this->left = solids->operator[](0);
+	this->right = solids->operator[](1);
     } else {
-	    this->left = solids->operator[](0);
-	    this->right = solids->operator[](1);
-	    for(uint32_t i = 2; i < size; i++) {
-            this->right = new CSGUnion(this->right,solids->operator[](i),NULL);
-	    }
+	vector<Solid*>* lefts = new vector<Solid*>(); 
+	vector<Solid*>* rights = new vector<Solid*>(); 
+	for(uint32_t i = 0; i < size/2; i++) {
+	    lefts->push_back(solids->operator[](i));
+	}
+	for(uint32_t i = size/2; i < size; i++) {
+	    rights->push_back(solids->operator[](i));
+	}
+	if (lefts->size() == 1) {
+	    left = lefts->operator[](0);
+	} else {
+	    left = new CSGUnion(lefts,mat);
+	}
+	if (rights->size() == 1) {
+	    right = rights->operator[](0);
+	} else {
+	    right = new CSGUnion(rights,mat);
+	}
+	delete lefts;
+	delete rights;
     }
+    this->max_intersections = left->maxIntersections() + right->maxIntersections();
 }
 
 SceneObject* CSGUnion::clone() const {
@@ -49,83 +67,61 @@ class compareIntersectionsAsc {
 	}
 };
 
-void CSGUnion::allIntersections(const Ray& ray, vector<Intersection>& result) const {
-    vector<Intersection> left_int;
-    left->allIntersections(ray,left_int);
-    vector<Intersection> right_int;
-    right->allIntersections(ray,right_int);
-    result.reserve(left_int.size() + right_int.size());
+uint32_t CSGUnion::maxIntersections() const {
+    if (max_intersections == 0) throw_exception("What!");
+    return max_intersections;
+}
 
-    /*
-    vector<Intersection> intersections;
-    uint32_t i = 0;
-    while (i < left_int.size()) intersections.push_back(left_int[i++]);
-    i = 0;
-    while (i < right_int.size()) intersections.push_back(right_int[i++]);
-    sort(intersections.begin(),intersections.end(),compareIntersectionsAsc());
+uint32_t CSGUnion::allIntersections(const Ray& ray, Intersection* result) const {
+    Intersection* left_int = (Intersection*)::alloca(sizeof(Intersection)*left->maxIntersections());
+    Intersection* right_int = (Intersection*)::alloca(sizeof(Intersection)*right->maxIntersections());
 
-    if (intersections.size() == 0) return;
+    uint32_t left_num = left->allIntersections(ray,left_int);
+    uint32_t right_num = right->allIntersections(ray,right_int);
 
-    bool inside = !intersections.front().isEntering();
-
-    i = 0;
-    while (i < intersections.size()) {
-	Intersection& intersection = intersections[i];
-	if ((intersection.isEntering() && !inside) ||
-            (!intersection.isEntering() && inside)) {
-	    result.push_back(intersection);
-	    inside = !inside;
-	}
-	i++;
+    if (left_num + right_num > max_intersections) {
+	cout << "Argh!" << endl;
     }
-    return;
-    */
 
     uint32_t l = 0;
     uint32_t r = 0;
+    uint32_t j = 0;
     bool left_inside = false;
     bool right_inside = false;
-    if (left_int.size() > 0) {
+
+    if (left_num > 0) {
 	left_inside = !left_int[0].isEntering();
     }
-    if (right_int.size() > 0) {
+    if (right_num > 0) {
 	right_inside = !right_int[0].isEntering();
     }
-    // Bail out quickly if possible
-    if (left_int.empty()) {
-	result = right_int;
-	return;
-    }
-    if (right_int.empty()) {
-	result = left_int;
-	return;	
-    }
+
+
     // Merge intersections while preserving order
-    while (l < left_int.size() && r < right_int.size()) {
+    while (l < left_num && r < right_num) {
 	if (left_int[l].getT() < right_int[r].getT()) {
-	    Intersection i = left_int[l];
+	    Intersection& i = left_int[l++];
 	    left_inside = i.isEntering();
-	    l++;
 	    if (!right_inside) {
-		result.push_back(i);
+		result[j++] = i;
 	    }
 	} else {
-	    Intersection i = right_int[r];
+	    Intersection& i = right_int[r++];
 	    right_inside = i.isEntering();
-	    r++;
 	    if (!left_inside) {
-		result.push_back(i);
+		result[j++] = i;
 	    }
 	}
     }
     // Copy remaining 
-    while (l < left_int.size()) result.push_back(left_int[l++]);
-    while (r < right_int.size()) result.push_back(right_int[r++]);
+    while (l < left_num) result[j++] = left_int[l++];
+    while (r < right_num) result[j++] = right_int[r++];
+
+    return j;
 }
 
 double CSGUnion::_fastIntersect(const Ray& ray) const {
     double left_t, right_t;
-    vector<Intersection> all;
     right_t = right->fastIntersect(ray);
     left_t = left->fastIntersect(ray);
     if (right_t > 0 && left_t > 0) {
@@ -140,10 +136,10 @@ double CSGUnion::_fastIntersect(const Ray& ray) const {
 }
 
 void CSGUnion::_fullIntersect(const Ray& ray, const double t, Intersection& result) const {
-    vector<Intersection> all;
-    allIntersections(ray,all);
-    if (!all.empty()) {
-	result = all.front();
+    Intersection* all = (Intersection*)::alloca(sizeof(Intersection)*maxIntersections());
+    uint32_t num = allIntersections(ray, all);
+    if (num > 0) {
+	result = all[0];
     } else {
 	throw_exception("This shouldn't happen...");
     }

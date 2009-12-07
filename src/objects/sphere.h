@@ -39,7 +39,8 @@ class Sphere : public Solid {
 	double _fastIntersect(const Ray& ray) const;
 	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
 	int intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const;
-	void allIntersections(const Ray& ray, vector<Intersection>& result) const;
+	uint32_t allIntersections(const Ray& ray, Intersection* result) const;
+	uint32_t maxIntersections() const;
 
 	Vector2 getUV(const Vector& normal) const;
 

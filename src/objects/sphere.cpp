@@ -88,7 +88,11 @@ double Sphere::_fastIntersect(const Ray& ray) const {
     return -1;
 }
 
-void Sphere::allIntersections(const Ray& ray, vector<Intersection>& result) const {
+uint32_t Sphere::maxIntersections() const {
+    return 2;
+}
+
+uint32_t Sphere::allIntersections(const Ray& ray, Intersection* result) const {
 
     Vector v = ray.getDirection();
     double QmP[3];
@@ -97,6 +101,7 @@ void Sphere::allIntersections(const Ray& ray, vector<Intersection>& result) cons
     double b = 2 * DOT(v,QmP);
     double c = (DOT(QmP,QmP) - radius * radius);
     double D = b * b - 4 * a * c;
+    uint32_t n = 0;
     if (D > EPSILON) {
 	// Two roots
        double sq = sqrt(D);
@@ -110,26 +115,30 @@ void Sphere::allIntersections(const Ray& ray, vector<Intersection>& result) cons
 	   if (t1 < t2) {
 	       i1.isEntering(true);
 	       i2.isEntering(false);
-	       result.push_back(i1);
-	       result.push_back(i2);
+	       result[0] = i1;
+	       result[1] = i2;
 	   } else {
 	       i2.isEntering(true);
 	       i1.isEntering(false);
-	       result.push_back(i2);
-	       result.push_back(i1);
+	       result[0] = i2;
+	       result[1] = i1;
 	   }
+	   n = 2;
        } else if (t1 <= EPSILON && t2 > EPSILON) {
 	   Intersection i2;
 	   fullIntersect(ray,t2,i2);
 	   i2.isEntering(false);
-	   result.push_back(i2);
+	   result[0] = i2;
+	   n = 1;
        } else if (t2 <= EPSILON && t1 > EPSILON) {
 	   Intersection i1;
 	   fullIntersect(ray,t1,i1);
 	   i1.isEntering(false);
-	   result.push_back(i1);
+	   result[0] = i1;
+	   n = 1;
        }
     }
+    return n;
 }
 
 ostream & operator<<(ostream &os, const Sphere &s) {
