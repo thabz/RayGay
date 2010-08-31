@@ -50,7 +50,7 @@
 
 (define (avg . l)
  "Average of a list of numbers"
- (/ (sum l)
+ (/ (apply sum l)
     (length l)))
 
 (define (lerp a b t)
