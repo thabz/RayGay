@@ -44,13 +44,21 @@
   "Returns a random element from a list"        
   (list-ref l (random (length l))))
 
+(define (sum . l)
+ "Sums of a list of numbers"
+ (fold-left + 0 l))
+
+(define (avg . l)
+ "Average of a list of numbers"
+ (/ (sum l)
+    (length l)))
+
 (define (lerp a b t)
   "Calculates a number between two numbers at a specific increment. The t parameter is the 
    amount to interpolate between the two values where 0.0 equal to the first point, 0.1 is 
    very near the first point, 0.5 is half-way in between, etc. The lerp function is convenient 
    for creating motion along a straight path and for drawing dotted lines."
   (+ a (* t (- b a))))
-
 
 (define (constrain value upperbound lowerbound)
   (max (min value upperbound) lowerbound))
