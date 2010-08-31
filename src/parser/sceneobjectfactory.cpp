@@ -571,7 +571,11 @@ SchemeObject* bounding_box(Scheme* scheme, SchemeObject* s_obj)
 
     SceneObject* sceneobj = scm2sceneobject(s_obj,proc,1);
     Object* obj = dynamic_cast<Object*>(sceneobj);
-    if (obj == NULL) wrong_type_arg(proc,1,s_obj);
+    ObjectGroup* objgroup = dynamic_cast<ObjectGroup*>(sceneobj);
+    if (obj == NULL && objgroup == NULL) wrong_type_arg(proc,1,s_obj);
+    if (obj == NULL) {
+        obj = new Bound(objgroup);
+    }
     AABox bbox = obj->getBoundingBox();
     Vector v1 = bbox.minimum();
     Vector v2 = bbox.maximum();
