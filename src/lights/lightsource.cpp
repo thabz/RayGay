@@ -8,6 +8,7 @@
 Lightsource::Lightsource(const Vector& position) {
     this->position = position;
     this->fadeEnabled = false;
+    this->power = RGB(1.0,1.0,1.0);
 }
 
 /**

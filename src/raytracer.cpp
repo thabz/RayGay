@@ -100,7 +100,7 @@ RGBA Raytracer::shade(const Ray& ray, Intersection& intersection, const int dept
 		    double intensity = info.intensity * attenuation;
 		    // Diffuse color
 		    if (material->getKd() > 0) {
-			color =  intensity * info.cos * material->getKd() * material->getDiffuseColor(intersection);
+			color =  intensity * info.cos * material->getKd() * (*p)->getPower() * material->getDiffuseColor(intersection);
 		    }
 
 		    // Specular color (Phong)
