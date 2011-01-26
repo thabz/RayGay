@@ -60,7 +60,7 @@
 * Optionally render additional output-images such as depth-map, sampling-density, photon-distribution.
 * Physics-engine
 * Lav en spotlight-lightsource som er et vindue med "tern". Se http://www.skeedz.com/images/wallpaper/0280.jpg ... Support for importance sampling af environmentmaps er vel bedre.
-
+* 3D Mandelbulbs http://www.skytopia.com/project/fractal/mandelbulb.html
 
 Snippets to implement sometime:
 
