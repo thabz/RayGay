@@ -8,6 +8,7 @@
 #include <string> 
 #include <iostream>
 #include <cassert>
+#include <cstring>
 
 #include "math/matrix3.h"
 #include "math/vector.h"

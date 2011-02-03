@@ -4,6 +4,8 @@
 #include <cmath>
 #include <cerrno>
 #include <iomanip>
+#include <cstdlib>
+#include <cstring>
 
 void coerceNumbers(int num, SchemeStack::iterator stack, double* dest) {
     for(int i = 0; i < num; i++) {

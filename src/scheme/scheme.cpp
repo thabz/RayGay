@@ -12,6 +12,7 @@
 #include <cctype>
 #include <stdexcept>
 #include <cerrno>
+#include <cstdlib>
 
 #include "lexer.h"
 #include "parser.h"

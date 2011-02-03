@@ -9,6 +9,7 @@ extern "C" {
 #include <iostream>
 #include <sstream>
 #include <sys/stat.h>
+#include <cstring>
 
 #define RFC1123FMT "%a, %d %b %Y %H:%M:%S GMT"
 

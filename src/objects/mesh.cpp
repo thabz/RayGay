@@ -3,6 +3,7 @@
 #include <vector>
 #include <cassert>
 #include <map>
+#include <cstdio>
 
 #include "exception.h"
 #include "objects/mesh.h"

@@ -4,6 +4,7 @@
 
 #include <string>
 #include <fstream>
+#include <stdint.h>
 
 /**
  * RFC 1952 describes the simple fileformat.

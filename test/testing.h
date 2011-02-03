@@ -6,6 +6,8 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <cstdio>
+
 #include "exception.h"
 #include "math/constants.h"
 

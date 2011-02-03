@@ -4,6 +4,7 @@
 
 #include <string>
 #include <map>
+#include <cstring>
 
 using namespace std;
 

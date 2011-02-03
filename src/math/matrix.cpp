@@ -12,6 +12,7 @@
 #include <string> 
 #include <iostream>
 #include <cassert>
+#include <cstring>
 
 #include "math/matrix.h"
 #include "math/vector.h"

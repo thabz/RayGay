@@ -5,6 +5,7 @@
 #include <string>
 #include <list>
 #include <iostream>
+#include <stdint.h>
 
 class SchemeObject;
 class Scheme;

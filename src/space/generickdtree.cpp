@@ -3,6 +3,8 @@
 #include "stats.h"
 #include "exception.h"
 #include <cassert>
+#include <algorithm>
+#include <cstring>
 
 // Don't check for best split in all 3 dimensions when number
 // of objects in a node exceeds this value. Then just use largest

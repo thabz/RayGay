@@ -1,5 +1,6 @@
 
 #include <cassert>
+#include <cstring>
 #include "samplers/whitted_adaptive.h"
 #include "renderer.h"
 #include "image/image.h"

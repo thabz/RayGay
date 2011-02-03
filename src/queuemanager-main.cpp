@@ -7,6 +7,7 @@
 #include "exception.h"
 #include <iostream>
 #include <csignal>
+#include <cstdio>
 
 extern "C" {
 #include <sys/types.h>

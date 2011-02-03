@@ -8,6 +8,8 @@ extern "C"
 #include <sys/mman.h>
 }
 
+#include <cstdio>
+
 #include <limits>
 #include <vector>
 #include <iostream>

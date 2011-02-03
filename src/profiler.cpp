@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
 #include "math/constants.h"
 
 vector<Profiler*> Profiler::profilers;

@@ -1,5 +1,6 @@
 
 #include "filenames.h"
+#include <cstdlib>
 
 std::string SchemeFilenames::toFilename(std::wstring str) {
     size_t length = str.size();        

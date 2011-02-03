@@ -9,6 +9,8 @@
 #include <sstream>
 #include <csignal>
 #include <cerrno>
+#include <cstdlib>
+#include <cstdio>
 
 extern "C" {
 #include <unistd.h>

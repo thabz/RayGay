@@ -2,6 +2,7 @@
 #define MATH_FUNCTIONS_H
 
 #include <vector>
+#include <stdint.h>
 
 class Vector;
 class QMCSequence;

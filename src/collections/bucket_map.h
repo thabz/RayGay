@@ -2,6 +2,7 @@
 #ifndef COLLECTIONS_BUCKET_MAP_H
 #define COLLECTIONS_BUCKET_MAP_H
 
+#include <stdint.h>
 #include <utility>   // For std::pair<A,B>
 
 template <typename K, typename V> 

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cassert>
 #include <list>
+#include <algorithm>
 
 #include "math/functions.h"
 #include "math/vector.h"

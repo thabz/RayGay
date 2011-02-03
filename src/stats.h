@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <iosfwd>
+#include <stdint.h>
 
 using namespace std;
 

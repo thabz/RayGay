@@ -9,6 +9,7 @@
 extern "C" {
 #include <sys/mman.h>
 #include <fcntl.h>
+#include <stdint.h>
 }
 
 #include <cstdlib>

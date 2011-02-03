@@ -3,6 +3,7 @@
 #define EXCEPTION_H
 
 #include <string>
+#include <stdint.h>
 
 /**
  * This macro is used to actually throw an exception. It is used

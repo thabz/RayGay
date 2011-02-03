@@ -1,5 +1,6 @@
 
 #include <cassert>
+#include <cstdlib>
 
 #pragma implementation "lights/arealight.h"
 

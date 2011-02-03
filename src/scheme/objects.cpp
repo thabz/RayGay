@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <limits>
 #include "heap.h"
+#include <cstdlib>
 
 // Map of known symbols
 map<wstring,SchemeObject*> SchemeObject::known_symbols;

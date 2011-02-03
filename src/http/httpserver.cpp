@@ -10,6 +10,7 @@
 #include <ctime>
 #include <cstdio>
 #include <sstream>
+#include <cstring>
 #include <iostream>
 #include <csignal>
 #include <cerrno>

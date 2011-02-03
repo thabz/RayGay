@@ -8,7 +8,9 @@
 
 #include <iostream>
 #include <cstdio>
+#include <stdlib.h>
 #include <cerrno>
+#include <cstring>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

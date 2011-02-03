@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <pthread.h>
+#include <stdint.h>
 
 #include "photontracer.h"
 #include "causticsmap.h"
