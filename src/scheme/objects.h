@@ -102,6 +102,7 @@ class SchemeObject
                     int32_t wrapped_subtype; // For wrapped C-objects
                     SchemeObject* buckets;   // For hashtables
                     Codec* codec;            // For textual codecs
+		    void* native_code;       // For compiled procedures
                 };
                 union {
                     SchemeObject* cdr;       // For pairs
@@ -111,6 +112,7 @@ class SchemeObject
 		            SchemeObject* binding_list; // For simple environments 
                     SchemeObject* (*fn)();   // For BUILT_IN_PROCEDURE
                     SchemeObject* s_closure_data;   // For USER_PROCEDURE (formals body . envt)
+		    SchemeObject* s_compiled_data;  // For COMPILED_PROCEDURE (formals . envt)
                     SchemeObject* s_hashtable_meta; // For HASHTABLE (hash_func equiv_func . size)
                     SchemeObject* imag;      // For complex numbers
                     SchemeObject* denominator;// For rational numbers
@@ -150,6 +152,7 @@ class SchemeObject
  		    USER_PROCEDURE,
  		    INTERNAL_PROCEDURE,
  		    BUILT_IN_PROCEDURE,
+		    COMPILED_PROCEDURE,
  		    MACRO,
  		    CONTINUATION,
  		    ENVIRONMENT,
@@ -232,6 +235,7 @@ class SchemeObject
         static SchemeObject* createCodec(Codec* codec);
         static SchemeObject* createBuiltinProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
         static SchemeObject* createUserProcedure(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
+        static SchemeObject* createCompiledProcedure(SchemeObject* userProcedure, void* code);
         static SchemeObject* createInternalProcedure(const wchar_t* name);
         static SchemeObject* createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
         static SchemeObject* createWrappedCObject(int subtype, SchemeWrappedCObject*);

@@ -19,6 +19,7 @@
 #include "interpreter.h"
 #include "filenames.h"
 #include "numbers.h"
+#include "compiler.h"
 #include "r6rs-lib-arithmetic.h"
 #include "r6rs-lib-bytevectors.h"
 #include "r6rs-lib-sorting.h"
@@ -281,6 +282,7 @@ Scheme::Scheme(int argc, char *argv[]) {
     R6RSLibHashtables::bind(this, scheme_report_environment);
 	R6RSLibIOSimple::bind(this, scheme_report_environment);
 	R6RSLibIOPorts::bind(this, scheme_report_environment);
+	Compiler::bind(this, scheme_report_environment);
     
     this->parser = new Parser(this);
     this->interpreter = new Interpreter(this);

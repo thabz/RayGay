@@ -255,6 +255,18 @@ SchemeObject* SchemeObject::createUserProcedure(SchemeObject* name, SchemeObject
     return result;
 }
 
+SchemeObject* SchemeObject::createCompiledProcedure(SchemeObject* userProcedure, void* code) {
+    assert(userProcedure->type() == SchemeObject::USER_PROCEDURE);
+
+    SchemeObject* s_formals = i_car(userProcedure->s_closure_data);
+    SchemeObject* envt = i_cddr(userProcedure->s_closure_data);
+
+    SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::COMPILED_PROCEDURE);
+    result->native_code = code;
+    result->s_compiled_data = i_cons(s_formals, envt);
+    return result;
+}
+
 SchemeObject* SchemeObject::createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body) {
     assert(i_symbol_p(name) == S_TRUE);
     ObjectType t = envt->type();
@@ -349,6 +361,9 @@ void SchemeObject::mark() {
                 if (name != NULL) {
                     name->mark();
                 }
+                break;
+	    case SchemeObject::COMPILED_PROCEDURE :
+                s_compiled_data->mark();
                 break;
             case SchemeObject::MACRO :
                 s_closure_data->mark();
@@ -510,6 +525,9 @@ wstring SchemeObject::toString() {
         case SchemeObject::INTERNAL_PROCEDURE :    
             ss << L"#<internal-procedure " << scm2string(name) << L">";
             break;
+        case SchemeObject::COMPILED_PROCEDURE :    
+            ss << L"#<compiled-procedure>";
+            break;
         case SchemeObject::WRAPPED_C_OBJECT :
             return wrapped_object->toString();
         case SchemeObject::EOFTYPE :
@@ -580,6 +598,8 @@ wstring SchemeObject::toString(ObjectType t) {
             return L"Built-in-procedure";
         case SchemeObject::INTERNAL_PROCEDURE :    
             return L"Internal-procedure";
+        case SchemeObject::COMPILED_PROCEDURE :    
+            return L"Compiled-procedure";
         case SchemeObject::WRAPPED_C_OBJECT :
             return L"Wrapped C-object";
         case SchemeObject::EOFTYPE :
