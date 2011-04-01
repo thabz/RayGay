@@ -70,4 +70,3 @@ An idea from Steve Parker:
 ---------------------------------------------------
 "An excellent code for box-triangle overlap is on Tomas Akenine-M¨oller's web site. It is faster and more stable than previous methods and very simple to add to your code library. I strongly recommend that any object you are inserting into your grid is tested to make sure it actually overlaps your grid cell. This simple change gave a 15-17% boost in performance for a simple scene with the Stanford bunny.
 ---------------------------------------------------
-
