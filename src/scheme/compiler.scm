@@ -14,10 +14,20 @@
   ((-) (SUBTRACT-INTEGERS))
   (else (list 'UNKNOWN-SYMBOL symbol))))
 
+(define (compile-special-form form)
+ (list 'SPECIALE-FORM))
+
+(define (special-form? expression)
+ (and (list? expression)
+      (member (car expression) '(if let map or and not let*))))
+
 (define (compile-expression expression) 
  (let  ((bytecode '()))
   (define (compile-expression-internal expression)
    (cond 
+    ((special-form? expression)
+     ; FIXME: Won't work if compile-special-form returns a list...
+     (set! bytecode (cons (compile-special-form expression) bytecode)))
     ((list? expression)
      (for-each compile-expression-internal (cdr expression))
      (set! bytecode (cons (compile-function (car expression)) bytecode)))
@@ -26,16 +36,18 @@
   (compile-expression-internal expression)
   (reverse bytecode)))
 
-(define (compile-list expressions)
- (map compile-expression expressions))
-
 (define (compile proc)
  (let ((source ($source proc)))
-  (compile-list source)))
+  (map compile-expression source)))
+
+(define (display-bytecode bytecode)
+ (for-each 
+  (lambda (code)
+   (display code)(newline))
+  bytecode))
 
 (define (compile-and-dump proc)
- (display (compile proc))
- (newline))
+ (display-bytecode (car (compile proc))))
 
 (define (test0)
  (- (+ 1 (+ 2 3)) 4))
