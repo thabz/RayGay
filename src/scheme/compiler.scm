@@ -1,5 +1,4 @@
 
-
 (define (PUSH-INTEGER x)
  (list 'PUSH-INTEGER x))
 
@@ -16,24 +15,23 @@
   (else (list 'UNKNOWN-SYMBOL symbol))))
 
 (define (compile-expression expression) 
- (cond 
-  ((list? expression)
-   (let* ((function (car expression))
-	  (args (cdr expression))
-          (function-c (list (compile-function function)))
-	  (args-c (compile-list args))
-          (result (append args-c function-c)))
-    (display result)(newline)
-    result))
-  ((integer? expression)
-     (PUSH-INTEGER expression))))
+ (let  ((bytecode '()))
+  (define (compile-expression-internal expression)
+   (cond 
+    ((list? expression)
+     (for-each compile-expression-internal (cdr expression))
+     (set! bytecode (cons (compile-function (car expression)) bytecode)))
+    ((integer? expression)
+     (set! bytecode (cons (PUSH-INTEGER expression) bytecode)))))
+  (compile-expression-internal expression)
+  (reverse bytecode)))
 
 (define (compile-list expressions)
  (map compile-expression expressions))
 
 (define (compile proc)
-  (let ((source ($source proc)))
-   (compile-list source)))
+ (let ((source ($source proc)))
+  (compile-list source)))
 
 (define (compile-and-dump proc)
  (display (compile proc))
@@ -46,11 +44,9 @@
  (+ x 1))
 
 (define (test2)
- (+ 1 2))
+ (+ 1 2)
+ (+ 3 4))
 
-(compile-and-dump test0)
 
-(display (flatten '(1 2 3)))    
-
-(define (flatten lists)
+(compile-and-dump test0)    
 
