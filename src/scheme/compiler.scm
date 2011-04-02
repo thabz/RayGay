@@ -1,6 +1,15 @@
 
+(define (uint64->list n)
+ (let ((v (make-bytevector 8)))
+  (bytevector-u64-native-set! v 0 n)
+  (bytevector->u8-list v)))
+
 (define (PUSH-INTEGER x)
- (list 'PUSH-INTEGER x))
+ (list 'PUSH-INTEGER x)
+ ; MOVL $xxyyxxyyxxyyxxyy,%rax
+ ; PUSH %rax
+ (list #x48))
+
 
 (define (ADD-INTEGERS)
  (list 'ADD-INTEGERS))

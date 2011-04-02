@@ -5,13 +5,21 @@
 
 SchemeObject* little_symbol;
 SchemeObject* big_symbol;
+SchemeObject* native_endianness;
 
 SchemeObject* s_native_endianness(Scheme* scheme) {
-#if WORDS_BIGENDIAN
-    return big_symbol;
-#else
-    return little_symbol;
-#endif
+    return native_endianness;
+}
+
+SchemeObject* s_endianness(Scheme* scheme, SchemeObject* symbol) {
+    if (symbol == little_symbol) {
+	return little_symbol;
+    } else if (symbol == big_symbol) {
+	return big_symbol;
+    } else {
+        throw scheme_exception(L"endianness", L"Unknown symbol. Use 'little or 'big.");
+
+    }
 }
 
 SchemeObject* s_bytevector_p(Scheme* scheme, SchemeObject* o) {
@@ -132,6 +140,56 @@ SchemeObject* s_bytevector_s8_set_e(Scheme* scheme, SchemeObject* bytevector, Sc
     uint8_t b = f < 0 ? 256 + f : f;
     bytevector->bytevector[scm2int(k)] = b;
     return S_UNSPECIFIED;
+}
+
+SchemeObject* s_bytevector_u64_set_e(Scheme* scheme, SchemeObject* bytevector, SchemeObject* k, SchemeObject* n, SchemeObject* endianness) {
+    assert_arg_bytevector_type(L"bytevector-u64-set!", 1, bytevector);
+    assert_arg_not_immutable(L"bytevector-u64-set!", 1, bytevector);
+    assert_arg_int_in_range(L"bytevector-u64-set!", 2, k, 0, bytevector->length-8);
+    uint64_t f = scm2int(n);
+    uint8_t* dst = bytevector->bytevector;
+    if (endianness == native_endianness) {
+	(*(uint64_t*)dst) = f;
+    } else {
+        uint8_t* src = (uint8_t*) &f;
+	dst[0] = src[7]; dst[1] = src[6];
+	dst[2] = src[5]; dst[3] = src[4];
+	dst[4] = src[3]; dst[5] = src[2];
+	dst[6] = src[1]; dst[7] = src[0];
+    }
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* s_bytevector_s64_set_e(Scheme* scheme, SchemeObject* bytevector, SchemeObject* k, SchemeObject* n, SchemeObject* endianness) {
+    assert_arg_bytevector_type(L"bytevector-s64-set!", 1, bytevector);
+    assert_arg_not_immutable(L"bytevector-s64-set!", 1, bytevector);
+    assert_arg_int_in_range(L"bytevector-s64-set!", 2, k, 0, bytevector->length-8);
+    int64_t f = scm2int(n);
+    uint8_t* dst = bytevector->bytevector;
+    if (endianness == native_endianness) {
+	(*(int64_t*)dst) = f;
+    } else {
+        uint8_t* src = (uint8_t*) &f;
+	dst[0] = src[7]; dst[1] = src[6];
+	dst[2] = src[5]; dst[3] = src[4];
+	dst[4] = src[3]; dst[5] = src[2];
+	dst[6] = src[1]; dst[7] = src[0];
+    }
+    return S_UNSPECIFIED;
+}
+
+SchemeObject* s_bytevector_s64_native_set_e(Scheme* scheme, SchemeObject* bytevector, SchemeObject* k, SchemeObject* n) {
+    assert_arg_bytevector_type(L"bytevector-native-s64-set!", 1, bytevector);
+    assert_arg_not_immutable(L"bytevector-native-s64-set!", 1, bytevector);
+    assert_arg_int_in_range(L"bytevector-native-s64-set!", 2, k, 0, bytevector->length-8);
+    return s_bytevector_s64_set_e(scheme, bytevector, k, n, native_endianness);
+}
+
+SchemeObject* s_bytevector_u64_native_set_e(Scheme* scheme, SchemeObject* bytevector, SchemeObject* k, SchemeObject* n) {
+    assert_arg_bytevector_type(L"bytevector-native-u64-set!", 1, bytevector);
+    assert_arg_not_immutable(L"bytevector-native-u64-set!", 1, bytevector);
+    assert_arg_int_in_range(L"bytevector-native-u64-set!", 2, k, 0, bytevector->length-8);
+    return s_bytevector_u64_set_e(scheme, bytevector, k, n, native_endianness);
 }
 
 SchemeObject* s_bytevector_u16_ref(Scheme* scheme, SchemeObject* bytevector, SchemeObject* s_k, SchemeObject* endianness) {
@@ -342,7 +400,8 @@ SchemeObject* s_utf8_2_string(Scheme* scheme, SchemeObject* bytevector) {
 }
 
 void R6RSLibBytevectors::bind(Scheme* scheme, SchemeObject* envt) {
-    scheme->assign(L"native_endianness"     ,0,0,0, (SchemeObject* (*)()) s_native_endianness, envt);
+    scheme->assign(L"endianness"            ,1,0,0, (SchemeObject* (*)()) s_endianness, envt);
+    scheme->assign(L"native-endianness"     ,0,0,0, (SchemeObject* (*)()) s_native_endianness, envt);
     scheme->assign(L"bytevector?"           ,1,0,0, (SchemeObject* (*)()) s_bytevector_p, envt);
     scheme->assign(L"make-bytevector"       ,1,1,0, (SchemeObject* (*)()) s_make_bytevector, envt);
     scheme->assign(L"bytevector-length"     ,1,0,0, (SchemeObject* (*)()) s_bytevector_length, envt);
@@ -354,6 +413,10 @@ void R6RSLibBytevectors::bind(Scheme* scheme, SchemeObject* envt) {
     scheme->assign(L"bytevector-s8-ref"     ,2,0,0, (SchemeObject* (*)()) s_bytevector_s8_ref, envt);
     scheme->assign(L"bytevector-u8-set!"    ,3,0,0, (SchemeObject* (*)()) s_bytevector_u8_set_e, envt);
     scheme->assign(L"bytevector-s8-set!"    ,3,0,0, (SchemeObject* (*)()) s_bytevector_s8_set_e, envt);
+    scheme->assign(L"bytevector-u64-set!"    ,4,0,0, (SchemeObject* (*)()) s_bytevector_u64_set_e, envt);
+    scheme->assign(L"bytevector-s64-set!"    ,4,0,0, (SchemeObject* (*)()) s_bytevector_s64_set_e, envt);
+    scheme->assign(L"bytevector-u64-native-set!"    ,3,0,0, (SchemeObject* (*)()) s_bytevector_u64_native_set_e, envt);
+    scheme->assign(L"bytevector-s64-native-set!"    ,3,0,0, (SchemeObject* (*)()) s_bytevector_s64_native_set_e, envt);
 
     scheme->assign(L"bytevector-u16-ref"    ,3,0,0, (SchemeObject* (*)()) s_bytevector_u16_ref, envt);
     scheme->assign(L"bytevector-s16-ref"    ,3,0,0, (SchemeObject* (*)()) s_bytevector_s16_ref, envt);
@@ -365,4 +428,9 @@ void R6RSLibBytevectors::bind(Scheme* scheme, SchemeObject* envt) {
 
     little_symbol = SchemeObject::createSymbol(L"little");
     big_symbol = SchemeObject::createSymbol(L"big");
+#if WORDS_BIGENDIAN
+    native_endianness = big_symbol;
+#else
+    native_endianness = little_symbol;
+#endif
 }
