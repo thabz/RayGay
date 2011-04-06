@@ -39,6 +39,7 @@ typedef int hashtable_type;
 #define i_procedure_p(p) (((p)->type() == SchemeObject::BUILT_IN_PROCEDURE ||  \
                            (p)->type() == SchemeObject::CONTINUATION       ||  \
                            (p)->type() == SchemeObject::USER_PROCEDURE     ||  \
+                           (p)->type() == SchemeObject::COMPILED_PROCEDURE ||  \
                            (p)->type() == SchemeObject::INTERNAL_PROCEDURE) ? S_TRUE : S_FALSE)
 #define i_null_p(o)      ((o) == S_EMPTY_LIST ? S_TRUE : S_FALSE)
 #define i_cons(car,cdr)  (SchemeObject::createPair((car),(cdr)))
@@ -102,7 +103,7 @@ class SchemeObject
                     int32_t wrapped_subtype; // For wrapped C-objects
                     SchemeObject* buckets;   // For hashtables
                     Codec* codec;            // For textual codecs
-		    void* native_code;       // For compiled procedures
+		    uint8_t* native_code;    // For compiled procedures
                 };
                 union {
                     SchemeObject* cdr;       // For pairs
@@ -235,7 +236,7 @@ class SchemeObject
         static SchemeObject* createCodec(Codec* codec);
         static SchemeObject* createBuiltinProcedure(SchemeObject* name, int req, int opt, int rst, SchemeObject* (*fn)());
         static SchemeObject* createUserProcedure(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
-        static SchemeObject* createCompiledProcedure(SchemeObject* userProcedure, void* code);
+        static SchemeObject* createCompiledProcedure(SchemeObject* userProcedure, uint8_t* code, uint32_t length);
         static SchemeObject* createInternalProcedure(const wchar_t* name);
         static SchemeObject* createMacro(SchemeObject* name, SchemeObject* envt, SchemeObject* s_formals, SchemeObject* s_body);
         static SchemeObject* createWrappedCObject(int subtype, SchemeWrappedCObject*);

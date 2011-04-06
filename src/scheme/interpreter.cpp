@@ -75,7 +75,6 @@ SchemeObject* Interpreter::call_procedure_3(SchemeObject* procedure, SchemeObjec
     return result;
 }
 
-
 SchemeObject* Interpreter::interpret(SchemeObject* parsetree, SchemeObject* top_level_bindings) {
     State* state = getState();
     if (parsetree == S_EMPTY_LIST) {
@@ -190,6 +189,10 @@ fn_ptr eval_list(Interpreter::State* state) {
             state->global_arg1 = p;
             state->global_arg2 = proc;
             return (fn_ptr)&eval_built_in_procedure_call;
+        } else if (proc->type() == SchemeObject::COMPILED_PROCEDURE) {
+            state->global_arg1 = p;
+            state->global_arg2 = proc;
+            return (fn_ptr)&eval_compiled_procedure_call;
         } else if (proc->type() == SchemeObject::CONTINUATION) {
             state->global_arg1 = i_car(cdr);
             eval(state);
@@ -858,6 +861,26 @@ fn_ptr eval_built_in_procedure_call(Interpreter::State* state)
     state->stack.pop_back();
     state->global_ret = result;
     return NULL;    
+}
+
+fn_ptr eval_compiled_procedure_call(Interpreter::State* state) 
+{
+    cout << "Inside compile proc" << endl;
+    SchemeObject* p = state->global_arg1;        
+    SchemeObject* proc = state->global_arg2;
+    SchemeObject* args = i_cdr(p);
+    
+    assert(proc != NULL);
+
+    cout << "Before function" << endl;
+    uint64_t (*f)() = (uint64_t(*)()) proc->native_code;
+    uint64_t j = f();
+    cout << "After function" << endl;
+
+    SchemeObject* result = int2scm(j);
+
+    state->global_ret = result;
+    return NULL;
 }
 
 fn_ptr eval_procedure_call(Interpreter::State* state) {

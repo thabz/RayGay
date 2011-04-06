@@ -7,6 +7,7 @@
 #include <limits>
 #include "heap.h"
 #include <cstdlib>
+#include <sys/mman.h>
 
 // Map of known symbols
 map<wstring,SchemeObject*> SchemeObject::known_symbols;
@@ -255,14 +256,23 @@ SchemeObject* SchemeObject::createUserProcedure(SchemeObject* name, SchemeObject
     return result;
 }
 
-SchemeObject* SchemeObject::createCompiledProcedure(SchemeObject* userProcedure, void* code) {
+SchemeObject* SchemeObject::createCompiledProcedure(SchemeObject* userProcedure, uint8_t* code, uint32_t size) {
     assert(userProcedure->type() == SchemeObject::USER_PROCEDURE);
 
     SchemeObject* s_formals = i_car(userProcedure->s_closure_data);
     SchemeObject* envt = i_cddr(userProcedure->s_closure_data);
 
+    // Copy the machinecode to an executable memory-page
+    uint8_t* codepage = (uint8_t*) valloc(size);
+    memmove(codepage, code, size);
+    if (mprotect(codepage, size, PROT_EXEC)) {
+        throw scheme_exception(L"mprotect failed");    
+    }
+    cout << "Codesize: " << size << endl;
+
+    // Create SchemeObject representing a compiled function
     SchemeObject* result = Heap::getUniqueInstance()->allocate(SchemeObject::COMPILED_PROCEDURE);
-    result->native_code = code;
+    result->native_code = codepage;
     result->s_compiled_data = i_cons(s_formals, envt);
     return result;
 }
