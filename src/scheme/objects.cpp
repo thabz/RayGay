@@ -8,6 +8,7 @@
 #include "heap.h"
 #include <cstdlib>
 #include <sys/mman.h>
+#include <string.h>
 
 // Map of known symbols
 map<wstring,SchemeObject*> SchemeObject::known_symbols;
