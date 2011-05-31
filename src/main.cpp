@@ -297,8 +297,10 @@ void render_frame(string outputfile, int jobs) {
     // Create and prepare job pool
     RenderJobPool* job_pool = new RenderJobPool(img_w,img_h);
 
-    TimerStats* rendering_time = new TimerStats("Renderer","Time");
+    TimerStats* rendering_time = new TimerStats("Renderer","CPU time");
+    WalltimeStats* rendering_walltime = new WalltimeStats("Renderer","Wall time");
     rendering_time->startTimer();
+    rendering_walltime->startTimer();
 
     active_renderers.clear();
 
@@ -351,6 +353,7 @@ void render_frame(string outputfile, int jobs) {
 	}
     }
     rendering_time->stopTimer();
+    rendering_walltime->stopTimer();
 
     if (renderersettings->renderertype == RendererSettings::PHOTON_RENDERER) {
         delete globalphotonmap;

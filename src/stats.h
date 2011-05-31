@@ -29,6 +29,7 @@ class Statistics
 	static vector<Statistics*> stats;
 };
 
+// Measures CPU time spent.
 class TimerStats : public Statistics 
 {
     public:
@@ -45,6 +46,25 @@ class TimerStats : public Statistics
     private:
 	clock_t begin_time;
 	clock_t end_time;
+};
+
+// Measures walltime
+class WalltimeStats : public Statistics 
+{
+    public:
+	/// Constructor
+	WalltimeStats(string group, string name);
+
+	/// Begin a time measure
+	void startTimer();
+	/// End a time measure
+	void stopTimer();
+
+	void out() const;
+	
+    private:
+	struct timespec begin_time;
+	struct timespec end_time;
 };
 
 class CounterStats : public Statistics 

@@ -72,7 +72,7 @@ fi
 dnl -------------------------------------------------
 dnl Check libraries needed
 dnl -------------------------------------------------
-LIBS="$LIBS -lm"    
+LIBS="$LIBS -lm -lrt"    
 AC_CHECK_LIB(m, sin,,[AC_MSG_ERROR([math library is not found])],)
 AC_CHECK_LIB(pthread, pthread_create,LIBS="-lpthread $LIBS")
 
@@ -138,7 +138,7 @@ fi
 dnl -------------------------------------------------
 dnl Add the CPU dependent compile optimizations
 dnl -------------------------------------------------
-CXXFLAGS="-g -O3 -Wall -Winline -ffast-math $GTK_CFLAGS $GUILE_CFLAGS"  
+CXXFLAGS="-g -O3 -Wall -Winline -ffast-math -lrt $GTK_CFLAGS $GUILE_CFLAGS"  
 case $target in
      pentium3) CXXFLAGS="$CXXFLAGS -malign-double -march=pentium3 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing";;
      pentium4) CXXFLAGS="$CXXFLAGS -fprefetch-loop-arrays -funroll-loops -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing -msse2";;
