@@ -1,14 +1,32 @@
 
+;
+; Compile bytecode to machine-code
+;
+
+(define (assemble bytecode)
+ (let ((snippets '()))
+  #vu8(
+    #x55
+    #x48 #x89 
+    #xe5
+    #x90 #x90 #x90 #x90
+    #x48 #xB8 #x10 #x20 #x30 #x40 #x50 #x60 #x70 #x80 ; MOV
+    #x90 #x90 #x90 #x90
+    #xc9
+    #xC3)))
+
 (define (uint64->list n)
  (let ((v (make-bytevector 8)))
-  (bytevector-u64-native-set! v 0 n)
+  (bytevector-u64-set! v 0 n (endianness 'little))
   (bytevector->u8-list v)))
 
 (define (PUSH-INTEGER x)
  (list 'PUSH-INTEGER x)
  ; MOVL $xxyyxxyyxxyyxxyy,%rax
  ; PUSH %rax
- (list #x48))
+ (list #x48
+    #x48 #xB8 #x10 #x20 #x30 #x40 #x50 #x60 #x70 #x80 ; MOV
+ ))
 
 
 (define (ADD-INTEGERS)
@@ -16,6 +34,10 @@
 
 (define (SUBTRACT-INTEGERS)
  (list 'SUBTRACT-INTEGERS))
+
+(define (POP-AND-RETURN)
+ (list 'POP-AND-RETURN))
+
 
 (define (compile-function symbol)
  (case symbol
@@ -45,7 +67,7 @@
   (compile-expression-internal expression)
   (reverse bytecode)))
 
-(define (compile proc)
+(define (compile-to-bytecode proc)
  (let ((source ($source proc)))
   (map compile-expression source)))
 
@@ -56,7 +78,10 @@
   bytecode))
 
 (define (compile-and-dump proc)
- (display-bytecode (car (compile proc))))
+ (display-bytecode (car (compile-to-bytecode proc))))
+
+(define (compile proc)
+ ($make-native-procedure (assemble (compile-to-bytecode proc)) proc)) 
 
 (define (test0)
  (- (+ 1 (+ 2 3)) 4))
@@ -71,3 +96,7 @@
 
 (compile-and-dump test0)    
 
+(define compiled (compile test0))    
+
+(display (compiled))
+(newline)

@@ -20,6 +20,7 @@ class Interpreter
         SchemeObject* call_procedure_2(SchemeObject* procedure, SchemeObject* arg1, SchemeObject* arg2);
         SchemeObject* call_procedure_3(SchemeObject* procedure, SchemeObject* arg1, SchemeObject* arg2, SchemeObject* arg3);
         SchemeObject* call_procedure_n(SchemeObject* procedure, SchemeObject* args_list);
+        SchemeObject* call_native_procedure(SchemeObject* procedure);
    	    
         struct State {
             SchemeObject* global_ret;
@@ -48,6 +49,7 @@ fn_ptr eval_apply(Interpreter::State*);
 fn_ptr eval_apply_real(Interpreter::State*);
 fn_ptr eval_procedure_call(Interpreter::State*);
 fn_ptr eval_user_procedure_call(Interpreter::State*);
+fn_ptr eval_compiled_procedure_call(Interpreter::State*);
 fn_ptr eval_built_in_procedure_call(Interpreter::State*);
 fn_ptr eval_let(Interpreter::State*);
 fn_ptr eval_letstar(Interpreter::State*);
