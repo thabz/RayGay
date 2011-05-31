@@ -166,18 +166,18 @@ WalltimeStats::WalltimeStats(string group, string name) : Statistics(group,name)
 
 void WalltimeStats::startTimer()
 {
-    clock_gettime(CLOCK_REALTIME, &begin_time);
+    gettimeofday(&begin_time, NULL);
 }
 
 void WalltimeStats::stopTimer()
 {
-    clock_gettime(CLOCK_REALTIME, &end_time);
+    gettimeofday(&end_time, NULL);
 }
 
 void WalltimeStats::out() const 
 {
     double secs = double(end_time.tv_sec - begin_time.tv_sec);
-    secs += double(end_time.tv_nsec - begin_time.tv_nsec) / 1000000000.0;
+    secs += double(end_time.tv_usec - begin_time.tv_usec) / 1000000.0;
     int whole_hours = int(secs / 3600);
     int whole_minutes = int(secs / 60);
     int whole_seconds = int(secs);

@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <time.h>
+#include <sys/time.h>
 #include <iostream>
 #include <vector>
 #include <iosfwd>
@@ -63,8 +64,8 @@ class WalltimeStats : public Statistics
 	void out() const;
 	
     private:
-	struct timespec begin_time;
-	struct timespec end_time;
+	struct timeval begin_time;
+	struct timeval end_time;
 };
 
 class CounterStats : public Statistics 
