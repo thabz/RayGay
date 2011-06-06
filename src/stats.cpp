@@ -157,6 +157,41 @@ void TimerStats::out() const
 }
 
 ///////////////////////////////////////////////////
+// WalltimeStats 
+///////////////////////////////////////////////////
+
+WalltimeStats::WalltimeStats(string group, string name) : Statistics(group,name)
+{
+}
+
+void WalltimeStats::startTimer()
+{
+    gettimeofday(&begin_time, NULL);
+}
+
+void WalltimeStats::stopTimer()
+{
+    gettimeofday(&end_time, NULL);
+}
+
+void WalltimeStats::out() const 
+{
+    double secs = double(end_time.tv_sec - begin_time.tv_sec);
+    secs += double(end_time.tv_usec - begin_time.tv_usec) / 1000000.0;
+    int whole_hours = int(secs / 3600);
+    int whole_minutes = int(secs / 60);
+    int whole_seconds = int(secs);
+    int hundreds = int(100.0 * (secs - whole_seconds));
+    if (whole_hours > 0) {
+	cout << whole_hours << ":";
+    }
+    cout << setfill('0') << setw(2) << whole_minutes % 60 << ":";
+    cout << setfill('0') << setw(2) << whole_seconds % 60 << ".";
+    cout << setfill('0') << setw(2) << hundreds;
+}
+
+
+///////////////////////////////////////////////////
 // CounterStats 
 ///////////////////////////////////////////////////
 

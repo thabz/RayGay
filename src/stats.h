@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <time.h>
+#include <sys/time.h>
 #include <iostream>
 #include <vector>
 #include <iosfwd>
@@ -29,6 +30,7 @@ class Statistics
 	static vector<Statistics*> stats;
 };
 
+// Measures CPU time spent.
 class TimerStats : public Statistics 
 {
     public:
@@ -45,6 +47,25 @@ class TimerStats : public Statistics
     private:
 	clock_t begin_time;
 	clock_t end_time;
+};
+
+// Measures walltime
+class WalltimeStats : public Statistics 
+{
+    public:
+	/// Constructor
+	WalltimeStats(string group, string name);
+
+	/// Begin a time measure
+	void startTimer();
+	/// End a time measure
+	void stopTimer();
+
+	void out() const;
+	
+    private:
+	struct timeval begin_time;
+	struct timeval end_time;
 };
 
 class CounterStats : public Statistics 
