@@ -2,3 +2,4 @@
 (load "scheme/test-format.scm")
 (load "scheme/test-vector-math.scm")
 (load "scheme/test-r6rs-lib-bytevectors.scm")
+(load "scheme/test-r6rs-lib-unicode.scm")

@@ -6,7 +6,7 @@
 ; Lowercase all chars and sort them to create the key
 ; Eq. "Tony" -> "noty"
 (define (word->key word)
- (list->string (list-sort char<? (map char-downcase (string->list word)))))
+ (list->string (list-sort char<? (string->list (string-downcase word)))))
 
 (define hash (make-hashtable string-hash equal?))
 
@@ -14,9 +14,13 @@
  (if (not (eof-object? word))
   (let* ((key (word->key word)))
    (hashtable-set! hash key (cons word (hashtable-ref hash key '())))
-   (if (> (length (hashtable-ref hash key '())) 2)
-    (begin
-      (display (hashtable-ref hash key "None"))
-      (newline)))
    (loop (get-line port)))))
 
+(display "Keys in hashtable: ")
+(display (hashtable-size hash))
+(newline)    
+
+;   (if (> (length (hashtable-ref hash key '())) 2)
+;    (begin
+;      (display (hashtable-ref hash key "None"))
+;      (newline)))

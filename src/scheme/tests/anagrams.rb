@@ -17,6 +17,9 @@ File.open(DICT).each{|line|
     else
 	$h[key] = Array[line]
     end	
+    if $h[key].size() > 1
+	puts $h[key].join(', ')
+    end	    
 }
 
 $h.each{ |key,list|
