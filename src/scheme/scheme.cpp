@@ -27,6 +27,7 @@
 #include "r6rs-lib-hashtables.h"
 #include "r6rs-lib-io-ports.h"
 #include "r6rs-lib-io-simple.h"
+#include "r6rs-lib-unicode.h"
 
 
 SchemeObject* S_UNSPECIFIED;
@@ -275,14 +276,15 @@ Scheme::Scheme(int argc, char *argv[]) {
     heap->addRoot(S_EOF);
     
     LibNumbers::bind(this, scheme_report_environment);
-	R6RSLibArithmetic::bind(this, scheme_report_environment);
-	R6RSLibBytevectors::bind(this, scheme_report_environment);
-	R6RSLibSorting::bind(this, scheme_report_environment);
-	R6RSLibLists::bind(this, scheme_report_environment);
+    R6RSLibArithmetic::bind(this, scheme_report_environment);
+    R6RSLibBytevectors::bind(this, scheme_report_environment);
+    R6RSLibSorting::bind(this, scheme_report_environment);
+    R6RSLibLists::bind(this, scheme_report_environment);
     R6RSLibHashtables::bind(this, scheme_report_environment);
-	R6RSLibIOSimple::bind(this, scheme_report_environment);
-	R6RSLibIOPorts::bind(this, scheme_report_environment);
-	Compiler::bind(this, scheme_report_environment);
+    R6RSLibIOSimple::bind(this, scheme_report_environment);
+    R6RSLibIOPorts::bind(this, scheme_report_environment);
+    R6RSLibUnicode::bind(this, scheme_report_environment);
+    Compiler::bind(this, scheme_report_environment);
     
     this->parser = new Parser(this);
     this->interpreter = new Interpreter(this);
