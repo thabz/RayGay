@@ -1,0 +1,9 @@
+*.o
+*.lo
+*.a
+*.la
+*.Po
+*.Plo
+Makefile.in
+Makefile
+*.dylib
