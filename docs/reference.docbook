@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<book>
+  <bookinfo>
+    <title>RayGay reference manual</title>
+    <author><firstname>Jesper</firstname>
+            <surname>Christensen</surname></author>
+    <volumenum>1234</volumenum>
+  </bookinfo>
+  <preface id="preface">  
+    <title>Title page</title>
+    <figure id="cover-image">
+      <title>Our EPUB cover image icon</title>
+      <graphic fileref="cover.png"/>
+    </figure>
+  </preface>
+  <chapter id="objects-chapter"> 
+    <title>Scene objects</title>
+    <para>
+      Not much to see here. 
+    </para>
+    <section id="solids">
+       <title>Solids</title>
+       <para>
+       <synopsis>
+       (make-sphere center radius material)
+       (make-sphere center radius)
+       </synopsis>
+       <code>center</code> is a 3-vector 
+       </para>
+       
+       <para>
+       <synopsis>(make-cylinder <parameter>begin</parameter> <parameter>end</parameter> <parameter>radius</parameter> <parameter>material</parameter>)</synopsis>
+       <synopsis>(make-cylinder <parameter>begin</parameter> <parameter>end</parameter> <parameter>radius</parameter>)</synopsis>
+       Makes a cylinder.
+       <parameter>begin</parameter> and <parameter>end</parameter> are 3D-vectors describing the center of the base plate and top plate respectively.
+       <parameter>radius</parameter> is a number specifying the radius of the cylinder.
+       The optional <parameter>material</parameter> sets the material of the object.
+       </para>
+
+       <para>
+       <synopsis>(make-cone <parameter>begin</parameter> <parameter>end</parameter> <parameter>radius<subscript>begin</subscript></parameter> <parameter>radius<subscript>end</subscript></parameter> <parameter>material</parameter>)</synopsis>
+       <synopsis>(make-cone <parameter>begin</parameter> <parameter>end</parameter> <parameter>radius<subscript>begin</subscript></parameter> <parameter>radius<subscript>end</subscript></parameter>)</synopsis>
+       Makes a cone.
+       <parameter>begin</parameter> and <parameter>end</parameter> are 3D-vectors describing the center of the base plate and top plate respectively.
+       <code>radius<subscript>begin</subscript></code> and <code>radius<subscript>end</subscript></code> are numbers specifying the radii of the base and top plates.
+       </para>
+
+       </section>
+  </chapter>
+  <chapter id="end-notes"> 
+    <title>End notes</title>
+    <para>
+      This space intentionally left blank.
+    </para>
+  </chapter>
+</book>
+
+<!--
+<html>
+<head>
+   <title>RayGay Scheme reference manual</title>
+   <link rel="stylesheet" href="reference.css" type="text/css">
+</head>
+<body>
+<h1>RayGay Scheme reference manual</h1>
+
+<h2>Contents</h2>
+<h3>Vector operations</h3>
+<a href="#vdot">vdot</a>
+<a href="#vcross">vcross</a>
+<a href="#bounding-box">bounding-box</a>
+<a href="#rotate">rotate</a>
+<a href="#translate">translate</a>
+
+<h3>Paths</h3>
+<a href="#make-circle">make-circle</a>
+<a href="#make-eclipse">make-eclipse</a>
+<a href="#make-linesegment">make-linesegment</a>
+<a href="#make-spiral">make-spiral</a>
+<a href="#make-bezierspline">make-bezierspline</a>
+<a href="#point-on-path">point-on-path</a>
+<a href="#tangent-to-path">tangent-to-path</a>
+
+<h3>Objects</h3>
+<a href="#make-sphere">make-sphere</a>
+<a href="#make-ellipsoid">make-ellipsoid</a>
+<a href="#make-torus">make-torus</a>
+<a href="#make-box">make-box</a>
+<a href="#make-solid-box">make-solid-box</a>
+<a href="#make-cylinder">make-cylinder</a>
+<a href="#make-uncapped-cylinder">make-uncapped-cylinder</a>
+<a href="#make-cone">make-cone</a>
+<a href="#make-uncapped-cone">make-uncapped-cone</a>
+<a href="#make-extrusion">make-extrusion</a>
+<a href="#make-heightfield">make-heightfield</a>
+<a href="#make-union">make-union</a>
+<a href="#make-difference">make-difference</a>
+<a href="#make-intersection">make-intersection</a>
+<a href="#make-bezierpatch">make-bezierpatch</a>
+
+<h2>Vector operations</h2>
+
+<div class="function">
+<a name="vdot">
+<h3>vdot</h3>
+<synopsis>(vdot <i>vector</i> <i>vector</i>) &rarr; <i>real</i></synopsis>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<a name="vcross">
+<h3>vcross</h3>
+<synopsis>(vcross <i>vector</i> <i>vector</i>) &rarr; <i>vector</i></synopsis>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<a name="bounding-box">
+<h3>bounding-box</h3>
+<synopsis>(bounding-box <i>object</i>:object ) &rarr; <i>(vector,vector)</i></synopsis>
+<para>Returns two corners describing the axis-aligned boundingbox of the object.</para>
+</div>
+
+<div class="function">
+<a name="rotate">
+<h3>rotate</h3>
+<synopsis>(rotate <i>vector</i>:vector <i>vector</i>:axis <i>real</i>:angle) &rarr; <i>vector</i></synopsis>
+<synopsis>(rotate <i>object</i>:object <i>vector</i>:axis <i>real</i>:angle) &rarr; <i>object</i></synopsis>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<a name="translate">
+<h3>translate</h3>
+<synopsis>(translate <i>vector</i> translation) &rarr; <i>vector</i></synopsis>
+<synopsis>(translate <i>object</i> translation) &rarr; <i>object</i></synopsis>
+<pre>
+</pre>
+</div>
+
+<h2>Paths</h2>
+
+<div class="function">
+<a name="make-circle">	
+<h3>make-circle</h3>
+<synopsis>(make-circle <i>vector</i>:center <i>real</i>:radius <i>vector</i>:normal) &rarr; <i>path</i></synopsis>
+<pre>
+(make-circle '(0 0 0) 10 '(0 0 1))
+</pre>
+</div>
+
+<div class="function">
+<a name="make-ellipse">
+<h3>make-ellipse</h3>
+<synopsis>(make-ellipse <i>vector</i>:center <i>real</i>:radius<subscript>x</subscript> <i>real</i>:radius<subscript>y</subscript> <i>vector</i>:normal) &rarr; <i>path</i></synopsis>
+<pre>
+(make-ellipse '(0 0 0) 10 20 '(0 0 1))
+</pre>
+</div>
+
+<div class="function">
+<a name="make-linesegment">
+<h3>make-linesegment</h3>
+<synopsis>(make-linesegment <i>vector</i>:from <i>vector</i>:to) &rarr; <i>path</i></synopsis>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<a name="make-spiral">
+<h3>make-spiral</h3>
+<synopsis>(make-spiral <i>path</i>:path radius windings offset) &rarr; <i>path</i></synopsis>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-bezierspline</h3>
+<a name="make-bezierspline">
+<synopsis>(make-bezierspline <i>vector</i>:point<subscript>1</subscript> ... <i>vector</i>:point<subscript>N</subscript>) &rarr; <i>path</i></synopsis>
+<para>
+<pre>
+(make-bezierspline '((0 0 0) (10 10 10) (20 20 10)))
+</pre>
+</para>
+</div>
+
+<div class="function">
+<a name="point-on-path">
+<h3>point-on-path</h3>
+<synopsis>(point-on-path <i>path</i>:path <i>real</i>:t) &rarr; vector</synopsis>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<a name="tangent-to-path">
+<h3>tangent-to-path</h3>
+<synopsis>(tangent-to-path <i>path</i>:path <i>real</i>:t) &rarr; vector</synopsis>
+<pre>
+</pre>
+</div>
+
+<h2>Objects</h2>
+
+<div class="function">
+<a name="make-sphere">
+<h3>make-sphere</h3>
+<synopsis>(make-sphere <i>vector</i>:center <i>real</i>:radius <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<synopsis>(make-sphere <i>vector</i>:center <i>real</i>:radius) &rarr; <i>object</i></synopsis>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<a name="make-ellipsoid">
+<h3>make-ellipsoid</h3>
+<synopsis>(make-ellipsoid <i>vector</i>:center <i>vector</i>:radii <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<synopsis>(make-ellipsoid <i>vector</i>:center <i>vector</i>:radii) &rarr; <i>object</i></synopsis>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-torus</h3>
+<synopsis>(make-torus <i>real</i>:R <i>real</i>:r <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<synopsis>(make-torus <i>real</i>:R <i>real</i>:r) &rarr; <i>object</i></synopsis>
+<para>Makes a torus placed in (0,0,0).</para>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-box</h3>
+<synopsis>(make-box <i>vector</i>:corner<subscript>1</subscript> <i>vector</i>:corner<subscript>2</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-solid-box</h3>
+<synopsis>(make-solid-box <i>vector</i>:corner<subscript>1</subscript> <i>vector</i>:corner<subscript>2</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<synopsis>(make-solid-box <i>vector</i>:corner<subscript>1</subscript> <i>vector</i>:corner<subscript>2</subscript>) &rarr; <i>object</i></synopsis>
+<para>This can be used for CSG operations.</para>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-cylinder</h3>
+<synopsis>(make-cylinder <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<synopsis>(make-cylinder <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius) &rarr; <i>object</i></synopsis>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-uncapped-cylinder</h3>
+<synopsis>(make-uncapped-cylinder <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<synopsis>(make-uncapped-cylinder <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius) &rarr; <i>object</i></synopsis>
+<para>This is slightly faster than <tt>make-cylinder</tt> if the caps aren't needed.</para>
+</div>
+
+<div class="function">
+<h3>make-cone</h3>
+<synopsis>(make-cone <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius<subscript>begin</subscript> <i>real</i>:radius<subscript>end</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<synopsis>(make-cone <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius<subscript>begin</subscript> <i>real</i>:radius<subscript>end</subscript>) &rarr; <i>object</i></synopsis>
+<pre>
+</pre>
+</div>
+
+<div class="function">
+<h3>make-uncapped-cone</h3>
+<synopsis>(make-uncapped-cone <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius<subscript>begin</subscript> <i>real</i>:radius<subscript>end</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<synopsis>(make-uncapped-cone <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius<subscript>begin</subscript> <i>real</i>:radius<subscript>end</subscript>) &rarr; <i>object</i></synopsis>
+<para>This is slightly faster than <tt>make-cone</tt> if the caps aren't needed.</para>
+</div>
+
+<div class="function">
+<h3>make-extrusion</h3>
+<synopsis>(make-extrusion <i>path</i>:path <i>path</i>:circle <i>real</i>:twists <i>int</i>:segments <i>real</i>:twists <i>material</i>:material) &rarr; <i>object</i></synopsis>
+</div>
+
+<div class="function">
+<h3>make-heightfield</h3>
+<synopsis>(make-heightfield <i>texture</i>:heightmap <i>vector</i>:size<subscript>xyz</subscript> <i>int</i>:width-divisions <i>int</i>:depth-divisions  <i>material</i>:material) &rarr; <i>object</i></synopsis>
+</div>
+
+<div class="function">
+<h3>make-union</h3>
+<synopsis>(make-union <i>object</i>:solid<subscript>1</subscript> <i>object</i>:solid<subscript>2</subscript> ... <i>object</i>:solid<subscript>n</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<synopsis>(make-union <i>object</i>:solid<subscript>1</subscript> <i>object</i>:solid<subscript>2</subscript> ... <i>object</i>:solid<subscript>n</subscript>) &rarr; <i>object</i></synopsis>
+</div>
+
+<div class="function">
+<h3>make-difference</h3>
+<synopsis>(make-difference <i>object</i>:solid<subscript>L</subscript> <i>object</i>:solid<subscript>R</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<synopsis>(make-difference <i>object</i>:solid<subscript>L</subscript> <i>object</i>:solid<subscript>R</subscript>) &rarr; <i>object</i></synopsis>
+</div>
+
+<div class="function">
+<h3>make-intersection</h3>
+<synopsis>(make-intersection <i>object</i>:solid<subscript>L</subscript> <i>object</i>:solid<subscript>R</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<synopsis>(make-intersection <i>object</i>:solid<subscript>L</subscript> <i>object</i>:solid<subscript>R</subscript>) &rarr; <i>object</i></synopsis>
+</div>
+
+<div class="function">
+<h3>make-bezierpatch</h3>
+<synopsis>(make-bezierpatch (<i>vector</i>:point<subscript>1</subscript> ... <i>vector</i>:point<subscript>16</subscript>) <i>int</i>:resolution<subscript>x</subscript> <i>int</i>:resolution<subscript>y</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
+<para>Makes a mesh of 2 &times; resolution<subscript>x</subscript> &times; resolution<subscript>y</subscript> triangles.</para>
+</div>
+
+<h2>Lightsources</h2>
+
+<div class="function">
+<h3>make-skylight</h3>
+<synopsis>(make-skylight <i>real</i>:radius <i>int</i>:num [<i>vector</i>:power]) &rarr; <i>object</i></synopsis>
+<para>Makes a skylight with <i>num</i> pointlights uniformly placed on a hemisphere of radius <i>radius</i>.</para>
+<para><pre>
+(make-skylight 10000 20)
+</pre></para>
+</div>
+
+<div class="function">
+<h3>make-arealight</h3>
+<synopsis>(make-arealight <i>vector</i>:position <i>vector</i>:direction <i>real</i>:radius <i>int</i>:num <i>real</i>:jitter  [<i>vector</i>:power]) &rarr; <i>object</i></synopsis>
+<para>Makes an arealight with <i>num</i> pointlights uniformly (jittering) placed on a disc of radius <i>radius</i> with normal <i>direction</i>.</para>
+<para><pre>
+(make-arealight #(1000 2000 2000) #(-0.5 -1 -1) 500 100 0.1)
+</pre></para>
+</div>
+
+
+<h2>Materials</h2>
+
+<h2>Scheme cheatsheet</h2>
+
+<h3>Iteration with <tt>do</tt></h3>
+
+<pre>
+(do ((x 0 (+ x 1)))
+  ((= x 10) x)
+    (display x)
+    (newline))
+
+(do ((var1 init1 step1)...)
+    (test expr ...)
+   command ...)
+</pre>
+The init expressions are assigned to the vars. Each iteration begins by
+evaluating test. 
+
+If the result is false the commands are run, then the steps evaluated and assigned to the vars and then the next iteration begins. If the result is true the exprs are evaluated and the last one is returned as the value of the do-expression.
+
+A step can the omitted. The init then works as a simple assignment of local vars.
+
+The example prints the numbers 0 to 10 and returns x which has the value 10.
+<hr>
+$Id$ Jesper Christensen, 2006.
+
+
+</body>
+</html>
+-->

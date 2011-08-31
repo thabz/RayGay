@@ -34,3 +34,13 @@ a {
 	color: #888880;
 	text-decoration: none;
 }
+
+/* For the docbook html output */
+em.parameter code {
+    font-family: serif;
+}
+
+h1.title, h2.title, p.title, div.toc p b, div.list-of-figuresp p b {
+    font-family: sans-serif;
+}
+
