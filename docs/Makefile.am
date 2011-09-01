@@ -14,7 +14,7 @@ html:
 	xsltproc --stringparam html.stylesheet reference.css ~/docbook-xsl-1.76.1/html/docbook.xsl reference.docbook > ref.html
 
 chunked:
-	xsltproc http://docbook.sourceforge.net/release/xsl/current/html/chunk.xsl reference.docbook 
+	xsltproc --stringparam html.stylesheet reference.css http://docbook.sourceforge.net/release/xsl/current/html/chunk.xsl reference.docbook 
 pdf:
 	xsltproc ~/docbook-xsl-1.76.1/pdf/docbook.xsl reference.docbook 
 

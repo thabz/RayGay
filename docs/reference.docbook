@@ -13,21 +13,47 @@
       <graphic fileref="cover.png"/>
     </figure>
   </preface>
+  <chapter id="paths-chapter"> 
+    <title>Paths</title>
+    <para>
+       Paths are a special category of objects in RayGay. A path can't be rendered, but it is useful for a few special purposes. A camera can be moved along a path or objects can be place along a path.
+    </para>
+  </chapter>  
   <chapter id="objects-chapter"> 
     <title>Scene objects</title>
     <para>
-      Not much to see here. 
+      There are several categories of renderable objects that can be added to a scene. 
+      Solid objects, collections of objects and meshes are examples.
     </para>
     <section id="solids">
        <title>Solids</title>
+       <para>Solid objects are objects that can be used for constructive solid geometry.</para>
+
+       <section id="sphere">
+       <title>Sphere</title>
+
        <para>
-       <synopsis>
-       (make-sphere center radius material)
-       (make-sphere center radius)
-       </synopsis>
-       <code>center</code> is a 3-vector 
+       <synopsis>(make-sphere <parameter>center</parameter> <parameter>radius</parameter> <parameter>material</parameter>)</synopsis>
+       <synopsis>(make-sphere <parameter>center</parameter> <parameter>radius</parameter> )</synopsis>
        </para>
+       <para>
+       Makes a sphere.
+       <parameter>center</parameter> is a 3D-vector describing the center of the sphere.
+       <parameter>radius</parameter> is a number specifying the radius of the sphere.
+       The optional <parameter>material</parameter> sets the material of the object.
+       </para>
+       <para>
+       <code>(make-sphere #(1 2 3) 10.5 chrome)</code>
+       </para>
+       <para>
+       Creates a sphere centeret in (1,2,3) with a 10.5 radius and uses the material chrome. 
+       </para>
+       </section>
        
+       
+
+       <section id="cylinder">
+       <title>Cylinder</title>
        <para>
        <synopsis>(make-cylinder <parameter>begin</parameter> <parameter>end</parameter> <parameter>radius</parameter> <parameter>material</parameter>)</synopsis>
        <synopsis>(make-cylinder <parameter>begin</parameter> <parameter>end</parameter> <parameter>radius</parameter>)</synopsis>
@@ -36,7 +62,13 @@
        <parameter>radius</parameter> is a number specifying the radius of the cylinder.
        The optional <parameter>material</parameter> sets the material of the object.
        </para>
+       </section>
 
+       <section id="cone">
+       <title>Cone</title>
+       <tip>
+           <para>A cone can simply be thought of as a cylinder with a different radius at each end.</para>
+       </tip>
        <para>
        <synopsis>(make-cone <parameter>begin</parameter> <parameter>end</parameter> <parameter>radius<subscript>begin</subscript></parameter> <parameter>radius<subscript>end</subscript></parameter> <parameter>material</parameter>)</synopsis>
        <synopsis>(make-cone <parameter>begin</parameter> <parameter>end</parameter> <parameter>radius<subscript>begin</subscript></parameter> <parameter>radius<subscript>end</subscript></parameter>)</synopsis>
@@ -44,6 +76,7 @@
        <parameter>begin</parameter> and <parameter>end</parameter> are 3D-vectors describing the center of the base plate and top plate respectively.
        <code>radius<subscript>begin</subscript></code> and <code>radius<subscript>end</subscript></code> are numbers specifying the radii of the base and top plates.
        </para>
+       </section>
 
        </section>
   </chapter>

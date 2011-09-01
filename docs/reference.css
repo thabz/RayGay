@@ -40,7 +40,14 @@ em.parameter code {
     font-family: serif;
 }
 
-h1.title, h2.title, p.title, div.toc p b, div.list-of-figuresp p b {
+h1.title, h2.title, h3.title, h3.author, p.title, div.toc p b, div.list-of-figuresp p b, div.navheader, div.navfooter {
     font-family: sans-serif;
 }
 
+div.tip {
+    border: 1px solid black;
+    background: white;    
+    width: 300px;
+    float:right;	   
+    padding:5px;	    
+}
