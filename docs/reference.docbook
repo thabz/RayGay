@@ -136,36 +136,35 @@
 
        <section id="union">
        <title>Union</title>
-       <para>A union TODO</para>
+       <para>A union of A and B is the all the space A and all the space B looked upon as one, even if it is not connected.</para>
        <para>
        <synopsis>(make-union <parameter>solid<subscript>1</subscript></parameter> <parameter>solid<subscript>2</subscript></parameter> ... <parameter>solid<subscript>n</subscript></parameter> <parameter>material</parameter>)</synopsis>
        <synopsis>(make-union <parameter>solid<subscript>1</subscript></parameter> <parameter>solid<subscript>2</subscript></parameter> ... <parameter>solid<subscript>n</subscript></parameter>)</synopsis>
-       Makes a CSG union.
-       <parameter>solid<subscript>i</subscript></parameter> are solid objects.
+       Makes a union of <parameter>solid<subscript>i</subscript></parameter> which all are solid objects. The resulting object is the spatial set resulting from the boolean union <parameter>solid<subscript>1</subscript></parameter> &#8746; <parameter>solid<subscript>2</subscript></parameter>  &#8746; ... &#8746; <parameter>solid<subscript>n</subscript></parameter>.
        The optional <parameter>material</parameter> sets the material of the object.
        </para>
        </section>
 
        <section id="intersection">
        <title>Intersection</title>
-       <para>A intersection TODO</para>
+       <para>An intersection of A and B is all the space A and B have in common.</para>
        <para>
        <synopsis>(make-intersection <parameter>solid<subscript>L</subscript></parameter> <parameter>solid<subscript>R</subscript></parameter> <parameter>material</parameter>)</synopsis>
        <synopsis>(make-intersection <parameter>solid<subscript>L</subscript></parameter> <parameter>solid<subscript>R</subscript></parameter>)</synopsis>
-       Makes a CSG intersection.
-       <parameter>solid<subscript>L</subscript></parameter> and <parameter>solid<subscript>R</subscript></parameter> are two solid objects.
+       Makes an intersection of the two solid objects <parameter>solid<subscript>L</subscript></parameter> and <parameter>solid<subscript>R</subscript></parameter>.
+        The resulting object is the spatial set resulting from the boolean intersecion <parameter>solid<subscript>1</subscript></parameter> &#8745; <parameter>solid<subscript>2</subscript></parameter>.
        The optional <parameter>material</parameter> sets the material of the object.
        </para>
        </section>
 
        <section id="difference">
        <title>Difference</title>
-       <para>A difference TODO</para>
+       <para>A difference A - B between two sets is whats left after all of B has been subtracted from A.</para>
        <para>
        <synopsis>(make-difference <parameter>solid<subscript>L</subscript></parameter> <parameter>solid<subscript>R</subscript></parameter> <parameter>material</parameter>)</synopsis>
        <synopsis>(make-difference <parameter>solid<subscript>L</subscript></parameter> <parameter>solid<subscript>R</subscript></parameter>)</synopsis>
-       Makes a CSG difference.
-       <parameter>solid<subscript>L</subscript></parameter> and <parameter>solid<subscript>R</subscript></parameter> are two solid objects.
+       Makes a difference of the two solid objects <parameter>solid<subscript>L</subscript></parameter> and <parameter>solid<subscript>R</subscript></parameter>.
+       The resulting object is the spatial set resulting from the boolean difference or relative complement <parameter>solid<subscript>1</subscript></parameter> - <parameter>solid<subscript>2</subscript></parameter> which also can be written as <parameter>solid<subscript>1</subscript></parameter> &#8260; <parameter>solid<subscript>2</subscript></parameter>.
        The optional <parameter>material</parameter> sets the material of the object.
        </para>
        </section>
@@ -195,6 +194,16 @@
        <parameter>heightmap</parameter> is a monochrome texture map. 
        The 3D-vector <parameter>size</parameter> describes the width,height and depth of the heightmap.
        The two integers <parameter>width-divisions</parameter> and <parameter>depth-divisions</parameter> specify the numbers of subdivisions in the x and z directions. 
+       The <parameter>material</parameter> parameter sets the material of the object.
+       </para>
+       </section>
+
+       <section id="extrusion">
+       <title>Extrusion</title>
+       <para>
+       <synopsis>(make-extrusion <parameter>path</parameter> <parameter>circle</parameter> <parameter>twists</parameter> <parameter>segments</parameter> <parameter>pieces</parameter> <parameter>material</parameter>)</synopsis>
+       Pull the closed <parameter>circle</parameter> path along the path <parameter>path</parameter> to create a tube. The extruded tube is constructed of triangles. There are <parameter>segments</parameter> segments along <parameter>path</parameter> and <parameter>pieces</parameter> triangle segments around <parameter>circle</parameter>. 
+       The <parameter>circle</parameter> path should be a closed path lying in the x,y-plane. If the <parameter>circle</parameter> is asymmetrical around the origion (thus anything but a circle) the <parameter>twists</parameter> can be set to a non-zero integer value to let the circle-path be rotated <parameter>twists</parameter> times around the origin as it's extruded along <parameter>path</parameter>.
        The <parameter>material</parameter> parameter sets the material of the object.
        </para>
        </section>
@@ -395,13 +404,6 @@
 <para>This is slightly faster than <tt>make-cylinder</tt> if the caps aren't needed.</para>
 </div>
 
-<div class="function">
-<h3>make-cone</h3>
-<synopsis>(make-cone <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius<subscript>begin</subscript> <i>real</i>:radius<subscript>end</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
-<synopsis>(make-cone <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius<subscript>begin</subscript> <i>real</i>:radius<subscript>end</subscript>) &rarr; <i>object</i></synopsis>
-<pre>
-</pre>
-</div>
 
 <div class="function">
 <h3>make-uncapped-cone</h3>
