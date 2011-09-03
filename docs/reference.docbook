@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>  
+<!--<!DOCTYPE article PUBLIC '-//OASIS//DTD DocBook XML V4.5//EN' 'http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd'>-->
 <book>
   <bookinfo>
     <title>RayGay reference manual</title>
@@ -124,6 +125,12 @@
        <synopsis>(make-solid-box <parameter>corner<subscript>1</subscript></parameter> <parameter>corner<subscript>2</subscript></parameter>)</synopsis>
        Makes a solid box. The two 3D-vectors <parameter>corner<subscript>1</subscript></parameter> and <parameter>corner<subscript>2</subscript></parameter> must be diagonally placed corners of the box.
        The optional <parameter>material</parameter> sets the material of the object.
+       </para>
+       <para>
+       <code>(make-solid-box #(-5 -5 -5) #(5 5 5))</code>
+       </para>
+       <para>
+       Creates a cube centered in (0,0,0) with all sides having an area of 10&#215;10. 
        </para>
        </section>
 
@@ -380,29 +387,6 @@
 </pre>
 </div>
 
-<div class="function">
-<h3>make-box</h3>
-<synopsis>(make-box <i>vector</i>:corner<subscript>1</subscript> <i>vector</i>:corner<subscript>2</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
-<pre>
-</pre>
-</div>
-
-<div class="function">
-<h3>make-solid-box</h3>
-<synopsis>(make-solid-box <i>vector</i>:corner<subscript>1</subscript> <i>vector</i>:corner<subscript>2</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
-<synopsis>(make-solid-box <i>vector</i>:corner<subscript>1</subscript> <i>vector</i>:corner<subscript>2</subscript>) &rarr; <i>object</i></synopsis>
-<para>This can be used for CSG operations.</para>
-<pre>
-</pre>
-</div>
-
-<div class="function">
-<h3>make-cylinder</h3>
-<synopsis>(make-cylinder <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius <i>material</i>:material) &rarr; <i>object</i></synopsis>
-<synopsis>(make-cylinder <i>vector</i>:begin <i>vector</i>:end <i>real</i>:radius) &rarr; <i>object</i></synopsis>
-<pre>
-</pre>
-</div>
 
 <div class="function">
 <h3>make-uncapped-cylinder</h3>
