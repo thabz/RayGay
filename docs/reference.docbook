@@ -29,8 +29,9 @@
        <title>Solids</title>
        <para>Solid objects are objects that can be used for constructive solid geometry.</para>
 
-       <section id="sphere">
+       <section id="sphere" xreflabel="Sphere section">
        <title>Sphere</title>
+       <indexterm><primary>Scene objects</primary><secondary>Sphere</secondary></indexterm>
 
        <para>
        <synopsis>(make-sphere <parameter>center</parameter> <parameter>radius</parameter> <parameter>material</parameter>)</synopsis>
@@ -38,7 +39,7 @@
        </para>
        <para>
        Makes a sphere.
-       <parameter>center</parameter> is a 3D-vector describing the center of the sphere.
+       <parameter>center</parameter> is the center of the sphere as a 3D-vector.
        <parameter>radius</parameter> is a number specifying the radius of the sphere.
        The optional <parameter>material</parameter> sets the material of the object.
        </para>
@@ -46,11 +47,36 @@
        <code>(make-sphere #(1 2 3) 10.5 chrome)</code>
        </para>
        <para>
-       Creates a sphere centeret in (1,2,3) with a 10.5 radius and uses the material chrome. 
+       Creates a sphere centered in (1,2,3) with a 10.5 radius and uses the material chrome. 
        </para>
        </section>
        
-       
+       <section id="ellipsoid">
+       <title>Ellipsoid</title>
+
+       <para>
+       <synopsis>(make-ellipsoid <parameter>center</parameter> <parameter>radii</parameter> <parameter>material</parameter>)</synopsis>
+       <synopsis>(make-ellipsoid <parameter>center</parameter> <parameter>radii</parameter> )</synopsis>
+       </para>
+       <para>
+       Makes a ellipsoid which is like a sphere (See <xref linkend="sphere"/>) but with a different radius for each of the three axis'. Reversely is a sphere like an ellipsoid where the three radii are the same.
+       <parameter>center</parameter> is a 3D-vector identifying the center of the ellipsoid.
+       <parameter>radii</parameter> is 3D-vector specifying radius for each of the X,Y and Z axis' of the ellipsoid.
+       The optional <parameter>material</parameter> sets the material of the object.
+       </para>
+       <para>
+       <code>(make-ellipsoid #(1 2 3) #(3 4 5) monkeybutter)</code>
+       </para>
+       <para>
+       Creates a ellipsoid centered in (1,2,3) with a radius of 3 along the x-axis, a radius of 4 along the the y-axis and a radius of 5 along the z-axis. It uses a strange material named monkeybutter. 
+       </para>
+       <para>
+       <code>(make-ellipsoid #(1 2 3) #(5 5 5) x-wing-black)</code>
+       </para>
+       <para>
+       Creates a sphere centered in (1,2,3) with a radius of 5 and some material named x-wing-black. 
+       </para>
+       </section>
 
        <section id="cylinder">
        <title>Cylinder</title>
@@ -75,6 +101,75 @@
        Makes a cone.
        <parameter>begin</parameter> and <parameter>end</parameter> are 3D-vectors describing the center of the base plate and top plate respectively.
        <code>radius<subscript>begin</subscript></code> and <code>radius<subscript>end</subscript></code> are numbers specifying the radii of the base and top plates.
+       The optional <parameter>material</parameter> sets the material of the object.
+       </para>
+       </section>
+
+       <section id="torus">
+       <title>Torus</title>
+       <para>
+       <synopsis>(make-torus <parameter>big-radius</parameter> <parameter>small-radius</parameter> <parameter>material</parameter>)</synopsis>
+       <synopsis>(make-torus <parameter>big-radius</parameter> <parameter>small-radius</parameter>)</synopsis>
+       Makes a torus placed in the origin (0,0,0). A torus can be thought of as a small circle extruded along a bigger circle. The two parameters <parameter>big-radius</parameter> and <parameter>small-radius</parameter> are the radii of these two circles. The big circles lies centered in the x,z-plane.
+       The optional <parameter>material</parameter> sets the material of the object.
+       </para>
+       </section>
+
+       <section id="solid-box">
+       <title>Solid box</title>
+       <para>
+       <synopsis>(make-solid-box <parameter>corner<subscript>1</subscript></parameter> <parameter>corner<subscript>2</subscript></parameter> <parameter>material</parameter>)</synopsis>
+       <synopsis>(make-solid-box <parameter>corner<subscript>1</subscript></parameter> <parameter>corner<subscript>2</subscript></parameter>)</synopsis>
+       Makes a solid box. The two 3D-vectors <parameter>corner<subscript>1</subscript></parameter> and <parameter>corner<subscript>2</subscript></parameter> must be diagonally placed corners of the box.
+       The optional <parameter>material</parameter> sets the material of the object.
+       </para>
+       </section>
+
+       <section id="union">
+       <title>Union</title>
+       <para>A union TODO</para>
+       <para>
+       <synopsis>(make-union <parameter>solid<subscript>1</subscript></parameter> <parameter>solid<subscript>2</subscript></parameter> ... <parameter>solid<subscript>n</subscript></parameter> <parameter>material</parameter>)</synopsis>
+       <synopsis>(make-union <parameter>solid<subscript>1</subscript></parameter> <parameter>solid<subscript>2</subscript></parameter> ... <parameter>solid<subscript>n</subscript></parameter>)</synopsis>
+       Makes a CSG union.
+       <parameter>solid<subscript>i</subscript></parameter> are solid objects.
+       The optional <parameter>material</parameter> sets the material of the object.
+       </para>
+       </section>
+
+       <section id="intersection">
+       <title>Intersection</title>
+       <para>A intersection TODO</para>
+       <para>
+       <synopsis>(make-intersection <parameter>solid<subscript>L</subscript></parameter> <parameter>solid<subscript>R</subscript></parameter> <parameter>material</parameter>)</synopsis>
+       <synopsis>(make-intersection <parameter>solid<subscript>L</subscript></parameter> <parameter>solid<subscript>R</subscript></parameter>)</synopsis>
+       Makes a CSG intersection.
+       <parameter>solid<subscript>L</subscript></parameter> and <parameter>solid<subscript>R</subscript></parameter> are two solid objects.
+       The optional <parameter>material</parameter> sets the material of the object.
+       </para>
+       </section>
+
+       <section id="difference">
+       <title>Difference</title>
+       <para>A difference TODO</para>
+       <para>
+       <synopsis>(make-difference <parameter>solid<subscript>L</subscript></parameter> <parameter>solid<subscript>R</subscript></parameter> <parameter>material</parameter>)</synopsis>
+       <synopsis>(make-difference <parameter>solid<subscript>L</subscript></parameter> <parameter>solid<subscript>R</subscript></parameter>)</synopsis>
+       Makes a CSG difference.
+       <parameter>solid<subscript>L</subscript></parameter> and <parameter>solid<subscript>R</subscript></parameter> are two solid objects.
+       The optional <parameter>material</parameter> sets the material of the object.
+       </para>
+       </section>
+
+       <section id="heightfield">
+       <title>Heightfield</title>
+       <para>
+       <synopsis>(make-heightfield <parameter>heightmap</parameter> <parameter>size</parameter> <parameter>width-divisions</parameter> <parameter>depth-divisions</parameter> <parameter>material</parameter>)</synopsis>
+       A heightfield is a mesh of triangles in a fixed grid or field in the x- and z-directions. The y-offsets are read from the supplied monochrome texture map. 
+       <parameter>heightmap</parameter> is a monochrome texture map. 
+       The 3D-vector <parameter>size</parameter> describes the width,height and depth of the heightmap.
+       The two integers <parameter>width-divisions</parameter> and <parameter>depth-divisions</parameter> specify the numbers of subdivisions in the x and z directions. 
+       The <parameter>material</parameter> parameter sets the material of the object.
        </para>
        </section>
 
@@ -315,29 +410,6 @@
 <div class="function">
 <h3>make-extrusion</h3>
 <synopsis>(make-extrusion <i>path</i>:path <i>path</i>:circle <i>real</i>:twists <i>int</i>:segments <i>real</i>:twists <i>material</i>:material) &rarr; <i>object</i></synopsis>
-</div>
-
-<div class="function">
-<h3>make-heightfield</h3>
-<synopsis>(make-heightfield <i>texture</i>:heightmap <i>vector</i>:size<subscript>xyz</subscript> <i>int</i>:width-divisions <i>int</i>:depth-divisions  <i>material</i>:material) &rarr; <i>object</i></synopsis>
-</div>
-
-<div class="function">
-<h3>make-union</h3>
-<synopsis>(make-union <i>object</i>:solid<subscript>1</subscript> <i>object</i>:solid<subscript>2</subscript> ... <i>object</i>:solid<subscript>n</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
-<synopsis>(make-union <i>object</i>:solid<subscript>1</subscript> <i>object</i>:solid<subscript>2</subscript> ... <i>object</i>:solid<subscript>n</subscript>) &rarr; <i>object</i></synopsis>
-</div>
-
-<div class="function">
-<h3>make-difference</h3>
-<synopsis>(make-difference <i>object</i>:solid<subscript>L</subscript> <i>object</i>:solid<subscript>R</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
-<synopsis>(make-difference <i>object</i>:solid<subscript>L</subscript> <i>object</i>:solid<subscript>R</subscript>) &rarr; <i>object</i></synopsis>
-</div>
-
-<div class="function">
-<h3>make-intersection</h3>
-<synopsis>(make-intersection <i>object</i>:solid<subscript>L</subscript> <i>object</i>:solid<subscript>R</subscript> <i>material</i>:material) &rarr; <i>object</i></synopsis>
-<synopsis>(make-intersection <i>object</i>:solid<subscript>L</subscript> <i>object</i>:solid<subscript>R</subscript>) &rarr; <i>object</i></synopsis>
 </div>
 
 <div class="function">
