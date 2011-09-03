@@ -14,13 +14,13 @@
       <graphic fileref="cover.png"/>
     </figure>
   </preface>
-  <chapter id="paths-chapter"> 
+  <chapter id="paths"> 
     <title>Paths</title>
     <para>
        Paths are a special category of objects in RayGay. A path can't be rendered, but it is useful for a few special purposes. A camera can be moved along a path or objects can be place along a path.
     </para>
   </chapter>  
-  <chapter id="objects-chapter"> 
+  <chapter id="objects"> 
     <title>Scene objects</title>
     <para>
       There are several categories of renderable objects that can be added to a scene. 
@@ -164,7 +164,7 @@
        <synopsis>(make-difference <parameter>solid<subscript>L</subscript></parameter> <parameter>solid<subscript>R</subscript></parameter> <parameter>material</parameter>)</synopsis>
        <synopsis>(make-difference <parameter>solid<subscript>L</subscript></parameter> <parameter>solid<subscript>R</subscript></parameter>)</synopsis>
        Makes a difference of the two solid objects <parameter>solid<subscript>L</subscript></parameter> and <parameter>solid<subscript>R</subscript></parameter>.
-       The resulting object is the spatial set resulting from the boolean difference or relative complement <parameter>solid<subscript>1</subscript></parameter> - <parameter>solid<subscript>2</subscript></parameter> which also can be written as <parameter>solid<subscript>1</subscript></parameter> &#8260; <parameter>solid<subscript>2</subscript></parameter>.
+       The resulting object is the spatial set resulting from the boolean difference or relative complement <parameter>solid<subscript>1</subscript></parameter> - <parameter>solid<subscript>2</subscript></parameter> which also can be written as <parameter>solid<subscript>1</subscript></parameter> &#x2216; <parameter>solid<subscript>2</subscript></parameter>.
        The optional <parameter>material</parameter> sets the material of the object.
        </para>
        </section>
@@ -202,7 +202,7 @@
        <title>Extrusion</title>
        <para>
        <synopsis>(make-extrusion <parameter>path</parameter> <parameter>circle</parameter> <parameter>twists</parameter> <parameter>segments</parameter> <parameter>pieces</parameter> <parameter>material</parameter>)</synopsis>
-       Pull the closed <parameter>circle</parameter> path along the path <parameter>path</parameter> to create a tube. The extruded tube is constructed of triangles. There are <parameter>segments</parameter> segments along <parameter>path</parameter> and <parameter>pieces</parameter> triangle segments around <parameter>circle</parameter>. 
+       Pull the closed <parameter>circle</parameter> path (See <xref linkend="paths"/>) along the path <parameter>path</parameter> to create a tube. The extruded tube is constructed of triangles. There are <parameter>segments</parameter> segments along <parameter>path</parameter> and <parameter>pieces</parameter> triangle segments around <parameter>circle</parameter>. 
        The <parameter>circle</parameter> path should be a closed path lying in the x,y-plane. If the <parameter>circle</parameter> is asymmetrical around the origion (thus anything but a circle) the <parameter>twists</parameter> can be set to a non-zero integer value to let the circle-path be rotated <parameter>twists</parameter> times around the origin as it's extruded along <parameter>path</parameter>.
        The <parameter>material</parameter> parameter sets the material of the object.
        </para>
