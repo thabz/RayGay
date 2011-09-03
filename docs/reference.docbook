@@ -28,6 +28,8 @@
     <section id="solids">
        <title>Solids</title>
        <para>Solid objects are objects that can be used for constructive solid geometry.</para>
+       <para>As solid objects can be constructed from other solid objects as boolean union, intersections and differences it is not necessary to specify the material on all these objects. Only the final object that is added to the scene must have a material assigned to it.
+       </para>
 
        <section id="sphere" xreflabel="Sphere section">
        <title>Sphere</title>
@@ -161,6 +163,23 @@
        </para>
        </section>
 
+       </section>
+
+    <section id="meshes">
+       <title>Meshes</title>
+       <para>Meshes are scene objects constructed from triangles. We distinguish them from solids as they can not be used in constructive solid geometry.</para>
+
+       <section id="box">
+       <title>Box</title>
+       <para>
+       <synopsis>(make-box <parameter>corner<subscript>1</subscript></parameter> <parameter>corner<subscript>2</subscript></parameter> <parameter>material</parameter>)</synopsis>
+       Makes a box. Each side of the box is two triangles. These boxes render faster than solid boxes (See <xref linkend="solid-box"/>) but can not be used in constructive solid geometry.
+       The two 3D-vectors <parameter>corner<subscript>1</subscript></parameter> and <parameter>corner<subscript>2</subscript></parameter> must be diagonally placed corners of the box.
+       The <parameter>material</parameter> sets the material of the object.
+       </para>
+       </section>
+
+
        <section id="heightfield">
        <title>Heightfield</title>
        <para>
@@ -173,7 +192,7 @@
        </para>
        </section>
 
-       </section>
+    </section>
   </chapter>
   <chapter id="end-notes"> 
     <title>End notes</title>
