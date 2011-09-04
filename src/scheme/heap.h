@@ -16,6 +16,10 @@ using namespace std;
 // 
 // Terminology: the heap is conceptually a number of pages each 
 // with HEAP_PAGE_SIZE number of slots. Each slot fits one object.
+//
+// Associated with each slot is generation-counter. The idea is to avoid
+// continously marking objects that have survived many sweeps. All 
+// marked objects gets the current generation-count. 
 
 #define HEAP_PAGE_SIZE 10000
 #define SIZE_OF_LOCAL_SLOTS 100
@@ -45,6 +49,7 @@ class Heap {
         uint32_t slots_num;
         uint32_t page_size;
         vector<SchemeObject*> banks;
+	vector<uint8_t> generations;
         uint32_t cur_bank_idx;
         uint32_t next_free_slot_idx;
         uint32_t allocated;
