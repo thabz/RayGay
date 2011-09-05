@@ -208,6 +208,7 @@ AC_OUTPUT(Makefile \
 	  src/http/Makefile \
 	  src/scheme/Makefile \
 	  scenes/Makefile	\
+	  scenes/lib/Makefile	\
 	  docs/Makefile	\
 	  test/Makefile		\
 	  test/gfx/Makefile	\
