@@ -206,6 +206,9 @@
        The <parameter>circle</parameter> path should be a closed path lying in the x,y-plane. If the <parameter>circle</parameter> is asymmetrical around the origion (thus anything but a circle) the <parameter>twists</parameter> can be set to a non-zero integer value to let the circle-path be rotated <parameter>twists</parameter> times around the origin as it's extruded along <parameter>path</parameter>.
        The <parameter>material</parameter> parameter sets the material of the object.
        </para>
+Lissajous knot
+       <!-- TODO: Illustrate this with a Lissajous knot. 8_21 looks perfect. See http://en.wikipedia.org/wiki/Lissajous_knot -->
+       <!-- TODO: A torus knot could be nice too. See http://en.wikipedia.org/wiki/Torus_knot -->
        </section>
 
     </section>
