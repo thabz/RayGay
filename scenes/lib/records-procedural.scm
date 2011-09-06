@@ -1,5 +1,5 @@
 (define (make-record-type-descriptor name parent uid sealed? opaque? fields)
- (vector 'rtd name parent uid sealed? opaque? field))
+ (vector 'rtd name parent uid sealed? opaque? fields))
 
 (define (record-type-descriptor? obj)
  (and (vector? obj)

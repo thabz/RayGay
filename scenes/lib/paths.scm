@@ -1,10 +1,49 @@
 
-; For at meget af nedenstående rigtigt kan lade sig gøre
-; skal vi have basal OO på plads med R6RS records.
+
+; First define a path-class or record-type-description in Scheme-speak
+(define path-rtd
+ (make-record-type-descriptor 'path #f #f #f #f
+  '#((mutable position) (mutable tangent) (mutable closed?))))
+
+(define path-rcd
+ (make-record-constructor-descriptor path-rtd #f #f))
 
 ; tangent-function and closed? are derived from position-function
 ; if not supplied
-(define (make-path position-function tangent-function closed?))    
+; (define (make-path position-function tangent-function closed?) #)
+(define make-path (record-constructor path-rcd))
+
+(define path-position (record-accessor path-rtd 0))
+
+(define path-tangent (record-accessor path-rtd 1))    
+
+(define path-closed? (record-accessor path-rtd 2))
+
+(define path? (record-predicate path-rtd))
+
+; -------------------------
+; The paths implementations
+; -------------------------
+
+(define (make-linesegment from to)
+ (let ((tangent (normalize (v- to from))))
+  (make-path
+   (lambda (t)
+    (+ (* from (- 1 t)) (* t to)))
+   (lambda (t)
+    tangent)
+   #f)))
+   
+(define (make-linesegment from to)
+  (make-path
+   (lambda (t) 
+    (+ (* from (- 1 t)) (* t to)))
+   (lambda (t) 
+    to)
+   #f))
+    
+(make-path (lambda (t) 2) (lambda (t) 3) #f)
+
 
 (define (make-circle center radius normal)
  (let* ((n (normalize normal))
@@ -24,14 +63,18 @@
    n (cross-product a n))
   center)))
 
-(define (make-ellipse center radius1 radius2 normal))
-(define (make-linesegment from to))
-(define (make-spiral path radius windings offset))
-(define (make-bezier-spline vector...)
-(define (make-catmullrom-spline vector...)
+(define (make-ellipse center radius1 radius2 normal) #f)
+(define (make-linesegment from to) #f)
+(define (make-spiral path radius windings offset) #f)
+(define (make-bezier-spline . vector) #f)
+(define (make-catmullrom-spline . vector) #f)
 
-(define (point-on-path path t))
-(define (tangent-to-path path t))
-(define (transform-path path transformation))
-(define (path? path))
+(define (point-on-path path t) 
+ ((path-position path) t))
+ 
+(define (tangent-to-path path t) 
+ ((path-tangent path) t))
+
+(define (transform-path path transformation) #f)
+
 
