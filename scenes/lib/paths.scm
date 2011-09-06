@@ -1,6 +1,6 @@
 
 
-; First define a path-class or record-type-description in Scheme-speak
+; First define a path class or record-type in Scheme-speak
 (define path-rtd
  (make-record-type-descriptor 'path #f #f #f #f
   '#((mutable position) (mutable tangent) (mutable closed?))))
