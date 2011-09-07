@@ -1,5 +1,8 @@
 
+(load "records-procedural.scm")
+
 (load "vector-math.scm")
+(load "paths.scm")
 (load "handy-extensions.scm")
 (load "image-sizes.scm")
 (load "mesh.scm")

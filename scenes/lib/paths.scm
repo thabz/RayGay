@@ -1,9 +1,13 @@
 
+(load "vector-math.scm")
 
 ; First define a path class or record-type in Scheme-speak
 (define path-rtd
  (make-record-type-descriptor 'path #f #f #f #f
-  '#((mutable position) (mutable tangent) (mutable closed?))))
+  '#((mutable position-func) 
+     (mutable tangent-func) 
+     (mutable closed?) 
+     (mutable matrix)))
 
 (define path-rcd
  (make-record-constructor-descriptor path-rtd #f #f))
@@ -19,6 +23,12 @@
 
 (define path-closed? (record-accessor path-rtd 2))
 
+(define path-matrix (record-accessor path-rtd 3))
+(define path-set-matrix! (record-mutator path-rtd 3))
+(define (path-transformate path m)
+ (path-set-matrix! path 
+  (m* (path-matrix path) m)))
+
 (define path? (record-predicate path-rtd))
 
 ; -------------------------
@@ -26,24 +36,13 @@
 ; -------------------------
 
 (define (make-linesegment from to)
- (let ((tangent (normalize (v- to from))))
+ (let ((tangent (vnormalize (v- to from))))
   (make-path
    (lambda (t)
-    (+ (* from (- 1 t)) (* t to)))
+    (vlerp from to t))
    (lambda (t)
     tangent)
    #f)))
-   
-(define (make-linesegment from to)
-  (make-path
-   (lambda (t) 
-    (+ (* from (- 1 t)) (* t to)))
-   (lambda (t) 
-    to)
-   #f))
-    
-(make-path (lambda (t) 2) (lambda (t) 3) #f)
-
 
 (define (make-circle center radius normal)
  (let* ((n (normalize normal))
@@ -64,7 +63,6 @@
   center)))
 
 (define (make-ellipse center radius1 radius2 normal) #f)
-(define (make-linesegment from to) #f)
 (define (make-spiral path radius windings offset) #f)
 (define (make-bezier-spline . vector) #f)
 (define (make-catmullrom-spline . vector) #f)
