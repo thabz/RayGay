@@ -7,13 +7,14 @@
   '#((mutable position-func) 
      (mutable tangent-func) 
      (mutable closed?) 
-     (mutable matrix)))
+     (mutable matrix))))
 
 (define path-rcd
  (make-record-constructor-descriptor path-rtd #f #f))
 
 ; tangent-function and closed? are derived from position-function
-; if not supplied
+; if not supplied.
+; Matrix is the identity if not supplied.
 ; (define (make-path position-function tangent-function closed?) #)
 (define make-path (record-constructor path-rcd))
 
@@ -25,11 +26,19 @@
 
 (define path-matrix (record-accessor path-rtd 3))
 (define path-set-matrix! (record-mutator path-rtd 3))
-(define (path-transformate path m)
+
+(define (path-transform path m)
  (path-set-matrix! path 
   (m* (path-matrix path) m)))
 
 (define path? (record-predicate path-rtd))
+    
+(define (point-on-path path t) 
+ ((path-position path) t))
+ 
+(define (tangent-to-path path t) 
+ ((path-tangent path) t))
+
 
 ; -------------------------
 ; The paths implementations
@@ -62,17 +71,10 @@
    n (cross-product a n))
   center)))
 
-(define (make-ellipse center radius1 radius2 normal) #f)
-(define (make-spiral path radius windings offset) #f)
-(define (make-bezier-spline . vector) #f)
-(define (make-catmullrom-spline . vector) #f)
+(define (make-ellipse center radius1 radius2 normal) 'todo)
+(define (make-spiral path radius windings offset) 'todo)
+(define (make-bezier-spline . vector) 'todo)
+(define (make-catmullrom-spline . vector) 'todo)
 
-(define (point-on-path path t) 
- ((path-position path) t))
- 
-(define (tangent-to-path path t) 
- ((path-tangent path) t))
-
-(define (transform-path path transformation) #f)
 
 
