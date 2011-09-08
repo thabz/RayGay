@@ -12,8 +12,8 @@
 (define path-rcd
  (make-record-constructor-descriptor path-rtd #f #f))
 
-; tangent-function and closed? are derived from position-function
-; if not supplied.
+; TODO: tangent-function and closed? are derived from 
+; position-function if not supplied.
 ; Matrix is the identity if not supplied.
 ; (define (make-path position-function tangent-function closed?) #)
 (define make-path (record-constructor path-rcd))
@@ -54,26 +54,51 @@
    #f)))
 
 (define (make-circle center radius normal)
- (let* ((n (normalize normal))
-	(y #(0 1 0))
-	(x #(1 0 0))
-	(a ((= n y) x y)))
- (translate	
-  (orient
-     (make-path 
-      (lambda (t)
-       (let ((radians (* 2 PI t)))
-       (vector (* radius (cos radians)) (* radius (sin radians)) 0)))
-      (lambda (t)
-       (let ((radians (* 2 PI t)))
-       (vector (- (sin radians)) (cos radians) 0)))
-      #t)
-   n (cross-product a n))
-  center)))
+ (make-path 
+  (lambda (t)
+   (let ((radians (* 2 PI t)))
+   (vector (* radius (cos radians)) 
+           (* radius (sin radians)) 0)))
+  (lambda (t)
+   (let ((radians (* 2 PI t)))
+   (vector (- (sin radians)) (cos radians) 0)))
+  #t)
 
-(define (make-ellipse center radius1 radius2 normal) 'todo)
-(define (make-spiral path radius windings offset) 'todo)
+(define (make-ellipse center radius1 radius2 normal)
+ (make-path
+  (lambda (t)
+   (let ((radians (* 2 PI t)))
+    (vector (* radius1 (cos radians))
+            (* radius2 (sin radians)) 0)))
+  (lambda (t)
+   (let ((radians (* 2 PI t)))
+    (vector (- (sin radians))
+            (cos radians)) 0))
+  #t))
+
+; A spiral around another path
+(define (make-spiral center-path radius windings offset) 
+ (make-path
+  (lambda (t)
+   (let* ((c (point-on-path center-path t))
+	  (n (tangent-to-path center-path t))
+          (circle (make-circle c radius n))
+	  (tn (+ (* t windings) offset))
+	  (tn2 (- tn (floor tn))))
+    (point-on-path circle tn2)))
+  (lambda (t)
+   (let* ((c (point-on-path center-path t))
+	  (n (tangent-to-path center-path t))
+          (circle (make-circle c radius n))
+	  (tn (+ (* t windings) offset))
+	  (tn2 (- tn (floor tn)))
+	  (circle-tangent (tangent-to-path circle t))
+	  (path-tangent (tangent-to-path center-path t)))
+    (vnormalize (v+ circle-tangent path-tangent))))))
+    
+; TODO: Expose Math::bernsteinPolynomial as a Scheme-function
 (define (make-bezier-spline . vector) 'todo)
+
 (define (make-catmullrom-spline . vector) 'todo)
 
 
