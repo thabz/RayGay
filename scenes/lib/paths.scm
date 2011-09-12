@@ -1,5 +1,7 @@
 
+(load "records-procedural.scm")
 (load "vector-math.scm")
+(load "handy-extensions.scm") ; For π
 
 ; First define a path class or record-type in Scheme-speak
 (define path-rtd
@@ -35,6 +37,15 @@
     
 (define (point-on-path path t) 
  ((path-position path) t))
+
+; Returns num points along path as a list
+(define (points-on-path path num)
+ (let loop ((result '())
+	    (i 0))
+  (if (= i num)
+   result
+   (loop (cons (point-on-path path (- 1 (/ i num))) result)
+         (+ i 1)))))
  
 (define (tangent-to-path path t) 
  ((path-tangent path) t))
@@ -53,16 +64,16 @@
     tangent)
    #f)))
 
-(define (make-circle center radius normal)
+(define (make-circle center radius)
  (make-path 
   (lambda (t)
-   (let ((radians (* 2 PI t)))
+   (let ((radians (* 2π t)))
    (vector (* radius (cos radians)) 
            (* radius (sin radians)) 0)))
   (lambda (t)
-   (let ((radians (* 2 PI t)))
+   (let ((radians (* 2π t)))
    (vector (- (sin radians)) (cos radians) 0)))
-  #t)
+  #t))
 
 (define (make-ellipse center radius1 radius2 normal)
  (make-path
