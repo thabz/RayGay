@@ -76,6 +76,8 @@
             (cos radians)) 0))
   #t))
 
+(define (make-super-ellipse center a b r normal) 'todo)    
+
 ; A spiral around another path
 (define (make-spiral center-path radius windings offset) 
  (make-path
@@ -100,6 +102,8 @@
 (define (make-bezier-spline . vector) 'todo)
 
 (define (make-catmullrom-spline . vector) 'todo)
+
+
 
 
 
