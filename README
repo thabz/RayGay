@@ -1,52 +1,5 @@
-///////////////////////////////////////////
-// Distributed rendering design
-///////////////////////////////////////////
-The client send a HEAD request for all files that are part of a project.
-The server respond includes the headers Last-Modified and Content-MD5 or a 404.
-Based on those the client makes PUT requests for each changed file.
-Then the client starts the job with a specific POST request.
-During rendering the client can poll the status with other POST requests.
-Finally the client retrieves the rendered image with a GET request.
+An opensource raytracer written in C++ with an embedded Scheme parser for scene files.
 
-///////////////////////////////////////////
->>>>>>> .r7557
-// Compiling into assembler source
-///////////////////////////////////////////
-  
-g++ <the load> -S -dA triangle.cpp
+The sourcecode is released under the GPL.
 
-
-///////////////////////////////////////////
-// Movie encoding
-///////////////////////////////////////////
-
-* LINUX *
-   Mencoder:
-   http://www.mplayerhq.hu/DOCS/HTML/en/menc-feat-enc-images.html
-
-   Transcode:
-   http://www.theorie.physik.uni-goettingen.de/%7Eostreich/transcode/html/anim.html
-
-   $ find frames -type f > files
-   $ transcode -z -i files -x imlist,null -g 640x480 -y xvid,null \ 
-     -f 25 -o movie.avi -H 0
-
-   erstat evt. xvid med dixv5
-
-* MAC OS X *   
-   På Mac OS X kan Quicktime åbne en billedesekvens og eksportere 
-   i hvilket som helst filmformat.
-
-///////////////////////////////////////////
-// Cachegrind
-///////////////////////////////////////////
-cd src
-valgrind --skin=cachegrind ./tracer ../scenes/scene.ray out.png
-cg_annotate --<pid> --auto=yes
-
-See http://developer.kde.org/~sewardj/docs-2.0.0/cg_main.html
-
-Alleyoop er endnu bedre:
-
-alleyoop -R src ./src/tracer scenes/math.gay out.png
 
