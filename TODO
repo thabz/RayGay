@@ -54,12 +54,12 @@
 * Optionally mmap photonmaps.
 * Optionally mmap meshdata.
 * Optionally render bezierpatches directly without tessalating into triangles.
-* Undersøg om vi kan bruge valarray nogle steder...
+* Checkout valarray
 * Implementer BoundaryAdaptive sampleren.
 * Fix at stats for Raytracer ikke virker. Lav en singleton- eller static-ting.
 * Optionally render additional output-images such as depth-map, sampling-density, photon-distribution.
 * Physics-engine
-* Lav en spotlight-lightsource som er et vindue med "tern". Se http://www.skeedz.com/images/wallpaper/0280.jpg ... Support for importance sampling af environmentmaps er vel bedre.
+* Make a spotlight-lightsource which is a "checkered" window. See http://www.skeedz.com/images/wallpaper/0280.jpg ... Support for importance sampling af environmentmaps is probably better.
 * 3D Mandelbulbs http://www.skytopia.com/project/fractal/mandelbulb.html
 
 Snippets to implement sometime:
