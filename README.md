@@ -4,24 +4,31 @@ Introduction
 
 An opensource raytracer written in C++ with an embedded Scheme parser for scene files.
 
-The sourcecode is released under the GPL.
+The sourcecode is released under the GPL. See the file COPYING.
 
-Compilation
+Get hacking 
 ===========
 
-Compile with
+The C++ source code is in src. Compile with
 
     ./autogen
     ./configure
     make
     sudo make install
 
-Hacking 
-=======
+The unit-tests are in test. Run them with
 
-The C++ source code is in src.
-The unit-tests are in test.
-The scenes-folder contains examples scenes.
-Documentation written in Docbook is in docs
+    make check
+
+The scenes-folder contains examples scenes. Render a scene with:
+
+    raygay scenes/csg.scm out.png
+
+Documentation written in Docbook is in docs. Build the HTML documentation with
+
+    cd docs
+    make chunked-portable
+
+
 
 
