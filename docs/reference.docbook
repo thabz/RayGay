@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>  
-<!--<!DOCTYPE article PUBLIC '-//OASIS//DTD DocBook XML V4.5//EN' 'http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd'>-->
+<?xml version="1.0" encoding="utf-8"?>   
+<!--<!DOCTYPE article PUBLIC '-//OASIS//DTD DocBook XML V4.5//EN' 'http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd'> -->
+
 <book>
   <bookinfo>
     <title>RayGay reference manual</title>
@@ -17,8 +18,39 @@
   <chapter id="paths"> 
     <title>Paths</title>
     <para>
-       Paths are a special category of objects in RayGay. A path can't be rendered, but it is useful for a few special purposes. A camera can be moved along a path or objects can be place along a path.
+       Paths are a special category of objects in RayGay. A path can't be rendered directly, but it is useful for a few special purposes. A camera can be moved along a path or objects can be place along a path.
     </para>
+
+    <section id="advanced_paths">
+       <title>Advanced</title>
+       <para>
+       <synopsis>(make-path <parameter>position-function</parameter> <parameter>tangent-function</parameter> <parameter>closed?</parameter>)</synopsis>
+       <synopsis>(make-path <parameter>position-function</parameter> <parameter>tangent-function</parameter>)</synopsis>
+       <synopsis>(make-path <parameter>position-function</parameter>)</synopsis>
+       </para>
+       <para>These are constructors for generic parametrised paths. The <parameter>position-function</parameter> parameter should be a parametric function that takes one numeric parameter between 0 and 1 and returns the position of the path at that offset The <parameter>tangent-function</parameter>, if specified, should also be a one-parameter parametric function that returns the tangent vector of the path. The optional boolean <parameter>closed?</parameter> says whether the path is closed. If the optional parameters <parameter>tangent-function</parameter> and <parameter>closed?</parameter> are not supplied, they are deduced using the <parameter>position-function</parameter>.</para>
+       <para>The following example creates a constructor for torus knot paths. See <link xlink:href="http://en.wikipedia.org/wiki/Torus_knot">Wikipedia</link>.</para>
+       <programlisting>
+(define (make-torus-knot-path p q)
+ (make-path 
+ (lambda (t) 
+  (let* ((phi (* t 2 PI))
+         (r (+ (cos (* q phi)) 2)))
+   (vector (* r (cos (* p phi)))
+           (* r (sin (* p phi)))
+	   (sin (* q phi)))))))
+       
+       </programlisting>
+       <figure id="torus-knot-image">
+         <title>The torus knot rendered as a necklace of small spheres.</title>
+	 <mediaobject>
+	   <imageobject>
+	     <imagedata fileref="examples/torus-knot.png"/>
+	   </imageobject>
+	   <textobject><phrase>A rendering of a torus knot.</phrase></textobject>
+	 </mediaobject>
+       </figure>
+    </section>   
   </chapter>  
   <chapter id="objects"> 
     <title>Scene objects</title>
