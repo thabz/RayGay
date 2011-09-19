@@ -51,3 +51,11 @@ div.tip {
     float:right;	   
     padding:5px;	    
 }
+
+div.mediaobject img {
+    width: auto;
+    display:inline-block;
+    border: 1px solid black;
+    padding: 5px;
+    background: white;
+}
