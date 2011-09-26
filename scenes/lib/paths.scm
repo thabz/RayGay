@@ -64,7 +64,8 @@
     tangent)
    #f)))
 
-(define (make-circle center radius)
+; TODO: Use the normal with a orient-transform
+(define (make-circle center radius normal)
  (make-path 
   (lambda (t)
    (let ((radians (* 2π t)))
@@ -75,6 +76,7 @@
    (vector (- (sin radians)) (cos radians) 0)))
   #t))
 
+; TODO: Use the normal with a orient-transform
 (define (make-ellipse center radius1 radius2 normal)
  (make-path
   (lambda (t)

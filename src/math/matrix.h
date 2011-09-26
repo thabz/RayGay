@@ -89,13 +89,6 @@ class Matrix {
 	    _matrix[col*4+row] = val;
 	}
 
-    private:
-	double _matrix[16];
-	static double _identity[16];
-
-	static void invertMatrixGeneral(const double *in, double *out);
-
-
 	inline double get(const int col,const int row) const {
 	    return _matrix[col*4+row];
 	}
@@ -103,6 +96,14 @@ class Matrix {
 	inline double &element(const int col,const int row) {
 	    return _matrix[col*4+row];
 	}
+
+    private:
+	double _matrix[16];
+	static double _identity[16];
+
+	static void invertMatrixGeneral(const double *in, double *out);
+
+
 };
 
 inline

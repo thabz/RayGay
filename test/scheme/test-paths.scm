@@ -12,7 +12,7 @@
 
 (define (test-circle-path)
  ; Test at origin
- (define c (make-circle #(0 0 0) 10))
+ (define c (make-circle #(0 0 0) 10 #(0 0 1)))
  (test "closed circle" (path-closed? c))
  (test "inside box" 
    (all-inside?
