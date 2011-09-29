@@ -1918,10 +1918,6 @@ int main(int , char *) {
         test_lib_hashtables();
         cout << " OK" << endl;
 
-        cout << "Test lib bytevectors... ";
-        test_lib_bytevectors();
-        cout << " OK" << endl;
-
         cout << "Test lib io ports...    ";
         test_lib_io_ports();
         cout << " OK" << endl;
