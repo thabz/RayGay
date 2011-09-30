@@ -45,6 +45,22 @@
  (test "rotate2" (near-equal? #(-1 0 0) (m* (rotate I #(0 0 1) 180) #(1 0 0))))
  (test "I * inv-translate" (near-equal? I (m* (translate I #(400 221 39)) (translate I #(-400 -221 -39)))))
  (test "I * inv-rotate" (near-equal? I (m* (rotate I #(1 0 0) π/2) (rotate I #(1 0 0) (- π/2)))))
+
+ ; Test (orient d)
+(let* ((v #(20 391 29))
+       (m (orient I v))
+       (w (m* m v)))
+ (test "orient 1a" (near-equal? 0 (.x w)))
+ (test "orient 1b" (near-equal? 0 (.y w))))
+
+ ; Test (orient d)
+(let* ((v #(0 13 0))
+       (m (orient I v))
+       (w (m* m v)))
+ (test "orient 2a" (near-equal? 0 (.x w)))
+ (test "orient 2b" (near-equal? 0 (.y w))))
+ (test "orient 2c" (near-equal? 13 (.z w))))
+
 )
 
 (run-test "Vector math" test-vector-math)

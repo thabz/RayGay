@@ -32,11 +32,21 @@ SchemeObject* TransformationFactory::scale(Scheme* scheme, SchemeObject* s_obj, 
 
 SchemeObject* TransformationFactory::orient(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_direction_x, SchemeObject* s_direction_y, SchemeObject* s_direction_z) 
 {
-    wchar_t* usage = L"(orient object orientation-vector-x orientation-vector-y orientation-vector-z)";
+    wchar_t* usage = L"(orient object orientation-vector-x orientation-vector-y orientation-vector-z) or (orient object direction-vector up-vector) or (orient direction)";
     Vector xv = scm2vector(s_direction_x, usage, 2);
-    Vector yv = scm2vector(s_direction_y, usage, 3);
-    Vector zv = scm2vector(s_direction_z, usage, 4);
-    Matrix matrix = Matrix::matrixOrient(xv,yv,zv);
+    Vector zv;
+    Matrix matrix;
+    if (s_direction_y == S_UNSPECIFIED) {
+        matrix = Matrix::matrixOrient(xv);
+    } else {
+        Vector yv = scm2vector(s_direction_y, usage, 3);
+	if (s_direction_z == S_UNSPECIFIED) {
+            matrix = Matrix::matrixOrient(xv,yv);
+        } else {
+	    zv = scm2vector(s_direction_z, usage, 4);
+            matrix = Matrix::matrixOrient(xv,yv,zv);
+	}
+    }
     return transform(scheme, s_obj, matrix, usage);
 }
 
@@ -134,6 +144,6 @@ void TransformationFactory::register_procs(Scheme* scheme)
 {
     scheme->assign(L"rotate",3,0,0,(SchemeObject* (*)()) TransformationFactory::rotate);
     scheme->assign(L"translate",2,0,0,(SchemeObject* (*)()) TransformationFactory::translate);
-    scheme->assign(L"orient",4,0,0,(SchemeObject* (*)()) TransformationFactory::orient);
+    scheme->assign(L"orient",2,2,0,(SchemeObject* (*)()) TransformationFactory::orient);
     scheme->assign(L"scale",2,0,0,(SchemeObject* (*)()) TransformationFactory::scale);
 }

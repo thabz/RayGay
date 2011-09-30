@@ -3,6 +3,8 @@
 (load "vector-math.scm")
 (load "handy-extensions.scm") ; For π
 
+(define vector-epsilon 10e-6)
+
 ; First define a path class or record-type in Scheme-speak
 (define path-rtd
  (make-record-type-descriptor 'path #f #f #f #f
@@ -64,17 +66,22 @@
     tangent)
    #f)))
 
-; TODO: Use the normal with a orient-transform
 (define (make-circle center radius normal)
+ (let* ((a (if (v= normal y-axis vector-epsilon) x-axis y-axis))
+        (o (orient identity-matrix
+		       normal (vcrossproduct a normal)))
+        (m (translate o center)))
  (make-path 
   (lambda (t)
-   (let ((radians (* 2π t)))
-   (vector (* radius (cos radians)) 
-           (* radius (sin radians)) 0)))
+   (m* m
+    (let ((radians (* 2π t)))
+    (vector (* radius (cos radians)) 
+            (* radius (sin radians)) 0))))
   (lambda (t)
-   (let ((radians (* 2π t)))
-   (vector (- (sin radians)) (cos radians) 0)))
-  #t))
+   (m* o
+    (let ((radians (* 2π t)))
+    (vector (- (sin radians)) (cos radians) 0))))
+  #t)))
 
 ; TODO: Use the normal with a orient-transform
 (define (make-ellipse center radius1 radius2 normal)

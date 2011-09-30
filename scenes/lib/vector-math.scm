@@ -50,6 +50,10 @@
  "Distance between two vectors"
  (vlength (v- v1 v2)))
 
+(define (v= v1 v2 epsilon)
+ "Is the distance between the two vectors less than epsilon?"
+ (< (vdist v1 v2) epsilon))
+
 (define (vcrossproduct b c)
  "Crossproduct of two vectors"
  (vector
@@ -162,7 +166,6 @@
    )
    (else
     (error!)))))
-
 
 
 
