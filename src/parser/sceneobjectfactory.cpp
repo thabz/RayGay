@@ -618,7 +618,7 @@ SchemeObject* all_intersections(Scheme* scheme, SchemeObject* s_obj, SchemeObjec
     if (obj == NULL) wrong_type_arg(proc,1,s_obj);
 
     Ray ray = Ray(origin,direction,1);
-    Intersection intersections[obj->maxIntersections()];
+    Intersection* intersections = (Intersection*)::alloca(sizeof(Intersection)*obj->maxIntersections());
     uint32_t num = obj->allIntersections(ray, intersections);
     SchemeObject* result = S_EMPTY_LIST;
     for(uint32_t i = 0; i < num; i++) {

@@ -75,7 +75,7 @@ uint32_t CSGDifference::maxIntersections() const {
  * \f[ R - L = R  \cap \neg L     \f]
  */
 uint32_t CSGDifference::allIntersections(const Ray& ray, Intersection* result) const {
-    Intersection left_int[left->maxIntersections()];
+    Intersection* left_int = (Intersection*)::alloca(sizeof(Intersection)*left->maxIntersections());
     bool left_inside = false;
     uint32_t left_num = left->allIntersections(ray,left_int);
     if (left_num == 0) return 0;
@@ -83,7 +83,7 @@ uint32_t CSGDifference::allIntersections(const Ray& ray, Intersection* result) c
 	left_inside = !left_int[0].isEntering();
     }
 
-    Intersection right_int[right->maxIntersections()];
+    Intersection* right_int = (Intersection*)::alloca(sizeof(Intersection)*right->maxIntersections());
     bool right_inside = false;
     uint32_t right_num = right->allIntersections(ray,right_int);
     if (right_num > 0) {

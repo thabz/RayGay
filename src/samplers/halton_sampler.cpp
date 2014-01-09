@@ -18,7 +18,7 @@ void HaltonSampler::render(const RenderJob& job)
 {
     RGBA color;
     halton_seq->reset();
-    RGBA c[samples_num];
+    RGBA* c = (RGBA*)::alloca(sizeof(RGBA)*samples_num);
     for (int y = job.begin_y; y < job.end_y && !aborting; y++) {
 	for (int x = job.begin_x; x < job.end_x && !aborting; x++) {
 	    for(uint32_t n = 0; n < samples_num; n++) {

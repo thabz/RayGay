@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <cerrno>
 #include <cstdlib>
+#include <unistd.h>
 
 #include "lexer.h"
 #include "parser.h"

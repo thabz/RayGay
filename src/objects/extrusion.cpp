@@ -55,7 +55,7 @@ Extrusion::Extrusion(const Path& path, const Path& circle, uint32_t segments, ui
 void Extrusion::init(const Path& path, const Path& circle, uint32_t segments, uint32_t pieces, double twists) {
     assert(pieces > 2);
 
-    Vector cp[segments];
+    Vector* cp = (Vector*)::alloca(sizeof(Vector)*segments);
     double last_t = 0;
     for (uint32_t p = 0; p < pieces; p++) {
 	    double t = double(p) / double(pieces);

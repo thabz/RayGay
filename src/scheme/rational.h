@@ -784,7 +784,7 @@ namespace std {
       static const bool is_bounded = true;
       static const bool is_modulo = true;
 
-      static const bool traps = __glibcxx_integral_traps;
+      //static const bool traps = __glibcxx_integral_traps;
       static const bool tinyness_before = false;
         static const float_round_style round_style = round_toward_zero;
     };
