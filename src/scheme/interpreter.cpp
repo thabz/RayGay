@@ -866,9 +866,9 @@ fn_ptr eval_built_in_procedure_call(Interpreter::State* state)
 fn_ptr eval_compiled_procedure_call(Interpreter::State* state) 
 {
     cout << "Inside compile proc" << endl;
-    SchemeObject* p = state->global_arg1;        
+//    SchemeObject* p = state->global_arg1;        
     SchemeObject* proc = state->global_arg2;
-    SchemeObject* args = i_cdr(p);
+    //SchemeObject* args = i_cdr(p);
     
     assert(proc != NULL);
 
