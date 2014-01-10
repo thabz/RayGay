@@ -8,6 +8,7 @@
 #include <iostream>
 #include <csignal>
 #include <cstdio>
+#include <unistd.h>
 
 extern "C" {
 #include <sys/types.h>

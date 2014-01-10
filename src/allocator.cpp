@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
+#include <unistd.h>
 #include "environment.h"
 
 using namespace std;

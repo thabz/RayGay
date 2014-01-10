@@ -18,6 +18,7 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <cstring>
+#include <unistd.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

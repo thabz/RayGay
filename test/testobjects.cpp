@@ -210,7 +210,7 @@ class sphere_test : public Test {
 
 	    /* Test AllIntersections */
 	    s = Sphere(Vector(0,0,0),20.0,m);
-	    Intersection result[s.maxIntersections()];
+	    Intersection* result = (Intersection*)::alloca(sizeof(Intersection)*s.maxIntersections());
 	    Ray ray = Ray(Vector(0,0,100),Vector(0,0,-1),-1);
 	    uint32_t num = s.allIntersections(ray,result);
 	    assertTrue(num == 2);
@@ -638,7 +638,7 @@ class cylinder_test : public Test {
 
 	    // test allIntersections
 	    cyl = new Cylinder(Vector(0,2,0),Vector(0,10,0),10,true,m);
-	    Intersection result[cyl->maxIntersections()];
+	    Intersection* result = (Intersection*)::alloca(sizeof(Intersection)*cyl->maxIntersections());
 	    Ray ray = Ray(Vector(0,5,1000),Vector(0,0,-1),-1);
 	    uint32_t num = cyl->allIntersections(ray,result);
 	    assertTrue(num == 2);
@@ -791,7 +791,7 @@ class torus_test : public Test {
 	    // Test allIntersections()
 	    t = new Torus(10,1,m);
 	    ray = Ray(Vector(1000,0,0),Vector(-1,0,0),1);
-	    Intersection all[t->maxIntersections()];
+	    Intersection* all = (Intersection*)::alloca(sizeof(Intersection)*t->maxIntersections());
 	    uint32_t num = t->allIntersections(ray,all);
 	    assertTrue(num == 4);
 	    assertTrue(all[0].getPoint() == Vector(11,0,0));
@@ -1304,7 +1304,7 @@ class ellipsoid_test : public Test {
 	    e = new Ellipsoid(Vector(0,0,0),Vector(2,5,6),NULL);
 	    e->transform(Matrix::matrixScale(Vector(5,4,5)));
 	    Ray ray = Ray(Vector(0,0,1000),Vector(0,0,-1),-1);
-	    Intersection all[e->maxIntersections()];
+	    Intersection* all = (Intersection*)::alloca(sizeof(Intersection)*e->maxIntersections());
 	    uint32_t num = e->allIntersections(ray,all);
 	    assertTrue(num == 2);
 	    assertTrue(all[0].getPoint() == Vector(0,0,30));

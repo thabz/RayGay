@@ -1801,7 +1801,7 @@ void test_lib_io_ports() {
      */
 }
 
-int main(int , char *) {
+int main(int , char **) {
     TestSuite suite;
     suite.add("Parser", new test_parser());
     //suite.add("Bigint", new test_bigint());

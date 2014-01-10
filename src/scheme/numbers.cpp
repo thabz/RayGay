@@ -61,7 +61,7 @@ SchemeObject* s_plus(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"+", num, stack);
 
     if (outType == SchemeObject::REAL_NUMBER) {
-       double args[num];
+       double* args = (double*)::alloca(sizeof(double)*num);
        coerceNumbers(num,stack,args);
        
        double result = 0;
@@ -70,7 +70,7 @@ SchemeObject* s_plus(Scheme* scheme, int num, SchemeStack::iterator stack) {
        }
        return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-       int64_t args[num];
+       int64_t* args = (int64_t*)::alloca(sizeof(int64_t)*num);
        coerceNumbers(num,stack,args);
        
        int64_t result = 0;
@@ -79,7 +79,7 @@ SchemeObject* s_plus(Scheme* scheme, int num, SchemeStack::iterator stack) {
        }
        return int2scm(result);
     } else if (outType == SchemeObject::COMPLEX_NUMBER) {
-       std::complex<double> args[num];
+       std::complex<double>* args = (std::complex<double>*)::alloca(sizeof(std::complex<double>)*num);
        coerceNumbers(num,stack,args);
        
        std::complex<double> result = 0;
@@ -88,7 +88,7 @@ SchemeObject* s_plus(Scheme* scheme, int num, SchemeStack::iterator stack) {
        }
        return complex2scm(result);
     } else {
-       rational_type args[num];
+       rational_type* args = (rational_type*)::alloca(sizeof(rational_type)*num);
        coerceNumbers(num,stack,args);
        
        rational_type result(0);
@@ -103,7 +103,7 @@ SchemeObject* s_minus(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"-", num, stack);
     
     if (outType == SchemeObject::REAL_NUMBER) {
-       double args[num];
+       double* args = (double*)::alloca(sizeof(double)*num);
        coerceNumbers(num,stack,args);
        double result = args[0];
        if (num == 1) {
@@ -115,7 +115,7 @@ SchemeObject* s_minus(Scheme* scheme, int num, SchemeStack::iterator stack) {
        }
        return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-       int64_t args[num];
+       int64_t* args = (int64_t*)::alloca(sizeof(int64_t)*num);
        coerceNumbers(num,stack,args);
        int64_t result = args[0];
        if (num == 1) {
@@ -127,7 +127,7 @@ SchemeObject* s_minus(Scheme* scheme, int num, SchemeStack::iterator stack) {
        }
        return int2scm(result);
     } else if (outType == SchemeObject::COMPLEX_NUMBER) {
-       std::complex<double> args[num];
+       std::complex<double>* args = (std::complex<double>*)::alloca(sizeof(std::complex<double>)*num);
        coerceNumbers(num,stack,args);
        std::complex<double> result = args[0];
        if (num == 1) {
@@ -139,7 +139,7 @@ SchemeObject* s_minus(Scheme* scheme, int num, SchemeStack::iterator stack) {
        }
        return complex2scm(result);
     } else {
-       rational_type args[num];
+       rational_type* args = (rational_type*)::alloca(sizeof(rational_type)*num);
        coerceNumbers(num,stack,args);
        
        rational_type result = args[0];
@@ -158,7 +158,7 @@ SchemeObject* s_minus(Scheme* scheme, int num, SchemeStack::iterator stack) {
 SchemeObject* s_divide(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"/", num, stack);
     if (outType == SchemeObject::REAL_NUMBER) {
-       double args[num];
+       double* args = (double*)::alloca(sizeof(double)*num);
        coerceNumbers(num,stack,args);
        double result = args[0];
        if (num == 1) {
@@ -170,7 +170,7 @@ SchemeObject* s_divide(Scheme* scheme, int num, SchemeStack::iterator stack) {
        }
        return double2scm(result);
     } else if (outType == SchemeObject::COMPLEX_NUMBER) {
-       std::complex<double> args[num];
+       std::complex<double>* args = (std::complex<double>*)::alloca(sizeof(std::complex<double>)*num);
        coerceNumbers(num,stack,args);
        std::complex<double> result = args[0];
        if (num == 1) {
@@ -183,7 +183,7 @@ SchemeObject* s_divide(Scheme* scheme, int num, SchemeStack::iterator stack) {
        return complex2scm(result);
     } else {
        // Both integers and rational types are handled as rationals            
-       rational_type args[num];
+       rational_type* args = (rational_type*)::alloca(sizeof(rational_type)*num);
        coerceNumbers(num,stack,args);
 
        rational_type result = args[0];
@@ -204,7 +204,7 @@ SchemeObject* s_mult(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"*", num, stack);
 
     if (outType == SchemeObject::REAL_NUMBER) {
-       double args[num];
+       double* args = (double*)::alloca(sizeof(double)*num);
        coerceNumbers(num,stack,args);
        
        double result = 1;
@@ -213,7 +213,7 @@ SchemeObject* s_mult(Scheme* scheme, int num, SchemeStack::iterator stack) {
        }
        return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-       int64_t args[num];
+       int64_t* args = (int64_t*)::alloca(sizeof(int64_t)*num);
        coerceNumbers(num,stack,args);
        
        int64_t result = 1;
@@ -222,7 +222,7 @@ SchemeObject* s_mult(Scheme* scheme, int num, SchemeStack::iterator stack) {
        }
        return int2scm(result);
     } else if (outType == SchemeObject::COMPLEX_NUMBER) {
-       std::complex<double> args[num];
+       std::complex<double>* args = (std::complex<double>*)::alloca(sizeof(std::complex<double>)*num);
        coerceNumbers(num,stack,args);
        
        std::complex<double> result = 1;
@@ -231,7 +231,7 @@ SchemeObject* s_mult(Scheme* scheme, int num, SchemeStack::iterator stack) {
        }
        return complex2scm(result);
     } else {
-       rational_type args[num];
+       rational_type* args = (rational_type*)::alloca(sizeof(rational_type)*num);
        coerceNumbers(num,stack,args);
        
        rational_type result(1);
@@ -639,7 +639,7 @@ SchemeObject* s_min(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"min", num, stack);
 
     if (outType == SchemeObject::REAL_NUMBER) {
-        double args[num];
+        double* args = (double*)::alloca(sizeof(double)*num);
         coerceNumbers(num,stack,args);
         double result = args[0];
         for(int i = 1; i < num; i++) {
@@ -649,7 +649,7 @@ SchemeObject* s_min(Scheme* scheme, int num, SchemeStack::iterator stack) {
         }
         return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-       int64_t args[num];
+       int64_t* args = (int64_t*)::alloca(sizeof(int64_t)*num);
        coerceNumbers(num,stack,args);
        int64_t result = args[0];
        int index = 0;
@@ -661,7 +661,7 @@ SchemeObject* s_min(Scheme* scheme, int num, SchemeStack::iterator stack) {
        }
        return stack[index];
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
-       rational_type args[num];
+       rational_type* args = (rational_type*)::alloca(sizeof(rational_type)*num);
        coerceNumbers(num,stack,args);
        rational_type result = args[0];
        int index = 0;
@@ -682,7 +682,7 @@ SchemeObject* s_max(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"max", num, stack);
 
     if (outType == SchemeObject::REAL_NUMBER) {
-        double args[num];
+        double* args = (double*)::alloca(sizeof(double)*num);
         coerceNumbers(num,stack,args);
         double result = args[0];
         for(int i = 1; i < num; i++) {
@@ -692,7 +692,7 @@ SchemeObject* s_max(Scheme* scheme, int num, SchemeStack::iterator stack) {
         }
         return double2scm(result);
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-       int64_t args[num];
+       int64_t* args = (int64_t*)::alloca(sizeof(int64_t)*num);
        coerceNumbers(num,stack,args);
        int64_t result = args[0];
        int index = 0;
@@ -704,7 +704,7 @@ SchemeObject* s_max(Scheme* scheme, int num, SchemeStack::iterator stack) {
        }
        return stack[index];
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
-       rational_type args[num];
+       rational_type* args = (rational_type*)::alloca(sizeof(rational_type)*num);
        coerceNumbers(num,stack,args);
        rational_type result = args[0];
        int index = 0;
@@ -927,7 +927,7 @@ SchemeObject* s_equal(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"=", num, stack);
 
     if (outType == SchemeObject::REAL_NUMBER) {
-        double args[num];
+        double* args = (double*)::alloca(sizeof(double)*num);
         coerceNumbers(num,stack,args);
         if (std::isnan(args[0])) return S_FALSE;
         for(int i = 1; i < num; i++) {
@@ -935,21 +935,21 @@ SchemeObject* s_equal(Scheme* scheme, int num, SchemeStack::iterator stack) {
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-       int64_t args[num];
+       int64_t* args = (int64_t*)::alloca(sizeof(int64_t)*num);
        coerceNumbers(num,stack,args);
        for(int i = 1; i < num; i++) {
 	       if (args[i] != args[i-1]) return S_FALSE;
        }
        return S_TRUE;
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
-       rational_type args[num];
+       rational_type* args = (rational_type*)::alloca(sizeof(rational_type)*num);
        coerceNumbers(num,stack,args);
        for(int i = 1; i < num; i++) {
 	       if (args[i] != args[i-1]) return S_FALSE;
        }
        return S_TRUE;
     } else {
-       std::complex<double> args[num];
+       std::complex<double>* args = (std::complex<double>*)::alloca(sizeof(std::complex<double>)*num);
        coerceNumbers(num,stack,args);
        for(int i = 1; i < num; i++) {
 	       if (args[i] != args[i-1]) return S_FALSE;
@@ -966,7 +966,7 @@ SchemeObject* s_less(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L"<", num, stack);
     
     if (outType == SchemeObject::REAL_NUMBER) {
-        double args[num];
+        double* args = (double*)::alloca(sizeof(double)*num);
         coerceNumbers(num,stack,args);
         if (std::isnan(args[0])) return S_FALSE;
         for(int i = 1; i < num; i++) {
@@ -974,14 +974,14 @@ SchemeObject* s_less(Scheme* scheme, int num, SchemeStack::iterator stack) {
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-        int64_t args[num];
+        int64_t* args = (int64_t*)::alloca(sizeof(int64_t)*num);
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
  	        if (args[i-1] >= args[i]) return S_FALSE;
         }
         return S_TRUE;
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
-        rational_type args[num];
+        rational_type* args = (rational_type*)::alloca(sizeof(rational_type)*num);
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
  	        if (args[i-1] >= args[i]) return S_FALSE;
@@ -999,7 +999,7 @@ SchemeObject* s_less_equal(Scheme* scheme, int num, SchemeStack::iterator stack)
     SchemeObject::ObjectType outType = representativeNumberType(L"<=", num, stack);
     
     if (outType == SchemeObject::REAL_NUMBER) {
-        double args[num];
+        double* args = (double*)::alloca(sizeof(double)*num);
         coerceNumbers(num,stack,args);
         if (std::isnan(args[0])) return S_FALSE;
         for(int i = 1; i < num; i++) {
@@ -1007,14 +1007,14 @@ SchemeObject* s_less_equal(Scheme* scheme, int num, SchemeStack::iterator stack)
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-        int64_t args[num];
+        int64_t* args = (int64_t*)::alloca(sizeof(int64_t)*num);
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
  	        if (args[i-1] > args[i]) return S_FALSE;
         }
         return S_TRUE;
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
-        rational_type args[num];
+        rational_type* args = (rational_type*)::alloca(sizeof(rational_type)*num);
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
  	        if (args[i-1] > args[i]) return S_FALSE;
@@ -1032,7 +1032,7 @@ SchemeObject* s_greater(Scheme* scheme, int num, SchemeStack::iterator stack) {
     SchemeObject::ObjectType outType = representativeNumberType(L">", num, stack);
     
     if (outType == SchemeObject::REAL_NUMBER) {
-        double args[num];
+        double* args = (double*)::alloca(sizeof(double)*num);
         coerceNumbers(num,stack,args);
         if (std::isnan(args[0])) return S_FALSE;
         for(int i = 1; i < num; i++) {
@@ -1040,14 +1040,14 @@ SchemeObject* s_greater(Scheme* scheme, int num, SchemeStack::iterator stack) {
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-        int64_t args[num];
+        int64_t* args = (int64_t*)::alloca(sizeof(int64_t)*num);
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
  	        if (args[i-1] <= args[i]) return S_FALSE;
         }
         return S_TRUE;
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
-        rational_type args[num];
+        rational_type* args = (rational_type*)::alloca(sizeof(rational_type)*num);
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
  	        if (args[i-1] <= args[i]) return S_FALSE;
@@ -1066,7 +1066,7 @@ SchemeObject* s_greater_equal(Scheme* scheme, int num, SchemeStack::iterator sta
     SchemeObject::ObjectType outType = representativeNumberType(L"<=", num, stack);
     
     if (outType == SchemeObject::REAL_NUMBER) {
-        double args[num];
+        double* args = (double*)::alloca(sizeof(double)*num);
         coerceNumbers(num,stack,args);
         if (std::isnan(args[0])) return S_FALSE;
         for(int i = 1; i < num; i++) {
@@ -1074,14 +1074,14 @@ SchemeObject* s_greater_equal(Scheme* scheme, int num, SchemeStack::iterator sta
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
-        int64_t args[num];
+        int64_t* args = (int64_t*)::alloca(sizeof(int64_t)*num);
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
  	        if (args[i-1] < args[i]) return S_FALSE;
         }
         return S_TRUE;
     } else if (outType == SchemeObject::RATIONAL_NUMBER) {
-        rational_type args[num];
+        rational_type* args = (rational_type*)::alloca(sizeof(rational_type)*num);
         coerceNumbers(num,stack,args);
         for(int i = 1; i < num; i++) {
  	        if (args[i-1] < args[i]) return S_FALSE;
