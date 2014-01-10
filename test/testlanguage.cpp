@@ -274,7 +274,7 @@ class test_mmap : public Test {
         public:
         void run() {
 
-    char* filename = "test.bin";        
+    const char* filename = "test.bin";        
     int file = open(filename, O_RDWR | O_CREAT | O_TRUNC, 00700);
     if (file == -1) {
         cout << "open failed" << endl;
