@@ -50,7 +50,7 @@ void Heap::allocateNewPage() {
 }
 
 SchemeObject* Heap::allocate(SchemeObject::ObjectType type) {
-    assert(type < 256);        
+    assert((int)type < 256);        
     ThreadLocalCache* local = (ThreadLocalCache*) pthread_getspecific(local_bank_key);
     if (local == NULL) {
         local = new ThreadLocalCache();    
