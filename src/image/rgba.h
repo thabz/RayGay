@@ -125,7 +125,7 @@ RGBA RGBA::clamped() const {
     return RGBA(Math::clamp(_vector[0]),
                 Math::clamp(_vector[1]),
                 Math::clamp(_vector[2]),
-                Math::clamp(_vector[3]));
+                Math::clamp(alpha));
 }
 
 #endif
