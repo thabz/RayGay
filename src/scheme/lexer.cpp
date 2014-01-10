@@ -39,7 +39,7 @@ Lexer::Token Lexer::nextToken(SchemeObject* port) {
         }
         // Skip single-line comment until end of line or end of stream
         // Or skip #! lines
-        if (c == L';' || (c == L'#') && i_lookahead_char(port) == L'!') {
+        if (c == L';' || ((c == L'#') && i_lookahead_char(port) == L'!')) {
             do {
                 c = i_get_char(port);
             } while (c != L'\n' && i_port_eof_p(port) == S_FALSE);

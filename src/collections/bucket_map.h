@@ -12,7 +12,7 @@ struct _bucket_map_node {
     bool empty;               
 };
 
-template <typename K, typename V>  class bucket_map;
+template <typename K, typename V>  struct bucket_map;
 
 template <typename K, typename V> 
 struct _bucket_map_iterator {
@@ -81,7 +81,7 @@ struct _bucket_map_iterator {
 };
 
 template <typename K, typename V> 
-class bucket_map 
+struct bucket_map 
 {
     public:
         typedef uint32_t hash_type;
@@ -92,7 +92,7 @@ class bucket_map
         typedef _bucket_map_node<K,V> node_type;
         typedef V& reference;
         typedef size_t size_type;
-        friend class _bucket_map_iterator<K,V>;
+        friend struct _bucket_map_iterator<K,V>;
         
         // n_b must be a power of two. No checking is done. TODO: Is there a fast way to check that?
     	bucket_map(uint32_t n_b = 256) : num_buckets(n_b) {
