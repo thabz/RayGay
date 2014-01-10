@@ -21,7 +21,7 @@ Material* Checker::materialAtPoint(const Vector& point) const {
     if (IS_NEGATIVE(p.y())) y ^= 1;
     if (IS_NEGATIVE(p.z())) z ^= 1;
 
-    if ((x+y+z) & 1 == 1) {
+    if (((x+y+z) & 1)== 1) {
 	return mat1;
     } else {
 	return mat2;
