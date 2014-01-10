@@ -51,7 +51,6 @@ void Interval::add(double f, double t)
      * 5: ---F---SSSTSSS----  Extend segment
      * 6: ---SSSFSSSTSSS----  Ignore segment
      */ 
-    Vector2 new_segment = Vector2(1,-1);
     bool setting_from = true;
     for(uint32_t i = 0; i < getSegmentsNum(); i++) {
 	Vector2 s = getSegment(i);

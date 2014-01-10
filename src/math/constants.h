@@ -44,8 +44,13 @@
 #define SIGN(x) 	((x >= 0) ? 1 : -1)
 #define SAME_SIGN(x,y) 	(SIGN(y) == SIGN(x)) 
 
+#ifndef MIN
 #define MIN(x,y)	((x) < (y) ? (x) : (y))
+#endif
+
+#ifndef MAX
 #define MAX(x,y)	((x) > (y) ? (x) : (y))
+#endif
 
 #define IS_POSITIVE(p)	((p) > -EPSILON)
 #define IS_NEGATIVE(p)	((p) < EPSILON)
