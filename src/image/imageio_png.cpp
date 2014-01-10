@@ -48,7 +48,7 @@ void PngIO::save(const Image* const image, FILE* fp) const {
     if (info_ptr == NULL)
     {
 	::fclose(fp);
-	png_destroy_write_struct(&png_ptr,  png_infopp_NULL);
+	png_destroy_write_struct(&png_ptr,  NULL);
 	throw_exception("Error saving PNG");
     }
 
@@ -134,14 +134,14 @@ Image* PngIO::load(const std::string& filename, Allocator::model_t model) {
     if (info_ptr == NULL)
     {
 	::fclose(fp);
-	png_destroy_read_struct(&png_ptr, png_infopp_NULL, png_infopp_NULL);
+	png_destroy_read_struct(&png_ptr, NULL, NULL);
 	throw_exception("Error opening " + filename);
     }
 
     if (setjmp(png_jmpbuf(png_ptr)))
     {
 	/* Free all of the memory associated with the png_ptr and info_ptr */
-	png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
+	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 	::fclose(fp);
 	/* If we get here, we had a problem reading the file */
 	throw_exception("Error reading " + filename);
@@ -152,7 +152,7 @@ Image* PngIO::load(const std::string& filename, Allocator::model_t model) {
     png_read_info(png_ptr, info_ptr);
 
     png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
-	    &interlace_type, int_p_NULL, int_p_NULL);
+	    &interlace_type, NULL, NULL);
 
     /* Expand paletted colors into true RGB triplets */
     
@@ -161,7 +161,7 @@ Image* PngIO::load(const std::string& filename, Allocator::model_t model) {
 
     /* Expand grayscale images to the full 8 bits from 1, 2, or 4 bits/pixel */
     if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
-	png_set_gray_1_2_4_to_8(png_ptr);
+	png_set_expand_gray_1_2_4_to_8(png_ptr);
 
     if (bit_depth < 8)
         png_set_packing(png_ptr);
@@ -197,7 +197,7 @@ Image* PngIO::load(const std::string& filename, Allocator::model_t model) {
 
     for (uint32_t y = 0; y < height; y++)
     {
-	png_read_rows(png_ptr, &rowp, png_bytepp_NULL, 1);
+	png_read_rows(png_ptr, &rowp, NULL, 1);
 	for(uint32_t x = 0; x < width; x++) {
 	    RGBA col;
 	    if (bpp == 4) {
@@ -223,7 +223,7 @@ Image* PngIO::load(const std::string& filename, Allocator::model_t model) {
     png_read_end(png_ptr, info_ptr);
 
     /* clean up after the read, and free any memory allocated - REQUIRED */
-    png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
+    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
     /* close the file */
     ::fclose(fp);
