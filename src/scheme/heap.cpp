@@ -11,6 +11,8 @@ Heap::Heap(uint32_t page_size) {
     this->free_slots = 0;
     this->slots_num = 0;
     this->allocated = 0;
+    this->next_free_slot_idx = 0;
+    this->cur_bank_idx = 0;
     
     for(int i = 0; i < SchemeObject::ALL_TYPE_ARE_BEFORE_HERE; i++) {
         alloced_types[i] = 0;    
