@@ -44,7 +44,7 @@ void DarwinIO::save(const Image* const image, const std::string& filename) const
 
     CFStringRef UTI = filenameToUTI(filename);
     CFStringRef path = CFStringCreateWithCString(NULL, filename.c_str(), kCFStringEncodingUTF8);
-    CFURLRef url = CFURLCreateWithFileSystemPath (NULL, path, kCFURLPOSIXPathStyle, NULL);
+    CFURLRef url = CFURLCreateWithFileSystemPath (NULL, path, kCFURLPOSIXPathStyle, 0);
     CGImageDestinationRef imageDest =  CGImageDestinationCreateWithURL(url, UTI, 1, NULL);
 
     CGImageDestinationAddImage(imageDest, imageRef, NULL);
@@ -62,7 +62,7 @@ Image* DarwinIO::load(const std::string& filename, Allocator::model_t model)
 {
 #define TYPE uint8_t
     CFStringRef path = CFStringCreateWithCString(NULL, filename.c_str(), kCFStringEncodingUTF8);
-    CFURLRef url = CFURLCreateWithFileSystemPath (NULL, path, kCFURLPOSIXPathStyle, NULL);
+    CFURLRef url = CFURLCreateWithFileSystemPath (NULL, path, kCFURLPOSIXPathStyle, 0);
     CGImageSourceRef source = CGImageSourceCreateWithURL(url, NULL);
     CGImageRef imageRef = CGImageSourceCreateImageAtIndex(source, 0, NULL);
     CFRelease(path);
@@ -72,7 +72,7 @@ Image* DarwinIO::load(const std::string& filename, Allocator::model_t model)
     uint64_t h = CGImageGetHeight(imageRef);
     bool has_alpha = CGImageGetAlphaInfo(imageRef) != kCGImageAlphaNone;
     CGBitmapInfo source_bitmap_info = CGImageGetBitmapInfo(imageRef);
-    bool uses_floats = source_bitmap_info & kCGBitmapFloatComponents != 0;
+    bool uses_floats = (source_bitmap_info & kCGBitmapFloatComponents) != 0;
     
     Image* result;
     if (has_alpha) {

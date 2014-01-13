@@ -7,6 +7,7 @@ Particle::Particle(Vector& p, Vector& v, double m) {
     this->position = p;
     this->velocity = v;
     this->age = 0;
+    this->mass = m;
 }
 
 void Particle::applyGravity(const Vector& gravity, double time_delta)
@@ -19,14 +20,14 @@ void Particle::move(const Vector& v) {
     position += v;
 }
 
-Spring::Spring(Particle* pa1, Particle* pa2, double strength, double damping, double rest_length)
+Spring::Spring(Particle* pa1, Particle* pa2, double s, double damping, double rest_length)
 {
     /// If no rest_length is supplied the current distance between the particles is used
     if (rest_length == -1) {
         rest_length = (pa1->getPosition() - pa2->getPosition()).length();
     }   
     this->rest_length = rest_length;
-    this->strength = strength;
+    this->strength = s;
     this->damping = damping;
     this->p1 = pa1;
     this->p1 = pa2;
@@ -46,6 +47,12 @@ void Spring::tick(double time_delta) {
     p2->move(F2 * delta);
 }
 
+Attraction::Attraction(Particle* p1, Particle* p2, double strength, double minimum_distance) {
+    this->p1 = p1;
+    this->p2 = p2;
+    this->strength = strength;
+    this->minimum_distance = minimum_distance;
+}
 
 double Attraction::currentDistance() const 
 {

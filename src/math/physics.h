@@ -47,6 +47,7 @@ class Spring
 class Attraction 
 {
     public:
+        Attraction(Particle* p1, Particle* p2, double strength, double minimum_distance);
         double currentDistance() const;
 
     private:
