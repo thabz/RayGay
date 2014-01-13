@@ -45,9 +45,6 @@ class Renderer {
 
 	Sampler* sampler;
 
-	bool aa_enabled;
-	uint32_t aa_depth;
-
 	Image* img;
 	RenderJobPool* job_pool;
 	uint32_t thread_id;
