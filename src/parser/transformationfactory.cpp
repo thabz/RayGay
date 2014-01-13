@@ -7,7 +7,7 @@
 
 SchemeObject* TransformationFactory::rotate(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_axis, SchemeObject* s_angle) 
 {
-    wchar_t* usage = L"(rotate object axis angle)";
+    const wchar_t* usage = L"(rotate object axis angle)";
     Vector axis = scm2vector(s_axis, usage, 2);
     double angle = safe_scm2double(s_angle, 3, usage);
     Matrix matrix = Matrix::matrixRotate(axis,angle);
@@ -16,7 +16,7 @@ SchemeObject* TransformationFactory::rotate(Scheme* scheme, SchemeObject* s_obj,
 
 SchemeObject* TransformationFactory::translate(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_translation) 
 {
-    wchar_t* usage = L"(translate object translation-vector)";
+    const wchar_t* usage = L"(translate object translation-vector)";
     Vector translation = scm2vector(s_translation, usage, 2);
     Matrix matrix = Matrix::matrixTranslate(translation);
     return transform(scheme, s_obj, matrix, usage);
@@ -24,7 +24,7 @@ SchemeObject* TransformationFactory::translate(Scheme* scheme, SchemeObject* s_o
 
 SchemeObject* TransformationFactory::scale(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_scale) 
 {
-    wchar_t* usage = L"(scale object scale-vector)";
+    const wchar_t* usage = L"(scale object scale-vector)";
     Vector scale = scm2vector(s_scale, usage, 2);
     Matrix matrix = Matrix::matrixScale(scale);
     return transform(scheme, s_obj, matrix, usage);
@@ -32,7 +32,7 @@ SchemeObject* TransformationFactory::scale(Scheme* scheme, SchemeObject* s_obj, 
 
 SchemeObject* TransformationFactory::orient(Scheme* scheme, SchemeObject* s_obj, SchemeObject* s_direction_x, SchemeObject* s_direction_y, SchemeObject* s_direction_z) 
 {
-    wchar_t* usage = L"(orient object orientation-vector-x orientation-vector-y orientation-vector-z) or (orient object direction-vector up-vector) or (orient direction)";
+    const wchar_t* usage = L"(orient object orientation-vector-x orientation-vector-y orientation-vector-z) or (orient object direction-vector up-vector) or (orient direction)";
     Vector xv = scm2vector(s_direction_x, usage, 2);
     Vector zv;
     Matrix matrix;
