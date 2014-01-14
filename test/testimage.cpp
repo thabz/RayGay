@@ -187,13 +187,17 @@ class test_png : public Test {
 	    img = Image::load(getLoadPrefix() + "/gfx/16x12x3.png");
 	    assertTrue(img->getWidth() == 16);
 	    assertTrue(img->getHeight() == 12);
+#ifndef OS_DARWIN	    
 	    assertTrue(img->cpp() == 3);
+#endif	    
 	    delete img;
 
 	    img = Image::load(getLoadPrefix() + "/gfx/16x12x1.png");
 	    assertTrue(img->getWidth() == 16);
 	    assertTrue(img->getHeight() == 12);
+#ifndef OS_DARWIN	    
 	    assertTrue(img->cpp() == 1);
+#endif	    
 	    delete img;
 	}
 };
@@ -241,13 +245,17 @@ class test_jpg : public Test {
 	    img = Image::load(getLoadPrefix() + "/gfx/16x12x3.jpg");
 	    assertTrue(img->getWidth() == 16);
 	    assertTrue(img->getHeight() == 12);
+#ifndef OS_DARWIN	    
 	    assertTrue(img->cpp() == 3);
+#endif	    
 	    delete img;
 
 	    img = Image::load(getLoadPrefix() + "/gfx/16x12x1.jpg");
 	    assertTrue(img->getWidth() == 16);
 	    assertTrue(img->getHeight() == 12);
+#ifndef OS_DARWIN	    
 	    assertTrue(img->cpp() == 1);
+#endif	    
 	    delete img;
 	}
 };

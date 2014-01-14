@@ -58,7 +58,7 @@
        (m (orient I v))
        (w (m* m v)))
  (test "orient 2a" (near-equal? 0 (.x w)))
- (test "orient 2b" (near-equal? 0 (.y w))))
+ (test "orient 2b" (near-equal? 0 (.y w)))
  (test "orient 2c" (near-equal? 13 (.z w))))
 
 )

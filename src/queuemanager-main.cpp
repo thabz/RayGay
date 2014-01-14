@@ -82,6 +82,7 @@ void sendFile(HTTPClient* client, string filename)
 }
 
 void sendDirRecursively(HTTPClient* client, string dir_name) {
+    /*
     uint16_t buffer[2048];
     uint16_t *p;
     long base = 0;
@@ -92,6 +93,7 @@ void sendDirRecursively(HTTPClient* client, string dir_name) {
     if ((fd = open(dir_name.c_str(), O_RDONLY, 0)) < 0) {
         throw_exception("Error opening " + dir_name);
     }
+    */
     // getdirentries is deprecated. Use readdir instead.
     /*
     while ((len = getdirentries(fd, (char*)buffer, sizeof(buffer), &base)) > 0) {

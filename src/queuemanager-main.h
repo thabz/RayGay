@@ -18,12 +18,14 @@ class QueueJob {
 };
 
 class QueueFrameJob : public QueueJob {
+    public:
     uint32_t frame;
     uint32_t frames;
     Image* result;        
 };
 
 class QueueTileJob : public QueueJob {
+    public:
     uint32_t x,y;
     uint32_t w,h;
     Image* result;
