@@ -70,11 +70,11 @@ RGBA Pathtracer::traceSub(const bool intersected, const Intersection& intersecti
 }
 
 RGB Pathtracer::shadeDirectDiffuse(const Ray& ray, const Intersection& intersection, const int depth) {
-        
+    return RGB();       
 }
 
 RGB Pathtracer::shadeIndirectDiffuse(const Ray& ray, const Intersection& intersection, const int depth) {
-        
+    return RGB();       
 }
 
 RGB Pathtracer::shadeTransmission(const Ray& ray, const Intersection& intersection, const int depth) {
@@ -99,6 +99,8 @@ RGB Pathtracer::shadeTransmission(const Ray& ray, const Intersection& intersecti
         Ray refl_ray = Ray(point,refl_vector,ray.getIndiceOfRefraction());
         return trace(refl_ray, depth - 1);
         */
+	// TODO: Implement
+	return RGB();
     }
     
 }

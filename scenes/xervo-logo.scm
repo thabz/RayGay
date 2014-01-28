@@ -2,12 +2,14 @@
 (load "lib/raygay.scm")
 (load "lib/mesh.scm")
 
+(define preview-quality #f)
+
 (set-background #(1 1 1 0))
 
-(set-image-size '(512 512))
-(set-image-size '(1024 1024))
-(set-image-size '(256 256))
-(set-image-size '(2048 2048))
+(if preview-quality
+  (set-image-size '(512 512))
+  (set-image-size '(4096 4096)))
+
 (set-renderer "raytracer")
 
 (set-camera 
@@ -39,12 +41,12 @@
 
 ;(add-to-scene (make-pointlight #(500 1300 1300)))
 ;(add-to-scene (make-skylight 10 250 #(1 1 1)))
-(add-to-scene (make-arealight #(200 400 400) #(-0.5 -1 -1) 40 50 0.1))
+(add-to-scene (make-arealight #(1000 4000 4000) #(-0.5 -1 -1) 700 (if preview-quality 100 300) 0.1))
 
 ; Transparent floor to receive the shadow
 (add-to-scene
   (make-solid-box 
-    #(-200 -20 -200) #(200 -10 200) trans))
+    #(-200 -20 -200) #(200 -0.5 200) trans))
 
 (define d 37.67)
 
@@ -71,7 +73,7 @@
 
 (define edge-radius 0.5)
 
-(add-to-scene (make-rounded-convex-hull bottom-box-points edge-radius red))
-(add-to-scene (make-rounded-convex-hull top-box-points edge-radius red))
-(add-to-scene (make-rounded-convex-hull vertical-box-points edge-radius red))
+(add-to-scene (make-rounded-box (vector 0 y1 0) (vector x3 y2 d) edge-radius red))
+(add-to-scene (make-rounded-box (vector 0 y3 0) (vector x3 y4 d) edge-radius red))
+(add-to-scene (make-rounded-box (vector x2 y1 0) (vector x3 y4 d) edge-radius red))
 (add-to-scene (make-rounded-box (vector x3 y4 0) (vector x4 y5 d) edge-radius red))
