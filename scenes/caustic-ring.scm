@@ -21,8 +21,8 @@
     finalgatherrays 	0
     cachetolerance 	0.1))
 
-(set-image-size '(1600 1200))
 (set-image-size '(640 480))
+(set-image-size '(1600 1200))
 (set-background #(0.0 0.0 0.0))
 
 (add-to-scene
