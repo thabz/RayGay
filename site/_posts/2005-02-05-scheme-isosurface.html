@@ -1,0 +1,38 @@
+---
+layout: post
+title:  Scheme isosurface
+date:   2005-02-05
+categories: raygay update
+---
+
+<p>Nu kan man rendere isosurfaces defineret ved en Scheme-funktion. En isosurface er overfladen defineres ved en vilkårlig &#8477;<sup>3</sup> &rarr; &#8477;: <i>f(x,y,z) = c</i> funktion. Nu kan denne funktion <i>f</i> skrives direkte i Scheme og C++-rendereren kalder så tilbage til denne.</p>
+<p>Nedenstående er en rendering af en <a href="http://mathworld.wolfram.com/Chair.html">formel fra Mathworld</a>.</p>
+<p><a href="{{site.url}}/assets/tracer75big.png"><img src="{{site.url}}/assets/tracer75.png"></a>
+<p>Dette objekt skrives således i Scheme.</p>
+<div id="scheme" class="vim">; Chair formula
+(define (iso-chair k a b x y z) 
+  (- (square (+ (square x)
+		(square y)
+		(square z)
+		(- (* a k k))))
+     (* b
+	(- (square (- z k))
+	   (* 2 x x))
+	(- (square (+ z k))
+	   (* 2 y y )))))
+
+; Callback function
+(define (iso-func x y z) 
+ (iso-chair 5 0.95 0.8 x y z))
+
+; Surface definition    
+(make-isosurface 
+ iso-func     ; function
+ '(-5 -5 -5)  ; bound min
+ '(5 5 5)     ; bound max
+ 0.0          ; iso-value
+ 500          ; steps
+ 0.000001     ; accuracy
+ chrome)
+</div>
+

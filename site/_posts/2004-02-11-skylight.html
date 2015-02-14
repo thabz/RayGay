@@ -1,0 +1,11 @@
+---
+layout: post
+title:  Skylight
+date:   2004-02-11
+categories: raygay update
+---
+
+<p>Sad ellers og fedtede med photon mapping, da jeg <a href="http://www.ypoart.com/tutorials/skylights-intro.htm">faldt</a> over en simpel teknik, som kan efterligne global illumination. Skylight eller hemispherical light består simpelthen bare en af bunke pointlights placeret i en stor halvkugle over scenen. Det tog fem minutter at kode en <tt>Skylight</tt>-klasse og ti timer at beregne nedenstående eksempel som har 400 lyskilder.</p>
+<p><a href="{{site.url}}/assets/tracer37big.png"><img src="{{site.url}}/assets/tracer37.png"></a></p>
+<p>Det er denne teknik som <a href="http://www.3dluvr.com/pepeland/">Pepeland</a>-knægten kaldte en "Arnold"-renderer.</p>
+<p>Har desuden kodet håndtering af kamera med position-, retning- og op-vektorer, vinkel og billedeopløsning.</p>

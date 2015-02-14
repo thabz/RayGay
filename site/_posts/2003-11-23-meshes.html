@@ -1,0 +1,16 @@
+---
+layout: post
+title:  Meshes
+date:   2003-11-23
+categories: raygay update
+---
+
+<p>Har kodet videre, uden at komme særligt langt med Phong-problemet.</p>
+<ul>
+   <li>Implementerede .tga saver og fjernede min dependency til ImageMagick.</li>
+   <li>Compiler nu med <tt>-Wall</tt> og fiksede alle compilewarnings.</li>
+   <li>Fik <a title="GNU profiler" href="http://www.gnu.org/manual/gprof-2.9.1/gprof.html">gprof</a> til at spille og lavede nogle simple optimeringer. BSP-træet er stadig ikke effektivt nok.</li>
+   <li>Skrevet tests til <tt>mesh.cpp</tt> &mdash; uden at finde problemer som kunne forklare de mærkelige <i>patches</i> som er i mine Phong-interpolerede meshes.</li>
+
+</ul>
+<p><a href="{{site.url}}/assets/tracer20big.png"><img src="{{site.url}}/assets/tracer20.png"></a>

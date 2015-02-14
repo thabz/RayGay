@@ -1,0 +1,26 @@
+---
+layout: post
+title:  Optimering
+date:   2004-04-30
+categories: raygay update
+---
+
+<p>Har optimeret røven ud af koden den sidste uges tid. Lavede en testscene som indeholdte et par tusinde reflekterende trekanter og gik så ellers igang. Det skal lige siges at koden ikke var specielt langsom til at starte med.</p>
+<p>
+<table>
+<tr><td>Begyndelsestid</td><td align="right"> 14:09</td></tr>
+<tr><td>Light occlusion stack</td><td align="right"> 11:20</td></tr>
+<tr><td>Udskyd fresnel udregning</td><td align="right"> 11:01</td></tr>
+<tr><td>Inline callstack i raytracer</td><td align="right"> 10:25</td></tr>
+<tr><td>Inline Vector::xProduct()</td><td align="right"> 10:10</td></tr>
+<tr><td>Bruger Boundingbox::intersect i KdTree</td><td align="right"> 9:14</td></tr>
+<tr><td>Const argumenter i KdTree</td><td align="right"> 9:04</td></tr>
+<tr><td>Simplere callstack til shadow</td><td align="right"> 9:00</td></tr>
+<tr><td>Valg af bedste splitdimension</td><td align="right"> 7:18</td></tr>
+<tr><td>fastIntersect og fullIntersect på object</td><td align="right"> 6:13</td></tr>
+<tr><td>Precalc sager i Triangle::_fastIntersect</td><td align="right"> 4:30</td></tr>
+<tr><td>Inline Object::fastIntersect</td><td align="right"> 4:04</td></tr>
+<tr><td>Culling i Triangle::_fastIntersect</td><td align="right"> 3:00</td></tr>
+</table>
+</p>
+<p>Traceren er altså blevet 4-5 gange så hurtig. Det er muligt at skære mere af ved at indsætte en snedigere cost-udregner i KD-Træets balancer.</p>

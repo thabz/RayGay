@@ -1,0 +1,27 @@
+---
+layout: post
+title:  Panorama - Interpolation - Optimering - Environment map - Bicubic interpolation
+date:   2003-11-30
+categories: raygay update
+---
+
+<p>Fandt en serie panorama billeder til at smide på indersiden af en kugle som indeholder hele verdenen på <a href="http://www.path.unimelb.edu.au/~dersch/">Panorama Tools</a>.</p>
+
+<h2>Interpolation</h2>
+<p>Samme site viser matematikken bag linær og kubisk interpolation på <a href="http://www.path.unimelb.edu.au/~dersch/interpolator/interpolator.html">Testing Interpolator Quality</a>.</p>
+
+<h2>Optimering</h2>
+<p>Har optimeret BSP-træets valg af splitdimension og -værdi ved at bruge medianer istedet for gennemsnit, samt ved at finde bedste splitdimension ved at teste alle tre mulige.</p>
+<p>Rendertiden for en torus med 3012 trekanter er nu på 133 sekunder i stedet for 252.</p>
+<p>Implementerede også BSP::intersectForShadow() som dog ikke gav megen hastighedsforøgelse.</p>
+
+<h2>Environment map</h2>
+<p>Otte linier kode i <tt>Scene::getBackgroundColor()</tt> og der er support for enviromentmaps. Brugte et af overnævnte panorama-billeder. Billedet med kuglerne herunder er beregnet på under 2 sekunder! Torussen på 3000 trekanter tog 91 sekunder.</p>
+<p><a href="{{site.url}}/assets/tracer22big.png"><img src="{{site.url}}/assets/tracer22.png"></a></p>
+<p><a href="{{site.url}}/assets/tracer23big.png"><img src="{{site.url}}/assets/tracer23.png"></a></p>
+
+<h2>Bicubic interpolation</h2>
+<p>Implementerede sgu' også lige bikubisk interpolation efter <a href="http://astronomy.swin.edu.au/~pbourke/colour/bicubic/">Bicubic Interpolation for Image Scaling</a>.</p>
+<p><a href="{{site.url}}/assets/tracer24big.png"><img src="{{site.url}}/assets/tracer24.png"></a></p>
+<p>Paul Bourkes <a href="http://astronomy.swin.edu.au/~pbourke/">site</a> er ret spændende.</p>
+

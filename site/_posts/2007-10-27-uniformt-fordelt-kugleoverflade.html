@@ -1,0 +1,25 @@
+---
+layout: post
+title:  Uniformt fordelt kugleoverflade
+date:   2007-10-27
+categories: raygay update
+---
+
+<p>I Monte-Carlo pathtracing har man brug for punkter som er uniformt fordelte på enhedskuglen <i>S<sup>2</sup></i>.</p>
+<p>Jeg har kode som finder perfekt uniformt fordelte punkter i [0,1]&times;[0,1] og har nu fundet en
+uniform mapning derfra til <i>S<sup>2</sup></i>.</p>
+<p>Den beror på, at hver af de tre koordinater for uniformt fordelte punkter på <i>S<sup>2</sup></i> faktisk er uniformt fordelte på [0,1]. De tre koordinater er selvfølgelig ikke uafhængige.</p>
+<p>Man kan derfor vælge een akse (her z-aksen) og finde en uniformt fordelt værdi på den akse. Dermed skal de resterende to koordinater findes på en cirkel parallelt til XY-planet med almindeligt trigonometri.</p>
+<p>Lad <i>(s,t)</i> tilhøre [0,1]&times;[0,1]. Fastlæg <i>z</i> med det samme som 2<i>s</i>-1.
+Lad radius <i>r</i> = sqrt(1-<i>z</i><sup>2</sup>). Lad placeringen på cirklen være &phi; = 2 <i>t</i> &pi;. Så kan <i>(x,y,z)</i> udtrykkes som (<i>r</i> cos &phi;, <i>r</i> sin &phi;, <i>z</i>).</p>
+<p>Sådan ser det ud i Scheme:</p>
+<div class="vim" id="scheme">(define (plane->sphere p)
+   (let* ((z (- (* 2 (car p)) 1))
+          (t (* 2 PI (cadr p)))
+          (r (sqrt (- 1 (* z z)))))
+      (vector (* r (cos t)) (* r (sin t)) z)))
+</div>
+<br>
+<p>Nedenstående viser omkr. 1000 Poisson-disk fordelte punkter mappet til en kugle.</p>
+<p><a href="{{site.url}}/assets/uniform-sphere.png"><img src="{{site.url}}/assets/uniform-sphere_thumbnail.png"></a></p>
+<p>Bemærk især, hvordan punkterne <i>ikke</i> klumper sammen omkring z-aksen.</p>

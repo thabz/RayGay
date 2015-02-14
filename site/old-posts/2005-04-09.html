@@ -1,0 +1,27 @@
+<h>Parametriske overflader</h>
+<p>Har kodet understøttelse for parametriske overflader. Dette er overflader defineret ved en vilkårlig kontinuert funktion <i>f(u,v)</i> &rarr; &#8477;<sup>3</sup> hvor u,v tilhører [0,1]&times;[0,1]. Funktionen kan defineres i Scheme og bruges via callback. Overfladen konverteres implicit til et mesh af trekanter.</p>
+<p><a href="files/tracer78big.png"><img src="files/tracer78.png"></a>
+<p>Ovenstående er <a href="http://mathworld.wolfram.com/Seashell.html">Seashell</a> overfladen defineret således i Scheme:</p>
+<div id="scheme" class="vim">; Seashell parametrization
+(define (seashell-func u01 v01)
+  (let* ((u (* u01 8 PI))
+	 (v (* v01 2 PI)) 
+	 (e6 (exp (/ u (* 6 PI))))
+	 (e3 (exp (/ u (* 3 PI))))
+	 (c (cos (* 0.5 v))))
+    (list
+      (* 2 (- 1 e6) (cos u) c c)
+      (* 2 (- e6 1) (sin u) c c)
+      (- 1 e3 (sin v) (* -1 e6 (sin v)))
+      ))) 
+
+; Append surface to scene
+(append! scene
+   (list 
+    (make-parametrized-surface 
+     seashell-func 
+     100 100 #f #f 
+     tiles-material)))
+</div>
+
+

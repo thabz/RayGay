@@ -1,0 +1,22 @@
+---
+layout: post
+title:  Photonmapping
+date:   2004-09-13
+categories: raygay update
+---
+
+<p>Fedter rundt med diffust lys igen og lavede en lille scene til at teste med.</p>
+<p><a href="{{site.url}}/assets/tracer64big.png"><img alt="" src="{{site.url}}/assets/tracer64.png"></a>
+<p>Hvilket ser sådan ud i scenesproget:</p>
+<div class="vim">$width = 3200
+$x = -$width / 2
+while ($x &lt; $width/2) {
+   $z = -$width / 2
+   while ($z &lt; $width/2) {
+      $a = sin($z/400)*sin($x/250)*300
+      object $box translate &lt;$x,$a,$z&gt;
+      $z += 120
+   }
+   $x += 120
+}
+</div>

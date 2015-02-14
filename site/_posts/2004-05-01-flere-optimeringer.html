@@ -1,0 +1,9 @@
+---
+layout: post
+title:  Flere optimeringer
+date:   2004-05-01
+categories: raygay update
+---
+
+<p>Smed <tt>-g -O3 -Wall -ffast-math -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing</tt> efter gcc og rendertiden er nu på 2:35.</p>
+<p>Hele 70% af tiden bruges af den lille <tt>Triangle::_fastIntersect()</tt> som udføres 716 millioner gange. 20% bruges i BSP-træets <tt>intersect</tt> som kaldes 9 millioner gange og 10% bruges så på at beregne pæne farver.</p>

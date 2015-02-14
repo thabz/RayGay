@@ -1,0 +1,23 @@
+---
+layout: post
+title:  Project Euler - R6RS - Blandede billeder
+date:   2008-04-13
+categories: raygay update
+---
+
+<p>Har brugt en del tid p&aring; at l&oslash;se opgaver i <a href="http://projecteuler.net/">Project Euler</a>.  Dermed har jeg f&aring;et luget ud i en del bugs i min Scheme-implementation.</p>
+
+<h2>R6RS</h2>
+<p>Dette har ogs&aring; v&aelig;ret motivationen til at implementere store dele af <a href="http://www.r6rs.org/final/html/r6rs-lib/r6rs-lib.html">standardbiblioteket</a> som den nye Scheme-standard kr&aelig;ver. Det har bla. medf&oslash;rt at alle source-filer forventes at v&aelig;re i UTF-8, hvormed man nu kan bruge symboler som <tt>&pi;</tt>, <tt>&lambda;</tt> eller <tt>vector&rarr;list</tt> istedet for <tt>PI</tt>, <tt>lambda</tt> og <tt>vector->list</tt>.</p>
+
+<h2>Blandede billeder</h2>
+<p>Nogle billeder som jeg har brugt til at debugge fejl i traceren med.</p> 
+<p>Orthocircles i 16:10 format, dvs. kan bruges som baggrundstapet p&aring; widescreen-sk&aelig;rme.
+	Orthocircles er en isosurface (her renderet via marchingcubes) med formlen:</p>
+<p>((x<sup>2</sup> + y<sup>2</sup> - 1)<sup>2</sup> + z<sup>2</sup>) ((y<sup>2</sup> + z<sup>2</sup> - 1)<sup>2</sup> + x<sup>2</sup>) ((z<sup>2</sup> + x<sup>2</sup> - 1)<sup>2</sup> + y<sup>2</sup>) -  0.0375<sup>2</sup> (1 + 3 (x<sup>2</sup> + y<sup>2</sup> + z<sup>2</sup>)) = 0</p> 
+
+<p><a href="{{site.url}}/assets/orthocircles-2000-samples.png"><img style="border:0px" src="{{site.url}}/assets/orthocircles-2000-samples_thumbnail.png"></a></p>
+<p>Den klassiske tepotte i 16:9 format.</p>
+<p><a href="{{site.url}}/assets/teapot.png"><img style="border:0px" src="{{site.url}}/assets/teapot_thumbnail.png"></a></p>
+<p>Venii fra Milo i forskellige farver.</p>
+<p><a href="{{site.url}}/assets/venus.png"><img style="border:0px" src="{{site.url}}/assets/venus_thumbnail.png"></a></p>

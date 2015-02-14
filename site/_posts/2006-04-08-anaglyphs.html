@@ -1,0 +1,11 @@
+---
+layout: post
+title:  Anaglyphs
+date:   2006-04-08
+categories: raygay update
+---
+
+<p>ImageMagick kan kombinere to billeder til et stereo anaglyph:<p>
+<div class="vim"><pre>$ convert -colorspace gray left.png left_tmp.png
+$ convert -colorspace gray right.png right_tmp.png
+$ composite -stereo right_tmp.png left_tmp.png out.png</pre></div>

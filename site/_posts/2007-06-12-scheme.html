@@ -1,0 +1,9 @@
+---
+layout: post
+title:  Scheme
+date:   2007-06-12
+categories: raygay update
+---
+
+<p>Har brugt de sidste måneder på at kode min egen <a href="http://en.wikipedia.org/wiki/Scheme_(programming_language)">Scheme</a> fortolker, som jeg netop har lagt ind i raytraceren i stedet for <a href="http://www.gnu.org/software/guile/guile.html">GNU's guile</a>. Det har været skægt at kode garbage-collectors, hurtige heaps, <a href="http://en.wikipedia.org/wiki/Tail-recursion">tail-recursion</a>, <a href="http://en.wikipedia.org/wiki/Continuation">continuations</a>, <a href="http://en.wikipedia.org/wiki/Closure_%28computer_science%29">closures</a>, makroer og andre specialiteter som Scheme skal understøtte.</p>
+<p>Forhåbningen er at jeg lavet understøttelse for lynhurtig linær algebra, så min Scheme kan integreres tættere på raytraceren. F.eks. kunne <a href="http://en.wikipedia.org/wiki/Shader">shaders</a> skrives direkte i Scheme med call-backs fra C++.</p>

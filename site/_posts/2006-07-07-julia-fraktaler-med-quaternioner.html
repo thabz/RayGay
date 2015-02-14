@@ -1,0 +1,16 @@
+---
+layout: post
+title:  Julia fraktaler med quaternioner
+date:   2006-07-07
+categories: raygay update
+---
+
+<p>Har implementeret 4-dimensionelle Julia fraktaler. Disse udregnes på samme måde som almindelige fraktaler, hvor et punkt z<sub>0</sub> tilhører mængden hvis følgende simple række kan begrænses, dvs. ikke forlader en angivet kugle.
+<p><center><i>z<sub>N+1</sub> = z<sub>N</sub><sup>2</sup> + c.</i></center><br></p>
+<p></p>
+<p>Dog bruges <a href="http://mathworld.wolfram.com/Quaternion.html">quaternioner</a> istedet for komplekse tal. Disse projiceres fra fire dimensioner til tre ved at skære med et 4-D plan og den resulterende 3-D-skive renderes som en isosurface.</p>
+<p><i>c</i> = (-0.08, 0.0, -0.8, -0.03) giver følgende:</p>
+<p><a href="{{site.url}}/assets/tracer86big.png"><img src="{{site.url}}/assets/tracer86.png"></a></p>
+<p>og <i>c</i> = (-0.450, -0.447, 0.181, 0.306) giver følgende:</p>
+<p><a href="{{site.url}}/assets/tracer87big.png"><img src="{{site.url}}/assets/tracer87.png"></a></p>
+

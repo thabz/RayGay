@@ -1,0 +1,12 @@
+---
+layout: post
+title:  Blog - Adaptive supersampling
+date:   2004-01-14
+categories: raygay update
+---
+
+<p>Har nu lagt denne blog offentligt ud.</p>
+
+<h2>Adaptive supersampling</h2>
+<p>Fik omsider kodet antialiasing ved hjælp af adaptive supersampling. Dette foregår ved at traceren <i>supersampler</i>, dvs. skyder flere primære rays afsted end der er pixels, således at hver pixels består af et gennemsnit af flere rays' resulterende farve. Det <i>adaptive</i> består i, at der kun laves antialias eller supersampling hvor det er nødvendigt. For hver pixel skydes fire rays afsted &mdash; en fra hvert af pixelens hjørner. Hvis disse rays giver for forskellige farver, deles pixelen op i fire subpixels, hvorefter processen gentages på disse, osv. Der stoppes når farvernes lysstyrke er divergeret eller en maximal rekursionsdybde er nået. Den oprindelige pixel får nu det vægtede gennemsnit af alle disse rays.</p>
+<p><a href="{{site.url}}/assets/tracer34big.png"><img src="{{site.url}}/assets/tracer34.png"></a></p>

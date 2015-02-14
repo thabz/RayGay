@@ -1,0 +1,12 @@
+---
+layout: post
+title:  Halftone - GZIP
+date:   2007-09-01
+categories: raygay update
+---
+
+<p>Konvertede en af mine animationer til <a href="http://en.wikipedia.org/wiki/Halftone">halftone</a>. Jeg gjorde det på 5 minutter med en Photoshop macro, men effekten er så fed, at jeg måske ender med at kode et postprocessing filter til traceren, som kan gøre det samme.</p>
+<p><a href="{{site.url}}/assets/caustics-halftone.mp4"><img src="{{site.url}}/assets/caustics_halftone_thumbnail.png"></a></p>
+
+<h2>GZIP</h2>
+<p>Har kodet en GZIP decompressor efter <a href="http://tools.ietf.org/html/rfc1951">RFC 1951</a> og <a href="http://tools.ietf.org/html/rfc1952">RFC 1952</a>. Planen er lave et <a href="http://en.wikipedia.org/wiki/Ifstream">C++ ifstream</a>-interface ovenpå og så lade traceren automatisk pakke .gz filer ud. Det er f.eks. smart til store objekter, både <a href="http://en.wikipedia.org/wiki/PLY_%28file_format%29">PLY-format</a> eller mit Scheme-format.</p>

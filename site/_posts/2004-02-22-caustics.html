@@ -1,0 +1,11 @@
+---
+layout: post
+title:  Caustics
+date:   2004-02-22
+categories: raygay update
+---
+
+<p>Photontraceren kan nu refracte photoner. Et konveks glasobjekt fokuserer lys, som det ses under glaskuglen nedenfor. Dette kaldes <i>caustics</i>, hvilket ikke kan renderes med almindelig raytracing.</p>
+<p><a href="{{site.url}}/assets/tracer39big.png"><img src="{{site.url}}/assets/tracer39.png"></a></p>
+<p>Har stadig problemer med støj i final gathering. Tror det er fordi min Monte Carlo integration ikke divergerer hurtigt nok. Derfor har jeg kigget på quasi-tilfældige generatorer såsom Halton-sekvensen, men uden resultater.</p>
+<p>Den groteske lysklump i hjørnet forsvinder når final gathering virker.</p>

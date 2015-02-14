@@ -1,0 +1,46 @@
+---
+layout: post
+title:  Nyt scenesprog
+date:   2005-01-31
+categories: raygay update
+---
+
+<p>Så er integrationen af Scheme-parseren næsten på højde med den tidligere parser. Og mit lille hoved er endelig ved at kunne overskue Scheme-syntaks.</p>
+
+<p><a href="{{site.url}}/assets/tracer73big.png"><img src="{{site.url}}/assets/tracer73.png"></a></p>
+
+<p>Billedet er lavet med følgende simple scene, som konverterer pixels i et billede til kulørte kugler.</p>
+
+<p>
+<div id="scheme" class="vim">(define img 
+ (make-texture 
+  "gfx/larry.jpg" 1.0 1.0 "none"))
+
+(define num 48)
+
+(let itery ((y (- num)))
+  (if (not(= y num))
+    (begin 
+      (let iterx ((x (- num)))
+	(if (not(= x num))
+	  (begin
+	    (append! 
+	      scene
+	      (list 
+		(make-sphere
+		  (list (* x 20) (* y -20) 0) 15.0
+		  (make-material 
+		    (list 
+		      'diffuse 
+		      (get-pixel 
+			img 
+			(/ (+ x num) (* 2 num)) 
+			(/ (+ y num) (* 2 num)))
+		      'kd 1.0
+		      'ks 0.0)))))
+	    (iterx (+ x 1)))))
+      (itery (+ y 1)))))
+</div>
+</p>
+
+

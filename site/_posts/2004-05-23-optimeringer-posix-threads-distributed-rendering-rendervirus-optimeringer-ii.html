@@ -1,0 +1,22 @@
+---
+layout: post
+title:  Optimeringer - POSIX Threads - Distributed rendering - Rendervirus - Optimeringer II
+date:   2004-05-23
+categories: raygay update
+---
+
+<p>Har tunet virtual nedarvning i objekter samt gjort stats-måleren mindre idiotisk. Min benchmarkscene beregnes nu på 1:23.</p>
+
+<h2>POSIX Threads</h2>
+<p>Har omsider fået implementeret multithreading i photonmapperen, hvilket giver 20% speedup på en P4 med hyperthreading. Har desværre ikke adgang til en ægte SMP-æske.</p>
+<p>Jeg mangler at gøre selve raytraceren multithreaded. Dette er lidt mere tricky, da min shadowcache kode ikke er reentrant.</p>
+<p>Fandt også ud af at bruge <a href="http://www.gnu.org/software/gengetopt/man_getopt.html">getopt</a> til at parse commandline options med. Har allerede <tt>-v</tt>, <tt>-h</tt> og <tt>-j NUM</tt> på plads. Sidstnævnte angiver hvor mange POSIX threads der skal i sving.</p>
+
+<h2>Distributed rendering</h2>
+<p>Har planer om at kunne sprede en rendering ud på flere maskiner. Den mest almindelige metode bruges til animationer, hvor hver maskine regner på hver sin hele frame. Så vinder man dog ikke noget ved enkelt-billede beregninger, hvilket jeg laver mest af. Min plan er derfor, at lade flere maskiner beregne på hver sin delmængde eller <i>tile</i> af et helt billede. Der skal så bare laves en render-manager i noget simpelt shell-script, som gennem <tt>ssh</tt> fyrer tracer-processer afsted på de forskellige hosts og tilsidst kombinerer de resulterende tiles til eet billede.</p>
+
+<h2>Rendervirus</h2>
+<p>Når det er på plads, skriver jeg selvfølgelig hele lortet om i Visual Basic og omdøber alle filer til ".scr". Så kan jeg nemt få udvidet min renderfarm med et par millioner hosts, takket være Outlook Express' smarte facilitet til "ressource-deling".</p>
+
+<h2>Optimeringer II</h2>
+<p>Fiflede lidt med kd-træets udregning af min og max t-værdier. Benchmark-scenen renderes nu på 1:07.</p>

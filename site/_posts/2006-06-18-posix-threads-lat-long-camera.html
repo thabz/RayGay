@@ -1,0 +1,15 @@
+---
+layout: post
+title:  POSIX threads - Lat-long camera
+date:   2006-06-18
+categories: raygay update
+---
+
+<p>Faldt over pthreads' funktioner (<tt>pthread_key_create, pthread_getspecific, pthread_setspecific</tt>) til thread local storage. Disse kunne bruges til at fjerne nogle mutex locks på et par centrale caches, hvori jeg gemte midlertidige udregninger, såsom ray-coherence-optimeringer. Nu oprettes uafhængige caches til hver tråd. Efter at havde udnyttet dette trick rundt omkring i traceren, er performance meget tæt på dobbelt på systemer med to CPUer. Før blev den ekstra CPU højst udnyttet 50%.</p>
+
+<h2>Lat-long camera</h2>
+<p>Traceren har nu mulighed for flere kamera-typer. Nedenstående rendering af fra en såkaldt panorama-camera eller lat-long-camera. Det renderer hele scenen i 360&deg;&times;180&deg; visning. Nederste linie på billedet er punktet lige under kameraet og hele øverste linie er punktet lige over kameraet.</p>
+<p><a href="{{site.url}}/assets/tracer82big.png"><img src="{{site.url}}/assets/tracer82.png"></a></p>
+<p>Nedenstående er samme scene set lidt udefra med et almindelig perspektiv-kamera. I ovenstående billedet er kameraet placeret midt mellem de fire kasser.</p>
+<p><a href="{{site.url}}/assets/tracer83big.png"><img src="{{site.url}}/assets/tracer83.png"></a></p>
+

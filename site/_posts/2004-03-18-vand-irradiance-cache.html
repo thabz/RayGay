@@ -1,0 +1,14 @@
+---
+layout: post
+title:  Vand - Irradiance Cache
+date:   2004-03-18
+categories: raygay update
+---
+
+<p>Har kodet et <tt>Heightfield</tt> objekt, som genererer et grid af trekanter ud fra et bitmap, hvor lysstyrke fortolkes som højde. Dette kunne også kaldes et materialiseret bumpmap.</p>
+<p>Et gennemsigtigt <tt>Heightfield</tt> som bryder lys ligner vand. Billedet herunder bruger desuden 2.000.000 caustic photoner til at simulere lyset i bunden af en pool. Vandoverfladen består af 20.000 trekanter.</p>
+<p><a href="{{site.url}}/assets/tracer43big.png"><img src="{{site.url}}/assets/tracer43.png"></a></p>
+
+<h2>Irradiance Cache</h2>
+<p>Jeg har desuden implementeret en <a href="http://radsite.lbl.gov/radiance/papers/sg88/paper.html">Irradiance Cache</a> som foreslået af Greg Ward. Denne gør beregning af indirekte diffust lys mere end 100 gange så hurtig.</p>
+<p>Billedet af rummet med persienner nedenfor beregnes nu på en time i stedet for fire dage.</p>

@@ -1,0 +1,55 @@
+---
+layout: post
+title:  Scene importer
+date:   2004-01-25
+categories: raygay update
+---
+
+<p>Inspireret af <a href="http://graphics.stanford.edu/~cek/rayshade/rayshade.html">Rayshade</a> opfandt jeg et simpelt format til at beskrive scener i &mdash; og kodede en parser til formålet.</p>
+<p><a href="{{site.url}}/assets/tracer36big.png"><img src="{{site.url}}/assets/tracer36.png"></a></p>
+<p>Ovenstående billede er beregnet ud fra følgende.</p>
+<div class="vim"><pre># Inkludér materialer
+include materials.gay
+
+# Et trin
+name step group
+    cylinder $dullblue 4    190 0 0   190 100 0
+    box $dullblue 0 -10 -40     200 10 40
+    box $dullblue 0 5 -40     200 10 45
+end
+
+# Kopier af trinet roteres om y-aksen og
+# forskydes langs samme
+object step rotate 0 1 0 140 translate 0 -140 0
+object step rotate 0 1 0 120 translate 0 -120 0
+object step rotate 0 1 0 100 translate 0 -100 0
+object step rotate 0 1 0 80 translate 0 -80 0
+object step rotate 0 1 0 60 translate 0 -60 0
+object step rotate 0 1 0 40 translate 0 -40 0
+object step rotate 0 1 0 20 translate 0 -20 0
+object step rotate 0 1 0 00 translate 0 00 0
+object step rotate 0 1 0 -20 translate 0 20 0
+object step rotate 0 1 0 -40 translate 0 40 0
+object step rotate 0 1 0 -60 translate 0 60 0
+object step rotate 0 1 0 -80 translate 0 80 0
+object step rotate 0 1 0 -100 translate 0 100 0
+object step rotate 0 1 0 -120 translate 0 120 0
+object step rotate 0 1 0 -140 translate 0 140 0
+object step rotate 0 1 0 -160 translate 0 160 0
+object step rotate 0 1 0 -180 translate 0 180 0
+object step rotate 0 1 0 -200 translate 0 200 0
+object step rotate 0 1 0 -220 translate 0 220 0
+
+# Midter cylinder
+cylinder $dullblue 50  0 -140 0 0 250 0
+
+# Gelænder
+linesegment $line 0 -140 0   0 220 0
+spiral $spiral $line 190 1 0.1
+extrusion $dullblue $spiral 8 16 50
+translate 0 100 0
+
+# Gulvet
+box $green -300 -200 -300 300 -150 300
+</pre>
+</div>
