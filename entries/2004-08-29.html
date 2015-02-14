@@ -1,0 +1,20 @@
+<h>Preview vindue</h>
+<p>Der er kodet et preview-vindue i <a href="http://www.gtk.org/">GTK+</a> som laver såkaldt <i>progressive refinement</i> via gradienter. Billedet bliver delt op i mindre og mindre tiles. De tiles som har størst kontrast mellem hjørnefarverne får højste <i>importance</i> og udregnes først. Hver tile plottes som en gradient mellem hjørnefarverne. Tiles som er under en vis størrelse renderes fuldt ud --- større tiles splittes op i fire mindre tiles.</p>
+<p>Allerede efter 4% pixels kan form og farver anes.</p>
+<p><a href="files/tracer58big.png"><img src="files/tracer58.png"></a></p>
+<p>Og ved 48% mangler kun de store flader med lav <i>importance</i> at blive udregnet.</p>
+<p><a href="files/tracer59big.png"><img src="files/tracer59.png"></a></p>
+
+<h>Superellipsoid</h>
+<p>Kodede en <a href="http://astronomy.swin.edu.au/~pbourke/surfaces/superellipse/">superellipsoid</a> isosurface.</p>
+<p><a href="files/tracer56big.png"><img src="files/tracer56.png"></a></p>
+
+<h>In other news</h>
+<p>Scenesproget lader nu een definere og kalde funktioner med argumenter. Understøttelse af retur-værdier mangler.</p>
+<p>Fortolkeren kan give runtime errors incl. source-filnavn og linienummer.</p>
+<p>Rodfinderen til isosurfaces bruger nu ikke-rekursiv <i>bisection</i> hvilket er noget hurtigere. Er ved at implementere <a href="http://mathworld.wolfram.com/BrentsMethod.html">Brent's method</a> som er endnu bedre.</p>
+<p>Der er understøttelse for variabel skalering i hver akse for de objekter, som ikke består af meshes. En kugle kan således skaleres til en ellipsoid.</p>
+
+<h>Wiggle</h>
+<p>En nyt desktop billede.</h>
+<p><a href="files/tracer57big.png"><img src="files/tracer57.png"></a></p>

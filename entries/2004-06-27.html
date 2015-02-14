@@ -1,0 +1,25 @@
+<h>Möbius-bånd</h>
+<p>Nedenstående er bare lidt leg med hhv. 100 og 5000 cylindere.</p>
+<p><a href="files/tracer52big.png"><img src="files/tracer52.png"></a></p>
+<p><a href="files/tracer53big.png"><img src="files/tracer53.png"></a></p>
+<p>Objektet er programmeret således:</p>
+<p>
+<div class="vim"><pre>$cyl = group {
+    sphere { $chrome 20 <0,200,0> }
+    cylinder { $chrome 20 <0,-200,0> <0,200,0> }
+    sphere { $chrome 20 <0,-200,0> }
+}
+
+$i = 0
+$num = 100
+$windings = 3.5
+do {
+    object $cyl
+       rotate { <1,0,0> $windings*$i*(360/$num) }
+       translate <0,250,500> 
+       rotate { <0,1,0> $i*(360/$num) }
+    $i++
+} while ($i &lt; $num)</pre>
+</div>
+
+</p>
