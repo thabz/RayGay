@@ -292,7 +292,7 @@ sub makeSidebar {
 	}
     }
     
-    $HTML .= '<br><br><a href="library.cgi">Bibliotek</a>';
+    $HTML .= '<br><br><a href="https://github.com/thabz/RayGay">Code</a>';
     return $HTML;
 }
 
