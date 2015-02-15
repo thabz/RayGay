@@ -65,3 +65,27 @@
     .vi    { color: #008080 } // Name.Variable.Instance
     .il    { color: #099 } // Literal.Number.Integer.Long
 }
+
+
+div.vim {
+       background-color: #e0e0c0;
+       border: 0px solid #808060;
+       color: #202020;
+       padding: 10px;
+       font-family: LucidaTypewriter, Courier, sans-serif;
+       font-size: 10pt;
+       white-space: pre;
+       -moz-border-radius: 6.5px;
+       -webkit-border-radius: 6.5px;
+       -webkit-box-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+}
+
+div.shell {
+       background-color: #202060;
+       border: 1px solid #8080c0;
+       color: #c0c0c0;
+       padding: 10px;
+       font-family: LucidaTypewriter, Courier, sans-serif;
+       font-size: 10pt;
+       white-space: pre;
+}
