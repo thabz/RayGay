@@ -1,6 +1,4 @@
 
-#include "http/httpserver.h"
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -23,6 +21,7 @@ extern "C" {
 #include "http/md5.h"
 }
 
+#include "http/httpserver.h"
 #include "exception.h"
 
 #ifdef OS_DARWIN
