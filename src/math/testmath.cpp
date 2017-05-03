@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <limits>
 
 #include "vector.h"
 #include "vector2.h"
@@ -1517,6 +1518,25 @@ class arc_interval_test : public Test {
 	}
 };
 
+int __isinf(double x) {
+    return fabs(x) > std::numeric_limits<double>::max();
+}
+
+class inf_and_nan_test : public Test {
+    public:
+	void run() {
+        assertFalse(NAN == NAN);
+        assertFalse(NAN > NAN);
+        assertTrue(std::numeric_limits<double>::infinity() == std::numeric_limits<double>::infinity());
+        assertTrue(std::numeric_limits<double>::infinity() > 0);
+        assertTrue(std::numeric_limits<double>::has_infinity);
+        assertTrue(__isinf(std::numeric_limits<double>::infinity()));
+        assertTrue(__isinf(std::numeric_limits<double>::infinity()));
+        assertTrue(__isinf(-std::numeric_limits<double>::infinity()));
+        assertTrue(std::numeric_limits<double>::infinity() > -std::numeric_limits<double>::infinity());
+    }
+};
+
 int main(int argc, char *argv[]) {
 
     TestSuite suite;
@@ -1544,6 +1564,7 @@ int main(int argc, char *argv[]) {
     suite.add("Interval",new interval_test());
     suite.add("Arc interval",new arc_interval_test());
     suite.add("Poisson Disc",new poisson_disc_test());
+    suite.add("Infinity and NaN",new inf_and_nan_test());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {
