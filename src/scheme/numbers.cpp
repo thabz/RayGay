@@ -435,7 +435,7 @@ SchemeObject* s_exp(Scheme* scheme, SchemeObject* n) {
     } else {
 	double d = scm2double(n);
 	if (std::isinf(d)) {
-	    return double2scm(d > 0 ? -log(0.0) : 0.0);
+	    return double2scm(d > 0 ? INFINITY : 0.0);
 	} else {
 	    return double2scm(std::exp(d));
 	}
