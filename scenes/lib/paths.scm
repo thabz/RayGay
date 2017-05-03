@@ -67,7 +67,7 @@
    #f)))
 
 (define (make-circle center radius normal)
- (let* ((a (if (v= normal y-axis vector-epsilon) x-axis y-axis))
+ (let* ((a (if (v= normal y-axis vector-epsilon) y-axis x-axis))
         (o (orient identity-matrix
 		       normal (vcrossproduct a normal)))
         (m (translate o center)))
