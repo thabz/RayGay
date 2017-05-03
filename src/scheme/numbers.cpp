@@ -1270,9 +1270,9 @@ SchemeObject* i_string_2_number(Scheme* scheme, wstring s, uint32_t radix, size_
 	    return S_FALSE;
     }
     if (s == L"+inf.0") {
-	    return double2scm(-1.0 * log(0.0));
+	    return double2scm(INFINITY);
     } else if (s == L"-inf.0") {
-	    return double2scm(log(0.0));
+	    return double2scm(-INFINITY);
     } else if (s == L"+nan.0") {
         return double2scm(NAN);
     }
