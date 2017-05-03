@@ -39,8 +39,6 @@ Glyph::Glyph(TrueTypeFont::Glyph* glyph, const Material* material) {
             Vector2 c1 = contour.coords[j];
             if (contour.onCurve[j]) {
                 // Add linesegment from c0 to c1
-                Vector2 middle = (c0 + c1) * 0.5;
-                //ExtrudedLine* l = new ExtrudedLine(c0, c1, material);    
                 ExtrudedCurve* c = new ExtrudedCurve(c0, c1, c1, material);
                 ObjectGroup::addObject(c);
                 // Continue from control point c1
