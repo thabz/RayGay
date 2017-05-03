@@ -7,8 +7,26 @@
 #include <cstdlib>
 #include <cstring>
 
+// The built-in std::isinf and std::isnan doesn't work in Linux.
+// When I discovered that 
+//
+// std::isinf(std::numeric_limits<double>::infinity())
+//
+// was false, I gave up on those without further investigation.
+// It's probably in combination with -ffast-math but who cares.
+//
+// http://stackoverflow.com/a/2249173/1514022
 int __isinf(double x) {
     return fabs(x) > std::numeric_limits<double>::max();
+}
+
+// http://stackoverflow.com/a/20723890/1514022
+int __isnan(double x)
+{
+    union { uint64_t u; double f; } ieee754;
+    ieee754.f = x;
+    return ( (unsigned)(ieee754.u >> 32) & 0x7fffffff ) +
+           ( (unsigned)ieee754.u != 0 ) > 0x7ff00000;
 }
 
 void coerceNumbers(int num, SchemeStack::iterator stack, double* dest) {
@@ -866,7 +884,7 @@ SchemeObject* s_zero_p(Scheme* scheme, SchemeObject* n) {
         result = c.real() == 0.0 && c.imag() == 0.0;
     } else {
         double d = scm2double(n);
-        result = !std::isnan(d) && d == 0.0;
+        result = !__isnan(d) && d == 0.0;
     }
     return bool2scm(result);
 }
@@ -892,7 +910,7 @@ SchemeObject* s_finite_p(Scheme* scheme, SchemeObject* n) {
 SchemeObject* s_nan_p(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"finite?", 1, n);
     if (n->type() == SchemeObject::REAL_NUMBER) {
-	    return bool2scm(std::isnan(scm2double(n)));
+	    return bool2scm(__isnan(scm2double(n)));
     } else {
 	    return S_FALSE;
     }
@@ -933,9 +951,9 @@ SchemeObject* s_equal(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (outType == SchemeObject::REAL_NUMBER) {
         double* args = (double*)::alloca(sizeof(double)*num);
         coerceNumbers(num,stack,args);
-        if (std::isnan(args[0])) return S_FALSE;
+        if (__isnan(args[0])) return S_FALSE;
         for(int i = 1; i < num; i++) {
- 	        if (std::isnan(args[i]) || args[i] != args[i-1]) return S_FALSE;
+ 	        if (__isnan(args[i]) || args[i] != args[i-1]) return S_FALSE;
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
@@ -972,9 +990,9 @@ SchemeObject* s_less(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (outType == SchemeObject::REAL_NUMBER) {
         double* args = (double*)::alloca(sizeof(double)*num);
         coerceNumbers(num,stack,args);
-        if (std::isnan(args[0])) return S_FALSE;
+        if (__isnan(args[0])) return S_FALSE;
         for(int i = 1; i < num; i++) {
- 	        if (std::isnan(args[i]) || args[i-1] >= args[i]) return S_FALSE;
+ 	        if (__isnan(args[i]) || args[i-1] >= args[i]) return S_FALSE;
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
@@ -1005,9 +1023,9 @@ SchemeObject* s_less_equal(Scheme* scheme, int num, SchemeStack::iterator stack)
     if (outType == SchemeObject::REAL_NUMBER) {
         double* args = (double*)::alloca(sizeof(double)*num);
         coerceNumbers(num,stack,args);
-        if (std::isnan(args[0])) return S_FALSE;
+        if (__isnan(args[0])) return S_FALSE;
         for(int i = 1; i < num; i++) {
- 	        if (std::isnan(args[i]) || args[i-1] > args[i]) return S_FALSE;
+ 	        if (__isnan(args[i]) || args[i-1] > args[i]) return S_FALSE;
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
@@ -1038,9 +1056,9 @@ SchemeObject* s_greater(Scheme* scheme, int num, SchemeStack::iterator stack) {
     if (outType == SchemeObject::REAL_NUMBER) {
         double* args = (double*)::alloca(sizeof(double)*num);
         coerceNumbers(num,stack,args);
-        if (std::isnan(args[0])) return S_FALSE;
+        if (__isnan(args[0])) return S_FALSE;
         for(int i = 1; i < num; i++) {
- 	        if (std::isnan(args[i]) || args[i-1] <= args[i]) return S_FALSE;
+ 	        if (__isnan(args[i]) || args[i-1] <= args[i]) return S_FALSE;
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
@@ -1072,9 +1090,9 @@ SchemeObject* s_greater_equal(Scheme* scheme, int num, SchemeStack::iterator sta
     if (outType == SchemeObject::REAL_NUMBER) {
         double* args = (double*)::alloca(sizeof(double)*num);
         coerceNumbers(num,stack,args);
-        if (std::isnan(args[0])) return S_FALSE;
+        if (__isnan(args[0])) return S_FALSE;
         for(int i = 1; i < num; i++) {
- 	        if (std::isnan(args[i]) || args[i-1] < args[i]) return S_FALSE;
+ 	        if (__isnan(args[i]) || args[i-1] < args[i]) return S_FALSE;
         }
 	    return S_TRUE;
     } else if (outType == SchemeObject::INTEGER_NUMBER) {
@@ -1141,7 +1159,7 @@ SchemeObject* i_integer_p(SchemeObject* p) {
         return bool2scm(d == 1 || d == -1);
     } else if (p->type() == SchemeObject::REAL_NUMBER) {
         double d = scm2double(p);
-        return !std::isnan(d) && !__isinf(d) && ::modf(d,&i) == 0.0 ? S_TRUE : S_FALSE;
+        return !__isnan(d) && !__isinf(d) && ::modf(d,&i) == 0.0 ? S_TRUE : S_FALSE;
     } else if (p->type() == SchemeObject::COMPLEX_NUMBER) {
         std::complex<double> z = p->complexValue();
         return ::modf(z.real(),&i) == 0.0 && z.imag() == 0.0 ? S_TRUE : S_FALSE;
@@ -1526,7 +1544,7 @@ wstring i_number_2_string(SchemeObject* o, uint32_t radix) {
         double d = scm2double(o);
 	    if (__isinf(d)) {
 	        ss << (d > 0 ? L"+inf.0" : L"-inf.0");
-	    } else if (std::isnan(d)) {
+	    } else if (__isnan(d)) {
 	        ss << L"+nan.0";
 	    } else {
 	        ss << std::setbase(radix);
