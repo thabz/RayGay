@@ -1,6 +1,5 @@
 
 #include "http/httpserver.h"
-#include "exception.h"
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -23,6 +22,8 @@ extern "C" {
 #include <arpa/inet.h>        /*  inet (3) funtions         */
 #include "http/md5.h"
 }
+
+#include "exception.h"
 
 #ifdef OS_DARWIN
 // Allow forked-off processes to die when they're done.
