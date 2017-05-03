@@ -1518,6 +1518,10 @@ class arc_interval_test : public Test {
 	}
 };
 
+int __isinf(double x) {
+    return fabs(x) > std::numeric_limits<double>::max();
+}
+
 class inf_and_nan_test : public Test {
     public:
 	void run() {
@@ -1526,9 +1530,9 @@ class inf_and_nan_test : public Test {
         assertTrue(std::numeric_limits<double>::infinity() == std::numeric_limits<double>::infinity());
         assertTrue(std::numeric_limits<double>::infinity() > 0);
         assertTrue(std::numeric_limits<double>::has_infinity);
-        assertTrue(isinf<double>(std::numeric_limits<double>::infinity()));
-        assertTrue(std::isinf<double>(std::numeric_limits<double>::infinity()));
-        assertTrue(std::isinf<double>(-std::numeric_limits<double>::infinity()));
+        assertTrue(__isinf(std::numeric_limits<double>::infinity()));
+        assertTrue(__isinf(std::numeric_limits<double>::infinity()));
+        assertTrue(__isinf(-std::numeric_limits<double>::infinity()));
         assertTrue(std::numeric_limits<double>::infinity() > -std::numeric_limits<double>::infinity());
     }
 };

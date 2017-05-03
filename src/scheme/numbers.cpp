@@ -7,6 +7,10 @@
 #include <cstdlib>
 #include <cstring>
 
+int __isinf(double x) {
+    return fabs(x) > std::numeric_limits<double>::max();
+}
+
 void coerceNumbers(int num, SchemeStack::iterator stack, double* dest) {
     for(int i = 0; i < num; i++) {
         *dest = scm2double(*stack);
@@ -434,7 +438,7 @@ SchemeObject* s_exp(Scheme* scheme, SchemeObject* n) {
         return complex2scm(std::exp(scm2complex(n)));
     } else {
 	double d = scm2double(n);
-	if (std::isinf(d)) {
+	if (__isinf(d)) {
 	    return double2scm(d > 0 ? std::numeric_limits<double>::infinity() : 0.0);
 	} else {
 	    return double2scm(std::exp(d));
@@ -870,7 +874,7 @@ SchemeObject* s_zero_p(Scheme* scheme, SchemeObject* n) {
 SchemeObject* s_infinite_p(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"infinite?", 1, n);
     if (n->type() == SchemeObject::REAL_NUMBER) {
-	    return bool2scm(std::isinf(scm2double(n)));
+	    return bool2scm(__isinf(scm2double(n)));
     } else {
 	    return S_FALSE;
     }
@@ -879,7 +883,7 @@ SchemeObject* s_infinite_p(Scheme* scheme, SchemeObject* n) {
 SchemeObject* s_finite_p(Scheme* scheme, SchemeObject* n) {
     assert_arg_number_type(L"finite?", 1, n);
     if (n->type() == SchemeObject::REAL_NUMBER) {
-	    return bool2scm(!std::isinf(scm2double(n)));
+	    return bool2scm(!__isinf(scm2double(n)));
     } else {
 	    return S_TRUE;
     }
@@ -1137,7 +1141,7 @@ SchemeObject* i_integer_p(SchemeObject* p) {
         return bool2scm(d == 1 || d == -1);
     } else if (p->type() == SchemeObject::REAL_NUMBER) {
         double d = scm2double(p);
-        return !std::isnan(d) && !std::isinf(d) && ::modf(d,&i) == 0.0 ? S_TRUE : S_FALSE;
+        return !std::isnan(d) && !__isinf(d) && ::modf(d,&i) == 0.0 ? S_TRUE : S_FALSE;
     } else if (p->type() == SchemeObject::COMPLEX_NUMBER) {
         std::complex<double> z = p->complexValue();
         return ::modf(z.real(),&i) == 0.0 && z.imag() == 0.0 ? S_TRUE : S_FALSE;
@@ -1520,7 +1524,7 @@ wstring i_number_2_string(SchemeObject* o, uint32_t radix) {
         return ss.str();
     } else if (type == SchemeObject::REAL_NUMBER) {
         double d = scm2double(o);
-	    if (std::isinf(d)) {
+	    if (__isinf(d)) {
 	        ss << (d > 0 ? L"+inf.0" : L"-inf.0");
 	    } else if (std::isnan(d)) {
 	        ss << L"+nan.0";
@@ -1541,7 +1545,7 @@ wstring i_number_2_string(SchemeObject* o, uint32_t radix) {
             return i_number_2_string(o->real, radix);        
         } else {
             ss << i_number_2_string(o->real, radix);
-            if (o->imag->realValue() >= 0.0 && !std::isinf(o->imag->realValue())) {
+            if (o->imag->realValue() >= 0.0 && !__isinf(o->imag->realValue())) {
                 ss << L"+";        
             }
             ss << i_number_2_string(o->imag, radix);
