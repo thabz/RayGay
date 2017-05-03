@@ -1274,7 +1274,7 @@ SchemeObject* i_string_2_number(Scheme* scheme, wstring s, uint32_t radix, size_
     } else if (s == L"-inf.0") {
 	    return double2scm(log(0.0));
     } else if (s == L"+nan.0") {
-	    return double2scm(sqrt(-1.0));
+        return double2scm(NAN);
     }
 
     bool radix_prefix_seen = false;
