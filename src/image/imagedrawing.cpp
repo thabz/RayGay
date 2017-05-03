@@ -33,8 +33,8 @@ void ImageDrawing::filledbox(Image* image, int x, int y, int w, int h, const RGB
 
 void ImageDrawing::filledcircle(Image* image, float x, float y, float r, const RGBA& c, AlphaCombineMode am) {
     for(float yi = y-r; yi < y+r; yi++) {
-        float phi = ::asin(::abs(yi-y)/r);
-        float xr = abs(::cos(phi)*r);
+        float phi = ::asin(std::abs(yi-y)/r);
+        float xr = std::abs(::cos(phi)*r);
         // Antialiased begin point
         float a = 1 - ((x-xr) - int(x-xr));
         RGBA d = RGBA(c.r(), c.g(), c.b(), c.a() * a);
