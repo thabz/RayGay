@@ -242,12 +242,12 @@ void GZIP::deflate() {
     global_filepos.bits_left_in_cur_byte = 0;
     
     // A checksum for the uncompressed data
-    uint32_t CRC32 = read_bits(&global_filepos, 32);
+    //uint32_t CRC32 = read_bits(&global_filepos, 32);
 
     // ISIZE is the uncompressed filesize modulo 2^32
     uint32_t ISIZE = read_bits(&global_filepos, 32);
     
-    if (buffer_pos & 0xffffffff != ISIZE) {
+    if ((buffer_pos & 0xffffffff) != ISIZE) {
         cout << "Uncompressed data doesn't match ISIZE" << endl;    
     }
 
