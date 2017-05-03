@@ -12,7 +12,7 @@
     (near-equal? (car a) (car b))
     (near-equal? (cdr a) (cdr b))))
   ((and (real? a) (real? b)) 
-   (> 0.0001 (abs (- a b))))
+   (> 0.01 (abs (- a b))))
   ((and (vector? a) (vector? b))
    (near-equal? (vector->list a) (vector->list b)))
   (else #f)))
