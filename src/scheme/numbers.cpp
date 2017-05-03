@@ -1199,7 +1199,7 @@ SchemeObject* i_double_2_exact(const double& n) {
     cout << "Exponent: " << exponent << endl;
     cout << "Mantissa: " << mantissa << endl;
     */
-    if (abs(exponent > 63)) {
+    if (abs(exponent) > 63) {
          // TODO: Create rational<bigint>   
     }
     rational_type result = rational_type(sign * mantissa, bit53);

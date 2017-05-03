@@ -7,6 +7,7 @@ win
 
 math/testmath
 scheme/testscheme
+scheme/testrational
 
 .libs
 .deps
