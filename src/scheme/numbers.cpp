@@ -435,7 +435,7 @@ SchemeObject* s_exp(Scheme* scheme, SchemeObject* n) {
     } else {
 	double d = scm2double(n);
 	if (std::isinf(d)) {
-	    return double2scm(d > 0 ? INFINITY : 0.0);
+	    return double2scm(d > 0 ? std::numeric_limits<double>::infinity() : 0.0);
 	} else {
 	    return double2scm(std::exp(d));
 	}
@@ -1270,11 +1270,11 @@ SchemeObject* i_string_2_number(Scheme* scheme, wstring s, uint32_t radix, size_
 	    return S_FALSE;
     }
     if (s == L"+inf.0") {
-	    return double2scm(INFINITY);
+	    return double2scm(std::numeric_limits<double>::infinity());
     } else if (s == L"-inf.0") {
-	    return double2scm(-INFINITY);
+	    return double2scm(-std::numeric_limits<double>::infinity());
     } else if (s == L"+nan.0") {
-        return double2scm(NAN);
+        return double2scm(std::numeric_limits<double>::quiet_NaN());
     }
 
     bool radix_prefix_seen = false;
