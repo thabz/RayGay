@@ -1,0 +1,13 @@
+raygay
+raygay-repl
+raygay-server
+raygay-queuemanager
+bench
+win
+
+math/testmath
+scheme/testscheme
+
+.libs
+.deps
+

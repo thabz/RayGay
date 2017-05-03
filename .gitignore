@@ -7,3 +7,5 @@
 Makefile.in
 Makefile
 *.dylib
+test*.log
+test*.trs
