@@ -35,6 +35,10 @@
    (expand (list 1 1 1)))))
 
 (define octahedron-vertices
+ (snap-to-unit-sphere 
+ '(#(1 0 0) #(-1 0 0) #(0 1 0) #(0 -1 0) #(0 0 1) #(0 0 -1))))
+
+(define x-octahedron-vertices
  (snap-to-unit-sphere
   (map list->vector (append
     (expand (list 1 0 0))
