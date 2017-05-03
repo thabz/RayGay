@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <limits>
 
 #include "vector.h"
 #include "vector2.h"
