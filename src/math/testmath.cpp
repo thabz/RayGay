@@ -1517,6 +1517,19 @@ class arc_interval_test : public Test {
 	}
 };
 
+class inf_and_nan_test : public Test {
+    public:
+	void run() {
+        assertFalse(NAN == NAN);
+        assertFalse(NAN > NAN);
+        assertTrue(std::numeric_limits<double>::infinity() == std::numeric_limits<double>::infinity());
+        assertTrue(std::numeric_limits<double>::infinity() > 0);
+        assertTrue(std::isinf(std::numeric_limits<double>::infinity()));
+        assertTrue(std::isinf(-std::numeric_limits<double>::infinity()));
+        assertTrue(std::numeric_limits<double>::infinity() > -std::numeric_limits<double>::infinity());
+    }
+};
+
 int main(int argc, char *argv[]) {
 
     TestSuite suite;
@@ -1544,6 +1557,7 @@ int main(int argc, char *argv[]) {
     suite.add("Interval",new interval_test());
     suite.add("Arc interval",new arc_interval_test());
     suite.add("Poisson Disc",new poisson_disc_test());
+    suite.add("Infinity and NaN",new inf_and_nan_test());
     suite.run();
     suite.printStatus();
     if (suite.hasFailures()) {
