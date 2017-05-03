@@ -1525,6 +1525,7 @@ class inf_and_nan_test : public Test {
         assertFalse(NAN > NAN);
         assertTrue(std::numeric_limits<double>::infinity() == std::numeric_limits<double>::infinity());
         assertTrue(std::numeric_limits<double>::infinity() > 0);
+        assertTrue(std::numeric_limits<double>::has_infinity);
         assertTrue(std::isinf(std::numeric_limits<double>::infinity()));
         assertTrue(std::isinf(-std::numeric_limits<double>::infinity()));
         assertTrue(std::numeric_limits<double>::infinity() > -std::numeric_limits<double>::infinity());
