@@ -13,7 +13,7 @@ SchemeObject* s_lightsource_p(Scheme* scheme, SchemeObject* object) {
 }
 
 SchemeObject* s_make_pointlight(Scheme* scheme, SchemeObject* s_pos, SchemeObject* s_power) {
-    wchar_t* proc = L"(make-pointlight pos [power])";
+    const wchar_t* proc = L"(make-pointlight pos [power])";
     Vector pos = scm2vector(s_pos, proc, 1);
     Pointlight* light = new Pointlight(pos);
     if (s_power != S_UNSPECIFIED) {
@@ -24,7 +24,7 @@ SchemeObject* s_make_pointlight(Scheme* scheme, SchemeObject* s_pos, SchemeObjec
 }
 
 SchemeObject* s_make_arealight(Scheme* scheme, SchemeObject* s_pos, SchemeObject* s_dir, SchemeObject* s_radius, SchemeObject* s_num, SchemeObject* s_jitter, SchemeObject* s_power) {
-    wchar_t* proc = L"(make-arealight pos dir radius num jitter [power])";
+    const wchar_t* proc = L"(make-arealight pos dir radius num jitter [power])";
     Vector pos = scm2vector(s_pos, proc, 1);
     Vector dir = scm2vector(s_dir, proc, 2);
     double radius = safe_scm2double(s_radius, 3, proc);
@@ -42,7 +42,7 @@ SchemeObject* s_make_arealight(Scheme* scheme, SchemeObject* s_pos, SchemeObject
 }
 
 SchemeObject* s_make_spotlight(Scheme* scheme, SchemeObject* s_pos, SchemeObject* s_lookat, SchemeObject* s_angle, SchemeObject* s_cut_angle, SchemeObject* s_power) {
-    wchar_t* proc = L"(make-spotlight pos lookat angle cut-angle [power])";
+    const wchar_t* proc = L"(make-spotlight pos lookat angle cut-angle [power])";
     Vector pos = scm2vector(s_pos, proc, 1);
     Vector lookat= scm2vector(s_lookat, proc, 2);
     double angle = safe_scm2double(s_angle,3,proc);
@@ -56,7 +56,7 @@ SchemeObject* s_make_spotlight(Scheme* scheme, SchemeObject* s_pos, SchemeObject
 }
 
 SchemeObject* s_make_skylight(Scheme* scheme, SchemeObject* s_radius, SchemeObject* s_num, SchemeObject* s_power) {
-    wchar_t* proc = L"(make-skylight radius num [power])";
+    const wchar_t* proc = L"(make-skylight radius num [power])";
     double radius = safe_scm2double(s_radius, 1, proc);
     int num = safe_scm2int(s_num, 2, proc);
     if (RendererSettings::uniqueInstance()->fast_preview) {
