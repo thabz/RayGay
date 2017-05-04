@@ -8,4 +8,4 @@ branches:
         - master
 before_install:
     - sudo apt-get install -qq autotools-dev autoconf automake pkg-config libtool
-script: ./configure && make && make check 
+script: ./configure && make && make -j 4 check 
