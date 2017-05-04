@@ -109,7 +109,7 @@ windowToolkitId availableWindowToolkit() {
 }
 
 PreviewWindow* windowFactory(int w, int h) {
-    PreviewWindow* result;
+    PreviewWindow* result = NULL;
     switch (availableWindowToolkit()) {
 	case GTK:
 #ifdef HAVE_GTK

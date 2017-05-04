@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/thabz/RayGay.svg?branch=master)](https://travis-ci.org/thabz/RayGay)
 
 Introduction
 ============
