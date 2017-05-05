@@ -1,5 +1,5 @@
 
-AM_CPPFLAGS = -I$(top_srcdir)/src -ffast-math
+AM_CPPFLAGS = -I$(top_srcdir)/src 
 
 noinst_LTLIBRARIES = libsamplers.la
 

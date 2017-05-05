@@ -8,17 +8,16 @@
 #include <cstring>
 
 // The built-in std::isinf and std::isnan doesn't work in Linux.
-// When I discovered that 
+// when using -ffast-math. So I using my own implementations
+// instead of the built-in, since
 //
 // std::isinf(std::numeric_limits<double>::infinity())
 //
-// was false, I gave up on those without further investigation.
-// It's probably in combination with -ffast-math but who cares.
+// is false with -ffast-math.
 //
 // http://stackoverflow.com/a/2249173/1514022
 int __isinf(double x) {
-    return std::isinf(x);
-   // return fabs(x) > std::numeric_limits<double>::max();
+   return fabs(x) > std::numeric_limits<double>::max();
 }
 
 // http://stackoverflow.com/a/20723890/1514022

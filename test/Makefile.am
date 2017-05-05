@@ -1,7 +1,7 @@
 
 SUBDIRS = gfx scheme
 
-INCLUDES = -I$(top_srcdir)/src 
+AM_CPPFLAGS = -I$(top_srcdir)/src 
 LDADD = $(top_builddir)/src/libtracer.la
 
 check_PROGRAMS = testimage testpaths testspace testobjects testspeed testlanguage teststats testthreads testparser

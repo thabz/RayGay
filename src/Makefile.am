@@ -1,5 +1,4 @@
 
-#AM_CPPFLAGS = -ffast-math
 SUBDIRS = materials paths lights math image photon imagefilters objects space shaders parser cameras collections samplers filters http scheme
 
 

@@ -1,7 +1,7 @@
 
 SUBDIRS = normalperturbers
 
-INCLUDES = -I$(top_srcdir)/src 
+AM_CPPFLAGS = -I$(top_srcdir)/src 
 
 noinst_LTLIBRARIES = libmaterials.la
 
