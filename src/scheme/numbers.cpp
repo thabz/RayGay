@@ -17,7 +17,8 @@
 //
 // http://stackoverflow.com/a/2249173/1514022
 int __isinf(double x) {
-    return fabs(x) > std::numeric_limits<double>::max();
+    return std::isinf(x);
+   // return fabs(x) > std::numeric_limits<double>::max();
 }
 
 // http://stackoverflow.com/a/20723890/1514022
