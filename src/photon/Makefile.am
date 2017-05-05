@@ -1,5 +1,5 @@
 
-INCLUDES = -I$(top_srcdir)/src 
+AM_CPPFLAGS = -I$(top_srcdir)/src -ffast-math
 
 noinst_LTLIBRARIES = libphoton.la
 

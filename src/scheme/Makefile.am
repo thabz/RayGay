@@ -4,7 +4,6 @@ AM_CPPFLAGS = -I$(top_srcdir)/src -fno-fast-math
 # Library
 # -----------------------------------------------------
 noinst_LTLIBRARIES = libscheme.la
-libscheme_la_CFLAGS = $(AM_CFLAGS) -fno-fast-math
 libscheme_la_SOURCES = lexer.h lexer.cpp \
                        interpreter.h interpreter.cpp \
                        objects.h objects.cpp \
