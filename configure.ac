@@ -1,16 +1,14 @@
 
-AC_INIT(raygay, 0.5, jesper@kalliope.org)    
+AC_INIT(raygay, 0.5)    
 AC_CONFIG_HEADERS([config.h:config.h.in])
 AC_CONFIG_SRCDIR(src/main.cpp)
-dnl We use AC_CONFIG_HEADERS as AM_CONFIG_HEADER is obsolete  
-dnl AM_CONFIG_HEADER(config.h)    
 
 RAYGAY_MAJOR_VERSION=0
 RAYGAY_MINOR_VERSION=7    
 RAYGAY_MICRO_VERSION=0    
 RAYGAY_VERSION="$RAYGAY_MAJOR_VERSION.$RAYGAY_MINOR_VERSION.$RAYGAY_MICRO_VERSION"
 
-AM_INIT_AUTOMAKE("raygay", $RAYGAY_VERSION)
+AM_INIT_AUTOMAKE
 
 AC_SUBST(RAYGAY_MAJOR_VERSION)
 AC_SUBST(RAYGAY_MINOR_VERSION)
@@ -138,7 +136,7 @@ fi
 dnl -------------------------------------------------
 dnl Add the CPU dependent compile optimizations
 dnl -------------------------------------------------
-CXXFLAGS="-g -O3 -Wall -Winline -ffast-math $GTK_CFLAGS $GUILE_CFLAGS"  
+CXXFLAGS="-g -O3 -Wall -Winline -ffast-math -pthread $GTK_CFLAGS $GUILE_CFLAGS"  
 case $target in
      pentium3) CXXFLAGS="$CXXFLAGS -malign-double -march=pentium3 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing";;
      pentium4) CXXFLAGS="$CXXFLAGS -fprefetch-loop-arrays -funroll-loops -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing -msse2";;
