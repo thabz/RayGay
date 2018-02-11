@@ -42,7 +42,6 @@ dnl Linux
 dnl -------------------------------------------------
 if test "x$target_os" = "xLinux"; then
    AC_DEFINE([OS_LINUX],[1],[System is Linux])
-   AC_CHECK_LIB(pthread, pthread_create,CPPFLAGS="-pthread $CPPFLAGS")
 fi
 AM_CONDITIONAL(OS_LINUX, test "x$target_os" = "xLinux")
 
@@ -74,6 +73,7 @@ dnl -------------------------------------------------
 LIBS="$LIBS -lm"    
 AC_CHECK_LIB(m, sin,,[AC_MSG_ERROR([math library is not found])],)
 AC_CHECK_LIB(pthread, pthread_create,LIBS="-lpthread $LIBS")
+AC_CHECK_LIB(pthread, pthread_create,CPPFLAGS="-pthread $CPPFLAGS")
 
 dnl trunc,fmax,fmin are C99 functions and not available on older systems
 AC_CHECK_FUNCS(trunc fmax fmin)
