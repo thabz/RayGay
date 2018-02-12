@@ -42,6 +42,7 @@ dnl Linux
 dnl -------------------------------------------------
 if test "x$target_os" = "xLinux"; then
    AC_DEFINE([OS_LINUX],[1],[System is Linux])
+   CXXFLAGS="-pthread $CXXFLAGS"  
 fi
 AM_CONDITIONAL(OS_LINUX, test "x$target_os" = "xLinux")
 
@@ -73,7 +74,6 @@ dnl -------------------------------------------------
 LIBS="$LIBS -lm"    
 AC_CHECK_LIB(m, sin,,[AC_MSG_ERROR([math library is not found])],)
 AC_CHECK_LIB(pthread, pthread_create,LIBS="-lpthread $LIBS")
-AC_CHECK_LIB(pthread, pthread_create,CPPFLAGS="-pthread $CPPFLAGS")
 
 dnl trunc,fmax,fmin are C99 functions and not available on older systems
 AC_CHECK_FUNCS(trunc fmax fmin)
@@ -137,7 +137,7 @@ fi
 dnl -------------------------------------------------
 dnl Add the CPU dependent compile optimizations
 dnl -------------------------------------------------
-CXXFLAGS="-g -O3 -Wall -Winline -ffast-math $GTK_CFLAGS $GUILE_CFLAGS"  
+CXXFLAGS="-g -O3 -Wall -Winline -ffast-math $GTK_CFLAGS $GUILE_CFLAGS $CXXFLAGS"  
 case $target in
      pentium3) CXXFLAGS="$CXXFLAGS -malign-double -march=pentium3 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing";;
      pentium4) CXXFLAGS="$CXXFLAGS -fprefetch-loop-arrays -funroll-loops -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing -msse2";;
