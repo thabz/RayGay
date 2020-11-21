@@ -36,10 +36,15 @@ class Solid : public Object, public SolidInterface {
 	 */
 	virtual AABox getContainedBox() const;
 
-        /**
-         * Says whether a point is inside the object
-         */
-        virtual bool inside(const Vector& p) const = 0;
+    /**
+    * Says whether a point is inside the object
+    */
+    virtual bool inside(const Vector& p) const = 0;
+
+    /**
+    * Signed distance
+    */
+    virtual bool sdf(const Vector& p) const = 0;
 
     protected:
 	/// Protected constructor
