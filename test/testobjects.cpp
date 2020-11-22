@@ -168,6 +168,11 @@ public:
     assertTrue(s.inside(Vector(0, 0, -9)));
     assertFalse(s.inside(Vector(0, 9, 9)));
 
+    assertEqualF(s.signedDistance(Vector(0, 0, 9)), -1);
+    assertEqualF(s.signedDistance(Vector(0, 0, -8)), -2);
+    assertEqualF(s.signedDistance(Vector(0, 0, -12)), 2);
+    assertEqualF(s.signedDistance(Vector(0, 12, 0)), 2);
+
     s = Sphere(Vector(0, 0, 0), 60.0, m);
 
     /* Test intersection(ray) */

@@ -197,5 +197,5 @@ bool Sphere::inside(const Vector &p) const {
 }
 
 double Sphere::signedDistance(const Vector &p) const {
-  return (p - center).norm() - radius * radius;
+  return (p - center).length() - radius;
 }
