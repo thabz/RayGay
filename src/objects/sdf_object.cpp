@@ -10,7 +10,7 @@ SDFObject::SDFObject(Solid* solid, double grow, uint32_t steps, double accuracy,
 }
 
 double SDFObject::evaluateFunction(const Vector& v) const {
-    return solid->sdf(v);
+    return solid->signedDistance(v);
 }
 
 SceneObject* SDFObject::clone() const {

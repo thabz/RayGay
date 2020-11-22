@@ -44,7 +44,7 @@ class Solid : public Object, public SolidInterface {
     /**
     * Signed distance
     */
-    virtual bool sdf(const Vector& p) const = 0;
+    virtual double signedDistance(const Vector& p) const = 0;
 
     protected:
 	/// Protected constructor
