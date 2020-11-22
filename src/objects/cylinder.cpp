@@ -195,3 +195,6 @@ bool Cylinder::inside(const Vector &point) const {
   return p.z() > 0 && p.z() < height &&
          (p.x() * p.x() + p.y() * p.y() < radius * radius);
 }
+
+// TODO: Implement
+double Cylinder::signedDistance(const Vector &p) const { return 0; }

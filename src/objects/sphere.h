@@ -46,6 +46,7 @@ public:
   Vector2 getUV(const Vector &normal) const;
 
   bool inside(const Vector &p) const;
+  double signedDistance(const Vector &p) const;
 
 private:
   Vector center;

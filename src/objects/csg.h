@@ -25,6 +25,7 @@ public:
   SceneObject *clone() const;
 
   bool inside(const Vector &p) const;
+  double signedDistance(const Vector &p) const;
 
 private:
   Solid *left;
@@ -53,6 +54,7 @@ public:
   SceneObject *clone() const;
 
   bool inside(const Vector &p) const;
+  double signedDistance(const Vector &p) const;
 
 private:
   Solid *left;
@@ -81,6 +83,7 @@ public:
   SceneObject *clone() const;
 
   bool inside(const Vector &p) const;
+  double signedDistance(const Vector &p) const;
 
 private:
   Solid *left;

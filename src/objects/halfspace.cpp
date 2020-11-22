@@ -115,10 +115,13 @@ uint32_t Halfspace::allIntersections(const Ray &ray,
   return 0;
 }
 
+bool Halfspace::canSelfshadow() const { return false; }
+
 // See http://mathworld.wolfram.com/Plane.html
 bool Halfspace::inside(const Vector &x) const {
   double D = normal * x + d;
   return D < 0;
 }
 
-bool Halfspace::canSelfshadow() const { return false; }
+// TODO: Implement
+double Halfspace::signedDistance(const Vector &point) const { return 0; }

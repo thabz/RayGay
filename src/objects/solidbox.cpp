@@ -91,10 +91,5 @@ void SolidBox::_fullIntersect(const Ray &world_ray, const double t,
 }
 
 bool SolidBox::inside(const Vector &p) const { return bbox.inside(p); }
-<<<<<<< HEAD
 
-double SolidBox::signedDistance(const Vector &p) const {
-  return bbox.inside(p);
-}
-=======
->>>>>>> master
+double SolidBox::signedDistance(const Vector &p) const { return 0; }

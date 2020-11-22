@@ -63,3 +63,8 @@ bool Ellipsoid::inside(const Vector &point) const {
   Vector p = pointToObject(point);
   return p.x() * p.x() + p.y() * p.y() + p.z() * p.z() < 1;
 }
+
+double Ellipsoid::signedDistance(const Vector &point) const {
+  Vector p = pointToObject(point);
+  return p.x() * p.x() + p.y() * p.y() + p.z() * p.z() - 1;
+}

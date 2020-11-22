@@ -195,3 +195,7 @@ SceneObject *Sphere::clone() const {
 bool Sphere::inside(const Vector &p) const {
   return (p - center).norm() < radius * radius;
 }
+
+double Sphere::signedDistance(const Vector &p) const {
+  return (p - center).norm() - radius * radius;
+}
