@@ -1,5 +1,5 @@
 
-SUBDIRS = materials paths lights math image photon imagefilters objects space shaders parser cameras collections samplers filters scheme
+SUBDIRS = materials paths lights math image photon imagefilters objects space shaders parser cameras collections samplers filters http scheme
 
 
 #--------------------------------------
@@ -37,7 +37,7 @@ libtracer_la_LIBADD =  samplers/libsamplers.la parser/libparser.la photon/libpho
 #--------------------------------------
 LIBS = @DARWIN_LIBS@
 
-bin_PROGRAMS = raygay raygay-repl 
+bin_PROGRAMS = raygay raygay-server raygay-queuemanager raygay-repl  
 noinst_PROGRAMS = bench 
 if OS_DARWIN
    noinst_PROGRAMS += win
