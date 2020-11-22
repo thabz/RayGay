@@ -35,13 +35,13 @@ void sigchild(int n) { wait3(NULL, WNOHANG, NULL); }
 
 Webserver::Webserver(int port, string document_root) {
   this->port = port;
-  sock = socket(AF_INET, SOCK_STREAM, 0);
+  sock = ::socket(AF_INET, SOCK_STREAM, 0);
 
   struct sockaddr_in sin;
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = INADDR_ANY;
   sin.sin_port = htons(port);
-  if (bind(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
+  if (::bind(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
     if (errno == EADDRINUSE) {
       throw_exception("Can't bind to port");
     } else if (errno == EINVAL) {
