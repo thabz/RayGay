@@ -1,14 +1,12 @@
 [![Build Status](https://travis-ci.org/thabz/RayGay.svg?branch=master)](https://travis-ci.org/thabz/RayGay)
 
-Introduction
-============
+# Introduction
 
 An opensource raytracer written in C++ with an embedded Scheme parser for scene files.
 
 The sourcecode is released under the GPL. See the file COPYING.
 
-Get hacking 
-===========
+# Get hacking
 
 The C++ source code is in `src`. Compile with
 
@@ -30,6 +28,6 @@ Documentation written in Docbook is in `docs`. Build the HTML documentation with
     cd docs
     make chunked-portable
 
+Reformat code using clang-format
 
-
-
+    clang-format -i --style=LLVM src/**/*.cpp src/**/*.h

@@ -9,14 +9,13 @@
  *
  * @see http://en.wikipedia.org/wiki/Lab_color_space
  */
-class Lab 
-{
-    public:
-	XYZ toXYZ(XYZ whitepoint) const;
-	RGB toRGB(double gamma = 2.2);
+class Lab {
+public:
+  XYZ toXYZ(XYZ whitepoint) const;
+  RGB toRGB(double gamma = 2.2);
 
-    private:
-	double L, a, b;
+private:
+  double L, a, b;
 };
 
 #endif

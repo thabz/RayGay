@@ -3,9 +3,7 @@
 
 class Image;
 
-class ImageResponse : public HTTPResponse 
-{
-    ImageResponse(Image* image);
-    ~ImageResponse();
+class ImageResponse : public HTTPResponse {
+  ImageResponse(Image *image);
+  ~ImageResponse();
 };
-

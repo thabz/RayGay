@@ -9,13 +9,12 @@
  * TODO: Consider generalizing this into a tint-filter.
  */
 class Sepia : public ImageFilter {
-    public:
-	Sepia(double amount);
-	void apply(Image* image);
+public:
+  Sepia(double amount);
+  void apply(Image *image);
 
-    private:
-	double amount;
+private:
+  double amount;
 };
 
 #endif
-

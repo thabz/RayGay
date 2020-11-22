@@ -6,33 +6,30 @@
 
 /**
  * Random Number Generator
- * TODO: Mersenne Twister et. al. are not threadsafe and some uses big statetables that thrashes the CPU cache.
+ * TODO: Mersenne Twister et. al. are not threadsafe and some uses big
+ * statetables that thrashes the CPU cache.
  * http://www.acm.org/tog/resources/RTNews/html/rtnv20n1.html#art10
  */
-class RNG 
-{
-    public:
+class RNG {
+public:
+  /**
+   * Reset the generator.
+   */
+  virtual void reset() = 0;
 
-	/**
-	 * Reset the generator.
-	 */
-	virtual void reset() = 0;
+  /**
+   * Get next random number as a unsigned long.
+   */
+  virtual unsigned long randomLong() = 0;
 
-	/**
-	 * Get next random number as a unsigned long.
-	 */
-	virtual unsigned long randomLong() = 0;
+  /**
+   * Get next random number as a double in [0;1]
+   */
+  double randomDouble();
 
-	/**
-	 * Get next random number as a double in [0;1]
-	 */
-	double randomDouble();
-
-	virtual ~RNG() {};
+  virtual ~RNG(){};
 };
 
-double RNG::randomDouble() {
-    return double(randomLong()) / double(ULONG_MAX);
-}
+double RNG::randomDouble() { return double(randomLong()) / double(ULONG_MAX); }
 
 #endif

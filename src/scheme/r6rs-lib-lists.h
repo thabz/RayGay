@@ -5,10 +5,9 @@
 #include "scheme.h"
 
 struct R6RSLibLists {
-    static void bind(Scheme* scheme, SchemeObject* envt);
+  static void bind(Scheme *scheme, SchemeObject *envt);
 };
 
-SchemeObject* s_memv(Scheme* scheme, SchemeObject* obj, SchemeObject* p);
+SchemeObject *s_memv(Scheme *scheme, SchemeObject *obj, SchemeObject *p);
 
 #endif
-

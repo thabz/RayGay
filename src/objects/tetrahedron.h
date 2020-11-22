@@ -10,12 +10,9 @@ class Vector;
 /// TODO: Implement this simple object in Scheme instead
 class Tetrahedron : public Mesh {
 
-    public:
-	/// Constructor
-	Tetrahedron(const Vector center, const double radius, const Material* mat);
+public:
+  /// Constructor
+  Tetrahedron(const Vector center, const double radius, const Material *mat);
 };
 
 #endif
-
-
-

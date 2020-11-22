@@ -6,13 +6,9 @@
 
 #include "object.h"
 
-Object::Object(const Material* material) {
-   this->material = material;
-}
+Object::Object(const Material *material) { this->material = material; }
 
-void Object::addSelf(KdTree* space) {
-    space->addObject((Object*)this);
-}
+void Object::addSelf(KdTree *space) { space->addObject((Object *)this); }
 
 /**
  * Refine an intersection. This is used when pruning the Kd-Tree.
@@ -29,8 +25,8 @@ void Object::addSelf(KdTree* space) {
  *         1 if intersection
  *         -1 if no intersection
  */
-int Object::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const {
-    return 0;
+int Object::intersects(const AABox &voxel_bbox, const AABox &obj_bbox) const {
+  return 0;
 }
 
 /**
@@ -38,13 +34,9 @@ int Object::intersects(const AABox& voxel_bbox, const AABox& obj_bbox) const {
  * intersection methods are called.
  */
 void Object::prepare() {
-    // Default does nothing
+  // Default does nothing
 }
 
-double Object::area() const {
-    return 1;
-}
+double Object::area() const { return 1; }
 
-bool Object::canSelfshadow() const {
-    return true;
-}
+bool Object::canSelfshadow() const { return true; }

@@ -6,10 +6,9 @@
 
 class Blinn : public Shader {
 
-    public:
-	Blinn(Material* material) : Shader(material) {};
-	RGB shade(const ShaderInput& shaderInput);
-
+public:
+  Blinn(Material *material) : Shader(material){};
+  RGB shade(const ShaderInput &shaderInput);
 };
 
 #endif

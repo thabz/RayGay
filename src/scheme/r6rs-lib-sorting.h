@@ -5,8 +5,7 @@
 #include "scheme.h"
 
 struct R6RSLibSorting {
-    static void bind(Scheme* scheme, SchemeObject* envt);
+  static void bind(Scheme *scheme, SchemeObject *envt);
 };
 
 #endif
-

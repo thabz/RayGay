@@ -7,9 +7,7 @@
 /**
  * A photon used for caustics.
  */
-class CausticPhoton : public Photon {
-
-};
+class CausticPhoton : public Photon {};
 
 /**
  * The photonmap for storing caustic photons.
@@ -18,14 +16,14 @@ class CausticPhoton : public Photon {
  */
 class CausticsMap : public PhotonMap<CausticPhoton> {
 
-    public:
-	CausticsMap(int size, double max_dist, int estimate_photons);
+public:
+  CausticsMap(int size, double max_dist, int estimate_photons);
 
-	/// Creates a Gauss-filtered irradiance estimate
-	RGB getFilteredIrradianceEstimate(const Vector& point, const Vector& normal) const;
+  /// Creates a Gauss-filtered irradiance estimate
+  RGB getFilteredIrradianceEstimate(const Vector &point,
+                                    const Vector &normal) const;
 
-	void store( const RGB& power, const Vector& pos, const Vector& dir);
+  void store(const RGB &power, const Vector &pos, const Vector &dir);
 };
 
 #endif
-

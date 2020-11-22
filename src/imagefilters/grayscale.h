@@ -7,9 +7,8 @@
  * A filter for grayscaling an image.
  */
 class Grayscale : public ImageFilter {
-    public:
-	void apply(Image* image);
+public:
+  void apply(Image *image);
 };
 
 #endif
-

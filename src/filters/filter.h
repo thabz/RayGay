@@ -6,15 +6,15 @@
 
 class Filter {
 
-    public:
-	Filter(double w, double h);
-	double filter(const Vector2& pos) const;
-	virtual double filter(double x, double y) const = 0;
-	virtual ~Filter() {};
+public:
+  Filter(double w, double h);
+  double filter(const Vector2 &pos) const;
+  virtual double filter(double x, double y) const = 0;
+  virtual ~Filter(){};
 
-    private:
-	double w; 
-	double h;
+private:
+  double w;
+  double h;
 };
 
 #endif

@@ -1,8 +1,8 @@
 
 #include "objects/ply.h"
 #include "exception.h"
-#include <string>
 #include <fstream>
+#include <string>
 
 // PLY header examples below
 /*
@@ -32,98 +32,92 @@ property list uchar int vertex_indices
 end_header
 */
 
-enum STATES {
-   NONE,
-   INSIDE_ELEMENT_VERTEX,
-   INSIDE_ELEMENT_FACE,
-   DONE        
-};
-
+enum STATES { NONE, INSIDE_ELEMENT_VERTEX, INSIDE_ELEMENT_FACE, DONE };
 
 using namespace std;
 
-PLY::PLY(string filename, const Material* m) : Mesh(Mesh::MESH_PHONG, m)
-{
-    uint32_t faces = 0, verts = 0;
-    char line[2000];
-    fstream file(filename.c_str(), ios::in);
-    uint32_t state = NONE;
-    uint32_t vertex_line_elements = 0;
-    
-    if (!file.is_open()) {
-        throw_exception("Error opening file. Wrong filename?");     
-    }
-    
+PLY::PLY(string filename, const Material *m) : Mesh(Mesh::MESH_PHONG, m) {
+  uint32_t faces = 0, verts = 0;
+  char line[2000];
+  fstream file(filename.c_str(), ios::in);
+  uint32_t state = NONE;
+  uint32_t vertex_line_elements = 0;
+
+  if (!file.is_open()) {
+    throw_exception("Error opening file. Wrong filename?");
+  }
+
+  file >> line;
+  if (string(line) != "ply") {
+    throw_exception("Not a PLY file");
+  }
+
+  while (state != DONE) {
     file >> line;
-    if (string(line) != "ply") {
-        throw_exception("Not a PLY file");            
+    if (string(line) == string("element")) {
+      file >> line;
+      if (string(line) == string("vertex")) {
+        state = INSIDE_ELEMENT_VERTEX;
+        file >> verts;
+      } else if (string(line) == string("face")) {
+        state = INSIDE_ELEMENT_FACE;
+        file >> faces;
+      }
     }
+    if (string(line) == "property") {
+      if (state == INSIDE_ELEMENT_VERTEX) {
+        vertex_line_elements++;
+      }
+    }
+    if (string(line) == "format") {
+      file >> line;
+      if (string(line) != "ascii") {
+        throw_exception("Only PLY-files in ASCII format supported.");
+      }
+    }
+    if (string(line) == "end_header") {
+      state = DONE;
+    }
+  }
 
-    while(state != DONE) {
-        file >> line;    
-        if (string(line) == string("element")) {
-           file >> line;    
-            if (string(line) == string("vertex")) {
-                state = INSIDE_ELEMENT_VERTEX;    
-                file >> verts;
-            } else if (string(line) == string("face")) {
-                state = INSIDE_ELEMENT_FACE;    
-                file >> faces;
-            }
-        }
-        if (string(line) == "property") {
-            if (state == INSIDE_ELEMENT_VERTEX) {
-                 vertex_line_elements++;    
-            }        
-        }
-        if (string(line) == "format") {
-            file >> line;
-            if (string(line) != "ascii") {
-                throw_exception("Only PLY-files in ASCII format supported.");
-            }        
-        }
-        if (string(line) == "end_header") {
-            state = DONE;
-        }
-    }
-    
-    if (faces == 0 || verts == 0) {
-        throw_exception("Couldn't read number of faces or number of verts");    
-    }
-    
-    cout << "Reading '" << filename << "' with " << verts << " vertices and " << faces << " faces..." << flush;
-    
-    hintVertexNum(verts);
-    hintFaceNum(faces);
+  if (faces == 0 || verts == 0) {
+    throw_exception("Couldn't read number of faces or number of verts");
+  }
 
-    double x,y,z,ignored;
-    while(verts-- > 0) {
-        file >> x;    
-        file >> y;    
-        file >> z;
-        for(uint32_t i = 3; i < vertex_line_elements; i++) {
-           file >> ignored;        
-        }
-        addVertex(Vector(x,y,z));
-    }
+  cout << "Reading '" << filename << "' with " << verts << " vertices and "
+       << faces << " faces..." << flush;
 
-    uint32_t idx[4];
-    int num;
-    while(faces-- > 0) {
-        file >> num;
-        file >> idx[0];
-        file >> idx[1];
-        file >> idx[2];
-        if (num == 3) {
-            addTriangle(idx);        
-        } else if (num == 4) {
-           file >> idx[3];
-           addQuad(idx);        
-        } else {
-           throw_exception("Too many verts in face. Only 3 or 4 supported.");        
-        }
+  hintVertexNum(verts);
+  hintFaceNum(faces);
+
+  double x, y, z, ignored;
+  while (verts-- > 0) {
+    file >> x;
+    file >> y;
+    file >> z;
+    for (uint32_t i = 3; i < vertex_line_elements; i++) {
+      file >> ignored;
     }
-    file.close();
-    
-    cout << "Done." << endl;
+    addVertex(Vector(x, y, z));
+  }
+
+  uint32_t idx[4];
+  int num;
+  while (faces-- > 0) {
+    file >> num;
+    file >> idx[0];
+    file >> idx[1];
+    file >> idx[2];
+    if (num == 3) {
+      addTriangle(idx);
+    } else if (num == 4) {
+      file >> idx[3];
+      addQuad(idx);
+    } else {
+      throw_exception("Too many verts in face. Only 3 or 4 supported.");
+    }
+  }
+  file.close();
+
+  cout << "Done." << endl;
 }

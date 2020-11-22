@@ -6,10 +6,9 @@
 
 class Plastic : public Shader {
 
-    public:
-	Plastic(Material* material) : Shader(material) {};
-	RGB shade(const ShaderInput& shaderInput);
-
+public:
+  Plastic(Material *material) : Shader(material){};
+  RGB shade(const ShaderInput &shaderInput);
 };
 
 #endif

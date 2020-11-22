@@ -1,4 +1,4 @@
-#ifndef INTERSECTION_H 
+#ifndef INTERSECTION_H
 #define INTERSECTION_H
 
 #include <iosfwd>
@@ -14,79 +14,75 @@ using namespace std;
 
 /// An intersection is returned from the various intersect(Ray) methods.
 class Intersection {
-    friend ostream & operator<< (ostream &os, const Intersection &i);
+  friend ostream &operator<<(ostream &os, const Intersection &i);
 
-    public:
-        /**
-	 * Default constructor.
-	 */
-	Intersection();
-	
-	/**
-	 * Constructor.
-	 *
-	 * @param p Point of intersection
-	 * @param t Distance along ray
-	 * @param n Surface normal at intersection
-	 * @param uv Texture UV-coordinates at point of intersection
-	 */
-	Intersection(const Vector& p, double t, const Vector& n, const Vector2& uvs);
+public:
+  /**
+   * Default constructor.
+   */
+  Intersection();
 
-	void setObject(const Object* obj) { o = obj; };
-        /// The object that was intersected
-	const Object* getObject() const { return o; };
+  /**
+   * Constructor.
+   *
+   * @param p Point of intersection
+   * @param t Distance along ray
+   * @param n Surface normal at intersection
+   * @param uv Texture UV-coordinates at point of intersection
+   */
+  Intersection(const Vector &p, double t, const Vector &n, const Vector2 &uvs);
 
-	void setPoint(const Vector& point) { this->point = point; };
- 	/// The intersection point
-	const Vector& getPoint() const { return point; };
+  void setObject(const Object *obj) { o = obj; };
+  /// The object that was intersected
+  const Object *getObject() const { return o; };
 
-        /// Get surface normal at intersection point
-	const Vector& getNormal() const { return normal; };
-	
-        /// Set surface normal at intersection point
-	void setNormal(const Vector& normal) { this->normal = normal; };
-	
-        /// Get surface normal at intersection point
-	const Vector& getOriginalNormal() const { return o_normal; };
-	
-        /// Set surface normal at intersection point
-	void setOriginalNormal(const Vector& n) { this->o_normal = n; };
+  void setPoint(const Vector &point) { this->point = point; };
+  /// The intersection point
+  const Vector &getPoint() const { return point; };
 
-	/// Flip direction of normal
-	void flipNormal() { normal *= -1.0; };
+  /// Get surface normal at intersection point
+  const Vector &getNormal() const { return normal; };
 
-	const Vector2& getUV() const { return uv; };
+  /// Set surface normal at intersection point
+  void setNormal(const Vector &normal) { this->normal = normal; };
 
-	double getT() const { return t; }; 
-	void setT(double new_t) { t = new_t; };
-	
-	bool isIntersected() const { return t >= 0.0; };
+  /// Get surface normal at intersection point
+  const Vector &getOriginalNormal() const { return o_normal; };
 
-	void isEntering(bool entering) { this->entering = entering; };
-	bool isEntering() const { return this->entering; };
-    private:
-	Vector point;
-	Vector normal;
-	Vector o_normal;
-	Vector2 uv;
-	double t;
-	Object const* o; 
-	bool entering;
+  /// Set surface normal at intersection point
+  void setOriginalNormal(const Vector &n) { this->o_normal = n; };
+
+  /// Flip direction of normal
+  void flipNormal() { normal *= -1.0; };
+
+  const Vector2 &getUV() const { return uv; };
+
+  double getT() const { return t; };
+  void setT(double new_t) { t = new_t; };
+
+  bool isIntersected() const { return t >= 0.0; };
+
+  void isEntering(bool entering) { this->entering = entering; };
+  bool isEntering() const { return this->entering; };
+
+private:
+  Vector point;
+  Vector normal;
+  Vector o_normal;
+  Vector2 uv;
+  double t;
+  Object const *o;
+  bool entering;
 };
 
-inline
-Intersection::Intersection() {
-    t = -1.0;
-}
+inline Intersection::Intersection() { t = -1.0; }
 
-inline
-Intersection::Intersection(const Vector& p, double s, const Vector& n, const Vector2& uvs) {
-    this->point = p;
-    this->t = s;
-    this->normal = n;
-    this->uv = uvs;
+inline Intersection::Intersection(const Vector &p, double s, const Vector &n,
+                                  const Vector2 &uvs) {
+  this->point = p;
+  this->t = s;
+  this->normal = n;
+  this->uv = uvs;
 }
 
 #endif
-
-

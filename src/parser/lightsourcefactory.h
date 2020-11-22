@@ -8,10 +8,10 @@
  * Factory for lightsource-related Scheme-procedures.
  */
 class LightsourceFactory {
-    public:
-	static void register_procs(Scheme* scheme);
+public:
+  static void register_procs(Scheme *scheme);
 };
 
-SchemeObject* s_lightsource_p(Scheme* scheme, SchemeObject* object);
+SchemeObject *s_lightsource_p(Scheme *scheme, SchemeObject *object);
 
 #endif

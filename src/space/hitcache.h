@@ -8,38 +8,36 @@ class Object;
 
 class HitCache {
 
-    public:
-	HitCache(uint32_t size);
-	~HitCache();
+public:
+  HitCache(uint32_t size);
+  ~HitCache();
 
-	Object* findEntry(void* fromObject) const;
-	void addEntry(void* fromObject, Object* toObject, double t);
-	void removeEntry(void* fromObject);
+  Object *findEntry(void *fromObject) const;
+  void addEntry(void *fromObject, Object *toObject, double t);
+  void removeEntry(void *fromObject);
 
-    private:
-	int findEntryIndex(void* fromObject) const;
+private:
+  int findEntryIndex(void *fromObject) const;
 
-	class Entry {
-	    public:
-		void* fromObject;
-		Object* toObject;
-		double t;
-	};
+  class Entry {
+  public:
+    void *fromObject;
+    Object *toObject;
+    double t;
+  };
 
-	Entry* entries;
-	uint32_t size;
-	uint32_t first;
+  Entry *entries;
+  uint32_t size;
+  uint32_t first;
 };
 
-inline
-Object* HitCache::findEntry(void* fromObject) const {
-    for(uint32_t i = 0; i < size; i++) {
-	if (entries[i].fromObject == fromObject) {
-	    return entries[i].toObject;
-	}
+inline Object *HitCache::findEntry(void *fromObject) const {
+  for (uint32_t i = 0; i < size; i++) {
+    if (entries[i].fromObject == fromObject) {
+      return entries[i].toObject;
     }
-    return 0;
+  }
+  return 0;
 }
 
 #endif
-

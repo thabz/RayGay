@@ -12,113 +12,114 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include "math/vector.h"
 #include "math/matrix3.h"
+#include "math/vector.h"
 #include <iosfwd>
 
 /// Some basic linear algebra
 class Matrix {
 
-    friend std::ostream &operator<<(std::ostream &os,const Matrix &m);
+  friend std::ostream &operator<<(std::ostream &os, const Matrix &m);
 
-    public:
-        /// The default constructor creates an identity
-	Matrix();
+public:
+  /// The default constructor creates an identity
+  Matrix();
 
-        /// Reset matrix to the identity
-	void identity();
+  /// Reset matrix to the identity
+  void identity();
 
-        /// Same as reset()
-	void reset();
+  /// Same as reset()
+  void reset();
 
-	/// Fills matrix with 0's
-	void clear();
-	
-	/// Says whether this matrix is the identity
-	bool isIdentity() const;
+  /// Fills matrix with 0's
+  void clear();
 
-	/// Says whether this matrix is orthogonal
-	bool isOrthogonal() const;
-	
-        /// Returns the inverse to this matrix
-	Matrix inverse() const;
+  /// Says whether this matrix is the identity
+  bool isIdentity() const;
 
-	/// Returns the transpose of the 3x3 matrix part
-	Matrix transpose() const;
+  /// Says whether this matrix is orthogonal
+  bool isOrthogonal() const;
 
-	/// Returns a matrix with the translation part stripped
-	Matrix3 extractRotation() const;
+  /// Returns the inverse to this matrix
+  Matrix inverse() const;
 
-	/// Multiply this matrix with a vector.
-	Vector operator*(const Vector & v) const;
+  /// Returns the transpose of the 3x3 matrix part
+  Matrix transpose() const;
 
-	/// Multiply with another Matrix
-	Matrix operator*(const Matrix &) const;
-	
-	/// Multiply with another Matrix
-	Matrix &operator*=(const Matrix &);
+  /// Returns a matrix with the translation part stripped
+  Matrix3 extractRotation() const;
 
-	/// Comparator
-	bool operator==(const Matrix &m) const;
+  /// Multiply this matrix with a vector.
+  Vector operator*(const Vector &v) const;
 
-	/// Comparator
-	bool operator!=(const Matrix &m) const;
+  /// Multiply with another Matrix
+  Matrix operator*(const Matrix &) const;
 
-	/// Rotate angle degrees around axis
-	static Matrix matrixRotate(const Vector axis, const double angle);
+  /// Multiply with another Matrix
+  Matrix &operator*=(const Matrix &);
 
-	/// Rotate around the three axises
-	static Matrix matrixRotate(const Vector angles);
+  /// Comparator
+  bool operator==(const Matrix &m) const;
 
-	/// Translate along a vector
-	static Matrix matrixTranslate(const Vector trans);
-	
-	/// Scale
-	static Matrix matrixScale(const Vector& scale);
+  /// Comparator
+  bool operator!=(const Matrix &m) const;
 
-	/// Rotate v onto the positive z-axis
-	static Matrix matrixOrient(const Vector& v);
+  /// Rotate angle degrees around axis
+  static Matrix matrixRotate(const Vector axis, const double angle);
 
-	/// Orientation transformation matrix
-	static Matrix matrixOrient(const Vector &x,const Vector &y,const Vector &z);
-	
-	/// Orientation transformation matrix
-        static Matrix matrixOrient(const Vector &direction,const Vector &up);
+  /// Rotate around the three axises
+  static Matrix matrixRotate(const Vector angles);
 
-	inline void set(const int col,const int row,const double val) {
-	    _matrix[col*4+row] = val;
-	}
+  /// Translate along a vector
+  static Matrix matrixTranslate(const Vector trans);
 
-	inline double get(const int col,const int row) const {
-	    return _matrix[col*4+row];
-	}
+  /// Scale
+  static Matrix matrixScale(const Vector &scale);
 
-	inline double &element(const int col,const int row) {
-	    return _matrix[col*4+row];
-	}
+  /// Rotate v onto the positive z-axis
+  static Matrix matrixOrient(const Vector &v);
 
-    private:
-	double _matrix[16];
-	static double _identity[16];
+  /// Orientation transformation matrix
+  static Matrix matrixOrient(const Vector &x, const Vector &y, const Vector &z);
 
-	static void invertMatrixGeneral(const double *in, double *out);
+  /// Orientation transformation matrix
+  static Matrix matrixOrient(const Vector &direction, const Vector &up);
 
+  inline void set(const int col, const int row, const double val) {
+    _matrix[col * 4 + row] = val;
+  }
 
+  inline double get(const int col, const int row) const {
+    return _matrix[col * 4 + row];
+  }
+
+  inline double &element(const int col, const int row) {
+    return _matrix[col * 4 + row];
+  }
+
+private:
+  double _matrix[16];
+  static double _identity[16];
+
+  static void invertMatrixGeneral(const double *in, double *out);
 };
 
-inline
-Vector Matrix::operator*(const Vector &v) const {
+inline Vector Matrix::operator*(const Vector &v) const {
 
-    double prod[3];
-    double div;
+  double prod[3];
+  double div;
 
-    prod[0] = _matrix[0]*v[0] + _matrix[4]*v[1] + _matrix[8]*v[2] + _matrix[12];
-    prod[1] = _matrix[1]*v[0] + _matrix[5]*v[1] + _matrix[9]*v[2] + _matrix[13];
-    prod[2] = _matrix[2]*v[0] + _matrix[6]*v[1] + _matrix[10]*v[2] + _matrix[14];
-    div     = _matrix[3]*v[0] + _matrix[7]*v[1] + _matrix[11]*v[2] + _matrix[15];
-    div     = 1.0 / div;
+  prod[0] =
+      _matrix[0] * v[0] + _matrix[4] * v[1] + _matrix[8] * v[2] + _matrix[12];
+  prod[1] =
+      _matrix[1] * v[0] + _matrix[5] * v[1] + _matrix[9] * v[2] + _matrix[13];
+  prod[2] =
+      _matrix[2] * v[0] + _matrix[6] * v[1] + _matrix[10] * v[2] + _matrix[14];
+  div =
+      _matrix[3] * v[0] + _matrix[7] * v[1] + _matrix[11] * v[2] + _matrix[15];
+  div = 1.0 / div;
 
-    return Vector(prod[0]*div,prod[1]*div,prod[2]*div);
+  return Vector(prod[0] * div, prod[1] * div, prod[2] * div);
 }
 
 #endif

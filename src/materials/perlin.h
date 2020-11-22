@@ -5,9 +5,9 @@
 
 class Perlin {
 
-    public:
-	static double noise(const Vector& pos);
-	static Vector noise3d(const Vector& pos, double offset);
+public:
+  static double noise(const Vector &pos);
+  static Vector noise3d(const Vector &pos, double offset);
 };
 
 #endif

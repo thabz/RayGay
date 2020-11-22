@@ -5,9 +5,6 @@
 // @see http://xitrace.org/ for an implementation
 // @see http://ompf.org/forum/viewtopic.php?t=159
 
-class BoundingIntervalHierarchy {
-
-
-};
+class BoundingIntervalHierarchy {};
 
 #endif
