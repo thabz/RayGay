@@ -14,52 +14,50 @@ extern "C" {
 using namespace std;
 
 class QueueJob {
-    time_t begin;           
+  time_t begin;
 };
 
 class QueueFrameJob : public QueueJob {
-    public:
-    uint32_t frame;
-    uint32_t frames;
-    Image* result;        
+public:
+  uint32_t frame;
+  uint32_t frames;
+  Image *result;
 };
 
 class QueueTileJob : public QueueJob {
-    public:
-    uint32_t x,y;
-    uint32_t w,h;
-    Image* result;
+public:
+  uint32_t x, y;
+  uint32_t w, h;
+  Image *result;
 };
 
 class QueueMaster;
 
-class QueueSlave 
-{
-    public:
-        QueueSlave(string host_and_port, QueueMaster* master);
-        ~QueueSlave();
-        string getProgress();
-        void run();
+class QueueSlave {
+public:
+  QueueSlave(string host_and_port, QueueMaster *master);
+  ~QueueSlave();
+  string getProgress();
+  void run();
 
-    private:
-        QueueMaster* master;
-        string progress;
-        HTTPClient* client;
+private:
+  QueueMaster *master;
+  string progress;
+  HTTPClient *client;
 };
 
-class QueueMaster 
-{
-    public:
-        QueueMaster(set<string> hosts, vector<QueueJob> jobs);
-        void run();
-        QueueJob get();    
-        void done(QueueJob job);
-        
-    private:
-        set<string> hosts;
-        vector<QueueJob> jobs_to_do;
-        vector<QueueJob> jobs_being_done;
-        vector<QueueSlave*> slaves;
+class QueueMaster {
+public:
+  QueueMaster(set<string> hosts, vector<QueueJob> jobs);
+  void run();
+  QueueJob get();
+  void done(QueueJob job);
+
+private:
+  set<string> hosts;
+  vector<QueueJob> jobs_to_do;
+  vector<QueueJob> jobs_being_done;
+  vector<QueueSlave *> slaves;
 };
 
 #endif /* RAYGAY_QUEMANAGER_H */

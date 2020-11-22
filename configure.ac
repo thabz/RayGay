@@ -158,6 +158,11 @@ fi
 AC_MSG_RESULT($extra_warnings)
 
 dnl -------------------------------------------------
+dnl Set C++ langage version
+dnl -------------------------------------------------
+CXXFLAGS="$CXXFLAGS -std=c++11"
+
+dnl -------------------------------------------------
 dnl Code coverage testing
 dnl http://developer.apple.com/documentation/Darwin/Reference/ManPages/man1/gcov.1.html
 dnl -------------------------------------------------

@@ -10,22 +10,21 @@ class KdTree;
  */
 class SceneObject {
 
-    public:
-	/// Destructor
-	virtual ~SceneObject() {};
+public:
+  /// Destructor
+  virtual ~SceneObject(){};
 
-	/// Prepares the object before rendering
-	virtual void prepare() = 0;
+  /// Prepares the object before rendering
+  virtual void prepare() = 0;
 
-	/// Transform this object
-	virtual void transform(const Matrix& m) = 0;
+  /// Transform this object
+  virtual void transform(const Matrix &m) = 0;
 
-	/// Add self or all subobjects to a space
-	virtual void addSelf(KdTree* space) = 0;
+  /// Add self or all subobjects to a space
+  virtual void addSelf(KdTree *space) = 0;
 
-	/// Clone this object
-	virtual SceneObject* clone() const = 0;
+  /// Clone this object
+  virtual SceneObject *clone() const = 0;
 };
 
 #endif
-

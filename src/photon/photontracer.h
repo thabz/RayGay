@@ -21,25 +21,24 @@ class GlobalPhotonMap;
  */
 class PhotonTracer {
 
-    public:
-	PhotonTracer(Scene* scene, KdTree* space, GlobalPhotonMap* globalphotonmap, CausticsMap* photonmap);
-	~PhotonTracer();
-	void trace(int threads_num);
-	void trace();
-	
-    private:
-	void trace(const Ray& ray, RGB power, int bounces);
-	void printProgress();
+public:
+  PhotonTracer(Scene *scene, KdTree *space, GlobalPhotonMap *globalphotonmap,
+               CausticsMap *photonmap);
+  ~PhotonTracer();
+  void trace(int threads_num);
+  void trace();
 
-	pthread_mutex_t mutex_print;
-	uint32_t skip_print;
-	Scene* scene;
-	KdTree* space;
-	CausticsMap* causticsmap;
-	GlobalPhotonMap* globalphotonmap;
-	QMCSequence* qmcsequence;
+private:
+  void trace(const Ray &ray, RGB power, int bounces);
+  void printProgress();
+
+  pthread_mutex_t mutex_print;
+  uint32_t skip_print;
+  Scene *scene;
+  KdTree *space;
+  CausticsMap *causticsmap;
+  GlobalPhotonMap *globalphotonmap;
+  QMCSequence *qmcsequence;
 };
 
 #endif
-
-

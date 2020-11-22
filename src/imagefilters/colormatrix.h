@@ -6,13 +6,13 @@
 
 class ColorMatrix {
 
-    public:
-	ColorMatrix();
-	ColorMatrix(double c[25]);
-	RGBA operator*(const RGBA& col) const;
-	
-    private:
-	double matrix[25];
+public:
+  ColorMatrix();
+  ColorMatrix(double c[25]);
+  RGBA operator*(const RGBA &col) const;
+
+private:
+  double matrix[25];
 };
 
 #endif

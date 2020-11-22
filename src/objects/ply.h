@@ -7,14 +7,13 @@
 
 /**
  * Loader for PLY meshes.
- * 
+ *
  * @see http://graphics.stanford.edu/data/3Dscanrep/
  * @see http://www-static.cc.gatech.edu/projects/large_models/
  */
-class PLY : public Mesh 
-{
-    public: 
-        PLY(std::string filename, const Material* material);    
+class PLY : public Mesh {
+public:
+  PLY(std::string filename, const Material *material);
 };
 
 #endif

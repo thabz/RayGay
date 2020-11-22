@@ -9,8 +9,8 @@
  */
 class Plastic : public Material {
 
-    public:
-	Plastic(const RGB& color);
+public:
+  Plastic(const RGB &color);
 };
 
 #endif

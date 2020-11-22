@@ -1,94 +1,91 @@
 #ifndef OBJECTS_TRANSFORMER_H
 #define OBJECTS_TRANSFORMER_H
 
+#include "aabox.h"
+#include "intersection.h"
 #include "math/matrix.h"
 #include "math/matrix3.h"
-#include "aabox.h"
 #include "ray.h"
-#include "intersection.h"
-
 
 /**
  * This is the superclass for objects that can't be transformed by themselves.
  *
  * This class holds a world to object transformation and its inverse.
  *
- * For many objects, such as cylinder and cone, it is much easier doing 
+ * For many objects, such as cylinder and cone, it is much easier doing
  * ray-object intersection if the object is placed along eg. the z-axis
  * and has height 1. These objects can be wrapped in a Transformer superclass
- * so that scaled, translated and rotated instances can the placing in the 
+ * so that scaled, translated and rotated instances can the placing in the
  * scene.
  */
 class Transformer {
 
-    public:
-	Transformer();
-	/// Apply a transformation
-	void transform(const Matrix& m);
+public:
+  Transformer();
+  /// Apply a transformation
+  void transform(const Matrix &m);
 
-    protected:
-	Vector pointToObject(const Vector& p) const;
-	Vector dirToObject(const Vector& d) const;
-	Vector pointToWorld(const Vector &p) const;
-	Vector normalToWorld(const Vector& d) const;
-	Ray rayToObject(const Ray& ray) const;
-	void intersectionToWorld(Intersection& i) const;
-	AABox bboxToWorld(const AABox& bbox) const;
+protected:
+  Vector pointToObject(const Vector &p) const;
+  Vector dirToObject(const Vector &d) const;
+  Vector pointToWorld(const Vector &p) const;
+  Vector normalToWorld(const Vector &d) const;
+  Ray rayToObject(const Ray &ray) const;
+  void intersectionToWorld(Intersection &i) const;
+  AABox bboxToWorld(const AABox &bbox) const;
 
-    private:
-	Matrix transformation;
-	Matrix inverse_transformation;
-	/// The inverse of the rotation part extracted from the transformation
-	Matrix3 inverse_rotation;
-	Matrix3 normal_transformation;
-	bool transformed;
-	bool scaled;
+private:
+  Matrix transformation;
+  Matrix inverse_transformation;
+  /// The inverse of the rotation part extracted from the transformation
+  Matrix3 inverse_rotation;
+  Matrix3 normal_transformation;
+  bool transformed;
+  bool scaled;
 };
 
-inline
-Ray Transformer::rayToObject(const Ray& ray) const {
-    if (!transformed) return ray;
-	
-    Vector o = inverse_transformation * ray.getOrigin();
-    Vector d = inverse_rotation * ray.getDirection();
-    double l;
-    if (scaled) {
-	l = d.length();
-	d = d / l;
-    } else {
-	l = 1.0;
-    }
-    double ior = ray.getIndiceOfRefraction();
-    Ray result = Ray(o,d,ior);
-    result.t_scale = l;
-    return result;
+inline Ray Transformer::rayToObject(const Ray &ray) const {
+  if (!transformed)
+    return ray;
+
+  Vector o = inverse_transformation * ray.getOrigin();
+  Vector d = inverse_rotation * ray.getDirection();
+  double l;
+  if (scaled) {
+    l = d.length();
+    d = d / l;
+  } else {
+    l = 1.0;
+  }
+  double ior = ray.getIndiceOfRefraction();
+  Ray result = Ray(o, d, ior);
+  result.t_scale = l;
+  return result;
 }
 
-inline
-Vector Transformer::pointToWorld(const Vector &p) const {
-    if (!transformed) return p;
+inline Vector Transformer::pointToWorld(const Vector &p) const {
+  if (!transformed)
+    return p;
 
-    return transformation * p;
+  return transformation * p;
 }
 
-inline
-Vector Transformer::normalToWorld(const Vector& d) const {
-    if (!transformed) return d;
+inline Vector Transformer::normalToWorld(const Vector &d) const {
+  if (!transformed)
+    return d;
 
-    Vector result = normal_transformation * d;
-    if (scaled) {
-	result.normalize();
-    }
-    return result;
+  Vector result = normal_transformation * d;
+  if (scaled) {
+    result.normalize();
+  }
+  return result;
 }
 
-inline
-void Transformer::intersectionToWorld(Intersection& i) const 
-{
-    if (transformed) { 
-	i.setNormal(normalToWorld(i.getNormal()));
-	i.setPoint(pointToWorld(i.getPoint()));
-    }
+inline void Transformer::intersectionToWorld(Intersection &i) const {
+  if (transformed) {
+    i.setNormal(normalToWorld(i.getNormal()));
+    i.setPoint(pointToWorld(i.getPoint()));
+  }
 }
 
 #endif

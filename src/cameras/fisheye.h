@@ -6,16 +6,15 @@
 
 /**
  * A Fisheye camera
- * 
+ *
  */
 class Fisheye : public Camera {
 
-    public:
-	Fisheye();
+public:
+  Fisheye();
 
-    protected:
-	Ray _getRay(const double x, const double y);
-
+protected:
+  Ray _getRay(const double x, const double y);
 };
 
 #endif

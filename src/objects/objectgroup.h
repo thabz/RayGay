@@ -8,28 +8,28 @@
 /// An object that builds itself from other objects
 class ObjectGroup : public SceneObject {
 
-    public:
-	/// Transform this object
-	virtual void transform(const Matrix& m);
+public:
+  /// Transform this object
+  virtual void transform(const Matrix &m);
 
-	/// Adds this or all subobjects to a space
-	virtual void addSelf(KdTree* space);
+  /// Adds this or all subobjects to a space
+  virtual void addSelf(KdTree *space);
 
-	/// Prepare object
-	virtual void prepare();
+  /// Prepare object
+  virtual void prepare();
 
-	virtual SceneObject* clone() const;
-	
-	/// Add an object to this group
-	virtual void addObject(SceneObject* obj);
+  virtual SceneObject *clone() const;
 
-	std::vector<SceneObject*> getObjects() const;
+  /// Add an object to this group
+  virtual void addObject(SceneObject *obj);
 
-    protected:
-        ObjectGroup();    
+  std::vector<SceneObject *> getObjects() const;
 
-    private:
-	std::vector<SceneObject*> objects;
+protected:
+  ObjectGroup();
+
+private:
+  std::vector<SceneObject *> objects;
 };
 
 #endif

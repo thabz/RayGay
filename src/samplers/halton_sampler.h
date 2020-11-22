@@ -6,26 +6,24 @@
 class Halton;
 
 class HaltonSamplerFactory : public SamplerFactory {
-    public:
-	HaltonSamplerFactory(uint32_t num);
-	Sampler* createInstance(Image* img, Renderer* renderer);
-	
-    private:
-	uint32_t samples_num;
+public:
+  HaltonSamplerFactory(uint32_t num);
+  Sampler *createInstance(Image *img, Renderer *renderer);
 
+private:
+  uint32_t samples_num;
 };
 
-class HaltonSampler : public Sampler
-{
-    friend Sampler* HaltonSamplerFactory::createInstance(Image*, Renderer*);
+class HaltonSampler : public Sampler {
+  friend Sampler *HaltonSamplerFactory::createInstance(Image *, Renderer *);
 
-    public:
-	virtual void render(const RenderJob& job);
-	
-    private:
-	HaltonSampler(Image* image, Renderer* renderer, uint32_t samples_num);
-	uint32_t samples_num;
-	Halton* halton_seq;
+public:
+  virtual void render(const RenderJob &job);
+
+private:
+  HaltonSampler(Image *image, Renderer *renderer, uint32_t samples_num);
+  uint32_t samples_num;
+  Halton *halton_seq;
 };
 
 #endif

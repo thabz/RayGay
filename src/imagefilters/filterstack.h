@@ -10,13 +10,12 @@ class ImageFilter;
 
 class FilterStack {
 
-    public:
-	
-	void push(ImageFilter* filter);
-	void apply(Image* image);
+public:
+  void push(ImageFilter *filter);
+  void apply(Image *image);
 
-    private:
-	std::vector<ImageFilter*> filters;
+private:
+  std::vector<ImageFilter *> filters;
 };
 
 #endif

@@ -13,24 +13,25 @@
  */
 class SolidBox : public Solid, public Transformer {
 
-    public:
-	/// Constructs a box with extremities at corner1 and corner2
-	SolidBox(const Vector corner1, const Vector corner2, const Material* mat);
+public:
+  /// Constructs a box with extremities at corner1 and corner2
+  SolidBox(const Vector corner1, const Vector corner2, const Material *mat);
 
-	bool inside(const Vector &p) const;
-    double signedDistance(const Vector& p) const;
-	uint32_t allIntersections(const Ray& ray, Intersection* result) const;
-	uint32_t maxIntersections() const;
+  bool inside(const Vector &p) const;
+  double signedDistance(const Vector &p) const;
+  uint32_t allIntersections(const Ray &ray, Intersection *result) const;
+  uint32_t maxIntersections() const;
 
-	AABox getBoundingBox() const;
-	SceneObject* clone() const;
-	void transform(const Matrix& m);
+  AABox getBoundingBox() const;
+  SceneObject *clone() const;
+  void transform(const Matrix &m);
 
-    private:
-	AABox bbox;
+private:
+  AABox bbox;
 
-	double _fastIntersect(const Ray& ray) const;
-	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
+  double _fastIntersect(const Ray &ray) const;
+  void _fullIntersect(const Ray &ray, const double t,
+                      Intersection &result) const;
 };
 
 #endif

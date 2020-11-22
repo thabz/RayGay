@@ -9,9 +9,8 @@
  * Conversion from wstrings to and from filenames on the local system.
  */
 struct SchemeFilenames {
-    static std::string toFilename(std::wstring str);
-    static std::wstring toString(std::string filename);
+  static std::string toFilename(std::wstring str);
+  static std::wstring toString(std::string filename);
 };
-
 
 #endif

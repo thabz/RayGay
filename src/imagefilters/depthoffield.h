@@ -13,19 +13,20 @@ class Image;
  */
 class DepthOfField : public ImageFilter {
 
-    public:
-	DepthOfField(Image* depth, double focus_depth, double near_radius, double far_radius);
-	void apply(Image* image);
+public:
+  DepthOfField(Image *depth, double focus_depth, double near_radius,
+               double far_radius);
+  void apply(Image *image);
 
-    private:
-	RGB sampleCircle(int x, int y, double z, double radius, double tolerance, Image* image) const;
+private:
+  RGB sampleCircle(int x, int y, double z, double radius, double tolerance,
+                   Image *image) const;
 
-	Image* depth_buffer;
-	double focus_depth;
-	double near_radius;
-	double far_radius;
-	double exponent;
+  Image *depth_buffer;
+  double focus_depth;
+  double near_radius;
+  double far_radius;
+  double exponent;
 };
 
 #endif
-

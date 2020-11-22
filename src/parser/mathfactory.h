@@ -7,11 +7,9 @@
 /**
  * Factory for math-related Scheme-procedures.
  */
-class MathFactory 
-{
-    public:
-	static void register_procs(Scheme* scheme);
+class MathFactory {
+public:
+  static void register_procs(Scheme *scheme);
 };
 
 #endif
-

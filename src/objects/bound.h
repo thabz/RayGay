@@ -2,9 +2,9 @@
 #ifndef OBJECTS_BOUND_H
 #define OBJECTS_BOUND_H
 
+#include "intersection.h"
 #include "objects/object.h"
 #include "space/kdtree.h"
-#include "intersection.h"
 
 class ObjectGroup;
 
@@ -12,30 +12,30 @@ class ObjectGroup;
  * An ObjectGroup inside its own KdTree.
  */
 class Bound : public Object {
-    
-    public:
-	/// Constructor
-	Bound(ObjectGroup* group);
 
-	void transform(const Matrix& m);
+public:
+  /// Constructor
+  Bound(ObjectGroup *group);
 
-	AABox getBoundingBox() const;
+  void transform(const Matrix &m);
 
-	SceneObject* clone() const;
+  AABox getBoundingBox() const;
 
-	void prepare();
+  SceneObject *clone() const;
 
-	void fullIntersect(const Ray& ray, double t, Intersection& result) const;
+  void prepare();
 
+  void fullIntersect(const Ray &ray, double t, Intersection &result) const;
 
-    protected:
-    	double _fastIntersect(const Ray& ray) const;
+protected:
+  double _fastIntersect(const Ray &ray) const;
 
-    	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
+  void _fullIntersect(const Ray &ray, const double t,
+                      Intersection &result) const;
 
-    private:
-	KdTree* tree;
-	ObjectGroup* group;
+private:
+  KdTree *tree;
+  ObjectGroup *group;
 };
 
 #endif

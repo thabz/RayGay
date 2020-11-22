@@ -10,15 +10,16 @@ using namespace std;
  * A bicubic bezier patch.
  */
 class BezierPatch : public ParametrizedSurface {
-    public:
-	BezierPatch(const vector<Vector> &points, const uint32_t xResolution, uint32_t yResolution, const Material* material);
+public:
+  BezierPatch(const vector<Vector> &points, const uint32_t xResolution,
+              uint32_t yResolution, const Material *material);
 
-    protected:
-	Vector eval(double u, double v) const;
+protected:
+  Vector eval(double u, double v) const;
 
-    private:
-	const Vector& getControlPoint(uint32_t i, uint32_t j) const;
-	Vector controlPoints[16];
+private:
+  const Vector &getControlPoint(uint32_t i, uint32_t j) const;
+  Vector controlPoints[16];
 };
 
 #endif

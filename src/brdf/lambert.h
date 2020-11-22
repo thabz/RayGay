@@ -7,24 +7,20 @@
  */
 class Lambert : public BRDF {
 
-    Lambert(double kd) {
-	this->kd = kd;
-    };
+  Lambert(double kd) { this->kd = kd; };
 
-    double brdf(const Vector& wi, const Vector& wo, const Vector& normal) {
-	double cosa = wi * n;
-	return cosa * kd;
-    }
+  double brdf(const Vector &wi, const Vector &wo, const Vector &normal) {
+    double cosa = wi * n;
+    return cosa * kd;
+  }
 
-    /**
-     * Returns a cosine distributed random direction on the hemisphere
-     */
-    Vector pdf(const Vector& normal, const Vector& incoming) {
-	return normal.randomHemisphere();
-    };
+  /**
+   * Returns a cosine distributed random direction on the hemisphere
+   */
+  Vector pdf(const Vector &normal, const Vector &incoming) {
+    return normal.randomHemisphere();
+  };
 
-    private:
-	double kd;
+private:
+  double kd;
 };
-
-

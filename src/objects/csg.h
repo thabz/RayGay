@@ -10,30 +10,30 @@
  */
 class CSGUnion : public Solid {
 
-    public:
+public:
+  /// Constructor using two solids
+  CSGUnion(Solid *left, Solid *right, const Material *mat);
 
-	/// Constructor using two solids
-	CSGUnion(Solid* left, Solid* right, const Material* mat); 
+  /// Constructor taking more than two solids
+  CSGUnion(vector<Solid *> *solids, const Material *mat);
 
-	/// Constructor taking more than two solids
-	CSGUnion(vector<Solid*>* solids, const Material* mat); 
+  uint32_t allIntersections(const Ray &ray, Intersection *result) const;
+  uint32_t maxIntersections() const;
 
-	uint32_t allIntersections(const Ray& ray, Intersection* result) const;
-	uint32_t maxIntersections() const;
+  void transform(const Matrix &m);
+  AABox getBoundingBox() const;
+  SceneObject *clone() const;
 
-	void transform(const Matrix& m);
-	AABox getBoundingBox() const;
-	SceneObject* clone() const;
-	
-        bool inside(const Vector& p) const;
+  bool inside(const Vector &p) const;
 
-    private:
-	Solid* left;
-	Solid* right;
-	uint32_t max_intersections;
+private:
+  Solid *left;
+  Solid *right;
+  uint32_t max_intersections;
 
-	double _fastIntersect(const Ray& ray) const;
-	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
+  double _fastIntersect(const Ray &ray) const;
+  void _fullIntersect(const Ray &ray, const double t,
+                      Intersection &result) const;
 };
 
 /**
@@ -42,26 +42,26 @@ class CSGUnion : public Solid {
  */
 class CSGDifference : public Solid {
 
-    public:
+public:
+  /// Constructor
+  CSGDifference(Solid *left, Solid *right, const Material *mat);
+  uint32_t allIntersections(const Ray &ray, Intersection *result) const;
+  uint32_t maxIntersections() const;
 
-	/// Constructor
-	CSGDifference(Solid* left, Solid* right, const Material* mat); 
-	uint32_t allIntersections(const Ray& ray, Intersection* result) const;
-	uint32_t maxIntersections() const;
+  void transform(const Matrix &m);
+  AABox getBoundingBox() const;
+  SceneObject *clone() const;
 
-	void transform(const Matrix& m);
-	AABox getBoundingBox() const;
-	SceneObject* clone() const;
+  bool inside(const Vector &p) const;
 
-        bool inside(const Vector& p) const;
+private:
+  Solid *left;
+  Solid *right;
+  uint32_t max_intersections;
 
-    private:
-	Solid* left;
-	Solid* right;
-	uint32_t max_intersections;
-
-	double _fastIntersect(const Ray& ray) const;
-	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
+  double _fastIntersect(const Ray &ray) const;
+  void _fullIntersect(const Ray &ray, const double t,
+                      Intersection &result) const;
 };
 
 /**
@@ -70,26 +70,26 @@ class CSGDifference : public Solid {
  */
 class CSGIntersection : public Solid {
 
-    public:
+public:
+  /// Constructor
+  CSGIntersection(Solid *left, Solid *right, const Material *mat);
+  uint32_t allIntersections(const Ray &ray, Intersection *result) const;
+  uint32_t maxIntersections() const;
 
-	/// Constructor
-	CSGIntersection(Solid* left, Solid* right, const Material* mat); 
-	uint32_t allIntersections(const Ray& ray, Intersection* result) const;
-	uint32_t maxIntersections() const;
+  void transform(const Matrix &m);
+  AABox getBoundingBox() const;
+  SceneObject *clone() const;
 
-	void transform(const Matrix& m);
-	AABox getBoundingBox() const;
-	SceneObject* clone() const;
+  bool inside(const Vector &p) const;
 
-        bool inside(const Vector& p) const;
+private:
+  Solid *left;
+  Solid *right;
+  uint32_t max_intersections;
 
-    private:
-	Solid* left;
-	Solid* right;
-	uint32_t max_intersections;
-
-	double _fastIntersect(const Ray& ray) const;
-	void _fullIntersect(const Ray& ray, const double t, Intersection& result) const;
+  double _fastIntersect(const Ray &ray) const;
+  void _fullIntersect(const Ray &ray, const double t,
+                      Intersection &result) const;
 };
 
 #endif

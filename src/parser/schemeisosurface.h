@@ -8,21 +8,22 @@
 class Profiler;
 
 class SchemeIsosurface : public IsoSurface {
-    public:
-	SchemeIsosurface(Scheme* scheme, SchemeObject* procedure, AABox bbox, uint32_t steps, double accuracy, double iso, Material* mat);
-	SceneObject* clone() const;
+public:
+  SchemeIsosurface(Scheme *scheme, SchemeObject *procedure, AABox bbox,
+                   uint32_t steps, double accuracy, double iso, Material *mat);
+  SceneObject *clone() const;
 
-    protected:
-	AABox _getBoundingBox() const;
-	double evaluateFunction(const Vector& point) const;
+protected:
+  AABox _getBoundingBox() const;
+  double evaluateFunction(const Vector &point) const;
 
-    private:
-        Scheme* scheme;    
-	SchemeObject* procedure;
-	AABox bbox;
-	static Profiler* profiler;
-    	static pthread_mutex_t mutex;
-    	static bool mutex_initialized;
+private:
+  Scheme *scheme;
+  SchemeObject *procedure;
+  AABox bbox;
+  static Profiler *profiler;
+  static pthread_mutex_t mutex;
+  static bool mutex_initialized;
 };
 
 #endif

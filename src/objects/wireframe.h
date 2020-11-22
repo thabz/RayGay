@@ -11,9 +11,9 @@ class Material;
 // The vertices are represented as cylinders and the vertices as spheres.
 class Wireframe : public ObjectGroup {
 
-    public:
-	/// Constructor
-	Wireframe(Mesh* mesh, double radius, const Material* material);
+public:
+  /// Constructor
+  Wireframe(Mesh *mesh, double radius, const Material *material);
 };
 
 #endif

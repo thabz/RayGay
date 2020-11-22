@@ -8,7 +8,7 @@
  *  The native code compiler
  */
 struct Compiler {
-    static void bind(Scheme* scheme, SchemeObject* envt);
+  static void bind(Scheme *scheme, SchemeObject *envt);
 };
 
 #endif

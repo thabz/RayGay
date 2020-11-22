@@ -8,11 +8,11 @@
  * @see http://en.wikipedia.org/wiki/CIE_1931_color_space
  */
 class XYZ {
-    public:
-	Lab toLab(XYZ whitepoint) const;
+public:
+  Lab toLab(XYZ whitepoint) const;
 
-    private:
-	double X,Y,Z;
+private:
+  double X, Y, Z;
 };
 
 #endif

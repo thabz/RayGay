@@ -3,37 +3,35 @@
 #include "math/functions.h"
 #include <cassert>
 
-BezierSpline::BezierSpline(Vector* controlpoints, uint32_t num) {
+BezierSpline::BezierSpline(Vector *controlpoints, uint32_t num) {
 
-   assert(num > 2);
-   this->num = num;
-   for(uint32_t i = 0; i < num; i++) {
-       this->controlpoints.push_back(controlpoints[i]);
-   }
+  assert(num > 2);
+  this->num = num;
+  for (uint32_t i = 0; i < num; i++) {
+    this->controlpoints.push_back(controlpoints[i]);
+  }
 }
 
-BezierSpline::BezierSpline(const std::vector<Vector>& points) {
-    controlpoints = points;
-    num = points.size();
-    assert(num > 2);
+BezierSpline::BezierSpline(const std::vector<Vector> &points) {
+  controlpoints = points;
+  num = points.size();
+  assert(num > 2);
 }
 
-BezierSpline::~BezierSpline() {
-   controlpoints.clear();
-}
+BezierSpline::~BezierSpline() { controlpoints.clear(); }
 
-void BezierSpline::transform(const Matrix& m) {
-   for(uint32_t i = 0; i < num; i++) {
-       controlpoints[i] = m * controlpoints[i];
-   }
+void BezierSpline::transform(const Matrix &m) {
+  for (uint32_t i = 0; i < num; i++) {
+    controlpoints[i] = m * controlpoints[i];
+  }
 }
 
 Vector BezierSpline::getPoint(double t) const {
-    Vector result = Vector(0,0,0);
-    for(uint32_t i = 0; i < num; i++) {
-	result += Math::bernsteinPolynomial(i,num-1,t) * getControlPoint(i);
-    }
-    return result;
+  Vector result = Vector(0, 0, 0);
+  for (uint32_t i = 0; i < num; i++) {
+    result += Math::bernsteinPolynomial(i, num - 1, t) * getControlPoint(i);
+  }
+  return result;
 }
 
 /**
@@ -41,14 +39,17 @@ Vector BezierSpline::getPoint(double t) const {
  *
  * The derivative of the Bernstein polynomial above is
  *
- * \f[ \frac{d}{dt}B_{i,n}(t) = n \left( B_{i-1,n-1}(t) - B_{i,n-1}(t) \right) \f]
+ * \f[ \frac{d}{dt}B_{i,n}(t) = n \left( B_{i-1,n-1}(t) - B_{i,n-1}(t) \right)
+ * \f]
  */
 Vector BezierSpline::getTangent(double t) const {
-    Vector result = Vector(0,0,0);
-    for(uint32_t i = 0; i < num; i++) {
-	result += num*(Math::bernsteinPolynomial(i-1,num-2,t) - Math::bernsteinPolynomial(i,num-2,t)) * getControlPoint(i);
-    }
-    result.normalize();
-    return result;
+  Vector result = Vector(0, 0, 0);
+  for (uint32_t i = 0; i < num; i++) {
+    result += num *
+              (Math::bernsteinPolynomial(i - 1, num - 2, t) -
+               Math::bernsteinPolynomial(i, num - 2, t)) *
+              getControlPoint(i);
+  }
+  result.normalize();
+  return result;
 }
-

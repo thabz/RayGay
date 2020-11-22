@@ -54,8 +54,9 @@ double SolidBox::_fastIntersect(const Ray &world_ray) const {
   ts[0] /= local_ray.t_scale;
   ts[1] /= local_ray.t_scale;
 
-  if (ts[1] < ts[0])
+  if (ts[1] < ts[0]) {
     return -1;
+  }
 
   if (ts[0] > EPSILON) {
     return ts[0];
@@ -90,7 +91,10 @@ void SolidBox::_fullIntersect(const Ray &world_ray, const double t,
 }
 
 bool SolidBox::inside(const Vector &p) const { return bbox.inside(p); }
+<<<<<<< HEAD
 
 double SolidBox::signedDistance(const Vector &p) const {
   return bbox.inside(p);
 }
+=======
+>>>>>>> master

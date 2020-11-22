@@ -2,13 +2,13 @@
 #ifndef MATH_STURM_SEQUENCE_H
 #define MATH_STURM_SEQUENCE_H
 
-#include <vector>
 #include "math/polynomial.h"
+#include <vector>
 
 /**
  * A Sturm sequence.
  *
- * In 1829 Jacques Charles Francois Sturm (1803-1855) found 
+ * In 1829 Jacques Charles Francois Sturm (1803-1855) found
  * a method for finding the number of real roots of a given
  * polynomial in a given interval.
  *
@@ -25,11 +25,11 @@
  * upon division by the polynomial \f$ P_{i-1} \f$. Also note that
  * \f$ \deg P_i < \deg P_{i-1} \f$ so the sequence does end.
  *
- * For any real value \f$ u \f$, consider the sequence of values 
- * \f$ P_i(u) \f$ for all \f$ i \f$. Let \f$ F(u) \f$ be the number 
- * of times this sequence changes sign, for a particular value of 
- * \f$ u \f$. Now, Sturm's theorem says that the number of distinct 
- * roots of \f$ P \f$ in the interval \f$ ]a,b[ \f$ is the absolute value of 
+ * For any real value \f$ u \f$, consider the sequence of values
+ * \f$ P_i(u) \f$ for all \f$ i \f$. Let \f$ F(u) \f$ be the number
+ * of times this sequence changes sign, for a particular value of
+ * \f$ u \f$. Now, Sturm's theorem says that the number of distinct
+ * roots of \f$ P \f$ in the interval \f$ ]a,b[ \f$ is the absolute value of
  * \f$ F(b) - F(a) \f$.
  *
  * This is an implementation of that method.
@@ -40,22 +40,21 @@
  */
 class SturmSequence {
 
-    public:
-	/// Constructor
-	SturmSequence(const Polynomial& polynomial);
+public:
+  /// Constructor
+  SturmSequence(const Polynomial &polynomial);
 
-	/// Calculate number of distinct real roots in the interval \f$ ]a,b[ \f$
-	uint32_t rootCount(double a, double b) const;
+  /// Calculate number of distinct real roots in the interval \f$ ]a,b[ \f$
+  uint32_t rootCount(double a, double b) const;
 
-    private:
-	/// Evaluate the sequence at a point
-	void eval(double x, double* dest) const;
+private:
+  /// Evaluate the sequence at a point
+  void eval(double x, double *dest) const;
 
-	/// Count number of sign changes at a point
-	int signChanges(double x) const;
+  /// Count number of sign changes at a point
+  int signChanges(double x) const;
 
-	std::vector<Polynomial> f;
+  std::vector<Polynomial> f;
 };
 
 #endif
-

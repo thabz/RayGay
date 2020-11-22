@@ -4,11 +4,9 @@
 
 #include "scheme/scheme.h"
 
-class SchemeFunctions 
-{
-    public:
-	static void register_procs(Scheme* scheme);
+class SchemeFunctions {
+public:
+  static void register_procs(Scheme *scheme);
 };
 
 #endif
-
