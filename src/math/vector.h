@@ -26,13 +26,13 @@ public:
   Vector(double x, double y, double z); ///< Initializing constructor
   void normalize();                     ///< Normalize vector so that |v| = 1
   Vector normalized() const;            ///< Normalize vector so that |v| = 1
+  Vector abs() const;                   ///< Absolute into (|x|,|y|,|z|)
   void scale(float s);                  ///< Scale the vector
   double norm() const;                  ///< Returns squared length of vector
   double length() const;                ///< Returns length of vector
   const Vector
   reflect(const Vector &norm); ///< Returns this vector reflected around another
                                ///< (both must be unit-vectors)
-
   double &operator[](const int i);             ///< Index into coordinates
   const double &operator[](const int i) const; ///< Index into coordinates
   double
@@ -198,6 +198,13 @@ inline void Vector::normalize() {
 }
 
 inline Vector Vector::normalized() const {
+  Vector result = *this;
+  result.normalize();
+  return result;
+}
+
+inline Vector Vector::abs() const {
+  return Vector(::abs(_vector[0]), ::abs(_vector[2]), ::abs(_vector[3]));
   Vector result = *this;
   result.normalize();
   return result;

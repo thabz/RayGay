@@ -1350,6 +1350,14 @@ public:
     b = new SolidBox(Vector(-10, -20, -30), Vector(40, 50, 60), NULL);
     assertTrue(normalCheck(b, 200));
     assertTrue(transparentCheck(b, 200));
+
+    // Solid box inside
+    b = new SolidBox(Vector(-1, -1, -1), Vector(1, 1, 1), NULL);
+    assertTrue(b->inside(Vector(0, 0, 0)));
+    assertFalse(b->inside(Vector(2, 0, 0)));
+    b->transform(Matrix::matrixTranslate(Vector(10, 0, 0)));
+    assertTrue(b->inside(Vector(10, 0, 0)));
+    assertFalse(b->inside(Vector(12, 0, 0)));
   }
 };
 
