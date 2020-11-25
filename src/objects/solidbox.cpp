@@ -99,6 +99,10 @@ bool SolidBox::inside(const Vector &p) const {
   return bbox.inside(localPoint);
 }
 
-double SolidBox::signedDistance(const Vector &p) const {
-  Vector q = p.abs() - bbox.lengths();
+double SolidBox::signedDistance(const Vector &worldPoint) const {
+  Vector p = pointToObject(worldPoint);
+  Vector b = bbox.maximum();
+  Vector q = p.abs() - b;
+  Vector maxQ = Vector(fmax(q.x(), 0), fmax(q.y(), 0), fmax(q.z(), 0));
+  return maxQ.length() + fmin(fmax(q.x(), fmax(q.y(), q.z())), 0);
 }

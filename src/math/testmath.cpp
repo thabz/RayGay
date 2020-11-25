@@ -162,8 +162,8 @@ public:
                Vector::area(Vector(0, 0, 0), Vector(0, 2, 0), Vector(2, 0, 0)));
 
     // Test abs()
-    assertTrue(abs(Vector(-1, -1, -1)) == Vector(1, 1, 1));
-    assertTrue(abs(Vector(1, 1, 1)) == Vector(1, 1, 1));
+    assertTrue(Vector(-1, -1, -1).abs() == Vector(1, 1, 1));
+    assertTrue(Vector(1, 1, 1).abs() == Vector(1, 1, 1));
   }
 };
 

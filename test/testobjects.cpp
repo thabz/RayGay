@@ -1358,6 +1358,20 @@ public:
     b->transform(Matrix::matrixTranslate(Vector(10, 0, 0)));
     assertTrue(b->inside(Vector(10, 0, 0)));
     assertFalse(b->inside(Vector(12, 0, 0)));
+
+    // Solid box distance
+    b = new SolidBox(Vector(-1, -1, -1), Vector(3, 3, 3), NULL);
+    // Distance onto top
+    assertEqualF(1, b->signedDistance(Vector(2, 4, 2)));
+    assertEqualF(2, b->signedDistance(Vector(5, 1, 2)));
+    // Distance onto back
+    assertEqualF(4, b->signedDistance(Vector(0, 0, -5)));
+    assertEqualF(4, b->signedDistance(Vector(-0.5, -0.5, -5)));
+    assertEqualF(4, b->signedDistance(Vector(0.5, 0.5, -5)));
+    // Distance onto max corner
+    assertEqualF(M_SQRT3, b->signedDistance(Vector(4, 4, 4)));
+    // Distance inside
+    assertEqualF(-1, b->signedDistance(Vector(2, 1, 1)));
   }
 };
 

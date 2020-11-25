@@ -204,10 +204,7 @@ inline Vector Vector::normalized() const {
 }
 
 inline Vector Vector::abs() const {
-  return Vector(::abs(_vector[0]), ::abs(_vector[2]), ::abs(_vector[3]));
-  Vector result = *this;
-  result.normalize();
-  return result;
+  return Vector(fabs(_vector[0]), fabs(_vector[1]), fabs(_vector[2]));
 }
 
 inline void Vector::scale(float s) {
