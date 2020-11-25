@@ -835,6 +835,14 @@ public:
     assertTrue(t->inside(Vector(0, 0, 10)));
     assertTrue(t->inside(Vector(10, 0, 0)));
     assertFalse(t->inside(Vector(10, 0, 10)));
+
+    // distance
+    assertEqualF(1, t->signedDistance(Vector(10, 2, 0)));
+    assertEqualF(2, t->signedDistance(Vector(10, 3, 0)));
+    assertEqualF(1, t->signedDistance(Vector(-10, -2, 0)));
+    assertEqualF(-0.2, t->signedDistance(Vector(10, 0.8, 0)));
+    assertEqualF(-0.1, t->signedDistance(Vector(0, 0.9, -10)));
+
     delete t;
 
     // Test allIntersections()

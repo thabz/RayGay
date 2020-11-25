@@ -189,4 +189,9 @@ bool Torus::inside(const Vector &point) const {
   return d * d + p.y() * p.y() - r * r < 0;
 }
 
-double Torus::signedDistance(const Vector &point) const { return 0; }
+double Torus::signedDistance(const Vector &point) const {
+  Vector p = pointToObject(point);
+  Vector2 pxz = Vector2(p.x(), p.z());
+  Vector2 q = Vector2(pxz.length() - R, p.y());
+  return q.length() - r;
+}
