@@ -306,6 +306,8 @@ public:
     assertTrue(s->inside(Vector(0, -2, 0)));
     assertFalse(s->inside(Vector(0, 0, 0)));
     assertFalse(s->inside(Vector(0, 2, 0)));
+    assertEqualF(-1, s->signedDistance(Vector(5, -2, 10)));
+    assertEqualF(3, s->signedDistance(Vector(0, 2, 5)));
 #ifdef HALFSPACE_OPTIMIZED_AABOX
     b = s->getBoundingBox();
     assertTrue(b.inside(Vector(0, -2, 0)));
@@ -323,6 +325,8 @@ public:
     assertTrue(s->inside(Vector(0, -2, 0)));
     assertTrue(s->inside(Vector(0, 0, 0)));
     assertFalse(s->inside(Vector(0, 2, 0)));
+    assertEqualF(-3, s->signedDistance(Vector(10, -2, 5)));
+    assertEqualF(1, s->signedDistance(Vector(0, 2, 5)));
 #ifdef HALFSPACE_OPTIMIZED_AABOX
     b = s->getBoundingBox();
     assertTrue(b.inside(Vector(0, -2, 0)));
@@ -357,6 +361,9 @@ public:
     assertFalse(s->inside(Vector(0, -2, 0)));
     assertFalse(s->inside(Vector(0, 0, 0)));
     assertTrue(s->inside(Vector(0, 2, 0)));
+    assertEqualF(3, s->signedDistance(Vector(10, -2, 5)));
+    assertEqualF(-1, s->signedDistance(Vector(0, 2, 5)));
+
 #ifdef HALFSPACE_OPTIMIZED_AABOX
     b = s->getBoundingBox();
     assertFalse(b.inside(Vector(0, -2, 0)));
