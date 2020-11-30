@@ -2,8 +2,8 @@
 #ifndef OBJECTS_SDF_OBJECT_H
 #define OBJECTS_SDF_OBJECT_H
 
-#include "objects/solid.h"
 #include "objects/isosurface.h"
+#include "objects/solid.h"
 #include <vector>
 
 /**
@@ -12,17 +12,19 @@
  */
 class SDFObject : public IsoSurface {
 
-    public:
-	/// Constructor
-	SDFObject(Solid* solid, double grow, uint32_t steps, double accuracy, Material* m);
-	SceneObject* clone() const;
+public:
+  /// Constructor
+  SDFObject(Solid *solid, double grow, uint32_t steps, double accuracy,
+            Material *m);
+  SceneObject *clone() const;
 
-    protected:
-	AABox _getBoundingBox() const;
+protected:
+  AABox _getBoundingBox() const;
 
-    private:
-	double evaluateFunction(const Vector& v) const;
-	Solid* solid;
+private:
+  double evaluateFunction(const Vector &v) const;
+  Solid *solid;
+  double grow;
 };
 
 #endif

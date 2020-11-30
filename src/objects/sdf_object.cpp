@@ -1,24 +1,27 @@
-
-#include <cmath>
 #include "objects/sdf_object.h"
 #include "aabox.h"
+#include <cmath>
 
 class Material;
 
-SDFObject::SDFObject(Solid* solid, double grow, uint32_t steps, double accuracy, Material* m) : IsoSurface(steps,accuracy,grow,m) {
-    this->solid = solid;
+SDFObject::SDFObject(Solid *solid, double grow, uint32_t steps, double accuracy,
+                     Material *m)
+    : IsoSurface(steps, accuracy, 0, m) {
+  this->solid = solid;
+  this->grow = grow;
 }
 
-double SDFObject::evaluateFunction(const Vector& v) const {
-    return solid->signedDistance(v);
+double SDFObject::evaluateFunction(const Vector &p) const {
+  return solid->signedDistance(p) - grow;
 }
 
-SceneObject* SDFObject::clone() const {
-    SDFObject* result = new SDFObject(*this);
-    return result;
+SceneObject *SDFObject::clone() const {
+  SDFObject *result = new SDFObject(*this);
+  return result;
 }
 
 AABox SDFObject::_getBoundingBox() const {
-    return solid->getBoundingBox();
+  AABox result = solid->getBoundingBox();
+  result.grow(grow);
+  return result;
 }
-

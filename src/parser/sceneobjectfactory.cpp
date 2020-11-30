@@ -24,6 +24,7 @@
 #include "objects/mesh.h"
 #include "objects/obj.h"
 #include "objects/ply.h"
+#include "objects/sdf_object.h"
 #include "objects/solidbox.h"
 #include "objects/sphere.h"
 #include "objects/text.h"
@@ -331,6 +332,27 @@ SchemeObject *SceneObjectFactory::make_isosurface(
   SchemeIsosurface *iso_surface = new SchemeIsosurface(
       scheme, s_proc, bbox, steps, accuracy, iso, material);
   return sceneobject2scm(iso_surface);
+}
+
+SchemeObject *make_sdf_object(Scheme *scheme, SchemeObject *s_solid,
+                              SchemeObject *s_grow, SchemeObject *s_steps,
+                              SchemeObject *s_accuracy,
+                              SchemeObject *s_material) {
+  const wchar_t *proc = L"make-sdf-object";
+
+  SceneObject *so_solid = scm2sceneobject(s_solid, proc, 1);
+  Solid *solid = dynamic_cast<Solid *>(so_solid);
+  if (solid == NULL) {
+    wrong_type_arg(proc, 1, s_solid);
+  }
+  double grow = safe_scm2double(s_grow, 2, proc);
+  int steps = safe_scm2int(s_steps, 3, proc);
+  double accuracy = safe_scm2double(s_accuracy, 4, proc);
+  Material *material = scm2material(s_material, proc, 5);
+
+  SDFObject *sdf_object = new SDFObject(solid, grow, steps, accuracy, material);
+
+  return sceneobject2scm(sdf_object);
 }
 
 SchemeObject *SceneObjectFactory::make_parametrized_surface(
@@ -725,6 +747,8 @@ void SceneObjectFactory::register_procs(Scheme *s) {
   scheme->assign(L"make-blob", 5, 0, 0, (SchemeObject * (*)()) make_blob);
   scheme->assign(L"make-isosurface", 7, 0, 0,
                  (SchemeObject * (*)()) SceneObjectFactory::make_isosurface);
+  scheme->assign(L"make-sdf-object", 5, 0, 0,
+                 (SchemeObject * (*)()) make_sdf_object);
   scheme->assign(L"make-mesh", 3, 0, 0, (SchemeObject * (*)()) make_mesh);
   scheme->assign(L"$make-ply-mesh", 2, 0, 0,
                  (SchemeObject * (*)()) make_ply_mesh);

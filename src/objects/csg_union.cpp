@@ -160,5 +160,5 @@ bool CSGUnion::inside(const Vector &p) const {
 }
 
 double CSGUnion::signedDistance(const Vector &p) const {
-  return min(left->signedDistance(p), right->signedDistance(p));
+  return ::min(left->signedDistance(p), right->signedDistance(p));
 }
