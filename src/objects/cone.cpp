@@ -212,4 +212,4 @@ bool Cone::inside(const Vector &point) const {
 }
 
 // TODO: Implement
-double Cone::signedDistance(const Vector &p) const { return 0; }
+double Cone::signedDistance(const Vector &point) const { return 0; }
