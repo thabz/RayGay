@@ -335,8 +335,7 @@ SchemeObject *SceneObjectFactory::make_isosurface(
 }
 
 SchemeObject *make_sdf_object(Scheme *scheme, SchemeObject *s_solid,
-                              SchemeObject *s_grow, SchemeObject *s_steps,
-                              SchemeObject *s_accuracy,
+                              SchemeObject *s_grow, SchemeObject *s_accuracy,
                               SchemeObject *s_material) {
   const wchar_t *proc = L"make-sdf-object";
 
@@ -346,11 +345,10 @@ SchemeObject *make_sdf_object(Scheme *scheme, SchemeObject *s_solid,
     wrong_type_arg(proc, 1, s_solid);
   }
   double grow = safe_scm2double(s_grow, 2, proc);
-  int steps = safe_scm2int(s_steps, 3, proc);
-  double accuracy = safe_scm2double(s_accuracy, 4, proc);
-  Material *material = scm2material(s_material, proc, 5);
+  double accuracy = safe_scm2double(s_accuracy, 3, proc);
+  Material *material = scm2material(s_material, proc, 4);
 
-  SDFObject *sdf_object = new SDFObject(solid, grow, steps, accuracy, material);
+  SDFObject *sdf_object = new SDFObject(solid, grow, accuracy, material);
 
   return sceneobject2scm(sdf_object);
 }
@@ -747,7 +745,7 @@ void SceneObjectFactory::register_procs(Scheme *s) {
   scheme->assign(L"make-blob", 5, 0, 0, (SchemeObject * (*)()) make_blob);
   scheme->assign(L"make-isosurface", 7, 0, 0,
                  (SchemeObject * (*)()) SceneObjectFactory::make_isosurface);
-  scheme->assign(L"make-sdf-object", 5, 0, 0,
+  scheme->assign(L"make-sdf-object", 4, 0, 0,
                  (SchemeObject * (*)()) make_sdf_object);
   scheme->assign(L"make-mesh", 3, 0, 0, (SchemeObject * (*)()) make_mesh);
   scheme->assign(L"$make-ply-mesh", 2, 0, 0,

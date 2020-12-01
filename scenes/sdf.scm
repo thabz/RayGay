@@ -51,7 +51,6 @@
     (make-sdf-object
       solid-box
       0.02  ; grow
-      100    ; steps
       0.0001 ; accuracy
       flat))
 
