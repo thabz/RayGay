@@ -36,8 +36,13 @@
 
 ; 1.78:1 aka 16:9 formats
 ; Used in new widescreen TVs
+
+(define image-size-8k-hd '(7680 4320))
+(define image-size-4k-hd '(3840 2160))
 (define image-size-1080-hd '(1920 1080)) 
+(define image-size-1080p-hd '(1920 1080))
 (define image-size-720-hd  '(1280 720))
+(define image-size-720p-hd  '(1280 720))
 (define image-size-360-hd  '(640 360))
 (define image-size-180-hd  '(320 180))
 

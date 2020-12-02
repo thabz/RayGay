@@ -38,6 +38,7 @@ public:
   uint32_t maxIntersections() const;
 
   bool inside(const Vector &point) const;
+  double signedDistance(const Vector &p) const;
 
 private:
   double _fastIntersect(const Ray &ray) const;

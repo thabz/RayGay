@@ -42,6 +42,11 @@ public:
    */
   virtual bool inside(const Vector &p) const = 0;
 
+  /**
+   * Signed distance
+   */
+  virtual double signedDistance(const Vector &p) const = 0;
+
 protected:
   /// Protected constructor
   Solid(const Material *mat) : Object(mat){};

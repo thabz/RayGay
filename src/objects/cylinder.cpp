@@ -195,3 +195,42 @@ bool Cylinder::inside(const Vector &point) const {
   return p.z() > 0 && p.z() < height &&
          (p.x() * p.x() + p.y() * p.y() < radius * radius);
 }
+
+double Cylinder::signedDistance(const Vector &point) const {
+  Vector p = pointToObject(point);
+  const double distanceToTube = ::sqrt(p.x() * p.x() + p.y() * p.y()) - radius;
+  const bool withinHeight = p.z() > 0 && p.z() < height;
+  if (distanceToTube < 0) {
+    // Inside infinite tube
+    if (p.z() > height) {
+      // Distxance to top cap (positive)
+      return p.z() - height;
+    } else if (p.z() < 0) {
+      // Distance to bottom cap (positive)
+      return -p.z();
+    } else {
+      // Distance to tube or either cap. Distance is negative
+      // since we're completely inside tube. We want the distance
+      // nearest to zero, ie. the max value of the three negative
+      // numbers
+      return ::max(p.z() - height, ::max(-p.z(), distanceToTube));
+    }
+  } else {
+    // Outside infinite tube
+    if (p.z() > height) {
+      // Distance to top rim (positive)
+      // Pythagoras
+      const double a = distanceToTube;
+      const double b = p.z() - height;
+      return ::sqrt(a * a + b * b);
+    } else if (p.z() < 0) {
+      // Distance to bottom rim (positive)
+      const double a = distanceToTube;
+      const double b = -p.z();
+      return ::sqrt(a * a + b * b);
+    } else {
+      // Distance to tube (positive)
+      return distanceToTube;
+    }
+  }
+}

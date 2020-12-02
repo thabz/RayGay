@@ -3,6 +3,7 @@
 #define VECTOR2_H
 
 #include "math/constants.h"
+#include <algorithm>
 #include <iostream>
 
 /// Implements a 2D vector
@@ -29,6 +30,10 @@ public:
   Vector2 operator+(const Vector2 &v) const;
   /// Subtract two vectors
   Vector2 operator-(const Vector2 &v) const;
+
+  /// Dot-product
+  Float operator*(const Vector2 &v) const;
+
   bool operator==(const Vector2 &v) const; ///< Comparator
   bool operator!=(const Vector2 &x) const; ///< Comparator
 
@@ -37,6 +42,12 @@ public:
 
   /// Returns squared length of vector
   double norm() const;
+
+  /// Absolute into (|x|,|y|)
+  Vector2 abs() const;
+
+  /// (max(x,m), max(y,m))
+  Vector2 max(const Float m) const;
 
   // Returns length of vector
   double length() const;
@@ -73,6 +84,10 @@ inline Vector2 operator*(const double x, const Vector2 &v) {
   return Vector2(v._vector[0] * x, v._vector[1] * x);
 }
 
+inline Float Vector2::operator*(const Vector2 &x) const {
+  return _vector[0] * x._vector[0] + _vector[1] * x._vector[1];
+}
+
 inline Vector2 Vector2::operator/(const Float x) const {
   return Vector2(_vector[0] / x, _vector[1] / x);
 }
@@ -91,7 +106,17 @@ inline double Vector2::norm() const {
   return _vector[0] * _vector[0] + _vector[1] * _vector[1];
 }
 
-inline double Vector2::length() const { return hypot(_vector[0], _vector[1]); }
+inline double Vector2::length() const {
+  return ::hypot(_vector[0], _vector[1]);
+}
+
+inline Vector2 Vector2::abs() const {
+  return Vector2(::fabs(_vector[0]), ::fabs(_vector[1]));
+}
+
+inline Vector2 Vector2::max(const Float m) const {
+  return Vector2(::fmax(_vector[0], m), ::fmax(_vector[1], m));
+}
 
 inline bool Vector2::operator==(const Vector2 &x) const {
   return IS_EQUAL(x[0], _vector[0]) && IS_EQUAL(x[1], _vector[1]);

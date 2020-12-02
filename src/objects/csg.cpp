@@ -60,6 +60,14 @@ bool CSGDifference::inside(const Vector &p) const {
   return left->inside(p) && !right->inside(p);
 }
 
+double CSGIntersection::signedDistance(const Vector &p) const {
+  return max(left->signedDistance(p), right->signedDistance(p));
+}
+
+double CSGDifference::signedDistance(const Vector &p) const {
+  return max(left->signedDistance(p), -right->signedDistance(p));
+}
+
 uint32_t CSGIntersection::maxIntersections() const {
   if (max_intersections == 0)
     throw_exception("What!");

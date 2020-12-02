@@ -168,6 +168,11 @@ public:
     assertTrue(s.inside(Vector(0, 0, -9)));
     assertFalse(s.inside(Vector(0, 9, 9)));
 
+    assertEqualF(s.signedDistance(Vector(0, 0, 9)), -1);
+    assertEqualF(s.signedDistance(Vector(0, 0, -8)), -2);
+    assertEqualF(s.signedDistance(Vector(0, 0, -12)), 2);
+    assertEqualF(s.signedDistance(Vector(0, 12, 0)), 2);
+
     s = Sphere(Vector(0, 0, 0), 60.0, m);
 
     /* Test intersection(ray) */
@@ -301,6 +306,8 @@ public:
     assertTrue(s->inside(Vector(0, -2, 0)));
     assertFalse(s->inside(Vector(0, 0, 0)));
     assertFalse(s->inside(Vector(0, 2, 0)));
+    assertEqualF(-1, s->signedDistance(Vector(5, -2, 10)));
+    assertEqualF(3, s->signedDistance(Vector(0, 2, 5)));
 #ifdef HALFSPACE_OPTIMIZED_AABOX
     b = s->getBoundingBox();
     assertTrue(b.inside(Vector(0, -2, 0)));
@@ -318,6 +325,8 @@ public:
     assertTrue(s->inside(Vector(0, -2, 0)));
     assertTrue(s->inside(Vector(0, 0, 0)));
     assertFalse(s->inside(Vector(0, 2, 0)));
+    assertEqualF(-3, s->signedDistance(Vector(10, -2, 5)));
+    assertEqualF(1, s->signedDistance(Vector(0, 2, 5)));
 #ifdef HALFSPACE_OPTIMIZED_AABOX
     b = s->getBoundingBox();
     assertTrue(b.inside(Vector(0, -2, 0)));
@@ -352,6 +361,9 @@ public:
     assertFalse(s->inside(Vector(0, -2, 0)));
     assertFalse(s->inside(Vector(0, 0, 0)));
     assertTrue(s->inside(Vector(0, 2, 0)));
+    assertEqualF(3, s->signedDistance(Vector(10, -2, 5)));
+    assertEqualF(-1, s->signedDistance(Vector(0, 2, 5)));
+
 #ifdef HALFSPACE_OPTIMIZED_AABOX
     b = s->getBoundingBox();
     assertFalse(b.inside(Vector(0, -2, 0)));
@@ -629,6 +641,19 @@ public:
     assertFalse(cyl->inside(Vector(9, 9, 9)));
     assertFalse(cyl->inside(Vector(0, 0, 11)));
 
+    assertEqualF(2, cyl->signedDistance(Vector(0, 0, 12)));
+    assertEqualF(-2, cyl->signedDistance(Vector(0, 0, 8)));
+    assertEqualF(2, cyl->signedDistance(Vector(0, 1, 12)));
+    assertEqualF(-2, cyl->signedDistance(Vector(0, 1, 8)));
+    assertEqualF(2, cyl->signedDistance(Vector(1, 0, 0)));
+    assertEqualF(-3, cyl->signedDistance(Vector(1, 0, 5)));
+    assertEqualF(2, cyl->signedDistance(Vector(0, 12, 5)));
+    assertEqualF(-2, cyl->signedDistance(Vector(0, 8, 5)));
+    assertEqualF(3, cyl->signedDistance(Vector(13, 0, 5)));
+    assertEqualF(-3, cyl->signedDistance(Vector(7, 0, 5)));
+    assertEqualF(sqrt(200), cyl->signedDistance(Vector(0, 20, 20)));
+    assertEqualF(sqrt(200), cyl->signedDistance(Vector(20, 0, -8)));
+
     delete cyl;
 
     // Test an x-axis aligned cylinder
@@ -823,6 +848,14 @@ public:
     assertTrue(t->inside(Vector(0, 0, 10)));
     assertTrue(t->inside(Vector(10, 0, 0)));
     assertFalse(t->inside(Vector(10, 0, 10)));
+
+    // distance
+    assertEqualF(1, t->signedDistance(Vector(10, 2, 0)));
+    assertEqualF(2, t->signedDistance(Vector(10, 3, 0)));
+    assertEqualF(1, t->signedDistance(Vector(-10, -2, 0)));
+    assertEqualF(-0.2, t->signedDistance(Vector(10, 0.8, 0)));
+    assertEqualF(-0.1, t->signedDistance(Vector(0, 0.9, -10)));
+
     delete t;
 
     // Test allIntersections()
@@ -1345,6 +1378,28 @@ public:
     b = new SolidBox(Vector(-10, -20, -30), Vector(40, 50, 60), NULL);
     assertTrue(normalCheck(b, 200));
     assertTrue(transparentCheck(b, 200));
+
+    // Solid box inside
+    b = new SolidBox(Vector(-1, -1, -1), Vector(1, 1, 1), NULL);
+    assertTrue(b->inside(Vector(0, 0, 0)));
+    assertFalse(b->inside(Vector(2, 0, 0)));
+    b->transform(Matrix::matrixTranslate(Vector(10, 0, 0)));
+    assertTrue(b->inside(Vector(10, 0, 0)));
+    assertFalse(b->inside(Vector(12, 0, 0)));
+
+    // Solid box distance
+    b = new SolidBox(Vector(-1, -1, -1), Vector(3, 3, 3), NULL);
+    // Distance onto top
+    assertEqualF(1, b->signedDistance(Vector(2, 4, 2)));
+    assertEqualF(2, b->signedDistance(Vector(5, 1, 2)));
+    // Distance onto back
+    assertEqualF(4, b->signedDistance(Vector(0, 0, -5)));
+    assertEqualF(4, b->signedDistance(Vector(-0.5, -0.5, -5)));
+    assertEqualF(4, b->signedDistance(Vector(0.5, 0.5, -5)));
+    // Distance onto max corner
+    assertEqualF(M_SQRT3, b->signedDistance(Vector(4, 4, 4)));
+    // Distance inside
+    assertEqualF(-1, b->signedDistance(Vector(2, 1, 1)));
   }
 };
 
@@ -1461,6 +1516,8 @@ public:
     assertFalse(c->inside(Vector(0, 3, 1)));
     assertTrue(c->inside(Vector(0, 0, 0.5)));
     assertTrue(c->inside(Vector(1, 1, 0.5)));
+    // assertEqualF(1, c->signedDistance(Vector(0, 0, -1)));
+    // assertEqualF(1, c->signedDistance(Vector(1, 1, 5)));
 
     c = new Cone(Vector(0, 0, -1), Vector(0, 0, 1), 4, 2, true, NULL);
     assertTrue(intersects(c, Vector(0, 1000, 0), Vector(0, -1, 0)));
@@ -1470,6 +1527,8 @@ public:
     assertTrue(intersects(c, Vector(0, 1000, 0.9), Vector(0, -1, 0)));
     assertTrue(intersects(c, Vector(0.01, 1000, -0.9), Vector(0, -1, 0)));
     assertTrue(intersects(c, Vector(0.01, 1000, 0.9), Vector(0, -1, 0)));
+    // assertEqualF(1, c->signedDistance(Vector(0, 0, -2)));
+    // assertEqualF(4, c->signedDistance(Vector(1, 1, 5)));
 
     c = new Cone(Vector(0, 0, 0), Vector(0, 0, 10), 500, 10, true, NULL);
     assertTrue(intersects(c, Vector(0, 1000, 0.1), Vector(0, -1, 0)));

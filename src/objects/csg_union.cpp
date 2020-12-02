@@ -158,3 +158,7 @@ void CSGUnion::_fullIntersect(const Ray &ray, const double t,
 bool CSGUnion::inside(const Vector &p) const {
   return left->inside(p) || right->inside(p);
 }
+
+double CSGUnion::signedDistance(const Vector &p) const {
+  return ::min(left->signedDistance(p), right->signedDistance(p));
+}

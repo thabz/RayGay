@@ -4,7 +4,11 @@
 SolidBox::SolidBox(const Vector corner1, const Vector corner2,
                    const Material *mat)
     : Solid(mat) {
-  bbox = AABox(corner1, corner2);
+  // We want a box centered in origin
+  const AABox inputBox = AABox(corner1, corner2);
+  const Vector center = inputBox.center();
+  bbox = AABox(corner1 - center, corner2 - center);
+  transform(Matrix::matrixTranslate(center));
 }
 
 AABox SolidBox::getBoundingBox() const {
@@ -90,4 +94,15 @@ void SolidBox::_fullIntersect(const Ray &world_ray, const double t,
   intersectionToWorld(result);
 }
 
-bool SolidBox::inside(const Vector &p) const { return bbox.inside(p); }
+bool SolidBox::inside(const Vector &p) const {
+  Vector localPoint = pointToObject(p);
+  return bbox.inside(localPoint);
+}
+
+double SolidBox::signedDistance(const Vector &worldPoint) const {
+  Vector p = pointToObject(worldPoint);
+  Vector b = bbox.maximum();
+  Vector q = p.abs() - b;
+  Vector maxQ = Vector(fmax(q.x(), 0), fmax(q.y(), 0), fmax(q.z(), 0));
+  return maxQ.length() + fmin(fmax(q.x(), fmax(q.y(), q.z())), 0);
+}

@@ -210,3 +210,6 @@ bool Cone::inside(const Vector &point) const {
   return p.x() * p.x() + p.y() * p.y() <
          radius_begin + p.z() * (radius_end - radius_begin);
 }
+
+// TODO: Implement
+double Cone::signedDistance(const Vector &point) const { return 0; }

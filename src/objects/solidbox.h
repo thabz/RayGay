@@ -18,6 +18,7 @@ public:
   SolidBox(const Vector corner1, const Vector corner2, const Material *mat);
 
   bool inside(const Vector &p) const;
+  double signedDistance(const Vector &p) const;
   uint32_t allIntersections(const Ray &ray, Intersection *result) const;
   uint32_t maxIntersections() const;
 

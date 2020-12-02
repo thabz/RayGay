@@ -34,6 +34,7 @@ public:
   uint32_t allIntersections(const Ray &ray, Intersection *result) const;
   uint32_t maxIntersections() const;
   bool inside(const Vector &p) const;
+  double signedDistance(const Vector &p) const;
   bool canSelfshadow() const;
 
 private:

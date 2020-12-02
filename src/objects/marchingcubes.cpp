@@ -337,7 +337,6 @@ Vector MarchingCubes::refine(const Vector &a, const Vector &b) {
         inside_aa = inside_mid;
       } else {
         bb = mid;
-        inside_aa = inside_aa;
       }
     }
     return 0.5 * (aa + bb);
@@ -380,7 +379,7 @@ static const uint32_t offsets[12][4] = {
 
 #define si(s, x, y, z, i) ((x)*s * s * 3 + (y)*s * 3 + (z)*3 + i)
 
-// TODO: Opbevar kun et bitset for de sidste par planer i vores grid. Så
+// TODO: Opbevar kun et bitset for de sidste par planer i vores grid. Sï¿½
 // fylder et 200x200x200 grid kun 40k modsat 1MB.
 void MarchingCubes::prepare() {
   prepare_profiler->start();
