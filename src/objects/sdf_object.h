@@ -11,10 +11,10 @@
  * A signed distance function object is solid that is grown.
  * Ie. a box gets a bigger rounded surface.
  */
-class SDFObject : public Object, public Transformer {
+class SDFObject : public Object {
 
 public:
-  SDFObject(Solid *solid, double grow, double accuracy, Material *m);
+  SDFObject(Solid *solid, double accuracy, Material *m);
 
   bool intersects(const AABox &b) const;
   void transform(const Matrix &m);
@@ -30,14 +30,10 @@ protected:
   void _fullIntersect(const Ray &ray, const double t,
                       Intersection &result) const;
 
-  /// Returns the bounding box in object space coordinates
-  AABox _getBoundingBox() const;
-
 private:
   Vector normal(const Vector &p) const;
   double evaluateFunction(const Vector &v) const;
   Solid *solid;
-  double grow;
   double accuracy;
 };
 

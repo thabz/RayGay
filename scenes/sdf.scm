@@ -1,23 +1,20 @@
-; A benchmark scene for blob rendering.
-;
-; Rendertimes
-; 2005-04-01:	5:07
-; 2005-04-03:	1:15
-
 (load "lib/raygay.scm")
+(load "lib/image-sizes.scm")
 
-(set-image-size '(1024 768))
+;(set-image-size image-size-4k-hd)
+;(set-image-size image-size-1080p-hd)
+(set-image-size image-size-720p-hd)
 (set-background (make-texture "gfx/goodmorning.jpg" 1 1 'bilinear))
 ;(set-background #(0.3 0.6 0.7))
 
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
-    '( pos #(10 17 20)
-       lookat #(0 0 0)
+    '( pos #(8 17 20)
+       lookat #(0 2 0)
        up #(0 1 0)
        fov 45
-       aa 0)))
+       aa 3)))
 
 (define chrome
   (make-material
@@ -35,22 +32,41 @@
        ks 0.1
        specpow 45)))
 
+(define flatter
+  (make-material
+    '( diffuse #(0.7 0.8 0.9)
+       kd 1
+       specular #(1.0 1.0 1.0)
+       ks 0
+       specpow 45)))
 
-(add-to-scene (make-pointlight #(-500 1300 1300)))
+
+;(add-to-scene (make-pointlight #(-500 1300 1300)))
+(add-to-scene (make-arealight
+  #(500 1300 1300) ; pos
+  #(-0.5 -1 -1)    ; direction
+  100 ; radius
+  10 ; num
+  0.1 ; jitter
+))
 
 (define union-spheres (make-union 
-  (make-sphere #(-5 0 0) 2.5)
-  (make-sphere #(0 0 0) 2.5)
-  (make-sphere #(5 0 0) 2.5)))
+  (make-sphere #(-5 2.5 0) 2.5)
+  (make-sphere #(0 2.5 0) 2.5)
+  (make-sphere #(5 2.5 0) 2.5)))
 
-(define solid-box (make-solid-box
-  #(-2 -2 -2)
-  #(2 2 2)))
+(define solid-box (make-difference 
+  (make-solid-box #(-2 0.2 -2 ) #(2 4.2 2))
+  (make-solid-box #(-1 -1 -1 ) #(1 5 1))))
+
+(define rotated (rotate-y solid-box (* clock 90)))
+;(define rotated (rotate-y solid-box (* 0 360)))
 
 (add-to-scene
     (make-sdf-object
-      solid-box
-      0.02  ; grow
-      0.0001 ; accuracy
+      union-spheres
+      0.001 
       flat))
 
+(add-to-scene
+  (make-halfspace #(0 1 0) 0 flatter))

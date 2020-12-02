@@ -5,16 +5,14 @@
 
 class Material;
 
-SDFObject::SDFObject(Solid *solid, double grow, double accuracy,
-                     Material *material)
+SDFObject::SDFObject(Solid *solid, double accuracy, Material *material)
     : Object(material) {
   this->solid = solid;
   this->accuracy = accuracy;
-  this->grow = grow;
 }
 
 double SDFObject::evaluateFunction(const Vector &p) const {
-  return solid->signedDistance(p) - grow;
+  return solid->signedDistance(p);
 }
 
 SceneObject *SDFObject::clone() const {
@@ -22,26 +20,15 @@ SceneObject *SDFObject::clone() const {
   return result;
 }
 
-AABox SDFObject::_getBoundingBox() const {
-  AABox result = solid->getBoundingBox();
-  result.grow(grow + 20 * EPSILON);
-  return result;
-}
-
-void SDFObject::_fullIntersect(const Ray &world_ray, const double t,
+void SDFObject::_fullIntersect(const Ray &ray, const double t,
                                Intersection &result) const {
-  Ray ray = rayToObject(world_ray);
   Vector p = ray.getPoint(t * ray.t_scale);
   result = Intersection(p, t * ray.t_scale, normal(p), Vector2(0, 0));
-  intersectionToWorld(result);
 }
 
 #define MAX_ITER 200
 
-double SDFObject::_fastIntersect(const Ray &world_ray) const {
-
-  Ray ray = rayToObject(world_ray);
-
+double SDFObject::_fastIntersect(const Ray &ray) const {
   int i = 0;
   double t = 0;
   while (i++ < MAX_ITER) {
@@ -73,14 +60,14 @@ Vector SDFObject::normal(const Vector &p) const {
   return normal;
 }
 
-bool SDFObject::intersects(const AABox &b) const {
-  return b.inside(getBoundingBox());
-}
+// bool SDFObject::intersects(const AABox &b) const {
+//   return b.inside(getBoundingBox());
+// }
 
-void SDFObject::transform(const Matrix &m) { Transformer::transform(m); }
+void SDFObject::transform(const Matrix &m) { solid->transform(m); }
 
 AABox SDFObject::getBoundingBox() const {
-  AABox result = bboxToWorld(_getBoundingBox());
+  AABox result = solid->getBoundingBox();
   result.grow(20 * EPSILON);
   return result;
 }
