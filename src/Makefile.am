@@ -8,6 +8,7 @@ lib_LTLIBRARIES = libtracer.la
 
 libtracer_la_SOURCES = \
 		      exception.h	\
+		      exception.cpp	\
 		      intersection.cpp 	\
 		      ray.cpp 		\
 		      scene.cpp 	\

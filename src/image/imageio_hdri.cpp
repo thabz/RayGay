@@ -17,7 +17,7 @@ typedef unsigned char RGBE[4];
 #define B 2
 #define E 3
 
-#define MINELEN 8 // minimum scanline length for encoding
+#define MINELEN 8      // minimum scanline length for encoding
 #define MAXELEN 0x7fff // maximum scanline length for encoding
 
 void workOnRGBE(RGBE *scan, int len, float *cols);
@@ -37,7 +37,8 @@ Image *HdriIO::load(const std::string &fileName, Allocator::model_t model) {
   if (!file)
     throw_exception("HDRI file named " + fileName + " not found.");
 
-  ::fread(str, 10, 1, file);
+  size_t bytes_read = ::fread(str, 10, 1, file);
+  assert(bytes_read == 10);
   if (::memcmp(str, "#?RADIANCE", 10)) {
     ::fclose(file);
     throw_exception(fileName + " is not a HDRI file.");

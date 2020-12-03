@@ -105,7 +105,7 @@ int repl(int argc, char *argv[]) {
   }
   // TODO: Not working on older gettexts, eg. on Mac.
   // rl_completion_entry_function = binding_completion_function;
-  rl_basic_word_break_characters = " \t\n\"'`;()";
+  rl_basic_word_break_characters = (char *)" \t\n\"'`;()";
 
   while (true) {
     char *input = ::readline("raygay> ");

@@ -67,7 +67,9 @@ void TgaIO::save(const Image *const image, FILE *outfile) const {
 
 RGBA readpixel(FILE *handle, int bpp) {
   uint8_t data[4];
-  ::fread(data, 1, bpp, handle);
+  size_t bytes_read = ::fread(data, 1, bpp, handle);
+  assert(bytes_read == bpp);
+
   RGBA result;
   switch (bpp) {
   case 3:
@@ -102,7 +104,8 @@ void readscanline(FILE *handle, RGBA *dest, int width, int bpp, bool rle) {
     int pixels_read = 0;
     uint8_t repcount;
     do {
-      ::fread(&repcount, 1, 1, handle);
+      size_t bytes_read = ::fread(&repcount, 1, 1, handle);
+      assert(bytes_read == 1);
       int count = (int(repcount) & 127) + 1;
       if (int(repcount) > 127) {
         // Process run-length packet
@@ -143,7 +146,8 @@ Image *TgaIO::load(const std::string &filename, Allocator::model_t model) {
   }
 
   ::fseek(Handle, 0, SEEK_SET);
-  ::fread(Header, 1, 18, Handle);
+  size_t bytes_read = ::fread(Header, 1, 18, Handle);
+  assert(bytes_read == 18);
 
   int bpp = int(Header[16]) / 8; // Bytes per pixel
 

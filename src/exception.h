@@ -17,11 +17,7 @@
 class Exception {
 
 public:
-  Exception(std::string message, const char *srcfile, uint32_t srcline) {
-    this->message = message;
-    this->sourcefile = srcfile;
-    this->sourceline = srcline;
-  }
+  Exception(std::string message, const char *srcfile, uint32_t srcline);
   std::string getMessage() { return message; };
   std::string getSourceFile() { return sourcefile; };
   uint32_t getSourceLine() { return sourceline; };
