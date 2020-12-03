@@ -15,7 +15,7 @@ extern "C" {
 
 using namespace std;
 
-typedef struct threadargs {
+struct threadargs {
   int a;
   int b;
 };
@@ -24,8 +24,11 @@ void *threadDo(void *input) {
   threadargs *myarg = static_cast<threadargs *>(input);
   int a = myarg->a;
   int b = myarg->b;
-  // cout << a << "," << b << endl;
-  return NULL;
+  if (a == b) {
+    return NULL;
+  } else {
+    return NULL;
+  }
 }
 
 void test_threads() {

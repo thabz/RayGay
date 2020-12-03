@@ -255,7 +255,7 @@ Matrix3 Matrix3::inverse() const {
 #define m32 MAT(m, 2, 1)
 #define m33 MAT(m, 2, 2)
 
-  register double det;
+  double det;
   double tmp[9]; /* Allow out == in. */
 
   /* Inverse = adjoint / det. (See linear algebra texts.)*/
@@ -274,7 +274,7 @@ Matrix3 Matrix3::inverse() const {
     return inv;
   } else {
     double d12, d13, d23;
-    register double im11, im12, im13;
+    double im11, im12, im13;
 
     det = 1. / det;
 

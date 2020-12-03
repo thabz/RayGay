@@ -2,6 +2,7 @@
 #ifndef RATIONAL_H
 #define RATIONAL_H
 
+#include <cmath>
 #include <limits>
 #include <sstream>
 

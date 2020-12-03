@@ -288,7 +288,7 @@ Matrix Matrix::inverse() const {
 #define m43 MAT(m, 3, 2)
 #define m44 MAT(m, 3, 3)
 
-  register double det;
+  double det;
   double tmp[16]; /* Allow out == in. */
 
   if (m41 != 0. || m42 != 0. || m43 != 0. || m44 != 1.) {
@@ -312,7 +312,7 @@ Matrix Matrix::inverse() const {
     return inv;
   } else {
     double d12, d13, d23, d24, d34, d41;
-    register double im11, im12, im13, im14;
+    double im11, im12, im13, im14;
 
     det = 1. / det;
 

@@ -118,7 +118,7 @@ void PhotonTracer::trace(const Ray &ray, RGB power, int bounces) {
       Ray new_ray = Ray(point + 0.1 * dir, dir, -1);
       new_ray.specularBounces = ray.specularBounces;
       new_ray.diffuseBounces = ray.diffuseBounces + 1;
-      power = power; // TODO: Modify power
+      // power = power; // TODO: Modify power
       return trace(new_ray, power, bounces + 1);
     }
   } else if (ran < material->getKd() + material->getKs()) {

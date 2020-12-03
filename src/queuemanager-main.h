@@ -14,7 +14,7 @@ extern "C" {
 using namespace std;
 
 class QueueJob {
-  time_t begin;
+  // time_t begin;
 };
 
 class QueueFrameJob : public QueueJob {

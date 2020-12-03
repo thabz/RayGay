@@ -16,7 +16,6 @@ class SDFObject : public Object {
 public:
   SDFObject(Solid *solid, double accuracy, Material *m);
 
-  bool intersects(const AABox &b) const;
   void transform(const Matrix &m);
   /// Return the bounding box in world space coordinates
   AABox getBoundingBox() const;

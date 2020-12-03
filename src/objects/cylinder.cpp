@@ -199,7 +199,7 @@ bool Cylinder::inside(const Vector &point) const {
 double Cylinder::signedDistance(const Vector &point) const {
   Vector p = pointToObject(point);
   const double distanceToTube = ::sqrt(p.x() * p.x() + p.y() * p.y()) - radius;
-  const bool withinHeight = p.z() > 0 && p.z() < height;
+
   if (distanceToTube < 0) {
     // Inside infinite tube
     if (p.z() > height) {

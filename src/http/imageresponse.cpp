@@ -6,7 +6,7 @@
 ImageResponse::ImageResponse(Image *image) : HTTPResponse(200, "image/png") {
   char filename[L_tmpnam + 1];
   char *ptr;
-  ptr = tmpnam(filename);
+  ptr = mktemp(filename);
   image->save(string(ptr) + ".png");
   FILE *f = ::fopen(ptr, "r");
   this->setBody(f);

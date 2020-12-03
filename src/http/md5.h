@@ -148,7 +148,7 @@ extern int md5_stream __P((FILE * stream, void *resblock));
 /* Compute MD5 message digest for bytes read from STREAM.  The
    resulting message digest number will be written as hex into
    the 32+1 chars beginning at RESBLOCK.  */
-extern int md5_stream_hex __P((FILE * stream, char *resblock));
+extern void md5_stream_hex __P((FILE * stream, char *resblock));
 
 /* Compute MD5 message digest for LEN bytes beginning at BUFFER.  The
    result is always in little endian byte order, so that a byte-wise

@@ -130,7 +130,7 @@ md5_finish_ctx (struct md5_ctx *ctx, void *resbuf)
 /* Compute MD5 message digest for bytes read from STREAM.  The
    resulting message digest number will be written as hex into 
    the 32+1 chars beginning at RESBLOCK.  */
-int
+void
 md5_stream_hex (FILE *stream, char *resblock)
 {
     char res[16];

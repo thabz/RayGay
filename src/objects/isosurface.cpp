@@ -105,10 +105,6 @@ Vector IsoSurface::normal(const Vector &p) const {
   return normal;
 }
 
-bool IsoSurface::intersects(const AABox &b) const {
-  return b.inside(getBoundingBox());
-}
-
 void IsoSurface::transform(const Matrix &m) { Transformer::transform(m); }
 
 AABox IsoSurface::getBoundingBox() const {

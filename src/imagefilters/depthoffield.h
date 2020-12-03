@@ -26,7 +26,7 @@ private:
   double focus_depth;
   double near_radius;
   double far_radius;
-  double exponent;
+  // double exponent;
 };
 
 #endif

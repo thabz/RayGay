@@ -60,10 +60,6 @@ Vector SDFObject::normal(const Vector &p) const {
   return normal;
 }
 
-// bool SDFObject::intersects(const AABox &b) const {
-//   return b.inside(getBoundingBox());
-// }
-
 void SDFObject::transform(const Matrix &m) { solid->transform(m); }
 
 AABox SDFObject::getBoundingBox() const {
