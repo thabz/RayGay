@@ -122,7 +122,6 @@ public:
 private:
   wstring str;
   const wchar_t *procname;
-  uint32_t line;
 };
 
 #define wrong_type_arg(procname, argnum, arg)                                  \

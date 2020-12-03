@@ -389,7 +389,6 @@ SchemeObject *make_mesh(Scheme *scheme, SchemeObject *s_material,
   // Add the triangles
   assert(scm2bool(s_list_p(scheme, s_triangles)));
   flength = safe_scm2int(s_length(scheme, s_triangles), 0, L"");
-  Vector2 uv = Vector2(0, 0);
   try {
     for (uint32_t i = 0; i < flength; i++) {
       SchemeObject *s_triangle = s_list_ref(scheme, s_triangles, int2scm(i));

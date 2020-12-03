@@ -39,10 +39,12 @@ enum category_ids {
 
 #include "r6rs-lib-unicode-categories.h"
 
+/*
 const static char *category_names[] = {
     "Lu", "Ll", "Lt", "Lm", "Lo", "Mn", "Mc", "Me", "Nd", "Nl",
     "No", "Ps", "Pe", "Pi", "Pf", "Pd", "Pc", "Po", "Sc", "Sm",
     "Sk", "So", "Zs", "Zp", "Zl", "Cc", "Cf", "Cs", "Co", "Cn"};
+*/
 
 SchemeObject *category_symbols[LastCatId];
 

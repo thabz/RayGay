@@ -850,6 +850,56 @@ vector<SchemeObject *> SchemeObject::getBindingKeys() {
 }
 
 //-----------------------------------------------------------
+// Values
+//-----------------------------------------------------------
+
+int64_t SchemeObject::integerValue() const {
+  ObjectType t = type();
+  if (t == INTEGER_NUMBER)
+    return integer_value;
+  else if (t == REAL_NUMBER)
+    return int64_t(real_value);
+  else if (t == RATIONAL_NUMBER)
+    return (numerator->integer_value / denominator->integer_value);
+  else if (t == COMPLEX_NUMBER)
+    return int64_t(real->real_value);
+  else
+    return -1; // Shouldn't happen
+}
+
+rational_type SchemeObject::rationalValue() const {
+  ObjectType t = type();
+  if (t == RATIONAL_NUMBER) {
+    return rational_type(numerator->integer_value, denominator->integer_value);
+  } else {
+    return rational_type(integerValue());
+  }
+}
+
+double SchemeObject::realValue() const {
+  ObjectType t = type();
+  if (t == REAL_NUMBER)
+    return real_value;
+  else if (t == INTEGER_NUMBER)
+    return double(integer_value);
+  else if (t == RATIONAL_NUMBER)
+    return double(numerator->integer_value) /
+           double(denominator->integer_value);
+  else if (t == COMPLEX_NUMBER)
+    return real->real_value;
+  else
+    return -1; // Shouldn't happen
+}
+
+std::complex<double> SchemeObject::complexValue() const {
+  ObjectType t = type();
+  if (t == COMPLEX_NUMBER) {
+    return std::complex<double>(car->realValue(), cdr->realValue());
+  } else {
+    return std::complex<double>(realValue(), 0);
+  }
+}
+//-----------------------------------------------------------
 // Wrapped objects
 //-----------------------------------------------------------
 SchemeWrappedCObject::~SchemeWrappedCObject() {}

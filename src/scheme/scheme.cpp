@@ -439,7 +439,7 @@ Scheme::Scheme(int argc, char *argv[]) {
     eval(L"(define-macro (force e) `(,e))", scheme_report_environment);
   } catch (scheme_exception e) {
     wcerr << L"ABORT in Scheme constructor: " << e.toString() << endl;
-    throw e;
+    throw std::move(e);
   }
 
   /*
