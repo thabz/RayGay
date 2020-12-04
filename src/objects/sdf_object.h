@@ -7,14 +7,17 @@
 #include "transformer.h"
 #include <vector>
 
+class Material;
 /**
- * A signed distance function object is solid that is grown.
- * Ie. a box gets a bigger rounded surface.
+ * An object that is defined by a signed distance
+ * function and is rendered by raymarching.
  */
 class SDFObject : public Object {
 
 public:
-  SDFObject(Solid *solid, double accuracy, Material *m);
+  SDFObject(const double accuracy, const Material *m);
+
+  virtual double signedDistance(const Vector &point) const = 0;
 
   bool intersects(const AABox &b) const;
   void transform(const Matrix &m);
@@ -23,18 +26,13 @@ public:
   bool inside(const Vector &p) const;
 
 protected:
-  /// Constructor
-  SceneObject *clone() const;
-
   double _fastIntersect(const Ray &ray) const;
   void _fullIntersect(const Ray &ray, const double t,
                       Intersection &result) const;
+  double accuracy;
 
 private:
   Vector normal(const Vector &p) const;
-  double evaluateFunction(const Vector &v) const;
-  Solid *solid;
-  double accuracy;
 };
 
 #endif

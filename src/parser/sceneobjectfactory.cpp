@@ -334,10 +334,11 @@ SchemeObject *SceneObjectFactory::make_isosurface(
   return sceneobject2scm(iso_surface);
 }
 
-SchemeObject *make_sdf_object(Scheme *scheme, SchemeObject *s_solid,
+SchemeObject *make_sdf_object(Scheme *scheme, 
+SchemeObject *s_left, SchemeObject *s_right,
                               SchemeObject *s_accuracy,
                               SchemeObject *s_material) {
-  const wchar_t *proc = L"make-sdf-object";
+  const wchar_t *proc = L"make-smooth-union";
 
   SceneObject *so_solid = scm2sceneobject(s_solid, proc, 1);
   Solid *solid = dynamic_cast<Solid *>(so_solid);

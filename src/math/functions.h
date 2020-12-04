@@ -17,8 +17,12 @@ public:
 
   /// Calculate a value of a Bernstein polynomial
   static double bernsteinPolynomial(uint32_t i, uint32_t n, double t);
+
   /// Clamps a to the [0,1] interval.
   static double clamp(double a);
+
+  /// Linear interpolation between a and b with t in [0,1]
+  static double mix(double a, double b, double t);
 
   /// Solves quartic equation
   static int solveQuartic(double A, double B, double C, double D,
@@ -58,6 +62,10 @@ inline double Math::clamp(double a) {
   } else {
     return a;
   }
+}
+
+inline double Math::mix(double a, double b, double t) {
+  return a * (1 - t) + b * t;
 }
 
 #endif
