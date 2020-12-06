@@ -13,7 +13,7 @@ class Arealight : public Lightsource {
 
 public:
   /// Constructor
-  Arealight(const Vector &pos, const Vector &dir, double radius, int num,
+  Arealight(const Vector &pos, const Vector &dir, double radius, uint32_t num,
             double jitter);
   virtual ~Arealight();
   void getLightinfo(const Intersection &inter, KdTree *space, Lightinfo *info,
@@ -26,11 +26,11 @@ private:
   std::vector<Circle *> circles;
   std::vector<double> ts;
   double jitter;
-  int num;
   pthread_key_t shadowcaches_key;
+  uint32_t num;
 
-  Vector getPosition(int i) const;
-  bool probeSublight(int i, const Intersection &inter, KdTree *space,
+  Vector getPosition(uint32_t i) const;
+  bool probeSublight(uint32_t i, const Intersection &inter, KdTree *space,
                      uint32_t depth) const;
 };
 

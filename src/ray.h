@@ -27,7 +27,7 @@ public:
   double getIndiceOfRefraction() const { return indice_of_refraction; };
 
   /// Accessor for the unique id of this ray, that is automatically assigned.
-  const int64_t getId() const { return id; };
+  int64_t getId() const { return id; };
 
   /// Get a point on the ray
   Vector getPoint(const double t) const { return origin + t * direction; };

@@ -25,7 +25,7 @@ private:
   double radius;
   int num;
 
-  bool probe(int num, const Ray &ray, double dist, uint32_t depth,
+  bool probe(uint32_t num, const Ray &ray, double dist, uint32_t depth,
              KdTree *space) const;
 };
 

@@ -11,7 +11,7 @@ Marble::Marble(const RGB &color1, const RGB &color2) : Material() {
 RGB Marble::getDiffuseColor(const Intersection &i) const {
   Vector p = i.getPoint() / 10;
 
-  float t = cos(p[0] / 2 + 3 * Perlin::noise(p));
+  double t = cos(p[0] / 2 + 3 * Perlin::noise(p));
   t = (t + 1) / 2.0;
   return RGB(t + 0.5, t + 0.6, 0.9 * t + 0.7);
 }

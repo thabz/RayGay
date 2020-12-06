@@ -86,16 +86,6 @@ protected:
   RGB _specularColor;
   double _ks;
 
-  int _spec_coeff;
-
-  bool no_shadow;
-
-  bool gloss_enabled;
-  uint32_t gloss_rays;
-  double gloss_angle_rad;
-
-  double bumpHeight;
-
   Texture *texture_diffuse;
   Texture *texture_bump;
 
@@ -104,7 +94,17 @@ protected:
   double _kt;
   double eta;
 
+  double bumpHeight;
+
+  double gloss_angle_rad;
+  uint32_t gloss_rays;
+  int _spec_coeff;
+
   bool alpha_shadows;
+
+  bool no_shadow;
+
+  bool gloss_enabled;
 
 private:
   void reset();

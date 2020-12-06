@@ -52,12 +52,13 @@ private:
   RGBA getRGBWrapped(int x, int y) const;
   virtual RGBA getRGB(int x, int y) const = 0;
 
+protected:
+  long width, height;
+
+private:
   Vector2 repeat_uv;
   InterpolationType interpolation_type;
   static Profiler *profiler;
-
-protected:
-  long width, height;
 };
 
 #endif

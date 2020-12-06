@@ -19,7 +19,7 @@ class KdTree;
  * @param jitter How many percent the light can jitter with value in [0,1]
  */
 Arealight::Arealight(const Vector &pos, const Vector &dir, double radius,
-                     int num, double jitter)
+                     uint32_t num, double jitter)
     : Lightsource(pos) {
   assert(num > 0);
 
@@ -35,7 +35,7 @@ Arealight::Arealight(const Vector &pos, const Vector &dir, double radius,
    * r(n) for 0 <= n <= N bliver dermed n * A / PI dvs.
    * r(n) = sqrt(n/N)*R for n mellem 0 og N.
    */
-  for (int i = 0; i < num; i++) {
+  for (uint32_t i = 0; i < num; i++) {
     double r = radius * sqrt(double(i) / (num - 1));
     circles.push_back(new Circle(pos, r, dir));
     ts.push_back(RANDOM(0, 1));
@@ -46,12 +46,12 @@ Arealight::~Arealight() {}
 
 void Arealight::transform(const Matrix &m) {
   Lightsource::transform(m);
-  for (int i = 0; i < num; i++) {
+  for (uint32_t i = 0; i < num; i++) {
     circles[i]->transform(m);
   }
 }
 
-Vector Arealight::getPosition(int i) const {
+Vector Arealight::getPosition(uint32_t i) const {
   assert(i < num);
   double j = jitter * RANDOM(0, 1);
   double t = (ts[i] + j) - int(ts[i] + j);
@@ -66,9 +66,9 @@ void Arealight::getLightinfo(const Intersection &inter, KdTree *space,
   info->cos = info->direction_to_light * inter.getNormal();
 
   if (info->cos > 0.0) {
-    int count = 0;
+    uint32_t count = 0;
 
-    for (int i = 0; i < num; i++) {
+    for (uint32_t i = 0; i < num; i++) {
       bool occluded = probeSublight(i, inter, space, depth);
       if (!occluded) {
         count++;
@@ -86,14 +86,14 @@ void Arealight::getSingleLightinfo(const Intersection &inter, KdTree *space,
   info->cos = info->direction_to_light * inter.getNormal();
 
   if (info->cos > 0.0) {
-    int sublight = int(RANDOM(0, num));
+    uint32_t sublight = uint32_t(RANDOM(0, num));
     bool occluded = probeSublight(sublight, inter, space, depth);
     info->intensity = occluded ? 0 : 1;
   }
 }
 
-bool Arealight::probeSublight(int i, const Intersection &inter, KdTree *space,
-                              uint32_t depth) const {
+bool Arealight::probeSublight(uint32_t i, const Intersection &inter,
+                              KdTree *space, uint32_t depth) const {
   Vector surface_point = inter.getPoint() + EPSILON * inter.getOriginalNormal();
 
   Vector direction_to_light = getPosition(i) - surface_point;

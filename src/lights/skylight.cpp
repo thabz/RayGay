@@ -23,10 +23,10 @@ void Skylight::getLightinfo(const Intersection &inter, KdTree *space,
                             Lightinfo *info, uint32_t depth) const {
   Vector surface_point =
       inter.getPoint() + 1000 * EPSILON * inter.getOriginalNormal();
-  int count = 0;
+  uint32_t count = 0;
   double cos_total = 0;
   double cos_tmp;
-  for (int i = 0; i < num; i++) {
+  for (uint32_t i = 0; i < num; i++) {
     Vector direction_to_light = positions[i] - surface_point;
     double dist_to_light = direction_to_light.length();
     direction_to_light = direction_to_light / dist_to_light;
@@ -49,7 +49,7 @@ void Skylight::getSingleLightinfo(const Intersection &inter, KdTree *space,
                                   Lightinfo *info, uint32_t depth) const {
   Vector surface_point =
       inter.getPoint() + 1000 * EPSILON * inter.getOriginalNormal();
-  int sublight = int(RANDOM(0, num));
+  uint32_t sublight = uint32_t(RANDOM(0, num));
 
   info->direction_to_light = positions[sublight] - surface_point;
   info->direction_to_light.normalize();
@@ -63,7 +63,7 @@ void Skylight::getSingleLightinfo(const Intersection &inter, KdTree *space,
   }
 }
 
-bool Skylight::probe(int i, const Ray &ray, double dist, uint32_t depth,
+bool Skylight::probe(uint32_t i, const Ray &ray, double dist, uint32_t depth,
                      KdTree *space) const {
   std::vector<ShadowCache> *shadowcaches =
       (std::vector<ShadowCache> *)pthread_getspecific(shadowcaches_key);

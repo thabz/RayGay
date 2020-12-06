@@ -106,7 +106,7 @@ private:
   bool findBestSplitPlane(uint32_t size, const AABox &bbox,
                           CostResult &result) const;
   void findBestSplitPlane(uint32_t size, const AABox &bbox, CostResult &result,
-                          int split_dim) const;
+                          uint32_t split_dim) const;
 
   BoundedObject<ObjectType> **left_bobs;
   BoundedObject<ObjectType> **right_bobs;

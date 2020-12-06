@@ -46,7 +46,7 @@ template <class ObjectType>
 void GenericKdTree<ObjectType>::findBestSplitPlane(uint32_t size,
                                                    const AABox &bbox,
                                                    CostResult &result,
-                                                   int d) const {
+                                                   uint32_t d) const {
   assert(d == 0 || d == 1 || d == 2);
 
   double split;

@@ -61,10 +61,10 @@ public:
   const Vector maximum() const { return Vector(_c2[0], _c2[1], _c2[2]); };
 
   /// An x,y or z value from the corner with smallest x,y,z values
-  const double minimum(const uint32_t i) const { return _c1[i]; };
+  double minimum(const uint32_t i) const { return _c1[i]; };
 
   /// An x,y or z value from the corner with biggest x,y,z values
-  const double maximum(const uint32_t i) const { return _c2[i]; };
+  double maximum(const uint32_t i) const { return _c2[i]; };
 
   /// Returns the smallest box that contains b1 and b2.
   static AABox doUnion(const AABox &b1, const AABox &b2);
