@@ -6,7 +6,7 @@
 
 class KdTree;
 
-Skylight::Skylight(double radius, int num) : Lightsource(Vector(0, 0, 0)) {
+Skylight::Skylight(double radius, uint32_t num) : Lightsource(Vector(0, 0, 0)) {
   this->radius = radius;
   this->num = num;
   Halton qmc = Halton(2, 2);

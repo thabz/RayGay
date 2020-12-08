@@ -65,7 +65,7 @@ void TgaIO::save(const Image *const image, FILE *outfile) const {
   delete[] bytes;
 }
 
-RGBA readpixel(FILE *handle, int bpp) {
+RGBA readpixel(FILE *handle, uint32_t bpp) {
   uint8_t data[4];
   size_t bytes_read = ::fread(data, 1, bpp, handle);
   assert(bytes_read == bpp);
@@ -99,7 +99,7 @@ RGBA readpixel(FILE *handle, int bpp) {
  * @param rle whether the data is compressed
  * @param bpp bytes per pixel (3 or 4)
  */
-void readscanline(FILE *handle, RGBA *dest, int width, int bpp, bool rle) {
+void readscanline(FILE *handle, RGBA *dest, int width, uint32_t bpp, bool rle) {
   if (rle) {
     int pixels_read = 0;
     uint8_t repcount;
@@ -149,7 +149,7 @@ Image *TgaIO::load(const std::string &filename, Allocator::model_t model) {
   size_t bytes_read = ::fread(Header, 1, 18, Handle);
   assert(bytes_read == 18);
 
-  int bpp = int(Header[16]) / 8; // Bytes per pixel
+  uint32_t bpp = int(Header[16]) / 8; // Bytes per pixel
 
   // Says whether the data is rle encoded
   bool rle = int(Header[2]) >> 3 == 1;

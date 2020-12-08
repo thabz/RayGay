@@ -17,7 +17,7 @@ typedef unsigned char RGBE[4];
 #define B 2
 #define E 3
 
-#define MINELEN 8      // minimum scanline length for encoding
+#define MINELEN 8 // minimum scanline length for encoding
 #define MAXELEN 0x7fff // maximum scanline length for encoding
 
 void workOnRGBE(RGBE *scan, int len, float *cols);
@@ -46,15 +46,14 @@ Image *HdriIO::load(const std::string &fileName, Allocator::model_t model) {
 
   ::fseek(file, 1, SEEK_CUR);
 
-  char cmd[2000];
   i = 0;
   char c = 0, oldc;
+  // Skip until first 0x0a 0x0a
   while (true) {
     oldc = c;
     c = ::fgetc(file);
     if (c == 0xa && oldc == 0xa)
       break;
-    cmd[i++] = c;
   }
 
   char reso[2000];

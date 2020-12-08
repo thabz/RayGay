@@ -188,7 +188,7 @@ uint32_t Cone::maxIntersections() const { return 2; }
 uint32_t Cone::allIntersections(const Ray &ray, Intersection *result) const {
   double roots[2];
   uint32_t num = allPositiveRoots(ray, roots);
-  for (int i = 0; i < num; i++) {
+  for (uint32_t i = 0; i < num; i++) {
     Intersection inter;
     fullIntersect(ray, roots[i], inter);
     result[i] = inter;

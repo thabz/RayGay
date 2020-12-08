@@ -25,5 +25,5 @@ RGBA ColorMatrix::operator*(const RGBA &color) const {
     result[y] = matrix[y * 4 + 0] * c[0] + matrix[y * 4 + 1] * c[1] +
                 matrix[y * 4 + 2] * c[2] + matrix[y * 4 + 3] * c[3];
   }
-  return RGBA(c[0], c[1], c[2], c[3]);
+  return RGBA(result[0], result[1], result[2], result[3]);
 }
