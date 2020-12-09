@@ -108,7 +108,7 @@ HTTPResponse HTTPClient::send(HTTPRequest &request) {
   }
   // printf("%s", buf);
 
-  char *protocol = ::strtok(buf, " ");
+  ::strtok(buf, " ");
   char *status = ::strtok(NULL, " ");
   ::strtok(NULL, "\r");
   response.status = ::atoi(status);
