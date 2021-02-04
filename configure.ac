@@ -152,8 +152,7 @@ AC_ARG_ENABLE(extra-warnings,
   [  --enable-extra-warnings        Enable extreme gcc-warnings.],
   [extra_warnings="yes"], [extra_warnings="no"])
 if test "$extra_warnings" = yes; then
-#   CXXFLAGS="$CXXFLAGS -W -Wunused -Wpadded -Waggregate-return"
-   CXXFLAGS="$CXXFLAGS -W -Wunused -Wpadded -Wconversion" 
+   CXXFLAGS="$CXXFLAGS -W -Wunused -Wconversion"
 fi
 AC_MSG_RESULT($extra_warnings)
 
