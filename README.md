@@ -19,7 +19,6 @@ The C++ source code is in `src`. Compile with
     make
     sudo make install
 
-
 The unit-tests are in `test`. Run them with
 
     make check
@@ -35,4 +34,5 @@ Documentation written in Docbook is in `docs`. Build the HTML documentation with
 
 Reformat code using clang-format
 
+    brew install clang-format
     clang-format -i --style=LLVM src/**/*.cpp src/**/*.h
