@@ -8,12 +8,17 @@ The sourcecode is released under the GPL. See the file COPYING.
 
 # Get hacking
 
+On a Mac you need the following to build.
+
+`brew install autoconf automake libtool`
+
 The C++ source code is in `src`. Compile with
 
     ./autogen
     ./configure
     make
     sudo make install
+
 
 The unit-tests are in `test`. Run them with
 
