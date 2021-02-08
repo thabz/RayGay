@@ -32,10 +32,6 @@ extern "C" {
 #include <unistd.h>
 }
 
-#ifdef OS_DARWIN
-#include <Carbon/Carbon.h>
-#endif
-
 #include "environment.h"
 #include "exception.h"
 #include "stats.h"
@@ -129,7 +125,7 @@ PreviewWindow *windowFactory(int w, int h) {
 uint32_t getNumberOfCPUs() {
   uint32_t a;
 #ifdef OS_DARWIN
-  a = MPProcessorsScheduled();
+  a = sysconf(_SC_NPROCESSORS_ONLN);
 #elif OS_LINUX
   a = sysconf(_SC_NPROCESSORS_ONLN);
 #elif OS_SOLARIS
