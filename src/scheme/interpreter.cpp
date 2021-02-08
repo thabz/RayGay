@@ -98,7 +98,7 @@ SchemeObject *Interpreter::interpret(SchemeObject *parsetree,
     result = trampoline((fn_ptr)&eval_sequence, state);
   } catch (scheme_exception e) {
     state->stack.resize(stack_size);
-    throw e;
+    throw std::move(e);
   }
   state->stack.pop_back();
   state->stack.pop_back();

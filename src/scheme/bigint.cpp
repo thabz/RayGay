@@ -56,11 +56,15 @@ bigint::bigint(const string &str, uint32_t radix) {
     } else if (c >= 'A' && c <= 'Z') {
       digit = 10 + (c - 'A');
     } else {
-      throw invalid_argument("Not a valid digit: " + c);
+      std::string msg = "Not a valid digit: ";
+      msg.push_back(c);
+      throw invalid_argument(msg);
     }
 
     if (digit >= radix) {
-      throw invalid_argument("Not a valid digit: " + c);
+      std::string msg = "Not a valid digit: ";
+      msg.push_back(c);
+      throw invalid_argument(msg);
     }
 
     *(this) *= radix;
