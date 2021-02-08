@@ -297,7 +297,7 @@ public:
     // Test small objects
     ////////////////////////////////////////////////////////
     KdTree bsp2 = KdTree();
-    double s = 0.001;
+    double s = 0.01;
     Box *box = new Box(Vector(-s, -s, -s), Vector(s, s, s), NULL);
     box->prepare();
     box->addSelf(&bsp2);
