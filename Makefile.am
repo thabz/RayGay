@@ -1,6 +1,6 @@
 
 SUBDIRS = src test scenes docs
-
+ACLOCAL_AMFLAGS = -I m4
 dist_bin_SCRIPTS=animation-render.sh
 
 doc:

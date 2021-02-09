@@ -1,5 +1,6 @@
 
 AC_INIT(raygay, 0.5)    
+AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_HEADERS([config.h:config.h.in])
 AC_CONFIG_SRCDIR(src/main.cpp)
 
