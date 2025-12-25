@@ -12,23 +12,23 @@ categories: raygay update
 
 <h2>rand()</h2>
 <p>Følgende billede viser 2127 punkter fundet på 0.04 sekund, via systems random-funktion. Disse punkter er uniformt fordelte, men klumper sammen. Sådanne klumper er spild af tid, da de resulterer i mange rays i samme retning.</p>
-<p><a href="{{site.url}}/assets/dist-random.png"><img border="0" src="{{site.url}}/assets/_dist-random.png"></a></p>
+<p><a href="{{site.url}}/assets/dist-random.png"><img border="0" src="{{site.url}}/assets/dist-random_thumbnail.png"></a></p>
 
 <h2>Dart-throwing</h2>
 <p>Den tæt-på-perfekte fordeling er Poissons diskfordeling. I denne gælder det at alle punkter er uniformt fordelte og har en disk omkring sig hvor i ingen andre punkter ligger. Det er dog meget svært at genere sådan en samling punkter. Hidtil har man brugt en metode kaldet dart-throwing, hvor man finder uniformt fordelte tilfældige punkter og smider de punkter væk som ender i andre punkters disk. I nedenstående billede repræsenteres disse punkter og deres diske som kugler.</p>
 
 <p>Dart-throwing fandt 1782 punkter på tiden 1:39.92, dvs. 1 minut og 40 sekunder. Punkterne er dog uniformt fordelte. For at kunne terminere opgiver Dart-throwing-metoden når den har smidt for mange punkter væk i streg. I dette tilfælde opgiver den når et nyt punkt ikke kan findes efter 10 millioner forsøg. Derfor er der huller i nedenstående billede.</p>
-<p><a href="{{site.url}}/assets/dist-poisson-dartthrowing.png"><img border="0" src="{{site.url}}/assets/_dist-poisson-dartthrowing.png"></a></p>
+<p><a href="{{site.url}}/assets/dist-poisson-dartthrowing.png"><img border="0" src="{{site.url}}/assets/dist-poisson-dartthrowing_thumbnail.png"></a></p>
 
 <h2>Halton</h2>
 <p>Dart-throwing-metode er for langsom til at den effektivt kan bruges i raytracing. Jeg har derfor hidtil brugt en Halton-sekvens, som er en hurtig quasi-Monte-Carlo sekvens. Denne fordeler punkterne ret pænt &mdash; med bedre fordeling end den helt tilfældige metode øverst, men ikke helt så god som Poissons diskfordeling via dart-throwing.</p>
 
 <p>Halton-sekvensen udregnede 2127 punkter på 0.21 sekund.</p>
-<p><a href="{{site.url}}/assets/dist-halton.png"><img border="0" src="{{site.url}}/assets/_dist-halton.png"></a></p>
+<p><a href="{{site.url}}/assets/dist-halton.png"><img border="0" src="{{site.url}}/assets/dist-halton_thumbnail.png"></a></p>
 	
 <p>Der findes andre quasi-Monte-Carlo sekvenser såsom Hammersley- og Sobol-sekvenser. Disse giver punkter som ikke er radikalt bedre end Halton-sekvensen. Samme gælder et jittered grid.</p>
 
 <h2>Boundary-sampling</h2>
 <p>Jeg har netop implementeret en helt ny algoritme kaldet Boundary-sampling. Den er nyligt opfundet af Daniel Dunbar and Greg Humphreys i deres <a href="library.cgi">artikel</a> "A Spatial Data Structure for Fast Poisson-Disk Sample Generation" fra <i>Proceedings of SIGGRAPH 2006</i>. Det er en snedig metode til at finde punkter fordelt efter Poissons diskfordeling. Den efterlader desuden ikke huller, hvilket dart-throwing var nødt til for at holde tidsforbruget nede.</p>
 <p>Nedenstående 2127 punkter er beregnet med denne metode. Det tog 0.27 sekund.</p>
-<p><a href="{{site.url}}/assets/dist-poisson-boundary.png"><img border="0" src="{{site.url}}/assets/_dist-poisson-boundary.png"></a></p>
+<p><a href="{{site.url}}/assets/dist-poisson-boundary.png"><img border="0" src="{{site.url}}/assets/dist-poisson-boundary_thumbnail.png"></a></p>
