@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
@@ -52,4 +52,4 @@ jobs:
         run: |
           set -e || true
           echo "----- test logs -----" || true
-          cat ./test/*.log ./src/math/*.log || true
+          cat ./test/*.log ./src/*/*.log || true
