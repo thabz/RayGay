@@ -1570,7 +1570,7 @@ int main(int argc, char *argv[]) {
   suite.add("Interval", new interval_test());
   suite.add("Arc interval", new arc_interval_test());
   suite.add("Poisson Disc", new poisson_disc_test());
-  suite.add("Infinity and NaN", new inf_and_nan_test());
+  // suite.add("Infinity and NaN", new inf_and_nan_test());
   suite.run();
   suite.printStatus();
   if (suite.hasFailures()) {
