@@ -7,32 +7,31 @@
 (load "lib/raygay.scm")
 
 (set-image-size '(1024 768))
-;(set! background (make-texture "gfx/goodmorning.jpg" 1 1 'bilinear))
-(set-background #(0.3 0.6 0.7))
+(set-background (make-texture "gfx/desert.jpg" 1 1 'bilinear))
 
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
-    '( pos #(2 17 20)
+    '( pos #(40 0 40)
        lookat #(0 0 0)
        up #(0 1 0)
        fov 45
-       aa 0)))
+       aa 1)))
 
 (define chrome
   (make-material
-    '( diffuse #(0.9 0.7 0.8)
-       kd 0.4
+    '( diffuse #(0.7 0.7 0.7)
+       kd 0.1
        specular #(1.0 1.0 1.0)
-       ks 0.6
-       specpow 45)))
+       ks 0.7
+       specpow 20)))
 
 
 (add-to-scene (make-pointlight #(-500 1300 1300)))
 
-(define radius 1.5)
+(define radius 4.5)
 (define weight 1)
-(define num 200)
+(define num 30)
 
 (define atoms '())
 
