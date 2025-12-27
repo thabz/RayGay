@@ -5,14 +5,17 @@
 (set-image-size '(640 480))
 (set-background #(0.3 0.6 0.7))
 
+(define num 20)
+(define pos (vector (* num 24) (* num 40) (* num 100)))
+
 (set-renderer "raytracer")
-(set-camera 
-  (make-pinhole-camera 
-    '( pos #(190 190 800)
-       lookat #(0 0 0)
-       up #(0 1 0)
-       fov 45
-       aa 3)))
+(set-camera
+  (make-pinhole-camera
+    (list 'pos pos
+          'lookat '#(0 0 0)
+          'up '#(0 1 0)
+          'fov 45
+          'aa 3)))
 
 (define brown
   (make-material
@@ -45,16 +48,14 @@
   (make-pointlight #(500 1300 1300))
   (make-pointlight #(-500 1300 1300))))
 
-;(add-to-scene
-;    (make-box 
-;      '(-1700 -51 -1700) 
-;      '(1700 1 1700) 
-;      brown))
+; (add-to-scene
+;     (make-box 
+;       #(-1700 -51 -1700) 
+;       #(1700 1 1700) 
+;       brown))
 
 (define (square x)
   (* x x))
-
-(define num 8)
 
 (do ((z (- num) (+ z 1)))
   ((= z num))
@@ -72,6 +73,6 @@
 	    (vector (* (+ x 0.8) 20)
 		    (* (+ y 0.8) 20) 
 		    (* (+ z 0.8) 20))
-	    5 blue))))))
+	    2 blue))))))
 
 
