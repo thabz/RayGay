@@ -1287,7 +1287,7 @@ SchemeObject *i_double_2_exact(const double &n) {
   if (abs(exponent) > 63) {
     // TODO: Create rational<bigint>
   }
-  rational_type result = rational_type(sign * mantissa, bit53);
+  rational_type result = rational_type(sign * mantissa, 1LL << 52);
   result *= pow(rational_type(2), exponent);
   return rational2scm(result);
 }
