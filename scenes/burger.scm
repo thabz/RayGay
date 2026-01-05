@@ -2,7 +2,7 @@
 (load "lib/raygay.scm")
 (load "lib/objects/make-rounded-box.scm")
 
-(set-image-size '(500 500))
+(set-image-size '(1000 1000))
 (set-background #(0.3 0.6 0.7 0.0))
 
 (set-renderer "raytracer")
@@ -64,7 +64,7 @@
 
 (dotimes n 1000
    (let ((p (vscale (vrandomunit) 300)))
-      (if (> (abs (.y p)) 40)           
+      (if (> (abs (.y p)) 45)
         (add-to-scene
           (make-sphere p 5 sesam)))))
 
