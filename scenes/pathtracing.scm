@@ -44,6 +44,12 @@
        kd 1.0
        ks 0.0)))
 
+(define blue
+  (make-material
+    '( diffuse #(0.2 0.2 1.0)
+       kd 1.0
+       ks 0.0)))
+
 (define textured
   (make-material
     `( diffuse ,tex
@@ -65,3 +71,6 @@
 
 (add-to-scene
   (make-sphere #(1 0.5 1) 0.5 red))
+
+(add-to-scene
+  (make-cone #(-1 0 1) #(-1 1 1) 0.5 0 blue))
