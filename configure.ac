@@ -138,7 +138,7 @@ fi
 dnl -------------------------------------------------
 dnl Add the CPU dependent compile optimizations
 dnl -------------------------------------------------
-CXXFLAGS="-g -O3 -Wall -Winline -ffast-math $GTK_CFLAGS $GUILE_CFLAGS $CXXFLAGS"  
+CXXFLAGS="-g -O3 -Wall -Winline $GTK_CFLAGS $GUILE_CFLAGS $CXXFLAGS"  
 case $target in
      pentium3) CXXFLAGS="$CXXFLAGS -malign-double -march=pentium3 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing";;
      pentium4) CXXFLAGS="$CXXFLAGS -fprefetch-loop-arrays -funroll-loops -malign-double -fomit-frame-pointer -march=pentium4 -mfpmath=sse -ftracer -mno-ieee-fp -fstrict-aliasing -msse2";;
@@ -225,5 +225,4 @@ echo
 echo "Where <cpu> can be: pentium3, pentiu4, g4"
 echo 
 echo "--------------------------------------------------------------"
-
 
