@@ -329,8 +329,8 @@ void render_frame(string outputfile, int jobs) {
     delete renderer;
   } else {
     // Spawn renderer threads
-    Renderer *renderers[renderersettings->threads_num];
-    pthread_t threads[renderersettings->threads_num];
+    vector<Renderer *> renderers(renderersettings->threads_num);
+    vector<pthread_t> threads(renderersettings->threads_num);
     for (int i = 0; i < renderersettings->threads_num; i++) {
       switch (renderersettings->renderertype) {
       case RendererSettings::PHOTON_RENDERER:

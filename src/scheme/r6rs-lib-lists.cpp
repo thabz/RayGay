@@ -1,6 +1,8 @@
 
 #include "r6rs-lib-lists.h"
 
+#include <vector>
+
 SchemeObject *s_find(Scheme *scheme, SchemeObject *proc, SchemeObject *list) {
   while (list != S_EMPTY_LIST) {
     if (scheme->callProcedure_1(proc, i_car(list)) != S_FALSE) {
@@ -19,7 +21,7 @@ SchemeObject *s_for_all(Scheme *scheme, int num, SchemeStack::iterator args) {
   assert_arg_procedure_type(procname, 1, proc);
 
   int empty = 0;
-  SchemeObject *cropped_args[num - 1];
+  vector<SchemeObject *> cropped_args(num - 1);
   for (int i = 1; i < num; i++) {
     assert_non_atom_type(procname, i, args[i]);
     cropped_args[i - 1] = args[i];
@@ -70,7 +72,7 @@ SchemeObject *s_exists(Scheme *scheme, int num, SchemeStack::iterator args) {
   assert_arg_procedure_type(procname, 1, proc);
 
   int empty = 0;
-  SchemeObject *cropped_args[num - 1];
+  vector<SchemeObject *> cropped_args(num - 1);
   for (int i = 1; i < num; i++) {
     assert_non_atom_type(procname, i, args[i]);
     cropped_args[i - 1] = args[i];
@@ -159,7 +161,7 @@ SchemeObject *s_fold_left(Scheme *scheme, int num, SchemeStack::iterator args) {
 
   SchemeObject *nil = args[1];
 
-  SchemeObject *cropped_args[num - 2];
+  vector<SchemeObject *> cropped_args(num - 2);
   for (int i = 2; i < num; i++) {
     assert_non_atom_type(procname, i, args[i]);
     cropped_args[i - 2] = args[i];
@@ -203,7 +205,7 @@ SchemeObject *s_fold_right(Scheme *scheme, int num,
 
   SchemeObject *nil = args[1];
 
-  SchemeObject *cropped_args[num - 2];
+  vector<SchemeObject *> cropped_args(num - 2);
   for (int i = 2; i < num; i++) {
     assert_non_atom_type(procname, i, args[i]);
     cropped_args[i - 2] = args[i];
@@ -220,10 +222,10 @@ SchemeObject *s_fold_right(Scheme *scheme, int num,
 
   // Kopier alle argument til en tabel. Vender desuden rækkefølgen
   // på listernes indhold.
-  SchemeObject *args_table[num - 2][length];
+  vector<SchemeObject *> args_table((num - 2) * length);
   for (int i = 0; i < num - 2; i++) {
     for (int64_t j = 0; j < length; j++) {
-      args_table[i][length - j - 1] = i_car(cropped_args[i]);
+      args_table[i * length + length - j - 1] = i_car(cropped_args[i]);
       cropped_args[i] = i_cdr(cropped_args[i]);
     }
   }
@@ -233,7 +235,7 @@ SchemeObject *s_fold_right(Scheme *scheme, int num,
   for (int j = 0; j < length; j++) {
     SchemeAppendableList collection;
     for (int i = 0; i < num - 2; i++) {
-      SchemeObject *o = args_table[i][j];
+      SchemeObject *o = args_table[i * length + j];
       collection.add(o);
     }
     collection.add(nil);

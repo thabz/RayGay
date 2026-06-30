@@ -33,6 +33,8 @@
 #include "parser/schemeisosurface.h"
 #include "parser/schemeparametrizedsurface.h"
 
+#include <vector>
+
 Scheme *SceneObjectFactory::scheme;
 
 SchemeObject *s_sceneobject_p(Scheme *scheme, SchemeObject *object) {
@@ -394,19 +396,19 @@ SchemeObject *make_mesh(Scheme *scheme, SchemeObject *s_material,
       SchemeObject *s_triangle = s_list_ref(scheme, s_triangles, int2scm(i));
       if (scm2bool(i_vector_p(s_triangle))) {
         int num = i_vector_length(s_triangle);
-        uint32_t v[num];
+        std::vector<uint32_t> v(num);
         for (int j = 0; j < num; j++) {
           v[j] = safe_scm2int(i_vector_ref(s_triangle, j), 2, proc);
         }
-        mesh->addConvexPolygon(num, v);
+        mesh->addConvexPolygon(num, v.data());
       } else if (scm2bool(i_list_p(s_triangle))) {
         int num = i_length(s_triangle);
-        uint32_t v[num];
+        std::vector<uint32_t> v(num);
         for (int j = 0; j < num; j++) {
           v[j] =
               safe_scm2int(s_list_ref(scheme, s_triangle, int2scm(j)), 2, proc);
         }
-        mesh->addConvexPolygon(num, v);
+        mesh->addConvexPolygon(num, v.data());
       } else {
         wrong_type_arg(proc, 2, s_triangle);
       }

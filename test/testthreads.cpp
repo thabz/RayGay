@@ -12,6 +12,7 @@ extern "C" {
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -34,8 +35,8 @@ void *threadDo(void *input) {
 void test_threads() {
   int threads_num = 10;
 
-  pthread_t threads[threads_num];
-  threadargs myargs[threads_num]; // arguments for threadDo
+  vector<pthread_t> threads(threads_num);
+  vector<threadargs> myargs(threads_num); // arguments for threadDo
 
   for (int i = 0; i < threads_num; i++) {
     myargs[i].a = i;

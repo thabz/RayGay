@@ -1,6 +1,8 @@
 
 #include "r6rs-lib-sorting.h"
 
+#include <vector>
+
 // Skift til mergesort. Java og Perl bruger mergesort.
 //
 // As of Perl 5.8, merge sort is its default sorting algorithm
@@ -47,8 +49,8 @@ void mergesort(Scheme *scheme, SchemeObject *proc, SchemeObject **array,
 SchemeObject *s_vector_sort_e(Scheme *scheme, SchemeObject *proc,
                               SchemeObject *vec) {
   //    assert_arg_procedure_that_take(L"vector-sort!", 1, proc, 2);
-  SchemeObject *tmp[vec->length];
-  mergesort(scheme, proc, vec->elems, vec->length, tmp);
+  std::vector<SchemeObject *> tmp(vec->length);
+  mergesort(scheme, proc, vec->elems, vec->length, tmp.data());
   return S_UNSPECIFIED;
 }
 
@@ -56,13 +58,13 @@ SchemeObject *s_list_sort(Scheme *scheme, SchemeObject *proc,
                           SchemeObject *list) {
   //    assert_arg_procedure_that_take(L"list-sort", 1, proc, 2);
   int64_t len = scm2int(s_length(scheme, list));
-  SchemeObject *vec[len];
-  SchemeObject *tmp[len];
+  std::vector<SchemeObject *> vec(len);
+  std::vector<SchemeObject *> tmp(len);
   for (int64_t i = 0; i < len; i++) {
     vec[i] = i_car(list);
     list = i_cdr(list);
   }
-  mergesort(scheme, proc, vec, len, tmp);
+  mergesort(scheme, proc, vec.data(), len, tmp.data());
   SchemeObject *result = S_EMPTY_LIST;
   for (int64_t i = 0; i < len; i++) {
     result = i_cons(vec[len - 1 - i], result);
@@ -75,11 +77,11 @@ SchemeObject *s_vector_sort(Scheme *scheme, SchemeObject *proc,
   // TODO: The check below doesn't work for user-defined lambdas.
   //    assert_arg_procedure_that_take(L"vector-sort", 1, proc, 2);
   SchemeObject **vect = new SchemeObject *[vec->length];
-  SchemeObject *tmp[vec->length];
+  std::vector<SchemeObject *> tmp(vec->length);
   for (uint32_t i = 0; i < vec->length; i++) {
     vect[i] = vec->getVectorElem(i);
   }
-  mergesort(scheme, proc, vect, vec->length, tmp);
+  mergesort(scheme, proc, vect, vec->length, tmp.data());
   return SchemeObject::createVector(vect, vec->length);
 }
 

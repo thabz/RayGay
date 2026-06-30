@@ -13,6 +13,16 @@ Polynomial::Polynomial() {
 
 Polynomial::Polynomial(const Polynomial &other) { init(other); }
 
+Polynomial::Polynomial(uint32_t num, Uninitialized) {
+  assert(num >= 1);
+  this->num = num;
+  if (num < MAX_INLINE_COEFFS) {
+    coefficients = coefficients_inline;
+  } else {
+    coefficients = new double[num];
+  }
+}
+
 Polynomial::Polynomial(double *coefficients, uint32_t num) {
   assert(num >= 1);
   if (num < MAX_INLINE_COEFFS) {
@@ -102,11 +112,12 @@ Polynomial Polynomial::derivative() const {
   if (num == 1)
     return Polynomial(0.0);
 
-  double c[num - 1];
+  Polynomial result(num - 1, Uninitialized());
   for (uint32_t i = 1; i < num; i++) {
-    c[i - 1] = coefficients[i] * i;
+    result.coefficients[i - 1] = coefficients[i] * i;
   }
-  return Polynomial(c, num - 1);
+  result.reduce();
+  return result;
 }
 
 bool Polynomial::operator==(const Polynomial &p) const {
@@ -121,47 +132,51 @@ bool Polynomial::operator==(const Polynomial &p) const {
 
 Polynomial Polynomial::operator+(const Polynomial &p) const {
   uint32_t new_num = MAX(p.num, num);
-  double new_coefs[new_num];
+  Polynomial result(new_num, Uninitialized());
   for (uint32_t i = 0; i < new_num; i++) {
     double q = 0.0;
     if (i < num)
       q += coefficients[i];
     if (i < p.num)
       q += p.coefficients[i];
-    new_coefs[i] = q;
+    result.coefficients[i] = q;
   }
-  return Polynomial(new_coefs, new_num);
+  result.reduce();
+  return result;
 }
 
 Polynomial Polynomial::operator-(const Polynomial &p) const {
   uint32_t new_num = MAX(p.num, num);
-  double new_coefs[new_num];
+  Polynomial result(new_num, Uninitialized());
   for (uint32_t i = 0; i < new_num; i++) {
     double q = 0.0;
     if (i < num)
       q += coefficients[i];
     if (i < p.num)
       q -= p.coefficients[i];
-    new_coefs[i] = q;
+    result.coefficients[i] = q;
   }
-  return Polynomial(new_coefs, new_num);
+  result.reduce();
+  return result;
 }
 
 Polynomial Polynomial::operator*(double c) const {
-  double new_coefs[num];
+  Polynomial result(num, Uninitialized());
   for (uint32_t i = 0; i < num; i++) {
-    new_coefs[i] = coefficients[i] * c;
+    result.coefficients[i] = coefficients[i] * c;
   }
-  return Polynomial(new_coefs, num);
+  result.reduce();
+  return result;
 }
 
 Polynomial Polynomial::operator/(double c) const {
   assert(IS_NZERO(c));
-  double new_coefs[num];
+  Polynomial result(num, Uninitialized());
   for (uint32_t i = 0; i < num; i++) {
-    new_coefs[i] = coefficients[i] / c;
+    result.coefficients[i] = coefficients[i] / c;
   }
-  return Polynomial(new_coefs, num);
+  result.reduce();
+  return result;
 }
 
 /**
@@ -172,15 +187,16 @@ Polynomial Polynomial::operator/(double c) const {
  * @return the \f$ g(x) \f$ above.
  */
 Polynomial Polynomial::timesX(uint32_t d) const {
-  double new_coefficients[num + d];
+  Polynomial result(num + d, Uninitialized());
   for (uint32_t i = 0; i < num + d; i++) {
     if (i < d) {
-      new_coefficients[i] = 0.0;
+      result.coefficients[i] = 0.0;
     } else {
-      new_coefficients[i] = coefficients[i - d];
+      result.coefficients[i] = coefficients[i - d];
     }
   }
-  return Polynomial(new_coefficients, num + d);
+  result.reduce();
+  return result;
 }
 
 double Polynomial::leadingCoefficient() const { return coefficients[num - 1]; }
@@ -211,9 +227,9 @@ Polynomial Polynomial::division(const Polynomial &divisor,
     return *this / divisor.coefficient(0);
   }
 
-  double quotient_coeffs[num];
+  Polynomial quotient(num, Uninitialized());
   for (uint32_t i = 0; i < num; i++)
-    quotient_coeffs[i] = 0.0;
+    quotient.coefficients[i] = 0.0;
 
   double div_lead_q = divisor.leadingCoefficient();
   uint32_t div_lead_d = divisor.order();
@@ -223,13 +239,14 @@ Polynomial Polynomial::division(const Polynomial &divisor,
   do {
     uint32_t new_d = remainder.order() - div_lead_d;
     double new_q = remainder.leadingCoefficient() / div_lead_q;
-    quotient_coeffs[new_d] = new_q;
+    quotient.coefficients[new_d] = new_q;
     Polynomial remainder_2 = divisor.timesX(new_d) * new_q;
     remainder = remainder - remainder_2;
   } while (remainder.order() >= div_lead_d);
 
   remainder.reduce();
-  return Polynomial(quotient_coeffs, num);
+  quotient.reduce();
+  return quotient;
 }
 
 /**
@@ -242,19 +259,20 @@ void Polynomial::reduce() {
 }
 
 Polynomial Polynomial::operator*(const Polynomial &other) const {
-  double result_coeffs[num + other.num];
+  Polynomial result(num + other.num, Uninitialized());
 
   for (uint32_t i = 0; i < num + other.num; i++) {
-    result_coeffs[i] = 0.0;
+    result.coefficients[i] = 0.0;
   }
 
   for (uint32_t i = 0; i < num; i++) {
     for (uint32_t j = 0; j < other.num; j++) {
-      result_coeffs[i + j] += other.coefficients[j] * coefficients[i];
+      result.coefficients[i + j] += other.coefficients[j] * coefficients[i];
     }
   }
 
-  return Polynomial(result_coeffs, num + other.num);
+  result.reduce();
+  return result;
 }
 
 Polynomial &Polynomial::operator=(const Polynomial &other) {

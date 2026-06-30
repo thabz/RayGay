@@ -3,6 +3,7 @@
 #include "exception.h"
 #include <cassert>
 #include <iomanip>
+#include <vector>
 
 #define ids2kernkey(l, r) (((l) << 16) | (r))
 
@@ -326,9 +327,9 @@ void TrueTypeFont::read_cmap_table(uint32_t offset) {
   read_struct("ss", (char *)&index, sizeof(CmapIndex));
   //    cout << "cmap subtables " << index.numberSubtables << endl;
 
-  uint32_t offsets[index.numberSubtables];
-  uint16_t platformIDs[index.numberSubtables];
-  uint16_t platformSpecificIDs[index.numberSubtables];
+  std::vector<uint32_t> offsets(index.numberSubtables);
+  std::vector<uint16_t> platformIDs(index.numberSubtables);
+  std::vector<uint16_t> platformSpecificIDs(index.numberSubtables);
 
   for (int i = 0; i < index.numberSubtables; i++) {
     read_struct("ssi", (char *)&encSubTable, sizeof(CmapEncodingSubtable));
@@ -400,7 +401,7 @@ void TrueTypeFont::read_gsub_table(uint32_t offset) { is->seekg(offset); }
 
 void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph *glyph,
                                       int16_t numberOfContours) {
-  uint16_t endPtsOfContours[numberOfContours];
+  std::vector<uint16_t> endPtsOfContours(numberOfContours);
 
   for (int16_t i = 0; i < numberOfContours; i++) {
     endPtsOfContours[i] = read_uint16();
@@ -414,7 +415,7 @@ void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph *glyph,
   }
 
   // Read RLE-encoded flags
-  uint8_t flags[numberOfPoints];
+  std::vector<uint8_t> flags(numberOfPoints);
   for (int16_t i = 0; i < numberOfPoints; i++) {
     uint8_t flag = read_uint8();
     if ((flag & 0xc0) != 0)
@@ -430,8 +431,8 @@ void TrueTypeFont::processSimpleGlyph(TrueTypeFont::Glyph *glyph,
   }
 
   // Read coordinates
-  int16_t xCoordinates[numberOfPoints];
-  int16_t yCoordinates[numberOfPoints];
+  std::vector<int16_t> xCoordinates(numberOfPoints);
+  std::vector<int16_t> yCoordinates(numberOfPoints);
 
   int16_t xCoord = 0;
   for (uint16_t i = 0; i < numberOfPoints; i++) {

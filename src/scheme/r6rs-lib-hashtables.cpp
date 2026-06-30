@@ -1,6 +1,7 @@
 
 #include "r6rs-lib-hashtables.h"
 #include "numbers.h"
+#include <vector>
 
 #define DEFAULT_INITIAL_CAPACITY 16
 
@@ -232,7 +233,7 @@ void i_hashtable_resize(Scheme *scheme, SchemeObject *hashtable) {
 
   // cout << "Resizing hash to size " << new_buckets_num << endl;
   SchemeObject *hash_func = i_car(hashtable->s_hashtable_meta);
-  int64_t hashes[entries_num];
+  vector<int64_t> hashes(entries_num);
   int64_t index = 0;
 
   // First find all the hashes. We do this before building the new bucket-lists
