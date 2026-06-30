@@ -22,7 +22,28 @@ dnl -------------------------------------------------
 dnl Check that the compiler and programs exists
 dnl -------------------------------------------------
 AC_PROG_CXX
-AC_PROG_LIBTOOL
+AC_CANONICAL_HOST
+
+dnl Libtool's Darwin sysctl probe can fail under restricted runners, leaving
+dnl max_cmd_len empty and causing noisy integer-expression warnings while
+dnl linking archives. Modern Darwin linkers also warn when libtool probes the
+dnl obsolete -single_module flag, even though macOS 10.4 and later do not need
+dnl that flag. Use the same safe max_cmd_len fallback value libtool uses for
+dnl Interix when Darwin cannot or should not run the sysctl probe.
+case $host_os in
+  darwin*)
+    : ${MACOSX_DEPLOYMENT_TARGET=10.4}
+    AC_SUBST(MACOSX_DEPLOYMENT_TARGET)
+    : ${lt_cv_sys_max_cmd_len=196608}
+    : ${lt_cv_apple_cc_single_mod=no}
+    ;;
+esac
+
+LT_INIT
+
+case $host_os in
+  darwin*) LIBTOOL="MACOSX_DEPLOYMENT_TARGET=$MACOSX_DEPLOYMENT_TARGET $LIBTOOL" ;;
+esac
 
 dnl -------------------------------------------------
 dnl Check system and headers
@@ -225,4 +246,3 @@ echo
 echo "Where <cpu> can be: pentium3, pentiu4, g4"
 echo 
 echo "--------------------------------------------------------------"
-

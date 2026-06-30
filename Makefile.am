@@ -1,6 +1,10 @@
 
 SUBDIRS = src test scenes docs
 ACLOCAL_AMFLAGS = -I m4
+if OS_DARWIN
+export MACOSX_DEPLOYMENT_TARGET
+AM_MAKEFLAGS = MACOSX_DEPLOYMENT_TARGET=$(MACOSX_DEPLOYMENT_TARGET)
+endif
 dist_bin_SCRIPTS=animation-render.sh
 
 doc:
@@ -15,4 +19,3 @@ dist-win-zip:
 	rm -fr raygay.zip
 	zip -r raygay.zip raygay
 	rm -fr raygay
-
