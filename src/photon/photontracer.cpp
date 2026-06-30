@@ -62,7 +62,7 @@ void PhotonTracer::printProgress() {
 }
 
 void PhotonTracer::trace(int threads_num) {
-  pthread_t threads[threads_num];
+  vector<pthread_t> threads(threads_num);
   // Spawn threads
   for (int i = 0; i < threads_num; i++) {
     pthread_create(&threads[i], NULL, threadDo, this);

@@ -4,6 +4,7 @@
 #include "photon/globalphotonmap.h"
 #include "stats.h"
 #include <pthread.h>
+#include <vector>
 
 /**
  * This is the constructor for the global photon map.
@@ -73,8 +74,8 @@ void *preComputeIrradianceThread(void *thread_data) {
 void GlobalPhotonMap::preComputeIrradiances(const int M, int threads_num) {
   assert(M >= 1);
   assert(threads_num >= 1);
-  struct thread_data *ta = new thread_data[threads_num];
-  pthread_t threads[threads_num];
+  std::vector<thread_data> ta(threads_num);
+  std::vector<pthread_t> threads(threads_num);
 
   for (int i = 0; i < threads_num; i++) {
     ta[i].map = this;
@@ -86,7 +87,6 @@ void GlobalPhotonMap::preComputeIrradiances(const int M, int threads_num) {
   for (int i = 0; i < threads_num; i++) {
     pthread_join(threads[i], NULL);
   }
-  delete[] ta;
 }
 
 /**

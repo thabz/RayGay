@@ -2,6 +2,7 @@
 #include "math/sturmsequence.h"
 #include <cassert>
 #include <iostream>
+#include <vector>
 
 SturmSequence::SturmSequence(const Polynomial &polynomial) {
   assert(f.size() == 0);
@@ -30,8 +31,8 @@ void SturmSequence::eval(double x, double *dest) const {
 int SturmSequence::signChanges(double x) const {
   uint32_t num = f.size() - 1; // Ignore last polynomial that is constant 0.
 
-  double values[num];
-  eval(x, values);
+  std::vector<double> values(f.size());
+  eval(x, values.data());
 
   uint32_t result = 0;
   for (uint32_t i = 1; i < num; i++) {

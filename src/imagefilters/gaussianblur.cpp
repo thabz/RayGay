@@ -2,6 +2,7 @@
 #include "imagefilters/gaussianblur.h"
 #include "image/image.h"
 #include <cassert>
+#include <vector>
 
 using namespace std;
 
@@ -14,7 +15,7 @@ void GaussianBlur::apply(Image *image) {
 
   int h = (int)radius;
 
-  double mask[h + 1];
+  vector<double> mask(h + 1);
 
   int h2 = h / 2;
 
@@ -25,7 +26,7 @@ void GaussianBlur::apply(Image *image) {
     mask[x + h2] = val;
   }
 
-  normalizeMask(mask, h + 1, 1);
+  normalizeMask(mask.data(), h + 1, 1);
 
-  applyMask(image, mask, h, h, ImageFilter::WRAP_EDGES);
+  applyMask(image, mask.data(), h, h, ImageFilter::WRAP_EDGES);
 }

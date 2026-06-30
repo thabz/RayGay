@@ -202,7 +202,7 @@ void Heap::dumpStats() {
 
   // Dump symbols hash distributions
   cout << "Symbols hash distribution" << endl;
-  uint32_t bits = 8;
+  static const uint32_t bits = 8;
   int bit_cor[bits]; // Bit correlations
   vector<SchemeObject *>::iterator banks_iterator = banks.begin();
   int hashes = 0;

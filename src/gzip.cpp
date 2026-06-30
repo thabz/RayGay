@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -159,25 +160,26 @@ void GZIP::process_dynamic_huffman_block() {
 
   // Create the dynamic lit-len and dist alphabets using the
   // code_length_alphabet
-  alphabet_t joined_alphabet[HLIT + HDIST];
-  clear_alphabet(joined_alphabet, HLIT + HDIST - 1);
-  create_code_length_encoded_alphabet(joined_alphabet, HLIT + HDIST,
+  vector<alphabet_t> joined_alphabet(HLIT + HDIST);
+  clear_alphabet(joined_alphabet.data(), HLIT + HDIST - 1);
+  create_code_length_encoded_alphabet(joined_alphabet.data(), HLIT + HDIST,
                                       code_length_tree);
 
   if (joined_alphabet[256].len == 0) {
     error("The end-of-block code must have non-zero bitlength.");
   }
 
-  expand_alphabet(joined_alphabet, HLIT - 1);
-  expand_alphabet(joined_alphabet + HLIT, HDIST);
+  expand_alphabet(joined_alphabet.data(), HLIT - 1);
+  expand_alphabet(joined_alphabet.data() + HLIT, HDIST);
 
   // Create the dynamic lit-len and dist trees using the corresponding alphabets
-  tree_t dynamic_lit_tree[HLIT * 3];
-  tree_t dynamic_dist_tree[HDIST * 3];
-  create_tree(dynamic_lit_tree, joined_alphabet, HLIT - 1);
-  create_tree(dynamic_dist_tree, joined_alphabet + HLIT, HDIST - 1);
+  vector<tree_t> dynamic_lit_tree(HLIT * 3);
+  vector<tree_t> dynamic_dist_tree(HDIST * 3);
+  create_tree(dynamic_lit_tree.data(), joined_alphabet.data(), HLIT - 1);
+  create_tree(dynamic_dist_tree.data(), joined_alphabet.data() + HLIT,
+              HDIST - 1);
 
-  process_huffman_block(dynamic_lit_tree, dynamic_dist_tree);
+  process_huffman_block(dynamic_lit_tree.data(), dynamic_dist_tree.data());
 }
 
 uint8_t len_extra_bits[] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2,
@@ -321,13 +323,12 @@ void GZIP::expand_alphabet(GZIP::alphabet_t *tree, uint32_t max_code) {
     }
   }
 
-  uint32_t bl_count[max_bits];
-  std::fill_n(bl_count, max_bits, 0);
+  vector<uint32_t> bl_count(max_bits + 1, 0);
   for (uint32_t i = 0; i <= max_code; i++) {
     bl_count[tree[i].len]++;
   }
 
-  uint32_t next_code[max_bits];
+  vector<uint32_t> next_code(max_bits + 1);
   uint32_t code = 0;
   for (uint32_t bits = 1; bits <= max_bits; bits++) {
     code = (code + bl_count[bits - 1]) << 1;

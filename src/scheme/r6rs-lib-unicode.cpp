@@ -3,6 +3,8 @@
 
 #include "r6rs-lib-unicode.h"
 
+#include <vector>
+
 enum category_ids {
   Lu,
   Ll,
@@ -59,22 +61,22 @@ SchemeObject *s_char_general_category(Scheme *scheme, SchemeObject *c) {
 
 SchemeObject *s_string_downcase(Scheme *scheme, SchemeObject *s) {
   assert_arg_string_type(L"string-downcase", 1, s);
-  wchar_t result[s->length + 1];
+  std::vector<wchar_t> result(s->length + 1);
   result[s->length] = 0;
   for (uint32_t i = 0; i < s->length; i++) {
     result[i] = tolower(s->str[i]);
   }
-  return SchemeObject::createString(result);
+  return SchemeObject::createString(result.data());
 }
 
 SchemeObject *s_string_upcase(Scheme *scheme, SchemeObject *s) {
   assert_arg_string_type(L"string-downcase", 1, s);
-  wchar_t result[s->length + 1];
+  std::vector<wchar_t> result(s->length + 1);
   result[s->length] = 0;
   for (uint32_t i = 0; i < s->length; i++) {
     result[i] = toupper(s->str[i]);
   }
-  return SchemeObject::createString(result);
+  return SchemeObject::createString(result.data());
 }
 
 void R6RSLibUnicode::bind(Scheme *scheme, SchemeObject *envt) {

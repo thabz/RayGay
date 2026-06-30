@@ -4,6 +4,7 @@
 #include "scheme.h"
 
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -861,7 +862,7 @@ fn_ptr eval_built_in_procedure_call(Interpreter::State *state) {
       result = (*((SchemeObject * (*)(Scheme *, int, SchemeStack::iterator))(
           proc->fn)))(scheme, num, stack_iter);
     } else {
-      SchemeObject *argsv[num];
+      vector<SchemeObject *> argsv(num);
       for (int i = 0; i < num; i++) {
         argsv[i] = *stack_iter;
         stack_iter++;
@@ -1018,7 +1019,7 @@ fn_ptr eval_procedure_call(Interpreter::State *state) {
         result = (*((SchemeObject * (*)(Scheme *, int, SchemeStack::iterator))(
             proc->fn)))(scheme, num, stack_iter);
       } else {
-        SchemeObject *argsv[num];
+        vector<SchemeObject *> argsv(num);
         for (int i = 0; i < num; i++) {
           argsv[i] = *stack_iter;
           stack_iter++;
@@ -1479,8 +1480,8 @@ fn_ptr eval_do(Interpreter::State *state) {
     binding_pairs_ptr = i_cdr(binding_pairs_ptr);
   }
 
-  SchemeObject *varnames[bindings_num];
-  SchemeObject *steps[bindings_num];
+  vector<SchemeObject *> varnames(bindings_num);
+  vector<SchemeObject *> steps(bindings_num);
 
   binding_pairs_ptr = binding_pairs;
   for (uint32_t i = 0; i < bindings_num; i++) {

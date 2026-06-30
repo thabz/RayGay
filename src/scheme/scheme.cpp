@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <stdexcept>
 #include <unistd.h>
+#include <vector>
 
 #include "compiler.h"
 #include "filenames.h"
@@ -778,7 +779,7 @@ SchemeObject *s_map_internal(Scheme *scheme, const wchar_t *procname, int num,
   SchemeObject *proc = *args;
   assert_arg_procedure_type(procname, 1, proc);
 
-  SchemeObject *cropped_args[num - 1];
+  std::vector<SchemeObject *> cropped_args(num - 1);
 
   for (int i = 1; i < num; i++) {
     assert_non_atom_type(procname, i, args[i]);

@@ -72,6 +72,8 @@ public:
   double coefficient(uint32_t i) const { return coefficients[i]; };
 
 private:
+  struct Uninitialized {};
+  Polynomial(uint32_t num, Uninitialized);
   void init(const Polynomial &other);
   void reduce();
 

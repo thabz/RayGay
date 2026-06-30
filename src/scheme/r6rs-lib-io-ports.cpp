@@ -1,5 +1,6 @@
 
 #include <fstream>
+#include <vector>
 
 #include "filenames.h"
 #include "numbers.h"
@@ -295,7 +296,7 @@ SchemeObject *s_get_string_n(Scheme *scheme, SchemeObject *port,
   if (n == 0) {
     return string2scm(wstring(L""));
   }
-  wchar_t chars[n + 1];
+  std::vector<wchar_t> chars(n + 1);
   int32_t i;
   for (i = 0; i < n; i++) {
     wchar_t c = i_get_char(port);
@@ -305,7 +306,7 @@ SchemeObject *s_get_string_n(Scheme *scheme, SchemeObject *port,
     chars[i] = c;
   }
   chars[i] = 0;
-  return i == 0 ? S_EOF : string2scm(wstring(chars, n));
+  return i == 0 ? S_EOF : string2scm(wstring(chars.data(), n));
 }
 
 SchemeObject *s_get_string_all(Scheme *scheme, SchemeObject *port) {

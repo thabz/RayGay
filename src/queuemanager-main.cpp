@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <iostream>
 #include <unistd.h>
+#include <vector>
 
 extern "C" {
 #include <fcntl.h>
@@ -141,7 +142,7 @@ QueueMaster::QueueMaster(set<string> hosts, vector<QueueJob> jobs) {
 
 void QueueMaster::run() {
   uint32_t threads_num = hosts.size();
-  pthread_t threads[threads_num];
+  vector<pthread_t> threads(threads_num);
   int j = 0;
   for (set<string>::iterator i = hosts.begin(); i != hosts.end(); i++) {
     QueueSlave *slave;
