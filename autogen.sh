@@ -21,7 +21,7 @@ else
 fi
 
 echo "Now running automake"
-automake --add-missing 
+automake --add-missing --copy --force-missing
 
 echo "Now running autoconf"
 autoconf
@@ -31,4 +31,3 @@ echo "Now running configure"
 $srcdir/configure $*
 
 echo "Type make to build raygay"
-
