@@ -4,10 +4,9 @@
 
 #include <cctype>
 #include <map>
+#include <string>
 
-class ignorecase_comparator
-    : public std::binary_function<const std::string &, const std::string &,
-                                  bool> {
+class ignorecase_comparator {
 public:
   bool operator()(const std::string &str1, const std::string &str2) const {
     std::string::size_type max =
