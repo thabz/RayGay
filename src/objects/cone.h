@@ -38,7 +38,7 @@ private:
   double _fastIntersect(const Ray &ray) const;
   void _fullIntersect(const Ray &ray, const double t,
                       Intersection &result) const;
-  uint32_t allPositiveRoots(const Ray &world_ray, double roots[4]) const;
+  uint32_t allPositiveRoots(const Ray &world_ray, double roots[2]) const;
   Vector getNormal(const Vector &local_point) const;
 
   Vector begin;
