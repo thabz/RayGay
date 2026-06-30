@@ -13,6 +13,7 @@
 #include <glib.h>
 #include <iostream>
 #include <pthread.h>
+#include <string>
 
 int darea_width;
 int darea_height;
@@ -148,9 +149,8 @@ void PreviewWindowGTK::setProgress(double progress) {
     gdk_threads_enter();
     gtk_progress_bar_set_fraction(progress_bar, progress);
     int p = int(100.0 * progress);
-    char title[1000];
-    sprintf(title, "RayGay (%d%%)", p);
-    gtk_window_set_title(GTK_WINDOW(window), title);
+    std::string title = "RayGay (" + std::to_string(p) + "%)";
+    gtk_window_set_title(GTK_WINDOW(window), title.c_str());
     gdk_flush();
     gdk_threads_leave();
   }

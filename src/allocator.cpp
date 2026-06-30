@@ -55,10 +55,9 @@ void *Allocator::safe_allocate(size_t size, model_t type) {
 
 void *Allocator::allocate_mmap(size_t size) {
   int res, file;
-  char templ[50] = "";
+  char templ[] = "/tmp/tracer-XXXXXX";
 
   // TODO: Lookup env TMPDIR for prefix below
-  sprintf(templ, "%s", "/tmp/tracer-XXXXXX");
   file = ::mkstemp(templ);
 
   if (Environment::getUniqueInstance()->isVerbose()) {

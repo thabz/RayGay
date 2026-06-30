@@ -109,12 +109,10 @@ void Test::_assertTrue(bool expr, const char *filename, int line,
   if (expr) {
     succeded_asserts++;
   } else {
-    char line_c[10];
-    sprintf(line_c, "%d", line);
     string error_text = "Failed test: ";
     error_text += string(filename);
     error_text += ":";
-    error_text += string(line_c);
+    error_text += to_string(line);
     error_text += ":";
     error_text += string(expr_code);
     failed_output.push_back(error_text);

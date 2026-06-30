@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <iostream>
 #include <map>
+#include <string>
 #include <vector>
 
 #include "exception.h"
@@ -262,9 +263,8 @@ void Mesh::addTriangle(const uint32_t v[3], const uint32_t uv[3],
                        const uint32_t n[3]) {
   uint32_t max_idx = corners.size() - 1;
   if (v[0] > max_idx || v[1] > max_idx || v[2] > max_idx) {
-    char vs[200];
-    sprintf(vs, "Triangle (%d,%d,%d) out of bounds", v[0], v[1], v[2]);
-    throw_exception(vs);
+    throw_exception("Triangle (" + to_string(v[0]) + "," + to_string(v[1]) +
+                    "," + to_string(v[2]) + ") out of bounds");
   }
   faces.push_back(v[0]);
   faces.push_back(v[1]);
@@ -298,9 +298,8 @@ void Mesh::addTriangle(const uint32_t v[3], const Vector2 uv[3]) {
     uint32_t max_idx = corners.size() - 1;
     if (v[0] > max_idx || v[1] > max_idx || v[2] > max_idx ||
         v[0] < 0 || v[1] < 0 || v[2] < 0) {
-        char vs[200];
-        sprintf(vs, "Triangle (%d,%d,%d) out of bounds",v[0],v[1],v[2]);
-        throw_exception(vs);
+        throw_exception("Triangle (" + to_string(v[0]) + "," + to_string(v[1]) +
+                        "," + to_string(v[2]) + ") out of bounds");
     }
 
     faces.push_back(v[0]);

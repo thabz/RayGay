@@ -145,15 +145,15 @@ Image *DarwinIO::load(const std::string &filename, Allocator::model_t model) {
 
 CFStringRef DarwinIO::filenameToUTI(const string &filename) const {
   if (filename.find(".png") != string::npos) {
-    return kUTTypePNG;
+    return CFSTR("public.png");
   } else if (filename.find(".jpg") != string::npos ||
              filename.find(".jpeg") != string::npos) {
-    return kUTTypeJPEG;
+    return CFSTR("public.jpeg");
   } else if (filename.find(".jp2") != string::npos) {
-    return kUTTypeJPEG2000;
+    return CFSTR("public.jpeg-2000");
   } else if (filename.find(".tif") != string::npos ||
              filename.find(".tiff") != string::npos) {
-    return kUTTypeTIFF;
+    return CFSTR("public.tiff");
   } else {
     throw_exception(filename + " has unknown fileformat.");
   }
