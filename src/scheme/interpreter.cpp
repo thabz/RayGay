@@ -1191,13 +1191,29 @@ fn_ptr eval_cond(Interpreter::State *state) {
       throw scheme_exception(L"Invalid clause");
     }
     SchemeObject *test_expr = s_car(scheme, clause);
+    SchemeObject *clause_tail = s_cdr(scheme, clause);
     if (test_expr == scheme->else_symbol) {
       // Handle (else <expressions> ...)
       if (i_null_p(s_cdr(scheme, p)) == S_FALSE) {
         throw scheme_exception(L"else-clause must be last");
       }
-      state->global_arg1 = s_cdr(scheme, clause);
+      if (clause_tail == S_EMPTY_LIST) {
+        throw scheme_exception(L"else-clause missing body");
+      }
+      state->global_arg1 = clause_tail;
       return (fn_ptr)&eval_sequence;
+    }
+
+    bool ergo_clause = i_pair_p(clause_tail) == S_TRUE &&
+                       s_car(scheme, clause_tail) == scheme->ergo_symbol;
+    SchemeObject *ergo_expr = S_EMPTY_LIST;
+    if (ergo_clause) {
+      SchemeObject *ergo_tail = s_cdr(scheme, clause_tail);
+      if (i_pair_p(ergo_tail) == S_FALSE ||
+          s_cdr(scheme, ergo_tail) != S_EMPTY_LIST) {
+        throw scheme_exception(L"Invalid => clause in cond");
+      }
+      ergo_expr = s_car(scheme, ergo_tail);
     }
 
     // Eval test_expr
@@ -1205,20 +1221,19 @@ fn_ptr eval_cond(Interpreter::State *state) {
     SchemeObject *test = trampoline((fn_ptr)&eval, state);
 
     if (scm2bool(test)) {
-      if (s_cdr(scheme, clause) == S_EMPTY_LIST) {
+      if (clause_tail == S_EMPTY_LIST) {
         state->global_ret = test;
         return NULL;
-      } else if (s_car(scheme, s_cdr(scheme, clause)) == scheme->ergo_symbol) {
+      } else if (ergo_clause) {
         // Handle (<test> => <expression>)
-        state->global_arg1 =
-            s_car(scheme, s_cdr(scheme, s_cdr(scheme, clause)));
+        state->global_arg1 = ergo_expr;
         SchemeObject *proc = trampoline((fn_ptr)&eval, state);
 
         state->global_arg1 = proc;
         state->global_arg2 = s_cons(scheme, test, S_EMPTY_LIST);
         return (fn_ptr)&eval_procedure_call;
       } else {
-        state->global_arg1 = s_cdr(scheme, clause);
+        state->global_arg1 = clause_tail;
         return (fn_ptr)&eval_sequence;
       }
     }
@@ -1245,18 +1260,26 @@ fn_ptr eval_case(Interpreter::State *state) {
       throw scheme_exception(L"Invalid clause");
     }
     SchemeObject *clause_car = s_car(scheme, clause);
+    SchemeObject *clause_body = s_cdr(scheme, clause);
     if (clause_car == scheme->else_symbol) {
       // Handle (else <expressions> ...)
       if (i_null_p(s_cdr(scheme, p)) == S_FALSE) {
         throw scheme_exception(L"else-clause must be last");
       }
+      if (clause_body == S_EMPTY_LIST) {
+        throw scheme_exception(L"else-clause missing body");
+      }
       state->stack.pop_back();
-      state->global_arg1 = s_cdr(scheme, clause);
+      state->global_arg1 = clause_body;
       return (fn_ptr)&eval_sequence;
-    } else if (i_pair_p(clause_car) == S_TRUE) {
+    } else if (i_pair_p(clause_car) == S_TRUE ||
+               clause_car == S_EMPTY_LIST) {
+      if (clause_body == S_EMPTY_LIST) {
+        throw scheme_exception(L"case-clause missing body");
+      }
       if (s_memv(scheme, key, clause_car) != S_FALSE) {
         state->stack.pop_back();
-        state->global_arg1 = s_cdr(scheme, clause);
+        state->global_arg1 = clause_body;
         return (fn_ptr)&eval_sequence;
       }
     } else {
@@ -1270,6 +1293,35 @@ fn_ptr eval_case(Interpreter::State *state) {
   return NULL;
 }
 
+static SchemeObject *validate_let_binding(Scheme *scheme, SchemeObject *binding,
+                                          const wchar_t *form_name) {
+  if (i_pair_p(binding) == S_FALSE ||
+      i_pair_p(s_cdr(scheme, binding)) == S_FALSE ||
+      s_cddr(scheme, binding) != S_EMPTY_LIST) {
+    throw scheme_exception(L"Bad binding in " + wstring(form_name) + L": " +
+                           binding->toString());
+  }
+
+  SchemeObject *symbol = s_car(scheme, binding);
+  if (i_symbol_p(symbol) == S_FALSE) {
+    throw scheme_exception(L"Bad variable in " + wstring(form_name) + L": " +
+                           symbol->toString());
+  }
+  return symbol;
+}
+
+static void reject_duplicate_let_binding(vector<SchemeObject *> &symbols,
+                                         SchemeObject *symbol,
+                                         const wchar_t *form_name) {
+  for (uint32_t i = 0; i < symbols.size(); i++) {
+    if (symbols[i] == symbol) {
+      throw scheme_exception(L"Duplicate variable in " + wstring(form_name) +
+                             L": " + symbol->toString());
+    }
+  }
+  symbols.push_back(symbol);
+}
+
 fn_ptr eval_let(Interpreter::State *state) {
   SchemeObject *p = state->global_arg1;
   SchemeObject *envt = state->global_envt;
@@ -1280,6 +1332,10 @@ fn_ptr eval_let(Interpreter::State *state) {
   }
 
   SchemeObject *first_arg = i_car(p);
+
+  if (i_null_p(s_cdr(scheme, p)) == S_TRUE) {
+    throw scheme_exception(L"Missing body in let");
+  }
 
   if (i_symbol_p(first_arg) == S_TRUE) {
     return (fn_ptr)&eval_named_let;
@@ -1294,16 +1350,18 @@ fn_ptr eval_let(Interpreter::State *state) {
   SchemeObject *binding_pairs = first_arg;
 
   state->stack.push_back(new_bindings);
+  vector<SchemeObject *> symbols;
 
   while (i_null_p(binding_pairs) == S_FALSE) {
-    // Eval binding value
+    SchemeObject *binding_pair = s_car(scheme, binding_pairs);
+    SchemeObject *symbol = validate_let_binding(scheme, binding_pair, L"let");
+    reject_duplicate_let_binding(symbols, symbol, L"let");
 
-    state->global_arg1 =
-        s_car(scheme, s_cdr(scheme, s_car(scheme, binding_pairs)));
+    // Eval binding value
+    state->global_arg1 = s_cadr(scheme, binding_pair);
     SchemeObject *val = trampoline((fn_ptr)&eval, state);
 
-    new_bindings->defineBinding(s_car(scheme, s_car(scheme, binding_pairs)),
-                                val);
+    new_bindings->defineBinding(symbol, val);
     binding_pairs = s_cdr(scheme, binding_pairs);
   }
   state->stack.pop_back();
@@ -1321,6 +1379,10 @@ fn_ptr eval_named_let(Interpreter::State *state) {
   SchemeObject *name = s_car(scheme, p);
   p = s_cdr(scheme, p);
 
+  if (i_null_p(s_cdr(scheme, p)) == S_TRUE) {
+    throw scheme_exception(L"Missing body in let");
+  }
+
   if (i_pair_p(s_car(scheme, p)) == S_FALSE &&
       i_null_p(s_car(scheme, p)) == S_FALSE) {
     throw scheme_exception(L"Bad formals in let");
@@ -1330,11 +1392,14 @@ fn_ptr eval_named_let(Interpreter::State *state) {
   SchemeObject *binding_pairs = s_car(scheme, p);
   SchemeAppendableList formals;
   SchemeAppendableList args;
+  vector<SchemeObject *> symbols;
 
   while (i_null_p(binding_pairs) == S_FALSE) {
     SchemeObject *binding_pair = s_car(scheme, binding_pairs);
-    SchemeObject *formal = s_car(scheme, binding_pair);
-    SchemeObject *arg = s_car(scheme, s_cdr(scheme, binding_pair));
+    SchemeObject *formal =
+        validate_let_binding(scheme, binding_pair, L"named let");
+    reject_duplicate_let_binding(symbols, formal, L"named let");
+    SchemeObject *arg = s_cadr(scheme, binding_pair);
 
     formals.add(formal);
     args.add(arg);
@@ -1376,17 +1441,14 @@ fn_ptr eval_letstar(Interpreter::State *state) {
   SchemeObject *binding_pairs = s_car(scheme, p);
 
   while (i_null_p(binding_pairs) == S_FALSE) {
+    SchemeObject *binding_pair = s_car(scheme, binding_pairs);
+    SchemeObject *sym = validate_let_binding(scheme, binding_pair, L"let*");
+
     // Eval binding value
-    state->global_arg1 = s_cadar(scheme, binding_pairs);
+    state->global_arg1 = s_cadr(scheme, binding_pair);
     state->global_envt = new_bindings;
     SchemeObject *val = trampoline((fn_ptr)&eval, state);
 
-    SchemeObject *sym = s_car(scheme, s_car(scheme, binding_pairs));
-    if (i_symbol_p(sym) == S_FALSE) {
-      throw scheme_exception(
-          L"Bad variable in let*: " +
-          s_car(scheme, s_car(scheme, binding_pairs))->toString());
-    }
     new_bindings->defineBinding(sym, val);
     binding_pairs = s_cdr(scheme, binding_pairs);
   }
