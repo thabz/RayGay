@@ -374,6 +374,10 @@ if(BUILD_TESTING)
   target_link_libraries(testrational PRIVATE raygay_scheme)
   add_test(NAME testrational COMMAND testrational)
 
+  add_executable(testbigint src/scheme/testbigint.cpp)
+  target_link_libraries(testbigint PRIVATE raygay_scheme)
+  add_test(NAME testbigint COMMAND testbigint)
+
   foreach(test_name IN ITEMS
     testobjects
     testimage

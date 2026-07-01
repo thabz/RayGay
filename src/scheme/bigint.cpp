@@ -85,6 +85,9 @@ string bigint::toString(uint32_t radix) const {
   char chars[37] = "0123456789abcdefghijklmnopqrstuvwxyz";
   if (radix >= 37 || radix == 0)
     throw invalid_argument("Invalid radix");
+  if (is_zero()) {
+    return "0";
+  }
   bigint b = abs(*this);
   string s = "";
   while (!b.is_zero()) {
@@ -194,6 +197,7 @@ bigint bigint::operator-(int32_t n) const {
 bigint bigint::operator-() const {
   bigint r = *this;
   r.sign = -r.sign;
+  r.normalize();
   return r;
 }
 
@@ -285,11 +289,17 @@ bigint bigint::operator/(int32_t n) const {
 // 257-258. Knuths algo in C:
 // http://www.ddj.com/showArticle.jhtml?documentID=cuj9611breitz&pgno=8
 bigint bigint::operator/(const bigint &denom) const {
+  if (denom.is_zero())
+    throw range_error("Division by zero");
+
   bigint q = 1;
   q.sign = this->sign * denom.sign;
 
   if (abs(*this) < abs(denom))
     return bigint(0);
+
+  if (abs(*this) == abs(denom))
+    return q;
 
   if (denom.exp() == 0) {
     // denom is a long, so send it
@@ -410,16 +420,16 @@ int bigint::compare(const bigint &b1, const bigint &b2) {
   } else if (b1.sign < b2.sign) {
     return -1;
   } else if (b1.digits.size() > b2.digits.size()) {
-    return 1;
+    return b1.sign;
   } else if (b1.digits.size() < b2.digits.size()) {
-    return -1;
+    return -b1.sign;
   } else {
     // Same number of digits and same sign. Compare digits.
     for (int i = b1.digits.size() - 1; i >= 0; i--) {
       if (b1.digits[i] > b2.digits[i]) {
-        return 1;
+        return b1.sign;
       } else if (b1.digits[i] < b2.digits[i]) {
-        return -1;
+        return -b1.sign;
       }
     }
     return 0;
@@ -520,7 +530,8 @@ ostream &operator<<(ostream &os, const bigint &b) {
 
 bigint bigint::times_two() const {
   bigint r = *this;
-  for (uint32_t i = r.size() - 1; i != 0; i--) {
+  uint32_t size = r.size();
+  for (uint32_t i = 0; i < size; i++) {
     r.digits[i] <<= 1;
     if (r.digits[i] >= RADIX) {
       if (i + 1 >= r.size()) {
@@ -566,20 +577,12 @@ bigint bigint::sqrt() const {
     return bigint::ONE;
   }
 
-  // A good initial guess is the square root of the most significant digit times
-  // the square root of its radix part.
-  bigint x_1 = ONE * 100;
-
+  bigint x = TWO.expt((sizeInBits() + 1) / 2);
   while (true) {
-    bigint x_2 = (*this) / x_1;
-    bigint diff = x_2 - x_1;
-    if (diff.is_zero()) {
-      return x_1;
+    bigint next = (x + (*this) / x) / 2;
+    if (next >= x) {
+      return x;
     }
-    if (diff.is_one()) {
-      return x_2;
-    }
-    x_1 = (x_1 + x_2) / 2;
-    // cout << "Guess " << x_1 << endl;
+    x = next;
   }
 }
