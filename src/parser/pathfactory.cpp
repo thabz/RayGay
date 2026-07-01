@@ -140,5 +140,5 @@ void PathFactory::register_procs(Scheme *scheme) {
   scheme->assign(L"point-on-path", 2, 0, 0,
                  (SchemeObject * (*)()) PathFactory::point_on_path);
   scheme->assign(L"tangent-to-path", 2, 0, 0,
-                 (SchemeObject * (*)()) PathFactory::point_on_path);
+                 (SchemeObject * (*)()) PathFactory::tangent_to_path);
 }
