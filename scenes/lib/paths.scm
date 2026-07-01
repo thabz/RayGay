@@ -67,7 +67,8 @@
    #f)))
 
 (define (make-circle center radius normal)
- (let* ((a (if (v= normal y-axis vector-epsilon) y-axis x-axis))
+ (let* ((x-up (vcrossproduct x-axis normal))
+        (a (if (< (vlength x-up) vector-epsilon) y-axis x-axis))
         (o (orient identity-matrix
 		       normal (vcrossproduct a normal)))
         (m (translate o center)))
@@ -122,7 +123,6 @@
 (define (make-bezier-spline . vector) 'todo)
 
 (define (make-catmullrom-spline . vector) 'todo)
-
 
 
 
