@@ -430,7 +430,11 @@ Scheme::Scheme(int argc, char *argv[]) {
 
   try {
     eval(L"(define-macro (values . x) `(list ,@x))", scheme_report_environment);
-    eval(L"(define-macro (call-with-values f g)  `(apply ,g (,f)))",
+    eval(L"(define-macro (call-with-values f g)"
+         L"  `(let ((vals (,f)))"
+         L"     (if (list? vals)"
+         L"       (apply ,g vals)"
+         L"       (,g vals))))",
          scheme_report_environment);
     // TODO: Memoize the result of delayed value.
     // R6RS has a definition for delay that does just that - but uses
@@ -745,8 +749,8 @@ SchemeObject *s_apply(Scheme *scheme, int num, SchemeStack::iterator args) {
 
   for (int i = 0; i < num; i++) {
     SchemeObject *arg = *args++;
-    if (i_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
-      if (i == num - 1) {
+    if (i == num - 1) {
+      if (i_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
         // arg is a list and last argument
         if (collected == S_EMPTY_LIST) {
           collected = arg;
@@ -754,7 +758,11 @@ SchemeObject *s_apply(Scheme *scheme, int num, SchemeStack::iterator args) {
           i_set_cdr_e(prev, arg);
         }
       } else {
-        throw scheme_exception(L"Illegal argument");
+        state->stack.pop_back();
+        wostringstream ss;
+        ss << L"Wrong argument-type (expecting list) in position " << i + 2;
+        ss << L" in call to apply: " << arg->toString();
+        throw scheme_exception(ss.str());
       }
     } else {
       if (collected == S_EMPTY_LIST) {

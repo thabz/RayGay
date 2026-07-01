@@ -314,9 +314,13 @@ void test_interpreter() {
   assert_eval(s, L"(apply + (list 3 4))", L"7");
   assert_eval(s, L"(apply + '(1 2 3))", L"6");
   assert_eval(s, L"(apply + 1 2 '(3 4))", L"10");
+  assert_eval(s, L"(apply list '(1 2) '(3 4))", L"((1 2) 3 4)");
   assert_eval(s, L"(apply list '())", L"()");
   assert_eval(s, L"(apply * 1 2 (list 3 4))", L"24");
   assert_eval(s, L"(apply apply `(,+ ,(list 1 2)))", L"3");
+  assert_eval(s, L"(apply list '(1 2) 3 '())", L"((1 2) 3)");
+  assert_eval(s, L"(apply list 1 '(2) '())", L"(1 (2))");
+  assert_fail(s, L"(apply + 1 2 3)");
   // assert_fail(s, L"(apply define (string->symbol \"xx\") 10)");
   s->eval(L"(define compose (lambda (f g) (lambda args (f (apply g args)))))");
   assert_eval(s, L"((compose sqrt *) 12 75)", L"30.0"); // R^5RS, Section 6.4.
