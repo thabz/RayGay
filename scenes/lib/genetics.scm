@@ -12,13 +12,13 @@
   (do ((i 0 (+ i 1)))
     ((= i (length l)) l)
     (if (< (random2 0 100) percent)
-       (list-swap l i (random (length l))))))
+       (list-swap l i (random-index (length l))))))
 
 ; Do a genetic crossover from two parent chromosomes.
 ; One-point crossover technique.
 (define (crossover c1 c2)
    (let loop ((filler c2)
-              (result (reverse (list-head c1 (random (length c1))))))
+              (result (reverse (list-head c1 (random-index (length c1))))))
      (if (null? filler)
        (reverse result)
        (if (member (car filler) result)
@@ -28,7 +28,7 @@
 ; Randomize list
 (define (list-shuffle l)
   (dotimes i (length l)
-    (list-swap l i (random (length l))))
+    (list-swap l i (random-index (length l))))
   l)
 
 ; Randomized list of 0,1,...,n
@@ -49,7 +49,7 @@
 
 (define (pick-chromosome population dist-table)
   (list-ref population 
-   (list-ref dist-table (random (length dist-table)))))
+   (list-ref dist-table (random-index (length dist-table)))))
 
 ; For pop-size 4 this results in (0 0 0 0 1 1 1 2 2 3)
 (define (precalc-dist-table pop-size)

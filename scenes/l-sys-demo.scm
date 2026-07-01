@@ -3,45 +3,45 @@
 (load "lib/l-system.scm")
 
 (set-image-size '(640 480))
-(set-background '(0.3 0.6 0.7))
+(set-background #(0.3 0.6 0.7))
 
 (set-renderer "raytracer")
 (set-camera 
   (make-pinhole-camera 
-    '( pos (1000 1000 2000)
-       lookat (0 500 0)
-       up (0 1 0)
+    '( pos #(1000 1000 2000)
+       lookat #(0 500 0)
+       up #(0 1 0)
        fov 45
        aa 0)))
 
 (define brown
   (make-material
-    '( diffuse (0.7 0.4 0.2)
+    '( diffuse #(0.7 0.4 0.2)
        kd 1.0
        ks 0.0)))
 
 (define green
   (make-material
-    '( diffuse (0.4 0.7 0.2)
+    '( diffuse #(0.4 0.7 0.2)
        kd 1.0
        ks 0.0)))
 
 (define chrome
   (make-material
-    '( diffuse (0.8 0.8 0.8)
+    '( diffuse #(0.8 0.8 0.8)
        kd 0.2
-       specular (1.0 1.0 1.0)
+       specular #(1.0 1.0 1.0)
        ks 0.8
        specpow 30)))
 
 
-(add-to-scene (make-pointlight '(500 1300 1300)))
-(add-to-scene (make-pointlight '(-500 1300 1300)))
+(add-to-scene (make-pointlight #(500 1300 1300)))
+(add-to-scene (make-pointlight #(-500 1300 1300)))
 
 (add-to-scene
-    (make-box 
-      '(-11700 -51 -11700) 
-      '(11700 1 11700) 
+    (make-box
+      #(-11700 -51 -11700)
+      #(11700 1 11700)
       green))
 
 
@@ -62,4 +62,3 @@
   rules
   5   ; depth
   brown))
-
