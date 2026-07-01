@@ -77,6 +77,7 @@ private:
 
 private:
   void normalize();
+  bigint divmod(const bigint &denom, bigint *remainder) const;
   static int compare(const bigint &b1, const bigint &b2);
   void resize(int32_t new_digits_num);
   uint32_t size() const;

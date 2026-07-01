@@ -196,11 +196,28 @@ public:
     assertTrue(bigint("-99999999999999999992") % 3 == -2);
 
     bigint large_divisor("123456789123456789");
+    bigint large_quotient("987654321987654321");
     bigint large_remainder("42424242");
+    bigint large_dividend("121932631356500531347203169155059511");
+    assertTrue(large_dividend / large_divisor == large_quotient);
+    assertTrue(large_dividend % large_divisor == large_remainder);
+    assertTrue((-large_dividend) / large_divisor == -large_quotient);
+    assertTrue((-large_dividend) % large_divisor == -large_remainder);
+    assertTrue(large_dividend / (-large_divisor) == -large_quotient);
+    assertTrue(large_dividend % (-large_divisor) == large_remainder);
+    assertTrue((-large_dividend) / (-large_divisor) == large_quotient);
+    assertTrue((-large_dividend) % (-large_divisor) == -large_remainder);
     assertTrue(large_divisor % large_divisor == bigint(0));
     assertTrue(large_remainder % large_divisor == large_remainder);
     assertTrue((-large_remainder) % large_divisor == -large_remainder);
     assertTrue(large_remainder % (-large_divisor) == large_remainder);
+
+    bigint huge_divisor("31415926535897932384626433832795028841971693993751");
+    bigint huge_quotient("271828182845904523536028747135266249775724709369995");
+    bigint huge_remainder("1618033988749894848204586834365638117720309179");
+    bigint huge_dividend("8539734222673567065463550869546574495034888535765069059801335454063529809962210050289497330397210424");
+    assertTrue(huge_dividend / huge_divisor == huge_quotient);
+    assertTrue(huge_dividend % huge_divisor == huge_remainder);
 
     bool divide_by_zero_failed = false;
     try {
