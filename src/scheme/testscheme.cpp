@@ -1377,13 +1377,23 @@ void test_let() {
       L"#t");
 
   assert_fail(s, L"(let)");
+  assert_fail(s, L"(let ())");
   assert_fail(s, L"(let 'a)");
   assert_fail(s, L"(let 'a 'b)");
+  assert_fail(s, L"(let ((1 2)) 1)");
+  assert_fail(s, L"(let ((x 1 2)) x)");
+  assert_fail(s, L"(let ((x 1) (x 2)) x)");
   assert_fail(s, L"(let loop 'b)");
   assert_fail(s, L"(let loop 'b 'c)");
+  assert_fail(s, L"(let loop ())");
+  assert_fail(s, L"(let loop ((1 2)) 1)");
+  assert_fail(s, L"(let loop ((x 1 2)) x)");
+  assert_fail(s, L"(let loop ((x 1) (x 2)) x)");
   assert_fail(s, L"(let*)");
   assert_fail(s, L"(let* 'a)");
   assert_fail(s, L"(let* 'a 'b)");
+  assert_fail(s, L"(let* ((x 1 2)) x)");
+  assert_eval(s, L"(let* ((x 1) (x 2)) x)", L"2");
   assert_fail(s, L"(letrec)");
   assert_fail(s, L"(letrec 'a)");
   assert_fail(s, L"(letrec 'a 'b)");
