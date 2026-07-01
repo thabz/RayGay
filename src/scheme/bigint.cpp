@@ -285,115 +285,84 @@ bigint bigint::operator/(int32_t n) const {
   return s;
 }
 
-// Donald Knuth, The Art of Computer Programming, Volume 2, 2nd ed., 1981, pp.
-// 257-258. Knuths algo in C:
-// http://www.ddj.com/showArticle.jhtml?documentID=cuj9611breitz&pgno=8
-bigint bigint::operator/(const bigint &denom) const {
+bigint bigint::divmod(const bigint &denom, bigint *remainder_out) const {
   if (denom.is_zero())
     throw range_error("Division by zero");
 
-  bigint q = 1;
-  q.sign = this->sign * denom.sign;
+  bigint numerator = abs(*this);
+  bigint divisor = abs(denom);
 
-  if (abs(*this) < abs(denom))
+  if (numerator < divisor) {
+    if (remainder_out)
+      *remainder_out = *this;
     return bigint(0);
-
-  if (abs(*this) == abs(denom))
-    return q;
-
-  if (denom.exp() == 0) {
-    // denom is a long, so send it
-    // to the easy routine
-    return *this / (denom.sign * denom.digits[0]);
-  } else {
-    q.resize(this->exp() - denom.exp() + 1);
-    int64_t qhat;
-    int qpos = q.exp();
-    int64_t d = RADIX / (denom.digits[denom.exp()] + 1); // d is a normalizer
-
-    bigint u(*this); // make a copy of the numerator
-    bigint v(denom); // make a copy of the denominator
-    int64_t start = u.exp() + 1;
-    u = u * d;
-    v = v * d;
-    if (u.exp() < start) {
-      u.resize(start + 1);
-      u.digits[start] = 0;
-    }
-
-    for (;;) {
-      if (abs(u) < abs(v)) { // when u < v we can't divide anymore
-        u = u / d;           // unnormalize u to get remainder
-        return q;
-      }
-      int i = 0;
-      int64_t stop;
-      while (u.digits[start + i] == v.digits[v.exp() + i] && v.exp() + i)
-        i--;
-      if (u.digits[start + i] < v.digits[v.exp() + i])
-        stop = start - v.exp() - 1;
-      else
-        stop = start - v.exp();
-
-      qhat = int64_t(u.digits[start]); // make a guess at qhat
-      qhat = qhat * RADIX + u.digits[start - 1];
-      qhat /= v.digits[v.exp()];
-      if (qhat > RADIX - 1)
-        qhat = RADIX - 1;
-
-      int64_t temp;
-      // fast check to see if qhat is too big
-      if (start - 1)
-        temp = u.digits[start - 2];
-      else
-        temp = 0;
-      while (int64_t(v.digits[v.exp() - 1]) * qhat >
-             (int64_t(u.digits[start]) * RADIX + u.digits[start - 1] -
-              qhat * int64_t(v.digits[v.exp()])) *
-                     RADIX +
-                 temp)
-        qhat--;
-
-      bigint work(v * qhat);
-      work.resize(u.exp() + 1);
-
-      // qhat still too big??
-      while (start - stop < work.exp()) {
-        --qhat;
-        work = work - v;
-      }
-
-      int64_t borrow = 0; // subtract work from u
-      work.digits[work.exp() + 1] = 0;
-      for (i = stop; i <= start; i++) {
-        temp = int64_t(u.digits[i]) - int64_t(work.digits[i - stop]) + borrow;
-        if (temp < 0) {
-          borrow = -1;
-          temp += RADIX;
-        } else
-          borrow = 0;
-        u.digits[i] = temp;
-      }
-
-      v.digits[v.exp() + 1] = 0;
-      while (borrow < 0 && qhat) { // oops qhat was still too big
-        // add back
-        qhat--;
-        int64_t carry = 0;
-        for (i = stop; i <= start; i++) {
-          temp = u.digits[i] + v.digits[i - stop] + carry;
-          carry = temp / RADIX;
-          u.digits[i] = temp % RADIX;
-        }
-        borrow += carry;
-      }
-
-      q.digits[qpos--] = qhat;
-      // work on next digit of u
-      start = u.exp() - 1;
-      u.resize(u.size() - 1);
-    }
   }
+
+  if (numerator == divisor) {
+    if (remainder_out)
+      *remainder_out = bigint(0);
+    bigint quotient(1);
+    quotient.sign = sign * denom.sign;
+    quotient.normalize();
+    return quotient;
+  }
+
+  if (divisor.exp() == 0) {
+    int32_t divisor_digit = divisor.digits[0];
+    if (remainder_out)
+      *remainder_out = bigint(*this % divisor_digit);
+    return *this / (denom.sign * divisor_digit);
+  }
+
+  bigint remainder(0);
+  remainder = numerator;
+
+  int max_shift = int(numerator.exp()) - int(divisor.exp());
+  bigint quotient(0);
+  quotient.resize(max_shift + 1);
+
+  for (int shift = max_shift; shift >= 0; shift--) {
+    bigint shifted_divisor = divisor;
+    if (shift > 0)
+      shifted_divisor.digits.insert(shifted_divisor.digits.begin(), shift, 0);
+
+    if (shifted_divisor > remainder)
+      continue;
+
+    int64_t low = 0;
+    int64_t high = RADIX - 1;
+    int64_t qdigit = 0;
+
+    while (low <= high) {
+      int64_t mid = low + (high - low) / 2;
+      bigint product = shifted_divisor * int32_t(mid);
+      if (product <= remainder) {
+        qdigit = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    quotient.digits[shift] = qdigit;
+    if (qdigit != 0)
+      remainder -= shifted_divisor * int32_t(qdigit);
+  }
+
+  quotient.sign = sign * denom.sign;
+  quotient.normalize();
+
+  if (remainder_out) {
+    remainder.sign = sign;
+    remainder.normalize();
+    *remainder_out = remainder;
+  }
+
+  return quotient;
+}
+
+bigint bigint::operator/(const bigint &denom) const {
+  return divmod(denom, 0);
 }
 
 int32_t bigint::operator%(int32_t n) const {
@@ -415,9 +384,9 @@ int32_t bigint::operator%(int32_t n) const {
 }
 
 bigint bigint::operator%(const bigint &denom) const {
-  if (denom.is_zero())
-    throw range_error("Division by zero");
-  return *this - ((*this / denom) * denom);
+  bigint remainder(0);
+  divmod(denom, &remainder);
+  return remainder;
 }
 
 int bigint::compare(const bigint &b1, const bigint &b2) {
