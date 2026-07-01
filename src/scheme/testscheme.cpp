@@ -332,10 +332,13 @@ void test_interpreter() {
               L"(case (car '(c d)) ((a e i o u) 'vowel) ((w y) 'semivowel) "
               L"(else 'consonant))",
               L"consonant");
+  assert_eval(s, L"(case 1 (() 'empty-datum-list) (else 'other))", L"other");
   assert_eval(s, L"(case 2)", L"#<unspecified>");
   assert_fail(s, L"(case)");
   assert_fail(s, L"(case 2 (2))");
   assert_fail(s, L"(case 2 2)");
+  assert_fail(s, L"(case 1 ((1)))");
+  assert_fail(s, L"(case 1 (else))");
 
   assert_eval(s, L"(cond ((> 3 2) 'greater) ((< 3 2) 'less))", L"greater");
   assert_eval(s, L"(cond ((> 3 3) 'greater) ((< 3 3) 'less) (else 'equal))",
@@ -346,6 +349,9 @@ void test_interpreter() {
   assert_eval(s, L"(cond (17))", L"17");
   assert_eval(s, L"(cond ((> 3 2)))", L"#t");
   assert_fail(s, L"(cond a)");
+  assert_fail(s, L"(cond (else))");
+  assert_fail(s, L"(cond (#t =>))");
+  assert_fail(s, L"(cond (#t => car cdr))");
   assert_eval(s, L"(cond ('a 'b))", L"b");
 
   // Brian M. Moore in thread: shadowing syntatic keywords, bug in MIT Scheme?
