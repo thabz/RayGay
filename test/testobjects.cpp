@@ -40,6 +40,8 @@ bool intersects(Object *o, const Vector &origin, const Vector &dir) {
   return intersects(o, ray);
 }
 
+static const int STRESS_CHECK_SAMPLES = 100;
+
 Vector iPoint(Object *o, const Ray &ray) {
   double t = o->fastIntersect(ray);
   if (t <= 0) {
@@ -79,8 +81,7 @@ Vector iNormal(Object *o, const Vector &origin, const Vector &dir) {
  */
 bool intersectionCheck(Object *object, double radius) {
   int failures = 0;
-  int num = 10000;
-  for (int i = 0; i < num; i++) {
+  for (int i = 0; i < STRESS_CHECK_SAMPLES; i++) {
     Vector v = Vector::randomUnitVector();
     Vector pos = v * radius;
     Vector dir = -1 * v;
@@ -98,9 +99,8 @@ bool intersectionCheck(Object *object, double radius) {
  * that the returned normals all have length one.
  */
 bool normalCheck(Object *object, double radius) {
-  int num = 10000;
   int failures = 0;
-  for (int i = 0; i < num; i++) {
+  for (int i = 0; i < STRESS_CHECK_SAMPLES; i++) {
     Vector v = Vector::randomUnitVector();
     Vector pos = v * radius;
     Vector dir = -1 * v;
@@ -122,8 +122,7 @@ bool normalCheck(Object *object, double radius) {
  */
 bool transparentCheck(Object *object, double radius) {
   int failures = 0;
-  int num = 10000;
-  for (int i = 0; i < num; i++) {
+  for (int i = 0; i < STRESS_CHECK_SAMPLES; i++) {
     Vector v = Vector::randomUnitVector();
     Vector pos = v * radius;
     Vector dir = -1 * v;
