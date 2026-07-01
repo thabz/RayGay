@@ -120,7 +120,21 @@ public:
     assertTrue(inplace == bigint("123456789123456789000"));
     assertTrue(bigint(1).times_two() == bigint(2));
     assertTrue(bigint("1073741824").times_two() == bigint("2147483648"));
+    assertTrue(bigint(0).square() == bigint(0));
     assertTrue(bigint("123456789").square() == bigint("15241578750190521"));
+    assertTrue(bigint("-123456789").square() == bigint("15241578750190521"));
+
+    vector<bigint> square_values = {
+        bigint("1"),
+        bigint("-1"),
+        bigint("123456789123456789"),
+        bigint("-123456789123456789"),
+        bigint("999999999999999999999999999999999999"),
+    };
+    for (uint32_t i = 0; i < square_values.size(); i++) {
+      bigint n = square_values[i];
+      assertTrue(n.square() == n * n);
+    }
   }
 };
 
