@@ -1191,13 +1191,29 @@ fn_ptr eval_cond(Interpreter::State *state) {
       throw scheme_exception(L"Invalid clause");
     }
     SchemeObject *test_expr = s_car(scheme, clause);
+    SchemeObject *clause_tail = s_cdr(scheme, clause);
     if (test_expr == scheme->else_symbol) {
       // Handle (else <expressions> ...)
       if (i_null_p(s_cdr(scheme, p)) == S_FALSE) {
         throw scheme_exception(L"else-clause must be last");
       }
-      state->global_arg1 = s_cdr(scheme, clause);
+      if (clause_tail == S_EMPTY_LIST) {
+        throw scheme_exception(L"else-clause missing body");
+      }
+      state->global_arg1 = clause_tail;
       return (fn_ptr)&eval_sequence;
+    }
+
+    bool ergo_clause = i_pair_p(clause_tail) == S_TRUE &&
+                       s_car(scheme, clause_tail) == scheme->ergo_symbol;
+    SchemeObject *ergo_expr = S_EMPTY_LIST;
+    if (ergo_clause) {
+      SchemeObject *ergo_tail = s_cdr(scheme, clause_tail);
+      if (i_pair_p(ergo_tail) == S_FALSE ||
+          s_cdr(scheme, ergo_tail) != S_EMPTY_LIST) {
+        throw scheme_exception(L"Invalid => clause in cond");
+      }
+      ergo_expr = s_car(scheme, ergo_tail);
     }
 
     // Eval test_expr
@@ -1205,20 +1221,19 @@ fn_ptr eval_cond(Interpreter::State *state) {
     SchemeObject *test = trampoline((fn_ptr)&eval, state);
 
     if (scm2bool(test)) {
-      if (s_cdr(scheme, clause) == S_EMPTY_LIST) {
+      if (clause_tail == S_EMPTY_LIST) {
         state->global_ret = test;
         return NULL;
-      } else if (s_car(scheme, s_cdr(scheme, clause)) == scheme->ergo_symbol) {
+      } else if (ergo_clause) {
         // Handle (<test> => <expression>)
-        state->global_arg1 =
-            s_car(scheme, s_cdr(scheme, s_cdr(scheme, clause)));
+        state->global_arg1 = ergo_expr;
         SchemeObject *proc = trampoline((fn_ptr)&eval, state);
 
         state->global_arg1 = proc;
         state->global_arg2 = s_cons(scheme, test, S_EMPTY_LIST);
         return (fn_ptr)&eval_procedure_call;
       } else {
-        state->global_arg1 = s_cdr(scheme, clause);
+        state->global_arg1 = clause_tail;
         return (fn_ptr)&eval_sequence;
       }
     }
@@ -1245,18 +1260,26 @@ fn_ptr eval_case(Interpreter::State *state) {
       throw scheme_exception(L"Invalid clause");
     }
     SchemeObject *clause_car = s_car(scheme, clause);
+    SchemeObject *clause_body = s_cdr(scheme, clause);
     if (clause_car == scheme->else_symbol) {
       // Handle (else <expressions> ...)
       if (i_null_p(s_cdr(scheme, p)) == S_FALSE) {
         throw scheme_exception(L"else-clause must be last");
       }
+      if (clause_body == S_EMPTY_LIST) {
+        throw scheme_exception(L"else-clause missing body");
+      }
       state->stack.pop_back();
-      state->global_arg1 = s_cdr(scheme, clause);
+      state->global_arg1 = clause_body;
       return (fn_ptr)&eval_sequence;
-    } else if (i_pair_p(clause_car) == S_TRUE) {
+    } else if (i_pair_p(clause_car) == S_TRUE ||
+               clause_car == S_EMPTY_LIST) {
+      if (clause_body == S_EMPTY_LIST) {
+        throw scheme_exception(L"case-clause missing body");
+      }
       if (s_memv(scheme, key, clause_car) != S_FALSE) {
         state->stack.pop_back();
-        state->global_arg1 = s_cdr(scheme, clause);
+        state->global_arg1 = clause_body;
         return (fn_ptr)&eval_sequence;
       }
     } else {
