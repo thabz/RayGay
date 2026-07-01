@@ -195,6 +195,13 @@ public:
     assertTrue(bigint("10000000000000000000000") % 3 == 1);
     assertTrue(bigint("-99999999999999999992") % 3 == -2);
 
+    bigint large_divisor("123456789123456789");
+    bigint large_remainder("42424242");
+    assertTrue(large_divisor % large_divisor == bigint(0));
+    assertTrue(large_remainder % large_divisor == large_remainder);
+    assertTrue((-large_remainder) % large_divisor == -large_remainder);
+    assertTrue(large_remainder % (-large_divisor) == large_remainder);
+
     bool divide_by_zero_failed = false;
     try {
       bigint(1) / 0;
@@ -293,6 +300,9 @@ public:
           assertTrue(big_a / b == bigint(to_string(a / b)));
           assertTrue(big_a % b == a % b);
           assertTrue((big_a / b) * b + (big_a % b) == big_a);
+          assertTrue(big_a / big_b == bigint(to_string(a / b)));
+          assertTrue(big_a % big_b == bigint(to_string(a % b)));
+          assertTrue((big_a / big_b) * big_b + (big_a % big_b) == big_a);
         }
       }
     }

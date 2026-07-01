@@ -414,6 +414,12 @@ int32_t bigint::operator%(int32_t n) const {
   return r;
 }
 
+bigint bigint::operator%(const bigint &denom) const {
+  if (denom.is_zero())
+    throw range_error("Division by zero");
+  return *this - ((*this / denom) * denom);
+}
+
 int bigint::compare(const bigint &b1, const bigint &b2) {
   if (b1.sign > b2.sign) {
     return 1;
