@@ -7,6 +7,12 @@
 (define 2π (* 2.0 π))
 (define π/2 (/ π 2.0))
 
+(define (random2 min max)
+  (random min max))
+
+(define (random-index upper)
+  (truncate (random 0 upper)))
+
 (define (first vec) (car vec))
 (define (second vec) (cadr vec))
 (define (third vec) (caddr vec))
@@ -42,7 +48,7 @@
 
 (define (pick-random-from-list l)
   "Returns a random element from a list"        
-  (list-ref l (random (length l))))
+  (list-ref l (random-index (length l))))
 
 (define (sum . l)
  "Sums of a list of numbers"
@@ -119,4 +125,3 @@
 ;(define ￮ make-sphere)
 ;(define □ make-box)
 ;(define ■ make-solid-box)
-
