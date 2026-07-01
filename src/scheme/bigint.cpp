@@ -544,8 +544,26 @@ bigint bigint::times_two() const {
   return r;
 }
 
-// TODO: Optimize this. Squaring can be done with half as many mults.
-bigint bigint::square() const { return *this * *this; }
+bigint bigint::square() const {
+  if (digits.size() < 4) {
+    return *this * *this;
+  }
+
+  bigint r = ZERO;
+  int size = digits.size() * 2;
+  r.resize(size);
+
+  for (uint32_t i = 0; i < digits.size(); i++) {
+    r.digits[i + i] += digits[i] * digits[i];
+    for (uint32_t j = i + 1; j < digits.size(); j++) {
+      r.digits[i + j] += 2 * digits[i] * digits[j];
+    }
+    r.normalize();
+    r.resize(size);
+  }
+  r.normalize();
+  return r;
+}
 
 // Returns this raised to the power p
 // TODO: This could be done faster by replacing recursion with a loop and by
