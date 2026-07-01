@@ -437,8 +437,9 @@ fn_ptr eval_apply(Interpreter::State *state) {
   while (args != S_EMPTY_LIST) {
     i++;
     SchemeObject *arg = s_car(scheme, args);
-    if (i_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
-      if (s_cdr(scheme, args) == S_EMPTY_LIST) {
+    bool is_last_arg = s_cdr(scheme, args) == S_EMPTY_LIST;
+    if (is_last_arg) {
+      if (i_pair_p(arg) == S_TRUE || arg == S_EMPTY_LIST) {
         // arg is a list and last argument
         if (collected == S_EMPTY_LIST) {
           collected = arg;
@@ -446,7 +447,14 @@ fn_ptr eval_apply(Interpreter::State *state) {
           i_set_cdr_e(prev, arg);
         }
       } else {
-        throw scheme_exception(L"Illegal argument");
+        if (collected != S_EMPTY_LIST) {
+          state->stack.pop_back();
+        }
+        state->stack.pop_back();
+        wostringstream ss;
+        ss << L"Wrong argument-type (expecting list) in position " << i + 1;
+        ss << L" in call to apply: " << arg->toString();
+        throw scheme_exception(ss.str());
       }
     } else {
       if (collected == S_EMPTY_LIST) {
