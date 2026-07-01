@@ -80,7 +80,6 @@ Vector iNormal(Object *o, const Vector &origin, const Vector &dir) {
 bool intersectionCheck(Object *object, double radius) {
   int failures = 0;
   int num = 10000;
-  int checked = 0;
   for (int i = 0; i < num; i++) {
     Vector v = Vector::randomUnitVector();
     Vector pos = v * radius;
@@ -90,9 +89,7 @@ bool intersectionCheck(Object *object, double radius) {
     if (t <= 0 || t > radius) {
       failures++;
     }
-    checked++;
   }
-  // cout << "Checked points: " << checked << endl;
   return failures == 0;
 }
 
@@ -102,7 +99,6 @@ bool intersectionCheck(Object *object, double radius) {
  */
 bool normalCheck(Object *object, double radius) {
   int num = 10000;
-  int checked = 0;
   int failures = 0;
   for (int i = 0; i < num; i++) {
     Vector v = Vector::randomUnitVector();
@@ -113,10 +109,8 @@ bool normalCheck(Object *object, double radius) {
       if (!IS_EQUAL(iNormal(object, ray).length(), 1.0)) {
         failures++;
       };
-      checked++;
     }
   }
-  // cout << "Checked normals: " << checked << endl;
   return failures == 0;
 }
 
@@ -129,22 +123,23 @@ bool normalCheck(Object *object, double radius) {
 bool transparentCheck(Object *object, double radius) {
   int failures = 0;
   int num = 10000;
-  int checked = 0;
   for (int i = 0; i < num; i++) {
     Vector v = Vector::randomUnitVector();
     Vector pos = v * radius;
     Vector dir = -1 * v;
     Ray ray = Ray(pos, dir, -1);
-    while (intersects(object, ray)) {
-      if (iPoint(object, ray) == pos)
+    double t;
+    while ((t = object->fastIntersect(ray)) > 0) {
+      Intersection intersection;
+      object->fullIntersect(ray, t, intersection);
+      Vector point = intersection.getPoint();
+      if (point == pos)
         failures++;
 
-      pos = iPoint(object, ray);
+      pos = point;
       ray = Ray(pos, dir, -1);
-      checked++;
     }
   }
-  // cout << "Checked points: " << checked << endl;
   return failures == 0;
 }
 
