@@ -34,3 +34,6 @@ test-driver
 
 *.png
 m4
+
+/build/
+/build-*/
