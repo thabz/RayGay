@@ -28,10 +28,11 @@ libscheme_la_SOURCES = lexer.h lexer.cpp \
 # -----------------------------------------------------
 # Tests
 # -----------------------------------------------------
-check_PROGRAMS = testscheme testrational
+check_PROGRAMS = testscheme testrational testbigint
 testscheme_SOURCES = testscheme.cpp
 testscheme_LDADD = libscheme.la
 testrational_SOURCES = testrational.cpp
-TESTS = testscheme testrational
+testbigint_SOURCES = testbigint.cpp
+testbigint_LDADD = libscheme.la
+TESTS = testscheme testrational testbigint
  
-
