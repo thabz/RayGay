@@ -566,21 +566,23 @@ bigint bigint::square() const {
 }
 
 // Returns this raised to the power p
-// TODO: This could be done faster by replacing recursion with a loop and by
-// just using one bigint modified inplace, ie. *= instead of *.
 bigint bigint::expt(int power) const {
-  if (power == 0) {
-    return ONE;
-  } else if (power == 1 || this->is_one()) {
-    return *this;
+  if (power < 0) {
+    throw range_error("Negative exponent");
   }
-  if (power % 2 == 0) {
-    bigint r = this->expt(power / 2);
-    return r.square();
-  } else {
-    bigint r = this->expt(power - 1);
-    return *this * r;
+
+  bigint result = ONE;
+  bigint base = *this;
+  while (power > 0) {
+    if (power % 2 == 1) {
+      result = result * base;
+    }
+    power /= 2;
+    if (power > 0) {
+      base = base.square();
+    }
   }
+  return result;
 }
 
 // Newton's method
