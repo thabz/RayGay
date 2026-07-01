@@ -1,9 +1,7 @@
 
 #include "http/httpcommon.h"
 
-extern "C" {
 #include "http/md5.h"
-}
 #include "exception.h"
 #include "math/constants.h" // For MIN()
 #include <cstring>

@@ -100,6 +100,10 @@ struct md5_ctx {
   char buffer[128] __attribute__((__aligned__(__alignof__(md5_uint32))));
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * The following three functions are build up the low level used in
  * the functions `md5_stream' and `md5_buffer'.
@@ -155,5 +159,9 @@ extern void md5_stream_hex __P((FILE * stream, char *resblock));
    output yields to the wanted ASCII representation of the message
    digest.  */
 extern void *md5_buffer __P((const char *buffer, size_t len, void *resblock));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* md5.h */

@@ -391,6 +391,11 @@ if(BUILD_TESTING)
     set_tests_properties(${test_name} PROPERTIES WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/test)
   endforeach()
 
+  add_executable(testhttp test/testhttp.cpp)
+  target_include_directories(testhttp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test)
+  target_link_libraries(testhttp PRIVATE raygay_http)
+  add_test(NAME testhttp COMMAND testhttp)
+
   add_executable(testspeed test/testspeed.cpp)
   target_include_directories(testspeed PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/test)
   target_link_libraries(testspeed PRIVATE raygay_tracer)

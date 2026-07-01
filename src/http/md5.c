@@ -137,7 +137,7 @@ md5_stream_hex (FILE *stream, char *resblock)
     unsigned int i;
     md5_stream(stream, res);
     for(i = 0; i < 16; i++, resblock += 2) {
-        sprintf(resblock, "%02x", (unsigned char) res[i]);
+        snprintf(resblock, 3, "%02x", (unsigned char) res[i]);
     }
 }
 

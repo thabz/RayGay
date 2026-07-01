@@ -12,8 +12,9 @@
 #include <iostream>
 #include <sstream>
 
-extern "C" {
 #include "http/md5.h"
+
+extern "C" {
 #include <arpa/inet.h> /*  inet (3) funtions         */
 #include <sys/socket.h>
 #include <sys/stat.h>
