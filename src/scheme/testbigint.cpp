@@ -195,6 +195,13 @@ public:
     assertTrue(bigint("10000000000000000000000") % 3 == 1);
     assertTrue(bigint("-99999999999999999992") % 3 == -2);
 
+    bigint large_divisor("123456789123456789");
+    bigint large_remainder("42424242");
+    assertTrue(large_divisor % large_divisor == bigint(0));
+    assertTrue(large_remainder % large_divisor == large_remainder);
+    assertTrue((-large_remainder) % large_divisor == -large_remainder);
+    assertTrue(large_remainder % (-large_divisor) == large_remainder);
+
     bool divide_by_zero_failed = false;
     try {
       bigint(1) / 0;
@@ -264,6 +271,62 @@ public:
   }
 };
 
+class native_integer_property_test : public Test {
+public:
+  void run() {
+    vector<int32_t> values = {-1000, -101, -17, -3, -1, 0,
+                              1,     2,    5,   19, 97, 1000};
+
+    for (uint32_t i = 0; i < values.size(); i++) {
+      int32_t a = values[i];
+      bigint big_a(a);
+      assertTrue(big_a.square() == bigint(to_string(int64_t(a) * int64_t(a))));
+
+      for (uint32_t j = 0; j < values.size(); j++) {
+        int32_t b = values[j];
+        bigint big_b(b);
+
+        assertTrue(big_a + big_b == bigint(to_string(int64_t(a) + int64_t(b))));
+        assertTrue(big_a - big_b == bigint(to_string(int64_t(a) - int64_t(b))));
+        assertTrue(big_a * big_b == bigint(to_string(int64_t(a) * int64_t(b))));
+        assertTrue((big_a == big_b) == (a == b));
+        assertTrue((big_a != big_b) == (a != b));
+        assertTrue((big_a < big_b) == (a < b));
+        assertTrue((big_a <= big_b) == (a <= b));
+        assertTrue((big_a > big_b) == (a > b));
+        assertTrue((big_a >= big_b) == (a >= b));
+
+        if (b != 0) {
+          assertTrue(big_a / b == bigint(to_string(a / b)));
+          assertTrue(big_a % b == a % b);
+          assertTrue((big_a / b) * b + (big_a % b) == big_a);
+          assertTrue(big_a / big_b == bigint(to_string(a / b)));
+          assertTrue(big_a % big_b == bigint(to_string(a % b)));
+          assertTrue((big_a / big_b) * big_b + (big_a % big_b) == big_a);
+        }
+      }
+    }
+
+    vector<int32_t> bases = {-7, -3, -1, 0, 1, 2, 5, 11};
+    for (uint32_t i = 0; i < bases.size(); i++) {
+      int32_t base = bases[i];
+      int64_t expected = 1;
+      for (int power = 0; power <= 8; power++) {
+        assertTrue(bigint(base).expt(power) == bigint(to_string(expected)));
+        expected *= base;
+      }
+    }
+
+    bool negative_exponent_failed = false;
+    try {
+      bigint(2).expt(-1);
+    } catch (range_error &) {
+      negative_exponent_failed = true;
+    }
+    assertTrue(negative_exponent_failed);
+  }
+};
+
 int main(int, char **) {
   TestSuite suite;
   suite.add("Construction", new construction_test());
@@ -275,6 +338,7 @@ int main(int, char **) {
   suite.add("Square root", new sqrt_test());
   suite.add("Comparison", new comparison_test());
   suite.add("Bit size", new bit_size_test());
+  suite.add("Native integer properties", new native_integer_property_test());
 
   suite.run();
   suite.printStatus();

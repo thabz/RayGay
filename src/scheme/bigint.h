@@ -46,6 +46,7 @@ public:
   bigint operator/(int32_t n) const;
   bigint operator/(const bigint &b) const;
   int32_t operator%(int32_t n) const;
+  bigint operator%(const bigint &b) const;
   bool operator==(const bigint &o) const;
   bool operator!=(const bigint &o) const;
   bool operator<(const bigint &o) const;

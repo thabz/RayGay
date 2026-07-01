@@ -414,6 +414,12 @@ int32_t bigint::operator%(int32_t n) const {
   return r;
 }
 
+bigint bigint::operator%(const bigint &denom) const {
+  if (denom.is_zero())
+    throw range_error("Division by zero");
+  return *this - ((*this / denom) * denom);
+}
+
 int bigint::compare(const bigint &b1, const bigint &b2) {
   if (b1.sign > b2.sign) {
     return 1;
@@ -566,21 +572,23 @@ bigint bigint::square() const {
 }
 
 // Returns this raised to the power p
-// TODO: This could be done faster by replacing recursion with a loop and by
-// just using one bigint modified inplace, ie. *= instead of *.
 bigint bigint::expt(int power) const {
-  if (power == 0) {
-    return ONE;
-  } else if (power == 1 || this->is_one()) {
-    return *this;
+  if (power < 0) {
+    throw range_error("Negative exponent");
   }
-  if (power % 2 == 0) {
-    bigint r = this->expt(power / 2);
-    return r.square();
-  } else {
-    bigint r = this->expt(power - 1);
-    return *this * r;
+
+  bigint result = ONE;
+  bigint base = *this;
+  while (power > 0) {
+    if (power % 2 == 1) {
+      result = result * base;
+    }
+    power /= 2;
+    if (power > 0) {
+      base = base.square();
+    }
   }
+  return result;
 }
 
 // Newton's method
