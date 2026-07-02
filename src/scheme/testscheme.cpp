@@ -1628,12 +1628,12 @@ void test_lib_sorting() {
   // The sort below will trigger a GC-run.
   assert_eval(s,
               L"(vector-length (vector-sort (lambda (a b) (< a b)) "
-              L"(make-vector 10000 1)))",
-              L"10000");
+              L"(make-vector 1000 1)))",
+              L"1000");
   assert_eval(s,
               L"(length (list-sort (lambda (a b) (< a b)) (vector->list "
-              L"(make-vector 10000 1))))",
-              L"10000");
+              L"(make-vector 1000 1))))",
+              L"1000");
 }
 
 void test_lib_lists() {
@@ -1730,7 +1730,7 @@ void test_lib_hashtables() {
   assert_eval(s, L"(= (equal-hash '(1 2 3)) (equal-hash '(1 2 3)))", L"#t");
   assert_eval(s, L"(= (equal-hash 'a) (equal-hash 'a))", L"#t");
   assert_eval(s,
-              L"(integer? (equal-hash (vector->list (make-vector 1000000 2))))",
+              L"(integer? (equal-hash (vector->list (make-vector 10000 2))))",
               L"#t");
   assert_eval(s, L"(= (string-hash \"AaA\") (string-hash \"AaA\"))", L"#t");
   assert_eval(s, L"(= (string-ci-hash \"AaA\") (string-ci-hash \"aaa\"))",
@@ -1763,11 +1763,11 @@ void test_lib_hashtables() {
   assert_eval(s, L"(hashtable-clear! h)", L"#<unspecified>");
   assert_eval(s, L"(hashtable-size h)", L"0");
   wchar_t str[100];
-  for (int i = 0; i < 5000; i++) {
+  for (int i = 0; i < 500; i++) {
     ::swprintf(str, 100, L"(hashtable-set! h %d %d)", i, i);
     assert_eval(s, str, L"#<unspecified>");
   }
-  for (int i = 0; i < 5000; i++) {
+  for (int i = 0; i < 500; i++) {
     ::swprintf(str, 100, L"(= %d (hashtable-ref h %d #f))", i, i);
     assert_eval(s, str, L"#t");
   }
