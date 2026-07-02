@@ -13,6 +13,8 @@ Required everywhere:
   - Ninja
   - A C++ compiler with C++11 support
 
+macOS builds require macOS 11.0 or newer.
+
 Linux also needs libpng and libjpeg development headers:
 
   sudo apt-get install cmake ninja-build g++ libpng-dev libjpeg-dev pkg-config

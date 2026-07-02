@@ -26,19 +26,7 @@ Triangle::Triangle(Mesh *m, uint32_t tri_index) : Object(NULL) {
 
 inline CachedVertex *
 TriangleVertexCache::getCachedVertex(const Triangle *triangle) const {
-#ifdef TRIANGLE_USE_PTHREAD_CACHE
-  CachedVertex *cached_vertices =
-      (CachedVertex *)pthread_getspecific(pthread_key);
-  if (cached_vertices == NULL) {
-    cached_vertices = new CachedVertex[CACHE_ENTRIES];
-    for (int i = 0; i < CACHE_ENTRIES; i++) {
-      cached_vertices[i].triangle = NULL;
-    }
-    pthread_setspecific(pthread_key, cached_vertices);
-  }
-#else
   static thread_local CachedVertex cached_vertices[CACHE_ENTRIES];
-#endif
 
   uint32_t key = triangle->_tri_idx & (CACHE_ENTRIES - 1);
   if (cached_vertices[key].triangle == triangle) {
@@ -445,9 +433,3 @@ int Triangle::intersects(const AABox &voxel_bbox, const AABox &obj_bbox) const {
 }
 
 bool Triangle::canSelfshadow() const { return false; }
-
-TriangleVertexCache::TriangleVertexCache() {
-#ifdef TRIANGLE_USE_PTHREAD_CACHE
-  pthread_key_create(&pthread_key, NULL);
-#endif
-}
