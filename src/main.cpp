@@ -69,18 +69,11 @@ using namespace std;
 
 RendererSettings *renderer_settings = RendererSettings::uniqueInstance();
 Scene *scene = new Scene();
-SceneParser *parser = NULL;
+SceneParser *parser = new SceneParser(scene);
 PreviewWindow *preview_window = NULL;
 std::string scenefile;
 
 RendererSettings *getRendererSettings() { return renderer_settings; }
-
-SceneParser *getParser() {
-  if (parser == NULL) {
-    parser = new SceneParser(scene);
-  }
-  return parser;
-}
 
 vector<Renderer *> active_renderers;
 
@@ -253,8 +246,8 @@ void render_frame(string outputfile, int jobs) {
   filename_clean = filename_clean.substr(idx + 1, filename_clean.length());
   chdir(SchemeFilenames::toFilename(cwd).c_str());
 
-  getParser()->parse_file(filename_clean);
-  getParser()->populate(scene, renderersettings);
+  parser->parse_file(filename_clean);
+  parser->populate(scene, renderersettings);
 
   parser_profiler->stop();
 
@@ -422,7 +415,7 @@ void print_usage() {
 void print_version() {
   cout << "Raygay " << VERSION << endl;
   cout << "Copyright (C) 2004-2008 Jesper Christensen" << endl;
-  cout << "   Parser: " << getParser()->version() << endl;
+  cout << "   Parser: " << parser->version() << endl;
   cout << "   Kernel pagesize: " << getpagesize() << " bytes" << endl;
   cout << "   CPUs: " << getNumberOfCPUs() << endl;
   cout << "   Image formats: ";
@@ -476,7 +469,7 @@ int main(int argc, char *argv[]) {
       };
       break;
     case 'e':
-      getParser()->parse_expr(SchemeFilenames::toString(optarg));
+      parser->parse_expr(SchemeFilenames::toString(optarg));
       break;
     case '?':
       cerr << "Unknown option -" << char(optopt) << endl << endl;
