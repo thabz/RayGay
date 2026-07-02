@@ -277,7 +277,6 @@ public:
   static wstring char2charname(wchar_t c);
 
 private:
-  static map<wstring, SchemeObject *> known_symbols;
   static int subtypes_seq;
 };
 

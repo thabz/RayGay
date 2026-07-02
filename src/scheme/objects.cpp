@@ -10,11 +10,13 @@
 #include <string.h>
 #include <sys/mman.h>
 
-// Map of known symbols
-map<wstring, SchemeObject *> SchemeObject::known_symbols;
-
 // Sequence for subtype identities
 int SchemeObject::subtypes_seq = 1;
+
+static map<wstring, SchemeObject *> &knownSymbols() {
+  static map<wstring, SchemeObject *> symbols;
+  return symbols;
+}
 
 //-----------------------------------------------------------
 // Static factory methods
@@ -167,12 +169,13 @@ SchemeObject *SchemeObject::createUnspecified() {
 SchemeObject *SchemeObject::createSymbol(const wchar_t *str) {
   SchemeObject *result;
   wstring strstring = wstring(str);
-  map<wstring, SchemeObject *>::iterator v = known_symbols.find(strstring);
-  if (v == known_symbols.end()) {
+  map<wstring, SchemeObject *> &symbols = knownSymbols();
+  map<wstring, SchemeObject *>::iterator v = symbols.find(strstring);
+  if (v == symbols.end()) {
     result = Heap::getUniqueInstance()->allocate(SchemeObject::SYMBOL);
     result->str = new wchar_t[strstring.size() + 1];
     wcscpy(result->str, str);
-    known_symbols[strstring] = result;
+    symbols[strstring] = result;
     int32_t h = intptr_t(result) & 0xffffffff;
 
 #if 0

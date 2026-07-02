@@ -8,7 +8,8 @@ The sourcecode is released under the GPL. See the file COPYING.
 
 # Get hacking
 
-RayGay builds with CMake. The recommended generator is Ninja.
+RayGay builds with CMake. The recommended generator is Ninja. macOS builds
+require macOS 11.0 or newer.
 
 On macOS with Homebrew:
 

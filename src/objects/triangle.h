@@ -2,7 +2,6 @@
 #define TRIANGLE_H
 
 #include "object.h"
-#include <pthread.h>
 
 class Material;
 class BoundingBox;
@@ -31,11 +30,7 @@ struct CachedVertex {
 
 class TriangleVertexCache {
 public:
-  TriangleVertexCache();
   CachedVertex *getCachedVertex(const Triangle *triangle) const;
-
-private:
-  pthread_key_t pthread_key;
 };
 
 /// The triangle of a Mesh

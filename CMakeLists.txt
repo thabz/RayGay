@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
 
+if(NOT DEFINED CMAKE_OSX_DEPLOYMENT_TARGET OR CMAKE_OSX_DEPLOYMENT_TARGET STREQUAL "")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING
+    "Minimum macOS deployment version" FORCE)
+endif()
+
 project(raygay VERSION 0.7.0 LANGUAGES C CXX)
 
 include(CheckFunctionExists)
@@ -44,6 +49,9 @@ set(HAVE_LONG_DOUBLE_WIDER 1)
 
 if(APPLE)
   set(OS_DARWIN 1)
+  if(CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS 11.0)
+    message(FATAL_ERROR "RayGay requires macOS 11.0 or newer")
+  endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(OS_LINUX 1)
 endif()
