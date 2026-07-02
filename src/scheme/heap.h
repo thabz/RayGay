@@ -69,7 +69,6 @@ private: /* Thread local stuff */
     uint32_t index;
   };
 
-  pthread_key_t local_bank_key;
   pthread_mutex_t mutex_reserve;
 };
 

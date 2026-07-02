@@ -3,6 +3,7 @@
 #define POINTLIGHT_H
 
 #include "lights/lightsource.h"
+#include <stdint.h>
 
 class RGB;
 class Matrix;
@@ -19,7 +20,7 @@ public:
                     uint32_t depth) const;
 
 private:
-  pthread_key_t shadowcache_key;
+  uint64_t shadowcache_id;
 };
 
 #endif

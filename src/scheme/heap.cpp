@@ -22,7 +22,6 @@ Heap::Heap(uint32_t page_size) {
   gc_runs = 0;
 
   pthread_mutex_init(&mutex_reserve, NULL);
-  pthread_key_create(&local_bank_key, NULL);
 
   allocateNewPage();
 }
@@ -49,12 +48,8 @@ void Heap::allocateNewPage() {
 
 SchemeObject *Heap::allocate(SchemeObject::ObjectType type) {
   assert((int)type < 256);
-  ThreadLocalCache *local =
-      (ThreadLocalCache *)pthread_getspecific(local_bank_key);
-  if (local == NULL) {
-    local = new ThreadLocalCache();
-    pthread_setspecific(local_bank_key, local);
-  }
+  static thread_local ThreadLocalCache thread_local_cache;
+  ThreadLocalCache *local = &thread_local_cache;
 
   if (local->index >= SIZE_OF_LOCAL_SLOTS) {
     reserve(local->bank, SIZE_OF_LOCAL_SLOTS);

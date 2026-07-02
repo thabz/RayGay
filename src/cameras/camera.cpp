@@ -4,7 +4,23 @@
 #include "math/functions.h"
 #include "ray.h"
 
+#include <atomic>
+#include <map>
+
+namespace {
+uint64_t nextCameraDofQmcId() {
+  static std::atomic<uint64_t> next_id(0);
+  return ++next_id;
+}
+
+std::map<uint64_t, QMCSequence *> &cameraDofQmcs() {
+  static thread_local std::map<uint64_t, QMCSequence *> qmcs;
+  return qmcs;
+}
+} // namespace
+
 Camera::Camera() {
+  dof_qmc_id = nextCameraDofQmcId();
   aa_enabled = false;
   dof_enabled = false;
   zoom_enabled = false;
@@ -24,6 +40,7 @@ Camera::Camera() {
  */
 Camera::Camera(Vector position, Vector lookAt, Vector up, double fieldOfView,
                int width, int height) {
+  dof_qmc_id = nextCameraDofQmcId();
   aa_enabled = false;
   dof_enabled = false;
   zoom_enabled = false;
@@ -37,8 +54,12 @@ Camera::Camera(Vector position, Vector lookAt, Vector up, double fieldOfView,
 }
 
 Camera::~Camera() {
-  if (dof_enabled)
-    delete get_dof_qmc();
+  std::map<uint64_t, QMCSequence *> &qmcs = cameraDofQmcs();
+  std::map<uint64_t, QMCSequence *>::iterator i = qmcs.find(dof_qmc_id);
+  if (i != qmcs.end()) {
+    delete i->second;
+    qmcs.erase(i);
+  }
 }
 
 void Camera::init() {
@@ -73,7 +94,6 @@ void Camera::enableDoF(double aperture, int samples, const Vector &focalpoint) {
   this->dof_samples = samples;
   this->dof_enabled = true;
   this->dof_sample_count = 0;
-  pthread_key_create(&dof_qmc_key, NULL);
 }
 
 void Camera::transform(const Matrix &m) {
@@ -150,12 +170,15 @@ void Camera::resetQMC() {
 }
 
 QMCSequence *Camera::get_dof_qmc() {
-  QMCSequence *qmc = (QMCSequence *)pthread_getspecific(dof_qmc_key);
-  if (qmc == NULL) {
+  std::map<uint64_t, QMCSequence *> &qmcs = cameraDofQmcs();
+  std::map<uint64_t, QMCSequence *>::iterator i = qmcs.find(dof_qmc_id);
+  if (i == qmcs.end()) {
+    QMCSequence *qmc;
     qmc = new Halton(2, 2);
-    pthread_setspecific(dof_qmc_key, qmc);
+    qmcs[dof_qmc_id] = qmc;
+    return qmc;
   }
-  return qmc;
+  return i->second;
 }
 
 void Camera::setZoom(const Vector2 &pos, double width) {

@@ -3,6 +3,7 @@
 
 #include "lights/lightsource.h"
 #include "lights/shadowcache.h"
+#include <stdint.h>
 #include <vector>
 
 class Object;
@@ -21,7 +22,7 @@ public:
 
 private:
   std::vector<Vector> positions;
-  pthread_key_t shadowcaches_key;
+  uint64_t shadowcache_id;
   double radius;
   uint32_t num;
 

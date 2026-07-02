@@ -3,16 +3,30 @@
 #include "r6rs-lib-lists.h"
 #include "scheme.h"
 
+#include <atomic>
 #include <iostream>
+#include <map>
 #include <vector>
 
 using namespace std;
+
+namespace {
+uint64_t nextInterpreterStateId() {
+  static atomic<uint64_t> next_id(0);
+  return ++next_id;
+}
+
+map<uint64_t, Interpreter::State *> &threadLocalStates() {
+  static thread_local map<uint64_t, Interpreter::State *> states;
+  return states;
+}
+} // namespace
 
 //------------------------------------------------------------------------
 // Interpreter
 //------------------------------------------------------------------------
 Interpreter::Interpreter(Scheme *scheme) {
-  pthread_key_create(&state_key, NULL);
+  state_id = nextInterpreterStateId();
   this->scheme = scheme;
 }
 
@@ -107,16 +121,18 @@ SchemeObject *Interpreter::interpret(SchemeObject *parsetree,
 }
 
 Interpreter::State *Interpreter::getState() {
-  State *state = (State *)pthread_getspecific(state_key);
-  if (state == NULL) {
+  map<uint64_t, Interpreter::State *> &states = threadLocalStates();
+  map<uint64_t, Interpreter::State *>::iterator i = states.find(state_id);
+  if (i == states.end()) {
     // TODO: Register the new state in a list.
     // We need states of all threads when calling
     // for garbage-collection.
-    state = new Interpreter::State();
+    State *state = new Interpreter::State();
     state->scheme = scheme;
-    pthread_setspecific(state_key, state);
+    states[state_id] = state;
+    return state;
   }
-  return state;
+  return i->second;
 }
 
 // A popular method for achieving proper tail recursion in a non-tail-recursive

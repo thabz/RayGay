@@ -4,14 +4,28 @@
 #include "math/functions.h"
 #include "math/halton.h"
 
+#include <atomic>
+#include <map>
+
 class KdTree;
+
+namespace {
+uint64_t nextSkylightShadowCacheId() {
+  static std::atomic<uint64_t> next_id(0);
+  return ++next_id;
+}
+
+std::map<uint64_t, std::vector<ShadowCache> > &skylightShadowCaches() {
+  static thread_local std::map<uint64_t, std::vector<ShadowCache> > caches;
+  return caches;
+}
+} // namespace
 
 Skylight::Skylight(double radius, uint32_t num) : Lightsource(Vector(0, 0, 0)) {
   this->radius = radius;
   this->num = num;
+  this->shadowcache_id = nextSkylightShadowCacheId();
   Halton qmc = Halton(2, 2);
-
-  pthread_key_create(&shadowcaches_key, NULL);
 
   for (int i = 0; i < num; i++) {
     Vector pos = Math::perturbVector(Vector(0, 1, 0), DEG2RAD(89), &qmc);
@@ -65,11 +79,10 @@ void Skylight::getSingleLightinfo(const Intersection &inter, KdTree *space,
 
 bool Skylight::probe(uint32_t i, const Ray &ray, double dist, uint32_t depth,
                      KdTree *space) const {
-  std::vector<ShadowCache> *shadowcaches =
-      (std::vector<ShadowCache> *)pthread_getspecific(shadowcaches_key);
-  if (shadowcaches == NULL) {
-    shadowcaches = new std::vector<ShadowCache>(num);
-    pthread_setspecific(shadowcaches_key, shadowcaches);
+  std::vector<ShadowCache> &shadowcaches =
+      skylightShadowCaches()[shadowcache_id];
+  if (shadowcaches.size() != num) {
+    shadowcaches = std::vector<ShadowCache>(num);
   }
-  return (*shadowcaches)[i].occluded(ray, dist, depth, space);
+  return shadowcaches[i].occluded(ray, dist, depth, space);
 }
