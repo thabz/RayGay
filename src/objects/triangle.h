@@ -2,7 +2,14 @@
 #define TRIANGLE_H
 
 #include "object.h"
+
+#if defined(__APPLE__) && defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) && __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1070
+#define TRIANGLE_USE_PTHREAD_CACHE
+#endif
+
+#ifdef TRIANGLE_USE_PTHREAD_CACHE
 #include <pthread.h>
+#endif
 
 class Material;
 class BoundingBox;
@@ -35,7 +42,9 @@ public:
   CachedVertex *getCachedVertex(const Triangle *triangle) const;
 
 private:
+#ifdef TRIANGLE_USE_PTHREAD_CACHE
   pthread_key_t pthread_key;
+#endif
 };
 
 /// The triangle of a Mesh
