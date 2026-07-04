@@ -3,6 +3,7 @@
 #endif
 
 #include <cassert>
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
 
@@ -166,6 +167,12 @@ public:
     assertEqualF(s.signedDistance(Vector(0, 0, -8)), -2);
     assertEqualF(s.signedDistance(Vector(0, 0, -12)), 2);
     assertEqualF(s.signedDistance(Vector(0, 12, 0)), 2);
+
+    Vector2 uv = s.getUV(
+        Vector(0.73386099292106322, -0.67929967103547995,
+               -2.3212565753993885e-09));
+    assertTrue(isfinite(uv[0]));
+    assertTrue(isfinite(uv[1]));
 
     s = Sphere(Vector(0, 0, 0), 60.0, m);
 
