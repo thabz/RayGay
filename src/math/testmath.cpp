@@ -509,6 +509,9 @@ public:
     assertTrue(Math::clamp(1.0) == 1.0);
     assertTrue(Math::clamp(-0.5) == 0.0);
     assertTrue(Math::clamp(1.5) == 1.0);
+    assertTrue(Math::clamp(0.5, -1.0, 1.0) == 0.5);
+    assertTrue(Math::clamp(-1.5, -1.0, 1.0) == -1.0);
+    assertTrue(Math::clamp(1.5, -1.0, 1.0) == 1.0);
   }
 };
 

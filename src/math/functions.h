@@ -19,6 +19,8 @@ public:
   static double bernsteinPolynomial(uint32_t i, uint32_t n, double t);
   /// Clamps a to the [0,1] interval.
   static double clamp(double a);
+  /// Clamps a to the [min,max] interval.
+  static double clamp(double a, double min, double max);
 
   /// Solves quartic equation
   static int solveQuartic(double A, double B, double C, double D,
@@ -51,10 +53,14 @@ public:
 };
 
 inline double Math::clamp(double a) {
-  if (a > double(1)) {
-    return double(1);
-  } else if (a < double(0)) {
-    return double(0);
+  return clamp(a, double(0), double(1));
+}
+
+inline double Math::clamp(double a, double min, double max) {
+  if (a > max) {
+    return max;
+  } else if (a < min) {
+    return min;
   } else {
     return a;
   }
