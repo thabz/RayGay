@@ -5,7 +5,7 @@
 #include "objects.h"
 #include "scheme.h"
 #include <csetjmp>
-#include <pthread.h>
+#include <stdint.h>
 #include <vector>
 
 #define INTERPRETER_MAX_STACK_SIZE 10000
@@ -38,7 +38,7 @@ public:
   State *getState();
 
 private:
-  pthread_key_t state_key;
+  uint64_t state_id;
   Scheme *scheme;
 };
 

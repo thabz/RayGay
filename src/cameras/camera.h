@@ -6,6 +6,7 @@
 #include "math/vector.h"
 #include "math/vector2.h"
 #include "samplers/sampler.h"
+#include <stdint.h>
 
 class Ray;
 
@@ -86,7 +87,7 @@ private:
   void init();
   SamplerFactory *sampler_factory;
   QMCSequence *get_dof_qmc();
-  pthread_key_t dof_qmc_key;
+  uint64_t dof_qmc_id;
   double aspect_ratio; ///< height / width in output image
   Vector2 zoom_pos;
   double zoom_width;

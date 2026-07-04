@@ -5,21 +5,31 @@
 #include "lights/shadowcache.h"
 #include "objects/object.h"
 
+#include <atomic>
+#include <map>
+
 class KdTree;
 
+namespace {
+uint64_t nextPointlightShadowCacheId() {
+  static std::atomic<uint64_t> next_id(0);
+  return ++next_id;
+}
+
+std::map<uint64_t, ShadowCache> &pointlightShadowCaches() {
+  static thread_local std::map<uint64_t, ShadowCache> caches;
+  return caches;
+}
+} // namespace
+
 Pointlight::Pointlight(const Vector &pos) : Lightsource(pos) {
-  pthread_key_create(&shadowcache_key, NULL);
+  shadowcache_id = nextPointlightShadowCacheId();
 }
 
 void Pointlight::getLightinfo(const Intersection &inter, KdTree *space,
                               Lightinfo *info, uint32_t depth) const {
 
-  ShadowCache *shadowcache =
-      (ShadowCache *)pthread_getspecific(shadowcache_key);
-  if (shadowcache == NULL) {
-    shadowcache = new ShadowCache();
-    pthread_setspecific(shadowcache_key, shadowcache);
-  }
+  ShadowCache *shadowcache = &pointlightShadowCaches()[shadowcache_id];
 
   // Move intersection point ESPILON along surface normal to
   // avoid selfshadowing.

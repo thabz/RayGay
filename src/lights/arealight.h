@@ -3,6 +3,7 @@
 
 #include "lights/lightsource.h"
 #include "lights/shadowcache.h"
+#include <stdint.h>
 #include <vector>
 
 class Circle;
@@ -26,7 +27,7 @@ private:
   std::vector<Circle *> circles;
   std::vector<double> ts;
   double jitter;
-  pthread_key_t shadowcaches_key;
+  uint64_t shadowcache_id;
   uint32_t num;
 
   Vector getPosition(uint32_t i) const;

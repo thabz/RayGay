@@ -7,7 +7,22 @@
 #include "math/vector.h"
 #include "paths/circle.h"
 
+#include <atomic>
+#include <map>
+
 class KdTree;
+
+namespace {
+uint64_t nextArealightShadowCacheId() {
+  static std::atomic<uint64_t> next_id(0);
+  return ++next_id;
+}
+
+std::map<uint64_t, std::vector<ShadowCache> > &arealightShadowCaches() {
+  static thread_local std::map<uint64_t, std::vector<ShadowCache> > caches;
+  return caches;
+}
+} // namespace
 
 /**
  * Constructs an area light
@@ -25,8 +40,7 @@ Arealight::Arealight(const Vector &pos, const Vector &dir, double radius,
 
   this->num = num;
   this->jitter = jitter;
-
-  pthread_key_create(&shadowcaches_key, NULL);
+  this->shadowcache_id = nextArealightShadowCacheId();
 
   /* De N punkter skal placeres på N koncentriske bånd omkring P. Disse
    * N bånd skal have samme areal A, så punkterne er dækker cirklens
@@ -105,14 +119,13 @@ bool Arealight::probeSublight(uint32_t i, const Intersection &inter,
 
   Ray ray_to_light = Ray(surface_point, direction_to_light, -1.0);
 
-  std::vector<ShadowCache> *shadowcaches =
-      (std::vector<ShadowCache> *)pthread_getspecific(shadowcaches_key);
-  if (shadowcaches == NULL) {
-    shadowcaches = new std::vector<ShadowCache>(num);
-    pthread_setspecific(shadowcaches_key, shadowcaches);
+  std::vector<ShadowCache> &shadowcaches =
+      arealightShadowCaches()[shadowcache_id];
+  if (shadowcaches.size() != num) {
+    shadowcaches = std::vector<ShadowCache>(num);
   }
 
   bool occluded =
-      (*shadowcaches)[i].occluded(ray_to_light, dist_to_light, depth, space);
+      shadowcaches[i].occluded(ray_to_light, dist_to_light, depth, space);
   return occluded;
 }
