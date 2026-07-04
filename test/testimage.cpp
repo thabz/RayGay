@@ -260,6 +260,36 @@ public:
   }
 };
 
+class test_openexr : public Test {
+public:
+  void run() {
+    RGBA bright = RGBA(4.0, 0.5, 12.0, 0.75);
+    RGBA dim = RGBA(0.125, 2.0, 0.25, 1.0);
+
+    Image *img = new ImageImpl<float, 4>(4, 3);
+    img->setRGBA(0, 0, bright);
+    img->setRGBA(3, 2, dim);
+
+    img->save(getLoadPrefix() + "/test.exr");
+    Image *img2 = Image::load(getLoadPrefix() + "/test.exr");
+
+    assertTrue(img2->getWidth() == 4);
+    assertTrue(img2->getHeight() == 3);
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(0, 0).r(), bright.r()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(0, 0).g(), bright.g()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(0, 0).b(), bright.b()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(0, 0).a(), bright.a()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(3, 2).r(), dim.r()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(3, 2).g(), dim.g()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(3, 2).b(), dim.b()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(3, 2).a(), dim.a()));
+
+    ::remove((getLoadPrefix() + "/test.exr").c_str());
+    delete img;
+    delete img2;
+  }
+};
+
 int main(int argc, char *argv[]) {
   TestSuite suite;
   suite.add("RGBA", new test_rgba());
@@ -272,6 +302,9 @@ int main(int argc, char *argv[]) {
   }
   if (Image::supportsFormat(".jpg")) {
     suite.add("JPEG", new test_jpg());
+  }
+  if (Image::supportsFormat(".exr")) {
+    suite.add("OpenEXR", new test_openexr());
   }
   suite.run();
   suite.printStatus();

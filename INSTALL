@@ -15,13 +15,14 @@ Required everywhere:
 
 macOS builds require macOS 11.0 or newer.
 
-Linux also needs libpng and libjpeg development headers:
+Linux also needs libpng and libjpeg development headers. OpenEXR is optional,
+but enables `.exr` HDR image input and output:
 
-  sudo apt-get install cmake ninja-build g++ libpng-dev libjpeg-dev pkg-config
+  sudo apt-get install cmake ninja-build g++ libpng-dev libjpeg-dev libopenexr-dev pkg-config
 
 On macOS with Homebrew:
 
-  brew install cmake ninja pkg-config
+  brew install cmake ninja pkg-config openexr
 
 PNG and JPEG libraries are optional on macOS because RayGay can use Apple's
 ApplicationServices image loading path there. Install them if you want CMake to
@@ -52,6 +53,7 @@ RayGay detects some optional features automatically:
 
   - readline support for raygay-repl, when readline headers and library exist
   - GTK 2 preview window support, when gtk+-2.0 is available through pkg-config
+  - OpenEXR `.exr` image support, when OpenEXR is available
 
 MPI support is off by default. Enable it explicitly:
 

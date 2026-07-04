@@ -92,6 +92,7 @@ png_set_text(png_ptr, info_ptr, text_ptr, 3);
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
       RGBA pixel = image->getRGBA(x, y);
+      pixel = pixel.clamped();
       row[x * 4 + 0] = int(pixel.r() * 255);
       row[x * 4 + 1] = int(pixel.g() * 255);
       row[x * 4 + 2] = int(pixel.b() * 255);

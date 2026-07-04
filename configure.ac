@@ -83,6 +83,11 @@ AM_CONDITIONAL(OS_DARWIN, test "x$target_os" = "xDarwin")
 dnl -------------------------------------------------
 dnl Image libs
 dnl -------------------------------------------------
+PKG_PROG_PKG_CONFIG
+PKG_CHECK_MODULES([OPENEXR], [OpenEXR],
+  [AC_DEFINE([HAVE_OPENEXR], [1], [Define if OpenEXR is available])],
+  [:])
+
 if test "x$target_os" = "xLinux"; then
    AC_CHECK_LIB(jpeg, jpeg_read_header,JPEG_LIBS="-ljpeg")
    AC_CHECK_LIB(png, png_read_info, PNG_LIBS="-lpng")
@@ -146,7 +151,6 @@ AS_IF([test "x$with_readline" != xno],
 dnl -------------------------------------------------
 dnl Check for GTK
 dnl -------------------------------------------------
-PKG_PROG_PKG_CONFIG
 PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 1.3],[gtk_found="yes"],[gtk_found="no"]) 
 AC_MSG_RESULT([$gtk_found])
 if test "x$gtk_found" = "xyes"; then

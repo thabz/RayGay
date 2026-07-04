@@ -14,6 +14,7 @@
 #cmakedefine HAVE_LONG_DOUBLE_WIDER 1
 #cmakedefine HAVE_MPI 1
 #cmakedefine HAVE_NDIR_H 1
+#cmakedefine HAVE_OPENEXR 1
 #cmakedefine HAVE_PNG_H 1
 #cmakedefine HAVE_PTHREAD_H 1
 #cmakedefine HAVE_STDINT_H 1

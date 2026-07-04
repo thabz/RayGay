@@ -13,11 +13,14 @@ require macOS 11.0 or newer.
 
 On macOS with Homebrew:
 
-    brew install cmake ninja pkg-config
+    brew install cmake ninja pkg-config openexr
 
 On Ubuntu/Debian:
 
-    sudo apt-get install cmake ninja-build g++ libjpeg-dev libpng-dev pkg-config
+    sudo apt-get install cmake ninja-build g++ libjpeg-dev libpng-dev libopenexr-dev pkg-config
+
+OpenEXR is optional. When found, RayGay can load and save `.exr` images with
+HDR values preserved.
 
 The C++ source code is in `src`. Compile with:
 
