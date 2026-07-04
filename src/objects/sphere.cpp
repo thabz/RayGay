@@ -6,6 +6,7 @@
 #include "image/rgb.h"
 #include "intersection.h"
 #include "materials/material.h"
+#include "math/functions.h"
 #include "math/matrix.h"
 #include "math/vector2.h"
 #include "object.h"
@@ -13,16 +14,6 @@
 #include "sphere.h"
 
 using namespace std;
-
-static inline double clampAcosArgument(double x) {
-  if (x < -1.0) {
-    return -1.0;
-  }
-  if (x > 1.0) {
-    return 1.0;
-  }
-  return x;
-}
 
 Sphere::Sphere(const Vector &c, double r, const Material *mat) : Solid(mat) {
   assert(r > 0);
@@ -161,15 +152,16 @@ AABox Sphere::getContainedBox() const {
 // See http://astronomy.swin.edu.au/~pbourke/texture/spheremap/
 Vector2 Sphere::getUV(const Vector &p) const {
   double u, v;
-  v = acos(clampAcosArgument(p[1])) / M_PI;
+  v = acos(Math::clamp(p[1], -1.0, 1.0)) / M_PI;
   if (IS_ZERO(sin((v)*M_PI))) {
     u = double(0.5);
     return Vector2(u, v);
   }
   if (p[2] <= 0.0) {
-    u = acos(clampAcosArgument(p[0] / (sin((v)*M_PI)))) / M_2PI;
+    u = acos(Math::clamp(p[0] / (sin((v)*M_PI)), -1.0, 1.0)) / M_2PI;
   } else {
-    u = 1 - (acos(clampAcosArgument(p[0] / (sin((v)*M_PI)))) / M_2PI);
+    u =
+        1 - (acos(Math::clamp(p[0] / (sin((v)*M_PI)), -1.0, 1.0)) / M_2PI);
   }
   return Vector2(u, v);
 }
