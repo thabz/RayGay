@@ -7,6 +7,7 @@
 #include "exception.h"
 #include "image/imageimpl.h"
 #include "image/imageio_openexr.h"
+#include "math/functions.h"
 
 #include <ImfArray.h>
 #include <ImfRgbaFile.h>
@@ -26,7 +27,8 @@ void OpenExrIO::save(const Image *const image,
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
       RGBA color = image->getRGBA(x, y);
-      pixels[y][x] = Rgba(color.r(), color.g(), color.b(), color.a());
+      pixels[y][x] = Rgba(color.r(), color.g(), color.b(),
+                          Math::clamp(color.a()));
     }
   }
 
