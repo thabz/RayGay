@@ -165,6 +165,18 @@ public:
     delete img;
     delete img2;
 
+    // LDR writers must clamp alpha before premultiplying. On macOS this
+    // exercises the same DarwinIO path used for JPEG output.
+    color = RGBA(0.1, 0.2, 0.3, 3.0);
+    img = new ImageImpl<double, 4>(1, 1);
+    img->setRGBA(0, 0, color);
+    img->save(getLoadPrefix() + "/test-clamped.png");
+    img2 = Image::load(getLoadPrefix() + "/test-clamped.png");
+    assertEqualColor(img2->getRGBA(0, 0), color.clamped());
+    ::remove((getLoadPrefix() + "/test-clamped.png").c_str());
+    delete img;
+    delete img2;
+
     // Load 24 bit png
     img = Image::load(getLoadPrefix() + "/gfx/rgb.png");
     img->save(getLoadPrefix() + "/rgb-kaj.png");

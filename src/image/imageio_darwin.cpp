@@ -28,7 +28,7 @@ void DarwinIO::save(const Image *const image,
   for (uint32_t y = 0; y < h; y++) {
     for (uint32_t x = 0; x < w; x++) {
       RGBA c = image->getRGBA(x, y);
-      c.clip();
+      c = c.clamped();
       data[4 * (x + y * w) + 0] = uint8_t(c.r() * c.a() * 255.0);
       data[4 * (x + y * w) + 1] = uint8_t(c.g() * c.a() * 255.0);
       data[4 * (x + y * w) + 2] = uint8_t(c.b() * c.a() * 255.0);
