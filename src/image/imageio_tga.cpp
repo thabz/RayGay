@@ -45,6 +45,7 @@ void TgaIO::save(const Image *const image, FILE *outfile) const {
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
       color = image->getRGBA(x, (height - 1) - y);
+      color = color.clamped();
       bytes[4 * (x + y * width) + 0] = (uint8_t)(floor(color.b() * 255 + 0.5));
       bytes[4 * (x + y * width) + 1] = (uint8_t)(floor(color.g() * 255 + 0.5));
       bytes[4 * (x + y * width) + 2] = (uint8_t)(floor(color.r() * 255 + 0.5));

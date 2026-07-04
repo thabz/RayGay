@@ -9,6 +9,7 @@
 #include "image/imageio_darwin.h"
 #include "image/imageio_hdri.h"
 #include "image/imageio_jpeg.h"
+#include "image/imageio_openexr.h"
 #include "image/imageio_png.h"
 #include "image/imageio_tga.h"
 #include "math/vector2.h"
@@ -72,6 +73,13 @@ ImageIO *getImageIO(const std::string &filename) {
   } else if (filename.find(".hdr") != string::npos ||
              filename.find(".HDR") != string::npos) {
     io = new HdriIO();
+  } else if (filename.find(".exr") != string::npos ||
+             filename.find(".EXR") != string::npos) {
+#ifdef HAVE_OPENEXR
+    io = new OpenExrIO();
+#else
+    throw_exception("Support for OpenEXR-files is not compiled in.");
+#endif
 #ifdef OS_DARWIN
   } else if (filename.find(".jp2") != string::npos ||
              filename.find(".JP2") != string::npos) {
@@ -113,6 +121,8 @@ std::vector<std::string> Image::supportedFormats() {
     result.push_back("JPEG2000");
   if (supportsFormat(".hdr"))
     result.push_back("HDRI");
+  if (supportsFormat(".exr"))
+    result.push_back("OpenEXR");
   return result;
 }
 
@@ -120,7 +130,6 @@ std::vector<std::string> Image::supportedFormats() {
  * Writes the image into a  24 bit uncompressed tga-file
  */
 void Image::save(const std::string &filename) {
-  clipColors();
   ImageIO *io = getImageIO(filename);
   io->save(this, filename);
   delete io;

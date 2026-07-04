@@ -165,6 +165,18 @@ public:
     delete img;
     delete img2;
 
+    // LDR writers must clamp alpha before premultiplying. On macOS this
+    // exercises the same DarwinIO path used for JPEG output.
+    color = RGBA(0.1, 0.2, 0.3, 3.0);
+    img = new ImageImpl<double, 4>(1, 1);
+    img->setRGBA(0, 0, color);
+    img->save(getLoadPrefix() + "/test-clamped.png");
+    img2 = Image::load(getLoadPrefix() + "/test-clamped.png");
+    assertEqualColor(img2->getRGBA(0, 0), color.clamped());
+    ::remove((getLoadPrefix() + "/test-clamped.png").c_str());
+    delete img;
+    delete img2;
+
     // Load 24 bit png
     img = Image::load(getLoadPrefix() + "/gfx/rgb.png");
     img->save(getLoadPrefix() + "/rgb-kaj.png");
@@ -260,6 +272,36 @@ public:
   }
 };
 
+class test_openexr : public Test {
+public:
+  void run() {
+    RGBA bright = RGBA(4.0, 0.5, 12.0, 4.0);
+    RGBA dim = RGBA(0.125, 2.0, 0.25, 1.0);
+
+    Image *img = new ImageImpl<float, 4>(4, 3);
+    img->setRGBA(0, 0, bright);
+    img->setRGBA(3, 2, dim);
+
+    img->save(getLoadPrefix() + "/test.exr");
+    Image *img2 = Image::load(getLoadPrefix() + "/test.exr");
+
+    assertTrue(img2->getWidth() == 4);
+    assertTrue(img2->getHeight() == 3);
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(0, 0).r(), bright.r()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(0, 0).g(), bright.g()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(0, 0).b(), bright.b()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(0, 0).a(), 1.0));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(3, 2).r(), dim.r()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(3, 2).g(), dim.g()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(3, 2).b(), dim.b()));
+    assertTrue(IS_SORTA_EQUAL(img2->getRGBA(3, 2).a(), dim.a()));
+
+    ::remove((getLoadPrefix() + "/test.exr").c_str());
+    delete img;
+    delete img2;
+  }
+};
+
 int main(int argc, char *argv[]) {
   TestSuite suite;
   suite.add("RGBA", new test_rgba());
@@ -272,6 +314,9 @@ int main(int argc, char *argv[]) {
   }
   if (Image::supportsFormat(".jpg")) {
     suite.add("JPEG", new test_jpg());
+  }
+  if (Image::supportsFormat(".exr")) {
+    suite.add("OpenEXR", new test_openexr());
   }
   suite.run();
   suite.printStatus();

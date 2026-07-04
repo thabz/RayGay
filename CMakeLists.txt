@@ -57,6 +57,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 endif()
 
 find_package(Threads REQUIRED)
+find_package(OpenEXR CONFIG QUIET)
 if(APPLE)
   find_package(PNG QUIET)
   find_package(JPEG QUIET)
@@ -68,6 +69,7 @@ endif()
 set(HAVE_PNG_H ${PNG_FOUND})
 set(HAVE_JPEGLIB_H ${JPEG_FOUND})
 set(HAVE_PTHREAD_H ${CMAKE_USE_PTHREADS_INIT})
+set(HAVE_OPENEXR ${OpenEXR_FOUND})
 
 if(UNIX AND NOT APPLE)
   find_library(MATH_LIBRARY m)
@@ -229,6 +231,7 @@ set(RAYGAY_TRACER_SOURCES
   src/image/imageio.cpp
   src/image/imageio_tga.cpp
   src/image/imageio_hdri.cpp
+  src/image/imageio_openexr.cpp
   src/image/imageio_jpeg.cpp
   src/image/imageio_png.cpp
   src/image/imageio_darwin.cpp
@@ -325,6 +328,9 @@ if(PNG_FOUND)
 endif()
 if(JPEG_FOUND)
   target_link_libraries(raygay_tracer PUBLIC JPEG::JPEG)
+endif()
+if(OpenEXR_FOUND)
+  target_link_libraries(raygay_tracer PUBLIC OpenEXR::OpenEXR)
 endif()
 
 set(RAYGAY_HTTP_SOURCES
