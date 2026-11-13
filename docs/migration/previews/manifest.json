@@ -1,0 +1,70 @@
+{
+  "reference_revision": "d6ec6b2baa5388fab032b8c2267184978c2f17ad",
+  "width": 128,
+  "height": 96,
+  "aa": 0,
+  "threads": 1,
+  "seed": 1,
+  "pairs": [
+    {
+      "source": "scenes/old/egg-chair.gay",
+      "images": {
+        "before": {
+          "file": "egg-chair-before.png",
+          "sha256": "f6fc2a170a79537fe1c941b5a186c94589bddddc843e29e79588bf70ab4bc5cb",
+          "kd_objects": 2894
+        },
+        "after": {
+          "file": "egg-chair-after.png",
+          "sha256": "ccb16ce17a9615716396a1682d5d96fea19c2938c46149c78654ce893d489469",
+          "kd_objects": 2894
+        }
+      }
+    },
+    {
+      "source": "scenes/old/staircase.gay",
+      "images": {
+        "before": {
+          "file": "staircase-before.png",
+          "sha256": "0d50e609f35ef74198380e605efa126315988b012f4e5c23dea627300149a2e2",
+          "kd_objects": 2056
+        },
+        "after": {
+          "file": "staircase-after.png",
+          "sha256": "647e01910dbf6188f25ce5f27cec072e49968293c1e70a8e46606046c032e807",
+          "kd_objects": 2056
+        }
+      }
+    },
+    {
+      "source": "scenes/old/elastic-ball.gay",
+      "images": {
+        "before": {
+          "file": "elastic-ball-before.png",
+          "sha256": "797702e61600a5c744ca3056c7de44b4302d94ec3990467689a2f7e1667bb1e4",
+          "kd_objects": 240002
+        },
+        "after": {
+          "file": "elastic-ball-after.png",
+          "sha256": "178a3d52f3d386b4a3c2a2a20a60e77759db84b0dae509400e0fe2587f9f8d18",
+          "kd_objects": 240002
+        }
+      }
+    },
+    {
+      "source": "scenes/old/greek-temple.gay",
+      "images": {
+        "before": {
+          "file": "greek-temple-before.png",
+          "sha256": "642bf56d5d0c70c1cf705313c962ecce5192b185c103a72e6ce8b35c06efaab3",
+          "kd_objects": 1020
+        },
+        "after": {
+          "file": "greek-temple-after.png",
+          "sha256": "df18924d419454f18fa6efad531210dd284a85de8452d07cfa55531e42e552c0",
+          "kd_objects": 1020
+        }
+      }
+    }
+  ]
+}
