@@ -27,6 +27,7 @@
 #include "objects/sdf_object.h"
 #include "objects/solidbox.h"
 #include "objects/sphere.h"
+#include "objects/superellipsoid.h"
 #include "objects/text.h"
 #include "objects/torus.h"
 #include "objects/transformedinstance.h"
@@ -34,11 +35,67 @@
 #include "parser/schemeparametrizedsurface.h"
 
 #include <vector>
+#include <cmath>
+#include <limits>
 
 Scheme *SceneObjectFactory::scheme;
 
 SchemeObject *s_sceneobject_p(Scheme *scheme, SchemeObject *object) {
   return isWrappedObjectType(object, SCENEOBJECT);
+}
+
+SchemeObject *legacy_repeat_count(Scheme *scheme, SchemeObject *s_count) {
+  double value = safe_scm2double(s_count, 1, L"legacy-repeat-count");
+  if (!std::isfinite(value) || value < std::numeric_limits<int>::min() ||
+      value > std::numeric_limits<int>::max())
+    throw scheme_exception(L"legacy-repeat-count", L"Repeat count out of range");
+  int count = static_cast<int>(value);
+  if (count < 0)
+    throw scheme_exception(L"legacy-repeat-count", L"Cannot repeat a negative number of times");
+  return int2scm(count);
+}
+
+SchemeObject *make_superellipsoid(Scheme *scheme, SchemeObject *s_n1,
+                                  SchemeObject *s_n2, SchemeObject *s_steps,
+                                  SchemeObject *s_accuracy, SchemeObject *s_material) {
+  const wchar_t *proc = L"make-superellipsoid";
+  double n1 = safe_scm2double(s_n1, 1, proc);
+  double n2 = safe_scm2double(s_n2, 2, proc);
+  int steps = safe_scm2int(s_steps, 3, proc);
+  double accuracy = safe_scm2double(s_accuracy, 4, proc);
+  Material *material = scm2material(s_material, proc, 5);
+  return sceneobject2scm(new SuperEllipsoid(n1, n2, steps, accuracy, material));
+}
+
+SchemeObject *legacy_blob(Scheme *scheme, SchemeObject *s_iso,
+                          SchemeObject *s_weight, SchemeObject *s_steps,
+                          SchemeObject *s_accuracy, SchemeObject *s_material,
+                          SchemeObject *s_spheres) {
+  const wchar_t *proc = L"legacy-blob";
+  double iso = safe_scm2double(s_iso, 1, proc);
+  double weight = safe_scm2double(s_weight, 2, proc);
+  int steps = safe_scm2int(s_steps, 3, proc);
+  double accuracy = safe_scm2double(s_accuracy, 4, proc);
+  Material *material = scm2material(s_material, proc, 5);
+  std::vector<Sphere *> spheres;
+  while (s_spheres != S_EMPTY_LIST) {
+    assert_arg_pair_type(proc, 6, s_spheres);
+    auto sphere = dynamic_cast<Sphere *>(scm2sceneobject(i_car(s_spheres), proc, 6));
+    if (!sphere) throw scheme_exception(proc, L"Expected sphere atoms");
+    spheres.push_back(sphere);
+    s_spheres = i_cdr(s_spheres);
+  }
+  auto blob = new Blob(iso, steps, accuracy, material);
+  for (auto sphere : spheres)
+    blob->addAtom(sphere->getCenter(), sphere->getRadius(), weight);
+  return sceneobject2scm(blob);
+}
+
+// Legacy named objects have value semantics: transformation must not mutate
+// the saved prototype. Lists are copied recursively by the migration helper.
+SchemeObject *scene_object_copy(Scheme *scheme, SchemeObject *s_object) {
+  SceneObject *object = scm2sceneobject(s_object, L"scene-object-copy", 1);
+  return sceneobject2scm(object->clone());
 }
 
 SchemeObject *make_sphere(Scheme *scheme, SchemeObject *s_center,
@@ -722,6 +779,13 @@ void SceneObjectFactory::register_procs(Scheme *s) {
   scheme = s;
   scheme->assign(L"sceneobject?", 1, 0, 0,
                  (SchemeObject * (*)()) s_sceneobject_p);
+  scheme->assign(L"legacy-repeat-count", 1, 0, 0,
+                 (SchemeObject * (*)()) legacy_repeat_count);
+  scheme->assign(L"make-superellipsoid", 5, 0, 0,
+                 (SchemeObject * (*)()) make_superellipsoid);
+  scheme->assign(L"legacy-blob", 6, 0, 0, (SchemeObject * (*)()) legacy_blob);
+  scheme->assign(L"scene-object-copy", 1, 0, 0,
+                 (SchemeObject * (*)()) scene_object_copy);
   scheme->assign(L"make-sphere", 2, 1, 0, (SchemeObject * (*)()) make_sphere);
   scheme->assign(L"make-halfspace", 2, 2, 0,
                  (SchemeObject * (*)()) make_halfspace);
