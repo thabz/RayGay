@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <limits>
+#include <sstream>
 #include <stdlib.h>
 
 #include "collections/vectorlist.h"
@@ -448,6 +449,149 @@ public:
     assertFalse(op2.isIdentity());
     assertTrue(op1 * op2 * v == v);
     assertTrue(op2 * op1 * v == v);
+  }
+};
+
+class matrix_operations_test : public Test {
+public:
+  void run() {
+    Matrix m, identity;
+    assertTrue(m.isIdentity());
+    assertTrue(m.isOrthogonal());
+    assertFalse(m != identity);
+    m.clear();
+    for (int c = 0; c < 4; c++) {
+      for (int r = 0; r < 4; r++) {
+        assertEqualF(m.get(c, r), 0);
+      }
+    }
+    assertFalse(m.isIdentity());
+    assertFalse(m == identity);
+    assertTrue(m * identity == m);
+    m.reset();
+    assertTrue(m == identity);
+    m.element(3, 2) = 7;
+    assertEqualF(m.get(3, 2), 7);
+    assertFalse(m.isIdentity());
+    m.identity();
+    assertTrue(m == identity);
+
+    Matrix translation = Matrix::matrixTranslate(Vector(5, -2, 7));
+    Matrix scale = Matrix::matrixScale(Vector(2, 3, -4));
+    Vector v(1, 2, 3);
+    // Matrix products apply transformations from left to right.
+    assertTrue((translation * scale) * v == Vector(12, 0, -40));
+    assertTrue((scale * translation) * v == Vector(7, 4, -5));
+    m = translation;
+    assertTrue(&(m *= scale) == &m);
+    assertTrue(m == translation * scale);
+    m = translation;
+    m *= m;
+    assertTrue(m * v == Vector(11, -2, 17));
+    assertTrue(identity * scale == scale);
+    assertTrue(scale * identity == scale);
+
+    ostringstream output;
+    output << identity;
+    assertTrue(output.str() ==
+               " 1\t 0\t 0\t 0\n 0\t 1\t 0\t 0\n"
+               " 0\t 0\t 1\t 0\n 0\t 0\t 0\t 1\n");
+  }
+};
+
+class matrix_inverse_edge_cases_test : public Test {
+public:
+  void run() {
+    Matrix identity;
+    assertTrue(identity.inverse() == identity);
+    Matrix affine = Matrix::matrixScale(Vector(2, -4, 0.5)) *
+                    Matrix::matrixTranslate(Vector(3, -5, 7));
+    Matrix inverse = affine.inverse();
+    assertTrue(inverse * Vector(7, -17, 9) == Vector(2, 3, 4));
+    assertTrue((affine * inverse).isIdentity());
+    assertTrue((inverse * affine).isIdentity());
+
+    // Non-affine triangular matrix and its independently calculated inverse.
+    const double rows[4][4] = {
+        {1, 2, 0, 0}, {0, 1, 3, 0}, {0, 0, 1, 4}, {0, 0, 0, 2}};
+    const double inverseRows[4][4] = {
+        {1, -2, 6, -12}, {0, 1, -3, 6}, {0, 0, 1, -2}, {0, 0, 0, 0.5}};
+    Matrix general, expected;
+    for (int r = 0; r < 4; r++) {
+      for (int c = 0; c < 4; c++) {
+        general.set(c, r, rows[r][c]);
+        expected.set(c, r, inverseRows[r][c]);
+      }
+    }
+    assertTrue(general.inverse() == expected);
+    assertTrue((general * expected).isIdentity());
+    assertTrue((expected * general).isIdentity());
+    assertTrue(general * Vector(2, 4, 6) == Vector(5, 11, 5));
+
+    // Exercise a position-dependent homogeneous divisor and its inverse.
+    Matrix perspective;
+    perspective.set(0, 3, 1);
+    perspective.set(1, 3, 2);
+    perspective.set(2, 3, 3);
+    Vector v(1, 2, 3);
+    assertTrue(perspective * v == Vector(1.0 / 15, 2.0 / 15, 3.0 / 15));
+    assertTrue(perspective.inverse() * (perspective * v) == v);
+    assertTrue((perspective * perspective.inverse()).isIdentity());
+
+    // Both inversion paths currently return identity for singular matrices.
+    Matrix singular = Matrix::matrixScale(Vector(1, 0, 2));
+    assertTrue(singular.inverse().isIdentity());
+    singular.clear();
+    assertTrue(singular.inverse().isIdentity());
+  }
+};
+
+class matrix_orientation_test : public Test {
+public:
+  void run() {
+    Matrix m;
+    for (int c = 0; c < 4; c++) {
+      for (int r = 0; r < 4; r++) {
+        m.set(c, r, 4 * r + c + 1);
+      }
+    }
+    Matrix transposed = m.transpose();
+    Matrix3 rotation = m.extractRotation();
+    for (int c = 0; c < 3; c++) {
+      for (int r = 0; r < 3; r++) {
+        assertEqualF(transposed.get(c, r), m.get(r, c));
+      }
+      assertEqualF(transposed.get(3, c), 0);
+      assertEqualF(transposed.get(c, 3), 0);
+      Vector axis(0, 0, 0);
+      axis[c] = 1;
+      assertTrue(rotation * axis ==
+                 Vector(m.get(c, 0), m.get(c, 1), m.get(c, 2)));
+    }
+    assertEqualF(transposed.get(3, 3), 1);
+
+    Matrix basis = Matrix::matrixOrient(
+        Vector(0, 1, 0), Vector(0, 0, 1), Vector(1, 0, 0));
+    assertTrue(basis * Vector(1, 0, 0) == Vector(0, 1, 0));
+    assertTrue(basis * Vector(0, 1, 0) == Vector(0, 0, 1));
+    assertTrue(basis * Vector(0, 0, 1) == Vector(1, 0, 0));
+    assertTrue(basis.isOrthogonal());
+    assertTrue(Matrix::matrixOrient(Vector(4, 0, 0), Vector(0, 7, 0)) *
+                   Vector(0, 0, 1) == Vector(1, 0, 0));
+    Matrix orient = Matrix::matrixOrient(Vector(-5, 0, 0));
+    assertTrue(orient * Vector(-5, 0, 0) == Vector(0, 0, 5));
+    assertTrue(orient.isOrthogonal());
+
+    Matrix rotate = Matrix::matrixRotate(Vector(30, -45, 60));
+    // Follow each axis rotation explicitly to verify Euler rotation order.
+    Vector v(2, -3, 4);
+    Vector expected = Matrix::matrixRotate(Vector(1, 0, 0), 30) * v;
+    expected = Matrix::matrixRotate(Vector(0, 1, 0), -45) * expected;
+    expected = Matrix::matrixRotate(Vector(0, 0, 1), 60) * expected;
+    assertTrue(rotate * v == expected);
+    assertTrue(rotate.transpose() == rotate.inverse());
+    assertTrue(Matrix::matrixRotate(Vector(0, 0, 8), 90) * Vector(1, 0, 0) ==
+               Vector(0, -1, 0));
   }
 };
 
@@ -1185,6 +1329,101 @@ public:
   }
 };
 
+class polynomial_edge_cases_test : public Test {
+public:
+  void run() {
+    Polynomial zero;
+    assertTrue(zero.order() == 0);
+    assertEqualF(zero.coefficient(0), 0);
+    assertEqualF(zero.leadingCoefficient(), 0);
+    assertEqualF(zero.eval(-3), 0);
+    assertTrue(zero.timesX(8) == zero);
+    assertTrue(zero.timesX(8).order() == 0);
+
+    double zeros[] = {0, 0, 0, 0, 0, 0};
+    assertTrue(Polynomial(zeros, 6) == zero);
+    Polynomial p(2, -3, 0, 5, -7);
+    assertEqualF(p.coefficient(0), -7);
+    assertEqualF(p.coefficient(3), -3);
+    assertEqualF(p.coefficient(4), 2);
+    assertEqualF(p.eval(0), -7);
+    assertEqualF(p.eval(-2), 39);
+    assertTrue(p.derivative() == Polynomial(8, -9, 0, 5));
+    assertTrue(p - p == zero);
+    assertTrue(p * zero == zero);
+    assertTrue(zero * p == zero);
+    assertTrue(p / -2 == Polynomial(-1, 1.5, 0, -2.5, 3.5));
+    assertFalse(Polynomial(1, 2, 3) == Polynomial(1, 2, 4));
+
+    ostringstream output;
+    output << p << " " << zero;
+    assertTrue(output.str() == "(2,-3,0,5,-7) (0)");
+  }
+};
+
+class polynomial_copy_test : public Test {
+public:
+  void run() {
+    // Exercise both sides of the inline coefficient storage boundary.
+    for (uint32_t count = MAX_INLINE_COEFFS - 1;
+         count <= MAX_INLINE_COEFFS + 1; count++) {
+      double coefficients[] = {1, -2, 3, -4, 5, -6};
+      Polynomial original(coefficients, count);
+      coefficients[0] = 99;
+      assertEqualF(original.coefficient(0), 1);
+
+      Polynomial copy(original);
+      assertTrue(copy == original);
+      original = original * 2;
+      assertEqualF(copy.coefficient(0), 1);
+      assertEqualF(original.coefficient(0), 2);
+
+      Polynomial assigned(7, 8);
+      assertTrue(&(assigned = copy) == &assigned);
+      assertTrue(assigned == copy);
+      Polynomial &alias = assigned;
+      assigned = alias;
+      assertTrue(assigned == copy);
+      copy = Polynomial(9);
+      assertEqualF(assigned.coefficient(0), 1);
+      assigned = Polynomial(3, 4);
+      assertTrue(assigned == Polynomial(3, 4));
+    }
+  }
+};
+
+class polynomial_division_edge_cases_test : public Test {
+public:
+  void run() {
+    Polynomial remainder(99);
+    Polynomial p(2, -4, 6);
+    assertTrue(p.division(Polynomial(-2), remainder) == Polynomial(-1, 2, -3));
+    assertTrue(remainder == Polynomial(0));
+    assertTrue(Polynomial(6).division(Polynomial(2), remainder) == Polynomial(3));
+    assertTrue(remainder == Polynomial(0));
+    assertTrue(Polynomial().division(Polynomial(2), remainder) == Polynomial(0));
+    assertTrue(remainder == Polynomial(0));
+
+    assertTrue(p.division(p, remainder) == Polynomial(1));
+    assertTrue(remainder == Polynomial(0));
+    Polynomial divisor(4, 2, -2);
+    Polynomial quotient = p.division(divisor, remainder);
+    assertTrue(quotient == Polynomial(0.5));
+    assertTrue(remainder == Polynomial(-5, 7));
+    assertTrue(quotient * divisor + remainder == p);
+    assertTrue(remainder.order() < divisor.order());
+
+    // x^6 - 1 divided by 2x^2 - 2 has gaps in the quotient.
+    double coefficients[] = {-1, 0, 0, 0, 0, 0, 1};
+    Polynomial large(coefficients, 7);
+    divisor = Polynomial(2, 0, -2);
+    quotient = large.division(divisor, remainder);
+    assertTrue(quotient == Polynomial(0.5, 0, 0.5, 0, 0.5));
+    assertTrue(remainder == Polynomial(0));
+    assertTrue(quotient * divisor + remainder == large);
+  }
+};
+
 class sturm_sequence_test : public Test {
 public:
   void run() {
@@ -1554,6 +1793,9 @@ int main(int argc, char *argv[]) {
   suite.add("Vector", new vector_test());
   suite.add("Vector2", new vector2_test());
   suite.add("Matrix", new matrix_test());
+  suite.add("Matrix operations", new matrix_operations_test());
+  suite.add("Matrix inverse edge cases", new matrix_inverse_edge_cases_test());
+  suite.add("Matrix orientation", new matrix_orientation_test());
   suite.add("Matrix3", new matrix3_test());
   suite.add("Binomial", new binomial_test());
   suite.add("Bernstein", new bernstein_polynomial_test());
@@ -1567,6 +1809,9 @@ int main(int argc, char *argv[]) {
   suite.add("Bisection", new bisection());
   suite.add("Regula falsi", new regula_falsi());
   suite.add("Polynomials", new polynomials());
+  suite.add("Polynomial edge cases", new polynomial_edge_cases_test());
+  suite.add("Polynomial copying", new polynomial_copy_test());
+  suite.add("Polynomial division edge cases", new polynomial_division_edge_cases_test());
   suite.add("Sturm sequence", new sturm_sequence_test());
   suite.add("Quaternion", new quaternion_test());
   suite.add("RootFinding", new rootfinding_test());
