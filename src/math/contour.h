@@ -21,15 +21,13 @@ public:
   void transform(float a, float b, float c, float d, float e, float f);
   std::vector<Contour> contours;
 
+  /// Test membership using the non-zero winding rule.
   bool isInside(const Vector2 &point, double x_max, double size) const;
+  /// Return filled-span transitions at or to the right of x_min.
+  /// x_max is retained for compatibility; the scanline extends to infinity.
   std::vector<double> rasterize(double x_min, double x_max, double y,
                                 double size = 1) const;
 
-private:
-  static int intersect(double x_min, double y, const Vector2 &a,
-                       const Vector2 &b, double *result);
-  static int intersect(double x_min, double y, const Vector2 &p0,
-                       const Vector2 &p1, const Vector2 &p2, double *result);
 };
 
 #endif

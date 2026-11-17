@@ -1,152 +1,190 @@
 
 #include "contour.h"
 
-#include "functions.h"
 #include <algorithm>
 
 using namespace std;
 
-bool Contours::isInside(const Vector2 &p, double x_max, double size) const {
-  // TODO: Use zero-winding rule as described by
-  // Apple in
-  // http://developer.apple.com/textfonts/TTRefMan/RM02/Chap2.html#distinguishing
+namespace {
+struct Crossing {
+  double x;
+  int winding;
+};
 
-  double y = p.y();
-  double x_min = p.x();
-  int intersections = 0;
-  for (uint32_t m = 0; m < contours.size(); m++) {
-    const Contour &contour = contours[m];
-    Vector2 c0 = contour.coords[0] * size;
-    for (uint32_t k = 1; k <= contour.coords.size(); k++) {
-      uint32_t j = k % contour.coords.size();
-      Vector2 c1 = contour.coords[j] * size;
-      if (contour.onCurve[j]) {
-        double root;
-        if (IS_NEQUAL(c0.y(), c1.y()) && IS_NEQUAL(y, c0.y()) &&
-            IS_NEQUAL(y, c1.y()) && IS_NEQUAL(c0.x(), x_min) &&
-            IS_NEQUAL(c1.x(), x_min)) {
-          int n = intersect(x_min, y, c0, c1, &root);
-          if (n > 0) {
-            intersections++;
-          }
-        }
-        c0 = c1;
-      } else {
-        uint32_t j = (k + 1) % contour.coords.size();
-        Vector2 c2 = contour.coords[j] * size;
-        if (!contour.onCurve[j]) {
-          // Reconstruct a new c2 that is on curve
-          c2 = (c1 + c2) * 0.5;
-        }
-        double roots[2];
-        int n = intersect(x_min, y, c0, c1, c2, roots);
-        for (int i = 0; i < n; i++) {
-          intersections++;
-        }
-        c0 = c2;
-      }
+template <typename Emit>
+void intersectLine(const Vector2 &a, const Vector2 &b, double y, Emit &emit) {
+  // Include the lower endpoint and exclude the upper one. Shared vertices
+  // are then counted once, while horizontal edges contribute no winding.
+  if ((a.y() <= y && y < b.y()) || (b.y() <= y && y < a.y())) {
+    double t = (y - a.y()) / (b.y() - a.y());
+    emit(a.x() + t * (b.x() - a.x()), b.y() > a.y() ? 1 : -1);
+  }
+}
+
+template <typename Emit>
+void intersectMonotonicCurve(const Vector2 &a, const Vector2 &control,
+                             const Vector2 &b, double y, Emit &emit) {
+  if (!((a.y() <= y && y < b.y()) || (b.y() <= y && y < a.y())))
+    return;
+
+  double t;
+  if (y == a.y()) {
+    t = 0;
+  } else if (y == b.y()) {
+    t = 1;
+  } else {
+    // Normalize by the piece's height, rather than applying an absolute
+    // coefficient tolerance. This also handles tiny pieces near an extremum.
+    double height = b.y() - a.y();
+    double fromStart = (y - a.y()) / height;
+    double fromEnd = (b.y() - y) / height;
+    double startSlope = (control.y() - a.y()) / height;
+    double endSlope = (b.y() - control.y()) / height;
+    // The squared derivative varies linearly with y. Interpolating its
+    // endpoint values avoids cancellation near a horizontal tangent.
+    double root = sqrt(startSlope * startSlope * fromEnd +
+                       endSlope * endSlope * fromStart);
+    t = fromStart / (startSlope + root);
+    t = std::max(0.0, std::min(1.0, t));
+  }
+  double u = 1 - t;
+  double x = u * u * a.x() + 2 * u * t * control.x() + t * t * b.x();
+  emit(x, b.y() > a.y() ? 1 : -1);
+}
+
+template <typename Emit>
+void intersectCurve(const Vector2 &a, const Vector2 &control, const Vector2 &b,
+                    double y, Emit &emit) {
+  double denominator = a.y() - 2 * control.y() + b.y();
+  if (denominator != 0) {
+    double t = (a.y() - control.y()) / denominator;
+    if (t > 0 && t < 1) {
+      // Split at the vertical extremum so each piece has a known direction.
+      Vector2 left = a * (1 - t) + control * t;
+      Vector2 right = control * (1 - t) + b * t;
+      Vector2 midpoint = left * (1 - t) + right * t;
+      intersectMonotonicCurve(a, left, midpoint, y, emit);
+      intersectMonotonicCurve(midpoint, right, b, y, emit);
+      return;
     }
   }
+  intersectMonotonicCurve(a, control, b, y, emit);
+}
 
-  return intersections % 2 == 1;
+template <bool PointQuery, typename Emit>
+void scanlineCrossings(const vector<Contour> &contours, double y, double size,
+                       double x_min, Emit &emit) {
+  for (const Contour &contour : contours) {
+    size_t count = contour.coords.size();
+    if (count == 0)
+      continue;
+
+    // Walk the original points directly. Consecutive off-curve controls
+    // imply an on-curve midpoint, including across the closing edge.
+    Vector2 start;
+    size_t i = 0;
+    size_t end = count;
+    if (contour.onCurve[0]) {
+      start = contour.coords[0] * size;
+      i = 1;
+    } else if (contour.onCurve[count - 1]) {
+      start = contour.coords[count - 1] * size;
+      end = count - 1;
+    } else {
+      start = (contour.coords[count - 1] + contour.coords[0]) * (0.5 * size);
+    }
+    Vector2 current = start;
+    while (i < end) {
+      Vector2 point = contour.coords[i] * size;
+      if (contour.onCurve[i]) {
+        intersectLine(current, point, y, emit);
+        current = point;
+        i++;
+      } else {
+        Vector2 next = i + 1 < end ? contour.coords[i + 1] * size : start;
+        if (i + 1 < end && !contour.onCurve[i + 1]) {
+          next = (point + next) * 0.5;
+          i++;
+        } else {
+          i += 2;
+        }
+        // A quadratic stays inside its control-point bounding box. Point
+        // queries can skip curves wholly to the left of their ray origin.
+        if (!PointQuery || current.x() >= x_min || point.x() >= x_min ||
+            next.x() >= x_min)
+          intersectCurve(current, point, next, y, emit);
+        current = next;
+      }
+    }
+    intersectLine(current, start, y, emit);
+  }
+}
+
+// Most glyph scanlines need only a few crossings. Spill to the heap only
+// when the inline buffer is full; isInside needs no crossing storage at all.
+class CrossingBuffer {
+public:
+  CrossingBuffer() : count(0) {}
+  void operator()(double x, int winding) {
+    if (count < inlineCapacity) {
+      inlineCrossings[count] = {x, winding};
+    } else {
+      if (count == inlineCapacity) {
+        overflow.reserve(inlineCapacity * 2);
+        overflow.assign(inlineCrossings, inlineCrossings + inlineCapacity);
+      }
+      overflow.push_back({x, winding});
+    }
+    count++;
+  }
+  Crossing *begin() {
+    return count <= inlineCapacity ? inlineCrossings : overflow.data();
+  }
+  Crossing *end() { return begin() + count; }
+  size_t size() const { return count; }
+
+private:
+  static const size_t inlineCapacity = 32;
+  Crossing inlineCrossings[inlineCapacity];
+  vector<Crossing> overflow;
+  size_t count;
+};
+} // namespace
+
+bool Contours::isInside(const Vector2 &p, double x_max, double size) const {
+  int winding = 0;
+  auto accumulate = [&](double x, int direction) {
+    if (x >= p.x())
+      winding += direction;
+  };
+  scanlineCrossings<true>(contours, p.y(), size, p.x(), accumulate);
+  return winding != 0;
 }
 
 vector<double> Contours::rasterize(double x_min, double x_max, double y,
-                                   double size) const {
-  // TODO: Use zero-winding rule as described by
-  // Apple in
-  // http://developer.apple.com/textfonts/TTRefMan/RM02/Chap2.html#distinguishing
+                                  double size) const {
+  CrossingBuffer crossings;
+  scanlineCrossings<false>(contours, y, size, x_min, crossings);
+  sort(crossings.begin(), crossings.end(),
+       [](const Crossing &a, const Crossing &b) { return a.x < b.x; });
 
   vector<double> result;
-
-  for (uint32_t m = 0; m < contours.size(); m++) {
-    const Contour &contour = contours[m];
-    Vector2 c0 = contour.coords[0] * size;
-    for (uint32_t k = 1; k <= contour.coords.size(); k++) {
-      uint32_t j = k % contour.coords.size();
-      Vector2 c1 = contour.coords[j] * size;
-      if (contour.onCurve[j]) {
-        double root;
-        if (IS_NEQUAL(c0.y(), c1.y()) && IS_NEQUAL(y, c0.y()) &&
-            IS_NEQUAL(y, c1.y()) && IS_NEQUAL(c0.x(), x_min) &&
-            IS_NEQUAL(c1.x(), x_min)) {
-          int n = intersect(x_min, y, c0, c1, &root);
-          if (n > 0) {
-            result.push_back(root + x_min);
-          }
-        }
-        c0 = c1;
-      } else {
-        uint32_t j = (k + 1) % contour.coords.size();
-        Vector2 c2 = contour.coords[j] * size;
-        if (!contour.onCurve[j]) {
-          // Reconstruct a new c2 that is on curve
-          c2 = (c1 + c2) * 0.5;
-        }
-        double roots[2];
-        int n = intersect(x_min, y, c0, c1, c2, roots);
-        for (int i = 0; i < n; i++) {
-          result.push_back(roots[i] + x_min);
-        }
-        c0 = c2;
-      }
-    }
+  result.reserve(crossings.size());
+  Crossing *events = crossings.begin();
+  int winding = 0;
+  for (size_t i = 0; i < crossings.size();) {
+    double x = events[i].x;
+    bool wasInside = winding != 0;
+    // Apply coincident crossings together, avoiding zero-width spans or
+    // artificial holes where two contours meet or cancel each other.
+    do {
+      winding += events[i].winding;
+      i++;
+    } while (i < crossings.size() && IS_EQUAL(events[i].x, x));
+    if (wasInside != (winding != 0) && x >= x_min)
+      result.push_back(x);
   }
-
-  std::sort(result.begin(), result.end());
   return result;
-}
-
-/// Intersect a quadratic Bezier curve with the ray with origin (x_min,y) and
-/// direction (1,0). This allows for two intersections that are returned as a
-/// pair of distances from the rays origin.
-/// @return the number of real roots
-int Contours::intersect(double x_min, double y, const Vector2 &p0,
-                        const Vector2 &p1, const Vector2 &p2, double *result) {
-  double A = p0[1] - 2 * p1[1] + p2[1];
-  double B = 2 * p1[1] - 2 * p0[1];
-  double C = p0[1] - y;
-
-  double roots[2];
-  if (IS_ZERO(A) && IS_ZERO(B))
-    return 0;
-  int num = Math::solveQuadratic(A, B, C, roots);
-
-  int n = 0;
-  for (int i = 0; i < num; i++) {
-    double t = roots[i];
-    // TODO: Skal nok være t < 1.0, så vi ikke løber ind i dobbelskæringer.
-    // Se plottet af @ på http://localhost/blog/files/filled-text.png
-    if (t > 0 && t <= 1.0) {
-      double s = (p0[0] - 2 * p1[0] + p2[0]) * t * t +
-                 (2 * p1[0] - 2 * p0[0]) * t + p0[0] - x_min;
-      if (s >= 0) {
-        result[n] = s;
-        n++;
-      }
-    }
-  }
-  return n;
-}
-
-/// Intersect a linesegment with the ray with origin (x_min,y) and direction
-/// (1,0).
-// @return 1 if intersecting, 0 otherwise. Distance written to *result.
-int Contours::intersect(double x_min, double y, const Vector2 &a,
-                        const Vector2 &b, double *result) {
-  // Skip horizonal lines
-  if (IS_EQUAL(a[1], b[1]))
-    return 0;
-
-  double t = (y - b[1]) / (a[1] - b[1]);
-  if (t > 0 && t <= 1.0) {
-    double s = t * a[0] + (1 - t) * b[0] - x_min;
-    if (s >= 0) {
-      *result = s;
-      return 1;
-    }
-  }
-  return 0;
 }
 
 Contours::Contours() {}

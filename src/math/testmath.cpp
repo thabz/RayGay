@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include "collections/vectorlist.h"
+#include "contour.h"
 #include "functions.h"
 #include "interval.h"
 #include "matrix.h"
@@ -592,6 +593,331 @@ public:
     assertTrue(rotate.transpose() == rotate.inverse());
     assertTrue(Matrix::matrixRotate(Vector(0, 0, 8), 90) * Vector(1, 0, 0) ==
                Vector(0, -1, 0));
+  }
+};
+
+class contours_test : public Test {
+private:
+  Contour rectangle(double left, double bottom, double right, double top) {
+    Contour contour;
+    contour.coords = {Vector2(left, bottom), Vector2(right, bottom),
+                      Vector2(right, top), Vector2(left, top)};
+    contour.onCurve = {true, true, true, true};
+    return contour;
+  }
+
+  void assertIntersections(const vector<double> &actual,
+                           const vector<double> &expected) {
+    assertTrue(actual.size() == expected.size());
+    for (size_t i = 0; i < actual.size() && i < expected.size(); i++) {
+      assertEqualF(actual[i], expected[i]);
+    }
+  }
+
+public:
+  void run() {
+    Contours shape;
+    assertTrue(shape.rasterize(-1, 10, 2).empty());
+    assertFalse(shape.isInside(Vector2(2, 2), 10, 1));
+    shape.transform(1, 0, 0, 1, 2, 3);
+    assertTrue(shape.contours.empty());
+
+    shape.contours.push_back(rectangle(0, 0, 4, 4));
+    assertIntersections(shape.rasterize(-1, 10, 2), {0, 4});
+    assertIntersections(shape.rasterize(1, 10, 2), {4});
+    assertTrue(shape.rasterize(5, 10, 2).empty());
+    assertTrue(shape.rasterize(-1, 10, -1).empty());
+    assertTrue(shape.rasterize(-1, 10, 5).empty());
+    assertTrue(shape.isInside(Vector2(2, 2), 10, 1));
+    assertFalse(shape.isInside(Vector2(-1, 2), 10, 1));
+    assertFalse(shape.isInside(Vector2(5, 2), 10, 1));
+    assertFalse(shape.isInside(Vector2(2, 5), 10, 1));
+    assertIntersections(shape.rasterize(-1, 20, 6, 2), {0, 8});
+    assertTrue(shape.isInside(Vector2(6, 6), 20, 2));
+    assertFalse(shape.isInside(Vector2(6, 6), 20, 1));
+
+    // Opposite winding makes the inner contour a hole.
+    Contour hole = rectangle(1, 1, 3, 3);
+    std::reverse(hole.coords.begin(), hole.coords.end());
+    shape.contours.push_back(hole);
+    assertIntersections(shape.rasterize(-1, 10, 2), {0, 1, 3, 4});
+    assertTrue(shape.isInside(Vector2(0.5, 2), 10, 1));
+    assertFalse(shape.isInside(Vector2(2, 2), 10, 1));
+    shape.contours.push_back(rectangle(6, 0, 8, 4));
+    assertIntersections(shape.rasterize(-1, 10, 2), {0, 1, 3, 4, 6, 8});
+    assertTrue(shape.isInside(Vector2(7, 2), 10, 1));
+  }
+};
+
+class contour_winding_test : public Test {
+private:
+  Contour rectangle(double left, double right, bool reversed = false) {
+    Contour contour;
+    contour.coords = {Vector2(left, 0), Vector2(right, 0),
+                      Vector2(right, 6), Vector2(left, 6)};
+    contour.onCurve = {true, true, true, true};
+    if (reversed)
+      std::reverse(contour.coords.begin(), contour.coords.end());
+    return contour;
+  }
+
+  void assertSpans(const Contours &shape, const vector<double> &expected,
+                   double y = 2) {
+    vector<double> actual = shape.rasterize(-1, 10, y);
+    // Rasterization returns endpoints of filled spans, not every crossing.
+    assertTrue(actual.size() == expected.size());
+    for (size_t i = 0; i < actual.size() && i < expected.size(); i++) {
+      assertEqualF(actual[i], expected[i]);
+    }
+  }
+
+public:
+  void run() {
+    // Apple's non-zero winding rule counts signed crossings, not parity.
+    // Test both signs: winding +2 and -2 must both remain filled.
+    for (int reversed = 0; reversed < 2; reversed++) {
+      Contours nested;
+      nested.contours.push_back(rectangle(0, 8, reversed));
+      Contour inner = rectangle(2, 6, reversed);
+      for (size_t i = 0; i < inner.coords.size(); i++) {
+        inner.coords[i][1] = inner.coords[i][1] * 0.5 + 1;
+      }
+      nested.contours.push_back(inner);
+      assertTrue(nested.isInside(Vector2(4, 2), 10, 1));
+      assertTrue(nested.isInside(Vector2(1, 2), 10, 1));
+      assertFalse(nested.isInside(Vector2(-0.5, 2), 10, 1));
+      assertSpans(nested, {0, 8});
+
+      // Reversing only the inner contour cancels the winding in its interior.
+      std::reverse(nested.contours[1].coords.begin(),
+                   nested.contours[1].coords.end());
+      assertFalse(nested.isInside(Vector2(4, 2), 10, 1));
+      assertTrue(nested.isInside(Vector2(1, 2), 10, 1));
+      assertSpans(nested, {0, 2, 6, 8});
+    }
+
+    Contours overlap;
+    overlap.contours.push_back(rectangle(0, 5));
+    overlap.contours.push_back(rectangle(3, 8));
+    assertTrue(overlap.isInside(Vector2(4, 2), 10, 1));
+    assertTrue(overlap.isInside(Vector2(1, 2), 10, 1));
+    assertTrue(overlap.isInside(Vector2(7, 2), 10, 1));
+    assertSpans(overlap, {0, 8});
+    overlap.contours[1] = rectangle(3, 8, true);
+    assertFalse(overlap.isInside(Vector2(4, 2), 10, 1));
+    assertTrue(overlap.isInside(Vector2(1, 2), 10, 1));
+    assertTrue(overlap.isInside(Vector2(7, 2), 10, 1));
+    assertSpans(overlap, {0, 3, 5, 8});
+
+    // Coincident quadratic curves must retain signed crossings as well.
+    Contour arch;
+    arch.coords = {Vector2(0, 0), Vector2(2, 4), Vector2(4, 0)};
+    arch.onCurve = {true, false, true};
+    Contours doubled;
+    doubled.contours.push_back(arch);
+    doubled.contours.push_back(arch);
+    assertTrue(doubled.isInside(Vector2(2, 1.5), 10, 1));
+    assertFalse(doubled.isInside(Vector2(0.5, 1.5), 10, 1));
+    assertSpans(doubled, {1, 3}, 1.5);
+    std::reverse(doubled.contours[1].coords.begin(),
+                 doubled.contours[1].coords.end());
+    // The flag sequence is symmetric: reversing it leaves it unchanged.
+    assertFalse(doubled.isInside(Vector2(2, 1.5), 10, 1));
+    assertSpans(doubled, {}, 1.5);
+
+    // Adjacent filled regions share an edge without introducing a transition.
+    Contours adjacent;
+    adjacent.contours.push_back(rectangle(0, 4));
+    adjacent.contours.push_back(rectangle(4, 8));
+    assertSpans(adjacent, {0, 8});
+    assertTrue(adjacent.isInside(Vector2(4, 2), 10, 1));
+
+    // A scanline through two shared vertices still has one entry and exit.
+    Contour diamond;
+    diamond.coords = {Vector2(0, 2), Vector2(2, 0),
+                      Vector2(4, 2), Vector2(2, 4)};
+    diamond.onCurve = {true, true, true, true};
+    Contours vertices;
+    vertices.contours.push_back(diamond);
+    assertSpans(vertices, {0, 4});
+    assertTrue(vertices.isInside(Vector2(2, 2), 10, 1));
+    assertFalse(vertices.isInside(Vector2(-0.5, 2), 10, 1));
+
+    // Merely touching the apex of a quadratic does not change winding.
+    Contours tangent;
+    tangent.contours.push_back(arch);
+    assertSpans(tangent, {}, 2);
+    assertFalse(tangent.isInside(Vector2(1, 2), 10, 1));
+
+    // Starting at an off-curve point describes the same closed path.
+    arch.coords = {Vector2(2, 4), Vector2(4, 0), Vector2(0, 0)};
+    arch.onCurve = {false, true, true};
+    tangent.contours[0] = arch;
+    assertSpans(tangent, {1, 3}, 1.5);
+    assertTrue(tangent.isInside(Vector2(2, 1.5), 10, 1));
+
+    // An all-off-curve contour obtains implicit midpoints on every edge.
+    Contour rounded;
+    rounded.coords = {Vector2(0, 0), Vector2(4, 0),
+                      Vector2(4, 4), Vector2(0, 4)};
+    rounded.onCurve = {false, false, false, false};
+    tangent.contours[0] = rounded;
+    assertSpans(tangent, {0, 4}, 2);
+    assertTrue(tangent.isInside(Vector2(2, 2), 10, 1));
+    tangent.contours.push_back(Contour());
+    assertTrue(tangent.isInside(Vector2(2, 2), 10, 1));
+  }
+};
+
+class contour_curves_test : public Test {
+private:
+  void assertPair(const vector<double> &actual, double left, double right) {
+    assertTrue(actual.size() == 2);
+    if (actual.size() == 2) {
+      assertEqualF(actual[0], left);
+      assertEqualF(actual[1], right);
+    }
+  }
+
+public:
+  void run() {
+    Contour arch;
+    arch.coords = {Vector2(0, 0), Vector2(2, 4), Vector2(4, 0)};
+    arch.onCurve = {true, false, true};
+    Contours shape;
+    shape.contours.push_back(arch);
+    // B(t) = (4t, 8t(1-t)); y=1.5 at t=0.25 and t=0.75.
+    assertPair(shape.rasterize(-2, 10, 1.5), 1, 3);
+    assertTrue(shape.isInside(Vector2(2, 1.5), 10, 1));
+    assertFalse(shape.isInside(Vector2(0.5, 1.5), 10, 1));
+    assertFalse(shape.isInside(Vector2(3.5, 1.5), 10, 1));
+    assertTrue(shape.rasterize(-2, 10, 3).empty());
+    assertTrue(shape.rasterize(3.5, 10, 1.5).empty());
+    assertPair(shape.rasterize(-2, 20, 3, 2), 2, 6);
+
+    // Adjacent off-curve points imply an on-curve midpoint at (2,4).
+    arch.coords = {Vector2(0, 0), Vector2(0, 4), Vector2(4, 4), Vector2(4, 0)};
+    arch.onCurve = {true, false, false, true};
+    shape.contours[0] = arch;
+    assertPair(shape.rasterize(-1, 10, 3), 0.5, 3.5);
+    assertTrue(shape.isInside(Vector2(2, 3), 10, 1));
+    assertFalse(shape.isInside(Vector2(0.25, 3), 10, 1));
+
+    // Collinear control points reduce the quadratic intersection to a line.
+    arch.coords = {Vector2(0, 0), Vector2(2, 2), Vector2(4, 4), Vector2(4, 0)};
+    arch.onCurve = {true, false, true, true};
+    shape.contours[0] = arch;
+    assertPair(shape.rasterize(-1, 10, 1), 1, 4);
+    assertTrue(shape.isInside(Vector2(2, 1), 10, 1));
+    assertFalse(shape.isInside(Vector2(0.5, 1), 10, 1));
+  }
+};
+
+class contour_small_extremum_test : public Test {
+public:
+  void run() {
+    Contour contour;
+    contour.coords = {Vector2(0, 0), Vector2(2, -0.000001), Vector2(4, 1)};
+    contour.onCurve = {true, false, true};
+    Contours shape;
+    shape.contours.push_back(contour);
+    const double y = -5e-13;
+    // y(t)=(1+2e-6)t^2-2e-6*t, x(t)=4t.
+    const double a = 1 + 2e-6;
+    const double delta = sqrt(1e-12 + a * y);
+    const double left = 4 * (1e-6 - delta) / a;
+    const double right = 4 * (1e-6 + delta) / a;
+    for (int reversed = 0; reversed < 2; reversed++) {
+      vector<double> spans = shape.rasterize(-1, 5, y);
+      assertTrue(spans.size() == 2);
+      if (spans.size() == 2) {
+        assertTrue(fabs(spans[0] - left) < 1e-14);
+        assertTrue(fabs(spans[1] - right) < 1e-14);
+      }
+      assertTrue(shape.isInside(Vector2((left + right) / 2, y), 5, 1));
+      assertFalse(shape.isInside(Vector2(0, y), 5, 1));
+      assertFalse(shape.isInside(Vector2(2 * right, y), 5, 1));
+      std::reverse(shape.contours[0].coords.begin(), shape.contours[0].coords.end());
+    }
+  }
+};
+
+class contour_intersection_scale_test : public Test {
+public:
+  void run() {
+    // x(t)=4t gives independently known crossings, even when the vertical
+    // coefficients would underflow or overflow if squared without scaling.
+    const double heights[] = {-1e180, -1, -1e-180, 1e-180, 1, 1e180};
+    const double controls[] = {0, 0.1, 0.9, 1};
+    const double parameters[] = {0.001, 0.25, 0.75, 0.999};
+    for (double height : heights) {
+      for (double control : controls) {
+        Contour contour;
+        contour.coords = {Vector2(0, 0), Vector2(2, control * height),
+                          Vector2(4, height)};
+        contour.onCurve = {true, false, true};
+        Contours shape;
+        shape.contours.push_back(contour);
+        for (double t : parameters) {
+          double fraction = 2 * control * (1 - t) * t + t * t;
+          vector<double> spans = shape.rasterize(-1, 5, height * fraction);
+          assertTrue(spans.size() == 2);
+          if (spans.size() == 2) {
+            assertTrue(fabs(spans[0] - std::min(4 * t, 4 * fraction)) < 1e-10);
+            assertTrue(fabs(spans[1] - std::max(4 * t, 4 * fraction)) < 1e-10);
+          }
+        }
+      }
+    }
+
+    // More than 32 crossings exercises storage beyond the inline buffer.
+    Contours many;
+    vector<double> expected;
+    for (int i = 0; i < 40; i++) {
+      double x = i * 3;
+      Contour rectangle;
+      rectangle.coords = {Vector2(x, 0), Vector2(x + 1, 0),
+                          Vector2(x + 1, 2), Vector2(x, 2)};
+      rectangle.onCurve = {true, true, true, true};
+      many.contours.push_back(rectangle);
+      expected.push_back(x);
+      expected.push_back(x + 1);
+    }
+    assertTrue(many.rasterize(-1, 120, 1) == expected);
+    assertTrue(many.isInside(Vector2(117.5, 1), 120, 1));
+    assertFalse(many.isInside(Vector2(118.5, 1), 120, 1));
+  }
+};
+
+class contour_transform_test : public Test {
+public:
+  void run() {
+    Contour contour;
+    contour.coords = {Vector2(1, 2), Vector2(-3, 4), Vector2(5, -6)};
+    contour.onCurve = {true, false, true};
+    Contours shape;
+    shape.contours.push_back(contour);
+    shape.contours.push_back(contour);
+    shape.transform(1, 0, 0, 1, 0, 0);
+    assertTrue(shape.contours[0].coords == contour.coords);
+    shape.transform(1, 0, 0, 1, 2, -3);
+    assertTrue(shape.contours[0].coords[0] == Vector2(3, -1));
+    assertTrue(shape.contours[0].coords[1] == Vector2(-1, 1));
+    assertTrue(shape.contours[0].coords[2] == Vector2(7, -9));
+    shape.transform(2, 0, 0, -3, 0, 0);
+    assertTrue(shape.contours[0].coords[0] == Vector2(6, 3));
+    assertTrue(shape.contours[0].coords[1] == Vector2(-2, -3));
+    assertTrue(shape.contours[0].coords[2] == Vector2(14, 27));
+    assertTrue(shape.contours[1].coords == shape.contours[0].coords);
+    assertTrue(shape.contours[0].onCurve == contour.onCurve);
+    assertTrue(shape.contours[1].onCurve == contour.onCurve);
+
+    // x'=x+2y, y'=y exercises the off-diagonal coefficient.
+    shape.contours[0] = contour;
+    shape.transform(1, 0, 2, 1, 0, 0);
+    assertTrue(shape.contours[0].coords[0] == Vector2(5, 2));
+    assertTrue(shape.contours[0].coords[1] == Vector2(5, 4));
+    assertTrue(shape.contours[0].coords[2] == Vector2(-7, -6));
   }
 };
 
@@ -1797,6 +2123,12 @@ int main(int argc, char *argv[]) {
   suite.add("Matrix inverse edge cases", new matrix_inverse_edge_cases_test());
   suite.add("Matrix orientation", new matrix_orientation_test());
   suite.add("Matrix3", new matrix3_test());
+  suite.add("Contours", new contours_test());
+  suite.add("Contour non-zero winding", new contour_winding_test());
+  suite.add("Contour curves", new contour_curves_test());
+  suite.add("Contour small extremum", new contour_small_extremum_test());
+  suite.add("Contour intersection scales", new contour_intersection_scale_test());
+  suite.add("Contour transforms", new contour_transform_test());
   suite.add("Binomial", new binomial_test());
   suite.add("Bernstein", new bernstein_polynomial_test());
   suite.add("Clamp", new clamp_test());
