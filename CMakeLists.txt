@@ -376,6 +376,13 @@ if(HAVE_MPI)
 endif()
 
 if(BUILD_TESTING)
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  add_executable(migration_probe test/migration_probe.cpp)
+  target_link_libraries(migration_probe PRIVATE raygay_tracer)
+  add_test(NAME testmigration COMMAND ${Python3_EXECUTABLE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/testmigration.py
+    --probe $<TARGET_FILE:migration_probe>)
+  set_tests_properties(testmigration PROPERTIES WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   add_executable(testmath src/math/testmath.cpp)
   target_link_libraries(testmath PRIVATE raygay_tracer)
   add_test(NAME testmath COMMAND testmath)
